@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: table.c,v 1.5 2001/11/22 13:35:45 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -3012,13 +3012,13 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		    q = p;
             switch (ec = getescapechar(&p)) {
             case '<':
-               Strcat_charp(tmp, "<");
+               Strcat_charp(tmp, "&lt;");
                break;
             case '>':
-               Strcat_charp(tmp, ">");
+               Strcat_charp(tmp, "&gt;");
                break;
             case '&':
-               Strcat_charp(tmp, "&");
+               Strcat_charp(tmp, "&amp;");
                break;
             case '\r':
                Strcat_char(tmp, '\n');

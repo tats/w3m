@@ -1,5 +1,16 @@
 2003-01-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03665] imlib2 support (on X11)
+	* configure: X11 inline image with Imlib2
+		fix typo in fb/imlib2
+	* w3mimg/x11/x11_w3mimg.c: USE_IMLIB2
+		(x11_load_image): USE_IMLIB2
+		(x11_show_image): USE_IMLIB2
+		(x11_free_image): USE_IMLIB2
+		(x11_get_image_size): USE_IMLIB2
+
+2003-01-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03664] config.param is clear when configure -help
 	* configure: config.param created after arg parsing
 
@@ -6652,4 +6663,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.698 2003/01/21 15:33:16 ukai Exp $
+$Id: ChangeLog,v 1.699 2003/01/21 15:38:55 ukai Exp $

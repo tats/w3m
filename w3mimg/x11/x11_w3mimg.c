@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.11 2002/12/25 16:14:45 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.12 2003/01/21 15:38:59 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -6,6 +6,10 @@
 
 #if defined(USE_IMLIB)
 #include <Imlib.h>
+#elif defined(USE_IMLIB2)
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <Imlib2.h>
 #elif defined(USE_GDKPIXBUF)
 #include <gdk-pixbuf/gdk-pixbuf-xlib.h>
 #else
@@ -227,6 +231,8 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     struct x11_info *xi;
 #if defined(USE_IMLIB)
     ImlibImage *im;
+#elif defined(USE_IMLIB2)
+    Imlib_Image im;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbufAnimation *animation;
     GList *frames;
@@ -258,6 +264,27 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
     Imlib_paste_image(xi->id, im, (Pixmap) img->pixmap, 0, 0, w, h);
     Imlib_kill_image(xi->id, im);
+#elif defined(USE_IMLIB2)
+    im = imlib_load_image(fname);
+    if (!im)
+        return 0;
+    imlib_context_set_image(im);
+    if (w <= 0)
+        w = imlib_image_get_width();
+    if (h <= 0)
+        h = imlib_image_get_height();
+    img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
+					DefaultDepth(xi->display, 0));
+    if (!img->pixmap)
+        return 0;
+    XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
+    XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
+    imlib_context_set_display(xi->display);
+    imlib_context_set_visual(DefaultVisual(xi->display, 0));
+    imlib_context_set_colormap(DefaultColormap(xi->display, 0));
+    imlib_context_set_drawable((Drawable)img->pixmap);
+    imlib_render_image_on_drawable_at_size(0, 0, w, h);
+    imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
     animation = gdk_pixbuf_animation_new_from_file(fname);
     if (!animation)
@@ -363,7 +390,7 @@ x11_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy, int sw,
     if (xi == NULL)
 	return 0;
 
-#if defined(USE_IMLIB)
+#if defined(USE_IMLIB) || defined(USE_IMLIB2)
     XCopyArea(xi->display, (Pixmap) img->pixmap, xi->window, xi->imageGC,
 	      sx, sy,
 	      (sw ? sw : img->width),
@@ -398,7 +425,7 @@ x11_free_image(w3mimg_op * self, W3MImage * img)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return;
-#if defined(USE_IMLIB)
+#if defined(USE_IMLIB) || defined(USE_IMLIB2)
     if (img && img->pixmap) {
 	XFreePixmap(xi->display, (Pixmap) img->pixmap);
 	img->pixmap = NULL;
@@ -432,6 +459,8 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     struct x11_info *xi;
 #if defined(USE_IMLIB)
     ImlibImage *im;
+#elif defined(USE_IMLIB2)
+    Imlib_Image im;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbuf *pixbuf;
 #endif
@@ -450,6 +479,15 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     *w = im->rgb_width;
     *h = im->rgb_height;
     Imlib_kill_image(xi->id, im);
+#elif defined(USE_IMLIB2)
+    im = imlib_load_image(fname);
+    if (im == NULL)
+        return 0;
+
+    imlib_context_set_image(im);
+    *w = imlib_image_get_width();
+    *h = imlib_image_get_height();
+    imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
     pixbuf = gdk_pixbuf_new_from_file(fname);
     if (!pixbuf)

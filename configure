@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.92 2003/01/21 15:33:19 ukai Exp $
+# $Id: configure,v 1.93 2003/01/21 15:38:57 ukai Exp $
 #	Configuration.
 #
 
@@ -820,7 +820,7 @@ ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
   imgtarget='$(IMGDISPLAY)'
-  ask_param "X11 inline image support (you need Imlib1 or GdkPixbuf library)" use_w3mimg_x11 y
+  ask_param "X11 inline image support (you need Imlib, Imlib2 or GdkPixbuf library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
   case $sysname in
   Linux|linux|LINUX)
@@ -2177,6 +2177,12 @@ if [ "$use_image" = y ]; then
 	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
 	  imgx11cflags="`${IMLIB_CONFIG} --cflags`"
 	  imgx11ldflags="`${IMLIB_CONFIG} --libs`"
+      elif find_imlib2; then
+	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
+	  def_use_imlib2='#define USE_IMLIB2'
+	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
+	  imgx11cflags="`${IMLIB2_CONFIG} --cflags`"
+	  imgx11ldflags="`${IMLIB2_CONFIG} --libs`"
       else
 	  use_w3mimg_x11=n
 	  echo "Disable X11 inline image"
@@ -2190,7 +2196,7 @@ if [ "$use_image" = y ]; then
 	  imgfbcflags="`${GDKPIXBUF_CONFIG} --cflags`"
 	  imgfbldflags="`${GDKPIXBUF_CONFIG} --libs`"
       elif find_imlib2; then
-	  def_use_imlib2='#define USE_IMLIB2'
+	  def_use_w3mimg_fb='#define USE_W3MIMG_FB'
 	  imgobjs="$imgobjs w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
 	  def_use_imlib2='#define USE_IMLIB2'
 	  imgfbcflags="`${IMLIB2_CONFIG} --cflags`"

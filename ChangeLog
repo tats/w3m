@@ -1,3 +1,10 @@
+2002-03-09  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03090] Re: gopher broken 
+		(Re: Bug#137287: w3m: segfault on gopher://xxxx.xxx URI)
+	* file.c (loadGeneralFile): if loadGopherDir, type is real_type
+	* file.c (loadGopherDir): rewrite to use loadHTMLstream()
+
 2002-03-08  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03088] gopher broken 
@@ -3075,4 +3082,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.336 2002/03/08 03:28:38 ukai Exp $
+$Id: ChangeLog,v 1.337 2002/03/08 15:16:02 ukai Exp $

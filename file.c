@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.75 2002/03/08 03:28:38 ukai Exp $ */
+/* $Id: file.c,v 1.76 2002/03/08 15:16:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1922,6 +1922,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	else if (proc == loadImageBuffer)
 	    b->type = b->real_type;
 #endif
+	else if (proc == loadGopherDir)
+	    b->type = b->real_type;
 	else
 	    b->type = "text/plain";
 	if (pu.label) {
@@ -6199,20 +6201,25 @@ loadHTMLString(Str page)
  * loadGopherDir: get gopher directory
  */
 Buffer *
-loadGopherDir(URLFile *uf, Buffer *newBuf)
+loadGopherDir(URLFile *uf, Buffer * volatile newBuf)
 {
-#ifdef JP_CHARSET
-    char code, ic;
-#endif
-    Str name, file, host, port;
-    char type;
-    char *p;
-    TextLineList *tl = newTextLineList();
-    Str lbuf;
-    int hseq = 1;
+    Str tmp, lbuf, name, file, host, port;
+    char code;
+    char *p, *q;
+    FILE *src;
+    URLFile f;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+    tmp = Strnew_charp("<pre>\n");
+
+    if (SETJMP(AbortLoading) != 0)
+        goto gopher_end;
+    prevtrap = signal(SIGINT, KeyAbort);
+    if (fmInitialized)
+        term_cbreak();
+
 #ifdef JP_CHARSET
     if (newBuf->document_code != '\0')
 	code = newBuf->document_code;
@@ -6220,9 +6227,6 @@ loadGopherDir(URLFile *uf, Buffer *newBuf)
 	code = content_charset;
     else
 	code = DocumentCode;
-#ifdef USE_IMAGE
-    cur_document_code = code;
-#endif
     content_charset = '\0';
 #endif
     while (1) {
@@ -6231,31 +6235,27 @@ loadGopherDir(URLFile *uf, Buffer *newBuf)
 	if (lbuf->ptr[0] == '.' &&
 	    (lbuf->ptr[1] == '\n' || lbuf->ptr[1] == '\r'))
 	    break;
-#ifdef JP_CHARSET
-	if ((ic = checkShiftCode(lbuf, code)) != '\0') {
-	    if (UseAutoDetect)
-		code = ic;
-	    lbuf = conv_str(lbuf, code, InnerCode);
-	}
-#endif				/* JP_CHARSET */
-	cleanup_line(lbuf, HTML_MODE);
-
+	lbuf = convertLine(uf, lbuf, &code, HTML_MODE);
 	p = lbuf->ptr;
-	for (name = Strnew(); *p && *p != '\t'; p++)
-	    Strcat_char(name, *p);
-	p++;
-	for (file = Strnew(); *p && *p != '\t'; p++)
-	    Strcat_char(file, *p);
-	p++;
-	for (host = Strnew(); *p && *p != '\t'; p++)
-	    Strcat_char(host, *p);
-	p++;
-	for (port = Strnew(); *p &&
-	     *p != '\t' && *p != '\r' && *p != '\n'; p++)
-	    Strcat_char(port, *p);
-	p++;
-	type = name->ptr[0];
-	switch (type) {
+	for (q = p; *q && *q != '\t'; q++) ;
+	name = Strnew_charp_n(p, q - p);
+	if (!*q)
+	    continue;
+	p = q + 1;
+	for (q = p; *q && *q != '\t'; q++) ;
+	file = Strnew_charp_n(p, q - p);
+	if (!*q)
+	    continue;
+	p = q + 1;
+	for (q = p; *q && *q != '\t'; q++) ;
+	host = Strnew_charp_n(p, q - p);
+	if (!*q)
+	    continue;
+	p = q + 1;
+	for (q = p; *q && *q != '\t'&& *q != '\r' && *q != '\n'; q++) ;
+	port = Strnew_charp_n(p, q - p);
+
+	switch (name->ptr[0]) {
 	case '0':
 	    p = "[text file]  ";
 	    break;
@@ -6278,22 +6278,31 @@ loadGopherDir(URLFile *uf, Buffer *newBuf)
 	    p = "[unsupported]";
 	    break;
 	}
-	lbuf = Sprintf("<A HSEQ=\"%d\" HREF=\"gopher://", hseq++);
-	Strcat(lbuf, host);
-	Strcat_char(lbuf, ':');
-	Strcat(lbuf, port);
-	Strcat_char(lbuf, '/');
-	Strcat(lbuf, file);
-	Strcat_charp(lbuf, "\">");
-	Strcat_charp(lbuf, p);
-	Strcat_charp(lbuf, name->ptr + 1);
-	Strcat_charp(lbuf, "</A>");
-	pushTextLine(tl, newTextLine(lbuf, visible_length(lbuf->ptr)));
+ 	q = Strnew_m_charp("gopher://", host, ":", port, "/", file, NULL)->ptr;
+ 	Strcat_m_charp(tmp, "<a href=\"", html_quote(q), "\">", p,
+ 			      html_quote(name->ptr + 1), "</a>\n", NULL);
     }
+ 
+   gopher_end:
+     if (fmInitialized)
+         term_raw();
+     signal(SIGINT, prevtrap);
+ 
+     Strcat_charp(tmp, "</pre>\n");
+ 
+     file = tmpfname(TMPF_SRC, ".html");
+     src = fopen(file->ptr, "w");
+     newBuf->sourcefile = file->ptr;
+     pushText(fileToDelete, file->ptr);
+ 
+     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
+     loadHTMLstream(&f, newBuf, src, TRUE);
+     if (src)
+         fclose(src);
+ 
 #ifdef JP_CHARSET
     newBuf->document_code = code;
 #endif				/* JP_CHARSET */
-    HTMLlineproc2(newBuf, tl);
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;

@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.18 2002/11/15 15:36:48 ukai Exp $ */
+/* $Id: menu.c,v 1.19 2002/11/22 15:43:14 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1252,6 +1252,8 @@ mainMn(void)
     Menu *menu = &MainMenu;
     char *data;
     int n;
+    int x = Currentbuf->cursorX + Currentbuf->rootX,
+	y = Currentbuf->cursorY + Currentbuf->rootY;
 
     data = searchKeyData();
     if (data != NULL) {
@@ -1260,8 +1262,13 @@ mainMn(void)
 	    return;
 	menu = w3mMenuList[n].menu;
     }
-    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
-	      Currentbuf->cursorY + Currentbuf->rootY, menu);
+#ifdef USE_MOUSE
+    if (mouse_menu && mouse_menu->in_action) {
+	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
+	y = mouse_menu->cursorY;
+    }
+#endif
+    popupMenu(x, y, menu);
 }
 
 /* --- MainMenu (END) --- */
@@ -1271,8 +1278,16 @@ mainMn(void)
 void
 selMn(void)
 {
-    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
-	      Currentbuf->cursorY + Currentbuf->rootY, &SelectMenu);
+    int x = Currentbuf->cursorX + Currentbuf->rootX,
+	y = Currentbuf->cursorY + Currentbuf->rootY;
+
+#ifdef USE_MOUSE
+    if (mouse_menu && mouse_menu->in_action) {
+	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
+	y = mouse_menu->cursorY;
+    }
+#endif
+    popupMenu(x, y, &SelectMenu);
 }
 
 static void
@@ -1408,8 +1423,16 @@ smDelBuf(char c)
 void
 tabMn(void)
 {
-    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
-	      Currentbuf->cursorY + Currentbuf->rootY, &SelTabMenu);
+    int x = Currentbuf->cursorX + Currentbuf->rootX,
+	y = Currentbuf->cursorY + Currentbuf->rootY;
+
+#ifdef USE_MOUSE
+    if (mouse_menu && mouse_menu->in_action) {
+	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
+	y = mouse_menu->cursorY;
+    }
+#endif
+    popupMenu(x, y, &SelTabMenu);
 }
 
 static void

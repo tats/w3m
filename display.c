@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.37 2002/11/21 17:05:01 ukai Exp $ */
+/* $Id: display.c,v 1.38 2002/11/22 15:43:13 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -254,7 +254,7 @@ displayBuffer(Buffer *buf, int mode)
     else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
-    if (nTab2 > 1) {
+    if (nTab > 1 || mouse_menu) {
 	ny = LastTab->y + 2;
 	if (ny > LASTLINE)
 	    ny = LASTLINE;
@@ -445,17 +445,15 @@ redrawNLine(Buffer *buf, int n)
 #endif				/* USE_BG_COLOR */
     }
 #endif				/* USE_COLOR */
-    if (nTab2 > 1) {
+    if (nTab > 1 || mouse_menu) {
 	TabBuffer *t;
 	int l;
 
-	i = 0;
 	move(0, 0);
-	if (mouse_menu) {
-	    addstr(mouse_menu);
-	    clrtoeolx();
-	    i++;
-	}
+#ifdef USE_MOUSE
+	if (mouse_menu && mouse_menu->str)
+	    addstr(mouse_menu->str);
+#endif
 	clrtoeolx();
 	for (t = FirstTab; t; t = t->nextTab) {
 	    move(t->y, t->x1);
@@ -477,8 +475,10 @@ redrawNLine(Buffer *buf, int n)
 		boldend();
 	    clrtoeolx();
 	}
+#if 0
 	move(0, COLS - 2);
 	addstr(" x");
+#endif
 	move(LastTab->y + 1, 0);
 	for (i = 0; i < COLS; i++)
 	    addch('~');

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.151 2002/11/21 17:12:18 ukai Exp $ */
+/* $Id: main.c,v 1.152 2002/11/22 15:43:14 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1017,6 +1017,8 @@ main(int argc, char **argv, char **envp)
 	CurrentKeyData = NULL;
 	/* get keypress event */
 #ifdef USE_MOUSE
+	if (mouse_menu)
+	    mouse_menu->in_action = FALSE;
 	if (use_mouse)
 	    mouse_active();
 #endif				/* USE_MOUSE */
@@ -4804,6 +4806,8 @@ posTab(int x, int y)
 {
     TabBuffer *tab;
 
+    if (mouse_menu && x < mouse_menu->width && y == 0)
+	return NO_TABBUFFER;
     for (tab = FirstTab; tab; tab = tab->nextTab) {
 	if (tab->x1 <= x && x <= tab->x2 && tab->y == y)
 	    return tab;
@@ -4812,8 +4816,10 @@ posTab(int x, int y)
 }
 
 static void
-mouse_menu_action(int btn, int x)
+mouse_menu_action(int btn, int x, int y)
 {
+    if (!mouse_menu)
+	return;
     switch (btn) {
     case MOUSE_BTN1_DOWN:
 	btn = 0;
@@ -4827,11 +4833,14 @@ mouse_menu_action(int btn, int x)
     default:
 	return;
     }
-    if (x >= 0 && x <= 9 && mouse_menu_map[btn][x].func) {
+    if (x >= 0 && x < mouse_menu->width && mouse_menu->map[btn][x].func) {
+	mouse_menu->in_action = TRUE;
+	mouse_menu->cursorX = x;
+	mouse_menu->cursorY = y;
 	CurrentKey = -1;
 	CurrentKeyData = NULL;
-	CurrentCmdData = mouse_menu_map[btn][x].data;
-	(*mouse_menu_map[btn][x].func) ();
+	CurrentCmdData = mouse_menu->map[btn][x].data;
+	(*mouse_menu->map[btn][x].func) ();
 	CurrentCmdData = NULL;
     }
 }
@@ -4844,23 +4853,25 @@ process_mouse(int btn, int x, int y)
     TabBuffer *t;
     int ny = 0;
 
-    if (nTab2 > 1)
+    if (nTab > 1 || mouse_menu)
 	ny = LastTab->y + 1;
     if (btn == MOUSE_BTN_UP) {
 	switch (press_btn) {
 	case MOUSE_BTN1_DOWN:
 	    if (ny && y < ny) {
 		if (press_y == y && press_x == x) {
+#if 0
 		    if (y == 0 && x >= COLS - 2) {
 			deleteTab(CurrentTab);
 			displayBuffer(Currentbuf, B_FORCE_REDRAW);
 			return;
 		    }
+#endif
 		    t = posTab(x, y);
 		    if (t == NULL)
 			return;
 		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x);
+			mouse_menu_action(press_btn, x, y);
 			return;
 		    }
 		    CurrentTab = t;
@@ -4970,25 +4981,25 @@ process_mouse(int btn, int x, int y)
 	    if (ny && y < ny) {
 		if (press_y == y && press_x == x) {
 		    t = posTab(x, y);
+		    if (t == NULL)
+			return;
 		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x);
+			mouse_menu_action(press_btn, x, y);
 			return;
 		    }
-		    if (t) {
-			deleteTab(t);
-			displayBuffer(Currentbuf, B_FORCE_REDRAW);
-		    }
+		    deleteTab(t);
+		    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 		}
 		return;
 	    }
 	    backBf();
 	    break;
 	case MOUSE_BTN3_DOWN:
-	    if (nTab2 > 1 && y < ny) {
+	    if (ny && y < ny) {
 		if (press_y == y && press_x == x) {
 		    t = posTab(x, y);
 		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x);
+			mouse_menu_action(press_btn, x, y);
 			return;
 		    }
 		}
@@ -5635,19 +5646,6 @@ newT(void)
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
-int
-nTabLine(void)
-{
-    int n = nTab2;
-
-    if (COLS - 2 > TabCols * n)
-	return n;
-    n = (n - 1) / ((n * TabCols - 1) / (COLS - 2) + 1) + 1;
-    if (n > (COLS - 2) / TabCols)
-	n = (COLS - 2) / TabCols;
-    return n ? n : 1;
-}
-
 TabBuffer *
 numTab(int n)
 {
@@ -5668,8 +5666,16 @@ static void
 calcTabPos(void)
 {
     TabBuffer *tab;
+#if 0
     int lcol = 0, rcol = 2, col;
+#else
+    int lcol = 0, rcol = 0, col;
+#endif
     int n1, n2, na, nx, ny, ix, iy;
+
+#ifdef USE_MOUSE
+    lcol = mouse_menu ? mouse_menu->width : 0;
+#endif
 
     if (nTab <= 0)
 	return;

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.86 2002/11/21 17:05:01 ukai Exp $ */
+/* $Id: fm.h,v 1.87 2002/11/22 15:43:14 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -808,7 +808,6 @@ global int open_tab_blank init(FALSE);
 global int open_tab_dl_list init(FALSE);
 global int close_tab_back init(FALSE);
 global int nTab;
-#define nTab2 (mouse_menu ? (nTab + 1) : nTab)
 global int TabCols init(10);
 #define NO_TABBUFFER ((TabBuffer *)1)
 #define Currentbuf (CurrentTab->currentBuffer)
@@ -994,12 +993,23 @@ global int reverse_mouse init(FALSE);
 global int relative_wheel_scroll init(FALSE);
 global int fixed_wheel_scroll_count init(5);
 global int relative_wheel_scroll_ratio init(30);
-struct _MouseMenu {
+typedef struct _MouseMenuMap {
     void (*func) ();
     char *data;
-} mouse_menu_map[3][10];
+} MouseMenuMap;
+typedef struct _MouseMenu {
+    char *str;
+    int width;
+    int in_action;
+    int cursorX;
+    int cursorY;
+    MouseMenuMap *map[3];
+} MouseMenu;
+global MouseMenu *mouse_menu init(NULL);
+#define LIMIT_MOUSE_MENU 100
+#else
+#define mouse_menu NULL
 #endif				/* USE_MOUSE */
-global char *mouse_menu init(NULL);
 
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);

@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.12 2002/11/21 16:32:29 ukai Exp $ */
+/* $Id: func.c,v 1.13 2002/11/22 15:43:14 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -331,12 +331,6 @@ initMouseMenu(void)
     int f, b, x, x2;
 
     mouse_menu = NULL;
-    for (b = 1; b <= 3; b++) {
-	for (x = 0; x < 10; x++) {
-	    mouse_menu_map[b - 1][x].func = NULL;
-	    mouse_menu_map[b - 1][x].data = NULL;
-	}
-    }
     if ((mf = fopen(rcFile(MOUSE_FILE), "rt")) == NULL)
 	return;
 
@@ -346,17 +340,31 @@ initMouseMenu(void)
 	Strremovefirstspaces(line);
 	if (line->length == 0)
 	    continue;
-	p = line->ptr;
+	p = conv_from_system(line->ptr);
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
 	    continue;
 	if (!strcmp(s, "menu")) {
 	    s = getQWord(&p);
-	    if (*s)
-		mouse_menu = Strnew_charp(s)->ptr;
-	    continue;
+	    if (!*s)
+		continue;	/* error */
+	    mouse_menu = New(MouseMenu);
+	    mouse_menu->str = s;
+	    mouse_menu->width = strlen(s);
+	    mouse_menu->in_action = FALSE;
+	    if (mouse_menu->width >= LIMIT_MOUSE_MENU)
+		mouse_menu->width = LIMIT_MOUSE_MENU;
+	    for (b = 0; b < 3; b++) {
+		mouse_menu->map[b] = New_N(MouseMenuMap, mouse_menu->width);
+		for (x = 0; x < mouse_menu->width; x++) {
+		    mouse_menu->map[b][x].func = NULL;
+		    mouse_menu->map[b][x].data = NULL;
+		}
+	    }
 	}
-	if (strcmp(s, "button"))
+	if (!mouse_menu)
+	    continue;		/* "menu" is not set */
+	if (strcmp(s, "button")) 
 	    continue;		/* error */
 	s = getWord(&p);
 	b = atoi(s);
@@ -364,11 +372,11 @@ initMouseMenu(void)
 	    continue;		/* error */
 	s = getWord(&p);
 	x = atoi(s);
-	if (!(IS_DIGIT(*s) && x >= 0 && x <= 9))
+	if (!(IS_DIGIT(*s) && x >= 0 && x < mouse_menu->width))
 	    continue;		/* error */
 	s = getWord(&p);
 	x2 = atoi(s);
-	if (!(IS_DIGIT(*s) && x2 >= 0 && x2 <= 9))
+	if (!(IS_DIGIT(*s) && x2 >= 0 && x2 < mouse_menu->width))
 	    continue;		/* error */
 	s = getWord(&p);
 	f = getFuncList(s);
@@ -378,8 +386,8 @@ initMouseMenu(void)
 	if (!*s)
 	    s = NULL;
 	for (; x <= x2; x++) {
-	    mouse_menu_map[b - 1][x].func = w3mFuncList[f].func;
-	    mouse_menu_map[b - 1][x].data = s;
+	    mouse_menu->map[b - 1][x].func = w3mFuncList[f].func;
+	    mouse_menu->map[b - 1][x].data = s;
 	}
     }
     fclose(mf);

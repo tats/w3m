@@ -2,9 +2,6 @@ TODO lists
 
 * news:<newsgroups> support
 
-* w3mimgdisplay setuid
-  - pam_console isn't secure enough
-
 * autoconfisicate
 
 * code review, cleanup

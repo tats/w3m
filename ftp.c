@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.30 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: ftp.c,v 1.31 2003/04/07 15:26:15 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -15,11 +15,9 @@
 #endif				/* DEBUG */
 
 #include <sys/socket.h>
-#if defined(INET6)
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#endif
 
 typedef struct _FTP {
     char *host;

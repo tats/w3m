@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.75 2003/10/05 18:52:51 ukai Exp $ */
+/* $Id: etc.c,v 1.76 2004/03/31 16:45:39 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1970,6 +1970,7 @@ FQDN(char *host)
 	char *namebuf;
 
 	memset(&hints, 0, sizeof(hints));
+	hints.ai_flags = AI_CANONNAME;
 	hints.ai_family = *af;
 	hints.ai_socktype = SOCK_STREAM;
 	error = getaddrinfo(host, NULL, &hints, &res0);

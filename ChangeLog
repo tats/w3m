@@ -21,6 +21,8 @@
 			add BIN_DIR, MAN1_DIR
 			LIB_TARGETS->CGIBIN_TARGETS
 			fix INSTALL_MAN
+	* scripts/w3mman/w3mman.1.in: 
+			change @LIB_DIR@ to @libexecdir@/@PACKAGE@/cgi-bin/
 
 2003-10-01  Akira TAGOH <at@gclab.org>
 
@@ -8136,4 +8138,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.878 2003/10/05 16:14:02 ukai Exp $
+$Id: ChangeLog,v 1.879 2003/10/05 16:24:45 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.10 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: linein.c,v 1.11 2001/12/06 15:48:35 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -676,11 +676,15 @@ next_compl(int next)
 	return;
     cm_clear = FALSE;
     if (!cm_next) {
-	for (b = CPos - 1; b >= 0; b--) {
-	    if (strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I)
-		break;
+	if (cm_mode & CPL_ALWAYS) {
+	    b = 0;
+	} else {
+	    for (b = CPos - 1; b >= 0; b--) {
+		if (strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I)
+		    break;
+	    }
+	    b++;
 	}
-	b++;
 	a = CPos;
 	CBeforeBuf = Strsubstr(strBuf, 0, b);
 	buf = Strsubstr(strBuf, b, a - b);

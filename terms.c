@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.46 2003/02/18 15:43:26 ukai Exp $ */
+/* $Id: terms.c,v 1.47 2003/02/21 14:25:33 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1861,7 +1861,7 @@ getch(void)
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 char
-wgetch(void)
+wgetch(void *p)
 {
     char c;
 

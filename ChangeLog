@@ -1,3 +1,8 @@
+2003-02-21  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 03765] Re: README.cygwin
+	* doc/README.cygwin: translated
+
 2003-02-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc/README: update
@@ -7222,4 +7227,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.759 2003/02/20 15:49:58 ukai Exp $
+$Id: ChangeLog,v 1.760 2003/02/21 14:25:33 ukai Exp $

@@ -103,11 +103,11 @@ FILE=`cygpath -a -w $1`
 exec "$EDITOR" "$FILE"
 ----------------------------------------
 
-Where the EDITOR= is the path of Native Perl in Cygwin context.
+Where the EDITOR= is the path of Native editor in Cygwin context.
 
-If you use inetd as a service in WinWinNT and connect to localhost by telnet,
-the windows will be opened only if "デスクトップとの対話をサービスに許可" is
-ON.
+If you use inetd as a service in WinNT and connect to localhost by telnet,
+the windows will be opened only if "Allow service to interact with the 
+desktop" is ON.
 
 Known Bugs
 
@@ -122,11 +122,9 @@ Cursor keys doesn't work when IME is ON in DOS prompt of Win9x.
     This is the problem of DOS prompt of Win9x and tty layer of Cygwin. Use
     C-f, C-b, C-p, and C-n instead.
 Screen is not controled correctly in command prompt of WinNT.
-    Set the each size of screen buffer and window in a same value, and/or
-    disable the back scrolling.
+    Set the each size of screen buffer and window in a same value.
 Can't use the mouse with DOS prompt or command prompt.
-    When "簡易編集モード" is ON, mouse events are not handed to w3m. Set it
-    OFF.
+    When "Quick Edit" is ON, mouse events are not handed to w3m. Set it OFF.
 Mouse buttons behave funny with DOS prompt or command prompt.
     In cygwin-1.3.15 or earlier, the escape sequence of the right and center
     button of the mouse are inverted. It is fixed in cygwin-1.3.16-1. Please
@@ -139,7 +137,7 @@ In Cygwin environment, it should be confortable to use not DOS prompt or
 command prompt but telnet clients like TeraTerm, PuTTY, and so on with inetd
 in localhost, or other tools as rxvt or cygterm.
 
- o rxvt:
+ o rxvt with japanese enhancement:
     rxvt on Cygwin
         http://hp.vector.co.jp/authors/VA021953/rxvt/
     compiled package

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.60 2002/06/01 16:50:16 ukai Exp $ */
+/* $Id: fm.h,v 1.61 2002/07/22 16:27:31 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -822,7 +822,6 @@ global int showLineNum init(FALSE);
 global int show_srch_str init(TRUE);
 #ifdef USE_IMAGE
 global char *Imgdisplay init(IMGDISPLAY);
-global char *Imgsize init(IMGSIZE);
 global int activeImage init(FALSE);
 global int displayImage init(TRUE);
 global int autoImage init(TRUE);

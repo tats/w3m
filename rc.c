@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.46 2002/06/01 17:10:37 ukai Exp $ */
+/* $Id: rc.c,v 1.47 2002/07/22 16:27:31 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -494,7 +494,6 @@ struct param_ptr params1[] = {
      NULL},
     {"imgdisplay", P_STRING, PI_TEXT, (void *)&Imgdisplay, CMT_IMGDISPLAY,
      NULL},
-    {"imgsize", P_STRING, PI_TEXT, (void *)&Imgsize, CMT_IMGSIZE, NULL},
 #endif
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,

@@ -1,4 +1,12 @@
 2002-07-23  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03280] w3m-img without w3mimgsize
+	* fm.h (Imagesize): deleted
+	* image.c (getImageSize): rewrite to use w3mimgdisplay 
+		instead of w3mimgsize
+	* rc.c (params1): remove imgsize, merged to imgdisplay
+
+2002-07-23  Hiroyuki Ito <hito@crl.go.jp>
 	
 	* [w3m-dev 03279] w3m-img for framebuffer update
 	  http://homepage3.nifty.com/slokar/fb/w3mfb.patch.gz
@@ -3646,4 +3654,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.412 2002/07/22 16:17:32 ukai Exp $
+$Id: ChangeLog,v 1.413 2002/07/22 16:27:30 ukai Exp $

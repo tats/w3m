@@ -1,3 +1,12 @@
+2005-01-05  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 04130] [w3m-dev 04131] [w3m-dev 04132] Multiple challeges in *-Authenticate header
+	* file.c (skip_auth_token): added
+		(extract_auth_val): ',' is end of token
+		(extract_auth_param): use skip_auth_token
+		(AuthDigestCred): parse qop and calc cnonce correctly
+		(findAuthentication): use skip_auth_token
+
 2004-11-09  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load):
@@ -8612,4 +8621,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.942 2004/11/08 17:14:06 ukai Exp $
+$Id: ChangeLog,v 1.943 2005/01/04 15:51:03 ukai Exp $

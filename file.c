@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.236 2004/11/04 17:25:45 ukai Exp $ */
+/* $Id: file.c,v 1.237 2005/01/04 15:51:04 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -972,7 +972,59 @@ struct http_auth {
 		 HRequest *hr, FormList *request);
 };
 
-#define TOKEN_PAT	"[^][()<>@,;:\\\"/?={} \t\001-\037\177]*"
+enum {
+    AUTHCHR_NUL,
+    AUTHCHR_SEP,
+    AUTHCHR_TOKEN,
+};
+
+static int
+skip_auth_token(char **pp)
+{
+    char *p;
+    int first = AUTHCHR_NUL, typ;
+
+    for (p = *pp ;; ++p) {
+	switch (*p) {
+	case '\0':
+	    goto endoftoken;
+	default:
+	    if ((unsigned char)*p > 037) {
+		typ = AUTHCHR_TOKEN;
+		break;
+	    }
+	    /* thru */
+	case '\177':
+	case '[':
+	case ']':
+	case '(':
+	case ')':
+	case '<':
+	case '>':
+	case '@':
+	case ';':
+	case ':':
+	case '\\':
+	case '"':
+	case '/':
+	case '?':
+	case '=':
+	case ' ':
+	case '\t':
+	case ',':
+	    typ = AUTHCHR_SEP;
+	    break;
+	}
+
+	if (!first)
+	    first = typ;
+	else if (first != typ)
+	    break;
+    }
+endoftoken:
+    *pp = p;
+    return first;
+}
 
 static Str
 extract_auth_val(char **q)
@@ -993,12 +1045,13 @@ extract_auth_val(char **q)
 	}
 	if (!quoted) {
 	    switch (*qq) {
+	    case '[':
+	    case ']':
 	    case '(':
 	    case ')':
 	    case '<':
 	    case '>':
 	    case '@':
-	    case ',':
 	    case ';':
 	    case ':':
 	    case '\\':
@@ -1009,6 +1062,7 @@ extract_auth_val(char **q)
 	    case ' ':
 	    case '\t':
 		qq++;
+	    case ',':
 		goto end_token;
 	    default:
 		if (*qq <= 037 || *qq == 0177) {
@@ -1022,11 +1076,6 @@ extract_auth_val(char **q)
 	Strcat_char(val, *qq++);
     }
   end_token:
-    if (*qq != '\0') {
-	SKIP_BLANKS(qq);
-	if (*qq == ',')
-	    qq++;
-    }
     *q = (char *)qq;
     return val;
 }
@@ -1058,10 +1107,7 @@ static char *
 extract_auth_param(char *q, struct auth_param *auth)
 {
     struct auth_param *ap;
-    char *q0;
-    Regex re_token;
-
-    newRegex(TOKEN_PAT, FALSE, &re_token, NULL);
+    char *p;
 
     for (ap = auth; ap->name != NULL; ap++) {
 	ap->val = NULL;
@@ -1070,26 +1116,41 @@ extract_auth_param(char *q, struct auth_param *auth)
     while (*q != '\0') {
 	SKIP_BLANKS(q);
 	for (ap = auth; ap->name != NULL; ap++) {
-	    if (strncasecmp(q, ap->name, strlen(ap->name)) == 0) {
-		q += strlen(ap->name);
-		SKIP_BLANKS(q);
-		if (*q != '=')
+	    size_t len;
+
+	    len = strlen(ap->name);
+	    if (strncasecmp(q, ap->name, len) == 0 &&
+		(IS_SPACE(q[len]) || q[len] == '=')) {
+		p = q + len;
+		SKIP_BLANKS(p);
+		if (*p != '=')
 		    return q;
-		q++;
+		q = p + 1;
 		ap->val = extract_auth_val(&q);
 		break;
 	    }
 	}
 	if (ap->name == NULL) {
 	    /* skip unknown param */
-	    if (RegexMatch(&re_token, q, -1, TRUE) == 0)
-		return q;
-	    MatchedPosition(&re_token, &q0, &q);
+	    int token_type;
+	    p = q;
+	    if ((token_type = skip_auth_token(&q)) == AUTHCHR_TOKEN &&
+		(IS_SPACE(*q) || *q == '=')) {
+		SKIP_BLANKS(q);
+		if (*q != '=')
+		    return p;
+		q++;
+		extract_auth_val(&q);
+	    }
+	    else
+		return p;
+	}
+	if (*q != '\0') {
 	    SKIP_BLANKS(q);
-	    if (*q != '=')
-		return q;
-	    q++;
-	    extract_auth_val(&q);
+	    if (*q == ',')
+		q++;
+	    else
+		break;
 	}
     }
     return q;
@@ -1157,6 +1218,12 @@ digest_hex(char *p)
     return tmp;
 }
 
+enum {
+    QOP_NONE,
+    QOP_AUTH,
+    QOP_AUTH_INT,
+};
+
 static Str
 AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	       HRequest *hr, FormList *request)
@@ -1168,11 +1235,50 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 
     Str algorithm = qstr_unquote(get_auth_param(ha->param, "algorithm"));
     Str nonce = qstr_unquote(get_auth_param(ha->param, "nonce"));
-    Str cnonce = qstr_unquote(get_auth_param(ha->param, "cnonce"));
+    Str cnonce /* = qstr_unquote(get_auth_param(ha->param, "cnonce")) */;
+    /* cnonce is what client should generate. */
     Str qop = qstr_unquote(get_auth_param(ha->param, "qop"));
 
-    if (cnonce == NULL)
-	cnonce = Strnew_charp("cnonce");	/* XXX */
+    static union {
+	int r[4];
+	char s[sizeof(int) * 4];
+    } cnonce_seed;
+    int qop_i = QOP_NONE;
+
+    cnonce_seed.r[0] = rand();
+    cnonce_seed.r[1] = rand();
+    cnonce_seed.r[2] = rand();
+    MD5(cnonce_seed.s, sizeof(cnonce_seed.s), md5);
+    cnonce = digest_hex(md5);
+    cnonce_seed.r[3]++;
+
+    if (qop) {
+	char *p;
+	size_t i;
+
+	p = qop->ptr;
+	SKIP_BLANKS(p);
+
+	for (;;) {
+	    if ((i = strcspn(p, " \t,")) > 0) {
+		if (i == sizeof("auth-int") - sizeof("") && !strncasecmp(p, "auth-int", i)) {
+		    if (qop_i < QOP_AUTH_INT)
+			qop_i = QOP_AUTH_INT;
+		}
+		else if (i == sizeof("auth") - sizeof("") && !strncasecmp(p, "auth", i)) {
+		    if (qop_i < QOP_AUTH)
+			qop_i = QOP_AUTH;
+		}
+	    }
+
+	    if (p[i]) {
+		p += i + 1;
+		SKIP_BLANKS(p);
+	    }
+	    else
+		break;
+	}
+    }
 
     /* A1 = unq(username-value) ":" unq(realm-value) ":" passwd */
     tmp = Strnew_m_charp(uname->ptr, ":",
@@ -1204,28 +1310,34 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 
     /* A2 = Method ":" digest-uri-value */
     tmp = Strnew_m_charp(HTTPrequestMethod(hr)->ptr, ":", uri->ptr, NULL);
-    if (qop && (strcasecmp(qop->ptr, "auth-int") == 0)) {
+    if (qop_i == QOP_AUTH_INT) {
 	/*  A2 = Method ":" digest-uri-value ":" H(entity-body) */
-	Str ebody = Strnew();
 	if (request && request->body) {
-	    FILE *fp = fopen(request->body, "r");
-	    if (fp != NULL) {
-		int c;
-		while ((c = fgetc(fp)) != EOF)
-		    Strcat_char(ebody, c);
-		fclose(fp);
+	    if (request->method == FORM_METHOD_POST && request->enctype == FORM_ENCTYPE_MULTIPART) {
+		FILE *fp = fopen(request->body, "r");
+		if (fp != NULL) {
+		    Str ebody;
+		    ebody = Strfgetall(fp);
+		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
+		}
+		else {
+		    MD5("", 0, md5);
+		}
+	    }
+	    else {
+		MD5(request->body, request->length, md5);
 	    }
 	}
-	MD5(ebody->ptr, strlen(ebody->ptr), md5);
-	ebody = digest_hex(md5);
-	Strcat_m_charp(tmp, ":", ebody->ptr, NULL);
+	else {
+	    MD5("", 0, md5);
+	}
+	Strcat_char(tmp, ':');
+	Strcat(tmp, digest_hex(md5));
     }
     MD5(tmp->ptr, strlen(tmp->ptr), md5);
     a2buf = digest_hex(md5);
 
-    if (qop &&
-	(strcasecmp(qop->ptr, "auth") == 0
-	 || strcasecmp(qop->ptr, "auth-int") == 0)) {
+    if (qop_i >= QOP_AUTH) {
 	/* request-digest  = <"> < KD ( H(A1),     unq(nonce-value)
 	 *                      ":" nc-value
 	 *                      ":" unq(cnonce-value)
@@ -1238,7 +1350,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	tmp = Strnew_m_charp(a1buf->ptr, ":", qstr_unquote(nonce)->ptr,
 			     ":", nc,
 			     ":", qstr_unquote(cnonce)->ptr,
-			     ":", qstr_unquote(qop)->ptr,
+			     ":", qop_i == QOP_AUTH ? "auth" : "auth-int",
 			     ":", a2buf->ptr, NULL);
 	MD5(tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
@@ -1279,10 +1391,13 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     if ((s = get_auth_param(ha->param, "opaque")) != NULL)
 	Strcat_m_charp(tmp, ", opaque=", s->ptr, NULL);
 
-    if (qop) {
+    if (qop_i >= QOP_AUTH) {
 	Strcat_m_charp(tmp, ", qop=",
-		       get_auth_param(ha->param, "qop")->ptr, NULL);
+		       qop_i == QOP_AUTH ? "auth" : "auth-int",
+		       NULL);
 	/* XXX how to count? */
+	/* Since nonce is unique up to each *-Authenticate and w3m does not re-use *-Authenticate: headers,
+	   nonce-count should be always "00000001". */
 	Strcat_m_charp(tmp, ", nc=", nc, NULL);
     }
 
@@ -1344,12 +1459,9 @@ static struct http_auth *
 findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
 {
     struct http_auth *ha;
-    int len = strlen(auth_field);
+    int len = strlen(auth_field), slen;
     TextListItem *i;
     char *p0, *p;
-    Regex re_token;
-
-    newRegex(TOKEN_PAT, FALSE, &re_token, NULL);
 
     bzero(hauth, sizeof(struct http_auth));
     for (i = buf->document_header->first; i != NULL; i = i->next) {
@@ -1358,29 +1470,30 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
 		SKIP_BLANKS(p);
 		p0 = p;
 		for (ha = &www_auth[0]; ha->scheme != NULL; ha++) {
-		    if (strncasecmp(p, ha->scheme, strlen(ha->scheme)) == 0) {
+		    slen = strlen(ha->scheme);
+		    if (strncasecmp(p, ha->scheme, slen) == 0) {
+			p += slen;
+			SKIP_BLANKS(p);
 			if (hauth->pri < ha->pri) {
 			    *hauth = *ha;
-			    p += strlen(ha->scheme);
-			    SKIP_BLANKS(p);
 			    p = extract_auth_param(p, hauth->param);
 			    break;
 			}
 			else {
 			    /* weak auth */
-			    p += strlen(ha->scheme);
-			    SKIP_BLANKS(p);
 			    p = extract_auth_param(p, none_auth_param);
 			}
 		    }
 		}
 		if (p0 == p) {
 		    /* all unknown auth failed */
-		    if (RegexMatch(&re_token, p0, -1, TRUE) == 0)
-			return NULL;
-		    MatchedPosition(&re_token, &p0, &p);
-		    SKIP_BLANKS(p);
-		    p = extract_auth_param(p, none_auth_param);
+		    int token_type;
+		    if ((token_type = skip_auth_token(&p)) == AUTHCHR_TOKEN && IS_SPACE(*p)) {
+			SKIP_BLANKS(p);
+			p = extract_auth_param(p, none_auth_param);
+		    }
+		    else
+			break;
 		}
 	    }
 	}
@@ -1893,6 +2006,27 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    status = HTST_NORMAL;
 	    goto load_doc;
 	}
+#ifdef AUTH_DEBUG
+	if ((p = checkHeader(t_buf, "WWW-Authenticate:")) != NULL) {
+	    /* Authentication needed */
+	    struct http_auth hauth;
+	    if (findAuthentication(&hauth, t_buf, "WWW-Authenticate:") != NULL
+		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
+		auth_pu = &pu;
+		getAuthCookie(&hauth, "Authorization:", extra_header,
+			      auth_pu, &hr, request, &uname, &pwd);
+		if (uname == NULL) {
+		    /* abort */
+		    TRAP_OFF;
+		    goto page_loaded;
+		}
+		UFclose(&f);
+		add_auth_cookie_flag = 1;
+		status = HTST_NORMAL;
+		goto load_doc;
+	    }
+	}
+#endif /* defined(AUTH_DEBUG) */
 	t = checkContentType(t_buf);
 	if (t == NULL)
 	    t = "text/plain";

@@ -1,4 +1,4 @@
-/* $Id: regex.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: regex.h,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
 #define REGEX_MAX	64
 #define STORAGE_MAX	256
 
@@ -42,11 +42,11 @@ typedef struct {
 } Regex;
 
 
-Regex *newRegex(char *ex, int igncase, Regex * regex, char **error_msg);
+Regex *newRegex(char *ex, int igncase, Regex *regex, char **error_msg);
 
-int RegexMatch(Regex * re, char *str, int len, int firstp);
+int RegexMatch(Regex *re, char *str, int len, int firstp);
 
-void MatchedPosition(Regex * re, char **first, char **last);
+void MatchedPosition(Regex *re, char **first, char **last);
 
 
 /* backward compatibility */

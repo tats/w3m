@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: regex.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -43,7 +43,7 @@ regexCompile(char *ex, int igncase)
 }
 
 Regex *
-newRegex(char *ex, int igncase, Regex * regex, char **msg)
+newRegex(char *ex, int igncase, Regex *regex, char **msg)
 {
     char *p;
     longchar *r;
@@ -51,7 +51,7 @@ newRegex(char *ex, int igncase, Regex * regex, char **msg)
     int m;
 
     if (regex == 0)
-	regex = (Regex *) GC_malloc_atomic(sizeof(Regex));
+	regex = (Regex *)GC_malloc_atomic(sizeof(Regex));
     st_ptr = regex->storage;
     for (p = ex; *p != '\0'; p++) {
 	switch (*p) {
@@ -156,7 +156,7 @@ regexMatch(char *str, int len, int firstp)
 }
 
 int
-RegexMatch(Regex * re, char *str, int len, int firstp)
+RegexMatch(Regex *re, char *str, int len, int firstp)
 {
     char *p, *ep;
 
@@ -165,7 +165,8 @@ RegexMatch(Regex * re, char *str, int len, int firstp)
     re->position = NULL;
     ep = str + ((len == 0) ? strlen(str) : len);
     for (p = str; p < ep; p++) {
-	switch (regmatch(re->re, p, ep - p, firstp && (p == str), &re->lposition)) {
+	switch (regmatch
+		(re->re, p, ep - p, firstp && (p == str), &re->lposition)) {
 	case 1:
 	    re->position = p;
 	    return 1;
@@ -185,7 +186,7 @@ RegexMatch(Regex * re, char *str, int len, int firstp)
  * matchedPosition: last matched position
  */
 void
-MatchedPosition(Regex * re, char **first, char **last)
+MatchedPosition(Regex *re, char **first, char **last)
 {
     *first = re->position;
     *last = re->lposition;
@@ -219,15 +220,15 @@ regmatch(regexchar * re, char *str, int len, int firstp, char **lastpos)
 	    re++;
 	}
 	else if (re->mode & RE_ANYTIME) {
-           short matched, ok = 0;
-           for (;;) {
-        matched = 0;
+	    short matched, ok = 0;
+	    for (;;) {
+		matched = 0;
 		if (regmatch(re + 1, p, ep - p, firstp, &lpos) == 1) {
 		    llpos = lpos;
 		    matched = 1;
 		    ok = 1;
 		}
-        if (p >= ep)
+		if (p >= ep)
 		    break;
 #ifdef JP_CHARSET
 		if (IS_KANJI1(*p)) {
@@ -250,9 +251,9 @@ regmatch(regexchar * re, char *str, int len, int firstp, char **lastpos)
 			    *lastpos = llpos;
 		    }
 		    else
-              break;
+			break;
 		}
-           } 
+	    }
 	    if (lastpos != NULL)
 		*lastpos = llpos;
 	    return ok;
@@ -270,7 +271,7 @@ regmatch(regexchar * re, char *str, int len, int firstp, char **lastpos)
 		p += 2;
 		a = regmatch1(re, k);
 	    }
-	    else 
+	    else
 #endif
 	    {
 		k = (unsigned char)*(p++);
@@ -385,8 +386,8 @@ lc2c(longchar * x)
 
 void
 debugre(re, s)
-    regexchar *re;
-    char *s;
+     regexchar *re;
+     char *s;
 {
     for (; !(re->mode & RE_ENDMARK); re++) {
 	if (re->mode & RE_BEGIN) {

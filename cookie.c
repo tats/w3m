@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: cookie.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -59,8 +59,7 @@ domain_match(char *host, char *domain)
 	 * "." match all domains (w3m only),
 	 * and ".local" match local domains ([DRAFT 12] s. 2)
 	 */
-	if (strcasecmp(domain, ".") == 0 ||
-	    strcasecmp(domain, ".local") == 0) {
+	if (strcasecmp(domain, ".") == 0 || strcasecmp(domain, ".local") == 0) {
 	    offset = strlen(host);
 	    domain_p = &host[offset];
 	    if (domain[1] == '\0' || contain_no_dots(host, domain_p))
@@ -135,8 +134,7 @@ check_expired_cookies(void)
     if (!First_cookie)
 	return;
 
-    if (First_cookie->expires != (time_t) - 1 &&
-	First_cookie->expires < now) {
+    if (First_cookie->expires != (time_t) - 1 && First_cookie->expires < now) {
 	if (!(First_cookie->flag & COO_DISCARD))
 	    is_saved = 0;
 	First_cookie = First_cookie->next;
@@ -163,7 +161,7 @@ make_cookie(struct cookie *cookie)
 }
 
 static int
-match_cookie(ParsedURL * pu, struct cookie *cookie)
+match_cookie(ParsedURL *pu, struct cookie *cookie)
 {
     char *domainname = (cookie->version == 0) ? FQDN(pu->host) : pu->host;
 
@@ -194,15 +192,14 @@ get_cookie_info(Str domain, Str path, Str name)
 
     for (p = First_cookie; p; p = p->next) {
 	if (Strcasecmp(p->domain, domain) == 0 &&
-	    Strcmp(p->path, path) == 0 &&
-	    Strcasecmp(p->name, name) == 0)
+	    Strcmp(p->path, path) == 0 && Strcasecmp(p->name, name) == 0)
 	    return p;
     }
     return NULL;
 }
 
 Str
-find_cookie(ParsedURL * pu)
+find_cookie(ParsedURL *pu)
 {
     Str tmp;
     struct cookie *p, *p1, *fco = NULL;
@@ -211,7 +208,8 @@ find_cookie(ParsedURL * pu)
     check_expired_cookies();
     for (p = First_cookie; p; p = p->next) {
 	if (p->flag & COO_USE && match_cookie(pu, p)) {
-	    for (p1 = fco; p1 && Strcasecmp(p1->name, p->name); p1 = p1->next);
+	    for (p1 = fco; p1 && Strcasecmp(p1->name, p->name);
+		 p1 = p1->next) ;
 	    if (p1)
 		continue;
 	    p1 = New(struct cookie);
@@ -240,21 +238,21 @@ find_cookie(ParsedURL * pu)
 	    if (p1->flag & COO_DOMAIN)
 		Strcat(tmp, Sprintf("; $Domain=\"%s\"", p1->domain->ptr));
 	    if (p1->portl)
-		Strcat(tmp, Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)));
+		Strcat(tmp,
+		       Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)));
 	}
     }
     return tmp;
 }
 
-char *special_domain[] =
-{
-    ".com", ".edu", ".gov", ".mil", ".net", ".org", ".int", NULL};
+char *special_domain[] = {
+    ".com", ".edu", ".gov", ".mil", ".net", ".org", ".int", NULL
+};
 
 int
-add_cookie(ParsedURL * pu, Str name, Str value,
+add_cookie(ParsedURL *pu, Str name, Str value,
 	   time_t expires, Str domain, Str path,
-	   int flag, Str comment, int version,
-	   Str port, Str commentURL)
+	   int flag, Str comment, int version, Str port, Str commentURL)
 {
     struct cookie *p;
     char *domainname = (version == 0) ? FQDN(pu->host) : pu->host;
@@ -278,7 +276,7 @@ add_cookie(ParsedURL * pu, Str name, Str value,
 #endif				/* DEBUG */
     /* [RFC 2109] s. 4.3.2 case 2; but this (no request-host) shouldn't happen */
     if (!domainname)
- 	return COO_ENODOT;
+	return COO_ENODOT;
 
     if (domain) {
 	char *dp;
@@ -299,7 +297,8 @@ add_cookie(ParsedURL * pu, Str name, Str value,
 				     3);
 	    if (n < 2) {
 		COOKIE_ERROR(COO_ESPECIAL);
-	    } else if (n == 2) {
+	    }
+	    else if (n == 2) {
 		char **sdomain;
 		int ok = 0;
 		for (sdomain = special_domain; !ok && *sdomain; sdomain++) {
@@ -311,7 +310,8 @@ add_cookie(ParsedURL * pu, Str name, Str value,
 		if (!ok)
 		    COOKIE_ERROR(COO_ESPECIAL);
 	    }
-	} else {
+	}
+	else {
 	    /* [DRAFT 12] s. 4.3.2 case 2 */
 	    if (strcasecmp(domain->ptr, ".local") != 0 &&
 		contain_no_dots(&domain->ptr[1], &domain->ptr[domain->length]))
@@ -328,7 +328,7 @@ add_cookie(ParsedURL * pu, Str name, Str value,
     }
     if (path) {
 	/* [RFC 2109] s. 4.3.2 case 1 */
-  	if (version > 0 && strncmp(path->ptr, pu->file, path->length) != 0)
+	if (version > 0 && strncmp(path->ptr, pu->file, path->length) != 0)
 	    COOKIE_ERROR(COO_EPATH);
     }
     if (port) {
@@ -461,7 +461,7 @@ load_cookies(void)
 	return;
 
     if (First_cookie) {
-	for (p = First_cookie; p->next; p = p->next);
+	for (p = First_cookie; p->next; p = p->next) ;
     }
     else {
 	p = NULL;
@@ -551,9 +551,10 @@ cookie_list_panel(void)
 	tmp = html_quote(parsedURL2Str(&p->url)->ptr);
 	if (p->expires != (time_t) - 1) {
 #ifdef HAVE_STRFTIME
-	    strftime(tmp2, 80, "%a, %d %b %Y %H:%M:%S GMT", gmtime(&p->expires));
-#else  /* not HAVE_STRFTIME */
-            struct tm *gmt;
+	    strftime(tmp2, 80, "%a, %d %b %Y %H:%M:%S GMT",
+		     gmtime(&p->expires));
+#else				/* not HAVE_STRFTIME */
+	    struct tm *gmt;
 	    static char *dow[] = {
 		"Sun ", "Mon ", "Tue ", "Wed ", "Thu ", "Fri ", "Sat "
 	    };
@@ -561,18 +562,18 @@ cookie_list_panel(void)
 		"Jan ", "Feb ", "Mar ", "Apr ", "May ", "Jun ",
 		"Jul ", "Aug ", "Sep ", "Oct ", "Nov ", "Dec "
 	    };
-            gmt = gmtime( &p->expires );
-	    strcpy(tmp2,dow[gmt->tm_wday]);
-            sprintf( &tmp2[4], "%02d ", gmt->tm_mday );
-	    strcpy(&tmp2[7],month[gmt->tm_mon]);
-            if( gmt->tm_year < 1900 )
-                sprintf( &tmp2[11], "%04d %02d:%02d:%02d GMT",
-			 (gmt->tm_year) + 1900, gmt->tm_hour, gmt->tm_min,
-			 gmt->tm_sec );
-            else
-                sprintf( &tmp2[11], "%04d %02d:%02d:%02d GMT",
-                    gmt->tm_year, gmt->tm_hour, gmt->tm_min, gmt->tm_sec );
-#endif  /* not HAVE_STRFTIME */
+	    gmt = gmtime(&p->expires);
+	    strcpy(tmp2, dow[gmt->tm_wday]);
+	    sprintf(&tmp2[4], "%02d ", gmt->tm_mday);
+	    strcpy(&tmp2[7], month[gmt->tm_mon]);
+	    if (gmt->tm_year < 1900)
+		sprintf(&tmp2[11], "%04d %02d:%02d:%02d GMT",
+			(gmt->tm_year) + 1900, gmt->tm_hour, gmt->tm_min,
+			gmt->tm_sec);
+	    else
+		sprintf(&tmp2[11], "%04d %02d:%02d:%02d GMT",
+			gmt->tm_year, gmt->tm_hour, gmt->tm_min, gmt->tm_sec);
+#endif				/* not HAVE_STRFTIME */
 	}
 	else
 	    tmp2[0] = '\0';
@@ -595,7 +596,8 @@ cookie_list_panel(void)
 	    Strcat_charp(src, "</td></tr>");
 	}
 	if (p->commentURL) {
-	    Strcat_charp(src, "<tr><td width=\"80\"><b>CommentURL:</b></td><td>");
+	    Strcat_charp(src,
+			 "<tr><td width=\"80\"><b>CommentURL:</b></td><td>");
 	    Strcat_charp(src, "<a href=\"");
 	    Strcat_charp(src, html_quote(p->commentURL->ptr));
 	    Strcat_charp(src, "\">");
@@ -638,7 +640,8 @@ cookie_list_panel(void)
 			    "<input type=radio name=\"%d\" value=0%s>No",
 			    i, (p->flag & COO_USE) ? " checked" : "",
 			    i, (!(p->flag & COO_USE)) ? " checked" : ""));
-	Strcat_charp(src, "</td></tr><tr><td><input type=submit value=\"OK\"></table><p>");
+	Strcat_charp(src,
+		     "</td></tr><tr><td><input type=submit value=\"OK\"></table><p>");
     }
     Strcat_charp(src, "</ol></form></body></html>");
     return loadHTMLString(src);

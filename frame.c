@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.5 2001/11/20 13:17:13 ukai Exp $ */
+/* $Id: frame.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -40,7 +40,8 @@ newFrameSet(struct parsed_tag *tag)
 	while (*p != '\0')
 	    if (*p++ == ',') {
 		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+		if (i >= sizeof(length) / sizeof(length[0]) - 2)
+		    break;
 	    }
 	length[++i] = p + 1;
     }
@@ -78,7 +79,8 @@ newFrameSet(struct parsed_tag *tag)
 	while (*p != '\0')
 	    if (*p++ == ',') {
 		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+		if (i >= sizeof(length) / sizeof(length[0]) - 2)
+		    break;
 	    }
 	length[++i] = p + 1;
     }
@@ -115,7 +117,7 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
     char *p;
 
     body = New(struct frame_body);
-    bzero((void *) body, sizeof(*body));
+    bzero((void *)body, sizeof(*body));
     body->attr = F_UNLOADED;
     body->flags = 0;
     body->baseURL = baseURL(buf);
@@ -142,7 +144,7 @@ deleteFrame(struct frame_body *b)
     if (b == NULL)
 	return;
     unloadFrame(b);
-    bzero((void *) b, sizeof(*b));
+    bzero((void *)b, sizeof(*b));
 }
 
 void
@@ -200,7 +202,7 @@ copyFrame(struct frame_body *ob)
     struct frame_body *rb;
 
     rb = New(struct frame_body);
-    bcopy((const void *) ob, (void *) rb, sizeof(struct frame_body));
+    bcopy((const void *)ob, (void *)rb, sizeof(struct frame_body));
     rb->flags &= ~FB_TODELETE;
     return rb;
 }
@@ -213,15 +215,13 @@ copyFrameSet(struct frameset *of)
 
     rf = New(struct frameset);
     n = of->col * of->row;
-    bcopy((const void *) of, (void *) rf, sizeof(struct frameset));
+    bcopy((const void *)of, (void *)rf, sizeof(struct frameset));
     rf->width = New_N(char *, rf->col);
-    bcopy((const void *) of->width,
-	  (void *) rf->width,
-	  sizeof(char *) * rf->col);
+    bcopy((const void *)of->width,
+	  (void *)rf->width, sizeof(char *) * rf->col);
     rf->height = New_N(char *, rf->row);
-    bcopy((const void *) of->height,
-	  (void *) rf->height,
-	  sizeof(char *) * rf->row);
+    bcopy((const void *)of->height,
+	  (void *)rf->height, sizeof(char *) * rf->row);
     rf->frame = New_N(union frameset_element, n);
     while (n) {
 	n--;
@@ -247,7 +247,7 @@ copyFrameSet(struct frameset *of)
 void
 flushFrameSet(struct frameset *fs)
 {
-    int             n = fs->i;
+    int n = fs->i;
 
     while (n) {
 	n--;
@@ -270,9 +270,7 @@ flushFrameSet(struct frameset *fs)
 }
 
 void
-pushFrameTree(struct frameset_queue **fqpp,
-	      struct frameset *fs,
-             Buffer *buf)
+pushFrameTree(struct frameset_queue **fqpp, struct frameset *fs, Buffer *buf)
 {
     struct frameset_queue *rfq, *cfq = *fqpp;
 
@@ -280,7 +278,8 @@ pushFrameTree(struct frameset_queue **fqpp,
 	return;
 
     rfq = New(struct frameset_queue);
-    rfq->linenumber = (buf && buf->currentLine) ? buf->currentLine->linenumber : 1;
+    rfq->linenumber = (buf
+		       && buf->currentLine) ? buf->currentLine->linenumber : 1;
     rfq->top_linenumber = (buf && buf->topLine) ? buf->topLine->linenumber : 1;
     rfq->pos = buf ? buf->pos : 0;
     rfq->currentColumn = buf ? buf->currentColumn : 0;
@@ -317,15 +316,13 @@ popFrameTree(struct frameset_queue **fqpp)
 	(rfq = cfq->back)->next = cfq->next;
     }
     *fqpp = rfq;
-    bzero((void *) cfq, sizeof(struct frameset_queue));
+    bzero((void *)cfq, sizeof(struct frameset_queue));
     return rfs;
 }
 
 void
 resetFrameElement(union frameset_element *f_element,
-		  Buffer * buf,
-		  char *referer,
-		  FormList * request)
+		  Buffer *buf, char *referer, FormList *request)
 {
     char *f_name;
     struct frame_body *f_body;
@@ -337,7 +334,7 @@ resetFrameElement(union frameset_element *f_element,
 	f_element->set = buf->frameset;
 	f_element->set->currentURL = New(ParsedURL);
 	copyParsedURL(f_element->set->currentURL, &buf->currentURL);
-       buf->frameset = popFrameTree(&(buf->frameQ));
+	buf->frameset = popFrameTree(&(buf->frameQ));
 	f_element->set->name = f_name;
     }
     else {
@@ -355,7 +352,7 @@ resetFrameElement(union frameset_element *f_element,
 	    f_body->flags |= FB_TODELETE;
 	    buf->sourcefile = NULL;
 	}
-       f_body->type = buf->type;
+	f_body->type = buf->type;
 	f_body->referer = referer;
 	f_body->request = request;
 	deleteFrameSetElement(*f_element);
@@ -364,8 +361,8 @@ resetFrameElement(union frameset_element *f_element,
 }
 
 static struct frameset *
-frame_download_source(struct frame_body *b, ParsedURL * currentURL,
-		      ParsedURL * baseURL, int flag)
+frame_download_source(struct frame_body *b, ParsedURL *currentURL,
+		      ParsedURL *baseURL, int flag)
 {
     Buffer *buf;
     struct frameset *ret_frameset = NULL;
@@ -379,19 +376,17 @@ frame_download_source(struct frame_body *b, ParsedURL * currentURL,
     parseURL2(b->url, &url, currentURL);
     switch (url.scheme) {
     case SCM_LOCAL:
-/*
+#if 0
 	b->source = url.real_file;
-*/
+#endif
 	b->flags = 0;
     default:
 	is_redisplay = TRUE;
-       w3m_dump |= DUMP_FRAME;
+	w3m_dump |= DUMP_FRAME;
 	buf = loadGeneralFile(b->url,
 			      baseURL ? baseURL : currentURL,
-			      b->referer,
-			      flag,
-			      b->request);
-       w3m_dump &= ~DUMP_FRAME;
+			      b->referer, flag, b->request);
+	w3m_dump &= ~DUMP_FRAME;
 	is_redisplay = FALSE;
 	break;
     }
@@ -417,14 +412,15 @@ frame_download_source(struct frame_body *b, ParsedURL * currentURL,
 	ret_frameset->name = b->name;
 	ret_frameset->currentURL = New(ParsedURL);
 	copyParsedURL(ret_frameset->currentURL, &buf->currentURL);
-       buf->frameset = popFrameTree(&(buf->frameQ));
+	buf->frameset = popFrameTree(&(buf->frameQ));
     }
     discardBuffer(buf);
     return ret_frameset;
 }
 
 static int
-createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int force_reload)
+createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
+		int force_reload)
 {
     int r, c, t_stack;
     URLFile f2;
@@ -512,8 +508,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		fflush(f1);
 		f_frameset = frame_download_source(frame.body,
 						   currentURL,
-						   current->baseURL,
-						   flag);
+						   current->baseURL, flag);
 		if (f_frameset) {
 		    deleteFrame(frame.body);
 		    f->frame[i].set = frame.set = f_frameset;
@@ -529,12 +524,15 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		if (f2.stream == NULL) {
 		    frame.body->attr = F_UNLOADED;
 		    if (frame.body->flags & FB_NO_BUFFER)
-			fprintf(f1, "Open %s with other method", frame.body->url);
+			fprintf(f1, "Open %s with other method",
+				frame.body->url);
 		    else if (frame.body->url)
 			fprintf(f1, "Can't open %s", frame.body->url);
 		    else
-			fprintf(f1, "This frame (%s) contains no src attribute",
-			    frame.body->name ? frame.body->name : "(no name)");
+			fprintf(f1,
+				"This frame (%s) contains no src attribute",
+				frame.body->name ? frame.body->
+				name : "(no name)");
 		    break;
 		}
 		parseURL2(frame.body->url, &base, currentURL);
@@ -546,28 +544,28 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		code = '\0';
 #endif				/* JP_CHARSET */
 		t_stack = 0;
-        if (frame.body->type &&
-               ! strcasecmp(frame.body->type, "text/plain")) {
-            Str tmp;
-            fprintf(f1, "<pre>\n");
-            while ((tmp = StrmyUFgets(&f2))->length) {
+		if (frame.body->type &&
+		    !strcasecmp(frame.body->type, "text/plain")) {
+		    Str tmp;
+		    fprintf(f1, "<pre>\n");
+		    while ((tmp = StrmyUFgets(&f2))->length) {
 #ifdef JP_CHARSET
-               if ((ic = checkShiftCode(tmp, code)) != '\0')
-                tmp = conv_str(tmp, (code = ic), InnerCode);
+			if ((ic = checkShiftCode(tmp, code)) != '\0')
+			    tmp = conv_str(tmp, (code = ic), InnerCode);
 
-#endif                /* JP_CHARSET */
-               cleanup_line(tmp, HTML_MODE);
-               fprintf(f1, "%s", html_quote(tmp->ptr));
-            }
-            fprintf(f1, "</pre>\n");
-            UFclose(&f2);
-            break;
-        }
+#endif				/* JP_CHARSET */
+			cleanup_line(tmp, HTML_MODE);
+			fprintf(f1, "%s", html_quote(tmp->ptr));
+		    }
+		    fprintf(f1, "</pre>\n");
+		    UFclose(&f2);
+		    break;
+		}
 		do {
 		    status = R_ST_NORMAL;
 		    do {
 			if (*p == '\0') {
- 			    Str tmp = StrmyUFgets(&f2);
+			    Str tmp = StrmyUFgets(&f2);
 			    if (tmp->length == 0 && status != R_ST_NORMAL)
 				tmp = correct_irrtag(status);
 			    if (tmp->length == 0)
@@ -640,7 +638,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 				Strshrinkfirst(tok, 1);
 				Strshrink(tok, 1);
 				fprintf(f1,
-				    "<!-- table stack underflow: %s -->",
+					"<!-- table stack underflow: %s -->",
 					tok->ptr);
 				goto token_end;
 			    }
@@ -676,7 +674,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 			    case ATTR_ACTION:
 				if (!tag->value[j])
 				    break;
-				tag->value[j] = url_quote_conv(tag->value[j], code);
+				tag->value[j] =
+				    url_quote_conv(tag->value[j], code);
 				parseURL2(tag->value[j], &url, &base);
 				if (url.scheme == SCM_MAILTO ||
 				    url.scheme == SCM_UNKNOWN ||
@@ -692,8 +691,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 				if (code != '\0') {
 				    charset[0] = code;
 				    parsedtag_set_value(tag,
-							ATTR_CHARSET,
-							charset);
+							ATTR_CHARSET, charset);
 				}
 #endif
 				break;
@@ -703,14 +701,11 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 				a_target |= 2;
 				if (!strcasecmp(tag->value[j], "_self")) {
 				    parsedtag_set_value(tag,
-							ATTR_TARGET,
-							s_target);
+							ATTR_TARGET, s_target);
 				}
-				else if (!strcasecmp(tag->value[j],
-						     "_parent")) {
+				else if (!strcasecmp(tag->value[j], "_parent")) {
 				    parsedtag_set_value(tag,
-							ATTR_TARGET,
-							p_target);
+							ATTR_TARGET, p_target);
 				}
 				break;
 			    case ATTR_NAME:
@@ -718,17 +713,14 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 				if (!tag->value[j])
 				    break;
 				parsedtag_set_value(tag,
-						    ATTR_FRAMENAME,
-						    s_target);
+						    ATTR_FRAMENAME, s_target);
 				break;
 			    }
 			}
 			if (a_target == 1) {
 			    /* there is HREF attribute and no TARGET
 			     * attribute */
-			    parsedtag_set_value(tag,
-						ATTR_TARGET,
-						d_target);
+			    parsedtag_set_value(tag, ATTR_TARGET, d_target);
 			}
 			if (parsedtag_need_reconstruct(tag))
 			    Strfputs(parsedtag2str(tag), f1);
@@ -750,7 +742,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		if (!frame.set->name && f->name) {
 		    frame.set->name = Sprintf("%s_%d", f->name, i)->ptr;
 		}
-		createFrameFile(frame.set, f1, current, level + 1, force_reload);
+		createFrameFile(frame.set, f1, current, level + 1,
+				force_reload);
 		break;
 	    }
 	    fputs("</td>\n", f1);
@@ -769,7 +762,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 }
 
 Buffer *
-renderFrame(Buffer * Cbuf, int force_reload)
+renderFrame(Buffer *Cbuf, int force_reload)
 {
     Str tmp;
     FILE *f;

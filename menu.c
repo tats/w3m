@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: menu.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -33,8 +33,7 @@ extern int do_getch();
 #ifdef USE_MENU
 
 #ifdef KANJI_SYMBOLS
-static char *FRAME[] =
-{
+static char *FRAME[] = {
 #ifdef MENU_THIN_FRAME
     "¨£", "¨¡", "¨¤",
     "¨¢", "  ", "¨¢",
@@ -44,28 +43,28 @@ static char *FRAME[] =
     "¨­", "  ", "¨­",
     "¨±", "¨¬", "¨°",
 #endif				/* not MENU_THIN_FRAME */
-    "¡§", "¡§"};
+    "¡§", "¡§"
+};
 #define FRAME_WIDTH 2
 
 #define G_start
-/**/
-#define G_end    /**/
-
+ /**/
+#define G_end /**/
 #else				/* not KANJI_SYMBOLS */
-static char *N_FRAME[] =
-{
+static char *N_FRAME[] = {
     "+", "-", "+",
     "|", " ", "|",
     "+", "-", "+",
-    ":", ":"};
+    ":", ":"
+};
 #define FRAME_WIDTH 1
 
-static char *G_FRAME[] =
-{
+static char *G_FRAME[] = {
     "l", "q", "k",
     "x", " ", "x",
     "m", "q", "j",
-    ":", ":"};
+    ":", ":"
+};
 
 static char **FRAME = NULL;
 static int graph_mode = FALSE;
@@ -97,9 +96,10 @@ static int mSrchB(char c);
 static int mSrchN(char c);
 static int mSrchP(char c);
 #ifdef __EMX__
-static int	mPc(char c);
+static int mPc(char c);
 #endif
 
+/* *INDENT-OFF* */
 static int (*MenuKeymap[128]) (char c) = {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
 #ifdef __EMX__
@@ -266,7 +266,7 @@ static int (*MenuPcKeymap[256])(char c)={
   mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull	   // 248
 };
 #endif
-
+/* *INDENT-ON* */
 /* --- SelectMenu --- */
 
 static Menu SelectMenu;
@@ -281,9 +281,8 @@ static int smDelBuf(char c);
 
 static Menu MainMenu;
 #if LANG == JA
-static MenuItem MainMenuItem[] =
-{
-/* type        label         variabel value func     popup keys data  */
+static MenuItem MainMenuItem[] = {
+    /* type        label         variabel value func     popup keys data  */
     {MENU_FUNC, "Ìá¤ë         (b)", NULL, 0, backBf, NULL, "b", NULL},
     {MENU_POPUP, "¥Ð¥Ã¥Õ¥¡ÁªÂò (s)", NULL, 0, NULL, &SelectMenu, "s", NULL},
     {MENU_FUNC, "¥½¡¼¥¹¤òÉ½¼¨ (v)", NULL, 0, vwSrc, NULL, "vV", NULL},
@@ -305,9 +304,8 @@ static MenuItem MainMenuItem[] =
     {MENU_END, "", NULL, 0, nulcmd, NULL, "", NULL},
 };
 #else				/* LANG != JA */
-static MenuItem MainMenuItem[] =
-{
-/* type        label           variable value func     popup keys data  */
+static MenuItem MainMenuItem[] = {
+    /* type        label           variable value func     popup keys data  */
     {MENU_FUNC, " Back         (b) ", NULL, 0, backBf, NULL, "b", NULL},
     {MENU_POPUP, " Select Buffer(s) ", NULL, 0, NULL, &SelectMenu, "s", NULL},
     {MENU_FUNC, " View Source  (v) ", NULL, 0, vwSrc, NULL, "vV", NULL},
@@ -343,7 +341,7 @@ static Menu *CurrentMenu = NULL;
 #define mvaddnstr(y, x, str, n) (move(y, x), addnstr_sup(str, n))
 
 void
-new_menu(Menu * menu, MenuItem * item)
+new_menu(Menu *menu, MenuItem *item)
 {
     int i, l;
     char *p;
@@ -362,7 +360,7 @@ new_menu(Menu * menu, MenuItem * item)
     if (item == NULL)
 	return;
 
-    for (i = 0; item[i].type != MENU_END; i++);
+    for (i = 0; item[i].type != MENU_END; i++) ;
     menu->nitem = i;
     menu->height = menu->nitem;
     for (i = 0; i < 128; i++)
@@ -372,8 +370,8 @@ new_menu(Menu * menu, MenuItem * item)
 	if ((p = item[i].keys) != NULL) {
 	    while (*p) {
 		if (IS_ASCII(*p)) {
-		    menu->keymap[(int) *p] = mSelect;
-		    menu->keyselect[(int) *p] = i;
+		    menu->keymap[(int)*p] = mSelect;
+		    menu->keyselect[(int)*p] = i;
 		}
 		p++;
 	    }
@@ -385,7 +383,7 @@ new_menu(Menu * menu, MenuItem * item)
 }
 
 void
-geom_menu(Menu * menu, int x, int y, int select)
+geom_menu(Menu *menu, int x, int y, int select)
 {
     int win_x, win_y, win_w, win_h;
 
@@ -424,7 +422,7 @@ geom_menu(Menu * menu, int x, int y, int select)
 }
 
 void
-draw_all_menu(Menu * menu)
+draw_all_menu(Menu *menu)
 {
     if (menu->parent != NULL)
 	draw_all_menu(menu->parent);
@@ -432,7 +430,7 @@ draw_all_menu(Menu * menu)
 }
 
 void
-draw_menu(Menu * menu)
+draw_menu(Menu *menu)
 {
     int x, y, w;
     int i, j;
@@ -508,14 +506,14 @@ draw_menu(Menu * menu)
 }
 
 void
-draw_menu_item(Menu * menu, int select)
+draw_menu_item(Menu *menu, int select)
 {
     mvaddnstr(menu->y + select - menu->offset, menu->x,
 	      menu->item[select].label, menu->width);
 }
 
 int
-select_menu(Menu * menu, int select)
+select_menu(Menu *menu, int select)
 {
     if (select < 0 || select >= menu->nitem)
 	return (MENU_NOTHING);
@@ -531,8 +529,8 @@ select_menu(Menu * menu, int select)
     standout();
     draw_menu_item(menu, menu->select);
     standend();
-/* 
- * move(menu->cursorY, menu->cursorX); */
+    /* 
+     * move(menu->cursorY, menu->cursorX); */
     move(menu->y + select - menu->offset, menu->x);
     toggle_stand();
     refresh();
@@ -541,7 +539,7 @@ select_menu(Menu * menu, int select)
 }
 
 void
-goto_menu(Menu * menu, int select, int down)
+goto_menu(Menu *menu, int select, int down)
 {
     int select_in;
     if (select >= menu->nitem)
@@ -551,16 +549,14 @@ goto_menu(Menu * menu, int select, int down)
     select_in = select;
     while (menu->item[select].type == MENU_NOP) {
 	if (down > 0) {
-	    if (++select >= menu->nitem)
-	    {
+	    if (++select >= menu->nitem) {
 		down_menu(menu, select_in - menu->select);
 		select = menu->select;
 		break;
 	    }
 	}
 	else if (down < 0) {
-	    if (--select < 0)
-	    {
+	    if (--select < 0) {
 		up_menu(menu, menu->select - select_in);
 		select = menu->select;
 		break;
@@ -574,7 +570,7 @@ goto_menu(Menu * menu, int select, int down)
 }
 
 void
-up_menu(Menu * menu, int n)
+up_menu(Menu *menu, int n)
 {
     if (n < 0 || menu->offset == 0)
 	return;
@@ -586,7 +582,7 @@ up_menu(Menu * menu, int n)
 }
 
 void
-down_menu(Menu * menu, int n)
+down_menu(Menu *menu, int n)
 {
     if (n < 0 || menu->offset + menu->height == menu->nitem)
 	return;
@@ -598,7 +594,7 @@ down_menu(Menu * menu, int n)
 }
 
 int
-action_menu(Menu * menu)
+action_menu(Menu *menu)
 {
     char c;
     int select;
@@ -631,7 +627,7 @@ action_menu(Menu * menu)
 				 * defined(USE_SYSMOUSE) */
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
-	    select = (*menu->keymap[(int) c]) (c);
+	    select = (*menu->keymap[(int)c]) (c);
 	    if (select != MENU_NOTHING)
 		break;
 	}
@@ -662,7 +658,7 @@ action_menu(Menu * menu)
 }
 
 void
-popup_menu(Menu * parent, Menu * menu)
+popup_menu(Menu *parent, Menu *menu)
 {
     int active = 1;
 
@@ -710,7 +706,7 @@ popup_menu(Menu * parent, Menu * menu)
 }
 
 void
-guess_menu_xy(Menu * parent, int width, int *x, int *y)
+guess_menu_xy(Menu *parent, int width, int *x, int *y)
 {
     *x = parent->x + parent->width + FRAME_WIDTH - 1;
     if (*x + width + FRAME_WIDTH > COLS) {
@@ -723,7 +719,7 @@ guess_menu_xy(Menu * parent, int width, int *x, int *y)
 }
 
 void
-new_option_menu(Menu * menu, char **label, int *variable, void (*func) ())
+new_option_menu(Menu *menu, char **label, int *variable, void (*func) ())
 {
     int i, nitem;
     char **p;
@@ -732,7 +728,7 @@ new_option_menu(Menu * menu, char **label, int *variable, void (*func) ())
     if (label == NULL || *label == NULL)
 	return;
 
-    for (i = 0, p = label; *p != NULL; i++, p++);
+    for (i = 0, p = label; *p != NULL; i++, p++) ;
     nitem = i;
 
     item = New_N(MenuItem, nitem + 1);
@@ -760,8 +756,8 @@ new_option_menu(Menu * menu, char **label, int *variable, void (*func) ())
 static int
 mPc(char c)
 {
-  c = getch();
-  return(MenuPcKeymap[(int)c](c));
+    c = getch();
+    return (MenuPcKeymap[(int)c] (c));
 }
 #endif
 
@@ -769,7 +765,7 @@ static int
 mEsc(char c)
 {
     c = getch();
-    return (MenuEscKeymap[(int) c] (c));
+    return (MenuEscKeymap[(int)c] (c));
 }
 
 static int
@@ -779,7 +775,7 @@ mEscB(char c)
     if (IS_DIGIT(c))
 	return (mEscD(c));
     else
-	return (MenuEscBKeymap[(int) c] (c));
+	return (MenuEscBKeymap[(int)c] (c));
 }
 
 static int
@@ -787,10 +783,10 @@ mEscD(char c)
 {
     int d;
 
-    d = (int) c - (int) '0';
+    d = (int)c - (int)'0';
     c = getch();
     if (IS_DIGIT(c)) {
-	d = d * 10 + (int) c - (int) '0';
+	d = d * 10 + (int)c - (int)'0';
 	c = getch();
     }
     if (c == '~')
@@ -809,7 +805,7 @@ static int
 mSelect(char c)
 {
     if (IS_ASCII(c))
-	return (select_menu(CurrentMenu, CurrentMenu->keyselect[(int) c]));
+	return (select_menu(CurrentMenu, CurrentMenu->keyselect[(int)c]));
     else
 	return (MENU_NOTHING);
 }
@@ -875,7 +871,8 @@ mFore(char c)
 {
     if (CurrentMenu->select >= CurrentMenu->nitem - 1)
 	return (MENU_NOTHING);
-    goto_menu(CurrentMenu, (CurrentMenu->select + CurrentMenu->height - 1), (CurrentMenu->height + 1));
+    goto_menu(CurrentMenu, (CurrentMenu->select + CurrentMenu->height - 1),
+	      (CurrentMenu->height + 1));
     return (MENU_NOTHING);
 }
 
@@ -884,7 +881,8 @@ mBack(char c)
 {
     if (CurrentMenu->select <= 0)
 	return (MENU_NOTHING);
-    goto_menu(CurrentMenu, (CurrentMenu->select - CurrentMenu->height + 1), (-1 - CurrentMenu->height));
+    goto_menu(CurrentMenu, (CurrentMenu->select - CurrentMenu->height + 1),
+	      (-1 - CurrentMenu->height));
     return (MENU_NOTHING);
 }
 
@@ -924,25 +922,25 @@ static char *SearchString = NULL;
 int (*menuSearchRoutine) (Menu *, char *, int);
 
 static int
-menuForwardSearch (Menu* menu, char* str, int from)
+menuForwardSearch(Menu *menu, char *str, int from)
 {
     int i;
-    char* p;
-    if ((p = regexCompile (str, IgnoreCase)) != NULL) {
-	message (p, 0, 0);
+    char *p;
+    if ((p = regexCompile(str, IgnoreCase)) != NULL) {
+	message(p, 0, 0);
 	return -1;
     }
     if (from < 0)
-       from = 0;
+	from = 0;
     for (i = from; i < menu->nitem; i++)
-       if (menu->item[i].type != MENU_NOP &&
-           regexMatch (menu->item[i].label, 0, 1) == 1)
-           return i;
+	if (menu->item[i].type != MENU_NOP &&
+	    regexMatch(menu->item[i].label, 0, 1) == 1)
+	    return i;
     return -1;
 }
 
 static int
-menu_search_forward (Menu* menu, int from)
+menu_search_forward(Menu *menu, int from)
 {
     char *str;
     int found;
@@ -950,48 +948,48 @@ menu_search_forward (Menu* menu, int from)
     if (str != NULL && *str == '\0')
 	str = SearchString;
     if (str == NULL || *str == '\0')
-       return -1;
+	return -1;
     SearchString = str;
     menuSearchRoutine = menuForwardSearch;
-    found = menuForwardSearch (menu, SearchString, from + 1);
+    found = menuForwardSearch(menu, SearchString, from + 1);
     if (WrapSearch && found == -1)
-        found = menuForwardSearch (menu, SearchString, 0);
+	found = menuForwardSearch(menu, SearchString, 0);
     if (found >= 0)
-        return found;
+	return found;
     disp_message("Not found", TRUE);
     return -1;
 }
 
 static int
-mSrchF (char c)
+mSrchF(char c)
 {
     int select;
-    select = menu_search_forward (CurrentMenu, CurrentMenu->select);
+    select = menu_search_forward(CurrentMenu, CurrentMenu->select);
     if (select >= 0)
-       goto_menu (CurrentMenu, select, 1);
+	goto_menu(CurrentMenu, select, 1);
     return (MENU_NOTHING);
 }
 
 static int
-menuBackwardSearch (Menu* menu, char* str, int from)
+menuBackwardSearch(Menu *menu, char *str, int from)
 {
     int i;
-    char* p;
-    if ((p = regexCompile (str, IgnoreCase)) != NULL) {
-	message (p, 0, 0);
+    char *p;
+    if ((p = regexCompile(str, IgnoreCase)) != NULL) {
+	message(p, 0, 0);
 	return -1;
     }
     if (from >= menu->nitem)
-       from = menu->nitem - 1;
+	from = menu->nitem - 1;
     for (i = from; i >= 0; i--)
-       if (menu->item[i].type != MENU_NOP &&
-           regexMatch (menu->item[i].label, 0, 1) == 1)
-            return i;
+	if (menu->item[i].type != MENU_NOP &&
+	    regexMatch(menu->item[i].label, 0, 1) == 1)
+	    return i;
     return -1;
 }
 
 static int
-menu_search_backward (Menu* menu, int from)
+menu_search_backward(Menu *menu, int from)
 {
     char *str;
     int found;
@@ -1002,37 +1000,35 @@ menu_search_backward (Menu* menu, int from)
 	return (MENU_NOTHING);
     SearchString = str;
     menuSearchRoutine = menuBackwardSearch;
-    found = menuBackwardSearch (menu, SearchString, from - 1);
+    found = menuBackwardSearch(menu, SearchString, from - 1);
     if (WrapSearch && found == -1)
-        found = menuBackwardSearch (menu, SearchString, menu->nitem);
+	found = menuBackwardSearch(menu, SearchString, menu->nitem);
     if (found >= 0)
-        return found;
+	return found;
     disp_message("Not found", TRUE);
     return -1;
 }
 
 static int
-mSrchB (char c)
+mSrchB(char c)
 {
     int select;
-    select = menu_search_backward (CurrentMenu, CurrentMenu->select);
+    select = menu_search_backward(CurrentMenu, CurrentMenu->select);
     if (select >= 0)
-       goto_menu (CurrentMenu, select, -1);
+	goto_menu(CurrentMenu, select, -1);
     return (MENU_NOTHING);
 }
 
 static int
-menu_search_next_previous (Menu* menu, int from, int reverse)
+menu_search_next_previous(Menu *menu, int from, int reverse)
 {
     int found;
-    static int (*routine[2]) (Menu *, char *, int) =
-    {
-	menuForwardSearch, menuBackwardSearch
-    };
+    static int (*routine[2]) (Menu *, char *, int) = {
+    menuForwardSearch, menuBackwardSearch};
 
     if (menuSearchRoutine == NULL) {
-	disp_message ("No previous regular expression", TRUE);
-       return -1;
+	disp_message("No previous regular expression", TRUE);
+	return -1;
     }
     if (reverse != 0)
 	reverse = 1;
@@ -1041,30 +1037,31 @@ menu_search_next_previous (Menu* menu, int from, int reverse)
     from += reverse ? -1 : 1;
     found = (*routine[reverse]) (menu, SearchString, from);
     if (WrapSearch && found == -1)
-        found = (*routine[reverse]) (menu, SearchString, reverse * menu->nitem);
+	found =
+	    (*routine[reverse]) (menu, SearchString, reverse * menu->nitem);
     if (found >= 0)
-        return found;
+	return found;
     disp_message("Not found", TRUE);
     return -1;
 }
 
 static int
-mSrchN (char c)
+mSrchN(char c)
 {
     int select;
-    select = menu_search_next_previous (CurrentMenu, CurrentMenu->select, 0);
+    select = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 0);
     if (select >= 0)
-       goto_menu (CurrentMenu, select, 1);
+	goto_menu(CurrentMenu, select, 1);
     return (MENU_NOTHING);
 }
 
 static int
-mSrchP (char c)
+mSrchP(char c)
 {
     int select;
-    select = menu_search_next_previous (CurrentMenu, CurrentMenu->select, 1);
+    select = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 1);
     if (select >= 0)
-       goto_menu (CurrentMenu, select, -1);
+	goto_menu(CurrentMenu, select, -1);
     return (MENU_NOTHING);
 }
 
@@ -1094,12 +1091,10 @@ process_mMouse(int btn, int x, int y)
 	return (MENU_NOTHING);
 
     if (btn == MOUSE_BTN_UP) {
-	if (press_btn == MOUSE_BTN1_DOWN ||
-	    press_btn == MOUSE_BTN3_DOWN) {
+	if (press_btn == MOUSE_BTN1_DOWN || press_btn == MOUSE_BTN3_DOWN) {
 	    if (x < menu->x - FRAME_WIDTH ||
 		x >= menu->x + menu->width + FRAME_WIDTH ||
-		y < menu->y - 1 ||
-		y >= menu->y + menu->height + 1) {
+		y < menu->y - 1 || y >= menu->y + menu->height + 1) {
 		return (MENU_CANCEL);
 	    }
 	    else if ((x >= menu->x - FRAME_WIDTH &&
@@ -1137,11 +1132,11 @@ mMouse(char c)
 {
     int btn, x, y;
 
-    btn = (unsigned char) getch() - 32;
-    x = (unsigned char) getch() - 33;
+    btn = (unsigned char)getch() - 32;
+    x = (unsigned char)getch() - 33;
     if (x < 0)
 	x += 0x100;
-    y = (unsigned char) getch() - 33;
+    y = (unsigned char)getch() - 33;
     if (y < 0)
 	y += 0x100;
 
@@ -1247,7 +1242,8 @@ mainMn(void)
 	    return;
 	menu = w3mMenuList[n].menu;
     }
-    popupMenu(Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY, menu);
+    popupMenu(Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY,
+	      menu);
 }
 
 /* --- MainMenu (END) --- */
@@ -1285,7 +1281,8 @@ initSelectMenu(void)
 	    case SCM_LOCAL_CGI:
 		if (strcmp(buf->currentURL.file, "-")) {
 		    Strcat_char(str, ' ');
-		    Strcat_charp(str, conv_from_system(buf->currentURL.real_file));
+		    Strcat_charp(str,
+				 conv_from_system(buf->currentURL.real_file));
 		}
 		break;
 	    case SCM_UNKNOWN:
@@ -1332,7 +1329,7 @@ smChBuf(void)
 
     if (SelectV < 0 || SelectV >= SelectMenu.nitem)
 	return;
-    for (i = 0, buf = Firstbuf; i < SelectV; i++, buf = buf->nextBuffer);
+    for (i = 0, buf = Firstbuf; i < SelectV; i++, buf = buf->nextBuffer) ;
     Currentbuf = buf;
     if (clear_buffer) {
 	for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer)
@@ -1341,13 +1338,15 @@ smChBuf(void)
 }
 
 static int
-smDelBuf(char c) {
+smDelBuf(char c)
+{
     int i, x, y, select;
     Buffer *buf;
 
     if (CurrentMenu->select < 0 || CurrentMenu->select >= SelectMenu.nitem)
 	return (MENU_NOTHING);
-    for (i = 0, buf = Firstbuf; i < CurrentMenu->select; i++, buf = buf->nextBuffer);
+    for (i = 0, buf = Firstbuf; i < CurrentMenu->select;
+	 i++, buf = buf->nextBuffer) ;
     if (Currentbuf == buf)
 	Currentbuf = buf->nextBuffer;
     Firstbuf = deleteBuffer(Firstbuf, buf);
@@ -1383,7 +1382,8 @@ smDelBuf(char c) {
 /* --- OptionMenu --- */
 
 void
-optionMenu(int x, int y, char **label, int *variable, int initial, void (*func) ())
+optionMenu(int x, int y, char **label, int *variable, int initial,
+	   void (*func) ())
 {
     Menu menu;
 
@@ -1477,7 +1477,7 @@ initMenu(void)
 }
 
 int
-setMenuItem(MenuItem * item, char *type, char *line)
+setMenuItem(MenuItem *item, char *type, char *line)
 {
     char *label, *func, *popup, *keys, *data;
     int f;
@@ -1527,12 +1527,12 @@ setMenuItem(MenuItem * item, char *type, char *line)
 }
 
 int
-addMenuList(MenuList ** mlist, char *id)
+addMenuList(MenuList **mlist, char *id)
 {
     int n;
     MenuList *list = *mlist;
 
-    for (n = 0; list->id != NULL; list++, n++);
+    for (n = 0; list->id != NULL; list++, n++) ;
     *mlist = New_Reuse(MenuList, *mlist, (n + 2));
     list = *mlist + n;
     list->id = id;
@@ -1543,7 +1543,7 @@ addMenuList(MenuList ** mlist, char *id)
 }
 
 int
-getMenuN(MenuList * list, char *id)
+getMenuN(MenuList *list, char *id)
 {
     int n;
 

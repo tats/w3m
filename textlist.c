@@ -1,4 +1,4 @@
-/* $Id: textlist.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: textlist.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #include "textlist.h"
 #include "indep.h"
 #include "Str.h"
@@ -7,7 +7,7 @@
 /* General doubly linked list */
 
 ListItem *
-newListItem(void *s, ListItem * n, ListItem * p)
+newListItem(void *s, ListItem *n, ListItem *p)
 {
     ListItem *it;
     it = New(ListItem);
@@ -27,7 +27,7 @@ newGeneralList()
 }
 
 void
-pushValue(GeneralList * tl, void *s)
+pushValue(GeneralList *tl, void *s)
 {
     ListItem *it;
     if (s == NULL)
@@ -46,7 +46,7 @@ pushValue(GeneralList * tl, void *s)
 }
 
 void *
-popValue(GeneralList * tl)
+popValue(GeneralList *tl)
 {
     ListItem *f;
 
@@ -63,7 +63,7 @@ popValue(GeneralList * tl)
 }
 
 void *
-rpopValue(GeneralList * tl)
+rpopValue(GeneralList *tl)
 {
     ListItem *f;
 
@@ -80,7 +80,7 @@ rpopValue(GeneralList * tl)
 }
 
 GeneralList *
-appendGeneralList(GeneralList * tl, GeneralList * tl2)
+appendGeneralList(GeneralList *tl, GeneralList *tl2)
 {
     if (tl && tl2) {
 	if (tl2->first) {
@@ -118,8 +118,8 @@ newTextLine(Str line, int pos)
     return lbuf;
 }
 
-void 
-appendTextLine(TextLineList * tl, Str line, int pos)
+void
+appendTextLine(TextLineList *tl, Str line, int pos)
 {
     TextLine *lbuf;
 
@@ -135,5 +135,3 @@ appendTextLine(TextLineList * tl, Str line, int pos)
 	lbuf->pos += pos;
     }
 }
-
-

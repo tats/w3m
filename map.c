@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: map.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -6,7 +6,7 @@
 
 #ifdef MENU_MAP
 char *
-follow_map_menu(Buffer * buf, struct parsed_tagarg *arg, int x, int y)
+follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, int x, int y)
 {
     MapList *ml;
     char *name;
@@ -25,12 +25,12 @@ follow_map_menu(Buffer * buf, struct parsed_tagarg *arg, int x, int y)
     if (ml == NULL)
 	return NULL;
 
-    for (n = 0, t = ml->urls->first; t != NULL; n++, t = t->next);
+    for (n = 0, t = ml->urls->first; t != NULL; n++, t = t->next) ;
     if (n == 0)
 	return NULL;
     label = New_N(char *, n + 1);
     for (i = 0, t = ml->urls->first, s = ml->alts->first; t != NULL;
-	i++, t = t->next, s = s->next)
+	 i++, t = t->next, s = s->next)
 	label[i] = *s->ptr ? s->ptr : t->ptr;
     label[n] = NULL;
 
@@ -49,7 +49,7 @@ char *map1 = "<HTML><HEAD><TITLE>Image map links</TITLE></HEAD>\
 <BODY><H1>Image map links</H1>";
 
 Buffer *
-follow_map_panel(Buffer * buf, struct parsed_tagarg *arg)
+follow_map_panel(Buffer *buf, struct parsed_tagarg *arg)
 {
     Str mappage;
     MapList *ml;
@@ -70,7 +70,7 @@ follow_map_panel(Buffer * buf, struct parsed_tagarg *arg)
 
     mappage = Strnew_charp(map1);
     for (t = ml->urls->first, s = ml->alts->first; t != NULL;
-	t = t->next, s = s->next) {
+	 t = t->next, s = s->next) {
 	parseURL2(t->ptr, &pu, baseURL(buf));
 	Strcat_charp(mappage, "<a href=\"");
 	Strcat_charp(mappage, html_quote(parsedURL2Str(&pu)->ptr));
@@ -134,7 +134,7 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
  * information of current page and link 
  */
 Buffer *
-page_info_panel(Buffer * buf)
+page_info_panel(Buffer *buf)
 {
     Str tmp = Strnew_size(1024);
     Anchor *a;
@@ -144,8 +144,10 @@ page_info_panel(Buffer * buf)
     struct frameset *f_set = NULL;
     int all;
 
-    Strcat_charp(tmp, "<html><head><title>Information about current page</title></head><body>");
-    Strcat_charp(tmp, "<h1>Information about current page</h1><table cellpadding=0>");
+    Strcat_charp(tmp,
+		 "<html><head><title>Information about current page</title></head><body>");
+    Strcat_charp(tmp,
+		 "<h1>Information about current page</h1><table cellpadding=0>");
     if (buf == NULL)
 	goto end;
     Strcat_charp(tmp, "<tr><td nowrap>Title<td>");
@@ -191,7 +193,7 @@ page_info_panel(Buffer * buf)
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {
-	s = Strnew_charp(form2str((FormItemList *) a->url));
+	s = Strnew_charp(form2str((FormItemList *)a->url));
 	Strcat_charp(tmp, "<tr><td nowrap>Method/type of current form<td>");
 	Strcat_charp(tmp, html_quote(s->ptr));
     }
@@ -207,8 +209,7 @@ page_info_panel(Buffer * buf)
     if (buf->frameset != NULL)
 	f_set = buf->frameset;
     else if (buf->bufferprop & BP_FRAME &&
-	     buf->nextBuffer != NULL &&
-	     buf->nextBuffer->frameset != NULL)
+	     buf->nextBuffer != NULL && buf->nextBuffer->frameset != NULL)
 	f_set = buf->nextBuffer->frameset;
 
     if (f_set) {

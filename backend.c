@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.4 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: backend.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -11,150 +11,166 @@
 /* Prototype declaration of internal functions */
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
-#else  /* ! HAVE_READLINE */
-static char *readline( char* );
-#endif /* ! HAVE_READLINE */
-static TextList* split( char * );
+#else				/* ! HAVE_READLINE */
+static char *readline(char *);
+#endif				/* ! HAVE_READLINE */
+static TextList *split(char *);
 
 
 /* Prototype declaration of command functions */
-static void get( TextList* );
-static void post( TextList* );
-static void set( TextList* );
-static void show( TextList* );
-static void quit( TextList* );
-static void help( TextList* );
+static void get(TextList *);
+static void post(TextList *);
+static void set(TextList *);
+static void show(TextList *);
+static void quit(TextList *);
+static void help(TextList *);
 
 
+/* *INDENT-OFF* */
 /* Table of command functions */
 struct {
     const char *name;
     const char *option_string;
     const char *help;
-    void (*func)( TextList* );
+    void (*func)(TextList*);
 } command_table[] = {
-    { "get", "[-download_only] URL", "Retrieve URL.", get },
-    { "post", "[-download_only] [-target TARGET] [-charset CHARSET]"
-      " [-enctype ENCTYPE] [-body BODY] [-boundary BOUNDARY] [-length LEN] URL",
-      "Retrieve URL.", post },
-    { "set", "VARIABLE VALUE", "Set VALUE to VARIABLE.", set },
-    { "show", "VARIABLE", "Show value of VARIABLE.", show },
-    { "quit", "", "Quit program.", quit },
-    { "help", "", "Display help messages.", help },
-    { NULL, NULL, NULL, NULL },
+    {"get", "[-download_only] URL", "Retrieve URL.", get},
+    {"post", "[-download_only] [-target TARGET] [-charset CHARSET]"
+     " [-enctype ENCTYPE] [-body BODY] [-boundary BOUNDARY] [-length LEN] URL",
+     "Retrieve URL.", post},
+    {"set", "VARIABLE VALUE", "Set VALUE to VARIABLE.", set},
+    {"show", "VARIABLE", "Show value of VARIABLE.", show},
+    {"quit", "", "Quit program.", quit},
+    {"help", "", "Display help messages.", help},
+    {NULL, NULL, NULL, NULL},
 };
-
+/* *INDENT-ON* */
 
 /* Prototype declaration of functions to manipulate configuration variables */
-static void set_column( TextList* );
-static void show_column( TextList* );
+static void set_column(TextList *);
+static void show_column(TextList *);
 
 
+/* *INDENT-OFF* */
 /* Table of configuration variables */
 struct {
     const char *name;
-    void (*set_func)( TextList* );
-    void (*show_func)( TextList* );
+    void (*set_func)(TextList*);
+    void (*show_func)(TextList*);
 } variable_table[] = {
-    { "column", set_column, show_column },
-    { NULL, NULL, NULL },
+    {"column", set_column, show_column},
+    {NULL, NULL, NULL},
 };
+/* *INDENT-ON* */
 
-
-static char* get_mime_charset_name( int coding ){
+static char *
+get_mime_charset_name(int coding)
+{
     Str r;
-    switch( coding ){
-	case CODE_EUC:
-	    r = Strnew_charp( "euc-japan" );
-	    break;
-	case CODE_SJIS:
-	    r = Strnew_charp( "shift_jis" );
-	    break;
-	case CODE_JIS_m:
-	case CODE_JIS_n:
-	case CODE_JIS_N:
-	case CODE_JIS_j:
-	case CODE_JIS_J:
-	    r = Strnew_charp( "iso-2022-jp" );
-	    break;
-	default:
-	    return NULL;
+    switch (coding) {
+    case CODE_EUC:
+	r = Strnew_charp("euc-japan");
+	break;
+    case CODE_SJIS:
+	r = Strnew_charp("shift_jis");
+	break;
+    case CODE_JIS_m:
+    case CODE_JIS_n:
+    case CODE_JIS_N:
+    case CODE_JIS_j:
+    case CODE_JIS_J:
+	r = Strnew_charp("iso-2022-jp");
+	break;
+    default:
+	return NULL;
     }
     return r->ptr;
 }
 
 
-static void print_headers( Buffer *buf, int len ){
+static void
+print_headers(Buffer *buf, int len)
+{
     TextListItem *tp;
 
-    if( buf->document_header ){
-	for( tp = buf->document_header->first; tp; tp = tp->next )
-	    printf( "%s\n", tp->ptr );
+    if (buf->document_header) {
+	for (tp = buf->document_header->first; tp; tp = tp->next)
+	    printf("%s\n", tp->ptr);
     }
-    printf( "w3m-content-type: %s\n", buf->type );
+    printf("w3m-content-type: %s\n", buf->type);
 #ifdef JP_CHARSET
-    if( buf->document_code )
-	printf( "w3m-content-charset: %s\n",
-		get_mime_charset_name( buf->document_code ) );
+    if (buf->document_code)
+	printf("w3m-content-charset: %s\n",
+	       get_mime_charset_name(buf->document_code));
 #endif
-    if( len > 0 )
-	printf( "w3m-content-length: %d\n", len );
+    if (len > 0)
+	printf("w3m-content-length: %d\n", len);
 }
 
 
-static void print_formlist( int fid, FormList *fp ){
-    Str s = Sprintf( "w3m-form: (formlist (fid %d) (action \"%s\") (method \"%s\")",
-		     fid,
-		     fp->action->ptr,
-		     ( fp->method == FORM_METHOD_POST )? "post"
-		     :( ( fp->method == FORM_METHOD_INTERNAL )? "internal" : "get" ) );
-    if( fp->target )
-	Strcat( s, Sprintf( " (target \"%s\")", fp->target ) );
-    if( fp->charset )
-	Strcat( s, Sprintf( " (charset '%s)", get_mime_charset_name(fp->charset) ) );
-    if( fp->enctype == FORM_ENCTYPE_MULTIPART )
-	Strcat_charp( s, " (enctype \"multipart/form-data\")" );
-    if( fp->boundary )
-	Strcat( s, Sprintf( " (boundary \"%s\")", fp->boundary ) );
-    Strcat_charp( s, ")\n" );
-    Strfputs( s, stdout );
+static void
+print_formlist(int fid, FormList *fp)
+{
+    Str s =
+	Sprintf("w3m-form: (formlist (fid %d) (action \"%s\") (method \"%s\")",
+		fid,
+		fp->action->ptr,
+		(fp->method == FORM_METHOD_POST) ? "post"
+		: ((fp->method == FORM_METHOD_INTERNAL) ? "internal" : "get"));
+    if (fp->target)
+	Strcat(s, Sprintf(" (target \"%s\")", fp->target));
+    if (fp->charset)
+	Strcat(s,
+	       Sprintf(" (charset '%s)", get_mime_charset_name(fp->charset)));
+    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
+	Strcat_charp(s, " (enctype \"multipart/form-data\")");
+    if (fp->boundary)
+	Strcat(s, Sprintf(" (boundary \"%s\")", fp->boundary));
+    Strcat_charp(s, ")\n");
+    Strfputs(s, stdout);
 }
 
 
-static void internal_get( char *url, int flag, FormList *request ){
+static void
+internal_get(char *url, int flag, FormList *request)
+{
     Buffer *buf;
 
-    backend_halfdump_str = Strnew_charp( "<pre>\n" );
+    backend_halfdump_str = Strnew_charp("<pre>\n");
     do_download = flag;
-    buf = loadGeneralFile( url, NULL, NO_REFERER, 0, request );
+    buf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
     do_download = FALSE;
-    if( buf != NULL && buf != NO_BUFFER ){
-	if( !strcasecmp( buf->type, "text/html" ) ){
-	    Strcat( backend_halfdump_str,
-		    Sprintf( "</pre><title>%s</title>\n", buf->buffername ) );
-	    print_headers( buf, backend_halfdump_str->length );
-	    if( buf->formlist ){
+    if (buf != NULL && buf != NO_BUFFER) {
+	if (!strcasecmp(buf->type, "text/html")) {
+	    Strcat(backend_halfdump_str,
+		   Sprintf("</pre><title>%s</title>\n", buf->buffername));
+	    print_headers(buf, backend_halfdump_str->length);
+	    if (buf->formlist) {
 		FormList *fp;
 		int fid = 0;
-		for( fp = buf->formlist; fp; fp = fp->next ) fid++;
-		for( fp = buf->formlist; fp; fp = fp->next )
-		    print_formlist( --fid, fp );
+		for (fp = buf->formlist; fp; fp = fp->next)
+		    fid++;
+		for (fp = buf->formlist; fp; fp = fp->next)
+		    print_formlist(--fid, fp);
 	    }
-	    printf( "\n" );
-	    Strfputs( backend_halfdump_str, stdout );
-	} else {
-	    if( !strcasecmp( buf->type, "text/plain" ) ){
+	    printf("\n");
+	    Strfputs(backend_halfdump_str, stdout);
+	}
+	else {
+	    if (!strcasecmp(buf->type, "text/plain")) {
 		Line *lp;
 		int len = 0;
-		for( lp = buf->firstLine; lp; lp = lp->next ){
+		for (lp = buf->firstLine; lp; lp = lp->next) {
 		    len += lp->len;
-		    if( lp->lineBuf[lp->len-1] != '\n' ) len++;
+		    if (lp->lineBuf[lp->len - 1] != '\n')
+			len++;
 		}
-		print_headers( buf, len );
-		printf( "\n" );
-		saveBuffer( buf, stdout );
-	    } else {
-		print_headers( buf, 0 );
+		print_headers(buf, len);
+		printf("\n");
+		saveBuffer(buf, stdout);
+	    }
+	    else {
+		print_headers(buf, 0);
 	    }
 	}
     }
@@ -162,66 +178,73 @@ static void internal_get( char *url, int flag, FormList *request ){
 
 
 /* Command: get */
-static void get( TextList *argv ){
+static void
+get(TextList *argv)
+{
     char *p, *url = NULL;
     int flag = FALSE;
 
-    while(( p = popText( argv ) )){
-	if( !strcasecmp( p, "-download_only" ) )
+    while ((p = popText(argv))) {
+	if (!strcasecmp(p, "-download_only"))
 	    flag = TRUE;
 	else
 	    url = p;
     }
-    if( url ){
-	internal_get( url, flag, NULL );
+    if (url) {
+	internal_get(url, flag, NULL);
     }
 }
 
 
 /* Command: post */
-static void post( TextList *argv ){
+static void
+post(TextList *argv)
+{
     FormList *request;
     char *p, *target = NULL, *charset = NULL,
 	*enctype = NULL, *body = NULL, *boundary = NULL, *url = NULL;
     int flag = FALSE, length = 0;
 
-    while(( p = popText( argv ) )){
-	if( !strcasecmp( p, "-download_only" ) )
+    while ((p = popText(argv))) {
+	if (!strcasecmp(p, "-download_only"))
 	    flag = TRUE;
-	else if( !strcasecmp( p, "-target" ) )
-	    target = popText( argv );
-	else if( !strcasecmp( p, "-charset" ) )
-	    charset = popText( argv );
-	else if( !strcasecmp( p, "-enctype" ) )
-	    enctype = popText( argv );
-	else if( !strcasecmp( p, "-body" ) )
-	    body = popText( argv );
-	else if( !strcasecmp( p, "-boundary" ) )
-	    boundary = popText( argv );
-	else if( !strcasecmp( p, "-length" ) )
-	    length = atol( popText( argv ) );
+	else if (!strcasecmp(p, "-target"))
+	    target = popText(argv);
+	else if (!strcasecmp(p, "-charset"))
+	    charset = popText(argv);
+	else if (!strcasecmp(p, "-enctype"))
+	    enctype = popText(argv);
+	else if (!strcasecmp(p, "-body"))
+	    body = popText(argv);
+	else if (!strcasecmp(p, "-boundary"))
+	    boundary = popText(argv);
+	else if (!strcasecmp(p, "-length"))
+	    length = atol(popText(argv));
 	else
 	    url = p;
     }
-    if( url ){
-       request = newFormList( NULL, "post", charset, enctype, target, NULL, NULL );
+    if (url) {
+	request =
+	    newFormList(NULL, "post", charset, enctype, target, NULL, NULL);
 	request->body = body;
 	request->boundary = boundary;
-	request->length = ( length > 0 )? length : ( body ? strlen(body) : 0 );
-	internal_get( url, flag, request );
+	request->length = (length > 0) ? length : (body ? strlen(body) : 0);
+	internal_get(url, flag, request);
     }
 }
 
 
 /* Command: set */
-static void set( TextList *argv ){
-    if( argv->nitem > 1 ){
+static void
+set(TextList *argv)
+{
+    if (argv->nitem > 1) {
 	int i;
-	for( i = 0; variable_table[i].name; i++ ){
-	    if( !strcasecmp( variable_table[i].name, argv->first->ptr ) ){
-		popText( argv );
-		if( variable_table[i].set_func )
-		    variable_table[i].set_func( argv );
+	for (i = 0; variable_table[i].name; i++) {
+	    if (!strcasecmp(variable_table[i].name, argv->first->ptr)) {
+		popText(argv);
+		if (variable_table[i].set_func)
+		    variable_table[i].set_func(argv);
 		break;
 	    }
 	}
@@ -230,14 +253,16 @@ static void set( TextList *argv ){
 
 
 /* Command: show */
-static void show( TextList *argv ){
-    if( argv->nitem >= 1 ){
+static void
+show(TextList *argv)
+{
+    if (argv->nitem >= 1) {
 	int i;
-	for( i = 0; variable_table[i].name; i++ ){
-	    if( !strcasecmp( variable_table[i].name, argv->first->ptr ) ){
-		popText( argv );
-		if( variable_table[i].show_func )
-		    variable_table[i].show_func( argv );
+	for (i = 0; variable_table[i].name; i++) {
+	    if (!strcasecmp(variable_table[i].name, argv->first->ptr)) {
+		popText(argv);
+		if (variable_table[i].show_func)
+		    variable_table[i].show_func(argv);
 		break;
 	    }
 	}
@@ -246,48 +271,57 @@ static void show( TextList *argv ){
 
 
 /* Command: quit */
-static void quit( TextList *argv ){
+static void
+quit(TextList *argv)
+{
 #ifdef USE_COOKIE
     save_cookies();
-#endif /* USE_COOKIE */
+#endif				/* USE_COOKIE */
     w3m_exit(0);
 }
 
 
 /* Command: help */
-static void help( TextList *argv ){
+static void
+help(TextList *argv)
+{
     int i;
-    for( i = 0; command_table[i].name; i++ )
-	printf( "%s %s\n    %s\n",
-		command_table[i].name,
-		command_table[i].option_string,
-		command_table[i].help );
+    for (i = 0; command_table[i].name; i++)
+	printf("%s %s\n    %s\n",
+	       command_table[i].name,
+	       command_table[i].option_string, command_table[i].help);
 }
 
 
 /* Sub command: set COLS */
-static void set_column( TextList *argv ){
-    if( argv->nitem == 1 ){
-	COLS = atol( argv->first->ptr );
+static void
+set_column(TextList *argv)
+{
+    if (argv->nitem == 1) {
+	COLS = atol(argv->first->ptr);
     }
 }
 
 /* Sub command: show COLS */
-static void show_column( TextList *argv ){
-    fprintf( stdout, "column=%d\n", COLS );
+static void
+show_column(TextList *argv)
+{
+    fprintf(stdout, "column=%d\n", COLS);
 }
 
 
 /* Call appropriate command function based on given string */
-static void call_command_function( char *str ){
+static void
+call_command_function(char *str)
+{
     int i;
-    TextList *argv = split( str );
-    if( argv->nitem > 0 ){
-	for( i = 0; command_table[i].name; i++ ){
-	    if( !strcasecmp( command_table[i].name, argv->first->ptr ) ){
-		popText( argv );
-		if( command_table[i].func )
-		    command_table[i].func( argv );
+    TextList *argv = split(str);
+    if (argv->nitem > 0) {
+	for (i = 0; command_table[i].name; i++) {
+	    if (!strcasecmp(command_table[i].name, argv->first->ptr)) {
+		popText(argv);
+		if (command_table[i].func)
+		    command_table[i].func(argv);
 		break;
 	    }
 	}
@@ -296,107 +330,117 @@ static void call_command_function( char *str ){
 
 
 /* Main function */
-int backend( void ){
+int
+backend(void)
+{
     char *str;
 
-    w3m_dump     = 0;
-    if (COLS == 0) COLS = 80;
+    w3m_dump = 0;
+    if (COLS == 0)
+	COLS = 80;
 #ifdef USE_MOUSE
     use_mouse = FALSE;
-#endif /* USE_MOUSE */
+#endif				/* USE_MOUSE */
 
-    if( backend_batch_commands ){
-	while(( str = popText(backend_batch_commands) ))
-	    call_command_function( str );
-    } else {
-	while(( str = readline( "w3m> " ) ))
-	    call_command_function( str );
+    if (backend_batch_commands) {
+	while ((str = popText(backend_batch_commands)))
+	    call_command_function(str);
     }
-    quit( NULL );
+    else {
+	while ((str = readline("w3m> ")))
+	    call_command_function(str);
+    }
+    quit(NULL);
     return 0;
 }
 
 
 /* Dummy function of readline(). */
 #ifndef HAVE_READLINE
-static char *readline( char *prompt ){
+static char *
+readline(char *prompt)
+{
     Str s;
-    fputs( prompt, stdout );
-    fflush( stdout );
-    s = Strfgets( stdin );
-    if( feof( stdin ) && (strlen( s->ptr ) == 0) )
+    fputs(prompt, stdout);
+    fflush(stdout);
+    s = Strfgets(stdin);
+    if (feof(stdin) && (strlen(s->ptr) == 0))
 	return NULL;
     else
 	return s->ptr;
 }
-#endif /* ! HAVE_READLINE */
+#endif				/* ! HAVE_READLINE */
 
 
 /* Splits a string into a list of tokens and returns that list. */
-static TextList* split( char *p ){
+static TextList *
+split(char *p)
+{
     int in_double_quote = FALSE, in_single_quote = FALSE;
     Str s = Strnew();
-    TextList* tp = newTextList();
+    TextList *tp = newTextList();
 
-    for( ; *p; p++ ){
-	switch( *p ){
-	    case '"':
-		if( in_single_quote )
-		    Strcat_char( s, '"' );
-		else
-		    in_double_quote = !in_double_quote;
-		break;
-	    case '\'':
-		if( in_double_quote )
-		    Strcat_char( s, '\'' );
-		else
-		    in_single_quote = !in_single_quote;
-		break;
-	    case '\\':
-		if( !in_single_quote ){
-		    /* Process escape characters. */
-		    p++;
-		    switch( *p ){
-			case 't':
-			    Strcat_char( s, '\t' );
-			    break;
-			case 'r':
-			    Strcat_char( s, '\r' );
-			    break;
-			case 'f':
-			    Strcat_char( s, '\f' );
-			    break;
-			case 'n':
-			    Strcat_char( s, '\n' );
-			    break;
-			case '\0':
-			    goto LAST;
-			default:
-			    Strcat_char( s, *p );
-		    }
-		} else {
-		    Strcat_char( s, *p );
+    for (; *p; p++) {
+	switch (*p) {
+	case '"':
+	    if (in_single_quote)
+		Strcat_char(s, '"');
+	    else
+		in_double_quote = !in_double_quote;
+	    break;
+	case '\'':
+	    if (in_double_quote)
+		Strcat_char(s, '\'');
+	    else
+		in_single_quote = !in_single_quote;
+	    break;
+	case '\\':
+	    if (!in_single_quote) {
+		/* Process escape characters. */
+		p++;
+		switch (*p) {
+		case 't':
+		    Strcat_char(s, '\t');
+		    break;
+		case 'r':
+		    Strcat_char(s, '\r');
+		    break;
+		case 'f':
+		    Strcat_char(s, '\f');
+		    break;
+		case 'n':
+		    Strcat_char(s, '\n');
+		    break;
+		case '\0':
+		    goto LAST;
+		default:
+		    Strcat_char(s, *p);
 		}
-		break;
-	    case ' ':
-	    case '\t':
-	    case '\r':
-	    case '\f':
-	    case '\n':
-		/* Separators are detected. */
-		if( in_double_quote || in_single_quote ){
-		    Strcat_char( s, *p );
-		} else if( s->length > 0 ){
-		    pushText( tp, s->ptr );
-		    s = Strnew();
-		}
-		break;
-	    default:
-		Strcat_char( s, *p );
+	    }
+	    else {
+		Strcat_char(s, *p);
+	    }
+	    break;
+	case ' ':
+	case '\t':
+	case '\r':
+	case '\f':
+	case '\n':
+	    /* Separators are detected. */
+	    if (in_double_quote || in_single_quote) {
+		Strcat_char(s, *p);
+	    }
+	    else if (s->length > 0) {
+		pushText(tp, s->ptr);
+		s = Strnew();
+	    }
+	    break;
+	default:
+	    Strcat_char(s, *p);
 	}
     }
-LAST:
-    if( s->length > 0 )
-	pushText( tp, s->ptr );
+  LAST:
+    if (s->length > 0)
+	pushText(tp, s->ptr);
     return tp;
 }

@@ -1,4 +1,4 @@
-/* $Id: parsetagx.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: parsetagx.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #ifndef PARSETAGX_H
 #define PARSETAGX_H
 
@@ -8,11 +8,11 @@
 /* Parsed Tag structure */
 
 struct parsed_tag {
-    unsigned char 	tagid;
-    unsigned char 	*attrid;
-    char 		**value;
-    unsigned char 	*map;
-    char 		need_reconstruct;
+    unsigned char tagid;
+    unsigned char *attrid;
+    char **value;
+    unsigned char *map;
+    char need_reconstruct;
 };
 
 #define parsedtag_accepts(tag, id) ((tag)->map&&(tag)->map[id]!=MAX_TAGATTR)

@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: table.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) 
@@ -106,7 +106,7 @@ struct table {
     short ntable;
     short tables_size;
     TextList *suspended_data;
-/* use for counting skipped spaces */
+    /* use for counting skipped spaces */
     struct table_linfo linfo;
 #ifdef MATRIX
     MAT *matrix;

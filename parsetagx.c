@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -16,6 +16,7 @@ static int toLength(char *, int *);
 static int toAlign(char *, int *);
 static int toVAlign(char *, int *);
 
+/* *INDENT-OFF* */
 static int (*toValFunc[]) () = {
     noConv,		/* VTYPE_NONE    */
     noConv,		/* VTYPE_STR     */
@@ -29,6 +30,7 @@ static int (*toValFunc[]) () = {
     noConv,		/* VTYPE_MLENGTH */
     noConv,		/* VTYPE_TYPE    */
 };
+/* *INDENT-ON* */
 
 static int
 noConv(char *oval, char **str)
@@ -79,8 +81,7 @@ toAlign(char *oval, int *align)
 static int
 toVAlign(char *oval, int *valign)
 {
-    if (strcasecmp(oval, "top") == 0 ||
-	strcasecmp(oval, "baseline") == 0)
+    if (strcasecmp(oval, "top") == 0 || strcasecmp(oval, "baseline") == 0)
 	*valign = VALIGN_TOP;
     else if (strcasecmp(oval, "bottom") == 0)
 	*valign = VALIGN_BOTTOM;
@@ -110,8 +111,7 @@ parse_tag(char **s, int internal)
 	*(p++) = *(q++);
 	SKIP_BLANKS(q);
     }
-    while (*q && !IS_SPACE(*q) && *q != '>' &&
-	   p - tagname < MAX_TAG_LEN - 1) {
+    while (*q && !IS_SPACE(*q) && *q != '>' && p - tagname < MAX_TAG_LEN - 1) {
 	*(p++) = tolower(*(q++));
     }
     *p = '\0';
@@ -211,10 +211,10 @@ parse_tag(char **s, int internal)
 	}
     }
 
- skip_parse_tagarg:
+  skip_parse_tagarg:
     while (*q != '>' && *q)
-	    q++;
- done_parse_tag:
+	q++;
+  done_parse_tag:
     if (*q == '>')
 	q++;
     *s = q;
@@ -243,10 +243,9 @@ int
 parsedtag_get_value(struct parsed_tag *tag, int id, void *value)
 {
     int i;
-    if (!parsedtag_exists(tag, id) ||
-	!tag->value[i = tag->map[id]])
+    if (!parsedtag_exists(tag, id) || !tag->value[i = tag->map[id]])
 	return 0;
-    return toValFunc[AttrMAP[id].vtype](tag->value[i], value);
+    return toValFunc[AttrMAP[id].vtype] (tag->value[i], value);
 }
 
 Str
@@ -263,8 +262,7 @@ parsedtag2str(struct parsed_tag *tag)
 	    Strcat_char(tagstr, ' ');
 	    Strcat_charp(tagstr, AttrMAP[tag->attrid[i]].name);
 	    if (tag->value[i])
-		Strcat(tagstr,
-		       Sprintf("=\"%s\"", html_quote(tag->value[i])));
+		Strcat(tagstr, Sprintf("=\"%s\"", html_quote(tag->value[i])));
 	}
     }
     Strcat_char(tagstr, '>');

@@ -1,4 +1,4 @@
-/* $Id: mimehead.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: mimehead.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
@@ -19,7 +19,7 @@
 #define BAD_BASE64 255
 
 static
-unsigned char
+    unsigned char
 c2e(char x)
 {
     if ('A' <= x && x <= 'Z')
@@ -36,7 +36,7 @@ c2e(char x)
 }
 
 static
-int
+    int
 ha2d(char x, char y)
 {
     int r = 0;
@@ -129,7 +129,8 @@ decodeU(char **ww)
 	if (i == 6) {
 	    w += 2;
 	    i = 2;
-	} else {
+	}
+	else {
 	    w++;
 	    i += 2;
 	}
@@ -204,7 +205,7 @@ decodeWord(char **ow)
     for (; *w != '?'; w++) {
 	if (*w == '\0')
 	    goto convert_fail;
-       Strcat_char(charset,*w);
+	Strcat_char(charset, *w);
     }
     if (Strcasecmp_charp(charset, J_CHARSET) != 0) {
 	/* NOT ISO-2022-JP encoding ... don't convert */
@@ -285,7 +286,8 @@ decodeMIME(char *orgstr)
 
 /* encoding */
 
-static char Base64Table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+static char Base64Table[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
 Str
 encodeB(char *a)

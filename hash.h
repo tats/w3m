@@ -1,4 +1,4 @@
-/* $Id: hash.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: hash.h,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
 #ifndef HASH_H
 #define HASH_H
 
@@ -79,5 +79,4 @@ getHash_##sym(Hash_##sym *t, keytype key, type failval)\
     return failval;\
   return hi->value;\
 }
-
 #endif				/* not HASH_H */

@@ -1,4 +1,4 @@
-/* $Id: Str.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: Str.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -32,7 +32,7 @@ Str Strnew();
 Str Strnew_size(int);
 Str Strnew_charp(char *);
 Str Strnew_charp_n(char *, int);
-Str Strnew_m_charp(char *,...);
+Str Strnew_m_charp(char *, ...);
 Str Strdup(Str);
 void Strclear(Str);
 void Strfree(Str);
@@ -42,7 +42,7 @@ void Strcopy_charp_n(Str, char *, int);
 void Strcat_charp_n(Str, char *, int);
 void Strcat(Str, Str);
 void Strcat_charp(Str, char *);
-void Strcat_m_charp(Str,...);
+void Strcat_m_charp(Str, ...);
 Str Strsubstr(Str, int, int);
 void Strinsert_char(Str, int, char);
 void Strinsert_charp(Str, int, char *);
@@ -59,7 +59,7 @@ Str Stralign_left(Str, int);
 Str Stralign_right(Str, int);
 Str Stralign_center(Str, int);
 
-Str Sprintf(char *fmt,...);
+Str Sprintf(char *fmt, ...);
 
 Str Strfgets(FILE *);
 Str Strfgetall(FILE *);

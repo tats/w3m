@@ -1,4 +1,4 @@
-/* $Id: conv.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: conv.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include "fm.h"
@@ -76,8 +76,7 @@ static Str cConvSE(Str is);
 static Str cConvJE(Str is);
 char checkShiftCode(Str buf, uchar);
 
-static char *han2zen_tab[] =
-{
+static char *han2zen_tab[] = {
     "!!", "!#", "!V", "!W", "!\"", "!&", "%r", "%!",
     "%#", "%%", "%'", "%)", "%c", "%e", "%g", "%C",
     "!<", "%\"", "%$", "%&", "%(", "%*", "%+", "%-",
@@ -90,31 +89,29 @@ static char *han2zen_tab[] =
 
 typedef struct _ConvRoutine {
     char key;
-     Str(*routine) ();
+    Str (*routine) ();
     char *ShiftIn, *ShiftOut;
 } ConvRoutine;
 
-static ConvRoutine FromEJ[] =
-{
+static ConvRoutine FromEJ[] = {
     {CODE_JIS_J, cConvEJ, JSIcode, JSOcode},
     {CODE_JIS_N, cConvEJ, NSIcode, NSOcode},
     {CODE_JIS_n, cConvEJ, N2SIcode, N2SOcode},
     {CODE_JIS_m, cConvEJ, N3SIcode, N3SOcode},
     {CODE_JIS_j, cConvEJ, J2SIcode, J2SOcode},
-    {CODE_SJIS,  cConvES, "", ""},
-    {CODE_EUC,   cConvEE, "", ""},
+    {CODE_SJIS, cConvES, "", ""},
+    {CODE_EUC, cConvEE, "", ""},
     {'\0', NULL, NULL, NULL}
 };
 
-static ConvRoutine ToEJ[] =
-{
+static ConvRoutine ToEJ[] = {
     {CODE_JIS_J, cConvJE, JSIcode, JSOcode},
     {CODE_JIS_N, cConvJE, NSIcode, NSOcode},
     {CODE_JIS_n, cConvJE, N2SIcode, N2SOcode},
     {CODE_JIS_m, cConvJE, N3SIcode, N3SOcode},
     {CODE_JIS_j, cConvJE, J2SIcode, J2SOcode},
-    {CODE_SJIS,  cConvSE, "", ""},
-    {CODE_EUC,   cConvEE, "", ""},
+    {CODE_SJIS, cConvSE, "", ""},
+    {CODE_EUC, cConvEE, "", ""},
     {'\0', NULL, NULL, NULL}
 };
 
@@ -122,7 +119,7 @@ char *
 GetSICode(char key)
 {
     int i;
-    for (i = 0; FromEJ[i].key != '\0' ; i++)
+    for (i = 0; FromEJ[i].key != '\0'; i++)
 	if (FromEJ[i].key == key)
 	    return FromEJ[i].ShiftIn;
     return "";
@@ -141,7 +138,8 @@ GetSOCode(char key)
 static void
 n_impr(char s)
 {
-    fprintf(stderr, "conv: option %c(0x%02x) is not implemented yet... sorry\n", s, s);
+    fprintf(stderr,
+	    "conv: option %c(0x%02x) is not implemented yet... sorry\n", s, s);
     w3m_exit(1);
 }
 
@@ -172,7 +170,7 @@ conv_str(Str is, char fc, char tc)
 	    n_impr(fc);
 	    return NULL;
 	}
-    next:
+      next:
 	os = conv_from(is);
     }
     if (tc == CODE_INNER_EUC || tc == CODE_EUC)
@@ -191,7 +189,7 @@ conv_str(Str is, char fc, char tc)
 	    n_impr(tc);
 	    return NULL;
 	}
-    next2:
+      next2:
 	return conv_to(os);
     }
 }
@@ -226,41 +224,40 @@ cConvSE(Str is)
     uchar *p, ub, lb;
     int state = SJIS_NOSTATE;
     Str os = Strnew_size(is->length);
-    uchar *endp = (uchar *) &is->ptr[is->length];
+    uchar *endp = (uchar *) & is->ptr[is->length];
 
     for (p = (uchar *) is->ptr; p < endp; p++) {
 	switch (state) {
 	case SJIS_NOSTATE:
 	    if (!(*p & 0x80))	/* ASCII */
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    else if (0x81 <= *p && *p <= 0x9f) {	/* JIS X 0208,
 							 * 0213 */
 		ub = *p & 0x7f;
 		state = SJIS_SHIFT_L;
 	    }
 	    else if (0xe0 <= *p && *p <= 0xef) {	/* JIS X 0208 */
-		/* } else if (0xe0 <= *p && *p <= 0xfc) { *//* JIS X 0213 */
+/* } else if (0xe0 <= *p && *p <= 0xfc) { *//* JIS X 0213 */
 		ub = (*p & 0x7f) - 0x40;
 		state = SJIS_SHIFT_H;
 	    }
 	    else if (0xa0 <= *p && *p <= 0xdf) {	/* JIS X 0201-Kana 
 							 */
-		Strcat_char(os, (char) (han2zen_tab[*p - 0xa0][0] | 0x80));
-		Strcat_char(os, (char) (han2zen_tab[*p - 0xa0][1] | 0x80));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0xa0][0] | 0x80));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0xa0][1] | 0x80));
 	    }
 	    break;
 	case SJIS_SHIFT_L:
 	case SJIS_SHIFT_H:
-	    if ((0x40 <= *p && *p <= 0x7e) ||
-		(0x80 <= *p && *p <= 0xfc)) {	/* JIS X 0208, 0213 */
+	    if ((0x40 <= *p && *p <= 0x7e) || (0x80 <= *p && *p <= 0xfc)) {	/* JIS X 0208, 0213 */
 		lb = getSLb(p, &ub);
 		ub += 0x20;
 		lb += 0x20;
-		Strcat_char(os, (char) (ub | 0x80));
-		Strcat_char(os, (char) (lb | 0x80));
+		Strcat_char(os, (char)(ub | 0x80));
+		Strcat_char(os, (char)(lb | 0x80));
 	    }
 	    else if (!(*p & 0x80))	/* broken ? */
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    state = SJIS_NOSTATE;
 	    break;
 	}
@@ -275,7 +272,7 @@ cConvJE(Str is)
     char cset = CSET_ASCII;
     int state = ISO_NOSTATE;
     Str os = Strnew_size(is->length);
-    uchar *endp = (uchar *) &is->ptr[is->length];
+    uchar *endp = (uchar *) & is->ptr[is->length];
 
     for (p = (uchar *) is->ptr; p < endp; p++) {
 	switch (state) {
@@ -283,7 +280,7 @@ cConvJE(Str is)
 	    if (*p == ESC_CODE)	/* ESC sequence */
 		state = ISO_ESC;
 	    else if (cset == CSET_ASCII || *p < 0x21)
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    else if (cset == CSET_X0208 && *p <= 0x7e) {
 		/* JIS X 0208 */
 		ub = *p;
@@ -291,20 +288,20 @@ cConvJE(Str is)
 	    }
 	    else if (cset == CSET_X0201K && *p <= 0x5f) {
 		/* JIS X 0201-Kana */
-		Strcat_char(os, (char) (han2zen_tab[*p - 0x20][0] | 0x80));
-		Strcat_char(os, (char) (han2zen_tab[*p - 0x20][1] | 0x80));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0x20][0] | 0x80));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0x20][1] | 0x80));
 	    }
 	    break;
 	case ISO_MBYTE1:
 	    if (*p == ESC_CODE)	/* ESC sequence */
 		state = ISO_ESC;
 	    else if (0x21 <= *p && *p <= 0x7e) {	/* JIS X 0208 */
-		Strcat_char(os, (char) (ub | 0x80));
-		Strcat_char(os, (char) (*p | 0x80));
+		Strcat_char(os, (char)(ub | 0x80));
+		Strcat_char(os, (char)(*p | 0x80));
 		state = ISO_NOSTATE;
 	    }
 	    else {
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 		state = ISO_NOSTATE;
 	    }
 	    break;
@@ -315,7 +312,7 @@ cConvJE(Str is)
 		state = ISO_MBCS;
 	    else {
 		Strcat_char(os, ESC_CODE);
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 		state = ISO_NOSTATE;
 	    }
 	    break;
@@ -327,7 +324,7 @@ cConvJE(Str is)
 	    else {
 		Strcat_char(os, ESC_CODE);
 		Strcat_char(os, '(');
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    }
 	    state = ISO_NOSTATE;
 	    break;
@@ -344,7 +341,7 @@ cConvJE(Str is)
 		Strcat_char(os, '$');
 		if (state == (ISO_MBCS | ISO_CS94))
 		    Strcat_char(os, '(');
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    }
 	    state = ISO_NOSTATE;
 	    break;
@@ -361,7 +358,7 @@ _cConvEE(Str is, char is_euc)
     int state = EUC_NOSTATE;
     char cset = CSET_ASCII;
     Str os;
-    uchar *endp = (uchar *) &is->ptr[is->length];
+    uchar *endp = (uchar *) & is->ptr[is->length];
 
     if (is_euc) {
 	os = Strnew_size(is->length);
@@ -378,7 +375,7 @@ _cConvEE(Str is, char is_euc)
 		    Strcat_charp(os, SOcode);
 		    cset = CSET_ASCII;
 		}
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    }
 	    else if (0xa1 <= *p && *p <= 0xfe) {	/* JIS X 0208,
 							 * 0213-1 */
@@ -396,15 +393,15 @@ _cConvEE(Str is, char is_euc)
 		    Strcat_charp(os, SIcode);
 		    cset = CSET_X0208;
 		}
-		Strcat_char(os, (char) ((ub & 0x7f) | euc));
-		Strcat_char(os, (char) ((*p & 0x7f) | euc));
+		Strcat_char(os, (char)((ub & 0x7f) | euc));
+		Strcat_char(os, (char)((*p & 0x7f) | euc));
 	    }
 	    else if (!(*p & 0x80)) {	/* broken ? */
 		if (!is_euc && cset != CSET_ASCII) {
 		    Strcat_charp(os, SOcode);
 		    cset = CSET_ASCII;
 		}
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    }
 	    state = EUC_NOSTATE;
 	    break;
@@ -414,8 +411,8 @@ _cConvEE(Str is, char is_euc)
 		    Strcat_charp(os, SIcode);
 		    cset = CSET_X0208;
 		}
-		Strcat_char(os, (char) (han2zen_tab[*p - 0xa0][0] | euc));
-		Strcat_char(os, (char) (han2zen_tab[*p - 0xa0][1] | euc));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0xa0][0] | euc));
+		Strcat_char(os, (char)(han2zen_tab[*p - 0xa0][1] | euc));
 	    }
 	    state = EUC_NOSTATE;
 	    break;
@@ -458,8 +455,8 @@ put_sjis(Str os, uchar ub, uchar lb)
     if (lb > 0x7e)
 	lb++;
 
-    Strcat_char(os, (char) (ub));
-    Strcat_char(os, (char) (lb));
+    Strcat_char(os, (char)(ub));
+    Strcat_char(os, (char)(lb));
 }
 
 static Str
@@ -468,13 +465,13 @@ cConvES(Str is)
     uchar *p, ub;
     int state = EUC_NOSTATE;
     Str os = Strnew_size(is->length);
-    uchar *endp = (uchar *) &is->ptr[is->length];
+    uchar *endp = (uchar *) & is->ptr[is->length];
 
     for (p = (uchar *) is->ptr; p < endp; p++) {
 	switch (state) {
 	case EUC_NOSTATE:
 	    if (!(*p & 0x80))	/* ASCII */
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    else if (0xa1 <= *p && *p <= 0xfe) {	/* JIS X 0208,
 							 * 0213-1 */
 		ub = *p;
@@ -489,13 +486,13 @@ cConvES(Str is)
 	    if (0xa1 <= *p && *p <= 0xfe)	/* JIS X 0208, 0213-1 */
 		put_sjis(os, ub & 0x7f, *p & 0x7f);
 	    else if (!(*p & 0x80))	/* broken ? */
-		Strcat_char(os, (char) (*p));
+		Strcat_char(os, (char)(*p));
 	    state = EUC_NOSTATE;
 	    break;
 	case EUC_SS2:
 	    if (0xa0 <= *p && *p <= 0xdf)	/* JIS X 0201-Kana */
 		put_sjis(os, han2zen_tab[*p - 0xa0][0],
-		       han2zen_tab[*p - 0xa0][1]);
+			 han2zen_tab[*p - 0xa0][1]);
 	    state = EUC_NOSTATE;
 	    break;
 	case EUC_SS3:
@@ -522,7 +519,7 @@ checkShiftCode(Str buf, uchar hint)
     int euc = (CODE_NORMAL | EUC_NOSTATE),
 	sjis = (CODE_NORMAL | SJIS_NOSTATE), sjis_kana = CODE_NORMAL,
 	iso = (CODE_NORMAL | ISO_NOSTATE), iso_kana = CODE_NORMAL;
-    uchar *endp = (uchar *) &buf->ptr[buf->length];
+    uchar *endp = (uchar *) & buf->ptr[buf->length];
 
     if (hint == CODE_INNER_EUC)
 	return '\0';
@@ -569,7 +566,7 @@ checkShiftCode(Str buf, uchar hint)
 		if (!(*p & 0x80))	/* ASCII */
 		    ;
 		else if (0xa1 <= *p && *p <= 0xfe)	/* JIS X 0208,
-							 * 0213-1 */
+							 * * * * * 0213-1 */
 		    euc = (CODE_STATE(euc) | EUC_MBYTE1);
 		else if (*p == EUC_SS2_CODE)	/* SS2 + JIS X 0201-Kana */
 		    euc = (CODE_STATE(euc) | EUC_SS2);
@@ -610,7 +607,9 @@ checkShiftCode(Str buf, uchar hint)
 		    ;
 		else if (0x81 <= *p && *p <= 0x9f)
 		    sjis = (CODE_STATE(sjis) | SJIS_SHIFT_L);
-		else if (0xe0 <= *p && *p <= 0xef)	/* JIS X 0208 */
+		else if (0xe0 <= *p && *p <= 0xef)
+
+		    /* JIS X 0208 */
 		    /* else if (0xe0 <= *p && *p <= 0xfc) */
 		    /* JIS X 0213 */
 		    sjis = (CODE_STATE(sjis) | SJIS_SHIFT_H);
@@ -626,9 +625,8 @@ checkShiftCode(Str buf, uchar hint)
 	    case SJIS_SHIFT_H:
 		if (CODE_STATE(sjis) == CODE_NORMAL)
 		    sjis = CODE_OK;
-		if ((0x40 <= *p && *p <= 0x7e) ||
-		    (0x80 <= *p && *p <= 0xfc))		/* JIS X 0208,
-							 * 0213 */
+		if ((0x40 <= *p && *p <= 0x7e) || (0x80 <= *p && *p <= 0xfc))	/* JIS X 0208,
+										 * * * * * 0213 */
 		    sjis = (CODE_STATE(sjis) | SJIS_NOSTATE);
 		else if (sjis & CODE_BROKEN)
 		    sjis = CODE_ERROR;
@@ -683,7 +681,8 @@ checkShiftCode(Str buf, uchar hint)
     if (hint == CODE_EUC) {
 	if (euc != CODE_ERROR)
 	    return CODE_EUC;
-    } else if (hint == CODE_SJIS) {
+    }
+    else if (hint == CODE_SJIS) {
 	if (sjis != CODE_ERROR)
 	    return CODE_SJIS;
     }

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: html.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -268,10 +268,10 @@ typedef struct {
 /* HTML Tag Information Table */
 
 typedef struct html_tag_info {
-    char 		*name;
-    unsigned char 	*accept_attribute;
-    unsigned char 	max_attribute;
-    unsigned char 	flag;
+    char *name;
+    unsigned char *accept_attribute;
+    unsigned char max_attribute;
+    unsigned char flag;
 } TagInfo;
 
 #define TFLG_END	1
@@ -280,9 +280,9 @@ typedef struct html_tag_info {
 /* HTML Tag Attribute Information Table */
 
 typedef struct tag_attribute_info {
-    char 		*name;
-    unsigned char 	vtype;
-    unsigned char 	flag;
+    char *name;
+    unsigned char vtype;
+    unsigned char flag;
 } TagAttrInfo;
 
 #define AFLG_INT	1

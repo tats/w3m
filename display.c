@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.7 2001/11/23 19:00:47 ukai Exp $ */
+/* $Id: display.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -43,17 +43,22 @@
 #define EFFECT_ACTIVE_END_NC        underlineend()
 #define EFFECT_ACTIVE_START_M       bold()
 #define EFFECT_ACTIVE_END_M         boldend()
-#define EFFECT_VISITED_START_M      /**/
-#define EFFECT_VISITED_END_M        /**/
-
+#define EFFECT_VISITED_START_M /**/
+#define EFFECT_VISITED_END_M /**/
 #define define_effect(name_start,name_end,color_start,color_end,mono_start,mono_end) \
 static void name_start { if (useColor) { color_start; } else { mono_start; }}\
 static void name_end { if (useColor) { color_end; } else { mono_end; }}
+define_effect(EFFECT_ANCHOR_START, EFFECT_ANCHOR_END, EFFECT_ANCHOR_START_C,
+	      EFFECT_ANCHOR_END_C, EFFECT_ANCHOR_START_M, EFFECT_ANCHOR_END_M)
+define_effect(EFFECT_IMAGE_START, EFFECT_IMAGE_END, EFFECT_IMAGE_START_C,
+	      EFFECT_IMAGE_END_C, EFFECT_IMAGE_START_M, EFFECT_IMAGE_END_M)
+define_effect(EFFECT_FORM_START, EFFECT_FORM_END, EFFECT_FORM_START_C,
+	      EFFECT_FORM_END_C, EFFECT_FORM_START_M, EFFECT_FORM_END_M)
 
-define_effect(EFFECT_ANCHOR_START, EFFECT_ANCHOR_END, EFFECT_ANCHOR_START_C, EFFECT_ANCHOR_END_C, EFFECT_ANCHOR_START_M, EFFECT_ANCHOR_END_M)
-define_effect(EFFECT_IMAGE_START, EFFECT_IMAGE_END, EFFECT_IMAGE_START_C, EFFECT_IMAGE_END_C, EFFECT_IMAGE_START_M, EFFECT_IMAGE_END_M)
-define_effect(EFFECT_FORM_START, EFFECT_FORM_END, EFFECT_FORM_START_C, EFFECT_FORM_END_C, EFFECT_FORM_START_M, EFFECT_FORM_END_M)
-static void EFFECT_ACTIVE_START
+/*****************/
+/* *INDENT-OFF* */
+static void
+EFFECT_ACTIVE_START
 {
     if (useColor) {
 	if (useActiveColor) {
@@ -73,7 +78,8 @@ static void EFFECT_ACTIVE_START
     }
 }
 
-static void EFFECT_ACTIVE_END
+static void
+EFFECT_ACTIVE_END
 {
     if (useColor) {
 	if (useActiveColor) {
@@ -82,11 +88,12 @@ static void EFFECT_ACTIVE_END
 	    EFFECT_ACTIVE_END_NC;
 	}
     } else {
-	 EFFECT_ACTIVE_END_M;
+	EFFECT_ACTIVE_END_M;
     }
 }
 
-static void EFFECT_VISITED_START
+static void
+EFFECT_VISITED_START
 {
     if (useVisitedColor) {
 	if (useColor) {
@@ -97,7 +104,8 @@ static void EFFECT_VISITED_START
     }
 }
 
-static void EFFECT_VISITED_END
+static void
+EFFECT_VISITED_END
 {
     if (useVisitedColor) {
 	if (useColor) {
@@ -107,7 +115,7 @@ static void EFFECT_VISITED_END
 	}
     }
 }
-
+/* *INDENT-ON* */
 #else				/* not USE_COLOR */
 
 #define EFFECT_ANCHOR_START       underline()
@@ -118,12 +126,9 @@ static void EFFECT_VISITED_END
 #define EFFECT_FORM_END           standend()
 #define EFFECT_ACTIVE_START       bold()
 #define EFFECT_ACTIVE_END         boldend()
-#define EFFECT_VISITED_START      /**/
-#define EFFECT_VISITED_END        /**/
-
+#define EFFECT_VISITED_START /**/
+#define EFFECT_VISITED_END /**/
 #endif				/* not USE_COLOR */
-
-
 #ifndef KANJI_SYMBOLS
 static char g_rule[] = "ntwluxkavmqajaaa";
 #endif				/* not KANJI_SYMBOLS */
@@ -174,7 +179,7 @@ static int ccolumn = -1;
 
 static int ulmode = 0, somode = 0, bomode = 0;
 static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
- active_mode = 0, visited_mode = 0;
+    active_mode = 0, visited_mode = 0;
 #ifndef KANJI_SYMBOLS
 static int graph_mode = 0;
 #endif				/* not KANJI_SYMBOLS */
@@ -189,7 +194,7 @@ static Buffer *save_current_buf = NULL;
 int in_check_url = FALSE;
 
 void
-displayBuffer(Buffer * buf, int mode)
+displayBuffer(Buffer *buf, int mode)
 {
     Str msg;
     Anchor *aa = NULL;
@@ -204,7 +209,8 @@ displayBuffer(Buffer * buf, int mode)
 	buf->width = COLS;
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
-    if (buf->width != INIT_BUFFER_WIDTH && buf->type && !strcmp(buf->type, "text/html")) {
+    if (buf->width != INIT_BUFFER_WIDTH && buf->type
+	&& !strcmp(buf->type, "text/html")) {
 	in_check_url = TRUE;
 	reshapeBuffer(buf);
 	in_check_url = FALSE;
@@ -212,18 +218,18 @@ displayBuffer(Buffer * buf, int mode)
     if (showLineNum) {
 	if (buf->lastLine && buf->lastLine->real_linenumber > 0)
 	    buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
-		/ log(10)) + 2;
+			       / log(10)) + 2;
 	if (buf->rootX < 5)
 	    buf->rootX = 5;
 	if (buf->rootX > COLS)
 	    buf->rootX = COLS;
-    } else
+    }
+    else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
     if (mode == B_FORCE_REDRAW ||
 	mode == B_SCROLL ||
-	cline != buf->topLine ||
-	ccolumn != buf->currentColumn) {
+	cline != buf->topLine || ccolumn != buf->currentColumn) {
 	if (mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
 	    int n = buf->topLine->linenumber - cline->linenumber;
 	    if (n > 0 && n < LASTLINE) {
@@ -281,10 +287,12 @@ displayBuffer(Buffer * buf, int mode)
 #endif				/* LANG != JA */
 		l = buf->width - msg->length;
 		Strcat(msg, Strsubstr(s, s->length - l, l));
-	    } else {
+	    }
+	    else {
 		msg = s;
 	    }
-	} else {
+	}
+	else {
 	    l -= s->length;
 	    if (msg->length > l) {
 #ifdef JP_CHARSET
@@ -302,7 +310,8 @@ displayBuffer(Buffer * buf, int mode)
 	    Strcat_charp(msg, "> ");
 	    Strcat(msg, s);
 	}
-    } else {
+    }
+    else {
 	Strcat_charp(msg, ">");
     }
     if (buf->firstLine == NULL) {
@@ -322,13 +331,13 @@ displayBuffer(Buffer * buf, int mode)
 }
 
 void
-redrawBuffer(Buffer * buf)
+redrawBuffer(Buffer *buf)
 {
     redrawNLine(buf, LASTLINE);
 }
 
 void
-redrawNLine(Buffer * buf, int n)
+redrawNLine(Buffer *buf, int n)
 {
     Line *l, *l0;
     int i;
@@ -358,7 +367,7 @@ redrawNLine(Buffer * buf, int n)
 #define addKanji(pc,pr) (addChar((pc)[0],(pr)[0]),addChar((pc)[1],(pr)[1]))
 
 Line *
-redrawLine(Buffer * buf, Line * l, int i)
+redrawLine(Buffer *buf, Line *l, int i)
 {
     int j, pos, rcol, ncol, delta;
     int column = buf->currentColumn;
@@ -385,10 +394,10 @@ redrawLine(Buffer * buf, Line * l, int i)
     move(i, 0);
     if (showLineNum) {
 	char tmp[16];
-	if (! buf->rootX) {
+	if (!buf->rootX) {
 	    if (buf->lastLine->real_linenumber > 0)
 		buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
-			/ log(10)) + 2;
+				   / log(10)) + 2;
 	    if (buf->rootX < 5)
 		buf->rootX = 5;
 	    if (buf->rootX > COLS)
@@ -522,7 +531,7 @@ redrawLine(Buffer * buf, Line * l, int i)
 }
 
 int
-redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
+redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 {
     int j, pos, rcol, ncol, delta;
     int column = buf->currentColumn;
@@ -681,7 +690,8 @@ do_effects(Lineprop m)
     do_effect2(PE_ANCHOR, anch_mode, EFFECT_ANCHOR_START, EFFECT_ANCHOR_END);
     do_effect2(PE_IMAGE, imag_mode, EFFECT_IMAGE_START, EFFECT_IMAGE_END);
     do_effect2(PE_FORM, form_mode, EFFECT_FORM_START, EFFECT_FORM_END);
-    do_effect2(PE_VISITED, visited_mode, EFFECT_VISITED_START, EFFECT_VISITED_END);
+    do_effect2(PE_VISITED, visited_mode, EFFECT_VISITED_START,
+	       EFFECT_VISITED_END);
     do_effect2(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
 #ifndef KANJI_SYMBOLS
     if (graph_mode) {
@@ -698,7 +708,8 @@ do_effects(Lineprop m)
     do_effect1(PE_ANCHOR, anch_mode, EFFECT_ANCHOR_START, EFFECT_ANCHOR_END);
     do_effect1(PE_IMAGE, imag_mode, EFFECT_IMAGE_START, EFFECT_IMAGE_END);
     do_effect1(PE_FORM, form_mode, EFFECT_FORM_START, EFFECT_FORM_END);
-    do_effect1(PE_VISITED, visited_mode, EFFECT_VISITED_START, EFFECT_VISITED_END);
+    do_effect1(PE_VISITED, visited_mode, EFFECT_VISITED_START,
+	       EFFECT_VISITED_END);
     do_effect1(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
 #ifndef KANJI_SYMBOLS
     if (m & PC_RULE) {
@@ -736,14 +747,15 @@ addChar(char c, Lineprop mode)
 #ifdef JP_CHARSET
     if (CharType(mode) != PC_KANJI2)
 #endif				/* JP_CHARSET */
-    do_effects(m);
+	do_effects(m);
 #ifndef KANJI_SYMBOLS
     if (m & PC_RULE) {
 	if (graph_mode)
 	    addch(g_rule[c & 0xF]);
 	else
 	    addch(alt_rule[c & 0xF]);
-    } else
+    }
+    else
 #endif				/* not KANJI_SYMBOLS */
     if (IS_UNPRINTABLE_ASCII(c, mode)) {
 	addstr(Sprintf("\\%3o", (unsigned char)c)->ptr);
@@ -759,7 +771,7 @@ addChar(char c, Lineprop mode)
     }
     else if (c != '\n')
 	addch(c);
-    else	/* \n */
+    else			/* \n */
 	addch(' ');
 }
 
@@ -790,10 +802,11 @@ message_list_panel(void)
 		 "<html><head><title>List of error messages</title></head><body>"
 		 "<h1>List of error messages</h1><table cellpadding=0>\n");
     if (message_list)
-      for (p = message_list->last ; p ; p = p->prev)
-	Strcat_m_charp(tmp, "<tr><td><pre>", html_quote(p->ptr), "</pre></td></tr>\n", NULL);
+	for (p = message_list->last; p; p = p->prev)
+	    Strcat_m_charp(tmp, "<tr><td><pre>", html_quote(p->ptr),
+			   "</pre></td></tr>\n", NULL);
     else
-      Strcat_charp(tmp, "<tr><td>(no message recorded)</td></tr>\n");
+	Strcat_charp(tmp, "<tr><td>(no message recorded)</td></tr>\n");
     Strcat_charp(tmp, "</table></body></html>");
     return loadHTMLString(tmp);
 }
@@ -817,7 +830,8 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
 	return;
     }
     if (Currentbuf != NULL)
-	message(s, Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY);
+	message(s, Currentbuf->cursorX + Currentbuf->rootX,
+		Currentbuf->cursorY);
     else
 	message(s, LASTLINE, 0);
     refresh();
@@ -848,14 +862,14 @@ disp_message_nomouse(char *s, int redraw_current)
 #endif
 
 void
-cursorUp(Buffer * buf, int n)
+cursorUp(Buffer *buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
     if (buf->cursorY > 0)
 	cursorUpDown(buf, -1);
     else {
-       buf->topLine = lineSkip(buf, buf->topLine, - n, FALSE);
+	buf->topLine = lineSkip(buf, buf->topLine, -n, FALSE);
 	if (buf->currentLine->prev != NULL)
 	    buf->currentLine = buf->currentLine->prev;
 	arrangeLine(buf);
@@ -863,14 +877,14 @@ cursorUp(Buffer * buf, int n)
 }
 
 void
-cursorDown(Buffer * buf, int n)
+cursorDown(Buffer *buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
     if (buf->cursorY < LASTLINE - 1)
 	cursorUpDown(buf, 1);
     else {
-       buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
+	buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
 	if (buf->currentLine->next != NULL)
 	    buf->currentLine = buf->currentLine->next;
 	arrangeLine(buf);
@@ -878,7 +892,7 @@ cursorDown(Buffer * buf, int n)
 }
 
 void
-cursorUpDown(Buffer * buf, int n)
+cursorUpDown(Buffer *buf, int n)
 {
     Line *cl = buf->currentLine;
 
@@ -890,7 +904,7 @@ cursorUpDown(Buffer * buf, int n)
 }
 
 void
-cursorRight(Buffer * buf, int n)
+cursorRight(Buffer *buf, int n)
 {
     int i, delta = 1, cpos, vpos2;
     Line *l = buf->currentLine;
@@ -910,32 +924,32 @@ cursorRight(Buffer * buf, int n)
 	buf->pos = i + delta;
     }
     else if (l->len == 0) {
-        buf->pos = 0;
+	buf->pos = 0;
     }
     else {
-        buf->pos = l->len -1;
+	buf->pos = l->len - 1;
 #ifdef JP_CHARSET
-        if (CharType(p[buf->pos]) == PC_KANJI2)
-            buf->pos--;
-#endif                          /* JP_CHARSET */
+	if (CharType(p[buf->pos]) == PC_KANJI2)
+	    buf->pos--;
+#endif				/* JP_CHARSET */
     }
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = cpos - buf->currentColumn;
     delta = 1;
 #ifdef JP_CHARSET
     if (CharType(p[buf->pos]) == PC_KANJI1)
-        delta = 2;
-#endif                          /* JP_CHARSET */
+	delta = 2;
+#endif				/* JP_CHARSET */
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
     if (vpos2 >= buf->COLS && n) {
-       columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
-       buf->visualpos = cpos - buf->currentColumn;
+	columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
+	buf->visualpos = cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos;
 }
 
 void
-cursorLeft(Buffer * buf, int n)
+cursorLeft(Buffer *buf, int n)
 {
     int i, delta = 1, cpos;
     Line *l = buf->currentLine;
@@ -956,14 +970,14 @@ cursorLeft(Buffer * buf, int n)
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = cpos - buf->currentColumn;
     if (buf->visualpos < 0 && n) {
-       columnSkip(buf, - n + buf->visualpos - buf->visualpos % n);
+	columnSkip(buf, -n + buf->visualpos - buf->visualpos % n);
 	buf->visualpos = cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos;
 }
 
 void
-cursorHome(Buffer * buf)
+cursorHome(Buffer *buf)
 {
     buf->visualpos = 0;
     buf->cursorX = buf->cursorY = 0;
@@ -975,9 +989,9 @@ cursorHome(Buffer * buf)
  * current position.
  */
 void
-arrangeCursor(Buffer * buf)
+arrangeCursor(Buffer *buf)
 {
-    int col,col2;
+    int col, col2;
     int delta = 1;
     if (buf == NULL || buf->currentLine == NULL)
 	return;
@@ -998,26 +1012,28 @@ arrangeCursor(Buffer * buf)
     col = COLPOS(buf->currentLine, buf->pos);
 #ifdef JP_CHARSET
     if (CharType(buf->currentLine->propBuf[buf->pos]) == PC_KANJI1)
-        delta = 2;
-#endif                         /* JP_CHARSET */
+	delta = 2;
+#endif				/* JP_CHARSET */
     col2 = COLPOS(buf->currentLine, buf->pos + delta);
     if (col < buf->currentColumn || col2 > buf->COLS + buf->currentColumn) {
 	buf->currentColumn = 0;
-        if (col2 > buf->COLS)
+	if (col2 > buf->COLS)
 	    columnSkip(buf, col);
     }
     /* Arrange cursor */
     buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
-    buf->visualpos = buf->cursorX = COLPOS(buf->currentLine, buf->pos) - buf->currentColumn;
+    buf->visualpos = buf->cursorX =
+	COLPOS(buf->currentLine, buf->pos) - buf->currentColumn;
 #ifdef DISPLAY_DEBUG
-    fprintf(stderr, "arrangeCursor: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
-	    buf->currentColumn, buf->cursorX, buf->visualpos,
-	    buf->pos, buf->currentLine->len);
+    fprintf(stderr,
+	    "arrangeCursor: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
+	    buf->currentColumn, buf->cursorX, buf->visualpos, buf->pos,
+	    buf->currentLine->len);
 #endif
 }
 
 void
-arrangeLine(Buffer * buf)
+arrangeLine(Buffer *buf)
 {
     int i, cpos;
 
@@ -1047,14 +1063,15 @@ arrangeLine(Buffer * buf)
 	buf->pos = 0;
     }
 #ifdef DISPLAY_DEBUG
-    fprintf(stderr, "arrangeLine: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
-	    buf->currentColumn, buf->cursorX, buf->visualpos,
-	    buf->pos, buf->currentLine->len);
+    fprintf(stderr,
+	    "arrangeLine: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
+	    buf->currentColumn, buf->cursorX, buf->visualpos, buf->pos,
+	    buf->currentLine->len);
 #endif
 }
 
 void
-cursorXY(Buffer * buf, int x, int y)
+cursorXY(Buffer *buf, int x, int y)
 {
     int oldX;
 
@@ -1062,19 +1079,19 @@ cursorXY(Buffer * buf, int x, int y)
 
     if (buf->cursorX > x) {
 	while (buf->cursorX > x)
-           cursorLeft(buf, buf->COLS / 2);
+	    cursorLeft(buf, buf->COLS / 2);
     }
     else if (buf->cursorX < x) {
 	while (buf->cursorX < x) {
 	    oldX = buf->cursorX;
 
-           cursorRight(buf, buf->COLS / 2);
+	    cursorRight(buf, buf->COLS / 2);
 
 	    if (oldX == buf->cursorX)
 		break;
 	}
 	if (buf->cursorX > x)
-           cursorLeft(buf, buf->COLS / 2);
+	    cursorLeft(buf, buf->COLS / 2);
     }
 }
 

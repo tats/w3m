@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.8 2001/11/22 14:15:19 ukai Exp $ */
+/* $Id: indep.c,v 1.9 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -33,8 +33,8 @@ allocStr(const char *s, int len)
 int
 strCmp(const void *s1, const void *s2)
 {
-    unsigned char *p1 = *(unsigned char **) s1;
-    unsigned char *p2 = *(unsigned char **) s2;
+    unsigned char *p1 = *(unsigned char **)s1;
+    unsigned char *p2 = *(unsigned char **)s2;
 
     while ((*p1 != '\0') && (*p1 == *p2)) {
 	p1++;
@@ -92,7 +92,7 @@ cleanupName(char *name)
 		q += 3;
 	    }
 	    else {
-		while (p != buf && *--p != '/');	/* ->foo/FOO */
+		while (p != buf && *--p != '/') ;	/* ->foo/FOO */
 		*p = '\0';
 		q += 3;
 		strcat(buf, q);
@@ -106,7 +106,7 @@ cleanupName(char *name)
 		/* ../../..     */
 	    }
 	    else {
-		while (p != buf && *--p != '/');	/* ->foo/ */
+		while (p != buf && *--p != '/') ;	/* ->foo/ */
 		*++p = '\0';
 	    }
 	    break;
@@ -224,12 +224,9 @@ remove_space(char *str)
 {
     char *p, *q;
 
-    for (p = str; *p && IS_SPACE(*p); p++)
-	;
-    for (q = p; *q; q++)
-	;
-    for (; q > p && IS_SPACE(*(q-1)); q--)
-	;
+    for (p = str; *p && IS_SPACE(*p); p++) ;
+    for (q = p; *q; q++) ;
+    for (; q > p && IS_SPACE(*(q - 1)); q--) ;
     if (*q != '\0')
 	return Strnew_charp_n(p, q - p)->ptr;
     return p;
@@ -252,8 +249,7 @@ void
 cleanup_line(Str s, int mode)
 {
     if (s->length >= 2 &&
-	s->ptr[s->length - 2] == '\r' &&
-	s->ptr[s->length - 1] == '\n') {
+	s->ptr[s->length - 2] == '\r' && s->ptr[s->length - 1] == '\n') {
 	Strshrink(s, 2);
 	Strcat_char(s, '\n');
     }
@@ -283,27 +279,26 @@ getescapechar(char **str)
 	p++;
 	if (*p == 'x' || *p == 'X') {
 	    p++;
-	    if (! IS_XDIGIT(*p)) {
+	    if (!IS_XDIGIT(*p)) {
 		*str = p;
 		return -1;
 	    }
 	    q = p;
-	    for (p++; IS_XDIGIT(*p); p++)
-		;
+	    for (p++; IS_XDIGIT(*p); p++) ;
 	    q = allocStr(q, p - q);
 	    if (*p == ';')
 		p++;
 	    *str = p;
 	    sscanf(q, "%x", &dummy);
 	    return dummy;
-	} else {
-	    if (! IS_DIGIT(*p)) {
+	}
+	else {
+	    if (!IS_DIGIT(*p)) {
 		*str = p;
 		return -1;
 	    }
 	    q = p;
-	    for (p++; IS_DIGIT(*p); p++)
-		;
+	    for (p++; IS_DIGIT(*p); p++) ;
 	    q = allocStr(q, p - q);
 	    if (*p == ';')
 		p++;
@@ -312,24 +307,22 @@ getescapechar(char **str)
 	    return dummy;
 	}
     }
-    if (! IS_ALPHA(*p)) {
+    if (!IS_ALPHA(*p)) {
 	*str = p;
 	return -1;
     }
     q = p;
-    for (p++; IS_ALNUM(*p); p++)
-	;
+    for (p++; IS_ALNUM(*p); p++) ;
     q = allocStr(q, p - q);
-    if (strcasestr("lt gt amp quot nbsp",q) &&
-	*p != '=') {
+    if (strcasestr("lt gt amp quot nbsp", q) && *p != '=') {
 	/* a character entity MUST be terminated with ";". However,
-	   there's MANY web pages which uses &lt , &gt or something
-	   like them as &lt;, &gt;, etc. Therefore, we treat the most
-	   popular character entities (including &#xxxx;) without
-	   the last ";" as character entities. If the trailing character
-	   is "=", it must be a part of query in an URL. So &lt=, &gt=, etc.
-	   are not regarded as character entities.
-	*/
+	 * there's MANY web pages which uses &lt , &gt or something
+	 * like them as &lt;, &gt;, etc. Therefore, we treat the most
+	 * popular character entities (including &#xxxx;) without
+	 * the last ";" as character entities. If the trailing character
+	 * is "=", it must be a part of query in an URL. So &lt=, &gt=, etc.
+	 * are not regarded as character entities.
+	 */
 	strict_entity = FALSE;
     }
     if (*p == ';')
@@ -405,7 +398,7 @@ html_unquote(char *str)
     Str tmp = NULL;
     char *p, *q;
 
-    for (p = str; *p; ) {
+    for (p = str; *p;) {
 	if (*p == '&') {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
@@ -439,7 +432,8 @@ url_unquote_char(char **str)
 	if (IS_XDIGIT(*p)) {
 	    buf[1] = *(p++);
 	    buf[2] = '\0';
-	} else
+	}
+	else
 	    buf[1] = '\0';
 	if (sscanf(buf, "%x", &n)) {
 	    *str = p;
@@ -457,12 +451,13 @@ url_quote(char *str)
     char buf[4];
 
     for (p = str; *p; p++) {
-	if (IS_CNTRL(*p) || *p == ' ' || ! IS_ASCII(*p)) {
+	if (IS_CNTRL(*p) || *p == ' ' || !IS_ASCII(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
 	    sprintf(buf, "%%%02X", (unsigned char)*p);
 	    Strcat_charp(tmp, buf);
-	} else {
+	}
+	else {
 	    if (tmp)
 		Strcat_char(tmp, *p);
 	}
@@ -479,11 +474,11 @@ url_unquote(char *str)
     char *p, *q;
     int c;
 
-    for (p = str; *p; ) {
+    for (p = str; *p;) {
 	if (*p == '%') {
 	    q = p;
 	    c = url_unquote_char(&q);
-	    if (c >= 0 && (IS_CNTRL(c) || c == ' ' || ! IS_ASCII(c))) {
+	    if (c >= 0 && (IS_CNTRL(c) || c == ' ' || !IS_ASCII(c))) {
 		if (tmp == NULL)
 		    tmp = Strnew_charp_n(str, (int)(p - str));
 		if (c != '\0' && c != '\n' && c != '\r')
@@ -509,13 +504,14 @@ file_quote(char *str)
     char buf[4];
 
     for (p = str; *p; p++) {
-	if (IS_CNTRL(*p) || *p == ' ' || ! IS_ASCII(*p) || *p == '+' ||
+	if (IS_CNTRL(*p) || *p == ' ' || !IS_ASCII(*p) || *p == '+' ||
 	    *p == ':' || *p == '#' || *p == '?' || *p == '&' || *p == '%') {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
 	    sprintf(buf, "%%%02X", (unsigned char)*p);
 	    Strcat_charp(tmp, buf);
-	} else {
+	}
+	else {
 	    if (tmp)
 		Strcat_char(tmp, *p);
 	}
@@ -532,7 +528,7 @@ file_unquote(char *str)
     char *p, *q;
     int c;
 
-    for (p = str; *p; ) {
+    for (p = str; *p;) {
 	if (*p == '%') {
 	    q = p;
 	    c = url_unquote_char(&q);
@@ -582,12 +578,14 @@ Str_form_quote(Str x)
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 	    Strcat_char(tmp, '+');
-	} else if (! is_url_safe(*p)) {
+	}
+	else if (!is_url_safe(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 	    sprintf(buf, "%%%02X", (unsigned char)*p);
 	    Strcat_charp(tmp, buf);
-	} else {
+	}
+	else {
 	    if (tmp)
 		Strcat_char(tmp, *p);
 	}
@@ -604,14 +602,15 @@ Str_form_unquote(Str x)
     char *p = x->ptr, *ep = x->ptr + x->length, *q;
     int c;
 
-    for (; p < ep; ) {
+    for (; p < ep;) {
 	if (*p == '+') {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 	    Strcat_char(tmp, ' ');
 	    p++;
 	    continue;
-	} else if (*p == '%') {
+	}
+	else if (*p == '%') {
 	    q = p;
 	    c = url_unquote_char(&q);
 	    if (c >= 0) {
@@ -653,12 +652,13 @@ shell_quote(char *str)
     char *p;
 
     for (p = str; *p; p++) {
-        if (! is_shell_safe(*p)) {
+	if (!is_shell_safe(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
-            Strcat_char(tmp, '\\');
+	    Strcat_char(tmp, '\\');
 	    Strcat_char(tmp, *p);
-	} else {
+	}
+	else {
 	    if (tmp)
 		Strcat_char(tmp, *p);
 	}
@@ -668,7 +668,7 @@ shell_quote(char *str)
     return str;
 }
 
-static char*
+static char *
 w3m_dir(const char *name, char *dft)
 {
 #ifdef USE_PATH_ENVVAR

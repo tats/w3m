@@ -1,4 +1,4 @@
-/* $Id: inflate.c,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: inflate.c,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <zlib.h>
@@ -16,9 +16,10 @@ main(int argc, char **argv)
 
     if (argc > 1) {
 	f = fopen(argv[1], "rb");
-	if (! f)
+	if (!f)
 	    exit(1);
-    } else
+    }
+    else
 	f = stdin;
 
     s.zalloc = Z_NULL;
@@ -28,12 +29,12 @@ main(int argc, char **argv)
     if (status != Z_OK)
 	exit(1);
     s.avail_in = 0;
-    s.next_out = (Bytef *)outbuf;
+    s.next_out = (Bytef *) outbuf;
     s.avail_out = sizeof(outbuf);
-    flush = Z_NO_FLUSH; 
+    flush = Z_NO_FLUSH;
     while (1) {
 	if (s.avail_in == 0) {
-	    s.next_in = (Bytef *)inbuf;
+	    s.next_in = (Bytef *) inbuf;
 	    s.avail_in = fread(inbuf, 1, sizeof(inbuf), f);
 	}
 	status = inflate(&s, flush);
@@ -46,7 +47,7 @@ main(int argc, char **argv)
 	    exit(1);
 	if (s.avail_out == 0) {
 	    fwrite(outbuf, 1, sizeof(outbuf), stdout);
-	    s.next_out = (Bytef *)outbuf;
+	    s.next_out = (Bytef *) outbuf;
 	    s.avail_out = sizeof(outbuf);
 	}
     }

@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: func.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -46,46 +46,46 @@ initKeymap(void)
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
 	    continue;
-       if (! strcmp(s, "keymap"))
-           ;
-       else if (! strcmp(s, "verbose")) {
-           s = getWord(&p);
-           if (*s)
-               verbose = str_to_bool(s, verbose);
-           continue;
-       } else {                /* error */
-           emsg = Sprintf("line %d: syntax error '%s'", lineno, s)->ptr;
+	if (!strcmp(s, "keymap")) ;
+	else if (!strcmp(s, "verbose")) {
+	    s = getWord(&p);
+	    if (*s)
+		verbose = str_to_bool(s, verbose);
+	    continue;
+	}
+	else {			/* error */
+	    emsg = Sprintf("line %d: syntax error '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-           if (verbose)
-               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+	    if (verbose)
+		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	    continue;
 	}
 	s = getQWord(&p);
 	c = getKey(s);
 	if (c < 0) {		/* error */
-           emsg = Sprintf("line %d: unknown key '%s'", lineno, s)->ptr;
+	    emsg = Sprintf("line %d: unknown key '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-           if (verbose)
-               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+	    if (verbose)
+		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	    continue;
 	}
 	s = getWord(&p);
 	f = getFuncList(s, w3mFuncList, w3mNFuncList);
 	if (f < 0) {
-           emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
+	    emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-           if (verbose)
-               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
-           continue;
+	    if (verbose)
+		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+	    continue;
 	}
 	if (c & K_ESCD)
-           EscDKeymap[c ^ K_ESCD] = f;
+	    EscDKeymap[c ^ K_ESCD] = f;
 	else if (c & K_ESCB)
-           EscBKeymap[c ^ K_ESCB] = f;
+	    EscBKeymap[c ^ K_ESCB] = f;
 	else if (c & K_ESC)
-           EscKeymap[c ^ K_ESC] = f;
+	    EscKeymap[c ^ K_ESC] = f;
 	else
-           GlobalKeymap[c] = f;
+	    GlobalKeymap[c] = f;
 	s = getQWord(&p);
 	addKeyList(&w3mKeyList, c, s);
     }
@@ -93,16 +93,16 @@ initKeymap(void)
 }
 
 int
-countFuncList(FuncList * list)
+countFuncList(FuncList *list)
 {
     int i;
 
-    for (i = 0; list->id != NULL; i++, list++);
+    for (i = 0; list->id != NULL; i++, list++) ;
     return i;
 }
 
 int
-getFuncList(char *id, FuncList * list, int nlist)
+getFuncList(char *id, FuncList *list, int nlist)
 {
     int i, is, ie, m;
 
@@ -141,21 +141,19 @@ getKey(char *s)
     else if (strcasecmp(s, "LEFT") == 0)	/* ^[[D */
 	return K_ESCB | 'D';
 
-    if (strncasecmp(s, "ESC-", 4) == 0 ||
-	strncasecmp(s, "ESC ", 4) == 0) {	/* ^[ */
+    if (strncasecmp(s, "ESC-", 4) == 0 || strncasecmp(s, "ESC ", 4) == 0) {	/* ^[ */
 	s += 4;
 	esc = K_ESC;
     }
-    else if (strncasecmp(s, "M-", 2) == 0 ||
-	     strncasecmp(s, "\\E", 2) == 0) {	/* ^[ */
+    else if (strncasecmp(s, "M-", 2) == 0 || strncasecmp(s, "\\E", 2) == 0) {	/* ^[ */
 	s += 2;
 	esc = K_ESC;
     }
-    else if (*s == ESC_CODE) {			/* ^[ */
+    else if (*s == ESC_CODE) {	/* ^[ */
 	s++;
 	esc = K_ESC;
     }
-    if (strncasecmp(s, "C-", 2) == 0) {		/* ^, ^[^ */
+    if (strncasecmp(s, "C-", 2) == 0) {	/* ^, ^[^ */
 	s += 2;
 	ctrl = 1;
     }
@@ -184,11 +182,11 @@ getKey(char *s)
     }
 
     if (ctrl) {
-	if (*s >= '@' && *s <= '_')		/* ^@ .. ^_ */
+	if (*s >= '@' && *s <= '_')	/* ^@ .. ^_ */
 	    return esc | (*s - '@');
 	else if (*s >= 'a' && *s <= 'z')	/* ^a .. ^z */
 	    return esc | (*s - 'a' + 1);
-	else if (*s == '?')			/* ^? */
+	else if (*s == '?')	/* ^? */
 	    return esc | DEL_CODE;
 	else
 	    return -1;
@@ -259,7 +257,7 @@ addKeyList(KeyList *list, int key, char *data)
 	if (list->nitem > list->size) {
 	    list->size = (list->size >= 2) ? (list->size * 3 / 2) : 2;
 	    list->item = New_Reuse(KeyListItem, list->item,
-		list->size * sizeof(KeyListItem));
+				   list->size * sizeof(KeyListItem));
 	}
 	item = &(list->item[list->nitem - 1]);
 	item->key = key;
@@ -324,10 +322,10 @@ getQWord(char **str)
 		    *e++ = '\\';
 	    }
 	    else {
-		if (*p != '\\' && *p != '\'' &&		/* ..\\.., *
-							 * ..\'..  */
-		    *p != '"' && !IS_SPACE(*p))		/* ..\".., * ..\.. 
-							 */
+		if (*p != '\\' && *p != '\'' &&	/* ..\\.., *
+						 * ..\'..  */
+		    *p != '"' && !IS_SPACE(*p))	/* ..\".., * ..\.. 
+						 */
 		    *e++ = '\\';
 	    }
 	    *e++ = *p;

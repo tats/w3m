@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.5 2001/11/20 08:15:22 ukai Exp $ */
+/* $Id: istream.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -35,9 +35,9 @@ do_update(BaseStream base)
     base->stream.cur = base->stream.next = 0;
     len = base->read(base->handle, base->stream.buf, base->stream.size);
     if (len <= 0)
-        base->iseos = TRUE;
+	base->iseos = TRUE;
     else
-        base->stream.next += len;
+	base->stream.next += len;
 }
 
 static int
@@ -60,7 +60,7 @@ init_buffer(BaseStream base, char *buf, int bufsize)
     sb->size = bufsize;
     sb->cur = 0;
     if (buf) {
-	sb->buf = (uchar *)buf;
+	sb->buf = (uchar *) buf;
 	sb->next = bufsize;
     }
     else {
@@ -93,13 +93,13 @@ newInputStream(int des)
     stream->base.type = IST_BASIC;
     stream->base.handle = New(int);
     *(int *)stream->base.handle = des;
-    stream->base.read = (int (*)()) basic_read;
-    stream->base.close = (void (*)()) basic_close;
+    stream->base.read = (int (*)())basic_read;
+    stream->base.close = (void (*)())basic_close;
     return stream;
 }
 
 InputStream
-newFileStream(FILE *f, void (*closep)())
+newFileStream(FILE * f, void (*closep) ())
 {
     InputStream stream;
     if (f == NULL)
@@ -112,9 +112,9 @@ newFileStream(FILE *f, void (*closep)())
     if (closep)
 	stream->file.handle->close = closep;
     else
-	stream->file.handle->close = (void (*)()) fclose;
-    stream->file.read = (int (*)()) file_read;
-    stream->file.close = (void (*)()) file_close;
+	stream->file.handle->close = (void (*)())fclose;
+    stream->file.read = (int (*)())file_read;
+    stream->file.close = (void (*)())file_close;
     return stream;
 }
 
@@ -128,14 +128,14 @@ newStrStream(Str s)
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
     stream->str.handle = s;
-    stream->str.read = (int (*)()) str_read;
+    stream->str.read = (int (*)())str_read;
     stream->str.close = NULL;
     return stream;
 }
 
 #ifdef USE_SSL
 InputStream
-newSSLStream(SSL *ssl, int sock)
+newSSLStream(SSL * ssl, int sock)
 {
     InputStream stream;
     if (sock < 0)
@@ -146,8 +146,8 @@ newSSLStream(SSL *ssl, int sock)
     stream->ssl.handle = New(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
-    stream->ssl.read = (int (*)()) ssl_read;
-    stream->ssl.close = (void (*)()) ssl_close;
+    stream->ssl.read = (int (*)())ssl_read;
+    stream->ssl.close = (void (*)())ssl_close;
     return stream;
 }
 #endif
@@ -167,8 +167,8 @@ newEncodedStream(InputStream is, char encoding)
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
     stream->ens.handle->s = NULL;
-    stream->ens.read = (int (*)()) ens_read;
-    stream->ens.close = (void (*)()) ens_close;
+    stream->ens.read = (int (*)())ens_read;
+    stream->ens.close = (void (*)())ens_close;
     return stream;
 }
 
@@ -240,7 +240,8 @@ StrISgets(InputStream stream)
 	    else {
 		if (s == NULL)
 		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], sb->next - sb->cur);
+		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
+			       sb->next - sb->cur);
 		sb->cur = sb->next;
 	    }
 	}
@@ -275,8 +276,8 @@ StrmyISgets(InputStream stream)
 		return s;
 	    }
 	    for (i = sb->cur;
-		 i < sb->next && sb->buf[i] != '\n' && sb->buf[i] != '\r'; 
-		 i++);
+		 i < sb->next && sb->buf[i] != '\n' && sb->buf[i] != '\r';
+		 i++) ;
 	    if (i < sb->next) {
 		len = i - sb->cur + 1;
 		if (s == NULL)
@@ -289,7 +290,8 @@ StrmyISgets(InputStream stream)
 	    else {
 		if (s == NULL)
 		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], sb->next - sb->cur);
+		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
+			       sb->next - sb->cur);
 		sb->cur = sb->next;
 	    }
 	}
@@ -371,7 +373,7 @@ ssl_get_certificate(InputStream stream)
 	return NULL;
     bp = BIO_new(BIO_s_mem());
     X509_print(bp, x);
-    len = (int)BIO_ctrl(bp, BIO_CTRL_INFO,0,(char *)&p);
+    len = (int)BIO_ctrl(bp, BIO_CTRL_INFO, 0, (char *)&p);
     s = Strnew_charp_n(p, len);
     BIO_free_all(bp);
     return s;
@@ -431,7 +433,7 @@ ssl_read(struct ssl_handle *handle, char *buf, int len)
 		break;
 	    switch (SSL_get_error(handle->ssl, status)) {
 	    case SSL_ERROR_WANT_READ:
-	    case SSL_ERROR_WANT_WRITE: /* reads can trigger write errors; see SSL_get_error(3) */
+	    case SSL_ERROR_WANT_WRITE:	/* reads can trigger write errors; see SSL_get_error(3) */
 		continue;
 	    default:
 		break;
@@ -466,7 +468,7 @@ ens_read(struct ens_handle *handle, char *buf, int len)
 	if (handle->encoding == ENC_BASE64)
 	    Strchop(handle->s);
 	else if (handle->encoding == ENC_UUENCODE) {
-	    if (! strncmp(handle->s->ptr, "begin", 5))
+	    if (!strncmp(handle->s->ptr, "begin", 5))
 		handle->s = StrmyISgets(handle->is);
 	    Strchop(handle->s);
 	}
@@ -479,7 +481,7 @@ ens_read(struct ens_handle *handle, char *buf, int len)
 	    handle->s = decodeU(&p);
 	handle->pos = 0;
     }
-    
+
     if (len > handle->s->length - handle->pos)
 	len = handle->s->length - handle->pos;
 

@@ -1,4 +1,4 @@
-/* $Id: istream.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: istream.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
@@ -15,7 +15,7 @@
 
 struct stream_buffer {
     unsigned char *buf;
-    int	           size, cur, next;
+    int size, cur, next;
 };
 
 typedef struct stream_buffer *StreamBuffer;
@@ -44,73 +44,73 @@ struct ens_handle {
 
 struct base_stream {
     struct stream_buffer stream;
-    void                 *handle;
-    char                 type;
-    char                 iseos;
-    int                  (*read) ();
-    void                 (*close) ();
+    void *handle;
+    char type;
+    char iseos;
+    int (*read) ();
+    void (*close) ();
 };
 
 struct file_stream {
     struct stream_buffer stream;
-    struct file_handle   *handle;
-    char                 type;
-    char                 iseos;
-    int                  (*read) ();
-    void                 (*close) ();
+    struct file_handle *handle;
+    char type;
+    char iseos;
+    int (*read) ();
+    void (*close) ();
 };
 
 struct str_stream {
     struct stream_buffer stream;
-    Str                  handle;
-    char                 type;
-    char                 iseos;
-    int                  (*read) ();
-    void                 (*close) ();
+    Str handle;
+    char type;
+    char iseos;
+    int (*read) ();
+    void (*close) ();
 };
 
 #ifdef USE_SSL
 struct ssl_stream {
     struct stream_buffer stream;
-    struct ssl_handle    *handle;
-    char                 type;
-    char                 iseos;
-    int                  (*read) ();
-    void                 (*close) ();
+    struct ssl_handle *handle;
+    char type;
+    char iseos;
+    int (*read) ();
+    void (*close) ();
 };
 #endif				/* USE_SSL */
 
 struct encoded_stream {
     struct stream_buffer stream;
-    struct ens_handle    *handle;
-    char                 type;
-    char                 iseos;
-    int                  (*read) ();
-    void                 (*close) ();
+    struct ens_handle *handle;
+    char type;
+    char iseos;
+    int (*read) ();
+    void (*close) ();
 };
 
 union input_stream {
-    struct base_stream   base;
-    struct file_stream	 file;
-    struct str_stream    str;
+    struct base_stream base;
+    struct file_stream file;
+    struct str_stream str;
 #ifdef USE_SSL
-    struct ssl_stream    ssl;
+    struct ssl_stream ssl;
 #endif				/* USE_SSL */
     struct encoded_stream ens;
 };
 
-typedef struct base_stream   *BaseStream;
-typedef struct file_stream   *FileStream;
-typedef struct str_stream    *StrStream;
+typedef struct base_stream *BaseStream;
+typedef struct file_stream *FileStream;
+typedef struct str_stream *StrStream;
 #ifdef USE_SSL
-typedef struct ssl_stream    *SSLStream;
+typedef struct ssl_stream *SSLStream;
 #endif				/* USE_SSL */
 typedef struct encoded_stream *EncodedStrStream;
 
-typedef union input_stream   *InputStream;
+typedef union input_stream *InputStream;
 
 extern InputStream newInputStream(int des);
-extern InputStream newFileStream(FILE * f, void (*closep)());
+extern InputStream newFileStream(FILE * f, void (*closep) ());
 extern InputStream newStrStream(Str s);
 #ifdef USE_SSL
 extern InputStream newSSLStream(SSL * ssl, int sock);

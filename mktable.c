@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: mktable.c,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -10,15 +10,14 @@
 
 defhash(HashItem_ss *, int, hss_i)
 #define keycomp(x,y) ((x)==(y))
-
-    static unsigned int hashfunc(HashItem_ss * x)
+     static unsigned int hashfunc(HashItem_ss * x)
 {
-    return (unsigned int) x;
+    return (unsigned int)x;
 }
 
 defhashfunc(HashItem_ss *, int, hss_i)
-    int
-     MAIN(int argc, char *argv[], char **envp)
+     int
+      MAIN(int argc, char *argv[], char **envp)
 {
     FILE *f;
     Hash_ss *hash;
@@ -91,20 +90,21 @@ defhashfunc(HashItem_ss *, int, hss_i)
     printf("static HashItem_si MyHashItem[] = {\n");
     for (i = 0; i < j; i++) {
 	printf("  /* %d */ {\"%s\",%s,", i,
-	       hashitems[i]->key,
-	       hashitems[i]->value);
+	       hashitems[i]->key, hashitems[i]->value);
 	if (hashitems[i]->next == NULL) {
 	    printf("NULL},\n");
 	}
 	else {
-	    printf("&MyHashItem[%d]},\n", getHash_hss_i(rhash, hashitems[i]->next, -1));
+	    printf("&MyHashItem[%d]},\n",
+		   getHash_hss_i(rhash, hashitems[i]->next, -1));
 	}
     }
     printf("};\n\nstatic HashItem_si *MyHashItemTbl[] = {\n");
 
     for (i = 0; i < hash->size; i++) {
 	if (hash->tab[i])
-	    printf("  &MyHashItem[%d],\n", getHash_hss_i(rhash, hash->tab[i], -1));
+	    printf("  &MyHashItem[%d],\n",
+		   getHash_hss_i(rhash, hash->tab[i], -1));
 	else
 	    printf("  NULL,\n");
     }

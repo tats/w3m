@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.15 2001/11/22 19:44:33 ukai Exp $ */
+/* $Id: terms.c,v 1.16 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -48,7 +48,7 @@ static int tty;
 #include <os2.h>
 
 #ifndef JP_CHARSET
-extern int	CodePage;
+extern int CodePage;
 #endif				/* !JP_CHARSET */
 #endif				/* __EMX__ */
 
@@ -86,7 +86,7 @@ init_win32_console_handle(void)
 
     check_win32_console();
     winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    if (GetVersionEx (&winVersionInfo) == 0) {
+    if (GetVersionEx(&winVersionInfo) == 0) {
 	fprintf(stderr, "can't get Windows version information.\n");
 	exit(1);
     }
@@ -101,9 +101,8 @@ init_win32_console_handle(void)
 	    }
 	    else {
 		hConIn = CreateFile("CONIN$", GENERIC_READ,
-			    FILE_SHARE_READ,
-			    NULL, OPEN_EXISTING,
-			    0, NULL);
+				    FILE_SHARE_READ,
+				    NULL, OPEN_EXISTING, 0, NULL);
 	    }
 	}
     }
@@ -112,10 +111,10 @@ init_win32_console_handle(void)
 static int
 read_win32_console_input(void)
 {
-   INPUT_RECORD *p;
-   DWORD nevents;
+    INPUT_RECORD *p;
+    DWORD nevents;
 
-   if (nConIn >= nConInMax) {
+    if (nConIn >= nConInMax) {
 	INPUT_RECORD *oldv;
 
 	nConInMax = (nConInMax / 2 + 1) * 3;
@@ -129,11 +128,11 @@ read_win32_console_input(void)
     if (ReadConsoleInput(hConIn, p, 1, &nevents) && nevents) {
 	switch (p->EventType) {
 	case KEY_EVENT:
-	    if (p->Event.KeyEvent.bKeyDown 
+	    if (p->Event.KeyEvent.bKeyDown
 		|| !p->Event.KeyEvent.uChar.AsciiChar)
-		    break;
+		break;
 #ifdef USE_MOUSE
-	event_found:
+	  event_found:
 #endif
 	    ++nConIn;
 	    return 1;
@@ -162,7 +161,7 @@ read_win32_console(char *s, int n)
     if (hConIn == INVALID_HANDLE_VALUE)
 	return read(tty, s, n);
 
-    for (i = 0 ; i < n ;)
+    for (i = 0; i < n;)
 #ifdef USE_MOUSE
 	if (iMouseConToXTerm) {
 	    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
@@ -172,47 +171,51 @@ read_win32_console(char *s, int n)
 	}
 	else
 #endif
-	    if (iConIn < nConIn)
-		switch (ConInV[iConIn].EventType) {
+	if (iConIn < nConIn)
+	    switch (ConInV[iConIn].EventType) {
 #ifdef USE_MOUSE
-		case MOUSE_EVENT:
-		    if (mouseActive) {
-			mer = &ConInV[iConIn++].Event.MouseEvent;
-			MouseConToXTerm[0] = '\033';
-			MouseConToXTerm[1] = '[';
-			MouseConToXTerm[2] = 'M';
-			MouseConToXTerm[4] = mer->dwMousePosition.X + '!';
-			MouseConToXTerm[5] = mer->dwMousePosition.Y + '!';
-			if (~(mer->dwButtonState) & lastConMouse.dwButtonState)
-			    MouseConToXTerm[3] = MOUSE_BTN_UP + ' ';
-			else if (!(down = mer->dwButtonState & ~lastConMouse.dwButtonState & ~(~0 << 5))) {
-			    lastConMouse = *mer;
-			    break;
-			}
-			else
-			    MouseConToXTerm[3] = (down & (1 << 0) ? MOUSE_BTN1_DOWN :
-				down & (1 << 1) ? MOUSE_BTN3_DOWN :
-				down & (1 << 2) ? MOUSE_BTN2_DOWN :
-				down & (1 << 3) ? MOUSE_BTN4_DOWN_XTERM :
-				MOUSE_BTN5_DOWN_XTERM) + ' ';
-
-			s[i++] = MouseConToXTerm[iMouseConToXTerm++];
+	    case MOUSE_EVENT:
+		if (mouseActive) {
+		    mer = &ConInV[iConIn++].Event.MouseEvent;
+		    MouseConToXTerm[0] = '\033';
+		    MouseConToXTerm[1] = '[';
+		    MouseConToXTerm[2] = 'M';
+		    MouseConToXTerm[4] = mer->dwMousePosition.X + '!';
+		    MouseConToXTerm[5] = mer->dwMousePosition.Y + '!';
+		    if (~(mer->dwButtonState) & lastConMouse.dwButtonState)
+			MouseConToXTerm[3] = MOUSE_BTN_UP + ' ';
+		    else if (!
+			     (down =
+			      mer->dwButtonState & ~lastConMouse.
+			      dwButtonState & ~(~0 << 5))) {
 			lastConMouse = *mer;
+			break;
 		    }
 		    else
-		        ++iConIn;
-		    break;
-#endif
-		default:
-		    s[i++] = ConInV[iConIn++].Event.KeyEvent.uChar.AsciiChar;
-		    break;
-		}
-	    else {
-		iConIn = nConIn = 0;
+			MouseConToXTerm[3] =
+			    (down & (1 << 0) ? MOUSE_BTN1_DOWN : down &
+			     (1 << 1) ? MOUSE_BTN3_DOWN : down & (1 << 2) ?
+			     MOUSE_BTN2_DOWN : down & (1 << 3) ?
+			     MOUSE_BTN4_DOWN_XTERM : MOUSE_BTN5_DOWN_XTERM) +
+			    ' ';
 
-		if (!read_win32_console_input())
-		    break;
+		    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
+		    lastConMouse = *mer;
+		}
+		else
+		    ++iConIn;
+		break;
+#endif
+	    default:
+		s[i++] = ConInV[iConIn++].Event.KeyEvent.uChar.AsciiChar;
+		break;
 	    }
+	else {
+	    iConIn = nConIn = 0;
+
+	    if (!read_win32_console_input())
+		break;
+	}
 
     if (iConIn >= nConIn)
 	iConIn = nConIn = 0;
@@ -349,8 +352,8 @@ static
 char bp[1024], funcstr[256];
 
 char *T_cd, *T_ce, *T_kr, *T_kl, *T_cr, *T_bt, *T_ta, *T_sc, *T_rc,
-*T_so, *T_se, *T_us, *T_ue, *T_cl, *T_cm, *T_al, *T_sr, *T_md, *T_me,
-*T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
+    *T_so, *T_se, *T_us, *T_ue, *T_cl, *T_cm, *T_al, *T_sr, *T_md, *T_me,
+    *T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
 
 int LINES, COLS;
 #if defined(CYGWIN) && LANG == JA
@@ -393,8 +396,8 @@ writestr(char *s)
 
 #ifdef USE_MOUSE
 static char *xterm_mouse_term[] = {
-     "xterm", "kterm", "rxvt", "cygwin", 
-     NULL
+    "xterm", "kterm", "rxvt", "cygwin",
+    NULL
 };
 #endif
 
@@ -422,10 +425,10 @@ set_tty(void)
 	char *term = getenv("TERM");
 	char **p;
 	for (p = xterm_mouse_term; *p != NULL; p++) {
-	     if (!strncmp(term, *p, strlen(*p))) {
-		  is_xterm = 1;
-		  break;
-	     }
+	    if (!strncmp(term, *p, strlen(*p))) {
+		is_xterm = 1;
+		break;
+	    }
 	}
     }
 #endif
@@ -444,7 +447,8 @@ ttymode_set(int mode, int imode)
 #endif				/* not HAVE_SGTTY_H */
 
     while (TerminalSet(tty, &ioval) == -1) {
-	if (errno == EINTR || errno == EAGAIN) continue;
+	if (errno == EINTR || errno == EAGAIN)
+	    continue;
 	printf("Error occured while set %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -462,7 +466,8 @@ ttymode_reset(int mode, int imode)
 #endif				/* not HAVE_SGTTY_H */
 
     while (TerminalSet(tty, &ioval) == -1) {
-	if (errno == EINTR || errno == EAGAIN) continue;
+	if (errno == EINTR || errno == EAGAIN)
+	    continue;
 	printf("Error occured while reset %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -477,7 +482,8 @@ set_cc(int spec, int val)
     TerminalGet(tty, &ioval);
     ioval.c_cc[spec] = val;
     while (TerminalSet(tty, &ioval) == -1) {
-	if (errno == EINTR || errno == EAGAIN) continue;
+	if (errno == EINTR || errno == EAGAIN)
+	    continue;
 	printf("Error occured: errno=%d\n", errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -495,9 +501,9 @@ reset_tty(void)
 {
     if (DisplayCode != CODE_EUC && DisplayCode != CODE_SJIS)
 #if defined(__EMX__)&&!defined(JP_CHARSET)
-      if(!CodePage)
+	if (!CodePage)
 #endif
-	writestr("\033(B");	/* designate US_ASCII */
+	    writestr("\033(B");	/* designate US_ASCII */
     writestr(T_op);		/* turn off */
     writestr(T_me);
     if (!Do_not_use_ti_te) {
@@ -546,7 +552,7 @@ set_int(void)
 #ifdef	SIGBUS
     signal(SIGBUS, error_dump);
 #endif				/* SIGBUS */
-/* signal(SIGSEGV, error_dump); */
+    /* signal(SIGSEGV, error_dump); */
 }
 
 
@@ -556,14 +562,14 @@ setgraphchar(void)
     int c, i, n;
 
     for (c = 0; c < 96; c++)
-	gcmap[c] = (char) (c + ' ');
+	gcmap[c] = (char)(c + ' ');
 
     if (!T_ac)
 	return;
 
     n = strlen(T_ac);
     for (i = 0; i < n - 1; i += 2) {
-	c = (unsigned) T_ac[i] - ' ';
+	c = (unsigned)T_ac[i] - ' ';
 	if (c >= 0 && c < 96)
 	    gcmap[c] = T_ac[i + 1];
     }
@@ -632,12 +638,13 @@ getTCstr(void)
     GETSTR(T_op, "op");		/* set default color pair to its original
 				 * * * * * * * value */
 #if defined( CYGWIN ) && CYGWIN < 1
-/* for TERM=pcansi on MS-DOS prompt.
+    /* for TERM=pcansi on MS-DOS prompt. */
+#if 0
     T_eA = "";
     T_as = "\033[12m";
     T_ae = "\033[10m";
     T_ac = "l\001k\002m\003j\004x\005q\006n\020a\024v\025w\026u\027t\031";
-*/
+#endif
     T_eA = "";
     T_as = "";
     T_ae = "";
@@ -673,11 +680,11 @@ setlinescols(void)
 	    }
 	}
 #ifndef JP_CHARSET
-	else{
-	    ULONG CpList[8],CpSize;
-	    CodePage=-1;
-	    if(!DosQueryCp(sizeof(CpList),CpList,&CpSize))
-		CodePage=*CpList;
+	else {
+	    ULONG CpList[8], CpSize;
+	    CodePage = -1;
+	    if (!DosQueryCp(sizeof(CpList), CpList, &CpSize))
+		CodePage = *CpList;
 	}
 #endif
     }
@@ -689,14 +696,10 @@ setlinescols(void)
 	LINES = wins.ws_row;
 	COLS = wins.ws_col;
     }
-#endif /* defined(HAVE-TERMIOS_H) && defined(TIOCGWINSZ) */
-    if (LINES <= 0 &&
-	(p = getenv("LINES")) != NULL &&
-	(i = atoi(p)) >= 0)
+#endif				/* defined(HAVE-TERMIOS_H) && defined(TIOCGWINSZ) */
+    if (LINES <= 0 && (p = getenv("LINES")) != NULL && (i = atoi(p)) >= 0)
 	LINES = i;
-    if (COLS <= 0 &&
-	(p = getenv("COLUMNS")) != NULL &&
-	(i = atoi(p)) >= 0)
+    if (COLS <= 0 && (p = getenv("COLUMNS")) != NULL && (i = atoi(p)) >= 0)
 	COLS = i;
     if (LINES <= 0)
 	LINES = tgetnum("li");	/* number of line */
@@ -779,7 +782,7 @@ write1(char c)
 	    break;
 	case C_WCHAR1:
 	    wmode = C_WCHAR2;
-	    putchars((unsigned char) wbuf, (unsigned char) c, ttyf);
+	    putchars((unsigned char)wbuf, (unsigned char)c, ttyf);
 	    break;
 	}
     }
@@ -860,7 +863,7 @@ putchars(unsigned char c1, unsigned char c2, FILE * f)
 	put_sjis(s, c1 & 0x7f, c2 & 0x7f);
 	break;
     }
-    if (! s->length) {
+    if (!s->length) {
 	putc('?', f);
 	putc('?', f);
 	return;
@@ -960,10 +963,12 @@ addch(char c)
 	    touch_column(CurColumn + 1);
 	    if (pr[CurColumn + 1] & S_EOL) {
 		p[CurColumn + 1] = ' ';
-		SETPROP(pr[CurColumn + 1], (pr[CurColumn + 1] & M_CEOL) | C_ASCII);
+		SETPROP(pr[CurColumn + 1],
+			(pr[CurColumn + 1] & M_CEOL) | C_ASCII);
 	    }
 #ifdef JP_CHARSET
-	    else if (CHMODE(pr[CurColumn + 1]) == C_WCHAR1 && CurColumn < COLS - 2)
+	    else if (CHMODE(pr[CurColumn + 1]) == C_WCHAR1
+		     && CurColumn < COLS - 2)
 		touch_column(CurColumn + 2);
 #endif				/* JP_CHARSET */
 	}
@@ -973,7 +978,8 @@ addch(char c)
     if (CurColumn >= 1 && CHMODE(pr[CurColumn - 1]) == C_WCHAR1 &&
 	CHMODE(CurrentMode) != C_WCHAR2) {
 	p[CurColumn - 1] = ' ';
-	SETPROP(pr[CurColumn - 1], (pr[CurColumn - 1] & ~C_WHICHCHAR) | C_ASCII);
+	SETPROP(pr[CurColumn - 1],
+		(pr[CurColumn - 1] & ~C_WHICHCHAR) | C_ASCII);
 	touch_line();
 	touch_column(CurColumn - 1);
     }
@@ -981,7 +987,8 @@ addch(char c)
     if (CurColumn < COLS - 1 && CHMODE(pr[CurColumn + 1]) == C_WCHAR2 &&
 	CHMODE(CurrentMode) != C_WCHAR1) {
 	p[CurColumn + 1] = ' ';
-	SETPROP(pr[CurColumn + 1], (pr[CurColumn + 1] & ~C_WHICHCHAR) | C_ASCII);
+	SETPROP(pr[CurColumn + 1],
+		(pr[CurColumn + 1] & ~C_WHICHCHAR) | C_ASCII);
 	touch_line();
 	touch_column(CurColumn + 1);
     }
@@ -1035,8 +1042,7 @@ addch(char c)
     else if (c == '\b' && CurColumn > 0) {	/* Backspace */
 	CurColumn--;
 #ifdef JP_CHARSET
-	if (CurColumn > 0 &&
-	    CHMODE(pr[CurColumn]) == C_WCHAR2)
+	if (CurColumn > 0 && CHMODE(pr[CurColumn]) == C_WCHAR2)
 	    CurColumn--;
 #endif				/* JP_CHARSET */
     }
@@ -1265,9 +1271,9 @@ refresh(void)
 #if defined(__CYGWIN__) && LANG == JA
 		if (isWinConsole)
 #endif				/* defined(__CYGWIN__) && LANG == JA */
-		if (line == LINES - 1 && col == COLS - 1)
-		    break;
-#endif			/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */
+		    if (line == LINES - 1 && col == COLS - 1)
+			break;
+#endif				/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */
 		if ((!(pr[col] & S_STANDOUT) && (mode & S_STANDOUT)) ||
 		    (!(pr[col] & S_UNDERLINE) && (mode & S_UNDERLINE)) ||
 		    (!(pr[col] & S_BOLD) && (mode & S_BOLD)) ||
@@ -1276,19 +1282,20 @@ refresh(void)
 		    || (!(pr[col] & S_BCOLORED) && (mode & S_BCOLORED))
 #endif				/* USE_BG_COLOR */
 		    || (!(pr[col] & S_GRAPHICS) && (mode & S_GRAPHICS))) {
-            if ((mode & S_COLORED)
+		    if ((mode & S_COLORED)
 #ifdef USE_BG_COLOR
-              || (mode & S_BCOLORED)
+			|| (mode & S_BCOLORED)
 #endif				/* USE_BG_COLOR */
 			)
 			writestr(T_op);
-            if (mode & S_GRAPHICS)
+		    if (mode & S_GRAPHICS)
 			writestr(T_ae);
 		    writestr(T_me);
 		    mode &= ~M_MEND;
 		}
 		if ((*dirty & L_NEED_CE && col >= ScreenImage[line]->eol) ?
-		    need_redraw(pc[col], pr[col], ' ', 0) : (pr[col] & S_DIRTY)) {
+		    need_redraw(pc[col], pr[col], ' ',
+				0) : (pr[col] & S_DIRTY)) {
 		    if (pcol == col - 1)
 			writestr(T_nd);
 		    else if (pcol != col)
@@ -1306,18 +1313,19 @@ refresh(void)
 			writestr(T_md);
 			mode |= S_BOLD;
 		    }
-            if ((pr[col] & S_COLORED) && (pr[col] ^ mode) & COL_FCOLOR) {
-               color = (pr[col] & COL_FCOLOR);
-               mode = ((mode & ~COL_FCOLOR) | color);
-               writestr(color_seq(color));
-            }
+		    if ((pr[col] & S_COLORED) && (pr[col] ^ mode) & COL_FCOLOR) {
+			color = (pr[col] & COL_FCOLOR);
+			mode = ((mode & ~COL_FCOLOR) | color);
+			writestr(color_seq(color));
+		    }
 #ifdef USE_BG_COLOR
-            if ((pr[col] & S_BCOLORED) && (pr[col] ^ mode) & COL_BCOLOR) {
-               bcolor = (pr[col] & COL_BCOLOR);
-               mode = ((mode & ~COL_BCOLOR) | bcolor);
-               writestr(bcolor_seq(bcolor));
-            }
-#endif                /* USE_BG_COLOR */
+		    if ((pr[col] & S_BCOLORED)
+			&& (pr[col] ^ mode) & COL_BCOLOR) {
+			bcolor = (pr[col] & COL_BCOLOR);
+			mode = ((mode & ~COL_BCOLOR) | bcolor);
+			writestr(bcolor_seq(bcolor));
+		    }
+#endif				/* USE_BG_COLOR */
 		    if ((pr[col] & S_GRAPHICS) && !(mode & S_GRAPHICS)) {
 			if (!graph_enabled) {
 			    graph_enabled = 1;
@@ -1326,7 +1334,8 @@ refresh(void)
 			writestr(T_as);
 			mode |= S_GRAPHICS;
 		    }
-		    write1((pr[col] & S_GRAPHICS) ? graphchar(pc[col]) : pc[col]);
+		    write1((pr[col] & S_GRAPHICS) ? graphchar(pc[col]) :
+			   pc[col]);
 		    pcol = col + 1;
 		}
 	    }
@@ -1719,7 +1728,7 @@ term_cooked(void)
     /* On XFree86/OS2, some scrambled characters
      * will appear when asserting IEXTEN flag.
      */
-    ttymode_set((TTY_MODE)&~IEXTEN,0);
+    ttymode_set((TTY_MODE) & ~IEXTEN, 0);
 #else
     ttymode_set(TTY_MODE, 0);
 #endif
@@ -1749,15 +1758,16 @@ getch(void)
 
     while (
 #ifdef __CYGWIN__
-	    read_win32_console(&c, 1)
+	      read_win32_console(&c, 1)
 #else
-	    read(tty, &c, 1)
+	      read(tty, &c, 1)
 #endif
-	    < (int)1) {
-        if (errno == EINTR || errno == EAGAIN) continue;
-        /* error happend on read(2) */
-        quitfm();
-        break;  /* unreachable */
+	      < (int)1) {
+	if (errno == EINTR || errno == EAGAIN)
+	    continue;
+	/* error happend on read(2) */
+	quitfm();
+	break;			/* unreachable */
     }
     return c;
 }
@@ -1807,7 +1817,7 @@ sysm_getch()
 int
 do_getch()
 {
-    if (is_xterm || ! sysm_handler)
+    if (is_xterm || !sysm_handler)
 	return getch();
     else
 	return sysm_getch();
@@ -1850,14 +1860,14 @@ skip_escseq(void)
 	c = getch();
 #ifdef USE_MOUSE
 	if (is_xterm && c == 'M') {
-	  getch();
-	  getch();
-	  getch();
+	    getch();
+	    getch();
+	    getch();
 	}
 	else
-#endif	
-	while (IS_DIGIT(c))
-	    c = getch();
+#endif
+	    while (IS_DIGIT(c))
+		c = getch();
     }
 }
 
@@ -1911,7 +1921,7 @@ mouse_init()
     conn.maxMod = 0;
     conn.minMod = 0;
     if (Gpm_Open(&conn, 0) == -2) {
-        /*
+	/*
 	 * If Gpm_Open() success, returns >= 0
 	 * Gpm_Open() returns -2 in case of xterm.
 	 * Gpm_Close() is necessary here. Otherwise,
@@ -1920,7 +1930,8 @@ mouse_init()
 	 */
 	Gpm_Close();
 	is_xterm = 1;
-    } else {
+    }
+    else {
 	gpm_handler = gpm_process_mouse;
     }
     if (is_xterm) {
@@ -1974,7 +1985,7 @@ mouse_init()
 	mi.operation = MOUSE_MODE;
 	mi.u.mode.mode = 0;
 	mi.u.mode.signal = SIGUSR2;
-       sysm_handler = NULL;
+	sysm_handler = NULL;
 	if (ioctl(tty, CONS_MOUSECTL, &mi) != -1) {
 	    signal(SIGUSR2, sysmouse);
 	    mi.operation = MOUSE_SHOW;
@@ -2015,7 +2026,7 @@ mouse_init()
 #ifdef __CYGWIN__
 	&& hConIn == INVALID_HANDLE_VALUE
 #endif
-	    ) {
+	) {
 	XTERM_ON;
     }
     mouseActive = 1;
@@ -2030,7 +2041,7 @@ mouse_end()
 #ifdef __CYGWIN__
 	&& hConIn == INVALID_HANDLE_VALUE
 #endif
-	    ) {
+	) {
 	XTERM_OFF;
     }
     mouseActive = 0;

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.7 2001/11/23 21:40:19 ukai Exp $ */
+/* $Id: etc.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -7,7 +7,7 @@
 #include "hash.h"
 #include "terms.h"
 
-#ifdef HAVE_GETCWD /* ??? ukai */
+#ifdef HAVE_GETCWD		/* ??? ukai */
 #include <unistd.h>
 #include <sys/param.h>
 #endif				/* HAVE_GETCWD */
@@ -86,7 +86,7 @@ arg_is(char *str, char *tag)
 }
 
 int
-columnSkip(Buffer * buf, int offset)
+columnSkip(Buffer *buf, int offset)
 {
     int i, maxColumn;
     int column = buf->currentColumn + offset;
@@ -94,9 +94,7 @@ columnSkip(Buffer * buf, int offset)
     Line *l;
 
     maxColumn = 0;
-    for (i = 0, l = buf->topLine;
-	 i < nlines && l != NULL;
-	 i++, l = l->next) {
+    for (i = 0, l = buf->topLine; i < nlines && l != NULL; i++, l = l->next) {
 	if (l->width < 0)
 	    l->width = COLPOS(l, l->len);
 	if (l->width - 1 > maxColumn)
@@ -115,7 +113,7 @@ columnSkip(Buffer * buf, int offset)
 }
 
 int
-columnPos(Line * line, int column)
+columnPos(Line *line, int column)
 {
     int i;
 
@@ -132,23 +130,22 @@ columnPos(Line * line, int column)
 }
 
 Line *
-lineSkip(Buffer * buf, Line * line, int offset, int last)
+lineSkip(Buffer *buf, Line *line, int offset, int last)
 {
     int i;
     Line *l;
 
     l = currentLineSkip(buf, line, offset, last);
 #ifdef NEXTPAGE_TOPLINE
-    if (! nextpage_topline)
+    if (!nextpage_topline)
 #endif
 	for (i = (LASTLINE - 1) - (buf->lastLine->linenumber - l->linenumber);
-	     i > 0 && l->prev != NULL;
-	     i--, l = l->prev);
+	     i > 0 && l->prev != NULL; i--, l = l->prev) ;
     return l;
 }
 
 Line *
-currentLineSkip(Buffer * buf, Line * line, int offset, int last)
+currentLineSkip(Buffer *buf, Line *line, int offset, int last)
 {
     int i, n;
     Line *l = line;
@@ -158,7 +155,7 @@ currentLineSkip(Buffer * buf, Line * line, int offset, int last)
 	if (buf->lastLine->linenumber < n)
 	    getNextPage(buf, n - buf->lastLine->linenumber);
 	while ((last || (buf->lastLine->linenumber < n)) &&
-	       (getNextPage(buf, 1) != NULL));
+	       (getNextPage(buf, 1) != NULL)) ;
 	if (last)
 	    l = buf->lastLine;
     }
@@ -166,9 +163,9 @@ currentLineSkip(Buffer * buf, Line * line, int offset, int last)
     if (offset == 0)
 	return l;
     if (offset > 0)
-	for (i = 0; i < offset && l->next != NULL; i++, l = l->next);
+	for (i = 0; i < offset && l->next != NULL; i++, l = l->next) ;
     else
-	for (i = 0; i < -offset && l->prev != NULL; i++, l = l->prev);
+	for (i = 0; i < -offset && l->prev != NULL; i++, l = l->prev) ;
     return l;
 }
 
@@ -178,10 +175,7 @@ static int
 get_cmd(Hash_si * hash,
 	char **s,
 	char *args,
-	char termchar,
-	int defaultcmd,
-	int allow_space,
-	int *status)
+	char termchar, int defaultcmd, int allow_space, int *status)
 {
     char cmdstr[MAX_CMD_LEN];
     char *p = cmdstr;
@@ -197,8 +191,7 @@ get_cmd(Hash_si * hash,
 	return defaultcmd;
     if (p[-1] == '/')
 	SKIP_BLANKS(*s);
-    while ((IS_ALNUM(**s) || **s == '_') &&
-	   p - cmdstr < MAX_CMD_LEN) {
+    while ((IS_ALNUM(**s) || **s == '_') && p - cmdstr < MAX_CMD_LEN) {
 	*(p++) = tolower(*((*s)++));
     }
     if (p - cmdstr == MAX_CMD_LEN) {
@@ -304,11 +297,10 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
     Linecolor c = *color;
     int i;
 
-    if (*p != ESC_CODE || *(p+1) != '[')
+    if (*p != ESC_CODE || *(p + 1) != '[')
 	return 0;
     p += 2;
-    for (q = p; IS_DIGIT(*q) || *q == ';'; q++)
-	;
+    for (q = p; IS_DIGIT(*q) || *q == ';'; q++) ;
     if (*q != 'm')
 	return 0;
     *str = q + 1;
@@ -320,8 +312,7 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
 	}
 	if (IS_DIGIT(*p)) {
 	    q = p;
-	    for (p++; IS_DIGIT(*p); p++)
-		;
+	    for (p++; IS_DIGIT(*p); p++) ;
 	    i = atoi(allocStr(q, p - q));
 	    switch (i) {
 	    case 0:
@@ -338,7 +329,7 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
 	    case 7:
 		e = PE_STAND;
 		break;
-	    case 100:	/* for EWS4800 kterm */
+	    case 100:		/* for EWS4800 kterm */
 		c = 0;
 		break;
 	    case 39:
@@ -356,12 +347,13 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
 	    }
 	    if (*p == 'm')
 		break;
-	} else {
+	}
+	else {
 	    e = PE_NORMAL;
 	    c = 0;
 	    break;
 	}
-	p++;	/* *p == ';' */
+	p++;			/* *p == ';' */
     }
     *effect = e;
     *color = c;
@@ -374,9 +366,9 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
  */
 
 Str
-checkType(Str s, Lineprop * oprop,
+checkType(Str s, Lineprop *oprop,
 #ifdef USE_ANSI_COLOR
-	  Linecolor * ocolor, int * check_color,
+	  Linecolor *ocolor, int *check_color,
 #endif
 	  int len)
 {
@@ -472,8 +464,7 @@ checkType(Str s, Lineprop * oprop,
 		else if (*(str + 1) == '\b') {
 #ifdef JP_CHARSET
 		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
-			if (str + 4 <= endp &&
-			    !strncmp(str - 2, str + 2, 2)) {
+			if (str + 4 <= endp && !strncmp(str - 2, str + 2, 2)) {
 			    *(prop - 1) |= PE_BOLD;
 			    *(prop - 2) |= PE_BOLD;
 			    str += 4;
@@ -487,8 +478,7 @@ checkType(Str s, Lineprop * oprop,
 		    else
 #endif				/* JP_CHARSET */
 		    if (s->length > 0) {
-			if (str + 3 <= endp &&
-			    *(str - 1) == *(str + 2)) {
+			if (str + 3 <= endp && *(str - 1) == *(str + 2)) {
 			    *(prop - 1) |= PE_BOLD;
 			    str += 3;
 			}
@@ -505,8 +495,7 @@ checkType(Str s, Lineprop * oprop,
 		else {
 #ifdef JP_CHARSET
 		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
-			if (str + 3 <= endp &&
-			    !strncmp(str - 2, str + 1, 2)) {
+			if (str + 3 <= endp && !strncmp(str - 2, str + 1, 2)) {
 			    *(prop - 1) |= PE_BOLD;
 			    *(prop - 2) |= PE_BOLD;
 			    str += 3;
@@ -520,8 +509,7 @@ checkType(Str s, Lineprop * oprop,
 		    else
 #endif				/* JP_CHARSET */
 		    if (s->length > 0) {
-			if (str + 2 <= endp &&
-			    *(str - 1) == *(str + 1)) {
+			if (str + 2 <= endp && *(str - 1) == *(str + 1)) {
 			    *(prop - 1) |= PE_BOLD;
 			    str += 2;
 			}
@@ -613,15 +601,15 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     if (l == NULL || len == 0)
 	return bpos;
     if (l == prevl && mode == CP_AUTO) {
-        if (pos <= len)
+	if (pos <= len)
 	    return realColumn[pos];
     }
     prevl = l;
     j = bpos;
     for (i = 0;; i++) {
 	realColumn[i] = j;
-        if (i == len)
-            break;
+	if (i == len)
+	    break;
 	if (l[i] == '\t' && pr[i] == PC_CTRL)
 	    j = (j + Tabstop) / Tabstop * Tabstop;
 #ifndef KANJI_SYMBOLS
@@ -944,8 +932,7 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 		*status = prev_status;
 		return 1;
 	    }
-	    if (*status == R_ST_TAG0 &&
-		!REALLY_THE_BEGINNING_OF_A_TAG(p)) {
+	    if (*status == R_ST_TAG0 && !REALLY_THE_BEGINNING_OF_A_TAG(p)) {
 		/* it seems that this '<' is not a beginning of a tag */
 		Strcat_charp(buf, "&lt;");
 		*status = R_ST_NORMAL;
@@ -986,7 +973,7 @@ correct_irrtag(int status)
 
     while (status != R_ST_NORMAL) {
 	switch (status) {
-	case R_ST_CMNT:		/* required "-->" */
+	case R_ST_CMNT:	/* required "-->" */
 	case R_ST_NCMNT1:	/* required "->" */
 	    c = '-';
 	    break;
@@ -1061,7 +1048,7 @@ add_auth_cookie(char *host, char *realm, Str cookie)
 
 /* get last modified time */
 char *
-last_modified(Buffer * buf)
+last_modified(Buffer *buf)
 {
     TextListItem *ti;
     struct stat st;
@@ -1082,12 +1069,10 @@ last_modified(Buffer * buf)
     return "unknown";
 }
 
-static char roman_num1[] =
-{
+static char roman_num1[] = {
     'i', 'x', 'c', 'm', '*',
 };
-static char roman_num5[] =
-{
+static char roman_num5[] = {
     'v', 'l', 'd', '*',
 };
 
@@ -1167,29 +1152,29 @@ romanAlphabet(int n)
 void
 mySystem(char *command, int background)
 {
-    if (background){
+    if (background) {
 #ifndef HAVE_SETPGRP
 	Str cmd = Strnew_charp("start /f ");
 	Strcat_charp(cmd, command);
 	system(cmd->ptr);
 #else
-        int pid;
-       flush_tty();
-        if ((pid = fork()) == 0) {
+	int pid;
+	flush_tty();
+	if ((pid = fork()) == 0) {
 #ifdef SIGCHLD
-          signal(SIGCHLD, SIG_IGN);
+	    signal(SIGCHLD, SIG_IGN);
 #endif
-          setpgrp();
-         close_tty();
-          fclose(stdout);
-          fclose(stderr);
-          execl("/bin/sh", "sh", "-c", command, NULL);
-          exit(127);
-       }
+	    setpgrp();
+	    close_tty();
+	    fclose(stdout);
+	    fclose(stderr);
+	    execl("/bin/sh", "sh", "-c", command, NULL);
+	    exit(127);
+	}
 #endif
     }
     else
-       system(command);
+	system(command);
 }
 
 char *
@@ -1240,25 +1225,26 @@ file_to_url(char *file)
     file = expandName(file);
 #ifdef SUPPORT_NETBIOS_SHARE
     if (file[0] == '/' && file[1] == '/') {
-       char *p;
-       file += 2;
-       if (*file) {
-           p = strchr(file, '/');
-           if (p != NULL && p != file) {
-        host = allocStr(file, (p - file));
-        file = p;
-           }
-       }
+	char *p;
+	file += 2;
+	if (*file) {
+	    p = strchr(file, '/');
+	    if (p != NULL && p != file) {
+		host = allocStr(file, (p - file));
+		file = p;
+	    }
+	}
     }
 #endif
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (IS_ALPHA(file[0]) && file[1] == ':') {
-       drive = allocStr(file, 2);
-       file += 2;
-    } else
+	drive = allocStr(file, 2);
+	file += 2;
+    }
+    else
 #endif
     if (file[0] != '/') {
-       tmp = Strnew_charp(CurrentDir);
+	tmp = Strnew_charp(CurrentDir);
 	if (Strlastchar(tmp) != '/')
 	    Strcat_char(tmp, '/');
 	Strcat_charp(tmp, file);
@@ -1267,22 +1253,21 @@ file_to_url(char *file)
     tmp = Strnew_charp("file://");
 #ifdef SUPPORT_NETBIOS_SHARE
     if (host)
-       Strcat_charp(tmp, host);
+	Strcat_charp(tmp, host);
 #endif
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (drive)
-       Strcat_charp(tmp, drive);
+	Strcat_charp(tmp, drive);
 #endif
     Strcat_charp(tmp, file_quote(cleanupName(file)));
     return tmp->ptr;
 }
 
-static char *tmpf_base[MAX_TMPF_TYPE] =
-{
-    "tmp", "src", "frame", "cache" 
+static char *tmpf_base[MAX_TMPF_TYPE] = {
+    "tmp", "src", "frame", "cache"
 };
 static unsigned int tmpf_seq[MAX_TMPF_TYPE];
-    
+
 Str
 tmpfname(int type, char *ext)
 {
@@ -1290,16 +1275,12 @@ tmpfname(int type, char *ext)
     tmpf = Sprintf("%s/w3m%s%d-%d%s",
 		   rc_dir,
 		   tmpf_base[type],
-		   (int) getpid(),
-		   tmpf_seq[type]++,
-		   (ext)? ext : ""
-		   );
+		   (int)getpid(), tmpf_seq[type]++, (ext) ? ext : "");
     return tmpf;
 }
 
 #ifdef USE_COOKIE
-static char *monthtbl[] =
-{
+static char *monthtbl[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
@@ -1417,8 +1398,7 @@ get_time(char **s, int *hour, int *min, int *sec)
     *sec = atoi(tmp->ptr);
 
     if (*hour < 0 || *hour >= 24 ||
-	*min < 0 || *min >= 60 ||
-	*sec < 0 || *sec >= 60) {
+	*min < 0 || *min >= 60 || *sec < 0 || *sec >= 60) {
 	*s = ss;
 	return -1;
     }
@@ -1506,9 +1486,7 @@ mymktime(char *timestr)
     day += (year - 1968) * 1461 / 4;
     day += ((((mon * 153) + 2) / 5) - 672);
     return (time_t) ((day * 60 * 60 * 24) +
-		     (hour * 60 * 60) +
-		     (min * 60) +
-		     sec);
+		     (hour * 60 * 60) + (min * 60) + sec);
 }
 
 #ifdef INET6
@@ -1531,7 +1509,7 @@ FQDN(char *host)
     if (strcasecmp(host, "localhost") == 0)
 	return host;
 
-    for (p = host; *p && *p != '.'; p++);
+    for (p = host; *p && *p != '.'; p++) ;
 
     if (*p == '.')
 	return host;

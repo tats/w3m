@@ -1,9 +1,9 @@
-/* $Id: search.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: search.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 
 int
-forwardSearch(Buffer * buf, char *str)
+forwardSearch(Buffer *buf, char *str)
 {
     char *p, *first, *last;
     Line *l, *begin;
@@ -71,7 +71,7 @@ forwardSearch(Buffer * buf, char *str)
 }
 
 int
-backwardSearch(Buffer * buf, char *str)
+backwardSearch(Buffer *buf, char *str)
 {
     char *p, *q, *found, *first, *last;
     Line *l, *begin;
@@ -84,8 +84,8 @@ backwardSearch(Buffer * buf, char *str)
     }
     l = begin = buf->currentLine;
     if (l == NULL) {
-        disp_message("Not found", FALSE);
-        return FALSE;
+	disp_message("Not found", FALSE);
+	return FALSE;
     }
     if (buf->pos > 0) {
 	pos = buf->pos - 1;

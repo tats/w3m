@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.7 2001/11/23 20:50:59 ukai Exp $ */
+/* $Id: linein.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -33,11 +33,11 @@ static int NCFileBuf;
 static int NCFileOffset;
 
 static void insertself(char c),
-  _mvR(void), _mvL(void), _mvRw(void), _mvLw(void), delC(void), insC(void),
-  _mvB(void), _mvE(void), _enter(void), _quo(void), _bs(void), _bsw(void),
-  killn(void), killb(void), _inbrk(void), _esc(void),
-  _prev(void), _next(void), _compl(void), _tcompl(void),
-  _dcompl(void), _rdcompl(void),  _rcompl(void);
+_mvR(void), _mvL(void), _mvRw(void), _mvLw(void), delC(void), insC(void),
+_mvB(void), _mvE(void), _enter(void), _quo(void), _bs(void), _bsw(void),
+killn(void), killb(void), _inbrk(void), _esc(void),
+_prev(void), _next(void), _compl(void), _tcompl(void),
+_dcompl(void), _rdcompl(void), _rcompl(void);
 #ifdef __EMX__
 static int getcntrl(void);
 #endif
@@ -49,6 +49,7 @@ static void next_compl(int next);
 static void next_dcompl(int next);
 static Str doComplete(Str ifn, int *status, int next);
 
+/* *INDENT-OFF* */
 void (*InputKeymap[32]) () = {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g     */
     _compl, _mvB,   _mvL,   _inbrk, delC,   _mvE,   _mvR,   _inbrk,
@@ -59,8 +60,9 @@ void (*InputKeymap[32]) () = {
 /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_     */
     _tcompl,_mvRw,  iself,  _esc,   iself,  iself,  iself,  iself,
 };
+/* *INDENT-ON* */
 
-static int setStrType(Str str, Lineprop * prop);
+static int setStrType(Str str, Lineprop *prop);
 static void addPasswd(char *p, Lineprop *pr, int len, int pos, int limit);
 static void addStr(char *p, Lineprop *pr, int len, int pos, int limit);
 
@@ -79,7 +81,7 @@ static void ins_kanji(Str tmp);
 #endif
 
 char *
-inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
+inputLineHist(char *prompt, char *def_str, int flag, Hist *hist)
 {
     int opos, x, y, lpos, rpos, epos;
     unsigned char c;
@@ -100,19 +102,23 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
     if (hist != NULL) {
 	use_hist = TRUE;
 	strCurrentBuf = NULL;
-    } else {
+    }
+    else {
 	use_hist = FALSE;
     }
     if (flag & IN_URL) {
 	cm_mode = CPL_ALWAYS | CPL_URL;
 	move_word = TRUE;
-    } else if (flag & IN_FILENAME) {
+    }
+    else if (flag & IN_FILENAME) {
 	cm_mode = CPL_ALWAYS;
 	move_word = TRUE;
-    } else if (flag & IN_PASSWORD) {
+    }
+    else if (flag & IN_PASSWORD) {
 	cm_mode = CPL_NEVER;
 	is_passwd = TRUE;
-    } else if (flag & IN_COMMAND)
+    }
+    else if (flag & IN_COMMAND)
 	cm_mode = CPL_ON;
     else
 	cm_mode = CPL_OFF;
@@ -127,7 +133,8 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
     if (def_str) {
 	strBuf = Strnew_charp(def_str);
 	CLen = CPos = setStrType(strBuf, strProp);
-    } else {
+    }
+    else {
 	strBuf = Strnew();
 	CLen = CPos = 0;
     }
@@ -146,7 +153,8 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 		offset = x - rpos;
 	    else if (y - epos > 0)
 		offset = y - epos;
-	} else if (x - lpos < offset) {
+	}
+	else if (x - lpos < offset) {
 	    if (x - lpos > 0)
 		offset = x - lpos;
 	    else
@@ -162,7 +170,7 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	move(LASTLINE, opos + x - offset);
 	refresh();
 
-    next_char:
+      next_char:
 	c = getch();
 #ifdef __EMX__
 	if (c == 0) {
@@ -171,7 +179,7 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	}
 #endif
 	cm_clear = TRUE;
- 	cm_disp_clear = TRUE;
+	cm_disp_clear = TRUE;
 #ifdef JP_CHARSET
 	if (mode == PC_KANJI1) {
 	    mode = PC_KANJI2;
@@ -179,36 +187,37 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 		goto next_char;
 	    Strcat_char(tmp, (c | (DisplayCode == CODE_SJIS ? 0 : 0x80)));
 	    tmp = conv_str(tmp,
-		(DisplayCode == CODE_SJIS ? CODE_SJIS : CODE_EUC), InnerCode);
+			   (DisplayCode == CODE_SJIS ? CODE_SJIS : CODE_EUC),
+			   InnerCode);
 	    ins_kanji(tmp);
 	}
 	else
 #endif
 	if (!i_quote &&
-	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
-	     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
+		(((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
+		     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
 #ifdef EMACS_LIKE_LINEEDIT
-		if (emacs_like_lineedit && cm_next) {
-		    _dcompl();
-		    need_redraw = TRUE;
-		}
-	        else {
+	    if (emacs_like_lineedit && cm_next) {
+		_dcompl();
+		need_redraw = TRUE;
+	    }
+	    else {
 #endif
-		    _compl();
-		    cm_disp_next = -1;
+		_compl();
+		cm_disp_next = -1;
 #ifdef EMACS_LIKE_LINEEDIT
-		}	
+	    }
 #endif
 	}
 	else if (!i_quote && CLen == CPos &&
 		 (cm_mode & CPL_ALWAYS || cm_mode & CPL_ON) && c == CTRL_D) {
 #ifdef EMACS_LIKE_LINEEDIT
-		if (! emacs_like_lineedit) {
+	    if (!emacs_like_lineedit) {
 #endif
-		    _dcompl();
-		    need_redraw = TRUE;
+		_dcompl();
+		need_redraw = TRUE;
 #ifdef EMACS_LIKE_LINEEDIT
-		}
+	    }
 #endif
 	}
 	else if (!i_quote && c == DEL_CODE) {
@@ -217,10 +226,10 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	    cm_disp_next = -1;
 	}
 	else if (!i_quote && c < 0x20) {	/* Control code */
-	    (*InputKeymap[(int) c]) (c);
+	    (*InputKeymap[(int)c]) (c);
 	    if (cm_clear)
 		cm_next = FALSE;
- 	    if (cm_disp_clear)
+	    if (cm_disp_clear)
 		cm_disp_next = -1;
 	}
 #ifdef JP_CHARSET
@@ -278,7 +287,7 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
     }
     if (use_hist && !(flag & IN_URL) && *p != '\0') {
 	char *q = lastHist(hist);
-	if (! q || strcmp(q, p))
+	if (!q || strcmp(q, p))
 	    pushHist(hist, p);
     }
     if (flag & IN_FILENAME)
@@ -295,7 +304,7 @@ getcntrl(void)
     case K_DEL:
 	return CTRL_D;
     case K_LEFT:
-       return CTRL_B;
+	return CTRL_B;
     case K_RIGHT:
 	return CTRL_F;
     case K_UP:
@@ -323,7 +332,7 @@ addPasswd(char *p, Lineprop *pr, int len, int offset, int limit)
     int rcol = 0, ncol;
 
     ncol = calcPosition(p, pr, len, len, 0, CP_AUTO);
-    if (ncol> offset + limit)
+    if (ncol > offset + limit)
 	ncol = offset + limit;
     if (offset) {
 	addChar('{', 0);
@@ -364,17 +373,19 @@ addStr(char *p, Lineprop *pr, int len, int offset, int limit)
 #endif
 	ncol = calcPosition(p, pr, len, i + delta, 0, CP_AUTO);
 	if (ncol - offset > limit)
-	   break;
+	    break;
 	if (p[i] == '\t') {
 	    for (; rcol < ncol; rcol++)
 		addChar(' ', 0);
 	    continue;
 #ifdef JP_CHARSET
-	} else if (delta == 2) {
+	}
+	else if (delta == 2) {
 	    addChar(p[i], pr[i]);
-	    addChar(p[i+1], pr[i+1]);
+	    addChar(p[i + 1], pr[i + 1]);
 #endif
-	} else
+	}
+	else
 	    addChar(p[i], pr[i]);
 	rcol = ncol;
     }
@@ -427,16 +438,17 @@ _esc(void)
 	    _rdcompl();
 	    cm_clear = FALSE;
 	    need_redraw = TRUE;
-	} else
+	}
+	else
 #else
-	    _rcompl();
+	_rcompl();
 #endif
 	break;
     case CTRL_D:
 #ifdef EMACS_LIKE_LINEEDIT
 	if (!emacs_like_lineedit)
 #else
-	    _rdcompl();
+	_rdcompl();
 #endif
 	need_redraw = TRUE;
 	break;
@@ -515,14 +527,12 @@ static void
 _mvLw(void)
 {
     int first = 1;
-    while(CPos > 0
-	  && ( first || !terminated(strBuf->ptr[CPos-1])))
-    {
+    while (CPos > 0 && (first || !terminated(strBuf->ptr[CPos - 1]))) {
 	CPos--;
 	first = 0;
 #ifdef JP_CHARSET
-    if (strProp[CPos] == PC_KANJI2)
-	CPos--;
+	if (strProp[CPos] == PC_KANJI2)
+	    CPos--;
 #endif				/* JP_CHARSET */
 	if (!move_word)
 	    break;
@@ -532,18 +542,16 @@ _mvLw(void)
 static void
 _mvRw(void)
 {
-  int first = 1;
-    while(CPos < CLen
-	  && ( first || !terminated(strBuf->ptr[CPos-1])))
-    {
+    int first = 1;
+    while (CPos < CLen && (first || !terminated(strBuf->ptr[CPos - 1]))) {
 	CPos++;
 	first = 0;
 #ifdef JP_CHARSET
-    if (strProp[CPos] == PC_KANJI2)
-	CPos++;
+	if (strProp[CPos] == PC_KANJI2)
+	    CPos++;
 #endif				/* JP_CHARSET */
-	if(!move_word)
-	  break;
+	if (!move_word)
+	    break;
     }
 }
 
@@ -571,9 +579,9 @@ static void
 _bsw(void)
 {
     int t = 0;
-    while(CPos > 0 && !t) {
+    while (CPos > 0 && !t) {
 	_mvL();
-	t = (move_word && terminated(strBuf->ptr[CPos-1]));
+	t = (move_word && terminated(strBuf->ptr[CPos - 1]));
 	delC();
     }
 }
@@ -727,10 +735,12 @@ next_dcompl(int next)
     if (LASTLINE >= 3) {
 	comment = TRUE;
 	nline = LASTLINE - 2;
-    } else if (LASTLINE) {
+    }
+    else if (LASTLINE) {
 	comment = FALSE;
 	nline = LASTLINE;
-    } else {
+    }
+    else {
 	return;
     }
     if (cm_disp_next >= 0) {
@@ -772,25 +782,28 @@ next_dcompl(int next)
     for (i = 0; i < NCFileBuf; i++) {
 	n = strlen(CFileBuf[i]) + 3;
 	if (len < n)
-	   len = n;
+	    len = n;
     }
     col = COLS / len;
     if (col == 0)
 	col = 1;
     row = (NCFileBuf + col - 1) / col;
 
-disp_next:
+  disp_next:
     if (comment) {
 	if (row > nline) {
 	    row = nline;
 	    y = 0;
-	} else
+	}
+	else
 	    y = nline - row + 1;
-    } else {
+    }
+    else {
 	if (row >= nline) {
 	    row = nline;
 	    y = 0;
-	} else
+	}
+	else
 	    y = nline - row - 1;
     }
     if (y) {
@@ -829,7 +842,7 @@ disp_next:
 	    addstr("----- Press TAB to continue -----");
 	else
 #else
-	    addstr("----- Press CTRL-D to continue -----");
+	addstr("----- Press CTRL-D to continue -----");
 #endif
 	boldend();
     }
@@ -848,15 +861,14 @@ doComplete(Str ifn, int *status, int next)
 	NCFileBuf = 0;
 	ifn = Str_conv_to_system(ifn);
 	CompleteBuf = Strdup(ifn);
-	while (Strlastchar(CompleteBuf) != '/' &&
-	       CompleteBuf->length > 0)
+	while (Strlastchar(CompleteBuf) != '/' && CompleteBuf->length > 0)
 	    Strshrink(CompleteBuf, 1);
 	CDirBuf = Strdup(CompleteBuf);
 	if (cm_mode & CPL_URL) {
 	    if (strncmp(CompleteBuf->ptr, "file://localhost/", 17) == 0)
 		Strdelete(CompleteBuf, 0, 16);
 	    else if (strncmp(CompleteBuf->ptr, "file:///", 8) == 0)
-		 Strdelete(CompleteBuf, 0, 7);
+		Strdelete(CompleteBuf, 0, 7);
 	    else if (strncmp(CompleteBuf->ptr, "file:/", 6) == 0 &&
 		     CompleteBuf->ptr[6] != '/')
 		Strdelete(CompleteBuf, 0, 5);
@@ -884,18 +896,20 @@ doComplete(Str ifn, int *status, int next)
 	    dir = readdir(d);
 	    if (dir == NULL)
 		break;
-	    if (fl == 0 && (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..")))
+	    if (fl == 0
+		&& (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, "..")))
 		continue;
 	    if (!strncmp(dir->d_name, fn, fl)) {	/* match */
 		NCFileBuf++;
 		CFileBuf = New_Reuse(char *, CFileBuf, NCFileBuf);
-		CFileBuf[NCFileBuf - 1] = NewAtom_N(char, strlen(dir->d_name) + 1);
+		CFileBuf[NCFileBuf - 1] =
+		    NewAtom_N(char, strlen(dir->d_name) + 1);
 		strcpy(CFileBuf[NCFileBuf - 1], dir->d_name);
 		if (NCFileBuf == 1) {
 		    CFileName = Strnew_charp(dir->d_name);
 		}
 		else {
-		    for (i = 0; CFileName->ptr[i] == dir->d_name[i]; i++);
+		    for (i = 0; CFileName->ptr[i] == dir->d_name[i]; i++) ;
 		    Strtruncate(CFileName, i);
 		}
 	    }
@@ -952,13 +966,14 @@ _prev(void)
     Hist *hist = CurrentHist;
     char *p;
 
-    if (! use_hist)
+    if (!use_hist)
 	return;
     if (strCurrentBuf) {
 	p = prevHist(hist);
 	if (p == NULL)
 	    return;
-    } else {
+    }
+    else {
 	p = lastHist(hist);
 	if (p == NULL)
 	    return;
@@ -975,14 +990,15 @@ _next(void)
     Hist *hist = CurrentHist;
     char *p;
 
-    if (! use_hist)
+    if (!use_hist)
 	return;
     if (strCurrentBuf == NULL)
 	return;
     p = nextHist(hist);
     if (p) {
 	strBuf = Strnew_charp(p);
-    } else {
+    }
+    else {
 	strBuf = strCurrentBuf;
 	strCurrentBuf = NULL;
     }
@@ -991,7 +1007,7 @@ _next(void)
 }
 
 static int
-setStrType(Str str, Lineprop * prop)
+setStrType(Str str, Lineprop *prop)
 {
     Lineprop ctype;
     int i = 0, delta;
@@ -1005,25 +1021,26 @@ setStrType(Str str, Lineprop * prop)
 #ifdef JP_CHARSET
 	if (ctype == PC_KANJI) {
 	    prop[i] = PC_KANJI1;
-	    prop[i+1] = PC_KANJI2;
+	    prop[i + 1] = PC_KANJI2;
 	}
 	else
 #endif
-	prop[i] = ctype;
+	    prop[i] = ctype;
     }
     return i;
 }
 
 static int
-terminated(unsigned char c){
-  int termchar[] = {'/', '&', '?', -1};
-  int *tp;
+terminated(unsigned char c)
+{
+    int termchar[] = { '/', '&', '?', -1 };
+    int *tp;
 
-  for(tp = termchar; *tp > 0; tp++){
-    if(c == *tp){
-      return 1;
+    for (tp = termchar; *tp > 0; tp++) {
+	if (c == *tp) {
+	    return 1;
+	}
     }
-  }
 
-  return 0;
+    return 0;
 }

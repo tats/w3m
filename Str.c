@@ -1,4 +1,4 @@
-/* $Id: Str.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: Str.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -17,7 +17,7 @@
 #include <gc.h>
 #include <stdarg.h>
 #include <string.h>
-#ifdef __EMX__	/* or include "fm.h" for HAVE_BCOPY? */
+#ifdef __EMX__			/* or include "fm.h" for HAVE_BCOPY? */
 #include <strings.h>
 #endif
 #include "Str.h"
@@ -67,12 +67,12 @@ Strnew_charp(char *p)
     x->ptr = GC_MALLOC_ATOMIC(n);
     x->area_size = n;
     x->length = n - 1;
-    bcopy((void *)p, (void*)x->ptr, n);
+    bcopy((void *)p, (void *)x->ptr, n);
     return x;
 }
 
 Str
-Strnew_m_charp(char *p,...)
+Strnew_m_charp(char *p, ...)
 {
     va_list ap;
     Str r = Strnew();
@@ -216,7 +216,7 @@ Strcat_charp(Str x, char *y)
 }
 
 void
-Strcat_m_charp(Str x,...)
+Strcat_m_charp(Str x, ...)
 {
     va_list ap;
     char *p;
@@ -351,7 +351,7 @@ Strremovefirstspaces(Str s)
     int i;
 
     STR_LENGTH_CHECK(s);
-    for (i = 0; i < s->length && IS_SPACE(s->ptr[i]); i++);
+    for (i = 0; i < s->length && IS_SPACE(s->ptr[i]); i++) ;
     if (i == 0)
 	return;
     Strdelete(s, 0, i);
@@ -363,7 +363,7 @@ Strremovetrailingspaces(Str s)
     int i;
 
     STR_LENGTH_CHECK(s);
-    for (i = s->length - 1; i >= 0 && IS_SPACE(s->ptr[i]); i--);
+    for (i = s->length - 1; i >= 0 && IS_SPACE(s->ptr[i]); i--) ;
     s->length = i + 1;
     s->ptr[i + 1] = '\0';
 }
@@ -424,7 +424,7 @@ Stralign_center(Str s, int width)
 #define SP_PREC2  2
 
 Str
-Sprintf(char *fmt,...)
+Sprintf(char *fmt, ...)
 {
     int len = 0;
     int status = SP_NORMAL;

@@ -1,9 +1,9 @@
-/* $Id: history.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: history.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
 Buffer *
-historyBuffer(Hist * hist)
+historyBuffer(Hist *hist)
 {
     Str src = Strnew();
     HistItem *item;
@@ -27,7 +27,7 @@ historyBuffer(Hist * hist)
 }
 
 void
-loadHistory(Hist * hist)
+loadHistory(Hist *hist)
 {
     FILE *f;
     Str line;
@@ -50,7 +50,7 @@ loadHistory(Hist * hist)
 }
 
 void
-saveHistory(Hist * hist, size_t size)
+saveHistory(Hist *hist, size_t size)
 {
     FILE *f;
     HistItem *item;
@@ -62,7 +62,7 @@ saveHistory(Hist * hist, size_t size)
 	return;
     }
     for (item = hist->list->first; item && hist->list->nitem > size;
-	item = item->next)
+	 item = item->next)
 	size++;
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
@@ -86,11 +86,11 @@ HistItem *
 unshiftHist(Hist *hist, char *ptr)
 {
     HistItem *item;
-  
+
     if (hist == NULL || hist->list == NULL)
 	return NULL;
     item = (HistItem *)newListItem((void *)allocStr(ptr, 0),
-	(ListItem *)hist->list->first, NULL);
+				   (ListItem *)hist->list->first, NULL);
     if (hist->list->first)
 	hist->list->first->prev = item;
     else
@@ -99,16 +99,16 @@ unshiftHist(Hist *hist, char *ptr)
     hist->list->nitem++;
     return item;
 }
-  
+
 HistItem *
 pushHist(Hist *hist, char *ptr)
-  {
+{
     HistItem *item;
-  
+
     if (hist == NULL || hist->list == NULL)
 	return NULL;
     item = (HistItem *)newListItem((void *)allocStr(ptr, 0),
-	NULL, (ListItem *)hist->list->last);
+				   NULL, (ListItem *)hist->list->last);
     if (hist->list->last)
 	hist->list->last->next = item;
     else
@@ -121,7 +121,7 @@ pushHist(Hist *hist, char *ptr)
 /* Don't mix pushHashHist() and pushHist()/unshiftHist(). */
 
 HistItem *
-pushHashHist(Hist * hist, char *ptr)
+pushHashHist(Hist *hist, char *ptr)
 {
     HistItem *item;
 
@@ -131,11 +131,11 @@ pushHashHist(Hist * hist, char *ptr)
     if (item) {
 	if (item->next)
 	    item->next->prev = item->prev;
-	else	/* item == hist->list->last */
+	else			/* item == hist->list->last */
 	    hist->list->last = item->prev;
 	if (item->prev)
 	    item->prev->next = item->next;
-	else	/* item == hist->list->first */
+	else			/* item == hist->list->first */
 	    hist->list->first = item->next;
 	hist->list->nitem--;
     }
@@ -145,7 +145,7 @@ pushHashHist(Hist * hist, char *ptr)
 }
 
 HistItem *
-getHashHist(Hist * hist, char *ptr)
+getHashHist(Hist *hist, char *ptr)
 {
     HistItem *item;
 
@@ -160,7 +160,7 @@ getHashHist(Hist * hist, char *ptr)
 }
 
 char *
-lastHist(Hist * hist)
+lastHist(Hist *hist)
 {
     if (hist == NULL || hist->list == NULL)
 	return NULL;
@@ -172,7 +172,7 @@ lastHist(Hist * hist)
 }
 
 char *
-nextHist(Hist * hist)
+nextHist(Hist *hist)
 {
     if (hist == NULL || hist->list == NULL)
 	return NULL;
@@ -184,7 +184,7 @@ nextHist(Hist * hist)
 }
 
 char *
-prevHist(Hist * hist)
+prevHist(Hist *hist)
 {
     if (hist == NULL || hist->list == NULL)
 	return NULL;
@@ -192,5 +192,5 @@ prevHist(Hist * hist)
 	hist->current = hist->current->prev;
 	return (char *)hist->current->ptr;
     }
-     return NULL;
+    return NULL;
 }

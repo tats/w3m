@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.5 2001/11/21 16:29:47 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,8 +38,9 @@ extractMailcapEntry(char *mcap_entry, char **type, char **cmd)
 
     while (*mcap_entry && IS_SPACE(*mcap_entry))
 	mcap_entry++;
-    for (j = 0; mcap_entry[j] && mcap_entry[j] != ';' && !IS_SPACE(mcap_entry[j]);
-	 j++);
+    for (j = 0;
+	 mcap_entry[j] && mcap_entry[j] != ';' && !IS_SPACE(mcap_entry[j]);
+	 j++) ;
     *type = allocStr(mcap_entry, j);
     if (mcap_entry[j] == ';')
 	j++;
@@ -49,8 +50,9 @@ extractMailcapEntry(char *mcap_entry, char **type, char **cmd)
 }
 
 static void
-bye(const char*action,const char*mailcap)
-{   printf("Content-Type: text/plain\n\n%s %s\n", action, mailcap);
+bye(const char *action, const char *mailcap)
+{
+    printf("Content-Type: text/plain\n\n%s %s\n", action, mailcap);
     exit(1);
 }
 
@@ -62,43 +64,51 @@ printMailcapPanel(char *mailcap)
     char *type, *viewer;
 
     if ((f = fopen(mailcap, "rt")) == NULL) {
-	if(errno!=ENOENT)
-	    bye("Can't open",mailcap);
+	if (errno != ENOENT)
+	    bye("Can't open", mailcap);
 
-	if(!(f=fopen(mailcap,"a+")))	/* if $HOME/.mailcap is not found, make it now! */
-	    bye("Can't open",mailcap);
+	if (!(f = fopen(mailcap, "a+")))	/* if $HOME/.mailcap is not found, make it now! */
+	    bye("Can't open", mailcap);
 
-	{   char* SysMailcap=getenv("SYS_MAILCAP");
-	    FILE* s = fopen(SysMailcap?SysMailcap:"/etc/mailcap","r");
+	{
+	    char *SysMailcap = getenv("SYS_MAILCAP");
+	    FILE *s = fopen(SysMailcap ? SysMailcap : "/etc/mailcap", "r");
 	    if (s) {
 		char buffer[256];
-		while(fgets(buffer,sizeof buffer,s))	/* Copy system mailcap to */
-		    fputs(buffer,f);			/* users' new one         */
+		while (fgets(buffer, sizeof buffer, s))	/* Copy system mailcap to */
+		    fputs(buffer, f);	/* users' new one         */
 		fclose(s);
 		rewind(f);
 	    }
 	}
     }
     printf("Content-Type: text/html\n\n");
-    printf("<html><head><title>External Viewer Setup</title></head><body><h1>%s</h1>\n", MSG_TITLE);
-    printf("<form method=get action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "\">\n");
+    printf
+	("<html><head><title>External Viewer Setup</title></head><body><h1>%s</h1>\n",
+	 MSG_TITLE);
+    printf("<form method=get action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME
+	   "\">\n");
     printf("<input type=hidden name=mode value=edit>\n");
-    printf("<input type=hidden name=cookie value=\"%s\">\n",local_cookie);
-    printf("%s: %s=<input type=text name=newtype><br>%s=<input type=text name=newcmd><br><input type=submit name=submit value=\"%s\">\n",
-	   MSG_NEW_ENTRY, MSG_TYPE, MSG_COMMAND, MSG_REGISTER);
-    printf("<p><hr width=50%%><p><table border='0' cellpadding='0'><tr><th>&nbsp;&nbsp;<th><b>%s</b><th><b>%s</b>\n",
-	   MSG_TYPE, MSG_COMMAND);
+    printf("<input type=hidden name=cookie value=\"%s\">\n", local_cookie);
+    printf
+	("%s: %s=<input type=text name=newtype><br>%s=<input type=text name=newcmd><br><input type=submit name=submit value=\"%s\">\n",
+	 MSG_NEW_ENTRY, MSG_TYPE, MSG_COMMAND, MSG_REGISTER);
+    printf
+	("<p><hr width=50%%><p><table border='0' cellpadding='0'><tr><th>&nbsp;&nbsp;<th><b>%s</b><th><b>%s</b>\n",
+	 MSG_TYPE, MSG_COMMAND);
     while (tmp = Strfgets(f), tmp->length > 0) {
 	if (tmp->ptr[0] == '#')
 	    continue;
 	Strchop(tmp);
 	extractMailcapEntry(tmp->ptr, &type, &viewer);
-	printf("<tr valign=top><td><td>%s<td>%s<td>", html_quote(type), html_quote(viewer));
+	printf("<tr valign=top><td><td>%s<td>%s<td>", html_quote(type),
+	       html_quote(viewer));
 	printf("<input type=checkbox name=delete value=\"%s\">%s\n",
 	       html_quote(type), MSG_DELETE);
     }
-    printf("</table><input type=submit name=submit value=\"%s\"></form></body></html>\n",
-	   MSG_DOIT);
+    printf
+	("</table><input type=submit name=submit value=\"%s\"></form></body></html>\n",
+	 MSG_DOIT);
 }
 
 void
@@ -113,7 +123,7 @@ editMailcap(char *mailcap, struct parsed_tagarg *args)
     int delete_it;
 
     if ((f = fopen(mailcap, "rt")) == NULL)
-	bye("Can't open",mailcap);
+	bye("Can't open", mailcap);
 
     while (tmp = Strfgets(f), tmp->length > 0) {
 	if (tmp->ptr[0] == '#')
@@ -136,7 +146,7 @@ editMailcap(char *mailcap, struct parsed_tagarg *args)
 	pushText(t, Sprintf("%s;\t%s\n", type, viewer)->ptr);
     fclose(f);
     if ((f = fopen(mailcap, "w")) == NULL)
-	bye("Can't write to",mailcap);
+	bye("Can't write to", mailcap);
 
     for (ti = t->first; ti != NULL; ti = ti->next)
 	fputs(ti->ptr, f);
@@ -169,17 +179,18 @@ MAIN(int argc, char *argv[], char **envp)
 	char *referer;
 	/* check if I can edit my mailcap */
 	if ((referer = getenv("HTTP_REFERER")) != NULL) {
-	    if (strncmp(referer,"file://",7) != 0 &&
-		strncmp(referer,"exec://",7) != 0) {
+	    if (strncmp(referer, "file://", 7) != 0 &&
+		strncmp(referer, "exec://", 7) != 0) {
 		/* referer is not file: nor exec: */
-		bye("It may be an illegal execution\n referer=",referer);
+		bye("It may be an illegal execution\n referer=", referer);
 	    }
 	}
-	sent_cookie = tag_get_value(cgiarg,"cookie");
+	sent_cookie = tag_get_value(cgiarg, "cookie");
 	if (local_cookie == NULL || sent_cookie == NULL ||
-	    strcmp(local_cookie,sent_cookie) != 0) {
+	    strcmp(local_cookie, sent_cookie) != 0) {
 	    /* Local cookie doesn't match */
-	    bye("Local cookie doesn't match: It may be an illegal execution","");
+	    bye("Local cookie doesn't match: It may be an illegal execution",
+		"");
 	}
 	/* edit mailcap */
 	editMailcap(mailcapfile->ptr, cgiarg);

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.5 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: form.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -9,9 +9,9 @@
 #include "local.h"
 
 #ifdef __EMX__
-/* lstat is identical to stat, only the link itself is statted, not the
- * file that is obtained by tracing the links.	But on OS/2 systems,
- * there is no differences. */
+/* lstat is identical to stat, only the link itself is statted, not the file
+ * that is obtained by tracing the links. But on OS/2 systems, there is no
+ * differences. */
 #define lstat stat
 #endif				/* __EMX__ */
 
@@ -21,28 +21,23 @@ extern FormSelectOption *select_option;
 #include "menu.h"
 #endif				/* MENU_SELECT */
 
+/* *INDENT-OFF* */
 struct {
     char *action;
-    void (*rout) (struct parsed_tagarg *);
+    void (*rout)(struct parsed_tagarg *);
 } internal_action[] = {
-    {
-	"map", follow_map
-    },
-    {
-	"option", panel_set_option
-    },
+    {"map", follow_map}, 
+    {"option", panel_set_option},
 #ifdef USE_COOKIE
-    {
-	"cookie", set_cookie_flag
-    },
+    {"cookie", set_cookie_flag},
 #endif				/* USE_COOKIE */
-    {
-	NULL, NULL
-    },
+    {NULL, NULL},
 };
+/* *INDENT-ON* */
 
 struct form_list *
-newFormList(char *action, char *method, char *charset, char *enctype, char *target, char *name, struct form_list *_next)
+newFormList(char *action, char *method, char *charset, char *enctype,
+	    char *target, char *name, struct form_list *_next)
 {
     struct form_list *l;
     Str a = Strnew_charp(action);
@@ -116,14 +111,14 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
     if (parsedtag_get_value(tag, ATTR_NAME, &p))
 	item->name = Strnew_charp(p);
     if (parsedtag_get_value(tag, ATTR_VALUE, &p))
-       item->value = item->init_value = Strnew_charp(p);
+	item->value = item->init_value = Strnew_charp(p);
     item->checked = item->init_checked = parsedtag_exists(tag, ATTR_CHECKED);
     item->accept = parsedtag_exists(tag, ATTR_ACCEPT);
     parsedtag_get_value(tag, ATTR_SIZE, &item->size);
     parsedtag_get_value(tag, ATTR_MAXLENGTH, &item->maxlength);
     item->readonly = parsedtag_exists(tag, ATTR_READONLY);
     if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i))
-       item->value = item->init_value = textarea_str[i];
+	item->value = item->init_value = textarea_str[i];
 #ifdef MENU_SELECT
     if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i))
 	item->select_option = select_option[i].first;
@@ -136,10 +131,10 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
     }
 #ifdef MENU_SELECT
     if (item->type == FORM_SELECT) {
-       chooseSelectOption(item, item->select_option);
-       item->init_selected = item->selected;
-       item->init_value = item->value;
-       item->init_label = item->label;
+	chooseSelectOption(item, item->select_option);
+	item->init_selected = item->selected;
+	item->init_value = item->value;
+	item->init_label = item->label;
     }
 #endif				/* MENU_SELECT */
     if (item->type == FORM_INPUT_FILE && item->value && item->value->length) {
@@ -161,24 +156,21 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
     return item;
 }
 
-static char *_formtypetbl[] =
-{
+static char *_formtypetbl[] = {
     "text", "password", "checkbox", "radio", "submit",
     "reset", "hidden", "image", "select", "textarea", "button", "file", 0,
 };
 
-static char *_formmethodtbl[] =
-{
+static char *_formmethodtbl[] = {
     "GET", "POST", "INTERNAL", "HEAD"
 };
 
 char *
-form2str(FormItemList * fi)
+form2str(FormItemList *fi)
 {
     Str tmp;
     if (fi->type == FORM_INPUT_SUBMIT ||
-	fi->type == FORM_INPUT_IMAGE ||
-	fi->type == FORM_INPUT_BUTTON) {
+	fi->type == FORM_INPUT_IMAGE || fi->type == FORM_INPUT_BUTTON) {
 	tmp = Strnew_charp(_formmethodtbl[fi->parent->method]);
 	Strcat_char(tmp, ' ');
 	Strcat(tmp, fi->parent->action);
@@ -200,7 +192,7 @@ formtype(char *typestr)
 }
 
 void
-formRecheckRadio(Anchor *a, Buffer *buf, FormItemList * fi)
+formRecheckRadio(Anchor *a, Buffer *buf, FormItemList *fi)
 {
     int i;
     Anchor *a2;
@@ -208,10 +200,9 @@ formRecheckRadio(Anchor *a, Buffer *buf, FormItemList * fi)
 
     for (i = 0; i < buf->formitem->nanchor; i++) {
 	a2 = &buf->formitem->anchors[i];
-	f2 = (FormItemList *) a2->url;
+	f2 = (FormItemList *)a2->url;
 	if (f2->parent == fi->parent && f2 != fi &&
-	    f2->type == FORM_INPUT_RADIO &&
-	    Strcmp(f2->name, fi->name) == 0) {
+	    f2->type == FORM_INPUT_RADIO && Strcmp(f2->name, fi->name) == 0) {
 	    f2->checked = 0;
 	    formUpdateBuffer(a2, buf, f2);
 	}
@@ -221,7 +212,7 @@ formRecheckRadio(Anchor *a, Buffer *buf, FormItemList * fi)
 }
 
 void
-formResetBuffer(Buffer * buf, AnchorList * formitem)
+formResetBuffer(Buffer *buf, AnchorList *formitem)
 {
     int i;
     Anchor *a;
@@ -231,8 +222,8 @@ formResetBuffer(Buffer * buf, AnchorList * formitem)
 	return;
     for (i = 0; i < buf->formitem->nanchor && i < formitem->nanchor; i++) {
 	a = &buf->formitem->anchors[i];
-	f1 = (FormItemList *) a->url;
-	f2 = (FormItemList *) formitem->anchors[i].url;
+	f1 = (FormItemList *)a->url;
+	f2 = (FormItemList *)formitem->anchors[i].url;
 	if (f1->type != f2->type ||
 	    strcmp(((f1->name == NULL) ? "" : f1->name->ptr),
 		   ((f2->name == NULL) ? "" : f2->name->ptr)))
@@ -262,7 +253,7 @@ formResetBuffer(Buffer * buf, AnchorList * formitem)
 }
 
 void
-formUpdateBuffer(Anchor * a, Buffer * buf, FormItemList * form)
+formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 {
     int i, j, k;
     Buffer save;
@@ -304,78 +295,79 @@ formUpdateBuffer(Anchor * a, Buffer * buf, FormItemList * form)
     case FORM_TEXTAREA:
 #ifdef MENU_SELECT
     case FORM_SELECT:
-       if (form->type == FORM_SELECT) {
+	if (form->type == FORM_SELECT) {
 	    p = form->label->ptr;
-           updateSelectOption(form, form->select_option);
-       } else
+	    updateSelectOption(form, form->select_option);
+	}
+	else
 #endif				/* MENU_SELECT */
 	    p = form->value->ptr;
-       j = 0;
-       l = buf->currentLine;
-       if (form->type == FORM_TEXTAREA) {
-            int n = a->y - buf->currentLine->linenumber;
-           if (n > 0)
-        for (; l && n; l = l->prev, n--);
-           else if (n < 0)
-        for (; l && n; l = l->prev, n++);
-           if (! l)
-        break;
-        }
-       rows = form->rows ? form->rows : 1;
-       if (rows > 1)
-           col = COLPOS(l, a->start.pos);
-       for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
-           if (rows > 1) {
-        pos = columnPos(l, col);
-        a = retrieveAnchor(buf->formitem, l->linenumber, pos);
-        if (a == NULL)
-            break;
-        spos = a->start.pos - 1;
-        epos = a->end.pos;
-           }
-           i = spos + 1;
-           while (p[j]) {
-        if (rows > 1 && (p[j] == '\r' || p[j] == '\n'))
-            break;
-        if (p[j] == '\r') {
-            j++;
-            continue;
-        }
-        c_type = get_mctype(&p[j]);
-        c_len = get_mclen(c_type);
-        k = i + c_len;
-        if (k > epos)
-            break;
+	j = 0;
+	l = buf->currentLine;
+	if (form->type == FORM_TEXTAREA) {
+	    int n = a->y - buf->currentLine->linenumber;
+	    if (n > 0)
+		for (; l && n; l = l->prev, n--) ;
+	    else if (n < 0)
+		for (; l && n; l = l->prev, n++) ;
+	    if (!l)
+		break;
+	}
+	rows = form->rows ? form->rows : 1;
+	if (rows > 1)
+	    col = COLPOS(l, a->start.pos);
+	for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
+	    if (rows > 1) {
+		pos = columnPos(l, col);
+		a = retrieveAnchor(buf->formitem, l->linenumber, pos);
+		if (a == NULL)
+		    break;
+		spos = a->start.pos - 1;
+		epos = a->end.pos;
+	    }
+	    i = spos + 1;
+	    while (p[j]) {
+		if (rows > 1 && (p[j] == '\r' || p[j] == '\n'))
+		    break;
+		if (p[j] == '\r') {
+		    j++;
+		    continue;
+		}
+		c_type = get_mctype(&p[j]);
+		c_len = get_mclen(c_type);
+		k = i + c_len;
+		if (k > epos)
+		    break;
 #ifdef JP_CHARSET
-        if (c_type == PC_KANJI && form->type != FORM_INPUT_PASSWORD) {
-            SetCharType(l->propBuf[i], PC_KANJI1);
-            SetCharType(l->propBuf[i+1], PC_KANJI2);
-        }
-        else
+		if (c_type == PC_KANJI && form->type != FORM_INPUT_PASSWORD) {
+		    SetCharType(l->propBuf[i], PC_KANJI1);
+		    SetCharType(l->propBuf[i + 1], PC_KANJI2);
+		}
+		else
 #endif				/* JP_CHARSET */
-            SetCharType(l->propBuf[i], PC_ASCII);
+		    SetCharType(l->propBuf[i], PC_ASCII);
 
-        for (; i < k; i++, j++) {
-            if (form->type == FORM_INPUT_PASSWORD)
-               l->lineBuf[i] = '*';
-            else if (c_type == PC_CTRL ||
-               IS_UNPRINTABLE_ASCII(p[j], c_type))
-               l->lineBuf[i] = ' ';
-            else
-               l->lineBuf[i] = p[j];
-        }
-           }
-           if (rows > 1) {
-        while (p[j] && p[j] != '\r' && p[j] != '\n')
-            j++;
-        if (p[j] == '\r')
-            j++;
-        if (p[j] == '\n')
-            j++;
-            }
-           for (; i < epos; i++) {
-        l->lineBuf[i] = ' ';
-        SetCharType(l->propBuf[i], PC_ASCII);
+		for (; i < k; i++, j++) {
+		    if (form->type == FORM_INPUT_PASSWORD)
+			l->lineBuf[i] = '*';
+		    else if (c_type == PC_CTRL ||
+			     IS_UNPRINTABLE_ASCII(p[j], c_type))
+			l->lineBuf[i] = ' ';
+		    else
+			l->lineBuf[i] = p[j];
+		}
+	    }
+	    if (rows > 1) {
+		while (p[j] && p[j] != '\r' && p[j] != '\n')
+		    j++;
+		if (p[j] == '\r')
+		    j++;
+		if (p[j] == '\n')
+		    j++;
+	    }
+	    for (; i < epos; i++) {
+		l->lineBuf[i] = ' ';
+		SetCharType(l->propBuf[i], PC_ASCII);
 	    }
 	}
 	break;
@@ -442,7 +434,8 @@ form_fputs_decode(Str s, FILE * f)
 	    if (*(p + 1) == '\n')
 		p++;
 	    /* continue to the next label */
-#endif         /* !defined( __CYGWIN__ ) && !defined( __EMX__ ) */
+#endif				/* !defined( __CYGWIN__ ) && !defined( __EMX__ 
+				 * ) */
 	default:
 	    Strcat_char(z, *p);
 	    p++;
@@ -458,7 +451,7 @@ form_fputs_decode(Str s, FILE * f)
 
 
 void
-input_textarea(FormItemList * fi)
+input_textarea(FormItemList *fi)
 {
     Str tmpname = tmpfname(TMPF_DFL, NULL);
     Str tmp;
@@ -476,23 +469,23 @@ input_textarea(FormItemList * fi)
 	form_fputs_decode(fi->value, f);
     fclose(f);
     if (strcasestr(Editor, "%s"))
-       if (strcasestr(Editor, "%d"))
-           tmp = Sprintf(Editor, 1, tmpname->ptr);
-       else
-           tmp = Sprintf(Editor, tmpname->ptr);
+	if (strcasestr(Editor, "%d"))
+	    tmp = Sprintf(Editor, 1, tmpname->ptr);
+	else
+	    tmp = Sprintf(Editor, tmpname->ptr);
     else {
-       if (strcasestr(Editor, "%d"))
-           tmp = Sprintf(Editor, 1);
-       else
-           tmp = Strnew_charp(Editor);
-       Strcat_m_charp(tmp, " ", tmpname->ptr, NULL);
+	if (strcasestr(Editor, "%d"))
+	    tmp = Sprintf(Editor, 1);
+	else
+	    tmp = Strnew_charp(Editor);
+	Strcat_m_charp(tmp, " ", tmpname->ptr, NULL);
     }
     fmTerm();
     system(tmp->ptr);
     fmInit();
 
     if (fi->readonly)
-       return;
+	return;
     f = fopen(tmpname->ptr, "r");
     if (f == NULL) {
 	disp_err_message("Can't open temporary file", FALSE);
@@ -510,10 +503,10 @@ input_textarea(FormItemList * fi)
 	    Strcat_charp(tmp, "\r\n");
 	}
 #ifdef JP_CHARSET
-       if ((ic = checkShiftCode(tmp, code)) != '\0')
-           tmp = conv_str(tmp, (code = ic), InnerCode);
+	if ((ic = checkShiftCode(tmp, code)) != '\0')
+	    tmp = conv_str(tmp, (code = ic), InnerCode);
 #endif				/* not JP_CHARSET */
-       Strcat(fi->value, tmp);
+	Strcat(fi->value, tmp);
     }
     fclose(f);
     unlink(tmpname->ptr);
@@ -534,7 +527,7 @@ do_internal(char *action, char *data)
 
 #ifdef MENU_SELECT
 void
-addSelectOption(FormSelectOption * fso, Str value, Str label, int chk)
+addSelectOption(FormSelectOption *fso, Str value, Str label, int chk)
 {
     FormSelectOptionItem *o;
     o = New(FormSelectOptionItem);
@@ -562,18 +555,18 @@ chooseSelectOption(FormItemList *fi, FormSelectOptionItem *item)
 
     fi->selected = 0;
     if (item == NULL) {
-       fi->value = Strnew_size(0);
-       fi->label = Strnew_size(0);
-       return;
+	fi->value = Strnew_size(0);
+	fi->label = Strnew_size(0);
+	return;
     }
     fi->value = item->value;
     fi->label = item->label;
     for (i = 0, opt = item; opt != NULL; i++, opt = opt->next) {
-       if (opt->checked) {
-           fi->value = opt->value;
-           fi->label = opt->label;
-           fi->selected = i;
-           break;
+	if (opt->checked) {
+	    fi->value = opt->value;
+	    fi->label = opt->label;
+	    fi->selected = i;
+	    break;
 	}
     }
     updateSelectOption(fi, item);
@@ -585,12 +578,12 @@ updateSelectOption(FormItemList *fi, FormSelectOptionItem *item)
     int i;
 
     if (fi == NULL || item == NULL)
-       return;
+	return;
     for (i = 0; item != NULL; i++, item = item->next) {
-       if (i == fi->selected)
-           item->checked = TRUE;
-       else
-           item->checked = FALSE;
+	if (i == fi->selected)
+	    item->checked = TRUE;
+	else
+	    item->checked = FALSE;
     }
 }
 
@@ -601,7 +594,7 @@ formChooseOptionByMenu(struct form_item_list *fi, int x, int y)
     FormSelectOptionItem *opt;
     char **label;
 
-    for (n = 0, opt = fi->select_option; opt != NULL; n++, opt = opt->next);
+    for (n = 0, opt = fi->select_option; opt != NULL; n++, opt = opt->next) ;
     label = New_N(char *, n + 1);
     for (i = 0, opt = fi->select_option; opt != NULL; i++, opt = opt->next)
 	label[i] = opt->label->ptr;
@@ -610,10 +603,10 @@ formChooseOptionByMenu(struct form_item_list *fi, int x, int y)
     optionMenu(x, y, label, &selected, init_select, NULL);
 
     if (selected < 0)
-       return 0;
+	return 0;
     for (i = 0, opt = fi->select_option; opt != NULL; i++, opt = opt->next) {
 	if (i == selected) {
-           fi->selected = selected;
+	    fi->selected = selected;
 	    fi->value = opt->value;
 	    fi->label = opt->label;
 	    break;
@@ -633,7 +626,8 @@ form_write_data(FILE * f, char *boundary, char *name, char *value)
 }
 
 void
-form_write_from_file(FILE * f, char *boundary, char *name, char *filename, char *file)
+form_write_from_file(FILE * f, char *boundary, char *name, char *filename,
+		     char *file)
 {
     FILE *fd;
     struct stat st;
@@ -641,13 +635,14 @@ form_write_from_file(FILE * f, char *boundary, char *name, char *filename, char 
     char *type;
 
     fprintf(f, "--%s\r\n", boundary);
-    fprintf(f, "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n",
+    fprintf(f,
+	    "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n",
 	    name, mybasename(filename));
     type = guessContentType(file);
     fprintf(f, "Content-Type: %s\r\n\r\n",
-	type ? type : "application/octet-stream");
+	    type ? type : "application/octet-stream");
 
-#ifdef	HAVE_READLINK /* readline == lstat ? (ukai) */
+#ifdef	HAVE_READLINK		/* readline == lstat ? (ukai) */
     if (lstat(file, &st) < 0)
 	goto write_end;
 #endif				/* HAVE_READLINK */

@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.7 2001/11/23 18:35:06 ukai Exp $ */
+/* $Id: table.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -14,21 +14,27 @@
 
 #ifdef KANJI_SYMBOLS
 static char *rule[] =
-{"ил", "из", "ии", "иг", "ий", "ив", "ид", "07", "ик", "иж", "иб", "0B", "ие", "0D", "0E", "  "};
+    { "ил", "из", "ии", "иг", "ий", "ив", "ид", "07", "ик", "иж", "иб", "0B",
+    "ие", "0D", "0E", "  "
+};
 static char *ruleB[] =
-{"00", "и╖", "и╕", "ио", "и╣", "ин", "ип", "07", "и║", "и▒", "им", "0B", "и░", "0D", "0E", "  "};
+    { "00", "и╖", "и╕", "ио", "и╣", "ин", "ип", "07", "и║", "и▒", "им", "0B",
+    "и░", "0D", "0E", "  "
+};
 #define TN_VERTICALBAR "ив"
 #define HORIZONTALBAR "им"
 #define RULE_WIDTH 2
 #else				/* not KANJI_SYMBOLS */
 char alt_rule[] = {
-'+', '|', '-', '+', '|', '|', '+', ' ', '-', '+', '-', ' ', '+', ' ', ' ', ' '};
+    '+', '|', '-', '+', '|', '|', '+', ' ', '-', '+', '-', ' ', '+', ' ', ' ',
+    ' '
+};
 #if defined(__EMX__)&&!defined(JP_CHARSET)
-extern int	CodePage;
+extern int CodePage;
 
-static char    *_rule[] =
+static char *_rule[] =
 #else
-static char    *rule[] =
+static char *rule[] =
 #endif
 {
     "<_RULE TYPE=0>+</_RULE>",
@@ -49,15 +55,17 @@ static char    *rule[] =
     "<_RULE TYPE=15> </_RULE>"
 };
 #if defined(__EMX__)&&!defined(JP_CHARSET)
-static char   **ruleB = _rule, **rule = _rule;
+static char **ruleB = _rule, **rule = _rule;
 static char *rule850[] = {
-    "\305",  "\303",	"\302",  "\332",  "\264",  "\263" , "\277",  "07",
-    "\301",  "\300",	"\304",  "0B", "\331",  "0D", "0E", " " };
+    "\305", "\303", "\302", "\332", "\264", "\263", "\277", "07",
+    "\301", "\300", "\304", "0B", "\331", "0D", "0E", " "
+};
 static char *ruleB850[] = {
-    "\316",  "\314",	"\313",  "\311"   "\271",  "\272",	"\273",  "07",
-    "\312",  "\310",	"\315",  "0B", "\274",  "0D", "0E", " " };
-#else  /* not __EMX__ or JP_CHARSET */
-static char   **ruleB = rule;
+    "\316", "\314", "\313", "\311" "\271", "\272", "\273", "07",
+    "\312", "\310", "\315", "0B", "\274", "0D", "0E", " "
+};
+#else				/* not __EMX__ or JP_CHARSET */
+static char **ruleB = rule;
 #endif				/* not __EMX__ or JP_CHARSET */
 
 #define TN_VERTICALBAR "<_RULE TYPE=5>|</_RULE>"
@@ -116,15 +124,15 @@ weight(int x)
 {
 
     if (x < COLS)
-	return (double) x;
+	return (double)x;
     else
-	return COLS * (log((double) x / COLS) + 1.);
+	return COLS * (log((double)x / COLS) + 1.);
 }
 
 static double
 weight2(int a)
 {
-    return (double) a / COLS * 4 + 1.;
+    return (double)a / COLS * 4 + 1.;
 }
 
 #define sigma_td(a)       (0.5*weight2(a))	/* <td width=...> */
@@ -139,15 +147,15 @@ weight3(int x)
     if (x < 0.1)
 	return 0.1;
     if (x < LOG_MIN)
-	return (double) x;
+	return (double)x;
     else
-	return LOG_MIN * (log((double) x / LOG_MIN) + 1.);
+	return LOG_MIN * (log((double)x / LOG_MIN) + 1.);
 }
 #endif				/* not MATRIX */
 
 static int
 bsearch_2short(short e1, short *ent1, short e2, short *ent2, int base,
-	    char *index, int nent)
+	       char *index, int nent)
 {
     int n = nent;
     int k = 0;
@@ -234,7 +242,7 @@ dv2sv(double *dv, short *iv, int size)
     edv = NewAtom_N(double, size);
     for (i = 0; i < size; i++) {
 	iv[i] = ceil(dv[i]);
-	edv[i] = (double) iv[i] - dv[i];
+	edv[i] = (double)iv[i] - dv[i];
     }
 
     w = 0.;
@@ -246,10 +254,10 @@ dv2sv(double *dv, short *iv, int size)
 	    bcopy(index + i, index + i + 1, k - i);
 	index[i] = k;
     }
-    iw = min((int) (w + 0.5), size);
+    iw = min((int)(w + 0.5), size);
     if (iw == 0)
 	return;
-    x = edv[(int) index[iw - 1]];
+    x = edv[(int)index[iw - 1]];
     for (i = 0; i < size; i++) {
 	k = index[i];
 	if (i >= iw && abs(edv[k] - x) > 1e-6)
@@ -263,7 +271,7 @@ static int
 table_colspan(struct table *t, int row, int col)
 {
     int i;
-    for (i = col + 1; i <= t->maxcol && (t->tabattr[row][i] & HTT_X); i++);
+    for (i = col + 1; i <= t->maxcol && (t->tabattr[row][i] & HTT_X); i++) ;
     return i - col;
 }
 
@@ -274,7 +282,7 @@ table_rowspan(struct table *t, int row, int col)
     if (!t->tabattr[row])
 	return 0;
     for (i = row + 1; i <= t->maxrow && t->tabattr[i] &&
-	 (t->tabattr[i][col] & HTT_Y); i++);
+	 (t->tabattr[i][col] & HTT_Y); i++) ;
     return i - row;
 }
 
@@ -452,7 +460,7 @@ suspend_or_pushdata(struct table *tbl, char *line)
 	pushText(tbl->suspended_data, line);
     }
 }
-	
+
 int visible_length_offset = 0;
 int
 visible_length(char *str)
@@ -472,7 +480,8 @@ visible_length(char *str)
 	    Strclear(tagbuf);
 	    Strcat_char(tagbuf, *str);
 	}
-	else if (status == R_ST_TAG || status == R_ST_DQUOTE || status == R_ST_QUOTE || status == R_ST_EQL) {
+	else if (status == R_ST_TAG || status == R_ST_DQUOTE
+		 || status == R_ST_QUOTE || status == R_ST_EQL) {
 	    Strcat_char(tagbuf, *str);
 	}
 	else if (status == R_ST_AMP) {
@@ -504,12 +513,13 @@ visible_length(char *str)
 		len++;
 	    } while ((visible_length_offset + len) % Tabstop != 0);
 	}
-        else if (*str == '\n' || *str == '\r') {
-            if (len > max_len) max_len = len;
-            len = 0;
-        }
-       else if (*str == '\n' || *str == '\r')
-           len = 0;
+	else if (*str == '\n' || *str == '\r') {
+	    if (len > max_len)
+		max_len = len;
+	    len = 0;
+	}
+	else if (*str == '\n' || *str == '\r')
+	    len = 0;
 	str++;
     }
     if (status == R_ST_AMP) {
@@ -529,7 +539,7 @@ maximum_visible_length(char *str)
     int maxlen, len;
     char *p;
 
-    for (p = str; *p && *p != '\t'; p++);
+    for (p = str; *p && *p != '\t'; p++) ;
 
     visible_length_offset = 0;
     maxlen = visible_length(str);
@@ -591,9 +601,7 @@ align(TextLine *lbuf, int width, int mode)
 }
 
 void
-print_item(struct table *t,
-	   int row, int col, int width,
-	   Str buf)
+print_item(struct table *t, int row, int col, int width, Str buf)
 {
     int alignment;
     TextLine *lbuf;
@@ -628,18 +636,16 @@ print_item(struct table *t,
 #define T_BOTTOM        2
 
 void
-print_sep(struct table *t,
-	  int row, int type, int maxcol,
-	  Str buf)
+print_sep(struct table *t, int row, int type, int maxcol, Str buf)
 {
     int forbid;
     char **rulep;
     int i, j, k, l, m;
 
 #if defined(__EMX__)&&!defined(JP_CHARSET)
-    if(CodePage==850){
+    if (CodePage == 850) {
 	ruleB = ruleB850;
-	rule  = rule850;
+	rule = rule850;
     }
 #endif
     if (row >= 0)
@@ -668,15 +674,19 @@ print_sep(struct table *t,
 		goto do_last_sep;
 	    }
 	    else {
-		for (k = row; k >= 0 && t->tabattr[k] && (t->tabattr[k][i] & HTT_Y); k--);
+		for (k = row;
+		     k >= 0 && t->tabattr[k] && (t->tabattr[k][i] & HTT_Y);
+		     k--) ;
 		m = t->tabwidth[i] + 2 * t->cellpadding;
-		for (l = i + 1; l <= t->maxcol && (t->tabattr[row][l] & HTT_X); l++)
+		for (l = i + 1; l <= t->maxcol && (t->tabattr[row][l] & HTT_X);
+		     l++)
 		    m += t->tabwidth[l] + t->cellspacing;
 		print_item(t, k, i, m, buf);
 	    }
 	}
 	else {
-	    for (j = 0; j < t->tabwidth[i] + 2 * t->cellpadding; j += RULE_WIDTH) {
+	    for (j = 0; j < t->tabwidth[i] + 2 * t->cellpadding;
+		 j += RULE_WIDTH) {
 		Strcat_charp(buf, rulep[forbid]);
 	    }
 	}
@@ -743,8 +753,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
     struct environment envs[MAX_ENV_LEVEL];
     int colspan, icell;
 
-    if (tbl->tabdata[row] == NULL ||
-	tbl->tabdata[row][col] == NULL)
+    if (tbl->tabdata[row] == NULL || tbl->tabdata[row][col] == NULL)
 	return;
     orgdata = (TextList *)tbl->tabdata[row][col];
     tbl->tabdata[row][col] = newGeneralList();
@@ -782,8 +791,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 
 		if (alignment != ALIGN_LEFT) {
 		    for (ti = tbl->tables[id].buf->first;
-			 ti != NULL;
-			 ti = ti->next)
+			 ti != NULL; ti = ti->next)
 			align(ti->ptr, h_env.limit, alignment);
 		}
 		appendTextLineList(h_env.buf, tbl->tables[id].buf);
@@ -938,7 +946,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
     mod = NewAtom_N(double, t->maxcol + 1);
     for (i = 0; i <= t->maxcol; i++) {
 	iwidth[i] = ceil_at_intervals(ceil(dwidth[i]), rulewidth);
-	mod[i] = (double) iwidth[i] - dwidth[i];
+	mod[i] = (double)iwidth[i] - dwidth[i];
     }
 
     sum = 0.;
@@ -974,7 +982,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		    fixed[ii] = 2;
 		if (fixed[ii] < 1 &&
 		    iwidth[ii] - rulewidth < t->tabwidth[ii] &&
-		    (double) rulewidth - mod[ii] > 0.5)
+		    (double)rulewidth - mod[ii] > 0.5)
 		    fixed[ii] = 1;
 	    }
 	    idx = NewAtom_N(char, n);
@@ -998,26 +1006,26 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		    width += iwidth[kk];
 		w = 0;
 		for (kk = 0; kk < m; kk++) {
-		    if (fixed[(int) idx[kk]] < 2)
+		    if (fixed[(int)idx[kk]] < 2)
 			w += rulewidth;
 		}
 		if (width - w < cell->minimum_width[j]) {
 		    for (kk = 0; kk < m; kk++) {
-			if (fixed[(int) idx[kk]] < 2)
-			    fixed[(int) idx[kk]] = 2;
+			if (fixed[(int)idx[kk]] < 2)
+			    fixed[(int)idx[kk]] = 2;
 		    }
 		}
 		w = 0;
 		for (kk = 0; kk < m; kk++) {
-		    if (fixed[(int) idx[kk]] < 1 &&
-			(double) rulewidth - mod[(int) idx[kk]] > 0.5)
+		    if (fixed[(int)idx[kk]] < 1 &&
+			(double)rulewidth - mod[(int)idx[kk]] > 0.5)
 			w += rulewidth;
 		}
 		if (width - w < cell->width[j]) {
 		    for (kk = 0; kk < m; kk++) {
-			if (fixed[(int) idx[kk]] < 1 &&
-			    (double) rulewidth - mod[(int) idx[kk]] > 0.5)
-			    fixed[(int) idx[kk]] = 1;
+			if (fixed[(int)idx[kk]] < 1 &&
+			    (double)rulewidth - mod[(int)idx[kk]] > 0.5)
+			    fixed[(int)idx[kk]] = 1;
 		    }
 		}
 	    }
@@ -1027,7 +1035,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		if (fixed[ii] <= step)
 		    nn++;
 	    }
-	    nsum = sum - (double) (nn * rulewidth);
+	    nsum = sum - (double)(nn * rulewidth);
 	    if (nsum < 0. && fabs(sum) <= fabs(nsum))
 		return;
 	    for (k = 0; k < n; k++) {
@@ -1061,7 +1069,7 @@ static double
 correlation_coefficient2(double sxx, double syy, double sxy)
 {
     double coe, tmp;
-    tmp = (syy + sxx - 2*sxy) * sxx;
+    tmp = (syy + sxx - 2 * sxy) * sxx;
     if (tmp < Tiny)
 	tmp = Tiny;
     coe = (sxx - sxy) / sqrt(tmp);
@@ -1074,13 +1082,11 @@ correlation_coefficient2(double sxx, double syy, double sxy)
 
 static double
 recalc_width(double old, double swidth, int cwidth,
-	     double sxx, double syy, double sxy,
-	     int is_inclusive)
+	     double sxx, double syy, double sxy, int is_inclusive)
 {
-    double delta = swidth - (double) cwidth;
+    double delta = swidth - (double)cwidth;
     double rat = sxy / sxx,
-	   coe = correlation_coefficient(sxx, syy, sxy),
-	   w, ww;
+	coe = correlation_coefficient(sxx, syy, sxy), w, ww;
     if (old < 0.)
 	old = 0.;
     if (fabs(coe) < 1e-5)
@@ -1132,13 +1138,13 @@ check_compressible_cell(struct table *t, MAT * minv,
 
     if (icol >= 0) {
 	owidth = newwidth[icol];
-	delta = newwidth[icol] - (double) t->tabwidth[icol];
+	delta = newwidth[icol] - (double)t->tabwidth[icol];
 	bcol = icol;
 	ecol = bcol + 1;
     }
     else if (icell >= 0) {
 	owidth = swidth[icell];
-	delta = swidth[icell] - (double) cwidth[icell];
+	delta = swidth[icell] - (double)cwidth[icell];
 	bcol = cell->col[icell];
 	ecol = bcol + cell->colspan[icell];
     }
@@ -1171,12 +1177,10 @@ check_compressible_cell(struct table *t, MAT * minv,
 	}
 	if (sxy > 0.)
 	    dmin = recalc_width(dmin, swidth[j], cwidth[j],
-				sxx, Sxx[j], sxy,
-				is_inclusive);
+				sxx, Sxx[j], sxy, is_inclusive);
 	else
 	    dmax = recalc_width(dmax, swidth[j], cwidth[j],
-				sxx, Sxx[j], sxy,
-				is_inclusive);
+				sxx, Sxx[j], sxy, is_inclusive);
     }
     for (m = 0; m <= t->maxcol; m++) {
 	int is_inclusive = 0;
@@ -1192,14 +1196,12 @@ check_compressible_cell(struct table *t, MAT * minv,
 	}
 	if (sxy > 0.)
 	    dmin = recalc_width(dmin, newwidth[m], t->tabwidth[m],
-				sxx, m_entry(minv, m, m), sxy,
-				is_inclusive);
+				sxx, m_entry(minv, m, m), sxy, is_inclusive);
 	else
 	    dmax = recalc_width(dmax, newwidth[m], t->tabwidth[m],
-				sxx, m_entry(minv, m, m), sxy,
-				is_inclusive);
+				sxx, m_entry(minv, m, m), sxy, is_inclusive);
     }
- _end:
+  _end:
     if (dmax > 0. && dmin > dmax)
 	dmin = dmax;
     span = ecol - bcol;
@@ -1261,8 +1263,7 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
 
     /* compress table */
     corr = check_compressible_cell(t, minv, newwidth, swidth,
-				   cwidth, twidth, Sxx, 
-				   -1, -1, stotal, corr);
+				   cwidth, twidth, Sxx, -1, -1, stotal, corr);
     if (itr < MAX_ITERATION && corr > 0)
 	return corr;
 
@@ -1270,7 +1271,7 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
     for (k = cell->maxcell; k >= 0; k--) {
 	j = cell->index[k];
 	corr = check_compressible_cell(t, minv, newwidth, swidth,
-				       cwidth, twidth, Sxx, 
+				       cwidth, twidth, Sxx,
 				       -1, j, Sxx[j], corr);
 	if (itr < MAX_ITERATION && corr > 0)
 	    return corr;
@@ -1279,7 +1280,7 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
     /* compress single column cell */
     for (i = 0; i <= t->maxcol; i++) {
 	corr = check_compressible_cell(t, minv, newwidth, swidth,
-				       cwidth, twidth, Sxx, 
+				       cwidth, twidth, Sxx,
 				       i, -1, m_entry(minv, i, i), corr);
 	if (itr < MAX_ITERATION && corr > 0)
 	    return corr;
@@ -1323,7 +1324,8 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
 	ecol = bcol + cell->colspan[j];
 	for (i = bcol; i < ecol; i++)
 	    nwidth += corwidth[i];
-	mwidth = cell->minimum_width[j] - (cell->colspan[j] - 1) * t->cellspacing;
+	mwidth =
+	    cell->minimum_width[j] - (cell->colspan[j] - 1) * t->cellspacing;
 	if (mwidth > swidth[j] && mwidth == nwidth) {
 	    double w = (sx > 0.5) ? 0.5 : sx * 0.2;
 
@@ -1411,7 +1413,7 @@ set_table_width(struct table *t, short *newwidth, int maxwidth)
 		if (!fixed[i])
 		    dwidth[i] = (width - fwidth) * weight3(t->tabwidth[i]) / s;
 		else
-		    dwidth[i] = (double) newwidth[i];
+		    dwidth[i] = (double)newwidth[i];
 	    }
 	    dv2sv(dwidth, newwidth, cell->colspan[j]);
 	    if (cell->fixed_width[j] > 0) {
@@ -1447,7 +1449,7 @@ set_table_width(struct table *t, short *newwidth, int maxwidth)
 	    if (!fixed[i])
 		dwidth[i] = (width - fwidth) * weight3(t->tabwidth[i]) / s;
 	    else
-		dwidth[i] = (double) newwidth[i];
+		dwidth[i] = (double)newwidth[i];
 	}
 	dv2sv(dwidth, newwidth, t->maxcol + 1);
 
@@ -1502,29 +1504,28 @@ check_table_height(struct table *t)
 	    if (rowspan > 1) {
 		int c = cell.maxcell + 1;
 		k = bsearch_2short(rowspan, cell.rowspan,
-				j, cell.row, t->maxrow + 1,
-				cell.index, c);
+				   j, cell.row, t->maxrow + 1, cell.index, c);
 		if (k <= cell.maxcell) {
 		    int idx = cell.index[k];
-		    if (cell.row[idx] == j &&
-			cell.rowspan[idx] == rowspan)
+		    if (cell.row[idx] == j && cell.rowspan[idx] == rowspan)
 			c = idx;
 		}
-        if (c < MAXCELL) {
-            if (c > cell.maxcell) {
-               cell.maxcell++;
-               cell.row[cell.maxcell] = j;
-               cell.rowspan[cell.maxcell] = rowspan;
-               cell.height[cell.maxcell] = 0;
-               if (cell.maxcell > k)
-                   bcopy(cell.index + k, cell.index + k + 1, cell.maxcell - k);
-               cell.index[k] = cell.maxcell;
-            }
+		if (c < MAXCELL) {
+		    if (c > cell.maxcell) {
+			cell.maxcell++;
+			cell.row[cell.maxcell] = j;
+			cell.rowspan[cell.maxcell] = rowspan;
+			cell.height[cell.maxcell] = 0;
+			if (cell.maxcell > k)
+			    bcopy(cell.index + k, cell.index + k + 1,
+				  cell.maxcell - k);
+			cell.index[k] = cell.maxcell;
+		    }
 
-            if (cell.height[c] < t_dep)
-               cell.height[c] = t_dep;
+		    if (cell.height[c] < t_dep)
+			cell.height[c] = t_dep;
 		}
-        continue;
+		continue;
 	    }
 	    if (t->tabheight[j] < t_dep)
 		t->tabheight[j] = t_dep;
@@ -1548,8 +1549,7 @@ check_table_height(struct table *t)
 #define CHECK_FIXED	2
 
 int
-get_table_width(struct table *t, short *orgwidth, short *cellwidth,
-		int flag)
+get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 {
 #ifdef __GNUC__
     short newwidth[t->maxcol + 1];
@@ -1630,8 +1630,7 @@ renderCoTable(struct table *tbl, int maxlimit)
 	else if (t->total_width > 0)
 	    maxwidth = t->total_width;
 	else
-	    maxwidth = t->total_width =
-		-t->total_width * h_env.limit / 100;
+	    maxwidth = t->total_width = -t->total_width * h_env.limit / 100;
 	renderTable(t, maxwidth, &h_env);
     }
 }
@@ -1648,17 +1647,17 @@ make_caption(struct table *t, struct html_feed_environ *h_env)
 	return;
 
     if (t->total_width > 0)
-       limit = t->total_width;
+	limit = t->total_width;
     else
-       limit = h_env->limit;
+	limit = h_env->limit;
     init_henv(&henv, &obuf, envs, MAX_ENV_LEVEL, newTextLineList(),
-             limit, h_env->envs[h_env->envc].indent);
+	      limit, h_env->envs[h_env->envc].indent);
     HTMLlineproc1("<center>", &henv);
     HTMLlineproc0(t->caption->ptr, &henv, FALSE);
     HTMLlineproc1("</center>", &henv);
 
     if (t->total_width < henv.maxlimit)
-       t->total_width = henv.maxlimit;
+	t->total_width = henv.maxlimit;
     limit = h_env->limit;
     h_env->limit = t->total_width;
     HTMLlineproc1("<center>", h_env);
@@ -1668,9 +1667,7 @@ make_caption(struct table *t, struct html_feed_environ *h_env)
 }
 
 void
-renderTable(struct table *t,
-	    int max_width,
-	    struct html_feed_environ *h_env)
+renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 {
     int i, j, w, r, h;
     Str renderbuf;
@@ -1698,12 +1695,12 @@ renderTable(struct table *t,
 	max_width = t->sloppy_width;
 
     rulewidth = table_rule_width(t);
-    
+
     max_width -= table_border_width(t);
 
     if (rulewidth > 1)
 	max_width = floor_at_intervals(max_width, rulewidth);
-	
+
     if (max_width < rulewidth)
 	max_width = rulewidth;
 
@@ -1801,8 +1798,7 @@ renderTable(struct table *t,
 	    TextLineList *l;
 	    int k;
 	    if ((t->tabattr[j][i] & HTT_Y) ||
-		(t->tabattr[j][i] & HTT_TOP) ||
-		(t->tabdata[j][i] == NULL))
+		(t->tabattr[j][i] & HTT_TOP) || (t->tabdata[j][i] == NULL))
 		continue;
 	    h = t->tabheight[j];
 	    for (k = j + 1; k <= t->maxrow; k++) {
@@ -1846,7 +1842,7 @@ renderTable(struct table *t,
     case BORDER_THICK:
 	renderbuf = Strnew();
 	print_sep(t, -1, T_TOP, t->maxcol, renderbuf);
-       push_render_image(renderbuf, width, t->total_width, h_env);
+	push_render_image(renderbuf, width, t->total_width, h_env);
 	t->total_height += 1;
 	break;
     }
@@ -1865,7 +1861,7 @@ renderTable(struct table *t,
 	Strcat_charp(vrulec, TK_VERTICALBAR(t->border_mode));
     case BORDER_NOWIN:
 #if defined(__EMX__)&&!defined(JP_CHARSET)
-	Strcat_charp(vruleb, CodePage==850?"\263":TN_VERTICALBAR);
+	Strcat_charp(vruleb, CodePage == 850 ? "\263" : TN_VERTICALBAR);
 #else
 	Strcat_charp(vruleb, TN_VERTICALBAR);
 #endif
@@ -1880,7 +1876,8 @@ renderTable(struct table *t,
     for (r = 0; r <= t->maxrow; r++) {
 	for (h = 0; h < t->tabheight[r]; h++) {
 	    renderbuf = Strnew();
-	    if (t->border_mode == BORDER_THIN || t->border_mode == BORDER_THICK)
+	    if (t->border_mode == BORDER_THIN
+		|| t->border_mode == BORDER_THICK)
 		Strcat(renderbuf, vrulea);
 #ifdef ID_EXT
 	    if (t->tridvalue[r] != NULL && h == 0) {
@@ -1901,13 +1898,11 @@ renderTable(struct table *t,
 		if (!(t->tabattr[r][i] & HTT_X)) {
 		    w = t->tabwidth[i];
 		    for (j = i + 1;
-			 j <= t->maxcol && (t->tabattr[r][j] & HTT_X);
-			 j++)
+			 j <= t->maxcol && (t->tabattr[r][j] & HTT_X); j++)
 			w += t->tabwidth[j] + t->cellspacing;
 		    if (t->tabattr[r][i] & HTT_Y) {
-			for (j = r - 1;
-			     j >= 0 && t->tabattr[j] && (t->tabattr[j][i] & HTT_Y);
-			     j--);
+			for (j = r - 1; j >= 0 && t->tabattr[j]
+			     && (t->tabattr[j][i] & HTT_Y); j--) ;
 			print_item(t, j, i, w, renderbuf);
 		    }
 		    else
@@ -1923,12 +1918,12 @@ renderTable(struct table *t,
 		t->total_height += 1;
 		break;
 	    }
-           push_render_image(renderbuf, width, t->total_width, h_env);
+	    push_render_image(renderbuf, width, t->total_width, h_env);
 	}
 	if (r < t->maxrow && t->border_mode != BORDER_NONE) {
 	    renderbuf = Strnew();
 	    print_sep(t, r, T_MIDDLE, t->maxcol, renderbuf);
-           push_render_image(renderbuf, width, t->total_width, h_env);
+	    push_render_image(renderbuf, width, t->total_width, h_env);
 	}
 	t->total_height += t->tabheight[r];
     }
@@ -1937,7 +1932,7 @@ renderTable(struct table *t,
     case BORDER_THICK:
 	renderbuf = Strnew();
 	print_sep(t, t->maxrow, T_BOTTOM, t->maxcol, renderbuf);
-       push_render_image(renderbuf, width, t->total_width, h_env);
+	push_render_image(renderbuf, width, t->total_width, h_env);
 	t->total_height += 1;
 	break;
     }
@@ -1945,7 +1940,7 @@ renderTable(struct table *t,
 	renderbuf = Strnew(" ");
 	t->total_height++;
 	t->total_width = 1;
-       push_render_image(renderbuf, 1, t->total_width, h_env);
+	push_render_image(renderbuf, 1, t->total_width, h_env);
     }
     HTMLlineproc1("</pre>", h_env);
 }
@@ -2026,7 +2021,7 @@ begin_table(int border, int spacing, int padding, int vspace)
 	else
 	    t->vcellpadding = 1;
     }
-    
+
     return t;
 }
 
@@ -2037,13 +2032,11 @@ end_table(struct table *tbl)
     int i, rulewidth = table_rule_width(tbl);
     if (rulewidth > 1) {
 	if (tbl->total_width > 0)
-	    tbl->total_width =
-		ceil_at_intervals(tbl->total_width, rulewidth);
+	    tbl->total_width = ceil_at_intervals(tbl->total_width, rulewidth);
 	for (i = 0; i <= tbl->maxcol; i++) {
 	    tbl->minimum_width[i] =
 		ceil_at_intervals(tbl->minimum_width[i], rulewidth);
-	    tbl->tabwidth[i] =
-		ceil_at_intervals(tbl->tabwidth[i], rulewidth);
+	    tbl->tabwidth[i] = ceil_at_intervals(tbl->tabwidth[i], rulewidth);
 	    if (tbl->fixed_width[i] > 0)
 		tbl->fixed_width[i] =
 		    ceil_at_intervals(tbl->fixed_width[i], rulewidth);
@@ -2051,8 +2044,7 @@ end_table(struct table *tbl)
 	for (i = 0; i <= cell->maxcell; i++) {
 	    cell->minimum_width[i] =
 		ceil_at_intervals(cell->minimum_width[i], rulewidth);
-	    cell->width[i] =
-		ceil_at_intervals(cell->width[i], rulewidth);
+	    cell->width[i] = ceil_at_intervals(cell->width[i], rulewidth);
 	    if (cell->fixed_width[i] > 0)
 		cell->fixed_width[i] =
 		    ceil_at_intervals(cell->fixed_width[i], rulewidth);
@@ -2085,7 +2077,7 @@ check_minimum0(struct table *t, int min)
 	    cell->minimum_width[cell->icell] = min;
     }
     for (i = t->col;
-      i <= t->maxcol && (i == t->col || (t->tabattr[t->row][i] & HTT_X));
+	 i <= t->maxcol && (i == t->col || (t->tabattr[t->row][i] & HTT_X));
 	 i++) {
 	if (t->minimum_width[i] < ww)
 	    t->minimum_width[i] = ww;
@@ -2178,7 +2170,7 @@ begin_cell(struct table *t, struct table_mode *mode)
 	t->suspended_data = NULL;
     }
 }
-    
+
 void
 check_rowcol(struct table *tbl, struct table_mode *mode)
 {
@@ -2199,8 +2191,7 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
     for (;; tbl->row++) {
 	check_row(tbl, tbl->row);
 	for (; tbl->col < MAXCOL &&
-	     tbl->tabattr[tbl->row][tbl->col] & (HTT_X | HTT_Y);
-	     tbl->col++);
+	     tbl->tabattr[tbl->row][tbl->col] & (HTT_X | HTT_Y); tbl->col++) ;
 	if (tbl->col < MAXCOL)
 	    break;
 	tbl->col = 0;
@@ -2294,14 +2285,12 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 
 static void
 feed_table_inline_tag(struct table *tbl,
-		      char *line,
-		      struct table_mode *mode,
-		      int width)
+		      char *line, struct table_mode *mode, int width)
 {
     check_rowcol(tbl, mode);
     pushdata(tbl, tbl->row, tbl->col, line);
     if (width >= 0) {
- 	check_minimum0(tbl, width);
+	check_minimum0(tbl, width);
 	addcontentssize(tbl, width);
 	setwidth(tbl, mode);
     }
@@ -2309,10 +2298,7 @@ feed_table_inline_tag(struct table *tbl,
 
 static void
 feed_table_block_tag(struct table *tbl,
-		     char *line,
-		     struct table_mode *mode,
-		     int indent,
-		     int cmd)
+		     char *line, struct table_mode *mode, int indent, int cmd)
 {
     int offset;
     if (mode->indent_level <= 0 && indent == -1)
@@ -2370,7 +2356,7 @@ table_close_anchor0(struct table *tbl, struct table_mode *mode)
     }
     else if (tbl->linfo.prev_spaces > 0 &&
 	     tbl->tabcontentssize - 1 == mode->anchor_offset) {
-	if(tbl->linfo.prev_spaces > 0)
+	if (tbl->linfo.prev_spaces > 0)
 	    tbl->linfo.prev_spaces = -1;
     }
 }
@@ -2400,7 +2386,8 @@ table_close_anchor0(struct table *tbl, struct table_mode *mode)
 	case HTML_COL
 
 static int
-feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width, struct parsed_tag *tag)
+feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+	       int width, struct parsed_tag *tag)
 {
     int cmd;
     char *p;
@@ -2427,11 +2414,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
     }
 
     switch (cmd) {
-    CASE_TABLE_TAG:
-	if (mode->caption) 
+      CASE_TABLE_TAG:
+	if (mode->caption)
 	    mode->caption = 0;
-	if (mode->pre_mode & (TBLM_IGNORE|TBLM_XMP|TBLM_LST))
-	    mode->pre_mode &= ~(TBLM_IGNORE|TBLM_XMP|TBLM_LST);
+	if (mode->pre_mode & (TBLM_IGNORE | TBLM_XMP | TBLM_LST))
+	    mode->pre_mode &= ~(TBLM_IGNORE | TBLM_XMP | TBLM_LST);
 	if (mode->pre_mode & TBLM_INTXTA)
 	    table_close_textarea(tbl, mode, width);
 	if (mode->pre_mode & TBLM_INSELECT)
@@ -2454,13 +2441,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	table_close_select(tbl, mode, width);
     }
 
-    if (
-	(mode->pre_mode & TBLM_INSELECT && cmd != HTML_N_SELECT) ||
+    if ((mode->pre_mode & TBLM_INSELECT && cmd != HTML_N_SELECT) ||
 	(mode->pre_mode & TBLM_INTXTA && cmd != HTML_N_TEXTAREA) ||
 	(mode->pre_mode & TBLM_XMP && cmd != HTML_N_XMP) ||
 	(mode->pre_mode & TBLM_LST && cmd != HTML_N_LISTING))
 	return TAG_ACTION_FEED;
-	
+
     if (mode->pre_mode & TBLM_PRE) {
 	switch (cmd) {
 	case HTML_NOBR:
@@ -2495,7 +2481,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 		break;
 	    case ALIGN_RIGHT:
 		align = (HTT_RIGHT | HTT_TRSET);
-		break;    
+		break;
 	    case ALIGN_CENTER:
 		align = (HTT_CENTER | HTT_TRSET);
 		break;
@@ -2607,7 +2593,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 #ifdef TABLE_EXPAND
 	    if (v > 0) {
 		if (tbl->real_width > 0)
-		    v = - (v * 100) / (tbl->real_width * pixel_per_char);
+		    v = -(v * 100) / (tbl->real_width * pixel_per_char);
 		else
 		    v = (int)(v / pixel_per_char);
 	    }
@@ -2632,11 +2618,10 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 
 	    cell->icell = cell->maxcell + 1;
 	    k = bsearch_2short(colspan, cell->colspan, col, cell->col, MAXCOL,
-			    cell->index, cell->icell);
+			       cell->index, cell->icell);
 	    if (k <= cell->maxcell) {
 		i = cell->index[k];
-		if (cell->col[i] == col &&
-		    cell->colspan[i] == colspan)
+		if (cell->col[i] == col && cell->colspan[i] == colspan)
 		    cell->icell = i;
 	    }
 	    if (cell->icell > cell->maxcell && cell->icell < MAXCELL) {
@@ -2647,7 +2632,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 		cell->minimum_width[cell->maxcell] = 0;
 		cell->fixed_width[cell->maxcell] = 0;
 		if (cell->maxcell > k)
-		    bcopy(cell->index + k, cell->index + k + 1, cell->maxcell - k);
+		    bcopy(cell->index + k, cell->index + k + 1,
+			  cell->maxcell - k);
 		cell->index[k] = cell->maxcell;
 	    }
 	    if (cell->icell > cell->maxcell)
@@ -2745,9 +2731,9 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	case HTML_N_XMP:
 	    mode->pre_mode &= ~TBLM_XMP;
 	    break;
-       case HTML_PLAINTEXT:
-           mode->pre_mode |= TBLM_PLAINTEXT;
-           break;
+	case HTML_PLAINTEXT:
+	    mode->pre_mode |= TBLM_PLAINTEXT;
+	    break;
 	}
 	break;
     case HTML_DL:
@@ -2888,7 +2874,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	    else
 		v = tbl->fixed_width[tbl->col];
 	    if (v < 0 && tbl->real_width > 0 && tbl1->real_width > 0)
-		w = - (tbl1->real_width * 100) / tbl->real_width;
+		w = -(tbl1->real_width * 100) / tbl->real_width;
 	    else
 		w = tbl1->real_width;
 	    if (w > 0)
@@ -3001,8 +2987,7 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	    char *q, *r;
 	    if (*p == '&') {
 		if (!strncasecmp(p, "&amp;", 5) ||
-		    !strncasecmp(p, "&gt;", 4) ||
-		    !strncasecmp(p, "&lt;", 4)) {
+		    !strncasecmp(p, "&gt;", 4) || !strncasecmp(p, "&lt;", 4)) {
 		    /* do not convert */
 		    Strcat_char(tmp, *p);
 		    p++;
@@ -3010,30 +2995,30 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		else {
 		    int ec;
 		    q = p;
-            switch (ec = getescapechar(&p)) {
-            case '<':
-               Strcat_charp(tmp, "&lt;");
-               break;
-            case '>':
-               Strcat_charp(tmp, "&gt;");
-               break;
-            case '&':
-               Strcat_charp(tmp, "&amp;");
-               break;
-            case '\r':
-               Strcat_char(tmp, '\n');
-               break;
-            default:
-               r = conv_entity(ec);
-               if (r != NULL && strlen(r) == 1 &&
-                   ec == (unsigned char)*r) {
-                   Strcat_char(tmp, *r);
-                   break;
-               }
-            case -1:
-                   Strcat_char(tmp, *q);
-                   p = q + 1;
-                   break;
+		    switch (ec = getescapechar(&p)) {
+		    case '<':
+			Strcat_charp(tmp, "&lt;");
+			break;
+		    case '>':
+			Strcat_charp(tmp, "&gt;");
+			break;
+		    case '&':
+			Strcat_charp(tmp, "&amp;");
+			break;
+		    case '\r':
+			Strcat_char(tmp, '\n');
+			break;
+		    default:
+			r = conv_entity(ec);
+			if (r != NULL && strlen(r) == 1 &&
+			    ec == (unsigned char)*r) {
+			    Strcat_char(tmp, *r);
+			    break;
+			}
+		    case -1:
+			Strcat_char(tmp, *q);
+			p = q + 1;
+			break;
 		    }
 		}
 	    }
@@ -3091,8 +3076,9 @@ feed_table1(struct table *tbl, Str tok, struct table_mode *mode, int width)
     tokbuf = Strnew();
     status = R_ST_NORMAL;
     line = tok->ptr;
-    while (read_token(tokbuf, &line, &status, mode->pre_mode & TBLM_PREMODE, 0))
-	    feed_table(tbl, tokbuf->ptr, mode, width, TRUE);
+    while (read_token
+	   (tokbuf, &line, &status, mode->pre_mode & TBLM_PREMODE, 0))
+	feed_table(tbl, tokbuf->ptr, mode, width, TRUE);
 }
 
 void
@@ -3119,8 +3105,7 @@ pushTable(struct table *tbl, struct table *tbl1)
     tbl->tables[tbl->ntable].indent = tbl->indent;
     tbl->tables[tbl->ntable].buf = newTextLineList();
     check_row(tbl, row);
-    if (col + 1 <= tbl->maxcol &&
-	tbl->tabattr[row][col + 1] & HTT_X)
+    if (col + 1 <= tbl->maxcol && tbl->tabattr[row][col + 1] & HTT_X)
 	tbl->tables[tbl->ntable].cell = tbl->cell.icell;
     else
 	tbl->tables[tbl->ntable].cell = -1;
@@ -3168,7 +3153,8 @@ correct_table_matrix2(struct table *t, int col, int cspan, double s, double b)
 }
 
 static void
-correct_table_matrix3(struct table *t, int col, char *flags, double s, double b)
+correct_table_matrix3(struct table *t, int col, char *flags, double s,
+		      double b)
 {
     int i, j;
     double ss;
@@ -3220,7 +3206,7 @@ set_table_matrix0(struct table *t, int maxwidth)
     if (cell->necell == 0) {
 	for (i = 0; i < size; i++) {
 	    s = we[i] / w0;
-	    b = sigma_td_nw((int) (s * maxwidth));
+	    b = sigma_td_nw((int)(s * maxwidth));
 	    correct_table_matrix2(t, i, 1, s, b);
 	}
 	return;
@@ -3243,7 +3229,7 @@ set_table_matrix0(struct table *t, int maxwidth)
 	for (i = bcol; i < ecol; i++)
 	    w1 += we[i];
 	s = w / (w0 + w - w1);
-	a = (int) (s * maxwidth);
+	a = (int)(s * maxwidth);
 	b = sigma_td_nw(a);
 	correct_table_matrix2(t, bcol, cell->colspan[j], s, b);
     }
@@ -3255,7 +3241,7 @@ set_table_matrix0(struct table *t, int maxwidth)
     for (i = 0; i < size; i++) {
 	if (expand[i] == 0) {
 	    s = we[i] / max(w1, 1.);
-	    b = sigma_td_nw((int) (s * maxwidth));
+	    b = sigma_td_nw((int)(s * maxwidth));
 	}
 	else {
 	    s = we[i] / max(w0 - w1, 1.);
@@ -3292,8 +3278,8 @@ set_table_matrix(struct table *t, int width)
 	    correct_table_matrix(t, i, 1, a, b);
 	}
 	else if (t->fixed_width[i] < 0) {
-	    s = -(double) t->fixed_width[i] / 100.;
-	    b = sigma_td((int) (s * width));
+	    s = -(double)t->fixed_width[i] / 100.;
+	    b = sigma_td((int)(s * width));
 	    correct_table_matrix2(t, i, 1, s, b);
 	}
     }
@@ -3302,14 +3288,12 @@ set_table_matrix(struct table *t, int width)
 	if (cell->fixed_width[j] > 0) {
 	    a = max(cell->fixed_width[j], cell->minimum_width[j]);
 	    b = sigma_td(a);
-	    correct_table_matrix(t, cell->col[j],
-				 cell->colspan[j], a, b);
+	    correct_table_matrix(t, cell->col[j], cell->colspan[j], a, b);
 	}
 	else if (cell->fixed_width[j] < 0) {
-	    s = -(double) cell->fixed_width[j] / 100.;
-	    b = sigma_td((int) (s * width));
-	    correct_table_matrix2(t, cell->col[j],
-				  cell->colspan[j], s, b);
+	    s = -(double)cell->fixed_width[j] / 100.;
+	    b = sigma_td((int)(s * width));
+	    correct_table_matrix2(t, cell->col[j], cell->colspan[j], s, b);
 	}
     }
 

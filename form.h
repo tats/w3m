@@ -1,4 +1,4 @@
-/* $Id: form.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: form.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
 /*
  * HTML forms 
  */
@@ -33,11 +33,11 @@
 #define FORM_ENCTYPE_URLENCODED 0
 #define FORM_ENCTYPE_MULTIPART  1
 
-#define MAX_TEXTAREA 10        /* max number of * <textarea>..</textarea> 
-				 * within one * document */
+#define MAX_TEXTAREA 10		/* max number of * <textarea>..</textarea> 
+				 * * within one * document */
 #ifdef MENU_SELECT
-#define MAX_SELECT 10        /* max number of <select>..</select> *
-				 * within one document */
+#define MAX_SELECT 10		/* max number of <select>..</select> *
+				 * * within one document */
 #endif				/* MENU_SELECT */
 
 typedef struct form_list {
@@ -69,7 +69,7 @@ typedef struct form_select_option {
     FormSelectOptionItem *last;
 } FormSelectOption;
 
-void addSelectOption(FormSelectOption * fso, Str value, Str label, int chk);
+void addSelectOption(FormSelectOption *fso, Str value, Str label, int chk);
 void chooseSelectOption(struct form_item_list *fi, FormSelectOptionItem *item);
 void updateSelectOption(struct form_item_list *fi, FormSelectOptionItem *item);
 int formChooseOptionByMenu(struct form_item_list *fi, int x, int y);

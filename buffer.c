@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: buffer.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -16,8 +16,7 @@ extern int do_getch();
 #include <strings.h>
 #endif
 char *NullLine = "";
-Lineprop NullProp[] =
-{0};
+Lineprop NullProp[] = { 0 };
 
 /* 
  * Buffer creation
@@ -30,7 +29,7 @@ newBuffer(int width)
     n = New(Buffer);
     if (n == NULL)
 	return NULL;
-    bzero((void *) n, sizeof(Buffer));
+    bzero((void *)n, sizeof(Buffer));
     n->width = width;
     n->COLS = COLS;
     n->currentURL.scheme = SCM_UNKNOWN;
@@ -65,7 +64,7 @@ nullBuffer(void)
  * clearBuffer: clear buffer content
  */
 void
-clearBuffer(Buffer * buf)
+clearBuffer(Buffer *buf)
 {
     buf->firstLine = buf->topLine = buf->currentLine = buf->lastLine = NULL;
     buf->allLine = 0;
@@ -76,7 +75,7 @@ clearBuffer(Buffer * buf)
  */
 
 void
-discardBuffer(Buffer * buf)
+discardBuffer(Buffer *buf)
 {
     int i;
     Buffer *b;
@@ -102,7 +101,7 @@ discardBuffer(Buffer * buf)
 	unlink(buf->mailcap_source);
     while (buf->frameset) {
 	deleteFrameSet(buf->frameset);
-       buf->frameset = popFrameTree(&(buf->frameQ));
+	buf->frameset = popFrameTree(&(buf->frameQ));
     }
 }
 
@@ -110,7 +109,7 @@ discardBuffer(Buffer * buf)
  * namedBuffer: Select buffer which have specified name
  */
 Buffer *
-namedBuffer(Buffer * first, char *name)
+namedBuffer(Buffer *first, char *name)
 {
     Buffer *buf;
 
@@ -129,7 +128,7 @@ namedBuffer(Buffer * first, char *name)
  * deleteBuffer: delete buffer
  */
 Buffer *
-deleteBuffer(Buffer * first, Buffer * delbuf)
+deleteBuffer(Buffer *first, Buffer *delbuf)
 {
     Buffer *buf, *b;
 
@@ -150,7 +149,7 @@ deleteBuffer(Buffer * first, Buffer * delbuf)
  * replaceBuffer: replace buffer
  */
 Buffer *
-replaceBuffer(Buffer * first, Buffer * delbuf, Buffer * newbuf)
+replaceBuffer(Buffer *first, Buffer *delbuf, Buffer *newbuf)
 {
     Buffer *buf;
 
@@ -174,7 +173,7 @@ replaceBuffer(Buffer * first, Buffer * delbuf, Buffer * newbuf)
 }
 
 Buffer *
-nthBuffer(Buffer * firstbuf, int n)
+nthBuffer(Buffer *firstbuf, int n)
 {
     int i;
     Buffer *buf = firstbuf;
@@ -190,7 +189,7 @@ nthBuffer(Buffer * firstbuf, int n)
 }
 
 static void
-writeBufferName(Buffer * buf, int n)
+writeBufferName(Buffer *buf, int n)
 {
     Str msg;
     int all;
@@ -226,7 +225,7 @@ writeBufferName(Buffer * buf, int n)
  * gotoLine: go to line number
  */
 void
-gotoLine(Buffer * buf, int n)
+gotoLine(Buffer *buf, int n)
 {
     char msg[32];
     Line *l = buf->firstLine;
@@ -237,7 +236,7 @@ gotoLine(Buffer * buf, int n)
 	if (buf->lastLine->linenumber < n)
 	    getNextPage(buf, n - buf->lastLine->linenumber);
 	while ((buf->lastLine->linenumber < n) &&
-	       (getNextPage(buf, 1) != NULL));
+	       (getNextPage(buf, 1) != NULL)) ;
     }
     if (l->linenumber > n) {
 	sprintf(msg, "First line is #%ld", l->linenumber);
@@ -250,7 +249,7 @@ gotoLine(Buffer * buf, int n)
 	sprintf(msg, "Last line is #%ld", buf->lastLine->linenumber);
 	disp_message(msg, FALSE);
 	buf->currentLine = l;
-	buf->topLine = lineSkip(buf, buf->currentLine, - (LASTLINE - 1), FALSE);
+	buf->topLine = lineSkip(buf, buf->currentLine, -(LASTLINE - 1), FALSE);
 	return;
     }
     for (; l != NULL; l = l->next) {
@@ -268,7 +267,7 @@ gotoLine(Buffer * buf, int n)
  * gotoRealLine: go to real line number
  */
 void
-gotoRealLine(Buffer * buf, int n)
+gotoRealLine(Buffer *buf, int n)
 {
     char msg[32];
     Line *l = buf->firstLine;
@@ -279,7 +278,7 @@ gotoRealLine(Buffer * buf, int n)
 	if (buf->lastLine->real_linenumber < n)
 	    getNextPage(buf, n - buf->lastLine->real_linenumber);
 	while ((buf->lastLine->real_linenumber < n) &&
-	       (getNextPage(buf, 1) != NULL));
+	       (getNextPage(buf, 1) != NULL)) ;
     }
     if (l->real_linenumber > n) {
 	sprintf(msg, "First line is #%ld", l->real_linenumber);
@@ -292,7 +291,7 @@ gotoRealLine(Buffer * buf, int n)
 	sprintf(msg, "Last line is #%ld", buf->lastLine->real_linenumber);
 	disp_message(msg, FALSE);
 	buf->currentLine = l;
-	buf->topLine = lineSkip(buf, buf->currentLine, - (LASTLINE - 1), FALSE);
+	buf->topLine = lineSkip(buf, buf->currentLine, -(LASTLINE - 1), FALSE);
 	return;
     }
     for (; l != NULL; l = l->next) {
@@ -308,7 +307,7 @@ gotoRealLine(Buffer * buf, int n)
 
 
 static Buffer *
-listBuffer(Buffer * top, Buffer * current)
+listBuffer(Buffer *top, Buffer *current)
 {
     int i, c = 0;
     Buffer *buf = top;
@@ -345,10 +344,11 @@ listBuffer(Buffer * top, Buffer * current)
 	buf = buf->nextBuffer;
     }
     standout();
-    message("Buffer selection mode: SPC for select / D for delete buffer", 0, 0);
+    message("Buffer selection mode: SPC for select / D for delete buffer", 0,
+	    0);
     standend();
-/* 
- * move(LASTLINE, COLS - 1); */
+    /* 
+     * move(LASTLINE, COLS - 1); */
     move(c, 0);
     refresh();
     return buf->nextBuffer;
@@ -359,7 +359,7 @@ listBuffer(Buffer * top, Buffer * current)
  * Select buffer visually
  */
 Buffer *
-selectBuffer(Buffer * firstbuf, Buffer * currentbuf, char *selectchar)
+selectBuffer(Buffer *firstbuf, Buffer *currentbuf, char *selectchar)
 {
     int i, cpoint,		/* Current Buffer Number */
      spoint,			/* Current Line on Screen */
@@ -406,20 +406,20 @@ selectBuffer(Buffer * firstbuf, Buffer * currentbuf, char *selectchar)
 	    }
 	}
 #ifdef __EMX__
-	else if(!c)
-	  switch(getch()){
+	else if (!c)
+	    switch (getch()) {
 	    case K_UP:
-		c='k';
+		c = 'k';
 		break;
 	    case K_DOWN:
-		c='j';
+		c = 'j';
 		break;
 	    case K_RIGHT:
-		c=' ';
+		c = ' ';
 		break;
 	    case K_LEFT:
-		c='B';
-	}
+		c = 'B';
+	    }
 #endif
 	switch (c) {
 	case CTRL_N:
@@ -472,9 +472,9 @@ selectBuffer(Buffer * firstbuf, Buffer * currentbuf, char *selectchar)
 	    *selectchar = c;
 	    return currentbuf;
 	}
-/* 
- * move(LASTLINE, COLS - 1);
- */
+	/* 
+	 * move(LASTLINE, COLS - 1);
+	 */
 	move(spoint, 0);
 	refresh();
     }
@@ -484,23 +484,25 @@ selectBuffer(Buffer * firstbuf, Buffer * currentbuf, char *selectchar)
  * Reshape HTML buffer
  */
 void
-reshapeBuffer(Buffer * buf)
+reshapeBuffer(Buffer *buf)
 {
     URLFile f;
     int top, linenum, cursorY, pos, currentColumn;
     AnchorList *formitem;
 
     if (buf->sourcefile == NULL)
-       return;
+	return;
     init_stream(&f, SCM_LOCAL, NULL);
-    examineFile(buf->mailcap_source ? buf->mailcap_source : buf->sourcefile, &f);
+    examineFile(buf->mailcap_source ? buf->mailcap_source : buf->sourcefile,
+		&f);
     if (f.stream == NULL)
-        return;
+	return;
 
     if (buf->firstLine == NULL) {
 	top = 1;
 	linenum = 1;
-    } else {
+    }
+    else {
 	top = buf->topLine->linenumber;
 	linenum = buf->currentLine->linenumber;
     }
@@ -510,7 +512,7 @@ reshapeBuffer(Buffer * buf)
     clearBuffer(buf);
     while (buf->frameset) {
 	deleteFrameSet(buf->frameset);
-       buf->frameset = popFrameTree(&(buf->frameQ));
+	buf->frameset = popFrameTree(&(buf->frameQ));
     }
 
     formitem = buf->formitem;
@@ -524,10 +526,10 @@ reshapeBuffer(Buffer * buf)
     UseContentCharset = FALSE;
     UseAutoDetect = FALSE;
 #endif
-    if (! strcasecmp(buf->type, "text/html"))
-       loadHTMLBuffer(&f, buf);
+    if (!strcasecmp(buf->type, "text/html"))
+	loadHTMLBuffer(&f, buf);
     else
-       loadBuffer(&f, buf);
+	loadBuffer(&f, buf);
     UFclose(&f);
 #ifdef JP_CHARSET
     UseContentCharset = TRUE;
@@ -551,18 +553,18 @@ reshapeBuffer(Buffer * buf)
 
 /* shallow copy */
 void
-copyBuffer(Buffer * a, Buffer * b)
+copyBuffer(Buffer *a, Buffer *b)
 {
     readBufferCache(b);
-    bcopy((void *) b, (void *) a, sizeof(Buffer));
+    bcopy((void *)b, (void *)a, sizeof(Buffer));
 }
 
 Buffer *
-prevBuffer(Buffer * first, Buffer * buf)
+prevBuffer(Buffer *first, Buffer *buf)
 {
     Buffer *b;
 
-    for (b = first; b != NULL && b->nextBuffer != buf; b = b->nextBuffer);
+    for (b = first; b != NULL && b->nextBuffer != buf; b = b->nextBuffer) ;
     return b;
 }
 
@@ -604,7 +606,7 @@ writeBufferCache(Buffer *buf)
 	    fwrite(l->propBuf, sizeof(Lineprop), l->len, cache) < l->len)
 	    goto _error;
 #ifdef USE_ANSI_COLOR
-        colorflag = l->colorBuf ? 1 : 0;
+	colorflag = l->colorBuf ? 1 : 0;
 	if (fwrite1(colorflag, cache))
 	    goto _error;
 	if (colorflag) {
@@ -616,10 +618,10 @@ writeBufferCache(Buffer *buf)
 
     fclose(cache);
     return 0;
-    _error:
+  _error:
     fclose(cache);
     unlink(buf->savecache);
-    _error1:
+  _error1:
     buf->savecache = NULL;
     return -1;
 }
@@ -638,9 +640,7 @@ readBufferCache(Buffer *buf)
 	return -1;
 
     cache = fopen(buf->savecache, "r");
-    if (cache == NULL ||
-	fread1(clnum, cache) ||
-	fread1(tlnum, cache)) {
+    if (cache == NULL || fread1(clnum, cache) || fread1(tlnum, cache)) {
 	buf->savecache = NULL;
 	return -1;
     }
@@ -661,8 +661,7 @@ readBufferCache(Buffer *buf)
 	    buf->topLine = l;
 	if (fread1(l->real_linenumber, cache) ||
 	    fread1(l->usrflags, cache) ||
-	    fread1(l->width, cache) ||
-	    fread1(l->len, cache))
+	    fread1(l->width, cache) || fread1(l->len, cache))
 	    break;
 	l->lineBuf = NewAtom_N(char, l->len + 1);
 	fread(l->lineBuf, 1, l->len, cache);
@@ -675,7 +674,8 @@ readBufferCache(Buffer *buf)
 	if (colorflag) {
 	    l->colorBuf = NewAtom_N(Linecolor, l->len);
 	    fread(l->colorBuf, sizeof(Linecolor), l->len, cache);
-	} else {
+	}
+	else {
 	    l->colorBuf = NULL;
 	}
 #endif

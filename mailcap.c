@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.5 2001/11/20 04:11:16 ukai Exp $ */
+/* $Id: mailcap.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -6,8 +6,7 @@
 #include "parsetag.h"
 #include "local.h"
 
-static struct mailcap DefaultMailcap[] =
-{
+static struct mailcap DefaultMailcap[] = {
     {"image/*", "xv %s", 0, NULL, NULL, NULL},	/* */
     {"audio/basic", "showaudio %s", 0, NULL, NULL, NULL},
     {NULL, NULL, 0, NULL, NULL, NULL}
@@ -74,7 +73,8 @@ searchMailcap(struct mailcap *table, char *type)
 	i = mailcapMatch(table, type);
 	if (i > level) {
 	    if (table->test) {
-		Str command = unquote_mailcap(table->test, type, NULL, NULL, NULL);
+		Str command =
+		    unquote_mailcap(table->test, type, NULL, NULL, NULL);
 		if (system(command->ptr) != 0)
 		    continue;
 	    }
@@ -86,7 +86,7 @@ searchMailcap(struct mailcap *table, char *type)
 }
 
 static int
-matchMailcapAttr(char *p, char *attr, int len, Str * value)
+matchMailcapAttr(char *p, char *attr, int len, Str *value)
 {
     int quoted;
     char *q = NULL;
@@ -140,7 +140,7 @@ extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
 	if (!IS_SPACE(p[j]))
 	    k = j;
     }
-    mcap->type = allocStr(p, (k >= 0)? k + 1 : j);
+    mcap->type = allocStr(p, (k >= 0) ? k + 1 : j);
     if (!p[j])
 	return 0;
     p += j + 1;
@@ -156,7 +156,7 @@ extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
 	else if (p[j] == '\\')
 	    quoted = 1;
     }
-    mcap->viewer = allocStr(p, (k >= 0)? k + 1 : j);
+    mcap->viewer = allocStr(p, (k >= 0) ? k + 1 : j);
     p += j;
 
     while (*p == ';') {
@@ -168,8 +168,8 @@ extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
 	else if (matchMailcapAttr(p, "copiousoutput", 13, NULL)) {
 	    mcap->flags |= MAILCAP_COPIOUSOUTPUT;
 	}
-       else if (matchMailcapAttr(p, "x-htmloutput", 12, NULL) ||
-         matchMailcapAttr(p, "htmloutput", 10, NULL)) {
+	else if (matchMailcapAttr(p, "x-htmloutput", 12, NULL) ||
+		 matchMailcapAttr(p, "htmloutput", 10, NULL)) {
 	    mcap->flags |= MAILCAP_HTMLOUTPUT;
 	}
 	else if (matchMailcapAttr(p, "test", 4, &tmp)) {
@@ -241,13 +241,13 @@ searchExtViewer(char *type)
 
     if (mailcap_list == NULL)
 	goto no_user_mailcap;
-    
+
     for (i = 0; i < mailcap_list->nitem; i++) {
 	if ((p = searchMailcap(UserMailcap[i], type)) != NULL)
 	    return p;
     }
 
- no_user_mailcap:
+  no_user_mailcap:
     return searchMailcap(DefaultMailcap, type);
 }
 
@@ -262,45 +262,46 @@ searchExtViewer(char *type)
 Str
 quote_mailcap(char *s, int flag)
 {
-  Str d;
+    Str d;
 
-  d = Strnew();
+    d = Strnew();
 
-  for (;; ++s)
-    switch (*s) {
-    case '\0':
-      goto end;
-    case '$':
-    case '`':
-    case '"':
-    case '\\':
-      if (!(flag & MCF_SQUOTED))
-       Strcat_char(d, '\\');
+    for (;; ++s)
+	switch (*s) {
+	case '\0':
+	    goto end;
+	case '$':
+	case '`':
+	case '"':
+	case '\\':
+	    if (!(flag & MCF_SQUOTED))
+		Strcat_char(d, '\\');
 
-      Strcat_char(d, *s);
-      break;
-    case '\'':
-      if (flag & MCF_SQUOTED) {
-	Strcat_charp(d, "'\\''");
-	break;
-      }
-    default:
-      if (!flag && !IS_ALNUM(*s))
-       Strcat_char(d, '\\');
-    case '_':
-    case '.':
-    case ':':
-    case '/':
-      Strcat_char(d, *s);
-      break;
-    }
-end:
-  return d;
+	    Strcat_char(d, *s);
+	    break;
+	case '\'':
+	    if (flag & MCF_SQUOTED) {
+		Strcat_charp(d, "'\\''");
+		break;
+	    }
+	default:
+	    if (!flag && !IS_ALNUM(*s))
+		Strcat_char(d, '\\');
+	case '_':
+	case '.':
+	case ':':
+	case '/':
+	    Strcat_char(d, *s);
+	    break;
+	}
+  end:
+    return d;
 }
 
 
 static Str
-unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, int flag0)
+unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat,
+		     int flag0)
 {
     Str str, tmp, test, then;
     char *p;
@@ -308,7 +309,7 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 
     if (stat)
 	*stat = 0;
-    
+
     if (qstr == NULL)
 	return NULL;
 
@@ -317,15 +318,15 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 
     for (flag = flag0, p = qstr; *p; p++) {
 	if (status == MC_QUOTED) {
-            if (prev_status == MC_PREC2)
-                Strcat_char(tmp, *p);
-            else
-	        Strcat_char(str, *p);
-            status = prev_status;
+	    if (prev_status == MC_PREC2)
+		Strcat_char(tmp, *p);
+	    else
+		Strcat_char(str, *p);
+	    status = prev_status;
 	    continue;
 	}
 	else if (*p == '\\') {
-            prev_status = status;
+	    prev_status = status;
 	    status = MC_QUOTED;
 	    continue;
 	}
@@ -334,35 +335,35 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 	    if (*p == '%') {
 		status = MC_PREC;
 	    }
-            else {
-                if (*p == '\'') {
-                    if (!flag0 && flag & MCF_SQUOTED)
-                        flag &= ~MCF_SQUOTED;
-                    else if (!flag)
-                        flag |= MCF_SQUOTED;
-                }
-                else if (*p == '"') {
-                    if (!flag0 && flag & MCF_DQUOTED)
-                        flag &= ~MCF_DQUOTED;
-                    else if (!flag)
-                        flag |= MCF_DQUOTED;
-                }
-                Strcat_char(str, *p);
-            }
+	    else {
+		if (*p == '\'') {
+		    if (!flag0 && flag & MCF_SQUOTED)
+			flag &= ~MCF_SQUOTED;
+		    else if (!flag)
+			flag |= MCF_SQUOTED;
+		}
+		else if (*p == '"') {
+		    if (!flag0 && flag & MCF_DQUOTED)
+			flag &= ~MCF_DQUOTED;
+		    else if (!flag)
+			flag |= MCF_DQUOTED;
+		}
+		Strcat_char(str, *p);
+	    }
 	    break;
 	case MC_PREC:
 	    if (IS_ALPHA(*p)) {
 		switch (*p) {
 		case 's':
 		    if (name) {
-                        Strcat_charp(str, quote_mailcap(name, flag)->ptr);
+			Strcat_charp(str, quote_mailcap(name, flag)->ptr);
 			if (stat)
 			    *stat |= MCSTAT_REPNAME;
 		    }
 		    break;
 		case 't':
 		    if (type) {
-                        Strcat_charp(str, quote_mailcap(type, flag)->ptr);
+			Strcat_charp(str, quote_mailcap(type, flag)->ptr);
 			if (stat)
 			    *stat |= MCSTAT_REPTYPE;
 		    }
@@ -372,7 +373,7 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 	    }
 	    else if (*p == '{') {
 		status = MC_PREC2;
-                test = then = NULL;
+		test = then = NULL;
 		tmp = Strnew();
 	    }
 	    else if (*p == '%') {
@@ -380,35 +381,35 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 	    }
 	    break;
 	case MC_PREC2:
-            if (sp > 0 || *p == '{') {
+	    if (sp > 0 || *p == '{') {
 		Strcat_char(tmp, *p);
 
-                switch (*p) {
-                case '{':
-                    ++sp;
-                    break;
-                case '}':
-                    --sp;
-                    break;
-                default:
-                    break;
-                }
+		switch (*p) {
+		case '{':
+		    ++sp;
+		    break;
+		case '}':
+		    --sp;
+		    break;
+		default:
+		    break;
+		}
 	    }
-           else if (*p == '}') {
-               char *q;
-               if (attr && (q = strcasestr(attr, tmp->ptr)) != NULL &&
-                 (q == attr || IS_SPACE(*(q-1)) || *(q-1) == ';') &&
-                 matchattr(q, tmp->ptr, tmp->length, &tmp)) {
-                   Strcat_charp(str, quote_mailcap(tmp->ptr, flag)->ptr);
-                   if (stat)
-                       *stat |= MCSTAT_REPPARAM;
-               }
-               status = MC_NORMAL;
-           }
-           else {
-               Strcat_char(tmp, *p);
-           }
-	   break;
+	    else if (*p == '}') {
+		char *q;
+		if (attr && (q = strcasestr(attr, tmp->ptr)) != NULL &&
+		    (q == attr || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
+		    matchattr(q, tmp->ptr, tmp->length, &tmp)) {
+		    Strcat_charp(str, quote_mailcap(tmp->ptr, flag)->ptr);
+		    if (stat)
+			*stat |= MCSTAT_REPPARAM;
+		}
+		status = MC_NORMAL;
+	    }
+	    else {
+		Strcat_char(tmp, *p);
+	    }
+	    break;
 	}
     }
     return str;
@@ -417,5 +418,5 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, 
 Str
 unquote_mailcap(char *qstr, char *type, char *name, char *attr, int *stat)
 {
-  return unquote_mailcap_loop(qstr, type, name, attr, stat, 0);
+    return unquote_mailcap_loop(qstr, type, name, attr, stat, 0);
 }

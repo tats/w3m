@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.191 2003/01/17 17:30:01 ukai Exp $ */
+/* $Id: file.c,v 1.192 2003/01/17 17:30:59 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1492,7 +1492,7 @@ same_url_p(ParsedURL *pu1, ParsedURL *pu2)
 	    && (pu1->file ? pu2->
 		file ? !strcmp(pu1->file, pu2->file) : 0 : 1));
 }
-		
+
 static int
 checkRedirection(ParsedURL *pu)
 {

@@ -1,5 +1,9 @@
 2004-03-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* main.c (main): DisplayCharset also follow locale
+
+2004-03-23  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* scripts/w3mhelp.cgi.in: use charset parramter
 	* scripts/w3mhelp-funcdesc.en.pl.in: add charset
 	* scripts/w3mhelp-funcdesc.ja.pl.in: ditto
@@ -8347,4 +8351,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.911 2004/03/22 17:03:13 ukai Exp $
+$Id: ChangeLog,v 1.912 2004/03/22 17:12:33 ukai Exp $

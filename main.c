@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.239 2004/03/22 03:32:27 ukai Exp $ */
+/* $Id: main.c,v 1.240 2004/03/22 17:12:33 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -446,8 +446,10 @@ main(int argc, char **argv, char **envp)
     URLHist = newHist();
 
 #ifdef USE_M17N
-    if (FollowLocale && Locale)
+    if (FollowLocale && Locale) {
+	DisplayCharset = wc_guess_locale_charset(Locale, DisplayCharset);
 	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
+    }
     auto_detect = WcOption.auto_detect;
 #endif
 

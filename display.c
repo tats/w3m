@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.53 2003/01/23 18:37:20 ukai Exp $ */
+/* $Id: display.c,v 1.54 2003/01/23 18:38:05 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -364,7 +364,9 @@ displayBuffer(Buffer *buf, int mode)
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
     if ((buf->width != INIT_BUFFER_WIDTH && (buf->type &&
-	 !strcmp(buf->type, "text/html") || FoldLine)) || buf->need_reshape) {
+					     !strcmp(buf->type, "text/html")
+					     || FoldLine))
+	|| buf->need_reshape) {
 	buf->need_reshape = TRUE;
 	reshapeBuffer(buf);
     }
@@ -1260,8 +1262,7 @@ cursorUp(Buffer *buf, int n)
     }
     cursorUp0(buf, n);
     while (buf->currentLine->prev && buf->currentLine->bpos &&
-	buf->currentLine->bwidth >=
-	buf->currentColumn + buf->visualpos)
+	   buf->currentLine->bwidth >= buf->currentColumn + buf->visualpos)
 	cursorUp0(buf, n);
 }
 
@@ -1293,8 +1294,8 @@ cursorDown(Buffer *buf, int n)
     }
     cursorDown0(buf, n);
     while (buf->currentLine->next && buf->currentLine->next->bpos &&
-	buf->currentLine->bwidth + buf->currentLine->width <
-	buf->currentColumn + buf->visualpos)
+	   buf->currentLine->bwidth + buf->currentLine->width <
+	   buf->currentColumn + buf->visualpos)
 	cursorDown0(buf, n);
 }
 
@@ -1389,7 +1390,9 @@ cursorLeft(Buffer *buf, int n)
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     if (buf->visualpos - l->bwidth < 0 && n) {
-	columnSkip(buf, -n + buf->visualpos - l->bwidth - (buf->visualpos - l->bwidth) % n);
+	columnSkip(buf,
+		   -n + buf->visualpos - l->bwidth - (buf->visualpos -
+						      l->bwidth) % n);
 	buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos - l->bwidth;
@@ -1464,7 +1467,7 @@ arrangeLine(Buffer *buf)
 	return;
     buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
     i = columnPos(buf->currentLine, buf->currentColumn + buf->visualpos
-	- buf->currentLine->bwidth);
+		  - buf->currentLine->bwidth);
     cpos = COLPOS(buf->currentLine, i) - buf->currentColumn;
     if (cpos >= 0) {
 	buf->cursorX = cpos;

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.58 2003/01/23 18:37:20 ukai Exp $ */
+/* $Id: etc.c,v 1.59 2003/01/23 18:38:06 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -240,7 +240,7 @@ checkType(Str s, Lineprop **oprop
 #ifdef USE_ANSI_COLOR
 	  , Linecolor **ocolor
 #endif
-	  )
+    )
 {
     Lineprop mode;
     Lineprop effect = PE_NORMAL;

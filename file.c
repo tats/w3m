@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.203 2003/01/23 18:37:20 ukai Exp $ */
+/* $Id: file.c,v 1.204 2003/01/23 18:38:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -658,7 +658,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 #ifdef USE_ANSI_COLOR
 				     , NULL
 #endif
-				     );
+		    );
 		Strcat(tmp, lineBuf2);
 		if (thru)
 		    addnewline(newBuf, lineBuf2->ptr, propBuffer,
@@ -6059,9 +6059,9 @@ extern Lineprop NullProp[];
 static void
 addnewline2(Buffer *buf, char *line, Lineprop *prop,
 #ifdef USE_ANSI_COLOR
-	   Linecolor *color,
+	    Linecolor *color,
 #endif
-	   int pos, int nlines)
+	    int pos, int nlines)
 {
     Line *l;
     l = New(Line);
@@ -6885,7 +6885,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 #ifdef USE_ANSI_COLOR
 			     , &colorBuffer
 #endif
-			     );
+	    );
 	addnewline(newBuf, lineBuf2->ptr, propBuffer,
 #ifdef USE_ANSI_COLOR
 		   colorBuffer,
@@ -7258,8 +7258,8 @@ getNextPage(Buffer *buf, int plen)
 #ifdef USE_ANSI_COLOR
 			     , &colorBuffer
 #endif
-			     );
-        addnewline(buf, lineBuf2->ptr, propBuffer,
+	    );
+	addnewline(buf, lineBuf2->ptr, propBuffer,
 #ifdef USE_ANSI_COLOR
 		   colorBuffer,
 #endif

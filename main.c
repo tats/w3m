@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.198 2003/01/23 18:37:21 ukai Exp $ */
+/* $Id: main.c,v 1.199 2003/01/23 18:38:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2487,7 +2487,8 @@ linend(void)
 {
     if (Currentbuf->firstLine == NULL)
 	return;
-    while (Currentbuf->currentLine->next && Currentbuf->currentLine->next->bpos)
+    while (Currentbuf->currentLine->next
+	   && Currentbuf->currentLine->next->bpos)
 	cursorDown0(Currentbuf, 1);
     Currentbuf->pos = Currentbuf->currentLine->len - 1;
     arrangeCursor(Currentbuf);

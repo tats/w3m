@@ -58,7 +58,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-alarm		disable alarm"
 ac_help="$ac_help
-  --disable-image=x11,fb,fb+s	disable inline image"
+  --enable-image[=x11,fb,fb+s]	enable inline image handler"
 ac_help="$ac_help
    --enable-xface		enable xface support"
 ac_help="$ac_help
@@ -1329,7 +1329,7 @@ else
 fi
 
 echo "$ac_t""$enable_japanese" 1>&6
-if test x$enable_japanese = xno; then
+if test x"$enable_japanese" = xno; then
   w3m_lang="en"
   cat >> confdefs.h <<\EOF
 #define DISPLAY_CODE 'x'
@@ -1341,7 +1341,7 @@ EOF
 
 else
   w3m_lang="ja";
-  case x$enable_japanese in
+  case x"$enable_japanese" in
   xS) cat >> confdefs.h <<EOF
 #define DISPLAY_CODE '$enable_japanese'
 EOF
@@ -1376,7 +1376,7 @@ cat >> confdefs.h <<EOF
 EOF
 
 
-if test x$enable_japanese != xno; then
+if test x"$enable_japanese" != xno; then
  echo $ac_n "checking if kanji symbols is used""... $ac_c" 1>&6
 echo "configure:1382: checking if kanji symbols is used" >&5
  # Check whether --enable-kanjisymbols or --disable-kanjisymbols was given.
@@ -1387,7 +1387,7 @@ else
   enable_kanjisymbols="yes"
 fi
 
- test x$enable_kanjisymbols = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_kanjisymbols" = xyes && cat >> confdefs.h <<\EOF
 #define KANJI_SYMBOLS 1
 EOF
 
@@ -1405,7 +1405,7 @@ else
   enable_color="yes"
 fi
 
-test x$enable_color = xyes && cat >> confdefs.h <<\EOF
+test x"$enable_color" = xyes && cat >> confdefs.h <<\EOF
 #define USE_COLOR 1
 EOF
 
@@ -1421,7 +1421,7 @@ else
   enable_ansi_color="yes"
 fi
 
- test x$enable_ansi_color = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_ansi_color" = xyes && cat >> confdefs.h <<\EOF
 #define USE_ANSI_COLOR 1
 EOF
 
@@ -1437,7 +1437,7 @@ else
   enable_bgcolor="yes"
 fi
 
- test x$enable_bgcolor = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_bgcolor" = xyes && cat >> confdefs.h <<\EOF
 #define USE_BG_COLOR 1
 EOF
 
@@ -1451,7 +1451,7 @@ echo "configure:1451: checking if migemo is supported with" >&5
  # Check whether --with-migemo or --without-migemo was given.
 if test "${with_migemo+set}" = set; then
   withval="$with_migemo"
-  test x$with_migemo = xyes || migemo_command="$with_migemo"
+  test x"$with_migemo" = xyes || migemo_command="$with_migemo"
 fi
 
  if test "${with_migemo+set}" = set; then
@@ -1477,7 +1477,7 @@ else
   enable_mouse="yes"
 fi
 
-test x$enable_mouse = xyes && cat >> confdefs.h <<\EOF
+test x"$enable_mouse" = xyes && cat >> confdefs.h <<\EOF
 #define USE_MOUSE 1
 EOF
 
@@ -1494,7 +1494,7 @@ else
   enable_menu="yes"
 fi
 
- test x$enable_menu = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_menu" = xyes && cat >> confdefs.h <<\EOF
 #define USE_MENU 1
 EOF
 
@@ -1510,7 +1510,7 @@ else
   enable_cookie="yes"
 fi
 
-test x$enable_cookie = xyes && cat >> confdefs.h <<\EOF
+test x"$enable_cookie" = xyes && cat >> confdefs.h <<\EOF
 #define USE_COOKIE 1
 EOF
 
@@ -1526,7 +1526,7 @@ else
   enable_dict="yes"
 fi
 
- test x$enable_dict = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_dict" = xyes && cat >> confdefs.h <<\EOF
 #define USE_DICT 1
 EOF
 
@@ -1542,7 +1542,7 @@ else
   enable_history="yes"
 fi
 
- test x$enable_history = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_history" = xyes && cat >> confdefs.h <<\EOF
 #define USE_HISTORY 1
 EOF
 
@@ -1558,7 +1558,7 @@ else
   enable_digest_auth="yes"
 fi
 
- test x$enable_digest_auth = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_digest_auth" = xyes && cat >> confdefs.h <<\EOF
 #define USE_DIGEST_AUTH 1
 EOF
 
@@ -1574,7 +1574,7 @@ else
   enable_nntp="yes"
 fi
 
- test x$enable_nntp = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_nntp" = xyes && cat >> confdefs.h <<\EOF
 #define USE_NNTP 1
 EOF
 
@@ -1590,7 +1590,7 @@ else
   enable_gopher="no"
 fi
 
- test x$enable_gopher = xyes &&  cat >> confdefs.h <<\EOF
+ test x"$enable_gopher" = xyes &&  cat >> confdefs.h <<\EOF
 #define USE_GOPHER 1
 EOF
 
@@ -1609,7 +1609,7 @@ else
 fi
 
  echo "$ac_t""$enable_lynx" 1>&6
- if test x$enable_lynx = xyes; then
+ if test x"$enable_lynx" = xyes; then
   w3m_keybind="lynx"
   KEYMAP_FILE="keybind_lynx"
  else
@@ -1635,7 +1635,7 @@ echo "configure:1635: checking which editor is used by default" >&5
 # Check whether --with-editor or --without-editor was given.
 if test "${with_editor+set}" = set; then
   withval="$with_editor"
-  w3m_editor=$with_editor
+  w3m_editor="$with_editor"
 fi
 
 echo "$ac_t""$w3m_editor" 1>&6
@@ -1650,7 +1650,7 @@ echo "configure:1650: checking which mailer is used by default" >&5
 # Check whether --with-mailer or --without-mailer was given.
 if test "${with_mailer+set}" = set; then
   withval="$with_mailer"
-  w3m_mailer=$with_mailer
+  w3m_mailer="$with_mailer"
 fi
 
 echo "$ac_t""$w3m_mailer" 1>&6
@@ -1665,7 +1665,7 @@ echo "configure:1665: checking which external browser is used by default" >&5
 # Check whether --with-browser or --without-browser was given.
 if test "${with_browser+set}" = set; then
   withval="$with_browser"
-  w3m_browser=$with_browser
+  w3m_browser="$with_browser"
 fi
 
 echo "$ac_t""$w3m_browser" 1>&6
@@ -1684,7 +1684,7 @@ else
   enable_help_cgi="yes"
 fi
 
- test x$enable_help_cgi = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_help_cgi" = xyes && cat >> confdefs.h <<\EOF
 #define USE_HELP_CGI 1
 EOF
 
@@ -1700,7 +1700,7 @@ else
   enable_external_uri_loader="yes"
 fi
 
- test x$enable_external_uri_loader = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_external_uri_loader" = xyes && cat >> confdefs.h <<\EOF
 #define USE_EXTERNAL_URI_LOADER 1
 EOF
 
@@ -1716,8 +1716,8 @@ else
   enable_w3mmailer="$enable_external_uri_loader"
 fi
 
- test x$enable_external_uri_loader = xno && enable_w3mmailer=no
- test x$enable_w3mmailer = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_external_uri_loader" = xno && enable_w3mmailer=no
+ test x"$enable_w3mmailer" = xyes && cat >> confdefs.h <<\EOF
 #define USE_W3MMAILER 1
 EOF
 
@@ -2191,9 +2191,9 @@ echo "configure:2191: checking GC library exists" >&5
 # Check whether --with-gc or --without-gc was given.
 if test "${with_gc+set}" = set; then
   withval="$with_gc"
-  test x$with_gc = xno && { echo "configure: error: You can not build w3m without gc" 1>&2; exit 1; }
+  test x"$with_gc" = xno && { echo "configure: error: You can not build w3m without gc" 1>&2; exit 1; }
 else
-  with_gc=yes
+  with_gc="yes"
 fi
 
  echo "$ac_t""$with_gc" 1>&6
@@ -2231,7 +2231,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
- if test x$ac_cv_header_gc_h = xno; then
+ if test x"$ac_cv_header_gc_h" = xno; then
    echo $ac_n "checking GC header location""... $ac_c" 1>&6
 echo "configure:2237: checking GC header location" >&5
    echo "$ac_t""" 1>&6
@@ -2279,7 +2279,7 @@ fi
 
      CPPFLAGS="$cppflags"
    done
-   if test x$gcincludedir = xno; then
+   if test x"$gcincludedir" = xno; then
      { echo "configure: error: gc.h not found" 1>&2; exit 1; }
    fi
  fi
@@ -2324,7 +2324,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
- if test x$ac_cv_lib_gc_GC_version = xno; then
+ if test x"$ac_cv_lib_gc_GC_version" = xno; then
     echo $ac_n "checking GC library location""... $ac_c" 1>&6
 echo "configure:2330: checking GC library location" >&5
     echo "$ac_t""" 1>&6
@@ -2379,7 +2379,7 @@ fi
 
       LDFLAGS="$ldflags"
     done
-    if test x$gclibdir = xno; then
+    if test x"$gclibdir" = xno; then
       { echo "configure: error: libgc not found" 1>&2; exit 1; }
     fi
  fi
@@ -2395,7 +2395,7 @@ else
 fi
 
  echo "$ac_t""$enable_alarm" 1>&6
- if test x$enable_alarm = xyes; then
+ if test x"$enable_alarm" = xyes; then
    cat > conftest.$ac_ext <<EOF
 #line 2401 "configure"
 #include "confdefs.h"
@@ -2449,9 +2449,9 @@ else
 fi
 
  echo "$ac_t""$enable_image" 1>&6
- if test x$enable_image != xno; then
+ if test x"$enable_image" != xno; then
   IMGOBJS=w3mimg/w3mimg.o
-  if test x$enable_image = xyes; then
+  if test x"$enable_image" = xyes; then
     enable_image=x11
     case "`uname -s`" in
     Linux|linux|LINUX) 
@@ -2483,97 +2483,97 @@ EOF
 #define USE_IMAGE 1
 EOF
 
-  if test x$IMLIB_CONFIG = x; then
+  if test x"$IMLIB_CONFIG" = x; then
     IMLIB_CONFIG=imlib-config
   fi
-  if test x$IMLIB2_CONFIG = x; then
+  if test x"$IMLIB2_CONFIG" = x; then
     IMLIB2_CONFIG=imlib2-config
   fi
-  if test x$GDKPIXBUF_CONFIG = x; then
+  if test x"$GDKPIXBUF_CONFIG" = x; then
     GDKPIXBUF_CONFIG=gdk-pixbuf-config
   fi
-  version=`$GDKPIXBUF_CONFIG --version 2>/dev/null`
- if test x$version != x; then
+  version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
+ if test x"$version" != x; then
    echo $ac_n "checking GdkPixbuf version""... $ac_c" 1>&6
 echo "configure:2499: checking GdkPixbuf version" >&5
    echo "$ac_t""$version" 1>&6
    set -- `echo "$version" | sed 's/[^0-9]/ /g'`
    if test "$1" -ne "0" -o "$2" -lt "16" -o "$3" -lt "0"; then
      echo "configure: warning: GdkPixbuf is too old. Install GdkPixbuf (version >= 0.16.0)" 1>&2
-     have_gdkpixbuf=no
-  version=`$IMLIB_CONFIG --version 2>/dev/null`
- if test x$version != x; then
+     have_gdkpixbuf="no"
+  version="`$IMLIB_CONFIG --version 2>/dev/null`"
+ if test x"$version" != x; then
    echo $ac_n "checking Imlib version""... $ac_c" 1>&6
 echo "configure:2508: checking Imlib version" >&5
    echo "$ac_t""$version" 1>&6
    set -- `echo "$version" | sed 's/[^0-9]/ /g'`
    if test "$1" -ne "1" -o "$2" -lt "9" -o "$3" -lt "8"; then
      echo "configure: warning: Imlib is too old. Install Imlib (version >= 1.9.8)" 1>&2
-     have_imlib=no
+     have_imlib="no"
    else
-     have_imlib=yes
+     have_imlib="yes"
    fi
  else
    echo "configure: warning: Imlib is not installed.  Install Imlib (version >= 1.9.8)" 1>&2
-   have_imlib=no
+   have_imlib="no"
  fi
-  version=`$IMLIB2_CONFIG --version 2>/dev/null`
- if test x$version != x; then
+  version="`$IMLIB2_CONFIG --version 2>/dev/null`"
+ if test x"$version" != x; then
    echo $ac_n "checking Imlib2 version""... $ac_c" 1>&6
 echo "configure:2524: checking Imlib2 version" >&5
    echo "$ac_t""$version" 1>&6
    set -- `echo "$version" | sed 's/[^0-9]/ /g'`
    if test "$1" -ne "1" -o "$2" -lt "0" -o "$3" -lt "5"; then
      echo "configure: warning: Imlib2 is too old. Install Imlib2 (version >= 1.0.5)" 1>&2
-     have_imlib2=no
+     have_imlib2="no"
    else
-     have_imlib2=yes
+     have_imlib2="yes"
    fi
  else
    echo "configure: warning: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.5)" 1>&2
-   have_imlib2=no
+   have_imlib2="no"
  fi
    else
-     have_gdkpixbuf=yes
+     have_gdkpixbuf="yes"
    fi
  else
    echo "configure: warning: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 0.16.0)" 1>&2
-   have_gdkpixbuf=no
-  version=`$IMLIB_CONFIG --version 2>/dev/null`
- if test x$version != x; then
+   have_gdkpixbuf="no"
+  version="`$IMLIB_CONFIG --version 2>/dev/null`"
+ if test x"$version" != x; then
    echo $ac_n "checking Imlib version""... $ac_c" 1>&6
 echo "configure:2546: checking Imlib version" >&5
    echo "$ac_t""$version" 1>&6
    set -- `echo "$version" | sed 's/[^0-9]/ /g'`
    if test "$1" -ne "1" -o "$2" -lt "9" -o "$3" -lt "8"; then
      echo "configure: warning: Imlib is too old. Install Imlib (version >= 1.9.8)" 1>&2
-     have_imlib=no
+     have_imlib="no"
    else
-     have_imlib=yes
+     have_imlib="yes"
    fi
  else
    echo "configure: warning: Imlib is not installed.  Install Imlib (version >= 1.9.8)" 1>&2
-   have_imlib=no
+   have_imlib="no"
  fi
-  version=`$IMLIB2_CONFIG --version 2>/dev/null`
- if test x$version != x; then
+  version="`$IMLIB2_CONFIG --version 2>/dev/null`"
+ if test x"$version" != x; then
    echo $ac_n "checking Imlib2 version""... $ac_c" 1>&6
 echo "configure:2562: checking Imlib2 version" >&5
    echo "$ac_t""$version" 1>&6
    set -- `echo "$version" | sed 's/[^0-9]/ /g'`
    if test "$1" -ne "1" -o "$2" -lt "0" -o "$3" -lt "5"; then
      echo "configure: warning: Imlib2 is too old. Install Imlib2 (version >= 1.0.5)" 1>&2
-     have_imlib2=no
+     have_imlib2="no"
    else
-     have_imlib2=yes
+     have_imlib2="yes"
    fi
  else
    echo "configure: warning: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.5)" 1>&2
-   have_imlib2=no
+   have_imlib2="no"
  fi
  fi
-  if test x$x11 = xyes; then
-   if test x$have_gdkpixbuf = xyes; then
+  if test x"$x11" = xyes; then
+   if test x"$have_gdkpixbuf" = xyes; then
      cat >> confdefs.h <<\EOF
 #define USE_W3MIMG_X11 1
 EOF
@@ -2585,7 +2585,7 @@ EOF
      IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
-   elif test x$have_imlib = xyes; then
+   elif test x"$have_imlib" = xyes; then
      cat >> confdefs.h <<\EOF
 #define USE_W3MIMG_X11 1
 EOF
@@ -2597,7 +2597,7 @@ EOF
      IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
-   elif test x$have_imlib2 = xyes; then
+   elif test x"$have_imlib2" = xyes; then
      cat >> confdefs.h <<\EOF
 #define USE_W3MIMG_X11 1
 EOF
@@ -2613,8 +2613,8 @@ EOF
      echo "configure: warning: unable to build w3mimgdisplay with X11 support" 1>&2
    fi
   fi
-  if test x$fb = xyes; then
-   if test x$have_gdkpixbuf = xyes; then
+  if test x"$fb" = xyes; then
+   if test x"$have_gdkpixbuf" = xyes; then
      cat >> confdefs.h <<\EOF
 #define USE_W3MIMG_FB 1
 EOF
@@ -2626,7 +2626,7 @@ EOF
      IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-   elif test x$have_imlib2 = xyes; then
+   elif test x"$have_imlib2" = xyes; then
      cat >> confdefs.h <<\EOF
 #define USE_W3MIMG_FB 1
 EOF
@@ -2676,7 +2676,7 @@ else
   enable_xface="$enable_image"
 fi
 
- test x$enable_xface = xyes && cat >> confdefs.h <<\EOF
+ test x"$enable_xface" = xyes && cat >> confdefs.h <<\EOF
 #define USE_XFACE 1
 EOF
 
@@ -2727,7 +2727,7 @@ else
 fi
 
 echo "$ac_t""$with_ssl" 1>&6
-if test x$with_ssl != xno; then
+if test x"$with_ssl" != xno; then
   cat >> confdefs.h <<\EOF
 #define USE_SSL 1
 EOF
@@ -2788,7 +2788,7 @@ w3m_ssl="not found"
 fi
 
 
-  if test x$w3m_ssl = xfound; then
+  if test x"$w3m_ssl" = xfound; then
     echo $ac_n "checking if SSL certificate verify is enabled""... $ac_c" 1>&6
 echo "configure:2794: checking if SSL certificate verify is enabled" >&5
     # Check whether --enable-sslverify or --disable-sslverify was given.
@@ -2799,7 +2799,7 @@ else
   enable_sslverify="yes"
 fi
 
-    test x$enable_sslverify = xyes && cat >> confdefs.h <<\EOF
+    test x"$enable_sslverify" = xyes && cat >> confdefs.h <<\EOF
 #define USE_SSL_VERIFY 1
 EOF
 
@@ -2818,7 +2818,7 @@ fi
 
 echo "$ac_t""$enable_ipv6" 1>&6
 
-if test x$enable_ipv6 = xyes; then
+if test x"$enable_ipv6" = xyes; then
  echo $ac_n "checking if IPv6 API available""... $ac_c" 1>&6
 echo "configure:2824: checking if IPv6 API available" >&5
  
@@ -2865,16 +2865,16 @@ fi
 
 if eval "test \"`echo '$ac_cv_func_'getaddrinfo`\" = yes"; then
   echo "$ac_t""yes" 1>&6
-  enable_ipv6=yes; cat >> confdefs.h <<\EOF
+  enable_ipv6="yes"; cat >> confdefs.h <<\EOF
 #define INET6 1
 EOF
 
 else
   echo "$ac_t""no" 1>&6
-enable_ipv6=no
+enable_ipv6="no"
 fi
 
- if test x$enable_ipv6 = xno; then
+ if test x"$enable_ipv6" = xno; then
     echo $ac_n "checking for libinet6""... $ac_c" 1>&6
 echo "configure:2880: checking for libinet6" >&5
     for dir in /usr/local/v6/lib /usr/local/lib /usr/lib
@@ -2918,7 +2918,7 @@ LIBS="$ac_save_LIBS"
 fi
 if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
   echo "$ac_t""yes" 1>&6
-  enable_ipv6=yes; cat >> confdefs.h <<\EOF
+  enable_ipv6="yes"; cat >> confdefs.h <<\EOF
 #define INET6 1
 EOF
 
@@ -3833,7 +3833,7 @@ EOF
 
  
  
- if test x$ac_cv_type_signal = xvoid; then
+ if test x"$ac_cv_type_signal" = xvoid; then
   cat >> confdefs.h <<\EOF
 #define SIGNAL_RETURN return
 EOF

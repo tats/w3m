@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.87 2002/03/15 19:02:40 ukai Exp $ */
+/* $Id: file.c,v 1.88 2002/03/19 15:54:47 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5078,7 +5078,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    internal = HTML_N_INTERNAL;
 		    break;
 		case HTML_FORM_INT:
-		    process_form(tag);
+		    if (parsedtag_get_value(tag, ATTR_FID, &form_id))
+			process_form_int(tag, form_id);
 		    break;
 		case HTML_TEXTAREA_INT:
 		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
@@ -5187,12 +5188,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     }
     if (w3m_debug)
 	fclose(debug);
+    for (form_id = 1; form_id <= form_max; form_id++)
+	forms[form_id]->next = forms[form_id - 1];
+    buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
     if (n_textarea)
 	addMultirowsForm(buf, buf->formitem);
 #ifdef USE_IMAGE
     addMultirowsImg(buf, buf->img);
 #endif
-    buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
 }
 
 void

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.211 2003/01/29 17:10:32 ukai Exp $ */
+/* $Id: file.c,v 1.212 2003/01/29 17:26:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6615,12 +6615,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     if (htmlenv1.title)
 	newBuf->buffername = htmlenv1.title;
     if (w3m_halfdump) {
-        TRAP_OFF;
+	TRAP_OFF;
 	print_internal_information(&htmlenv1);
 	return;
     }
     if (w3m_backend) {
-        TRAP_OFF;
+	TRAP_OFF;
 	print_internal_information(&htmlenv1);
 	backend_halfdump_buf = htmlenv1.buf;
 	return;
@@ -6650,7 +6650,7 @@ loadHTMLString(Str page)
 
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
-        TRAP_OFF;
+	TRAP_OFF;
 	discardBuffer(newBuf);
 	return NULL;
     }

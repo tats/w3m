@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.30 2003/01/29 17:10:40 ukai Exp $ */
+/* $Id: image.c,v 1.31 2003/01/29 17:26:52 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -344,13 +344,13 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-/*
-#ifdef HAVE_WAITPID
-	    waitpid(cache->pid, &wait_st, 0);
-#else
-	    wait(&wait_st);
-#endif
-*/
+	    /*
+	     * #ifdef HAVE_WAITPID
+	     * waitpid(cache->pid, &wait_st, 0);
+	     * #else
+	     * wait(&wait_st);
+	     * #endif
+	     */
 	    cache->pid = 0;
 	}
 	if (!stat(cache->file, &st)) {
@@ -373,13 +373,13 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-/*
-#ifdef HAVE_WAITPID
-	    waitpid(cache->pid, &wait_st, 0);
-#else
-	    wait(&wait_st);
-#endif
-*/
+	    /*
+	     * #ifdef HAVE_WAITPID
+	     * waitpid(cache->pid, &wait_st, 0);
+	     * #else
+	     * wait(&wait_st);
+	     * #endif
+	     */
 	    cache->pid = 0;
 	}
 	unlink(cache->touch);
@@ -427,9 +427,9 @@ loadImage(Buffer *buf, int flag)
 	flush_tty();
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
-/*
-	    setup_child(TRUE, 0, -1);
-*/
+	    /*
+	     * setup_child(TRUE, 0, -1);
+	     */
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);

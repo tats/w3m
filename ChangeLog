@@ -1,3 +1,9 @@
+2003-08-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03957] Location: from local-CGI
+	* file.c (loadGeneralFile): don't parse header for local file
+		redirected by Location: from local-CGI
+
 2003-08-12  TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* [w3m-dev 03950] rel attribute of anchor tag
@@ -7989,4 +7995,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.857 2003/08/11 17:33:08 ukai Exp $
+$Id: ChangeLog,v 1.858 2003/08/29 14:49:46 ukai Exp $

@@ -9,6 +9,7 @@ new features
 * bookmark editor
 	[w3m-dev 03394] bookmark editor
 * [w3m-dev 03591] fold lines of plain text
+* [w3m-dev 03612] data: URL scheme
 
 * SMB
 * merge m17n

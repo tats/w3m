@@ -614,31 +614,62 @@ AC_DEFUN([AC_W3M_IMAGE],
   IFS="$save_ifs"
   enable_image=yes
   AC_DEFINE(USE_IMAGE)
-  if test x"$IMLIB_CONFIG" = x; then
-    IMLIB_CONFIG=imlib-config
+  AC_MSG_CHECKING(image library)
+  AC_ARG_WITH(imagelib,
+   [  --with-imagelib=IMAGELIBS		image library
+				 IMAGELIBS may be space separeted list of: 
+				    gdk-pixbuf imlib imlib2],,
+
+   [with_imagelib="yes"])
+  if test x"$with_imagelib" = xyes; then
+    with_imagelib="gdk-pixbuf imlib imlib2"
   fi
-  if test x"$IMLIB2_CONFIG" = x; then
-    IMLIB2_CONFIG=imlib2-config
-  fi
-  if test x"$GDKPIXBUF_CONFIG" = x; then
-    GDKPIXBUF_CONFIG=gdk-pixbuf-config
-  fi
+  AC_MSG_RESULT($with_imagelib)
+  with_imlib=no
+  with_imlib2=no
+  with_gdkpixbuf=no
+  for imagelib in $with_imagelib
+  do
+   case "$imagelib" in
+   imlib)
+     with_imlib="yes"
+     if test x"$IMLIB_CONFIG" = x; then
+       IMLIB_CONFIG=imlib-config
+     fi;;
+   imlib2)
+     with_imlib2="yes"
+     if test x"$IMLIB2_CONFIG" = x; then
+       IMLIB2_CONFIG=imlib2-config
+     fi;;
+   gdk-pixbuf)
+     with_gdkpixbuf="yes"
+     if test x"$GDKPIXBUF_CONFIG" = x; then
+       GDKPIXBUF_CONFIG=gdk-pixbuf-config
+     fi;;
+   esac
+  done
   IMGTARGETS=""
-  AC_W3M_CHECK_VER([GdkPixbuf],
+  if test x"$with_gdkpixbuf" = xyes; then
+   AC_W3M_CHECK_VER([GdkPixbuf],
 	[`$GDKPIXBUF_CONFIG --version 2>/dev/null`],
 	0, 16, 0,
 	[have_gdkpixbuf="yes"],
-	[have_gdkpixbuf="no"
-  AC_W3M_CHECK_VER([Imlib],
+	[have_gdkpixbuf="no"])
+  fi
+  if test x"$with_imlib" = xyes; then
+   AC_W3M_CHECK_VER([Imlib],
 	[`$IMLIB_CONFIG --version 2>/dev/null`],
 	1, 9, 8,
 	[have_imlib="yes"],
 	[have_imlib="no"])
-  AC_W3M_CHECK_VER([Imlib2],
+  fi
+  if test x"$with_imlib2" = xyes; then
+   AC_W3M_CHECK_VER([Imlib2],
 	[`$IMLIB2_CONFIG --version 2>/dev/null`],
 	1, 0, 5,
 	[have_imlib2="yes"],
-	[have_imlib2="no"])])
+	[have_imlib2="no"])
+  fi
   if test x"$x11" = xyes; then
    if test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)

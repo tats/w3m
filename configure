@@ -886,6 +886,9 @@ Optional Packages:
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
   --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
   --without-libintl-prefix     don't search for libintl in includedir and libdir
+  --with-imagelib=IMAGELIBS		image library
+				 IMAGELIBS may be space separeted list of:
+				    gdk-pixbuf imlib imlib2
   --with-migemo=MIGEMO_COMMAND	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
@@ -4920,17 +4923,47 @@ _ACEOF
 #define USE_IMAGE 1
 _ACEOF
 
-  if test x"$IMLIB_CONFIG" = x; then
-    IMLIB_CONFIG=imlib-config
+  echo "$as_me:$LINENO: checking image library" >&5
+echo $ECHO_N "checking image library... $ECHO_C" >&6
+
+# Check whether --with-imagelib or --without-imagelib was given.
+if test "${with_imagelib+set}" = set; then
+  withval="$with_imagelib"
+
+else
+  with_imagelib="yes"
+fi;
+  if test x"$with_imagelib" = xyes; then
+    with_imagelib="gdk-pixbuf imlib imlib2"
   fi
-  if test x"$IMLIB2_CONFIG" = x; then
-    IMLIB2_CONFIG=imlib2-config
-  fi
-  if test x"$GDKPIXBUF_CONFIG" = x; then
-    GDKPIXBUF_CONFIG=gdk-pixbuf-config
-  fi
+  echo "$as_me:$LINENO: result: $with_imagelib" >&5
+echo "${ECHO_T}$with_imagelib" >&6
+  with_imlib=no
+  with_imlib2=no
+  with_gdkpixbuf=no
+  for imagelib in $with_imagelib
+  do
+   case "$imagelib" in
+   imlib)
+     with_imlib="yes"
+     if test x"$IMLIB_CONFIG" = x; then
+       IMLIB_CONFIG=imlib-config
+     fi;;
+   imlib2)
+     with_imlib2="yes"
+     if test x"$IMLIB2_CONFIG" = x; then
+       IMLIB2_CONFIG=imlib2-config
+     fi;;
+   gdk-pixbuf)
+     with_gdkpixbuf="yes"
+     if test x"$GDKPIXBUF_CONFIG" = x; then
+       GDKPIXBUF_CONFIG=gdk-pixbuf-config
+     fi;;
+   esac
+  done
   IMGTARGETS=""
-  version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
+  if test x"$with_gdkpixbuf" = xyes; then
+   version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
  if test x"$version" != x; then
    echo "$as_me:$LINENO: checking GdkPixbuf version" >&5
 echo $ECHO_N "checking GdkPixbuf version... $ECHO_C" >&6
@@ -4941,44 +4974,6 @@ echo "${ECHO_T}$version" >&6
      { echo "$as_me:$LINENO: WARNING: GdkPixbuf is too old. Install GdkPixbuf (version >= 0.16.0)" >&5
 echo "$as_me: WARNING: GdkPixbuf is too old. Install GdkPixbuf (version >= 0.16.0)" >&2;}
      have_gdkpixbuf="no"
-  version="`$IMLIB_CONFIG --version 2>/dev/null`"
- if test x"$version" != x; then
-   echo "$as_me:$LINENO: checking Imlib version" >&5
-echo $ECHO_N "checking Imlib version... $ECHO_C" >&6
-   echo "$as_me:$LINENO: result: $version" >&5
-echo "${ECHO_T}$version" >&6
-   set -- `echo "$version" | sed 's/[^0-9]/ /g'`
-   if test "$1" -ne "1" -o "$2" -lt "9" || test "$2" -eq "9" -a "$3" -lt "8"; then
-     { echo "$as_me:$LINENO: WARNING: Imlib is too old. Install Imlib (version >= 1.9.8)" >&5
-echo "$as_me: WARNING: Imlib is too old. Install Imlib (version >= 1.9.8)" >&2;}
-     have_imlib="no"
-   else
-     have_imlib="yes"
-   fi
- else
-   { echo "$as_me:$LINENO: WARNING: Imlib is not installed.  Install Imlib (version >= 1.9.8)" >&5
-echo "$as_me: WARNING: Imlib is not installed.  Install Imlib (version >= 1.9.8)" >&2;}
-   have_imlib="no"
- fi
-  version="`$IMLIB2_CONFIG --version 2>/dev/null`"
- if test x"$version" != x; then
-   echo "$as_me:$LINENO: checking Imlib2 version" >&5
-echo $ECHO_N "checking Imlib2 version... $ECHO_C" >&6
-   echo "$as_me:$LINENO: result: $version" >&5
-echo "${ECHO_T}$version" >&6
-   set -- `echo "$version" | sed 's/[^0-9]/ /g'`
-   if test "$1" -ne "1" -o "$2" -lt "0" || test "$2" -eq "0" -a "$3" -lt "5"; then
-     { echo "$as_me:$LINENO: WARNING: Imlib2 is too old. Install Imlib2 (version >= 1.0.5)" >&5
-echo "$as_me: WARNING: Imlib2 is too old. Install Imlib2 (version >= 1.0.5)" >&2;}
-     have_imlib2="no"
-   else
-     have_imlib2="yes"
-   fi
- else
-   { echo "$as_me:$LINENO: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.5)" >&5
-echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.5)" >&2;}
-   have_imlib2="no"
- fi
    else
      have_gdkpixbuf="yes"
    fi
@@ -4986,7 +4981,10 @@ echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.
    { echo "$as_me:$LINENO: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 0.16.0)" >&5
 echo "$as_me: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 0.16.0)" >&2;}
    have_gdkpixbuf="no"
-  version="`$IMLIB_CONFIG --version 2>/dev/null`"
+ fi
+  fi
+  if test x"$with_imlib" = xyes; then
+   version="`$IMLIB_CONFIG --version 2>/dev/null`"
  if test x"$version" != x; then
    echo "$as_me:$LINENO: checking Imlib version" >&5
 echo $ECHO_N "checking Imlib version... $ECHO_C" >&6
@@ -5005,7 +5003,9 @@ echo "$as_me: WARNING: Imlib is too old. Install Imlib (version >= 1.9.8)" >&2;}
 echo "$as_me: WARNING: Imlib is not installed.  Install Imlib (version >= 1.9.8)" >&2;}
    have_imlib="no"
  fi
-  version="`$IMLIB2_CONFIG --version 2>/dev/null`"
+  fi
+  if test x"$with_imlib2" = xyes; then
+   version="`$IMLIB2_CONFIG --version 2>/dev/null`"
  if test x"$version" != x; then
    echo "$as_me:$LINENO: checking Imlib2 version" >&5
 echo $ECHO_N "checking Imlib2 version... $ECHO_C" >&6
@@ -5024,7 +5024,7 @@ echo "$as_me: WARNING: Imlib2 is too old. Install Imlib2 (version >= 1.0.5)" >&2
 echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.5)" >&2;}
    have_imlib2="no"
  fi
- fi
+  fi
   if test x"$x11" = xyes; then
    if test x"$have_gdkpixbuf" = xyes; then
      cat >>confdefs.h <<\_ACEOF

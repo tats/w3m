@@ -1,5 +1,11 @@
 2003-10-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* --with-imagelib request on [w3m-dev 03981]
+	 from Mamoru KOMACHI <usata@sodan.ecc.u-tokyo.ac.jp>
+	* acinclude.m4 (AC_W3M_IMAGE): add --with-imagelib
+
+2003-10-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* fix problem reported on [w3m-dev 03981]
 	  from Mamoru KOMACHI <usata@sodan.ecc.u-tokyo.ac.jp>
 	* configure.in: add AC_SUBST(HELP_DIR)
@@ -8138,4 +8144,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.879 2003/10/05 16:24:45 ukai Exp $
+$Id: ChangeLog,v 1.880 2003/10/05 16:59:37 ukai Exp $

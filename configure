@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.38 2001/12/20 00:44:00 ukai Exp $
+# $Id: configure,v 1.39 2001/12/20 03:39:32 ukai Exp $
 #	Configuration.
 #
 
@@ -137,12 +137,6 @@ do
   esac
   shift
 done
-
-# Version number of Boehm-GC library comes with w3m.
-# version number: JMMAAA  J: major MM: minor AAA: alpha
-#   Alpha number of non-alpha version is 255.
-# version 4.14alpha1 => 414002
-mygcversion=600255
 
 if [ -z "`echo -n aho | grep n`" ] ; then
 Echo()
@@ -992,6 +986,19 @@ esac
 if [ -n "$gclib" -a -n "$gcinclude" ]; then
   Echo GC library found on your system...
   cat > _zmachdep.c << EOF
+#include "gc/version.h"
+main()
+{
+  printf("%d%02d%03d\n",(GC_version>>16)&0xff,(GC_version>>8)&0xff,GC_version&0xff);
+}
+EOF
+  if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+  then
+    mygcversion=`./_zmachdep`
+  else
+    mygcversion=0
+  fi
+  cat > _zmachdep.c << EOF
 #include <gc.h>
 main()
 {
@@ -1014,15 +1021,21 @@ EOF
         cflags="$cflags -I./gc/include"
         gclib="gc/gc.a"
         gctarget=$gclib
+        echo "GC_version is $mygcversion."
       fi
     else
       cflags="$cflags -I$gcinclude"
     fi
-  else
+  elif [ $mygcversion -gt 0 ]; then
     echo "but it doesn't seem to work."
     cflags="$cflags -I./gc/include"
     gclib="gc/gc.a"
     gctarget=$gclib
+    echo "GC_version is $mygcversion."    
+  else
+    echo "It seems you don't have GC library."
+    echo "Stop."
+    exit 1
   fi
 fi
 

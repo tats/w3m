@@ -1,4 +1,4 @@
-GCLIBTGZ=gc5.0alpha3.tar.gz
+GCLIBTGZ=gc6.1alpha2.tar.gz
 
 all: XXMakefile
 	$(MAKE) -f XXMakefile 
@@ -36,7 +36,7 @@ veryclean: clean sweep
 prepare:
 	rm -rf gc
 	gzip -dc ../$(GCLIBTGZ) | tar xvf -
-	cp XMakefile.dist XMakefile
+#	cp XMakefile.dist XMakefile
 
 dist: XXMakefile
 	$(MAKE) -f XXMakefile dist

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.15 2003/07/09 15:07:11 ukai Exp $ */
+/* $Id: fb.c,v 1.16 2003/07/13 16:19:10 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -357,6 +357,12 @@ fb_clear(int x, int y, int w, int h, int r, int g, int b)
 
     if (is_open != TRUE || x > fb_width() || y > fb_height())
 	return 1;
+
+    if (x < 0)
+	x = 0;
+    if (y < 0)
+	y = 0;
+
     if (x + w > fb_width())
 	w = fb_width() - x;
     if (y + h > fb_height())

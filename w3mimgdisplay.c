@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.16 2003/07/08 17:29:56 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.17 2003/07/13 16:19:10 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -17,7 +17,7 @@ static char *defined_size = NULL;
 
 #define MAX_IMAGE 1000
 static W3MImage *imageBuf = NULL;
-static int maxImage = 0, maxAnim = 100;
+static int maxImage = 0, maxAnim = 100, clearMargin = 0;
 
 static void GetOption(int argc, char **argv);
 static void DrawImage(char *buf, int redraw);
@@ -58,7 +58,9 @@ main(int argc, char **argv)
 	w_op->offset_x = offset_x;
     if (defined_y)
 	w_op->offset_y = offset_y;
+
     w_op->max_anim = maxAnim;
+    w_op->clear_margin = clearMargin;
 
     if (defined_test) {
 	printf("%d %d\n", w_op->width - w_op->offset_x,
@@ -192,6 +194,13 @@ GetOption(int argc, char **argv)
 		exit(1);
 	    maxAnim = atoi(argv[i]);
 	}
+	else if (!strcmp("-margin", argv[i])) {
+	    if (++i >= argc)
+		exit(1);
+	    clearMargin = atoi(argv[i]);
+	    if (clearMargin < 0)
+		clearMargin = 0;
+	}
 	else if (!strcmp("-size", argv[i])) {
 	    if (++i >= argc)
 		exit(1);
@@ -324,5 +333,9 @@ ClearImage(char *buf)
     for (; isdigit(*p); p++)
 	h = 10 * h + (*p - '0');
 
-    w_op->clear(w_op, x + offset_x, y + offset_y, w, h);
+    w_op->clear(w_op,
+		x + offset_x - w_op->clear_margin,
+		y + offset_y - w_op->clear_margin,
+		w + w_op->clear_margin * 2,
+		h + w_op->clear_margin * 2);
 }

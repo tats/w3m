@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.24 2003/07/08 17:32:13 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.25 2003/07/13 16:19:10 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -131,6 +131,12 @@ x11_clear(w3mimg_op * self, int x, int y, int w, int h)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
+
+    if (x < 0)
+	x = 0;
+    if (y < 0)
+	y = 0;
+
     XClearArea(xi->display, xi->window, x, y, w, h, False);
     return 1;
 }

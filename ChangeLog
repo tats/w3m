@@ -1,3 +1,13 @@
+2003-07-14  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03938] clear region margin
+	* w3mimgdisplay.c (clearMargin): added
+		(GetOption): add -margin
+		(ClearImage): clear margin
+	* w3mi,g/w3mimg.h (w3mimg_op): clear_margin
+	* w3mimg/fb/fb.c (fb_clear): x,y must be >= 0
+	* w3mimg/x11/x11_w3mimg.c (x11_clear): x,y must be >= 0
+
 2003-07-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03937] <center> in <table>
@@ -7923,4 +7933,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.851 2003/07/13 16:14:47 ukai Exp $
+$Id: ChangeLog,v 1.852 2003/07/13 16:19:09 ukai Exp $

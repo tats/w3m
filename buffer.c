@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.11 2002/03/13 15:51:36 ukai Exp $ */
+/* $Id: buffer.c,v 1.12 2002/03/14 16:12:05 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -497,15 +497,11 @@ reshapeBuffer(Buffer *buf)
     buf->need_reshape = FALSE;
     if (buf->sourcefile == NULL)
 	return;
-    if (buf->currentURL.scheme == SCM_LOCAL &&
-	!strcmp(buf->currentURL.file, "-"))
-	return;
     init_stream(&f, SCM_LOCAL, NULL);
     examineFile(buf->mailcap_source ? buf->mailcap_source : buf->sourcefile,
 		&f);
     if (f.stream == NULL)
 	return;
-
     copyBuffer(&sbuf, buf);
     clearBuffer(buf);
     while (buf->frameset) {
@@ -523,8 +519,21 @@ reshapeBuffer(Buffer *buf)
     UseContentCharset = FALSE;
     UseAutoDetect = FALSE;
 #endif
-    if (buf->search_header && buf->currentURL.scheme == SCM_LOCAL)
-	readHeader(&f, buf, TRUE, NULL);
+    if (buf->search_header && buf->currentURL.scheme == SCM_LOCAL) {
+	if (buf->header_source && (buf->mailcap_source ||
+	    !strcmp(buf->currentURL.file, "-"))) {
+	    URLFile h;
+	    init_stream(&h, SCM_LOCAL, NULL);
+	    examineFile(buf->header_source, &h);
+	    if (h.stream) {
+		readHeader(&h, buf, TRUE, NULL);
+		UFclose(&h);
+	    }
+	}
+	else
+	    readHeader(&f, buf, TRUE, NULL);
+    }
+
     if (!strcasecmp(buf->type, "text/html"))
 	loadHTMLBuffer(&f, buf);
     else

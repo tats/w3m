@@ -1,13 +1,19 @@
 #!@PERL@
 
-# See http://www.lab3.kuis.kyoto-u.ac.jp/~tsumura/emacs/x-face.html
+# compface/uncompface
+#   ftp://metalab.unc.edu/pub/Linux/apps/graphics/convert/
 $UNCOMPFACE = "uncompface";
 
+$XF = @ARGV ? shift @ARGV : '-';
+$XBM = @ARGV ? shift @ARGV : '-';
+
+open(XF, "<$XF");
 $xf = "";
-while(<>) {
+while(<XF>) {
 #	s/^X-Face://i if ($xf eq "");
 	$xf .= $_;
 }
+close(XF);
 
 pipe(R, W2);
 pipe(R2, W);
@@ -17,7 +23,7 @@ if (! fork()) {
 	open(STDIN, "<&R2");
         open(STDOUT, ">&W2");
 	exec $UNCOMPFACE;
-	die;
+	exit 1;
 }
 close(R2);
 close(W2);
@@ -29,10 +35,12 @@ while(<R>) {
 	}
 }
 close(R);
+@bm || exit 1;
 
 $W = 48;
 $H = @bm * 8 / $W;	# must be 48
-print <<EOF;
+open(XBM, ">$XBM");
+print XBM <<EOF;
 #define xf_width $W
 #define xf_height $H
 static char xf_bits[] = {
@@ -45,10 +53,11 @@ while (@bm) {
 			$y |= ($x & 1) << (8 - $i);
 			$x >>= 1;
 		}
-		printf " 0x%02X,", $y;
+		printf XBM " 0x%02X,", $y;
 	}
-	print "\n";
+	print XBM "\n";
 }
-print <<EOF;
+print XBM <<EOF;
 };
 EOF
+close(XBM);

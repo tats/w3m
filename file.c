@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.84 2002/03/13 17:04:56 ukai Exp $ */
+/* $Id: file.c,v 1.85 2002/03/14 16:12:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -511,14 +511,17 @@ xface2xbm(char *xface)
 {
     char *xbm;
     FILE *f;
+    struct stat st;
 
     xbm = tmpfname(TMPF_DFL, ".xbm")->ptr;
-    pushText(fileToDelete, xbm);
-    f = popen(Sprintf("%s > %s", libFile(XFACE2XBM), xbm)->ptr, "w");
+    f = popen(Sprintf("%s - %s", libFile(XFACE2XBM), xbm)->ptr, "w");
     if (!f)
 	return NULL;
     fprintf(f, "%s", xface);
     pclose(f);
+    if (stat(xbm, &st))
+	return NULL;
+    pushText(fileToDelete, xbm);
     return xbm;
 }
 #endif
@@ -538,6 +541,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 #ifdef JP_CHARSET
     char code = DocumentCode, ic;
 #endif
+    FILE *src = NULL;
 
     headerlist = newBuf->document_header = newTextList();
     if (uf->scheme == SCM_HTTP
@@ -549,6 +553,13 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     else
 	http_response_code = 0;
 
+    if (thru && !newBuf->header_source) {
+	Str tmpf = tmpfname(TMPF_DFL, NULL);
+	pushText(fileToDelete, tmpf->ptr);
+	src = fopen(tmpf->ptr, "w");
+	if (src)
+	    newBuf->header_source = tmpf->ptr;
+    }
     while ((tmp = StrmyUFgets(uf))->length) {
 #ifdef HTTP_DEBUG
 	{
@@ -558,6 +569,8 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    fclose(ff);
 	}
 #endif				/* HTTP_DEBUG */
+	if (src)
+	    Strfputs(tmp, src);
 	cleanup_line(tmp, HEADER_MODE);
 	if ((tmp->ptr[0] == '\n' || tmp->ptr[0] == '\r' || tmp->ptr[0] == '\0')
 #ifdef USE_NNTP
@@ -611,7 +624,8 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    }
 #ifdef USE_IMAGE
 #ifdef USE_XFACE
-	    if (thru && !strncasecmp(tmp->ptr, "X-Face:", 7)) {
+	    if (thru && activeImage && displayImage &&
+		!strncasecmp(tmp->ptr, "X-Face:", 7)) {
 		char *tmpf;
 		Str src;
 		URLFile f;
@@ -847,6 +861,8 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		   NULL,
 #endif
 		   0, -1);
+    if (src)
+	fclose(src);
 }
 
 char *

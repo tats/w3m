@@ -1,3 +1,19 @@
+2002-03-15  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03129] Re: X-Face
+	* configure (use_xface): ask
+	* fm.h (_Buffer): add header_source
+	* buffer.c (reshapeBuffer): fix reshape when reading stdin with image
+			fix disappearing header when reading stdin
+	* file.c (xface2xbm): check file existence
+	* file.c (readHeader): save to tmp file
+			X-Face when activeImage & displayImage
+	* main.c (dispI): comment out checking content type
+	* main.c (stopI): ditto
+	* scripts/xface2xbm.in: update compface URL
+			read from file $XF
+			write to file $XBM
+
 2002-03-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* proto.h (readHeader): added
@@ -3153,4 +3169,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.348 2002/03/14 15:41:53 ukai Exp $
+$Id: ChangeLog,v 1.349 2002/03/14 16:12:02 ukai Exp $

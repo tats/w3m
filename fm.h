@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.54 2002/03/12 16:59:50 ukai Exp $ */
+/* $Id: fm.h,v 1.55 2002/03/14 16:12:07 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -430,6 +430,7 @@ typedef struct _Buffer {
     char *edit;
     struct mailcap *mailcap;
     char *mailcap_source;
+    char *header_source;
     char search_header;
 #ifdef USE_SSL
     char *ssl_certificate;

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.64 2002/03/13 17:04:56 ukai Exp $
+# $Id: configure,v 1.65 2002/03/14 16:12:06 ukai Exp $
 #	Configuration.
 #
 
@@ -754,6 +754,11 @@ ask_param "Gopher support" use_gopher $include_opt
 
 ask_param "Use alarm support code" use_alarm $include_opt
 ask_param "Use mark operation" use_mark $include_opt
+if [ "$use_image" = y ]; then
+  ask_param "X-Face support (you need uncompface)" use_xface n
+else
+  use_xface=n
+fi
 
 ### only use config.param
 def_param use_dict n
@@ -770,7 +775,6 @@ def_param vi_prec_num $include_opt
 def_param label_topline $include_opt
 def_param nextpage_topline $include_opt
 def_param ftppass_hostnamegen $include_opt
-def_param use_xface $use_image
 
 def_param table_expand n
 def_param table_no_compact n

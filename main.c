@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.86 2002/03/05 16:58:09 ukai Exp $ */
+/* $Id: main.c,v 1.87 2002/03/14 16:12:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4547,8 +4547,10 @@ dispI(void)
     if (!activeImage)
 	return;
     displayImage = TRUE;
+/*
     if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
 	return;
+*/
     Currentbuf->image_flag = IMG_FLAG_AUTO;
     Currentbuf->need_reshape = TRUE;
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
@@ -4559,8 +4561,10 @@ stopI(void)
 {
     if (!activeImage)
 	return;
+/*
     if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
 	return;
+*/
     Currentbuf->image_flag = IMG_FLAG_SKIP;
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }

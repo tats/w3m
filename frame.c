@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.15 2002/04/17 02:44:22 ukai Exp $ */
+/* $Id: frame.c,v 1.16 2002/06/17 15:50:45 inu Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -38,7 +38,7 @@ parseFrameSetLength(char *s, char ***ret)
 
     for (i = 0, p = s;; ++p) {
 	SKIP_BLANKS(p);
-	len = strtoul(p, &q, 10);
+	len = strtol(p, &q, 10);
 
 	switch (*q) {
 	case '%':

@@ -1348,7 +1348,7 @@ else
 EOF
 
       cat >> confdefs.h <<\EOF
-#define DISPLAY_CODE 'S'
+#define SYSTEM_CODE 'S'
 EOF
 ;;
   xE|xj|xN|xn|xm) 
@@ -2757,7 +2757,7 @@ EOF
 
 
 
-if test x$CYGIN = xyes; then
+if test x$CYGWIN = xyes; then
  cat >> confdefs.h <<\EOF
 #define USE_BINMODE_STREAM 1
 EOF

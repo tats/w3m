@@ -163,7 +163,7 @@ else
   w3m_lang="ja";
   case x"$enable_japanese" in
   xS) AC_DEFINE_UNQUOTED(DISPLAY_CODE, '$enable_japanese')
-      AC_DEFINE(DISPLAY_CODE, 'S');;
+      AC_DEFINE(SYSTEM_CODE, 'S');;
   xE|xj|xN|xn|xm) 
       AC_DEFINE_UNQUOTED(DISPLAY_CODE, '$enable_japanese')
       AC_DEFINE(SYSTEM_CODE, 'E');;

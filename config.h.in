@@ -145,12 +145,15 @@ typedef long clen_t;
 #undef HAVE_LANGINFO_CODESET
 
 #undef SETPGRP_VOID
+#ifdef HAVE_SETPGRP
 #ifdef SETPGRP_VOID
 #define SETPGRP() setpgrp()
 #else
 #define SETPGRP() setpgrp(0,0)
 #endif
-
+#else /* no HAVE_SETPGRP; OS/2 EMX */
+#define SETPGRP() setpgid(0, 0)
+#endif
 #undef HAVE_FLOAT_H
 #undef HAVE_SYS_SELECT_H
 

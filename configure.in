@@ -110,7 +110,7 @@ AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
 case "$host_os" in
-  *cygwin*)
+  *cygwin*|*os2-emx*)
     AC_DEFINE(USE_BINMODE_STREAM)
     ;;
 esac

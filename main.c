@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.246 2004/09/29 15:44:03 ukai Exp $ */
+/* $Id: main.c,v 1.247 2005/02/26 17:06:44 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5673,7 +5673,7 @@ searchKeyNum(void)
 static char *
 getCodePage(void)
 {
-    ULONG CpList[8], CpSize;
+    unsigned long CpList[8], CpSize;
 
     if (!getenv("WINDOWID") && !DosQueryCp(sizeof(CpList), CpList, &CpSize))
 	return Sprintf("CP%d", *CpList)->ptr;

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.28 2002/11/06 03:19:30 ukai Exp $ */
+/* $Id: display.c,v 1.29 2002/11/08 15:54:47 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -254,16 +254,18 @@ displayBuffer(Buffer *buf, int mode)
     else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
-    if (nTab > 1)
+    if (nTab > 1) {
 	ny = (nTab - 1) / N_TAB + 2;
-    if (buf->rootY != ny) {
-	buf->rootY = ny;
-	arrangeCursor(buf);
+	if (ny > LASTLINE)
+	    ny = LASTLINE;
     }
-    if (mode == B_FORCE_REDRAW || mode == B_SCROLL ||
-#ifdef USE_IMAGE
-	mode == B_REDRAW_IMAGE ||
-#endif
+    if (buf->rootY != ny || buf->LINES != LASTLINE - ny) {
+	buf->rootY = ny;
+	buf->LINES = LASTLINE - ny;
+	arrangeCursor(buf);
+	mode = B_REDRAW_IMAGE;
+    }
+    if (mode == B_FORCE_REDRAW || mode == B_SCROLL || mode == B_REDRAW_IMAGE ||
 	cline != buf->topLine || ccolumn != buf->currentColumn) {
 	if (
 #ifdef USE_IMAGE
@@ -271,15 +273,15 @@ displayBuffer(Buffer *buf, int mode)
 #endif
 	       mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
 	    int n = buf->topLine->linenumber - cline->linenumber;
-	    if (n > 0 && n < LASTLINE) {
+	    if (n > 0 && n < buf->LINES) {
 		move(LASTLINE, 0);
 		clrtoeolx();
 		refresh();
 		scroll(n);
 	    }
-	    else if (n < 0 && n > -LASTLINE) {
+	    else if (n < 0 && n > -buf->LINES) {
 #if defined(__CYGWIN__) && LANG == JA
-		move(LASTLINE + n + 1, 0);
+		move(buf->LINES + n + 1, 0);
 		clrtoeolx();
 		refresh();
 #endif				/* defined(__CYGWIN__) && LANG == JA */
@@ -468,9 +470,9 @@ redrawNLine(Buffer *buf, int n)
 	for (i = 0; i < COLS; i++)
 	    addch('~');
     }
-    for (i = buf->rootY, l = buf->topLine; i < LASTLINE; i++) {
-	if (i >= LASTLINE - n || (i - buf->rootY) < -n)
-	    l0 = redrawLine(buf, l, i);
+    for (i = 0, l = buf->topLine; i < buf->LINES; i++) {
+	if (i >= buf->LINES - n || i < -n)
+	    l0 = redrawLine(buf, l, i + buf->rootY);
 	else {
 	    l0 = (l) ? l->next : NULL;
 	}
@@ -485,9 +487,9 @@ redrawNLine(Buffer *buf, int n)
     if (!(activeImage && displayImage && buf->img))
 	return;
     move(buf->cursorY + buf->rootY, buf->cursorX + buf->rootX);
-    for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
-	if (i >= LASTLINE - n || i < -n)
-	    l0 = redrawLineImage(buf, l, i);
+    for (i = 0, l = buf->topLine; i < buf->LINES; i++) {
+	if (i >= buf->LINES - n || i < -n)
+	    l0 = redrawLineImage(buf, l, i + buf->rootY);
 	else {
 	    l0 = (l) ? l->next : NULL;
 	}
@@ -519,7 +521,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 
     if (l == NULL) {
 	if (buf->pagerSource) {
-	    l = getNextPage(buf, LASTLINE - i);
+	    l = getNextPage(buf, buf->LINES - i);
 	    if (l == NULL)
 		return NULL;
 	}
@@ -706,7 +708,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 		    buf->need_reshape = TRUE;
 		}
 		x = (int)((rcol - column + buf->rootX) * pixel_per_char);
-		y = (int)((i + buf->rootY) * pixel_per_line);
+		y = (int)(i * pixel_per_line);
 		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
 		sy = (int)((l->linenumber - image->y) * pixel_per_line);
 		if (sx == 0 && x + image->xoffset >= 0)
@@ -1105,7 +1107,7 @@ cursorDown(Buffer *buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
-    if (buf->cursorY + buf->rootY < LASTLINE - 1)
+    if (buf->cursorY < buf->LINES - 1)
 	cursorUpDown(buf, 1);
     else {
 	buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
@@ -1220,8 +1222,7 @@ arrangeCursor(Buffer *buf)
     if (buf == NULL || buf->currentLine == NULL)
 	return;
     /* Arrange line */
-    if (buf->currentLine->linenumber - buf->topLine->linenumber >= LASTLINE -
-	buf->rootY
+    if (buf->currentLine->linenumber - buf->topLine->linenumber >= buf->LINES
 	|| buf->currentLine->linenumber < buf->topLine->linenumber) {
 	/*
 	 * buf->topLine = buf->currentLine;

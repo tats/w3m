@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.71 2002/11/06 15:07:40 ukai Exp $ */
+/* $Id: fm.h,v 1.72 2002/11/08 15:54:47 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -406,6 +406,7 @@ typedef struct _Buffer {
     short rootX;
     short rootY;
     short COLS;
+    short LINES;
     InputStream pagerSource;
     AnchorList *href;
     AnchorList *name;

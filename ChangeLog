@@ -1,5 +1,36 @@
 2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03387] Re: tab browser
+	* buffer.c (newBuffer): buf->LINES initialize
+		(gotoLine): use buf->LINES
+		(gotoRealLine): use buf->LINES
+	* display.c (displayBuffer): check by buf->LINES
+		(redrawNLine): buf->LINES
+		(redrawLine): buf->LINES
+		(redrawLineImage): no need buf->rootY
+		(cursorDown): buf->LINES
+		(arrangeCursor): buf->LINES
+	* etc.c (columnSkip): buf->LINES
+		(lineSkip): buf->LINES
+		(currentLineSkip): buf->LINES
+	* fm.h (Buffer): add LINES
+	* main.c (nscroll): Currentbuf->LINES
+		(pgFore): Currentbuf->LINES
+		(pgBack): Currentbuf->LINES
+		(ctrCsrV): Currentbuf->LINES
+		(movD): Currentbuf->LINES
+		(movU): Currentbuf->LINES
+		(_goLine): Currentbuf->LINES
+		(drawAnchorCursor): Currentbuf->LINES
+		(setOpt): B_REDRAW_IMAGE
+		(newT): B_REDRAW_IMAGE
+		(closeT): B_REDRAW_IMAGE
+		(nextT): B_REDRAW_IMAGE
+		(prevT): B_REDRAW_IMAGE
+		(moveTab): B_NORMAL
+
+2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03386] Re: Interrupt in no_proxy_check()
 	* file.c (getAuthCookie): term_cbreak()
 		(loadGeneralFile): term_cbreak()
@@ -4387,4 +4418,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.485 2002/11/08 15:46:05 ukai Exp $
+$Id: ChangeLog,v 1.486 2002/11/08 15:54:46 ukai Exp $

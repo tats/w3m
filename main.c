@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.120 2002/11/06 03:27:04 ukai Exp $ */
+/* $Id: main.c,v 1.121 2002/11/08 15:54:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1307,8 +1307,7 @@ nscroll(int n, int mode)
     }
     else {
 	tlnum = Currentbuf->topLine->linenumber;
-	llnum = Currentbuf->topLine->linenumber + LASTLINE - Currentbuf->rootY
-	    - 1;
+	llnum = Currentbuf->topLine->linenumber + Currentbuf->LINES - 1;
 #ifdef NEXTPAGE_TOPLINE
 	if (nextpage_topline)
 	    diff_n = 0;
@@ -1331,12 +1330,11 @@ pgFore(void)
 {
 #ifdef VI_PREC_NUM
     if (vi_prec_num)
-	nscroll(searchKeyNum() * (LASTLINE - Currentbuf->rootY - 1), B_NORMAL);
+	nscroll(searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
     else
 #endif
 	nscroll(prec_num ? searchKeyNum() : searchKeyNum()
-		* (LASTLINE - Currentbuf->rootY - 1),
-		prec_num ? B_SCROLL : B_NORMAL);
+		* (Currentbuf->LINES - 1), prec_num ? B_SCROLL : B_NORMAL);
 }
 
 /* Move page backward */
@@ -1345,13 +1343,11 @@ pgBack(void)
 {
 #ifdef VI_PREC_NUM
     if (vi_prec_num)
-	nscroll(-searchKeyNum() * (LASTLINE - Currentbuf->rootY - 1),
-		B_NORMAL);
+	nscroll(-searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
     else
 #endif
 	nscroll(-(prec_num ? searchKeyNum() : searchKeyNum()
-		  * (LASTLINE - Currentbuf->rootY - 1)),
-		prec_num ? B_SCROLL : B_NORMAL);
+		  * (Currentbuf->LINES - 1)), prec_num ? B_SCROLL : B_NORMAL);
 }
 
 /* 1 line up */
@@ -1375,7 +1371,7 @@ ctrCsrV(void)
     int offsety;
     if (Currentbuf->firstLine == NULL)
 	return;
-    offsety = (LASTLINE - Currentbuf->rootY) / 2 - Currentbuf->cursorY;
+    offsety = Currentbuf->LINES / 2 - Currentbuf->cursorY;
     if (offsety != 0) {
 #if 0
 	Currentbuf->currentLine = lineSkip(Currentbuf,
@@ -1969,7 +1965,7 @@ _movD(int n)
 void
 movD(void)
 {
-    _movD((LASTLINE - Currentbuf->rootY + 1) / 2);
+    _movD((Currentbuf->LINES + 1) / 2);
 }
 
 void
@@ -1993,7 +1989,7 @@ _movU(int n)
 void
 movU(void)
 {
-    _movU((LASTLINE - Currentbuf->rootY + 1) / 2);
+    _movU((Currentbuf->LINES + 1) / 2);
 }
 
 void
@@ -2284,7 +2280,7 @@ _goLine(char *l)
     else if (*l == '$') {
 	Currentbuf->topLine =
 	    lineSkip(Currentbuf, Currentbuf->lastLine,
-		     -(LASTLINE - Currentbuf->rootY + 1) / 2, TRUE);
+		     -(Currentbuf->LINES + 1) / 2, TRUE);
 	Currentbuf->currentLine = Currentbuf->lastLine;
     }
     else
@@ -3285,7 +3281,7 @@ drawAnchorCursor(Buffer *buf)
     else
 	hseq = -1;
     tline = buf->topLine->linenumber;
-    eline = tline + LASTLINE - buf->rootY;
+    eline = tline + buf->LINES;
     prevhseq = buf->hmarklist->prevhseq;
 
     drawAnchorCursor0(buf, hseq, prevhseq, tline, eline, 1);
@@ -3918,11 +3914,7 @@ setOpt(void)
     }
     if (set_param_option(opt))
 	sync_with_option();
-#ifdef USE_IMAGE
-    if (activeImage)
-	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
-#endif
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
 /* error message list */
@@ -5418,7 +5410,7 @@ void
 newT(void)
 {
     _newT();
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
 TabBuffer *
@@ -5482,7 +5474,7 @@ closeT(void)
 	tab = CurrentTab;
     if (tab)
 	deleteTab(tab);
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
 void
@@ -5498,7 +5490,7 @@ nextT(void)
 	else
 	    CurrentTab = FirstTab;
     }
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
 void
@@ -5514,7 +5506,7 @@ prevT(void)
 	else
 	    CurrentTab = LastTab;
     }
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
 void
@@ -5656,7 +5648,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
 	    FirstTab = t;
 	t2->prevTab = t;
     }
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    displayBuffer(Currentbuf, B_NORMAL);
 }
 
 void

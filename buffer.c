@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.13 2002/03/15 19:02:40 ukai Exp $ */
+/* $Id: buffer.c,v 1.14 2002/11/08 15:54:46 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -32,6 +32,7 @@ newBuffer(int width)
     bzero((void *)n, sizeof(Buffer));
     n->width = width;
     n->COLS = COLS;
+    n->LINES = LASTLINE;
     n->currentURL.scheme = SCM_UNKNOWN;
     n->baseURL = NULL;
     n->baseTarget = NULL;
@@ -252,15 +253,16 @@ gotoLine(Buffer *buf, int n)
 	sprintf(msg, "Last line is #%ld", buf->lastLine->linenumber);
 	set_delayed_message(msg);
 	buf->currentLine = l;
-	buf->topLine = lineSkip(buf, buf->currentLine, -(LASTLINE - 1), FALSE);
+	buf->topLine = lineSkip(buf, buf->currentLine, -(buf->LINES - 1),
+				FALSE);
 	return;
     }
     for (; l != NULL; l = l->next) {
 	if (l->linenumber >= n) {
 	    buf->currentLine = l;
 	    if (n < buf->topLine->linenumber ||
-		buf->topLine->linenumber + LASTLINE <= n)
-		buf->topLine = lineSkip(buf, l, -(LASTLINE + 1) / 2, FALSE);
+		buf->topLine->linenumber + buf->LINES <= n)
+		buf->topLine = lineSkip(buf, l, -(buf->LINES + 1) / 2, FALSE);
 	    break;
 	}
     }
@@ -294,15 +296,16 @@ gotoRealLine(Buffer *buf, int n)
 	sprintf(msg, "Last line is #%ld", buf->lastLine->real_linenumber);
 	set_delayed_message(msg);
 	buf->currentLine = l;
-	buf->topLine = lineSkip(buf, buf->currentLine, -(LASTLINE - 1), FALSE);
+	buf->topLine = lineSkip(buf, buf->currentLine, -(buf->LINES - 1),
+				FALSE);
 	return;
     }
     for (; l != NULL; l = l->next) {
 	if (l->real_linenumber >= n) {
 	    buf->currentLine = l;
 	    if (n < buf->topLine->real_linenumber ||
-		buf->topLine->real_linenumber + LASTLINE <= n)
-		buf->topLine = lineSkip(buf, l, -(LASTLINE + 1) / 2, FALSE);
+		buf->topLine->real_linenumber + buf->LINES <= n)
+		buf->topLine = lineSkip(buf, l, -(buf->LINES + 1) / 2, FALSE);
 	    break;
 	}
     }

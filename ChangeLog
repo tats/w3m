@@ -1,3 +1,8 @@
+2004-04-22  Masao Uebayashi <uebayasi@pultek.co.jp>
+
+	* fix build error for --enable-m17n --disable-unicode
+	* libwc/detect.c (wc_create_detect_map): #ifdef USE_UNICODE
+
 2004-04-17  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 04064] authentication
@@ -8443,4 +8448,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.919 2004/04/16 18:47:18 ukai Exp $
+$Id: ChangeLog,v 1.920 2004/04/21 16:42:17 ukai Exp $

@@ -63,7 +63,9 @@ wc_create_detect_map(wc_ces ces, wc_bool esc)
 	    for (i = 0; i < 0x20; i++)
 		WC_DETECT_MAP[i] = 0;
 	    WC_DETECT_MAP[WC_C_HZ_TILDA] = (ces == WC_CES_HZ_GB_2312) ? 1 : 0;
+#ifdef USE_UNICODE
 	    WC_DETECT_MAP[WC_C_UTF7_PLUS] = (ces == WC_CES_UTF_7) ? 1 : 0;
+#endif
 	}
 	detect_ces = ces;
     }

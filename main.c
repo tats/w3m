@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.177 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: main.c,v 1.178 2002/12/24 17:28:48 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -33,13 +33,12 @@ Hist *URLHist;
 Hist *ShellHist;
 Hist *TextHist;
 
-typedef struct {
+typedef struct _Event {
     int cmd;
-    void *user_data;
+    void *data;
+    struct _Event *next;
 } Event;
-#define N_EVENT_QUEUE 10
-static Event eventQueue[N_EVENT_QUEUE];
-static int n_event_queue;
+static Event *CurrentEvent = NULL;
 
 #ifdef USE_ALARM
 static AlarmEvent DefaultAlarm = {
@@ -986,17 +985,17 @@ main(int argc, char **argv, char **envp)
 	    gotoLine(Currentbuf, a->start.line);
 	    Currentbuf->pos = a->start.pos;
 	    _followForm(TRUE);
+	    continue;
 	}
 	/* event processing */
-	if (n_event_queue > 0) {
-	    for (i = 0; i < n_event_queue; i++) {
-		CurrentKey = -1;
-		CurrentKeyData = NULL;
-		CurrentCmdData = (char *)eventQueue[i].user_data;
-		w3mFuncList[eventQueue[i].cmd].func();
-	    }
+	if (CurrentEvent) {
+	    CurrentKey = -1;
+	    CurrentKeyData = NULL;
+	    CurrentCmdData = (char *)CurrentEvent->data;
+	    w3mFuncList[CurrentEvent->cmd].func();
 	    CurrentCmdData = NULL;
-	    n_event_queue = 0;
+	    CurrentEvent = CurrentEvent->next;
+	    continue;
 	}
 	/* get keypress event */
 #ifdef USE_ALARM
@@ -1010,6 +1009,7 @@ main(int argc, char **argv, char **envp)
 		    CurrentCmdData = (char *)CurrentAlarm->data;
 		    w3mFuncList[CurrentAlarm->cmd].func();
 		    CurrentCmdData = NULL;
+		    continue;
 		}
 	    }
 	    else
@@ -1088,13 +1088,18 @@ keyPressEventProc(int c)
 }
 
 void
-pushEvent(int event, void *user_data)
+pushEvent(int cmd, void *data)
 {
-    if (n_event_queue < N_EVENT_QUEUE) {
-	eventQueue[n_event_queue].cmd = event;
-	eventQueue[n_event_queue].user_data = user_data;
-	n_event_queue++;
-    }
+    Event *event;
+
+    event = New(Event);
+    event->cmd = cmd;
+    event->data = data;
+    event->next = NULL;
+    if (CurrentEvent)
+	CurrentEvent->next = event;
+    else
+	CurrentEvent = event;
 }
 
 static void
@@ -5514,6 +5519,14 @@ SigAlarm(SIGNAL_ARG)
 	    CurrentAlarm->sec = 0;
 	    CurrentAlarm->status = AL_UNSET;
 	}
+	if (Currentbuf->event) {
+	    if (Currentbuf->event->status != AL_UNSET)
+		CurrentAlarm = Currentbuf->event;
+	    else
+		Currentbuf->event = NULL;
+	}
+	if (!Currentbuf->event)
+	    CurrentAlarm = &DefaultAlarm;
 	if (CurrentAlarm->sec > 0) {
 	    signal(SIGALRM, SigAlarm);
 	    alarm(CurrentAlarm->sec);

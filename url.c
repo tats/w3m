@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.74 2003/02/05 16:44:00 ukai Exp $ */
+/* $Id: url.c,v 1.75 2003/03/13 17:47:52 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -994,9 +994,9 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    }
 	}
 	return;
-    }
+    }n
     if (pu->scheme == SCM_LOCAL)
-	pu->file = expandName(pu->file);
+	pu->file = file_quote(expandName(file_unquote(pu->file)));
 
     if (current && (pu->scheme == current->scheme ||
 		    (pu->scheme == SCM_FTP && current->scheme == SCM_FTPDIR) ||

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.69 2003/03/13 15:40:47 ukai Exp $ */
+/* $Id: etc.c,v 1.70 2003/03/13 17:47:49 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1552,8 +1552,7 @@ expandName(char *name)
 	return NULL;
     p = name;
     if (*p == '/') {
-	if (((*(p + 1) == '~' && IS_ALPHA(*(p + 2)))
-	     || (strncasecmp(p + 1, "%7e", 3) == 0))
+	if ((*(p + 1) == '~' && IS_ALPHA(*(p + 2)))
 	    && personal_document_root) {
 	    char *q;
 	    p += 2;

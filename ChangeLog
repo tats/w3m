@@ -1,3 +1,9 @@
+2003-03-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03823] Re: etc.c: treatment for "%7E" is added to  expandName()
+	* url.c (parseURL2): file unquote
+	* etc.c (expandName): revert previous changes
+
 2003-03-14  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03822] Re: etc.c: treatment for "%7E" is added to  expandName()
@@ -7535,4 +7541,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.794 2003/03/13 15:40:40 ukai Exp $
+$Id: ChangeLog,v 1.795 2003/03/13 17:47:45 ukai Exp $

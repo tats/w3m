@@ -1,3 +1,17 @@
+smb.cgi
+
+  [w3m-dev 03634] smb.cgi
+  localcgi to access SMB.
+  Since it uses nmblookup, smbclient, you should install samba.
+  Password can be configured in ~/.w3m/smb:
+     when -A option available smbclient -A ~/.w3m/smb 
+     otherwise, environment variable PASSWD 
+		  that is set by contents of ~/.w3m/smb
+
+google.cgi
+
+  [w3m-dev 03625] keymap key SEARCH string
+
 html2latex
 
   Convert HTML document into LaTeX. Ruby script. incomplete.

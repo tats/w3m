@@ -1,3 +1,7 @@
+2003-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Bonus/README.eng: sync with Bonus/README
+
 2003-01-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03634] smb.cgi
@@ -6384,4 +6388,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.675 2003/01/11 16:05:17 ukai Exp $
+$Id: ChangeLog,v 1.676 2003/01/11 16:10:11 ukai Exp $

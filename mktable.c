@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.9 2002/02/01 13:58:47 inu Exp $ */
+/* $Id: mktable.c,v 1.10 2002/11/12 12:41:58 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -6,8 +6,6 @@
 #include "hash.h"
 #include "Str.h"
 #include <gc.h>
-
-#include "gcmain.c"
 
 /* *INDENT-OFF* */
 defhash(HashItem_ss *, int, hss_i)
@@ -27,7 +25,7 @@ defhashfunc(HashItem_ss *, int, hss_i)
 /* *INDENT-ON* */
 
 int
-MAIN(int argc, char *argv[], char **envp)
+main(int argc, char *argv[], char **envp)
 {
     FILE *f;
     Hash_ss *hash;

@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.8 2002/06/01 17:09:05 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.9 2002/11/12 12:41:58 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,8 +8,6 @@
 #include "textlist.h"
 #include "parsetag.h"
 #include "myctype.h"
-
-#include "gcmain.c"
 
 #if LANG == JA
 #define MSG_TITLE		"外部ビューアの編集"
@@ -157,7 +155,7 @@ editMailcap(char *mailcap, struct parsed_tagarg *args)
 }
 
 int
-MAIN(int argc, char *argv[], char **envp)
+main(int argc, char *argv[], char **envp)
 {
     Str mailcapfile;
     extern char *getenv();

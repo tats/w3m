@@ -1,3 +1,13 @@
+2002-11-12  Akira TAGOH <at@gclab.org>
+
+	* [w3m-dev 03415] fix a build issue for 64bit arch
+	* gcmain.c: deleted
+	* main.c: no need gcmain.c
+		s/MAIN/main/
+	* mktable.c: ditto
+	* w3mbookmark.c: ditto
+	* w3mhelperpanel.c: ditto
+
 2002-11-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc/w3m.1: update
@@ -4567,4 +4577,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.502 2002/11/12 12:36:30 ukai Exp $
+$Id: ChangeLog,v 1.503 2002/11/12 12:41:57 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.128 2002/11/12 12:24:44 ukai Exp $ */
+/* $Id: main.c,v 1.129 2002/11/12 12:41:57 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -97,8 +97,6 @@ static int check_target = TRUE;
 #define PREC_NUM (prec_num ? prec_num : 1)
 #define PREC_LIMIT 10000
 static int searchKeyNum(void);
-
-#include "gcmain.c"
 
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
@@ -346,7 +344,7 @@ make_optional_header_string(char *s)
 }
 
 int
-MAIN(int argc, char **argv, char **envp)
+main(int argc, char **argv, char **envp)
 {
     Buffer *newbuf = NULL;
     char *p, c;

@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.6 2002/11/12 12:41:58 ukai Exp $ */
 #ifdef __EMX__
 #include <stdlib.h>
 #endif
@@ -8,8 +8,6 @@
 #include "indep.h"
 #include "textlist.h"
 #include "parsetag.h"
-
-#include "gcmain.c"
 
 #if LANG == JA
 static char *bkmark_src1 = "<html><head><title>Bookmark Registration</title>\n\
@@ -174,7 +172,7 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 }
 
 int
-MAIN(int argc, char *argv[], char **envp)
+main(int argc, char *argv[], char **envp)
 {
     extern char *getenv();
     char *qs;

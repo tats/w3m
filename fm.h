@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.38 2002/01/15 17:23:29 ukai Exp $ */
+/* $Id: fm.h,v 1.39 2002/01/16 15:37:06 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -126,8 +126,9 @@ void bzero(void *, int);
 #endif				/* not KANJI_SYMBOLS */
 
 /* Effect ( standout/underline ) */
-#define P_EFFECT	0x01fe
+#define P_EFFECT	0x01ff
 #define PE_NORMAL	0x00
+#define PE_MARK		0x01
 #define PE_UNDER	0x02
 #define PE_STAND	0x04
 #define PE_BOLD		0x08
@@ -137,9 +138,6 @@ void bzero(void *, int);
 #define PE_FORM         0x40
 #define PE_ACTIVE	0x80
 #define PE_VISITED	0x0100
-
-/* Mark */
-#define PM_MARK		0x01
 
 #define CharType(c)	((c)&P_CHARTYPE)
 #ifdef KANJI_SYMBOLS
@@ -722,6 +720,7 @@ global int image_color init(2);	/* green */
 global int form_color init(1);	/* red   */
 #ifdef USE_BG_COLOR
 global int bg_color init(8);	/* don't change */
+global int mark_color init(6);	/* cyan */
 #endif				/* USE_BG_COLOR */
 global int useActiveColor init(FALSE);
 global int active_color init(6);	/* cyan */

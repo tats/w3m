@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.59 2002/01/15 17:23:29 ukai Exp $ */
+/* $Id: main.c,v 1.60 2002/01/16 15:37:06 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1351,6 +1351,16 @@ migemostr(char *str)
 }
 #endif				/* USE_MIGEMO */
 
+static void
+clear_mark(Line *l)
+{
+    short pos;
+    if (!l)
+	return;
+    for (pos = 0; pos < l->len; pos++)
+	l->propBuf[pos] &= ~PE_MARK;
+}
+
 /* search by regular expression */
 static int
 srchcore(char *str, int (*func) (Buffer *, char *))
@@ -1391,7 +1401,7 @@ disp_srchresult(int result, char *prompt, char *str)
 }
 
 static int
-dispincsrch(int ch, Str buf, short *x, short *y)
+dispincsrch(int ch, Str buf)
 {
     static Buffer sbuf;
     static Line *currentLine;
@@ -1422,8 +1432,8 @@ dispincsrch(int ch, Str buf, short *x, short *y)
     }
 
     if (do_next_search) {
+	SAVE_BUFPOSITION(&sbuf);
 	if (*str) {
-	    SAVE_BUFPOSITION(&sbuf);
 	    srchcore(str, searchRoutine);
 	    arrangeCursor(Currentbuf);
 	    if (Currentbuf->currentLine == currentLine
@@ -1432,28 +1442,20 @@ dispincsrch(int ch, Str buf, short *x, short *y)
 		srchcore(str, searchRoutine);
 		arrangeCursor(Currentbuf);
 	    }
-	    *x = Currentbuf->cursorX;
-	    *y = Currentbuf->cursorY;
-	    displayBuffer(Currentbuf, B_NORMAL);
-	    return -1;
-	}
-	else {
-	    return 020;		/* _prev completion? */
 	}
     }
-    else if (*str) {
+    else {
 	RESTORE_BUFPOSITION(&sbuf);
 	arrangeCursor(Currentbuf);
-	srchcore(str, searchRoutine);
-	arrangeCursor(Currentbuf);
-	*x = Currentbuf->cursorX;
-	*y = Currentbuf->cursorY;
+	if (*str) {
+	    srchcore(str, searchRoutine);
+	    arrangeCursor(Currentbuf);
+	}
 	currentLine = Currentbuf->currentLine;
 	pos = Currentbuf->pos;
-	displayBuffer(Currentbuf, B_NORMAL);
     }
-    else
-	displayBuffer(Currentbuf, B_NORMAL);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    clear_mark(Currentbuf->currentLine);
     return -1;
 }
 
@@ -1463,14 +1465,14 @@ isrch(int (*func) (Buffer *, char *), char *prompt)
     char *str;
     Buffer sbuf;
     SAVE_BUFPOSITION(&sbuf);
-    dispincsrch(0, NULL, NULL, NULL);	/* initialize incremental search state */
+    dispincsrch(0, NULL);	/* initialize incremental search state */
 
     searchRoutine = func;
     str = inputLineHistSearch(prompt, NULL, IN_STRING, TextHist, dispincsrch);
     if (str == NULL) {
 	RESTORE_BUFPOSITION(&sbuf);
     }
-    displayBuffer(Currentbuf, B_NORMAL);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
     onA();
 }
 
@@ -1486,6 +1488,8 @@ srch(int (*func) (Buffer *, char *), char *prompt)
     if (str == NULL)
 	return;
     result = srchcore(str, func);
+    if (result & SR_FOUND)
+	clear_mark(Currentbuf->currentLine);
     displayBuffer(Currentbuf, B_NORMAL);
     onA();
     disp_srchresult(result, prompt, str);
@@ -1539,6 +1543,8 @@ srch_nxtprv(int reverse)
     if (searchRoutine == backwardSearch)
 	reverse ^= 1;
     result = srchcore(SearchString, routine[reverse]);
+    if (result & SR_FOUND)
+	clear_mark(Currentbuf->currentLine);
     displayBuffer(Currentbuf, B_NORMAL);
     onA();
     disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
@@ -2355,11 +2361,7 @@ cmd_mark(Lineprop *p)
 {
     if (!use_mark)
 	return;
-    if ((*p & PM_MARK) && (*p & PE_STAND))
-	*p &= ~PE_STAND;
-    else if (!(*p & PM_MARK) && !(*p & PE_STAND))
-	*p |= PE_STAND;
-    *p ^= PM_MARK;
+    *p |= PE_MARK;
 }
 
 /* Go to next mark */
@@ -2381,7 +2383,7 @@ nextMk(void)
     }
     while (l != NULL) {
 	for (; i < l->len; i++) {
-	    if (l->propBuf[i] & PM_MARK) {
+	    if (l->propBuf[i] & PE_MARK) {
 		Currentbuf->currentLine = l;
 		Currentbuf->pos = i;
 		arrangeCursor(Currentbuf);
@@ -2415,7 +2417,7 @@ prevMk(void)
     }
     while (l != NULL) {
 	for (; i >= 0; i--) {
-	    if (l->propBuf[i] & PM_MARK) {
+	    if (l->propBuf[i] & PE_MARK) {
 		Currentbuf->currentLine = l;
 		Currentbuf->pos = i;
 		arrangeCursor(Currentbuf);

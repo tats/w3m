@@ -1,6 +1,13 @@
-/* $Id: search.c,v 1.7 2002/01/11 03:00:16 ukai Exp $ */
+/* $Id: search.c,v 1.8 2002/01/16 15:37:07 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
+
+static void
+set_mark(Line *l, int pos, int epos)
+{
+    for (; pos < epos && pos < l->len; pos++) 
+        l->propBuf[pos] |= PE_MARK;
+}
 
 int
 forwardSearch(Buffer *buf, char *str)
@@ -27,6 +34,7 @@ forwardSearch(Buffer *buf, char *str)
 	matchedPosition(&first, &last);
 	buf->pos = first - l->lineBuf;
 	arrangeCursor(buf);
+	set_mark(l, buf->pos, last - l->lineBuf);
 	return SR_FOUND;
     }
     for (l = l->next;; l = l->next) {
@@ -60,6 +68,7 @@ forwardSearch(Buffer *buf, char *str)
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
+	    set_mark(l, buf->pos, last - l->lineBuf);
 	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */
@@ -109,6 +118,7 @@ backwardSearch(Buffer *buf, char *str)
 	if (found) {
 	    buf->pos = found - l->lineBuf;
 	    arrangeCursor(buf);
+	    set_mark(l, buf->pos, last - l->lineBuf);
 	    return SR_FOUND;
 	}
     }
@@ -143,6 +153,7 @@ backwardSearch(Buffer *buf, char *str)
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
+	    set_mark(l, buf->pos, last - l->lineBuf);
 	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */

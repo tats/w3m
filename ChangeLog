@@ -1,3 +1,35 @@
+2002-01-17  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02854] highlight for incremental search
+	* display.c (EFFECT_MARK_START): added
+	* display.c (EFFECT_MARK_END): added
+	* display.c (EFFECT_MARK_START_C): added
+	* display.c (EFFECT_MARK_END_C): added
+	* display.c (EFFECT_MARK_START_M): added
+	* display.c (EFFECT_MARK_END_M): added
+	* display.c: define_effect for MARK_{START,END}
+	* display.c (mark_mode): added
+	* display.c (redrawLine): if mark_mode
+	* display.c (do_effects): do_effect2(PE_MARK, ...)
+	* display.c (do_effects): do_effect1(PE_MARK, ...)
+	* fm.h (P_EFFECT): changed to 0x01ff
+	* fm.h (PE_MARK): moved
+	* fm.h (mark_color): added
+	* linein.c (inputLineHistSearch): incrfunc(int ch, Str str)
+	* main.c (clear_mark): added
+	* main.c (dispincsrch): remove arg `x', `y'
+	* main.c (dispincsrch): move SAVE_BUFPOSITION()
+	* main.c (srch): if (result & SR_FOUND) clear_mark()
+	* main.c (cmd_mark): PE_MARK
+	* main.c (nextMk): s/PM_MARK/PE_MARK/
+	* main.c (prevMk): s/PM_MARK/PE_MARK/
+	* proto.h (inputLineHistSearch): change prototype incfunc()
+	* rc.c (CMT_MARK_COLOR): added
+	* rc.c (params2): add "mark_color"
+	* search.c (set_mark): added
+	* search.c (forwardSearch): use set_mark()
+	* search.c (backwardSearch): use set_mark()
+
 2002-01-16  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02851]
@@ -2003,4 +2035,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.228 2002/01/16 04:38:06 ukai Exp $
+$Id: ChangeLog,v 1.229 2002/01/16 15:37:06 ukai Exp $

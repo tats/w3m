@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.29 2002/01/15 17:23:29 ukai Exp $ */
+/* $Id: rc.c,v 1.30 2002/01/16 15:37:07 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -74,6 +74,7 @@ static char *config_file = NULL;
 #define CMT_I_COLOR      "画像リンクの色"
 #define CMT_F_COLOR      "フォームの色"
 #define CMT_BG_COLOR     "背景の色"
+#define CMT_MARK_COLOR   "マークの色"
 #define CMT_ACTIVE_STYLE "現在選択されているリンクの色を指定する"
 #define CMT_C_COLOR	 "現在選択されているリンクの色"
 #define CMT_VISITED_ANCHOR	"訪れたことがあるリンクは色を変える"
@@ -200,6 +201,7 @@ static char *config_file = NULL;
 #define CMT_VISITED_ANCHOR "Use visited link color"
 #define CMT_V_COLOR	 "Color of visited link"
 #define CMT_BG_COLOR     "Color of background"
+#define CMT_MARK_COLOR   "Color of mark"
 #define CMT_HTTP_PROXY   "URL of HTTP proxy host"
 #ifdef USE_GOPHER
 #define CMT_GOPHER_PROXY "URL of GOPHER proxy host"
@@ -435,6 +437,8 @@ struct param_ptr params2[] = {
     {"form_color", P_COLOR, PI_SEL_C, (void *)&form_color, CMT_F_COLOR,
      colorstr},
 #ifdef USE_BG_COLOR
+    {"mark_color", P_COLOR, PI_SEL_C, (void *)&mark_color, CMT_MARK_COLOR,
+     colorstr},
     {"bg_color", P_COLOR, PI_SEL_C, (void *)&bg_color, CMT_BG_COLOR, colorstr},
 #endif				/* USE_BG_COLOR */
     {"active_style", P_INT, PI_ONOFF, (void *)&useActiveColor,

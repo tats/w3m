@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.13 2001/12/26 18:17:57 ukai Exp $ */
+/* $Id: display.c,v 1.14 2002/01/16 15:37:06 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -17,6 +17,8 @@
 #define EFFECT_ACTIVE_END	  effect_active_end()
 #define EFFECT_VISITED_START      effect_visited_start()
 #define EFFECT_VISITED_END        effect_visited_end()
+#define EFFECT_MARK_START         effect_mark_start()
+#define EFFECT_MARK_END           effect_mark_end()
 
 /* color: *     0  black *      1  red *        2  green *      3  yellow
  * *    4  blue *       5  magenta *    6  cyan *       7  white */
@@ -26,12 +28,22 @@
 #define EFFECT_FORM_START_C         setfcolor(form_color)
 #define EFFECT_ACTIVE_START_C      (setfcolor(active_color), underline())
 #define EFFECT_VISITED_START_C      setfcolor(visited_color)
+#ifdef USE_BG_COLOR
+#define EFFECT_MARK_START_C         setbcolor(mark_color)
+#else
+#define EFFECT_MARK_START_C         standout()
+#endif
 
 #define EFFECT_IMAGE_END_C          setfcolor(basic_color)
 #define EFFECT_ANCHOR_END_C         setfcolor(basic_color)
 #define EFFECT_FORM_END_C           setfcolor(basic_color)
 #define EFFECT_ACTIVE_END_C        (setfcolor(basic_color), underlineend())
 #define EFFECT_VISITED_END_C        setfcolor(basic_color)
+#ifdef USE_BG_COLOR
+#define EFFECT_MARK_END_C           setbcolor(bg_color)
+#else
+#define EFFECT_MARK_END_C           standend()
+#endif
 
 #define EFFECT_ANCHOR_START_M       underline()
 #define EFFECT_ANCHOR_END_M         underlineend()
@@ -45,6 +57,8 @@
 #define EFFECT_ACTIVE_END_M         boldend()
 #define EFFECT_VISITED_START_M /**/
 #define EFFECT_VISITED_END_M /**/
+#define EFFECT_MARK_START_M         standout()
+#define EFFECT_MARK_END_M           standend()
 #define define_effect(name_start,name_end,color_start,color_end,mono_start,mono_end) \
 static void name_start { if (useColor) { color_start; } else { mono_start; }}\
 static void name_end { if (useColor) { color_end; } else { mono_end; }}
@@ -54,6 +68,8 @@ define_effect(EFFECT_IMAGE_START, EFFECT_IMAGE_END, EFFECT_IMAGE_START_C,
 	      EFFECT_IMAGE_END_C, EFFECT_IMAGE_START_M, EFFECT_IMAGE_END_M)
 define_effect(EFFECT_FORM_START, EFFECT_FORM_END, EFFECT_FORM_START_C,
 	      EFFECT_FORM_END_C, EFFECT_FORM_START_M, EFFECT_FORM_END_M)
+define_effect(EFFECT_MARK_START, EFFECT_MARK_END, EFFECT_MARK_START_C,
+	      EFFECT_MARK_END_C, EFFECT_MARK_START_M, EFFECT_MARK_END_M)
 
 /*****************/
 /* *INDENT-OFF* */
@@ -128,6 +144,8 @@ EFFECT_VISITED_END
 #define EFFECT_ACTIVE_END         boldend()
 #define EFFECT_VISITED_START /**/
 #define EFFECT_VISITED_END /**/
+#define EFFECT_MARK_START         standout()
+#define EFFECT_MARK_END           standend()
 #endif				/* not USE_COLOR */
 #ifndef KANJI_SYMBOLS
 static char g_rule[] = "ntwluxkavmqajaaa";
@@ -176,7 +194,7 @@ static int ccolumn = -1;
 
 static int ulmode = 0, somode = 0, bomode = 0;
 static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
-    active_mode = 0, visited_mode = 0;
+    active_mode = 0, visited_mode = 0, mark_mode = 0;
 #ifndef KANJI_SYMBOLS
 static int graph_mode = 0;
 #endif				/* not KANJI_SYMBOLS */
@@ -512,6 +530,10 @@ redrawLine(Buffer *buf, Line *l, int i)
 	active_mode = FALSE;
 	EFFECT_ACTIVE_END;
     }
+    if (mark_mode) {
+	mark_mode = FALSE;
+	EFFECT_MARK_END;
+    }
 #ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graph_mode = FALSE;
@@ -649,6 +671,10 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 	active_mode = FALSE;
 	EFFECT_ACTIVE_END;
     }
+    if (mark_mode) {
+	mark_mode = FALSE;
+	EFFECT_MARK_END;
+    }
 #ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graph_mode = FALSE;
@@ -690,6 +716,7 @@ do_effects(Lineprop m)
     do_effect2(PE_VISITED, visited_mode, EFFECT_VISITED_START,
 	       EFFECT_VISITED_END);
     do_effect2(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
+    do_effect2(PE_MARK, mark_mode, EFFECT_MARK_START, EFFECT_MARK_END);
 #ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graphend();
@@ -708,6 +735,7 @@ do_effects(Lineprop m)
     do_effect1(PE_VISITED, visited_mode, EFFECT_VISITED_START,
 	       EFFECT_VISITED_END);
     do_effect1(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
+    do_effect1(PE_MARK, mark_mode, EFFECT_MARK_START, EFFECT_MARK_END);
 #ifndef KANJI_SYMBOLS
     if (m & PC_RULE) {
 	if (!graph_mode && graph_ok()) {

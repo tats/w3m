@@ -1,11 +1,24 @@
-/* $Id: map.c,v 1.13 2002/11/13 15:51:39 ukai Exp $ */
+/* $Id: map.c,v 1.14 2002/11/19 17:40:34 ukai Exp $ */
 /*
  * client-side image maps
  */
 #include "fm.h"
 #include <math.h>
 
-#ifdef MENU_MAP
+static MapList *
+searchMapList(Buffer *buf, char *name)
+{
+    MapList *ml;
+
+    if (name == NULL)
+	return NULL;
+    for (ml = buf->maplist; ml != NULL; ml = ml->next) {
+	if (!Strcmp_charp(ml->name, name))
+	    break;
+    }
+    return ml;
+}
+
 #ifdef USE_IMAGE
 static int
 inMapArea(MapArea * a, int x, int y)
@@ -63,7 +76,7 @@ nearestMapArea(MapList *ml, int x, int y)
 {
     ListItem *al;
     MapArea *a;
-    int i, l, n = 0, min = -1, limit = pixel_per_char * pixel_per_char
+    int i, l, n = -1, min = -1, limit = pixel_per_char * pixel_per_char
 	+ pixel_per_line * pixel_per_line;
 
     if (!ml || !ml->area)
@@ -81,127 +94,83 @@ nearestMapArea(MapList *ml, int x, int y)
     }
     return n;
 }
-#endif
 
-MapArea *
-follow_map_menu(Buffer *buf, struct parsed_tagarg * arg, Anchor *a_img, int x,
-		int y)
+static int
+searchMapArea(Buffer *buf, MapList *ml, Anchor *a_img)
 {
+    ListItem *al;
+    MapArea *a;
+    int i, n;
+    int px, py;
+
+    if (!(ml && ml->area && ml->area->nitem))
+	return -1;
+    if (! getMapXY(buf, a_img, &px, &py))
+	return -1;
+    n = - ml->area->nitem;
+    for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (!a)
+	    continue;
+	if (n < 0 && inMapArea(a, px, py)) {
+	    if (a->shape == SHAPE_DEFAULT) {
+		if (n == - ml->area->nitem)
+		    n = -i;
+	    }
+	    else
+		n = i;
+	}
+    }
+    if (n == - ml->area->nitem)
+	return nearestMapArea(ml, px, py);
+    else if (n < 0)
+	return -n;
+    return n;
+}
+
+Str
+getCurrentMapLabel(Buffer *buf)
+{
+    Anchor *a_img, *a_form;
+    FormItemList *fi;
     MapList *ml;
     ListItem *al;
     MapArea *a;
-    char *name;
-    int i, n, selected = -1, initial;
-    char **label;
-#ifdef USE_IMAGE
-    int px, py, map = 0;
-#endif
+    int i, n;
+    Str s;
 
-    name = tag_get_value(arg, "link");
-    if (name == NULL)
+    a_img = retrieveCurrentImg(buf);
+    if (!(a_img && a_img->image && a_img->image->map))
 	return NULL;
-
-    for (ml = buf->maplist; ml != NULL; ml = ml->next) {
-	if (!Strcmp_charp(ml->name, name))
-	    break;
-    }
-    if (ml == NULL || ml->area == NULL)
+    a_form = retrieveCurrentForm(buf);
+    if (!(a_form && a_form->url))
 	return NULL;
-
-    n = ml->area->nitem;
-    if (n == 0)
+    fi = (FormItemList *)a_form->url;
+    if (!(fi && fi->parent && fi->parent->item))
 	return NULL;
-    label = New_N(char *, n + 1);
-#ifdef USE_IMAGE
-    if (getMapXY(buf, a_img, &px, &py))
-	map = 1;
-#endif
-    initial = -n;
+    fi = fi->parent->item;
+    ml = searchMapList(buf, fi->value ? fi->value->ptr : NULL);
+    if (!ml)
+	return NULL;
+    n = searchMapArea(buf, ml, a_img);
+    if (n < 0)
+	return NULL;
     for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
 	a = (MapArea *) al->ptr;
-	if (a) {
-	    label[i] = *a->alt ? a->alt : a->url;
-#ifdef USE_IMAGE
-	    if (initial < 0 && map && inMapArea(a, px, py)) {
-		if (a->shape == SHAPE_DEFAULT) {
-		    if (initial == -n)
-			initial = -i;
-		}
-		else
-		    initial = i;
-	    }
-#endif
+	if (!(a && i == n))
+	    continue;
+	s = Sprintf("[%s]", a->alt);
+	if (*a->alt) {
+	    ParsedURL pu;
+	    parseURL2(a->url, &pu, baseURL(buf));
+	    Strcat_char(s, ' ');
+	    Strcat(s, parsedURL2Str(&pu));
 	}
-	else
-	    label[i] = "";
-    }
-    label[n] = NULL;
-    if (initial == -n)
-#ifdef USE_IMAGE
-	initial = map ? nearestMapArea(ml, px, py) : 0;
-#else
-	initial = 0;
-#endif
-    else if (initial < 0)
-	initial *= -1;
-
-    optionMenu(x, y, label, &selected, initial, NULL);
-
-    if (selected >= 0) {
-	for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
-	    if (al->ptr && i == selected)
-		return (MapArea *) al->ptr;
-	}
+	return s;
     }
     return NULL;
 }
 
-#else
-char *map1 = "<HTML><HEAD><TITLE>Image map links</TITLE></HEAD>\
-<BODY><H1>Image map links</H1>";
-
-Buffer *
-follow_map_panel(Buffer *buf, struct parsed_tagarg *arg)
-{
-    Str mappage;
-    MapList *ml;
-    ListItem *al;
-    MapArea *a;
-    char *name;
-    ParsedURL pu;
-
-    name = tag_get_value(arg, "link");
-    if (name == NULL)
-	return NULL;
-
-    for (ml = buf->maplist; ml != NULL; ml = ml->next) {
-	if (!Strcmp_charp(ml->name, name))
-	    break;
-    }
-    if (ml == NULL)
-	return NULL;
-
-    mappage = Strnew_charp(map1);
-    for (al = ml->area->first; al != NULL; al = al->next) {
-	a = (MapArea *) al->ptr;
-	if (!a)
-	    continue;
-	parseURL2(a->url, &pu, baseURL(buf));
-	Strcat_charp(mappage, "<a href=\"");
-	Strcat_charp(mappage, html_quote(parsedURL2Str(&pu)->ptr));
-	Strcat_charp(mappage, "\">");
-	Strcat_charp(mappage, html_quote(a->alt));
-	Strcat_charp(mappage, " ");
-	Strcat_charp(mappage, html_quote(a->url));
-	Strcat_charp(mappage, "</a><br>\n");
-    }
-    Strcat_charp(mappage, "</body></html>");
-
-    return loadHTMLString(mappage);
-}
-#endif
-
-#ifdef USE_IMAGE
 int
 getMapXY(Buffer *buf, Anchor *a, int *x, int *y)
 {
@@ -220,21 +189,118 @@ getMapXY(Buffer *buf, Anchor *a, int *x, int *y)
 }
 #endif
 
+Anchor *
+retrieveCurrentMap(Buffer *buf)
+{
+    Anchor *a;
+    FormItemList *fi;
+
+    a = retrieveCurrentForm(buf);
+    if (!a || !a->url)
+	return NULL;
+    fi = (FormItemList *)a->url;
+    if (fi->parent->method == FORM_METHOD_INTERNAL &&
+        !Strcmp_charp(fi->parent->action, "map"))
+	return a;
+    return NULL;
+}
+
+MapArea *
+follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
+{
+    MapList *ml;
+    ListItem *al;
+    MapArea *a;
+    int i, selected = -1, initial = 0;
+#ifdef MENU_MAP
+    char **label;
+#endif
+
+    ml = searchMapList(buf, name);
+    if (ml == NULL || ml->area == NULL || ml->area->nitem == 0)
+	return NULL;
+
+#ifdef USE_IMAGE
+    initial = searchMapArea(buf, ml, a_img);
+    if (initial < 0)
+	initial = 0;
+    else if (!image_map_list) {
+	selected = initial;
+	goto map_end;
+    }
+#endif
+
+#ifdef MENU_MAP
+    label = New_N(char *, ml->area->nitem + 1);
+    for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (a)
+	    label[i] = *a->alt ? a->alt : a->url;
+	else
+	    label[i] = "";
+    }
+    label[ml->area->nitem] = NULL;
+
+    optionMenu(x, y, label, &selected, initial, NULL);
+#endif
+
+  map_end:
+    if (selected >= 0) {
+	for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	    if (al->ptr && i == selected)
+		return (MapArea *) al->ptr;
+	}
+    }
+    return NULL;
+}
+
+#ifndef MENU_MAP
+char *map1 = "<HTML><HEAD><TITLE>Image map links</TITLE></HEAD>\
+<BODY><H1>Image map links</H1>\
+<table>";
+
+Buffer *
+follow_map_panel(Buffer *buf, char *name)
+{
+    Str mappage;
+    MapList *ml;
+    ListItem *al;
+    MapArea *a;
+    ParsedURL pu;
+    char *url;
+
+    ml = searchMapList(buf, name);
+    if (ml == NULL)
+	return NULL;
+
+    mappage = Strnew_charp(map1);
+    for (al = ml->area->first; al != NULL; al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (!a)
+	    continue;
+	parseURL2(a->url, &pu, baseURL(buf));
+	url = html_quote(parsedURL2Str(&pu)->ptr);
+	Strcat_m_charp(mappage, "<tr><td>", html_quote(a->alt),
+		       "<td><a href=\"", url, "\">", url, "</a>\n", NULL);
+    }
+    Strcat_charp(mappage, "</table></body></html>");
+
+    return loadHTMLString(mappage);
+}
+#endif
+
 MapArea *
 newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 {
     MapArea *a = New(MapArea);
-#ifdef MENU_MAP
 #ifdef USE_IMAGE
     char *p;
     int i, max;
-#endif
 #endif
 
     a->url = url;
     a->target = target;
     a->alt = alt ? alt : "";
-#ifdef MENU_MAP
 #ifdef USE_IMAGE
     a->shape = SHAPE_RECT;
     if (shape) {
@@ -317,8 +383,36 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 	a->center_y /= a->ncoords / 2;
     }
 #endif
-#endif
     return a;
+}
+
+/* append image map links */
+static void
+append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
+{
+    MapList *ml;
+    ListItem *al;
+    MapArea *a;
+    ParsedURL pu;
+    char *url;
+
+    ml = searchMapList(buf, fi->value ? fi->value->ptr : NULL);
+    if (ml == NULL)
+	return;
+
+    Strcat_charp(tmp, "<tr><td colspan=2>Links of current image map");
+    Strcat_charp(tmp, "<tr><td colspan=2><table>");
+    for (al = ml->area->first; al != NULL; al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (!a)
+	    continue;
+	parseURL2(a->url, &pu, baseURL(buf));
+	url = html_quote(parsedURL2Str(&pu)->ptr);
+	Strcat_m_charp(tmp, "<tr><td>&nbsp;&nbsp;<td>",
+		       html_quote(a->alt), "<td><a href=\"", url, "\">", url,
+		       "</a>\n", NULL);
+    }
+    Strcat_charp(tmp, "</table>");
 }
 
 /* append frame URL */
@@ -436,9 +530,13 @@ page_info_panel(Buffer *buf)
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {
-	s = Strnew_charp(form2str((FormItemList *)a->url));
+	FormItemList *fi = (FormItemList *)a->url;
+	s = Strnew_charp(form2str(fi));
 	Strcat_charp(tmp, "<tr><td nowrap>Method/type of current form<td>");
 	Strcat_charp(tmp, html_quote(s->ptr));
+	if (fi->parent->method == FORM_METHOD_INTERNAL &&
+	    !Strcmp_charp(fi->parent->action, "map"))
+	    append_map_info(buf, tmp, fi->parent->item);
     }
     Strcat_charp(tmp, "</table>\n");
     if (buf->document_header != NULL) {

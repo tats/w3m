@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.143 2002/11/18 17:29:32 ukai Exp $ */
+/* $Id: main.c,v 1.144 2002/11/19 17:40:32 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2757,8 +2757,14 @@ followA(void)
 	return;
     }
     if (a && a->image && a->image->ismap) {
-	getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
+	getMapXY(Currentbuf, a, &x, &y);
 	map = 1;
+    }
+#else
+    a = retrieveCurrentMap(Currentbuf);
+    if (a) {
+	_followForm(FALSE);
+	return;
     }
 #endif
     a = retrieveCurrentAnchor(Currentbuf);
@@ -3240,7 +3246,10 @@ _followForm(int submit)
 		buf->form_submit = save_submit_formlist(fi);
 	    }
 	}
-	else if ((fi->parent->method == FORM_METHOD_INTERNAL && (!Strcmp_charp(fi->parent->action, "map") || !Strcmp_charp(fi->parent->action, "none"))) || Currentbuf->bufferprop & BP_INTERNAL) {	/* internal */
+	else if ((fi->parent->method == FORM_METHOD_INTERNAL &&
+		 (!Strcmp_charp(fi->parent->action, "map") ||
+		  !Strcmp_charp(fi->parent->action, "none"))) ||
+		 Currentbuf->bufferprop & BP_INTERNAL) {	/* internal */
 	    do_internal(tmp2->ptr, tmp->ptr);
 	}
 	else {
@@ -3275,16 +3284,16 @@ _followForm(int submit)
 }
 
 static void
-drawAnchorCursor0(Buffer *buf, int hseq, int prevhseq, int tline, int eline,
-		  int active)
+drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
+		  int tline, int eline, int active)
 {
     int i, j;
     Line *l;
     Anchor *an;
 
     l = buf->topLine;
-    for (j = 0; j < buf->href->nanchor; j++) {
-	an = &buf->href->anchors[j];
+    for (j = 0; j < al->nanchor; j++) {
+	an = &al->anchors[j];
 	if (an->start.line < tline)
 	    continue;
 	if (an->start.line >= eline)
@@ -3324,13 +3333,15 @@ drawAnchorCursor(Buffer *buf)
     int hseq, prevhseq;
     int tline, eline;
 
-    if (buf->firstLine == NULL)
+    if (!buf->firstLine || !buf->hmarklist)
 	return;
-    if (buf->href == NULL)
+    if (!buf->href && !buf->formitem)
 	return;
 
     an = retrieveCurrentAnchor(buf);
-    if (an != NULL)
+    if (!an)
+	an = retrieveCurrentMap(buf);
+    if (an)
 	hseq = an->hseq;
     else
 	hseq = -1;
@@ -3338,8 +3349,14 @@ drawAnchorCursor(Buffer *buf)
     eline = tline + buf->LINES;
     prevhseq = buf->hmarklist->prevhseq;
 
-    drawAnchorCursor0(buf, hseq, prevhseq, tline, eline, 1);
-    drawAnchorCursor0(buf, hseq, -1, tline, eline, 0);
+    if (buf->href) {
+	drawAnchorCursor0(buf, buf->href, hseq, prevhseq, tline, eline, 1);
+	drawAnchorCursor0(buf, buf->href, hseq, -1, tline, eline, 0);
+    }
+    if (buf->formitem) {
+	drawAnchorCursor0(buf, buf->formitem, hseq, prevhseq, tline, eline, 1);
+	drawAnchorCursor0(buf, buf->formitem, hseq, -1, tline, eline, 0);
+    }
     buf->hmarklist->prevhseq = hseq;
 }
 
@@ -4002,7 +4019,8 @@ pginfo(void)
 void
 follow_map(struct parsed_tagarg *arg)
 {
-#ifdef MENU_MAP
+    char *name = tag_get_value(arg, "link");
+#if defined(MENU_MAP) || defined(USE_IMAGE)
     Anchor *an;
     MapArea *a;
     int x, y;
@@ -4011,9 +4029,22 @@ follow_map(struct parsed_tagarg *arg)
     an = retrieveCurrentImg(Currentbuf);
     x = Currentbuf->cursorX + Currentbuf->rootX;
     y = Currentbuf->cursorY + Currentbuf->rootY;
-    a = follow_map_menu(Currentbuf, arg, an, x, y);
-    if (a == NULL || a->url == NULL || *(a->url) == '\0')
+    a = follow_map_menu(Currentbuf, name, an, x, y);
+    if (a == NULL || a->url == NULL || *(a->url) == '\0') {
+#endif
+#ifndef MENU_MAP
+	Buffer *buf = follow_map_panel(Currentbuf, name);
+
+	if (buf != NULL) {
+#ifdef JP_CHARSET
+	    buf->document_code = Currentbuf->document_code;
+#endif				/* JP_CHARSET */
+	    cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
+	}
+#endif
+#if defined(MENU_MAP) || defined(USE_IMAGE)
 	return;
+    }
     if (*(a->url) == '#') {
 	gotoLabel(a->url + 1);
 	return;
@@ -4037,12 +4068,6 @@ follow_map(struct parsed_tagarg *arg)
     }
     cmd_loadURL(a->url, baseURL(Currentbuf),
 		parsedURL2Str(&Currentbuf->currentURL)->ptr);
-#else
-    Buffer *buf;
-
-    buf = follow_map_panel(Currentbuf, arg);
-    if (buf != NULL)
-	cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
 #endif
 }
 

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.64 2002/11/18 17:26:10 ukai Exp $ */
+/* $Id: rc.c,v 1.65 2002/11/19 17:40:34 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -76,6 +76,7 @@ static char *config_file = NULL;
 #define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
 #define CMT_IMAGE_SCALE  "画像のスケール(%)"
 #define CMT_IMGDISPLAY   "画像を表示するためのコマンド"
+#define CMT_IMAGE_MAP_LIST "イメージマップのリンク先一覧を表示"
 #endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
@@ -229,6 +230,7 @@ static char *config_file = NULL;
 #define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"
 #define CMT_IMAGE_SCALE  "Scale of image (%)"
 #define CMT_IMGDISPLAY   "External command to display image"
+#define CMT_IMAGE_MAP_LIST "Use link list of image map"
 #endif
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
@@ -539,6 +541,8 @@ struct param_ptr params1[] = {
      NULL},
     {"imgdisplay", P_STRING, PI_TEXT, (void *)&Imgdisplay, CMT_IMGDISPLAY,
      NULL},
+    {"image_map_list", P_INT, PI_ONOFF, (void *)&image_map_list,
+     CMT_IMAGE_MAP_LIST, NULL},
 #endif
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,

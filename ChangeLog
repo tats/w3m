@@ -1,3 +1,35 @@
+2002-11-20  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03452] image map
+	* display.c (displayBuffer): use getCurrentMapLabel()
+	* fm.h (MapArea): delete ifdef MENU_MAP
+		(image_map_list): added
+	* main.c (followA): don't call retrieveCurrentImg() ifdef USE_IMAGE
+		use retrieveCurrentMap() ifndef USE_IMAGE
+		(_followForm): indent
+		(drawAnchorCursor0): add AnchorList
+		(drawAnchorCuror): pass AnchorList to drawAnchorCursor0
+		(follow_map): follow_map_panel
+	* map.c (searchMapList): added
+		(nearestMapArea): n, min default value to -1
+		(searchMapArea): added
+		(getCurrentMapLabel): added
+		(getMapXY): moved
+		(retrieveCurrentMap): added
+		(follow_map_menu): parsed_tagarg -> name
+				rewrite to search map list/area
+		(follow_map_panel): parsed_tagarg -> name
+				rewrite to search map list/area
+		(newMapArea): delete ifdef MENU_MAP
+		(append_map_info): added
+		(page_info_panel): append_map_info
+	* proto.h (follow_map_menu): parsed_tagarg -> name
+		(follow_map_panel): parsed_tagarg -> name
+		(getCurrentMapLabel): added
+		(retrieveCurrentMap): added
+	* rc.c (CMT_IMAGE_MAP_LIST): added
+		(image_map_list): added
+
 2002-11-20  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03450] Re: cygwin console on Win9X
@@ -4893,4 +4925,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.536 2002/11/19 17:18:54 ukai Exp $
+$Id: ChangeLog,v 1.537 2002/11/19 17:40:30 ukai Exp $

@@ -1,29 +1,10 @@
-w3m 0.3.3 or 0.4?
+w3m 0.3.2.1 - 2002-11-26?
 
-* func: CLOSE_TAB_MOUSE, MENU_MOUSE, MOVE_MOUSE, TAB_MOUSE
-* options: -N
-* func: NEXT, PREV
-* rc: image_map_list
-* rc: open_tab_dl_list
-* func: DOWNLOAD_LIST
-* env: https_proxy
-* rc: https_proxy
-* options: -show-option
-* rc: relative_wheel_scroll
-* rc: relative_wheel_scroll_ratio
-* rc: fixed_wheel_scroll_count
-* separate auxbindir and libdir (local-CGI, file:///$LIB/)
-* configure: -auxbindir
-* rc: disable_secret_security_check (for windows?)
-* tab browsing
-* rc: open_tab_blank, close_tab_back
-* func: CLOSE_TAB, NEW_TAB, NEXT_TAB, PREV_TAB, 
-* func:	TAB_GOTO, TAB_GOTO_RELATIVE
-* func: TAB_LEFT, TAB_LINK, TAB_MENU, TAB_RIGHT
-* pre_form: ~/.w3m/pre_form
-* rc: pre_form_file: pre_form configuration file
+* security fix: html_quote for frame contents
+* backport from w3m 0.3.2+cvs
+ - fix segmentation fault by large complex table.
+	[w3m-dev 03371][w3m-dev 03438]
 
-----------------------------------------------------------------
 w3m 0.3.2 - 2002-11-05
 
 * ~/.netrc: password for ftp

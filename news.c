@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.12 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: news.c,v 1.13 2003/01/15 16:14:41 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -44,7 +44,7 @@ news_command(News * news, char *cmd, char *arg, int *status)
 	    tmp = Sprintf("%s %s\r\n", cmd, arg);
 	else
 	    tmp = Sprintf("%s\r\n", cmd);
-	fwrite(tmp->ptr, tmp->length, sizeof(char), news->wf);
+	fwrite(tmp->ptr, sizeof(char), tmp->length, news->wf);
 	fflush(news->wf);
     }
     if (!status)

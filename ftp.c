@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.24 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: ftp.c,v 1.25 2003/01/15 16:14:41 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -47,7 +47,7 @@ ftp_command(FTP ftp, char *cmd, char *arg, int *status)
 	    tmp = Sprintf("%s %s\r\n", cmd, arg);
 	else
 	    tmp = Sprintf("%s\r\n", cmd);
-	fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wf);
+	fwrite(tmp->ptr, sizeof(char), tmp->length, ftp->wf);
 	fflush(ftp->wf);
     }
     if (!status)

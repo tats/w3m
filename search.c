@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.15 2002/01/17 15:05:43 ukai Exp $ */
+/* $Id: search.c,v 1.16 2002/01/17 15:49:04 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -51,6 +51,9 @@ open_migemo(char *migemo_command)
     if (migemo_pid == 0) {
 	/* child */
 	signal(SIGINT, SIG_IGN);
+#ifdef SIGCHLD
+	signal(SIGCHLD, SIG_IGN);
+#endif
 #ifdef HAVE_SETPGRP
 	setpgrp();
 #endif

@@ -1,3 +1,8 @@
+2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* terms.c (mouse_init): Gpm_Close() is required.
+	  closes: Debian Bug#120221: w3m-ssl: trashes terminal on exit
+
 2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* XMakefile (funcname1.h funcname2.h): sort as well as funcname.c

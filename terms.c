@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.7 2001/11/19 08:17:13 ukai Exp $ */
+/* $Id: terms.c,v 1.8 2001/11/19 19:19:21 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1728,7 +1728,11 @@ mouse_init()
         /*
 	 * If Gpm_Open() success, returns >= 0
 	 * Gpm_Open() returns -2 in case of xterm.
+	 * Gpm_Close() is necessary here. Otherwise,
+	 * xterm is being left in the mode where the mouse clicks are
+	 * passed through to the application.
 	 */
+	Gpm_Close();
 	is_xterm = 1;
     } else {
 	gpm_handler = gpm_process_mouse;

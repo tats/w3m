@@ -1,3 +1,17 @@
+2002-03-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03130] w3mman.1
+	* scripts/w3mman/.cvsignore: add w3mman.1
+	* scripts/w3mman/Makefile (MAN_DIR): added
+		(MAN_TARGETS): added
+		(all): add $(MAN_TARGETS)
+		(.in): replace @LIB_DIR@
+		(install): install $(MAN_TARGETS)
+		(uninstall): uninstall $(MAN_TARGETS)
+		(clean): clean $(MAN_TARGETS)
+	* scripts/w3mman/w3mman.1.in: added
+	* scripts/w3mman/w3mman2html.cgi.in: undef $PAGER
+
 2002-03-15  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03129] Re: X-Face
@@ -3169,4 +3183,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.349 2002/03/14 16:12:02 ukai Exp $
+$Id: ChangeLog,v 1.350 2002/03/14 17:51:41 ukai Exp $

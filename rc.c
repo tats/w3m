@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.59 2002/11/06 03:27:04 ukai Exp $ */
+/* $Id: rc.c,v 1.60 2002/11/09 21:55:24 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1484,6 +1484,16 @@ rcFile(char *base)
 }
 
 char *
+auxbinFile(char *base)
+{
+    Str file = Strnew_charp(w3m_auxbin_dir());
+    Strcat_char(file, '/');
+    Strcat_charp(file, base);
+    return expandName(file->ptr);
+}
+
+#if 0 /* not used */
+char *
 libFile(char *base)
 {
     Str file = Strnew_charp(w3m_lib_dir());
@@ -1491,6 +1501,7 @@ libFile(char *base)
     Strcat_charp(file, base);
     return expandName(file->ptr);
 }
+#endif
 
 char *
 etcFile(char *base)
@@ -1501,6 +1512,7 @@ etcFile(char *base)
     return expandName(file->ptr);
 }
 
+#ifndef USE_HELP_CGI
 char *
 helpFile(char *base)
 {
@@ -1509,3 +1521,5 @@ helpFile(char *base)
     Strcat_charp(file, base);
     return expandName(file->ptr);
 }
+#endif
+

@@ -1,4 +1,4 @@
-/* $Id: indep.h,v 1.9 2002/08/20 17:49:39 ukai Exp $ */
+/* $Id: indep.h,v 1.10 2002/11/09 21:55:24 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include "gc.h"
@@ -50,6 +50,7 @@ extern Str Str_form_quote(Str x);
 extern Str Str_form_unquote(Str x);
 extern char *shell_quote(char *str);
 
+extern char *w3m_auxbin_dir();
 extern char *w3m_lib_dir();
 extern char *w3m_etc_dir();
 extern char *w3m_help_dir();

@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.30 2002/11/06 03:50:49 ukai Exp $
+# $Id: XMakefile,v 1.31 2002/11/09 21:55:24 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -21,7 +21,7 @@ INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
 MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
-TARGETS=$(TARGET) $(EXT_TARGETS)
+TARGETS=$(TARGET) $(LIB_TARGETS) $(AUXBIN_TARGETS)
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
@@ -121,6 +121,7 @@ install: install-core install-scripts
 
 install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
+	-$(MKDIR) $(DESTDIR)$(AUXBIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(MAN1_DIR)
@@ -129,13 +130,18 @@ install-core: $(TARGETS)
 	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
 	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(MAN1_DIR)/$(TARGET).1
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(MAN1_JA_DIR)/$(TARGET).1
-	for file in $(EXT_TARGETS); \
+	for file in $(AUXBIN_TARGETS); \
 	do \
 		case $$file in \
-		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
-		*) $(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
+		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file $(DESTDIR)$(AUXBIN_DIR)/$$file;; \
+		*) $(INSTALL_PROGRAM) $$file $(DESTDIR)$(AUXBIN_DIR)/$$file;; \
 		esac; \
 	done
+	for file in $(LIB_TARGETS); \
+	do \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
+	done
+
 
 install-helpfile:
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
@@ -147,19 +153,23 @@ install-helpfile:
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' RC_DIR='$(RC_DIR)' KEYBIND_SRC='$(KEYBIND_SRC)');	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' AUXBIN_DIR='$(AUXBIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' RC_DIR='$(RC_DIR)' KEYBIND_SRC='$(KEYBIND_SRC)');	\
 	done
 
 install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' MAN_DIR='$(MAN_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install-sh" install);	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(BIN_DIR)' AUXBIN_DIR='$(AUXBIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' MAN_DIR='$(MAN_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install-sh" install);	\
 	done
 
 uninstall:
 	-rm -f $(BIN_DIR)/$(TARGET)
-	-for file in $(EXT_TARGETS); \
+	-for file in $(AUXBIN_TARGETS); \
+	do \
+		rm -f $(AUXBIN_DIR)/$$file; \
+	done
+	-for file in $(LIB_TARGETS); \
 	do \
 		rm -f $(LIB_DIR)/$$file; \
 	done

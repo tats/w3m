@@ -1,3 +1,30 @@
+2002-11-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03398] auxbindir
+	* XMakefile: EXT_TARGETS -> LIB_TARGETS, AUXBIN_TARGETS
+	* config.h.dist: add AUXBIN_DIR
+			LIB_DIR is cgi-bin
+	* configure: add -auxbindir
+			add AUXBIN_DIR
+			LIB_DIR is cgi-bin
+			EXT_TARGETS -> LIB_TARGETS, AUXBIN_TARGETS
+	* file.c (compression_decoder): libfile_p -> auxbin_p
+		(check_command): libfile_p -> auxbin_p
+				use w3m_auxbin_dir() instead of w3m_lib_dir()
+		(acceptableEncoding): libfile_p -> auxbin_p
+		(xface2xpm): use auxbinFile() instead of libFile()
+		(uncompress_stream): libfile_p -> auxbin_p
+				use auxbinFile() instead of libFile()
+	* image.c (getCharSize): use w3m_auxbin_dir() instead of w3m_lib_dir()
+		(openImgdisplay): use w3m_auxbin_dir() instead of w3m_lib_dir()
+	* indep.c (w3m_auxbin_dir): added
+	* indep.h (w3m_auxbin_dir): added
+	* proto.h (auxbinFile): added
+	* rc.c (auxbinFile): added
+		(libFile): #if 0, no longer used
+		(helpFile): used only #ifndef USE_HELP_CGI
+	* NEWS: separate auxbindir and libdir (local-CGI, file:///$LIB/)
+
 2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03396] Re: meta refresh problem
@@ -4446,4 +4473,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.490 2002/11/08 17:32:50 ukai Exp $
+$Id: ChangeLog,v 1.491 2002/11/09 21:55:24 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.15 2002/11/06 15:05:35 ukai Exp $ */
+/* $Id: image.c,v 1.16 2002/11/09 21:55:24 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -57,7 +57,7 @@ getCharSize()
 
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
-	Strcat_m_charp(tmp, w3m_lib_dir(), "/", NULL);
+	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
     Strcat_m_charp(tmp, Imgdisplay, " -test 2> /dev/null", NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
@@ -127,7 +127,7 @@ openImgdisplay()
 	for (i = 3; i < FOPEN_MAX; i++)
 	    close(i);
 	if (!strchr(Imgdisplay, '/'))
-	    cmd = Strnew_m_charp(w3m_lib_dir(), "/", Imgdisplay, NULL)->ptr;
+	    cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
 	else
 	    cmd = Imgdisplay;
 	execl("/bin/sh", "sh", "-c", cmd, NULL);

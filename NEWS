@@ -1,5 +1,7 @@
 w3m 0.3.3 or 0.4?
 
+* separate auxbindir and libdir (local-CGI, file:///$LIB/)
+* configure: -auxbindir
 * rc: disable_secret_security_check (for windows?)
 * tab browsing
 * rc: open_tab_blank, close_tab_back

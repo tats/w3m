@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.113 2002/11/08 15:46:06 ukai Exp $ */
+/* $Id: file.c,v 1.114 2002/11/09 21:55:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -163,7 +163,7 @@ static struct compression_decoder {
     int type;
     char *ext;
     char *mime_type;
-    int libfile_p;
+    int auxbin_p;
     char *cmd;
     char *name;
     char *encoding;
@@ -372,7 +372,7 @@ examineFile(char *path, URLFile *uf)
 #define S_IXANY	(S_IXUSR|S_IXGRP|S_IXOTH)
 
 int
-check_command(char *cmd, int libfile_p)
+check_command(char *cmd, int auxbin_p)
 {
     static char *path = NULL;
     Str dirs;
@@ -382,8 +382,8 @@ check_command(char *cmd, int libfile_p)
 
     if (path == NULL)
 	path = getenv("PATH");
-    if (libfile_p)
-	dirs = Strnew_charp(w3m_lib_dir());
+    if (auxbin_p)
+	dirs = Strnew_charp(w3m_auxbin_dir());
     else
 	dirs = Strnew_charp(path);
     for (p = dirs->ptr; p != NULL; p = np) {
@@ -413,7 +413,7 @@ acceptableEncoding()
 	return encodings->ptr;
     l = newTextList();
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
-	if (check_command(d->cmd, d->libfile_p)) {
+	if (check_command(d->cmd, d->auxbin_p)) {
 	    pushText(l, d->encoding);
 	}
     }
@@ -514,7 +514,7 @@ xface2xpm(char *xface)
     struct stat st;
 
     xpm = tmpfname(TMPF_DFL, ".xpm")->ptr;
-    f = popen(Sprintf("%s > %s", libFile(XFACE2XPM), xpm)->ptr, "w");
+    f = popen(Sprintf("%s > %s", auxbinFile(XFACE2XPM), xpm)->ptr, "w");
     if (!f)
 	return NULL;
     fprintf(f, "%s", xface);
@@ -7383,8 +7383,8 @@ uncompress_stream(URLFile *uf)
     }
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
 	if (uf->compression == d->type) {
-	    if (d->libfile_p)
-		expand_cmd = libFile(d->cmd);
+	    if (d->auxbin_p)
+		expand_cmd = auxbinFile(d->cmd);
 	    else
 		expand_cmd = d->cmd;
 	    expand_name = d->name;

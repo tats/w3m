@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.24 2002/08/27 16:35:15 ukai Exp $ */
+/* $Id: indep.c,v 1.25 2002/11/09 21:55:24 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -746,6 +746,12 @@ w3m_dir(const char *name, char *dft)
 #else
     return dft;
 #endif
+}
+
+char *
+w3m_auxbin_dir()
+{
+    return w3m_dir("W3M_AUXBIN_DIR", AUXBIN_DIR);
 }
 
 char *

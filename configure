@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.84 2002/11/06 14:58:03 ukai Exp $
+# $Id: configure,v 1.85 2002/11/09 21:55:24 ukai Exp $
 #	Configuration.
 #
 
@@ -57,6 +57,9 @@ do
     ;;
   -bindir=*|--bindir=*)
     bindir=`expr "$1" : "-*bindir=\(.*\)"`
+    ;;
+  -auxbindir=*|--auxbindir=*)
+    auxbindir=`expr "$1" : "-*auxbindir=\(.*\)"`
     ;;
   -libdir=*|--libdir=*)
     libdir=`expr "$1" : "-*libdir=\(.*\)"`
@@ -123,7 +126,8 @@ do
     echo "-yes, -nonstop  Set all parameters to the default"
     echo "-prefix=DIR     Specify prefix (default: /usr/local)"
     echo "-bindir=DIR     user executable in DIR (default: PREFIX/bin)"
-    echo "-libdir=DIR     program executables in DIR (default: PREFIX/lib/w3m)"
+    echo "-auxbindir=DIR  support programs in DIR (default: PREFIX/lib/w3m)"
+    echo "-libdir=DIR     local cgi in DIR (default: PREFIX/lib/w3m/cgi-bin)"
     echo "-helpdir=DIR    help file in DIR (default: PREFIX/share/w3m)"
     echo "-mandir=DIR     manual in DIR (default: PREFIX/man)"
     echo "-sysconfdir=DIR w3mconfig in DIR [PREFIX/etc/w3m]"
@@ -577,18 +581,35 @@ readdir "$d_bindir"
 bindir=$_dir
 echo "bindir='$bindir'" >> config.param
 
-d_libdir=$libdir
-if [ -z "$d_libdir" ]; then
+d_auxbindir=$auxbindir
+if [ -z "$d_auxbindir" ]; then
   case "$sysname" in
   *BSD)
-    d_libdir="$topdir/libexec/w3m"
+    d_auxbindir="$topdir/libexec/w3m"
   ;;
   *)
-    d_libdir="$topdir/lib/w3m"
+    d_auxbindir="$topdir/lib/w3m"
   ;;
   esac
 fi
 echo "Which directory do you want to put the support binary files?"
+Echo "(default: $d_auxbindir) "
+readdir "$d_auxbindir"
+auxbindir=$_dir
+echo "auxbindir='$auxbindir'" >> config.param
+
+d_libdir=$libdir
+if [ -z "$d_libdir" ]; then
+  case "$sysname" in
+  *BSD)
+    d_libdir="$topdir/libexec/w3m/cgi-bin"
+  ;;
+  *)
+    d_libdir="$topdir/lib/w3m/cgi-bin"
+  ;;
+  esac
+fi
+echo "Which directory do you want to use local cgi?"
 Echo "(default: $d_libdir) "
 readdir "$d_libdir"
 libdir=$_dir
@@ -2292,6 +2313,7 @@ $def_matrix
 #ifdef makefile_parameter
 
 BIN_DIR = $bindir
+AUXBIN_DIR = $auxbindir
 LIB_DIR = $libdir
 HELP_DIR = $helpdir
 MAN_DIR = $mandir
@@ -2312,7 +2334,8 @@ EXT=$extension
 MATHLIB=$mathlib
 Z_CFLAGS=$z_cflags
 ZLIB=$zlib
-EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate $imgtarget
+AUXBIN_TARGETS=$inflate $imgtarget
+LIB_TARGETS=\$(BOOKMARKER) \$(HELPER)
 IMGCFLAGS=$imgx11cflags $imgfbcflags
 IMGLDFLAGS=$imgx11ldflags $imgfbldflags
 IMGX11CFLAGS=$imgx11cflags
@@ -2380,6 +2403,7 @@ $def_use_xface
 /* for USE_MIGEMO */
 #define DEF_MIGEMO_COMMAND	"$def_migemo_command"
 
+#define AUXBIN_DIR   "$auxbindir"
 #define LIB_DIR      "$libdir"
 #define HELP_DIR     "$helpdir"
 #define ETC_DIR	     "$sysconfdir"

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.134 2002/11/27 16:40:22 ukai Exp $ */
+/* $Id: file.c,v 1.135 2002/11/28 16:00:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5537,8 +5537,6 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    if (obuf->flag & RB_INTXTA) {
 		if (cmd == HTML_N_TEXTAREA)
 		    goto proc_normal;
-		if (is_tag)
-		    continue;
 		feed_textarea(q);
 	    }
 	    else if (obuf->flag & RB_INSELECT) {

@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.21 2002/11/26 17:12:15 ukai Exp $ */
+/* $Id: frame.c,v 1.22 2002/11/28 16:00:34 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -573,8 +573,10 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    cleanup_line(tmp, HTML_MODE);
 			    p = tmp->ptr;
 			}
-			if (status == R_ST_NORMAL || ST_IS_COMMENT(status))
+			if (status == R_ST_NORMAL)
 			    read_token(tok, &p, &status, 1, 0);
+			else if (ST_IS_COMMENT(status))
+			    read_token(tok, &p, &status, 0, 0);
 			else
 			    read_token(tok, &p, &status, 1, 1);
 		    } while (status != R_ST_NORMAL);

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.64 2003/01/06 15:49:29 ukai Exp $ */
+/* $Id: url.c,v 1.65 2003/01/07 15:53:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -682,12 +682,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     /* RFC1808: Relative Uniform Resource Locators
      * 4.  Resolving Relative URLs
      */
-    if (*url == '\0' && current) {
-	copyParsedURL(p_url, current);
-	return;
-    }
-
-    if (*url == '#') {		/* label only */
+    if (*url == '\0' || *url == '#') {
 	if (current)
 	    copyParsedURL(p_url, current);
 	goto do_label;
@@ -713,12 +708,9 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	 * denotes a filename (therefore the scheme is SCM_LOCAL).
 	 */
 	if (current) {
-	    copyParsedURL(p_url, current);
+	    p_url->scheme = current->scheme;
 	    if (p_url->scheme == SCM_LOCAL_CGI)
 		p_url->scheme = SCM_LOCAL;
-	    /* label part and query part don't inherit */
-	    p_url->label = NULL;
-	    p_url->query = NULL;
 	}
 	else
 	    p_url->scheme = SCM_LOCAL;
@@ -828,7 +820,8 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
   analyze_file:
 #ifndef SUPPORT_NETBIOS_SHARE
     if (p_url->scheme == SCM_LOCAL && p_url->user == NULL &&
-	p_url->host != NULL && strcmp(p_url->host, "localhost")) {
+	p_url->host != NULL && *p_url->host != '\0' &&
+	strcmp(p_url->host, "localhost")) {
 	/*
 	 * In the environments other than CYGWIN, a URL like 
 	 * file://host/file is regarded as ftp://host/file.
@@ -843,6 +836,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    p_url->port = DefaultPort[SCM_FTP];
     }
 #endif
+    if ((*p == '\0' || *p == '#' || *p == '?') && p_url->host == NULL) {
+	p_url->file = "";
+	goto do_query;
+    }
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (p_url->scheme == SCM_LOCAL) {
 	q = p;
@@ -870,10 +867,9 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 #endif				/* USE_GOPHER */
     if (*p == '/')
 	p++;
-    if (*p == '\0') {		/* scheme://host[:port]/ */
+    if (*p == '\0' || *p == '#' || *p == '?') {	/* scheme://host[:port]/ */
 	p_url->file = DefaultFile(p_url->scheme);
-	p_url->label = NULL;
-	return;
+	goto do_query;
     }
 #ifdef USE_GOPHER
     if (p_url->scheme == SCM_GOPHER && *p == 'R') {
@@ -925,6 +921,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    p_url->file = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
     }
 
+  do_query:
     if (*p == '?') {
 	q = ++p;
 	while (*p && *p != '#')
@@ -973,42 +970,43 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     if (pu->scheme == SCM_MAILTO)
 	return;
 #endif
-    if (pu->scheme == SCM_NEWS) {
+    if (pu->scheme == SCM_NEWS || pu->scheme == SCM_NEWS_GROUP) {
 	if (pu->file && !strchr(pu->file, '@') &&
 	    (!(p = strchr(pu->file, '/')) || strchr(p + 1, '-') ||
 	     *(p + 1) == '\0'))
 	    pu->scheme = SCM_NEWS_GROUP;
+	else
+	    pu->scheme = SCM_NEWS;
 	return;
     }
-    if (pu->scheme == SCM_NNTP) {
+    if (pu->scheme == SCM_NNTP || pu->scheme == SCM_NNTP_GROUP) {
+	if (pu->file && *pu->file == '/')
+	    pu->file = allocStr(pu->file + 1, -1);
 	if (pu->file && !strchr(pu->file, '@') &&
-	    (!(p = strchr(pu->file + 1, '/')) || strchr(p + 1, '-') ||
+	    (!(p = strchr(pu->file, '/')) || strchr(p + 1, '-') ||
 	     *(p + 1) == '\0'))
 	    pu->scheme = SCM_NNTP_GROUP;
+	else
+	    pu->scheme = SCM_NNTP;
 	if (current && (current->scheme == SCM_NNTP ||
 			current->scheme == SCM_NNTP_GROUP)) {
-	    if (pu->host == NULL)
+	    if (pu->host == NULL) {
 		pu->host = current->host;
-	    if (pu->port == 0)
 		pu->port = current->port;
+	    }
 	}
 	return;
     }
     if (pu->scheme == SCM_LOCAL)
 	pu->file = expandName(pu->file);
 
-    if (current && pu->scheme == current->scheme) {
+    if (current && pu->scheme == current->scheme && pu->host == NULL) {
 	/* Copy omitted element from the current URL */
-	if (pu->user == NULL) {
-	    pu->user = current->user;
-	}
-	if (pu->pass == NULL) {
-	    pu->pass = current->pass;
-	}
-	if (pu->host == NULL) {
-	    pu->host = current->host;
-	}
-	if (pu->file) {
+	pu->user = current->user;
+	pu->pass = current->pass;
+	pu->host = current->host;
+	pu->port = current->port;
+	if (pu->file && *pu->file) {
 	    if (
 #ifdef USE_GOPHER
 		   pu->scheme != SCM_GOPHER &&
@@ -1040,9 +1038,10 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    }
 #endif				/* USE_GOPHER */
 	}
-	else if (pu->label) {
-	    /* pu has only label */
+	else {	/* scheme:[?query][#label] */
 	    pu->file = current->file;
+	    if (!pu->query)
+		pu->query = current->query;
 	}
 	/* comment: query part need not to be completed
 	 * from the current URL. */

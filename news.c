@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.8 2003/01/06 15:49:29 ukai Exp $ */
+/* $Id: news.c,v 1.9 2003/01/07 15:53:43 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -272,12 +272,7 @@ openNewsStream(ParsedURL *pu)
     }
     if (pu->scheme == SCM_NNTP || pu->scheme == SCM_NEWS) {
 	/* News article */
-	group = allocStr(pu->file, -1);
-	if (pu->scheme == SCM_NNTP && *group == '/') {
-	    /* first char of pu->file is '/' */
-	    group++;
-	}
-	group = file_unquote(group);
+	group = file_unquote(allocStr(pu->file, -1));
 	p = strchr(group, '/');
 	if (p == NULL) {	/* <message-id> */
 	    if (!strchr(group, '@'))
@@ -321,11 +316,8 @@ readNewsgroup(ParsedURL *pu)
     if (current_news.host == NULL || !pu->file || *pu->file == '\0')
 	return NULL;
     group = allocStr(pu->file, -1);
-    if (pu->scheme == SCM_NNTP_GROUP) {
-	if (*group == '/')
-	    group++;
-	scheme = "nntp:/";
-    }
+    if (pu->scheme == SCM_NNTP_GROUP)
+	scheme = "/";
     else
 	scheme = "news:";
     if ((list = strchr(group, '/'))) {

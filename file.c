@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.207 2003/01/24 17:54:13 ukai Exp $ */
+/* $Id: file.c,v 1.208 2003/01/24 17:57:07 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4959,6 +4959,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 }
 
 #define PPUSH(p,c) {outp[pos]=(p);outc[pos]=(c);pos++;}
+#define PSIZE	\
+    if (out_size <= pos + 1) {	\
+	out_size = pos * 3 / 2;	\
+	outc = New_Reuse(char, outc, out_size);	\
+	outp = New_Reuse(Lineprop, outp, out_size);	\
+    }
 
 static TextLineListItem *_tl_lp2;
 
@@ -5004,8 +5010,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 
     if (out_size == 0) {
 	out_size = LINELEN;
-	outc = New_N(char, out_size);
-	outp = New_N(Lineprop, out_size);
+	outc = NewAtom_N(char, out_size);
+	outp = NewAtom_N(Lineprop, out_size);
     }
 
     n_textarea = -1;
@@ -5047,11 +5053,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	str = line->ptr;
 	endp = str + line->length;
 	while (str < endp) {
-	    if (out_size <= pos) {
-		out_size = pos * 3 / 2;
-		outc = New_N(char, out_size);
-		outp = New_N(Lineprop, out_size);
-	    }
+	    PSIZE;
 	    mode = get_mctype(str);
 #ifndef KANJI_SYMBOLS
 	    if (effect & PC_RULE && *str != '<') {
@@ -5081,6 +5083,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		int emode;
 		p = getescapecmd(&str);
 		while (*p) {
+	    	    PSIZE;
 		    emode = get_mctype(p);
 #ifdef JP_CHARSET
 		    if (emode == PC_KANJI) {

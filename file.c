@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.88 2002/03/19 15:54:47 ukai Exp $ */
+/* $Id: file.c,v 1.89 2002/04/09 14:45:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -507,22 +507,24 @@ matchattr(char *p, char *attr, int len, Str *value)
 #ifdef USE_IMAGE
 #ifdef USE_XFACE
 static char *
-xface2xbm(char *xface)
+xface2xpm(char *xface)
 {
-    char *xbm;
+    char *xpm;
     FILE *f;
     struct stat st;
 
-    xbm = tmpfname(TMPF_DFL, ".xbm")->ptr;
-    f = popen(Sprintf("%s - %s", libFile(XFACE2XBM), xbm)->ptr, "w");
+    xpm = tmpfname(TMPF_DFL, ".xpm")->ptr;
+    f = popen(Sprintf("%s > %s", libFile(XFACE2XPM), xpm)->ptr, "w");
     if (!f)
 	return NULL;
     fprintf(f, "%s", xface);
     pclose(f);
-    if (stat(xbm, &st))
+    if (stat(xpm, &st))
 	return NULL;
-    pushText(fileToDelete, xbm);
-    return xbm;
+    pushText(fileToDelete, xpm);
+    if (!st.st_size)
+	return NULL;
+    return xpm;
 }
 #endif
 #endif
@@ -631,7 +633,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		URLFile f;
 		Line *l;
 
-		tmpf = xface2xbm(&tmp->ptr[7]);
+		tmpf = xface2xpm(&tmp->ptr[7]);
 		if (tmpf) {
 		    src =
 			Sprintf

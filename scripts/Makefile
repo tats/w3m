@@ -6,7 +6,7 @@ LIB_DIR		= $(prefix)/lib/w3m
 HELP_DIR	= $(prefix)/lib/w3m
 RC_DIR		= ~/.w3m
 
-LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi xface2xbm
+LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi xface2xpm
 HELP_LIBS	= w3mhelp-funcname.pl w3mhelp-funcdesc.pl
 
 MKDIR		= mkdir -p

@@ -1,3 +1,14 @@
+2002-04-09  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03167] xface2xbm -> xface2xpm (current imlib can't handle XBM)
+	* configure: s/XFACE2XBM/XFACE2XPM/
+	* config.h.dist: ditto
+	* file.c (xface2xpm): renamed from xface2xbm
+			modified for xpm
+		(readHeader): s/xface2xbm/xface2xpm/
+	* scripts/Makefile (LIB_TARGETS): s/xface2xbm/xface2xpm/
+	* scripts/xface2xpm.in: added
+
 2002-03-30  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03162] Re: "ttp:" is marked instead of "http:" by MARL_URL
@@ -3323,4 +3334,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.367 2002/04/09 04:34:36 ukai Exp $
+$Id: ChangeLog,v 1.368 2002/04/09 14:45:58 ukai Exp $

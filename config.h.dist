@@ -147,7 +147,7 @@ MODEL=Linux.i686-monster-ja
 #define W3MCONFIG    "w3mconfig"
 #define IMGSIZE      "w3mimgsize"
 #define IMGDISPLAY   "w3mimgdisplay"
-#define XFACE2XBM    "xface2xbm"
+#define XFACE2XPM    "xface2xpm"
 
 #define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.208 2003/01/24 17:57:07 ukai Exp $ */
+/* $Id: file.c,v 1.209 2003/01/24 17:57:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5083,7 +5083,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		int emode;
 		p = getescapecmd(&str);
 		while (*p) {
-	    	    PSIZE;
+		    PSIZE;
 		    emode = get_mctype(p);
 #ifdef JP_CHARSET
 		    if (emode == PC_KANJI) {

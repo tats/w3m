@@ -1,3 +1,8 @@
+2001-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* terms.c (xterm_mouse_term set_tty): add cygwin as xterm-style
+	  mouse terminal
+
 2001-11-19  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* main.c (GetWord): [w3m-dev 02436] fix segmentation fault in main.c

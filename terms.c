@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.6 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: terms.c,v 1.7 2001/11/19 08:17:13 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -219,6 +219,13 @@ writestr(char *s)
 
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
+#ifdef MOUSE
+static char *xterm_mouse_term[] = {
+     "xterm", "kterm", "rxvt", "cygwin", 
+     NULL
+};
+#endif
+
 int
 set_tty(void)
 {
@@ -244,9 +251,14 @@ set_tty(void)
     TerminalGet(tty, &d_ioval);
 #ifdef MOUSE
     term = getenv("TERM");
-    if (!strncmp(term, "kterm", 5) || !strncmp(term, "xterm", 5) ||
-	!strncmp(term, "rxvt", 4)) {
-	is_xterm = 1;
+    {
+	char **p;
+	for (p = xterm_mouse_term; *p != NULL; p++) {
+	     if (!strncmp(term, *p, strlen(*p))) {
+		  is_xterm = 1;
+		  break;
+	     }
+	}
     }
 #endif
     return 0;

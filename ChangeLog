@@ -1,3 +1,8 @@
+2002-07-01  Dai SAto <satodai@dog.intcul.tohoku.ac.jp>
+
+	* [w3m-dev 03235] topA/lastA with prec_num
+	* main.c: add prec_num to topA() and lastA()
+
 2002-06-24  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03233] "obuf->flag |= RB_IGNORE_P" after <body> tag
@@ -3514,4 +3519,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.392 2002/06/24 13:32:10 ukai Exp $
+$Id: ChangeLog,v 1.393 2002/07/01 10:50:53 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.107 2002/06/09 16:09:25 ukai Exp $ */
+/* $Id: main.c,v 1.108 2002/07/01 10:51:58 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3273,14 +3273,17 @@ topA(void)
     HmarkerList *hl = Currentbuf->hmarklist;
     BufferPoint *po;
     Anchor *an;
-    int hseq;
+    int hseq = 0;
 
     if (Currentbuf->firstLine == NULL)
 	return;
     if (!hl || hl->nmark == 0)
 	return;
 
-    hseq = 0;
+    if (prec_num > hl->nmark)
+	hseq = hl->nmark - 1;
+    else if (prec_num > 0)
+	hseq = prec_num - 1;
     do {
 	if (hseq >= hl->nmark)
 	    return;
@@ -3304,14 +3307,17 @@ lastA(void)
     HmarkerList *hl = Currentbuf->hmarklist;
     BufferPoint *po;
     Anchor *an;
-    int hseq;
+    int hseq = hl->nmark - 1;
 
     if (Currentbuf->firstLine == NULL)
 	return;
     if (!hl || hl->nmark == 0)
 	return;
 
-    hseq = hl->nmark - 1;
+    if( prec_num >= hl->nmark )
+	hseq = 0;
+    else if( prec_num > 0 )
+	hseq = hl->nmark - prec_num;
     do {
 	if (hseq < 0)
 	    return;

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.26 2003/01/23 18:37:21 ukai Exp $ */
+/* $Id: search.c,v 1.27 2003/01/30 16:26:18 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -121,7 +121,7 @@ forwardSearch(Buffer *buf, char *str)
     if (pos < l->size && regexMatch(&l->lineBuf[pos], l->size - pos, 0) == 1) {
 	matchedPosition(&first, &last);
 	pos = first - l->lineBuf;
-	while (pos >= l->len) {
+	while (pos >= l->len && l->next && l->next->bpos) {
 	    pos -= l->len;
 	    l = l->next;
 	}
@@ -162,7 +162,7 @@ forwardSearch(Buffer *buf, char *str)
 		/* exactly same match */
 		break;
 	    pos = first - l->lineBuf;
-	    while (pos >= l->len) {
+	    while (pos >= l->len && l->next && l->next->bpos) {
 		pos -= l->len;
 		l = l->next;
 	    }
@@ -228,6 +228,8 @@ backwardSearch(Buffer *buf, char *str)
 		found = first;
 		found_last = last;
 	    }
+	    if (q - l->lineBuf >= l->size)
+		break;
 #ifdef JP_CHARSET
 	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
 		q += 2;
@@ -239,7 +241,7 @@ backwardSearch(Buffer *buf, char *str)
 	}
 	if (found) {
 	    pos = found - l->lineBuf;
-	    while (pos >= l->len) {
+	    while (pos >= l->len && l->next && l->next->bpos) {
 		pos -= l->len;
 		l = l->next;
 	    }
@@ -273,6 +275,8 @@ backwardSearch(Buffer *buf, char *str)
 		found = first;
 		found_last = last;
 	    }
+	    if (q - l->lineBuf >= l->size)
+		break;
 #ifdef JP_CHARSET
 	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
 		q += 2;
@@ -282,7 +286,7 @@ backwardSearch(Buffer *buf, char *str)
 	}
 	if (found) {
 	    pos = found - l->lineBuf;
-	    while (pos >= l->len) {
+	    while (pos >= l->len && l->next && l->next->bpos) {
 		pos -= l->len;
 		l = l->next;
 	    }

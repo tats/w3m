@@ -8,7 +8,7 @@ prefix = /usr/local
 exec_prefix = ${prefix}
 bindir = ${exec_prefix}/bin
 datadir = ${prefix}/share
-libdir = /usr/ccs/lib
+libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include
 infodir = ${prefix}/info
 libexecdir = ${exec_prefix}/libexec
@@ -26,7 +26,7 @@ CFLAGS = $(OPTS) -g -O2 $(DEFS)
 CPPFLAGS =  -I/usr/include/gc -I/usr/include/gc
 DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
 LDFLAGS = 
-LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgpm -lgc
+LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgc
 
 IMGCFLAGS = -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include
 IMGLDFLAGS = -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lgdk_pixbuf_xlib -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
@@ -42,15 +42,15 @@ INSTALL=/usr/bin/install -c
 INSTALL_PROGRAM=${INSTALL}
 INSTALL_SCRIPT=${INSTALL_PROGRAM}
 INSTALL_DATA=${INSTALL} -m 644
-INSTALL_W3MIMGDISPLAY=${INSTALL} -o root -m 4755 -s
+INSTALL_W3MIMGDISPLAY=${INSTALL_PROGRAM}
 
-HELP_FILE = w3mhelp-ja.html
+HELP_FILE = w3mhelp-w3m_en.html
 KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 GCLIB=@gclib@
 
-VERSION=0.4.1
-MODEL=i686-pc-linux-gnu-monster-JA
+VERSION=0.4.1+cvs-1.778
+MODEL=@W3M_TARGET@-@W3M_MODEL@-EN
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \

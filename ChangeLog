@@ -1,3 +1,31 @@
+2003-03-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03804] fix autoconf
+	* acinclude.m4 (AC_W3M_MODEL): deleted
+		(AC_W3M_COLOR): default enable
+		(AC_W3M_ANSI_COLOR): default enable
+		(AC_W3M_BG_COLOR): default enable
+		(AC_W3M_SHOW_PARAMS): deleted
+		(AC_W3M_DICT): default enable
+		(AC_W3M_HISTORY): default enable
+		(AC_W3M_VIEW_UNSEENOBJECTS): deleted
+		(AC_W3M_FORMAT_NICE): deleted
+		(AC_W3M_ID_EXT): deleted
+		(AC_W3M_FTPPASS_HOSTNAMEGEN): deleted
+		(AC_W3M_NNTP): default enabled
+		(AC_W3M_LANG): autodetect whether japanese is enabled
+		(AC_W3M_KANJI_SYMBOLS): default enabled
+		(AC_W3M_EMACS_LIKE_LINEEDIT): deleted
+		(AC_W3M_VI_PREC_NUM): deleted
+		(AC_W3M_MARK): deleted
+		(AC_W3M_LABEL_TOPLINE): deleted
+		(AC_W3M_NEXTPAGE_TOPLINE): deleted
+		(AC_W3M_SSL): fix without ssl
+		(AC_W3M_IMAGE): default enabled
+		(AC_W3M_XFACE): check uncompface
+		(AC_W3M_IPv6): enable_ipv6 if inet6 lib found
+	* configure.in (AC_PROG_CPP): added
+
 2003-03-11  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03803] fix autoconf
@@ -7381,4 +7409,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.778 2003/03/10 16:10:55 ukai Exp $
+$Id: ChangeLog,v 1.779 2003/03/10 17:28:52 ukai Exp $

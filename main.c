@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.79 2002/02/05 12:31:27 ukai Exp $ */
+/* $Id: main.c,v 1.80 2002/02/07 14:44:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -733,6 +733,10 @@ MAIN(int argc, char **argv, char **envp)
 	setupscreen();
 #endif				/* not SIGWINCH */
     }
+#ifdef USE_IMAGE
+    else if (w3m_halfdump && displayImage)
+	activeImage = TRUE;
+#endif
 #ifdef SIGCHLD
     signal(SIGCHLD, sig_chld);
 #endif

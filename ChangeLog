@@ -1,5 +1,10 @@
 2002-02-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [emacs-w3m:02733] for emacs-w3m better rendering with inline image
+	* main.c (MAIN): activeImage = TRUE when -halfdump & display_image=1
+
+2002-02-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03006] fix form order in table
 	* file.c (process_form): static
 			fix form index order
@@ -2865,4 +2870,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.305 2002/02/07 14:15:59 ukai Exp $
+$Id: ChangeLog,v 1.306 2002/02/07 14:44:47 ukai Exp $

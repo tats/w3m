@@ -1,9 +1,9 @@
-w3m 0.5 or 1.0?
+w3m 0.4.2 - 2003-09-23
 
 * options: -4, -6
 * configuration file in $(sysconfdir)/$(package)/
 * func: NEXT_VISITED, PREV_VISITED
-* autoconfiscate
+* autoconfiscate (partially)
 * rc: use_history
 
 w3m 0.4.1 - 2003-03-07

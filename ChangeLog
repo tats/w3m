@@ -1,5 +1,13 @@
 2003-09-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* w3m 0.4.2
+	* version.c.in: update
+	* doc/README: version 0.4.2, release date
+	* doc-jp/README: ditto
+	* NEWS: update
+
+2003-09-23  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03967] Re: IPv4/IPv6 only option patch
 	* NEWS: options: -4, -6
 	* fm.h (DNS_ORDER_INET_ONLY): added
@@ -8017,4 +8025,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.861 2003/09/22 17:37:40 ukai Exp $
+$Id: ChangeLog,v 1.862 2003/09/22 18:11:16 ukai Exp $

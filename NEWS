@@ -1,4 +1,4 @@
-w3m 0.3
+w3m 0.3 - 2002-03-06
 
 * rc: mailer
 	if mailer is set, it will be used for simple mailto: URLs

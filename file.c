@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.122 2002/11/15 16:47:03 ukai Exp $ */
+/* $Id: file.c,v 1.123 2002/11/18 18:11:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -27,6 +27,7 @@
 
 static int frame_source = 0;
 
+static void FTPhalfclose(InputStream stream);
 static int _MoveFile(char *path1, char *path2);
 static void uncompress_stream(URLFile *uf);
 static FILE *lessopen_stream(char *path);
@@ -1805,6 +1806,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (save2tmp(f, tmpf) < 0)
 		UFclose(&f);
 	    else {
+		UFclose(&f);
 		if (fmInitialized)
 		    term_raw();
 		signal(SIGINT, prevtrap);
@@ -1873,7 +1875,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	else
 	    file = guess_save_name(t_buf, pu.file);
 	doFileSave(f, file);
-	UFclose(&f);
+	if (f.scheme == SCM_FTP)
+	    FTPhalfclose(f.stream);
+	else
+	    UFclose(&f);
 	return NO_BUFFER;
     }
 
@@ -1899,10 +1904,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    b->sourcefile = image_source;
 	    b->real_type = t;
 	}
+	UFclose(&f);
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
-	UFclose(&f);
 	return b;
     }
 #endif
@@ -1952,7 +1957,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 		    f.stream = newEncodedStream(f.stream, f.encoding);
 		doFileSave(f, guess_save_name(t_buf, pu.file));
-		UFclose(&f);
+		if (f.scheme == SCM_FTP)
+		    FTPhalfclose(f.stream);
+		else
+		    UFclose(&f);
 	    }
 	    return NO_BUFFER;
 	}
@@ -6594,11 +6602,13 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
     if (save2tmp(*uf, cache->file) < 0) {
+	UFclose(uf);
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
 	return NULL;
     }
+    UFclose(uf);
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, prevtrap);
@@ -6829,6 +6839,7 @@ openGeneralPagerBuffer(InputStream stream)
 #endif
     else {
 	if (doExternal(uf, "-", t, &buf, t_buf)) {
+	    UFclose(&uf);
 	    if (buf == NULL || buf == NO_BUFFER)
 		return buf;
 	}
@@ -7049,8 +7060,6 @@ save2tmp(URLFile uf, char *tmpf)
 	term_raw();
     signal(SIGINT, prevtrap);
     fclose(ff);
-    if (uf.scheme == SCM_FTP)
-	FTPhalfclose(uf.stream);
     current_content_length = 0;
     return 0;
 }

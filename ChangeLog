@@ -1,4 +1,17 @@
 2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+	
+	* [w3m-dev 03444] download from ftp.
+	* file.c (FTPhalfclose: static
+		(loadGeneralFile): UFclose
+				FTPhalfclose for SCM_FTP
+				UFclose before signal back
+		(loadImageBuffer): UFclose before signal back
+		(openGeneralPagerBuffer): UFclose
+	* ftp.c (ftp_fclose): added
+		(Ftpfclose): dont read response(), but ftp_fclose()
+		(FtpBye): ftp_fclose()
+
+2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03449] Add DOWNLOAD_LIST to doc*/README.func and scripts/w3mhelp.cgi.in
 	* doc-jp/README.func (DOWNLOAD_LIST): added
@@ -4870,4 +4883,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.533 2002/11/18 17:43:36 ukai Exp $
+$Id: ChangeLog,v 1.534 2002/11/18 18:10:35 ukai Exp $

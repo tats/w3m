@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.20 2003/04/03 16:36:54 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.21 2003/06/13 15:03:05 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -275,7 +275,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     int i, j, iw, ih, n, frame_num, delay, max_anim;
     double ratio_w, ratio_h;
     struct x11_image *ximg;
-    GdkPixbufFrameAction action = GDK_PIXBUF_FRAME_REVERT;
+    Pixmap tmp_pixmap;
 #endif
 
     if (self == NULL)
@@ -349,8 +349,16 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	ratio_w = 1.0 * w / iw;
 	ratio_h = 1.0 * h / ih;
     }
+    tmp_pixmap = XCreatePixmap(xi->display, xi->parent, w, h,
+			       DefaultDepth(xi->display, 0));
+    XFillRectangle(xi->display, (Pixmap) tmp_pixmap, xi->imageGC, 0, 0, w, h);
+    if (!tmp_pixmap) {
+	gdk_pixbuf_animation_unref(animation);
+	return 0;
+    }
     ximg = x11_img_new(xi, w, h, frame_num);
     if (!ximg) {
+	XFreePixmap(xi->display, tmp_pixmap);
 	gdk_pixbuf_animation_unref(animation);
 	return 0;
     }
@@ -388,36 +396,38 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	if (delay > ximg->delay)
 	    ximg->delay = delay;
 
-	if (i > 0) {
-	    switch (action) {
-	    case GDK_PIXBUF_FRAME_RETAIN:
-		XCopyArea(xi->display, ximg->pixmap[i - 1], ximg->pixmap[i],
-			  xi->imageGC, 0, 0, w, h, 0, 0);
-		break;
-	    case GDK_PIXBUF_FRAME_DISPOSE:
-		break;
-	    case GDK_PIXBUF_FRAME_REVERT:
-		XCopyArea(xi->display, ximg->pixmap[0], ximg->pixmap[i],
-			  xi->imageGC, 0, 0, w, h, 0, 0);
-		break;
-	    default:
-		XCopyArea(xi->display, ximg->pixmap[0], ximg->pixmap[i],
-			  xi->imageGC, 0, 0, w, h, 0, 0);
-		break;
-	    }
-	}
-
+	XCopyArea(xi->display, tmp_pixmap, ximg->pixmap[i],
+		  xi->imageGC, 0, 0, w, h, 0, 0);
 	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
 						 (Drawable) ximg->pixmap[i], 0,
 						 0, ofstx, ofsty, width,
 						 height,
 						 GDK_PIXBUF_ALPHA_BILEVEL, 1,
 						 XLIB_RGB_DITHER_NORMAL, 0, 0);
-	action = gdk_pixbuf_frame_get_action(frame);
+
+	switch (gdk_pixbuf_frame_get_action(frame)) {
+	case GDK_PIXBUF_FRAME_RETAIN:
+	    XCopyArea(xi->display, ximg->pixmap[i], tmp_pixmap,
+		    xi->imageGC, 0, 0, w, h, 0, 0);
+	    break;
+	case GDK_PIXBUF_FRAME_DISPOSE:
+	    break;
+	case GDK_PIXBUF_FRAME_REVERT:
+	    XCopyArea(xi->display, ximg->pixmap[0], tmp_pixmap,
+		    xi->imageGC, 0, 0, w, h, 0, 0);
+	    break;
+	default:
+	    XCopyArea(xi->display, ximg->pixmap[0], tmp_pixmap,
+		    xi->imageGC, 0, 0, w, h, 0, 0);
+	    break;
+	}
+
+
 	if (org_pixbuf != pixbuf)
 	    gdk_pixbuf_finalize(pixbuf);
 
     }
+    XFreePixmap(xi->display, tmp_pixmap);
     gdk_pixbuf_animation_unref(animation);
     img->pixmap = ximg;
 #endif

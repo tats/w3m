@@ -108,10 +108,10 @@ HELP_TARGET=w3mhelp.html
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
-SCRIPTSUBDIRS= scripts scripts/multipart scripts/w3mman
-SUBDIRS = $(SCRIPTSUBDIRS)
+SCRIPTSUBDIRS= scripts
+SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc
 
-.PHONY: w3mimg libwc
+.PHONY: $(SUBDIRS)
 
 all: $(TARGETS) all-scripts
 
@@ -212,14 +212,14 @@ install-helpfile:
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS)); \
+		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \
 	done
 
 install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS) install); \
+		(cd $$dir && $(MAKE) $(MAKE_ARGS) install); \
 	done
 
 uninstall:
@@ -241,7 +241,7 @@ uninstall:
 	-$(RM) -f $(mandir)/ja/man1/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
+		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
 	done
 
 clean: sweep

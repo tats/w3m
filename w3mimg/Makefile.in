@@ -14,7 +14,7 @@ IMGCFLAGS=@IMGX11CFLAGS@ @IMGFBCFLAGS@
 all: w3mimg.o fb x11
 
 w3mimg.o: w3mimg.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -I$(top_srcdir) -c $<
+	$(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -I$(top_srcdir) -I$(srcdir) -c $<
 
 fb x11:
 	cd $@ && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"

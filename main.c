@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.132 2002/11/15 15:19:46 ukai Exp $ */
+/* $Id: main.c,v 1.133 2002/11/15 15:21:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5822,7 +5822,7 @@ DownloadListBuffer(void)
 				duration / (60 * 60), (duration / 60) % 60,
 				duration % 60, convert_size(rate, 1)));
 	    if (!d->ok && size < d->size && rate) {
-	    	eta = (d->size - size) / rate;
+		eta = (d->size - size) / rate;
 		Strcat(src, Sprintf("  eta %02d:%02d:%02d", eta / (60 * 60),
 				    (eta / 60) % 60, eta % 60));
 	    }
@@ -5832,10 +5832,11 @@ DownloadListBuffer(void)
 	    Strcat(src, Sprintf("<input type=submit name=ok%d value=OK>",
 				d->pid));
 	    if (size < d->size)
-	        Strcat_charp(src, " Download incompleted");
+		Strcat_charp(src, " Download incompleted");
 	    else
-	        Strcat_charp(src, " Download completed");
-	} else
+		Strcat_charp(src, " Download completed");
+	}
+	else
 	    Strcat(src, Sprintf("<input type=submit name=stop%d value=STOP>",
 				d->pid));
 	Strcat_charp(src, "\n</pre><hr>\n");
@@ -5854,11 +5855,11 @@ download_action(struct parsed_tagarg *arg)
 	if (!strcmp(arg->arg, "update"))
 	    break;
 	else if (!strncmp(arg->arg, "stop", 4)) {
-	    pid = (pid_t)atoi(&arg->arg[4]);
+	    pid = (pid_t) atoi(&arg->arg[4]);
 	    kill(pid, SIGKILL);
 	}
 	else if (!strncmp(arg->arg, "ok", 2))
-	    pid = (pid_t)atoi(&arg->arg[2]);
+	    pid = (pid_t) atoi(&arg->arg[2]);
 	else
 	    continue;
 	for (d = FirstDL; d; d = d->next) {

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.20 2002/11/24 16:02:22 ukai Exp $ */
+/* $Id: image.c,v 1.21 2002/11/27 16:46:34 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -589,6 +589,7 @@ int
 getImageSize(ImageCache * cache)
 {
     Str tmp;
+    FILE *f;
     int w = 0, h = 0;
 
     if (!activeImage)
@@ -597,21 +598,18 @@ getImageSize(ImageCache * cache)
 	(cache->width > 0 && cache->height > 0))
 	return FALSE;
     tmp = Strnew();
-    if (!(Imgdisplay_rf && Imgdisplay_wf)) {
-	if (!openImgdisplay())
-	    return FALSE;
+    if (!strchr(Imgdisplay, '/'))
+	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
+    Strcat_m_charp(tmp, Imgdisplay, " -size ", shell_quote(cache->file),
+		   " 2> /dev/null", NULL);
+    f = popen(tmp->ptr, "r");
+    if (!f)
+	return FALSE;
+    while (fscanf(f, "%d %d", &w, &h) < 0) {
+	if (feof(f))
+	    break;
     }
-    fputs("5;", Imgdisplay_wf);	/* Get Size */
-    fputs(cache->file, Imgdisplay_wf);
-    fputs("\n", Imgdisplay_wf);
-    fflush(Imgdisplay_wf);
-    {
-	char buf[1024];
-	fgets(buf, sizeof(buf), Imgdisplay_rf);
-	if (sscanf(buf, "%d %d", &w, &h) != 2) {
-	    return FALSE;
-	}
-    }
+    pclose(f);
 
     if (!(w > 0 && h > 0))
 	return FALSE;

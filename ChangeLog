@@ -1,5 +1,13 @@
 2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03497] incorrect image size
+	* image.c (getImageSize): invoke w3mimgdiplay -size instead of "5;..."
+	* w3mimgdisplay.c (defined_size): added
+			(main): if defined_size get_image_size()
+			(GetOption): -size
+
+2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03496] parse <!-- ... --> in <script>
 	* etc.c (read_token): check <pre>
 	* file.c (HTMLlineproc0): remove comment processing
@@ -5234,4 +5242,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.569 2002/11/27 16:39:13 ukai Exp $
+$Id: ChangeLog,v 1.570 2002/11/27 16:46:30 ukai Exp $

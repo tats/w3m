@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.9 2002/11/06 03:50:49 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.10 2002/11/27 16:46:34 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -13,6 +13,7 @@ static char *background = NULL;
 static int offset_x = 0, offset_y = 0;
 static int defined_bg = 0, defined_x = 0, defined_y = 0, defined_test = 0;
 static int defined_debug = 0;
+static char *defined_size = NULL;
 
 #define MAX_IMAGE 1000
 static W3MImage *imageBuf = NULL;
@@ -60,6 +61,16 @@ main(int argc, char **argv)
     if (defined_test) {
 	printf("%d %d\n", w_op->width - w_op->offset_x, 
 	       w_op->height - w_op->offset_y);
+	exit(0);
+    }
+
+    if (defined_size) {
+	if (w_op->init(w_op)) {
+	    W3MImage img;
+	    int w, h;
+	    if (w_op->get_image_size(w_op, &img, defined_size, &w, &h))
+		printf("%d %d\n", w, h);
+	}
 	exit(0);
     }
 
@@ -165,6 +176,11 @@ GetOption(int argc, char **argv)
 	}
 	else if (!strcmp("-test", argv[i])) {
 	    defined_test = 1;
+	}
+	else if (!strcmp("-size", argv[i])) {
+	    if (++i >= argc)
+		exit(1);
+	    defined_size = argv[i];
 	}
 	else if (!strcmp("-debug", argv[i])) {
 	    defined_debug = 1;

@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.16 2003/03/26 15:34:20 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.17 2003/03/26 15:35:20 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -43,7 +43,7 @@ struct x11_image {
 };
 
 static void
-get_animation_size(GdkPixbufAnimation *animation, int *w, int *h)
+get_animation_size(GdkPixbufAnimation * animation, int *w, int *h)
 {
     GList *frames;
     int iw, ih, n, i;
@@ -59,9 +59,9 @@ get_animation_size(GdkPixbufAnimation *animation, int *w, int *h)
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
 	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	iw = gdk_pixbuf_frame_get_x_offset(frame)
-	  +gdk_pixbuf_get_width(pixbuf);
+	    + gdk_pixbuf_get_width(pixbuf);
 	ih = gdk_pixbuf_frame_get_y_offset(frame)
-	  + gdk_pixbuf_get_height(pixbuf);
+	    + gdk_pixbuf_get_height(pixbuf);
 	if (iw > *w)
 	    *w = iw;
 	if (ih > *h)
@@ -366,7 +366,8 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	width = gdk_pixbuf_get_width(pixbuf);
 	height = gdk_pixbuf_get_height(pixbuf);
 
-	if (delay >= 0) ximg->delay = delay;
+	if (delay >= 0)
+	    ximg->delay = delay;
 
 	if (i > 0) {
 	    switch (action) {

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.15 2002/11/19 17:48:00 ukai Exp $ */
+/* $Id: map.c,v 1.16 2002/11/25 17:10:52 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -210,9 +210,9 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
 {
     MapList *ml;
     ListItem *al;
-    MapArea *a;
     int i, selected = -1, initial = 0;
 #ifdef MENU_MAP
+    MapArea *a;
     char **label;
 #endif
 

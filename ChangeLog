@@ -1,5 +1,6 @@
 2002-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* map.c (follow_map_menu): MapArea *a is used ifdef MENU_MAP
 	* func.c (initMouseAction): remove unsed variables: x, width, map
 
 2002-11-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
@@ -5136,4 +5137,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.554 2002/11/25 17:03:45 ukai Exp $
+$Id: ChangeLog,v 1.555 2002/11/25 17:10:48 ukai Exp $

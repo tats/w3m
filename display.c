@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.58 2003/01/28 16:45:18 ukai Exp $ */
+/* $Id: display.c,v 1.59 2003/01/29 17:10:27 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -164,7 +164,7 @@ fmTerm(void)
 	refresh();
 #ifdef USE_IMAGE
 	if (activeImage)
-	    loadImage(IMG_FLAG_STOP);
+	    loadImage(NULL, IMG_FLAG_STOP);
 #endif
 #ifdef USE_MOUSE
 	if (use_mouse)
@@ -210,7 +210,7 @@ static int graph_mode = 0;
 static Linecolor color_mode = 0;
 #endif
 
-#if defined(USE_BUFINFO) || defined(USE_IMAGE)
+#ifdef USE_BUFINFO
 static Buffer *save_current_buf = NULL;
 #endif
 
@@ -431,10 +431,7 @@ displayBuffer(Buffer *buf, int mode)
 		if (draw_image_flag)
 		    clear();
 		clearImage();
-		if (buf != save_current_buf)
-		    loadImage(IMG_FLAG_STOP);
-		else
-		    loadImage(IMG_FLAG_START);
+		loadImage(buf, IMG_FLAG_STOP);
 		image_touch++;
 		draw_image_flag = FALSE;
 	    }
@@ -472,17 +469,12 @@ displayBuffer(Buffer *buf, int mode)
     refresh();
 #ifdef USE_IMAGE
     if (activeImage && displayImage && buf->img) {
-	/*
-	 * loadImage(IMG_FLAG_START);
-	 */
 	drawImage();
     }
 #endif
-#if defined(USE_BUFINFO) || defined(USE_IMAGE)
-    if (buf != save_current_buf) {
 #ifdef USE_BUFINFO
+    if (buf != save_current_buf) {
 	saveBufferInfo();
-#endif
 	save_current_buf = buf;
     }
 #endif

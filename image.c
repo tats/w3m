@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.28 2003/01/28 16:45:19 ukai Exp $ */
+/* $Id: image.c,v 1.30 2003/01/29 17:10:40 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -243,6 +243,7 @@ static Hash_sv *image_hash = NULL;
 static Hash_sv *image_file = NULL;
 static GeneralList *image_list = NULL;
 static ImageCache **image_cache = NULL;
+static Buffer *image_buffer = NULL;
 
 void
 deleteImage(Buffer *buf)
@@ -263,7 +264,7 @@ deleteImage(Buffer *buf)
 	    a->image->cache->index < 0)
 	    unlink(a->image->cache->file);
     }
-    loadImage(IMG_FLAG_STOP);
+    loadImage(NULL, IMG_FLAG_STOP);
 }
 
 void
@@ -274,6 +275,7 @@ getAllImage(Buffer *buf)
     ParsedURL *current;
     int i;
 
+    image_buffer = buf;
     if (!buf)
 	return;
     buf->image_loaded = TRUE;
@@ -318,11 +320,11 @@ showImageProgress(Buffer *buf)
 }
 
 void
-loadImage(int flag)
+loadImage(Buffer *buf, int flag)
 {
     ImageCache *cache;
     struct stat st;
-    int wait_st, i;
+    int wait_st, i, draw = FALSE;
 
     if (maxLoadImage > MAX_LOAD_IMAGE)
 	maxLoadImage = MAX_LOAD_IMAGE;
@@ -334,73 +336,70 @@ loadImage(int flag)
 	image_cache = New_N(ImageCache *, MAX_LOAD_IMAGE);
 	bzero(image_cache, sizeof(ImageCache *) * MAX_LOAD_IMAGE);
     }
-
-    if (flag == IMG_FLAG_STOP || flag == IMG_FLAG_START) {
-	if (flag == IMG_FLAG_STOP)
-	    i = 0;
-	else
-	    i = maxLoadImage;
-	for ( ; i < n_load_image; i++) {
-	    cache = image_cache[i];
-	    if (!cache)
-		continue;
-	    if (cache->pid) {
-		kill(cache->pid, SIGKILL);
+    for (i = 0; i < n_load_image; i++) {
+	cache = image_cache[i];
+	if (!cache)
+	    continue;
+	if (lstat(cache->touch, &st))
+	    continue;
+	if (cache->pid) {
+	    kill(cache->pid, SIGKILL);
+/*
 #ifdef HAVE_WAITPID
-		waitpid(cache->pid, &wait_st, 0);
+	    waitpid(cache->pid, &wait_st, 0);
 #else
-		wait(&wait_st);
+	    wait(&wait_st);
 #endif
-		cache->pid = 0;
-	    }
-	    unlink(cache->touch);
-	    image_cache[i] = NULL;
+*/
+	    cache->pid = 0;
 	}
+	if (!stat(cache->file, &st)) {
+	    cache->loaded = IMG_FLAG_LOADED;
+	    if (getImageSize(cache)) {
+		if (image_buffer)
+		    image_buffer->need_reshape = TRUE;
+	    }
+	    draw = TRUE;
+	}
+	else
+	    cache->loaded = IMG_FLAG_ERROR;
+	unlink(cache->touch);
+	image_cache[i] = NULL;
+    }
+
+    for (i = (buf != image_buffer) ? 0 : maxLoadImage; i < n_load_image; i++) {
+	cache = image_cache[i];
+	if (!cache)
+	    continue;
+	if (cache->pid) {
+	    kill(cache->pid, SIGKILL);
+/*
+#ifdef HAVE_WAITPID
+	    waitpid(cache->pid, &wait_st, 0);
+#else
+	    wait(&wait_st);
+#endif
+*/
+	    cache->pid = 0;
+	}
+	unlink(cache->touch);
+	image_cache[i] = NULL;
+    }
+
+    if (flag == IMG_FLAG_STOP) {
 	image_list = NULL;
 	image_file = NULL;
 	n_load_image = maxLoadImage;
+	image_buffer = NULL;
 	return;
     }
 
-    {
-	int draw = FALSE;
-	for (i = 0; i < n_load_image; i++) {
-	    cache = image_cache[i];
-	    if (!cache)
-		continue;
-#ifdef HAVE_LSTAT
-	    if (lstat(cache->touch, &st))
-#else
-	    if (stat(cache->touch, &st))
-#endif
-		continue;
-	    if (cache->pid) {
-		kill(cache->pid, SIGKILL);
-#ifdef HAVE_WAITPID
-		waitpid(cache->pid, &wait_st, 0);
-#else
-		wait(&wait_st);
-#endif
-		cache->pid = 0;
-	    }
-	    if (!stat(cache->file, &st)) {
-		cache->loaded = IMG_FLAG_LOADED;
-		if (getImageSize(cache)) {
-		    if (CurrentTab && Currentbuf)
-			Currentbuf->need_reshape = TRUE;
-		}
-		draw = TRUE;
-	    }
-	    else
-		cache->loaded = IMG_FLAG_ERROR;
-	    unlink(cache->touch);
-	    image_cache[i] = NULL;
-	}
-	if (draw && CurrentTab && Currentbuf) {
-	    drawImage();
-	    showImageProgress(Currentbuf);
-	}
+    if (draw && image_buffer) {
+	drawImage();
+	showImageProgress(image_buffer);
     }
+
+    image_buffer = buf;
 
     if (!image_list)
 	return;
@@ -416,8 +415,8 @@ loadImage(int flag)
 		}
 		image_list = NULL;
 		image_file = NULL;
-		if (CurrentTab && Currentbuf)
-		    displayBuffer(Currentbuf, B_NORMAL);
+		if (image_buffer)
+		    displayBuffer(image_buffer, B_NORMAL);
 		return;
 	    }
 	    if (cache->loaded == IMG_FLAG_UNLOADED)
@@ -428,7 +427,10 @@ loadImage(int flag)
 	flush_tty();
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
+/*
 	    setup_child(TRUE, 0, -1);
+*/
+	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))

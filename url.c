@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.69 2003/01/17 17:06:06 ukai Exp $ */
+/* $Id: url.c,v 1.70 2003/01/29 17:10:53 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -457,7 +457,7 @@ openSocket(char *const hostname,
     int a1, a2, a3, a4;
     unsigned long adr;
 #endif				/* not INET6 */
-    MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (fmInitialized) {
 	message(Sprintf("Opening socket...")->ptr, 0, 0);
@@ -471,9 +471,7 @@ openSocket(char *const hostname,
 	    close(sock);
 	goto error;
     }
-    trap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
     if (hostname == NULL) {
 #ifdef SOCK_DEBUG
 	sock_log("openSocket() failed. reason: Bad hostname \"%s\"\n",
@@ -618,15 +616,10 @@ openSocket(char *const hostname,
     }
 #endif				/* not INET6 */
 
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, trap);
+    TRAP_OFF;
     return sock;
   error:
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, trap);
-
+    TRAP_OFF;
     return -1;
 
 }
@@ -1955,7 +1948,7 @@ check_no_proxy(char *domain)
 {
     TextListItem *tl;
     volatile int ret = 0;
-    MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (NO_proxy_domains == NULL || NO_proxy_domains->nitem == 0 ||
 	domain == NULL)
@@ -1974,9 +1967,7 @@ check_no_proxy(char *domain)
 	ret = 0;
 	goto end;
     }
-    trap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
     {
 #ifndef INET6
 	struct hostent *he;
@@ -2053,9 +2044,7 @@ check_no_proxy(char *domain)
 #endif				/* INET6 */
     }
   end:
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, trap);
+    TRAP_OFF;
     return ret;
 }
 

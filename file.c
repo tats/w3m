@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.210 2003/01/28 16:41:05 ukai Exp $ */
+/* $Id: file.c,v 1.211 2003/01/29 17:10:32 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1583,10 +1583,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
     checkRedirection(NULL);
   load_doc:
-    if (fmInitialized)
-	term_raw();
-    if (prevtrap)
-	signal(SIGINT, prevtrap);
+    TRAP_OFF;
     url_option.referer = referer;
     url_option.flag = flag;
     f = openURL(tpath, &pu, current, &url_option, request, extra_header, of,
@@ -1654,10 +1651,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 
     if (status == HTST_MISSING) {
-	if (fmInitialized)
-	    term_raw();
-	if (prevtrap)
-	    signal(SIGINT, prevtrap);
+	TRAP_OFF;
 	UFclose(&f);
 	return NULL;
     }
@@ -1665,9 +1659,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     /* openURL() succeeded */
     if (SETJMP(AbortLoading) != 0) {
 	/* transfer interrupted */
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+	TRAP_OFF;
 	if (b)
 	    discardBuffer(b);
 	UFclose(&f);
@@ -1682,9 +1674,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
     if (header_string)
 	header_string = NULL;
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
     if (pu.scheme == SCM_HTTP ||
 #ifdef USE_SSL
 	pu.scheme == SCM_HTTPS ||
@@ -1754,9 +1744,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
-		    if (fmInitialized)
-			term_raw();
-		    signal(SIGINT, prevtrap);
+		    TRAP_OFF;
 		    return NULL;
 		}
 		UFclose(&f);
@@ -1778,9 +1766,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
-		    if (fmInitialized)
-			term_raw();
-		    signal(SIGINT, prevtrap);
+		    TRAP_OFF;
 		    return NULL;
 		}
 		UFclose(&f);
@@ -1818,9 +1804,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	case 'm':
 	    page = loadGopherDir(&f, &pu, &code);
 	    t = "gopher:directory";
-	    if (fmInitialized)
-		term_raw();
-	    signal(SIGINT, prevtrap);
+	    TRAP_OFF;
 	    goto page_loaded;
 	case 's':
 	    t = "audio/basic";
@@ -1865,9 +1849,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		UFclose(&f);
 	    else {
 		UFclose(&f);
-		if (fmInitialized)
-		    term_raw();
-		signal(SIGINT, prevtrap);
+		TRAP_OFF;
 		doFileMove(tmpf, guess_save_name(t_buf, pu.file));
 	    }
 	    return NO_BUFFER;
@@ -1971,9 +1953,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (do_download) {
 	/* download only */
 	char *file;
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+	TRAP_OFF;
 	if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 	    f.stream = newEncodedStream(f.stream, f.encoding);
 	if (pu.scheme == SCM_LOCAL) {
@@ -2016,9 +1996,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    b->real_type = t;
 	}
 	UFclose(&f);
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+	TRAP_OFF;
 	return b;
     }
 #endif
@@ -2044,15 +2022,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    copyParsedURL(&b->currentURL, &pu);
 	    }
 	    UFclose(&f);
-	    if (fmInitialized)
-		term_raw();
-	    signal(SIGINT, prevtrap);
+	    TRAP_OFF;
 	    return b;
 	}
 	else {
-	    if (fmInitialized)
-		term_raw();
-	    signal(SIGINT, prevtrap);
+	    TRAP_OFF;
 	    if (pu.scheme == SCM_LOCAL) {
 		UFclose(&f);
 		_doFileCopy(pu.real_file,
@@ -2140,9 +2114,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	reAnchorNewsheader(b);
 #endif
     preFormUpdateBuffer(b);
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
     return b;
 }
 
@@ -6572,9 +6544,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
 	goto phase2;
     }
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
 #ifdef JP_CHARSET
     if (newBuf != NULL && newBuf->document_code != '\0')
@@ -6645,25 +6615,19 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     if (htmlenv1.title)
 	newBuf->buffername = htmlenv1.title;
     if (w3m_halfdump) {
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+        TRAP_OFF;
 	print_internal_information(&htmlenv1);
 	return;
     }
     if (w3m_backend) {
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+        TRAP_OFF;
 	print_internal_information(&htmlenv1);
 	backend_halfdump_buf = htmlenv1.buf;
 	return;
     }
   phase2:
     newBuf->trbyte = trbyte + linelen;
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
 #ifdef JP_CHARSET
     newBuf->document_code = code;
     content_charset = '\0';
@@ -6686,22 +6650,16 @@ loadHTMLString(Str page)
 
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+        TRAP_OFF;
 	discardBuffer(newBuf);
 	return NULL;
     }
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
     init_stream(&f, SCM_LOCAL, newStrStream(page));
     loadHTMLstream(&f, newBuf, NULL, TRUE);
 
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
@@ -6740,9 +6698,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, char *code)
 
     if (SETJMP(AbortLoading) != 0)
 	goto gopher_end;
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
 #ifdef JP_CHARSET
     *code = DocumentCode;
@@ -6804,9 +6760,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, char *code)
     }
 
   gopher_end:
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
 
     Strcat_charp(tmp, "</table>\n</body>\n</html>\n");
     return tmp;
@@ -6839,9 +6793,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     if (SETJMP(AbortLoading) != 0) {
 	goto _end;
     }
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
     if (newBuf->sourcefile == NULL &&
 	(uf->scheme != SCM_LOCAL || newBuf->mailcap)) {
@@ -6906,9 +6858,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
     }
   _end:
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
@@ -6931,10 +6881,10 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     Str tmp, tmpf;
     FILE *src = NULL;
     URLFile f;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     struct stat st;
 
-    loadImage(IMG_FLAG_STOP);
+    loadImage(newBuf, IMG_FLAG_STOP);
     image.url = uf->url;
     image.ext = uf->ext;
     image.width = -1;
@@ -6945,22 +6895,16 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 	!stat(cache->file, &st))
 	goto image_buffer;
 
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
     if (save2tmp(*uf, cache->file) < 0) {
 	UFclose(uf);
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
+	TRAP_OFF;
 	return NULL;
     }
     UFclose(uf);
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
 
     cache->loaded = IMG_FLAG_LOADED;
     cache->index = 0;
@@ -7242,9 +7186,7 @@ getNextPage(Buffer *buf, int plen)
     if (SETJMP(AbortLoading) != 0) {
 	goto pager_end;
     }
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
     init_stream(&uf, SCM_UNKNOWN, NULL);
     for (i = 0; i < plen; i++) {
@@ -7307,9 +7249,7 @@ getNextPage(Buffer *buf, int plen)
 	}
     }
   pager_end:
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
 
     buf->trbyte = trbyte + linelen;
 #ifdef JP_CHARSET
@@ -7342,9 +7282,7 @@ save2tmp(URLFile uf, char *tmpf)
     if (SETJMP(AbortLoading) != 0) {
 	goto _end;
     }
-    prevtrap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
     check = 0;
 #ifdef USE_NNTP
     if (uf.scheme == SCM_NEWS) {
@@ -7379,9 +7317,7 @@ save2tmp(URLFile uf, char *tmpf)
     }
   _end:
     bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, prevtrap);
+    TRAP_OFF;
     fclose(ff);
     current_content_length = 0;
     return 0;

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.29 2003/01/20 15:22:59 ukai Exp $ */
+/* $Id: form.c,v 1.30 2003/01/29 17:10:38 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -8,13 +8,6 @@
 #include "myctype.h"
 #include "local.h"
 #include "regex.h"
-
-#ifndef HAVE_LSTAT
-/* lstat is identical to stat, only the link itself is statted, not the file
- * that is obtained by tracing the links. But on OS/2 systems, there is no
- * differences. */
-#define lstat stat
-#endif				/* not HAVE_LSTAT */
 
 extern Str *textarea_str;
 #ifdef MENU_SELECT

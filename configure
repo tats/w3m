@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.95 2003/01/22 16:36:11 ukai Exp $
+# $Id: configure,v 1.96 2003/01/29 17:10:25 ukai Exp $
 #	Configuration.
 #
 
@@ -2502,6 +2502,10 @@ $def_ipv6_ss_family
 #else /* HAVE_SRANDOM */
 #define USE_INCLUDED_SRAND48
 #endif /* HAVE_SRANDOM */
+#endif
+
+#ifndef HAVE_LSTAT
+#define lstat stat
 #endif
 
 #if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.202 2003/01/28 16:34:25 ukai Exp $ */
+/* $Id: main.c,v 1.203 2003/01/29 17:10:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1039,7 +1039,7 @@ main(int argc, char **argv, char **envp)
 	if (activeImage && displayImage && Currentbuf->img &&
 	    !Currentbuf->image_loaded) {
 	    do {
-		loadImage(IMG_FLAG_NEXT);
+		loadImage(Currentbuf, IMG_FLAG_NEXT);
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 #endif
@@ -6089,11 +6089,7 @@ checkDownloadList(void)
     if (!FirstDL)
 	return FALSE;
     for (d = FirstDL; d != NULL; d = d->next) {
-#ifdef HAVE_LSTAT
 	if (!d->ok && !lstat(d->lock, &st))
-#else
-	if (!d->ok && !stat(d->lock, &st))
-#endif
 	    return TRUE;
     }
     return FALSE;
@@ -6131,11 +6127,7 @@ DownloadListBuffer(void)
 		       DOWNLOAD_LIST_TITLE "</h1>\n"
 		       "<form method=internal action=download><hr>\n");
     for (d = LastDL; d != NULL; d = d->prev) {
-#ifdef HAVE_LSTAT
 	if (lstat(d->lock, &st))
-#else
-	if (stat(d->lock, &st))
-#endif
 	    d->ok = TRUE;
 	Strcat_charp(src, "<pre>\n");
 	Strcat(src, Sprintf("%s\n  --&gt; %s\n  ", html_quote(d->url),

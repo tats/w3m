@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.30 2003/01/20 15:30:20 ukai Exp $ */
+/* $Id: frame.c,v 1.31 2003/01/29 17:10:39 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -424,15 +424,10 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 
     if (level == 0) {
 	if (SETJMP(AbortLoading) != 0) {
-	    if (fmInitialized)
-		term_raw();
-	    signal(SIGINT, prevtrap);
+	    TRAP_OFF;
 	    return -1;
 	}
-	prevtrap = signal(SIGINT, KeyAbort);
-	if (fmInitialized)
-	    term_cbreak();
-
+	TRAP_ON;
 	f->name = "_top";
     }
 
@@ -852,9 +847,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
     fputs("</table>\n", f1);
     if (level == 0) {
 	fputs("</body></html>\n", f1);
-	signal(SIGINT, prevtrap);
-	if (fmInitialized)
-	    term_raw();
+	TRAP_OFF;
     }
     return 0;
 }

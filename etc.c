@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.60 2003/01/25 17:42:17 ukai Exp $ */
+/* $Id: etc.c,v 1.61 2003/01/29 17:10:30 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1367,6 +1367,7 @@ setup_child(int child, int i, int f)
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
     fmInitialized = FALSE;
+    TrapSignal = FALSE;
 }
 
 pid_t

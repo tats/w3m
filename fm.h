@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.109 2003/01/27 16:18:52 ukai Exp $ */
+/* $Id: fm.h,v 1.110 2003/01/29 17:10:37 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -778,6 +778,18 @@ global char MetaRefresh init(FALSE);
 
 global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);
+global char TrapSignal init(TRUE);
+#define TRAP_ON if (TrapSignal) { \
+    prevtrap = signal(SIGINT, KeyAbort); \
+    if (fmInitialized) \
+	term_cbreak(); \
+}
+#define TRAP_OFF if (TrapSignal) { \
+    if (fmInitialized) \
+	term_raw(); \
+    if (prevtrap) \
+	signal(SIGINT, prevtrap); \
+}
 
 extern unsigned char GlobalKeymap[];
 extern unsigned char EscKeymap[];

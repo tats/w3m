@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.14 2003/01/15 16:24:25 ukai Exp $ */
+/* $Id: news.c,v 1.15 2003/01/29 17:10:49 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -314,7 +314,7 @@ loadNewsgroup(ParsedURL *pu, char *code)
     char *volatile scheme, *volatile group, *volatile list;
     int status, i, first, last;
     volatile int flag = 0, start = 0, end = 0;
-    MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (current_news.host == NULL || !pu->file || *pu->file == '\0')
 	return NULL;
@@ -346,9 +346,7 @@ loadNewsgroup(ParsedURL *pu, char *code)
 	Strcat_charp(page, "</table>\n<p>Transfer Interrupted!\n");
 	goto news_end;
     }
-    trap = signal(SIGINT, KeyAbort);
-    if (fmInitialized)
-	term_cbreak();
+    TRAP_ON;
 
     tmp = news_command(&current_news, "GROUP", group, &status);
     if (status != 211)
@@ -489,9 +487,7 @@ loadNewsgroup(ParsedURL *pu, char *code)
 
   news_end:
     Strcat_charp(page, "</body>\n</html>\n");
-    if (fmInitialized)
-	term_raw();
-    signal(SIGINT, trap);
+    TRAP_OFF;
     return page;
 }
 

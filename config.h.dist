@@ -238,6 +238,10 @@ typedef void MySignalHandler;
 #endif /* HAVE_SRANDOM */
 #endif
 
+#ifndef HAVE_LSTAT
+#define lstat stat
+#endif
+
 #if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )
 #define __CYGWIN__
 #endif

@@ -1,11 +1,43 @@
-2003-01-29  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+2003-01-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03708] Re: Don't stop loading image when moving to next page.
+	* config.h.dist (lstat): define ifndef HAVE_LSTAT
+	* configure (config.h) ditto
+	* display.c (fmTerm): new loadImage
+		(save_current_buf): only ifdef USE_BUFINFO
+		(displayBuffer): new loadImage
+	* etc.c (setup_child): TrapSignal
+	* file.c (loadGeneralFile): TRAP_OFF, TRAP_ON
+		(loadHTMLstream): ditto
+		(loadGopherDir): ditto
+		(loadBuffer): ditto
+		(loadImageBuffer): ditto
+		(getNextPage): ditto
+		(save2tmp): ditto
+	* fm.h (TrapSignal): added
+		(TRAP_ON): added
+		(TRAP_OFF): added
+	* form.c (HAVE_LSTAT): deleted
+	* frame.c (createFrameFile): TRAP_OFF, TRAP_ON
+	* image.c (image_buffer): added
+		(deleteImage): new loadImage
+		(getAllImage): initialize image_buffer
+		(loadImage): rewrite
+	* main.c (main): new loadImage
+		(checkDownloadList): remove ifdef HAVE_LSTAT
+	* news.c (loadNwesgroup): TRAP_ON, TRAP_OFF
+	* proto.h (loadImage): add buf arg
+	* url.c (openSocket): TRAP_ON, TRAP_OFF
+		(check_no_proxy): TRAP_ON, TRAP_OFF
+
+2003-01-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03707] Don't stop loading image when moving to next page.
 	* display.c (save_current_buf): required when defined USE_IMAGE
 		(displayBuffer): stop only buffer changed
 	* image.c (loadImage): IMG_FLAG_START load from maxLoadImage
 
-2003-01-29  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+2003-01-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03706] X-Image-URL: support, bug fix of reshapeBuffer()
 	* buffer.c (reshapeBuffer): rewrite
@@ -6899,4 +6931,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.722 2003/01/28 16:45:15 ukai Exp $
+$Id: ChangeLog,v 1.723 2003/01/29 17:10:17 ukai Exp $

@@ -1,3 +1,9 @@
+2001-12-16  Rin Okuyama <okuyama@cna.ne.jp>
+
+	* [w3m-dev 02664] install-sh -s option
+	* XMakefile: install-sh -s
+	* install-sh: support strip option
+
 2001-12-15  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02663] fix prevA() cause loop
@@ -1250,4 +1256,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.129 2001/12/14 17:58:40 ukai Exp $
+$Id: ChangeLog,v 1.130 2001/12/15 17:25:45 ukai Exp $

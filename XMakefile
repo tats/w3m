@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.17 2001/12/14 17:10:54 ukai Exp $
+# $Id: XMakefile,v 1.18 2001/12/15 17:25:45 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -32,7 +32,7 @@ CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS)
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install-sh
-INSTALL_PROGRAM=$(INSTALL) -m 755
+INSTALL_PROGRAM=$(INSTALL) -m 755 -s
 INSTALL_SCRIPT=$(INSTALL) -m 755
 INSTALL_DATA=$(INSTALL) -m 644
 AR=ar

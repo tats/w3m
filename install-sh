@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: install-sh,v 1.1 2001/12/06 15:36:55 ukai Exp $
+# $Id: install-sh,v 1.2 2001/12/15 17:25:45 ukai Exp $
 
 while :
 do
@@ -7,6 +7,14 @@ do
   -m)
     mode=$2
     shift; shift
+    ;;
+  -s)
+    if [ -n "$STRIP" ]; then
+      strip=$STRIP
+    else
+      strip=strip
+    fi
+    shift;
     ;;
   -*)
     shift
@@ -17,18 +25,21 @@ do
 done
 
 if [ $# -lt 2 ]; then
-  echo "usage: $0 [-m mode] file1 file2"
+  echo "usage: $0 [-m mode] [-s] file1 file2"
   exit 1
 fi
 
 file=$1
-dest=$2
+if [ -d $2 ]; then
+  dest=$2/$file
+else
+  dest=$2
+fi
 
 cp $file $dest
+if [ -n "$strip" ]; then
+  $strip $dest
+fi
 if [ -n "$mode" ]; then
-  if [ -d $dest ]; then
-    chmod $mode $dest/$file
-  else
-    chmod $mode $dest
-  fi
+  chmod $mode $dest
 fi

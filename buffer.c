@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.21 2003/01/23 18:38:04 ukai Exp $ */
+/* $Id: buffer.c,v 1.22 2003/01/24 17:30:50 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -559,6 +559,11 @@ reshapeBuffer(Buffer *buf)
     buf->height = LASTLINE + 1;
     if (buf->firstLine && sbuf.firstLine) {
 	int n;
+	buf->pos = sbuf.pos;
+	if (sbuf.currentLine)
+	    buf->pos += sbuf.currentLine->bpos;
+	while (sbuf.currentLine->bpos && sbuf.currentLine->prev)
+	    sbuf.currentLine = sbuf.currentLine->prev;
 	gotoRealLine(buf, sbuf.currentLine->real_linenumber);
 	n = (buf->currentLine->linenumber - buf->topLine->linenumber)
 	    - (sbuf.currentLine->linenumber - sbuf.topLine->linenumber);
@@ -566,8 +571,10 @@ reshapeBuffer(Buffer *buf)
 	    buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
 	    gotoRealLine(buf, sbuf.currentLine->real_linenumber);
 	}
-	buf->pos = sbuf.pos;
-	buf->currentColumn = sbuf.currentColumn;
+	if (FoldLine)
+	    buf->currentColumn = 0;
+	else
+	    buf->currentColumn = sbuf.currentColumn;
 	arrangeCursor(buf);
     }
     if (buf->check_url & CHK_URL)

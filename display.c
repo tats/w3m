@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.55 2003/01/23 18:42:52 ukai Exp $ */
+/* $Id: display.c,v 1.56 2003/01/24 17:30:57 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -1413,7 +1413,7 @@ cursorHome(Buffer *buf)
 void
 arrangeCursor(Buffer *buf)
 {
-    int col, col2;
+    int col, col2, pos;
     int delta = 1;
     if (buf == NULL || buf->currentLine == NULL)
 	return;
@@ -1426,7 +1426,18 @@ arrangeCursor(Buffer *buf)
 	buf->topLine = lineSkip(buf, buf->currentLine, 0, FALSE);
     }
     /* Arrange column */
-    if (buf->currentLine->len == 0)
+    while (buf->pos < 0 && buf->currentLine->prev && buf->currentLine->bpos) {
+	pos = buf->pos + buf->currentLine->prev->len;
+	cursorUp0(buf, 1);
+	buf->pos = pos;
+    }
+    while (buf->pos >= buf->currentLine->len && buf->currentLine->next &&
+	   buf->currentLine->next->bpos) {
+	pos = buf->pos - buf->currentLine->len;
+	cursorDown0(buf, 1);
+	buf->pos = pos;
+    }
+    if (buf->currentLine->len == 0 || buf->pos < 0)
 	buf->pos = 0;
     else if (buf->pos >= buf->currentLine->len)
 	buf->pos = buf->currentLine->len - 1;
@@ -1529,6 +1540,8 @@ restorePosition(Buffer *buf, Buffer *orig)
 			    FALSE);
     gotoLine(buf, CUR_LINENUMBER(orig));
     buf->pos = orig->pos;
+    if (buf->currentLine && orig->currentLine)
+	buf->pos += orig->currentLine->bpos - buf->currentLine->bpos;
     buf->currentColumn = orig->currentColumn;
     arrangeCursor(buf);
 }

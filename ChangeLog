@@ -1,3 +1,11 @@
+2003-01-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03681] Re: fold patch
+	* buffer.c (reshapeBuffer): buf->pos, sbuf.currentLine fix
+				FoldLine
+	* display.c (arrangeCursor): buf->pos fix
+		(restorePosition): buf->pos fix	
+
 2003-01-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: func: RESHAPE
@@ -6824,4 +6832,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.711 2003/01/23 18:44:26 ukai Exp $
+$Id: ChangeLog,v 1.712 2003/01/24 17:30:38 ukai Exp $

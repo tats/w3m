@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.20 2002/02/05 12:31:27 ukai Exp $ */
+/* $Id: table.c,v 1.21 2002/02/22 17:55:17 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -1806,6 +1806,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 		switch (t->border_mode) {
 		case BORDER_THIN:
 		case BORDER_THICK:
+		case BORDER_NOWIN:
 		    h += 1;
 		    break;
 		}

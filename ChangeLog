@@ -1,3 +1,8 @@
+2002-02-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03059] table + hborder + rowspan + valign=bottom
+	* table.c (renderTable): add case BORDER_NOWIN:
+
 2002-02-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03057] Re: Bug#134350: w3m: Forgets (http auth) login information upon reload (or almost anything else)
@@ -2976,4 +2981,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.321 2002/02/19 15:50:17 ukai Exp $
+$Id: ChangeLog,v 1.322 2002/02/22 17:55:17 ukai Exp $

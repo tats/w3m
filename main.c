@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.205 2003/01/30 16:18:31 ukai Exp $ */
+/* $Id: main.c,v 1.206 2003/01/30 16:21:59 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4797,8 +4797,7 @@ curlno()
     else
 	tmp = Sprintf("line %d/%d (%d%%) col %d/%d", cur, all,
 		      (int)((double)cur * 100.0 / (double)(all ? all : 1)
-			    + 0.5),
-		      col, len);
+			    + 0.5), col, len);
 #ifdef JP_CHARSET
     Strcat_charp(tmp, "  ");
     Strcat_charp(tmp, code_to_str(Currentbuf->document_code));

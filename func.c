@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.17 2002/11/25 17:03:45 ukai Exp $ */
+/* $Id: func.c,v 1.18 2002/12/03 16:01:31 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -20,6 +20,7 @@ static struct stat current_keymap_file;
 void
 setKeymap(char *p, int lineno, int verbose)
 {
+    unsigned char *map = NULL;
     char *s, *emsg;
     int c, f;
 
@@ -47,14 +48,56 @@ setKeymap(char *p, int lineno, int verbose)
 	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	return;
     }
-    if (c & K_ESCD)
-	EscDKeymap[c ^ K_ESCD] = f;
-    else if (c & K_ESCB)
-	EscBKeymap[c ^ K_ESCB] = f;
-    else if (c & K_ESC)
-	EscKeymap[c ^ K_ESC] = f;
-    else
-	GlobalKeymap[c] = f;
+    if (c & K_MULTI) {
+	unsigned char **mmap = NULL;
+	int i, j, m = MULTI_KEY(c);
+
+	if (m & K_ESCD)
+ 	    map = EscDKeymap;
+	else if (m & K_ESCB)
+	    map = EscBKeymap;
+	else if (m & K_ESC)
+	    map = EscKeymap;
+	else
+	    map = GlobalKeymap;
+	if (map[m & 0x7F] == FUNCNAME_multimap)
+	    mmap = (unsigned char **)getKeyData(m);
+	else
+	    map[m & 0x7F] = FUNCNAME_multimap;
+	if (!mmap) {
+	    mmap = New_N(unsigned char *, 4);
+	    for (i = 0; i < 4; i++) {
+		mmap[i] = New_N(unsigned char, 128);
+		for (j = 0; j < 128; j++)
+		    mmap[i][j] = FUNCNAME_nulcmd;
+	    }
+	    mmap[0][ESC_CODE] = FUNCNAME_escmap;
+	    mmap[1]['['] = FUNCNAME_escbmap;
+	    mmap[1]['O'] = FUNCNAME_escbmap;
+	}
+	if (keyData == NULL)
+	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
+	putHash_iv(keyData, m, (void *)mmap);
+	if (c & K_ESCD)
+	    map = mmap[3];
+	else if (c & K_ESCB)
+	    map = mmap[2];
+	else if (c & K_ESC)
+	    map = mmap[1];
+	else
+	    map = mmap[0];
+    }
+    else {
+	if (c & K_ESCD)
+ 	    map = EscDKeymap;
+	else if (c & K_ESCB)
+	    map = EscBKeymap;
+	else if (c & K_ESC)
+	    map = EscKeymap;
+	else
+	    map = GlobalKeymap;
+    }
+    map[c & 0x7F] = f;
     s = getQWord(&p);
     if (*s) {
 	if (keyData == NULL)
@@ -134,22 +177,31 @@ getKeyData(int key)
     return (char *)getHash_iv(keyData, key, NULL);
 }
 
-int
-getKey(char *s)
+static int
+getKey2(char **str)
 {
+    char *s = *str;
     int c, esc = 0, ctrl = 0;
 
     if (s == NULL || *s == '\0')
 	return -1;
 
-    if (strcasecmp(s, "UP") == 0)	/* ^[[A */
+    if (strcasecmp(s, "UP") == 0) {	/* ^[[A */
+	*str = s + 2;
 	return K_ESCB | 'A';
-    else if (strcasecmp(s, "DOWN") == 0)	/* ^[[B */
+    }
+    else if (strcasecmp(s, "DOWN") == 0) {	/* ^[[B */
+	*str = s + 4;
 	return K_ESCB | 'B';
-    else if (strcasecmp(s, "RIGHT") == 0)	/* ^[[C */
+    }
+    else if (strcasecmp(s, "RIGHT") == 0) {	/* ^[[C */
+	*str = s + 5;
 	return K_ESCB | 'C';
-    else if (strcasecmp(s, "LEFT") == 0)	/* ^[[D */
+    }
+    else if (strcasecmp(s, "LEFT") == 0) {	/* ^[[D */
+	*str = s + 4;
 	return K_ESCB | 'D';
+    }
 
     if (strncasecmp(s, "ESC-", 4) == 0 || strncasecmp(s, "ESC ", 4) == 0) {	/* ^[ */
 	s += 4;
@@ -192,6 +244,7 @@ getKey(char *s)
     }
 
     if (ctrl) {
+	*str = s + 1;
 	if (*s >= '@' && *s <= '_')	/* ^@ .. ^_ */
 	    return esc | (*s - '@');
 	else if (*s >= 'a' && *s <= 'z')	/* ^a .. ^z */
@@ -209,21 +262,30 @@ getKey(char *s)
 	    c = c * 10 + (int)(*s - '0');
 	    s++;
 	}
+	*str = s + 1;
 	if (*s == '~')
 	    return K_ESCD | c;
 	else
 	    return -1;
     }
 
-    if (strncasecmp(s, "SPC", 3) == 0)	/* ' ' */
+    if (strncasecmp(s, "SPC", 3) == 0) {	/* ' ' */
+	*str = s + 3;
 	return esc | ' ';
-    else if (strncasecmp(s, "TAB", 3) == 0)	/* ^i */
+    }
+    else if (strncasecmp(s, "TAB", 3) == 0) {	/* ^i */
+	*str = s + 3;
 	return esc | '\t';
-    else if (strncasecmp(s, "DEL", 3) == 0)	/* ^? */
+    }
+    else if (strncasecmp(s, "DEL", 3) == 0) {	/* ^? */
+	*str = s + 3;
 	return esc | DEL_CODE;
+    }
 
     if (*s == '\\' && *(s + 1) != '\0') {
-	switch (*(s + 1)) {
+	s++;
+	*str = s + 1;
+	switch (*s) {
 	case 'a':		/* ^g */
 	    return esc | CTRL_G;
 	case 'b':		/* ^h */
@@ -244,10 +306,30 @@ getKey(char *s)
 	    return -1;
 	}
     }
+    *str = s + 1;
     if (IS_ASCII(*s))		/* Ascii */
 	return esc | *s;
     else
 	return -1;
+}
+
+int
+getKey(char *s)
+{
+    int c, c2;
+
+    c = getKey2(&s);
+    if (c < 0)
+	return -1;
+    if (*s == ' ' || *s == '-')
+	s++;
+    if (*s) {
+	c2 = getKey2(&s);
+	if (c2 < 0)
+	    return -1;
+	c = K_MULTI | (c << 16) | c2;
+    }
+    return c;
 }
 
 char *

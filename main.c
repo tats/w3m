@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.156 2002/11/26 18:03:27 ukai Exp $ */
+/* $Id: main.c,v 1.157 2002/12/03 16:01:37 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1183,15 +1183,41 @@ pcmap(void)
 }
 #endif
 
+static void
+escKeyProc(int c, int esc, unsigned char *map)
+{
+    if (CurrentKey >= 0 && CurrentKey & K_MULTI) {
+	unsigned char **mmap;
+	mmap = (unsigned char **)getKeyData(MULTI_KEY(CurrentKey));
+	if (!mmap)
+	    return;
+	switch (esc) {
+	case K_ESCD:
+	    map = mmap[3];
+	    break;
+	case K_ESCB:
+	    map = mmap[2];
+	    break;
+	case K_ESC:
+	    map = mmap[1];
+	    break;
+	default:
+	    map = mmap[0];
+	    break;
+	}
+	esc |= (CurrentKey & ~0xFFFF);
+    }
+    CurrentKey = esc | c;
+    w3mFuncList[(int)map[c]].func();
+}
+
 void
 escmap(void)
 {
     char c;
     c = getch();
-    if (IS_ASCII(c)) {
-	CurrentKey = K_ESC | c;
-	w3mFuncList[(int)EscKeymap[(int)c]].func();
-    }
+    if (IS_ASCII(c))
+        escKeyProc((int)c, K_ESC, EscKeymap);
 }
 
 void
@@ -1199,29 +1225,36 @@ escbmap(void)
 {
     char c;
     c = getch();
-
-    if (IS_DIGIT(c))
+    if (IS_DIGIT(c)) {
 	escdmap(c);
-    else if (IS_ASCII(c)) {
-	CurrentKey = K_ESCB | c;
-	w3mFuncList[(int)EscBKeymap[(int)c]].func();
+	return;
     }
+    if (IS_ASCII(c))
+        escKeyProc((int)c, K_ESCB, EscBKeymap);
 }
 
 void
 escdmap(char c)
 {
     int d;
-
     d = (int)c - (int)'0';
     c = getch();
     if (IS_DIGIT(c)) {
 	d = d * 10 + (int)c - (int)'0';
 	c = getch();
     }
-    if (c == '~') {
-	CurrentKey = K_ESCD | d;
-	w3mFuncList[(int)EscDKeymap[d]].func();
+    if (c == '~')
+        escKeyProc((int)d, K_ESCD, EscDKeymap);
+}
+
+void
+multimap(void)
+{
+    char c;
+    c = getch();
+    if (IS_ASCII(c)) {
+	CurrentKey = K_MULTI | (CurrentKey << 16) | c;
+	escKeyProc((int)c, 0, NULL);
     }
 }
 

@@ -1,3 +1,7 @@
+2003-02-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* version.c.in: cvs version
+
 2003-02-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3m 0.4
@@ -7241,4 +7245,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.762 2003/02/23 16:37:11 ukai Exp $
+$Id: ChangeLog,v 1.763 2003/02/24 16:24:14 ukai Exp $

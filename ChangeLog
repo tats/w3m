@@ -1,3 +1,9 @@
+2002-07-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03275] fix of multipart.cgi
+	* scripts/multipart/multipart.cgi.in: check REQUEST_METHOD first
+					need $count for POST
+
 2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3mimgdisplay.c (main): '5' for w3mimgsize
@@ -3610,4 +3616,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.408 2002/07/18 06:27:23 ukai Exp $
+$Id: ChangeLog,v 1.409 2002/07/18 13:12:07 ukai Exp $

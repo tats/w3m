@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>OUTLINE&nbsp;-概要編-</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">概要編</A></H1>
+<UL>
+	<LI><A HREF="#install">インストールの概要</A>
+	<LI><A HREF="#operation">操作方法の概要</A>
+	<UL>
+		<LI><A HREF="#display">表示内容の説明</A>
+		<LI><A HREF="#basic">基本的な使い方</A>
+		<LI><A HREF="#help">ヘルプの参照</A>
+	</UL>
+</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+
+<HR>
+
+<H2><A NAME="install">インストールの概要</A><H2>
+<!-- インストールの概要 -->
+<DIV>
+<A HREF="index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="operation">操作方法の概要</A><H2>
+<!-- 操作方法の概要 -->
+
+<H3><A NAME="display">表示内容の説明</A></H3>
+<!-- 表示内容の説明 -->
+
+<H3><A NAME="basic">基本的な使い方</A></H3>
+<!-- 基本的な使い方 -->
+
+<H3><A NAME="help">ヘルプの参照</A></H3>
+<!-- ヘルプの参照 -->
+
+<DIV>
+<A HREF="index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+
+</BODY>
+</HTML>
+

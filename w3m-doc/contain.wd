@@ -1,0 +1,14 @@
+@define
+DOC.index           index.html
+DOC.prologue        prologue.html
+DOC.copyright       copyright.html
+DOC.outline         outline.html
+DOC.detail          detail.html
+DOC.install         install.html
+DOC.operation       operation.html
+DOC.configuration   configuration.html
+DOC.function        function.html
+DOC.FAQ             faq.html
+DOC.developement    developement.html
+DOC.community       community.html
+@end

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>INSTALL&nbsp;-インストールの詳細-</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">インストールの詳細</A></H1>
+<DIV>
+<!-- w3mのインストールの詳細を記す -->
+</DIV>
+	<UL>
+		<LI><A HREF="#get_w3m">w3m入手方法</A>
+			<UL>
+				<LI><A HREF="#w3m_home">w3m home</A>
+				<LI><A HREF="#BBS">aito連絡帳</A>
+			</UL>
+		<LI><A HREF="#require">必要な物</A>
+		<LI><A HREF="#configure">configureについて</A>
+		<LI><A HREF="#config_h">config.hについて</A>
+		<LI><A HREF="#make">makeについて</A>
+		<LI><A HREF="#tips">他のOSでインストールする際のTips</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="get_w3m">w3m入手方法</A></H2>
+<!-- w3m入手方法 -->
+
+<H3><A NAME="w3m_home">w3m home</A><H3>
+<!-- w3m HOME pageについて -->
+
+<H3><A NAME="BBS">aito連絡帳</A><H3>
+<!-- aito連絡帳、その他掲示板 -->
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="require">必要な物</A></H2>
+<!-- w3mをmakeするうえで必要な物／あれば良い物 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="configure">configureについて</A></H2>
+<!-- configure実行時の説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="config_h">config.hについて</A></H2>
+<!-- config.hでdefineするもの等について -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="make">makeについて</A></H2>
+<!-- make時の説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="tips">他のOSでインストールする際のTips</A><H2>
+<!-- 各種OS上でw3mをインストールする際のTips -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

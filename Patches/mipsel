@@ -1,0 +1,184 @@
+diff -ur gc/gcconfig.h w3m/gc/gcconfig.h
+--- gc/gcconfig.h	Tue Jan  4 14:46:50 2000
++++ gc/gcconfig.h	Fri May 26 00:30:56 2000
+@@ -67,11 +67,13 @@
+ #    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
+ #	define ULTRIX
+ #    else
+-#	if defined(_SYSTYPE_SVR4) || defined(SYSTYPE_SVR4) || defined(__SYSTYPE_SVR4__)
+-#	  define IRIX5   /* or IRIX 6.X */
+-#	else
+-#	  define RISCOS  /* or IRIX 4.X */
+-#	endif
++#       if !defined(LINUX)
++#	   if defined(_SYSTYPE_SVR4) || defined(SYSTYPE_SVR4) || defined(__SYSTYPE_SVR4__)
++#	     define IRIX5   /* or IRIX 6.X */
++#	   else
++#	     define RISCOS  /* or IRIX 4.X */
++#	   endif
++#       endif
+ #    endif
+ #    define mach_type_known
+ # endif
+@@ -836,49 +838,58 @@
+ 
+ # ifdef MIPS
+ #   define MACH_TYPE "MIPS"
+-#   ifndef IRIX5
+-#     define DATASTART (ptr_t)0x10000000
++#   ifdef LINUX
++#     define OS_TYPE "LINUX"
++      extern int __data_start;
++#     define DATASTART ((ptr_t)(&__data_start))
++#     define ALIGNMENT 4
++#     define USE_GENERIC_PUSH_REGS 1
++#     define STACKBOTTOM 0x80000000
++#   else /* LINUX */
++#     ifndef IRIX5
++#       define DATASTART (ptr_t)0x10000000
+ 			      /* Could probably be slightly higher since */
+ 			      /* startup code allocates lots of stuff.   */
+-#   else
+-      extern int _fdata;
+-#     define DATASTART ((ptr_t)(&_fdata))
+-#     ifdef USE_MMAP
+-#         define HEAP_START (ptr_t)0x30000000
+ #     else
+-#	  define HEAP_START DATASTART
+-#     endif
++        extern int _fdata;
++#       define DATASTART ((ptr_t)(&_fdata))
++#       ifdef USE_MMAP
++#           define HEAP_START (ptr_t)0x30000000
++#       else
++#	    define HEAP_START DATASTART
++#       endif
+ 			      /* Lowest plausible heap address.		*/
+ 			      /* In the MMAP case, we map there.	*/
+ 			      /* In either case it is used to identify	*/
+ 			      /* heap sections so they're not 		*/
+ 			      /* considered as roots.			*/
+-#   endif /* IRIX5 */
+-#   define HEURISTIC2
++#     endif /* IRIX5 */
++#     define HEURISTIC2
+ /* #   define STACKBOTTOM ((ptr_t)0x7fff8000)  sometimes also works.  */
+-#   ifdef ULTRIX
+-#	define OS_TYPE "ULTRIX"
+-#       define ALIGNMENT 4
+-#   endif
+-#   ifdef RISCOS
+-#	define OS_TYPE "RISCOS"
+-#   	define ALIGNMENT 4  /* Required by hardware */
+-#   endif
+-#   ifdef IRIX5
+-#	define OS_TYPE "IRIX5"
+-#       define MPROTECT_VDB
+-#       ifdef _MIPS_SZPTR
+-#	  define CPP_WORDSZ _MIPS_SZPTR
+-#	  define ALIGNMENT (_MIPS_SZPTR/8)
+-#	  if CPP_WORDSZ != 64
++#     ifdef ULTRIX
++#	  define OS_TYPE "ULTRIX"
++#         define ALIGNMENT 4
++#     endif
++#     ifdef RISCOS
++#	  define OS_TYPE "RISCOS"
++#   	  define ALIGNMENT 4  /* Required by hardware */
++#     endif
++#     ifdef IRIX5
++#	  define OS_TYPE "IRIX5"
++#         define MPROTECT_VDB
++#         ifdef _MIPS_SZPTR
++#	    define CPP_WORDSZ _MIPS_SZPTR
++#	    define ALIGNMENT (_MIPS_SZPTR/8)
++#	    if CPP_WORDSZ != 64
++#	      define ALIGN_DOUBLE
++#	    endif
++#	  else
++#           define ALIGNMENT 4
+ #	    define ALIGN_DOUBLE
+ #	  endif
+-#	else
+-#         define ALIGNMENT 4
+-#	  define ALIGN_DOUBLE
+-#	endif
+-#	define DYNAMIC_LOADING
+-#   endif
++#	  define DYNAMIC_LOADING
++#     endif
++#   endif
+ # endif
+ 
+ # ifdef RS6000
+diff -ur gc/mach_dep.c w3m/gc/mach_dep.c
+--- gc/mach_dep.c	Tue Jan  4 14:46:50 2000
++++ gc/mach_dep.c	Fri May 26 00:34:11 2000
+@@ -74,6 +74,21 @@
+ #       ifdef RT
+ 	  register long TMP_SP; /* must be bound to r11 */
+ #       endif
++#       if defined(MIPS) && defined(LINUX)
++#         define call_push(x)     asm("move $4," x ";"); asm("jal GC_push_one")
++         call_push("$2");
++         call_push("$3");
++         call_push("$16");
++         call_push("$17");
++         call_push("$18");
++         call_push("$19");
++         call_push("$20");
++         call_push("$21");
++         call_push("$22");
++         call_push("$23");
++         call_push("$30");
++#         undef call_push
++#       endif  /* MIPS && LINUX */
+ #       ifdef VAX
+ 	  /* VAX - generic code below does not work under 4.2 */
+ 	  /* r1 through r5 are caller save, and therefore     */
+@@ -338,7 +353,9 @@
+ #       if !(defined M68K) && !(defined VAX) && !(defined RT) 
+ #	if !(defined SPARC) && !(defined I386) && !(defined NS32K)
+ #	if !defined(POWERPC) && !defined(UTS4)
++#       if (!defined(MIPS) && !defined(LINUX))
+ 	    --> bad news <--
++#       endif
+ #       endif
+ #       endif
+ #       endif
+diff -ur gc/misc.c w3m/gc/misc.c
+--- gc/misc.c	Tue Jan  4 14:46:50 2000
++++ gc/misc.c	Fri May 26 00:52:59 2000
+@@ -433,7 +433,8 @@
+ #   ifdef MSWIN32
+  	GC_init_win32();
+ #   endif
+-#   if defined(LINUX) && (defined(POWERPC) || defined(ALPHA) || defined(SPARC))
++#   if defined(LINUX) && (defined(POWERPC) || defined(ALPHA) || \
++		defined(SPARC) || defined(MIPS))
+ 	GC_init_linux_data_start();
+ #   endif
+ #   ifdef SOLARIS_THREADS
+diff -ur gc/os_dep.c w3m/gc/os_dep.c
+--- gc/os_dep.c	Tue Jan  4 14:46:50 2000
++++ gc/os_dep.c	Fri May 26 00:37:07 2000
+@@ -72,7 +72,8 @@
+ #   define NEED_FIND_LIMIT
+ # endif
+ 
+-# if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA))
++# if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || \
++	defined(ALPHA) || defined(MIPS))
+ #   define NEED_FIND_LIMIT
+ # endif
+ 
+@@ -139,7 +140,8 @@
+ # define OPT_PROT_EXEC 0
+ #endif
+ 
+-#if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA))
++#if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || \
++	defined(ALPHA) || defined(MIPS))
+   /* The I386 case can be handled without a search.  The Alpha case	*/
+   /* used to be handled differently as well, but the rules changed	*/
+   /* for recent Linux versions.  This seems to be the easiest way to	*/

@@ -1,0 +1,106 @@
+	w3m: WWW wo Miru Tool  version beta-990323
+		(C) Copyright by Akinori ITO	March 23, 1999
+
+1. Introduction
+
+     w3m is a pager with WWW capability. It IS a pager, but it can be
+used as a text-mode WWW browser.
+
+     The features of w3m are as follows:
+
+* When reading HTML document, you can follow links and view images
+  (using external image viewer).
+* It has 'internet message mode', which determines the type of document
+  from header. If the Content-Type: field of the document is text/html,
+  that document is displayed as HTML document.
+* You can change URL description like 'http://hogege.net' in plain text
+  into link to that URL.
+
+Current problems are:
+
+* Resize behaviour is imcomplete.
+* It can't show images inline. (It seems to be impossible as far as using
+  xterm)
+* It doesn't decode MIME-body of the document.
+* Online manuals are poor.
+
+w3m is known to work on these platforms.
+
+      SunOS4.1.x
+      HP-UX 9.x, 10.x
+      Solaris2.5.x
+      Linux 2.0.30
+      FreeBSD 2.2.8, 3.1, 3.2
+      NetBSD/macppc, m68k
+      EWS4800 Rel.12.2 Rev.A
+      Digital UNIX: v3.2D, v4.0D
+      IRIX 5.3, IRIX 6.5
+      OS/2 with emx
+      Windows 9x/NT with Cygwin32 b20.1
+      MS-DOS with DJGPP and WATT32 packet driver
+      MacOS X Server
+
+2. Installation
+
+Follow these instructions to install w3m.
+
+2.1 Run configure. The script will ask you a few questions. Answer them.
+2.2 do make
+2.3 do make install
+
+MACHINE/OS specific notices:
+
+HP-UX
+	If you want to use HP C compiler, answer
+
+		Input your favorite C-compiler.
+		(Default: cc) cc -Aa -D_HPUX_SOURCE
+
+	If you use just 'cc' without options, you can't compile w3m.
+	If you are using gcc, no option is needed. 
+
+OS/2
+	You can compile w3m using emx. First you have to do
+	is to compile GC library with
+
+		cd gc
+		make -f EMX_MAKEFILE
+
+	then compile w3m. I heard that OS/2 console can't 
+	display color, you had better compile w3m without
+	color capability.
+
+Windows
+	See README.cygwin.
+
+MS-DOS
+	See README.dj.
+
+
+3. Copyright
+
+  (C) Copyright 1994-1999 by Akinori Ito.
+
+  Hans J. Boehm, Alan J. Demers, Xerox Corp. and Silicon Graphics
+  have the copyright of the GC library comes with w3m package.
+
+4. License
+
+  Use, modification and redistribution of this software is hereby granted, 
+  provided that this entire copyright notice is included on any copies of 
+  this software and applications and derivations thereof.
+
+  This software is provided on an "as is" basis, without warranty of any
+  kind, either expressed or implied, as to any matter including, but not
+  limited to warranty of fitness of purpose, or merchantability, or
+  results obtained from use of this software.
+
+
+5. Author
+
+Feel free to send your opinion to the author.
+
+	Akinori Ito
+	Faculty of Engineering, Yamagata University
+	aito@ei5sun.yz.yamagata-u.ac.jp
+	http://ei5nazha.yz.yamagata-u.ac.jp/

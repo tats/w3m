@@ -1,0 +1,147 @@
+Here is a patch to port GC library to NetBSD/macppc. If you are
+using NetBSD on PowerMac, apply this patch first.
+
+This patch is provided by K. Sunagawa (kei_sun@ba2.so-net.ne.jp).
+
+Index: gc/dyn_load.c
+===================================================================
+RCS file: /cvsroot/w3m/gc/dyn_load.c,v
+retrieving revision 1.1.1.2
+retrieving revision 1.2
+diff -u -u -r1.1.1.2 -r1.2
+--- gc/dyn_load.c	1999/06/02 19:29:13	1.1.1.2
++++ gc/dyn_load.c	1999/06/03 12:44:49	1.2
+@@ -48,7 +48,8 @@
+ #if !defined(SUNOS4) && !defined(SUNOS5DL) && !defined(IRIX5) && \
+     !defined(MSWIN32) && !(defined(ALPHA) && defined(OSF1)) && \
+     !defined(HP_PA) && !(defined(LINUX) && defined(__ELF__)) && \
+-    !defined(RS6000) && !defined(SCO_ELF)
++    !defined(RS6000) && !defined(SCO_ELF) && \
++    !(defined(NETBSD) && defined(POWERPC))
+  --> We only know how to find data segments of dynamic libraries for the
+  --> above.  Additional SVR4 variants might not be too
+  --> hard to add.
+@@ -260,14 +261,22 @@
+ # endif /* !USE_PROC ... */
+ # endif /* SUNOS */
+ 
+-#if defined(LINUX) && defined(__ELF__) || defined(SCO_ELF)
++#if defined(LINUX) && defined(__ELF__) || defined(SCO_ELF) || \
++    (defined(NETBSD) && defined(POWERPC))
+ 
+ /* Dynamic loading code for Linux running ELF. Somewhat tested on
+  * Linux/x86, untested but hopefully should work on Linux/Alpha. 
+  * This code was derived from the Solaris/ELF support. Thanks to
+  * whatever kind soul wrote that.  - Patrick Bridges */
+ 
++#if defined(NETBSD)
++#include <sys/exec_elf.h>
++#define DT_DEBUG	21
++#define PT_LOAD		1
++#define PF_W		0x2
++#else
+ #include <elf.h>
++#endif
+ #include <link.h>
+ 
+ /* Newer versions of Linux/Alpha and Linux/x86 define this macro.  We
+Index: gc/gcconfig.h
+===================================================================
+RCS file: /cvsroot/w3m/gc/gcconfig.h,v
+retrieving revision 1.1.1.2
+retrieving revision 1.2
+diff -u -u -r1.1.1.2 -r1.2
+--- gc/gcconfig.h	1999/06/02 19:29:18	1.1.1.2
++++ gc/gcconfig.h	1999/06/03 12:44:49	1.2
+@@ -48,6 +48,11 @@
+ #    define NETBSD
+ #    define mach_type_known
+ # endif
++# if defined(__NetBSD__) && defined(__powerpc__)
++#    define POWERPC
++#    define NETBSD
++#    define mach_type_known
++# endif
+ # if defined(vax)
+ #    define VAX
+ #    ifdef ultrix
+@@ -486,8 +491,8 @@
+ 
+ # ifdef POWERPC
+ #   define MACH_TYPE "POWERPC"
+-#   define ALIGNMENT 2
+ #   ifdef MACOS
++#     define ALIGNMENT 2
+ #     ifndef __LOWMEM__
+ #     include <LowMem.h>
+ #     endif
+@@ -497,6 +502,7 @@
+ #     define DATAEND  /* not needed */
+ #   endif
+ #   ifdef LINUX
++#     define ALIGNMENT 2
+ #     define OS_TYPE "LINUX"
+ #     define HEURISTIC1
+ #     undef STACK_GRAN
+@@ -504,6 +510,14 @@
+ #     define DATASTART GC_data_start
+       extern int _end;
+ #     define DATAEND (&_end)
++#   endif
++#   ifdef NETBSD
++#     define ALIGNMENT 4
++#     define OS_TYPE "NETBSD"
++#     define HEURISTIC2
++      extern char etext;
++#     define DATASTART GC_data_start
++#     define DYNAMIC_LOADING
+ #   endif
+ # endif
+ 
+Index: gc/misc.c
+===================================================================
+RCS file: /cvsroot/w3m/gc/misc.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -u -u -r1.1.1.1 -r1.2
+--- gc/misc.c	1999/06/02 19:23:56	1.1.1.1
++++ gc/misc.c	1999/06/03 12:44:50	1.2
+@@ -433,6 +433,9 @@
+ #   if defined(LINUX) && defined(SPARC)
+ 	GC_init_linuxsparc();
+ #   endif
++#   if defined(NETBSD) && defined(POWERPC)
++	GC_init_netbsd_powerpc();
++#   endif
+ #   ifdef SOLARIS_THREADS
+ 	GC_thr_init();
+ 	/* We need dirty bits in order to find live stack sections.	*/
+Index: gc/os_dep.c
+===================================================================
+RCS file: /cvsroot/w3m/gc/os_dep.c,v
+retrieving revision 1.1.1.2
+retrieving revision 1.2
+diff -u -u -r1.1.1.2 -r1.2
+--- gc/os_dep.c	1999/06/02 19:29:10	1.1.1.2
++++ gc/os_dep.c	1999/06/03 12:44:50	1.2
+@@ -84,6 +84,19 @@
+ #  include <machine/trap.h>
+ #endif
+ 
++#if defined(NETBSD) && defined(POWERPC)
++  ptr_t GC_data_start;
++
++  void GC_init_netbsd_powerpc()
++  {
++    extern ptr_t GC_find_limit();
++    extern char **environ;
++	/* This may need to be environ, without the underscore, for	*/
++	/* some versions.						*/
++    GC_data_start = GC_find_limit((ptr_t)&environ, FALSE);
++  }
++#endif
++
+ #ifdef AMIGA
+ # include <proto/exec.h>
+ # include <proto/dos.h>
+

@@ -1,0 +1,18 @@
+***How to compile w3m on Windows***
+
+To compile w3m on MS-Windows, you have to use Cygwin32 with development
+tools. You can get it from http://sourceware.cygnus.com/cygwin/ .
+
+After installing Cygwin32, what you have to do first is
+
+  TERM=ansi; export TERM
+  sh configure
+
+and
+
+  make
+
+
+Known Bugs:
+
+Local file with drive letter (//C/zonk.html) can't be handled correctly.

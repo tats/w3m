@@ -1,0 +1,85 @@
+ABORT		Quit w3m without confirmation
+ADD_BOOKMARK	Add current page to bookmark
+BACK		Back to previous buffer
+BEGIN		Go to the first line
+BOOKMARK	Read bookmark
+CENTER_H	Move to the center line
+CENTER_V	Move to the center column
+COOKIE		View cookie list
+DELETE_PREVBUF  Delete previous buffer
+DICT_WORD	Execute dictionary command (see README.dict)
+DOWN		Scroll down one line
+DOWN_LOAD	Save HTML source
+EDIT		Edit current document
+EDIT_SCREEN	Edit currently rendered document
+END		Go to the last line
+EXEC_SHELL	Execute shell command
+EXIT		Quit w3m without confirmation
+EXTERN		Execute external browser
+EXTERN_LINK	View current link using external browser
+FRAME		Render frame
+GOTO		Go to URL
+GOTO_LINE	Go to specified line
+GOTO_LINK	Go to current link
+HELP		View help
+HISTORY		View history of URL
+INFO		View info of current document
+INTERRUPT	Stop loading document
+INIT_MAILCAP    Reread mailcap
+LEFT		Shift screen one column
+LINE_BEGIN	Go to the beginning of line
+LINE_END	Go to the end of line
+LINE_INFO	Show current line number
+LOAD		Load local file
+MAIN_MENU	Popup menu
+MARK		Set/unset mark
+MARK_MID	Mark Message-ID-like strings as anchors
+MARK_URL	Mark URL-like strings as anchors
+MENU		Popup menu
+MOVE_DOWN	Move cursor down
+MOVE_LEFT	Move cursor left
+MOVE_RIGHT	Move cursor right
+MOVE_UP		Move cursor up
+NEXT_LINK	Move to next link
+NEXT_MARK	Move to next word
+NEXT_PAGE	Move to next page
+NEXT_WORD	Move to next word
+NOTHING		Do nothing
+NULL		Do nothing
+OPTIONS		Option setting panel
+PEEK		Peek current URL
+PEEK_LINK	Peek link URL
+PEEK_IMG	Peek image URL 
+PIPE_SHELL	Execute shell command and browse
+PREV_LINK	Move to previous link
+PREV_MARK	Move to previous mark
+PREV_PAGE	Move to previous page
+PREV_WORD	Move to previous word
+PRINT		Save buffer to file
+QUIT		Quit w3m
+READ_SHELL	Execute shell command and load
+REDRAW		Redraw screen
+REG_MARK	Set mark using regexp
+RELOAD		Reload buffer
+RIGHT		Shift screen one column right
+SAVE		Save HTML source to file
+SAVE_IMAGE	Save image to file
+SAVE_LINK	Save link to file
+SAVE_SCREEN	Save rendered document to file
+SEARCH		Search forward
+SEARCH_BACK	Search backward
+SEARCH_FORE	Search forward
+SEARCH_NEXT	Search next regexp
+SEARCH_PREV	Search previous regexp
+SELECT		Go to buffer selection panel
+SHELL		Execute shell command
+SHIFT_LEFT	Shift screen left
+SHIFT_RIGHT	Shift screen right
+SOURCE		View HTML source
+SUSPEND		Stop loading document
+UP		Scroll up one line
+VIEW		View HTML source
+VIEW_BOOKMARK	View bookmark
+VIEW_IMAGE	View image
+WHEREIS		Search forward
+WRAP_TOGGLE   Toggle wrap search mode

@@ -1,0 +1,27 @@
+diff -ur gc/Makefile gc/Makefile
+--- gc/Makefile Sat Jul 24 02:53:34 1999
++++ gc/Makefile Tue Nov 30 14:29:50 1999
+@@ -7,7 +7,7 @@
+ #               and runs some tests of collector and cords.  Does not add cords or
+ #       c++ interface to gc.a
+ # cord/de - builds dumb editor based on cords.
+-ABI_FLAG=
++ABI_FLAG=-KPIC
+ CC=cc $(ABI_FLAG)
+ CXX=CC $(ABI_FLAG)
+ AS=as $(ABI_FLAG)
+Only in gc: Makefile.back
+Only in gc: Makefile.orig
+diff -ur gc/gcconfig.h gc/gcconfig.h
+--- gc/gcconfig.h       Fri Jul  9 05:03:22 1999
++++ gc/gcconfig.h       Tue Nov 30 14:30:11 1999
+@@ -64,7 +64,8 @@
+ # endif
+ # if defined(mips) || defined(__mips)
+ #    define MIPS
+-#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
++#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__) ||\
++        defined(nec_ews) || defined(__sony_news)
+ #      define ULTRIX
+ #    else
+ #      if defined(_SYSTYPE_SVR4) || defined(SYSTYPE_SVR4) || defined(__SYSTYPE_SVR4__)

@@ -1,0 +1,49 @@
+html2latex
+
+  Convert HTML document into LaTeX. Ruby script. incomplete.
+
+  Usage:
+
+    html2latex file.html > file.tex
+
+  Why this script is here?
+
+    To exploit code for makeref. :-)
+
+makeref
+
+  Read HTML document and number the anchors. Print numbered document
+  into standard output and append reference index. Ruby script.
+
+  Usage:
+
+    makeref [-u] [-url base_url] [file]
+
+    -url: Specify URL of the document. It is used to complete link
+          in the document.
+
+    -u: Append URL after each anchor, instead of reference number.
+
+  Bugs
+
+    If there are any error in HTML (unbalanced < , character entity
+    without ; , etc.), output will be miserable.
+
+htmldump
+
+  Read HTML document from URL, number the anchors and format it,
+  and output it on standard output.
+
+  Usage
+
+    htmldump [-u] [URL]
+
+    -u: Append URL after each anchor, instead of reference number.
+
+    If URL is omitted, $WWW_HOME is used instead.
+
+  Bugs
+
+    It assumes that the document on URL is HTML.
+    As it uses makeref to number the anchor, it can't handle any document
+    makeref can't handle.

@@ -1,0 +1,27 @@
+***Windows で w3m を動かすには***
+
+Windows で w3m を動かすためには，Windows 上の UNIX互換環境である Cygwin32
+(開発環境付き)が必要です．Cygwin32 に関する情報は http://sourceware.cygnus.com/cygwin/
+から手に入ります．
+
+コンパイルするには，
+
+  sh configure
+
+を実行してから make します．実行前に，
+
+  TERM=ansi; export TERM
+
+を実行しておくとよいらしいです．
+
+以下は，Cygwin32 で w3m を動かした場合の問題点です．
+[上田さん(ueda@iias.flab.fujitsu.co.jp)より]
+
+Known Bugs:
+cygwin32 で、ローカルファイルをブックマークにしようとすると、URLが化け
+て file://c:540390910/path あるいは、file://C//c/path のようになってし
+まい、正しく参照することができなくなる。
+登録時に file:////c/path のように直して登録することで解決できる。
+
+原因: cygwin32 ではファイル名は //ドライブ名/パス で表されるが、これを 
+loadGeneralFile() で読み込む時にurl を間違えて解釈するため。

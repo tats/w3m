@@ -1,0 +1,39 @@
+--- w3m-0.1.10/XMakefile	Thu Jun  8 13:26:04 2000
++++ w3m-0.1.10-6/XMakefile	Sun Jun 11 16:37:18 2000
+@@ -8,7 +8,7 @@
+ LOBJS=terms.o conv.o url.o ftp.o anchor.o mimehead.o hash.o tagtable.o
+ LLOBJS=version.o
+ ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o
+-ALIB=libindep.a
++ALIB=indep.a
+ ALLOBJS=$(OBJS) $(LOBJS) $(LLOBJS)
+ 
+ TARGET=w3m$(EXT)
+@@ -31,13 +31,13 @@
+ 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LIBS)
+ 
+ $(ALIB): $(ALIBOBJS)
+-	$(AR) rv $(ALIB) $(ALIBOBJS)
++	$(AR) srv $(ALIB) $(ALIBOBJS)
+ 	$(RANLIB) $(ALIB)
+ 
+ $(OBJS): fm.h funcname1.h
+ 
+ tagtable.c: html.h tagtable.tab mktable$(EXT)
+-	./mktable 100 tagtable.tab > tagtable.c
++	mktable 100 tagtable.tab > tagtable.c
+ 
+ func.o: funcname.c
+ keybind.o: funcname2.h
+--- w3m-0.1.10/gc/os_dep.c	Tue Jan  4 14:46:50 2000
++++ w3m-0.1.10-6/gc/os_dep.c	Sun Jun 11 16:37:16 2000
+@@ -732,7 +732,9 @@
+       if (!(flags & OBJWRITE)) continue;
+       if (!(flags & OBJREAD)) continue;
+       if (flags & OBJINVALID) {
++#ifndef __EMX__
+           GC_err_printf0("Object with invalid pages?\n");
++#endif
+           continue;
+       } 
+       GC_add_roots_inner(O32_BASE(seg), O32_BASE(seg)+O32_SIZE(seg), FALSE);

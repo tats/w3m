@@ -1,0 +1,1712 @@
+#!/bin/sh
+#
+#	Configuration.
+#
+
+#
+sysname=`uname -s`
+sysversion=`uname -r`
+host=`hostname`
+platform=`uname -m`
+
+sysversion1=`echo $sysversion | awk -F. '{print $1}'`
+sysversion2=`echo $sysversion | awk -F. '{print $2}'`
+sysversion3=`echo $sysversion | awk -F. '{print $3}'`
+
+echo $sysname $sysversion1 $sysversion2 $sysversion3 /$platform at $host
+
+if [ -f config.param ] ; then
+	confhost=`awk 'NR==1{print $4}' config.param`
+	if [ "$confhost" = "$host" ] ; then
+          . ./config.param
+	fi
+fi
+
+echo "# Configuretion at $host" > config.param
+
+# parameters:
+
+prefix=/usr/local
+all_yes=0
+while [ $# -gt 0 ]
+do
+  case "$1" in
+  -yes|--yes|-nonstop|--nonstop)
+    all_yes=1
+    echo "Setting all parameters to the default..."
+    ;;
+  -prefix|--prefix)
+    prefix=$2
+    shift
+    ;;
+  -prefix=*|--prefix=*)
+    prefix=`expr "$1" : "-*prefix=\(.*\)"`
+    ;;
+  -lang=en|--lang=en)
+    pref_lang=2
+    ;;
+  -lang=ja|--lang=ja)
+    pref_lang=1
+    ;;
+  -model=baby|--model=baby)
+    dmodel=1
+    ;;
+  -model=little|--model=little)
+    dmodel=2
+    ;;
+  -model=mouse|--model=mouse)
+    dmodel=3
+    ;;
+  -model=cookie|--model=cookie)
+    dmodel=4
+    ;;
+  -model=monster|--model=monster)
+    dmodel=5
+    ;;
+  -code=*|--code=*)
+    def_dcode=`expr "$1" : "-*code=\(.*\)"`
+    ;;
+  -cflags=*|--cflags=*)
+    dcflags=`echo $1 | sed -e 's/-*cflags=//'`
+    ;;
+  -help|--help)
+    echo "-yes, -nonstop  Set all parameters to the default"
+    echo "-prefix=DIR     Specify prefix (default: /usr/local)"
+    echo "-lang=(en|ja)   Specify default language"
+    echo "-model=(baby|little|mouse|cookie|monster)"
+    echo "                Specify default model"                     
+    echo "-code=(S|E|j|N|n|m)"
+    echo "                Specify derault kanji code"
+    echo "-cflags=FLAGS   Specify C flags"
+    echo "-help           Display help"
+    exit 0
+    ;;
+  esac
+  shift
+done
+
+# Version number of Boehm-GC library comes with w3m.
+# version number: JMMAAA  J: major MM: minor AAA: alpha
+#   Alpha number of non-alpha version is 255.
+# version 4.14alpha1 => 414002
+mygcversion=500003
+
+if [ -z "`echo -n aho | grep n`" ] ; then
+Echo()
+{
+	echo -n "$*"
+}
+else
+Echo()
+{
+	echo "$*\c"
+}
+fi
+
+
+do_sigtest()
+{
+  echo "#include <signal.h>" > _zmachdep.c
+  if [ "$2" = void ]; then
+    echo "$1 _handler($2) {}" >> _zmachdep.c
+  else
+    echo "$1 _handler($2 x) {}" >> _zmachdep.c
+  fi
+  echo "int main(void) { $1 (*hdl)($2); hdl = signal(SIGINT,_handler); return 0; }" >> _zmachdep.c
+  $cc $cflags -o _zmachdep _zmachdep.c > _zwarning 2>&1 
+  stat=$?
+  warning=`cat _zwarning`
+  rm -f _zwarning
+}
+
+readdir() { 
+  if [ "$all_yes" = 0 ]; then
+    read __dir
+  else
+    __dir=$1
+    echo "$1"
+  fi
+  if [ -z "$__dir" ]; then
+    _dir=$1
+  else
+    _dir=`echo "$__dir"|sed -e "s;^~;$HOME;"`
+  fi
+}
+
+readanswer() {
+  var=$1
+  dflt=$2
+  ok=$3
+  if [ "$all_yes" = 0 -o -z "$dflt$ok" ]; then
+    read ans
+    if [ -z "$ans" ]; then
+      ans=$dflt
+    fi
+  else
+    ans=$dflt
+    echo "$ans"
+  fi
+  eval $var='$ans'
+}
+
+yesno() {
+  var=$1
+  dflt=$2
+  ddflt=$3
+  if [ -z "$dflt" ]; then
+    dflt=$ddflt
+  fi
+  if [ "$dflt" = y ]; then
+    ndflt=n
+  else
+    ndflt=y
+  fi
+  Echo "[$dflt]? "
+  if [ "$all_yes" = 0 ]; then
+    read ks_ans
+  else
+    ks_ans=$dflt
+    echo "$dflt"
+  fi
+  if [ "$ks_ans" = "$ndflt" ]; then
+    eval $var='$ndflt'
+  else
+    eval $var='$dflt'
+  fi
+}
+
+save_params() {
+  echo "use_color=$use_color" >> config.param
+  echo "use_menu=$use_menu" >> config.param
+  echo "use_mouse=$use_mouse" >> config.param
+  echo "use_cookie=$use_cookie" >> config.param
+  echo "use_ssl=$use_ssl" >> config.param
+  if [ -n "$dmodel" ]; then
+    echo "dmodel=$dmodel" >> config.param
+  fi
+}
+
+find_ssl() {
+  sslinclude=""
+  for i1 in /usr /usr/local
+  do
+    for i2 in /openssl /ssl / 
+    do
+      if [ "$i2" = "/" ]; then i2=''; fi
+      dirname=${i1}${i2}
+      if [ -f $dirname/include/ssl.h ]; then
+        sslinclude="-I${dirname}/include"
+      elif [ -f $dirname/include/openssl/ssl.h ]; then
+        sslinclude="-I${dirname}/include/openssl -I${dirname}/include"
+      fi
+      for i3 in lib/openssl lib
+      do
+        dirname=${i1}${i2}/${i3}
+        for ext in a so
+        do
+          if [ -f $dirname/libssl.$ext -o -f $dirname/libcrypto.$ext ]; then
+            if [ "$ssllib" = -L${dirname} ]; then
+              ssllib="-L${dirname}"
+            else
+              ssllib="$ssllib -L${dirname}"
+            fi
+          fi
+        done
+      done
+    done
+  done
+  ssllib="$ssllib -lssl -lcrypto"
+  if [ "$sslinclude" = "" ]; then
+    echo "Where is ssl.h? (for example, /usr/crypto/include)"
+    Echo ":"
+    read ks_ans
+    sslinclude="-I${ks_ans}"
+    if [ -d $ks_ans/openssl ]; then
+      sslinclude="${sslinclude} -I${ks_ans}/openssl"
+    fi
+    echo "Where is libssl.a? (for example, /usr/crypto/lib)"
+    Echo ":"
+    read ks_ans
+    ssllib="-L${ks_ans} -lssl -lcrypto"
+  fi
+}
+
+#--------------------------------------------------------------
+if [ -n "$USER" ]; then
+	user=$USER
+elif [ -n "$LOGNAME" ]; then
+	user=$LOGNAME
+elif [ -n "`whoami`" ]; then
+	user=`whoami`
+else
+#	Echo "Who are you? "
+#	read user
+	user=nobody
+fi
+
+echo "%"
+echo "% Hello $user. Let's start configuration process for w3m."
+echo "% Please answer some questions."
+echo "%"
+
+if [ -n "`echo $sysname | grep CYGWIN`" ]; then
+  sysname="CYGWIN"
+  extension='.exe'
+else
+  extension=
+fi
+
+topdir=$prefix
+special_sys=''
+case "$sysname" in
+  aix | AIX )
+    special_sys="#define AIX"
+  ;;
+  CYGWIN )
+    special_sys="#define CYGWIN $sysversion1"
+    if [ $sysversion1 -eq 0 ]; then
+    topdir=/cygnus/cygwin-b20/H-i586-cygwin32
+    fi
+  ;;
+  NetBSD )
+# Newer NetBSD system doesn't define 'unix' symbol anymore, but GC library
+# requires it.
+    special_sys="#define unix"
+  ;;
+esac
+
+if [ -z "$def_bindir" ]; then
+  def_bindir="$topdir/bin"
+fi
+echo "Which directory do you want to put the binary?"
+Echo "(default: $def_bindir) "
+readdir "$def_bindir"
+bindir=$_dir
+echo "def_bindir='$bindir'" >> config.param
+
+if [ -z "$def_libdir" ]; then
+  case "$sysname" in
+  *BSD)
+    def_libdir="$topdir/libexec/w3m"
+  ;;
+  *)
+    def_libdir="$topdir/lib/w3m"
+  ;;
+  esac
+fi
+echo "Which directory do you want to put the support binary files?"
+Echo "(default: $def_libdir) "
+readdir "$def_libdir"
+suplibdir=$_dir
+echo "def_libdir='$suplibdir'" >> config.param
+
+if [ -z "$def_helpdir" ]; then
+  def_helpdir="$topdir/lib/w3m"
+fi
+echo "Which directory do you want to put the helpfile?"
+Echo "(default: $def_helpdir) "
+readdir "$def_helpdir"
+helpdir=$_dir
+echo "def_helpdir='$helpdir'" >> config.param
+
+echo "Which language do you prefer?"
+echo "  1 - Japanese (charset ISO-2022-JP, EUC-JP, Shift_JIS)"
+echo "  2 - English (charset US_ASCII, ISO-8859-1, etc.)"
+if [ "$pref_lang" = 2 ]; then
+  Echo '[2]? '
+  def_lg=2
+else
+  Echo '[1]? '
+  def_lg=1
+fi
+while :
+do
+  readanswer lg_ans "$def_lg"
+  if [ "$lg_ans" != 1 -a "$lg_ans" != 2 ]; then
+    echo "Please choose 1 or 2."
+    Echo "[$def_lg]? "
+    continue
+  else
+    :
+  fi
+  break
+done 
+echo "pref_lang=$lg_ans" >> config.param
+if [ "$lg_ans" = 1 ]; then
+  use_lang="#define LANG JA"
+  lang=ja
+else
+  use_lang="#define LANG EN"
+  lang=en
+fi
+
+
+if [ "$lang" = ja ]; then
+  echo "Input your display kanji code."
+  echo "	S - Shift JIS"
+  echo "	E - EUC-JP"
+  echo '	j - JIS: ESC $@ - ESC (J'
+  echo '	N - JIS: ESC $B - ESC (J'
+  echo '	n - JIS: ESC $B - ESC (B'
+  echo '	m - JIS: ESC $@ - ESC (B'
+  echo ''
+  while :
+  do
+	if [ -n "$def_dcode" ] ; then
+		Echo "(default: $def_dcode) "
+	fi
+	Echo "Which? "
+	readanswer ncode "$def_dcode"
+	case "$ncode" in
+	[SEjNnm])
+		;;
+	*)
+		echo "Illegal code. Try again."
+		continue
+		;;
+	esac
+	break
+  done
+  echo "def_dcode=$ncode" >> config.param
+else
+  ncode=x
+fi
+
+echo "Do you want to use Lynx-like key binding?"
+yesno lynx_key "$lynx_key" n
+echo "lynx_key=$lynx_key" >> config.param
+if [ "$lynx_key" = y ]; then
+  keymap_file="keybind_lynx"
+else
+  keymap_file="keybind"
+fi
+
+if [ "$lang" = ja ]; then
+  if [ "$lynx_key" = y ]; then
+    helpfile="w3mhelp-lynx_ja.html"
+  else
+    helpfile="w3mhelp-w3m_ja.html"
+  fi
+else
+  if [ "$lynx_key" = y ]; then
+    helpfile="w3mhelp-lynx_en.html"
+  else  
+    helpfile="w3mhelp-w3m_en.html"
+  fi
+fi
+
+if [ "$lang" = ja ]; then
+  echo "Do you want to use 2-byte character for table border, item, etc."
+  yesno kanji_symbols "$kanji_symbols" y
+  echo "kanji_symbols=$kanji_symbols" >> config.param
+else
+  kanji_symbols=n
+fi
+if [ "$kanji_symbols" = y ]; then
+  def_kanji_symbols="#define KANJI_SYMBOLS"
+else
+  def_kanji_symbols="#undef KANJI_SYMBOLS"
+fi
+
+echo "Do you want to automatically generate domain parts of passwords for anonymous FTP logins"
+yesno ftppass_hostnamegen "$ftppass_hostnamegen" n
+echo "ftppass_hostnamegen=$ftppass_hostnamegen" >> config.param
+if [ "$ftppass_hostnamegen" = y ]; then
+  def_ftppass_hostnamegen="#define FTPPASS_HOSTNAMEGEN"
+else
+  def_ftppass_hostnamegen="#undef FTPPASS_HOSTNAMEGEN"
+fi
+
+echo "Do you want listing of options"
+yesno show_params "$show_params" n
+echo "show_params=$show_params" >> config.param
+if [ "$show_params" = y ]; then
+  def_show_params="#define SHOW_PARAMS"
+else
+  def_show_params="#undef SHOW_PARAMS"
+fi
+
+echo "Do you want NNTP support"
+yesno use_nntp "$use_nntp" n
+echo "use_nntp=$use_nntp" >> config.param
+if [ "$use_nntp" = y ]; then
+  def_use_nntp="#define USE_NNTP"
+else
+  def_use_nntp="#undef USE_NNTP"
+fi
+
+echo "Do you want ANSI color escape sequences supprot?"
+yesno ansi_color "$ansi_color" n
+echo "ansi_color=$ansi_color" >> config.param
+if [ "$ansi_color" = y ]; then
+  def_ansi_color="#define ANSI_COLOR"
+else
+  def_ansi_color="#undef ANSI_COLOR"
+fi
+
+echo ""
+echo "Let's do some configurations. Choose config option among the list."
+echo ""
+echo "1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)"
+echo "2 - Little model  (color, menu, no mouse, no cookie, no SSL)"
+echo "3 - Mouse model   (color, menu, mouse, no cookie, no SSL)"
+echo "4 - Cookie model  (color, menu, mouse, cookie, no SSL)"
+echo "5 - Monster model (with everything; you need openSSL library)"
+echo "6 - Customize"
+echo ""
+Echo "Which? "
+if [ -n "$dmodel" ]; then
+  Echo "(default: $dmodel) "
+fi
+
+while :
+do
+readanswer ans "$dmodel"
+if [ -z "$ans" -a -n "$dmodel" ]; then
+  ans=$dmodel
+fi
+dmodel=$ans
+case "$ans" in
+  1)
+    use_color=n; def_color="#undef COLOR"
+    use_menu=n;  def_menu="#undef MENU"
+    use_mouse=n; def_mouse="#undef MOUSE"
+    use_cookie=n; def_cookie="#undef USE_COOKIE"
+    use_ssl=n; def_ssl="#undef USE_SSL"
+    save_params
+    customized=y
+    ;;
+  2)
+    use_color=y; def_color="#define COLOR"
+    use_menu=y;  def_menu="#define MENU"
+    use_mouse=n; def_mouse="#undef MOUSE"
+    use_cookie=n; def_cookie="#undef USE_COOKIE"
+    use_ssl=n; def_ssl="#undef USE_SSL"
+    save_params
+    customized=y
+    ;;
+  3)
+    use_color=y; def_color="#define COLOR"
+    use_menu=y;  def_menu="#define MENU"
+    use_mouse=y; def_mouse="#define MOUSE"
+    use_cookie=n; def_cookie="#undef USE_COOKIE"
+    use_ssl=n; def_ssl="#undef USE_SSL"
+    save_params
+    customized=y
+    ;;
+  4)
+    use_color=y; def_color="#define COLOR"
+    use_menu=y;  def_menu="#define MENU"
+    use_mouse=y; def_mouse="#define MOUSE"
+    use_cookie=y; def_cookie="#define USE_COOKIE"
+    use_ssl=n; def_ssl="#undef USE_SSL"
+    save_params
+    customized=y
+    ;;
+  5)
+    use_color=y; def_color="#define COLOR"
+    use_menu=y;  def_menu="#define MENU"
+    use_mouse=y; def_mouse="#define MOUSE"
+    use_cookie=y; def_cookie="#define USE_COOKIE"
+    use_ssl=y; def_ssl="#define USE_SSL"
+    find_ssl
+    save_params
+    customized=y
+    ;;
+  6)
+    ;;
+  *)
+    echo "Please input 1-6."
+    Echo "Which? "
+    continue
+  ;;
+esac
+break
+done
+
+if [ "$customized" != y ]; then
+
+echo "Do you want to use color ESC sequence for kterm/pxvt "
+yesno use_color "$use_color" y
+echo "use_color=$use_color" >> config.param
+if [ "$use_color" = y ]; then
+  def_color="#define COLOR"
+else
+  def_color="#undef COLOR"
+fi
+
+echo 'Do you want to use mouse? (It requires xterm/kterm)'
+yesno use_mouse "$use_mouse" n
+echo "use_mouse=$use_mouse" >> config.param
+if [ "$use_mouse" = y ]; then
+  def_mouse="#define MOUSE"
+else
+  def_mouse="#undef MOUSE"
+fi
+
+echo "Do you want to use popup menu?"
+yesno use_menu "$use_menu" y
+echo "use_menu=$use_menu" >> config.param
+if [ "$use_menu" = y ]; then
+  def_menu="#define MENU"
+else
+  def_menu="#undef MENU"
+fi
+
+#echo "Do you want to use matrix in rendering table?"
+#if [ "$use_matrix" = n ]; then
+#  Echo '[n]? '
+#  read ks_ans
+#  if [ "$ks_ans" = 'y' ]; then
+#    use_matrix='y'
+#  fi
+#else
+#  Echo '[y]? '
+#  read ks_ans
+#  if [ "$ks_ans" = 'n' ]; then
+#    use_matrix='n'
+#  else
+#    use_matrix='y'
+#  fi
+#fi
+#use_matrix=y
+#echo "use_matrix=$use_matrix" >> config.param
+#if [ "$use_matrix" = y ]; then
+#  def_matrix="#define MATRIX 1"
+#else
+#  def_matrix="#undef MATRIX"
+#fi
+
+echo "Do you want to use cookie?"
+yesno use_cookie "$use_cookie" n
+echo "use_cookie=$use_cookie" >> config.param
+if [ "$use_cookie" = y ]; then
+  def_cookie="#define USE_COOKIE"
+else
+  def_cookie="#undef USE_COOKIE"
+fi
+
+echo "Do you want to use SSL?"
+echo '(You need OpenSSL library; Please see http://www.openssl.org/)'
+yesno use_ssl "$use_ssl" n
+echo "use_ssl=$use_ssl" >> config.param
+if [ "$use_ssl" = y ]; then
+  def_ssl="#define USE_SSL"
+  find_ssl
+else
+  def_ssl="#undef USE_SSL"
+  ssllib=""
+  sslinclude=""
+fi
+
+fi
+
+if [ "$use_ssl" = y ]; then
+  echo "Do you want SSL verification support"
+  echo '(Your SSL library must be version 0.8 or later)'
+  yesno use_ssl_verify "$use_ssl_verify" n
+  echo "use_ssl_verify=$use_ssl_verify" >> config.param
+  if [ "$use_ssl_verify" = y ]; then
+    def_use_ssl_verify="#define USE_SSL_VERIFY"
+  else
+    def_use_ssl_verify="#undef USE_SSL_VERIFY"
+  fi
+else
+  use_ssl_verify=n
+  def_use_ssl_verify="#undef USE_SSL_VERIFY"
+fi
+
+if [ -z "$ded" ] ; then ded=`./which \vi` ; fi
+if [ -n  "`echo $ded | grep 'no'`" ] ; then ded=vi ; fi
+echo "Input your favorite editor program."
+Echo "(Default: $ded) "
+readdir "$ded"
+editor=$_dir
+echo "ded='$editor'" >> config.param
+
+if [ -z "$dmail" ] ; then 
+  if ./which \mailx > /dev/null
+  then
+    dmail=`./which \mailx` 
+  else
+    dmail=`./which \mail`
+  fi
+  if [ -n  "`echo $dmail | grep 'no'`" ] ; then dmail=mailx ; fi
+fi
+echo "Input your favorite mailer program."
+Echo "(Default: $dmail) "
+readdir "$dmail"
+mailer=$_dir
+echo "dmail='$mailer'" >> config.param
+
+
+if [ -z "$dbrowser" ] ; then 
+  if ./which netscape > /dev/null
+  then
+    dbrowser=`./which netscape` 
+  elif ./which iexplore > /dev/null
+  then
+    dbrowser=`./which iexplore`
+  else
+    dbrowser=`./which lynx`
+  fi
+  if [ -n  "`echo $dbrowser | grep 'no'`" ] ; then dbrowser=netscape ; fi
+fi
+echo "Input your favorite external browser program."
+Echo "(Default: $dbrowser) "
+readdir "$dbrowser"
+brz=$_dir
+echo "dbrowser='$brz'" >> config.param
+
+if [ -z "$dcc" ] ; then 
+  if ./which gcc >/dev/null
+  then
+    dcc=gcc
+  else
+    dcc=cc
+  fi
+fi
+echo "Input your favorite C-compiler."
+Echo "(Default: $dcc) "
+readanswer cc "$dcc"
+echo "dcc='$cc'" >> config.param
+
+if [ -z "$dcflags" ] ; then dcflags="-O" ; fi
+echo "Input your favorite C flags."
+Echo "(Default: $dcflags) "
+readanswer cflags "$dcflags"
+echo "dcflags='$cflags'" >> config.param
+
+bsdinclude=''
+if [ ! -f /usr/include/netinet/in.h ] ; then
+	if [ -f /usr/include/bsd/netinet/in.h ] ; then
+		bsdinclude='-I/usr/include/bsd'
+	elif [ -f /usr/bsdinclude/netinet/in.h ] ; then
+		bsdinclude='-I/usr/bsdinclude'
+	else
+		echo "It seems you don't have some include files for networking."
+	fi
+fi
+
+termlib=''
+cat > _zmachdep.c << EOF
+main()
+{
+  char bp[100];
+  tgetent(bp,getenv("TERM"));
+}
+EOF
+
+if [ -z "$dtermlib" ]; then
+  TERM_LIBS='termcap termlib terminfo mytinfo curses ncurses'
+
+  for lib in $TERM_LIBS
+  do
+    for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+    do
+      if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.so ] ; then 
+        # check if the lib works...
+        Echo "Terminal library -l$lib found at $libdir, "
+        if $cc $cflags -o _zmachdep _zmachdep.c -l$lib > /dev/null 2>&1
+        then
+          echo "and it seems to work."
+          termlib=-l$lib
+        else
+          echo "but it doesn't seem to work."
+        fi
+      fi
+    done
+  done
+  if [ -z "$termlib" ]; then
+    Echo "termcap/curses library not found; I hope -ltermcap works."
+    termlib='-ltermcap'
+  fi
+  dtermlib=$termlib
+fi
+echo 'Which terminal library do you want to use? (type "none" if you do not need one)'
+Echo "(default: $dtermlib) "
+readanswer termlib "$dtermlib"
+if [ "$termlib" = none ]; then
+  termlib=""
+else
+  echo "dtermlib='$termlib'" >> config.param
+fi
+
+## Setup for math library
+if [ $sysname = Rhapsody -o $sysname = "Mac OS" ]; then
+  echo "MacOS X doesn't need -lm."
+  mathlib=""
+else
+  mathlib="-lm"
+fi
+
+## look for GPM library
+use_gpm=""
+gpmlib=""
+if [ "$use_mouse" = y ]; then
+  for libdir in /lib /usr/lib /usr/local/lib
+  do
+    if [ -f $libdir/libgpm.a -o -f $libdir/libgpm.so ]; then
+      echo "GPM library found."
+      use_gpm="#define USE_GPM"
+      gpmlib="-lgpm"
+    fi
+  done
+fi
+
+case $sysname in
+  freebsd|FreeBSD)
+    use_sysmouse="#define USE_SYSMOUSE"
+    ;;
+  *)
+    use_sysmouse="#undef USE_SYSMOUSE"
+    ;;
+esac
+
+extlib=''
+
+case $sysname in
+  *bsd)
+    searchlibs="socket nsl"
+    ;;
+  *BSD)
+    searchlibs="socket nsl"
+    ;;
+  *)
+    searchlibs="bsd BSD 44bsd socket nsl"
+    ;;
+esac
+for lib in $searchlibs
+do
+  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+  do
+    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.so ] ; then 
+      extlib="$extlib -l$lib"
+      break
+    fi
+  done
+done
+if [ $sysname = "HP-UX" ]; then
+  extlib="$extlib -ldld"
+fi
+if [ -n "$extlib" ]; then
+  echo "additional library found: $extlib"
+fi
+
+gclib=''
+gcinclude=''
+gctarget=''
+for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib ${HOME}/lib
+do
+  if [ -f $libdir/libgc.a -o -f $libdir/libgc.so ] ; then 
+    echo "$libdir/libgc found"
+    gclib="-L$libdir -lgc"
+    break
+  fi
+done
+for inc in /usr/include /usr/include/gc /usr/local/include /usr/local/include/gc ${HOME}/include
+do
+  if [ -f $inc/gc.h ]; then
+    echo "$inc/gc.h found"
+    gcinclude=$inc
+    break
+  fi
+done
+
+case $sysname in
+  linux|Linux|LINUX|aix|Aix|AIX)
+    # these OS requires gcmain.c, which include gc/gc_priv.h
+    # therefore we use gc library comes with w3m
+    echo "Your OS is $sysname; using gc library comes with w3m."
+    gcinclude=""
+    gclib=""
+    ;;
+esac
+
+if [ -n "$gclib" -a -n "$gcinclude" ]; then
+  Echo GC library found on your system...
+  cat > _zmachdep.c << EOF
+#include <gc.h>
+main()
+{
+  extern unsigned GC_version;
+  printf("%d%02d%03d\n",(GC_version>>16)&0xff,(GC_version>>8)&0xff,GC_version&0xff);
+}
+EOF
+  if $cc $cflags -I$gcinclude -o _zmachdep _zmachdep.c $gclib > /dev/null 2>&1
+  then
+    echo "and it seems to work."
+    gcversion=`./_zmachdep`
+    echo "GC_version is $gcversion."    
+    if [ $gcversion -lt $mygcversion ]; then
+      echo "GC library on your system seems to be old."
+      Echo "Do you want to use GC library comes with w3m?[y] "
+      read ans
+      if [ "$ans" = 'n' -o "$ans" = 'N' ]; then
+        cflags="$cflags -I$gcinclude"
+      else
+        cflags="$cflags -I./gc/include"
+        gclib="gc/gc.a"
+        gctarget=$gclib
+      fi
+    else
+      cflags="$cflags -I$gcinclude"
+    fi
+  else
+    echo "but it doesn't seem to work."
+    cflags="$cflags -I./gc/include"
+    gclib="gc/gc.a"
+    gctarget=$gclib
+  fi
+fi
+
+if [ -z "$gclib" -o -z "$gcinclude" ]; then
+  cflags="$cflags -I./gc/include"
+  gclib="gc/gc.a"
+  gctarget="$gclib"
+fi
+
+# Apply patch.
+if [ "$gclib" = "gc/gc.a" -a ! -f patch_done ]; then
+  patchfile=""
+  case "$platform:$sysname" in
+  [Aa]lpha:Linux)
+    patchfile=Patches/alpha ;;
+  [Ss]parc:Linux|sun4*:Linux)
+      if [ "$sysversion1" = 2 -a "$sysversion2" = 2 ]
+      then
+        patchfile=Patches/linux2.2sparc
+      fi
+      ;;
+  ARM*:Linux|arm*:Linux)
+    patchfile=Patches/armlinux
+    ;;
+  [mM]ips*:Linux|MIPS*:Linux)
+    patchfile=Patches/mipsel
+    ;;
+  *:HP-UX)
+    if [ "$sysversion2" = 11 ]
+    then
+      patchfile=Patches/hpux11
+    fi
+    ;;
+  macppc:NetBSD)
+    patchfile = Patches/macppc
+    ;;
+  R3000:*System_V*|R4000:UNIX_SYSV|R*000:UNIX_SV)
+    # EWS-4800
+    patchfile=Patches/ews4800
+    ;;
+  *:NEWS-OS)
+    patchfile=Patches/newsos6
+    ;;
+  *:Rhapsody|*:"Mac OS")
+    # MacOS X
+    patchfile=Patches/macosx
+    ;;
+  *:OS/2)
+    # OS/2
+    patchfile=Patches/os2
+  esac
+
+  if [ -n "$patchfile" -a -f "$patchfile" ]; then
+    patch -p0 < $patchfile
+    echo "dpatch='$patch'" >> config.param
+    touch patch_done
+  fi
+fi
+
+
+echo "Input additional LD flags other than listed above, if any:"
+if [ -n "$dldflags" ]; then
+  Echo "(default: $dldflags) : "
+else
+  Echo ": "
+fi
+readanswer ldflags "$dldflags" ok
+if [ -z "$ldflags" ]; then
+  ldflags=$dldflags
+fi
+echo "dldflags='$ldflags'" >> config.param
+
+echo "Checking machine dependency."
+
+###### mime.types
+MIME_TYPES=""
+for d in /usr/lib /usr/local/lib /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
+do
+  if [ -f $d/mime.types ]; then
+    MIME_TYPES="$d/mime.types"
+  fi
+done
+if [ -z "$MIME_TYPES" ]; then
+  echo "Global mime.types not found; Hope /usr/local/lib/mime.types works."
+  MIME_TYPES=/usr/local/lib/mime.types
+fi
+
+####### ranlib
+if ./which ranlib > /dev/null
+then
+  echo "You have ranlib."
+  ranlib_cmd=ranlib
+else
+  if [ $sysname = "OS/2" ]; then
+    ranlib_cmd=rem
+  else
+  echo "You don't have ranlib."
+  ranlib_cmd=:
+  fi
+fi
+
+####### mkdir -p
+if mkdir -p hogege 
+then
+  echo "You have mkdir -p."
+  MKDIR="mkdir -p"
+else
+  MKDIR="mkdir"
+fi
+rm -rf hogege 2>&1 >/dev/null
+
+####### strcasecmp
+cat > _zmachdep.c << EOF
+#include <string.h>
+main()
+{
+  int i;
+  i = strcasecmp("abc","def");
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have strcasecmp()."
+  strcasecmp_flg="#define STRCASECMP"
+else
+  echo "You don't have strcasecmp()."
+  strcasecmp_flg="#undef STRCASECMP"
+fi
+
+####### strchr
+cat > _zmachdep.c << EOF
+#include <string.h>
+main()
+{
+  char *p, *q = "abc";
+  p = strchr(q,'c');
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have strchr()."
+  strchr_flg="#define STRCHR"
+else
+  echo "You don't have strchr()."
+  strchr_flg="#undef STRCHR"
+fi
+
+####### strerror
+cat > _zmachdep.c << EOF
+main()
+{
+  int i;
+  i = strerror(0);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have strerror()."
+  strerror_flg="#define STRERROR"
+else
+  echo "You don't have strerror()."
+  strerror_flg="#undef STRERROR"
+fi
+
+
+####### sys_errlist
+cat > _zmachdep.c << EOF
+main()
+{
+  extern char sys_errlist[];
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have sys_errlist[]."
+  syserrlist_flg="#define SYS_ERRLIST"
+else
+  echo "You don't have sys_errlist[]."
+  syserrlist_flg="#undef SYS_ERRLIST"
+fi
+
+####### bcopy
+cat > _zmachdep.c << EOF
+main()
+{
+  char x[1],y[1];
+  bzero(x,1);
+  bcopy(x,y,1);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have bcopy()."
+  bcopy_flg="#undef NOBCOPY"
+else
+  echo "You don't have bcopy()."
+  bcopy_flg="#define NOBCOPY"
+fi
+
+####### waitpid
+cat > _zmachdep.c << EOF
+#include <sys/types.h>
+#include <sys/wait.h>
+
+main()
+{
+    pid_t pid;
+    int status;
+    if ((pid = fork()) == 0) {
+       sleep(10);
+       exit(1);
+    }
+    while(waitpid(pid,&status,WNOHANG));
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have waitpid()."
+  waitpid_flg="#define HAVE_WAITPID"
+else
+  echo "You don't have waitpid()."
+  waitpid_flg="#undef HAVE_WAITPID"
+fi
+
+####### wait3
+cat > _zmachdep.c << EOF
+#include <sys/types.h>
+#include <time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#ifndef NULL
+#define NULL 0
+#endif
+
+main()
+{
+    int pid;
+    int status;
+    if ((pid = fork()) == 0) {
+       sleep(10);
+       exit(1);
+    }
+    while(wait3(&status,WNOHANG,NULL) > 0);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have wait3()."
+  wait3_flg="#define HAVE_WAIT3"
+else
+  echo "You don't have wait3()."
+  wait3_flg="#undef HAVE_WAIT3"
+fi
+
+####### strftime
+cat > _zmachdep.c << EOF
+#include <time.h>
+
+main()
+{
+    time_t ct;
+    struct tm *tm;
+    char t[80];
+    time(&ct);
+    strftime(t, 80, "%a, %d %b %Y %H:%M:%S GMT",gmtime(&ct));
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have strftime()."
+  strftime_flg="#define HAVE_STRFTIME"
+else
+  echo "You don't have strftime()."
+  strftime_flg="#undef HAVE_STRFTIME"
+fi
+
+
+####### getcwd
+cat > _zmachdep.c << EOF
+#include <sys/param.h>
+#include <unistd.h>
+main()
+{
+  char path[MAXPATHLEN];
+  getcwd(path,MAXPATHLEN);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have getcwd()."
+  getcwd_flg="#define GETCWD"
+else
+  echo "You don't have getcwd()."
+  getcwd_flg="#undef GETCWD"
+fi
+
+####### getwd
+cat > _zmachdep.c << EOF
+main()
+{
+  char path[64];
+  getwd(path);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have getwd()."
+  getwd_flg="#define GETWD"
+else
+  echo "You don't have getwd()."
+  getwd_flg="#undef GETWD"
+fi
+
+####### readlink
+cat > _zmachdep.c << EOF
+main()
+{
+  char path[64],lpath[64];
+  readlink(path,lpath,64);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have readlink()."
+  readlink_flg="#define READLINK"
+else
+  echo "You don't have readlink()."
+  readlink_flg="#undef READLINK"
+fi
+
+####### setenv
+cat > _zmachdep.c << EOF
+#include <stdlib.h>
+main()
+{
+  setenv("HOGE","hoge",1);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have setenv()."
+  setenv_flg="#define HAVE_SETENV"
+else
+  echo "You don't have setenv()."
+  setenv_flg="#undef HAVE_SETENV"
+fi
+
+####### putenv
+cat > _zmachdep.c << EOF
+#include <stdlib.h>
+main()
+{
+  putenv("HOGE=hoge");
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have putenv()."
+  putenv_flg="#define HAVE_PUTENV"
+else
+  echo "You don't have putenv()."
+  putenv_flg="#undef HAVE_PUTENV"
+fi
+
+####### sigsetjmp
+cat > _zmachdep.c << EOF
+#include <setjmp.h>
+main()
+{
+  jmp_buf env;
+  if (sigsetjmp(env,1) != 0) {
+    exit(0);
+  }
+  siglongjmp(env,1);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have sigsetjmp()."
+  setjmp_def="#define SETJMP(env) sigsetjmp(env,1)"
+  longjmp_def="#define LONGJMP(env,val) siglongjmp(env,val)"
+  jmpbuf_def="#define JMP_BUF sigjmp_buf"
+else
+  echo "You don't have sigsetjmp()."
+  setjmp_def="#define SETJMP(env) setjmp(env)"
+  longjmp_def="#define LONGJMP(env,val) longjmp(env)"
+  jmpbuf_def="#define JMP_BUF jmp_buf"
+fi
+
+####### fclose
+cat > _zmachdep.c << EOF
+#include <stdio.h>
+#include <stdlib.h>
+main()
+{
+  void (*c)() = fclose;
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "fclose() is declared."
+  fclose_dcl=''
+else
+  echo "fclose() is not declared."
+  fclose_dcl='void fclose(FILE*);'
+fi
+
+####### pclose
+cat > _zmachdep.c << EOF
+#include <stdio.h>
+#include <stdlib.h>
+main()
+{
+  void (*c)() = pclose;
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "pclose() is declared."
+  pclose_dcl=''
+else
+  echo "pclose() is not declared."
+  pclose_dcl='void pclose(FILE*);'
+fi
+
+####### termios/termio/sgtty
+term_if='#define SGTTY'
+if [ $sysname = "HP-UX" ]; then
+	echo "Your OS is HP-UX; using termio"
+	term_if="#define TERMIO"
+elif [ $sysname = "CYGWIN" ]; then
+	echo "Your OS is CYGWIN; using termios"
+	term_if="#define TERMIOS"
+elif [ $sysname = "OS/2" ]; then
+	echo "Your OS is OS/2; using termios"
+	term_if='#define TERMIOS'
+elif [ -r /usr/include/termios.h ]; then
+	echo "You have termios."
+	term_if='#define TERMIOS'
+elif [ -r /usr/include/termio.h ]; then
+	echo "You have termio."
+	term_if='#define TERMIO'
+elif [ -r /usr/include/sgtty.h ]; then
+	echo "You have sgtty."
+	term_if='#define SGTTY'
+else
+	echo "Do you have tty interface? I can't find one but I hope sgtty works..."
+fi
+
+####### dirent/direct
+dir_if=''
+if [ $sysname = "CYGWIN" ]; then
+	echo "Your OS is CYGWIN; using dirent.h"
+	dir_if='#define DIRENT'
+elif [ $sysname = "OS/2" ]; then
+	echo "Your OS is OS/2; using dirent.h"
+	dir_if='#define DIRENT'
+elif [ -r /usr/include/dirent.h ]; then
+	echo "You have dirent.h."
+	dir_if='#define DIRENT'
+elif [ -r /usr/include/sys/dir.h ]; then
+	echo "You have sys/dir.h."
+	dir_if=''
+else
+	echo "Do you have directory interface? I can't find one but I hope sys/dir.h works..."
+fi
+
+# check signal handler
+
+do_sigtest int int
+if [ $stat = 0 -a -z "$warning" ]
+then
+  echo 'signal handler is int handler(int).'
+  sig_type='typedef int MySignalHandler;'
+  sig_arg='#define SIGNAL_ARG int _dummy'
+  sig_arglist='#define SIGNAL_ARGLIST 0'
+  sig_return='#define SIGNAL_RETURN return 0'
+else
+  do_sigtest int void
+  if [ $stat = 0 -a -z "$warning" ]
+  then
+    echo 'signal handler is int handler(void).'
+    sig_type='typedef int MySignalHandler;'
+    sig_arg='#define SIGNAL_ARG void'
+    sig_arglist='#define SIGNAL_ARGLIST'
+    sig_return='#define SIGNAL_RETURN return 0'
+  else
+    do_sigtest void int
+    if [ $stat = 0 -a -z "$warning" ]
+    then
+      echo 'signal handler is void handler(int).'
+      sig_type='typedef void MySignalHandler;'
+      sig_arg='#define SIGNAL_ARG int _dummy'
+      sig_arglist='#define SIGNAL_ARGLIST 0'
+      sig_return='#define SIGNAL_RETURN return'
+    else
+      do_sigtest void void
+      if [ $stat = 0 -a -z "$warning" ]
+      then
+        echo 'signal handler is void handler(void).'
+      else
+        echo 'I could not find the type of signal handler. I hope void handler(void) works.'
+      fi
+      sig_type='typedef void MySignalHandler;'
+      sig_arg='#define SIGNAL_ARG void'
+      sig_arglist='#define SIGNAL_ARGLIST'
+      sig_return='#define SIGNAL_RETURN return'
+    fi
+  fi
+fi
+
+# check for float.h
+cat > _zmachdep.c << EOF
+#include <float.h>
+main()
+{
+  ;
+}
+EOF
+if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have float.h."
+  no_float_h='#undef NO_FLOAT_H'
+else
+  no_float_h='#define NO_FLOAT_H 1'
+fi
+
+###### IPv6 support check
+cat > _zmachdep.c <<EOF
+#include <sys/types.h>
+#include <sys/socket.h>
+main()
+{
+ if (socket(AF_INET6, SOCK_STREAM, 0) < 0)
+   exit(1);
+ else
+   exit(0);
+}
+EOF
+ipv6="#undef INET6"
+v6lib=''
+if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
+then
+  if ./_zmachdep; then
+    ipv6="#define INET6"
+  fi
+  case $sysname in
+  *BSD|*bsd)
+    cat > _zmachdep.c <<EOF
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+
+struct addrinfo *hints, **res;
+
+int main() {
+    getaddrinfo("null", "null", hints, res);
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
+    then
+      echo "You have getaddrinfo() in libc."
+    else
+      for libdir in /usr/local/v6/lib /usr/local/lib /usr/lib
+      do
+	if [ -e $libdir/libinet6.a ]; then
+	  if [ "$libdir" != "/usr/lib" ]; then
+	    v6lib="-L$libdir"
+	  fi
+	  v6lib="$v6lib -linet6"
+	  if $cc $cflags -o _zmachdep _zmachdep.c $extlib $v6lib > /dev/null 2>&1
+	  then
+	    echo "You have getaddrinfo() in libinet6."
+	  fi
+	  break
+	fi
+      done
+      if [ "X$v6lib" = "X" ]; then
+	echo "You don't have getaddrinfo()."
+	ipv6="#undef INET6"
+      fi
+    fi
+    ;;
+  CYGWIN*)
+    ipv6="#undef INET6"
+    ;;
+  esac
+fi
+if [ "$ipv6" = "#undef INET6" ]; then
+  echo "You don't have IPv6 support."
+else
+  echo "You have IPv6 support."
+fi
+
+
+
+rm -f _zmachdep$extension _zmachdep.c _zmachdep.o
+echo "------------ Configuration done ------------"
+
+# set model name
+case $dmodel in
+  1) modelname=baby;;
+  2) modelname=little;;
+  3) modelname=mouse;;
+  4) modelname=cookie;;
+  5) modelname=monster;;
+  6) modelname=custom;;
+esac
+
+cat > extrvers.c << EOF
+#include <stdio.h>
+#include <string.h>
+#include "version.c"
+main()
+{
+  char *p = strchr(version,'/');
+  if (p == NULL)
+    printf("unknown\n");
+  else
+    printf("%s\n",p+1);
+}
+EOF
+$cc $cflags -o extrvers extrvers.c  > /dev/null 2>&1
+w3mversion=`./extrvers`
+echo "Current w3m version is $w3mversion."
+rm -f extrvers.c extrvers$extension
+
+echo "Extracting config.h"
+cat > config.h << END_OF_CONFIG_H
+/*
+ * Configuration for w3m
+ */
+
+#ifndef _CONFIGURED_
+#define _CONFIGURED_
+
+/* User Configuration */
+
+/* 
+   If you define DICT, you can use dictionary look-up function
+   in w3m. See README.dict for detail.
+*/
+#undef DICT
+
+/*
+   If you define USE_MARK, you can use set-mark (C-SPC),
+   goto-next-mark (ESC p), goto-next-mark (ESC n) and
+   mark-by-regexp (").
+*/
+#undef USE_MARK
+
+/*
+   If you want to load and save URL history.
+ */
+#define USE_HISTORY
+
+/*
+   BG_COLOR enables w3m to set background color.
+ */
+#define BG_COLOR
+
+/*
+   VIEW_UNSEENOBJECTS enables w3m to make a link to unseen objects.
+   e.g. background image.
+ */
+#undef VIEW_UNSEENOBJECTS
+
+/*
+   VI_PREC_NUM enables vi-like behavior for '2 SPC' or '2 b'
+ */
+#undef VI_PREC_NUM
+
+/*
+ * Do word fill
+ */
+#undef FORMAT_NICE
+
+/*
+ * Support Gopher protocol
+ */
+#undef USE_GOPHER
+
+/*
+ * Support NNTP
+ */
+$def_use_nntp
+
+/*
+ * Support ANSI color escape sequences
+ */
+$def_ansi_color
+
+/*
+ * Enable id attribute
+ */
+#define ID_EXT
+
+/*
+ * Save Current-buffer Information
+ */
+#define BUFINFO
+
+/*
+ * Support EGD (Entropy Gathering Daemon)
+ */
+#undef USE_EGD
+
+/*
+ * MENU_MAP enables w3m to show image map link with popup menu.
+ */
+#define MENU_MAP
+
+/*
+ * Use Emacs-like key binding for file name completion
+ */
+#undef EMACS_LIKE_LINEEDIT
+
+/*
+ * Remove line trailing spaces in html buffer.
+ */
+#undef ENABLE_REMOVE_TRAILINGSPACES
+
+/**********************************************************/
+#ifdef makefile_parameter
+
+BIN_DIR = $bindir
+HELP_DIR = $helpdir
+LIB_DIR = $suplibdir
+HELP_FILE = $helpfile
+SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
+LOCAL_LIBRARIES = $ldflags
+CC = $cc
+MYCFLAGS = $cflags $bsdinclude $sslinclude
+GCCFLAGS = $cflags -DATOMIC_UNCOLLECTABLE -DNO_EXECUTE_PERMISSION -DALL_INTERIOR_POINTERS -DSILENT -DNO_DEBUGGING #-DNO_SIGNALS
+KEYBIND_SRC = $keymap_file.c
+KEYBIND_OBJ = $keymap_file.o
+EXT=$extension
+MATHLIB=$mathlib
+GCLIB=$gclib
+GCTARGET=$gctarget
+RANLIB=$ranlib_cmd
+MKDIR=$MKDIR
+VERSION=$w3mversion
+MODEL=$sysname.$platform-$modelname-$lang
+#else
+$special_sys
+
+#define DISPLAY_CODE '$ncode'
+
+#define JA 0
+#define EN 1
+$use_lang
+$def_kanji_symbols
+$def_color
+$def_mouse
+$use_gpm
+$use_sysmouse
+$def_menu
+$def_cookie
+$def_ssl
+$def_use_ssl_verify
+$def_ftppass_hostnamegen
+$def_show_params
+
+#define DEF_EDITOR "$editor"
+#define DEF_MAILER "$mailer"
+#define DEF_EXT_BROWSER "$brz"
+
+#define LIB_DIR      "$suplibdir"
+#define HELP_DIR     "$helpdir"
+#define HELP_FILE    "w3mhelp.html"
+#define W3MCONFIG    "w3mconfig"
+
+#define RC_DIR       "~/.w3m/"
+#define BOOKMARK     "bookmark.html"
+#define CONFIG_FILE  "config"
+#define KEYMAP_FILE  "keymap"
+#define MENU_FILE    "menu"
+#define COOKIE_FILE  "cookie"
+#define HISTORY_FILE "history"
+
+#define USER_MAILCAP RC_DIR "/mailcap"
+#define SYS_MAILCAP  "/etc/mailcap"
+#define USER_MIMETYPES "~/.mime.types"
+#define SYS_MIMETYPES "$MIME_TYPES"
+
+#define DEF_SAVE_FILE "index.html"
+
+$term_if
+$dir_if
+$strcasecmp_flg
+$strchr_flg
+$strerror_flg
+$syserrlist_flg
+$bcopy_flg
+$waitpid_flg
+$wait3_flg
+$strftime_flg
+$getdtablesize_flg
+$getcwd_flg
+$getwd_flg
+$readlink_flg
+$setenv_flg
+$putenv_flg
+$readlink_flg
+$fclose_dcl
+$pclose_dcl
+$setjmp_def
+$longjmp_def
+$jmpbuf_def
+
+$sig_type
+$sig_arg
+$sig_arglist
+$sig_return
+/*
+   If you want to use IPv6, define this symbol.
+ */
+$ipv6
+
+#undef TABLE_EXPAND
+#undef TABLE_NO_COMPACT
+#define NOWRAP 1
+#define NEW_FORM 1
+#define MATRIX 1
+$no_float_h
+
+#endif /* makefile_parameter */
+#endif /* _CONFIGURED_ */
+
+END_OF_CONFIG_H
+
+echo ''
+echo 'config.h is created. See config.h for further configuration.'
+echo ''
+echo 'Generating dirlist.cgi'
+
+perl=`./which perl`
+if [ `expr "$perl" : 'not found'` != 0 ]; then
+  perl=/usr/local/bin/perl
+fi
+if [ $sysname = CYGWIN ]; then
+  cygwin=1
+else
+  cygwin=0
+fi
+sed -e "s;@PERL@;$perl;" \
+    -e "s;@CYGWIN@;$cygwin;" \
+    scripts/dirlist.in > scripts/dirlist.cgi
+
+
+echo 'Configuration done. Just type "make".'

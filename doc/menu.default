@@ -1,0 +1,33 @@
+# A sample of ~/.w3m/menu  (default)
+#
+# menu MENU_ID
+#  func  LABEL FUNCTION KEYS
+#  popup LABEL MENU_ID  KEYS
+#  nop   LABEL
+# end
+#
+# MENU_ID
+#  Main:   Main menu
+#  Select: Buffer selection menu
+
+menu Main
+  func   " Back         (b) "  BACK		"b"
+  func   " Select Buffer(s) "  SELECT		"s"
+  func   " View Source  (v) "  VIEW		"vV"
+  func   " Edit Source  (e) "  EDIT		"eE"
+  func   " Save Source  (S) "  SAVE		"S"
+  func   " Reload       (r) "  RELOAD		"rR"
+  nop    " -----------------"  
+
+  func   " Go Link      (a) "  GOTO_LINK	"a"
+  func   " Save Link    (A) "  SAVE_LINK	"A"
+  func   " View Image   (i) "  VIEW_IMAGE	"i"
+  func   " Save Image   (I) "  SAVE_IMAGE	"I"
+  func   " View Frame   (f) "  FRAME		"fF"
+  nop    " ---------------- "
+  func   " Bookmark     (B) "  BOOKMARK		"B"  
+  func   " Help         (h) "  HELP		"hH"
+  func   " Option       (o) "  OPTIONS		"oO"
+  nop    " ---------------- "
+  func   " Quit         (q) "  QUIT		"qQ"
+end

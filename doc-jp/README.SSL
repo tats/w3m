@@ -1,0 +1,46 @@
+SSL サポートについて
+
+                                                         (2000/11/07)  岡部克也
+                                                        okabek@guitar.ocn.ne.jp
+
+ ・ SSLeay/OpenSSL ライブラリを通じて, SSL をサポートしています.
+    あらかじめインストールしておいてください.
+   
+ ・ configure スクリプト実行時, "5 - Monster model" または "6 - Customize" を選
+    ぶ事で利用可能になります.
+    もしうまく動かないときは, config.h をチェックしてみてください. SSL を利用す
+    るためには, config.h で, USE_SSL マクロが定義されている必要があります.
+    さらに, SSL 認証サポートを利用する場合は, USE_SSL_VERIFY マクロもチェックし
+    てみてください.
+    コンパイルでエラーが出る場合は, リンカフラグに `-lssl -lcrypto', コンパイラ
+    フラグに '-I(SSLeay/OpenSSL のヘッダがあるディレクトリ)' があるか確認してく
+    ださい.
+   
+    SSL サポートが有効になっているかどうかは, Option Setting Panel で確認できま
+    す.
+   
+ ・ SSL に関して以下の設定が可能になってます:
+
+    ssl_verify_server ON/OFF
+        SSLのサーバ認証を行う(デフォルトはOFF).
+    ssl_cert_file ファイル名
+        SSLのクライアント用PEM形式証明書ファイル(デフォルトは<NULL>).
+    ssl_key_file ファイル名
+        SSLのクライアント用PEM形式秘密鍵ファイル(デフォルトは<NULL>).
+    ssl_ca_path ディレクトリ名
+        SSLの認証局のPEM形式証明書群のあるディレクトリへのパス
+        (デフォルトは<NULL>).
+    ssl_ca_file ファイル名
+        SSLの認証局のPEM形式証明書群のファイル(デフォルトは<NULL>).
+    ただし「SSLEAY_VERSION_NUMBER >= 0x0800」な環境でないと無駄なコードが増
+    えるだけなので, configure時にdisableしておいたほうがよいでしょう.
+
+    また実際に認証を行う場合, ssl_ca_pathまたはssl_ca_fileで, サーバの鍵に
+    署名している認証局の証明書を (ssl_verify_serverのON/OFFに関係無く) 指定
+    しないと認証が成功しないようです.
+
+ ・ バージョン 0.9.5 以降の OpenSSL ライブラリは, 乱数を初期化するために幾つか
+    のシードを設定する必要があります.
+    デフォルトでは /dev/urandom があればそれを利用しますが, 無ければ w3m 内部
+    で生成します. もし, EGD (Entropy Gathering Daemon) が利用できる環境でこれ
+    を使いたい場合は, USE_EGD マクロをチェックしてみてください.

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>FUNCTION&nbsp;-機能詳細-</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">機能詳細</A></H1>
+<DIV>
+<!-- w3mの各機能についての詳細説明を記す -->
+</DIV>
+	<UL>
+		<LI><A HREF="#url">対応しているURL</A>
+		<LI><A HREF="#html">対応しているHTML</A>
+		<LI><A HREF="#ssl">SSL</A>
+		<LI><A HREF="#cookie">cookie</A>
+		<LI><A HREF="#local_CGI">ローカルCGI機能</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="url">対応しているURL</A></H2>
+<!-- w3mが解釈可能なURLについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="html">対応しているHTML</A><H2>
+<!-- w3mが対応しているHTMLについて -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="ssl">SSL</A><H2>
+<!-- SSLについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="cookie">cookie</A><H2>
+<!-- cookieについての説明 -->
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="local_CGI">ローカルCGI機能</A><H2>
+<!-- ローカルCGI機能についての説明 -->
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

@@ -1,0 +1,34 @@
+--- XMakefile.orig	Mon Mar 19 10:47:56 2001
++++ XMakefile	Mon Mar 19 21:03:34 2001
+@@ -65,7 +65,7 @@
+ 	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS)
+ 
+ gc/gc.a:
+-	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS)'
++	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS) -Dmips'
+ 
+ install: $(TARGETS)
+ 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
+--- gc/Makefile.orig	Tue Jan  4 14:46:50 2000
++++ gc/Makefile	Thu Mar 22 18:10:10 2001
+@@ -7,7 +7,7 @@
+ #      	 and runs some tests of collector and cords.  Does not add cords or
+ #	 c++ interface to gc.a
+ # cord/de - builds dumb editor based on cords.
+-ABI_FLAG=
++ABI_FLAG=-Kconform_pic
+ CC=cc $(ABI_FLAG)
+ CXX=CC $(ABI_FLAG)
+ AS=as $(ABI_FLAG)
+--- gc/gcconfig.h.orig	Tue Jun  6 14:39:29 2000
++++ gc/gcconfig.h	Mon Mar 19 21:02:51 2001
+@@ -64,7 +64,8 @@
+ # endif
+ # if defined(mips) || defined(__mips)
+ #    define MIPS
+-#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
++#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__) ||\
++        defined(nec_ews)
+ #	define ULTRIX
+ #    else
+ #       if !defined(LINUX)

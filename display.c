@@ -1,0 +1,1064 @@
+/* $Id: display.c,v 1.1 2001/11/08 05:14:32 a-ito Exp $ */
+#include <signal.h>
+#include "fm.h"
+
+#define MAX(a, b)  ((a) > (b) ? (a) : (b))
+#define MIN(a, b)  ((a) < (b) ? (a) : (b))
+
+#ifdef COLOR
+
+#define EFFECT_ANCHOR_START       effect_anchor_start()
+#define EFFECT_ANCHOR_END         effect_anchor_end()
+#define EFFECT_IMAGE_START        effect_image_start()
+#define EFFECT_IMAGE_END          effect_image_end()
+#define EFFECT_FORM_START         effect_form_start()
+#define EFFECT_FORM_END           effect_form_end()
+#define EFFECT_ACTIVE_START	  effect_active_start()
+#define EFFECT_ACTIVE_END	  effect_active_end()
+#define EFFECT_VISITED_START      effect_visited_start()
+#define EFFECT_VISITED_END        effect_visited_end()
+
+/* color: *     0  black *      1  red *        2  green *      3  yellow
+ * *    4  blue *       5  magenta *    6  cyan *       7  white */
+
+#define EFFECT_ANCHOR_START_C       setfcolor(anchor_color)
+#define EFFECT_IMAGE_START_C        setfcolor(image_color)
+#define EFFECT_FORM_START_C         setfcolor(form_color)
+#define EFFECT_ACTIVE_START_C      (setfcolor(active_color), underline())
+#define EFFECT_VISITED_START_C      setfcolor(visited_color)
+
+#define EFFECT_IMAGE_END_C          setfcolor(basic_color)
+#define EFFECT_ANCHOR_END_C         setfcolor(basic_color)
+#define EFFECT_FORM_END_C           setfcolor(basic_color)
+#define EFFECT_ACTIVE_END_C        (setfcolor(basic_color), underlineend())
+#define EFFECT_VISITED_END_C        setfcolor(basic_color)
+
+#define EFFECT_ANCHOR_START_M       underline()
+#define EFFECT_ANCHOR_END_M         underlineend()
+#define EFFECT_IMAGE_START_M        standout()
+#define EFFECT_IMAGE_END_M          standend()
+#define EFFECT_FORM_START_M         standout()
+#define EFFECT_FORM_END_M           standend()
+#define EFFECT_ACTIVE_START_NC      underline()
+#define EFFECT_ACTIVE_END_NC        underlineend()
+#define EFFECT_ACTIVE_START_M       bold()
+#define EFFECT_ACTIVE_END_M         boldend()
+#define EFFECT_VISITED_START_M      /**/
+#define EFFECT_VISITED_END_M        /**/
+
+#define define_effect(name_start,name_end,color_start,color_end,mono_start,mono_end) \
+static void name_start { if (useColor) { color_start; } else { mono_start; }}\
+static void name_end { if (useColor) { color_end; } else { mono_end; }}
+
+define_effect(EFFECT_ANCHOR_START, EFFECT_ANCHOR_END, EFFECT_ANCHOR_START_C, EFFECT_ANCHOR_END_C, EFFECT_ANCHOR_START_M, EFFECT_ANCHOR_END_M)
+define_effect(EFFECT_IMAGE_START, EFFECT_IMAGE_END, EFFECT_IMAGE_START_C, EFFECT_IMAGE_END_C, EFFECT_IMAGE_START_M, EFFECT_IMAGE_END_M)
+define_effect(EFFECT_FORM_START, EFFECT_FORM_END, EFFECT_FORM_START_C, EFFECT_FORM_END_C, EFFECT_FORM_START_M, EFFECT_FORM_END_M)
+static void EFFECT_ACTIVE_START
+{
+    if (useColor) {
+	if (useActiveColor) {
+#ifdef __EMX__
+	    if(!getenv("WINDOWID"))
+		setfcolor(active_color);
+	    else
+#endif
+	    {
+		EFFECT_ACTIVE_START_C;
+	    }
+	} else {
+	    EFFECT_ACTIVE_START_NC;
+	}
+    } else {
+	EFFECT_ACTIVE_START_M;
+    }
+}
+
+static void EFFECT_ACTIVE_END
+{
+    if (useColor) {
+	if (useActiveColor) {
+	    EFFECT_ACTIVE_END_C;
+	} else {
+	    EFFECT_ACTIVE_END_NC;
+	}
+    } else {
+	 EFFECT_ACTIVE_END_M;
+    }
+}
+
+static void EFFECT_VISITED_START
+{
+    if (useVisitedColor) {
+	if (useColor) {
+	    EFFECT_VISITED_START_C;
+	} else {
+	    EFFECT_VISITED_START_M;
+	}
+    }
+}
+
+static void EFFECT_VISITED_END
+{
+    if (useVisitedColor) {
+	if (useColor) {
+	    EFFECT_VISITED_END_C;
+	} else {
+	    EFFECT_VISITED_END_M;
+	}
+    }
+}
+
+#else				/* not COLOR */
+
+#define EFFECT_ANCHOR_START       underline()
+#define EFFECT_ANCHOR_END         underlineend()
+#define EFFECT_IMAGE_START        standout()
+#define EFFECT_IMAGE_END          standend()
+#define EFFECT_FORM_START         standout()
+#define EFFECT_FORM_END           standend()
+#define EFFECT_ACTIVE_START       bold()
+#define EFFECT_ACTIVE_END         boldend()
+#define EFFECT_VISITED_START      /**/
+#define EFFECT_VISITED_END        /**/
+
+#endif				/* not COLOR */
+
+
+#ifndef KANJI_SYMBOLS
+static char g_rule[] = "ntwluxkavmqajaaa";
+#endif				/* not KANJI_SYMBOLS */
+
+/* 
+ * Terminate routine.
+ */
+
+void
+fmTerm(void)
+{
+    if (fmInitialized) {
+	move(LASTLINE, 0);
+	clrtoeolx();
+	refresh();
+#ifdef MOUSE
+	if (use_mouse)
+	    mouse_end();
+#endif				/* MOUSE */
+	reset_tty();
+	fmInitialized = FALSE;
+    }
+}
+
+void
+deleteFiles()
+{
+    Buffer *buf;
+    char *f;
+    while (Firstbuf && Firstbuf != NO_BUFFER) {
+	buf = Firstbuf->nextBuffer;
+	discardBuffer(Firstbuf);
+	Firstbuf = buf;
+    }
+    while ((f = popText(fileToDelete)) != NULL)
+	unlink(f);
+}
+
+
+/* 
+ * Initialize routine.
+ */
+void
+fmInit(void)
+{
+    if (!fmInitialized) {
+	initscr();
+	term_raw();
+	term_noecho();
+#ifdef MOUSE
+	if (use_mouse)
+	    mouse_init();
+#endif				/* MOUSE */
+    }
+    fmInitialized = TRUE;
+}
+
+/* 
+ * Display some lines.
+ */
+static Line *cline = NULL;
+static int ccolumn = -1;
+
+static int ulmode = 0, somode = 0, bomode = 0;
+static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
+ active_mode = 0, visited_mode = 0;
+#ifndef KANJI_SYMBOLS
+static int graph_mode = 0;
+#endif				/* not KANJI_SYMBOLS */
+#ifdef ANSI_COLOR
+static Linecolor color_mode = 0;
+#endif
+
+#ifdef BUFINFO
+static Buffer *save_current_buf = NULL;
+#endif
+
+static int in_check_url = FALSE;
+
+void
+displayBuffer(Buffer * buf, int mode)
+{
+    Str msg;
+    Anchor *aa = NULL;
+
+    if (in_check_url)
+	return;
+    if (buf->topLine == NULL && readBufferCache(buf) == 0) {	/* clear_buffer */
+	mode = B_FORCE_REDRAW;
+    }
+
+    if (buf->width == 0)
+	buf->width = COLS;
+    if (buf->height == 0)
+	buf->height = LASTLINE + 1;
+    if (buf->width != INIT_BUFFER_WIDTH && buf->type && !strcmp(buf->type, "text/html")) {
+	in_check_url = TRUE;
+	reshapeBuffer(buf);
+	in_check_url = FALSE;
+    }
+    if (mode == B_FORCE_REDRAW ||
+	mode == B_SCROLL ||
+	cline != buf->topLine ||
+	ccolumn != buf->currentColumn) {
+	if (mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
+	    int n = buf->topLine->linenumber - cline->linenumber;
+	    if (n > 0 && n < LASTLINE) {
+		move(LASTLINE, 0);
+		clrtoeolx();
+		refresh();
+		scroll(n);
+	    }
+	    else if (n < 0 && n > -LASTLINE) {
+		rscroll(-n);
+	    }
+	    redrawNLine(buf, n);
+	}
+	else
+	    redrawBuffer(buf);
+	cline = buf->topLine;
+	ccolumn = buf->currentColumn;
+    }
+    if (buf->topLine == NULL)
+	buf->topLine = buf->firstLine;
+
+#ifdef MOUSE
+    if (use_mouse)
+#if LANG == JA
+	msg = Strnew_charp("¢ã¢¬¢­");
+#else				/* LANG != JA */
+	msg = Strnew_charp("<=UpDn ");
+#endif				/* LANG != JA */
+    else
+#endif				/* not MOUSE */
+	msg = Strnew();
+    Strcat_charp(msg, "Viewing <");
+    Strcat_charp(msg, buf->buffername);
+    if (displayLink)
+	aa = retrieveCurrentAnchor(buf);
+    if (aa) {
+	ParsedURL url;
+	Str s;
+	int l;
+	parseURL2(aa->url, &url, baseURL(buf));
+	s = parsedURL2Str(&url);
+	l = buf->width - 2;
+	if (s->length > l) {
+	    if (l >= 4) {
+		msg = Strsubstr(s, 0, (l - 2) / 2);
+#if LANG == JA
+		Strcat_charp(msg, "¡Ä");
+#else				/* LANG != JA */
+		Strcat_charp(msg, "..");
+#endif				/* LANG != JA */
+		l = buf->width - msg->length;
+		Strcat(msg, Strsubstr(s, s->length - l, l));
+	    } else {
+		msg = s;
+	    }
+	} else {
+	    l -= s->length;
+	    if (msg->length > l) {
+#ifdef JP_CHARSET
+		char *bn = msg->ptr;
+		int i, j;
+		for (i = 0; bn[i]; i += j) {
+		    j = get_mclen(get_mctype(&bn[i]));
+		    if (i + j > l)
+			break;
+		}
+		l = i;
+#endif
+		Strtruncate(msg, l);
+	    }
+	    Strcat_charp(msg, "> ");
+	    Strcat(msg, s);
+	}
+    } else {
+	Strcat_charp(msg, ">");
+    }
+    if (buf->firstLine == NULL) {
+	Strcat_charp(msg, "\tNo Line");
+	clear();
+    }
+    standout();
+    message(msg->ptr, buf->cursorX, buf->cursorY);
+    standend();
+    refresh();
+#ifdef BUFINFO
+    if (Currentbuf != save_current_buf) {
+	saveBufferInfo();
+	save_current_buf = Currentbuf;
+    }
+#endif
+}
+
+void
+redrawBuffer(Buffer * buf)
+{
+    redrawNLine(buf, LASTLINE);
+}
+
+void
+redrawNLine(Buffer * buf, int n)
+{
+    Line *l, *l0;
+    int i;
+
+#ifdef COLOR
+    if (useColor) {
+	EFFECT_ANCHOR_END_C;
+#ifdef BG_COLOR
+	setbcolor(bg_color);
+#endif				/* BG_COLOR */
+    }
+#endif				/* COLOR */
+    for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
+	if (i >= LASTLINE - n || i < -n)
+	    l0 = redrawLine(buf, l, i);
+	else {
+	    l0 = (l) ? l->next : NULL;
+	}
+	if (l0 == NULL && l == NULL)
+	    break;
+	l = l0;
+    }
+    if (n > 0)
+	clrtobotx();
+}
+
+#define addKanji(pc,pr) (addChar((pc)[0],(pr)[0]),addChar((pc)[1],(pr)[1]))
+
+Line *
+redrawLine(Buffer * buf, Line * l, int i)
+{
+    int j, pos, rcol, ncol, delta;
+    int column = buf->currentColumn;
+    char *p;
+    Lineprop *pr;
+#ifdef ANSI_COLOR
+    Linecolor *pc;
+#endif
+#ifdef COLOR
+    Anchor *a;
+    ParsedURL url;
+    int k, vpos = -1;
+#endif
+
+    if (l == NULL) {
+	if (buf->pagerSource) {
+	    l = getNextPage(buf, LASTLINE - i);
+	    if (l == NULL)
+		return NULL;
+	}
+	else
+	    return NULL;
+    }
+    move(i, 0);
+    if (l->width < 0)
+	l->width = COLPOS(l, l->len);
+    if (l->len == 0 || l->width - 1 < column) {
+	clrtoeolx();
+	return l->next;
+    }
+    /* need_clrtoeol(); */
+    pos = columnPos(l, column);
+    p = &(l->lineBuf[pos]);
+    pr = &(l->propBuf[pos]);
+#ifdef ANSI_COLOR
+    if (useColor && l->colorBuf)
+	pc = &(l->colorBuf[pos]);
+    else
+	pc = NULL;
+#endif
+    rcol = COLPOS(l, pos);
+
+#ifndef JP_CHARSET
+    delta = 1;
+#endif
+    for (j = 0; rcol - column < COLS && pos + j < l->len; j += delta) {
+#ifdef COLOR
+	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
+	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
+	    if (a) {
+		parseURL2(a->url, &url, baseURL(buf));
+		if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+		    for (k = a->start.pos; k < a->end.pos; k++)
+			pr[k - pos] |= PE_VISITED;
+		}
+		vpos = a->end.pos;
+	    }
+	}
+#endif
+#ifdef JP_CHARSET
+	if (CharType(pr[j]) == PC_KANJI1)
+	    delta = 2;
+	else
+	    delta = 1;
+#endif
+	ncol = COLPOS(l, pos + j + delta);
+	if (ncol - column > COLS)
+	    break;
+#ifdef ANSI_COLOR
+	if (pc)
+	    do_color(pc[j]);
+#endif
+	if (rcol < column) {
+	    for (rcol = column; rcol < ncol; rcol++)
+		addChar(' ', 0);
+	    continue;
+	}
+	if (p[j] == '\t') {
+	    for (; rcol < ncol; rcol++)
+		addChar(' ', 0);
+	}
+#ifdef JP_CHARSET
+	else if (delta == 2) {
+	    addKanji(&p[j], &pr[j]);
+	}
+#endif
+	else {
+	    addChar(p[j], pr[j]);
+	}
+	rcol = ncol;
+    }
+    if (somode) {
+	somode = FALSE;
+	standend();
+    }
+    if (ulmode) {
+	ulmode = FALSE;
+	underlineend();
+    }
+    if (bomode) {
+	bomode = FALSE;
+	boldend();
+    }
+    if (emph_mode) {
+	emph_mode = FALSE;
+	boldend();
+    }
+
+    if (anch_mode) {
+	anch_mode = FALSE;
+	EFFECT_ANCHOR_END;
+    }
+    if (imag_mode) {
+	imag_mode = FALSE;
+	EFFECT_IMAGE_END;
+    }
+    if (form_mode) {
+	form_mode = FALSE;
+	EFFECT_FORM_END;
+    }
+    if (visited_mode) {
+	visited_mode = FALSE;
+	EFFECT_VISITED_END;
+    }
+    if (active_mode) {
+	active_mode = FALSE;
+	EFFECT_ACTIVE_END;
+    }
+#ifndef KANJI_SYMBOLS
+    if (graph_mode) {
+	graph_mode = FALSE;
+	graphend();
+    }
+#endif				/* not KANJI_SYMBOLS */
+#ifdef ANSI_COLOR
+    if (color_mode)
+	do_color(0);
+#endif
+    if (rcol - column < COLS)
+	clrtoeolx();
+    return l->next;
+}
+
+int
+redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
+{
+    int j, pos, rcol, ncol, delta;
+    int column = buf->currentColumn;
+    char *p;
+    Lineprop *pr;
+#ifdef ANSI_COLOR
+    Linecolor *pc;
+#endif
+    int bcol, ecol;
+#ifdef COLOR
+    Anchor *a;
+    ParsedURL url;
+    int k, vpos = -1;
+#endif
+
+    if (l == NULL)
+	return 0;
+    pos = columnPos(l, column);
+    p = &(l->lineBuf[pos]);
+    pr = &(l->propBuf[pos]);
+#ifdef ANSI_COLOR
+    if (useColor && l->colorBuf)
+	pc = &(l->colorBuf[pos]);
+    else
+	pc = NULL;
+#endif
+    rcol = COLPOS(l, pos);
+    bcol = bpos - pos;
+    ecol = epos - pos;
+
+#ifndef JP_CHARSET
+    delta = 1;
+#endif
+    for (j = 0; rcol - column < COLS && pos + j < l->len; j += delta) {
+#ifdef COLOR
+	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
+	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
+	    if (a) {
+		parseURL2(a->url, &url, baseURL(buf));
+		if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+		    for (k = a->start.pos; k < a->end.pos; k++)
+			pr[k - pos] |= PE_VISITED;
+		}
+		vpos = a->end.pos;
+	    }
+	}
+#endif
+#ifdef JP_CHARSET
+	if (CharType(pr[j]) == PC_KANJI1)
+	    delta = 2;
+	else
+	    delta = 1;
+#endif
+	ncol = COLPOS(l, pos + j + delta);
+	if (ncol - column > COLS)
+	    break;
+#ifdef ANSI_COLOR
+	if (pc)
+	    do_color(pc[j]);
+#endif
+	if (j >= bcol && j < ecol) {
+	    if (rcol < column) {
+		move(i, 0);
+		for (rcol = column; rcol < ncol; rcol++)
+		    addChar(' ', 0);
+		continue;
+	    }
+	    move(i, rcol - column);
+	    if (p[j] == '\t') {
+		for (; rcol < ncol; rcol++)
+		    addChar(' ', 0);
+	    }
+#ifdef JP_CHARSET
+	    else if (delta == 2) {
+		addKanji(&p[j], &pr[j]);
+	    }
+#endif
+	    else {
+		addChar(p[j], pr[j]);
+	    }
+	}
+	rcol = ncol;
+    }
+    if (somode) {
+	somode = FALSE;
+	standend();
+    }
+    if (ulmode) {
+	ulmode = FALSE;
+	underlineend();
+    }
+    if (bomode) {
+	bomode = FALSE;
+	boldend();
+    }
+    if (emph_mode) {
+	emph_mode = FALSE;
+	boldend();
+    }
+
+    if (anch_mode) {
+	anch_mode = FALSE;
+	EFFECT_ANCHOR_END;
+    }
+    if (imag_mode) {
+	imag_mode = FALSE;
+	EFFECT_IMAGE_END;
+    }
+    if (form_mode) {
+	form_mode = FALSE;
+	EFFECT_FORM_END;
+    }
+    if (visited_mode) {
+	visited_mode = FALSE;
+	EFFECT_VISITED_END;
+    }
+    if (active_mode) {
+	active_mode = FALSE;
+	EFFECT_ACTIVE_END;
+    }
+#ifndef KANJI_SYMBOLS
+    if (graph_mode) {
+	graph_mode = FALSE;
+	graphend();
+    }
+#endif				/* not KANJI_SYMBOLS */
+#ifdef ANSI_COLOR
+    if (color_mode)
+	do_color(0);
+#endif
+    return rcol - column;
+}
+
+#define do_effect1(effect,modeflag,action_start,action_end) \
+if (m & effect) { \
+    if (!modeflag) { \
+	action_start; \
+	modeflag = TRUE; \
+    } \
+}
+
+#define do_effect2(effect,modeflag,action_start,action_end) \
+if (modeflag) { \
+    action_end; \
+    modeflag = FALSE; \
+}
+
+void
+do_effects(Lineprop m)
+{
+    /* effect end */
+    do_effect2(PE_UNDER, ulmode, underline(), underlineend());
+    do_effect2(PE_STAND, somode, standout(), standend());
+    do_effect2(PE_BOLD, bomode, bold(), boldend());
+    do_effect2(PE_EMPH, emph_mode, bold(), boldend());
+    do_effect2(PE_ANCHOR, anch_mode, EFFECT_ANCHOR_START, EFFECT_ANCHOR_END);
+    do_effect2(PE_IMAGE, imag_mode, EFFECT_IMAGE_START, EFFECT_IMAGE_END);
+    do_effect2(PE_FORM, form_mode, EFFECT_FORM_START, EFFECT_FORM_END);
+    do_effect2(PE_VISITED, visited_mode, EFFECT_VISITED_START, EFFECT_VISITED_END);
+    do_effect2(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
+#ifndef KANJI_SYMBOLS
+    if (graph_mode) {
+	graphend();
+	graph_mode = FALSE;
+    }
+#endif				/* not KANJI_SYMBOLS */
+
+    /* effect start */
+    do_effect1(PE_UNDER, ulmode, underline(), underlineend());
+    do_effect1(PE_STAND, somode, standout(), standend());
+    do_effect1(PE_BOLD, bomode, bold(), boldend());
+    do_effect1(PE_EMPH, emph_mode, bold(), boldend());
+    do_effect1(PE_ANCHOR, anch_mode, EFFECT_ANCHOR_START, EFFECT_ANCHOR_END);
+    do_effect1(PE_IMAGE, imag_mode, EFFECT_IMAGE_START, EFFECT_IMAGE_END);
+    do_effect1(PE_FORM, form_mode, EFFECT_FORM_START, EFFECT_FORM_END);
+    do_effect1(PE_VISITED, visited_mode, EFFECT_VISITED_START, EFFECT_VISITED_END);
+    do_effect1(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
+#ifndef KANJI_SYMBOLS
+    if (m & PC_RULE) {
+	if (!graph_mode && graph_ok()) {
+	    graphstart();
+	    graph_mode = TRUE;
+	}
+    }
+#endif				/* not KANJI_SYMBOLS */
+}
+
+#ifdef ANSI_COLOR
+void
+do_color(Linecolor c)
+{
+    if (c & 0x8)
+	setfcolor(c & 0x7);
+    else if (color_mode & 0x8)
+	setfcolor(basic_color);
+#ifdef BG_COLOR
+    if (c & 0x80)
+	setbcolor((c >> 4) & 0x7);
+    else if (color_mode & 0x80)
+	setbcolor(bg_color);
+#endif
+    color_mode = c;
+}
+#endif
+
+void
+addChar(char c, Lineprop mode)
+{
+    Lineprop m = CharEffect(mode);
+
+#ifdef JP_CHARSET
+    if (CharType(mode) != PC_KANJI2)
+#endif				/* JP_CHARSET */
+    do_effects(m);
+#ifndef KANJI_SYMBOLS
+    if (m & PC_RULE) {
+	if (graph_mode)
+	    addch(g_rule[c & 0xF]);
+	else
+	    addch(alt_rule[c & 0xF]);
+    } else
+#endif				/* not KANJI_SYMBOLS */
+    if (IS_UNPRINTABLE_ASCII(c, mode)) {
+	addstr(Sprintf("\\%3o", (unsigned char)c)->ptr);
+    }
+    else if (c == '\t') {
+	addch(c);
+    }
+    else if (c == DEL_CODE)
+	addstr("^?");
+    else if (IS_UNPRINTABLE_CONTROL(c, mode)) {	/* Control code */
+	addch('^');
+	addch(c + '@');
+    }
+    else if (c != '\n')
+	addch(c);
+    else	/* \n */
+	addch(' ');
+}
+
+GeneralList *message_list = NULL;
+
+void
+record_err_message(char *s)
+{
+    if (fmInitialized) {
+	if (!message_list)
+	    message_list = newGeneralList();
+	if (message_list->nitem >= LINES)
+	    popValue(message_list);
+	pushValue(message_list, allocStr(s, 0));
+    }
+}
+
+/* 
+ * List of error messages
+ */
+Buffer *
+message_list_panel(void)
+{
+    Str tmp = Strnew_size(LINES * COLS);
+    ListItem *p;
+
+    Strcat_charp(tmp,
+		 "<html><head><title>List of error messages</title></head><body>"
+		 "<h1>List of error messages</h1><table cellpadding=0>\n");
+    if (message_list)
+      for (p = message_list->last ; p ; p = p->prev)
+	Strcat_m_charp(tmp, "<tr><td><pre>", htmlquote_str(p->ptr), "</pre></td></tr>\n", NULL);
+    else
+      Strcat_charp(tmp, "<tr><td>(no message recorded)</td></tr>\n");
+    Strcat_charp(tmp, "</table></body></html>");
+    return loadHTMLString(tmp);
+}
+
+void
+message(char *s, int return_x, int return_y)
+{
+    if (!fmInitialized)
+	return;
+    move(LASTLINE, 0);
+    addnstr(s, COLS - 1);
+    clrtoeolx();
+    move(return_y, return_x);
+}
+
+void
+disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
+{
+    if (!fmInitialized) {
+	fprintf(stderr, "%s\n", s);
+	return;
+    }
+    if (Currentbuf != NULL)
+	message(s, Currentbuf->cursorX, Currentbuf->cursorY);
+    else
+	message(s, LASTLINE, 0);
+    refresh();
+#ifdef MOUSE
+    if (mouse && use_mouse)
+	mouse_active();
+#endif
+    sleep_till_anykey(sec, purge);
+#ifdef MOUSE
+    if (mouse && use_mouse)
+	mouse_inactive();
+#endif
+    if (Currentbuf != NULL && redraw_current)
+	displayBuffer(Currentbuf, B_NORMAL);
+}
+
+void
+disp_message(char *s, int redraw_current)
+{
+    disp_message_nsec(s, redraw_current, 10, FALSE, TRUE);
+}
+#ifdef MOUSE
+void
+disp_message_nomouse(char *s, int redraw_current)
+{
+    disp_message_nsec(s, redraw_current, 10, FALSE, FALSE);
+}
+#endif
+
+void
+cursorUp(Buffer * buf)
+{
+    if (buf->firstLine == NULL)
+	return;
+    if (buf->cursorY > 0)
+	cursorUpDown(buf, -1);
+    else {
+	buf->topLine = lineSkip(buf, buf->topLine, -(LASTLINE + 1) / 2, FALSE);
+	if (buf->currentLine->prev != NULL)
+	    buf->currentLine = buf->currentLine->prev;
+	arrangeLine(buf);
+    }
+}
+
+void
+cursorDown(Buffer * buf)
+{
+    if (buf->firstLine == NULL)
+	return;
+    if (buf->cursorY < LASTLINE - 1)
+	cursorUpDown(buf, 1);
+    else {
+	buf->topLine = lineSkip(buf, buf->topLine, (LASTLINE + 1) / 2, FALSE);
+	if (buf->currentLine->next != NULL)
+	    buf->currentLine = buf->currentLine->next;
+	arrangeLine(buf);
+    }
+}
+
+void
+cursorUpDown(Buffer * buf, int n)
+{
+    Line *cl = buf->currentLine;
+
+    if (buf->firstLine == NULL)
+	return;
+    if ((buf->currentLine = currentLineSkip(buf, cl, n, FALSE)) == cl)
+	return;
+    arrangeLine(buf);
+}
+
+void
+cursorRight(Buffer * buf)
+{
+    int i, delta = 1, cpos, vpos2;
+    Line *l = buf->currentLine;
+    Lineprop *p;
+
+    if (buf->firstLine == NULL)
+	return;
+    if (buf->pos == l->len)
+	return;
+    i = buf->pos;
+    p = l->propBuf;
+#ifdef JP_CHARSET
+    if (CharType(p[i]) == PC_KANJI1)
+	delta = 2;
+#endif				/* JP_CHARSET */
+    if (i + delta < l->len) {
+	buf->pos = i + delta;
+    }
+    else if (l->len == 0) {
+        buf->pos = 0;
+    }
+    else {
+        buf->pos = l->len -1;
+#ifdef JP_CHARSET
+        if (CharType(p[buf->pos]) == PC_KANJI2)
+            buf->pos--;
+#endif                          /* JP_CHARSET */
+    }
+    cpos = COLPOS(l, buf->pos);
+    buf->visualpos = cpos - buf->currentColumn;
+    delta = 1;
+#ifdef JP_CHARSET
+    if (CharType(p[buf->pos]) == PC_KANJI1)
+        delta = 2;
+#endif                          /* JP_CHARSET */
+    vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
+    if (vpos2 >= COLS) {
+       columnSkip(buf, (COLS / 2) + (vpos2 - COLS) - (vpos2 - COLS) % (COLS / 2));
+       buf->visualpos = cpos - buf->currentColumn;
+    }
+    buf->cursorX = buf->visualpos;
+}
+
+void
+cursorLeft(Buffer * buf)
+{
+    int i, delta = 1, cpos;
+    Line *l = buf->currentLine;
+    Lineprop *p;
+
+    if (buf->firstLine == NULL)
+	return;
+    i = buf->pos;
+    p = l->propBuf;
+#ifdef JP_CHARSET
+    if (i >= 2 && CharType(p[i - 1]) == PC_KANJI2)
+	delta = 2;
+#endif				/* JP_CHARSET */
+    if (i > delta)
+	buf->pos = i - delta;
+    else
+	buf->pos = 0;
+    cpos = COLPOS(l, buf->pos);
+    buf->visualpos = cpos - buf->currentColumn;
+    if (buf->visualpos < 0) {
+	columnSkip(buf, -(COLS / 2) + buf->visualpos - buf->visualpos % (COLS / 2));
+	buf->visualpos = cpos - buf->currentColumn;
+    }
+    buf->cursorX = buf->visualpos;
+}
+
+void
+cursorHome(Buffer * buf)
+{
+    buf->visualpos = 0;
+    buf->cursorX = buf->cursorY = 0;
+}
+
+
+/* 
+ * Arrange line,column and cursor position according to current line and
+ * current position.
+ */
+void
+arrangeCursor(Buffer * buf)
+{
+    int col,col2;
+    int delta = 1;
+    if (buf == NULL || buf->currentLine == NULL)
+	return;
+    /* Arrange line */
+    if (buf->currentLine->linenumber - buf->topLine->linenumber >= LASTLINE ||
+	buf->currentLine->linenumber < buf->topLine->linenumber) {
+	buf->topLine = buf->currentLine;
+    }
+    /* Arrange column */
+    if (buf->currentLine->len == 0)
+	buf->pos = 0;
+    else if (buf->pos >= buf->currentLine->len)
+	buf->pos = buf->currentLine->len - 1;
+#ifdef JP_CHARSET
+    if (CharType(buf->currentLine->propBuf[buf->pos]) == PC_KANJI2)
+	buf->pos--;
+#endif				/* JP_CHARSET */
+    col = COLPOS(buf->currentLine, buf->pos);
+#ifdef JP_CHARSET
+    if (CharType(buf->currentLine->propBuf[buf->pos]) == PC_KANJI1)
+        delta = 2;
+#endif                         /* JP_CHARSET */
+    col2 = COLPOS(buf->currentLine, buf->pos + delta);
+    if (col < buf->currentColumn || col2 > COLS + buf->currentColumn) {
+	buf->currentColumn = 0;
+        if (col2 > COLS)
+	    columnSkip(buf, col);
+    }
+    /* Arrange cursor */
+    buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
+    buf->visualpos = buf->cursorX = COLPOS(buf->currentLine, buf->pos) - buf->currentColumn;
+#ifdef DISPLAY_DEBUG
+    fprintf(stderr, "arrangeCursor: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
+	    buf->currentColumn, buf->cursorX, buf->visualpos,
+	    buf->pos, buf->currentLine->len);
+#endif
+}
+
+void
+arrangeLine(Buffer * buf)
+{
+    int i, cpos;
+
+    if (buf->firstLine == NULL)
+	return;
+    buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
+    i = columnPos(buf->currentLine, buf->currentColumn + buf->visualpos);
+    cpos = COLPOS(buf->currentLine, i) - buf->currentColumn;
+    if (cpos >= 0) {
+	buf->cursorX = cpos;
+	buf->pos = i;
+    }
+    else if (Currentbuf->currentLine->len > i) {
+	int delta = 1;
+#ifdef JP_CHARSET
+	if (Currentbuf->currentLine->len > i + 1 &&
+	    CharType(buf->currentLine->propBuf[i + 1]) == PC_KANJI2)
+	    delta = 2;
+#endif
+	buf->cursorX = 0;
+	buf->pos = i;
+	if (COLPOS(buf->currentLine, i + delta) <= buf->currentColumn)
+	    buf->pos += delta;
+    }
+    else {
+	buf->cursorX = 0;
+	buf->pos = 0;
+    }
+#ifdef DISPLAY_DEBUG
+    fprintf(stderr, "arrangeLine: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
+	    buf->currentColumn, buf->cursorX, buf->visualpos,
+	    buf->pos, buf->currentLine->len);
+#endif
+}
+
+void
+cursorXY(Buffer * buf, int x, int y)
+{
+    int oldX;
+
+    cursorUpDown(buf, y - buf->cursorY);
+
+    if (buf->cursorX > x) {
+	while (buf->cursorX > x)
+	    cursorLeft(buf);
+    }
+    else if (buf->cursorX < x) {
+	while (buf->cursorX < x) {
+	    oldX = buf->cursorX;
+
+	    cursorRight(buf);
+
+	    if (oldX == buf->cursorX)
+		break;
+	}
+	if (buf->cursorX > x)
+	    cursorLeft(buf);
+    }
+}
+
+/* Local Variables:    */
+/* c-basic-offset: 4   */
+/* tab-width: 8        */
+/* End:                */

@@ -1,0 +1,99 @@
+
+w3m のメニューについて
+                                                   (1999/11/03)  坂本 浩則
+                                                   hsaka@mth.biglobe.ne.jp
+
+[1] キー操作
+
+  ・一般的なもの
+
+    HELP, INS キー             : メニューの立ち上げ
+    HELP, INS キー, C-c,       : メニューの消去
+    RET(C-m, C-j), SPC, →キー : 選択
+    BS(C-h), DEL(C-?), ←キー  : 戻る
+    C-n, j, ↓キー             : 下の項目へ
+    C-p, k, ↑キー             : 上の項目へ
+    C-a                        : 先頭の項目へ
+    C-e                        : 最後の項目へ
+    C-f, C-v                   : 次ページの項目へ
+    C-b, M-v                   : 前ページの項目へ
+    C-z                        : サスペンド
+
+    # INS は通常 ^[[2~ ですが ^[[L(コンソール), ^[[E(PocketBSD) にも
+      バインドしてあります。
+
+    MenuKeymap, MenuEscKeymap, MenuEscBKeymap, MenuEscDKeymap (menu.c)
+    で定義
+
+  ・個別のメニュー用
+
+    MenuItem 構造体 (menu.h) の char *keys に設定(複数可能)
+    上記のキー操作に上書きされます。
+
+[2] マウス
+
+    ボタン３ : メニューの立ち上げ
+
+   立ち上げ後
+
+    ボタン１/３ (項目)         : 選択
+        ″      (枠,MENU_NOP)  : 何もしない
+        ″      (枠外)         : 戻る(メニューの消去)
+        ″      ( : )          : 次ページまたは前ページの項目へ
+                                 (長いメニューの場合)
+
+[3] メニューのカスタマイズ
+
+   ~/.w3m/menu にメニューを定義できます。
+   メニューは、
+
+     menu MENU_ID
+      項目
+        :
+     end
+
+   として設定します。各項目には、
+
+     func  LABEL FUNCTION KEYS [DATA]	コマンド実行
+     popup LABEL MENU_ID  KEYS		サブメニュー立ち上げ
+     nop   LABEL			何もしない(セパレータやタイトル)
+
+   を設定可能です。
+   例は menu.default や menu.submenu を見てください。
+   設定できるコマンド(FUNCTION)は README.func を見てください。
+   MENU_ID として "Main" はメインメニューに、"Select" はバッファ選択
+   メニューに予約されています。
+   KEYS はバインドするキーで複数指定可能です。
+   DATA が設定されていればコマンド(FUNCTION)の引数として使われます。
+
+[4] 開発について
+
+   メニュールーチンの例は mainMenu(), optionMenu() を見れば分かると思います。
+   このルーチンと以下の MenuItem 構造体を定義すれば、ほとんどのメニューは、
+   設定できると思います。
+
+   MenuItem 構造体 (menu.h)
+
+    struct {
+        int  type;		/* タイプ */
+        char *label;		/* ラベル */
+        int  *variable;		/* VALUE_MENU の場合に設定する変数 */
+        int  value;		/* VALUE_MENU の場合に設定する値 */
+        void (*func)();		/* 選択された時に実行する関数 */
+        struct _Menu *popup;	/* サブメニュー */
+        char *keys;		/* バインドするキー(複数可能) */
+    } MenuItem;
+ 
+   タイプ type は以下のものが使用できます。
+
+     MENU_NOP   (1) : なにもしない。選択もできない。
+                      (タイトルやセパレータ用)
+     MENU_FUNC  (2) : 関数を実行
+     MENU_VALUE (4) : 変数(*variable)に値(value)を設定
+     MENU_POPUP (8) : サブメニューを立ち上げる
+
+     MENU_FUNC と MENU_VALUE は (MENU_FUNC | MENU_VALUE) と
+     設定することで両方の動作をします。(変数設定が先です)
+
+   設定例は、MainMenuItem (menu.c) や new_option_menu() を見てください。
+

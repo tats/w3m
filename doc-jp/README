@@ -1,0 +1,111 @@
+	w3m: WWW wo Miru Tool  version beta-990323
+		(C) Copyright by Akinori ITO	March 23, 1999
+
+1. はじめに
+
+  w3m は，World Wide Web に対応したページャです．あくまでページャですが，
+テキストベース WWW プラウザとしても使うことができます．
+
+  w3m は，fm というページャをベースとして作られました．fm についての詳細
+は，README.fm をお読みください．w3m のページャとしての基本的な特徴は，fm
+とほとんど同じです．
+
+  w3m 独自の特徴としては，次のようなものがあります．
+
+  ・WWW 対応なので，HTML の文書を読んでいる時には，その中のリンクを辿った
+    り，画像を見ることができる．
+  ・Internet message 表示のためのモードがある．この時，Content-Type: が
+    text/html の場合は，自動的に HTML の文書として表示する．また，自力で
+    MIME header のデコードをする．
+  ・見ている plain text 文書中に URL 表記があった場合，その部分からリンク
+    をたどることができる．
+
+  現在の問題点は以下のようなものです．
+
+  ・インライン画像表示ができない(これは原理的に無理でしょう)．
+  ・MIME-body のデコードができない．7bit 以外の Content-Transfer-encoding
+    に対応していない．
+  ・オンラインマニュアルが貧弱．簡単な使い方については，MANUAL.html をお読み
+    ください．
+
+  現在動作が確認されている OS は以下の通りです．
+      SunOS4.1.x
+      HP-UX 9.x, 10.x
+      Solaris2.5.x
+      Linux 2.0.30
+      FreeBSD 2.2.8, 3.1, 3.2
+      NetBSD/macppc, m68k
+      EWS4800 Rel.12.2 Rev.A
+      Digital UNIX: v3.2D, v4.0D
+      IRIX 5.3, IRIX 6.5
+      OS/2 with emx
+      Windows 9x/NT with Cygwin32 b20.1
+      MS-DOS with DJGPP and WATT32 packet driver
+      MacOS X Server
+
+2. インストール
+
+インストールをするには，次のようにします．
+
+  2.1 configure を実行する．いくつか質問されるので，それに答えます．
+
+  2.2 make を実行
+
+  2.3 make install を実行
+
+以上でインストールは終わりです．
+
+機種ごとの注意点：
+
+HP-UX
+	HP の C コンパイラ(gccでなく)でコンパイルする場合，
+	configure の
+
+		Input your favorite C-compiler.
+		(Default: cc)
+
+	に，cc -Aa -D_HPUX_SOURCE と答えてください．cc
+	だけだとコンパイルが通りません．gcc なら普通に
+	通りますが，バージョン古めの場合は -g を付けな
+	いでください．
+
+OS/2
+	emx を使うことで w3m をコンパイルすることができます．
+	まず最初に
+
+	  cd gc
+	  make -f EMX_MAKEFILE
+
+	を実行して GC ライブラリをコンパイルしておいてから，w3m
+	本体をコンパイルします．なお，カラー表示が変になるらしい
+	ので，モノクロ用にコンパイルした方が良いでしょう．
+Windows
+	README.cygwin をごらんください．
+MS-DOS
+	README.djをごらんください。
+
+
+3. 著作権
+
+w3m の著作権は，伊藤彰則に属しています．
+(C) Copyright 1994-1999 by Akinori Ito
+
+添付ライブラリのうち，Boehm GC library の著作権は Hans-J. Boehm,
+Alan J. Demers および Xerox Corporation, Silicon Graphics に属し
+ています．
+
+4. 配布条件
+
+このソフトウェアによって利用者または第三者が何らかの被害を受けた
+場合，作者はその責任を一切負いません．この事を承諾する限りにおい
+て，このソフトウェアは，誰でも作者に断りなく利用・改変・配布でき
+ます．
+
+5. 作者
+
+ご意見，ご感想を作者までお寄せください．
+
+	山形大学工学部電子情報工学科
+	伊藤 彰則
+	aito@ei5sun.yz.yamagata-u.ac.jp
+	http://ei5nazha.yz.yamagata-u.ac.jp/

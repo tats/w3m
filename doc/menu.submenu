@@ -1,0 +1,44 @@
+# A sample of ~/.w3m/menu  (submenu type)
+#
+# menu MENU_ID
+#  func  LABEL FUNCTION KEYS
+#  popup LABEL MENU_ID  KEYS
+#  nop   LABEL
+# end
+#
+# MENU_ID
+#  Main:   Main Menu
+#  Select: Buffer selection menu
+
+menu Main
+ func	"Back         (b)"	BACK		"b"
+ popup	"Buffer ops  >(f)"	Buffer		"fF"
+ popup	"Link ops    >(l)"	Link		"lL"
+ nop	"----------------"
+ popup	"Bookmarks   >(B)"	Bookmark	"B"
+ func	"Help         (h)"	HELP		"hH"
+ func	"Options      (o)"	OPTIONS		"oO"
+ nop	"----------------"
+ func	"Quit         (q)"	QUIT		"qQ"
+end
+
+menu Buffer
+ popup	"Buffer select(s)"	Select		"s"
+ func	"View source  (v)"	VIEW		"vV"
+ func	"Edit source  (e)"	EDIT		"eE"
+ func	"Save source  (S)"	SAVE		"S"
+ func	"Reload       (r)"	RELOAD		"rR"
+end
+
+menu Link
+ func	"Go link      (a)"	GOTO_LINK	"a"
+ func	"Save link    (A)"	SAVE_LINK	"A"
+ func	"View image   (i)"	VIEW_IMAGE	"i"
+ func	"Save image   (I)"	SAVE_IMAGE	"I"
+ func	"View frame   (f)"	FRAME		"fF"
+end
+
+menu Bookmark
+ func   "Read bookmark       (b)"	BOOKMARK	"bB"
+ func   "Add page to bookmark(a)"	ADD_BOOKMARK	"aA"
+end

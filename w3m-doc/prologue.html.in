@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>PROLOGUE&nbsp;-はじめに-</title>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">はじめに</A></H1>
+
+<UL>
+	<LI><A HREF="#summary">w3mとは</A>
+	<LI><A HREF="#glossary">用語の説明</A>
+	<LI><A HREF="#disclaimer">注意事項</A>
+	<LI><A HREF="@DOC.copyright@">著作権、ライセンス</A>
+	<LI><A HREF="#confirmation">動作確認OS</A>
+</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="summary">w3mとは</A></H2>
+<!-- w3mとは -->
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="glossary">用語説明</A></H2>
+<!-- 用語説明 -->
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="disclaimer">注意事項</A></H2>
+<!-- 注意事項 -->
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2>著作権、ライセンス</H2>
+<DIV>
+  <A HREF="@DOC.copyright@">著作権、ライセンス</A>を参照ください。
+</DIV>
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="confirmation">動作確認OS</A></H2>
+<!-- 動作確認OS -->
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

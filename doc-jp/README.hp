@@ -1,0 +1,28 @@
+HP-UX で w3m をコンパイルする場合の注意
+
+PA-RISC 2.0 で HP-UX 11.x を動かしている場合，以下のパッチ
+を gc ライブラリに当ててやる必要があります．このパッチは，
+Dave Eaton <dwe@arde.com> によるものです．
+
+HP の C コンパイラ(gccでなく)でコンパイルする場合，
+configure の
+
+	Input your favorite C-compiler.
+	(Default: cc)
+
+に，cc -Aa -D_HPUX_SOURCE と答えてください．cc
+だけだとコンパイルが通りません．gcc なら普通に
+通りますが，バージョン古めの場合は -g を付けな
+いでください．
+
+----------------------------------------------------------------------
+--- w3m/gc/gcconfig.h.original  Wed May 19 01:38:55 1999
++++ w3m/gc/gcconfig.h   Tue Jun  8 12:38:22 1999
+@@ -125,6 +125,7 @@
+ #   define mach_type_known
+ # endif
+ # if defined(_PA_RISC1_0) || defined(_PA_RISC1_1) \
++     || defined(_PA_RISC2_0) \
+      || defined(hppa) || defined(__hppa__)
+ #   define HP_PA
+ #   define mach_type_known

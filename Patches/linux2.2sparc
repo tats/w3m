@@ -1,0 +1,10 @@
+--- gc/gcconfig.h.org
++++ gc/gcconfig.h
+@@ -601,7 +601,7 @@
+       extern int _end;
+ #     define DATAEND (&_end)
+ #     define SVR4
+-#     define STACKBOTTOM ((ptr_t) 0xf0000000)
++#     define STACKBOTTOM ((ptr_t) 0xeffff000)
+ #   endif
+ # endif

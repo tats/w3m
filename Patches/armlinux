@@ -1,0 +1,110 @@
+From lars@junk.nocrew.org Tue Mar  7 04:44 EST 2000
+Return-Path: <lars@junk.nocrew.org>
+Received: from ei5sun.yz.yamagata-u.ac.jp (ei5sun.yz.yamagata-u.ac.jp [133.24.114.42])
+	by ei5hp710.yz.yamagata-u.ac.jp (8.9.3/8.9.3) with ESMTP id EAA25953
+	for <aito@ei5hp710.yz.yamagata-u.ac.jp>; Tue, 7 Mar 2000 04:44:51 -0500 (EST)
+Received: from junk.nocrew.org (mail@[212.73.17.42]) by ei5sun.yz.yamagata-u.ac.jp (8.8.0/3.5Wbeta) with ESMTP id SAA07952 for <aito@ei5sun.yz.yamagata-u.ac.jp>; Tue, 7 Mar 2000 18:54:43 +0900 (JST)
+Received: from lars by junk.nocrew.org with local (Exim 3.03 #1 (Debian))
+	for aito@ei5sun.yz.yamagata-u.ac.jp
+	id 12SGVE-0001rh-00; Tue, 07 Mar 2000 10:42:08 +0100
+To: aito@ei5sun.yz.yamagata-u.ac.jp
+Subject: ARMLinux patch
+From: lars brinkhoff <lars@nocrew.org>
+Date: 07 Mar 2000 10:42:08 +0100
+Message-ID: <85zosbjevj.fsf@junk.nocrew.org>
+Lines: 89
+User-Agent: Gnus/5.0803 (Gnus v5.8.3) Emacs/20.5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Sender: lars brinkhoff <lars@junk.nocrew.org>
+
+This patch is an attempt to make w3m version 0.1.6 work in ARMLinux.
+It seems to work well.
+
+--- gc/gcconfig.h.org	Wed Jan 12 05:23:37 2000
++++ gc/gcconfig.h	Sun Mar  5 14:24:52 2000
+@@ -151,6 +151,10 @@
+ #    define SPARC
+ #    define mach_type_known
+ # endif
++# if defined(LINUX) && (defined(__arm__) || defined(arm))
++#    define ARM
++#    define mach_type_known
++# endif
+ # if defined(__alpha) || defined(__alpha__)
+ #   define ALPHA
+ #   if !defined(LINUX)
+@@ -985,6 +989,39 @@
+ #       define DATASTART (ptr_t)GC_SysVGetDataStart(0x10000, &_etext)
+ #	define DATAEND (&_end)
+ #	define HEURISTIC2
++# endif
++
++# ifdef ARM
++#   define MACH_TYPE "ARM"
++#   ifdef LINUX
++#     define OS_TYPE "LINUX"
++#     define HEURISTIC1
++#     define STACKBOTTOM ((ptr_t) 0xbffffffc)
++#     ifdef __ELF__
++#         define DYNAMIC_LOADING
++#	  include <features.h>
++#	  if defined(__GLIBC__) && __GLIBC__ >= 2
++		extern int __data_start;
++#		define DATASTART ((ptr_t)(&__data_start))
++#	  else
++     	         extern char **__environ;
++#                define DATASTART ((ptr_t)(&__environ))
++			      /* hideous kludge: __environ is the first */
++			      /* word in crt0.o, and delimits the start */
++			      /* of the data segment, no matter which   */
++			      /* ld options were passed through.        */
++			      /* We could use _etext instead, but that  */
++			      /* would include .rodata, which may       */
++			      /* contain large read-only data tables    */
++			      /* that we'd rather not scan.		*/
++#	  endif
++	  extern int _end;
++#	  define DATAEND (&_end)
++#     else
++          ARMLinux non elf ?
++#     endif
++#   endif
++#   define ALIGNMENT 4
+ # endif
+ 
+ # ifndef STACK_GROWS_UP
+diff -ur gc/mach_dep.c w3m-0.1.6.lars/gc/mach_dep.c
+--- gc/mach_dep.c.org	Wed Jan 12 05:23:37 2000
++++ gc/mach_dep.c	Thu Jan 27 21:28:39 2000
+@@ -337,7 +337,7 @@
+       /* other machines... */
+ #       if !(defined M68K) && !(defined VAX) && !(defined RT) 
+ #	if !(defined SPARC) && !(defined I386) && !(defined NS32K)
+-#	if !defined(POWERPC) && !defined(UTS4)
++#	if !defined(POWERPC) && !defined(UTS4) && !defined(ARM)
+ 	    --> bad news <--
+ #       endif
+ #       endif
+diff -ur w3m/gc/os_dep.c w3m-0.1.6.lars/gc/os_dep.c
+--- gc/os_dep.c.org	Wed Jan 12 05:23:37 2000
++++ gc/os_dep.c	Thu Jan 27 21:37:27 2000
+@@ -72,7 +72,7 @@
+ #   define NEED_FIND_LIMIT
+ # endif
+ 
+-# if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA))
++# if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA) || defined (ARM))
+ #   define NEED_FIND_LIMIT
+ # endif
+ 
+@@ -139,7 +139,7 @@
+ # define OPT_PROT_EXEC 0
+ #endif
+ 
+-#if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA))
++#if defined(LINUX) && (defined(POWERPC) || defined(SPARC) || defined(ALPHA) || defined(ARM))
+   /* The I386 case can be handled without a search.  The Alpha case	*/
+   /* used to be handled differently as well, but the rules changed	*/
+   /* for recent Linux versions.  This seems to be the easiest way to	*/
+

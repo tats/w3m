@@ -1,0 +1,32 @@
+#!/bin/sh
+
+W3MDOC="./w3mdoc.pl"
+W3M="$HOME/bin/pre_w3m"
+#W3M="w3m"
+
+NKF="/usr/local/bin/nkf"
+SED="/usr/bin/sed"
+TR="/usr/bin/tr"
+
+HTML_JP_DIR="html-jp"
+DOC_JP_DIR="doc-jp"
+#HTML_DIR="html"
+#DOC_DIR="doc"
+
+if [ ! -d ${HTML_JP_DIR} ]; then
+    mkdir ${HTML_JP_DIR}
+fi
+if [ ! -d ${DOC_JP_DIR} ]; then
+    mkdir ${DOC_JP_DIR}
+fi
+
+for SRC in *.in
+do
+    HTML=`echo ${SRC} | ${SED} 's/\.in$//p'`
+    DOC=`echo ${HTML} | ${SED} 's/\.html$//p' | ${TR} '[a-z]' '[A-Z]'`
+    echo "converting ${SRC} to ${HTML_JP_DIR}/${HTML} ... \c"
+    ${NKF} -e ${SRC} | ${SED} -e 's/。/．/gp' -e 's/、/，/gp' | ${NKF} -j | ${W3MDOC} > ${HTML_JP_DIR}/${HTML}
+    echo "done.\nconverting ${HTML} to ${DOC_JP_DIR}/${DOC} ... \c"
+    ${W3M} -dump -e ${HTML_JP_DIR}/${HTML} > ${DOC_JP_DIR}/${DOC}
+    echo "done."
+done

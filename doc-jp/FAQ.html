@@ -1,0 +1,238 @@
+<HTML>
+<HEAD>
+<TITLE>W3M FAQ</TITLE>
+</HEAD>
+<BODY>
+<h1>w3mに関して良く聞かれる(であろう)質問とその答え</h1>
+<div align=right>
+伊藤 彰則<br>
+aito@ei5sun.yz.yamagata-u.ac.jp
+</div>
+<a name="general">
+<center>
+<h2>一般的なこと，入手方法，動作環境</h2>
+</center>
+<dl>
+<dt>``w3m''は何と読むのですか？
+<dd>「だぶりゅーさんえむ」または「だぶりゅーすりーえむ」です．
+``w3m''と書いてプテラノドンと読んだりはしません．
+<P>
+<dt>どうして``w3m''という名前なの？
+<dd>WWW-wo-Miru(WWWを見る)から付けました．
+<P>
+<dt>どういう環境で動くの？
+<dd>一般的なUNIXで動きます．最新版またはそれに近いバージョンで動作が確認されているのは，
+<blockquote>
+<pre>
+Solaris 2.5 以上
+SunOS 4.1.x
+HP-UX 9.x, 10.x
+Linux 2.0.30
+FreeBSD 2.2.8, 3.1
+EWS4800 Release12.2 Rev.A
+</pre></blockquote>
+などです．その他のものでも，メジャーなUNIXシステムなら動くでしょう．
+<P>
+version 990226 から，OS/2 で動くようです．
+<P>
+version 990303 から，Windows+cygwin32 で動くようになりました．
+<P>
+<dt>Windows 9x/NT では動かないの？
+<dd><a href="http://sourceware.cygnus.com/cygwin/">Cygwin32</a>を使えば動きます．
+<p>
+<dt>w3mに関する情報はどこから手に入るの？
+<dd><a href="http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/">
+http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/</a>に w3m のページ
+があります．
+<p>
+<dt>最新版はどこから手に入るの？
+<dd><a href="ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/">
+ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/</a>から手に入ります．
+<p>
+<dt>w3m に関するMLはありませんか？
+<dd>
+開発者向けML(w3m-dev(日本語)とw3m-dev-en(英語))があります。詳しくは
+<a href="http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/">w3m のページ</a>
+をご覧ください。開発関連以外で
+何か言いたいことがある場合には，作者に<a href="mailto:aito@ei5sun.yz.yamagata-u.ac.jp">
+直接メール</a>するか，あるいは<a href="http://ei5nazha.yz.yamagata-u.ac.jp/BBS/spool/log.html">
+作者の運営する掲示板</a>に書いてください．
+<p>
+<dt>バイナリ配布はしないの？
+<dd>
+いくつかのプラットフォームについて，w3mのバイナリ配布をやって
+くださっているサイトがあります．詳しくは
+<a href="http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/">
+w3mのページ</a>をごらんください．
+
+</dl>
+
+<a name="install"></a>
+<center><h2>コンパイルとインストール</h2></center>
+特に問題なし :-)
+
+<a name="command"></a>
+<center><h2>オプション，コマンド，使いかた</h2></center>
+<dl>
+<dt> w3m と入力したら，何も表示せずに終わっちゃいました．何が悪いの？
+<dd> w3m は<B>ページャ</B>です．ですから，何も指定しないで起動すれば
+そのまま終了します．何か表示させたい場合には，
+<ol>
+<li>引数にファイル名かURLを書く．
+<li>標準入力に何か入れてあげる．
+<li>-B オプション(ブックマーク表示)をつける．
+<li>環境変数 HTTP_HOME か WWW_HOME に，見たいページのURLを入れておく．
+</ol>
+のどれかをやってください．
+<p>
+<dt>w3mを起動したら，画面が真っ黒になってしまいました．どうして？
+<dd>w3mをカラー表示の設定でコンパイルすると，最初は背景色が白で
+文字色が黒の設定になります．そのため，ふだん背景を黒にしている状態で
+w3mを起動すると，字が見えなくなります．<p>
+こういう場合は，次のようにして色を設定します．
+<UL>
+<LI>w3m -M で w3m を起動し，白黒モードで表示する．
+<LI>"o" コマンドでオプション設定画面にする．
+<LI><B>カラー表示モードをONにし</B>，適当な文字色を選んで，
+[OK]を選択する．
+</UL>
+<dt>カラー表示をさせるにはどうするの？
+<dd>コンパイル時に，configure の質問
+<p>
+<pre>
+Let's do some configurations. Choose config option among the list."
+
+1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
+2 - Little model  (color, menu, no mouse, no cookie, no SSL)
+3 - Mouse model   (color, menu, mouse, no cookie, no SSL)
+4 - Cookie model  (color, menu, mouse, cookie, no SSL)
+5 - Monster model (with everything; you need openSSL library)
+6 - Customize
+Which? 
+</pre>
+<p>
+で、2,3,4,5のどれかを答えればカラー表示ができるようになります。
+<p>
+<dt>白黒で表示したいんだけど？
+<dd>方法は3つあります．
+<OL>
+<LI>上記の質問に 1 と答えてコンパイルする．
+<LI>-M オプションをつけて起動する．
+<LI>"o" コマンドでオプション設定パネルを起動し，カラー表示をOFFにする．
+</OL>
+<dt>画面をはみ出した部分を見るには？
+<dd>カーソルを画面の端に移動させれば，それに合わせて画面全体がずれます．
+また，"&gt;"と"&lt;"で画面全体をずらすことができます．
+<p>
+<dt>カーソル移動がわずらわしい．
+<dd>TABで次のアンカーに移動するので，Lynxと似た感覚で使えるでしょう．
+また，C-uおよびESC TABで前のアンカーに戻ります．
+<p>
+<dt>Netscapeでは赤い文字になっている部分が，w3m では黒いまま．なぜ？
+<dd>w3mは，&lt;FONT COLOR=".."&gt;による文字の色指定には対応していません．
+対応は不可能ではないですが，文字の色が背景と同じになったりして見づらく
+なるのがオチなので，あまり対応する気になりません．
+<p>
+<dt>アンカー/画像/formの色を変えるには？
+<dd>990309版から，オプションで切りかえられるようになりました．"o" コマンド
+で設定パネルを表示させ，好きな色を選んでください．字の表示色が背景と同じに
+なって何も見えないという場合には，-M オプションで白黒表示にしてから設定を
+するとよいでしょう．
+<p>
+<dt>環境変数 EDITOR を設定したけど，効かないのはなぜ？
+<dd>"o"コマンドでオプションを表示させてみてください．
+エディタの項目に何か書いてあれば，それが優先されます．
+環境変数を効かせたい場合は，この欄を空白にしてオプションを
+更新してください．
+<p>
+<dt>サーチやURL入力を途中でやめるには？
+<dd><!-- C-u で入力内容を消して，RETを押します．-->
+    C-c で戻ります．
+
+</dl>
+
+<a name="www"></a>
+<center><h2>WWWを使う場合の質問</h2></center>
+<dl>
+<dt>formに入力するにはどうするの？
+<dd>formの部分は，画面上で赤(または反転)で表示されていますので，
+そこにカーソルを持っていってリターンを押します．すると，
+<UL>
+<LI>text の場合は，画面最下行で入力待ちになりますので，文字を入力します．
+<LI>radio, checkbox の場合は，その項目が選ばれます．
+<LI>textarea の場合は，エディタが起動しますので，文章を入力します．
+このとき，必ず表示用漢字コードと同じ漢字コードでファイルを保存してください．
+<LI>submit, reset の場合は，formの内容を送信/クリアします．
+</UL>
+<dt>文書の表示が遅いんだけど？
+<dd>w3mはHTML文書を2パスで整形するので，文書全体を読みこまないと
+表示ができません．Netscapeなどは文書を読みながら表示するので，
+表示が速いように思えるのでしょう．
+<p>
+<dt>一度読んだ文書を2度目に読んだときに，読みこみが速くならないんだけど？
+<dd>他の多くのブラウザと違い，w3mはキャッシュを持っていません．
+そのため，文書を読むたびにWWWサーバから文書を転送します．もし可能なら，
+キャッシュサーバを利用すると快適です．設定はプロキシの設定と同じです．
+<p>
+<dt>リンク先のファイルを直接保存する方法はないの？
+<dd>'a' (Lynx 風キーバインドの場合は 'd') または ESC RETでリンク先の文書を
+保存します．画像を保存する場合は ESC I です．
+<p>
+<dt>プロキシの設定はどうするの？
+<dd>環境変数 HTTP_proxy を設定するか，"o" コマンドのオプション設定パネル
+で設定します．例えば proxy.hogege.com というホストの 8000番ポートを
+利用する場合，
+<p>
+<pre>
+    http://proxy.hogege.com:8000/
+</pre>
+<p>
+と設定します．
+<p>
+<dt>外部ブラウザを起動すると，w3mが固まってしまいます．
+何とかなりませんか？
+<dd>"o"コマンドで設定パネルを表示し，外部ブラウザの項目に，例えば
+<p>
+<pre>
+    netscape %s &
+</pre>
+<p>
+のように入力します．この場合，%s の部分が URL に置きかわってブラウザが起動し
+ます．
+<p>
+<dt>画像のビューアを変えたいんだけど，どうするの？
+<dd>初期設定では画像を見るのに xv を使うようになっていますが，これを
+例えば display に変える場合は，~/.mailcap または /etc/mailcap に次のよ
+うな記述を入れます．
+<p>
+<pre>
+image/*; display %s
+</pre>
+<p>
+同じように，他のタイプのデータを処理するプログラムを指定することも
+できます．
+<p>
+<pre>
+image/*;                     display %s
+application/postscript;      ghostview %s
+application/x-dvi;           xdvi %s
+</pre>
+
+</dl>
+
+<a name="other"></a>
+<center><h2>その他</h2></center>
+<dl>
+<dt>設定ファイルはどこにあるの？
+<dd>~/.w3m ディレクトリの下の config です．
+<p>
+<dt>~/.w3m の下に w3mXXXXXX のようなファイルがたくさんあるけど，何？
+<dd>WWWサーバからファイルを読んでいるときに，それを一時的に保存する
+ファイルです．いわゆるキャッシュファイルではありません．
+w3m を終了すれば消去されるはずですが，w3mが異常終了した場合には残る
+ことがあります．そういう場合は手で消してください．
+<p>
+</dl>
+
+</BODY>
+</HTML>

@@ -1,0 +1,56 @@
+クッキーサポートについて
+
+                                                         (2000/11/07)  岡部克也
+                                                        okabek@guitar.ocn.ne.jp
+
+ ・ version 0 (参照: http://www.netscape.com/newsref/std/cookie_spec.html) と,
+    version 1 (参照: http://www.ics.uci.edu/pub/ietf/http/rfc2109.txt, 
+    http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt)
+    のクッキーをサポートしています.
+   
+ ・ configure スクリプト実行時, "4 - Cookie model", "5 - Monster model", "6 -
+    Customize" のいずれかを選ぶと利用可能になります.
+    もしうまく動かないときは, config.h をチェックしてみてください. クッキーを利
+    用するためには, config.h で USE_COOKIE マクロが定義されている必要がありま
+    す.
+   
+ ・ Option Setting Panel (通常 `o' キーにバインドされている), または起動オプシ
+    ョン (-cookie, -no-cookie) で使用するか否かを選択できます.
+   
+ ・ Option Setting Panel でクッキーを受け付けないようにする事もできます.
+    この場合, 以後のサーバから送られてくる全てのクッキーはリジェクトされますが,
+    既に受け取っているクッキーについては継続して使用されます.
+   
+ ・ C-k でクッキー一覧が表示できます. この画面で, クッキー毎に使用するか否かを
+    選択できます.
+   
+ ・ 2000/10/24 の版から, Option Setting Panel でクッキーを受け付ける (または受
+    け付けない) ドメイン (のリスト) を設定できるようになりました. 以下のフォー
+    マットで指定します:
+   
+      domain-list = domains                                                    
+                  | ""                                                         
+      domains     = domain                                                     
+                  | domain + "," + domains                                     
+      domain      = "." + domain-name      ; ドメイン名とマッチ                
+                  | host-domain-name       ; HDN とマッチ                      
+                  | ".local"               ; . を含まない全ての HDN にマッチ   
+                  | "."                    ; 全ての HDN にマッチ               
+                                                                               
+                              (HDN: host domain name)                          
+   
+    例として, 特定のドメイン (.xxx.or.jp) のクッキーのみを受け付けたい場合は,
+   
+    ┌────────────────────────────────────┐
+    │クッキーの設定                                                          │
+    │                                                                        │
+    │クッキーを使用する                              (*)ON  ( )OFF           │
+    │クッキーを受け付ける                            (*)ON  ( )OFF           │
+    │問題のあるクッキーでも受け付ける                [discard]               │
+    │クッキーを受け付けないドメイン                  [.                   ]  │
+    │クッキーを受け付けるドメイン                    [.xxx.or.jp          ]  │
+    │                                                [OK]                    │
+    └────────────────────────────────────┘
+   
+    のように設定します.
+   

@@ -1,0 +1,45 @@
+mailcap サポートについて
+
+                                                         (2000/11/07)  岡部克也
+                                                        okabek@guitar.ocn.ne.jp
+
+ ・ 2000/10/6 の版から, mailcap のフィールド test, nametemplate, needsterminal,
+    copiousoutput, edit (参照: RFC 1524) を見るようになりました.
+    また 2000/10/26 の版からは, mailcap と mime.types ファイルの場所が Option
+    Setting Panel で変更できるようになりました.
+   
+ ・ mailcap 中の %s は外部コマンドに渡すパス名, %t は content-type で置換されま
+    す.
+   
+ ・ もし mailcap エントリに test=command フィールドが存在する場合 command の実
+    行結果が真であるときのみ, 外部コマンドが実行されます. 例えば
+   
+    image/gif; xv '%s'; test=test "$DISPLAY"
+   
+    のように書けば, DISPLAY 環境変数がセットされているときのみ xv が実行されま
+    す.
+   
+ ・ もし mailcap エントリに copiousoutput フィールドが存在する場合, 外部コマン
+    ドの標準出力はバッファに読み込まれます.
+    例:
+   
+    application/x-troff-man;/usr/bin/nroff -mandoc;copiousoutput
+   
+    LESSOPEN コマンドでできる事は, 大部分これで置き換える事ができます. そのため
+    LESSOPEN の利用はオプション扱いになりました.
+   
+    w3m の拡張フィールドとして, htmloutput があります. copiousoutput と同様にコ
+    マンドの実行結果がバッファに読み込まれますが, HTML としてレンダリングする所
+    が異なります. この機能を使う場合は, w3m 用の mailcap ファイルを別に用意する
+    か, 他のブラウザ用に htmloutput を含まないエントリを前に置いておくと良いか
+    もしれません.
+   
+ ・ nametemplate= は外部コマンドに渡すファイル名の拡張子を指定します.
+    テンポラリファイルを作るとき, 通常元の URL の拡張子がファイル名に付けられま
+    すが, nametemplate= フィールドによって変更する事ができます.
+    例:
+   
+    application/x-dvi;xdvi '%s';test=test -n "$DISPLAY";nametemplate=%s.dvi
+   
+ ・ needsterminal, edit については RFC 1524 を見てください.
+   

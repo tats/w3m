@@ -1,0 +1,109 @@
+# A sample of ~/.w3m/keymap (lynx-like)
+#
+# Ctrl  : C-, ^
+# Escape: ESC-, M-, ^[
+# Space : SPC, ' '
+# Tab   : TAB, ^i, ^I
+# Delete: DEL, ^?
+# Up    : UP, ^[[A
+# Down  : DOWN, ^[[B
+# Right : RIGHT, ^[[C
+# Left  : LEFT, ^[[D
+
+keymap	C-@	MARK
+keymap	C-a	BEGIN
+keymap	C-b	PREV_PAGE
+keymap	C-e	END
+keymap	C-f	NEXT_PAGE
+keymap	C-h	HISTORY
+keymap	TAB	NEXT_LINK
+keymap	C-j	GOTO_LINK
+keymap	C-k	COOKIE
+keymap	C-l	REDRAW
+keymap	C-m	GOTO_LINK
+keymap	C-n	NEXT_LINK
+keymap	C-p	PREV_LINK
+keymap	C-r	RELOAD
+keymap	C-s	SEARCH
+keymap	C-v	NEXT_PAGE
+keymap	C-w	REDRAW
+keymap	C-z	SUSPEND
+
+keymap	SPC	NEXT_PAGE
+keymap	!	SHELL
+keymap	\"	REG_MARK
+keymap	#	PIPE_SHELL
+keymap	$	LINE_END
+keymap	+	NEXT_PAGE
+keymap	-	PREV_PAGE
+keymap	/	SEARCH
+keymap	:	MARK_URL
+keymap	<	SHIFT_LEFT
+keymap	=	INFO
+keymap	>	SHIFT_RIGHT
+keymap	?	HELP
+keymap	@	READ_SHELL
+keymap	B	BACK
+keymap	E	EDIT
+keymap	F	FRAME
+keymap	G	GOTO_LINE
+keymap	H	HELP
+keymap	I	VIEW_IMAGE
+keymap	J	UP
+keymap	K	DOWN
+keymap	N	NEXT_MARK
+keymap	P	PREV_MARK
+keymap	Q	EXIT
+keymap	R	RELOAD
+keymap	S	SAVE_SCREEN
+keymap	U	GOTO
+keymap	V	LOAD
+keymap	Z	CENTER_H
+keymap	\\	SOURCE
+keymap	\^	LINE_BEGIN
+keymap	a	ADD_BOOKMARK
+keymap	b	PREV_PAGE
+keymap	c	PEEK
+keymap	d	SAVE
+keymap	g	GOTO
+keymap	h	MOVE_LEFT
+keymap	i	PEEK_IMG
+keymap	j	MOVE_DOWN
+keymap	k	MOVE_UP
+keymap	l	MOVE_RIGHT
+keymap	n	SEARCH_NEXT
+keymap	o	OPTIONS
+keymap	p	SAVE_SCREEN
+keymap	q	QUIT
+keymap	s	SELECT
+keymap	u	PEEK_LINK
+keymap	v	BOOKMARK
+keymap	z	CENTER_V
+
+keymap	M-TAB	PREV_LINK
+keymap	M-C-j	SAVE_LINK
+keymap	M-C-m	SAVE_LINK
+
+keymap	M-:	MARK_MID
+keymap	M-I	SAVE_IMAGE
+keymap	M-a	ADD_BOOKMARK
+keymap	M-b	BOOKMARK
+keymap	M-e	EDIT_SCREEN
+keymap	M-s	SAVE
+keymap	M-v	PREV_PAGE
+
+keymap	UP	PREV_LINK
+keymap	DOWN	NEXT_LINK
+keymap	RIGHT	GOTO_LINK
+keymap	LEFT	BACK
+
+keymap	M-[E	MENU
+keymap	M-[L	MENU
+
+keymap	M-[1~	BEGIN
+keymap	M-[2~	MENU
+keymap	M-[4~	END
+keymap	M-[5~	PREV_PAGE
+keymap	M-[6~	NEXT_PAGE
+keymap	M-[28~	MENU
+

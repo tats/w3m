@@ -1,0 +1,115 @@
+# A sample of ~/.w3m/keymap (default)
+#
+# Ctrl  : C-, ^
+# Escape: ESC-, M-, ^[
+# Space : SPC, ' '
+# Tab   : TAB, ^i, ^I
+# Delete: DEL, ^?
+# Up    : UP, ^[[A
+# Down  : DOWN, ^[[B
+# Right : RIGHT, ^[[C
+# Left  : LEFT, ^[[D
+
+keymap	C-@	MARK
+keymap	C-a	LINE_BEGIN
+keymap	C-b	MOVE_LEFT
+keymap	C-e	LINE_END
+keymap	C-f	MOVE_RIGHT
+keymap	C-g	LINE_INFO
+keymap	C-h	HISTORY
+keymap	TAB	NEXT_LINK
+keymap	C-j	GOTO_LINK
+keymap	C-k	COOKIE
+keymap	C-l	REDRAW
+keymap	C-m	GOTO_LINK
+keymap	C-n	MOVE_DOWN
+keymap	C-p	MOVE_UP
+keymap	C-r	SEARCH_BACK
+keymap	C-s	SEARCH
+keymap	C-v	NEXT_PAGE
+keymap	C-z	SUSPEND
+
+keymap	SPC	NEXT_PAGE
+keymap	!	SHELL
+keymap	\"	REG_MARK
+keymap	#	PIPE_SHELL
+keymap	$	LINE_END
+keymap	,	LEFT
+keymap	.	RIGHT
+keymap	/	SEARCH
+keymap	:	MARK_URL
+keymap	<	SHIFT_LEFT
+keymap	=	INFO
+keymap	>	SHIFT_RIGHT
+keymap	?	SEARCH_BACK
+keymap	@	READ_SHELL
+keymap	B	BACK
+keymap	E	EDIT
+keymap	F	FRAME
+keymap	G	END
+keymap	H	HELP
+keymap	I	VIEW_IMAGE
+keymap	J	UP
+keymap	K	DOWN
+keymap	M	EXTERN
+keymap	Q	EXIT
+keymap	R	RELOAD
+keymap	S	SAVE_SCREEN
+keymap	U	GOTO
+keymap	V	LOAD
+keymap	W	PREV_WORD
+keymap	Z	CENTER_H
+keymap	\^	LINE_BEGIN
+keymap	a	SAVE_LINK
+keymap	b	PREV_PAGE
+keymap	c	PEEK
+keymap	g	BEGIN
+keymap	h	MOVE_LEFT
+keymap	i	PEEK_IMG
+keymap	j	MOVE_DOWN
+keymap	k	MOVE_UP
+keymap	l	MOVE_RIGHT
+keymap	n	SEARCH_NEXT
+keymap	o	OPTIONS
+keymap	q	QUIT
+keymap	s	SELECT
+keymap	u	PEEK_LINK
+keymap	v	VIEW
+keymap	w	NEXT_WORD
+keymap	z	CENTER_V
+
+keymap	M-TAB	PREV_LINK
+keymap	M-C-j	SAVE_LINK
+keymap	M-C-m	SAVE_LINK
+
+keymap	M-:	MARK_MID
+keymap	M-<	BEGIN
+keymap	M->	END
+keymap	M-I	SAVE_IMAGE
+keymap	M-M	EXTERN_LINK
+keymap	M-W	DICT_WORD_AT
+keymap	M-a	ADD_BOOKMARK
+keymap	M-b	BOOKMARK
+keymap	M-e	EDIT_SCREEN
+keymap	M-g	GOTO_LINE
+keymap	M-n	NEXT_MARK
+keymap	M-p	PREV_MARK
+keymap	M-s	SAVE
+keymap	M-v	PREV_PAGE
+keymap	M-w	DICT_WORD
+
+keymap	UP	MOVE_UP
+keymap	DOWN	MOVE_DOWN
+keymap	RIGHT	MOVE_RIGHT
+keymap	LEFT	MOVE_LEFT
+
+keymap	M-[E	MENU
+keymap	M-[L	MENU
+
+keymap	M-[1~	BEGIN
+keymap	M-[2~	MENU
+keymap	M-[4~	END
+keymap	M-[5~	PREV_PAGE
+keymap	M-[6~	NEXT_PAGE
+keymap	M-[28~	MENU
+

@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.14 2002/03/15 19:02:40 ukai Exp $ */
+/* $Id: frame.c,v 1.15 2002/04/17 02:44:22 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -20,13 +20,52 @@ KeyAbort(SIGNAL_ARG)
     LONGJMP(AbortLoading, 1);
 }
 
+static int
+parseFrameSetLength(char *s, char ***ret)
+{
+    int i, len;
+    char *p, *q, **lv;
+
+    i = 1;
+
+    if (s)
+	for (p = s; (p = strchr(p, ',')); ++p)
+	    ++i;
+    else
+	s = "*";
+
+    lv = New_N(char *, i);
+
+    for (i = 0, p = s;; ++p) {
+	SKIP_BLANKS(p);
+	len = strtoul(p, &q, 10);
+
+	switch (*q) {
+	case '%':
+	    lv[i++] = Sprintf("%d%%", len)->ptr;
+	    break;
+	case '*':
+	    lv[i++] = "*";
+	    break;
+	default:
+	    lv[i++] = Sprintf("%d", len)->ptr;
+	    break;
+	}
+
+	if (!(p = strchr(q, ',')))
+	    break;
+    }
+
+    *ret = lv;
+    return i;
+}
+
 struct frameset *
 newFrameSet(struct parsed_tag *tag)
 {
     struct frameset *f;
     int i;
-    char *cols = NULL, *rows = NULL, *p, *q;
-    char *length[100];
+    char *cols = NULL, *rows = NULL;
 
     f = New(struct frameset);
     f->attr = F_FRAMESET;
@@ -34,78 +73,13 @@ newFrameSet(struct parsed_tag *tag)
     f->currentURL = NULL;
     parsedtag_get_value(tag, ATTR_COLS, &cols);
     parsedtag_get_value(tag, ATTR_ROWS, &rows);
-    i = 0;
-    if (cols) {
-	length[i] = p = cols;
-	while (*p != '\0')
-	    if (*p++ == ',') {
-		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2)
-		    break;
-	    }
-	length[++i] = p + 1;
-    }
-    if (i > 1) {
-	f->col = i;
-	f->width = New_N(char *, i);
-	p = length[i];
-	do {
-	    i--;
-	    q = p - 2;
-	    p = length[i];
-	    switch (*q) {
-		Str tmp;
-	    case '%':
-		f->width[i] = allocStr(p, q - p + 1);
-		break;
-	    case '*':
-		f->width[i] = "*";
-		break;
-	    default:
-		tmp = Sprintf("%d", atoi(p));
-		f->width[i] = tmp->ptr;
-		break;
-	    }
-	} while (i);
-    }
-    else {
-	f->col = 1;
-	f->width = New_N(char *, 1);
-	f->width[0] = "*";
-    }
-    i = 0;
-    if (rows) {
-	length[i] = p = rows;
-	while (*p != '\0')
-	    if (*p++ == ',') {
-		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2)
-		    break;
-	    }
-	length[++i] = p + 1;
-    }
-    if (i > 1) {
-	f->row = i;
-	f->height = New_N(char *, i);
-	p = length[i];
-	do {
-	    i--;
-	    q = p - 2;
-	    p = length[i];
-	    f->height[i] = allocStr(p, q - p + 1);
-	} while (i);
-    }
-    else {
-	f->row = 1;
-	f->height = New_N(char *, 1);
-	f->height[0] = "*";
-    }
-    i = f->row * f->col;
+    f->col = parseFrameSetLength(cols, &f->width);
+    f->row = parseFrameSetLength(rows, &f->height);
     f->i = 0;
+    i = f->row * f->col;
     f->frame = New_N(union frameset_element, i);
     do {
-	i--;
-	f->frame[i].element = NULL;
+	f->frame[--i].element = NULL;
     } while (i);
     return f;
 }

@@ -1,5 +1,11 @@
 2002-04-17  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
+	* [w3m-dev 03178] Parser of ``cols'' and ``rows''
+	* frame.c (parseFrameSetLength): added
+		(newFrameSet): use parseFrameSetLength()
+
+2002-04-17  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
 	* [w3m-dev 03177] SIGUSR1 --> W3M_SIGIMG in image.c
 	* image.c (W3M_SIGIMG): added
 		(load_image_handler): s/SIGUSR1/W3M_SIGIMG/
@@ -3353,4 +3359,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.371 2002/04/17 02:36:45 ukai Exp $
+$Id: ChangeLog,v 1.372 2002/04/17 02:44:22 ukai Exp $

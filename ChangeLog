@@ -1,5 +1,10 @@
 2002-06-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03204] INET6
+	* main.c (fversion): s/USE_INET6/INET6/
+
+2002-06-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03203] dict
 	* main.c (execdict): fix loadGeneralFile()
 
@@ -3459,4 +3464,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.383 2002/06/05 15:27:47 ukai Exp $
+$Id: ChangeLog,v 1.384 2002/06/05 15:29:37 ukai Exp $

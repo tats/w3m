@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.104 2002/06/05 15:27:47 ukai Exp $ */
+/* $Id: main.c,v 1.105 2002/06/05 15:29:37 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -150,7 +150,7 @@ fversion(FILE * f)
 #ifdef USE_GOPHER
 	    ",gopher"
 #endif
-#ifdef USE_INET6
+#ifdef INET6
 	    ",ipv6"
 #endif
 #ifdef USE_ALARM

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.219 2003/03/23 15:21:02 ukai Exp $ */
+/* $Id: main.c,v 1.220 2003/04/06 16:27:54 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -410,7 +410,8 @@ main(int argc, char **argv, char **envp)
     TextHist = newHist();
     URLHist = newHist();
 #ifdef USE_HISTORY
-    loadHistory(URLHist);
+    if (UseHistory)
+	loadHistory(URLHist);
 #endif				/* not USE_HISTORY */
 
     if (!non_null(HTTP_proxy) &&
@@ -1420,11 +1421,9 @@ nscroll(int n, int mode)
     else {
 	tlnum = buf->topLine->linenumber;
 	llnum = buf->topLine->linenumber + buf->LINES - 1;
-#ifdef NEXTPAGE_TOPLINE
 	if (nextpage_topline)
 	    diff_n = 0;
 	else
-#endif
 	    diff_n = n - (tlnum - top->linenumber);
 	if (lnum < tlnum)
 	    lnum = tlnum + diff_n;
@@ -1462,11 +1461,9 @@ nscroll(int n, int mode)
 void
 pgFore(void)
 {
-#ifdef VI_PREC_NUM
     if (vi_prec_num)
 	nscroll(searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
     else
-#endif
 	nscroll(prec_num ? searchKeyNum() : searchKeyNum()
 		* (Currentbuf->LINES - 1), prec_num ? B_SCROLL : B_NORMAL);
 }
@@ -1475,11 +1472,9 @@ pgFore(void)
 void
 pgBack(void)
 {
-#ifdef VI_PREC_NUM
     if (vi_prec_num)
 	nscroll(-searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
     else
-#endif
 	nscroll(-(prec_num ? searchKeyNum() : searchKeyNum()
 		  * (Currentbuf->LINES - 1)), prec_num ? B_SCROLL : B_NORMAL);
 }
@@ -2346,7 +2341,7 @@ _quitfm(int confirm)
     save_cookies();
 #endif				/* USE_COOKIE */
 #ifdef USE_HISTORY
-    if (SaveURLHist)
+    if (UseHistory && SaveURLHist)
 	saveHistory(URLHist, URLHistSize);
 #endif				/* USE_HISTORY */
     w3m_exit(0);
@@ -2795,14 +2790,12 @@ loadLink(char *url, char *target, char *referer, FormList *request)
 	}
 	if (al) {
 	    gotoLine(Currentbuf, al->start.line);
-#ifdef LABEL_TOPLINE
 	    if (label_topline)
 		Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
 					       Currentbuf->currentLine->
 					       linenumber -
 					       Currentbuf->topLine->linenumber,
 					       FALSE);
-#endif
 	    Currentbuf->pos = al->start.pos;
 	    arrangeCursor(Currentbuf);
 	}
@@ -2832,13 +2825,11 @@ gotoLabel(char *label)
     (*buf->clone)++;
     pushBuffer(buf);
     gotoLine(Currentbuf, al->start.line);
-#ifdef LABEL_TOPLINE
     if (label_topline)
 	Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
 				       Currentbuf->currentLine->linenumber
 				       - Currentbuf->topLine->linenumber,
 				       FALSE);
-#endif
     Currentbuf->pos = al->start.pos;
     arrangeCursor(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);

@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.29 2003/03/06 14:26:14 ukai Exp $ */
+/* $Id: ftp.c,v 1.30 2003/04/06 16:27:54 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -15,7 +15,7 @@
 #endif				/* DEBUG */
 
 #include <sys/socket.h>
-#if defined(FTPPASS_HOSTNAMEGEN) || defined(INET6)
+#if defined(INET6)
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
@@ -119,7 +119,6 @@ ftp_login(FTP ftp)
     sock = openSocket(ftp->host, "ftp", 21);
     if (sock < 0)
 	goto open_err;
-#ifdef FTPPASS_HOSTNAMEGEN
     if (ftppass_hostnamegen && !strcmp(ftp->user, "anonymous")) {
 	size_t n = strlen(ftp->pass);
 
@@ -143,7 +142,6 @@ ftp_login(FTP ftp)
 	    }
 	}
     }
-#endif
     ftp->rf = newInputStream(sock);
     ftp->wf = fdopen(dup(sock), "wb");
     if (!ftp->rf || !ftp->wf)

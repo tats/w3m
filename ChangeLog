@@ -1,3 +1,16 @@
+2003-04-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03843] cleanup macros
+	* config.h.dist config.h.in etc.c file.c fm.h ftp.c linein.c 
+	   main.c rc.c:
+	   delete EMACS_LIKE_LINEEDIT, VI_PREC_NUM, LABEL_TOPLINE, 
+		NEXTPAGE_TOPLINE, FTPPASS_HOSTNAMEGEN
+	   use_mark default FALSE
+	   emacs_like_lineedit default FALSE
+	   vi_prec_num default FALSE
+	   add UseHistory, use_history
+	* NEWS: rc: use_history
+
 2003-04-05  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03838] W3M_LIBS splitted from LIBS
@@ -7645,4 +7658,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.810 2003/04/04 16:00:09 ukai Exp $
+$Id: ChangeLog,v 1.811 2003/04/06 16:27:53 ukai Exp $

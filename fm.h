@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.113 2003/02/18 15:43:24 ukai Exp $ */
+/* $Id: fm.h,v 1.114 2003/04/06 16:27:54 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -898,20 +898,12 @@ global int visited_color init(5);	/* magenta  */
 #endif				/* USE_COLOR */
 global int confirm_on_quit init(TRUE);
 #ifdef USE_MARK
-global int use_mark init(TRUE);
+global int use_mark init(FALSE);
 #endif
-#ifdef EMACS_LIKE_LINEEDIT
-global int emacs_like_lineedit init(TRUE);
-#endif
-#ifdef VI_PREC_NUM
-global int vi_prec_num init(TRUE);
-#endif
-#ifdef LABEL_TOPLINE
+global int emacs_like_lineedit init(FALSE);
+global int vi_prec_num init(FALSE);
 global int label_topline init(FALSE);
-#endif
-#ifdef NEXTPAGE_TOPLINE
 global int nextpage_topline init(FALSE);
-#endif
 global char *displayTitleTerm init(NULL);
 global int displayLink init(FALSE);
 global int displayLineInfo init(FALSE);
@@ -944,9 +936,7 @@ global int disable_secret_security_check init(FALSE);
 global char *passwd_file init(PASSWD_FILE);
 global char *pre_form_file init(PRE_FORM_FILE);
 global char *ftppasswd init(NULL);
-#ifdef FTPPASS_HOSTNAMEGEN
 global int ftppass_hostnamegen init(TRUE);
-#endif
 global int do_download init(FALSE);
 #ifdef USE_IMAGE
 global char *image_source init(NULL);
@@ -1005,6 +995,7 @@ extern Hist *URLHist;
 extern Hist *ShellHist;
 extern Hist *TextHist;
 #ifdef USE_HISTORY
+global int UseHistory init(TRUE);
 global int URLHistSize init(100);
 global int SaveURLHist init(TRUE);
 #endif				/* USE_HISTORY */

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.70 2003/03/13 17:47:49 ukai Exp $ */
+/* $Id: etc.c,v 1.71 2003/04/06 16:27:54 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -84,9 +84,7 @@ lineSkip(Buffer *buf, Line *line, int offset, int last)
     Line *l;
 
     l = currentLineSkip(buf, line, offset, last);
-#ifdef NEXTPAGE_TOPLINE
     if (!nextpage_topline)
-#endif
 	for (i = buf->LINES - 1 - (buf->lastLine->linenumber - l->linenumber);
 	     i > 0 && l->prev != NULL; i--, l = l->prev) ;
     return l;

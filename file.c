@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.219 2003/03/02 15:09:24 ukai Exp $ */
+/* $Id: file.c,v 1.220 2003/04/06 16:27:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2079,12 +2079,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif				/* not JP_CHARSET */
 		if (a != NULL) {
 		    gotoLine(b, a->start.line);
-#ifdef LABEL_TOPLINE
 		    if (label_topline)
 			b->topLine = lineSkip(b, b->topLine,
 					      b->currentLine->linenumber
 					      - b->topLine->linenumber, FALSE);
-#endif
 		    b->pos = a->start.pos;
 		    arrangeCursor(b);
 		}

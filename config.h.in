@@ -42,11 +42,7 @@
 #undef USE_ANSI_COLOR
 #undef USE_BG_COLOR
 #undef USE_MIGEMO
-#define EMACS_LIKE_LINEEDIT
-#define VI_PREC_NUM
 #define USE_MARK
-#define LABEL_TOPLINE
-#define NEXTPAGE_TOPLINE
 #undef USE_MOUSE
 #undef USE_GPM
 #undef USE_SYSMOUSE
@@ -55,7 +51,6 @@
 #undef USE_DIGEST_AUTH
 #undef USE_SSL
 #undef USE_SSL_VERIFY
-#define FTPPASS_HOSTNAMEGEN
 #undef USE_HELP_CGI
 #undef USE_EXTERNAL_URI_LOADER
 #undef USE_W3MMAILER
@@ -70,10 +65,8 @@
 #undef USE_GDKPIXBUF
 #undef USE_IMLIB2
 #undef USE_XFACE
-#define SHOW_PARAMS
 #undef USE_DICT
 #undef USE_HISTORY
-#define VIEW_UNSEENOBJECTS
 #undef FORMAT_NICE
 #define ID_EXT
 #undef CLEAR_BUF

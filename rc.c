@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.82 2003/02/05 16:48:09 ukai Exp $ */
+/* $Id: rc.c,v 1.83 2003/04/06 16:27:54 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -57,6 +57,7 @@ static int RC_table_size;
 #define CMT_PIXEL_PER_CHAR      "文字幅 (4.0...32.0)"
 #define CMT_PIXEL_PER_LINE      "一行の高さ (4.0...64.0)"
 #define CMT_PAGERLINE    "ページャとして利用した時に保存される行数"
+#define CMT_HISTORY	 "履歴を使う"
 #define CMT_HISTSIZE     "保持するURL履歴の数"
 #define CMT_SAVEHIST     "URL履歴の保存"
 #define CMT_KANJICODE    "表示用漢字コード"
@@ -119,18 +120,10 @@ static int RC_table_size;
 #ifdef USE_MARK
 #define CMT_USE_MARK	"マーク機能を有効にする"
 #endif
-#ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Emacs風の行編集にする"
-#endif
-#ifdef VI_PREC_NUM
 #define CMT_VI_PREC_NUM "vi風の数値プレフィクス"
-#endif
-#ifdef LABEL_TOPLINE
 #define CMT_LABEL_TOPLINE	"ラベルに移動する時にカーソルがトップになるようにする"
-#endif
-#ifdef NEXTPAGE_TOPLINE
 #define CMT_NEXTPAGE_TOPLINE	"次のページに移動する時にカーソルがトップになるようにする"
-#endif
 #define CMT_FOLD_LINE    "plain text ファイルの行を折り返す"
 #define CMT_SHOW_NUM     "行番号を表示する"
 #define CMT_SHOW_SRCH_STR "検索文字列を表示する"
@@ -146,9 +139,7 @@ static int RC_table_size;
 #define CMT_PASSWDFILE	 "パスワードファイル"
 #define CMT_PRE_FORM_FILE	"文書読込時のフォーム設定用ファイル"
 #define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
-#ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
-#endif
 #define CMT_USERAGENT    "User-Agent"
 #define CMT_ACCEPTENCODING	"圧縮方法(Accept-Encoding:)"
 #define CMT_ACCEPTMEDIA	 "受けつけるメディアタイプ(Accept:)"
@@ -222,6 +213,7 @@ static int RC_table_size;
 #define CMT_PIXEL_PER_CHAR      "Number of pixels per character (4.0...32.0)"
 #define CMT_PIXEL_PER_LINE      "Number of pixels per line (4.0...64.0)"
 #define CMT_PAGERLINE    "Number of remembered lines when used as a pager"
+#define CMT_HISTORY	 "Use URL history"
 #define CMT_HISTSIZE     "Number of remembered URL"
 #define CMT_SAVEHIST     "Save URL history"
 /* #define CMT_KANJICODE    "Display Kanji Code" */
@@ -284,18 +276,10 @@ static int RC_table_size;
 #ifdef USE_MARK
 #define CMT_USE_MARK	"Enable mark operations"
 #endif
-#ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Enable Emacs-style line editing"
-#endif
-#ifdef VI_PREC_NUM
 #define CMT_VI_PREC_NUM	 "Enable vi-like numeric prefix"
-#endif
-#ifdef LABEL_TOPLINE
 #define CMT_LABEL_TOPLINE	"Move cursor to top line when going to label"
-#endif
-#ifdef NEXTPAGE_TOPLINE
 #define CMT_NEXTPAGE_TOPLINE	"Move cursor to top line when moving to next page"
-#endif
 #define CMT_FOLD_LINE    "Fold lines of plain text file"
 #define CMT_SHOW_NUM     "Show line numbers"
 #define CMT_SHOW_SRCH_STR "Show search string"
@@ -311,9 +295,7 @@ static int RC_table_size;
 #define CMT_PASSWDFILE	 "Password file"
 #define CMT_PRE_FORM_FILE	"File for setting form on loading"
 #define CMT_FTPPASS      "Password for anonymous FTP (your mail address)"
-#ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN "Generate domain part of password for FTP"
-#endif
 #define CMT_USERAGENT    "User-Agent identification string"
 #define CMT_ACCEPTENCODING	"Accept-Encoding header"
 #define CMT_ACCEPTMEDIA	 "Accept header"
@@ -575,14 +557,10 @@ struct param_ptr params1[] = {
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
      CMT_SHOW_SRCH_STR, NULL},
-#ifdef LABEL_TOPLINE
     {"label_topline", P_INT, PI_ONOFF, (void *)&label_topline,
      CMT_LABEL_TOPLINE, NULL},
-#endif
-#ifdef NEXTPAGE_TOPLINE
     {"nextpage_topline", P_INT, PI_ONOFF, (void *)&nextpage_topline,
      CMT_NEXTPAGE_TOPLINE, NULL},
-#endif
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -618,6 +596,7 @@ struct param_ptr params2[] = {
 struct param_ptr params3[] = {
     {"pagerline", P_NZINT, PI_TEXT, (void *)&PagerMax, CMT_PAGERLINE, NULL},
 #ifdef USE_HISTORY
+    {"use_history", P_INT, PI_ONOFF, (void *)&UseHistory, CMT_HISTORY, NULL},
     {"history", P_INT, PI_TEXT, (void *)&URLHistSize, CMT_HISTSIZE, NULL},
     {"save_hist", P_INT, PI_ONOFF, (void *)&SaveURLHist, CMT_SAVEHIST, NULL},
 #endif				/* USE_HISTORY */
@@ -628,14 +607,10 @@ struct param_ptr params3[] = {
 #ifdef USE_MARK
     {"mark", P_INT, PI_ONOFF, (void *)&use_mark, CMT_USE_MARK, NULL},
 #endif
-#ifdef EMACS_LIKE_LINEEDIT
     {"emacs_like_lineedit", P_INT, PI_ONOFF, (void *)&emacs_like_lineedit,
      CMT_EMACS_LIKE_LINEEDIT, NULL},
-#endif
-#ifdef VI_PREC_NUM
     {"vi_prec_num", P_INT, PI_ONOFF, (void *)&vi_prec_num, CMT_VI_PREC_NUM,
      NULL},
-#endif
     {"mark_all_pages", P_INT, PI_ONOFF, (void *)&MarkAllPages,
      CMT_MARK_ALL_PAGES, NULL},
     {"wrap_search", P_INT, PI_ONOFF, (void *)&WrapDefault, CMT_WRAP, NULL},
@@ -766,10 +741,8 @@ struct param_ptr params9[] = {
      (void *)&disable_secret_security_check, CMT_DISABLE_SECRET_SECURITY_CHECK,
      NULL},
     {"ftppasswd", P_STRING, PI_TEXT, (void *)&ftppasswd, CMT_FTPPASS, NULL},
-#ifdef FTPPASS_HOSTNAMEGEN
     {"ftppass_hostnamegen", P_INT, PI_ONOFF, (void *)&ftppass_hostnamegen,
      CMT_FTPPASS_HOSTNAMEGEN, NULL},
-#endif
     {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
      CMT_PRE_FORM_FILE, NULL},
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},

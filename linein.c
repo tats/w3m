@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.29 2003/03/06 14:31:22 ukai Exp $ */
+/* $Id: linein.c,v 1.30 2003/04/06 16:27:54 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -201,29 +201,21 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	if (!i_quote &&
 		(((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
 		     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
-#ifdef EMACS_LIKE_LINEEDIT
 	    if (emacs_like_lineedit && cm_next) {
 		_dcompl();
 		need_redraw = TRUE;
 	    }
 	    else {
-#endif
 		_compl();
 		cm_disp_next = -1;
-#ifdef EMACS_LIKE_LINEEDIT
 	    }
-#endif
 	}
 	else if (!i_quote && CLen == CPos &&
 		 (cm_mode & CPL_ALWAYS || cm_mode & CPL_ON) && c == CTRL_D) {
-#ifdef EMACS_LIKE_LINEEDIT
 	    if (!emacs_like_lineedit) {
-#endif
 		_dcompl();
 		need_redraw = TRUE;
-#ifdef EMACS_LIKE_LINEEDIT
 	    }
-#endif
 	}
 	else if (!i_quote && c == DEL_CODE) {
 	    _bs();
@@ -456,24 +448,19 @@ _esc(void)
 	break;
     case CTRL_I:
     case ' ':
-#ifdef EMACS_LIKE_LINEEDIT
 	if (emacs_like_lineedit) {
 	    _rdcompl();
 	    cm_clear = FALSE;
 	    need_redraw = TRUE;
 	}
 	else
-#endif
 	    _rcompl();
 	break;
     case CTRL_D:
-#ifdef EMACS_LIKE_LINEEDIT
 	if (!emacs_like_lineedit)
-#endif
 	    _rdcompl();
 	need_redraw = TRUE;
 	break;
-#ifdef EMACS_LIKE_LINEEDIT
     case 'f':
 	if (emacs_like_lineedit)
 	    _mvRw();
@@ -486,7 +473,6 @@ _esc(void)
 	if (emacs_like_lineedit)
 	    _bsw();
 	break;
-#endif
 #ifdef JP_CHARSET
     case '$':
 	/* ISO-2022-jp characters */
@@ -865,11 +851,9 @@ next_dcompl(int next)
 	move(y, 0);
 	clrtoeolx();
 	bold();
-#ifdef EMACS_LIKE_LINEEDIT
 	if (emacs_like_lineedit)
 	    addstr("----- Press TAB to continue -----");
 	else
-#endif
 	    addstr("----- Press CTRL-D to continue -----");
 	boldend();
     }

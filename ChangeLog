@@ -1,3 +1,9 @@
+2002-02-15  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03056] DISPLAY_IMAGE, STOP_IMAGE don't work.
+	* main.c (dispI): fix DISPLAY_IMAGE
+	* main.c (stopI): fix STOP_IMAGE
+
 2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03055] LIB_DIR -> w3m_lib_dir()
@@ -2938,4 +2944,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.318 2002/02/14 03:50:03 ukai Exp $
+$Id: ChangeLog,v 1.319 2002/02/14 15:10:29 ukai Exp $

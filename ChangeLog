@@ -1,3 +1,9 @@
+2002-06-10  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev-en 00751] Re: tab completion weirdness in w3m 0.3
+	* main.c (svBuf): unescape spaces when input is filename
+	* proto.h (unescape_spaces): added
+
 2002-06-08  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03207] strchr(), strcasecmp(), and strncasecmp()
@@ -3482,4 +3488,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.386 2002/06/07 15:46:44 ukai Exp $
+$Id: ChangeLog,v 1.387 2002/06/09 16:09:24 ukai Exp $

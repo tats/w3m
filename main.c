@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.106 2002/06/05 15:42:10 ukai Exp $ */
+/* $Id: main.c,v 1.107 2002/06/09 16:09:25 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3971,26 +3971,29 @@ svI(void)
 void
 svBuf(void)
 {
-    char *file;
+    char *qfile = NULL, *file;
     FILE *f;
     int is_pipe;
 
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     file = searchKeyData();
     if (file == NULL || *file == '\0') {
-	file = inputLineHist("Save buffer to: ", NULL, IN_COMMAND, SaveHist);
+	qfile = inputLineHist("Save buffer to: ", NULL, IN_COMMAND, SaveHist);
+	if (qfile == NULL || *qfile == '\0') {
+	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	    return;
+	}
     }
-    if (file != NULL)
-	file = conv_to_system(file);
-    if (file == NULL || *file == '\0') {
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	return;
-    }
+    file = conv_to_system(qfile ? qfile : file);
     if (*file == '|') {
 	is_pipe = TRUE;
 	f = popen(file + 1, "w");
     }
     else {
+	if (qfile) {
+	    file = unescape_spaces(Strnew_charp(qfile))->ptr;
+	    file = conv_to_system(file);
+	}
 	file = expandName(file);
 	if (checkOverWrite(file) < 0)
 	    return;

@@ -1,3 +1,16 @@
+2003-03-11  Fumitoshi UKAI  <ukai@ukai.org>
+
+	* [w3m-dev 03804] fix autoconf
+	* config.h.in (EAMCS_LIKE_LINEEDIT): define
+		(VI_PREC_NUM): define
+		(USE_MARK): define
+		(LABEL_TOPLINE): define
+		(NEXTPAGE_TOPLINE): define
+		(FTPPASS_HOSTNAMEGEN): define
+		(SHOW_PARAMS): define
+		(VIEW_UNSEENOBJECTS): define
+		(ID_EXT): define
+
 2003-03-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03804] fix autoconf
@@ -7409,4 +7422,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.779 2003/03/10 17:28:52 ukai Exp $
+$Id: ChangeLog,v 1.780 2003/03/10 17:33:21 ukai Exp $

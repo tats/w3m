@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.19 2003/01/18 18:40:32 ukai Exp $ */
+/* $Id: istream.c,v 1.20 2003/01/20 15:25:30 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -343,6 +343,10 @@ ISfileno(InputStream stream)
 	return *(int *)stream->base.handle;
     case IST_FILE:
 	return fileno(stream->file.handle->f);
+#ifdef USE_SSL
+    case IST_SSL:
+	return stream->ssl.handle->sock;
+#endif
     case IST_ENCODED:
 	return ISfileno(stream->ens.handle->is);
     default:

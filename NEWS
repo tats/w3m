@@ -1,5 +1,6 @@
 w3m 0.3?
 
+* support -dump_extra ftp://
 * new regex implementation
 
 ----------------------------------------------------------------

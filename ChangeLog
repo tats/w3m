@@ -1,5 +1,11 @@
 2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03396] Re: meta refresh problem
+	* main.c (MAIN): AL_IMPLICIT -> alarm_status
+		(SigAlarm): AL_IMPLICIT -> alarm_status
+
+2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03391] use editor when input at last line
 	* linein.c (_editor): added
 
@@ -4440,4 +4446,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.489 2002/11/08 16:09:58 ukai Exp $
+$Id: ChangeLog,v 1.490 2002/11/08 17:32:50 ukai Exp $

@@ -1,3 +1,9 @@
+2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03679] Re: cleanup for pipe
+	* etc.c (open_pipe_rw): check stdin, stdout
+	* file.c (uncompress_stream): rewrite
+
 2003-01-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03678] Re: config.param is clear when configure -help
@@ -6715,4 +6721,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.705 2003/01/22 16:36:11 ukai Exp $
+$Id: ChangeLog,v 1.706 2003/01/23 15:59:24 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.200 2003/01/22 16:16:20 ukai Exp $ */
+/* $Id: file.c,v 1.201 2003/01/23 15:59:27 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7749,6 +7749,7 @@ uncompress_stream(URLFile *uf, char **src)
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
     }
 
+    /* child1 -- stdout|f1=uf -> parent */
     pid1 = open_pipe_rw(&f1, NULL);
     if (pid1 < 0) {
 	UFclose(uf);
@@ -7757,31 +7758,36 @@ uncompress_stream(URLFile *uf, char **src)
     if (pid1 == 0) {
 	/* child */
 	pid_t pid2;
-	FILE *f2;
-	dup2(1, 2);		/* stderr>&stdout */
-	setup_child(TRUE, -1, UFfileno(uf));
-	pid2 = open_pipe_rw(NULL, &f2);
+	FILE *f2 = stdin;
+
+	/* uf -> child2 -- stdout|stdin -> child1 */
+	pid2 = open_pipe_rw(&f2, NULL);
 	if (pid2 < 0) {
 	    UFclose(uf);
 	    exit(1);
 	}
-	if (pid2 > 0) {
+	if (pid2 == 0) {
+	    /* child2 */
 	    Str buf = Strnew_size(SAVE_BUF_SIZE);
 	    FILE *f = NULL;
+
+	    setup_child(TRUE, 2, UFfileno(uf));
 	    if (tmpf)
 		f = fopen(tmpf, "wb");
 	    while (UFread(uf, buf, SAVE_BUF_SIZE)) {
-		if (Strfputs(buf, f2) < 0)
+		if (Strfputs(buf, stdout) < 0)
 		    break;
 		if (f)
 		    Strfputs(buf, f);
 	    }
-	    fclose(f2);
+	    UFclose(uf);
 	    if (f)
 		fclose(f);
 	    exit(0);
 	}
-	/* child */
+	/* child1 */
+	dup2(1, 2);		/* stderr>&stdout */
+	setup_child(TRUE, -1, -1);
 	execlp(expand_cmd, expand_name, NULL);
 	exit(1);
     }
@@ -7792,7 +7798,7 @@ uncompress_stream(URLFile *uf, char **src)
 	    uf->scheme = SCM_LOCAL;
     }
     UFhalfclose(uf);
-    uf->stream = newFileStream(f1, (void (*)())fclose);
+    uf->stream = newFileStream(f1, (void (*)())pclose);
 }
 
 static FILE *

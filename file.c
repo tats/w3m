@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.139 2002/12/02 17:55:46 ukai Exp $ */
+/* $Id: file.c,v 1.140 2002/12/03 15:00:53 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1496,6 +1496,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     add_auth_cookie_flag = 0;
 
   load_doc:
+    if (fmInitialized)
+	term_raw();
+    if (prevtrap)
+	signal(SIGINT, prevtrap);
     url_option.referer = referer;
     url_option.flag = flag;
     f = openURL(tpath, &pu, current, &url_option, request, extra_header, of,
@@ -1508,10 +1512,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	/* openURL failure: it means either (1) the requested URL is a directory name
 	 * on an FTP server, or (2) is a local directory name. 
 	 */
-	if (fmInitialized)
-	    term_raw();
-	if (prevtrap)
-	    signal(SIGINT, prevtrap);
 	switch (f.scheme) {
 	case SCM_FTPDIR:
 	    {

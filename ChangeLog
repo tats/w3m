@@ -1,3 +1,8 @@
+2002-12-03  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03505] Re: coredump when ssl error
+	* file.c (loadGeneralFile): term_raw(), SIGINT before retry
+
 2002-12-03  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
 	* [w3m-dev 03504] coredump when ssl error
@@ -5298,4 +5303,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.574 2002/12/02 17:48:56 ukai Exp $
+$Id: ChangeLog,v 1.575 2002/12/03 15:00:52 ukai Exp $

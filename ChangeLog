@@ -1,3 +1,8 @@
+2003-01-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* fix compiler warnings
+	* html.h (UFclose): value computed but not used
+
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03632] cleanup (don't close connection of news server)
@@ -6349,4 +6354,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.671 2003/01/10 17:06:17 ukai Exp $
+$Id: ChangeLog,v 1.672 2003/01/10 17:15:08 ukai Exp $

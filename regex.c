@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.18 2002/11/22 15:57:29 ukai Exp $ */
+/* $Id: regex.c,v 1.19 2002/11/26 18:51:15 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -660,8 +660,8 @@ matchWhich(longchar * pattern, longchar c, int igncase)
 		break;
 	    }
 	    else if (igncase && c < 127 && IS_ALPHA(c) &&
-		     ((*p <= c && tolower(c) <= *(p + 2)) ||
-		      (*p <= c && toupper(c) <= *(p + 2)))) {
+		     ((*p <= tolower(c) && tolower(c) <= *(p + 2)) ||
+		      (*p <= toupper(c) && toupper(c) <= *(p + 2)))) {
 		ans = 1;
 		break;
 	    }

@@ -1,5 +1,10 @@
 2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03491] Re: case insensitive regexp search
+	* regex.c (matchWhich): tolower
+
+2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* use local_cookie for support local-cgi commands
 	* file.c (loadGeneralFile): pass Local_cookie to DirBufferCommand
 	* fm.h (Local_cookie): Str
@@ -5195,4 +5200,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.563 2002/11/26 18:03:18 ukai Exp $
+$Id: ChangeLog,v 1.564 2002/11/26 18:51:15 ukai Exp $

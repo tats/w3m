@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.50 2002/10/25 20:02:41 ukai Exp $ */
+/* $Id: rc.c,v 1.51 2002/10/26 08:10:43 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -66,6 +66,7 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
 #define CMT_DISPLINK     "リンク先の自動表示"
+#define CMT_DISPLINEINFO "現在の行番号の表示"
 #ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "インライン画像を表示"
 #define CMT_AUTO_IMAGE   "インライン画像を自動で読み込む"
@@ -208,6 +209,7 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "Treat argument without scheme as URL"
 #define CMT_TSELF        "Use _self as default target"
 #define CMT_DISPLINK     "Display link URL automatically"
+#define CMT_DISPLINEINFO "Display current line number"
 #ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "Display inline images"
 #define CMT_AUTO_IMAGE   "Load inline images automatically"
@@ -465,6 +467,8 @@ struct param_ptr params1[] = {
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
+    {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo, 
+     CMT_DISPLINEINFO, NULL},
     {"ext_dirlist", P_INT, PI_ONOFF, (void *)&UseExternalDirBuffer,
      CMT_EXT_DIRLIST, NULL},
     {"dirlist_cmd", P_STRING, PI_TEXT, (void *)&DirBufferCommand,

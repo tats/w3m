@@ -102,12 +102,12 @@ clean:
 	-rm -f $(HELP_TARGETS) w3mhelp-*.pl
 	-for dir in multipart w3mman; \
 	do \
-	  cd $$dir && $(MAKE) clean; \
+	  (cd $$dir && $(MAKE) clean); \
 	done
 
 distclean:
 	-rm -f $(LIB_TARGETS) $(AUXBIN_TARGETS) 
 	-for dir in multipart w3mman; \
 	do \
-	  cd $$dir && $(MAKE) distclean; \
+	  (cd $$dir && $(MAKE) distclean); \
 	done

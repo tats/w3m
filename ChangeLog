@@ -1,3 +1,8 @@
+2002-02-23  HIDAI Ken-ichi <hidai@nmn.jp>
+
+	* [w3m-dev 03060] doc-jp/README.migemo
+	* doc-jp/README.migemo: added
+
 2002-02-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03059] table + hborder + rowspan + valign=bottom
@@ -2981,4 +2986,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.322 2002/02/22 17:55:17 ukai Exp $
+$Id: ChangeLog,v 1.323 2002/02/22 17:59:51 ukai Exp $

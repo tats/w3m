@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.22 2002/12/11 15:07:53 ukai Exp $ */
+/* $Id: image.c,v 1.23 2002/12/11 15:08:47 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -315,7 +315,7 @@ getAllImage(Buffer *buf)
 	    a->image->cache = getImage(a->image, current, buf->image_flag);
 	    if (a->image->cache &&
 		a->image->cache->loaded == IMG_FLAG_UNLOADED)
-	   	buf->image_loaded = FALSE;
+		buf->image_loaded = FALSE;
 	}
     }
 }

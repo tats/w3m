@@ -1,3 +1,13 @@
+2003-10-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* #include <openssl/...>
+	 suggested by ABE Yuji <cbo46560@pop12.odn.ne.jp>
+	 [w3m-dev 03998] problem about pkg-config check for OpenSSL
+	* html.h: #include <openssl/...>
+	* istream.c: ditto
+	* istream.h: ditto
+	* url.c: ditto
+
 2003-10-20  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 04002] Re: function and w3m-control
@@ -8215,4 +8225,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.885 2003/10/19 16:17:12 ukai Exp $
+$Id: ChangeLog,v 1.886 2003/10/20 16:41:56 ukai Exp $

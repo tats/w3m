@@ -1,10 +1,10 @@
-/* $Id: istream.c,v 1.22 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: istream.c,v 1.23 2003/10/20 16:41:56 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
 #include <signal.h>
 #ifdef USE_SSL
-#include <x509v3.h>
+#include <openssl/x509v3.h>
 #endif
 
 #define	uchar		unsigned char

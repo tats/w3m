@@ -1,10 +1,10 @@
-/* $Id: html.h,v 1.24 2003/09/22 21:02:19 ukai Exp $ */
+/* $Id: html.h,v 1.25 2003/10/20 16:41:56 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
-#include <bio.h>
-#include <x509.h>
-#include <ssl.h>
+#include <openssl/bio.h>
+#include <openssl/x509.h>
+#include <openssl/ssl.h>
 #endif				/* USE_SSL */
 
 #include "istream.h"

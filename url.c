@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.84 2003/10/19 16:17:12 ukai Exp $ */
+/* $Id: url.c,v 1.85 2003/10/20 16:41:56 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -22,9 +22,9 @@
 
 #ifdef USE_SSL
 #ifndef SSLEAY_VERSION_NUMBER
-#include <crypto.h>		/* SSLEAY_VERSION_NUMBER may be here */
+#include <openssl/crypto.h>		/* SSLEAY_VERSION_NUMBER may be here */
 #endif
-#include <err.h>
+#include <openssl/err.h>
 #endif
 
 #ifdef	__WATT32__
@@ -248,7 +248,7 @@ free_ssl_ctx()
 }
 
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
-#include <rand.h>
+#include <openssl/rand.h>
 static void
 init_PRNG()
 {

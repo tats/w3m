@@ -1,12 +1,12 @@
-/* $Id: istream.h,v 1.11 2003/07/22 17:33:16 ukai Exp $ */
+/* $Id: istream.h,v 1.12 2003/10/20 16:41:56 ukai Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
 #include <stdio.h>
 #ifdef USE_SSL
-#include <bio.h>
-#include <x509.h>
-#include <ssl.h>
+#include <openssl/bio.h>
+#include <openssl/x509.h>
+#include <openssl/ssl.h>
 #endif
 #include "Str.h"
 #include <sys/types.h>

@@ -1,3 +1,38 @@
+2002-11-16  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
+
+	* [w3m-dev 03433] cygwin console on Win9X
+	* configure (config.h): SUPPORT_WIN9X_CONSOLE_MBCS
+	* linein.c (inputLineHistSearch): enable_win9x_console_input()
+					disable_win9x_console_input()
+	* main.c (mouse): cygin_mouse_btn_swapped
+	* terms.c (is_xterm): static
+		(isLocalConsole): added
+		(cygwin_mouse_btn_swapped): added
+		(check_win32_console): deleted
+		(check_win9x): added
+		(init_win32_console_handle): check ttyslot()
+		(enable_win9x_console_input): added
+		(disable_win9x_console_input): added
+		(read_win32_console_input): delete ifdef MOUSE
+		(cmp_tv): deleted
+		(subtract_tv): deleted
+		(GetConsoleHwnd): added
+		(cygwin_version): added
+		(select_or_poll_win32_console): deleted
+		(check_cygwin_console): added
+		(select_win32_console): deleted
+		(set_tty): check_cygin_console()
+		(term_title): SetConsoleTitle()
+		(CYGWIN_ON): added
+		(CYGIN_OFF): added
+		(mouse_init): NEED_CYGWIN_ON
+		(mouse_end): NEED_CYGWIN_OFF
+	* terms.h (cygwin_mouse_btn_swapped): added
+		(enable_win9x_console_input): added
+		(disable_win9x_console_input): added
+		(NEED_CYGWIN_ON): added
+		(NEED_CYGWIN_OFF): added
+
 2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03432] Re: tab browser
@@ -4691,4 +4726,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.516 2002/11/15 15:23:45 ukai Exp $
+$Id: ChangeLog,v 1.517 2002/11/15 15:36:48 ukai Exp $

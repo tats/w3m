@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.34 2002/11/06 03:50:49 ukai Exp $ */
+/* $Id: terms.c,v 1.35 2002/11/15 15:36:48 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -33,10 +33,7 @@ static int cwidth = 8, cheight = 16;
 static int xpix, ypix, nbs, obs = 0;
 #endif				/* use_SYSMOUSE */
 
-#ifndef __CYGWIN__
-static
-#endif
-int is_xterm = 0;
+static int is_xterm = 0;
 
 void mouse_init(), mouse_end();
 int mouseActive = 0;
@@ -61,9 +58,14 @@ extern int CodePage;
 
 #if defined(__CYGWIN__)
 #include <windows.h>
-static HANDLE hConIn;
+#include <sys/cygwin.h>
+static int isWinConsole = 0;
+static int isLocalConsole = 0;
+int cygwin_mouse_btn_swapped = 0;
+
+#if defined(SUPPORT_WIN9X_CONSOLE_MBCS)
+static HANDLE hConIn = INVALID_HANDLE_VALUE;
 static int isWin95;
-static int isWinConsole;
 static char *ConInV;
 static int iConIn, nConIn, nConInMax;
 #ifdef USE_MOUSE
@@ -71,25 +73,10 @@ static MOUSE_EVENT_RECORD lastConMouse;
 #endif
 
 void
-check_win32_console(void)
-{
-    char *tty;
-
-    tty = ttyname(1);
-    if (!strncmp(tty, "/dev/con", 8)) {
-	isWinConsole = TRUE;
-    }
-    else {
-	isWinConsole = FALSE;
-    }
-}
-
-void
-init_win32_console_handle(void)
+check_win9x(void)
 {
     OSVERSIONINFO winVersionInfo;
 
-    check_win32_console();
     winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
     if (GetVersionEx(&winVersionInfo) == 0) {
 	fprintf(stderr, "can't get Windows version information.\n");
@@ -97,19 +84,35 @@ init_win32_console_handle(void)
     }
     if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
 	isWin95 = 1;
-    }
-    hConIn = INVALID_HANDLE_VALUE;
-    if (isWin95) {
-	if (isWinConsole) {
-	    if (isatty(0)) {
-		hConIn = GetStdHandle(STD_INPUT_HANDLE);
-	    }
-	    else {
-		hConIn = CreateFile("CONIN$", GENERIC_READ,
-				    FILE_SHARE_READ,
-				    NULL, OPEN_EXISTING, 0, NULL);
-	    }
+	if (ttyslot() != -1) {
+	    isLocalConsole = 0;
 	}
+    }
+    else {
+	isWin95 = 0;
+    }
+}
+
+void
+enable_win9x_console_input(void)
+{
+    if (isWin95 && isWinConsole && isLocalConsole &&
+	hConIn == INVALID_HANDLE_VALUE) {
+	hConIn = CreateFile("CONIN$", GENERIC_READ|GENERIC_WRITE,
+			    FILE_SHARE_READ|FILE_SHARE_WRITE,
+			    NULL, OPEN_EXISTING, 0, NULL);
+	if (hConIn != INVALID_HANDLE_VALUE) {
+	    getch();
+	}
+    }
+}
+
+void
+disable_win9x_console_input(void)
+{
+    if (hConIn != INVALID_HANDLE_VALUE) {
+	CloseHandle(hConIn);
+	hConIn = INVALID_HANDLE_VALUE;
     }
 }
 
@@ -143,44 +146,6 @@ read_win32_console_input(void)
 	    }
 
 	    break;
-#ifdef USE_MOUSE
-	case MOUSE_EVENT:
-	    if ((lastConMouse.dwButtonState ^ rec.Event.MouseEvent.
-		 dwButtonState) & ~(~0 << 5)) {
-		int down;
-		MOUSE_EVENT_RECORD *mer;
-		INPUT_RECORD dummy;
-
-		expand_win32_console_input_buffer(6);
-		mer = &rec.Event.MouseEvent;
-		ConInV[nConIn] = '\033';
-		ConInV[nConIn + 1] = '[';
-		ConInV[nConIn + 2] = 'M';
-
-		if (~(mer->dwButtonState) & lastConMouse.
-		    dwButtonState & ~(~0 << 5))
-		    ConInV[nConIn + 3] = MOUSE_BTN_UP + ' ';
-		else if (!
-			 (down =
-			  mer->dwButtonState & ~lastConMouse.
-			  dwButtonState & ~(~0 << 5)))
-		    break;
-		else
-		    ConInV[nConIn + 3] = (down & (1 << 0) ? MOUSE_BTN1_DOWN :
-					  down & (1 << 1) ? MOUSE_BTN3_DOWN :
-					  down & (1 << 2) ? MOUSE_BTN2_DOWN :
-					  down & (1 << 3) ?
-					  MOUSE_BTN4_DOWN_XTERM :
-					  MOUSE_BTN5_DOWN_XTERM) + ' ';
-
-		ConInV[nConIn + 4] = mer->dwMousePosition.X + '!';
-		ConInV[nConIn + 5] = mer->dwMousePosition.Y + '!';
-		nConIn += 6;
-		lastConMouse = *mer;
-		ReadConsoleInput(hConIn, &rec, 1, &nevents);
-		return 6;
-	    }
-#endif
 	default:
 	    break;
 	}
@@ -220,92 +185,64 @@ read_win32_console(char *s, int n)
     return n;
 }
 
-static int
-cmp_tv(const struct timeval *tv_a, const struct timeval *tv_b)
+#endif /* SUPPORT_WIN9X_CONSOLE_MBCS */
+
+HWND GetConsoleHwnd(void)
 {
-    return ((tv_a->tv_sec < tv_b->tv_sec) ? -1 :
-	    (tv_a->tv_sec > tv_b->tv_sec) ? 1 :
-	    (tv_a->tv_usec < tv_b->tv_usec) ? -1 :
-	    (tv_a->tv_usec > tv_b->tv_usec) ? 1 : 0);
+    #define MY_BUFSIZE 1024
+    HWND hwndFound;
+    char pszNewWindowTitle[MY_BUFSIZE];
+    char pszOldWindowTitle[MY_BUFSIZE];
+
+    GetConsoleTitle(pszOldWindowTitle, MY_BUFSIZE);
+    wsprintf(pszNewWindowTitle,"%d/%d",
+		GetTickCount(),
+		GetCurrentProcessId());
+    SetConsoleTitle(pszNewWindowTitle);
+    Sleep(40);
+    hwndFound = FindWindow(NULL, pszNewWindowTitle);
+    SetConsoleTitle(pszOldWindowTitle);
+    return(hwndFound);
+}
+ 
+unsigned long
+cygwin_version(void)
+{
+    struct per_process *p;
+
+    p = (struct per_process *)cygwin_internal(CW_USER_DATA);
+    if (p != NULL) {
+	return (p->dll_major * 1000) +  p->dll_minor;
+    }
+    return 0;
 }
 
-static int
-subtract_tv(struct timeval *dst, const struct timeval *src)
+void
+check_cygwin_console(void)
 {
-    if ((dst->tv_usec -= src->tv_usec) < 0) {
-	--(dst->tv_sec);
-	dst->tv_usec += 1000000;
+    char *term = getenv("TERM");
+    HANDLE hWnd;
+
+    if (strncmp(term, "cygwin", 6) == 0) {
+	isWinConsole = 1;
     }
-
-    return ((dst->tv_sec -= src->tv_sec) < 0 ? -1 :
-	    !dst->tv_sec ? (dst->tv_usec <
-			    0 ? -1 : !dst->tv_usec ? 0 : 1) : 1);
-}
-
-int
-select_or_poll_win32_console(int n, fd_set * rfds, fd_set * wfds,
-			     fd_set * efds, struct timeval *tout)
-{
-    int m;
-    DWORD nevents;
-
-    if ((m = select(n, rfds, wfds, efds, tout)) < 0)
-	return m;
-
-    if (iConIn < nConIn) {
-	FD_SET(tty, rfds);
-	++m;
-    }
-    else {
-	iConIn = nConIn = 0;
-
-	while (GetNumberOfConsoleInputEvents(hConIn, &nevents) && nevents)
-	    read_win32_console_input();
-
-	if (nConIn) {
-	    FD_SET(tty, rfds);
-	    ++m;
+    if (isWinConsole) {
+	hWnd = GetConsoleHwnd();
+	if (hWnd != INVALID_HANDLE_VALUE) {
+	    if (IsWindowVisible(hWnd)) {
+		isLocalConsole = 1;
+	    }
 	}
-    }
-
-    return m;
-}
-
-int
-select_win32_console(int n, fd_set * rfds, fd_set * wfds, fd_set * efds,
-		     struct timeval *tout)
-{
-    static struct timeval polltv = { 0, 1000000 / CLOCKS_PER_SEC };
-    int m;
-    struct timeval tv;
-
-    if (hConIn == INVALID_HANDLE_VALUE || tty < 0 || tty >= n || !rfds
-	|| !FD_ISSET(tty, rfds))
-	return select(n, rfds, wfds, efds, tout);
-
-    FD_CLR(tty, rfds);
-
-    if (tout) {
-	while (cmp_tv(tout, &polltv) > 0) {
-	    tv = polltv;
-
-	    if ((m = select_or_poll_win32_console(n, rfds, wfds, efds, &tv)))
-		return m;
-
-	    subtract_tv(tout, &polltv);
-	}
-
-	return select_or_poll_win32_console(n, rfds, wfds, efds, tout);
-    }
-    else
-	for (;;) {
-	    tv = polltv;
-
-	    if ((m = select_or_poll_win32_console(n, rfds, wfds, efds, &tv)))
-		return m;
-	}
-}
+#ifdef SUPPORT_WIN9X_CONSOLE_MBCS
+	check_win9x();
 #endif
+    }
+    if (cygwin_version() <= 1003015) {
+	/* cygwin DLL 1.3.15 or earler */
+	cygwin_mouse_btn_swapped = 1;
+    }
+}
+#endif /* __CYGWIN__ */
 
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
@@ -499,7 +436,7 @@ static struct w3m_term_info {
     {W3M_TERM_INFO("mlterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {W3M_TERM_INFO("screen", SCREEN_TITLE, 0)},
 #ifdef __CYGWIN__
-    {W3M_TERM_INFO("cygwin", NULL, NEED_XTERM_ON)},
+    {W3M_TERM_INFO("cygwin", XTERM_TITLE, (NEED_CYGWIN_ON|NEED_CYGWIN_OFF))},
 #endif
     {W3M_TERM_INFO(NULL, NULL, 0)}
 };
@@ -522,7 +459,7 @@ set_tty(void)
     }
     ttyf = fdopen(tty, "w");
 #ifdef __CYGWIN__
-    init_win32_console_handle();
+    check_cygwin_console();
 #endif
     TerminalGet(tty, &d_ioval);
     if (displayTitleTerm != NULL) {
@@ -1872,8 +1809,17 @@ term_title(char *s)
 {
     if (!fmInitialized)
         return;
-    if (title_str != NULL)
+    if (title_str != NULL) {
+#ifdef __CYGWIN__
+	if (isLocalConsole) {
+	    char buff[1024];
+	    snprintf(buff, sizeof(buff), "w3m: %s", s);
+	    SetConsoleTitle(buff);
+	}
+	else if (!isWinConsole)
+#endif
         fprintf(ttyf, title_str, s);
+    }
 }
 
 char
@@ -1882,7 +1828,7 @@ getch(void)
     char c;
 
     while (
-#ifdef __CYGWIN__
+#ifdef SUPPORT_WIN9X_CONSOLE_MBCS
 	      read_win32_console(&c, 1)
 #else
 	      read(tty, &c, 1)
@@ -2020,13 +1966,7 @@ sleep_till_anykey(int sec, int purge)
     FD_ZERO(&rfd);
     FD_SET(tty, &rfd);
 
-    if (
-#ifdef __CYGWIN__
-	   select_win32_console(tty + 1, &rfd, 0, 0, &tim)
-#else
-	   select(tty + 1, &rfd, 0, 0, &tim)
-#endif
-	   > 0 && purge) {
+    if (select(tty + 1, &rfd, 0, 0, &tim) > 0 && purge) {
 	c = getch();
 	if (c == ESC_CODE)
 	    skip_escseq();
@@ -2042,6 +1982,8 @@ sleep_till_anykey(int sec, int purge)
 
 #define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
 #define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
+#define CYGWIN_ON  {fputs("\033[?1000h",ttyf); flush_tty();}
+#define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
 
 #ifdef USE_GPM
 /* Linux console with GPM support */
@@ -2167,6 +2109,9 @@ mouse_init()
     if (is_xterm & NEED_XTERM_ON) {
 	XTERM_ON;
     }
+    else if (is_xterm & NEED_CYGWIN_ON) {
+	CYGWIN_ON;
+    }
     mouseActive = 1;
 }
 
@@ -2177,6 +2122,9 @@ mouse_end()
 	return;
     if (is_xterm & NEED_XTERM_OFF) {
 	XTERM_OFF;
+    }
+    else if (is_xterm & NEED_CYGWIN_OFF) {
+	CYGWIN_OFF;
     }
     mouseActive = 0;
 }

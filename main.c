@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.133 2002/11/15 15:21:07 ukai Exp $ */
+/* $Id: main.c,v 1.134 2002/11/15 15:36:48 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4895,6 +4895,14 @@ mouse()
     int btn, x, y;
 
     btn = (unsigned char)getch() - 32;
+#if defined(__CYGWIN__)
+    if (cygwin_mouse_btn_swapped) {
+	if (btn == MOUSE_BTN2_DOWN)
+	    btn = MOUSE_BTN3_DOWN;
+	else if (btn == MOUSE_BTN3_DOWN)
+	    btn = MOUSE_BTN2_DOWN;
+    }
+#endif
     x = (unsigned char)getch() - 33;
     if (x < 0)
 	x += 0x100;

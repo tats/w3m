@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.24 2002/11/08 16:10:01 ukai Exp $ */
+/* $Id: linein.c,v 1.25 2002/11/15 15:36:48 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -139,6 +139,9 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	CLen = CPos = 0;
     }
 
+#ifdef SUPPORT_WIN9X_CONSOLE_MBCS
+    enable_win9x_console_input();
+#endif
     i_cont = TRUE;
     i_broken = FALSE;
     i_quote = FALSE;
@@ -286,6 +289,10 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 
     if (need_redraw)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+
+#ifdef SUPPORT_WIN9X_CONSOLE_MBCS
+    disable_win9x_console_input();
+#endif
 
     if (i_broken)
 	return NULL;
@@ -443,15 +450,6 @@ _esc(void)
 	case 'D':
 	    _mvL();
 	    break;
-#if defined(__CYGWIN__) && defined(USE_MOUSE)
-	case 'M':
-	    if ((is_xterm & (NEED_XTERM_ON | NEED_XTERM_OFF)) == NEED_XTERM_ON) {
-		getch();
-		getch();
-		getch();
-	    }
-	    break;
-#endif
 	}
 	break;
     case CTRL_I:

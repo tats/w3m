@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.86 2002/11/12 12:44:49 ukai Exp $
+# $Id: configure,v 1.87 2002/11/15 15:36:48 ukai Exp $
 #	Configuration.
 #
 
@@ -2502,6 +2502,9 @@ $def_ipv6_ss_family
 
 #if defined( __CYGWIN__ )
 #define SUPPORT_NETBIOS_SHARE 1
+#if LANG == JA
+#define SUPPORT_WIN9X_CONSOLE_MBCS 1
+#endif
 #endif
 
 #if defined(__DJGPP__)

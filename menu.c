@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.17 2002/11/11 15:33:38 ukai Exp $ */
+/* $Id: menu.c,v 1.18 2002/11/15 15:36:48 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1142,6 +1142,14 @@ mMouse(char c)
     int btn, x, y;
 
     btn = (unsigned char)getch() - 32;
+#if defined(__CYGWIN__)
+    if (cygwin_mouse_btn_swapped) {
+	if (btn == MOUSE_BTN2_DOWN)
+	    btn = MOUSE_BTN3_DOWN;
+	else if (btn == MOUSE_BTN3_DOWN)
+	    btn = MOUSE_BTN2_DOWN;
+    }
+#endif
     x = (unsigned char)getch() - 33;
     if (x < 0)
 	x += 0x100;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.187 2003/01/10 16:08:23 ukai Exp $ */
+/* $Id: main.c,v 1.188 2003/01/10 16:23:59 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1651,19 +1651,25 @@ srch(int (*func) (Buffer *, char *), char *prompt)
 {
     char *str;
     int result;
+    int disp = FALSE;
 
-    str = inputStrHist(prompt, NULL, TextHist);
-    if (str != NULL && *str == '\0')
-	str = SearchString;
-    if (str == NULL) {
-	displayBuffer(Currentbuf, B_NORMAL);
-	return;
+    str = searchKeyData();
+    if (str == NULL || *str == '\0') {
+	str = inputStrHist(prompt, NULL, TextHist);
+	if (str != NULL && *str == '\0')
+	    str = SearchString;
+	if (str == NULL) {
+	    displayBuffer(Currentbuf, B_NORMAL);
+	    return;
+	}
+	disp = TRUE;
     }
     result = srchcore(str, func);
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);
     displayBuffer(Currentbuf, B_NORMAL);
-    disp_srchresult(result, prompt, str);
+    if (disp)
+	disp_srchresult(result, prompt, str);
     searchRoutine = func;
 }
 
@@ -2634,10 +2640,13 @@ reMark(void)
 
     if (!use_mark)
 	return;
-    str = inputStrHist("(Mark)Regexp: ", MarkString, TextHist);
+    str = searchKeyData();
     if (str == NULL || *str == '\0') {
-	displayBuffer(Currentbuf, B_NORMAL);
-	return;
+	str = inputStrHist("(Mark)Regexp: ", MarkString, TextHist);
+	if (str == NULL || *str == '\0') {
+	    displayBuffer(Currentbuf, B_NORMAL);
+	    return;
+	}
     }
     if ((p = regexCompile(str, 1)) != NULL) {
 	disp_message(p, TRUE);

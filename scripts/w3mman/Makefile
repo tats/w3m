@@ -1,7 +1,7 @@
 
 prefix		= /usr/local
 BIN_DIR		= $(prefix)/bin
-LIB_DIR		= $(prefix)/lib/w3m
+LIB_DIR		= $(prefix)/lib/w3m/cgi-bin
 MAN_DIR		= $(prefix)/man
 MAN1_DIR	= $(MAN_DIR)/man1
 DESTDIR		=

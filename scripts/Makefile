@@ -2,12 +2,14 @@
 prefix		= /usr/local
 DESTDIR		=
 BIN_DIR		= $(prefix)/bin
-LIB_DIR		= $(prefix)/lib/w3m
-HELP_DIR	= $(prefix)/lib/w3m
+AUXBIN_DIR	= $(prefix)/lib/w3m
+LIB_DIR		= $(prefix)/lib/w3m/cgi-bin
+HELP_DIR	= $(prefix)/share/w3m
 RC_DIR		= ~/.w3m
 
-LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi xface2xpm
-HELP_LIBS	= w3mhelp-funcname.pl w3mhelp-funcdesc.pl
+AUXBIN_TARGETS	= xface2xpm
+LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
+HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
 
 MKDIR		= mkdir -p
 INSTALL		= install -c
@@ -20,7 +22,7 @@ DOCDIRS = doc:en_English doc-jp:ja_Japanese
 
 .SUFFIXES: .in
 
-all: $(LIB_TARGETS) $(HELP_LIBS)
+all: $(LIB_TARGETS) $(HELP_TARGETS)
 
 .in:
 	@echo "generating $@..."
@@ -42,8 +44,7 @@ w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab ../doc/keymap.defaul
 	@cat w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
 	@echo "done"
 
-w3mhelp-funcdesc.pl: w3mhelp-funcdesc-stamp
-w3mhelp-funcdesc-stamp:
+w3mhelp-funcdesc-stamp: ../doc/README.func ../doc-jp/README.func w3mhelp-funcdesc.en.pl.in w3mhelp-funcdesc.ja.pl.in
 	@echo "generating w3mhelp-funcdesc*.pl..."
 	@for dirlang in $(DOCDIRS); do \
 	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
@@ -54,11 +55,16 @@ w3mhelp-funcdesc-stamp:
 	  cat w3mhelp-funcdesc.$$lang.pl.in >> w3mhelp-funcdesc.$$lang.pl; \
 	done
 	@echo done
-	touch w3mhelp-funcdesc-stamp
+	@touch w3mhelp-funcdesc-stamp
 
-install: $(LIB_TARGETS) $(HELP_LIBS)
+install: $(LIB_TARGETS) $(HELP_TARGETS)
+	-$(MKDIR) $(DESTDIR)$(AUXBIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
+	for file in $(AUXBIN_TARGETS);     \
+	do      \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(AUXBIN_DIR);  \
+	done
 	for file in $(LIB_TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);  \
@@ -69,6 +75,10 @@ install: $(LIB_TARGETS) $(HELP_LIBS)
 	done
 
 uninstall:
+	-for file in $(AUXBIN_TARGETS); \
+	do      \
+		rm -f $(AUXBIN_DIR)/$$file; \
+	done
 	-for file in $(LIB_TARGETS); \
 	do      \
 		rm -f $(LIB_DIR)/$$file; \
@@ -79,4 +89,4 @@ uninstall:
 	done
 
 clean:
-	-rm -f $(LIB_TARGETS) w3mhelp-*.pl *-stamp
+	-rm -f $(LIB_TARGETS) $(HELP_TARGETS) w3mhelp-*.pl

@@ -1,5 +1,14 @@
 2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03406]
+	* scripts/Makefile: add AUXBIN_DIR
+			update LIB_DIR, HELP_DIR
+			xface2xpm installed in AUXBIN_DIR
+	* scripts/multipart/Makefile: update LIB_DIR
+	* scripts/w3mman/Makefile: update LIB_DIR
+
+2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03405] Re: tab browser
 	* main.c (moveTab): B_FORCE_REDRAW
 
@@ -4496,4 +4505,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.494 2002/11/11 15:16:37 ukai Exp $
+$Id: ChangeLog,v 1.495 2002/11/11 15:19:49 ukai Exp $

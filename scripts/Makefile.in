@@ -131,3 +131,5 @@ distclean:
 	do \
 	  (cd $$subdir && $(MAKE) distclean); \
 	done
+	-rm -f Makefile
+

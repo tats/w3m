@@ -84,6 +84,7 @@ clean:
 
 distclean:
 	-rm -f $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
+	-rm -f Makefile
 
 dist: all
 	@-rm -fr $(distdir)/w3mman

@@ -63,6 +63,7 @@ clean:
 
 distclean:
 	-rm -f $(LIB_TARGETS)
+	-rm -f Makefile
 
 dist: all
 	@-rm -fr $(distdir)/multipart

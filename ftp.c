@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.21 2003/01/11 15:54:09 ukai Exp $ */
+/* $Id: ftp.c,v 1.22 2003/01/11 15:55:10 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -52,7 +52,7 @@ ftp_command(FTP ftp, char *cmd, char *arg, int *status)
     }
     if (!status)
 	return NULL;
-    *status = -1;	/* error */
+    *status = -1;		/* error */
     tmp = StrISgets(ftp->rf);
     if (IS_DIGIT(tmp->ptr[0]) && IS_DIGIT(tmp->ptr[1]) &&
 	IS_DIGIT(tmp->ptr[2]) && tmp->ptr[3] == ' ')
@@ -60,15 +60,15 @@ ftp_command(FTP ftp, char *cmd, char *arg, int *status)
 
     if (tmp->ptr[3] != '-')
 	return tmp;
-	/* RFC959 4.2 FTP REPLIES */
-	/* multi-line response start */
-	/* 
-	 * Thus the format for multi-line replies is that the
-	 * first line will begin with the exact required reply
-	 * code, followed immediately by a Hyphen, "-" (also known 
-	 * as Minus), followed by text.  The last line will begin
-	 * with the same code, followed immediately by Space <SP>, 
-	 * optionally some text, and the Telnet end-of-line code. */
+    /* RFC959 4.2 FTP REPLIES */
+    /* multi-line response start */
+    /* 
+     * Thus the format for multi-line replies is that the
+     * first line will begin with the exact required reply
+     * code, followed immediately by a Hyphen, "-" (also known 
+     * as Minus), followed by text.  The last line will begin
+     * with the same code, followed immediately by Space <SP>, 
+     * optionally some text, and the Telnet end-of-line code. */
     while (1) {
 	tmp = StrISgets(ftp->rf);
 	if (IS_DIGIT(tmp->ptr[0]) && IS_DIGIT(tmp->ptr[1]) &&
@@ -87,8 +87,8 @@ ftp_close(FTP ftp)
 	return;
     if (ftp->rf) {
 	IStype(ftp->rf) &= ~IST_UNCLOSE;
-        ISclose(ftp->rf);
-        ftp->rf = NULL;
+	ISclose(ftp->rf);
+	ftp->rf = NULL;
     }
     if (ftp->wf) {
 	fclose(ftp->wf);
@@ -119,8 +119,7 @@ ftp_login(FTP ftp)
 	    struct sockaddr_in sockname;
 	    int socknamelen = sizeof(sockname);
 
-	    if (!getsockname(sock, (struct sockaddr *)&sockname,
-			     &socknamelen)) {
+	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
 		struct hostent *sockent;
 		tmp = Strnew_charp(ftp->pass);
 
@@ -264,13 +263,13 @@ ftp_modtime(FTP ftp, char *path)
 static int
 ftp_quit(FTP ftp)
 {
-/*
-    int status;
-    ftp_command(ftp, "QUIT", NULL, &status);
-    ftp_close(ftp);
-    if (status != 221)
-	return -1;
-*/
+    /*
+     * int status;
+     * ftp_command(ftp, "QUIT", NULL, &status);
+     * ftp_close(ftp);
+     * if (status != 221)
+     * return -1;
+     */
     ftp_command(ftp, "QUIT", NULL, NULL);
     ftp_close(ftp);
     return 0;
@@ -287,7 +286,7 @@ static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
 #define	FTPDIR_FILE	3
 
 static void
-closeFTPdata(FILE *f)
+closeFTPdata(FILE * f)
 {
     int status;
     if (f) {
@@ -337,8 +336,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
 
     if (current_ftp.host) {
 	if (!strcmp(current_ftp.host, pu->host) &&
-	    current_ftp.port == pu->port &&
-	    !strcmp(current_ftp.user, user)) {
+	    current_ftp.port == pu->port && !strcmp(current_ftp.user, user)) {
 	    ftp_command(&current_ftp, "NOOP", NULL, &status);
 	    if (status != 200)
 		ftp_close(&current_ftp);
@@ -379,11 +377,11 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
     }
 
     if (!current_ftp.host) {
-        current_ftp.host = allocStr(pu->host, -1);
-        current_ftp.port = pu->port;
-        current_ftp.user = allocStr(user, -1);
-        current_ftp.pass = allocStr(pass, -1);
-        if (!ftp_login(&current_ftp))
+	current_ftp.host = allocStr(pu->host, -1);
+	current_ftp.port = pu->port;
+	current_ftp.user = allocStr(user, -1);
+	current_ftp.pass = allocStr(pass, -1);
+	if (!ftp_login(&current_ftp))
 	    return NULL;
     }
     if (add_auth_cookie_flag)
@@ -425,8 +423,7 @@ readFTPDir(ParsedURL *pu)
     if (current_ftp.data == NULL)
 	return NULL;
     tmp = ftp_command(&current_ftp, "SYST", NULL, &status);
-    if (strstr(tmp->ptr, "UNIX") != NULL ||
-	!strncmp(tmp->ptr + 4, "Windows_NT", 10))	/* :-) */
+    if (strstr(tmp->ptr, "UNIX") != NULL || !strncmp(tmp->ptr + 4, "Windows_NT", 10))	/* :-) */
 	sv_type = UNIXLIKE_SERVER;
     else
 	sv_type = SERVER_NONE;

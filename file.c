@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.130 2002/11/26 17:05:24 ukai Exp $ */
+/* $Id: file.c,v 1.131 2002/11/26 17:12:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3946,7 +3946,7 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
     char *r;
     Str s_tmp = NULL;
 
-    if(q == NULL || refresh_uri == NULL)
+    if (q == NULL || refresh_uri == NULL)
 	return 0;
 
     refresh_interval = atoi(q);
@@ -3960,11 +3960,11 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
 	    while (*r && !IS_SPACE(*r) && *r != ';')
 		r++;
 	    s_tmp = Strnew_charp_n(q, r - q);
-	    
+
 	    if (s_tmp->ptr[s_tmp->length - 1] == '\"') {	/* " 
 								 */
 		s_tmp->length--;
-			s_tmp->ptr[s_tmp->length] = '\0';
+		s_tmp->ptr[s_tmp->length] = '\0';
 	    }
 	    q = r;
 	}

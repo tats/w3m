@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.22 2002/03/12 16:59:50 ukai Exp $ */
+/* $Id: table.c,v 1.23 2002/04/09 14:53:54 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -1475,14 +1475,16 @@ check_table_height(struct table *t)
 {
     int i, j, k;
     struct {
-	short row[MAXCELL];
-	short rowspan[MAXCELL];
-	char indexarray[MAXCELL];
+	short *row;
+	short *rowspan;
+	char *indexarray;
 	short maxcell;
-	short height[MAXCELL];
+	short size;
+	short *height;
     } cell;
     int space = 0;
 
+    cell.size = 0;
     cell.maxcell = -1;
 
     for (j = 0; j <= t->maxrow; j++) {
@@ -1509,21 +1511,36 @@ check_table_height(struct table *t)
 		    if (cell.row[idx] == j && cell.rowspan[idx] == rowspan)
 			c = idx;
 		}
-		if (c < MAXCELL) {
-		    if (c > cell.maxcell) {
-			cell.maxcell++;
-			cell.row[cell.maxcell] = j;
-			cell.rowspan[cell.maxcell] = rowspan;
-			cell.height[cell.maxcell] = 0;
-			if (cell.maxcell > k)
-			    bcopy(cell.indexarray + k, cell.indexarray + k + 1,
-				  cell.maxcell - k);
-			cell.indexarray[k] = cell.maxcell;
+		if (c >= cell.size) {
+		    if (cell.size == 0) {
+			cell.size = max(MAXCELL, c + 1);
+			cell.row = NewAtom_N(short, cell.size);
+			cell.rowspan = NewAtom_N(short, cell.size);
+			cell.indexarray = NewAtom_N(char, cell.size);
+			cell.height = NewAtom_N(short, cell.size);
+		    } else {
+			cell.size = max(cell.size + MAXCELL, c + 1);
+			cell.row = New_Reuse(short, cell.row, cell.size);
+			cell.rowspan = New_Reuse(short, cell.rowspan,
+						 cell.size);
+			cell.indexarray = New_Reuse(char, cell.indexarray,
+						    cell.size);
+			cell.height = New_Reuse(short, cell.height, cell.size);
 		    }
-
-		    if (cell.height[c] < t_dep)
-			cell.height[c] = t_dep;
 		}
+		if (c > cell.maxcell) {
+		    cell.maxcell++;
+		    cell.row[cell.maxcell] = j;
+		    cell.rowspan[cell.maxcell] = rowspan;
+		    cell.height[cell.maxcell] = 0;
+		    if (cell.maxcell > k)
+			bcopy(cell.indexarray + k, cell.indexarray + k + 1,
+			      cell.maxcell - k);
+		    cell.indexarray[k] = cell.maxcell;
+		}
+
+		if (cell.height[c] < t_dep)
+		    cell.height[c] = t_dep;
 		continue;
 	    }
 	    if (t->tabheight[j] < t_dep)

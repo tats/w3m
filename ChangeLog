@@ -1,5 +1,11 @@
 2002-04-09  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03169] Can't calculate table height if number of cells > 20.
+	* table.c (check_table_height): change row, rowspan, indexarray, height
+			from array to pointer
+
+2002-04-09  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03167] xface2xbm -> xface2xpm (current imlib can't handle XBM)
 	* configure: s/XFACE2XBM/XFACE2XPM/
 	* config.h.dist: ditto
@@ -3334,4 +3340,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.368 2002/04/09 14:45:58 ukai Exp $
+$Id: ChangeLog,v 1.369 2002/04/09 14:53:54 ukai Exp $

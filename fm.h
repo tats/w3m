@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.110 2003/01/29 17:10:37 ukai Exp $ */
+/* $Id: fm.h,v 1.111 2003/01/30 16:29:14 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -523,7 +523,8 @@ typedef struct _DownloadList {
 
 #define FONTSTAT_SIZE 4
 
-#define INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
+#define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
+#define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
 #define FOLD_BUFFER_WIDTH (FoldLine ? (INIT_BUFFER_WIDTH + 1) : -1)
 
 typedef struct {

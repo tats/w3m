@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.213 2003/01/29 17:38:14 ukai Exp $ */
+/* $Id: file.c,v 1.214 2003/01/30 16:29:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6145,6 +6145,15 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 		i--;
 #endif
 	}
+	if (i == 0) {
+	    i++;
+#ifdef JP_CHARSET
+	    if (CharType(p[i]) == PC_KANJI2)
+		i++;
+#endif
+	}
+	if (i == l->len)
+	    return;
 	l->len = i;
 	l->width = COLPOS(l, l->len);
 	bpos += l->len;

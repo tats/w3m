@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.12 2001/11/23 21:22:02 ukai Exp $ */
+/* $Id: file.c,v 1.13 2001/11/23 22:41:42 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -652,7 +652,8 @@ readHeader(URLFile * uf,
 		    if (fmInitialized && (err & COO_OVERRIDE_OK) &&
 			accept_bad_cookie == PERHAPS) {
 			Str msg = Sprintf("Accept bad cookie from %s for %s? (y or n) ",
-					pu->host, domain->ptr);
+					pu->host, 
+					domain && domain->ptr ? domain->ptr : "<localdomain>");
 			if (msg->length > COLS - 4)
 			    Strshrink(msg, msg->length - (COLS - 4));
 			term_raw();

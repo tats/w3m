@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.22 2002/03/19 16:27:20 ukai Exp $
+# $Id: XMakefile,v 1.23 2002/04/20 17:50:21 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -137,7 +137,7 @@ install-helpfile:
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' RC_DIR='$(RC_DIR)');	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' RC_DIR='$(RC_DIR)' KEYBIND_SRC='$(KEYBIND_SRC)');	\
 	done
 
 install-scripts: all-scripts

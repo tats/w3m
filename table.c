@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.11 2001/12/14 17:58:40 ukai Exp $ */
+/* $Id: table.c,v 1.12 2001/12/17 16:05:03 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -537,14 +537,11 @@ int
 maximum_visible_length(char *str)
 {
     int maxlen, len;
-    char *p;
-
-    for (p = str; *p && *p != '\t'; p++) ;
 
     visible_length_offset = 0;
     maxlen = visible_length(str);
 
-    if (*p == '\0')
+    if (!strchr(str, '\t'))
 	return maxlen;
 
     for (visible_length_offset = 1; visible_length_offset < Tabstop;
@@ -779,7 +776,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 		int limit = tbl->tables[id].indent + t->total_width;
 		tbl->tables[id].ptr = NULL;
 		save_fonteffect(&h_env, h_env.obuf);
-		flushline(&h_env, &obuf, 0, 1, h_env.limit);
+		flushline(&h_env, &obuf, 0, 2, h_env.limit);
 		if (t->vspace > 0 && !(obuf.flag & RB_IGNORE_P))
 		    do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
 		if (RB_GET_ALIGN(h_env.obuf) == RB_CENTER)

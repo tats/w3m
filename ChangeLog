@@ -1,3 +1,9 @@
+2001-12-18  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02670]
+	* table.c (maximum_visible_length): use strchr()
+	* table.c (do_refill): use force==2 mode for flushline()
+
 2001-12-18  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02669] delete cURLcode()
@@ -1279,4 +1285,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.134 2001/12/17 15:54:14 ukai Exp $
+$Id: ChangeLog,v 1.135 2001/12/17 16:05:03 ukai Exp $

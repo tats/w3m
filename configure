@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.12 2001/11/21 19:24:35 ukai Exp $
+# $Id: configure,v 1.13 2001/11/22 03:22:12 ukai Exp $
 #	Configuration.
 #
 
@@ -470,7 +470,7 @@ fi
 
 echo "Do you want to move cursor to top line when going to label?"
 yesno label_topline "$label_topline" n
-echo "label_topline $label_topline" >> config.param
+echo "label_topline=$label_topline" >> config.param
 if [ "$label_topline" = y ]; then
   def_label_topline='#define LABEL_TOPLINE'
 else
@@ -479,7 +479,7 @@ fi
 
 echo "Do you want to move cursor to top line when moving to next page?"
 yesno nextpage_topline "$nextpage_topline" n
-echo "nextpage_topline $nextpage_topline" >> config.param
+echo "nextpage_topline=$nextpage_topline" >> config.param
 if [ "$nextpage_topline" = y ]; then
   def_nextpage_topline='#define NEXTPAGE_TOPLINE'
 else
@@ -1071,7 +1071,7 @@ echo "Checking machine dependency."
 
 ###### mime.types
 MIME_TYPES=""
-if [ -f $mimetypes ]; then
+if [ -n "$mimetypes" ] && [ -f "$mimetypes" ]; then
    MIME_TYPES=$mimetypes
 else
  for d in /etc /usr/lib /usr/local/lib /usr/local/etc $prefix/lib /usr/local/etc/apache /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape

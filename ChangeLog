@@ -1,3 +1,10 @@
+2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02494]
+	* configure (MIME_TYPES): check if mimetypes is empty
+	* configure (label_topline): add missing =
+	* configure (nextpage_topline): ditto
+
 2001-11-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02493]

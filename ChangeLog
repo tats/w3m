@@ -1,3 +1,8 @@
+2003-05-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03896] html_quote in textarea in frame
+	* frame.c (createFrameFile): fix html_quote in textarea in frame
+
 2003-05-13  Hironori SAKAMOTO <h-saka@lsi.nec.co.jp>
 
 	* [w3m-dev 03895] type=image support of pre_form
@@ -7804,4 +7809,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.834 2003/05/12 16:24:50 ukai Exp $
+$Id: ChangeLog,v 1.835 2003/05/12 16:33:16 ukai Exp $

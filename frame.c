@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.31 2003/01/29 17:10:39 ukai Exp $ */
+/* $Id: frame.c,v 1.32 2003/05/12 16:33:18 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -804,8 +804,11 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			Strfputs(tok, f1);
 		    }
 		    else {
-			if (pre_mode & (RB_PLAIN | RB_INTXTA))
+			if (pre_mode & RB_PLAIN)
 			    fprintf(f1, "%s", html_quote(tok->ptr));
+			else if (pre_mode & RB_INTXTA)
+			    fprintf(f1, "%s",
+				    html_quote(html_unquote(tok->ptr)));
 			else
 			    Strfputs(tok, f1);
 		    }

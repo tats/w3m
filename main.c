@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.139 2002/11/15 16:17:00 ukai Exp $ */
+/* $Id: main.c,v 1.140 2002/11/15 16:46:12 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5828,7 +5828,7 @@ DownloadListBuffer(void)
 	    d->ok = TRUE;
 	Strcat_charp(src, "<pre>\n");
 	Strcat(src, Sprintf("%s\n  --&gt; %s\n  ", html_quote(d->url),
-			    html_quote(d->save)));
+			    html_quote(conv_from_system(d->save))));
 	duration = cur_time - d->time;
 	if (!stat(d->save, &st)) {
 	    size = st.st_size;

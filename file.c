@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.120 2002/11/15 15:57:16 ukai Exp $ */
+/* $Id: file.c,v 1.121 2002/11/15 16:46:09 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7214,13 +7214,14 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		return;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
-	    msg = Sprintf("Can't copy. %s and %s are identical.", tmpf, p);
+	    msg = Sprintf("Can't copy. %s and %s are identical.",
+			  conv_from_system(tmpf), conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
 	if (!download) {
 	    if (_MoveFile(tmpf, p) < 0) {
-		msg = Sprintf("Can't save to %s", p);
+		msg = Sprintf("Can't save to %s", conv_from_system(p));
 		disp_err_message(msg->ptr, FALSE);
 	    }
 	    return;
@@ -7251,7 +7252,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	}
 	if (!stat(tmpf, &st))
 	    size = st.st_size;
-	addDownloadList(pid, tmpf, p, lock, size);
+	addDownloadList(pid, conv_from_system(tmpf), p, lock, size);
     }
     else {
 	q = searchKeyData();
@@ -7314,13 +7315,14 @@ doFileSave(URLFile uf, char *defstr)
 	if (checkOverWrite(p) < 0)
 	    return;
 	if (checkSaveFile(uf.stream, p) < 0) {
-	    msg = Sprintf("Can't save. Load file and %s are identical.", p);
+	    msg = Sprintf("Can't save. Load file and %s are identical.",
+			  conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
 	/*
 	 * if (save2tmp(uf, p) < 0) {
-	 * msg = Sprintf("Can't save to %s", p);
+	 * msg = Sprintf("Can't save to %s", conv_from_system(p));
 	 * disp_err_message(msg->ptr, FALSE);
 	 * }
 	 */
@@ -7349,7 +7351,8 @@ doFileSave(URLFile uf, char *defstr)
 	    unlink(lock);
 	    exit(0);
 	}
-	addDownloadList(pid, uf.url, p, lock, current_content_length);
+	addDownloadList(pid, uf.url, p, lock,
+			current_content_length);
     }
     else {
 	q = searchKeyData();

@@ -1,5 +1,12 @@
 2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03441] charset of save file
+	* file.c (_doFileCopy): use conv_from_system()
+		(doFileSave): conv_from_system()
+	* main.c (DownloadListBuffer): conv_from_system()
+
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03440] Re: restore alarm event
 	* fm.h (BP_RELOAD): added
 		(DOWNLOAD_LIST_TITLE): added
@@ -4814,4 +4821,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.524 2002/11/15 16:14:25 ukai Exp $
+$Id: ChangeLog,v 1.525 2002/11/15 16:46:07 ukai Exp $

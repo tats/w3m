@@ -22,7 +22,7 @@ sysconfdir = ${prefix}/etc
 top_srcdir = .
 DESTDIR = 
 
-CFLAGS = $(OPTS) -g -O2 -I/usr/include/openssl $(DEFS)
+CFLAGS = $(OPTS) -g -O2 -I/usr/include/gc -I/usr/include/openssl $(DEFS)
 CPPFLAGS =  -I/usr/include/gc -I/usr/include/gc
 DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
 LDFLAGS = 
@@ -44,12 +44,12 @@ INSTALL_SCRIPT=${INSTALL_PROGRAM}
 INSTALL_DATA=${INSTALL} -m 644
 INSTALL_W3MIMGDISPLAY=${INSTALL_PROGRAM}
 
-HELP_FILE = w3mhelp-w3m_en.html
+HELP_FILE = w3mhelp-w3m_ja.html
 KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 
-VERSION=0.4.1+cvs-1.782
-MODEL=i686-pc-linux-gnu-@W3M_MODEL@-EN
+VERSION=0.4.1+cvs-1.783
+MODEL=i686-pc-linux-gnu-JA
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \

@@ -1,3 +1,11 @@
+2003-03-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+	
+	* [w3m-dev 03808] fix autoconf
+	* acinclude.m4 (AC_W3M_GC): --with-gc takes PREFIX
+				check include first
+		(AC_W3M_CHECK_VER): show checking message
+		(AC_W3M_IMAGE): if gdkpixbuf found, don't check imlib*
+
 2003-03-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Makefile.in (MODEL): delete @W3M_TARGET@
@@ -7444,4 +7452,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.783 2003/03/10 18:30:24 ukai Exp $
+$Id: ChangeLog,v 1.784 2003/03/11 16:18:19 ukai Exp $

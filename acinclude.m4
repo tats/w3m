@@ -328,47 +328,49 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
 AC_ARG_WITH(gc,
- [  --with-gc=PATH	  	libgc PATH],
+ [  --with-gc=PREFIX	  	libgc PREFIX],
  [test x$with_gc = xno && AC_MSG_ERROR([You can not build w3m without gc])],
  [with_gc=yes])
  AC_MSG_RESULT($with_gc)
- unset ac_cv_lib_gc_GC_version
- AC_CHECK_LIB(gc, GC_version, [LIBS="$LIBS -lgc"])
- if test x$ac_cv_lib_gc_GC_version = xno; then
-    AC_MSG_CHECKING(GC library location)
-    gc_libdir="$with_gc"
-    test x"$gc_libdir" = xyes && gc_libdir="/lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib ${HOME}/lib"
-   gclibdir=no
-   for dir in $gc_libdir; do
-     ldflags="$LDFLAGS"
-     LDFLAGS="$LDFLAGS -L$dir"
-     AC_CHECK_LIB(gc, GC_version, [gclibdir=$dir; LIBS="$LIBS -L$dir -lgc"; break])
-     LDFLAGS="$ldflags"
-     unset ac_cv_gc_GC_version
-   done
-   if test x$gclibdir = xno; then
-    AC_MSG_ERROR([libgc not found])
-   fi
- fi
  unset ac_cv_header_gc_h
  AC_CHECK_HEADER(gc.h)
  if test x$ac_cv_header_gc_h = xno; then
    AC_MSG_CHECKING(GC header location)
-   gc_includedir="$with_gc"
-   test x"$gc_includedir" = xyes && gc_includedir="/usr/include /usr/include/gc /usr/local/include /usr/local/include/gc ${HOME}/include"
+   AC_MSG_RESULT()
+   gc_includedir="$with_gc/include"
+   test x"$with_gc" = xyes && gc_includedir="/usr/include /usr/include/gc /usr/local/include /usr/local/include/gc ${HOME}/include"
    gcincludedir=no
-   unset ac_cv_header_gc_h
    for dir in $gc_includedir; do
      cppflags="$CPPFLAGS"
      CPPFLAGS="$CPPFLAGS -I$dir"
      AC_MSG_CHECKING($dir)
-     AC_CHECK_HEADER(gc.h, [gcincludedir=$dir; CPPFLAGS="$CPPFLAGS -I$dir"; break])
-     CPPFLAGS="$cppflags"
      unset ac_cv_header_gc_h
+     AC_CHECK_HEADER(gc.h, [gcincludedir=$dir; CPPFLAGS="$CPPFLAGS -I$dir"; CFLAGS="$CFLAGS -I$dir"; break])
+     CPPFLAGS="$cppflags"
    done
    if test x$gcincludedir = xno; then
      AC_MSG_ERROR([gc.h not found])
    fi
+ fi
+ unset ac_cv_lib_gc_GC_version
+ AC_CHECK_LIB(gc, GC_version, [LIBS="$LIBS -lgc"])
+ if test x$ac_cv_lib_gc_GC_version = xno; then
+    AC_MSG_CHECKING(GC library location)
+    AC_MSG_RESULT()
+    gc_libdir="$with_gc/lib"
+    test x"$gc_libdir" = xyes && gc_libdir="/lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib ${HOME}/lib"
+    gclibdir=no
+    for dir in $gc_libdir; do
+      ldflags="$LDFLAGS"
+      LDFLAGS="$LDFLAGS -L$dir"
+      AC_MSG_CHECKING($dir)
+      unset ac_cv_gc_GC_version
+      AC_CHECK_LIB(gc, GC_version, [gclibdir=$dir; LIBS="$LIBS -L$dir -lgc"; break])
+      LDFLAGS="$ldflags"
+    done
+    if test x$gclibdir = xno; then
+      AC_MSG_ERROR([libgc not found])
+    fi
  fi])
 #
 # ----------------------------------------------------------------
@@ -438,16 +440,19 @@ AC_DEFUN([AC_W3M_ALARM],
 AC_DEFUN([AC_W3M_CHECK_VER],
 [version=$2
  if test x$version != x; then
+   AC_MSG_CHECKING($1 version)
    save_ifs="$IFS"; IFS="."
    set -- $version
    IFS="$save_ifs"
+   AC_MSG_RESULT($version)
    if test "$[1]" -ne "$3" -o "$[2]" -lt "$4" -o "$[3]" -lt "$5"; then
-     AC_MSG_WARN([$1 is too old Install $1 (version >= $3.$4.$5)])
+     AC_MSG_WARN([$1 is too old. Install $1 (version >= $3.$4.$5)])
      $7
    else
      $6
    fi
  else
+   AC_MSG_WARN([$1 is not installed.  Install $1 (version >= $3.$4.$5)])
    $7
  fi])
 #
@@ -513,7 +518,7 @@ AC_DEFUN([AC_W3M_IMAGE],
 	[`$GDKPIXBUF_CONFIG --version 2>/dev/null`],
 	0, 16, 0,
 	[have_gdkpixbuf=yes],
-	[have_gdkpixbuf=no])
+	[have_gdkpixbuf=no
   AC_W3M_CHECK_VER([Imlib],
 	[`$IMLIB_CONFIG --version 2>/dev/null`],
 	1, 9, 8,
@@ -523,7 +528,7 @@ AC_DEFUN([AC_W3M_IMAGE],
 	[`$IMLIB2_CONFIG --version 2>/dev/null`],
 	1, 0, 5,
 	[have_imlib2=yes],
-	[have_imlib2=no])
+	[have_imlib2=no])])
   if test x$x11 = xyes; then
    if test x$have_gdkpixbuf = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.49 2002/09/24 16:35:02 ukai Exp $ */
+/* $Id: url.c,v 1.50 2002/09/24 17:06:05 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1114,6 +1114,10 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 #ifndef USE_W3MMAILER
     if (pu->scheme == SCM_MAILTO) {
 	Strcat_charp(tmp, pu->file);
+	if (pu->query) {
+	    Strcat_char(tmp, '?');
+	    Strcat_charp(tmp, pu->query);
+	}
 	return tmp;
     }
 #endif

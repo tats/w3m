@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.112 2002/09/05 15:49:50 ukai Exp $ */
+/* $Id: main.c,v 1.113 2002/09/24 17:06:04 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2729,11 +2729,22 @@ followA(void)
 #endif
 	) {
 	/* invoke external mailer */
+	Str to = Strnew_charp(a->url + 7);
+#ifndef USE_W3MMAILER
+	char *pos;
+	if (!non_null(Mailer)) {
+	    disp_err_message("no mailer is specified", TRUE);
+	    return;
+	}
+	if ((pos = strchr(to->ptr, '?')) != NULL)
+	    Strtruncate(to, pos - to->ptr);
+#endif
 	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(url_unquote(a->url + 7)),
+	system(myExtCommand(Mailer, shell_quote(url_unquote(to->ptr)),
 			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	pushHashHist(URLHist, a->url);
 	return;
     }
 #ifdef USE_NNTP
@@ -3691,11 +3702,22 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 #endif
 	) {
 	/* invoke external mailer */
+	Str to = Strnew_charp(url + 7);
+#ifndef USE_W3MMAILER
+	char *pos;
+	if (!non_null(Mailer)) {
+	    disp_err_message("no mailer is specified", TRUE);
+	    return;
+	}
+	if ((pos = strchr(to->ptr, '?')) != NULL)
+	    Strtruncate(to, pos - to->ptr);
+#endif
 	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(url_unquote(url + 7)),
+	system(myExtCommand(Mailer, shell_quote(url_unquote(to->ptr)),
 			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	pushHashHist(URLHist, url);
 	return;
     }
 #ifdef USE_NNTP

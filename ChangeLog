@@ -1,5 +1,12 @@
 2002-09-25  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
+	* [w3m-dev 03319] mailto
+	* main.c (followA): mailto
+	* main.c (cmd_loadURL): mailto
+	* url.c (_parsedURL2Str): mailto: query
+
+2002-09-25  AIDA Shinra <aida-s@jcom.home.ne.jp>
+
 	* [w3m-dev 03318] Re: Passwords
 	* etc.c (struct auth_path): added
 		(passwords): added
@@ -3815,4 +3822,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.428 2002/09/24 16:35:02 ukai Exp $
+$Id: ChangeLog,v 1.429 2002/09/24 17:06:04 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.29 2003/04/08 16:01:39 ukai Exp $ */
+/* $Id: local.c,v 1.30 2003/05/12 16:34:12 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -50,7 +50,7 @@ localCookie()
     char hostname[256];
 
     if (Local_cookie)
-        return Local_cookie;
+	return Local_cookie;
     gethostname(hostname, 256);
     srand48((long)New(char) + (long)time(NULL));
     Local_cookie = Sprintf("%ld@%s", lrand48(), hostname);

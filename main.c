@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.225 2003/05/06 16:35:36 ukai Exp $ */
+/* $Id: main.c,v 1.226 2003/05/12 16:34:12 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1626,11 +1626,11 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
 	    if (searchRoutine == forwardSearch)
 		Currentbuf->pos += 1;
 	    SAVE_BUFPOSITION(&sbuf);
-            if (srchcore(str, searchRoutine) == SR_NOTFOUND 
+	    if (srchcore(str, searchRoutine) == SR_NOTFOUND
 		&& searchRoutine == forwardSearch) {
-                Currentbuf->pos -= 1;
-                SAVE_BUFPOSITION(&sbuf);
-            }
+		Currentbuf->pos -= 1;
+		SAVE_BUFPOSITION(&sbuf);
+	    }
 	    arrangeCursor(Currentbuf);
 	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	    clear_mark(Currentbuf->currentLine);

@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.7 2002/12/25 16:14:45 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.8 2002/12/25 16:18:19 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -88,7 +88,7 @@ w3mfb_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy,
 	return 0;
 
     if (img->pixmap == NULL)
-       return 0;
+	return 0;
 
     frame = (FB_IMAGE **) img->pixmap;
     i = frame[0]->id;
@@ -143,9 +143,9 @@ check_tty_console(char *tty)
 	return 0;
     if (strncmp(tty, "/dev/", 5) == 0)
 	tty += 5;
-    if (strncmp(tty, "tty", 3) == 0 && isdigit(*(tty+3)))
+    if (strncmp(tty, "tty", 3) == 0 && isdigit(*(tty + 3)))
 	return 1;
-    if (strncmp(tty, "vc/", 3) == 0 && isdigit(*(tty+3)))
+    if (strncmp(tty, "vc/", 3) == 0 && isdigit(*(tty + 3)))
 	return 1;
     return 0;
 }
@@ -162,7 +162,7 @@ w3mimg_fbopen()
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
 
-    if (! check_tty_console(getenv("W3M_TTY"))) {
+    if (!check_tty_console(getenv("W3M_TTY"))) {
 	fprintf(stderr, "w3mimgdisplay/fb: tty is not console\n");
 	goto error;
     }

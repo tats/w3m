@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.11 2001/11/26 09:04:01 ukai Exp $ */
+/* $Id: indep.c,v 1.12 2001/11/27 16:55:46 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -48,8 +48,12 @@ currentdir()
 {
     char *path;
 #ifdef HAVE_GETCWD
+#ifdef MAXPATHLEN
     path = NewAtom_N(char, MAXPATHLEN);
     getcwd(path, MAXPATHLEN);
+#else
+    path = getcwd(NULL, 0);
+#endif
 #else				/* not HAVE_GETCWD */
 #ifdef HAVE_GETWD
     path = NewAtom_N(char, 1024);

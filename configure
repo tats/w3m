@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.21 2001/11/26 09:59:16 ukai Exp $
+# $Id: configure,v 1.22 2001/11/27 17:00:41 ukai Exp $
 #	Configuration.
 #
 
@@ -1271,8 +1271,12 @@ cat > _zmachdep.c << EOF
 #include <unistd.h>
 main()
 {
+#ifdef MAXPATHLEN
   char path[MAXPATHLEN];
   getcwd(path,MAXPATHLEN);
+#else
+  gwtcwd(NULL, 0);
+#endif
 }
 EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1

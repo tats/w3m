@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.24 2003/01/17 17:07:00 ukai Exp $ */
+/* $Id: local.c,v 1.25 2003/01/22 16:10:28 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -355,60 +355,10 @@ cgi_filename(char *fn, int *status)
     return fn;
 }
 
-static pid_t
-localcgi_popen_rw(int *p_fdr, int *p_fdw)
-{
-    int fdr[2], fdw[2];
-    pid_t pid;
-    Str emsg;
-
-    if (pipe(fdr) < 0) {
-	emsg = Sprintf("localcgi_popen_rw: pipe: %s", strerror(errno));
-	goto pipe_err0;
-    }
-    if (p_fdw && pipe(fdw) < 0) {
-	emsg = Sprintf("localcgi_popen_rw: pipe: %s", strerror(errno));
-	goto pipe_err1;
-    }
-
-    flush_tty();
-    if ((pid = fork()) < 0) {
-	emsg = Sprintf("localcgi_popen_rw: fork: %s", strerror(errno));
-	goto pipe_err2;
-    }
-    else if (!pid) {
-	close(fdr[0]);
-	dup2(fdr[1], 1);
-	if (p_fdw) {
-	    close(fdw[1]);
-	    dup2(fdw[0], 0);
-	}
-	setup_child(TRUE, 2, -1);
-    }
-    else {
-	close(fdr[1]);
-	*p_fdr = fdr[0];
-	if (p_fdw) {
-	    close(fdw[0]);
-	    *p_fdw = fdw[1];
-	}
-    }
-    return pid;
-  pipe_err2:
-    close(fdw[0]);
-    close(fdw[1]);
-  pipe_err1:
-    close(fdr[0]);
-    close(fdr[1]);
-  pipe_err0:
-    disp_err_message(emsg->ptr, FALSE);
-    return (pid_t) - 1;
-}
-
 FILE *
 localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 {
-    int fdr, fdw = -1;
+    FILE *fr = NULL, *fw = NULL;
     int status;
     pid_t pid;
     char *file;
@@ -418,18 +368,19 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	return NULL;
     writeLocalCookie();
     if (request && request->enctype != FORM_ENCTYPE_MULTIPART)
-	pid = localcgi_popen_rw(&fdr, &fdw);
+	pid = open_pipe_rw(&fr, &fw);
     else
-	pid = localcgi_popen_rw(&fdr, NULL);
+	pid = open_pipe_rw(&fr, NULL);
     if (pid < 0)
 	return NULL;
     else if (pid) {
-	if (fdw > 0) {
-	    write(fdw, request->body, request->length);
-	    close(fdw);
+	if (fw) {
+	    fwrite(request->body, sizeof(char), request->length, fw);
+	    fclose(fw);
 	}
-	return fdopen(fdr, "r");
+	return fr;
     }
+    setup_child(TRUE, 2, -1);
 
     if (qstr == NULL)
 	set_cgi_environ(uri, file, uri);

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.197 2003/01/22 16:01:17 ukai Exp $ */
+/* $Id: file.c,v 1.198 2003/01/22 16:10:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7723,8 +7723,8 @@ inputAnswer(char *prompt)
 static void
 uncompress_stream(URLFile *uf, char **src)
 {
-    int pid1;
-    int fd1[2];
+    pid_t pid1;
+    FILE *f1;
     char *expand_cmd = GUNZIP_CMDNAME;
     char *expand_name = GUNZIP_NAME;
     char *tmpf = NULL;
@@ -7748,82 +7748,58 @@ uncompress_stream(URLFile *uf, char **src)
     }
     uf->compression = CMP_NOCOMPRESS;
 
-    if (pipe(fd1) < 0) {
-	UFclose(uf);
-	return;
-    }
-
     if (uf->scheme != SCM_LOCAL
 #ifdef USE_IMAGE
 	&& !image_source
 #endif
 	) {
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
-	if (save2tmp(*uf, tmpf) < 0) {
+    }
+
+    pid1 = open_pipe_rw(&f1, NULL);
+    if (pid1 < 0) {
+	UFclose(uf);
+	return;
+    }
+    if (pid1 == 0) {
+	/* child */
+	pid_t pid2;
+	FILE *f2;
+	dup2(1, 2);	/* stderr>&stdout */
+	setup_child(TRUE, -1, UFfileno(uf));
+	pid2 = open_pipe_rw(NULL, &f2);
+	if (pid2 < 0) {
 	    UFclose(uf);
-	    return;
+	    exit(1);
 	}
-#if 0
-	if (uf->scheme != SCM_FTP)
-#endif
-	    UFclose(uf);
+	if (pid2 > 0) {
+	    Str buf = Strnew_size(SAVE_BUF_SIZE);
+	    FILE *f = NULL;
+	    if (tmpf)
+		f = fopen(tmpf, "wb");
+	    while (UFread(uf, buf, SAVE_BUF_SIZE)) {
+		if (Strfputs(buf, f2) < 0)
+		    break;
+		if (f)
+		    Strfputs(buf, f);
+	    }
+	    fclose(f2);
+	    if (f)
+		fclose(f);
+	    exit(0);
+	}
+	/* child */
+	execlp(expand_cmd, expand_name, NULL);
+	exit(1);
+    }
+    if (tmpf) {
 	if (src)
 	    *src = tmpf;
 	else
 	    uf->scheme = SCM_LOCAL;
     }
-
-    flush_tty();
-    /* fd1[0]: read, fd1[1]: write */
-    if ((pid1 = fork()) == 0) {
-	close(fd1[0]);
-	dup2(fd1[1], 1);
-	dup2(fd1[1], 2);
-	setup_child(TRUE, -1, UFfileno(uf));
-	if (tmpf) {
-#ifdef USE_BINMODE_STREAM
-	    int tmpfd = open(tmpf, O_RDONLY | O_BINARY);
-#else
-	    int tmpfd = open(tmpf, O_RDONLY);
-#endif
-	    if (tmpfd < 0) {
-		close(fd1[1]);
-		exit(1);
-	    }
-	    dup2(tmpfd, 0);
-	}
-	else {
-	    /* child */
-	    int pid2;
-	    int fd2[2];
-	    if (pipe(fd2) < 0) {
-		close(fd1[1]);
-		UFclose(uf);
-		exit(1);
-	    }
-	    if ((pid2 = fork()) == 0) {
-		/* child */
-		Str buf = Strnew_size(SAVE_BUF_SIZE);
-		close(fd2[0]);
-		while (UFread(uf, buf, SAVE_BUF_SIZE)) {
-		    if (write(fd2[1], buf->ptr, buf->length) < 0) {
-			close(fd2[1]);
-			exit(0);
-		    }
-		}
-		close(fd2[1]);
-		exit(0);
-	    }
-	    close(fd2[1]);
-	    dup2(fd2[0], 0);
-	}
-	execlp(expand_cmd, expand_name, NULL);
-	exit(0);
-    }
-    close(fd1[1]);
-    if (tmpf == NULL)
-	UFclose(uf);
-    uf->stream = newFileStream(fdopen(fd1[0], "rb"), (void (*)())pclose);
+    UFhalfclose(uf);
+    uf->stream = newFileStream(f1, (void (*)())fclose);
 }
 
 static FILE *

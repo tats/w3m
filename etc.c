@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.52 2003/01/17 17:06:57 ukai Exp $ */
+/* $Id: etc.c,v 1.53 2003/01/22 16:10:28 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1337,6 +1337,58 @@ setup_child(int child, int i, int f)
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
     fmInitialized = FALSE;
+}
+
+pid_t
+open_pipe_rw(FILE **fr, FILE **fw)
+{
+    int fdr[2];
+    int fdw[2];
+    pid_t pid;
+
+    if (fr && pipe(fdr) < 0)
+	goto err0;
+    if (fw && pipe(fdw) < 0)
+	goto err1;
+
+    flush_tty();
+    pid = fork();
+    if (pid < 0)
+	goto err2;
+    if (pid == 0) {
+	/* child */
+	if (fr) {
+	    close(fdr[0]);
+	    dup2(fdr[1], 1);
+	}
+	if (fw) {
+	    close(fdw[1]);
+	    dup2(fdw[0], 0);
+	}
+    }
+    else {
+	if (fr) {
+	    close(fdr[1]);
+	    *fr = fdopen(fdr[0], "r");
+	}
+	if (fw) {
+	    close(fdw[0]);
+	    *fw = fdopen(fdw[1], "w");
+	}
+    }
+    return pid;
+  err2:
+    if (fw) {
+       close(fdw[0]);
+       close(fdw[1]);
+    }
+  err1:
+    if (fr) {
+       close(fdr[0]);
+       close(fdr[1]);
+    }
+  err0:
+    return (pid_t) -1;
 }
 
 void

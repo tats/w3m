@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.26 2003/01/17 16:57:19 ukai Exp $ */
+/* $Id: image.c,v 1.27 2003/01/22 16:10:28 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -89,24 +89,12 @@ termImage()
 static int
 openImgdisplay()
 {
-    int fdr[2], fdw[2];
-    char *cmd;
-
-    if (pipe(fdr) < 0)
-	goto err0;
-    if (pipe(fdw) < 0)
-	goto err1;
-
-    flush_tty();
-    Imgdisplay_pid = fork();
+    Imgdisplay_pid = open_pipe_rw(&Imgdisplay_rf, &Imgdisplay_wf);
     if (Imgdisplay_pid < 0)
-	goto err2;
+	goto err0;
     if (Imgdisplay_pid == 0) {
 	/* child */
-	close(fdr[0]);
-	close(fdw[1]);
-	dup2(fdw[0], 0);
-	dup2(fdr[1], 1);
+	char *cmd;
 	setup_child(FALSE, 2, -1);
 	set_environ("W3M_TTY", ttyname_tty());
 	if (!strchr(Imgdisplay, '/'))
@@ -116,21 +104,9 @@ openImgdisplay()
 	myExec(cmd);
 	/* XXX: ifdef __EMX__, use start /f ? */
     }
-    close(fdr[1]);
-    close(fdw[0]);
-    Imgdisplay_rf = fdopen(fdr[0], "r");
-    Imgdisplay_wf = fdopen(fdw[1], "w");
     activeImage = TRUE;
     return TRUE;
-  err2:
-    close(fdw[0]);
-    close(fdw[1]);
-  err1:
-    close(fdr[0]);
-    close(fdr[1]);
   err0:
-    Imgdisplay_rf = NULL;
-    Imgdisplay_wf = NULL;
     Imgdisplay_pid = 0;
     activeImage = FALSE;
     return FALSE;

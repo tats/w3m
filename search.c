@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.24 2003/01/17 16:57:20 ukai Exp $ */
+/* $Id: search.c,v 1.25 2003/01/22 16:10:29 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -14,9 +14,9 @@ set_mark(Line *l, int pos, int epos)
 
 #ifdef USE_MIGEMO
 /* Migemo: romaji --> kana+kanji in regexp */
-static FILE *migemor, *migemow;
+static FILE *migemor = NULL, *migemow = NULL;
 static int migemo_running;
-static int migemo_pid;
+static int migemo_pid = 0;
 
 void
 init_migemo()
@@ -35,41 +35,18 @@ init_migemo()
 static int
 open_migemo(char *migemo_command)
 {
-    int fdr[2];
-    int fdw[2];
-
-    if (pipe(fdr) < 0)
-	goto err0;
-    if (pipe(fdw) < 0)
-	goto err1;
-
-    flush_tty();
-    /* migemow:fdw[1] -|-> fdw[0]=0 {migemo} fdr[1]=1 -|-> fdr[0]:migemor */
-    migemo_pid = fork();
+    migemo_pid = open_pipe_rw(&migemor, &migemow);
     if (migemo_pid < 0)
-	goto err2;
+	goto err0;
     if (migemo_pid == 0) {
 	/* child */
-	close(fdr[0]);
-	close(fdw[1]);
-	dup2(fdw[0], 0);
-	dup2(fdr[1], 1);
 	setup_child(FALSE, 2, -1);
 	myExec(migemo_command);
 	/* XXX: ifdef __EMX__, use start /f ? */
     }
-    close(fdr[1]);
-    close(fdw[0]);
-    migemor = fdopen(fdr[0], "r");
-    migemow = fdopen(fdw[1], "w");
     return 1;
-  err2:
-    close(fdw[0]);
-    close(fdw[1]);
-  err1:
-    close(fdr[0]);
-    close(fdr[1]);
   err0:
+    migemo_pid = 0;
     migemo_active = migemo_running = 0;
     return 0;
 }

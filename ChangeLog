@@ -1,5 +1,19 @@
 2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03676] cleanup for pipe
+	* etc.c (open_pipe_rw): added
+	* file.c (uncompress_stream): rewrite using open_pipe_rw
+	* image.c (openImgdisplay): rewrite using open_pipe_rw
+	* local.c (localcgi_popen_rw): deleted
+		(localcgi_post): rewrite using open_pipe_rw
+	* proto.h (open_pipe_rw): added
+	* search.c (migemor): initialized to NULL
+		(migemow): initialized to NULL
+		(migemo_pid): initialized to 0
+		(open_migemo): rewrite using open_pipe_rw
+
+2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03675] x-face
 	* file.c (xface2xpm): use getImage()
 		(readHeader): check same file
@@ -6686,4 +6700,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.702 2003/01/22 16:01:16 ukai Exp $
+$Id: ChangeLog,v 1.703 2003/01/22 16:10:27 ukai Exp $

@@ -68,7 +68,10 @@ OS/2
 	color capability.
 
 Windows
-	See README.cygwin.
+	To compile w3m on MS-Windows, you have to use Cygwin with
+	development tools.
+	You can get it from http://sourceware.cygnus.com/cygwin/ .
+	
 
 3. Copyright
 

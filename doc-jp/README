@@ -78,7 +78,10 @@ OS/2
 	ので，モノクロ用にコンパイルした方が良いでしょう．
 
 Windows
-	README.cygwin をごらんください．
+	Windows で w3m を動かすためには，Windows 上の UNIX互換環境
+	である Cygwin(開発環境付き)が必要です．Cygwinに関する情報は
+	http://sources.redhat.com/cygwin/ を参照してください．
+	http://www.page.sannet.ne.jp/knabe/w3m/w3m.html も大変参考になります。
 
 
 3. 著作権

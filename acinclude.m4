@@ -312,11 +312,11 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 [lib=$1
  AC_MSG_CHECKING(for -l$lib)
  extlib="not found"
- for extlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+ for dir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
  do
-   if test -f $extlibdir/lib$lib.a -o -f $extlibdir/lib$lib.so ; then 
+   if test -f $dir/lib$lib.a -o -f $dir/lib$lib.so ; then 
     LIBS="$LIBS -l$lib"
-    extlib="found at $extlibdir"
+    extlib="found at $dir"
     break
    fi
  done
@@ -328,7 +328,7 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
 AC_ARG_WITH(gc,
- [  --with-gc=PREFIX	  	libgc PREFIX],
+ [  --with-gc[=PREFIX]	  	libgc PREFIX],
  [test x$with_gc = xno && AC_MSG_ERROR([You can not build w3m without gc])],
  [with_gc=yes])
  AC_MSG_RESULT($with_gc)
@@ -381,22 +381,22 @@ AC_DEFUN([AC_W3M_SSL],
 AC_SUBST(USE_SSL_VERIFY)
 AC_MSG_CHECKING(if SSL is suported)
 AC_ARG_WITH(ssl,
- [  --with-ssl=PATH		support https protocol],,
+ [  --with-ssl[=PREFIX]		support https protocol],,
  [with_ssl="yes"])
 AC_MSG_RESULT($with_ssl)
 if test x$with_ssl != xno; then
   AC_DEFINE(USE_SSL)
   AC_MSG_CHECKING(for SSL library/header)
-  test -d $with_ssl || with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
-  for i in $with_ssl
+  test x"$with_ssl" = xyes || with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
+  for dir in $with_ssl
   do
-     if test -f "$i/include/openssl/ssl.h"; then
-        CFLAGS="$CFLAGS -I$i/include/openssl"
-     elif test -f "$i/include/ssl.h"; then
-        CFLAGS="$CFLAGS -I$i/include"
+     if test -f "$dir/include/openssl/ssl.h"; then
+        CFLAGS="$CFLAGS -I$dir/include/openssl"
+     elif test -f "$dir/include/ssl.h"; then
+        CFLAGS="$CFLAGS -I$dir/include"
      fi
-     if test -f "$i/lib/libssl.a"; then
-	LIBS="$LIBS -L$i/lib"
+     if test -f "$dir/lib/libssl.a"; then
+	LIBS="$LIBS -L$dir/lib"
      fi
   done
   AC_CHECK_LIB(ssl, SSL_new,
@@ -441,10 +441,8 @@ AC_DEFUN([AC_W3M_CHECK_VER],
 [version=$2
  if test x$version != x; then
    AC_MSG_CHECKING($1 version)
-   save_ifs="$IFS"; IFS="."
-   set -- $version
-   IFS="$save_ifs"
    AC_MSG_RESULT($version)
+   set -- `echo "$version" | sed 's/[[^0-9]]/ /g'`
    if test "$[1]" -ne "$3" -o "$[2]" -lt "$4" -o "$[3]" -lt "$5"; then
      AC_MSG_WARN([$1 is too old. Install $1 (version >= $3.$4.$5)])
      $7
@@ -608,11 +606,11 @@ if test x$enable_ipv6 = xyes; then
 	[enable_ipv6=no])
  if test x$enable_ipv6 = xno; then
     AC_MSG_CHECKING(for libinet6)
-    for libdir in /usr/local/v6/lib /usr/local/lib /usr/lib
+    for dir in /usr/local/v6/lib /usr/local/lib /usr/lib
     do
-	if test -f $libdir/libinet6.a; then
-	  if test $libdir != "/usr/lib"; then
-		LIBS="$LIBS -L$libdir"
+	if test -f $dir/libinet6.a; then
+	  if test $dir != "/usr/lib"; then
+		LIBS="$LIBS -L$dir"
 	  fi
 	  AC_CHECK_LIB(inet6, getaddrinfo,
 		[enable_ipv6=yes; AC_DEFINE(INET6)

@@ -1,4 +1,19 @@
 2003-03-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03810] autoconf
+	* acinclude.m4 (AC_W3M_EXTLIBS): use $dir
+			(AC_W3M_GC): PREFIX is optional
+			(AC_W3M_SSL): PREFIX is optional
+				with_ssl=yes, check usual dirs
+				use $dir
+			(AC_W3M_IPv6): use $dir
+
+2003-03-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03809] fix autoconf
+	* acinclude.m4 (AC_W3M_CHECK_VER): accept version like "1.9.13-2"
+
+2003-03-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 	
 	* [w3m-dev 03808] fix autoconf
 	* acinclude.m4 (AC_W3M_GC): --with-gc takes PREFIX
@@ -7452,4 +7467,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.784 2003/03/11 16:18:19 ukai Exp $
+$Id: ChangeLog,v 1.785 2003/03/11 16:29:34 ukai Exp $

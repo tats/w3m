@@ -48,7 +48,7 @@ HELP_FILE = w3mhelp-w3m_ja.html
 KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 
-VERSION=0.4.1+cvs-1.783
+VERSION=0.4.1+cvs-1.784
 MODEL=i686-pc-linux-gnu-JA
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \

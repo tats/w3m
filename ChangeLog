@@ -1,5 +1,10 @@
 2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03522] newline around <pre>..</pre>
+	* file.c (HTMLtagproc1): break before <pre>/after </pre> if necessary
+
+2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03521] sync option
 	* display.c (redrawNLine): calcTabPos()
 	* func.c (initKeymap): return if keymap_initialized
@@ -5415,4 +5420,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.584 2002/12/04 16:45:40 ukai Exp $
+$Id: ChangeLog,v 1.585 2002/12/04 16:55:04 ukai Exp $

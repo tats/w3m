@@ -1,5 +1,12 @@
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02481]
+	* s/BG_COLOR/USE_BG_COLOR/
+	* s/ANSI_COLOR/USE_ANSI_COLOR/
+	* s/COLOR/USE_COLOR/
+	* s/MENU/USE_MENU/
+	* s/MOUSE/USE_MOUSE/
+
 	* [w3m-dev 02480] new configure
 	* config.h.dist: updated
 	* configure: $def_emacs_like_lineedit, $def_vi_prec_num

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.6 2001/11/21 16:29:47 ukai Exp $ */
+/* $Id: rc.c,v 1.7 2001/11/21 19:24:35 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -43,7 +43,7 @@ static int rc_initialized = 0;
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
 #define P_SSLPATH  5
 #endif
-#ifdef COLOR
+#ifdef USE_COLOR
 #define P_COLOR    6
 #endif
 #ifdef JP_CHARSET
@@ -115,10 +115,10 @@ static int rc_initialized = 0;
 #define CMT_IFILE        "各ディレクトリのインデックスファイル"
 #define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
 #define CMT_DECODE_CTE   "保存時に Content-Transfer-Encoding をデコードする"
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #define CMT_MOUSE         "マウスを使う"
 #define CMT_REVERSE_MOUSE "マウスのドラッグ動作を逆にする"
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     "表示されていないバッファのメモリを開放する"
 #define CMT_NOSENDREFERER "Referer: を送らないようにする"
 #define CMT_IGNORE_CASE "サーチ時に大文字小文字の区別をしない"
@@ -210,10 +210,10 @@ static int rc_initialized = 0;
 #define CMT_IFILE        "Index file for the directory"
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
 #define CMT_DECODE_CTE   "Decode Content-Transfer-Encoding when saving"
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #define CMT_MOUSE         "Use mouse"
 #define CMT_REVERSE_MOUSE "Reverse mouse dragging action"
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     "Free memory of the undisplayed buffers"
 #define CMT_NOSENDREFERER "Don't send header `Referer:'"
 #define CMT_IGNORE_CASE "Ignore case when search"
@@ -279,7 +279,7 @@ static struct sel_c scodestr[] =
 };
 #endif				/* JP_CHARSET */
 
-#ifdef COLOR
+#ifdef USE_COLOR
 static struct sel_c colorstr[] =
 {
 #if LANG == JA
@@ -306,7 +306,7 @@ static struct sel_c colorstr[] =
     {0, NULL, NULL}
 #endif				/* LANG != JA */
 };
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
 
 #ifdef INET6
 static struct sel_c dnsorders[] =
@@ -353,7 +353,7 @@ struct param_ptr params1[] =
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
-#ifdef COLOR
+#ifdef USE_COLOR
 struct param_ptr params2[] =
 {
     {"color", P_INT, PI_ONOFF, (void *) &useColor, CMT_COLOR, NULL},
@@ -361,16 +361,16 @@ struct param_ptr params2[] =
     {"anchor_color", P_COLOR, PI_SEL_C, (void *) &anchor_color, CMT_A_COLOR, colorstr},
     {"image_color", P_COLOR, PI_SEL_C, (void *) &image_color, CMT_I_COLOR, colorstr},
     {"form_color", P_COLOR, PI_SEL_C, (void *) &form_color, CMT_F_COLOR, colorstr},
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
     {"bg_color", P_COLOR, PI_SEL_C, (void *) &bg_color, CMT_BG_COLOR, colorstr},
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
     {"active_style", P_INT, PI_ONOFF, (void *) &useActiveColor, CMT_ACTIVE_STYLE, NULL},
     {"active_color", P_COLOR, PI_SEL_C, (void *) &active_color, CMT_C_COLOR, colorstr},
     {"visited_anchor", P_INT, PI_ONOFF, (void *) &useVisitedColor, CMT_VISITED_ANCHOR, NULL},
     {"visited_color", P_COLOR, PI_SEL_C, (void *) &visited_color, CMT_V_COLOR, colorstr},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
 
 
 struct param_ptr params3[] =
@@ -383,10 +383,10 @@ struct param_ptr params3[] =
     {"confirm_qq", P_INT, PI_ONOFF, (void *) &confirm_on_quit, CMT_CONFIRM_QQ, NULL},
     {"wrap_search", P_INT, PI_ONOFF, (void *) &WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *) &IgnoreCase, CMT_IGNORE_CASE, NULL},
-#ifdef MOUSE
+#ifdef USE_MOUSE
     {"use_mouse", P_INT, PI_ONOFF, (void *) &use_mouse, CMT_MOUSE, NULL},
     {"reverse_mouse", P_INT, PI_ONOFF, (void *) &reverse_mouse, CMT_REVERSE_MOUSE, NULL},
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
     {"clear_buffer", P_INT, PI_ONOFF, (void *) &clear_buffer, CMT_CLEAR_BUF, NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *) &DecodeCTE, CMT_DECODE_CTE, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
@@ -476,9 +476,9 @@ struct param_section sections[] =
 {
 #if LANG == JA
     {"表示関係", params1},
-#ifdef COLOR
+#ifdef USE_COLOR
     {"表示色", params2},
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
     {"雑多な設定", params3},
     {"ディレクトリ設定", params5},
     {"外部プログラム", params6},
@@ -493,9 +493,9 @@ struct param_section sections[] =
 #endif
 #else				/* LANG != JA */
     {"Display", params1},
-#ifdef COLOR
+#ifdef USE_COLOR
     {"Color Setting", params2},
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
     {"Miscellaneous Setting", params3},
     {"Directory Setting", params5},
     {"External Programs", params6},
@@ -643,7 +643,7 @@ show_params(FILE * fp)
 		t = "path";
 		break;
 #endif
-#ifdef COLOR
+#ifdef USE_COLOR
 	    case P_COLOR:
 		t = "color";
 		break;
@@ -702,7 +702,7 @@ str_to_bool(char *value, int old)
     return 1;
 }
 
-#ifdef COLOR
+#ifdef USE_COLOR
 static int
 str_to_color(char *value)
 {
@@ -846,7 +846,7 @@ set_param(char *name, char *value)
 	ssl_path_modified = 1;
 	break;
 #endif
-#ifdef COLOR
+#ifdef USE_COLOR
     case P_COLOR:
 	*(int *) p->varptr = str_to_color(value);
 	break;
@@ -1131,7 +1131,7 @@ to_str(struct param_ptr *p)
 {
     switch (p->type) {
     case P_INT:
-#ifdef COLOR
+#ifdef USE_COLOR
     case P_COLOR:
 #endif
     case P_NZINT:

@@ -1,7 +1,7 @@
-/* $Id: buffer.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: buffer.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
 #include "fm.h"
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif
@@ -9,7 +9,7 @@
 extern int do_getch();
 #define getch()	do_getch()
 #endif				/* USE_GPM */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 #ifdef __EMX__
 #include <sys/kbdscan.h>
@@ -314,14 +314,14 @@ listBuffer(Buffer * top, Buffer * current)
     Buffer *buf = top;
 
     move(0, 0);
-#ifdef COLOR
+#ifdef USE_COLOR
     if (useColor) {
 	setfcolor(basic_color);
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 	setbcolor(bg_color);
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
     }
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
     clrtobotx();
     for (i = 0; i < LASTLINE; i++) {
 	if (buf == current) {
@@ -575,7 +575,7 @@ writeBufferCache(Buffer *buf)
     Str tmp;
     FILE *cache = NULL;
     Line *l;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     int colorflag;
 #endif
 
@@ -603,7 +603,7 @@ writeBufferCache(Buffer *buf)
 	    fwrite(l->lineBuf, 1, l->len, cache) < l->len ||
 	    fwrite(l->propBuf, sizeof(Lineprop), l->len, cache) < l->len)
 	    goto _error;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
         colorflag = l->colorBuf ? 1 : 0;
 	if (fwrite1(colorflag, cache))
 	    goto _error;
@@ -630,7 +630,7 @@ readBufferCache(Buffer *buf)
     FILE *cache;
     Line *l = NULL, *prevl;
     long lnum = 0, clnum, tlnum;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     int colorflag;
 #endif
 
@@ -669,7 +669,7 @@ readBufferCache(Buffer *buf)
 	l->lineBuf[l->len] = '\0';
 	l->propBuf = NewAtom_N(Lineprop, l->len);
 	fread(l->propBuf, sizeof(Lineprop), l->len, cache);
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (fread1(colorflag, cache))
 	    break;
 	if (colorflag) {

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.10 2001/11/21 16:29:46 ukai Exp $ */
+/* $Id: file.c,v 1.11 2001/11/21 19:24:35 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -30,13 +30,13 @@ static Buffer *loadcmdout(char *cmd,
 			  Buffer *defaultbuf);
 static void close_textarea(struct html_feed_environ *h_env);
 static void addnewline(Buffer * buf, char *line, Lineprop * prop,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 		       Linecolor * color,
 #endif
 		       int pos, int nlines);
 
 static Lineprop propBuffer[LINELEN];
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 static Linecolor colorBuffer[LINELEN];
 #endif
 
@@ -487,14 +487,14 @@ readHeader(URLFile * uf,
 	    for (p = lineBuf2->ptr; *p; p = q) {
 		for (q = p; *q && *q != '\r' && *q != '\n'; q++);
 		lineBuf2 = checkType(Strnew_charp(p), propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 				     NULL, NULL,
 #endif
 				     min(LINELEN, q - p));
 		Strcat(tmp, lineBuf2);
 		if (thru)
 		    addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 			       NULL,
 #endif
 			       lineBuf2->length, -1);
@@ -703,7 +703,7 @@ readHeader(URLFile * uf,
     }
     if (thru)
 	addnewline(newBuf, "", propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 		   NULL,
 #endif
 		   0, -1);
@@ -4014,7 +4014,7 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 	}
 	/* end of processing for one line */
 	addnewline(buf, outc, outp,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 		   NULL,
 #endif
 		   pos, nlines);
@@ -4517,7 +4517,7 @@ extern Lineprop NullProp[];
 
 static void
 addnewline(Buffer * buf, char *line, Lineprop * prop,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	   Linecolor * color,
 #endif
 	   int pos, int nlines)
@@ -4534,7 +4534,7 @@ addnewline(Buffer * buf, char *line, Lineprop * prop,
 	l->lineBuf = NullLine;
 	l->propBuf = NullProp;
     }
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (pos > 0 && color) {
 	l->colorBuf = NewAtom_N(Linecolor, pos);
 	bcopy((void *) color, (void *) l->colorBuf, pos * sizeof(Linecolor));
@@ -5093,7 +5093,7 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
     int nlines;
     Str tmpf;
     int linelen = 0, trbyte = 0;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     int check_color;
 #endif
     MySignalHandler(*prevtrap) ();
@@ -5154,12 +5154,12 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 #endif				/* USE_NNTP */
 	Strchop(lineBuf2);
 	lineBuf2 = checkType(lineBuf2, propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 			     colorBuffer, &check_color,
 #endif
 			     LINELEN);
 	addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 		   check_color ? colorBuffer : NULL,
 #endif
 		   lineBuf2->length, nlines);
@@ -5405,7 +5405,7 @@ getNextPage(Buffer * buf, int plen)
     URLFile uf;
     char code;
     int squeeze_flag = 0;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     int check_color;
 #endif
 
@@ -5455,7 +5455,7 @@ getNextPage(Buffer * buf, int plen)
 	++nlines;
 	Strchop(lineBuf2);
 	lineBuf2 = checkType(lineBuf2, propBuffer,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 			     colorBuffer, &check_color,
 #endif
 			     LINELEN);
@@ -5464,7 +5464,7 @@ getNextPage(Buffer * buf, int plen)
 	l->lineBuf = lineBuf2->ptr;
 	l->propBuf = NewAtom_N(Lineprop, len);
 	bcopy((void *) propBuffer, (void *) l->propBuf, len * sizeof(Lineprop));
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (check_color) {
 	    l->colorBuf = NewAtom_N(Linecolor, len);
 	    bcopy((void *) colorBuffer, (void *) l->colorBuf, len * sizeof(Linecolor));

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.14 2001/11/21 18:51:48 ukai Exp $ */
+/* $Id: main.c,v 1.15 2001/11/21 19:24:35 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -11,7 +11,7 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
@@ -107,9 +107,9 @@ fusage(FILE *f, int err)
     fprintf(f, "    -T type          specify content-type\n");
     fprintf(f, "    -m               internet message mode\n");
     fprintf(f, "    -v               visual startup mode\n");
-#ifdef COLOR
+#ifdef USE_COLOR
     fprintf(f, "    -M               monochrome display\n");
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
     fprintf(f, "    -F               automatically render frame\n");
     fprintf(f, "    -cols width      specify column width (used with -dump)\n");
     fprintf(f, "    -ppc count       specify the number of pixels per character (4.0...32.0)\n");
@@ -123,9 +123,9 @@ fusage(FILE *f, int err)
     fprintf(f, "    +<num>           goto <num> line\n");
     fprintf(f, "    -num             show line number\n");
     fprintf(f, "    -no-proxy        don't use proxy\n");
-#ifdef MOUSE
+#ifdef USE_MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 #ifdef USE_COOKIE
     fprintf(f, "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
@@ -425,10 +425,10 @@ MAIN(int argc, char **argv, char **envp)
 		SearchHeader = search_header = TRUE;
 	    else if (!strcmp("-v", argv[i]))
 		visual_start = TRUE;
-#ifdef COLOR
+#ifdef USE_COLOR
 	    else if (!strcmp("-M", argv[i]))
 		useColor = FALSE;
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
 	    else if (!strcmp("-B", argv[i]))
 		load_bookmark = TRUE;
 	    else if (!strcmp("-bookmark", argv[i])) {
@@ -515,11 +515,11 @@ MAIN(int argc, char **argv, char **envp)
                        Strcat (header_string, hs);
 	       }
            }       
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	    else if (!strcmp("-no-mouse", argv[i])) {
 		use_mouse = FALSE;
 	    }
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 #ifdef USE_COOKIE
 	    else if (!strcmp("-no-cookie", argv[i])) {
 		use_cookie = FALSE;
@@ -608,7 +608,7 @@ MAIN(int argc, char **argv, char **envp)
 	backend();
     if (!w3m_dump) {
        initKeymap();
-#ifdef MENU
+#ifdef USE_MENU
        initMenu();
        CurrentMenuData = NULL;
 #endif                /* MENU */
@@ -820,7 +820,7 @@ MAIN(int argc, char **argv, char **envp)
 	    for (i = 0; i < n_event_queue; i++) {
 		CurrentKey = -1;
 		CurrentKeyData = eventQueue[i].user_data;
-#ifdef MENU
+#ifdef USE_MENU
 		CurrentMenuData = NULL;
 #endif
 		w3mFuncList[eventQueue[i].cmd].func();
@@ -829,10 +829,10 @@ MAIN(int argc, char **argv, char **envp)
 	}
 	CurrentKeyData = NULL;
 	/* get keypress event */
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 #ifdef USE_ALARM
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
@@ -852,10 +852,10 @@ MAIN(int argc, char **argv, char **envp)
            alarm(0);
        }
 #endif
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
 	    if (((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
 		prec_num = prec_num * 10 + (int) (c - '0');
@@ -4180,7 +4180,7 @@ curlno()
     disp_message(tmp->ptr, FALSE);
 }
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 /* Addition:mouse event */
 #define MOUSE_BTN1_DOWN 0
 #define MOUSE_BTN2_DOWN 1
@@ -4270,12 +4270,12 @@ process_mouse(int btn, int x, int y)
 	    backBf();
 	    break;
 	case MOUSE_BTN3_DOWN:
-#ifdef MENU
+#ifdef USE_MENU
 	    if (x >= Currentbuf->rootX)
 	    cursorXY(Currentbuf, x - Currentbuf->rootX, y);
 	    onA();
 	    mainMenu(x, y);
-#endif				/* MENU */
+#endif				/* USE_MENU */
 	    break;
 	case MOUSE_BTN4_DOWN_RXVT:
 	    for (i = 0; i < MOUSE_SCROLL_LINE; i++)
@@ -4385,7 +4385,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
     return 0;
 }
 #endif				/* USE_SYSMOUSE */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 void
 dispVer()
@@ -4542,7 +4542,7 @@ searchKeyData(void)
 
     if (CurrentKeyData != NULL && *CurrentKeyData != '\0')
 	return allocStr(CurrentKeyData, 0);
-#ifdef MENU
+#ifdef USE_MENU
     if (CurrentMenuData != NULL && *CurrentMenuData != '\0')
 	return allocStr(CurrentMenuData, 0);
 #endif
@@ -4597,7 +4597,7 @@ SigAlarm(SIGNAL_ARG)
     if (alarm_sec > 0) {
        CurrentKey = -1;
        CurrentKeyData = (char *)alarm_event.user_data;
-#ifdef MENU
+#ifdef USE_MENU
        CurrentMenuData = NULL;
 #endif
        w3mFuncList[alarm_event.cmd].func();

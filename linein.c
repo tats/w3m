@@ -1,9 +1,9 @@
-/* $Id: linein.c,v 1.4 2001/11/20 04:11:16 ukai Exp $ */
+/* $Id: linein.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif
@@ -11,7 +11,7 @@
 extern int do_getch();
 #define getch()	do_getch()
 #endif				/* USE_GPM */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 #ifdef __EMX__
 #include <sys/kbdscan.h>

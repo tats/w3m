@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.9 2001/11/21 16:29:46 ukai Exp $ */
+/* $Id: fm.h,v 1.10 2001/11/21 19:24:35 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -18,13 +18,13 @@
 #include "config.h"
 #include "history.h"
 
-#ifdef MENU
+#ifdef USE_MENU
 #define MENU_SELECT
 #define MENU_MAP
-#endif				/* MENU */
+#endif				/* USE_MENU */
 
-#ifndef COLOR
-#undef ANSI_COLOR
+#ifndef USE_COLOR
+#undef USE_ANSI_COLOR
 #endif
 
 #include "ctrlcode.h"
@@ -255,7 +255,7 @@ extern int REV_LB[];
  */
 
 typedef unsigned short Lineprop;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 typedef unsigned char Linecolor;
 #endif
 
@@ -269,7 +269,7 @@ typedef struct _MapList {
 typedef struct _Line {
     char *lineBuf;
     Lineprop *propBuf;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     Linecolor *colorBuf;
 #endif
     struct _Line *next;
@@ -669,7 +669,7 @@ global Buffer *Currentbuf;
 global Buffer *Firstbuf;
 global int CurrentKey;
 global char *CurrentKeyData;
-#ifdef MENU
+#ifdef USE_MENU
 global char *CurrentMenuData;
 #endif
 extern char *ullevel[];
@@ -689,20 +689,20 @@ global int w3m_halfload init(FALSE);
 global Str header_string init(NULL);
 global int override_content_type init(FALSE);
 
-#ifdef COLOR
+#ifdef USE_COLOR
 global int useColor init(TRUE);
 global int basic_color init(8);	/* don't change */
 global int anchor_color init(4);	/* blue  */
 global int image_color init(2);	/* green */
 global int form_color init(1);	/* red   */
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 global int bg_color init(8);	/* don't change */
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 global int useActiveColor init(FALSE);
 global int active_color init(6);	/* cyan */
 global int useVisitedColor init(FALSE);
 global int visited_color init(5);	/* magenta  */
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
 global int confirm_on_quit init(TRUE);
 global int displayLink init(FALSE);
 global int retryAsHttp init(TRUE);
@@ -786,11 +786,11 @@ extern char UseAltEntity;
 global char *rc_dir;
 global int rc_dir_is_tmp init(FALSE);
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 global int use_mouse init(TRUE);
 extern int mouseActive;
 global int reverse_mouse init(FALSE);
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);

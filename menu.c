@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: menu.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -10,7 +10,7 @@
 #include "myctype.h"
 #include "regex.h"
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 static int gpm_process_menu_mouse(Gpm_Event * event, void *data);
@@ -28,9 +28,9 @@ extern int do_getch();
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || * * * * * *
 				 * defined(USE_SYSMOUSE) */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
-#ifdef MENU
+#ifdef USE_MENU
 
 #ifdef KANJI_SYMBOLS
 static char *FRAME[] =
@@ -613,12 +613,12 @@ action_menu(Menu * menu)
     select_menu(menu, menu->select);
 
     while (1) {
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 	c = getch();
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
@@ -629,7 +629,7 @@ action_menu(Menu * menu)
 	}
 #endif				/* defined(USE_GPM) || * * * * * *
 				 * defined(USE_SYSMOUSE) */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
 	    select = (*menu->keymap[(int) c]) (c);
 	    if (select != MENU_NOTHING)
@@ -671,14 +671,14 @@ popup_menu(Menu * parent, Menu * menu)
     if (menu->active)
 	return;
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
     gpm_handler = gpm_process_menu_mouse;
 #endif				/* USE_GPM */
 #ifdef USE_SYSMOUSE
     sysm_handler = sysm_process_menu_mouse;
 #endif				/* USE_SYSMOUSE */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
     menu->parent = parent;
     menu->select = menu->initial;
     menu->offset = 0;
@@ -697,7 +697,7 @@ popup_menu(Menu * parent, Menu * menu)
     }
     menu->active = 0;
     CurrentMenu = parent;
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
     if (CurrentMenu == NULL)
 	gpm_handler = gpm_process_mouse;
@@ -706,7 +706,7 @@ popup_menu(Menu * parent, Menu * menu)
     if (CurrentMenu == NULL)
 	sysm_handler = sysm_process_mouse;
 #endif				/* USE_SYSMOUSE */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 }
 
 void
@@ -1068,7 +1068,7 @@ mSrchP (char c)
     return (MENU_NOTHING);
 }
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #define MOUSE_BTN1_DOWN 0
 #define MOUSE_BTN2_DOWN 1
 #define MOUSE_BTN3_DOWN 2
@@ -1202,13 +1202,13 @@ sysm_process_menu_mouse(int x, int y, int nbs, int obs)
     return X_MOUSE_SELECTED;
 }
 #endif				/* USE_SYSMOUSE */
-#else				/* not MOUSE */
+#else				/* not USE_MOUSE */
 static int
 mMouse(char c)
 {
     return (MENU_NOTHING);
 }
-#endif				/* not MOUSE */
+#endif				/* not USE_MOUSE */
 
 /* --- MenuFunctions (END) --- */
 
@@ -1556,4 +1556,4 @@ getMenuN(MenuList * list, char *id)
 
 /* --- InitMenu (END) --- */
 
-#endif				/* MENU */
+#endif				/* USE_MENU */

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.11 2001/11/21 18:51:48 ukai Exp $
+# $Id: configure,v 1.12 2001/11/21 19:24:35 ukai Exp $
 #	Configuration.
 #
 
@@ -517,9 +517,9 @@ echo "Do you want ANSI color escape sequences support?"
 yesno ansi_color "$ansi_color" n
 echo "ansi_color=$ansi_color" >> config.param
 if [ "$ansi_color" = y ]; then
-  def_ansi_color="#define ANSI_COLOR"
+  def_ansi_color="#define USE_ANSI_COLOR"
 else
-  def_ansi_color="#undef ANSI_COLOR"
+  def_ansi_color="#undef USE_ANSI_COLOR"
 fi
 
 
@@ -584,45 +584,45 @@ dmodel_save="$dmodel"
 dmodel=$ans
 case "$ans" in
   1)
-    use_color=n; def_color="#undef COLOR"
-    use_menu=n;  def_menu="#undef MENU"
-    use_mouse=n; def_mouse="#undef MOUSE"
+    use_color=n; def_color="#undef USE_COLOR"
+    use_menu=n;  def_menu="#undef USE_MENU"
+    use_mouse=n; def_mouse="#undef USE_MOUSE"
     use_cookie=n; def_cookie="#undef USE_COOKIE"
     use_ssl=n; def_ssl="#undef USE_SSL"
     save_params
     customized=y
     ;;
   2)
-    use_color=y; def_color="#define COLOR"
-    use_menu=y;  def_menu="#define MENU"
-    use_mouse=n; def_mouse="#undef MOUSE"
+    use_color=y; def_color="#define USE_COLOR"
+    use_menu=y;  def_menu="#define USE_MENU"
+    use_mouse=n; def_mouse="#undef USE_MOUSE"
     use_cookie=n; def_cookie="#undef USE_COOKIE"
     use_ssl=n; def_ssl="#undef USE_SSL"
     save_params
     customized=y
     ;;
   3)
-    use_color=y; def_color="#define COLOR"
-    use_menu=y;  def_menu="#define MENU"
-    use_mouse=y; def_mouse="#define MOUSE"
+    use_color=y; def_color="#define USE_COLOR"
+    use_menu=y;  def_menu="#define USE_MENU"
+    use_mouse=y; def_mouse="#define USE_MOUSE"
     use_cookie=n; def_cookie="#undef USE_COOKIE"
     use_ssl=n; def_ssl="#undef USE_SSL"
     save_params
     customized=y
     ;;
   4)
-    use_color=y; def_color="#define COLOR"
-    use_menu=y;  def_menu="#define MENU"
-    use_mouse=y; def_mouse="#define MOUSE"
+    use_color=y; def_color="#define USE_COLOR"
+    use_menu=y;  def_menu="#define USE_MENU"
+    use_mouse=y; def_mouse="#define USE_MOUSE"
     use_cookie=y; def_cookie="#define USE_COOKIE"
     use_ssl=n; def_ssl="#undef USE_SSL"
     save_params
     customized=y
     ;;
   5)
-    use_color=y; def_color="#define COLOR"
-    use_menu=y;  def_menu="#define MENU"
-    use_mouse=y; def_mouse="#define MOUSE"
+    use_color=y; def_color="#define USE_COLOR"
+    use_menu=y;  def_menu="#define USE_MENU"
+    use_mouse=y; def_mouse="#define USE_MOUSE"
     use_cookie=y; def_cookie="#define USE_COOKIE"
     use_ssl=y; def_ssl="#define USE_SSL"
     find_ssl
@@ -655,27 +655,27 @@ echo "Do you want to use color ESC sequence for kterm/pxvt "
 yesno use_color "$use_color" y
 echo "use_color=$use_color" >> config.param
 if [ "$use_color" = y ]; then
-  def_color="#define COLOR"
+  def_color="#define USE_COLOR"
 else
-  def_color="#undef COLOR"
+  def_color="#undef USE_COLOR"
 fi
 
 echo 'Do you want to use mouse? (It requires xterm/kterm)'
 yesno use_mouse "$use_mouse" n
 echo "use_mouse=$use_mouse" >> config.param
 if [ "$use_mouse" = y ]; then
-  def_mouse="#define MOUSE"
+  def_mouse="#define USE_MOUSE"
 else
-  def_mouse="#undef MOUSE"
+  def_mouse="#undef USE_MOUSE"
 fi
 
 echo "Do you want to use popup menu?"
 yesno use_menu "$use_menu" y
 echo "use_menu=$use_menu" >> config.param
 if [ "$use_menu" = y ]; then
-  def_menu="#define MENU"
+  def_menu="#define USE_MENU"
 else
-  def_menu="#undef MENU"
+  def_menu="#undef USE_MENU"
 fi
 
 #echo "Do you want to use matrix in rendering table?"
@@ -1841,9 +1841,9 @@ cat > config.h << END_OF_CONFIG_H
 #define USE_HISTORY
 
 /*
-   BG_COLOR enables w3m to set background color.
+   USE_BG_COLOR enables w3m to set background color.
  */
-#define BG_COLOR
+#define USE_BG_COLOR
 
 /*
  * Do word fill

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.12 2001/11/21 18:51:48 ukai Exp $ */
+/* $Id: terms.c,v 1.13 2001/11/21 19:24:35 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -15,7 +15,7 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
@@ -35,7 +35,7 @@ static int xpix, ypix, nbs, obs = 0;
 static int is_xterm = 0;
 void mouse_init(), mouse_end();
 int mouseActive = 0;
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 #include "terms.h"
 #include "fm.h"
@@ -125,7 +125,7 @@ typedef struct sgttyb TerminalMode;
 
 #define S_COLORED       0xf00
 
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 /* Background Color */
 #define COL_BCOLOR      0xf000
 #define COL_BBLACK      0x8000
@@ -139,7 +139,7 @@ typedef struct sgttyb TerminalMode;
 #define COL_BTERM       0x0000
 
 #define S_BCOLORED      0xf000
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 
 
 #define S_GRAPHICS      0x10
@@ -217,7 +217,7 @@ writestr(char *s)
 
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 static char *xterm_mouse_term[] = {
      "xterm", "kterm", "rxvt", "cygwin", 
      NULL
@@ -228,9 +228,6 @@ int
 set_tty(void)
 {
     char *ttyn;
-#ifdef MOUSE
-    char *term;
-#endif
 
     if (isatty(0))		/* stdin */
 	ttyn = ttyname(0);
@@ -243,9 +240,9 @@ set_tty(void)
     }
     ttyf = fdopen(tty, "w");
     TerminalGet(tty, &d_ioval);
-#ifdef MOUSE
-    term = getenv("TERM");
+#ifdef USE_MOUSE
     {
+	char *term = getenv("TERM");
 	char **p;
 	for (p = xterm_mouse_term; *p != NULL; p++) {
 	     if (!strncmp(term, *p, strlen(*p))) {
@@ -342,10 +339,10 @@ MySignalHandler
 reset_exit(SIGNAL_ARG)
 {
     reset_tty();
-#ifdef MOUSE
+#ifdef USE_MOUSE
     if (mouseActive)
 	mouse_end();
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
     w3m_exit(0);
     SIGNAL_RETURN;
 }
@@ -702,11 +699,11 @@ move(int line, int column)
 	CurColumn = column;
 }
 
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 #define M_SPACE (S_SCREENPROP|S_COLORED|S_BCOLORED|S_GRAPHICS)
-#else				/* not BG_COLOR */
+#else				/* not USE_BG_COLOR */
 #define M_SPACE (S_SCREENPROP|S_COLORED|S_GRAPHICS)
-#endif				/* not BG_COLOR */
+#endif				/* not USE_BG_COLOR */
 
 static int
 need_redraw(char c1, l_prop pr1, char c2, l_prop pr2)
@@ -978,7 +975,7 @@ color_seq(int colmode)
     return seqbuf;
 }
 
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 void
 setbcolor(int color)
 {
@@ -994,16 +991,16 @@ bcolor_seq(int colmode)
     sprintf(seqbuf, "\033[%dm", ((colmode >> 12) & 7) + 40);
     return seqbuf;
 }
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 
 #define RF_NEED_TO_MOVE    0
 #define RF_CR_OK           1
 #define RF_NONEED_TO_MOVE  2
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 #define M_MEND (S_STANDOUT|S_UNDERLINE|S_BOLD|S_COLORED|S_BCOLORED|S_GRAPHICS)
-#else				/* not BG_COLOR */
+#else				/* not USE_BG_COLOR */
 #define M_MEND (S_STANDOUT|S_UNDERLINE|S_BOLD|S_COLORED|S_GRAPHICS)
-#endif				/* not BG_COLOR */
+#endif				/* not USE_BG_COLOR */
 void
 refresh(void)
 {
@@ -1013,9 +1010,9 @@ refresh(void)
     char *pc;
     l_prop *pr, mode = 0;
     l_prop color = COL_FTERM;
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
     l_prop bcolor = COL_BTERM;
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
     short *dirty;
 
     for (line = 0; line <= LASTLINE; line++) {
@@ -1084,25 +1081,25 @@ refresh(void)
 		 * avoid the scroll, I prohibit to draw character on
 		 * (COLS-1,LINES-1).
 		 */
-#if !defined(BG_COLOR) || defined(__CYGWIN__)
+#if !defined(USE_BG_COLOR) || defined(__CYGWIN__)
 #if defined(__CYGWIN__) && LANG == JA
 		if (isWinConsole)
 #endif				/* defined(__CYGWIN__) && LANG == JA */
 		if (line == LINES - 1 && col == COLS - 1)
 		    break;
-#endif				/* !defined(BG_COLOR) || defined(__CYGWIN__) */
+#endif			/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */
 		if ((!(pr[col] & S_STANDOUT) && (mode & S_STANDOUT)) ||
 		    (!(pr[col] & S_UNDERLINE) && (mode & S_UNDERLINE)) ||
 		    (!(pr[col] & S_BOLD) && (mode & S_BOLD)) ||
 		    (!(pr[col] & S_COLORED) && (mode & S_COLORED))
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 		    || (!(pr[col] & S_BCOLORED) && (mode & S_BCOLORED))
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 		    || (!(pr[col] & S_GRAPHICS) && (mode & S_GRAPHICS))) {
             if ((mode & S_COLORED)
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
               || (mode & S_BCOLORED)
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 			)
 			writestr(T_op);
             if (mode & S_GRAPHICS)
@@ -1134,13 +1131,13 @@ refresh(void)
                mode = ((mode & ~COL_FCOLOR) | color);
                writestr(color_seq(color));
             }
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
             if ((pr[col] & S_BCOLORED) && (pr[col] ^ mode) & COL_BCOLOR) {
                bcolor = (pr[col] & COL_BCOLOR);
                mode = ((mode & ~COL_BCOLOR) | bcolor);
                writestr(bcolor_seq(bcolor));
             }
-#endif                /* BG_COLOR */
+#endif                /* USE_BG_COLOR */
 		    if ((pr[col] & S_GRAPHICS) && !(mode & S_GRAPHICS)) {
 			if (!graph_enabled) {
 			    graph_enabled = 1;
@@ -1161,9 +1158,9 @@ refresh(void)
 	*dirty &= ~(L_NEED_CE | L_CLRTOEOL);
 	if (mode & M_MEND) {
 	    if (mode & (S_COLORED
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 			| S_BCOLORED
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
 		))
 		writestr(T_op);
 	    if (mode & S_GRAPHICS)
@@ -1326,7 +1323,7 @@ clrtoeol(void)
     }
 }
 
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 void
 clrtoeol_with_bcolor(void)
 {
@@ -1352,14 +1349,14 @@ clrtoeolx(void)
 {
     clrtoeol_with_bcolor();
 }
-#else				/* not BG_COLOR */
+#else				/* not USE_BG_COLOR */
 
 void
 clrtoeolx(void)
 {
     clrtoeol();
 }
-#endif				/* not BG_COLOR */
+#endif				/* not USE_BG_COLOR */
 
 void
 clrtobot_eol(void (*clrtoeol) ())
@@ -1579,7 +1576,7 @@ getch(void)
     return c;
 }
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 #ifdef USE_GPM
 char
 wgetch(void)
@@ -1649,7 +1646,7 @@ sysmouse(SIGNAL_ARG)
     ioctl(tty, CONS_MOUSECTL, &mi);
 }
 #endif				/* USE_SYSMOUSE */
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 void
 bell(void)
@@ -1665,7 +1662,7 @@ skip_escseq(void)
     c = getch();
     if (c == '[' || c == 'O') {
 	c = getch();
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (is_xterm && c == 'M') {
 	  getch();
 	  getch();
@@ -1707,7 +1704,7 @@ sleep_till_anykey(int sec, int purge)
     }
 }
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
 
 #define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
 #define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
@@ -1862,7 +1859,7 @@ mouse_inactive()
 	mouse_end();
 }
 
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 
 void
 flush_tty()

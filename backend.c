@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: backend.c,v 1.4 2001/11/21 19:24:35 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -301,9 +301,9 @@ int backend( void ){
 
     w3m_dump     = 0;
     if (COLS == 0) COLS = 80;
-#ifdef MOUSE
+#ifdef USE_MOUSE
     use_mouse = FALSE;
-#endif /* MOUSE */
+#endif /* USE_MOUSE */
 
     if( backend_batch_commands ){
 	while(( str = popText(backend_batch_commands) ))

@@ -20,9 +20,9 @@
 #define USE_HISTORY
 
 /*
-   BG_COLOR enables w3m to set background color.
+   USE_BG_COLOR enables w3m to set background color.
  */
-#define BG_COLOR
+#define USE_BG_COLOR
 
 /*
  * Do word fill
@@ -91,17 +91,17 @@ MODEL=Linux.i686-monster-ja
 #define EN 1
 #define LANG JA
 #define KANJI_SYMBOLS
-#define COLOR
-#undef ANSI_COLOR
+#define USE_COLOR
+#undef USE_ANSI_COLOR
 #undef EMACS_LIKE_LINEEDIT
 #undef VI_PREC_NUM
 #undef USE_MARK
 #undef LABEL_TOPLINE
 #undef NEXTPAGE_TOPLINE
-#define MOUSE
+#define USE_MOUSE
 #define USE_GPM
 #undef USE_SYSMOUSE
-#define MENU
+#define USE_MENU
 #define USE_COOKIE
 #define USE_SSL
 #undef USE_SSL_VERIFY

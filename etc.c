@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.5 2001/11/20 16:46:32 ukai Exp $ */
+/* $Id: etc.c,v 1.6 2001/11/21 19:24:35 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -294,7 +294,7 @@ getAnchor(char *arg, char **arg_return)
     return allocStr(arg, p - arg);
 }
 
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 static int
 parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
 {
@@ -374,7 +374,7 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
 
 Str
 checkType(Str s, Lineprop * oprop,
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	  Linecolor * ocolor, int * check_color,
 #endif
 	  int len)
@@ -383,7 +383,7 @@ checkType(Str s, Lineprop * oprop,
     Lineprop effect = PE_NORMAL;
     Lineprop *prop = oprop;
     char *str = s->ptr, *endp = &s->ptr[s->length], *bs = NULL;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     Lineprop ceffect = PE_NORMAL;
     Linecolor cmode = 0;
     Linecolor *color = NULL;
@@ -392,13 +392,13 @@ checkType(Str s, Lineprop * oprop,
     int do_copy = FALSE;
     int size = (len < s->length) ? len : s->length;
 
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (check_color)
 	*check_color = FALSE;
 #endif
     if (ShowEffect) {
 	bs = memchr(str, '\b', s->length);
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (ocolor) {
 	    es = memchr(str, ESC_CODE, s->length);
 	    if (es)
@@ -406,7 +406,7 @@ checkType(Str s, Lineprop * oprop,
 	}
 #endif
 	if (s->length > size || (bs != NULL)
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	    || (es != NULL)
 #endif
 	    ) {
@@ -538,12 +538,12 @@ checkType(Str s, Lineprop * oprop,
 		    bs = memchr(str, '\b', endp - str);
 		continue;
 	    }
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	    else if (str > bs)
 		bs = memchr(str, '\b', endp - str);
 #endif
 	}
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (es != NULL) {
 	    if (str == es) {
 		int ok = parse_ansi_color(&str, &ceffect, &cmode);
@@ -561,7 +561,7 @@ checkType(Str s, Lineprop * oprop,
 #endif
 
 	mode = get_mctype(str);
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	effect |= ceffect;
 #endif
 #ifdef JP_CHARSET
@@ -574,7 +574,7 @@ checkType(Str s, Lineprop * oprop,
 	    }
 	    prop += 2;
 	    str += 2;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	    if (color) {
 		color[0] = cmode;
 		color[1] = cmode;
@@ -590,7 +590,7 @@ checkType(Str s, Lineprop * oprop,
 		Strcat_char(s, *str);
 	    prop++;
 	    str++;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	    if (color) {
 		*color = cmode;
 		color++;

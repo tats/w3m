@@ -1,11 +1,11 @@
-/* $Id: display.c,v 1.5 2001/11/21 09:09:10 ukai Exp $ */
+/* $Id: display.c,v 1.6 2001/11/21 19:24:35 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
 #define MAX(a, b)  ((a) > (b) ? (a) : (b))
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
-#ifdef COLOR
+#ifdef USE_COLOR
 
 #define EFFECT_ANCHOR_START       effect_anchor_start()
 #define EFFECT_ANCHOR_END         effect_anchor_end()
@@ -108,7 +108,7 @@ static void EFFECT_VISITED_END
     }
 }
 
-#else				/* not COLOR */
+#else				/* not USE_COLOR */
 
 #define EFFECT_ANCHOR_START       underline()
 #define EFFECT_ANCHOR_END         underlineend()
@@ -121,7 +121,7 @@ static void EFFECT_VISITED_END
 #define EFFECT_VISITED_START      /**/
 #define EFFECT_VISITED_END        /**/
 
-#endif				/* not COLOR */
+#endif				/* not USE_COLOR */
 
 
 #ifndef KANJI_SYMBOLS
@@ -139,10 +139,10 @@ fmTerm(void)
 	move(LASTLINE, 0);
 	clrtoeolx();
 	refresh();
-#ifdef MOUSE
+#ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_end();
-#endif				/* MOUSE */
+#endif				/* USE_MOUSE */
 	reset_tty();
 	fmInitialized = FALSE;
     }
@@ -178,7 +178,7 @@ static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
 #ifndef KANJI_SYMBOLS
 static int graph_mode = 0;
 #endif				/* not KANJI_SYMBOLS */
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 static Linecolor color_mode = 0;
 #endif
 
@@ -250,7 +250,7 @@ displayBuffer(Buffer * buf, int mode)
     if (buf->topLine == NULL)
 	buf->topLine = buf->firstLine;
 
-#ifdef MOUSE
+#ifdef USE_MOUSE
     if (use_mouse)
 #if LANG == JA
 	msg = Strnew_charp("¢ã¢¬¢­");
@@ -258,7 +258,7 @@ displayBuffer(Buffer * buf, int mode)
 	msg = Strnew_charp("<=UpDn ");
 #endif				/* LANG != JA */
     else
-#endif				/* not MOUSE */
+#endif				/* not USE_MOUSE */
 	msg = Strnew();
     Strcat_charp(msg, "Viewing <");
     Strcat_charp(msg, buf->buffername);
@@ -333,14 +333,14 @@ redrawNLine(Buffer * buf, int n)
     Line *l, *l0;
     int i;
 
-#ifdef COLOR
+#ifdef USE_COLOR
     if (useColor) {
 	EFFECT_ANCHOR_END_C;
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
 	setbcolor(bg_color);
-#endif				/* BG_COLOR */
+#endif				/* USE_BG_COLOR */
     }
-#endif				/* COLOR */
+#endif				/* USE_COLOR */
     for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
 	if (i >= LASTLINE - n || i < -n)
 	    l0 = redrawLine(buf, l, i);
@@ -364,10 +364,10 @@ redrawLine(Buffer * buf, Line * l, int i)
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     Linecolor *pc;
 #endif
-#ifdef COLOR
+#ifdef USE_COLOR
     Anchor *a;
     ParsedURL url;
     int k, vpos = -1;
@@ -412,7 +412,7 @@ redrawLine(Buffer * buf, Line * l, int i)
     pos = columnPos(l, column);
     p = &(l->lineBuf[pos]);
     pr = &(l->propBuf[pos]);
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (useColor && l->colorBuf)
 	pc = &(l->colorBuf[pos]);
     else
@@ -424,7 +424,7 @@ redrawLine(Buffer * buf, Line * l, int i)
     delta = 1;
 #endif
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
-#ifdef COLOR
+#ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
 	    if (a) {
@@ -446,7 +446,7 @@ redrawLine(Buffer * buf, Line * l, int i)
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (pc)
 	    do_color(pc[j]);
 #endif
@@ -512,7 +512,7 @@ redrawLine(Buffer * buf, Line * l, int i)
 	graphend();
     }
 #endif				/* not KANJI_SYMBOLS */
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
 #endif
@@ -528,11 +528,11 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     Linecolor *pc;
 #endif
     int bcol, ecol;
-#ifdef COLOR
+#ifdef USE_COLOR
     Anchor *a;
     ParsedURL url;
     int k, vpos = -1;
@@ -543,7 +543,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
     pos = columnPos(l, column);
     p = &(l->lineBuf[pos]);
     pr = &(l->propBuf[pos]);
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (useColor && l->colorBuf)
 	pc = &(l->colorBuf[pos]);
     else
@@ -557,7 +557,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
     delta = 1;
 #endif
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
-#ifdef COLOR
+#ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
 	    if (a) {
@@ -579,7 +579,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 	if (pc)
 	    do_color(pc[j]);
 #endif
@@ -649,7 +649,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
 	graphend();
     }
 #endif				/* not KANJI_SYMBOLS */
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
 #endif
@@ -710,7 +710,7 @@ do_effects(Lineprop m)
 #endif				/* not KANJI_SYMBOLS */
 }
 
-#ifdef ANSI_COLOR
+#ifdef USE_ANSI_COLOR
 void
 do_color(Linecolor c)
 {
@@ -718,7 +718,7 @@ do_color(Linecolor c)
 	setfcolor(c & 0x7);
     else if (color_mode & 0x8)
 	setfcolor(basic_color);
-#ifdef BG_COLOR
+#ifdef USE_BG_COLOR
     if (c & 0x80)
 	setbcolor((c >> 4) & 0x7);
     else if (color_mode & 0x80)
@@ -821,12 +821,12 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
     else
 	message(s, LASTLINE, 0);
     refresh();
-#ifdef MOUSE
+#ifdef USE_MOUSE
     if (mouse && use_mouse)
 	mouse_active();
 #endif
     sleep_till_anykey(sec, purge);
-#ifdef MOUSE
+#ifdef USE_MOUSE
     if (mouse && use_mouse)
 	mouse_inactive();
 #endif
@@ -839,7 +839,7 @@ disp_message(char *s, int redraw_current)
 {
     disp_message_nsec(s, redraw_current, 10, FALSE, TRUE);
 }
-#ifdef MOUSE
+#ifdef USE_MOUSE
 void
 disp_message_nomouse(char *s, int redraw_current)
 {

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.198 2003/01/22 16:10:28 ukai Exp $ */
+/* $Id: file.c,v 1.199 2003/01/22 16:11:03 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7765,7 +7765,7 @@ uncompress_stream(URLFile *uf, char **src)
 	/* child */
 	pid_t pid2;
 	FILE *f2;
-	dup2(1, 2);	/* stderr>&stdout */
+	dup2(1, 2);		/* stderr>&stdout */
 	setup_child(TRUE, -1, UFfileno(uf));
 	pid2 = open_pipe_rw(NULL, &f2);
 	if (pid2 < 0) {

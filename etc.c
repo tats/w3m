@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.53 2003/01/22 16:10:28 ukai Exp $ */
+/* $Id: etc.c,v 1.54 2003/01/22 16:11:03 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1340,7 +1340,7 @@ setup_child(int child, int i, int f)
 }
 
 pid_t
-open_pipe_rw(FILE **fr, FILE **fw)
+open_pipe_rw(FILE ** fr, FILE ** fw)
 {
     int fdr[2];
     int fdw[2];
@@ -1379,16 +1379,16 @@ open_pipe_rw(FILE **fr, FILE **fw)
     return pid;
   err2:
     if (fw) {
-       close(fdw[0]);
-       close(fdw[1]);
+	close(fdw[0]);
+	close(fdw[1]);
     }
   err1:
     if (fr) {
-       close(fdr[0]);
-       close(fdr[1]);
+	close(fdr[0]);
+	close(fdr[1]);
     }
   err0:
-    return (pid_t) -1;
+    return (pid_t) - 1;
 }
 
 void

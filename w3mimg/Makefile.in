@@ -37,8 +37,8 @@ distclean: clean
 	do \
 		(cd $$subdir && $(MAKE) distclean); \
 	done
+	-$(RM) -f w3mimg.a
 	-$(RM) -f Makefile
 
-	-$(RM) -f Makefile
 
 #

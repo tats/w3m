@@ -1,3 +1,15 @@
+2005-02-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* configure.ac: rename from configure.in. this is for autoconf2.50
+
+2005-02-27  NOMIYA Masaru <nomiya@ttmy.ne.jp>
+
+	* [w3m-dev 04143] Patch for OS/2
+	* config.h.in: ifdef HAVE_SETPGRP
+	* configure.in: define USE_BINMODE_STREAM for *os2-emx*
+	* islang.c: ULONG -> unsigned long
+	* main.c: ULONG -> unsigned long
+
 2005-02-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 01045] From newbie: problem with w3m-0.5.1 installation
@@ -8631,4 +8643,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.945 2005/02/14 16:36:29 ukai Exp $
+$Id: ChangeLog,v 1.946 2005/02/26 17:13:58 ukai Exp $

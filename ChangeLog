@@ -1,3 +1,8 @@
+2002-09-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03321] Bug#162104: file descriptors 1 and 2 are closed rather than reopened to /dev/null
+	* etc.c (mySystem): fd 0,1,2 redirect /dev/null, close all other fds
+
 2002-09-25  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
 	* [w3m-dev 03319] mailto
@@ -3822,4 +3827,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.429 2002/09/24 17:06:04 ukai Exp $
+$Id: ChangeLog,v 1.430 2002/09/24 17:35:52 ukai Exp $

@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* URL news:, nntp: newsgroup support
 * rc: nntpserver, nntpmode, max_news
 * rc: graphic_char
 * rc: use_proxy

@@ -2984,7 +2984,7 @@ else
 #define USE_M17N 1
 _ACEOF
 
- WCTARGET="libwc"
+ WCTARGET="libwc/libwc.a"
  WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
  wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
@@ -4890,7 +4890,7 @@ fi;
  echo "$as_me:$LINENO: result: $enable_image" >&5
 echo "${ECHO_T}$enable_image" >&6
  if test x"$enable_image" != xno; then
-  IMGOBJS=w3mimg/w3mimg.o
+  IMGOBJS=w3mimg.o
   if test x"$enable_image" = xyes; then
     enable_image=x11
     case "`uname -s`" in
@@ -5035,7 +5035,7 @@ _ACEOF
 #define USE_GDKPIXBUF 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
      IMGTARGETS="x11"
@@ -5048,7 +5048,7 @@ _ACEOF
 #define USE_IMLIB 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"
@@ -5061,7 +5061,7 @@ _ACEOF
 #define USE_IMLIB2 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
      IMGTARGETS="x11"
@@ -5080,7 +5080,7 @@ _ACEOF
 #define USE_GDKPIXBUF 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
      IMGTARGETS="${IMGTARGETS} fb"
@@ -5093,7 +5093,7 @@ _ACEOF
 #define USE_IMLIB2 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
      IMGTARGETS="${IMGTARGETS} fb"
@@ -9255,14 +9255,14 @@ _ACEOF
  fi
 
 
-HELP_DIR="$datadir/$PACKAGE"
-cat >>confdefs.h <<_ACEOF
+HELP_DIR=$(eval echo "$datadir/$PACKAGE")
+cat >>confdefs.h <<\_ACEOF
 #define HELP_DIR "$HELP_DIR"
 _ACEOF
 
 
 RC_DIR="~/.$PACKAGE"
-cat >>confdefs.h <<_ACEOF
+cat >>confdefs.h <<\_ACEOF
 #define RC_DIR "$RC_DIR"
 _ACEOF
 

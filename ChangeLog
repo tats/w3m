@@ -1,3 +1,30 @@
+2003-10-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* scripts/Makefile.in (w3mhelp-funcname.pl): depends ../funcname.tab
+	* Makefile.in (IMGOBJS): deleted
+		(indep.o): depends on fm.h funcname1.h
+		(IMGDISPLAY): depends on w3mimg/w3mimg.a
+		(w3mimg/w3mimg.a): renamed from w3mimg
+	* acinclude.m4 (AC_W3M_IMAGE): modify IMBOBJS 
+	* w3mimg/Makefile.in (AR): added
+			(RANLIB): added
+			(IMGOBJS): added
+			(w3mimg.a): added
+
+2003-10-11  qhwt@myrealbox.com
+
+	* [w3m-dev 03990] Re: post-m17n merge problem?
+	* Makefile.in (MAN1): need $(top_srcdir)
+			(MAN1_JA): ditto
+			(LOBJS): depends on fm.h funcname1.h
+			(INFLATE): depends on $(ALIB)
+			(libwc/libwc.a): renamed from libwc
+			(IMGDISPLAY): depends on $(IMGOBJS) instead of w3mimg
+				  depends on $(ALIB)
+			(w3mimgdisplay.o): depends on w3mimg/w3mimg.h
+	* acinclude.m4 (AC_W3M_M17N): WCTARGET is libwc/libwc.a
+	* configure.in (HELP_DIR): expand ${prefix}
+
 2003-10-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03985] Re: support for 307 Temporary Redirect
@@ -8176,4 +8203,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.882 2003/10/08 14:51:33 ukai Exp $
+$Id: ChangeLog,v 1.883 2003/10/10 16:33:13 ukai Exp $

@@ -48,10 +48,10 @@ PERL		= @PERL@
 
 all: $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS) $(SUBDIRS)
 
-w3mhelp-funcname.pl: w3mhelp-funcname.pl.in $(top_srcdir)/funcname.tab $(top_srcdir)/doc/keymap.default $(top_srcdir)/doc/keymap.lynx
+w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab $(top_srcdir)/doc/keymap.default $(top_srcdir)/doc/keymap.lynx
 	@echo "generating w3mhelp-funcname.pl..."
 	@echo '%funcname = (' > w3mhelp-funcname.pl
-	@sed -ne "/^[a-zA-Z@]/s/\([a-zA-Z@][a-zA-Z0-9@_]*\)[ 	][ 	]*\([^ 	]*\)/'\1', '\2',/p" < $(top_srcdir)/funcname.tab >> w3mhelp-funcname.pl
+	@sed -ne "/^[a-zA-Z@]/s/\([a-zA-Z@][a-zA-Z0-9@_]*\)[ 	][ 	]*\([^ 	]*\)/'\1', '\2',/p" < ../funcname.tab >> w3mhelp-funcname.pl
 	@echo ');' >> w3mhelp-funcname.pl
 	@echo '%keyfunc = (' >> w3mhelp-funcname.pl
 	@case "$(KEYBIND_SRC)" in *lynx*) keymap=keymap.lynx;; *) keymap=keymap.default;; esac; \

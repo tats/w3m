@@ -172,7 +172,7 @@ if test x"$enable_m17n" = xno; then
   document_charset='WC_CES_US_ASCII'
 else
  AC_DEFINE(USE_M17N)
- WCTARGET="libwc"
+ WCTARGET="libwc/libwc.a"
  WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
  wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
@@ -602,7 +602,7 @@ AC_DEFUN([AC_W3M_IMAGE],
  [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
  if test x"$enable_image" != xno; then
-  IMGOBJS=w3mimg/w3mimg.o
+  IMGOBJS=w3mimg.o
   if test x"$enable_image" = xyes; then
     enable_image=x11
     case "`uname -s`" in
@@ -686,21 +686,21 @@ AC_DEFUN([AC_W3M_IMAGE],
    if test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      AC_DEFINE(USE_GDKPIXBUF)
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
      IMGTARGETS="x11"    
    elif test x"$have_imlib" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      AC_DEFINE(USE_IMLIB)
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"    
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      AC_DEFINE(USE_IMLIB2)
-     IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
      IMGTARGETS="x11"    
@@ -712,14 +712,14 @@ AC_DEFUN([AC_W3M_IMAGE],
    if test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      AC_DEFINE(USE_GDKPIXBUF)
-     IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
      IMGTARGETS="${IMGTARGETS} fb"
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      AC_DEFINE(USE_IMLIB2)
-     IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
      IMGTARGETS="${IMGTARGETS} fb"

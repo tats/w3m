@@ -96,7 +96,6 @@ LLOBJS=version.o
 ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o hash.o
 ALIB=libindep.a
 ALLOBJS=$(OBJS) $(LOBJS) $(LLOBJS)
-IMGOBJS=@IMGOBJS@
 
 EXT=@EXEEXT@
 
@@ -106,8 +105,8 @@ HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
 MAN1_TARGET=$(PACKAGE).1
-MAN1=doc/w3m.1
-MAN1_JA=doc-jp/w3m.1
+MAN1=$(top_srcdir)/doc/w3m.1
+MAN1_JA=$(top_srcdir)/doc-jp/w3m.1
 
 LIB_TARGETS=$(BOOKMARKER) $(HELPER)
 AUXBIN_TARGETS=@AUXBIN_TARGETS@
@@ -129,11 +128,12 @@ $(ALIB): $(ALIBOBJS)
 	$(AR) rv $(ALIB) $(ALIBOBJS)
 	$(RANLIB) $(ALIB)
 
-$(OBJS): fm.h funcname1.h
+$(OBJS) $(LOBJS): fm.h funcname1.h
 
 tagtable.c: tagtable.tab mktable$(EXT) html.h 
 	./mktable$(EXT) 100 $(srcdir)/tagtable.tab > $@
 
+indep.o: indep.c fm.h funcname1.h
 func.o: funcname.c functable.c funcname1.h
 keybind.o: funcname2.h
 keybind_lynx.o: funcname2.h
@@ -168,25 +168,25 @@ $(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
 
 $(HELPER): w3mhelperpanel.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)	
-$(INFLATE): inflate.o
+$(INFLATE): inflate.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
-libwc:
+libwc/libwc.a:
 	(cd libwc && $(MAKE) CC='$(CC0)' TOP_CFLAGS='$(CFLAGS)')
  
 dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
-$(IMGDISPLAY): w3mimgdisplay.o w3mimg
-	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
+$(IMGDISPLAY): w3mimgdisplay.o $(ALIB) w3mimg/w3mimg.a
+	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
-w3mimgdisplay.o: w3mimgdisplay.c w3mimg
+w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
-w3mimg:
+w3mimg/w3mimg.a:
 	(cd w3mimg && $(MAKE) CC="$(CC0)" CFLAGS="$(CFLAGS)")
 
 po:

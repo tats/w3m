@@ -1,3 +1,12 @@
+2001-12-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02655] print version and compile options
+	* configure: change order of questions
+	* main.c (fversion): added
+	* main.c (fusage): use fversion()
+	* main.c (fusage): add -help, -version
+	* main.c (MAIN): add -help, -version
+
 2001-12-20  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02672]
@@ -1303,4 +1312,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.138 2001/12/19 16:24:21 ukai Exp $
+$Id: ChangeLog,v 1.139 2001/12/19 18:16:18 ukai Exp $

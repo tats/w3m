@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.39 2001/12/19 16:24:21 ukai Exp $ */
+/* $Id: main.c,v 1.40 2001/12/19 18:16:18 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -85,9 +85,66 @@ static int searchKeyNum(void);
 #define usage() fusage(stderr, 1)
 
 static void
+fversion(FILE * f)
+{
+    fprintf(f, "w3m version %s, options %s\n", w3m_version,
+#if LANG == JA
+	    "lang=ja"
+#ifdef KANJI_SYMBOLS
+	    ",kanji-symbols"
+#endif
+#else
+	    "lang=en"
+#endif
+#ifdef USE_COLOR
+	    ",color"
+#ifdef USE_ANSI_COLOR
+	    ",ansi-color"
+#endif
+#endif
+#ifdef USE_MOUSE
+	    ",mouse"
+#ifdef USE_GPM
+	    ",gpm"
+#endif
+#ifdef USE_SYSMOUSE
+	    ",sysmouse"
+#endif
+#endif
+#ifdef USE_MENU
+	    ",menu"
+#endif
+#ifdef USE_COOKIE
+	    ",cookie"
+#endif
+#ifdef USE_SSL
+	    ",ssl"
+#ifdef USE_SSL_VERIFY
+	    ",ssl-verify"
+#endif
+#endif
+#ifdef USE_NNTP
+	    ",nntp"
+#endif
+#ifdef USE_GOPHER
+	    ",gopher"
+#endif
+#ifdef USE_INET6
+	    ",ipv6"
+#endif
+#ifdef USE_ALARM
+	    ",alarm"
+#endif
+#ifdef USE_MARK
+	    ",mark"
+#endif
+	);
+}
+
+static void
 fusage(FILE * f, int err)
 {
-    fprintf(f, "version %s\n", w3m_version);
+    fversion(f);
     fprintf(f, "usage: w3m [options] [URL or filename]\noptions:\n");
     fprintf(f, "    -t tab           set tab width\n");
     fprintf(f, "    -r               ignore backspace effect\n");
@@ -146,6 +203,8 @@ fusage(FILE * f, int err)
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -config file     specify config file\n");
+    fprintf(f, "    -help            print this usage message\n");
+    fprintf(f, "    -version         print w3m version\n");
     fprintf(f, "    -debug           DO NOT USE\n");
     if (show_params_p)
 	show_params(f);
@@ -172,11 +231,11 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 	static int n = 0;
 	static int lock = 0;
 	int j;
-	
+
 	j = (i + n) % (sizeof(msg_ring) / sizeof(msg_ring[0]));
 	msg_ring[j].msg = msg;
 	msg_ring[j].arg = arg;
-	
+
 	if (n < sizeof(msg_ring) / sizeof(msg_ring[0]))
 	    ++n;
 	else
@@ -304,8 +363,12 @@ MAIN(int argc, char **argv, char **envp)
 		config_filename = argv[i];
 		argv[i] = "-dummy";
 	    }
-	    else if (!strcmp("-h", argv[i]))
+	    else if (!strcmp("-h", argv[i]) || !strcmp("-help", argv[i]))
 		help();
+	    else if (!strcmp("-V", argv[i]) || !strcmp("-version", argv[i])) {
+		fversion(stdout);
+		exit(0);
+	    }
 	}
     }
 

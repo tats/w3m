@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.36 2001/12/17 16:18:18 ukai Exp $
+# $Id: configure,v 1.37 2001/12/19 18:16:18 ukai Exp $
 #	Configuration.
 #
 
@@ -555,22 +555,19 @@ else
   def_param system_code x
 fi
 
-# editing?
-ask_param "Use Lynx-like key binding as default" use_lynx_key n
-if [ "$use_lynx_key" = y ]; then
-  keymap_file="keybind_lynx"
-else
-  keymap_file="keybind"
-fi
-
-# terminal capabilities
 if [ "$lang" = "JA" ]; then
   ask_param "Use 2-byte character for table border, item, etc." kanji_symbols y
 else
   kanji_symbols=n
   def_param kanji_symbols n
 fi
-ask_param "ANSI color escape sequences support" use_ansi_color n
+
+ask_param "Use Lynx-like key binding as default" use_lynx_key n
+if [ "$use_lynx_key" = y ]; then
+  keymap_file="keybind_lynx"
+else
+  keymap_file="keybind"
+fi
 
 if [ "$lang" = "JA" ]; then
   if [ "$use_lynx_key" = y ]; then
@@ -694,7 +691,15 @@ fi
 if [ "$use_ssl" = y ]; then
   ask_param "SSL verification support (SSL library >= version 0.8)" use_ssl_verify n
 else
+  use_ssl_verify=n
   def_param "use_ssl_verify" n
+fi
+
+if [ "$use_color" = y ]; then
+  ask_param "ANSI color escape sequences support" use_ansi_color n
+else
+  use_ansi_color=n
+  def_param "use_ansi_color" n
 fi
 
 # protocols?

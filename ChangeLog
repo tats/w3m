@@ -1,3 +1,13 @@
+2002-01-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02879] reset signals
+	* etc.c (reset_signals): added
+	* etc.c (mySystem): use reset_signals()
+	* file.c (uncompress_stream): use reset_signals()
+	* proto.h (reset_signals): added
+	* search.c (init_migemo): kill by SIGKILL
+	* search.c (open_migemo): use reset_signals()
+
 2002-01-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* url.c (URI_PATTERN): remove \
@@ -2174,4 +2184,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.247 2002/01/21 16:58:32 ukai Exp $
+$Id: ChangeLog,v 1.248 2002/01/21 17:57:27 ukai Exp $

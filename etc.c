@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.16 2001/12/26 18:29:33 ukai Exp $ */
+/* $Id: etc.c,v 1.17 2002/01/21 17:57:27 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1031,6 +1031,31 @@ romanAlphabet(int n)
     return r;
 }
 
+#ifndef SIGIOT
+#define SIGIOT SIGABRT
+#endif				/* not SIGIOT */
+
+void
+reset_signals(void)
+{
+    signal(SIGHUP, SIG_DFL);	/* terminate process */
+    signal(SIGINT, SIG_DFL);	/* terminate process */
+    signal(SIGQUIT, SIG_DFL);	/* terminate process */
+    signal(SIGTERM, SIG_DFL);	/* terminate process */
+    signal(SIGILL, SIG_DFL);	/* create core image */
+    signal(SIGIOT, SIG_DFL);	/* create core image */
+    signal(SIGFPE, SIG_DFL);	/* create core image */
+#ifdef SIGBUS
+    signal(SIGBUS, SIG_DFL);	/* create core image */
+#endif				/* SIGBUS */
+#ifdef SIGCHLD
+    signal(SIGCHLD, SIG_IGN);
+#endif
+#ifdef SIGPIPE
+    signal(SIGPIPE, SIG_IGN);
+#endif
+}
+
 void
 mySystem(char *command, int background)
 {
@@ -1043,9 +1068,7 @@ mySystem(char *command, int background)
 	int pid;
 	flush_tty();
 	if ((pid = fork()) == 0) {
-#ifdef SIGCHLD
-	    signal(SIGCHLD, SIG_IGN);
-#endif
+	    reset_signals();
 	    setpgrp();
 	    close_tty();
 	    fclose(stdout);

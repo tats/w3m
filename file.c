@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.44 2002/01/15 03:45:02 ukai Exp $ */
+/* $Id: file.c,v 1.45 2002/01/21 17:57:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6149,7 +6149,7 @@ uncompress_stream(URLFile *uf)
     flush_tty();
     /* fd1[0]: read, fd1[1]: write */
     if ((pid1 = fork()) == 0) {
-	signal(SIGINT, SIG_DFL);
+	reset_signals();
 	close(fd1[0]);
 	if (tmpf) {
 #ifdef USE_BINMODE_STREAM

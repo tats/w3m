@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.85 2002/11/09 21:55:24 ukai Exp $
+# $Id: configure,v 1.86 2002/11/12 12:44:49 ukai Exp $
 #	Configuration.
 #
 
@@ -819,7 +819,6 @@ ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
   imgtarget='$(IMGDISPLAY)'
-  install_w3mimgdisplay='$(INSTALL_PROGRAM)'
   ask_param "X11 inline image support (you need Imlib1 or GdkPixbuf library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
   case $sysname in
@@ -830,9 +829,6 @@ if [ "$use_image" = y ]; then
     ask_param "Linux Framebuffer inline image support (you need Imlib2 or GdkPixbuf)" use_w3mimg_fb $d_w3mimg_fb
     if [ "$use_w3mimg_fb" = y ]; then
 	ask_param "setuid w3mimgdisplay to open /dev/fb0?" w3mimgdisplay_setuid  y
-	if [ "$w3mimgdisplay_setuid" = y ]; then
-	    install_w3mimgdisplay='$(INSTALL) -o root -m 4755 -s'
-	fi
     fi
     ;;
   esac
@@ -2200,6 +2196,12 @@ if [ "$use_image" = y ]; then
       else
 	  use_w3mimg_fb=n
 	  echo "Disable Linux framebuffer inline image"
+      fi
+  fi
+  install_w3mimgdisplay='$(INSTALL_PROGRAM)'
+  if [ "$use_w3mimg_fb" = y ]; then
+      if [ "$w3mimgdisplay_setuid" = y ]; then
+	  install_w3mimgdisplay='$(INSTALL) -o root -m 4755 -s'
       fi
   fi
 fi

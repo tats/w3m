@@ -1,3 +1,8 @@
+2002-12-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03604] http response code and content-type
+	* file.c (loadGeneralFile): don't guessContentType if http errors
+
 2002-12-26  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03602] Re: w3mimgdisplay core dump
@@ -6086,4 +6091,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.648 2002/12/25 16:14:45 ukai Exp $
+$Id: ChangeLog,v 1.649 2002/12/26 15:23:20 ukai Exp $

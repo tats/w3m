@@ -1,3 +1,8 @@
+2001-12-11  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02648] rewrite strCmp() with strcmp()
+	* indep.c (strCmp): use strcmp()
+
 2001-12-11  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02441] A patch against functions *_(un)?quote()
@@ -1133,4 +1138,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.120 2001/12/10 15:23:08 ukai Exp $
+$Id: ChangeLog,v 1.121 2001/12/10 15:27:58 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.15 2001/11/23 19:00:47 ukai Exp $
+# $Id: configure,v 1.16 2001/11/23 22:10:58 ukai Exp $
 #	Configuration.
 #
 
@@ -297,7 +297,7 @@ ask_choice() {
     set -- $list
     while [ -n "$1" -a -n "$2" ]; do
        case $REPLY in
-       $1) eval "varvar=$2"
+       $1) eval "varvar=$1"
 	   break
            ;;
        esac
@@ -322,6 +322,7 @@ ask_choice() {
        eval "$var=$v"
        eval "echo $var=$v >> config.param";
        echo " $def=$v"
+       break
        ;;
     *) while [ "$1" != "." ]; do
     	shift;
@@ -535,11 +536,6 @@ if [ "$use_lynx_key" = y ]; then
 else
   keymap_file="keybind"
 fi
-ask_param "Use Emacs-like key binding for filename completion" emacs_like_lineedit n
-ask_param "Use vi-like behavior for numeric prefix like '2 SPC'" vi_prec_num n
-ask_param "Use mark operations" use_mark n
-ask_param "Move cursor to top line when going to label" label_topline n
-ask_param "Move cursor to top line when moving to next page" nextpage_topline n
 
 # terminal capabilities
 if [ "$lang" = "JA" ]; then
@@ -548,31 +544,6 @@ else
   def_param kanji_symbols n
 fi
 ask_param "ANSI color escape sequences support" use_ansi_color n
-
-# protocols?
-ask_param "Generate domain parts of passwords for anonymous FTP logins" ftppass_hostnamegen n
-ask_param "NNTP support" use_nntp n
-ask_param "Gopher support" use_gopher n
-
-# obsoleted?
-# ask_param "Use matrix in rendering table" use_matrix n
-
-### only use config.param
-def_param "use_alarm" n
-def_param "use_dict" n
-def_param "use_history" y
-def_param "use_bg_color" y
-def_param "format_nice" n
-def_param "id_ext" y
-def_param "use_bufinfo" y
-def_param "use_egd" y
-def_param "enable_remove_trailingspaces" n
-def_param "menu_thin_frame" n
-
-def_param "table_expand" n
-def_param "table_no_compact" n
-def_param nowrap y
-def_param matrix y
 
 if [ "$lang" = "JA" ]; then
   if [ "$use_lynx_key" = y ]; then
@@ -605,6 +576,7 @@ if [ -n "$dmodel" ]; then
   Echo "(default: $dmodel) "
 fi
 
+include_opt=y
 while :
 do
 readanswer ans "$dmodel"
@@ -620,6 +592,7 @@ case "$ans" in
     use_mouse=n;
     use_cookie=n;
     use_ssl=n;
+    include_opt=n
     customized=y
     ;;
   2)
@@ -696,6 +669,37 @@ if [ "$use_ssl" = y ]; then
 else
   def_param "use_ssl_verify" n
 fi
+
+# protocols?
+ask_param "NNTP support" use_nntp $include_opt
+ask_param "Gopher support" use_gopher $include_opt
+
+# obsoleted?
+# ask_param "Use matrix in rendering table" use_matrix n
+
+ask_param "Use alarm support code" use_alarm $include_opt
+ask_param "Use mark operation" use_mark $include_opt
+
+### only use config.param
+def_param use_dict n
+def_param use_history y
+def_param use_bg_color y
+def_param format_nice n
+def_param id_ext y
+def_param use_bufinfo y
+def_param use_egd y
+def_param enable_remove_trailingspaces n
+def_param menu_thin_frame n
+def_param emacs_like_lineedit $include_opt
+def_param vi_prec_num $include_opt
+def_param label_topline $include_opt
+def_param nextpage_topline $include_opt
+def_param ftppass_hostnamegen $include_opt
+
+def_param table_expand n
+def_param table_no_compact n
+def_param nowrap y
+def_param matrix y
 
 if [ -z "$ded" ] ; then ded=`./which \vi` ; fi
 if [ -n  "`echo $ded | grep 'no'`" ] ; then ded=vi ; fi

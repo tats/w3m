@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.17 2003/01/10 16:42:50 ukai Exp $ */
+/* $Id: local.c,v 1.18 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -34,8 +34,8 @@ setLocalCookie()
     set_environ("LOCAL_COOKIE", Local_cookie->ptr);
 }
 
-Buffer *
-dirBuffer(char *dname)
+Str
+loadLocalDir(char *dname)
 {
     Str tmp;
     DIR *d;
@@ -53,17 +53,18 @@ dirBuffer(char *dname)
     int i, l, nrow = 0, n = 0, maxlen = 0;
     int nfile, nfile_max = 100;
     Str dirname;
-    Buffer *buf;
 
     d = opendir(dname);
     if (d == NULL)
 	return NULL;
     dirname = Strnew_charp(dname);
+    if (Strlastchar(dirname) != '/')
+	Strcat_char(dirname, '/');
     qdir = html_quote(Str_conv_from_system(dirname)->ptr);
-    tmp =
-	Sprintf
-	("<title>Directory list of %s</title><h1>Directory list of %s</h1>\n",
-	 qdir, qdir);
+    tmp = Strnew_m_charp("<HTML>\n<HEAD>\n<BASE HREF=\"file://", qdir,
+			 "\">\n<TITLE>Directory list of ", qdir,
+		         "</TITLE>\n</HEAD>\n<BODY>\n<H1>Directory list of ",
+			 qdir, "</H1>\n", NULL);
     flist = New_N(char *, nfile_max);
     nfile = 0;
     while ((dir = readdir(d)) != NULL) {
@@ -86,7 +87,7 @@ dirBuffer(char *dname)
 	    l = 1;
 	nrow = (n + l - 1) / l;
 	n = 1;
-	Strcat_charp(tmp, "<TABLE CELLPADDING=0><TR VALIGN=TOP>\n");
+	Strcat_charp(tmp, "<TABLE CELLPADDING=0>\n<TR VALIGN=TOP>\n");
     }
     qsort((void *)flist, nfile, sizeof(char *), strCmp);
     for (i = 0; i < nfile; i++) {
@@ -108,22 +109,23 @@ dirBuffer(char *dname)
 		Strcat_charp(tmp, "<TD><NOBR>");
 	}
 	else {
+#ifdef HAVE_LSTAT
+	    if (S_ISLNK(lst.st_mode))
+		Strcat_charp(tmp, "[LINK] ");
+	    else
+#endif				/* HAVE_LSTAT */
 	    if (S_ISDIR(st.st_mode))
 		Strcat_charp(tmp, "[DIR]&nbsp; ");
-#ifdef HAVE_LSTAT
-	    else if (S_ISLNK(lst.st_mode))
-		Strcat_charp(tmp, "[LINK] ");
-#endif				/* HAVE_LSTAT */
 	    else
 		Strcat_charp(tmp, "[FILE] ");
 	}
-	Strcat_m_charp(tmp, "<A HREF=\"", file_to_url(fbuf->ptr), NULL);
+	Strcat_m_charp(tmp, "<A HREF=\"", html_quote(file_quote(p)), NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
 	Strcat_m_charp(tmp, "\">", html_quote(conv_from_system(p)), NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
-	Strcat_charp(tmp, "</a>");
+	Strcat_charp(tmp, "</A>");
 	if (multicolList) {
 	    if (n++ == nrow) {
 		Strcat_charp(tmp, "</NOBR></TD>\n");
@@ -149,15 +151,11 @@ dirBuffer(char *dname)
 	}
     }
     if (multicolList) {
-	Strcat_charp(tmp, "</TR></TABLE>\n");
+	Strcat_charp(tmp, "</TR>\n</TABLE>\n");
     }
+    Strcat_charp(tmp, "</BODY>\n</HTML>\n");
 
-    buf = loadHTMLString(tmp);
-#ifdef JP_CHARSET
-    if (buf)
-	buf->document_code = SystemCode;
-#endif
-    return buf;
+    return tmp;
 }
 
 static int
@@ -364,6 +362,7 @@ localcgi_popen_r(FILE ** p_fp)
 	    close(fd[1]);
 
 	close(fd[0]);
+	close_all_fds(2);
     }
     else {
 	close(fd[1]);

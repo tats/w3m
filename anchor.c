@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.19 2003/01/06 15:37:49 ukai Exp $ */
+/* $Id: anchor.c,v 1.20 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -198,10 +198,7 @@ _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
 	if (*(p2 - 1) == '>')
 	    p2--;
     }
-    tmp = Strnew_charp_n(p1, p2 - p1);
-#ifdef JP_CHARSET
-    tmp = conv_str(tmp, InnerCode, buf->document_code);
-#endif
+    tmp = conv_str(Strnew_charp_n(p1, p2 - p1), InnerCode, buf->document_code);
     tmp = Sprintf("news:%s", file_quote(tmp->ptr));
     return registerHref(buf, tmp->ptr, NULL, NO_REFERER, NULL, '\0', line,
 			pos);
@@ -213,10 +210,7 @@ _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
 {
     Str tmp;
 
-    tmp = Strnew_charp_n(p1, p2 - p1);
-#ifdef JP_CHARSET
-    tmp = conv_str(tmp, InnerCode, buf->document_code);
-#endif
+    tmp = conv_str(Strnew_charp_n(p1, p2 - p1), InnerCode, buf->document_code);
     return registerHref(buf, url_quote(tmp->ptr), NULL, NO_REFERER, NULL,
 			'\0', line, pos);
 }

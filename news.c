@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.11 2003/01/10 17:06:25 ukai Exp $ */
+/* $Id: news.c,v 1.12 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -33,14 +33,18 @@ KeyAbort(SIGNAL_ARG)
 }
 
 static Str
-news_command(News * news, char *command, int *status)
+news_command(News * news, char *cmd, char *arg, int *status)
 {
     Str tmp;
 
     if (!news->host)
 	return NULL;
-    if (command) {
-	fprintf(news->wf, "%s\r\n", command);
+    if (cmd) {
+	if (arg)
+	    tmp = Sprintf("%s %s\r\n", cmd, arg);
+	else
+	    tmp = Sprintf("%s\r\n", cmd);
+	fwrite(tmp->ptr, tmp->length, sizeof(char), news->wf);
 	fflush(news->wf);
     }
     if (!status)
@@ -82,11 +86,11 @@ news_open(News * news)
     if (!news->rf || !news->wf)
 	goto open_err;
     IStype(news->rf) |= IST_UNCLOSE;
-    news_command(news, NULL, &status);
+    news_command(news, NULL, NULL, &status);
     if (status != 200 && status != 201)
 	goto open_err;
     if (news->mode) {
-	news_command(news, Sprintf("MODE %s", news->mode)->ptr, &status);
+	news_command(news, "MODE", news->mode, &status);
 	if (status != 200 && status != 201)
 	    goto open_err;
     }
@@ -99,7 +103,7 @@ news_open(News * news)
 static void
 news_quit(News * news)
 {
-    news_command(news, "QUIT", NULL);
+    news_command(news, "QUIT", NULL, NULL);
     news_close(news);
 }
 
@@ -257,8 +261,8 @@ openNewsStream(ParsedURL *pu)
 	mode = NULL;
     if (current_news.host) {
 	if (!strcmp(current_news.host, host) && current_news.port == port) {
-	    tmp = Sprintf("MODE %s", mode ? mode : "READER");
-	    tmp = news_command(&current_news, tmp->ptr, &status);
+	    tmp = news_command(&current_news, "MODE", mode ? mode : "READER",
+			       &status);
 	    if (status != 200 && status != 201)
 		news_close(&current_news);
 	}
@@ -283,17 +287,15 @@ openNewsStream(ParsedURL *pu)
 	}
 	else {			/* <newsgroup>/<message-id or article-number> */
 	    *p++ = '\0';
-	    news_command(&current_news, Sprintf("GROUP %s", group)->ptr,
-			 &status);
+	    news_command(&current_news, "GROUP", group, &status);
 	    if (status != 211)
 		return NULL;
 	}
 	if (strchr(p, '@'))	/* <message-id> */
-	    news_command(&current_news, Sprintf("ARTICLE <%s>", p)->ptr,
+	    news_command(&current_news, "ARTICLE", Sprintf("<%s>", p)->ptr,
 			 &status);
 	else			/* <article-number> */
-	    news_command(&current_news, Sprintf("ARTICLE %s", p)->ptr,
-			 &status);
+	    news_command(&current_news, "ARTICLE", p, &status);
 	if (status != 220)
 	    return NULL;
 	return current_news.rf;
@@ -302,7 +304,7 @@ openNewsStream(ParsedURL *pu)
 }
 
 Str
-readNewsgroup(ParsedURL *pu)
+loadNewsgroup(ParsedURL *pu, char *code)
 {
     volatile Str page;
     Str tmp;
@@ -312,11 +314,13 @@ readNewsgroup(ParsedURL *pu)
     char *volatile scheme, *volatile group, *volatile list;
     int status, i, first, last;
     volatile int flag = 0, start = 0, end = 0;
-    char code = '\0';
     MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
 
     if (current_news.host == NULL || !pu->file || *pu->file == '\0')
 	return NULL;
+#ifdef JP_CHARSET
+    *code = DocumentCode;
+#endif
     group = allocStr(pu->file, -1);
     if (pu->scheme == SCM_NNTP_GROUP)
 	scheme = "/";
@@ -332,12 +336,15 @@ readNewsgroup(ParsedURL *pu)
     }
     qgroup = html_quote(group);
     group = file_unquote(group);
-    page = Sprintf("<title>Newsgroup: %s</title>\n\
-<h1>Newsgroup:&nbsp;%s</h1>\n<hr>\n", qgroup, qgroup);
+    page = Strnew_m_charp("<html>\n<head>\n<base href=\"",
+			  parsedURL2Str(pu)->ptr, "\">\n<title>Newsgroup: ",
+			  qgroup, "</title>\n</head>\n<body>\n<h1>Newsgroup: ",
+			  qgroup, "</h1>\n<hr>\n", NULL);
 
     if (SETJMP(AbortLoading) != 0) {
 	news_close(&current_news);
-	Strcat_charp(page, "</table><p>Transfer Interrupted!\n");
+	Strcat_charp(page,
+		     "</table>\n<p>Transfer Interrupted!\n");
 	goto news_end;
     }
     trap = signal(SIGINT, KeyAbort);
@@ -345,7 +352,7 @@ readNewsgroup(ParsedURL *pu)
 	term_cbreak();
 
     tmp =
-	news_command(&current_news, Sprintf("GROUP %s", group)->ptr, &status);
+	news_command(&current_news, "GROUP", group, &status);
     if (status != 211)
 	goto news_list;
     if (sscanf(tmp->ptr, "%d %d %d %d", &status, &i, &first, &last) != 4)
@@ -369,8 +376,11 @@ readNewsgroup(ParsedURL *pu)
 	if (end - start > MaxNewsMessage - 1)
 	    start = end - MaxNewsMessage + 1;
     }
-    page = Sprintf("<title>Newsgroup: %s %d-%d</title>\n\
-<h1>Newsgroup:&nbsp;%s %d-%d</h1>\n<hr>\n", qgroup, start, end, qgroup, start, end);
+    page = Sprintf("<html>\n<head>\n<base href=\"%s\">\n\
+<title>Newsgroup: %s %d-%d</title>\n\
+</head>\n<body>\n<h1>Newsgroup: %s %d-%d</h1>\n<hr>\n",
+		   parsedURL2Str(pu)->ptr, qgroup, start, end, qgroup, start,
+		   end);
     if (start > first) {
 	i = start - MaxNewsMessage;
 	if (i < first)
@@ -380,7 +390,7 @@ readNewsgroup(ParsedURL *pu)
     }
 
     Strcat_charp(page, "<table>\n");
-    news_command(&current_news, Sprintf("XOVER %d-%d", start, end)->ptr,
+    news_command(&current_news, "XOVER", Sprintf("%d-%d", start, end)->ptr,
 		 &status);
     if (status == 224) {
 	f.scheme = SCM_NEWS;
@@ -407,8 +417,8 @@ readNewsgroup(ParsedURL *pu)
 	    if (!(q = strchr(p, '>')) && !(q = strchr(p, '\t')))
 		continue;
 	    *q = '\0';
-	    s = convertLine(&f, decodeMIME(s), &code, HEADER_MODE)->ptr;
-	    n = convertLine(&f, decodeMIME(n), &code, HEADER_MODE)->ptr;
+	    s = convertLine(&f, decodeMIME(s), code, HEADER_MODE)->ptr;
+	    n = convertLine(&f, decodeMIME(n), code, HEADER_MODE)->ptr;
 	    add_news_message(page, i, t, n, s, p, scheme,
 			     pu->scheme == SCM_NNTP_GROUP ? qgroup : NULL);
 	}
@@ -417,7 +427,7 @@ readNewsgroup(ParsedURL *pu)
 	init_stream(&f, SCM_NEWS, current_news.rf);
 	buf = newBuffer(INIT_BUFFER_WIDTH);
 	for (i = start; i <= end && i <= last; i++) {
-	    news_command(&current_news, Sprintf("HEAD %d", i)->ptr, &status);
+	    news_command(&current_news, "HEAD", Sprintf("%d", i)->ptr, &status);
 	    if (status != 221)
 		continue;
 	    readHeader(&f, buf, FALSE, NULL);
@@ -449,10 +459,10 @@ readNewsgroup(ParsedURL *pu)
     flag = 1;
 
   news_list:
-    tmp = Sprintf("LIST ACTIVE %s", group);
+    tmp = Sprintf("ACTIVE %s", group);
     if (!strchr(group, '*'))
 	Strcat_charp(tmp, ".*");
-    news_command(&current_news, tmp->ptr, &status);
+    news_command(&current_news, "LIST", tmp->ptr, &status);
     if (status != 215)
 	goto news_end;
     while (1) {
@@ -481,10 +491,17 @@ readNewsgroup(ParsedURL *pu)
 	Strcat_charp(page, "</table>\n");
 
   news_end:
+    Strcat_charp(page, "</body>\n</html>\n");
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, trap);
     return page;
+}
+
+void
+closeNews(void)
+{
+    news_close(&current_news);
 }
 
 void

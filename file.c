@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.184 2003/01/11 15:54:08 ukai Exp $ */
+/* $Id: file.c,v 1.185 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -28,6 +28,7 @@
 
 static int frame_source = 0;
 
+static char *guess_filename(char *file);
 static int _MoveFile(char *path1, char *path2);
 static void uncompress_stream(URLFile *uf, char **src);
 static FILE *lessopen_stream(char *path);
@@ -191,6 +192,25 @@ KeyAbort(SIGNAL_ARG)
 {
     LONGJMP(AbortLoading, 1);
     SIGNAL_RETURN;
+}
+
+static void
+UFhalfclose(URLFile *f)
+{
+    switch (f->scheme) {
+    case SCM_FTP:
+	closeFTP();
+	break;
+#ifdef USE_NNTP
+    case SCM_NEWS:
+    case SCM_NNTP:
+	closeFTP();
+	break;
+#endif
+    default:
+	UFclose(f);
+	break;
+    }
 }
 
 int
@@ -455,9 +475,10 @@ convertLine(URLFile *uf, Str line, char *code, int mode)
 	line = conv_str(line, *code, InnerCode);
     }
 #endif				/* JP_CHARSET */
-    cleanup_line(line, mode);
+    if (mode != RAW_MODE)
+	cleanup_line(line, mode);
 #ifdef USE_NNTP
-    if (uf->scheme == SCM_NEWS)
+    if (uf && uf->scheme == SCM_NEWS)
 	Strchop(line);
 #endif				/* USE_NNTP */
     return line;
@@ -560,9 +581,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     Str lineBuf2 = NULL;
     Str tmp;
     TextList *headerlist;
-#ifdef JP_CHARSET
-    char code = DocumentCode, ic;
-#endif
+    char code;
     FILE *src = NULL;
 
     headerlist = newBuf->document_header = newTextList();
@@ -581,6 +600,9 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if (src)
 	    newBuf->header_source = tmpf->ptr;
     }
+#ifdef JP_CHARSET
+    code = DocumentCode;
+#endif
     while ((tmp = StrmyUFgets(uf))->length) {
 #ifdef USE_NNTP
 	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
@@ -616,13 +638,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		/* header line is continued */
 		continue;
 	    lineBuf2 = decodeMIME(lineBuf2->ptr);
-#ifdef JP_CHARSET
-	    if ((ic = checkShiftCode(lineBuf2, code)) != '\0') {
-		if (UseAutoDetect)
-		    code = ic;
-		lineBuf2 = conv_str(lineBuf2, code, InnerCode);
-	    }
-#endif				/* JP_CHARSET */
+	    lineBuf2 = convertLine(NULL, lineBuf2, &code, RAW_MODE);
 	    /* separated with line and stored */
 	    tmp = Strnew_size(lineBuf2->length);
 	    for (p = lineBuf2->ptr; *p; p = q) {
@@ -1503,6 +1519,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     unsigned char status = HTST_NORMAL;
     URLOption url_option;
     Str tmp;
+    Str volatile page = NULL;
+    char code = '\0';
     HRequest hr;
     ParsedURL *volatile auth_pu;
 
@@ -1524,34 +1542,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     content_charset = '\0';
 #endif
     if (f.stream == NULL) {
-	/* openURL failure: it means either (1) the requested URL is a directory name
-	 * on an FTP server, or (2) is a local directory name. 
-	 */
 	switch (f.scheme) {
-	case SCM_FTPDIR:
-	    {
-		Str ftpdir = readFTPDir(&pu);
-		if (ftpdir && ftpdir->length > 0) {
-		    FILE *src;
-		    tmp = tmpfname(TMPF_SRC, ".html");
-		    src = fopen(tmp->ptr, "w");
-		    if (src) {
-			Strfputs(ftpdir, src);
-			fclose(src);
-		    }
-		    b = loadHTMLString(ftpdir);
-		    if (b) {
-			if (b->currentURL.host == NULL
-			    && b->currentURL.file == NULL)
-			    copyParsedURL(&b->currentURL, &pu);
-			b->real_scheme = pu.scheme;
-			if (src)
-			    b->sourcefile = tmp->ptr;
-		    }
-		    return b;
-		}
-	    }
-	    break;
 	case SCM_LOCAL:
 	    {
 		struct stat st;
@@ -1572,42 +1563,24 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 			return b;
 		    }
 		    else {
-			b = dirBuffer(pu.real_file);
-			if (b == NULL)
-			    return NULL;
-			t = "text/html";
-			b->real_scheme = pu.scheme;
-			goto loaded;
+		        page = loadLocalDir(pu.real_file);
+			t = "local:directory";
+#ifdef JP_CHARSET
+			code = SystemCode;
+#endif
 		    }
-		}
-	    }
-	    break;
+	        }
+	     }
+	     break;
+	case SCM_FTPDIR:
+	     page = loadFTPDir(&pu, &code);
+	     t = "ftp:directory";
+	     break;
 #ifdef USE_NNTP
 	case SCM_NEWS_GROUP:
-	    {
-		Str group = readNewsgroup(&pu);
-		if (group && group->length > 0) {
-		    FILE *src;
-		    tmp = tmpfname(TMPF_SRC, ".html");
-		    src = fopen(tmp->ptr, "w");
-		    if (src) {
-			Strfputs(group, src);
-			fclose(src);
-		    }
-		    b = loadHTMLString(group);
-		    if (b) {
-			b->real_type = "news:group";
-			if (b->currentURL.host == NULL
-			    && b->currentURL.file == NULL)
-			    copyParsedURL(&b->currentURL, &pu);
-			b->real_scheme = pu.scheme;
-			if (src)
-			    b->sourcefile = tmp->ptr;
-		    }
-		    return b;
-		}
-	    }
-	    break;
+	     page = loadNewsgroup(&pu, &code);
+	     t = "news:group";
+	     break;
 #endif
 	case SCM_UNKNOWN:
 #ifdef USE_EXTERNAL_URI_LOADER
@@ -1623,6 +1596,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 				     parsedURL2Str(&pu)->ptr)->ptr, FALSE);
 	    break;
 	}
+	if (page && page->length > 0)
+	    goto page_loaded;
 	return NULL;
     }
 
@@ -1812,11 +1787,13 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    t = "text/plain";
 	    break;
 	case '1':
-	    t = "gopher:directory";
-	    break;
 	case 'm':
+	    page = loadGopherDir(&f, &pu, &code);
 	    t = "gopher:directory";
-	    break;
+	    if (fmInitialized)
+		term_raw();
+	    signal(SIGINT, prevtrap);
+	    goto page_loaded;
 	case 's':
 	    t = "audio/basic";
 	    break;
@@ -1906,12 +1883,52 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (f.guess_type)
 	    t = f.guess_type;
     }
+
+  page_loaded:
+    if (page) {
+	FILE *src;
+	tmp = tmpfname(TMPF_SRC, ".html");
+	src = fopen(tmp->ptr, "w");
+	if (src) {
+	    Strfputs(conv_str(page, InnerCode, code), src);
+	    fclose(src);
+	}
+	if (do_download) {
+	    char *file;
+	    if (!src)
+	        return NULL;
+	    file = guess_filename(pu.file);
+#ifdef USE_GOPHER
+	    if (f.scheme == SCM_GOPHER)
+	        file = Sprintf("%s.html", file)->ptr;
+#endif
+#ifdef USE_NNTP
+	    if (f.scheme == SCM_NEWS_GROUP)
+	        file = Sprintf("%s.html", file)->ptr;
+#endif
+	    doFileMove(tmp->ptr, file);
+	    return NO_BUFFER;
+	}
+	b = loadHTMLString(page);
+	if (b) {
+	    copyParsedURL(&b->currentURL, &pu);
+	    b->real_scheme = pu.scheme;
+	    b->real_type = t;
+	    if (src)
+		b->sourcefile = tmp->ptr;
+#ifdef JP_CHARSET
+	    b->document_code = code;
+#endif
+	}
+	return b;
+    }
+
+    if (real_type == NULL)
+	real_type = t;
     if (SkipHeader) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&f, t_buf, TRUE, NULL);
     }
-    if (real_type == NULL)
-	real_type = t;
     proc = loadBuffer;
 #ifdef USE_IMAGE
     cur_baseURL = New(ParsedURL);
@@ -1921,7 +1938,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
 	current_content_length = strtoclen(p);
-
     if (do_download) {
 	/* download only */
 	char *file;
@@ -1938,8 +1954,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	else
 	    file = guess_save_name(t_buf, pu.file);
-	if (doFileSave(f, file) == 0 && f.scheme == SCM_FTP)
-	    closeFTP();
+	if (doFileSave(f, file) == 0)
+	    UFhalfclose(&f);
 	else
 	    UFclose(&f);
 	return NO_BUFFER;
@@ -1986,11 +2002,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6))
 	proc = loadImageBuffer;
 #endif
-#ifdef USE_GOPHER
-    else if (!strcasecmp(t, "gopher:directory")) {
-	proc = loadGopherDir;
-    }
-#endif				/* USE_GOPHER */
     else if (w3m_backend) ;
     else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
 	if (!do_download && doExternal(f,
@@ -2021,9 +2032,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    else {
 		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 		    f.stream = newEncodedStream(f.stream, f.encoding);
-		if (doFileSave(f, guess_save_name(t_buf, pu.file)) == 0 &&
-		    f.scheme == SCM_FTP)
-		    closeFTP();
+		if (doFileSave(f, guess_save_name(t_buf, pu.file)) == 0)
+		    UFhalfclose(&f);
 		else
 		    UFclose(&f);
 	    }
@@ -2047,7 +2057,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (b) {
 	b->real_scheme = f.scheme;
 	b->real_type = real_type;
-      loaded:
 	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 	    copyParsedURL(&b->currentURL, &pu);
 	if (!strcasecmp(t, "text/html"))
@@ -2058,10 +2067,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 #ifdef USE_IMAGE
 	else if (proc == loadImageBuffer)
-	    b->type = "text/html";
-#endif
-#ifdef USE_GOPHER
-	else if (proc == loadGopherDir)
 	    b->type = "text/html";
 #endif
 	else
@@ -6558,8 +6563,6 @@ loadHTMLString(Str page)
     URLFile f;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     Buffer *newBuf;
-    Str tmp;
-    FILE *volatile src = NULL;
 
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
@@ -6574,15 +6577,7 @@ loadHTMLString(Str page)
 	term_cbreak();
 
     init_stream(&f, SCM_LOCAL, newStrStream(page));
-
-    if (w3m_dump & DUMP_FRAME) {
-	tmp = tmpfname(TMPF_SRC, ".html");
-	src = fopen(tmp->ptr, "w");
-	if (src)
-	    newBuf->sourcefile = tmp->ptr;
-    }
-
-    loadHTMLstream(&f, newBuf, src, TRUE);
+    loadHTMLstream(&f, newBuf, NULL, TRUE);
 
     if (fmInitialized)
 	term_raw();
@@ -6597,9 +6592,6 @@ loadHTMLString(Str page)
     newBuf->real_type = newBuf->type;
     if (n_textarea)
 	formResetBuffer(newBuf, newBuf->formitem);
-    if (src)
-	fclose(src);
-
     return newBuf;
 }
 
@@ -6608,19 +6600,21 @@ loadHTMLString(Str page)
 /* 
  * loadGopherDir: get gopher directory
  */
-Buffer *
-loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
+Str
+loadGopherDir(URLFile *uf, ParsedURL *pu, char *code)
 {
-    Str tmp, lbuf, name, file, host, port;
-    char code = CODE_ASCII;
-    char *p, *q;
-    FILE *src;
-    URLFile f;
+    Str volatile tmp;
+    Str lbuf, name, file, host, port;
+    char *volatile p, *volatile q;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
-    if (newBuf == NULL)
-	newBuf = newBuffer(INIT_BUFFER_WIDTH);
-    tmp = Strnew_charp("<pre>\n");
+    tmp = parsedURL2Str(pu);
+    p = html_quote(tmp->ptr);
+    tmp = convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), code, NULL);
+    q = html_quote(tmp->ptr);
+    tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
+			 "</title>\n</head>\n<body>\n<h1>Index of ", q,
+			 "</h1>\n<table>\n", NULL);
 
     if (SETJMP(AbortLoading) != 0)
 	goto gopher_end;
@@ -6629,13 +6623,7 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 	term_cbreak();
 
 #ifdef JP_CHARSET
-    if (newBuf->document_code != '\0')
-	code = newBuf->document_code;
-    else if (content_charset != '\0' && UseContentCharset)
-	code = content_charset;
-    else
-	code = DocumentCode;
-    content_charset = '\0';
+    *code = DocumentCode;
 #endif
     while (1) {
 	if (lbuf = StrUFgets(uf), lbuf->length == 0)
@@ -6643,7 +6631,7 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 	if (lbuf->ptr[0] == '.' &&
 	    (lbuf->ptr[1] == '\n' || lbuf->ptr[1] == '\r'))
 	    break;
-	lbuf = convertLine(uf, lbuf, &code, HTML_MODE);
+	lbuf = convertLine(uf, lbuf, code, HTML_MODE);
 	p = lbuf->ptr;
 	for (q = p; *q && *q != '\t'; q++) ;
 	name = Strnew_charp_n(p, q - p);
@@ -6665,22 +6653,22 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 
 	switch (name->ptr[0]) {
 	case '0':
-	    p = "[text file]  ";
+	    p = "[text file]";
 	    break;
 	case '1':
-	    p = "[directory]  ";
+	    p = "[directory]";
 	    break;
 	case 'm':
-	    p = "[message]    ";
+	    p = "[message]";
 	    break;
 	case 's':
-	    p = "[sound]      ";
+	    p = "[sound]";
 	    break;
 	case 'g':
-	    p = "[gif]        ";
+	    p = "[gif]";
 	    break;
 	case 'h':
-	    p = "[HTML]       ";
+	    p = "[HTML]";
 	    break;
 	default:
 	    p = "[unsupported]";
@@ -6688,9 +6676,9 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 	}
 	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
 			   "/", file->ptr, NULL)->ptr;
-	Strcat_m_charp(tmp, "<a href=\"",
-		       html_quote(url_quote_conv(q, code)),
-		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
+	Strcat_m_charp(tmp, "<tr valign=top><td>", p, "<td><a href=\"",
+		       html_quote(url_quote_conv(q, *code)),
+		       "\">", html_quote(name->ptr + 1), "</a>\n", NULL);
     }
 
   gopher_end:
@@ -6698,25 +6686,8 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 	term_raw();
     signal(SIGINT, prevtrap);
 
-    Strcat_charp(tmp, "</pre>\n");
-
-    file = tmpfname(TMPF_SRC, ".html");
-    src = fopen(file->ptr, "w");
-    newBuf->sourcefile = file->ptr;
-
-    init_stream(&f, SCM_LOCAL, newStrStream(tmp));
-    loadHTMLstream(&f, newBuf, src, TRUE);
-    if (src)
-	fclose(src);
-
-#ifdef JP_CHARSET
-    newBuf->document_code = code;
-#endif				/* JP_CHARSET */
-    newBuf->topLine = newBuf->firstLine;
-    newBuf->lastLine = newBuf->currentLine;
-    newBuf->currentLine = newBuf->firstLine;
-
-    return newBuf;
+    Strcat_charp(tmp, "</table>\n</body>\n</html>\n");
+    return tmp;
 }
 #endif				/* USE_GOPHER */
 
@@ -6946,10 +6917,7 @@ saveBuffer(Buffer *buf, FILE * f)
 	else
 #endif
 	    tmp = Strnew_charp_n(l->lineBuf, l->len);
-#ifdef JP_CHARSET
-	tmp = conv_str(tmp, InnerCode, DisplayCode);
-#endif
-	Strfputs(tmp, f);
+	Strfputs(conv_str(tmp, InnerCode, DisplayCode), f);
 	if (Strlastchar(tmp) != '\n')
 	    putc('\n', f);
     }
@@ -7520,6 +7488,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    signal(SIGINT, SIG_IGN);
 	    SETPGRP();
 	    close_tty();
+	    close_all_fds(2); 
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    if (!_MoveFile(tmpf, p) && PreserveTimestamp && !is_pipe &&
@@ -7626,6 +7595,7 @@ doFileSave(URLFile uf, char *defstr)
 	    signal(SIGINT, SIG_IGN);
 	    SETPGRP();
 	    close_tty();
+	    close_all_fds_except(2, UFfileno(&uf)); 
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
@@ -7788,6 +7758,9 @@ uncompress_stream(URLFile *uf, char **src)
 	QuietMessage = TRUE;
 	fmInitialized = FALSE;
 	close(fd1[0]);
+	dup2(fd1[1], 1);
+	dup2(fd1[1], 2);
+	close_all_fds_except(-1, UFfileno(uf));
 	if (tmpf) {
 #ifdef USE_BINMODE_STREAM
 	    int tmpfd = open(tmpf, O_RDONLY | O_BINARY);
@@ -7825,8 +7798,6 @@ uncompress_stream(URLFile *uf, char **src)
 	    close(fd2[1]);
 	    dup2(fd2[0], 0);
 	}
-	dup2(fd1[1], 1);
-	dup2(fd1[1], 2);
 	execlp(expand_cmd, expand_name, NULL);
 	exit(0);
     }

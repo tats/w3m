@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.21 2003/01/10 17:15:22 ukai Exp $ */
+/* $Id: html.h,v 1.22 2003/01/15 16:11:43 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -15,6 +15,7 @@
 #define UFundogetc(f) ISundogetc((f)->stream)
 #define UFread(f,buf,len) ISread((f)->stream,buf,len)
 #define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
+#define UFfileno(f) ISfileno((f)->stream)
 
 struct cmdtable {
     char *cmdname;

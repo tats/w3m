@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.27 2003/01/10 16:58:31 ukai Exp $ */
+/* $Id: form.c,v 1.28 2003/01/15 16:11:43 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -447,11 +447,7 @@ form_fputs_decode(Str s, FILE * f)
 	    break;
 	}
     }
-#ifdef JP_CHARSET
     fputs(conv_str(z, InnerCode, DisplayCode)->ptr, f);
-#else				/* not JP_CHARSET */
-    fputs(z->ptr, f);
-#endif				/* not JP_CHARSET */
 }
 
 
@@ -462,7 +458,7 @@ input_textarea(FormItemList *fi)
     Str tmp;
     FILE *f;
 #ifdef JP_CHARSET
-    char code = DisplayCode, ic;
+    char code = DisplayCode;
 #endif
 
     f = fopen(tmpf, "w");
@@ -497,8 +493,7 @@ input_textarea(FormItemList *fi)
 	    Strcat_charp(tmp, "\r\n");
 	}
 #ifdef JP_CHARSET
-	if ((ic = checkShiftCode(tmp, code)) != '\0')
-	    tmp = conv_str(tmp, (code = ic), InnerCode);
+	tmp = convertLine(NULL, tmp, &code, RAW_MODE);
 #endif				/* not JP_CHARSET */
 	Strcat(fi->value, tmp);
     }

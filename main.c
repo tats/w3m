@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.191 2003/01/11 16:17:43 ukai Exp $ */
+/* $Id: main.c,v 1.192 2003/01/15 16:11:43 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -889,7 +889,8 @@ main(int argc, char **argv, char **envp)
 	else if (newbuf == NO_BUFFER)
 	    continue;
 	if (newbuf->pagerSource ||
-	    (newbuf->currentURL.file && strcmp(newbuf->currentURL.file, "-")))
+	    (newbuf->real_scheme == SCM_LOCAL && newbuf->header_source &&
+	     newbuf->currentURL.file && strcmp(newbuf->currentURL.file, "-")))
 	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
@@ -928,6 +929,8 @@ main(int argc, char **argv, char **envp)
 	}
     }
     if (w3m_dump) {
+	if (err_msg->length)
+	    fprintf(stderr, "%s", err_msg->ptr);
 #ifdef USE_COOKIE
 	save_cookies();
 #endif				/* USE_COOKIE */
@@ -4409,7 +4412,9 @@ vwSrc(void)
 	    return;
 	}
     }
-    else if (Currentbuf->real_scheme == SCM_LOCAL) {
+    else if (Currentbuf->real_scheme == SCM_LOCAL &&
+	     !(Currentbuf->real_type &&
+	      !strcasecmp(Currentbuf->real_type, "local:directory"))) {
 	fn = Currentbuf->filename;
     }
     else {

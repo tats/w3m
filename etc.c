@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.47 2003/01/10 16:42:26 ukai Exp $ */
+/* $Id: etc.c,v 1.48 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1306,7 +1306,7 @@ reset_signals(void)
 #endif
 
 void
-close_all_fds(int i)
+close_all_fds_except(int i, int f)
 {
     switch (i) {		/* fall through */
     case 0:
@@ -1317,8 +1317,10 @@ close_all_fds(int i)
 	dup2(open("/dev/null", O_WRONLY), 2);
     }
     /* close all other file descriptors (socket, ...) */
-    for (i = 3; i < FOPEN_MAX; i++)
-	close(i);
+    for (i = 3; i < FOPEN_MAX; i++) {
+	if (i != f)
+	    close(i);
+    }
 }
 
 #ifdef HAVE_SETPGRP

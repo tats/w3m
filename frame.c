@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.28 2003/01/09 15:30:43 ukai Exp $ */
+/* $Id: frame.c,v 1.29 2003/01/15 16:11:43 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -410,8 +410,9 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 {
     int r, c, t_stack;
     URLFile f2;
+    char code;
 #ifdef JP_CHARSET
-    char code, ic, charset[2];
+    char charset[2];
 #endif				/* JP_CHARSET */
     char *d_target, *p_target, *s_target, *t_target;
     ParsedURL *currentURL, base;
@@ -530,20 +531,15 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		t_target = "_blank";
 		d_target = TargetSelf ? s_target : t_target;
 #ifdef JP_CHARSET
-		code = '\0';
-#endif				/* JP_CHARSET */
+		code = DocumentCode;
+#endif
 		t_stack = 0;
 		if (frame.body->type &&
 		    !strcasecmp(frame.body->type, "text/plain")) {
 		    Str tmp;
 		    fprintf(f1, "<pre>\n");
 		    while ((tmp = StrmyUFgets(&f2))->length) {
-#ifdef JP_CHARSET
-			if ((ic = checkShiftCode(tmp, code)) != '\0')
-			    tmp = conv_str(tmp, (code = ic), InnerCode);
-
-#endif				/* JP_CHARSET */
-			cleanup_line(tmp, HTML_MODE);
+			tmp = convertLine(NULL, tmp, &code, HTML_MODE);
 			fprintf(f1, "%s", html_quote(tmp->ptr));
 		    }
 		    fprintf(f1, "</pre>\n");
@@ -560,12 +556,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    Str tmp = StrmyUFgets(&f2);
 			    if (tmp->length == 0)
 				break;
-#ifdef JP_CHARSET
-			    if ((ic = checkShiftCode(tmp, code)) != '\0')
-				tmp = conv_str(tmp, (code = ic), InnerCode);
-
-#endif				/* JP_CHARSET */
-			    cleanup_line(tmp, HTML_MODE);
+			    tmp = convertLine(NULL, tmp, &code, HTML_MODE);
 			    p = tmp->ptr;
 			}
 			read_token(tok, &p, &status, 1, status != R_ST_NORMAL);

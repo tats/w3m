@@ -1,4 +1,4 @@
-/* $Id: indep.h,v 1.11 2003/01/08 17:24:12 ukai Exp $ */
+/* $Id: indep.h,v 1.12 2003/01/15 16:11:43 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include "gc.h"
@@ -12,9 +12,10 @@
 #define FALSE 0
 #endif				/* FALSE */
 
-#define PAGER_MODE	0
-#define HTML_MODE	1
-#define HEADER_MODE	2
+#define RAW_MODE	0
+#define PAGER_MODE	1
+#define HTML_MODE	2
+#define HEADER_MODE	3
 
 extern clen_t strtoclen(const char *s);
 extern char *conv_entity(int ch);

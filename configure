@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.39 2001/12/20 03:39:32 ukai Exp $
+# $Id: configure,v 1.40 2001/12/20 04:03:24 ukai Exp $
 #	Configuration.
 #
 
@@ -1013,9 +1013,8 @@ EOF
     echo "GC_version is $gcversion."    
     if [ $gcversion -lt $mygcversion ]; then
       echo "GC library on your system seems to be old."
-      echo "Do you want to use GC library comes with w3m?"
-      yesno ans y y
-      if [ "$ans" = 'n' -o "$ans" = 'N' ]; then
+      ask_param "Do you want to use GC library comes with w3m?" "use_bundled_gclib" y
+      if [ "$use_bundled_gclib" = 'n' -o "$use_bundled_gclib" = 'N' ]; then
         cflags="$cflags -I$gcinclude"
       else
         cflags="$cflags -I./gc/include"

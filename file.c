@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.201 2003/01/23 15:59:27 ukai Exp $ */
+/* $Id: file.c,v 1.202 2003/01/23 16:05:56 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6182,12 +6182,11 @@ showProgress(clen_t * linelen, clen_t * trbyte)
     if (!fmInitialized)
 	return;
 
+    if (*linelen < 1024)
+	return;
     if (current_content_length > 0) {
 	double ratio;
 	cur_time = time(0);
-	if (cur_time == last_time)
-	    return;
-	last_time = cur_time;
 	if (*trbyte == 0) {
 	    move(LASTLINE, 0);
 	    clrtoeolx();
@@ -6195,6 +6194,9 @@ showProgress(clen_t * linelen, clen_t * trbyte)
 	}
 	*trbyte += *linelen;
 	*linelen = 0;
+	if (cur_time == last_time)
+	    return;
+	last_time = cur_time;
 	move(LASTLINE, 0);
 	ratio = 100.0 * (*trbyte) / current_content_length;
 	fmtrbyte = convert_size2(*trbyte, current_content_length, 1);
@@ -6231,11 +6233,8 @@ showProgress(clen_t * linelen, clen_t * trbyte)
 	/* no_clrtoeol(); */
 	refresh();
     }
-    else if (*linelen > 1000) {
+    else {
 	cur_time = time(0);
-	if (cur_time == last_time)
-	    return;
-	last_time = cur_time;
 	if (*trbyte == 0) {
 	    move(LASTLINE, 0);
 	    clrtoeolx();
@@ -6243,6 +6242,9 @@ showProgress(clen_t * linelen, clen_t * trbyte)
 	}
 	*trbyte += *linelen;
 	*linelen = 0;
+	if (cur_time == last_time)
+	    return;
+	last_time = cur_time;
 	move(LASTLINE, 0);
 	fmtrbyte = convert_size(*trbyte, 1);
 	duration = cur_time - start_time;

@@ -115,7 +115,7 @@ HELP_TARGET=w3mhelp.html
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
-DEFUNS=main.c menu.c
+DEFUNS=$(top_srcdir)/main.c $(top_srcdir)/menu.c
 SCRIPTSUBDIRS= scripts
 SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc po
 .PHONY: $(SUBDIRS)

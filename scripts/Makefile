@@ -39,7 +39,7 @@ w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab ../doc/keymap.defaul
 	@echo ');' >> w3mhelp-funcname.pl
 	@echo '%keyfunc = (' >> w3mhelp-funcname.pl
 	@case "$(KEYBIND_SRC)" in *lynx*) keymap=keymap.lynx;; *) keymap=keymap.default;; esac; \
-	while read keyword keys func rest; do \
+	while read -r keyword keys func rest; do \
 	 if [ "X$$keyword" = Xkeymap ]; then \
 	   keys=`echo "$$keys" | sed -e 's/\\\\/\\\\&/g'`; \
 	   echo "'$$keys', '$$func',"; \

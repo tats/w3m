@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.22 2003/06/13 15:04:00 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.23 2003/07/07 15:48:17 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -119,6 +119,19 @@ x11_finish(w3mimg_op * self)
 	XFreeGC(xi->display, xi->imageGC);
 	xi->imageGC = NULL;
     }
+    return 1;
+}
+
+static int
+x11_clear(w3mimg_op * self, int x, int y, int w, int h)
+{
+    struct x11_info *xi;
+    if (self == NULL)
+	return 0;
+    xi = (struct x11_info *)self->priv;
+    if (xi == NULL)
+	return 0;
+    XClearArea(xi->display, xi->window, x, y, w, h, FALSE);
     return 1;
 }
 
@@ -688,6 +701,7 @@ w3mimg_x11open()
     wop->set_background = x11_set_background;
     wop->sync = x11_sync;
     wop->close = x11_close;
+    wop->clear = x11_clear;
 
     wop->load_image = x11_load_image;
     wop->show_image = x11_show_image;

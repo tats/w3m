@@ -1,4 +1,4 @@
-/* $Id: fb.h,v 1.6 2002/10/10 16:16:03 ukai Exp $ */
+/* $Id: fb.h,v 1.7 2003/07/07 15:48:17 ukai Exp $ */
 #ifndef fb_header
 #define fb_header
 #include <linux/fb.h>
@@ -29,5 +29,6 @@ int fb_open(void);
 void fb_close(void);
 int fb_width(void);
 int fb_height(void);
+int fb_clear(int x, int y, int w, int h, int r, int g, int b);
 
 #endif

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.34 2003/02/24 16:27:36 ukai Exp $ */
+/* $Id: image.c,v 1.35 2003/07/07 15:48:16 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -149,6 +149,24 @@ addImage(ImageCache * cache, int x, int y, int sx, int sy, int w, int h)
     n_terminal_image++;
 }
 
+static void
+syncImage(void)
+{
+    fputs("3;\n", Imgdisplay_wf);	/* XSync() */
+    fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
+    while (fflush(Imgdisplay_wf) != 0) {
+	if (ferror(Imgdisplay_wf))
+	    goto err;
+    }
+    if (!fgetc(Imgdisplay_rf))
+	goto err;
+    return;
+  err:
+    closeImgdisplay();
+    image_index += MAX_IMAGE;
+    n_terminal_image = 0;
+}
+
 void
 drawImage()
 {
@@ -169,10 +187,6 @@ drawImage()
 	    if (!openImgdisplay())
 		return;
 	}
-	if (!draw) {
-	    fputs("3;\n", Imgdisplay_wf);	/* XSync() */
-	    draw = TRUE;
-	}
 	if (i->cache->index > 0) {
 	    i->cache->index *= -1;
 	    fputs("0;", Imgdisplay_wf);	/* DrawImage() */
@@ -187,49 +201,39 @@ drawImage()
 	fputs(buf, Imgdisplay_wf);
 	fputs(i->cache->file, Imgdisplay_wf);
 	fputs("\n", Imgdisplay_wf);
-	fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
-	while (fflush(Imgdisplay_wf) != 0) {
-	    if (ferror(Imgdisplay_wf))
-		goto err;
-	}
-	if (!fgetc(Imgdisplay_rf))
-	    goto err;
+	draw = TRUE;
     }
     if (!draw)
 	return;
-    fputs("3;\n", Imgdisplay_wf);	/* XSync() */
-    fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
-    while (fflush(Imgdisplay_wf) != 0) {
-	if (ferror(Imgdisplay_wf))
-	    goto err;
-    }
-    if (!fgetc(Imgdisplay_rf))
-	goto err;
-    /*
-     * touch_line();
-     * touch_column(CurColumn);
-     * #ifdef JP_CHARSET
-     * if (CurColumn > 0 &&
-     * CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR2)
-     * touch_column(CurColumn - 1);
-     * else if (CurColumn < COLS - 1 &&
-     * CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR1)
-     * touch_column(CurColumn + 1);
-     * #endif
-     */
+    syncImage();
     touch_cursor();
     refresh();
-    return;
-  err:
-    closeImgdisplay();
-    image_index += MAX_IMAGE;
 }
 
 void
 clearImage()
 {
+    static char buf[64];
+    int j;
+    TerminalImage *i;
+
     if (!activeImage)
 	return;
+    if (!n_terminal_image)
+	return;
+    if (!Imgdisplay_wf) {
+	n_terminal_image = 0;
+	return;
+    }
+    for (j = 0; j < n_terminal_image; j++) {
+	i = &terminal_image[j];
+	if (!(i->cache->loaded & IMG_FLAG_LOADED &&
+	    i->width > 0 && i->height > 0))
+	    continue;
+	sprintf(buf, "6;%d;%d;%d;%d\n", i->x, i->y, i->width, i->height);
+	fputs(buf, Imgdisplay_wf);
+    }
+    syncImage();
     n_terminal_image = 0;
 }
 

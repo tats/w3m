@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.13 2003/03/24 15:45:57 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.14 2003/07/07 15:48:16 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -21,7 +21,8 @@ static int maxImage = 0, maxAnim = 100;
 
 static void GetOption(int argc, char **argv);
 static void DrawImage(char *buf, int redraw);
-static void ClearImage(void);
+static void TermImage(void);
+static void ClearImage(char *buf);
 
 int
 main(int argc, char **argv)
@@ -100,15 +101,18 @@ main(int argc, char **argv)
 	 * op	args
 	 *  0;  params		draw image
 	 *  1;  params		redraw image
-	 *  2;  -none-		clear image
+	 *  2;  -none-		terminate drawing
 	 *  3;  -none-		sync drawing
 	 *  4;  -none-		nop, sync communication
 	 *			response '\n'
 	 *  5;  path		get size of image,
 	 *			response "<width> <height>\n"
+	 *  6;  params(6)	clear image
 	 *
 	 * params
 	 *	<n>;<x>;<y>;<w>;<h>;<sx>;<sy>;<sw>;<sh>;<path>
+	 * params(6)
+	 *	<x>;<y>;<w>;<h>
 	 *   
 	 */
 	switch (buf[0]) {
@@ -119,7 +123,7 @@ main(int argc, char **argv)
 	    DrawImage(&buf[2], 1);
 	    break;
 	case '2':
-	    ClearImage();
+	    TermImage();
 	    break;
 	case '3':
 	    w_op->sync(w_op);
@@ -144,9 +148,12 @@ main(int argc, char **argv)
 		fflush(stdout);
 	    }
 	    break;
+	case '6':
+	    ClearImage(&buf[2]);
+	    break;
 	}
     }
-    ClearImage();
+    TermImage();
     w_op->close(w_op);
     exit(0);
 }
@@ -278,7 +285,7 @@ DrawImage(char *buf, int redraw)
 }
 
 void
-ClearImage(void)
+TermImage(void)
 {
     w_op->finish(w_op);
     if (imageBuf) {
@@ -290,4 +297,30 @@ ClearImage(void)
 	imageBuf = NULL;
     }
     maxImage = 0;
+}
+
+void
+ClearImage(char *buf)
+{
+    char *p = buf;
+    int x = 0, y = 0, w = 0, h = 0;
+
+    if (!p)
+	return;
+    for (; isdigit(*p); p++)
+	x = 10 * x + (*p - '0');
+    if (*(p++) != ';')
+	return;
+    for (; isdigit(*p); p++)
+	y = 10 * y + (*p - '0');
+    if (*(p++) != ';')
+	return;
+    for (; isdigit(*p); p++)
+	w = 10 * w + (*p - '0');
+    if (*(p++) != ';')
+	return;
+    for (; isdigit(*p); p++)
+	h = 10 * h + (*p - '0');
+
+    w_op->clear(w_op, x, y, w, h);
 }

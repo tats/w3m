@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.11 2003/04/03 16:35:48 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.12 2003/07/07 15:48:17 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -58,6 +58,15 @@ static void
 w3mfb_close(w3mimg_op * self)
 {
     fb_close();
+}
+
+static int
+w3mfb_clear(w3mimg_op * self, int x, int y, int w, int h)
+{
+    if (self == NULL)
+	return 0;
+    fb_image_clear(x, y, w, h);
+    return 1;
 }
 
 static int
@@ -179,6 +188,7 @@ w3mimg_fbopen()
     wop->set_background = w3mfb_set_background;
     wop->sync = w3mfb_sync;
     wop->close = w3mfb_close;
+    wop->clear = w3mfb_clear;
 
     wop->load_image = w3mfb_load_image;
     wop->show_image = w3mfb_show_image;

@@ -1,5 +1,28 @@
 2003-07-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03929] clear image
+	* image.c (syncImage): added
+		(drawImage): rewrite using syncImage()
+		(clearImage): use clear image command (6)
+	* w3mimgdisplay.c: change protocol
+		2 => terminate drawing
+		6 => clear image
+		(main): '2' calls TermImage()
+			'6' calls ClearImage()
+			TermImage() when exit
+		(TermImage): renamed from ClearImage
+		(ClearImage): rewritten to call w_op->clear()
+	* w3mimg.h/w3mimg.h (w3mimg_op): add clear()
+	* w3mimg/fb/fb.c (fb_clear): added
+	* w3mimg/fb/fb.h (fb_clear): added
+	* w3mimg/fb/fb_img.c (fb_image_clear): added
+	* w3mimg/fb/fb_w3mimg.c (w3mfb_clear): added
+		(w3mimg_fbopen): initialize wop->clear
+	* w3mimg/x11/x11_w3mimg.c (x11_clear): added
+		(w3mimg_x11open): initialize wop->clear
+
+2003-07-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03927] deflate
 	* file.c (compression_decoder): .deflate for application/x-deflate's
 				extension
@@ -7869,4 +7892,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.844 2003/07/07 15:39:43 ukai Exp $
+$Id: ChangeLog,v 1.845 2003/07/07 15:48:16 ukai Exp $

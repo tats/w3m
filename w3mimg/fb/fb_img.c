@@ -1,4 +1,4 @@
-/* $Id: fb_img.c,v 1.5 2002/10/10 16:16:04 ukai Exp $ */
+/* $Id: fb_img.c,v 1.6 2003/07/07 15:48:17 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -23,4 +23,10 @@ fb_image_set_bg(int r, int g, int b)
     bg_r = r;
     bg_g = g;
     bg_b = b;
+}
+
+int
+fb_image_clear(int x, int y, int w, int h)
+{
+    return fb_clear(x, y, w, h, bg_r, bg_g, bg_b);
 }

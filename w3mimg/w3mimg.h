@@ -1,4 +1,4 @@
-/* $Id: w3mimg.h,v 1.6 2003/03/24 15:45:58 ukai Exp $ */
+/* $Id: w3mimg.h,v 1.7 2003/07/07 15:48:17 ukai Exp $ */
 #include "config.h"
 
 #ifdef USE_W3MIMG_FB
@@ -32,6 +32,7 @@ typedef struct _w3mimg_op {
     void (*free_image) (struct _w3mimg_op * self, W3MImage * img);
     int (*get_image_size) (struct _w3mimg_op * self, W3MImage * img,
 			   char *fname, int *w, int *h);
+    int (*clear) (struct _w3mimg_op * self, int x, int y, int w, int h);
 } w3mimg_op;
 
 #ifdef USE_W3MIMG_X11

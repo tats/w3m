@@ -1,3 +1,15 @@
+2002-11-15  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03429] https proxy
+	* fm.h (HTTPS_proxy): added
+		(HTTPS_proxy_parsed): added
+	* main.c (main): check https_proxy
+	* rc.c (CMT_HTTPS_PROXY): added
+		(https_proxy): added
+		(parse_proxy): HTTPS_proxy
+	* url.c (openURL): for HTTPS, use HTTPS_proxy
+		(schemeToProxy): HTTPS_proxy_parsed
+
 2002-11-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03428] install manual as w3m.exe.1 on Cygwin
@@ -4621,4 +4633,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.510 2002/11/13 15:53:44 ukai Exp $
+$Id: ChangeLog,v 1.511 2002/11/14 16:56:22 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.62 2002/11/12 12:42:51 ukai Exp $ */
+/* $Id: rc.c,v 1.63 2002/11/14 16:56:24 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -91,6 +91,9 @@ static char *config_file = NULL;
 #define CMT_VISITED_ANCHOR	"訪れたことがあるリンクは色を変える"
 #define CMT_V_COLOR	 "訪れたことがあるリンクの色"
 #define CMT_HTTP_PROXY   "HTTPプロキシ(URLで入力)"
+#ifdef USE_SSL
+#define CMT_HTTPS_PROXY  "HTTPSプロキシ(URLで入力)"
+#endif				/* USE_SSL */
 #ifdef USE_GOPHER
 #define CMT_GOPHER_PROXY "GOPHERプロキシ(URLで入力)"
 #endif				/* USE_GOPHER */
@@ -240,6 +243,9 @@ static char *config_file = NULL;
 #define CMT_BG_COLOR     "Color of background"
 #define CMT_MARK_COLOR   "Color of mark"
 #define CMT_HTTP_PROXY   "URL of HTTP proxy host"
+#ifdef USE_SSL
+#define CMT_HTTPS_PROXY  "URL of HTTPS proxy host"
+#endif				/* USE_SSL */
 #ifdef USE_GOPHER
 #define CMT_GOPHER_PROXY "URL of GOPHER proxy host"
 #endif				/* USE_GOPHER */
@@ -630,6 +636,10 @@ struct param_ptr params3[] = {
 struct param_ptr params4[] = {
     {"http_proxy", P_STRING, PI_TEXT, (void *)&HTTP_proxy, CMT_HTTP_PROXY,
      NULL},
+#ifdef USE_SSL
+    {"https_proxy", P_STRING, PI_TEXT, (void *)&HTTPS_proxy, CMT_HTTPS_PROXY,
+     NULL},
+#endif				/* USE_SSL */
 #ifdef USE_GOPHER
     {"gopher_proxy", P_STRING, PI_TEXT, (void *)&GOPHER_proxy,
      CMT_GOPHER_PROXY, NULL},
@@ -1220,6 +1230,10 @@ parse_proxy()
 {
     if (non_null(HTTP_proxy))
 	parseURL(HTTP_proxy, &HTTP_proxy_parsed, NULL);
+#ifdef USE_SSL
+    if (non_null(HTTPS_proxy))
+	parseURL(HTTPS_proxy, &HTTPS_proxy_parsed, NULL);
+#endif				/* USE_SSL */
 #ifdef USE_GOPHER
     if (non_null(GOPHER_proxy))
 	parseURL(GOPHER_proxy, &GOPHER_proxy_parsed, NULL);

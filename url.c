@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.55 2002/11/06 15:03:26 ukai Exp $ */
+/* $Id: url.c,v 1.56 2002/11/14 16:56:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1600,8 +1600,11 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    hr->command = HR_COMMAND_POST;
 	if (request && request->method == FORM_METHOD_HEAD)
 	    hr->command = HR_COMMAND_HEAD;
-	if (non_null(HTTP_proxy) &&
-	    !Do_not_use_proxy &&
+	if ((
+#ifdef USE_SSL
+	    (pu->scheme == SCM_HTTPS) ? non_null(HTTPS_proxy) :
+#endif				/* USE_SSL */
+	    non_null(HTTP_proxy)) && !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
 	    char *save_label;
 	    hr->flag |= HR_FLAG_PROXY;
@@ -1614,17 +1617,21 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		    return uf;
 		}
 	    }
+	    else if (pu->scheme == SCM_HTTPS) {
+		sock = openSocket(HTTPS_proxy_parsed.host,
+				  schemetable[HTTPS_proxy_parsed.scheme].
+				  cmdname, HTTPS_proxy_parsed.port);
+		sslh = NULL;
+	    }
 	    else {
+#endif				/* USE_SSL */
 		sock = openSocket(HTTP_proxy_parsed.host,
 				  schemetable[HTTP_proxy_parsed.scheme].
 				  cmdname, HTTP_proxy_parsed.port);
+#ifdef USE_SSL
 		sslh = NULL;
 	    }
-#else
-	    sock = openSocket(HTTP_proxy_parsed.host,
-			      schemetable[HTTP_proxy_parsed.scheme].cmdname,
-			      HTTP_proxy_parsed.port);
-#endif
+#endif				/* USE_SSL */
 	    if (sock < 0) {
 #ifdef SOCK_DEBUG
 		sock_log("Can't open socket\n");
@@ -2229,11 +2236,13 @@ schemeToProxy(int scheme)
     ParsedURL *pu = NULL;	/* for gcc */
     switch (scheme) {
 	case SCM_HTTP:
-#ifdef USE_SSL
-	case SCM_HTTPS:
-#endif
 	    pu = &HTTP_proxy_parsed;
 	    break;
+#ifdef USE_SSL
+	case SCM_HTTPS:
+	    pu = &HTTPS_proxy_parsed;
+	    break;
+#endif
 	case SCM_FTP:
 	    pu = &FTP_proxy_parsed;
 	    break;

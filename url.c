@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.24 2001/12/26 12:58:49 ukai Exp $ */
+/* $Id: url.c,v 1.25 2001/12/26 18:46:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -272,6 +272,81 @@ init_PRNG()
 }
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
+
+#ifdef USE_SSL_VERIFY
+static const char *
+ssl_verify_error_string(unsigned long verr)
+{
+    /* see verify(1ssl) - we can't use ERR_error_string()? */
+    switch (verr) {
+    case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT:
+	return "Unable to get issuer cert";
+    case X509_V_ERR_UNABLE_TO_GET_CRL:
+	return "Unable to get CRL";
+    case X509_V_ERR_UNABLE_TO_DECRYPT_CERT_SIGNATURE:
+	return "Unable to decrypt cert signature";
+    case X509_V_ERR_UNABLE_TO_DECRYPT_CRL_SIGNATURE:
+	return "Unable to decrypt CRL signature";
+    case X509_V_ERR_UNABLE_TO_DECODE_ISSUER_PUBLIC_KEY:
+	return "Unable to decode issuer public key";
+    case X509_V_ERR_CERT_SIGNATURE_FAILURE:
+	return "Certificate signature failture";
+    case X509_V_ERR_CRL_SIGNATURE_FAILURE:
+	return "CRL signature failture";
+    case X509_V_ERR_CERT_NOT_YET_VALID:
+	return "Certificate not yet valid";
+    case X509_V_ERR_CERT_HAS_EXPIRED:
+	return "Certificate has expired";
+    case X509_V_ERR_CRL_NOT_YET_VALID:
+	return "CRL not yet valid";
+    case X509_V_ERR_CRL_HAS_EXPIRED:
+	return "CRL has expired";
+    case X509_V_ERR_ERROR_IN_CERT_NOT_BEFORE_FIELD:
+	return "Error in certificate Not Before: field";
+    case X509_V_ERR_ERROR_IN_CERT_NOT_AFTER_FIELD:
+	return "Error in certificate Not After: field";
+    case X509_V_ERR_ERROR_IN_CRL_LAST_UPDATE_FIELD:
+	return "Error in CRL Last Update: field";
+    case X509_V_ERR_ERROR_IN_CRL_NEXT_UPDATE_FIELD:
+	return "Error in CRL Next Update: field";
+    case X509_V_ERR_OUT_OF_MEM:
+	return "Out of memory";
+    case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+	return "Depth zero self signed certificate";
+    case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+	return "Self signed certificate in chain";
+    case X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY:
+	return "Unable to get issuer certificate locally";
+    case X509_V_ERR_UNABLE_TO_VERIFY_LEAF_SIGNATURE:
+	return "Unable to verify leaf signature";
+    case X509_V_ERR_CERT_CHAIN_TOO_LONG:
+	return "Certificate chain too long";
+    case X509_V_ERR_CERT_REVOKED:
+	return "Certificate revoked";
+    case X509_V_ERR_INVALID_CA:
+	return "Invalid CA";
+    case X509_V_ERR_PATH_LENGTH_EXCEEDED:
+	return "Path length exceeded";
+    case X509_V_ERR_INVALID_PURPOSE:
+	return "Invalid purpose";
+    case X509_V_ERR_CERT_UNTRUSTED:
+	return "Certificate untrusted";
+    case X509_V_ERR_CERT_REJECTED:
+	return "Certificate rejected";
+    case X509_V_ERR_SUBJECT_ISSUER_MISMATCH:
+	return "Subject Issuer mismatch";
+    case X509_V_ERR_AKID_SKID_MISMATCH:
+	return "akid skid mismatch";
+    case X509_V_ERR_AKID_ISSUER_SERIAL_MISMATCH:
+	return "akid issuer serial mismatch";
+    case X509_V_ERR_KEYUSAGE_NO_CERTSIGN:
+	return "Keyusage no certsign";
+    default:
+	return "unknown verification error";
+    }
+}
+#endif
+
 static SSL *
 openSSLHandle(int sock, char *hostname)
 {
@@ -282,6 +357,7 @@ openSSLHandle(int sock, char *hostname)
     static char *old_ssl_forbid_method = NULL;
 #ifdef USE_SSL_VERIFY
     static int old_ssl_verify_server = -1;
+    static Str accept_this_site = NULL;
 #endif
 
     if (!old_ssl_forbid_method || !ssl_forbid_method ||
@@ -300,6 +376,7 @@ openSSLHandle(int sock, char *hostname)
     }
     if (ssl_path_modified) {
 	free_ssl_ctx();
+	accept_this_site = NULL;
 	ssl_path_modified = 0;
     }
 #endif				/* defined(USE_SSL_VERIFY) */
@@ -327,9 +404,13 @@ openSSLHandle(int sock, char *hostname)
 	SSL_CTX_set_options(ssl_ctx, option);
 #ifdef USE_SSL_VERIFY
 	/* derived from openssl-0.9.5/apps/s_{client,cb}.c */
+#if 1				/* use SSL_get_verify_result() to verify cert */
+	SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
+#else
 	SSL_CTX_set_verify(ssl_ctx,
 			   ssl_verify_server ? SSL_VERIFY_PEER :
 			   SSL_VERIFY_NONE, NULL);
+#endif
 	if (ssl_cert_file != NULL && *ssl_cert_file != '\0') {
 	    int ng = 1;
 	    if (SSL_CTX_use_certificate_file
@@ -364,35 +445,77 @@ openSSLHandle(int sock, char *hostname)
      * The chain length is automatically checked by OpenSSL when we
      * set the verify depth in the ctx.
      */
-    if (ssl_verify_server && (SSL_get_verify_result(handle) != X509_V_OK)) {
-	emsg = Strnew_charp("Accept SSL session "
-			    "which certificate doesn't verify (y/n)?");
-	term_raw();
-	ans = inputChar(emsg->ptr);
-	if (tolower(*ans) == 'y') {
-	    amsg = Strnew_charp("Accept unsecure SSL session: "
-				"unverified certificate");
+    if (ssl_verify_server) {
+	X509 *x;
+	x = SSL_get_peer_certificate(handle);
+	if (x == NULL) {
+	    if (accept_this_site
+		&& strcasecmp(accept_this_site->ptr, hostname) == 0)
+		ans = "y";
+	    else {
+		emsg = Strnew_charp("No SSL peer certificate: accept (y/n)?");
+		term_raw();
+		ans = inputChar(emsg->ptr);
+	    }
+	    if (tolower(*ans) == 'y')
+		amsg =
+		    Strnew_charp
+		    ("Accept SSL session without any peer certificate");
+	    else {
+		char *e = "This SSL session was rejected "
+		    "to prevent security violation: no peer certificate";
+		disp_err_message(e, FALSE);
+		free_ssl_ctx();
+		return NULL;
+	    }
 	}
 	else {
-	    char *e = "This SSL session was rejected "
-		"to prevent security violation";
-	    disp_err_message(e, FALSE);
-	    free_ssl_ctx();
-	    return NULL;
+	    unsigned long verr;
+	    X509_free(x);
+	    if ((verr = SSL_get_verify_result(handle)) != X509_V_OK) {
+		const char *em = ssl_verify_error_string(verr);
+		if (accept_this_site
+		    && strcasecmp(accept_this_site->ptr, hostname) == 0)
+		    ans = "y";
+		else {
+		    emsg = Sprintf("%s: accept (y/n)?", em);
+		    term_raw();
+		    ans = inputChar(emsg->ptr);
+		}
+		if (tolower(*ans) == 'y') {
+		    amsg = Sprintf("Accept unsecure SSL session: "
+				   "unverified: %s", em);
+		}
+		else {
+		    char *e =
+			Sprintf("This SSL session was rejected: %s", em)->ptr;
+		    disp_err_message(e, FALSE);
+		    free_ssl_ctx();
+		    return NULL;
+		}
+	    }
 	}
     }
+    else
 #endif
+	amsg = Strnew_charp("Certificate is not verified");
 
     emsg = ssl_check_cert_ident(handle, hostname);
     if (emsg != NULL) {
-	if (emsg->length > COLS - 16)
-	    Strshrink(emsg, emsg->length - (COLS - 16));
-	term_raw();
-	Strcat_charp(emsg, ": accept(y/n)?");
-	ans = inputChar(emsg->ptr);
+	if (accept_this_site
+	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
+	    ans = "y";
+	else {
+	    Str ep = Strdup(emsg);
+	    if (ep->length > COLS - 16)
+		Strshrink(ep, ep->length - (COLS - 16));
+	    term_raw();
+	    Strcat_charp(ep, ": accept(y/n)?");
+	    ans = inputChar(ep->ptr);
+	}
 	if (tolower(*ans) == 'y') {
-	    amsg = Strnew_charp("Accept unsecure SSL session:"
-				"certificate ident mismatch");
+	    amsg = Strnew_charp("Accept unsecure SSL session:");
+	    Strcat(amsg, emsg);
 	}
 	else {
 	    char *e = "This SSL session was rejected "
@@ -402,10 +525,13 @@ openSSLHandle(int sock, char *hostname)
 	    return NULL;
 	}
     }
+    ssl_set_certificate_validity(amsg);
     if (amsg)
 	disp_err_message(amsg->ptr, FALSE);
+    accept_this_site = Strnew_charp(hostname);
     return handle;
   eend:
+    accept_this_site = NULL;
     emsg = Sprintf("SSL error: %s", ERR_error_string(ERR_get_error(), NULL));
     disp_err_message(emsg->ptr, FALSE);
     return NULL;

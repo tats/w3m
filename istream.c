@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.8 2001/12/26 12:58:49 ukai Exp $ */
+/* $Id: istream.c,v 1.9 2001/12/26 18:46:33 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -357,6 +357,14 @@ ISeos(InputStream stream)
 }
 
 #ifdef USE_SSL
+static Str ssl_certificate_validity;
+
+void
+ssl_set_certificate_validity(Str msg)
+{
+    ssl_certificate_validity = msg;
+}
+
 Str
 ssl_get_certificate(InputStream stream)
 {
@@ -377,8 +385,12 @@ ssl_get_certificate(InputStream stream)
     bp = BIO_new(BIO_s_mem());
     X509_print(bp, x);
     len = (int)BIO_ctrl(bp, BIO_CTRL_INFO, 0, (char *)&p);
-    s = Strnew_charp_n(p, len);
+    s = ssl_certificate_validity ? Strdup(ssl_certificate_validity)
+	: Strnew_charp("valid certificate");
+    Strcat_charp(s, "\n");
+    Strcat_charp_n(s, p, len);
     BIO_free_all(bp);
+    X509_free(x);
     return s;
 }
 

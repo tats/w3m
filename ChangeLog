@@ -1,3 +1,8 @@
+2002-10-09  AIDA Shinra <aida-s@jcom.home.ne.jp>
+
+	* [w3m-dev 03336] proxy check for https authorization:
+	* url.c (HTTPrequest): check CONNECT request for ssl
+
 2002-10-06  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03333] x11 image animation
@@ -3886,4 +3891,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.438 2002/10/05 16:43:10 ukai Exp $
+$Id: ChangeLog,v 1.439 2002/10/08 15:28:37 ukai Exp $

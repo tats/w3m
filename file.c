@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.216 2003/01/30 16:39:36 ukai Exp $ */
+/* $Id: file.c,v 1.217 2003/01/30 16:48:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6134,7 +6134,7 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 	if (i == 0) {
 	    i++;
 #ifdef JP_CHARSET
-	    if (CharType(p[i]) == PC_KANJI2)
+	    if (i < l->len && CharType(p[i]) == PC_KANJI2)
 		i++;
 #endif
 	}

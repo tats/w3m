@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.44 2002/02/19 15:50:18 ukai Exp $ */
+/* $Id: url.c,v 1.45 2002/02/27 16:53:27 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -1577,7 +1577,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    if (pu->scheme == SCM_HTTPS) {
 		if (*status == HTST_NORMAL) {
 		    hr->command = HR_COMMAND_CONNECT;
-		    tmp = HTTPrequest(pu, current, hr, NULL);
+		    tmp = HTTPrequest(pu, current, hr, extra_header);
 		    *status = HTST_CONNECT;
 		}
 		else {

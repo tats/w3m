@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.15 2002/11/18 18:26:13 ukai Exp $ */
+/* $Id: ftp.c,v 1.16 2002/12/14 15:18:38 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -351,6 +351,34 @@ FtpData(FTP ftp, char *cmd, char *arg, char *mode)
     return FtpDataBody(ftp, cmd, arg, mode);
 }
 
+time_t
+getFtpModtime(FTP ftp, char *path)
+{
+    Str tmp;
+    char *p;
+    struct tm tm;
+    time_t t;
+
+    memset(&tm, 0, sizeof(struct tm));
+    tmp = Sprintf("MDTM %s\r\n", path);
+    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
+    fflush(ftp->wcontrol);
+    tmp = read_response(ftp);
+    if (atoi(tmp->ptr) != 213)
+	return -1;
+    for (p = tmp->ptr + 4; *p && *p == ' '; p++)
+	;
+    if (sscanf(p, "%04d%02d%02d%02d%02d%02d",
+	       &tm.tm_year, &tm.tm_mon, &tm.tm_mday,
+	       &tm.tm_hour, &tm.tm_min, &tm.tm_sec) < 6)
+	return -1;
+    tm.tm_year -= 1900;
+    tm.tm_mon--;
+    t = mktime(&tm);
+    t += mktime(localtime(&t)) - mktime(gmtime(&t));
+    return t;
+}
+
 int
 FtpClose(FTP ftp)
 {
@@ -394,7 +422,7 @@ static int ftp_system(FTP);
 #define	FTPDIR_FILE	3
 
 FILE *
-openFTP(ParsedURL *pu)
+openFTP(ParsedURL *pu, URLFile *uf)
 {
     Str tmp2 = Strnew();
     Str tmp3 = Strnew();
@@ -472,6 +500,7 @@ openFTP(ParsedURL *pu)
 	goto ftp_dir;
 
     /* Get file */
+    uf->modtime = getFtpModtime(current_ftp, realpathname);
     FtpBinary(current_ftp);
     if (ftp_pasv(current_ftp) < 0) {
 	FtpBye(current_ftp);

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.42 2002/11/27 16:40:19 ukai Exp $ */
+/* $Id: etc.c,v 1.43 2002/12/14 15:18:38 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1518,7 +1518,6 @@ tmpfname(int type, char *ext)
     return tmpf;
 }
 
-#ifdef USE_COOKIE
 static char *monthtbl[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -1728,6 +1727,7 @@ mymktime(char *timestr)
 		     (hour * 60 * 60) + (min * 60) + sec);
 }
 
+#ifdef USE_COOKIE
 #ifdef INET6
 #include <sys/socket.h>
 #endif				/* INET6 */

@@ -1,3 +1,21 @@
+2002-12-15  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
+
+	* [w3m-dev 03568] Re: preserve timestamp
+	* etc.c (USE_COOKIE): moved
+	* file.c (utime.h): include
+		(setModtime): added
+		(loadGeneralFile): set f.modtime
+		(_doFileCopy): setModtime()
+		(doFileSave): setModtime()
+	* ftp.c (getFtpModtime): added
+		(openFTP): pass URLFile, set modtime
+	* html.h (URLFile): add modtime
+	* proto.h (openFTP): arg URLFile *uf
+		(mymktime): always
+	* url.c (init_stream): initialize modtime
+		(openFTPStream): pass URLFile 
+		(openURL): openFTPStream
+	
 2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03567] default keybinding
@@ -5830,4 +5848,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.618 2002/12/13 03:02:03 ukai Exp $
+$Id: ChangeLog,v 1.619 2002/12/14 15:18:37 ukai Exp $

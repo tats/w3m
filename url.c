@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.58 2002/11/18 17:32:33 ukai Exp $ */
+/* $Id: url.c,v 1.59 2002/12/14 15:18:39 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1412,12 +1412,13 @@ init_stream(URLFile *uf, int scheme, InputStream stream)
     uf->compression = 0;
     uf->guess_type = NULL;
     uf->ext = NULL;
+    uf->modtime = -1;
 }
 
 static InputStream
-openFTPStream(ParsedURL *pu)
+openFTPStream(ParsedURL *pu, URLFile *uf)
 {
-    return newFileStream(openFTP(pu), closeFTP);
+    return newFileStream(openFTP(pu, uf), closeFTP);
 }
 
 URLFile
@@ -1587,7 +1588,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    write(sock, tmp->ptr, tmp->length);
 	}
 	else {
-	    uf.stream = openFTPStream(pu);
+	    uf.stream = openFTPStream(pu, &uf);
 	    uf.scheme = pu->scheme;
 	    return uf;
 	}

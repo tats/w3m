@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.159 2002/12/13 00:09:50 ukai Exp $ */
+/* $Id: file.c,v 1.160 2002/12/14 15:18:38 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -11,6 +11,7 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <utime.h>
 /* foo */
 
 #include "html.h"
@@ -329,6 +330,19 @@ uncompressed_file_type(char *path, char **ext)
     if (t0 == NULL)
 	t0 = "text/plain";
     return t0;
+}
+
+static int setModtime(char *path, time_t modtime)
+{
+    struct utimbuf t;
+    struct stat st;
+
+    if (stat(path, &st) == 0)
+	t.actime = st.st_atime;
+    else
+	t.actime = time(NULL);
+    t.modtime = modtime;
+    return utime(path, &t);
 }
 
 void
@@ -1748,6 +1762,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    of = &f;
 	    goto load_doc;
 	}
+
+	f.modtime = mymktime(checkHeader(t_buf, "Last-Modified:"));
     }
 #ifdef USE_NNTP
     else if (pu.scheme == SCM_NEWS || pu.scheme == SCM_NNTP) {
@@ -1876,9 +1892,12 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	signal(SIGINT, prevtrap);
 	if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 	    f.stream = newEncodedStream(f.stream, f.encoding);
-	if (pu.scheme == SCM_LOCAL)
+	if (pu.scheme == SCM_LOCAL) {
+	    struct stat st;
+	    if (stat(pu.real_file, &st) == 0)
+		f.modtime = st.st_mtime;
 	    file = conv_from_system(guess_save_name(NULL, pu.real_file));
-	else
+	} else
 	    file = guess_save_name(t_buf, pu.file);
 	doFileSave(f, file);
 	if (f.scheme == SCM_FTP)
@@ -7410,6 +7429,8 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    _MoveFile(tmpf, p);
+	    if (stat(tmpf, &st) == 0)
+		setModtime(p, st.st_mtime);
 	    unlink(lock);
 	    exit(0);
 	}
@@ -7443,7 +7464,8 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	}
 	if (_MoveFile(tmpf, p) < 0) {
 	    printf("Can't save to %s\n", p);
-	}
+	} else if (stat(tmpf, &st) == 0)
+	    setModtime(p, st.st_mtime);
     }
 }
 
@@ -7508,6 +7530,8 @@ doFileSave(URLFile uf, char *defstr)
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    save2tmp(uf, p);
+	    if (uf.modtime != -1)
+		setModtime(p, uf.modtime);
 	    UFclose(&uf);
 	    unlink(lock);
 	    exit(0);
@@ -7537,7 +7561,8 @@ doFileSave(URLFile uf, char *defstr)
 	}
 	if (save2tmp(uf, p) < 0) {
 	    printf("Can't save to %s\n", p);
-	}
+	} else if (uf.modtime != -1)
+	    setModtime(p, uf.modtime);
     }
 }
 

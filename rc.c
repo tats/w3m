@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.95 2004/03/22 17:20:16 ukai Exp $ */
+/* $Id: rc.c,v 1.96 2004/04/22 16:34:08 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1320,9 +1320,11 @@ load_option_panel(void)
 		    wc_conv(gettext(p->comment), OptionCharset,
 			    InnerCharset)->ptr;
 	}
+#ifdef USE_COLOR
 	for (s = colorstr; s->text; s++)
 	    s->text = wc_conv(gettext(s->text), OptionCharset,
 			      InnerCharset)->ptr;
+#endif
 	OptionEncode = TRUE;
     }
 #endif

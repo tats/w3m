@@ -1,3 +1,8 @@
+2004-04-23  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 04066] --disable-color
+	* rc.c (load_option_panel): #ifdef USE_COLOR
+
 2004-04-22  Masao Uebayashi <uebayasi@pultek.co.jp>
 
 	* fix build error for --enable-m17n --disable-unicode
@@ -8448,4 +8453,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.920 2004/04/21 16:42:17 ukai Exp $
+$Id: ChangeLog,v 1.921 2004/04/22 16:34:08 ukai Exp $

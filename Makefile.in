@@ -276,6 +276,7 @@ distclean: clean
 	-$(RM) w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 	-$(RM) version.c
 	-$(RM) config.h Makefile
+	-$(RM) -f core *.core
 
 sweep:
 	-$(RM) -f core *~ *.bak *.orig *.rej

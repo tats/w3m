@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.233 2003/10/22 18:41:11 ukai Exp $ */
+/* $Id: file.c,v 1.234 2003/12/08 16:08:01 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6387,6 +6387,9 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	HTMLlineproc1("</title>", h_env);
 
     /* for unbalanced table tag */
+    if (obuf->table_level >= MAX_TABLE)
+	obuf->table_level = MAX_TABLE - 1;
+
     while (obuf->table_level >= 0) {
 	table_mode[obuf->table_level].pre_mode
 	    &= ~(TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN);

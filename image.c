@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.21 2002/11/27 16:46:34 ukai Exp $ */
+/* $Id: image.c,v 1.22 2002/12/11 15:07:53 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -11,10 +11,6 @@
 #endif
 
 #ifdef USE_IMAGE
-
-#ifndef W3M_SIGIMG
-#define W3M_SIGIMG (SIGUSR1)
-#endif
 
 static int image_index = 0;
 
@@ -276,25 +272,6 @@ static Hash_sv *image_hash = NULL;
 static Hash_sv *image_file = NULL;
 static GeneralList *image_list = NULL;
 static ImageCache **image_cache = NULL;
-static char *image_lock = NULL;
-static int need_load_image = FALSE;
-
-static MySignalHandler
-load_image_handler(SIGNAL_ARG)
-{
-    need_load_image = TRUE;
-    signal(W3M_SIGIMG, load_image_handler);
-    SIGNAL_RETURN;
-}
-
-static MySignalHandler
-load_image_next(SIGNAL_ARG)
-{
-    need_load_image = TRUE;
-    signal(W3M_SIGIMG, load_image_handler);
-    loadImage(IMG_FLAG_NEXT);
-    SIGNAL_RETURN;
-}
 
 void
 deleteImage(Buffer *buf)
@@ -328,13 +305,18 @@ getAllImage(Buffer *buf)
 
     if (!buf)
 	return;
+    buf->image_loaded = TRUE;
     al = buf->img;
     if (!al)
 	return;
     current = baseURL(buf);
     for (i = 0, a = al->anchors; i < al->nanchor; i++, a++) {
-	if (a->image)
+	if (a->image) {
 	    a->image->cache = getImage(a->image, current, buf->image_flag);
+	    if (a->image->cache &&
+		a->image->cache->loaded == IMG_FLAG_UNLOADED)
+	   	buf->image_loaded = FALSE;
+	}
     }
 }
 
@@ -401,14 +383,11 @@ loadImage(int flag)
 	}
 	image_list = NULL;
 	image_file = NULL;
-	if (image_lock)
-	    unlink(image_lock);
-	need_load_image = FALSE;
 	n_load_image = maxLoadImage;
 	return;
     }
 
-    if (need_load_image) {
+    {
 	int draw = FALSE;
 	for (i = 0; i < n_load_image; i++) {
 	    cache = image_cache[i];
@@ -432,7 +411,7 @@ loadImage(int flag)
 	    if (!stat(cache->file, &st)) {
 		cache->loaded = IMG_FLAG_LOADED;
 		if (getImageSize(cache)) {
-		    if (flag == IMG_FLAG_NEXT && CurrentTab && Currentbuf)
+		    if (CurrentTab && Currentbuf)
 			Currentbuf->need_reshape = TRUE;
 		}
 		draw = TRUE;
@@ -442,16 +421,11 @@ loadImage(int flag)
 	    unlink(cache->touch);
 	    image_cache[i] = NULL;
 	}
-	if (flag == IMG_FLAG_NEXT && draw)
+	if (draw && CurrentTab && Currentbuf) {
 	    drawImage();
-	if (CurrentTab && Currentbuf)
 	    showImageProgress(Currentbuf);
+	}
     }
-
-    if (image_lock)
-	unlink(image_lock);
-    need_load_image = FALSE;
-    signal(W3M_SIGIMG, load_image_handler);
 
     if (!image_list)
 	return;
@@ -463,7 +437,7 @@ loadImage(int flag)
 	    if (!cache) {
 		for (i = 0; i < n_load_image; i++) {
 		    if (image_cache[i])
-			goto load_image_end;
+			return;
 		}
 		image_list = NULL;
 		image_file = NULL;
@@ -476,17 +450,9 @@ loadImage(int flag)
 	}
 	image_cache[i] = cache;
 
-	if (!image_lock) {
-	    image_lock = tmpfname(TMPF_DFL, ".lock")->ptr;
-	    pushText(fileToDelete, image_lock);
-	}
-
 	flush_tty();
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
-#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
-	    FILE *f;
-#endif
 	    reset_signals();
 	    signal(SIGINT, SIG_IGN);
 	    close_tty();
@@ -498,21 +464,13 @@ loadImage(int flag)
 		unlink(cache->file);
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
-	    if (lstat(image_lock, &st)) {
-		if (symlink(cache->file, image_lock))
-		    exit(0);
 #else
-	    f = fopen(cache->touch, "w");
-	    if (f)
-		fclose(f);
-	    if (stat(image_lock, &st)) {
-		f = fopen(image_lock, "w");
-		if (!f)
-		    exit(0);
-		fclose(f);
-#endif
-		kill(getppid(), W3M_SIGIMG);
+	    {
+		FILE *f = fopen(cache->touch, "w");
+		if (f)
+		    fclose(f);
 	    }
+#endif
 	    exit(0);
 	}
 	else if (cache->pid < 0) {
@@ -520,9 +478,6 @@ loadImage(int flag)
 	    return;
 	}
     }
-  load_image_end:
-    if (flag == IMG_FLAG_NEXT)
-	signal(W3M_SIGIMG, load_image_next);
 }
 
 ImageCache *

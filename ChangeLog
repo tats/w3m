@@ -1,5 +1,21 @@
 2002-12-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03559] Re: use select instead of signal for loading images
+	* fm.h (Buffer): add image_loaded
+	* image.c (W3M_SIGIMG): deleted
+		(image_lock): deleted
+		(need_load_image): deleted
+		(load_image_handler): deleted
+		(load_image_next): deleted
+		(getAllImage): check image_loaded
+		(loadImage): delete image_lock
+			delete IMG_FLAG_NEXT
+	* main.c (main): check image_loaded
+	* proto.h (sleep_till_anykey): return int
+	* terms.c (sleep_till_anykey): return int
+
+2002-12-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03558] long title is displayed over tab region
 	* display.c (redrawNLine): check l < 0
 				use addnstr
@@ -5721,4 +5737,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.612 2002/12/11 15:03:06 ukai Exp $
+$Id: ChangeLog,v 1.613 2002/12/11 15:07:53 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.95 2002/12/10 15:51:14 ukai Exp $ */
+/* $Id: fm.h,v 1.96 2002/12/11 15:07:53 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -458,6 +458,7 @@ typedef struct _Buffer {
     char *ssl_certificate;
 #endif
     char image_flag;
+    char image_loaded;
     char need_reshape;
     Anchor *submit;
     struct _BufferPos *undo;

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.40 2002/12/04 16:38:54 ukai Exp $ */
+/* $Id: terms.c,v 1.41 2002/12/11 15:07:53 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1962,12 +1962,12 @@ skip_escseq(void)
     }
 }
 
-void
+int
 sleep_till_anykey(int sec, int purge)
 {
     fd_set rfd;
     struct timeval tim;
-    int er, c;
+    int er, c, ret;
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -1979,7 +1979,8 @@ sleep_till_anykey(int sec, int purge)
     FD_ZERO(&rfd);
     FD_SET(tty, &rfd);
 
-    if (select(tty + 1, &rfd, 0, 0, &tim) > 0 && purge) {
+    ret = select(tty + 1, &rfd, 0, 0, &tim);
+    if (ret > 0 && purge) {
 	c = getch();
 	if (c == ESC_CODE)
 	    skip_escseq();
@@ -1989,6 +1990,7 @@ sleep_till_anykey(int sec, int purge)
 	printf("Error occured: errno=%d\n", errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
+    return ret;
 }
 
 #ifdef USE_MOUSE

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.166 2002/12/10 15:53:03 ukai Exp $ */
+/* $Id: main.c,v 1.167 2002/12/11 15:07:53 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1039,14 +1039,14 @@ main(int argc, char **argv, char **envp)
 	signal(SIGWINCH, resize_handler);
 #endif
 #ifdef USE_IMAGE
-	if (activeImage && displayImage)
-	    loadImage(IMG_FLAG_NEXT);
+	if (activeImage && displayImage && Currentbuf->img &&
+	    !Currentbuf->image_loaded) {
+	    do {
+		loadImage(IMG_FLAG_NEXT);
+	    } while (sleep_till_anykey(1, 0) <= 0);
+	}
 #endif
 	c = getch();
-#ifdef USE_IMAGE
-	if (activeImage && displayImage)
-	    loadImage(IMG_FLAG_START);
-#endif
 #ifdef SIGWINCH
 	signal(SIGWINCH, resize_hook);
 #endif

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.98 2002/04/24 18:29:35 ukai Exp $ */
+/* $Id: main.c,v 1.99 2002/04/26 16:06:34 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -70,9 +70,6 @@ static void cmd_loadfile(char *path);
 static void cmd_loadURL(char *url, ParsedURL *current, char *referer);
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
-#ifdef USE_MARK
-static void cmd_mark(Lineprop *p);
-#endif				/* USE_MARK */
 int show_params_p = 0;
 void show_params(FILE * fp);
 
@@ -2432,16 +2429,8 @@ _mark(void)
     if (Currentbuf->firstLine == NULL)
 	return;
     l = Currentbuf->currentLine;
-    cmd_mark(&l->propBuf[Currentbuf->pos]);
+    l->propBuf[Currentbuf->pos] ^= PE_MARK;
     redrawLine(Currentbuf, l, l->linenumber - Currentbuf->topLine->linenumber);
-}
-
-static void
-cmd_mark(Lineprop *p)
-{
-    if (!use_mark)
-	return;
-    *p |= PE_MARK;
 }
 
 /* Go to next mark */
@@ -2537,7 +2526,7 @@ reMark(void)
 	for (;;) {
 	    if (regexMatch(p, &l->lineBuf[l->len] - p, p == l->lineBuf) == 1) {
 		matchedPosition(&p1, &p2);
-		cmd_mark(l->propBuf + (p1 - l->lineBuf));
+		l->propBuf[p1 - l->lineBuf] |= PE_MARK;
 		p = p2;
 	    }
 	    else

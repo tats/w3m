@@ -1,3 +1,10 @@
+2002-04-27  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 03185] Re: cmd_mark in main.c, rev 1.60 broke unmark?
+	* main.c (cmd_mark): deleted
+		(_mark): xor PE_MARK
+		(reMark): or PE_MARK
+
 2002-04-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* scripts/.cvsignore: add xface2xpm
@@ -3395,4 +3402,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.376 2002/04/26 16:00:58 ukai Exp $
+$Id: ChangeLog,v 1.377 2002/04/26 16:06:34 ukai Exp $

@@ -1,5 +1,10 @@
 2003-01-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* NEWS: func: RESHAPE
+		rc: fold_line
+
+2003-01-24  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* fix compiler warnings
 	* display.c (displayBuffer): fix suggest parentheses around && within ||
 2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
@@ -6819,4 +6824,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.710 2003/01/23 18:42:51 ukai Exp $
+$Id: ChangeLog,v 1.711 2003/01/23 18:44:26 ukai Exp $

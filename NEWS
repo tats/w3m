@@ -1,5 +1,7 @@
-w3m 0.3.3 or 0.4?
+w3m 0.4?
 
+* func: RESHAPE
+* rc: fold_line
 * local cookie: passed via file named $LOCAL_COOKIE or posted not in url query
 * func: SEARCH can take arg
 * URL data: support

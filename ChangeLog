@@ -1,3 +1,8 @@
+2003-02-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.4 release candidate 1
+        * version.c.in: update
+
 2003-02-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03737] local-CGI POST
@@ -7128,4 +7133,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.744 2003/02/08 18:23:52 ukai Exp $
+$Id: ChangeLog,v 1.745 2003/02/10 18:03:08 ukai Exp $

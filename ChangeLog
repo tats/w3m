@@ -1,5 +1,10 @@
 2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* 0.3.2 release candidate 4
+	* version.c.in: update
+
+2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03365] ~/.netrc support
 	* etc.c (add_auth_pass_entry): add netrc arg
 			add new entry to tail
@@ -4076,4 +4081,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.462 2002/10/30 17:21:35 ukai Exp $
+$Id: ChangeLog,v 1.463 2002/10/30 17:26:53 ukai Exp $

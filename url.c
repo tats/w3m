@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.41 2002/02/04 14:49:21 ukai Exp $ */
+/* $Id: url.c,v 1.39.2.1 2002/02/04 16:26:29 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"

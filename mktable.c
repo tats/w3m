@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.9 2002/02/01 13:58:47 inu Exp $ */
+/* $Id: mktable.c,v 1.8.2.1 2002/02/04 16:26:29 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

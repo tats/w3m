@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.28 2003/03/06 14:30:26 ukai Exp $ */
+/* $Id: linein.c,v 1.29 2003/03/06 14:31:22 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -758,7 +758,7 @@ next_dcompl(int next)
 	return;
     cm_disp_clear = FALSE;
     if (CurrentTab)
-        displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 
     if (LASTLINE >= 3) {
 	comment = TRUE;
@@ -1154,5 +1154,5 @@ _editor(void)
     }
     CLen = CPos = setStrType(strBuf, strProp);
     if (CurrentTab)
-        displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }

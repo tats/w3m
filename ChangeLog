@@ -1,5 +1,11 @@
 2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03414] Re: show parameter
+	* main.c (fusage): add -show-option
+		(MAIN): check -show-option
+
+2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03413] Re: setting form on loading
 	* form.c (loadPreForm): add textarea
 		(preFormUpdateBuffer): submit if value is matched as well
@@ -4555,4 +4561,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.500 2002/11/12 12:22:59 ukai Exp $
+$Id: ChangeLog,v 1.501 2002/11/12 12:24:44 ukai Exp $

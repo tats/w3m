@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.127 2002/11/11 15:33:36 ukai Exp $ */
+/* $Id: main.c,v 1.128 2002/11/12 12:24:44 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -239,6 +239,7 @@ fusage(FILE * f, int err)
     fprintf(f,
 	    "    -title[=TERM]    set buffer name to terminal title string\n");
     fprintf(f, "    -o opt=value     assign value to config option\n");
+    fprintf(f, "    -show-option     print all config options\n");
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -help            print this usage message\n");
     fprintf(f, "    -version         print w3m version\n");
@@ -654,10 +655,12 @@ MAIN(int argc, char **argv, char **envp)
 		displayTitleTerm = getenv("TERM");
 	    else if (!strncmp("-title=", argv[i], 7))
 		displayTitleTerm = argv[i] + 7;
-	    else if (!strcmp("-o", argv[i])) {
-		if (++i >= argc || !strcmp(argv[i], "?")) {
-		    show_params_p = 1;
-		    usage();
+	    else if (!strcmp("-o", argv[i]) ||
+		     !strcmp("-show-option", argv[i])) {
+		if (!strcmp("-show-option", argv[i]) || ++i >= argc ||
+		    !strcmp(argv[i], "?")) {
+		    show_params(stdout);
+		    exit(0);
 		}
 		if (!set_param_option(argv[i])) {
 		    /* option set failed */

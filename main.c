@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.213 2003/02/25 16:05:48 ukai Exp $ */
+/* $Id: main.c,v 1.214 2003/02/25 16:06:57 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2509,8 +2509,7 @@ cur_real_linenumber(Buffer *buf)
     if (!cur)
 	return 1;
     n = cur->real_linenumber ? cur->real_linenumber : 1;
-    for (l = buf->firstLine; l && l != cur && l->real_linenumber == 0;
-	 l = l->next) {		/* header */
+    for (l = buf->firstLine; l && l != cur && l->real_linenumber == 0; l = l->next) {	/* header */
 	if (l->bpos == 0)
 	    n++;
     }

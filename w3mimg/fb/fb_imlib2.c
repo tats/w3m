@@ -1,4 +1,4 @@
-/* $Id: fb_imlib2.c,v 1.9 2003/03/24 15:45:59 ukai Exp $ */
+/* $Id: fb_imlib2.c,v 1.10 2004/08/04 17:32:28 ukai Exp $ */
 /**************************************************************************
                 fb_imlib2.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -10,6 +10,12 @@
 
 static void draw(FB_IMAGE * img, Imlib_Image image);
 static Imlib_Image resize_image(Imlib_Image image, int width, int height);
+
+void
+fb_image_init()
+{
+    return;
+}
 
 int
 get_image_size(char *filename, int *w, int *h)

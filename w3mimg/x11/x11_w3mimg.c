@@ -1,6 +1,7 @@
-/* $Id: x11_w3mimg.c,v 1.25 2003/07/13 16:19:10 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.26 2004/08/04 17:32:28 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <ctype.h>
 #include "config.h"
 
@@ -11,7 +12,13 @@
 #include <X11/Xutil.h>
 #include <Imlib2.h>
 #elif defined(USE_GDKPIXBUF)
+#if defined(USE_GTK2)
+#include <glib-object.h>
+#include <gdk/gdk.h>
+#include <gdk-pixbuf-xlib/gdk-pixbuf-xlib.h>
+#else
 #include <gdk-pixbuf/gdk-pixbuf-xlib.h>
+#endif
 #else
 #error no Imlib and GdkPixbuf support
 #endif
@@ -42,7 +49,33 @@ struct x11_image {
     Pixmap *pixmap;
 };
 
-static void
+#if defined(USE_GTK2)
+static int
+get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
+{
+    GdkPixbufAnimationIter *iter;
+    int n, i, d = -1;
+
+    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
+    *w = gdk_pixbuf_animation_get_width(animation);
+    *h = gdk_pixbuf_animation_get_height(animation);
+    for (i = 1;
+	 gdk_pixbuf_animation_iter_on_currently_loading_frame(iter) != TRUE;
+	 i++) {
+	int tmp;
+	tmp = gdk_pixbuf_animation_iter_get_delay_time(iter);
+	if (tmp > d)
+	    d = tmp;
+	gdk_pixbuf_animation_iter_advance(iter, NULL);
+    }
+    if (delay)
+	*delay = d;
+    g_object_unref(G_OBJECT(iter));
+    n = i;
+    return n;
+}
+#else
+static int
 get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 {
     GList *frames;
@@ -74,7 +107,7 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
     if (delay)
 	*delay = d;
 }
-
+#endif
 #endif
 
 static int
@@ -94,6 +127,9 @@ x11_init(w3mimg_op * self)
     }
 #elif defined(USE_GDKPIXBUF)
     if (!xi->init_flag) {
+#if defined(USE_GTK2)
+	g_type_init();
+#endif
 	gdk_pixbuf_xlib_init(xi->display, 0);
 	xi->init_flag = TRUE;
     }
@@ -290,11 +326,15 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     Imlib_Image im;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbufAnimation *animation;
-    GList *frames;
-    int i, j, iw, ih, n, frame_num, delay, max_anim;
+    int i, j, iw, ih, n, frame_num, delay = -1, max_anim;
     double ratio_w, ratio_h;
     struct x11_image *ximg;
     Pixmap tmp_pixmap;
+#if defined(USE_GTK2)
+    GdkPixbufAnimationIter *iter;
+#else
+    GList *frames;
+#endif
 #endif
 
     if (self == NULL)
@@ -342,13 +382,14 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
     max_anim = self->max_anim;
+#if defined(USE_GTK2)
+    animation = gdk_pixbuf_animation_new_from_file(fname, NULL);
+#else
     animation = gdk_pixbuf_animation_new_from_file(fname);
+#endif
     if (!animation)
 	return 0;
-    frames = gdk_pixbuf_animation_get_frames(animation);
-    frame_num = n = gdk_pixbuf_animation_get_num_frames(animation);
-
-    get_animation_size(animation, &iw, &ih, &delay);
+    frame_num = n = get_animation_size(animation, &iw, &ih, &delay);
     if (delay <= 0)
 	max_anim = -1;
 
@@ -370,17 +411,83 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     }
     tmp_pixmap = XCreatePixmap(xi->display, xi->parent, w, h,
 			       DefaultDepth(xi->display, 0));
+    XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) tmp_pixmap, xi->imageGC, 0, 0, w, h);
     if (!tmp_pixmap) {
+#if defined(USE_GTK2)
+	g_object_unref(G_OBJECT(animation));
+#else
 	gdk_pixbuf_animation_unref(animation);
+#endif
 	return 0;
     }
     ximg = x11_img_new(xi, w, h, frame_num);
     if (!ximg) {
 	XFreePixmap(xi->display, tmp_pixmap);
+#if defined(USE_GTK2)
+	g_object_unref(G_OBJECT(animation));
+#else
 	gdk_pixbuf_animation_unref(animation);
+#endif
 	return 0;
     }
+#if defined(USE_GTK2)
+    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
+
+    for (j = 0; j < n; j++) {
+	GdkPixbuf *org_pixbuf, *pixbuf;
+	int width, height, ofstx = 0, ofsty = 0;
+
+	if (max_anim < 0) {
+	    i = (j - n + frame_num > 0) ? (j - n + frame_num) : 0;
+	}
+	else {
+	    i = j;
+	}
+
+	if (gdk_pixbuf_animation_iter_on_currently_loading_frame(iter)) {
+	    g_object_unref(G_OBJECT(iter));
+	    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
+	}
+	org_pixbuf = gdk_pixbuf_animation_iter_get_pixbuf(iter);
+	delay = gdk_pixbuf_animation_iter_get_delay_time(iter);
+	width = gdk_pixbuf_get_width(org_pixbuf);
+	height = gdk_pixbuf_get_height(org_pixbuf);
+
+	if (width == w && height == h) {
+	    pixbuf = resize_image(org_pixbuf, w, h);
+	}
+	else {
+	    pixbuf =
+		resize_image(org_pixbuf, width * ratio_w, height * ratio_h);
+	}
+	width = gdk_pixbuf_get_width(pixbuf);
+	height = gdk_pixbuf_get_height(pixbuf);
+
+	if (delay > ximg->delay)
+	    ximg->delay = delay;
+
+	XCopyArea(xi->display, tmp_pixmap, ximg->pixmap[i],
+		  xi->imageGC, 0, 0, w, h, 0, 0);
+	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
+						 (Drawable) ximg->pixmap[i], 0,
+						 0, ofstx, ofsty, width,
+						 height,
+						 GDK_PIXBUF_ALPHA_BILEVEL, 1,
+						 XLIB_RGB_DITHER_NORMAL, 0, 0);
+	/* XXX */
+	XCopyArea(xi->display, ximg->pixmap[0], tmp_pixmap,
+		  xi->imageGC, 0, 0, w, h, 0, 0);
+	if (org_pixbuf != pixbuf)
+	    g_object_unref(G_OBJECT(pixbuf));
+	gdk_pixbuf_animation_iter_advance(iter, NULL);
+    }
+    XFreePixmap(xi->display, tmp_pixmap);
+    g_object_unref(G_OBJECT(animation));
+
+#else
+    frames = gdk_pixbuf_animation_get_frames(animation);
+
     for (j = 0; j < n; j++) {
 	GdkPixbufFrame *frame;
 	GdkPixbuf *org_pixbuf, *pixbuf;
@@ -448,6 +555,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     }
     XFreePixmap(xi->display, tmp_pixmap);
     gdk_pixbuf_animation_unref(animation);
+#endif
     img->pixmap = ximg;
 #endif
 
@@ -577,12 +685,20 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     *h = imlib_image_get_height();
     imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
+#if defined(USE_GTK2)
+    animation = gdk_pixbuf_animation_new_from_file(fname, NULL);
+#else
     animation = gdk_pixbuf_animation_new_from_file(fname);
+#endif
     if (!animation)
 	return 0;
 
     get_animation_size(animation, w, h, NULL);
+#if defined(USE_GTK2)
+    g_object_unref(G_OBJECT(animation));
+#else
     gdk_pixbuf_animation_unref(animation);
+#endif
 #endif
     return 1;
 }

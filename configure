@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_GTK2 USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -888,7 +888,7 @@ Optional Packages:
   --without-libintl-prefix     don't search for libintl in includedir and libdir
   --with-imagelib=IMAGELIBS		image library
 				 IMAGELIBS may be space separeted list of:
-				    gdk-pixbuf imlib imlib2
+				    gtk2 gdk-pixbuf imlib imlib2
   --with-migemo=MIGEMO_COMMAND	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
@@ -4982,6 +4982,7 @@ _ACEOF
 
 
 
+
  echo "$as_me:$LINENO: checking if image is enabled" >&5
 echo $ECHO_N "checking if image is enabled... $ECHO_C" >&6
  # Check whether --enable-image or --disable-image was given.
@@ -5038,13 +5039,14 @@ else
   with_imagelib="yes"
 fi;
   if test x"$with_imagelib" = xyes; then
-    with_imagelib="gdk-pixbuf imlib imlib2"
+    with_imagelib="gtk2 gdk-pixbuf imlib imlib2"
   fi
   echo "$as_me:$LINENO: result: $with_imagelib" >&5
 echo "${ECHO_T}$with_imagelib" >&6
   with_imlib=no
   with_imlib2=no
   with_gdkpixbuf=no
+  with_gtk2=no
   for imagelib in $with_imagelib
   do
    case "$imagelib" in
@@ -5063,11 +5065,40 @@ echo "${ECHO_T}$with_imagelib" >&6
      if test x"$GDKPIXBUF_CONFIG" = x; then
        GDKPIXBUF_CONFIG=gdk-pixbuf-config
      fi;;
+   gtk2)
+     with_gtk2="yes"
+     if test x"$PKG_CONFIG" = x; then
+       PKG_CONFIG=pkg-config
+     else
+       PKG_CONFIG=:
+     fi;;
    esac
   done
   IMGTARGETS=""
+  if test x"$with_gtk2" = xyes; then
+   version="`$PKG_CONFIG --modversion gdk-pixbuf-2.0 2>/dev/null`"
+ if test x"$version" != x; then
+   echo "$as_me:$LINENO: checking GdkPixbuf version" >&5
+echo $ECHO_N "checking GdkPixbuf version... $ECHO_C" >&6
+   echo "$as_me:$LINENO: result: $version" >&5
+echo "${ECHO_T}$version" >&6
+   set -- `echo "$version" | sed 's/[^0-9]/ /g'`
+   if test "$1" -ne "2" -o "$2" -lt "0" || test "$2" -eq "0" -a "$3" -lt "0"; then
+     { echo "$as_me:$LINENO: WARNING: GdkPixbuf is too old. Install GdkPixbuf (version >= 2.0.0)" >&5
+echo "$as_me: WARNING: GdkPixbuf is too old. Install GdkPixbuf (version >= 2.0.0)" >&2;}
+     have_gdkpixbuf="no"; have_gtk2="no"
+   else
+     have_gdkpixbuf="yes"; have_gtk2="yes"
+   fi
+ else
+   { echo "$as_me:$LINENO: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 2.0.0)" >&5
+echo "$as_me: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 2.0.0)" >&2;}
+   have_gdkpixbuf="no"; have_gtk2="no"
+ fi
+  fi
   if test x"$with_gdkpixbuf" = xyes; then
-   version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
+   if test x"$have_gdkpixbuf" = xno; then
+    version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
  if test x"$version" != x; then
    echo "$as_me:$LINENO: checking GdkPixbuf version" >&5
 echo $ECHO_N "checking GdkPixbuf version... $ECHO_C" >&6
@@ -5086,6 +5117,7 @@ echo "$as_me: WARNING: GdkPixbuf is too old. Install GdkPixbuf (version >= 0.16.
 echo "$as_me: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >= 0.16.0)" >&2;}
    have_gdkpixbuf="no"
  fi
+   fi
   fi
   if test x"$with_imlib" = xyes; then
    version="`$IMLIB_CONFIG --version 2>/dev/null`"
@@ -5130,29 +5162,47 @@ echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 1.0.
  fi
   fi
   if test x"$x11" = xyes; then
-   if test x"$have_gdkpixbuf" = xyes; then
+   if test x"$have_gtk2" = xyes; then
      cat >>confdefs.h <<\_ACEOF
 #define USE_W3MIMG_X11 1
 _ACEOF
 
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"
      cat >>confdefs.h <<\_ACEOF
 #define USE_GDKPIXBUF 1
 _ACEOF
 
+     cat >>confdefs.h <<\_ACEOF
+#define USE_GTK2 1
+_ACEOF
+
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+     IMGX11LDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+   elif test x"$have_gdkpixbuf" = xyes; then
+     cat >>confdefs.h <<\_ACEOF
+#define USE_W3MIMG_X11 1
+_ACEOF
+
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"
+     cat >>confdefs.h <<\_ACEOF
+#define USE_GDKPIXBUF 1
+_ACEOF
+
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
-     IMGTARGETS="x11"
    elif test x"$have_imlib" = xyes; then
      cat >>confdefs.h <<\_ACEOF
 #define USE_W3MIMG_X11 1
 _ACEOF
 
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"
      cat >>confdefs.h <<\_ACEOF
 #define USE_IMLIB 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"
@@ -5161,38 +5211,57 @@ _ACEOF
 #define USE_W3MIMG_X11 1
 _ACEOF
 
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"
      cat >>confdefs.h <<\_ACEOF
 #define USE_IMLIB2 1
 _ACEOF
 
-     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
-     IMGTARGETS="x11"
    else
      { echo "$as_me:$LINENO: WARNING: unable to build w3mimgdisplay with X11 support" >&5
 echo "$as_me: WARNING: unable to build w3mimgdisplay with X11 support" >&2;}
    fi
   fi
   if test x"$fb" = xyes; then
-   if test x"$have_gdkpixbuf" = xyes; then
+   if test x"$have_gtk2" = xyes; then
      cat >>confdefs.h <<\_ACEOF
 #define USE_W3MIMG_FB 1
 _ACEOF
 
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
      cat >>confdefs.h <<\_ACEOF
 #define USE_GDKPIXBUF 1
 _ACEOF
 
+     cat >>confdefs.h <<\_ACEOF
+#define USE_GTK2 1
+_ACEOF
+
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
+   elif test x"$have_gdkpixbuf" = xyes; then
+     cat >>confdefs.h <<\_ACEOF
+#define USE_W3MIMG_FB 1
+_ACEOF
+
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     cat >>confdefs.h <<\_ACEOF
+#define USE_GDKPIXBUF 1
+_ACEOF
+
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-     IMGTARGETS="${IMGTARGETS} fb"
    elif test x"$have_imlib2" = xyes; then
      cat >>confdefs.h <<\_ACEOF
 #define USE_W3MIMG_FB 1
 _ACEOF
 
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
      cat >>confdefs.h <<\_ACEOF
 #define USE_IMLIB2 1
 _ACEOF
@@ -5200,7 +5269,6 @@ _ACEOF
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
-     IMGTARGETS="${IMGTARGETS} fb"
    else
      { echo "$as_me:$LINENO: WARNING: unable to build w3mimgdisplay with FB support" >&5
 echo "$as_me: WARNING: unable to build w3mimgdisplay with FB support" >&2;}
@@ -10864,6 +10932,7 @@ s,@USE_W3MIMG_FB@,$USE_W3MIMG_FB,;t t
 s,@W3MIMGDISPLAY_SETUID@,$W3MIMGDISPLAY_SETUID,;t t
 s,@INSTALL_W3MIMGDISPLAY@,$INSTALL_W3MIMGDISPLAY,;t t
 s,@USE_GDKPIXBUF@,$USE_GDKPIXBUF,;t t
+s,@USE_GTK2@,$USE_GTK2,;t t
 s,@USE_IMLIB@,$USE_IMLIB,;t t
 s,@USE_IMLIB2@,$USE_IMLIB2,;t t
 s,@IMGTARGETS@,$IMGTARGETS,;t t

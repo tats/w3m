@@ -573,6 +573,7 @@ AC_DEFUN([AC_W3M_IMAGE],
  INSTALL_W3MIMGDISPLAY='${INSTALL_PROGRAM}'
  AC_DEFINE(INSTALL_W3MIMGDISPLAY, $INSTALL_W3MIMGDISPLAY)
  AC_SUBST(USE_GDKPIXBUF)
+ AC_SUBST(USE_GTK2)
  AC_SUBST(USE_IMLIB)
  AC_SUBST(USE_IMLIB2)
  AC_SUBST(IMGTARGETS)
@@ -618,16 +619,17 @@ AC_DEFUN([AC_W3M_IMAGE],
   AC_ARG_WITH(imagelib,
    [  --with-imagelib=IMAGELIBS		image library
 				 IMAGELIBS may be space separeted list of: 
-				    gdk-pixbuf imlib imlib2],,
+				    gtk2 gdk-pixbuf imlib imlib2],,
 
    [with_imagelib="yes"])
   if test x"$with_imagelib" = xyes; then
-    with_imagelib="gdk-pixbuf imlib imlib2"
+    with_imagelib="gtk2 gdk-pixbuf imlib imlib2"
   fi
   AC_MSG_RESULT($with_imagelib)
   with_imlib=no
   with_imlib2=no
   with_gdkpixbuf=no
+  with_gtk2=no
   for imagelib in $with_imagelib
   do
    case "$imagelib" in
@@ -646,15 +648,31 @@ AC_DEFUN([AC_W3M_IMAGE],
      if test x"$GDKPIXBUF_CONFIG" = x; then
        GDKPIXBUF_CONFIG=gdk-pixbuf-config
      fi;;
+   gtk2)
+     with_gtk2="yes"
+     if test x"$PKG_CONFIG" = x; then
+       PKG_CONFIG=pkg-config
+     else
+       PKG_CONFIG=:
+     fi;;
    esac
   done
   IMGTARGETS=""
-  if test x"$with_gdkpixbuf" = xyes; then
+  if test x"$with_gtk2" = xyes; then
    AC_W3M_CHECK_VER([GdkPixbuf],
+	[`$PKG_CONFIG --modversion gdk-pixbuf-2.0 2>/dev/null`],
+	2, 0, 0,
+	[have_gdkpixbuf="yes"; have_gtk2="yes"],
+	[have_gdkpixbuf="no"; have_gtk2="no"])
+  fi
+  if test x"$with_gdkpixbuf" = xyes; then
+   if test x"$have_gdkpixbuf" = xno; then
+    AC_W3M_CHECK_VER([GdkPixbuf],
 	[`$GDKPIXBUF_CONFIG --version 2>/dev/null`],
 	0, 16, 0,
 	[have_gdkpixbuf="yes"],
 	[have_gdkpixbuf="no"])
+   fi
   fi
   if test x"$with_imlib" = xyes; then
    AC_W3M_CHECK_VER([Imlib],
@@ -671,46 +689,64 @@ AC_DEFUN([AC_W3M_IMAGE],
 	[have_imlib2="no"])
   fi
   if test x"$x11" = xyes; then
-   if test x"$have_gdkpixbuf" = xyes; then
+   if test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
-     AC_DEFINE(USE_GDKPIXBUF)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_GDKPIXBUF)
+     AC_DEFINE(USE_GTK2)
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+     IMGX11LDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+   elif test x"$have_gdkpixbuf" = xyes; then
+     AC_DEFINE(USE_W3MIMG_X11)
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_GDKPIXBUF)
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
-     IMGTARGETS="x11"    
    elif test x"$have_imlib" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
-     AC_DEFINE(USE_IMLIB)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_IMLIB)
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"    
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
-     AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_IMLIB2)
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
-     IMGTARGETS="x11"    
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
   fi
   if test x"$fb" = xyes; then
-   if test x"$have_gdkpixbuf" = xyes; then
+   if test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
-     AC_DEFINE(USE_GDKPIXBUF)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     AC_DEFINE(USE_GDKPIXBUF)
+     AC_DEFINE(USE_GTK2)
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
+   elif test x"$have_gdkpixbuf" = xyes; then
+     AC_DEFINE(USE_W3MIMG_FB)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     AC_DEFINE(USE_GDKPIXBUF)
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-     IMGTARGETS="${IMGTARGETS} fb"
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
-     IMGTARGETS="${IMGTARGETS} fb"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi

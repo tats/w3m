@@ -1,3 +1,16 @@
+2004-08-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 04096] w3m-img gtk2
+	* acinclude.m4 (AC_W3M_IMAGE): add USE_GTK2
+		add --with-imagelib=gtk2
+	* aclocal.m4 config.guess config.sub configure: regen
+	* config.h.in: add USE_GTK2
+	* w3mimg/fb/fb_gdkpixbuf.c: support USE_GTK2
+	* w3mimg/fb/fb_img.h: add fb_image_init()
+	* w3mimg/fb/fb_imlib2.h: fb_image_init() stub
+	* w3mimg/fb/fb_w3mimg.c: call fb_image_init()
+	* w3mimg/x11/x11_w3mimg.c: support USE_GTK2
+
 2004-08-03  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 04095] build fix when configure with --enable-messagel10n
@@ -8540,4 +8553,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.933 2004/08/02 15:40:50 ukai Exp $
+$Id: ChangeLog,v 1.934 2004/08/04 17:32:27 ukai Exp $

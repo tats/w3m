@@ -72,6 +72,7 @@
 #undef W3MIMGDISPLAY_SETUID
 #undef USE_IMLIB
 #undef USE_GDKPIXBUF
+#undef USE_GTK2
 #undef USE_IMLIB2
 #undef USE_XFACE
 #undef USE_DICT

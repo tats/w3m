@@ -1,3 +1,7 @@
+2003-03-28  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
+
+	* Makefile.in: distclean removes core
+
 2003-03-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03836] CFLAGS for SSL in configure
@@ -7615,4 +7619,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.806 2003/03/27 17:18:34 ukai Exp $
+$Id: ChangeLog,v 1.807 2003/03/28 10:17:17 inu Exp $

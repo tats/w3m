@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.12 2002/02/04 15:18:42 ukai Exp $ */
+/* $Id: form.c,v 1.13 2002/02/25 15:40:04 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -235,15 +235,22 @@ formResetBuffer(Buffer *buf, AnchorList *formitem)
 	case FORM_INPUT_FILE:
 	case FORM_TEXTAREA:
 	    f1->value = f2->value;
+	    f1->init_value = f2->init_value;
 	    break;
 	case FORM_INPUT_CHECKBOX:
 	case FORM_INPUT_RADIO:
 	    f1->checked = f2->checked;
+	    f1->init_checked = f2->init_checked;
 	    break;
 	case FORM_SELECT:
 #ifdef MENU_SELECT
 	    f1->select_option = f2->select_option;
+	    f1->value = f2->value;
 	    f1->label = f2->label;
+	    f1->selected = f2->selected;
+	    f1->init_value = f2->init_value;
+	    f1->init_label = f2->init_label;
+	    f1->init_selected = f2->init_selected;
 #endif				/* MENU_SELECT */
 	    break;
 	default:

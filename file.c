@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.63 2002/02/04 15:26:44 ukai Exp $ */
+/* $Id: file.c,v 1.64 2002/02/05 03:45:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6985,7 +6985,6 @@ char *
 inputAnswer(char *prompt)
 {
     char *ans;
-    char buf[80];
 
     if (fmInitialized) {
 	term_raw();
@@ -6994,8 +6993,7 @@ inputAnswer(char *prompt)
     else {
 	printf(prompt);
 	fflush(stdout);
-	fgets(buf, 80, stdin);
-	ans = allocStr(buf, 1);
+	ans = Strfgets(stdin)->ptr;
     }
     return ans;
 }

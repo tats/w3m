@@ -1,3 +1,8 @@
+2002-02-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02989]
+	* file.c (inputAnswer): use Strfgets() instead of fgets()
+
 2002-02-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
 
 	* [w3m-dev 02986]
@@ -2794,4 +2799,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.299 2002/02/04 15:26:44 ukai Exp $
+$Id: ChangeLog,v 1.300 2002/02/05 03:45:33 ukai Exp $

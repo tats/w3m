@@ -1,5 +1,9 @@
 2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* version.c.in: 0.2.3.1-cvs
+
+2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* w3m 0.2.3.1
 	* version.c.in: update
 	* w3mhelp-*.html: version 0.2.3.1
@@ -1360,4 +1364,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.150 2001/12/20 12:39:53 ukai Exp $
+$Id: ChangeLog,v 1.151 2001/12/20 13:17:48 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.40 2002/02/01 13:58:47 inu Exp $ */
+/* $Id: url.c,v 1.41 2002/02/04 14:49:21 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -286,8 +286,9 @@ openSSLHandle(int sock, char *hostname)
     static int old_ssl_verify_server = -1;
 #endif
 
-    if (!old_ssl_forbid_method || !ssl_forbid_method ||
-	strcmp(old_ssl_forbid_method, ssl_forbid_method)) {
+    if (old_ssl_forbid_method != ssl_forbid_method
+	&& (!old_ssl_forbid_method || !ssl_forbid_method ||
+	    strcmp(old_ssl_forbid_method, ssl_forbid_method))) {
 	old_ssl_forbid_method = ssl_forbid_method;
 #ifdef USE_SSL_VERIFY
 	ssl_path_modified = 1;

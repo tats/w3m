@@ -1,3 +1,8 @@
+2003-04-12  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+
+	* [w3m-dev 03872] goodict.cgi
+	* Bonus/goodict.cgi: adapt new goo dict web page
+
 2003-04-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* configure.in (AUXBIN_TARGETS): don't reset, move to head
@@ -7727,4 +7732,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.821 2003/04/10 17:10:03 ukai Exp $
+$Id: ChangeLog,v 1.822 2003/04/12 14:28:55 ukai Exp $

@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.12 2001/12/02 16:26:08 ukai Exp $
+# $Id: XMakefile,v 1.13 2001/12/02 16:28:52 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -105,10 +105,10 @@ all-scripts:
 	done
 
 install-scripts: all-scripts
+	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		TOPDIR=`pwd`; \
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$TOPDIR/install.sh" install);	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install.sh" install);	\
 	done
 
 uninstall:

@@ -1,3 +1,8 @@
+2001-12-03  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02606]
+	* XMakefile (install-scripts): run pwd outside for loop
+
 2001-12-03  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02605] $(PWD) / allocStr()

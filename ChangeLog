@@ -1,3 +1,9 @@
+2001-11-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* terms.c (mouse_init): fix mouse handling on TERM=linux
+	   if Gpm_Open() successed, set is_xterm = 0 so that 
+	   w3m uses gpm functions.
+
 2001-11-16  Tsutomu Okada <okada@furuno.co.jp>
 
 	* file.c (HTMLtagproc1): [w3m-dev 02408] meta refresh

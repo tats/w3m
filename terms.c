@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: terms.c,v 1.4 2001/11/16 05:55:07 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1717,14 +1717,18 @@ mouse_init()
     if (is_xterm) {
 	XTERM_ON;
     }
-    else {
-	conn.eventMask = ~0;
-	conn.defaultMask = 0;
-	conn.maxMod = 0;
-	conn.minMod = 0;
-	Gpm_Open(&conn, 0);	/* don't care even if it fails */
-	gpm_handler = gpm_process_mouse;
+    conn.eventMask = ~0;
+    conn.defaultMask = 0;
+    conn.maxMod = 0;
+    conn.minMod = 0;
+    if (Gpm_Open(&conn, 0) >= 0) {
+        /*
+	 * If Gpm_Open() success, returns >= 0
+	 * Gpm_Open() returns -2 in case of xterm.
+	 */
+	is_xterm = 0;
     }
+    gpm_handler = gpm_process_mouse;
     mouseActive = 1;
 }
 

@@ -2,9 +2,7 @@
 
 	* main.c (main): DisplayCharset and DocumentCharset also follow 
 	    locale configuration
-
-2004-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
-
+	* Makefile.in (distclean): distclean libwc
 	* libwc/Makefile.in: add distclean
 	* scripts/multipart/Makefile.in: add distclean
 	* scripts/w3mman/Makefile.in: add distclean
@@ -8330,4 +8328,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.905 2004/03/21 16:37:08 ukai Exp $
+$Id: ChangeLog,v 1.906 2004/03/21 16:40:41 ukai Exp $

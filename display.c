@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.42 2002/12/03 15:52:38 ukai Exp $ */
+/* $Id: display.c,v 1.43 2002/12/04 16:45:41 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -453,6 +453,7 @@ redrawNLine(Buffer *buf, int n)
 	TabBuffer *t;
 	int l;
 
+	calcTabPos();
 	move(0, 0);
 #ifdef USE_MOUSE
 	if (mouse_action.menu_str)

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.158 2002/12/03 16:09:43 ukai Exp $ */
+/* $Id: main.c,v 1.159 2002/12/04 16:45:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -102,7 +102,6 @@ void set_buffer_environ(Buffer *);
 static void _followForm(int);
 static void _goLine(char *);
 static void _newT(void);
-static void calcTabPos(void);
 static void followTab(TabBuffer * tab);
 static void moveTab(TabBuffer * t, TabBuffer * t2, int right);
 static int check_target = TRUE;
@@ -710,12 +709,6 @@ main(int argc, char **argv, char **envp)
 	i++;
     }
 
-    sync_with_option();
-#ifdef USE_COOKIE
-    initCookie();
-#endif				/* USE_COOKIE */
-    setLocalCookie();		/* setup cookie for local CGI */
-
 #ifdef	__WATT32__
     if (w3m_debug)
 	dbug_init();
@@ -742,9 +735,7 @@ main(int argc, char **argv, char **envp)
 #ifdef USE_BINMODE_STREAM
     setmode(fileno(stdout), O_BINARY);
 #endif
-    if (w3m_backend)
-	backend();
-    if (!w3m_dump) {
+    if (!w3m_dump && !w3m_backend) {
 	fmInit();
 #ifdef SIGWINCH
 	signal(SIGWINCH, resize_hook);
@@ -752,18 +743,21 @@ main(int argc, char **argv, char **envp)
 	setlinescols();
 	setupscreen();
 #endif				/* not SIGWINCH */
-	initKeymap(TRUE);
-#ifdef USE_MOUSE
-	initMouseAction();
-#endif				/* MOUSE */
-#ifdef USE_MENU
-	initMenu();
-#endif				/* MENU */
     }
 #ifdef USE_IMAGE
     else if (w3m_halfdump && displayImage)
 	activeImage = TRUE;
 #endif
+
+    sync_with_option();
+#ifdef USE_COOKIE
+    initCookie();
+#endif				/* USE_COOKIE */
+    setLocalCookie();		/* setup cookie for local CGI */
+
+    if (w3m_backend)
+	backend();
+
 #ifdef SIGCHLD
     signal(SIGCHLD, sig_chld);
 #endif
@@ -902,7 +896,6 @@ main(int argc, char **argv, char **envp)
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
-	    calcTabPos();
 	    Firstbuf = Currentbuf = newbuf;
 	}
 	else if (open_new_tab) {
@@ -949,7 +942,6 @@ main(int argc, char **argv, char **envp)
 	if (!FirstTab) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
-	    calcTabPos();
 	}
 	if (!Firstbuf || Firstbuf == NO_BUFFER) {
 	    Firstbuf = Currentbuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -5590,19 +5582,14 @@ reinit()
 #ifdef USE_COOKIE
 	initCookie();
 #endif
-	initKeymap(TRUE);
-#ifdef USE_MOUSE
-	initMouseAction();
-#endif
-#ifdef USE_MENU
-	initMenu();
-#endif
+	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 	return;
     }
 
     if (!strcasecmp(resource, "CONFIG") || !strcasecmp(resource, "RC")) {
 	init_rc(config_filename);
 	sync_with_option();
+	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 	return;
     }
 
@@ -5713,7 +5700,6 @@ _newT(void)
     CurrentTab->nextTab = tag;
     CurrentTab = tag;
     nTab++;
-    calcTabPos();
 }
 
 void
@@ -5723,7 +5709,7 @@ newT(void)
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
-TabBuffer *
+static TabBuffer *
 numTab(int n)
 {
     TabBuffer *tab;
@@ -5739,7 +5725,7 @@ numTab(int n)
     return tab;
 }
 
-static void
+void
 calcTabPos(void)
 {
     TabBuffer *tab;
@@ -5819,7 +5805,6 @@ deleteTab(TabBuffer * tab)
 	    CurrentTab = tab->nextTab;
     }
     nTab--;
-    calcTabPos();
     buf = tab->firstBuffer;
     while (buf && buf != NO_BUFFER) {
 	next = buf->nextBuffer;
@@ -6018,7 +6003,6 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
 	    FirstTab = t;
 	t2->prevTab = t;
     }
-    calcTabPos();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.20 2002/12/03 16:09:41 ukai Exp $ */
+/* $Id: func.c,v 1.21 2002/12/04 16:45:41 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -120,7 +120,7 @@ initKeymap(int force)
     struct stat kstat;
     extern int str_to_bool(char *value, int old);
 
-    if (!force && !keymap_initialized)
+    if (!force && keymap_initialized)
 	return;
 
     if ((kf = fopen(rcFile(keymap_file), "rt")) == NULL ||

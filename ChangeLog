@@ -1,5 +1,21 @@
 2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03521] sync option
+	* display.c (redrawNLine): calcTabPos()
+	* func.c (initKeymap): return if keymap_initialized
+	* main.c (calcTabPos): no more static
+		(main): move sync_with_option, initCookie, setLocalCookie
+			move backend
+			move initKeymap, initMouseAction, initMenu
+			remove calcTabPos
+			add displayBuffer
+		(numTab): static
+		(deleteTab): delete calcTabPos
+		(moveTab): delete calcTabPos
+	* proto.h (calcTabPos): added
+		
+2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev-en 00841] Re: w3m segfaults if the terminal is not writable
 	* terms.c (reset_tty): don't close stderr
 
@@ -5399,4 +5415,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.583 2002/12/04 16:38:53 ukai Exp $
+$Id: ChangeLog,v 1.584 2002/12/04 16:45:40 ukai Exp $

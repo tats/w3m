@@ -1,3 +1,8 @@
+2002-06-18  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
+
+	* [w3m-dev 03215] Re: Boehm GC 6.1alpha5
+	* XMakefile: add "base_lib gc.a" for making GC
+
 2002-06-18  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03212] lstat() in form.c
@@ -3504,4 +3509,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.390 2002/06/17 17:51:39 ukai Exp $
+$Id: ChangeLog,v 1.391 2002/06/18 05:16:24 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.15 2002/01/25 15:10:14 ukai Exp $ */
+/* $Id: table.c,v 1.16 2002/01/25 15:20:34 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2656,7 +2656,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	for (i = 0; i < rowspan; i++) {
 	    check_row(tbl, tbl->row + i);
 	    for (j = 0; j < colspan; j++) {
+#if 0
 		tbl->tabattr[tbl->row + i][tbl->col + j] &= ~(HTT_X | HTT_Y);
+#endif
+		if (tbl->tabattr[tbl->row + i][tbl->col + j] & (HTT_X | HTT_Y))
+		    break;
 		tbl->tabattr[tbl->row + i][tbl->col + j] |=
 		    ((i > 0) ? HTT_Y : 0) | ((j > 0) ? HTT_X : 0);
 		if (tbl->col + j > tbl->maxcol) {

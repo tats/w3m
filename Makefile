@@ -22,11 +22,11 @@ sysconfdir = ${prefix}/etc
 top_srcdir = .
 DESTDIR = 
 
-CFLAGS = $(OPTS) -g -O2 $(DEFS)
+CFLAGS = $(OPTS) -g -O2 -I/usr/include/openssl $(DEFS)
 CPPFLAGS =  -I/usr/include/gc -I/usr/include/gc
 DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
 LDFLAGS = 
-LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgc
+LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgpm -lgc -L/usr/lib -lssl -lcrypto
 
 IMGCFLAGS = -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include
 IMGLDFLAGS = -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lgdk_pixbuf_xlib -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
@@ -49,7 +49,7 @@ KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 GCLIB=@gclib@
 
-VERSION=0.4.1+cvs-1.779
+VERSION=0.4.1+cvs-1.780
 MODEL=@W3M_TARGET@-@W3M_MODEL@-EN
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \

@@ -1,6 +1,16 @@
 2003-03-11  Fumitoshi UKAI  <ukai@ukai.org>
 
 	* [w3m-dev 03804] fix autoconf
+	* acinclude.m4 (AC_W3M_MENU): default enabled
+			(AC_W3M_MOUSE): default enabled
+			(AC_W3M_COOKIE): default enabled
+			(AC_W3M_LANG): can't detect locale here.
+				autoconf set LANG=C
+			(AC_W3M_DIGEST_AUTH): default enabled
+			(AC_W3M_SSL): default enabled
+	* configure.in (AC_W3M_DIGEST_AUTH): added
+
+	* [w3m-dev 03804] fix autoconf
 	* config.h.in (EAMCS_LIKE_LINEEDIT): define
 		(VI_PREC_NUM): define
 		(USE_MARK): define
@@ -7422,4 +7432,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.780 2003/03/10 17:33:21 ukai Exp $
+$Id: ChangeLog,v 1.781 2003/03/10 17:50:50 ukai Exp $

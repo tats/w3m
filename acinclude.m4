@@ -52,8 +52,8 @@ AC_DEFUN([AC_W3M_MENU],
 [AC_SUBST(USE_MENU)
 AC_MSG_CHECKING(if popup menu is enabled)
 AC_ARG_ENABLE(menu,
- [  --enable-menu			enable popup menu],,
- [enable_menu="no"])
+ [  --disable-menu			disable popup menu],,
+ [enable_menu="yes"])
  test x$enable_menu = xyes && AC_DEFINE(USE_MENU)
  AC_MSG_RESULT($enable_menu)])
 #
@@ -64,8 +64,8 @@ AC_DEFUN([AC_W3M_MOUSE],
 [AC_SUBST(USE_MOUSE)
 AC_MSG_CHECKING(if mouse operation enabled)
 AC_ARG_ENABLE(mouse,
- [  --enable-mouse		enable mouse operation],,
- [enable_mouse="no"])
+ [  --disable-mouse		disable mouse operation],,
+ [enable_mouse="yes"])
 test x$enable_mouse = xyes && AC_DEFINE(USE_MOUSE)
 AC_MSG_RESULT($enable_mouse)])
 #
@@ -76,8 +76,8 @@ AC_DEFUN([AC_W3M_COOKIE],
 [AC_SUBST(USE_COOKIE)
 AC_MSG_CHECKING(if cookie is enabled)
 AC_ARG_ENABLE(cookie,
- [  --enable-cookie		enable cookie],,
- [enable_cookie="no"])
+ [  --disable-cookie		disable cookie],,
+ [enable_cookie="yes"])
 test x$enable_cookie = xyes && AC_DEFINE(USE_COOKIE)
 AC_MSG_RESULT($enable_cookie)])
 #
@@ -140,10 +140,7 @@ AC_SUBST(SYSTEM_CODE)
 AC_MSG_CHECKING(if japanese support is enabled)
 AC_ARG_ENABLE(japanese,
  [  --enable-japanese=CODE	support Japanese character sets, CODE=(S|E|j|N|n|m)],,
- [case "${LC_ALL:-$LANG}" in
-  ja*) enable_japanese="yes";;
-  *) enable_japanese="no";;
-  esac])
+ [enable_japanese="no"])
 AC_MSG_RESULT($enable_japanese)
 if test x$enable_japanese = xno; then
   w3m_lang="en"
@@ -210,8 +207,8 @@ AC_DEFUN([AC_W3M_DIGEST_AUTH],
 [AC_SUBST(USE_DIGEST_AUTH)
  AC_MSG_CHECKING(if digest auth is enabled)
  AC_ARG_ENABLE(digest_auth,
- [  --enable-digest-auth	enable digest auth],,
- [enable_digest_auth="no"])
+ [  --disable-digest-auth	disable digest auth],,
+ [enable_digest_auth="yes"])
  test x$enable_digest_auth = xyes && AC_DEFINE(USE_DIGEST_AUTH)
  AC_MSG_RESULT($enable_digest_auth)])
 #
@@ -383,7 +380,7 @@ AC_SUBST(USE_SSL_VERIFY)
 AC_MSG_CHECKING(if SSL is suported)
 AC_ARG_WITH(ssl,
  [  --with-ssl=PATH		support https protocol],,
- [with_ssl="no"])
+ [with_ssl="yes"])
 AC_MSG_RESULT($with_ssl)
 if test x$with_ssl != xno; then
   AC_DEFINE(USE_SSL)

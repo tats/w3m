@@ -1,0 +1,28 @@
+w3m 0.2.3.2 - 2001-12-22
+
+* fix security hole in w3m/scripts
+
+----------------------------------------------------------------
+w3m 0.2.3.1 - 2001-12-20
+
+* sync with cvs repository
+* fix bug in configure
+
+----------------------------------------------------------------
+w3m 0.2.3 - 2001-12-20
+
+* command line option: -help, -version
+* new libgc included
+* new runtime option use_mark, nextpage_topline, label_topline, vi_prec_num
+   emacs_like_lineedit, ftppass_hostnamegen
+* RFC2732 support (IPv6)
+* new w3mhelp system
+* several configure changes
+* code cleanups, now gcc -Wall -Werror safe
+
+----------------------------------------------------------------
+w3m 0.2.2 - 2001-11-15
+
+* sync with w3m 0.2.1-inu-1.5
+* w3m maintained in sourceforge.net/projects/w3m
+

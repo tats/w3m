@@ -5,6 +5,7 @@
 	* w3mhelp-*.html: version 0.2.3.2
 	* doc/README: version 0.2.3.2, release date
 	* doc-jp/README: ditto
+	* NEWS: added
 
 2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
@@ -1389,4 +1390,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.154 2001/12/21 19:33:29 ukai Exp $
+$Id: ChangeLog,v 1.155 2001/12/21 19:47:48 ukai Exp $

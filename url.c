@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.75 2003/03/13 17:47:52 ukai Exp $ */
+/* $Id: url.c,v 1.76 2003/03/14 02:07:57 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -994,7 +994,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    }
 	}
 	return;
-    }n
+    }
     if (pu->scheme == SCM_LOCAL)
 	pu->file = file_quote(expandName(file_unquote(pu->file)));
 

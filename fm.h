@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.46 2002/01/31 17:54:51 ukai Exp $ */
+/* $Id: fm.h,v 1.47 2002/02/03 06:12:41 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -772,6 +772,7 @@ extern char *w3m_version;
 #define DUMP_EXTRA    0x08
 #define DUMP_HALFDUMP 0x10
 #define DUMP_FRAME    0x20
+#define DUMP_HALFEXTRA 0x40
 global int w3m_debug;
 global int w3m_dump init(0);
 #define w3m_halfdump (w3m_dump & DUMP_HALFDUMP)

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.77 2002/01/31 17:54:52 ukai Exp $ */
+/* $Id: main.c,v 1.78 2002/02/03 06:12:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -562,6 +562,8 @@ MAIN(int argc, char **argv, char **envp)
 		w3m_dump = (DUMP_HEAD | DUMP_SOURCE | DUMP_EXTRA);
 	    else if (!strcmp("-halfdump", argv[i]))
 		w3m_dump = DUMP_HALFDUMP;
+	    else if (!strcmp("-halfdump_extra", argv[i]))
+		w3m_dump = DUMP_HALFDUMP | DUMP_HALFEXTRA;
 	    else if (!strcmp("-halfload", argv[i])) {
 		w3m_dump = 0;
 		w3m_halfload = TRUE;

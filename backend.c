@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.7 2001/12/27 18:22:59 ukai Exp $ */
+/* $Id: backend.c,v 1.8 2002/02/03 06:12:41 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -97,6 +97,9 @@ print_headers(Buffer *buf, int len)
 	for (tp = buf->document_header->first; tp; tp = tp->next)
 	    printf("%s\n", tp->ptr);
     }
+    printf("w3m-current-url: %s\n", parsedURL2Str(&buf->currentURL)->ptr);
+    if (buf->baseURL)
+	printf("w3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
     printf("w3m-content-type: %s\n", buf->type);
 #ifdef JP_CHARSET
     if (buf->document_code)
@@ -105,29 +108,6 @@ print_headers(Buffer *buf, int len)
 #endif
     if (len > 0)
 	printf("w3m-content-length: %d\n", len);
-}
-
-
-static void
-print_formlist(int fid, FormList *fp)
-{
-    Str s =
-	Sprintf("w3m-form: (formlist (fid %d) (action \"%s\") (method \"%s\")",
-		fid,
-		fp->action->ptr,
-		(fp->method == FORM_METHOD_POST) ? "post"
-		: ((fp->method == FORM_METHOD_INTERNAL) ? "internal" : "get"));
-    if (fp->target)
-	Strcat(s, Sprintf(" (target \"%s\")", fp->target));
-    if (fp->charset)
-	Strcat(s,
-	       Sprintf(" (charset '%s)", get_mime_charset_name(fp->charset)));
-    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
-	Strcat_charp(s, " (enctype \"multipart/form-data\")");
-    if (fp->boundary)
-	Strcat(s, Sprintf(" (boundary \"%s\")", fp->boundary));
-    Strcat_charp(s, ")\n");
-    Strfputs(s, stdout);
 }
 
 
@@ -151,14 +131,6 @@ internal_get(char *url, int flag, FormList *request)
 	    last = Strnew_m_charp("</pre><title>", html_quote(buf->buffername),
 				  "</title>\n", NULL);
 	    print_headers(buf, len + first->length + last->length);
-	    if (buf->formlist) {
-		FormList *fp;
-		int fid = 0;
-		for (fp = buf->formlist; fp; fp = fp->next)
-		    fid++;
-		for (fp = buf->formlist; fp; fp = fp->next)
-		    print_formlist(--fid, fp);
-	    }
 	    printf("\n");
 	    printf("%s", first->ptr);
 	    for (p = backend_halfdump_buf->first; p; p = p->next)

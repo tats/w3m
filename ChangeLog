@@ -1,3 +1,15 @@
+2002-02-03  TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* [w3m-dev 02964] Print data of forms when halfdump option is set
+	* backend.c (print_headers): print w3m-current-url and w3m-base-url
+	* backend.c (print_formlist): deleted
+	* backend.c (internal_get): remove "if (buf->formlist) {}"
+	* file.c (print_internal_information): added
+	* file.c (loadHTMLstream): if halfdump, print_internal_information
+				if w3m_backend, print_internal_information
+	* fm.h (DUMP_HALFEXTRA): added
+	* main.c (-halfdump_extra): added
+
 2002-02-01  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
 
 	* [w3m-dev 02972] #include "config.h"
@@ -2709,4 +2721,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.291 2002/02/01 14:06:46 inu Exp $
+$Id: ChangeLog,v 1.292 2002/02/03 06:12:41 ukai Exp $

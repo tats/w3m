@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.58 2002/02/01 05:01:47 ukai Exp $ */
+/* $Id: file.c,v 1.59 2002/02/03 06:12:41 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5714,6 +5714,66 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     }
 }
 
+static void
+print_internal_information(struct html_feed_environ *henv)
+{
+    int i;
+    Str s;
+    TextLineList *tl = newTextLineList();
+
+    if (form_max >= 0) {
+	FormList *fp;
+	for (i = 0; i <= form_max; i++) {
+	    fp = forms[i];
+	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
+			i, fp->action->ptr,
+			(fp->method == FORM_METHOD_POST) ? "post"
+			: ((fp->method == FORM_METHOD_INTERNAL) ? "internal" : "get"));
+	    if (fp->target)
+		Strcat(s, Sprintf(" target=\"%s\"", fp->target));
+	    if (fp->charset)
+		Strcat(s, Sprintf(" accept-charset=\"%s\"", code_to_str(fp->charset)));
+	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
+		Strcat_charp(s, " enctype=multipart/form-data");
+	    if (fp->boundary)
+		Strcat_m_charp(s, " boundary=\"", html_quote(fp->boundary), "\"", NULL);
+	    Strcat_charp(s, ">");
+	    pushTextLine(tl, newTextLine(s, 0));
+	}
+    }
+#ifdef MENU_SELECT
+    if (n_select > 0) {
+	FormSelectOptionItem *ip;
+	for (i = 0; i < n_select; i++) {
+	    for (ip = select_option[i].first; ip; ip = ip->next) {
+		s = Sprintf("<option_int selectnumber=%d"
+			    " value=\"%s\"%s>%s</option_int>",
+			    i,
+			    html_quote(ip->value ? ip->value->ptr : ip->label->ptr),
+			    ip->checked ? " selected" : "",
+			    ip->label->ptr);
+		pushTextLine(tl, newTextLine(s, 0));
+	    }
+	}
+    }
+#endif /* MENU_SELECT */
+    if (n_textarea > 0) {
+	for (i = 0; i < n_textarea; i++) {
+	    s = Sprintf("<textarea_int textareanumber=%d>%s</textarea_int>",
+			i, textarea_str[i]->ptr);
+	    pushTextLine(tl, newTextLine(s, 0));
+	}
+    }
+
+    if (henv->buf)
+	appendTextLineList(henv->buf, tl);
+    else if (henv->f) {
+	TextLineListItem *p;
+	for (p = tl->first; p; p = p->next)
+	    printf("%s\n", p->ptr->line->ptr);
+    }
+}
+
 void
 loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 {
@@ -5850,6 +5910,13 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
+	if (w3m_dump & DUMP_HALFEXTRA)
+	    print_internal_information(&htmlenv1);
+	return;
+    }
+    if (w3m_backend) {
+	print_internal_information(&htmlenv1);
+	backend_halfdump_buf = htmlenv1.buf;
 	return;
     }
   phase2:
@@ -5864,8 +5931,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #ifdef USE_IMAGE
     newBuf->image_flag = image_flag;
 #endif
-    if (w3m_backend)
-	backend_halfdump_buf = htmlenv1.buf;
     HTMLlineproc2(newBuf, htmlenv1.buf);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.13 2002/02/25 15:40:04 ukai Exp $ */
+/* $Id: form.c,v 1.14 2002/06/17 17:51:39 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -8,12 +8,12 @@
 #include "myctype.h"
 #include "local.h"
 
-#ifdef __EMX__
+#ifndef HAVE_LSTAT
 /* lstat is identical to stat, only the link itself is statted, not the file
  * that is obtained by tracing the links. But on OS/2 systems, there is no
  * differences. */
 #define lstat stat
-#endif				/* __EMX__ */
+#endif				/* not HAVE_LSTAT */
 
 extern Str *textarea_str;
 #ifdef MENU_SELECT
@@ -642,10 +642,8 @@ form_write_from_file(FILE * f, char *boundary, char *name, char *filename,
     fprintf(f, "Content-Type: %s\r\n\r\n",
 	    type ? type : "application/octet-stream");
 
-#ifdef HAVE_LSTAT
     if (lstat(file, &st) < 0)
 	goto write_end;
-#endif				/* HAVE_LSTAT */
     if (S_ISDIR(st.st_mode))
 	goto write_end;
     fd = fopen(file, "r");

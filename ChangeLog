@@ -1,3 +1,8 @@
+2002-02-01  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02968] fix problem with Netscape-Enterprise WWW-authenticate
+	* file.c (findAuthentication): token is case insensitive
+
 2002-02-01  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02961] halfdump image is not consistent
@@ -2699,4 +2704,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.289 2002/01/31 18:40:14 ukai Exp $
+$Id: ChangeLog,v 1.290 2002/02/01 05:01:47 ukai Exp $

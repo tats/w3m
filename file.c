@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.67 2002/02/06 16:20:25 ukai Exp $ */
+/* $Id: file.c,v 1.68 2002/02/07 14:16:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3593,8 +3593,8 @@ check_accept_charset(char *s)
 }
 #endif				/* JP_CHARSET */
 
-Str
-process_form(struct parsed_tag *tag)
+static Str
+process_form_int(struct parsed_tag *tag, int fid)
 {
     char *p, *q, *r, *s, *tg, *n;
     char cs = 0;
@@ -3617,8 +3617,16 @@ process_form(struct parsed_tag *tag)
     n = NULL;
     parsedtag_get_value(tag, ATTR_NAME, &n);
 
-    form_max++;
-    form_sp++;
+    if (fid < 0) {
+	form_max++;
+	form_sp++;
+	fid = form_max;
+    }
+    else {			/* <form_int> */
+	if (form_max < fid)
+	    form_max = fid;
+	form_sp = fid;
+    }
     if (forms_size == 0) {
 	forms_size = INITIAL_FORM_SIZE;
 	forms = New_N(FormList *, forms_size);
@@ -3629,11 +3637,11 @@ process_form(struct parsed_tag *tag)
 	forms = New_Reuse(FormList *, forms, forms_size);
 	form_stack = New_Reuse(int, form_stack, forms_size);
     }
-    form_stack[form_sp] = form_max;
+    form_stack[form_sp] = fid;
 
     if (w3m_halfdump) {
 	Str tmp = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
-			  form_max, html_quote(q), p);
+			  fid, html_quote(q), html_quote(p));
 	if (s)
 	    Strcat(tmp, Sprintf(" enctype=\"%s\"", html_quote(s)));
 	if (tg)
@@ -3648,10 +3656,14 @@ process_form(struct parsed_tag *tag)
 	return tmp;
     }
 
-    forms[form_max] =
-	newFormList(q, p, &cs, s, tg, n,
-		    (form_max > 0) ? forms[form_max - 1] : NULL);
+    forms[fid] = newFormList(q, p, &cs, s, tg, n, NULL);
     return NULL;
+}
+
+Str
+process_form(struct parsed_tag *tag)
+{
+    return process_form_int(tag, -1);
 }
 
 Str
@@ -4578,7 +4590,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     int frameset_sp = -1;
     union frameset_element *idFrame = NULL;
     char *id = NULL;
-    int hseq;
+    int hseq, form_id;
     Str line;
     char *endp;
 #ifndef KANJI_SYMBOLS
@@ -4824,13 +4836,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    {
 			FormList *form;
 			int top = 0, bottom = 0;
-			int form_id = -1;
 			int textareanumber = -1;
 #ifdef MENU_SELECT
 			int selectnumber = -1;
 #endif
-
 			hseq = 0;
+			form_id = -1;
+
 			parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
 			parsedtag_get_value(tag, ATTR_FID, &form_id);
 			parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);

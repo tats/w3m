@@ -1,3 +1,14 @@
+2002-02-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03006] fix form order in table
+	* file.c (process_form): static
+			fix form index order
+			method should be quoted
+	* file.c (process_form): added
+	* file.c (HTMLlineproc2body): add form_id
+	* html.c (ALST_FORM_INT): added
+	* html.c (form_int): update
+
 2002-02-07  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03005] fix Bad cert ident
@@ -2854,4 +2865,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.304 2002/02/06 17:24:14 ukai Exp $
+$Id: ChangeLog,v 1.305 2002/02/07 14:15:59 ukai Exp $

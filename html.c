@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.9 2002/02/05 12:31:27 ukai Exp $ */
+/* $Id: html.c,v 1.10 2002/02/07 14:16:00 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -94,6 +94,11 @@ unsigned char ALST_RULE[] = { ATTR_TYPE };
 #define MAXA_RULE       1
 unsigned char ALST_TITLE_ALT[] = { ATTR_TITLE };
 #define MAXA_TITLE_ALT	1
+unsigned char ALST_FORM_INT[] =
+    { ATTR_METHOD, ATTR_ACTION, ATTR_CHARSET, ATTR_ACCEPT_CHARSET,
+    ATTR_ENCTYPE, ATTR_TARGET, ATTR_NAME, ATTR_FID
+};
+#define MAXA_FORM_INT  8
 unsigned char ALST_INPUT_ALT[] =
     { ATTR_HSEQ, ATTR_FID, ATTR_NO_EFFECT, ATTR_TYPE, ATTR_NAME, ATTR_VALUE,
     ATTR_CHECKED, ATTR_ACCEPT, ATTR_SIZE, ATTR_MAXLENGTH, ATTR_READONLY,
@@ -232,7 +237,7 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"pre_int", NULL, 0, TFLG_INT},	/* 116 HTML_PRE_INT     */
     {"/pre_int", NULL, 0, TFLG_INT | TFLG_END},	/* 117 HTML_N_PRE_INT   */
     {"title_alt", ALST_TITLE_ALT, MAXA_TITLE_ALT, TFLG_INT},	/* 118 HTML_TITLE_ALT   */
-    {"form_int", ALST_FORM, MAXA_FORM, TFLG_INT},	/* 119 HTML_FORM_INT    */
+    {"form_int", ALST_FORM_INT, MAXA_FORM_INT, TFLG_INT},	/* 119 HTML_FORM_INT    */
     {"/form_int", NULL, 0, TFLG_INT | TFLG_END},	/* 120 HTML_N_FORM_INT  */
     {"dl_compact", NULL, 0, TFLG_INT},	/* 121 HTML_DL_COMPACT  */
     {"input_alt", ALST_INPUT_ALT, MAXA_INPUT_ALT, TFLG_INT},	/* 122 HTML_INPUT_ALT   */

@@ -1,3 +1,7 @@
+2002-07-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* gc/: import gc6.1alpha5
+
 2002-07-09  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* delete old mail addresses of aito-san from docs
@@ -3524,4 +3528,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.395 2002/07/09 06:14:14 inu Exp $
+$Id: ChangeLog,v 1.396 2002/07/10 14:21:42 ukai Exp $

@@ -182,6 +182,7 @@ register int k;
     ptr_t result;
     DCL_LOCK_STATE;
 
+    if (GC_debugging_started) GC_print_all_smashed();
     GC_INVOKE_FINALIZERS();
     if (SMALL_OBJ(lb)) {
     	DISABLE_SIGNALS();
@@ -337,6 +338,26 @@ DCL_LOCK_STATE;
   {
     return((GC_PTR)REDIRECT_MALLOC(n*lb));
   }
+
+#ifndef strdup
+# include <string.h>
+# ifdef __STDC__
+    char *strdup(const char *s)
+# else
+    char *strdup(s)
+    char *s;
+# endif
+  {
+    size_t len = strlen(s) + 1;
+    char * result = ((char *)REDIRECT_MALLOC(len+1));
+    BCOPY(s, result, len+1);
+    return result;
+  }
+#endif /* !defined(strdup) */
+ /* If strdup is macro defined, we assume that it actually calls malloc, */
+ /* and thus the right thing will happen even without overriding it.	 */
+ /* This seems to be true on most Linux systems.			 */
+
 # endif /* REDIRECT_MALLOC */
 
 /* Explicitly deallocate an object p.				*/

@@ -324,10 +324,11 @@ ptr_t p;
 {
     register oh * ohdr = (oh *)GC_base(p);
     
+    GC_ASSERT(!I_HOLD_LOCK());
     GC_err_printf1("0x%lx (", ((unsigned long)ohdr + sizeof(oh)));
     GC_err_puts(ohdr -> oh_string);
 #   ifdef SHORT_DBG_HDRS
-      GC_err_printf1(":%ld, sz=%ld)\n", (unsigned long)(ohdr -> oh_int));
+      GC_err_printf1(":%ld)\n", (unsigned long)(ohdr -> oh_int));
 #   else
       GC_err_printf2(":%ld, sz=%ld)\n", (unsigned long)(ohdr -> oh_int),
           			        (unsigned long)(ohdr -> oh_sz));
@@ -342,6 +343,7 @@ ptr_t p;
     ptr_t p;
 # endif
 {
+    GC_ASSERT(!I_HOLD_LOCK());
     if (GC_HAS_DEBUG_INFO(p)) {
 	GC_print_obj(p);
     } else {
@@ -355,6 +357,7 @@ ptr_t p, clobbered_addr;
 {
     register oh * ohdr = (oh *)GC_base(p);
     
+    GC_ASSERT(!I_HOLD_LOCK());
     GC_err_printf2("0x%lx in object at 0x%lx(", (unsigned long)clobbered_addr,
     					        (unsigned long)p);
     if (clobbered_addr <= (ptr_t)(&(ohdr -> oh_sz))
@@ -376,14 +379,18 @@ ptr_t p, clobbered_addr;
 
 void GC_check_heap_proc GC_PROTO((void));
 
+void GC_print_all_smashed_proc GC_PROTO((void));
+
 void GC_do_nothing() {}
 
 void GC_start_debugging()
 {
 #   ifndef SHORT_DBG_HDRS
       GC_check_heap = GC_check_heap_proc;
+      GC_print_all_smashed = GC_print_all_smashed_proc;
 #   else
       GC_check_heap = GC_do_nothing;
+      GC_print_all_smashed = GC_do_nothing;
 #   endif
     GC_print_heap_obj = GC_debug_print_heap_obj_proc;
     GC_debugging_started = TRUE;
@@ -592,7 +599,7 @@ GC_PTR p;
     int i;
 # endif
 {
-    GC_PTR result = GC_malloc_uncollectable(lb + DEBUG_BYTES);
+    GC_PTR result = GC_malloc_uncollectable(lb + UNCOLLECTABLE_DEBUG_BYTES);
     
     if (result == 0) {
         GC_err_printf1("GC_debug_malloc_uncollectable(%ld) returning NIL (",
@@ -618,7 +625,8 @@ GC_PTR p;
     int i;
 # endif
 {
-    GC_PTR result = GC_malloc_atomic_uncollectable(lb + DEBUG_BYTES);
+    GC_PTR result =
+	GC_malloc_atomic_uncollectable(lb + UNCOLLECTABLE_DEBUG_BYTES);
     
     if (result == 0) {
         GC_err_printf1(
@@ -774,6 +782,41 @@ void GC_debug_free_inner(GC_PTR p)
 }
 
 #ifndef SHORT_DBG_HDRS
+
+/* List of smashed objects.  We defer printing these, since we can't	*/
+/* always print them nicely with the allocation lock held.		*/
+/* We put them here instead of in GC_arrays, since it may be useful to	*/
+/* be able to look at them with the debugger.				*/
+#define MAX_SMASHED 20
+ptr_t GC_smashed[MAX_SMASHED];
+unsigned GC_n_smashed = 0;
+
+# if defined(__STDC__) || defined(__cplusplus)
+    void GC_add_smashed(ptr_t smashed)
+# else
+    void GC_add_smashed(smashed)
+    ptr_t smashed;
+#endif
+{
+    GC_smashed[GC_n_smashed] = smashed;
+    if (GC_n_smashed < MAX_SMASHED - 1) ++GC_n_smashed;
+}
+
+/* Print all objects on the list.  Clear the list.	*/
+void GC_print_all_smashed_proc ()
+{
+    int i;
+
+    GC_ASSERT(!I_HOLD_LOCK());
+    if (GC_n_smashed == 0) return;
+    GC_err_printf0("GC_check_heap_block: found smashed heap objects:\n");
+    for (i = 0; i < GC_n_smashed; ++i) {
+        GC_print_smashed_obj(GC_base(GC_smashed[i]), GC_smashed[i]);
+	GC_smashed[i] = 0;
+    }
+    GC_n_smashed = 0;
+}
+
 /* Check all marked objects in the given block for validity */
 /*ARGSUSED*/
 # if defined(__STDC__) || defined(__cplusplus)
@@ -802,11 +845,7 @@ void GC_debug_free_inner(GC_PTR p)
 	        && GC_HAS_DEBUG_INFO((ptr_t)p)) {
 	        ptr_t clobbered = GC_check_annotated_obj((oh *)p);
 	        
-	        if (clobbered != 0) {
-	            GC_err_printf0(
-	                "GC_check_heap_block: found smashed location at ");
-        	    GC_print_smashed_obj((ptr_t)p, clobbered);
-	        }
+	        if (clobbered != 0) GC_add_smashed(clobbered);
 	    }
 	    word_no += sz;
 	    p += sz;

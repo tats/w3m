@@ -177,6 +177,7 @@ register int k;
     lw = ROUNDED_UP_WORDS(lb);
     n_blocks = OBJ_SZ_TO_BLOCKS(lw);
     init = GC_obj_kinds[k].ok_init;
+    if (GC_debugging_started) GC_print_all_smashed();
     GC_INVOKE_FINALIZERS();
     DISABLE_SIGNALS();
     LOCK();
@@ -286,6 +287,7 @@ register struct obj_kind * kind = GC_obj_kinds + k;
 register ptr_t op;
 DCL_LOCK_STATE;
 
+    if (GC_debugging_started) GC_print_all_smashed();
     GC_INVOKE_FINALIZERS();
     DISABLE_SIGNALS();
     LOCK();
@@ -354,6 +356,7 @@ DCL_LOCK_STATE;
         return;
     }
     lw = ALIGNED_WORDS(lb);
+    if (GC_debugging_started) GC_print_all_smashed();
     GC_INVOKE_FINALIZERS();
     DISABLE_SIGNALS();
     LOCK();
@@ -375,6 +378,7 @@ DCL_LOCK_STATE;
     	while ((hbp = *rlh) != 0) {
             hhdr = HDR(hbp);
             *rlh = hhdr -> hb_next;
+	    hhdr -> hb_last_reclaimed = (unsigned short) GC_gc_no;
 #	    ifdef PARALLEL_MARK
 		{
 		  signed_word my_words_allocd_tmp = GC_words_allocd_tmp;

@@ -70,6 +70,8 @@ HOSTCFLAGS=$(CFLAGS)
 # -DGC_OSF1_THREADS enables support for Tru64 pthreads.  Untested.
 # -DGC_FREEBSD_THREADS enables support for FreeBSD pthreads.  Untested.
 #   Appeared to run into some underlying thread problems.
+# -DGC_DGUX386_THREADS enables support for DB/UX on I386 threads.
+#   See README.DGUX386.
 # -DALL_INTERIOR_POINTERS allows all pointers to the interior
 #   of objects to be recognized.  (See gc_priv.h for consequences.)
 #   Alternatively, GC_all_interior_pointers can be set at process
@@ -103,9 +105,9 @@ HOSTCFLAGS=$(CFLAGS)
 #   See gc_cpp.h for details.  No effect on the C part of the collector.
 #   This is defined implicitly in a few environments.  Must also be defined
 #   by clients that use gc_cpp.h.
-# -DREDIRECT_MALLOC=X causes malloc, realloc, and free to be defined
-#   as aliases for X, GC_realloc, and GC_free, respectively.
-#   Calloc is redefined in terms of the new malloc.  X should
+# -DREDIRECT_MALLOC=X causes malloc, realloc, and free to be
+#   defined as aliases for X, GC_realloc, and GC_free, respectively.
+#   Calloc and strdup are redefined in terms of the new malloc.  X should
 #   be either GC_malloc or GC_malloc_uncollectable, or
 #   GC_debug_malloc_replacement.  (The latter invokes GC_debug_malloc
 #   with dummy source location information, but still results in
@@ -114,7 +116,9 @@ HOSTCFLAGS=$(CFLAGS)
 #   you don't want to (or can't) look at.  It may not work for
 #   existing code, but it often does.  Neither works on all platforms,
 #   since some ports use malloc or calloc to obtain system memory.
-#   (Probably works for UNIX, and win32.)
+#   (Probably works for UNIX, and win32.)  If you build with DBG_HDRS_ALL,
+#   you should only use GC_debug_malloc_replacement as a malloc
+#   replacement.
 # -DREDIRECT_REALLOC=X causes GC_realloc to be redirected to X.
 #   The canonical use is -DREDIRECT_REALLOC=GC_debug_realloc_replacement,
 #   together with -DREDIRECT_MALLOC=GC_debug_malloc_replacement to
@@ -183,8 +187,12 @@ HOSTCFLAGS=$(CFLAGS)
 #   allocated through the debugging interface.  Affects the amount of
 #   information generated in leak reports.  Only matters on platforms
 #   on which we can quickly generate call stacks, currently Linux/(X86 & SPARC)
-#   and Solaris/SPARC.  Turns on call chain saving on X86.  On X86, client
+#   and Solaris/SPARC and platforms that provide execinfo.h.
+#   Default is zero.  On X86, client
 #   code should NOT be compiled with -fomit-frame-pointer.
+# -DSAVE_CALL_NARGS=<n> Set the number of functions arguments to be
+#   saved with each call frame.  Default is zero.  Ignored if we
+#   don't know how to retrieve arguments on the platform.
 # -DCHECKSUMS reports on erroneously clear dirty bits, and unexpectedly
 #   altered stubborn objects, at substantial performance cost.
 #   Use only for debugging of the incremental collector.
@@ -230,6 +238,9 @@ HOSTCFLAGS=$(CFLAGS)
 # -DSTUBBORN_ALLOC allows allocation of "hard to change" objects, and thus
 #   makes incremental collection easier.  Was enabled by default until 6.0.
 #   Rarely used, to my knowledge.
+# -DHANDLE_FORK attempts to make GC_malloc() work in a child process fork()ed
+#   from a multithreaded parent.  Currently only supported by linux_threads.c.
+#   (Similar code should work on Solaris or Irix, but it hasn't been tried.)
 #
 
 CXXFLAGS= $(CFLAGS) 
@@ -245,16 +256,16 @@ CORD_SRCS=  cord/cordbscs.c cord/cordxtra.c cord/cordprnt.c cord/de.c cord/cordt
 
 CORD_OBJS=  cord/cordbscs.o cord/cordxtra.o cord/cordprnt.o
 
-SRCS= $(CSRCS) mips_sgi_mach_dep.s rs6000_mach_dep.s alpha_mach_dep.s \
-    sparc_mach_dep.s include/gc.h include/gc_typed.h \
+SRCS= $(CSRCS) mips_sgi_mach_dep.S rs6000_mach_dep.s alpha_mach_dep.S \
+    sparc_mach_dep.S include/gc.h include/gc_typed.h \
     include/private/gc_hdrs.h include/private/gc_priv.h \
     include/private/gcconfig.h include/private/gc_pmark.h \
     include/gc_inl.h include/gc_inline.h include/gc_mark.h \
     threadlibs.c if_mach.c if_not_there.c gc_cpp.cc include/gc_cpp.h \
     gcname.c include/weakpointer.h include/private/gc_locks.h \
     gcc_support.c mips_ultrix_mach_dep.s include/gc_alloc.h \
-    include/new_gc_alloc.h include/javaxfc.h sparc_sunos4_mach_dep.s \
-    sparc_netbsd_mach_dep.s \
+    include/new_gc_alloc.h include/gc_allocator.h \
+    include/javaxfc.h sparc_sunos4_mach_dep.s sparc_netbsd_mach_dep.s \
     include/private/solaris_threads.h include/gc_backptr.h \
     hpux_test_and_clear.s include/gc_gcj.h \
     include/gc_local_alloc.h include/private/dbg_mlc.h \
@@ -270,15 +281,16 @@ DOC_FILES= README.QUICK doc/README.Mac doc/README.MacOSX doc/README.OS2 \
 	doc/README.win32 doc/barrett_diagram doc/README \
         doc/README.contributors doc/README.changes doc/gc.man \
 	doc/README.environment doc/tree.html doc/gcdescr.html \
-	doc/README.autoconf doc/README.macros doc/README.ews4800
+	doc/README.autoconf doc/README.macros doc/README.ews4800 \
+	doc/README.DGUX386 doc/README.arm.cross
 
 TESTS= tests/test.c tests/test_cpp.cc tests/trace_test.c \
 	tests/leak_test.c tests/thread_leak_test.c
 
 GNU_BUILD_FILES= configure.in Makefile.am configure acinclude.m4 \
 		 libtool.m4 install-sh configure.host Makefile.in \
-		 aclocal.m4 config.sub config.guess ltconfig \
-		 ltmain.sh mkinstalldirs
+		 ltconfig aclocal.m4 config.sub config.guess \
+		 ltmain.sh mkinstalldirs depcomp missing
 
 OTHER_MAKEFILES= OS2_MAKEFILE NT_MAKEFILE NT_THREADS_MAKEFILE gc.mak \
 		 BCC_MAKEFILE EMX_MAKEFILE WCC_MAKEFILE Makefile.dj \
@@ -439,18 +451,19 @@ liblinuxgc.so: $(OBJS) dyn_load.o
 # 	gcc -shared -Wl,-soname=libgc.so.0 -o libgc.so.0 $(LIBOBJS) dyn_load.lo
 #	touch liblinuxgc.so
 
-mach_dep.o: $(srcdir)/mach_dep.c $(srcdir)/mips_sgi_mach_dep.s $(srcdir)/mips_ultrix_mach_dep.s \
-            $(srcdir)/rs6000_mach_dep.s $(srcdir)/powerpc_macosx_mach_dep.s $(UTILS)
+mach_dep.o: $(srcdir)/mach_dep.c $(srcdir)/mips_sgi_mach_dep.S \
+	    $(srcdir)/mips_ultrix_mach_dep.s \
+            $(srcdir)/rs6000_mach_dep.s $(srcdir)/powerpc_macosx_mach_dep.s \
+	    $(srcdir)/sparc_mach_dep.S $(srcdir)/sparc_sunos4_mach_dep.s \
+	    $(srcdir)/ia64_save_regs_in_stack.s \
+	    $(srcdir)/sparc_netbsd_mach_dep.s $(UTILS)
 	rm -f mach_dep.o
-	./if_mach MIPS IRIX5 $(AS) -o mach_dep.o $(srcdir)/mips_sgi_mach_dep.s
+	./if_mach MIPS IRIX5 $(AS) -o mach_dep.o $(srcdir)/mips_sgi_mach_dep.S
 	./if_mach MIPS RISCOS $(AS) -o mach_dep.o $(srcdir)/mips_ultrix_mach_dep.s
 	./if_mach MIPS ULTRIX $(AS) -o mach_dep.o $(srcdir)/mips_ultrix_mach_dep.s
-	./if_mach RS6000 "" $(AS) -o mach_dep.o $(srcdir)/rs6000_mach_dep.s
 	./if_mach POWERPC MACOSX $(AS) -o mach_dep.o $(srcdir)/powerpc_macosx_mach_dep.s
-#	./if_mach ALPHA "" $(AS) -o mach_dep.o $(srcdir)/alpha_mach_dep.s
-#	alpha_mach_dep.s assumes that pointers are not saved in fp registers.
-#	Gcc on a 21264 can spill pointers to fp registers.  Oops.
-	./if_mach SPARC SUNOS5 $(AS) -o mach_dep.o $(srcdir)/sparc_mach_dep.s
+	./if_mach ALPHA "" $(CC) -c -o mach_dep.o $(srcdir)/alpha_mach_dep.S
+	./if_mach SPARC SUNOS5 $(CC) -c -o mach_dep.o $(srcdir)/sparc_mach_dep.S
 	./if_mach SPARC SUNOS4 $(AS) -o mach_dep.o $(srcdir)/sparc_sunos4_mach_dep.s
 	./if_mach SPARC OPENBSD $(AS) -o mach_dep.o $(srcdir)/sparc_sunos4_mach_dep.s
 	./if_mach SPARC NETBSD $(AS) -o mach_dep.o $(srcdir)/sparc_netbsd_mach_dep.s

@@ -1,3 +1,7 @@
+2002-11-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: func: DOWNLOAD_LIST
+
 2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03431] save file by background process
@@ -4682,4 +4686,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.514 2002/11/15 15:19:43 ukai Exp $
+$Id: ChangeLog,v 1.515 2002/11/15 15:21:55 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.173 2002/12/18 16:33:19 ukai Exp $ */
+/* $Id: main.c,v 1.174 2002/12/18 16:34:38 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -975,7 +975,7 @@ main(int argc, char **argv, char **envp)
 #endif
 
     Currentbuf = Firstbuf;
-    displayBuffer(Currentbuf, B_NORMAL);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
     if (line_str) {
 	_goLine(line_str);
     }

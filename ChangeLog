@@ -1,3 +1,9 @@
+2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02929] Re: fixed w3mmail.cgi
+	* file.c (openPagerBuffer): use content_charset as document_code
+	* file.c (getNextPage): code is document_code or DocumentCode
+
 2002-01-30  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02928] RFC2617: HTTP Digest authentication
@@ -2393,4 +2399,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.273 2002/01/29 19:08:49 ukai Exp $
+$Id: ChangeLog,v 1.274 2002/01/30 04:25:02 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: Str.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: Str.c,v 1.6 2001/11/29 09:34:14 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -428,7 +428,7 @@ Sprintf(char *fmt, ...)
 {
     int len = 0;
     int status = SP_NORMAL;
-    int p;
+    int p = 0;
     char *f;
     Str s;
     va_list ap;

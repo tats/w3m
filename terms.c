@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.16 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: terms.c,v 1.17 2001/11/29 09:34:15 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -842,7 +842,7 @@ switch_wchar(FILE * f)
 void
 putchars(unsigned char c1, unsigned char c2, FILE * f)
 {
-    Str s;
+    Str s = NULL;
     char *p;
 
     switch (DisplayCode) {

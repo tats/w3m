@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.11 2001/11/27 17:00:18 ukai Exp $ */
+/* $Id: url.c,v 1.12 2001/11/29 09:34:15 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -349,10 +349,10 @@ baseURL(Buffer *buf)
 }
 
 int
-openSocket(char *hostname,
+openSocket(char *volatile hostname,
 	   char *remoteport_name, unsigned short remoteport_num)
 {
-    int sock = -1;
+    volatile int sock = -1;
 #ifdef INET6
     int *af;
     struct addrinfo hints, *res0, *res;
@@ -365,7 +365,7 @@ openSocket(char *hostname,
     int a1, a2, a3, a4;
     unsigned long adr;
 #endif				/* not INET6 */
-    MySignalHandler(*trap) ();
+    MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
 
     if (fmInitialized) {
 	message(Sprintf("Opening socket...")->ptr, 0, 0);
@@ -481,7 +481,7 @@ openSocket(char *hostname,
     }
     else {
 	char **h_addr_list;
-	int result;
+	int result = -1;
 	if (fmInitialized) {
 	    message(Sprintf("Performing hostname lookup on %s", hostname)->ptr,
 		    0, 0);
@@ -1123,7 +1123,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 
     Strcat_charp(s, "User-Agent: ");
     if (UserAgent == NULL || *UserAgent == '\0')
-	Strcat_charp(s, version);
+	Strcat_charp(s, w3m_version);
     else
 	Strcat_charp(s, UserAgent);
     Strcat_charp(s, "\r\n");
@@ -1289,7 +1289,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     URLFile uf;
     HRequest hr;
 #ifdef USE_SSL
-    SSL *sslh;
+    SSL *sslh = NULL;
 #endif				/* USE_SSL */
 #ifdef USE_NNTP
     FILE *fw;

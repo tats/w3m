@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: form.c,v 1.7 2001/11/29 09:34:14 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -258,7 +258,7 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
     int i, j, k;
     Buffer save;
     char *p;
-    int spos, epos, c_len, rows, c_rows, pos, col;
+    int spos, epos, c_len, rows, c_rows, pos, col = 0;
     Lineprop c_type;
     Line *l;
 

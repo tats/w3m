@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: menu.c,v 1.7 2001/11/29 09:34:15 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -383,11 +383,11 @@ new_menu(Menu *menu, MenuItem *item)
 }
 
 void
-geom_menu(Menu *menu, int x, int y, int select)
+geom_menu(Menu *menu, int x, int y, int mselect)
 {
     int win_x, win_y, win_w, win_h;
 
-    menu->select = select;
+    menu->select = mselect;
 
     if (menu->width % FRAME_WIDTH)
 	menu->width = (menu->width / FRAME_WIDTH + 1) * FRAME_WIDTH;
@@ -405,7 +405,7 @@ geom_menu(Menu *menu, int x, int y, int select)
     }
     menu->x = win_x + FRAME_WIDTH;
 
-    win_y = menu->y - select - 1;
+    win_y = menu->y - mselect - 1;
     win_h = menu->height + 2;
     if (win_y + win_h > LASTLINE)
 	win_y = LASTLINE - win_h;
@@ -414,8 +414,8 @@ geom_menu(Menu *menu, int x, int y, int select)
 	if (win_y + win_h > LASTLINE) {
 	    win_h = LASTLINE - win_y;
 	    menu->height = win_h - 2;
-	    if (menu->height <= select)
-		menu->offset = select - menu->height + 1;
+	    if (menu->height <= mselect)
+		menu->offset = mselect - menu->height + 1;
 	}
     }
     menu->y = win_y + 1;
@@ -506,32 +506,32 @@ draw_menu(Menu *menu)
 }
 
 void
-draw_menu_item(Menu *menu, int select)
+draw_menu_item(Menu *menu, int mselect)
 {
-    mvaddnstr(menu->y + select - menu->offset, menu->x,
-	      menu->item[select].label, menu->width);
+    mvaddnstr(menu->y + mselect - menu->offset, menu->x,
+	      menu->item[mselect].label, menu->width);
 }
 
 int
-select_menu(Menu *menu, int select)
+select_menu(Menu *menu, int mselect)
 {
-    if (select < 0 || select >= menu->nitem)
+    if (mselect < 0 || mselect >= menu->nitem)
 	return (MENU_NOTHING);
-    if (select < menu->offset)
-	up_menu(menu, menu->offset - select);
-    else if (select >= menu->offset + menu->height)
-	down_menu(menu, select - menu->offset - menu->height + 1);
+    if (mselect < menu->offset)
+	up_menu(menu, menu->offset - mselect);
+    else if (mselect >= menu->offset + menu->height)
+	down_menu(menu, mselect - menu->offset - menu->height + 1);
 
     if (menu->select >= menu->offset &&
 	menu->select < menu->offset + menu->height)
 	draw_menu_item(menu, menu->select);
-    menu->select = select;
+    menu->select = mselect;
     standout();
     draw_menu_item(menu, menu->select);
     standend();
     /* 
      * move(menu->cursorY, menu->cursorX); */
-    move(menu->y + select - menu->offset, menu->x);
+    move(menu->y + mselect - menu->offset, menu->x);
     toggle_stand();
     refresh();
 
@@ -539,26 +539,26 @@ select_menu(Menu *menu, int select)
 }
 
 void
-goto_menu(Menu *menu, int select, int down)
+goto_menu(Menu *menu, int mselect, int down)
 {
     int select_in;
-    if (select >= menu->nitem)
-	select = menu->nitem - 1;
-    else if (select < 0)
-	select = 0;
-    select_in = select;
-    while (menu->item[select].type == MENU_NOP) {
+    if (mselect >= menu->nitem)
+	mselect = menu->nitem - 1;
+    else if (mselect < 0)
+	mselect = 0;
+    select_in = mselect;
+    while (menu->item[mselect].type == MENU_NOP) {
 	if (down > 0) {
-	    if (++select >= menu->nitem) {
+	    if (++mselect >= menu->nitem) {
 		down_menu(menu, select_in - menu->select);
-		select = menu->select;
+		mselect = menu->select;
 		break;
 	    }
 	}
 	else if (down < 0) {
-	    if (--select < 0) {
+	    if (--mselect < 0) {
 		up_menu(menu, menu->select - select_in);
-		select = menu->select;
+		mselect = menu->select;
 		break;
 	    }
 	}
@@ -566,7 +566,7 @@ goto_menu(Menu *menu, int select, int down)
 	    return;
 	}
     }
-    select_menu(menu, select);
+    select_menu(menu, mselect);
 }
 
 void
@@ -597,7 +597,7 @@ int
 action_menu(Menu *menu)
 {
     char c;
-    int select;
+    int mselect;
     MenuItem item;
 
     if (menu->active == 0) {
@@ -619,21 +619,21 @@ action_menu(Menu *menu)
 	    mouse_inactive();
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
 	if (c == X_MOUSE_SELECTED) {
-	    select = X_Mouse_Selection;
-	    if (select != MENU_NOTHING)
+	    mselect = X_Mouse_Selection;
+	    if (mselect != MENU_NOTHING)
 		break;
 	}
 #endif				/* defined(USE_GPM) || * * * * * *
 				 * defined(USE_SYSMOUSE) */
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
-	    select = (*menu->keymap[(int)c]) (c);
-	    if (select != MENU_NOTHING)
+	    mselect = (*menu->keymap[(int)c]) (c);
+	    if (mselect != MENU_NOTHING)
 		break;
 	}
     }
-    if (select >= 0 && select < menu->nitem) {
-	item = menu->item[select];
+    if (mselect >= 0 && mselect < menu->nitem) {
+	item = menu->item[mselect];
 	if (item.type & MENU_POPUP) {
 	    popup_menu(menu, item.popup);
 	    return (1);
@@ -650,7 +650,7 @@ action_menu(Menu *menu)
 	    CurrentMenuData = NULL;
 	}
     }
-    else if (select == MENU_CLOSE) {
+    else if (mselect == MENU_CLOSE) {
 	if (menu->parent != NULL)
 	    menu->parent->active = 0;
     }
@@ -845,24 +845,24 @@ mTop(char c)
 static int
 mNext(char c)
 {
-    int select = CurrentMenu->select + CurrentMenu->height;
+    int mselect = CurrentMenu->select + CurrentMenu->height;
 
-    if (select >= CurrentMenu->nitem)
+    if (mselect >= CurrentMenu->nitem)
 	return mLast(c);
     down_menu(CurrentMenu, CurrentMenu->height);
-    goto_menu(CurrentMenu, select, -1);
+    goto_menu(CurrentMenu, mselect, -1);
     return (MENU_NOTHING);
 }
 
 static int
 mPrev(char c)
 {
-    int select = CurrentMenu->select - CurrentMenu->height;
+    int mselect = CurrentMenu->select - CurrentMenu->height;
 
-    if (select < 0)
+    if (mselect < 0)
 	return mTop(c);
     up_menu(CurrentMenu, CurrentMenu->height);
-    goto_menu(CurrentMenu, select, 1);
+    goto_menu(CurrentMenu, mselect, 1);
     return (MENU_NOTHING);
 }
 
@@ -889,11 +889,11 @@ mBack(char c)
 static int
 mOk(char c)
 {
-    int select = CurrentMenu->select;
+    int mselect = CurrentMenu->select;
 
-    if (CurrentMenu->item[select].type == MENU_NOP)
+    if (CurrentMenu->item[mselect].type == MENU_NOP)
 	return (MENU_NOTHING);
-    return (select);
+    return (mselect);
 }
 
 static int
@@ -963,10 +963,10 @@ menu_search_forward(Menu *menu, int from)
 static int
 mSrchF(char c)
 {
-    int select;
-    select = menu_search_forward(CurrentMenu, CurrentMenu->select);
-    if (select >= 0)
-	goto_menu(CurrentMenu, select, 1);
+    int mselect;
+    mselect = menu_search_forward(CurrentMenu, CurrentMenu->select);
+    if (mselect >= 0)
+	goto_menu(CurrentMenu, mselect, 1);
     return (MENU_NOTHING);
 }
 
@@ -1012,10 +1012,10 @@ menu_search_backward(Menu *menu, int from)
 static int
 mSrchB(char c)
 {
-    int select;
-    select = menu_search_backward(CurrentMenu, CurrentMenu->select);
-    if (select >= 0)
-	goto_menu(CurrentMenu, select, -1);
+    int mselect;
+    mselect = menu_search_backward(CurrentMenu, CurrentMenu->select);
+    if (mselect >= 0)
+	goto_menu(CurrentMenu, mselect, -1);
     return (MENU_NOTHING);
 }
 
@@ -1048,20 +1048,20 @@ menu_search_next_previous(Menu *menu, int from, int reverse)
 static int
 mSrchN(char c)
 {
-    int select;
-    select = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 0);
-    if (select >= 0)
-	goto_menu(CurrentMenu, select, 1);
+    int mselect;
+    mselect = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 0);
+    if (mselect >= 0)
+	goto_menu(CurrentMenu, mselect, 1);
     return (MENU_NOTHING);
 }
 
 static int
 mSrchP(char c)
 {
-    int select;
-    select = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 1);
-    if (select >= 0)
-	goto_menu(CurrentMenu, select, -1);
+    int mselect;
+    mselect = menu_search_next_previous(CurrentMenu, CurrentMenu->select, 1);
+    if (mselect >= 0)
+	goto_menu(CurrentMenu, mselect, -1);
     return (MENU_NOTHING);
 }
 
@@ -1081,7 +1081,7 @@ static int
 process_mMouse(int btn, int x, int y)
 {
     Menu *menu;
-    int select;
+    int mselect;
     static int press_btn = MOUSE_BTN_RESET, press_x, press_y;
     char c = ' ';
 
@@ -1112,10 +1112,10 @@ process_mMouse(int btn, int x, int y)
 		return (MENU_NOTHING);
 	    }
 	    else {
-		select = y - menu->y + menu->offset;
-		if (menu->item[select].type == MENU_NOP)
+		mselect = y - menu->y + menu->offset;
+		if (menu->item[mselect].type == MENU_NOP)
 		    return (MENU_NOTHING);
-		return (select_menu(menu, select));
+		return (select_menu(menu, mselect));
 	    }
 	}
     }
@@ -1149,7 +1149,7 @@ mMouse(char c)
 static int
 gpm_process_menu_mouse(Gpm_Event * event, void *data)
 {
-    int btn, x, y;
+    int btn = MOUSE_BTN_RESET, x, y;
     if (event->type & GPM_UP)
 	btn = MOUSE_BTN_UP;
     else if (event->type & GPM_DOWN) {
@@ -1340,7 +1340,7 @@ smChBuf(void)
 static int
 smDelBuf(char c)
 {
-    int i, x, y, select;
+    int i, x, y, mselect;
     Buffer *buf;
 
     if (CurrentMenu->select < 0 || CurrentMenu->select >= SelectMenu.nitem)
@@ -1359,7 +1359,7 @@ smDelBuf(char c)
 
     x = CurrentMenu->x;
     y = CurrentMenu->y;
-    select = CurrentMenu->select;
+    mselect = CurrentMenu->select;
 
     initSelectMenu();
 
@@ -1368,7 +1368,7 @@ smDelBuf(char c)
 
     geom_menu(CurrentMenu, x, y, 0);
 
-    CurrentMenu->select = (select <= CurrentMenu->nitem - 2) ? select
+    CurrentMenu->select = (mselect <= CurrentMenu->nitem - 2) ? mselect
 	: (CurrentMenu->nitem - 2);
 
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -1407,8 +1407,8 @@ initMenu(void)
     FILE *mf;
     Str line;
     char *p, *s;
-    int in_menu, nmenu, nitem, type;
-    MenuItem *item;
+    int in_menu, nmenu = 0, nitem = 0, type;
+    MenuItem *item = NULL;
     MenuList *list;
 
     w3mMenuList = New_N(MenuList, 3);

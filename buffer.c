@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: buffer.c,v 1.7 2001/11/29 09:34:14 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -630,7 +630,7 @@ int
 readBufferCache(Buffer *buf)
 {
     FILE *cache;
-    Line *l = NULL, *prevl;
+    Line *l = NULL, *prevl = NULL;
     long lnum = 0, clnum, tlnum;
 #ifdef USE_ANSI_COLOR
     int colorflag;

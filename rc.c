@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.15 2001/11/27 18:29:24 ukai Exp $ */
+/* $Id: rc.c,v 1.16 2001/11/29 09:34:15 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -34,6 +34,7 @@ static struct rc_search_table *RC_search_table;
 static int RC_table_size;
 
 static int rc_initialized = 0;
+static char *config_file = NULL;
 
 #define P_INT      0
 #define P_SHORT    1
@@ -702,7 +703,7 @@ void
 show_params(FILE * fp)
 {
     int i, j, l;
-    char *t;
+    char *t = NULL;
     char *cmt;
 
     fputs("\nconfiguration parameters\n", fp);
@@ -1153,7 +1154,7 @@ sync_with_option(void)
 }
 
 void
-init_rc(char *config_file)
+init_rc(char *config_filename)
 {
     struct stat st;
     FILE *f;
@@ -1200,6 +1201,7 @@ init_rc(char *config_file)
 	interpret_rc(f);
 	fclose(f);
     }
+    config_file = config_filename;
     if (config_file == NULL)
 	config_file = rcFile(CONFIG_FILE);
     if ((f = fopen(config_file, "rt")) != NULL) {
@@ -1248,7 +1250,7 @@ to_str(struct param_ptr *p)
 Buffer *
 load_option_panel(void)
 {
-    Str src = Sprintf(optionpanel_src1, version, CMT_HELPER);
+    Str src = Sprintf(optionpanel_src1, w3m_version, CMT_HELPER);
     struct param_ptr *p;
     struct sel_c *s;
     int x, i;

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.9 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: local.c,v 1.10 2001/11/29 09:34:14 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -47,7 +47,7 @@ dirBuffer(char *dname)
     struct stat lst;
     char lbuf[1024];
 #endif				/* HAVE_READLINK */
-    int i, l, nrow, n = 0, maxlen = 0;
+    int i, l, nrow = 0, n = 0, maxlen = 0;
     int nfile, nfile_max = 100;
     Str dirname;
     Buffer *buf;
@@ -256,7 +256,7 @@ set_environ(char *var, char *value)
 static void
 set_cgi_environ(char *name, char *fn, char *req_uri)
 {
-    set_environ("SERVER_SOFTWARE", version);
+    set_environ("SERVER_SOFTWARE", w3m_version);
     set_environ("SERVER_PROTOCOL", "HTTP/1.0");
     set_environ("SERVER_NAME", "localhost");
     set_environ("SERVER_PORT", "80");	/* dummy */

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.16 2001/11/27 18:23:33 ukai Exp $ */
+/* $Id: file.c,v 1.17 2001/11/29 09:34:14 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -413,7 +413,10 @@ matchattr(char *p, char *attr, int len, Str *value)
 void
 readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 {
-    char *p, *q, *emsg;
+    char *p, *q;
+#ifdef USE_COOKIE
+    char *emsg;
+#endif
     char c;
     Str lineBuf2 = NULL;
     Str tmp;
@@ -552,7 +555,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		 (!strncasecmp(lineBuf2->ptr, "Set-Cookie:", 11) ||
 		  !strncasecmp(lineBuf2->ptr, "Set-Cookie2:", 12))) {
 	    Str name = Strnew(), value = Strnew(), domain = NULL, path = NULL,
-		comment = NULL, commentURL = NULL, port = NULL, tmp;
+		comment = NULL, commentURL = NULL, port = NULL, tmp2;
 	    int version, quoted, flag = 0;
 	    time_t expires = (time_t) - 1;
 
@@ -589,36 +592,36 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    while (*p == ';') {
 		p++;
 		SKIP_BLANKS(p);
-		if (matchattr(p, "expires", 7, &tmp)) {
+		if (matchattr(p, "expires", 7, &tmp2)) {
 		    /* version 0 */
-		    expires = mymktime(tmp->ptr);
+		    expires = mymktime(tmp2->ptr);
 		}
-		else if (matchattr(p, "max-age", 7, &tmp)) {
+		else if (matchattr(p, "max-age", 7, &tmp2)) {
 		    /* XXX Is there any problem with max-age=0? (RFC 2109 ss. 4.2.1, 4.2.2 */
-		    expires = time(NULL) + atol(tmp->ptr);
+		    expires = time(NULL) + atol(tmp2->ptr);
 		}
-		else if (matchattr(p, "domain", 6, &tmp)) {
-		    domain = tmp;
+		else if (matchattr(p, "domain", 6, &tmp2)) {
+		    domain = tmp2;
 		}
-		else if (matchattr(p, "path", 4, &tmp)) {
-		    path = tmp;
+		else if (matchattr(p, "path", 4, &tmp2)) {
+		    path = tmp2;
 		}
 		else if (matchattr(p, "secure", 6, NULL)) {
 		    flag |= COO_SECURE;
 		}
-		else if (matchattr(p, "comment", 7, &tmp)) {
-		    comment = tmp;
+		else if (matchattr(p, "comment", 7, &tmp2)) {
+		    comment = tmp2;
 		}
-		else if (matchattr(p, "version", 7, &tmp)) {
-		    version = atoi(tmp->ptr);
+		else if (matchattr(p, "version", 7, &tmp2)) {
+		    version = atoi(tmp2->ptr);
 		}
-		else if (matchattr(p, "port", 4, &tmp)) {
+		else if (matchattr(p, "port", 4, &tmp2)) {
 		    /* version 1, Set-Cookie2 */
-		    port = tmp;
+		    port = tmp2;
 		}
-		else if (matchattr(p, "commentURL", 10, &tmp)) {
+		else if (matchattr(p, "commentURL", 10, &tmp2)) {
 		    /* version 1, Set-Cookie2 */
-		    commentURL = tmp;
+		    commentURL = tmp2;
 		}
 		else if (matchattr(p, "discard", 7, NULL)) {
 		    /* version 1, Set-Cookie2 */
@@ -893,24 +896,24 @@ same_url_p(ParsedURL *pu1, ParsedURL *pu2)
  * loadGeneralFile: load file to buffer
  */
 Buffer *
-loadGeneralFile(char *path, ParsedURL *current, char *referer, int flag,
-		FormList *request)
+loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+		int flag, FormList *volatile request)
 {
-    URLFile f, *of = NULL;
+    URLFile f, *volatile of = NULL;
     ParsedURL pu, *volatile puv = NULL;
     int volatile nredir = 0;
     int volatile nredir_size = 0;
-    Buffer *b = NULL, *(*proc) ();
-    char *tpath;
-    char *t, *p, *real_type = NULL;
-    Buffer *t_buf = NULL;
-    int searchHeader = SearchHeader;
-    int searchHeader_through = TRUE;
-    MySignalHandler(*prevtrap) ();
+    Buffer *b = NULL, *(*volatile proc)() = loadBuffer;
+    char *volatile tpath;
+    char *volatile t = "text/plain", *p, *volatile real_type = NULL;
+    Buffer *volatile t_buf = NULL;
+    int volatile searchHeader = SearchHeader;
+    int volatile searchHeader_through = TRUE;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     TextList *extra_header = newTextList();
-    Str ss;
-    Str realm;
-    int add_auth_cookie_flag;
+    volatile Str ss = NULL;
+    volatile Str realm = NULL;
+    int volatile add_auth_cookie_flag;
     unsigned char status = HTST_NORMAL;
     URLOption url_option;
     Str tmp;
@@ -961,10 +964,10 @@ loadGeneralFile(char *path, ParsedURL *current, char *referer, int flag,
 		    return NULL;
 		if (S_ISDIR(st.st_mode)) {
 		    if (UseExternalDirBuffer) {
-			Str tmp = Strnew_charp(DirBufferCommand);
-			Strcat_m_charp(tmp, "?dir=",
+			Str cmd = Strnew_charp(DirBufferCommand);
+			Strcat_m_charp(cmd, "?dir=",
 				       pu.real_file, "#current", NULL);
-			b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0,
+			b = loadGeneralFile(cmd->ptr, NULL, NO_REFERER, 0,
 					    NULL);
 			if (b != NULL && b != NO_BUFFER) {
 			    copyParsedURL(&b->currentURL, &pu);
@@ -1798,16 +1801,16 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	*hidden_under = NULL, *hidden = NULL;
 
     if (w3m_debug) {
-	FILE *f = fopen("zzzproc1", "a");
-	fprintf(f, "flushline(%s,%d,%d,%d)\n", obuf->line->ptr, indent, force,
+	FILE *df = fopen("zzzproc1", "a");
+	fprintf(df, "flushline(%s,%d,%d,%d)\n", obuf->line->ptr, indent, force,
 		width);
 	if (buf) {
 	    TextLineListItem *p;
 	    for (p = buf->first; p; p = p->next) {
-		fprintf(f, "buf=\"%s\"\n", p->ptr->line->ptr);
+		fprintf(df, "buf=\"%s\"\n", p->ptr->line->ptr);
 	    }
 	}
-	fclose(f);
+	fclose(df);
     }
 
     if (!(obuf->flag & (RB_SPECIAL & ~RB_NOBR)) && Strlastchar(line) == ' ') {
@@ -3749,12 +3752,11 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     Lineprop outp[LINELEN], mode, effect;
     int pos;
     int nlines;
-    FILE *debug;
+    FILE *debug = NULL;
     struct frameset *frameset_s[FRAMESTACK_SIZE];
     int frameset_sp = -1;
     union frameset_element *idFrame = NULL;
     char *id = NULL;
-    Str tmp;
     int hseq;
     Str line;
     char *endp;
@@ -4192,8 +4194,8 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
     struct parsed_tag *tag;
     Str tokbuf;
     struct table *tbl = NULL;
-    struct table_mode *tbl_mode;
-    int tbl_width;
+    struct table_mode *tbl_mode = NULL;
+    int tbl_width = 0;
 
     if (w3m_debug) {
 	FILE *f = fopen("zzzproc1", "a");
@@ -4867,7 +4869,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     char code;
     struct html_feed_environ htmlenv1;
     struct readbuffer obuf;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     n_textarea = 0;
     cur_textarea = NULL;
@@ -4988,10 +4990,10 @@ Buffer *
 loadHTMLString(Str page)
 {
     URLFile f;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     Buffer *newBuf;
     Str tmp;
-    FILE *src = NULL;
+    FILE *volatile src = NULL;
 
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
@@ -5141,19 +5143,19 @@ loadGopherDir(URLFile *uf, Buffer *newBuf)
  * loadBuffer: read file and make new buffer
  */
 Buffer *
-loadBuffer(URLFile *uf, Buffer *newBuf)
+loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 {
-    FILE *src = NULL;
+    FILE *volatile src = NULL;
     char code;
     Str lineBuf2;
-    char pre_lbuf = '\0';
+    volatile char pre_lbuf = '\0';
     int nlines;
     Str tmpf;
     int linelen = 0, trbyte = 0;
 #ifdef USE_ANSI_COLOR
     int check_color;
 #endif
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -5280,7 +5282,6 @@ saveBufferDelNum(Buffer *buf, FILE * f, int del)
 {
     Line *l = buf->firstLine;
     Str tmp;
-    char *p;
 
 #ifndef KANJI_SYMBOLS
     int is_html = FALSE;
@@ -5598,7 +5599,7 @@ save2tmp(URLFile uf, char *tmpf)
     FILE *ff;
     int check;
     int linelen = 0, trbyte = 0;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
 
     ff = fopen(tmpf, "wb");
@@ -5665,7 +5666,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 {
     Str tmpf, command;
     struct mailcap *mcap;
-    int stat;
+    int mc_stat;
     Buffer *buf = NULL;
     char *header;
 
@@ -5693,9 +5694,9 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     header = checkHeader(defaultbuf, "Content-Type:");
     if (header)
 	header = conv_to_system(header);
-    command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, header, &stat);
+    command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, header, &mc_stat);
 #ifndef __EMX__
-    if (!(stat & MCSTAT_REPNAME)) {
+    if (!(mc_stat & MCSTAT_REPNAME)) {
 	Str tmp = Sprintf("(%s) < %s", command->ptr, shell_quote(tmpf->ptr));
 	command = tmp;
     }

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.9 2001/11/24 16:32:10 inu Exp $ */
+/* $Id: display.c,v 1.10 2001/11/29 09:34:14 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -402,7 +402,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 	    buf->COLS = COLS - buf->rootX;
 	}
 	if (l->real_linenumber)
-	    sprintf(tmp, "%*d:", buf->rootX - 1, l->real_linenumber);
+	    sprintf(tmp, "%*ld:", buf->rootX - 1, l->real_linenumber);
 	else
 	    sprintf(tmp, "%*s ", buf->rootX - 1, "");
 	addstr(tmp);

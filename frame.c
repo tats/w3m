@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: frame.c,v 1.7 2001/11/29 09:34:14 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -429,7 +429,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 #endif				/* JP_CHARSET */
     char *d_target, *p_target, *s_target, *t_target;
     ParsedURL *currentURL, base;
-    MySignalHandler(*prevtrap) (SIGNAL_ARG) = NULL;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     int flag;
 
     if (f == NULL)

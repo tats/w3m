@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: table.c,v 1.9 2001/11/29 09:34:15 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -470,7 +470,7 @@ visible_length(char *str)
     int prev_status = status;
     Str tagbuf = Strnew();
     char *t, *r2;
-    int amp_len;
+    int amp_len = 0;
 
     t = str;
     while (*str) {
@@ -938,7 +938,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
     int i, j, k, n, bcol, ecol, step;
     char *index, *fixed;
     double *mod;
-    double sum = 0., x;
+    double sum = 0., x = 0.;
     struct table_cell *cell = &t->cell;
     int rulewidth = table_rule_width(t);
 
@@ -1483,7 +1483,7 @@ check_table_height(struct table *t)
 	short maxcell;
 	short height[MAXCELL];
     } cell;
-    int space;
+    int space = 0;
 
     cell.maxcell = -1;
 
@@ -1680,7 +1680,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 #endif				/* MATRIX */
     int width;
     int rulewidth;
-    Str vrulea, vruleb, vrulec;
+    Str vrulea = NULL, vruleb = NULL, vrulec = NULL;
 #ifdef ID_EXT
     Str idtag;
 #endif				/* ID_EXT */

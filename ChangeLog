@@ -1,3 +1,100 @@
+2001-11-29  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02584] code cleanup
+
+	* linein.c (_esc): fix #ifdef EMACS_LIKE_LINEEDIT
+	
+	* fix shadow variables (partially)
+	* version.c: s/version/w3m_version/
+	* configure: ditto
+	* fm.h: ditto
+	* local.c (set_environ): ditto
+	* main.c (fusage): ditto
+	* main.c (MAIN): ditto
+	* main.c (dispVer): ditto
+	* rc.c (load_option_panel): ditto
+	* url.c (otherinfo): ditto
+	* file.c (readHeader): s/tmp/tmp2/
+	* file.c (loadGeneralFile): s/tmp/cmd/
+	* file.c (flushline): s/f/df/
+	* file.c (doExternal): s/stat/mc_stat/
+	* proto.h: ditto
+	* mailcap.c (unquote_mailcap_loop): ditto
+	* mailcap.c (unquote_mailcap): ditto
+	* main.c (cmd_loadBuffer): s/link/linkid/
+	* main.c (sig_chld): s/stat/p_stat/
+	* fm.h: remove config_file
+	* main.c (MAIN): s/config_file/config_filename/
+	* rc.c (init_rc): ditto
+	* proto.h: ditto
+	* rc.c: add config_file 
+	* menu.c (goem_menu): s/select/mselect/
+	* menu.c (draw_menu_item): ditto
+	* menu.c (select_menu): ditto
+	* menu.c (goto_menu): ditto
+	* menu.c (action_menu): ditto
+	* menu.c (mNext): ditto
+	* menu.c (mPrev): ditto
+	* menu.c (mOk): ditto
+	* menu.c (mSrchF): ditto
+	* menu.c (mSrchB): ditto
+	* menu.c (mSrchN): ditto
+	* menu.c (mSrchP): ditto
+	* menu.c (process_mMouse): ditto
+	* menu.c (smDelBuf): ditto
+	* proto.h: ditto
+
+	* printf format
+	* display.c (redrawLine): use %*ld instead of %*d
+
+	* require parentheses
+	* ftp.c (FtpLogin): add paren
+
+	* fix variable might be clobbered by `longjmp' or `vfork'
+	* file.c (loadGeneralFile): add volatile
+	* file.c (loadHTMLString): ditto
+	* file.c (loadBuffer): ditto
+	* file.c (doExternal): ditto
+	* frame.c (createFrameFile): ditto
+	* main.c (srchfor): ditto
+	* main.c (srchbak): ditto
+	* main.c (srch_nxtprv): ditto
+	* url.c (openSocket): ditto
+
+	* fix unused variables
+	* file.c (readHeader): emssg if USE_COOKIE defined
+	* file.c (HTMLlineproc2body: remove tmp
+	* file.c (saveBufferDelNum): remove p
+	* linein.c (_esc): c2 if JP_CHARSET defined
+	
+	* fix uninitialized variables
+	* Str.c (Sprintf): initialize p
+	* buffer.c (readBufferCache): initialize prevl
+	* conv.c (cConvSE): initialize ub
+	* conv.c (_cConvEE): initialize ub
+	* conv.c (cConvES): initialize ub
+	* file.c (loadGeneralFile): initialize proc, t, prevtral, ss, realm
+	* file.c (HTMLlineproc2body): initialize debug
+	* file.c (HTMLlineproc0): initialize tbl_mode, tbl_width
+	* file.c (loadHTMLstream): initialize prevtrap
+	* file.c (loadHTMLString): initialize prevtrap
+	* file.c (loadBuffer): initialize prevtrap
+	* form.c (formUpdateBuffer): initialize col
+	* ftp.c (openFTP): initialize pwd
+	* local.c (dirBuffer): initialize nrow
+	* main.c (gpm_process_mouse): initialize btn
+	* menu.c (gpm_process_menu_mouse): ditto
+	* menu.c (initMenu): initialize nmenu, nitem, item
+	* parsetagx.c (parse_tag): initialize attr_id
+	* rc.c (show_params): initialize t
+	* table.c (visible_length): initialize amp_len
+	* table.c (set_integered_width): initialize x
+	* table.c (check_table_height): initialize space
+	* table.c (renderTable): initialize vrulea, vruleb, vrulec
+	* terms.c (putchars): initialize s
+	* url.c (openSocket): initialize trap, result
+	* url.c (openURL): initialize sslh
+	
 2001-11-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02579]

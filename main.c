@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.25 2001/11/27 18:23:33 ukai Exp $ */
+/* $Id: main.c,v 1.26 2001/11/29 09:34:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -56,7 +56,7 @@ JMP_BUF IntReturn;
 
 static void cmd_loadfile(char *path);
 static void cmd_loadURL(char *url, ParsedURL *current);
-static void cmd_loadBuffer(Buffer *buf, int prop, int link);
+static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 #ifdef USE_MARK
 static void cmd_mark(Lineprop *p);
@@ -88,7 +88,7 @@ static int searchKeyNum(void);
 static void
 fusage(FILE * f, int err)
 {
-    fprintf(f, "version %s\n", version);
+    fprintf(f, "version %s\n", w3m_version);
     fprintf(f, "usage: w3m [options] [URL or filename]\noptions:\n");
     fprintf(f, "    -t tab           set tab width\n");
     fprintf(f, "    -r               ignore backspace effect\n");
@@ -211,21 +211,21 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 static void
 sig_chld(int signo)
 {
-    int stat;
+    int p_stat;
 #ifdef HAVE_WAITPID
     pid_t pid;
 
-    while ((pid = waitpid(-1, &stat, WNOHANG)) > 0) {
+    while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0) {
 	;
     }
 #elif HAVE_WAIT3
     int pid;
 
-    while ((pid = wait3(&stat, WNOHANG, NULL)) > 0) {
+    while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0) {
 	;
     }
 #else
-    wait(&stat);
+    wait(&p_stat);
 #endif
     signal(SIGCHLD, sig_chld);
     return;
@@ -274,6 +274,7 @@ MAIN(int argc, char **argv, char **envp)
     char search_header = FALSE;
     char *default_type = NULL;
     char *post_file = NULL;
+    char *config_filename = NULL;
     Str err_msg;
 
 #ifndef HAVE_SYS_ERRLIST
@@ -294,7 +295,7 @@ MAIN(int argc, char **argv, char **envp)
     i = strlen(rc_dir);
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
-    config_file = rcFile(CONFIG_FILE);
+    config_filename = rcFile(CONFIG_FILE);
     create_option_search_table();
 
     /* argument search 1 */
@@ -304,7 +305,7 @@ MAIN(int argc, char **argv, char **envp)
 		argv[i] = "-dummy";
 		if (++i >= argc)
 		    usage();
-		config_file = argv[i];
+		config_filename = argv[i];
 		argv[i] = "-dummy";
 	    }
 	    else if (!strcmp("-h", argv[i]))
@@ -313,7 +314,7 @@ MAIN(int argc, char **argv, char **envp)
     }
 
     /* initializations */
-    init_rc(config_file);
+    init_rc(config_filename);
 #ifdef USE_COOKIE
     initCookie();
 #endif				/* USE_COOKIE */
@@ -644,7 +645,7 @@ MAIN(int argc, char **argv, char **envp)
 	    Strcat_charp(s_page, "<a href='http://w3m.sourceforge.net/'>");
 	    Strcat_m_charp(s_page,
 			   "w3m</a>!<p><p>This is w3m version ",
-			   version,
+			   w3m_version,
 			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
 			   NULL);
 #ifdef DEBIAN
@@ -1237,7 +1238,7 @@ srchfor(void)
     MySignalHandler(*prevtrap) ();
     char *str;
     int i, n = searchKeyNum();
-    int wrapped = 0;
+    volatile int wrapped = 0;
 
     str = inputStrHist("Forward: ", NULL, TextHist);
     if (str != NULL && *str == '\0')
@@ -1269,7 +1270,7 @@ srchbak(void)
     MySignalHandler(*prevtrap) ();
     char *str;
     int i, n = searchKeyNum();
-    int wrapped = 0;
+    volatile int wrapped = 0;
 
     str = inputStrHist("Backward: ", NULL, TextHist);
     if (str != NULL && *str == '\0')
@@ -1295,10 +1296,10 @@ srchbak(void)
 }
 
 static void
-srch_nxtprv(int reverse)
+srch_nxtprv(volatile int reverse)
 {
     int i;
-    int wrapped = 0;
+    volatile int wrapped = 0;
     static int (*routine[2]) (Buffer *, char *) = {
     forwardSearch, backwardSearch};
     MySignalHandler(*prevtrap) ();
@@ -3498,7 +3499,7 @@ goURL(void)
 }
 
 static void
-cmd_loadBuffer(Buffer *buf, int prop, int link)
+cmd_loadBuffer(Buffer *buf, int prop, int linkid)
 {
     if (buf == NULL) {
 	disp_err_message("Can't load string", FALSE);
@@ -3507,9 +3508,9 @@ cmd_loadBuffer(Buffer *buf, int prop, int link)
 	buf->bufferprop |= (BP_INTERNAL | prop);
 	if (!(buf->bufferprop & BP_NO_URL))
 	    copyParsedURL(&buf->currentURL, &Currentbuf->currentURL);
-	if (link != LB_NOLINK) {
-	    buf->linkBuffer[REV_LB[link]] = Currentbuf;
-	    Currentbuf->linkBuffer[link] = buf;
+	if (linkid != LB_NOLINK) {
+	    buf->linkBuffer[REV_LB[linkid]] = Currentbuf;
+	    Currentbuf->linkBuffer[linkid] = buf;
 	}
 	pushBuffer(buf);
     }
@@ -4401,7 +4402,7 @@ mouse()
 int
 gpm_process_mouse(Gpm_Event * event, void *data)
 {
-    int btn, x, y;
+    int btn = MOUSE_BTN_RESET, x, y;
     if (event->type & GPM_UP)
 	btn = MOUSE_BTN_UP;
     else if (event->type & GPM_DOWN) {
@@ -4454,7 +4455,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
 void
 dispVer()
 {
-    disp_message(Sprintf("w3m version %s", version)->ptr, FALSE);
+    disp_message(Sprintf("w3m version %s", w3m_version)->ptr, FALSE);
 }
 
 void

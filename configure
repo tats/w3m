@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.24 2001/11/28 12:23:40 ukai Exp $
+# $Id: configure,v 1.25 2001/11/29 09:34:14 ukai Exp $
 #	Configuration.
 #
 
@@ -1839,7 +1839,7 @@ cat > extrvers.c << EOF
 #include "version.c"
 main()
 {
-  char *p = strchr(version,'/');
+  char *p = strchr(w3m_version,'/');
   if (p == NULL)
     printf("unknown\n");
   else

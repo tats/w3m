@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: ftp.c,v 1.7 2001/11/29 09:34:14 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -121,9 +121,9 @@ FtpLogin(FTP * ftp_return, char *host, char *user, char *pass)
 		struct hostent *sockent;
 		Str tmp2 = Strnew_charp(pass);
 
-		if (sockent = gethostbyaddr((char *)&sockname.sin_addr,
-					    sizeof(sockname.sin_addr),
-					    sockname.sin_family))
+		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
+					     sizeof(sockname.sin_addr),
+					     sockname.sin_family)))
 		    Strcat_charp(tmp2, sockent->h_name);
 		else
 		    Strcat_m_charp(tmp2, "[", inet_ntoa(sockname.sin_addr),
@@ -401,7 +401,7 @@ openFTP(ParsedURL *pu)
     char *qdir;
     char **flist;
     int i, nfile, nfile_max = 100;
-    Str pwd;
+    Str pwd = NULL;
     int add_auth_cookie_flag;
     char *realpath = NULL;
 #ifdef JP_CHARSET

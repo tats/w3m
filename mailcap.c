@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: mailcap.c,v 1.7 2001/11/29 09:34:15 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -300,15 +300,15 @@ quote_mailcap(char *s, int flag)
 
 
 static Str
-unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat,
-		     int flag0)
+unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr,
+		     int *mc_stat, int flag0)
 {
     Str str, tmp, test, then;
     char *p;
     int status = MC_NORMAL, prev_status = MC_NORMAL, sp = 0, flag;
 
-    if (stat)
-	*stat = 0;
+    if (mc_stat)
+	*mc_stat = 0;
 
     if (qstr == NULL)
 	return NULL;
@@ -357,15 +357,15 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat,
 		case 's':
 		    if (name) {
 			Strcat_charp(str, quote_mailcap(name, flag)->ptr);
-			if (stat)
-			    *stat |= MCSTAT_REPNAME;
+			if (mc_stat)
+			    *mc_stat |= MCSTAT_REPNAME;
 		    }
 		    break;
 		case 't':
 		    if (type) {
 			Strcat_charp(str, quote_mailcap(type, flag)->ptr);
-			if (stat)
-			    *stat |= MCSTAT_REPTYPE;
+			if (mc_stat)
+			    *mc_stat |= MCSTAT_REPTYPE;
 		    }
 		    break;
 		}
@@ -401,8 +401,8 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat,
 		    (q == attr || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
 		    matchattr(q, tmp->ptr, tmp->length, &tmp)) {
 		    Strcat_charp(str, quote_mailcap(tmp->ptr, flag)->ptr);
-		    if (stat)
-			*stat |= MCSTAT_REPPARAM;
+		    if (mc_stat)
+			*mc_stat |= MCSTAT_REPPARAM;
 		}
 		status = MC_NORMAL;
 	    }
@@ -416,7 +416,7 @@ unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat,
 }
 
 Str
-unquote_mailcap(char *qstr, char *type, char *name, char *attr, int *stat)
+unquote_mailcap(char *qstr, char *type, char *name, char *attr, int *mc_stat)
 {
-    return unquote_mailcap_loop(qstr, type, name, attr, stat, 0);
+    return unquote_mailcap_loop(qstr, type, name, attr, mc_stat, 0);
 }

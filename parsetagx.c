@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.6 2001/11/29 09:34:15 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -102,7 +102,7 @@ parse_tag(char **s, int internal)
     int tag_id;
     char tagname[MAX_TAG_LEN], attrname[MAX_TAG_LEN];
     char *p, *q;
-    int i, attr_id, nattr;
+    int i, attr_id = 0, nattr;
 
     /* Parse tag name */
     q = (*s) + 1;

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.33 2001/12/07 19:50:37 ukai Exp $
+# $Id: configure,v 1.34 2001/12/08 11:24:41 ukai Exp $
 #	Configuration.
 #
 
@@ -1838,7 +1838,7 @@ case $dmodel in
   6) modelname=custom;;
 esac
 
-cvsver=`awk '\$1 ~ /\\$Id: configure,v 1.33 2001/12/07 19:50:37 ukai Exp $3}' ChangeLog`
+cvsver=`awk '\$1 ~ /[$]Id:/ { print \$3}' ChangeLog`
 sed -e 's/^#define CURRENT_VERSION "\(.*\)+cvs.*"/#define CURRENT_VERSION "\1+cvs-'$cvsver'"/' version.c.in > version.c
 
 cat > extrvers.c << EOF

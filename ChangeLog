@@ -1,3 +1,16 @@
+2004-04-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 04073] Re: run configure in another directory
+	* Makefile.in (CFLAGS): include dir here
+		(DEFS): delete include dirs
+		(libwc/libwc.a): pass OPTS only
+		(w3mimg/w3mimg.a): pass OPTS only
+	* libwc/Makefile.in (CFLAGS): fixed
+	* w3mimg/Makefile.in (CFLAGS): added
+		(fb x11): pass OPTS only
+	* w3mimg/fb/Makefile.in (CFLAGS): added
+	* w3mimg/x11/Makefile.in (CFLAGS): added
+
 2004-04-23  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 
 	* [w3m-dev 04066] --disable-color
@@ -8453,4 +8466,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.921 2004/04/22 16:34:08 ukai Exp $
+$Id: ChangeLog,v 1.922 2004/04/26 17:00:37 ukai Exp $

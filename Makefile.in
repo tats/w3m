@@ -35,10 +35,10 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
-CFLAGS = $(OPTS) @CFLAGS@ $(CPPFLAGS) $(DEFS)
+CFLAGS = $(OPTS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
-DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
+DEFS = @DEFS@ -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DCGIBIN_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
 	-DETC_DIR=\"$(ETC_DIR)\" -DCONF_DIR=\"$(CONF_DIR)\" \
 	-DRC_DIR=\"$(RC_DIR)\" \
@@ -183,7 +183,7 @@ inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
 libwc/libwc.a:
-	(cd libwc && $(MAKE) CC='$(CC0)' TOP_CFLAGS='$(CFLAGS)')
+	(cd libwc && $(MAKE) CC='$(CC0)' OPTS='$(OPTS)')
  
 dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
@@ -195,7 +195,7 @@ w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
 w3mimg/w3mimg.a:
-	(cd w3mimg && $(MAKE) CC="$(CC0)" CFLAGS="$(CFLAGS)")
+	(cd w3mimg && $(MAKE) CC="$(CC0)" OPTS="$(OPTS)")
 
 po:
 	(cd $@ && $(MAKE))

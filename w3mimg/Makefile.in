@@ -6,6 +6,7 @@ SHELL=@SHELL@
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = $(srcdir):.
+CFLAGS=$(OPTS) -I.. -I$(top_srcdir) -I$(srcdir) @CFLAGS@ @CPPFLAGS@ @DEFS@ $(IMGCFLAGS)
 AR=ar
 RANLIB=@RANLIB@
 RM=rm
@@ -21,10 +22,10 @@ w3mimg.a: $(IMGOBJS)
 	$(RANLIB) $@
 
 w3mimg.o: w3mimg.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -I$(top_srcdir) -I$(srcdir) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 fb x11:
-	cd $@ && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)"
+	cd $@ && $(MAKE) CC="$(CC)" OPTS="$(OPTS)"
 
 clean:
 	@-$(RM) -f *.o

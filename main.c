@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.204 2003/01/29 17:38:15 ukai Exp $ */
+/* $Id: main.c,v 1.205 2003/01/30 16:18:31 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4779,27 +4779,26 @@ curlno()
 {
     Line *l = Currentbuf->currentLine;
     Str tmp;
-    int cur = 0, all, col, len = 0;
+    int cur = 0, all = 0, col = 0, len = 0;
 
     if (l != NULL) {
 	cur = l->real_linenumber;
+	col = l->bwidth + Currentbuf->currentColumn + Currentbuf->cursorX + 1;
+	while (l->next && l->next->bpos)
+	    l = l->next;
 	if (l->width < 0)
 	    l->width = COLPOS(l, l->len);
 	len = l->bwidth + l->width;
     }
-    col = l->bwidth + Currentbuf->currentColumn + Currentbuf->cursorX + 1;
-    all =
-	(Currentbuf->lastLine ? Currentbuf->lastLine->
-	 real_linenumber : Currentbuf->allLine);
-    if (all == 0 && Currentbuf->lastLine != NULL)
-	all = l->real_linenumber;
-    if (all == 0)
-	all = 1;
+    if (Currentbuf->lastLine)
+	all = Currentbuf->lastLine->real_linenumber;
     if (Currentbuf->pagerSource && !(Currentbuf->bufferprop & BP_CLOSE))
 	tmp = Sprintf("line %d col %d/%d", cur, col, len);
     else
-	tmp = Sprintf("line %d/%d (%d%%) col %d/%d",
-		      cur, all, cur * 100 / all, col, len);
+	tmp = Sprintf("line %d/%d (%d%%) col %d/%d", cur, all,
+		      (int)((double)cur * 100.0 / (double)(all ? all : 1)
+			    + 0.5),
+		      col, len);
 #ifdef JP_CHARSET
     Strcat_charp(tmp, "  ");
     Strcat_charp(tmp, code_to_str(Currentbuf->document_code));

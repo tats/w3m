@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.45 2002/12/27 15:53:04 ukai Exp $ */
+/* $Id: etc.c,v 1.46 2002/12/27 16:09:18 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1745,8 +1745,9 @@ mymktime(char *timestr)
 	    return -1;
     }
 #ifdef DEBUG
-    fprintf(stderr, "year=%d month=%d day=%d hour:min:sec=%d:%d:%d zone=%d:%d\n",
-	    year, mon, day, hour, min, sec, z_hour, z_min);
+    fprintf(stderr,
+	    "year=%d month=%d day=%d hour:min:sec=%d:%d:%d zone=%d:%d\n", year,
+	    mon, day, hour, min, sec, z_hour, z_min);
 #endif				/* DEBUG */
 
     mon -= 3;

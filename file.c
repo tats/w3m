@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.172 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: file.c,v 1.173 2002/12/27 16:09:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2034,7 +2034,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
     frame_source = 0;
     if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
-        UFclose(&f);
+	UFclose(&f);
     if (b) {
 	b->real_scheme = f.scheme;
 	b->real_type = real_type;
@@ -6458,10 +6458,10 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	if (f->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
 	    Strshrinkfirst(lineBuf2, 1);
 	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
-	        lineBuf2->ptr[0] == '\0') {
-/*
-		iseos(f->stream) = TRUE;
-*/
+		lineBuf2->ptr[0] == '\0') {
+		/*
+		 * iseos(f->stream) = TRUE;
+		 */
 		break;
 	    }
 	}
@@ -6763,10 +6763,10 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	if (uf->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
 	    Strshrinkfirst(lineBuf2, 1);
 	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
-	        lineBuf2->ptr[0] == '\0') {
-/*
-		iseos(uf->stream) = TRUE;
-*/
+		lineBuf2->ptr[0] == '\0') {
+		/*
+		 * iseos(uf->stream) = TRUE;
+		 */
 		break;
 	    }
 	}

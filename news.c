@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.1 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: news.c,v 1.2 2002/12/27 16:09:18 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -33,7 +33,7 @@ KeyAbort(SIGNAL_ARG)
 }
 
 static Str
-news_command(News *news, char *command, int *status)
+news_command(News * news, char *command, int *status)
 {
     Str tmp;
     char c;
@@ -54,7 +54,7 @@ news_command(News *news, char *command, int *status)
 }
 
 static void
-news_close(News *news)
+news_close(News * news)
 {
     if (!news->host)
 	return;
@@ -70,7 +70,7 @@ news_close(News *news)
 }
 
 static int
-news_open(News *news)
+news_open(News * news)
 {
     Str tmp;
     int sock, status;
@@ -97,7 +97,7 @@ news_open(News *news)
 }
 
 static void
-news_quit(News *news)
+news_quit(News * news)
 {
     news_command(news, "QUIT", NULL);
     news_close(news);
@@ -114,9 +114,9 @@ name_from_address(char *str, int n)
     if (*s == '<' && (p = strchr(s, '>'))) {
 	*p++ = '\0';
 	SKIP_BLANKS(p);
-	if (*p == '\0')			/* <address> */
+	if (*p == '\0')		/* <address> */
 	    s++;
-	else				/* <address> name ? */
+	else			/* <address> name ? */
 	    s = p;
     }
     else if ((p = strchr(s, '<')))	/* name <address> */
@@ -192,9 +192,10 @@ add_news_message(Str str, int index, char *date, char *name, char *subject,
     t = mymktime(date);
     tm = localtime(&t);
     Strcat(str,
-	   Sprintf("<tr valign=top><td>%d<td nowrap>(%02d/%02d)<td nowrap>%s<td><a href=\"news:%s\">%s</a>\n",
-		   index, tm->tm_mon + 1, tm->tm_mday, html_quote_s(name),
-		   html_quote(file_quote(mid)), html_quote(subject)));
+	   Sprintf
+	   ("<tr valign=top><td>%d<td nowrap>(%02d/%02d)<td nowrap>%s<td><a href=\"news:%s\">%s</a>\n",
+	    index, tm->tm_mon + 1, tm->tm_mday, html_quote_s(name),
+	    html_quote(file_quote(mid)), html_quote(subject)));
 }
 
 InputStream
@@ -223,8 +224,7 @@ openNewsStream(ParsedURL *pu)
     else
 	mode = NULL;
     if (current_news.host) {
-	if (!strcmp(current_news.host, host) &&
-	    current_news.port == port) {
+	if (!strcmp(current_news.host, host) && current_news.port == port) {
 	    tmp = Sprintf("MODE %s", mode ? mode : "READER");
 	    tmp = news_command(&current_news, tmp->ptr, &status);
 	    if (status != 200 && status != 201)
@@ -296,11 +296,14 @@ readNewsgroup(ParsedURL *pu)
     if (fmInitialized)
 	term_cbreak();
 
-    page = Sprintf("<title>Newsgroup: %s</title>\n<h1>Newsgroup:&nbsp;%s</h1>\n<hr>\n",
-			 qgroup, qgroup);
+    page =
+	Sprintf
+	("<title>Newsgroup: %s</title>\n<h1>Newsgroup:&nbsp;%s</h1>\n<hr>\n",
+	 qgroup, qgroup);
 
     qgroup = html_quote(file_quote(group));	/* URL */
-    tmp = news_command(&current_news, Sprintf("GROUP %s", group)->ptr, &status);
+    tmp =
+	news_command(&current_news, Sprintf("GROUP %s", group)->ptr, &status);
     if (status != 211)
 	goto news_list;
     if (sscanf(tmp->ptr, "%d %d %d %d", &status, &i, &first, &last) != 4)
@@ -329,7 +332,7 @@ readNewsgroup(ParsedURL *pu)
 
     Strcat_charp(page, "<table>\n");
     news_command(&current_news, Sprintf("XOVER %d-%d", start, end - 1)->ptr,
-					&status);
+		 &status);
     if (status == 224) {
 	f.scheme = SCM_NEWS;
 	while (1) {
@@ -361,7 +364,7 @@ readNewsgroup(ParsedURL *pu)
 	}
     }
     else {
-	init_stream(&f, SCM_NEWS, current_news.rf); 
+	init_stream(&f, SCM_NEWS, current_news.rf);
 	buf = newBuffer(INIT_BUFFER_WIDTH);
 	for (i = start; i < end && i <= last; i++) {
 	    news_command(&current_news, Sprintf("HEAD %d", i)->ptr, &status);
@@ -416,8 +419,9 @@ readNewsgroup(ParsedURL *pu)
 	if (sscanf(q, "%d %d", &last, &first) == 2 && last >= first)
 	    i = last - first + 1;
 	Strcat(page,
-	       Sprintf("<tr><td align=right>%d<td><a href=\"news:%s\">%s</a>\n",
-		       i, html_quote(file_quote(p)), html_quote(p)));
+	       Sprintf
+	       ("<tr><td align=right>%d<td><a href=\"news:%s\">%s</a>\n", i,
+		html_quote(file_quote(p)), html_quote(p)));
     }
     if (flag == 2)
 	Strcat_charp(page, "</table>\n");
@@ -435,4 +439,4 @@ disconnectNews(void)
     news_quit(&current_news);
 }
 
-#endif		/* USE_NNTP */
+#endif				/* USE_NNTP */

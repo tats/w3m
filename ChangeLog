@@ -1,5 +1,13 @@
 2002-03-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* part of [w3m-dev-en 00713] contrib: unofficial "current page info" patch, updated for w3m-0.3
+	  by Moritz Barsnick <barsnick@gmx.net>
+	* map.c (page_info_panel): s/line/lines/
+				s/byte/bytes/
+				anchor for URL of current anchor
+
+2002-03-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* -title support
 	  modified [w3m-dev-en 00710] contrib: unofficial "xterm title" patch, updated for w3m-0.3
 	  by Moritz Barsnick <barsnick@gmx.net>
@@ -3227,4 +3235,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.354 2002/03/15 18:33:31 ukai Exp $
+$Id: ChangeLog,v 1.355 2002/03/15 18:48:55 ukai Exp $

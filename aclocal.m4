@@ -443,7 +443,7 @@ if test x"$with_ssl" != xno; then
   if test x"$w3m_ssl" = xfound; then
     AC_MSG_CHECKING(if SSL certificate verify is enabled)
     AC_ARG_ENABLE(sslverify,
-      [   --disable-sslverify		vefify SSL certificate],,
+      [   --disable-sslverify		verify SSL certificate],,
       [enable_sslverify="yes"])
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
@@ -511,7 +511,10 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_SUBST(IMGFBLDFLAGS)
  AC_MSG_CHECKING(if image is enabled)
  AC_ARG_ENABLE(image,
- [  --disable-image[=x11,fb,fb+s]	enable inline image handler],,
+ [  --enable-image[=DEVS]		enable inline image handler for DEVS
+				 DEVS may be comma separeted: x11,fb,fb+s
+				 default: autodetected.
+				 'no' means disable inline image],,
  [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
  if test x"$enable_image" != xno; then
@@ -616,7 +619,7 @@ AC_DEFUN([AC_W3M_XFACE],
 [AC_SUBST(USE_XFACE)
  AC_MSG_CHECKING(if xface is enabled)
  AC_ARG_ENABLE(xface,
-  [   --disable-xface		enable xface support],,
+  [   --disable-xface		disable xface support],,
   [enable_xface="$enable_image"])
  test x"$enable_xface" = xyes && AC_DEFINE(USE_XFACE)
  AC_MSG_RESULT($enable_xface)

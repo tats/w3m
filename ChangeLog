@@ -1,3 +1,15 @@
+2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.2.3.2 - Security fix in w3m/scripts
+	* version.c.in: update
+	* w3mhelp-*.html: version 0.2.3.2
+	* doc/README: version 0.2.3.2, release date
+	* doc-jp/README: ditto
+
+2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* scripts/w3mhelp.cgi.in: lang=[a-z][a-z] only
+
 2001-12-22  Hironori Sakamoto <h-saka@lsi.nec.co.jp>
 
 	* Security hole in multipart.cgi.in, w3mman2html.cgi.in
@@ -1377,4 +1389,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.153 2001/12/21 18:33:41 ukai Exp $
+$Id: ChangeLog,v 1.154 2001/12/21 19:33:29 ukai Exp $

@@ -1,3 +1,8 @@
+2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* XMakefile (clean): rm tagtable.c
+	* .cvsignore: XXMakefile config.h config.param
+
 2001-11-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* XMakefile.dist deflate.c: removed, not used

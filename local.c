@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.11 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: local.c,v 1.12 2001/12/03 18:15:12 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -460,7 +460,7 @@ localcgi_get(char *uri, char *request, char *referer)
 	return NULL;
     else if (pid)
 	return f;
-    if (!strcmp(request, "")) {
+    if (request == NULL) {
 	set_cgi_environ(Strnew_charp(uri)->ptr, file, Strnew_charp(uri)->ptr);
     }
     else {
@@ -470,7 +470,7 @@ localcgi_get(char *uri, char *request, char *referer)
     if (referer && referer != NO_REFERER)
 	set_environ("HTTP_REFERER", referer);
     set_environ("REQUEST_METHOD", "GET");
-    set_environ("QUERY_STRING", request);
+    set_environ("QUERY_STRING", request ? request : "");
     freopen(DEV_NULL_PATH, "r", stdin);
 #ifdef HAVE_CHDIR		/* ifndef __EMX__? */
     chdir(mydirname(file));

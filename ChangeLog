@@ -1,3 +1,9 @@
+2001-12-04  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02608]
+	* local.c (localcgi_get): request == NULL means no ? in URL
+	* url.c (openURL): ditto
+
 2001-12-03  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02606]

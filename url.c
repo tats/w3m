@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.17 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: url.c,v 1.18 2001/12/03 18:15:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1433,7 +1433,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	else if ((i = strlen(pu->file)) > extlen &&
 		 !strncmp(pu->file + i - extlen, CGI_EXTENSION, extlen)) {
 	    /* lodal CGI: GET */
-	    uf.stream = newFileStream(localcgi_get(pu->real_file, "",
+	    uf.stream = newFileStream(localcgi_get(pu->real_file, NULL,
 						   option->referer),
 				      (void (*)())pclose);
 	    if (uf.stream == NULL)

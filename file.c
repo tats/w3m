@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.214 2003/01/30 16:29:13 ukai Exp $ */
+/* $Id: file.c,v 1.215 2003/01/30 16:32:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7254,7 +7254,7 @@ getNextPage(Buffer *buf, int plen)
 		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
 	if (!top) {
 	    top = buf->firstLine;
-	    cur = buf->currentLine;
+	    cur = top;
 	}
 	if (buf->lastLine->real_linenumber - buf->firstLine->real_linenumber
 	    >= PagerMax) {

@@ -30,7 +30,7 @@
       HP-UX 9.x, 10.x
       Solaris 2.5.x, 2.6, 8
       Linux 2.0.30
-      FreeBSD 2.2.8, 3.1, 3.2
+      FreeBSD 2.2.8, 3.1, 3.2, 4.6
       NetBSD/macppc, m68k
       EWS4800 Rel.12.2 Rev.A
       Digital UNIX: v3.2D, v4.0D
@@ -39,6 +39,7 @@
       Windows 9x/NT with Cygwin32 b20.1
       MS-DOS with DJGPP and WATT32 packet driver
       MacOS X Server
+      MacOS X 10.1, 10.2
 
 2. インストール
 

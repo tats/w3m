@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.6 2001/12/03 18:29:37 ukai Exp $ */
+/* $Id: cookie.c,v 1.7 2002/01/10 15:39:21 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -45,9 +45,9 @@ domain_match(char *host, char *domain)
     /* [RFC 2109] s. 2, "domain-match", case 1
      * (both are IP and identical)
      */
-    regexCompile("[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*", 0);
-    m0 = regexMatch(host, 0, 1);
-    m1 = regexMatch(domain, 0, 1);
+    regexCompile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+", 0);
+    m0 = regexMatch(host, -1, 1);
+    m1 = regexMatch(domain, -1, 1);
     if (m0 && m1) {
 	if (strcasecmp(host, domain) == 0)
 	    return host;

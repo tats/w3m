@@ -1,3 +1,17 @@
+2002-01-11  aito@fw.ipsj.or.jp
+
+	* [w3m-dev 02815]
+	* cookie.c (domain_match): use new regex
+	* main.c (chkURLBuffer): use new regex
+	* main.c (chkNMIDBuffer): use new regex
+	* menu.c (menuForwardSearch): new regexMatch()
+	* regex.c (RegexMatch): negative length means whole string
+	* regex.c (RegexMatch): new regmatch()
+	* regex.c (regmatch_sub_anytime): add 5th arg `char *'
+	* regex.c (regmatch_iter): add 4th arg `char *'
+	* regex.c (regmatch): add 3rd arg `char *'
+	* url.c (openSocket): use new regex
+
 2002-01-10  aito@fw.ipsj.or.jp
 
 	* [w3m-dev 02811] new regexp implementation
@@ -1818,4 +1832,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.203 2002/01/10 04:55:06 ukai Exp $
+$Id: ChangeLog,v 1.204 2002/01/10 15:39:21 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.7 2002/01/10 04:55:07 ukai Exp $ */
+/* $Id: regex.c,v 1.8 2002/01/10 15:39:21 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -66,7 +66,7 @@ static Regex DefaultRegex;
 #define CompiledRegex DefaultRegex.re
 #define Cstorage DefaultRegex.storage
 
-static int regmatch(regexchar *, char *, int, char **);
+static int regmatch(regexchar *, char *, char *, int, char **);
 static int regmatch1(regexchar *, longchar);
 static int matchWhich(longchar *, longchar);
 
@@ -261,7 +261,7 @@ RegexMatch(Regex *re, char *str, int len, int firstp)
 
     if (str == NULL)
 	return 0;
-    if (len == 0)
+    if (len < 0)
 	len = strlen(str);
     re->position = NULL;
     ep = str + len;
@@ -269,7 +269,7 @@ RegexMatch(Regex *re, char *str, int len, int firstp)
 	lpos = NULL;
 	re->lposition = NULL;
 	for (r = re; r != NULL; r = r->alt_regex) {
-	    switch (regmatch(r->re, p, firstp && (p == str), &lpos)) {
+	    switch (regmatch(r->re, p, ep, firstp && (p == str), &lpos)) {
 	    case 1:		/* matched */
 		re->position = p;
 		if (re->lposition == NULL || re->lposition < lpos)
@@ -341,11 +341,13 @@ struct MatchingContext2 {
 
 #define YIELD(retval,context,lnum) (context)->label = lnum; return (retval); label##lnum:
 
-static int regmatch_iter(struct MatchingContext1 *, regexchar *, char *, int);
+static int regmatch_iter(struct MatchingContext1 *,
+			 regexchar *, char *, char *, int);
 
 static int
 regmatch_sub_anytime(struct MatchingContext2 *c, Regex *regex,
-		     regexchar * pat2, char *str, int iter_limit, int firstp)
+		     regexchar * pat2,
+		     char *str, char *end_p, int iter_limit, int firstp)
 {
     switch (c->label) {
     case 1:
@@ -364,7 +366,7 @@ regmatch_sub_anytime(struct MatchingContext2 *c, Regex *regex,
     c->firstp = firstp;
     for (;;) {
 	c->ctx->label = 0;
-	while (regmatch_iter(c->ctx, c->regex->re, c->str, c->firstp)) {
+	while (regmatch_iter(c->ctx, c->regex->re, c->str, end_p, c->firstp)) {
 	    c->n_any = c->ctx->lastpos - c->str;
 	    if (c->n_any <= 0)
 		continue;
@@ -373,7 +375,7 @@ regmatch_sub_anytime(struct MatchingContext2 *c, Regex *regex,
 		c->lastpos = c->str + c->n_any;
 		YIELD(1, c, 1);
 	    }
-	    else if (regmatch(pat2, c->str + c->n_any,
+	    else if (regmatch(pat2, c->str + c->n_any, end_p,
 			      c->firstp, &c->lastpos) == 1) {
 		YIELD(1, c, 2);
 	    }
@@ -381,8 +383,8 @@ regmatch_sub_anytime(struct MatchingContext2 *c, Regex *regex,
 		continue;
 	    c->ctx2->label = 0;
 	    while (regmatch_sub_anytime(c->ctx2, regex, pat2,
-					c->str + c->n_any, iter_limit - 1,
-					c->firstp)) {
+					c->str + c->n_any, end_p,
+					iter_limit - 1, c->firstp)) {
 
 		c->lastpos = c->ctx2->lastpos;
 		YIELD(1, c, 3);
@@ -397,7 +399,7 @@ regmatch_sub_anytime(struct MatchingContext2 *c, Regex *regex,
 
 static int
 regmatch_iter(struct MatchingContext1 *c,
-	      regexchar * re, char *str, int firstp)
+	      regexchar * re, char *str, char *end_p, int firstp)
 {
     switch (c->label) {
     case 1:
@@ -418,10 +420,11 @@ regmatch_iter(struct MatchingContext1 *c,
     if (RE_MODE(re) == RE_ENDMARK)
 	return 0;
     c->re = re;
-    c->end_p = str + strlen(str);
     c->firstp = firstp;
     c->str = str;
+    c->end_p = end_p;
     c->sub_ctx = NULL;
+    c->lastpos = NULL;
     while (RE_MODE(c->re) != RE_ENDMARK) {
 	if (c->re->mode & (RE_ANYTIME | RE_OPT)) {
 	    if (c->re->mode & RE_ANYTIME)
@@ -441,6 +444,7 @@ regmatch_iter(struct MatchingContext1 *c,
 						    c->re->p.sub,
 						    c->re + 1,
 						    c->str + c->n_any,
+						    c->end_p,
 						    c->iter_limit,
 						    c->firstp)) {
 			    c->n_any = c->ctx2->lastpos - c->str;
@@ -480,7 +484,7 @@ regmatch_iter(struct MatchingContext1 *c,
 		    c->lastpos = c->str + c->n_any;
 		    YIELD(1, c, 2);
 		}
-		else if (regmatch(c->re + 1, c->str + c->n_any,
+		else if (regmatch(c->re + 1, c->str + c->n_any, c->end_p,
 				  c->firstp, &c->lastpos) == 1) {
 		    YIELD(1, c, 3);
 		}
@@ -488,8 +492,6 @@ regmatch_iter(struct MatchingContext1 *c,
 	    return 0;
 	}
 	/* regexp other than pat*, pat+ and pat? */
-	if (c->str >= c->end_p)
-	    return 0;
 	switch (RE_MODE(c->re)) {
 	case RE_BEGIN:
 	    if (!c->firstp)
@@ -497,9 +499,15 @@ regmatch_iter(struct MatchingContext1 *c,
 	    c->re++;
 	    break;
 	case RE_END:
-	    c->lastpos = c->str;
-	    c->re++;
-	    YIELD((c->str >= c->end_p), c, 4);
+	    if (c->str >= c->end_p) {
+		c->lastpos = c->str;
+		c->re++;
+		YIELD(1, c, 4);
+	    }
+	    else {
+		c->lastpos = NULL;
+		return 0;
+	    }
 	    break;
 	case RE_SUBREGEX:
 	    if (c->sub_ctx == NULL) {
@@ -509,14 +517,14 @@ regmatch_iter(struct MatchingContext1 *c,
 	    for (;;) {
 		c->sub_ctx->label = 0;
 		while (regmatch_iter(c->sub_ctx, c->sub_regex->re,
-				     c->str, c->firstp)) {
+				     c->str, c->end_p, c->firstp)) {
 		    if (c->sub_ctx->lastpos != c->str)
 			c->firstp = 0;
 		    if (RE_MODE(c->re + 1) == RE_ENDMARK) {
 			c->lastpos = c->sub_ctx->lastpos;
 			YIELD(1, c, 5);
 		    }
-		    else if (regmatch(c->re + 1, c->sub_ctx->lastpos,
+		    else if (regmatch(c->re + 1, c->sub_ctx->lastpos, c->end_p,
 				      c->firstp, &c->lastpos) == 1) {
 			YIELD(1, c, 6);
 		    }
@@ -557,14 +565,14 @@ regmatch_iter(struct MatchingContext1 *c,
 }
 
 static int
-regmatch(regexchar * re, char *str, int firstp, char **lastpos)
+regmatch(regexchar * re, char *str, char *end_p, int firstp, char **lastpos)
 {
     struct MatchingContext1 contx;
 
     *lastpos = NULL;
 
     contx.label = 0;
-    while (regmatch_iter(&contx, re, str, firstp)) {
+    while (regmatch_iter(&contx, re, str, end_p, firstp)) {
 #ifdef REGEX_DEBUG
 	char *p;
 	if (verbose) {
@@ -756,14 +764,15 @@ main(int argc, char **argv)
 	    printf("Error on regexp /%s/: %s\n", buf, msg);
 	    exit(1);
 	}
-	if (RegexMatch(re, buf2, 0, 1)) {
-	    printf("/%s/\t%s\t", buf, buf2);
+	if (RegexMatch(re, buf2, -1, 1)) {
+	    printf("/%s/\t\"%s\"\t\"", buf, buf2);
 	    MatchedPosition(re, &fpos, &epos);
 	    while (fpos < epos)
 		putchar(*(fpos++));
+	    putchar('"');
 	}
 	else
-	    printf("/%s/\t%s\tno_match", buf, buf2);
+	    printf("/%s/\t\"%s\"\tno_match", buf, buf2);
 	putchar('\n');
     }
     /* notreatched */

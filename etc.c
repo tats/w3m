@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.14 2001/12/25 16:49:42 ukai Exp $ */
+/* $Id: etc.c,v 1.15 2001/12/25 18:15:00 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -888,39 +888,40 @@ correct_irrtag(int status)
 
 /* authentication */
 struct auth_cookie *
-find_auth(char *host, char *realm)
+find_auth(char *host, int port, char *realm)
 {
     struct auth_cookie *p;
 
     for (p = Auth_cookie; p != NULL; p = p->next) {
 	if (!Strcasecmp_charp(p->host, host) &&
-	    !Strcasecmp_charp(p->realm, realm))
+	    p->port == port && !Strcasecmp_charp(p->realm, realm))
 	    return p;
     }
     return NULL;
 }
 
 Str
-find_auth_cookie(char *host, char *realm)
+find_auth_cookie(char *host, int port, char *realm)
 {
-    struct auth_cookie *p = find_auth(host, realm);
+    struct auth_cookie *p = find_auth(host, port, realm);
     if (p)
 	return p->cookie;
     return NULL;
 }
 
 void
-add_auth_cookie(char *host, char *realm, Str cookie)
+add_auth_cookie(char *host, int port, char *realm, Str cookie)
 {
     struct auth_cookie *p;
 
-    p = find_auth(host, realm);
+    p = find_auth(host, port, realm);
     if (p) {
 	p->cookie = cookie;
 	return;
     }
     p = New(struct auth_cookie);
     p->host = Strnew_charp(host);
+    p->port = port;
     p->realm = Strnew_charp(realm);
     p->cookie = cookie;
     p->next = Auth_cookie;

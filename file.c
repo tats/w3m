@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.33 2001/12/25 16:49:42 ukai Exp $ */
+/* $Id: file.c,v 1.34 2001/12/25 18:15:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -901,7 +901,7 @@ getAuthCookie(char *realm, char *auth_header, TextList *extra_header,
 				 * extra_header */
     }
     else
-	ss = find_auth_cookie(pu->host, realm);
+	ss = find_auth_cookie(pu->host, pu->port, realm);
     if (ss == NULL) {
 	/* input username and password */
 	sleep(2);
@@ -1203,7 +1203,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (add_auth_cookie_flag)
 	    /* If authorization is required and passed */
-	    add_auth_cookie(pu.host, realm->ptr, ss);
+	    add_auth_cookie(pu.host, pu.port, realm->ptr, ss);
 	if (status == HTST_CONNECT) {
 	    of = &f;
 	    goto load_doc;

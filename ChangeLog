@@ -1,3 +1,18 @@
+2001-12-26  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02732] fix Debian Bug#126381
+	  		- Passwords entered for HTTPS are used for HTTP
+	* etc.c (find_auth): add port arg
+	* etc.c (find_auth_cookie): add port arg
+	* etc.c (add_auth_cookie): add port arg
+	* file.c (getAuthCookie): find_auth_cookie(host, port, realm)
+	* file.c (loadGeneralFile): add_auth_cookie(host, port, realm, ss)
+	* fm.h (struct auth_cookie): add port
+	* ftp.c (openFTP): find_auth_cookie(host, port, user)
+	* ftp.c (openFTP): add_auth_cookie(host, port, user, pwd)
+	* proto.h (find_auth_cookie): add port
+	* proto.h (add_auth_cookie): add port
+
 2001-12-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02729]
@@ -1578,4 +1593,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.176 2001/12/25 17:29:31 ukai Exp $
+$Id: ChangeLog,v 1.177 2001/12/25 18:14:59 ukai Exp $

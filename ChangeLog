@@ -1,3 +1,8 @@
+2003-07-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03941] fix character encoding for 'v'
+	* main.c (vwSrc): use document_code as DisplayCode
+
 2003-07-23  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03939] next/prev visited link
@@ -7951,4 +7956,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.853 2003/07/22 17:24:49 ukai Exp $
+$Id: ChangeLog,v 1.854 2003/07/22 17:27:19 ukai Exp $

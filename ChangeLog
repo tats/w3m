@@ -1,5 +1,12 @@
 2002-11-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03457] open URL of command line on each new tabs
+	* main.c (delBuffer): static
+		(fusage): -N
+		(main): add open_new_tab for -N
+
+2002-11-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03456] tiling of tab
 	* display.c (displayBuffer): use LastTab->y
 		(redrawNLine): fix column calculation
@@ -4993,4 +5000,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.543 2002/11/21 17:05:00 ukai Exp $
+$Id: ChangeLog,v 1.544 2002/11/21 17:11:15 ukai Exp $

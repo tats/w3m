@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.149 2002/11/21 17:05:47 ukai Exp $ */
+/* $Id: main.c,v 1.150 2002/11/21 17:11:16 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -77,6 +77,7 @@ int (*searchRoutine) (Buffer *, char *);
 
 JMP_BUF IntReturn;
 
+static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
 static void cmd_loadURL(char *url, ParsedURL *current, char *referer);
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
@@ -206,6 +207,7 @@ fusage(FILE * f, int err)
 #ifdef USE_COLOR
     fprintf(f, "    -M               monochrome display\n");
 #endif				/* USE_COLOR */
+    fprintf(f, "    -N               open URL of command line on each new tab\n");
     fprintf(f, "    -F               automatically render frame\n");
     fprintf(f,
 	    "    -cols width      specify column width (used with -dump)\n");
@@ -367,6 +369,7 @@ main(int argc, char **argv, char **envp)
     int load_argc = 0;
     int load_bookmark = FALSE;
     int visual_start = FALSE;
+    int open_new_tab = FALSE;
     char search_header = FALSE;
     char *default_type = NULL;
     char *post_file = NULL;
@@ -527,6 +530,8 @@ main(int argc, char **argv, char **envp)
 		SearchHeader = search_header = TRUE;
 	    else if (!strcmp("-v", argv[i]))
 		visual_start = TRUE;
+	    else if (!strcmp("-N", argv[i]))
+		open_new_tab = TRUE;
 #ifdef USE_COLOR
 	    else if (!strcmp("-M", argv[i]))
 		useColor = FALSE;
@@ -899,6 +904,11 @@ main(int argc, char **argv, char **envp)
 	    calcTabPos();
 	    Firstbuf = Currentbuf = newbuf;
 	}
+	else if (open_new_tab) {
+	    _newT();
+	    Currentbuf->nextBuffer = newbuf;
+	    delBuffer(Currentbuf);
+	}
 	else {
 	    Currentbuf->nextBuffer = newbuf;
 	    Currentbuf = newbuf;
@@ -934,6 +944,7 @@ main(int argc, char **argv, char **envp)
 
     if (add_download_list) {
 	add_download_list = FALSE;
+	CurrentTab = LastTab;
 	if (!FirstTab) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
@@ -948,6 +959,8 @@ main(int argc, char **argv, char **envp)
 	    Currentbuf = Firstbuf;
 	ldDL();
     }
+    else
+	CurrentTab = FirstTab;
     if (!FirstTab || !Firstbuf || Firstbuf == NO_BUFFER) {
 	if (newbuf == NO_BUFFER) {
 	    if (fmInitialized)

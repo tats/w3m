@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.21 2001/11/23 21:40:19 ukai Exp $ */
+/* $Id: main.c,v 1.22 2001/11/23 22:07:45 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2142,6 +2142,8 @@ void
 _mark(void)
 {
     Line *l;
+    if (! use_mark)
+	return;
     if (Currentbuf->firstLine == NULL)
 	return;
     l = Currentbuf->currentLine;
@@ -2152,6 +2154,8 @@ _mark(void)
 static void
 cmd_mark(Lineprop * p)
 {
+    if (! use_mark)
+	return;
     if ((*p & PM_MARK) && (*p & PE_STAND))
 	*p &= ~PE_STAND;
     else if (!(*p & PM_MARK) && !(*p & PE_STAND))
@@ -2166,6 +2170,8 @@ nextMk(void)
     Line *l;
     int i;
 
+    if (! use_mark)
+	return;
     if (Currentbuf->firstLine == NULL)
 	return;
     i = Currentbuf->pos + 1;
@@ -2197,6 +2203,8 @@ prevMk(void)
     Line *l;
     int i;
 
+    if (! use_mark)
+	return;
     if (Currentbuf->firstLine == NULL)
 	return;
     i = Currentbuf->pos - 1;
@@ -2231,6 +2239,8 @@ reMark(void)
     char *str;
     char *p, *p1, *p2;
 
+    if (! use_mark)
+	return;
     str = inputStrHist("(Mark)Regexp: ", MarkString, TextHist);
     if (str == NULL || *str == '\0') {
 	displayBuffer(Currentbuf, B_NORMAL);

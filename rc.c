@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.12 2001/11/23 21:40:19 ukai Exp $ */
+/* $Id: rc.c,v 1.13 2001/11/23 22:07:45 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -89,6 +89,9 @@ static int rc_initialized = 0;
 #define CMT_PDROOT       "/~user で表されるディレクトリ"
 #define CMT_CGIBIN       "/cgi-bin で表されるディレクトリ"
 #define CMT_CONFIRM_QQ   "q での終了時に確認する"
+#ifdef USE_MARK
+#define CMT_USE_MARK	"マーク機能を有効にする"
+#endif
 #ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Emacs風の行編集にする"
 #endif
@@ -199,6 +202,9 @@ static int rc_initialized = 0;
 #define CMT_PDROOT       "Directory corresponds to /~user"
 #define CMT_CGIBIN       "Directory corresponds to /cgi-bin"
 #define CMT_CONFIRM_QQ   "Confirm when quitting with q"
+#ifdef USE_MARK
+#define CMT_USE_MARK	"Enable mark operations"
+#endif
 #ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Emacs-style line editing"
 #endif
@@ -411,6 +417,9 @@ struct param_ptr params3[] =
     {"save_hist", P_INT, PI_ONOFF, (void *) &SaveURLHist, CMT_SAVEHIST, NULL},
 #endif				/* USE_HISTORY */
     {"confirm_qq", P_INT, PI_ONOFF, (void *) &confirm_on_quit, CMT_CONFIRM_QQ, NULL},
+#ifdef USE_MARK
+    {"mark", P_INT, PI_ONOFF, (void *) &use_mark, CMT_USE_MARK, NULL },
+#endif
 #ifdef EMACS_LIKE_LINEEDIT
     {"emacs_like_lineedit", P_INT, PI_ONOFF, (void *) &emacs_like_lineedit, CMT_EMACS_LIKE_LINEEDIT, NULL },
 #endif

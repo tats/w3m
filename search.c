@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.6 2002/01/11 02:24:13 a-ito Exp $ */
+/* $Id: search.c,v 1.7 2002/01/11 03:00:16 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 
@@ -23,8 +23,7 @@ forwardSearch(Buffer *buf, char *str)
     if (l->propBuf[pos] & PC_KANJI2)
 	pos++;
 #endif
-    if (pos < l->len &&
-	regexMatch(&l->lineBuf[pos], l->len - pos, 0) == 1) {
+    if (pos < l->len && regexMatch(&l->lineBuf[pos], l->len - pos, 0) == 1) {
 	matchedPosition(&first, &last);
 	buf->pos = first - l->lineBuf;
 	arrangeCursor(buf);

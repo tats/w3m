@@ -1,5 +1,10 @@
 2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03642] Re: cleanup (don't close connection of news server)
+	* local.c (localcgi_post): localcgi_popen_r first
+
+2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03641] Re: cleanup (don't close connection of news server)
 	* ftp.c (ftp_command): fix fwrite arg
 	* news.c (news_command): fix fwrite arg
@@ -6466,4 +6471,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.682 2003/01/15 16:14:40 ukai Exp $
+$Id: ChangeLog,v 1.683 2003/01/15 16:17:11 ukai Exp $

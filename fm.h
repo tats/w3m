@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.67 2002/10/30 15:46:29 ukai Exp $ */
+/* $Id: fm.h,v 1.68 2002/11/05 15:56:13 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -438,6 +438,7 @@ typedef struct _Buffer {
 #endif
     char image_flag;
     char need_reshape;
+    Anchor *submit;
 } Buffer;
 
 
@@ -842,6 +843,7 @@ global char *ExtBrowser2 init(NULL);
 global char *ExtBrowser3 init(NULL);
 global int BackgroundExtViewer init(TRUE);
 global char *passwd_file init(PASSWD_FILE);
+global char *pre_form_file init(PRE_FORM_FILE);
 global char *ftppasswd init(NULL);
 #ifdef FTPPASS_HOSTNAMEGEN
 global int ftppass_hostnamegen init(TRUE);

@@ -1,5 +1,30 @@
 2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03373] setting form on loading
+	* config.h.dist (PRE_FORM_FILE): added
+	* configure (PRE_FORM_FILE): added
+	* etc.c (openPasswdFile): define by openSecretFile()
+		(openSecretFile): renamed, not static
+	* file.c (loadGeneralFile): preFOrmUpdateBuffer()
+	* fm.h (Buffer): add submit
+		(pre_form_file): added
+	* form.c (struct pre_form_item): added
+		(struct pre_form): added
+		(next_token): added
+		(PreForm): added
+		(add_pre_form): added
+		(add_pre_form_item): added
+		(loadPreForm): added
+		(preFormUpdateBuffer): added
+	* frame.c (renderFrame): add preFormUpdateBuffer()
+	* main.c (MAIN): buf->submit check
+	* proto.h (preFormUpdateBuffer): added
+		(openSecretFile): added
+		(loadPreForm): added
+	* rc.c (sync_with_option): add loadPreForm()
+	
+2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03371] segmentation fault by large complex table.
 	* table.c (bsearch_2short): indexarry char to short
 		(bsearch_double): ditto
@@ -4117,4 +4142,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.469 2002/11/05 15:45:52 ukai Exp $
+$Id: ChangeLog,v 1.470 2002/11/05 15:56:11 ukai Exp $

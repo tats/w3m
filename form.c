@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.14 2002/06/17 17:51:39 ukai Exp $ */
+/* $Id: form.c,v 1.15 2002/11/05 15:56:13 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -654,4 +654,194 @@ form_write_from_file(FILE * f, char *boundary, char *name, char *filename,
     }
   write_end:
     fprintf(f, "\r\n");
+}
+
+struct pre_form_item {
+    int type;
+    char *name;
+    char *value;
+    int checked;
+    struct pre_form_item *next;
+};
+
+struct pre_form {
+    ParsedURL url;
+    char *action;
+    struct pre_form_item *item;
+    struct pre_form *next;
+};
+
+static Str next_token(Str arg);
+static struct pre_form *PreForm = NULL;
+
+static struct pre_form *
+add_pre_form(struct pre_form *prev, char *url, char *action)
+{
+    struct pre_form *new;
+
+    if (prev)
+	new = prev->next = New(struct pre_form);
+    else
+	new = PreForm = New(struct pre_form);
+    parseURL2(url, &new->url, NULL);
+    if (action && *action)
+	new->action = action;
+    else
+	new->action = NULL;
+    new->item = NULL;
+    new->next = NULL;
+    return new;
+}
+
+static struct pre_form_item *
+add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
+		  char *name, char *value, char *checked)
+{
+    struct pre_form_item *new;
+
+    if (!pf)
+	return NULL;
+    if (prev)
+	new = prev->next = New(struct pre_form_item);
+    else
+	new = pf->item = New(struct pre_form_item);
+    new->type = type;
+    new->name = name;
+    new->value = value;
+    if (checked && *checked && (!strcmp(checked, "0") ||
+	strcasecmp(checked, "off") || !strcasecmp(checked, "no")))
+        new->checked = 0;
+    else
+        new->checked = 1;
+    new->next = NULL;
+    return new;
+}
+
+/*
+url <url> [<action>]
+text <name> <value>
+file <name> <value>
+passwd <name> <value>
+checkbox <name> <value> [<checked>]
+radio <name> <value>
+submit [<name>]
+*/
+
+#define FILE_IS_READABLE_MSG "SECURITY NOTE: file %s must not be accessible by others"
+
+void
+loadPreForm(void)
+{
+    FILE *fp;
+    Str line = NULL;
+    struct pre_form *pf = NULL;
+    struct pre_form_item *pi = NULL;
+
+    fp = openSecretFile(pre_form_file, Sprintf(FILE_IS_READABLE_MSG,
+					       pre_form_file)->ptr);
+    if (fp == NULL) {
+	PreForm = NULL;
+	return;
+    }
+    while (1) {
+	int type = 0;
+	char *p, *s, *arg;
+
+	line = Strfgets(fp);
+	if (line->length == 0)
+	    break;
+	Strchop(line);
+	Strremovefirstspaces(line);
+	p = line->ptr;
+	if (*p == '#' || *p == '\0')
+	    continue;		/* comment or empty line */
+	s = getWord(&p);
+	arg = getWord(&p);
+
+	if (!strcmp(s, "url")) {
+	    if (!arg || !*arg)
+		continue;
+	    p = getQWord(&p);
+	    pf = add_pre_form(pf, arg, p);
+	    pi = pf->item;
+	    continue;
+	}
+	if (!pf)
+	    continue;
+	if (!strcmp(s, "text"))
+	    type = FORM_INPUT_TEXT;
+	else if (!strcmp(s, "file"))
+	    type = FORM_INPUT_FILE;
+	else if (!strcmp(s, "passwd") || !strcmp(s, "password"))
+	    type = FORM_INPUT_PASSWORD;
+	else if (!strcmp(s, "checkbox"))
+	    type = FORM_INPUT_CHECKBOX;
+	else if (!strcmp(s, "radio"))
+	    type = FORM_INPUT_RADIO;
+	else if (!strcmp(s, "submit"))
+	    type = FORM_INPUT_SUBMIT;
+	else
+	    continue;
+	s = getQWord(&p);
+	pi = add_pre_form_item(pf, pi, type, arg, s, getQWord(&p));
+    }
+    fclose(fp);
+}
+
+void
+preFormUpdateBuffer(Buffer *buf)
+{
+    struct pre_form *pf;
+    struct pre_form_item *pi;
+    int i;
+    Anchor *a;
+    FormList *fl;
+    FormItemList *fi;
+
+    if (!buf || !buf->formitem || !PreForm)
+	return;
+    
+    for (pf = PreForm; pf; pf = pf->next) {
+	if (Strcmp(parsedURL2Str(&buf->currentURL), parsedURL2Str(&pf->url)))
+	    continue;
+	for (i = 0; i < buf->formitem->nanchor; i++) {
+	    a = &buf->formitem->anchors[i];
+	    fi = (FormItemList *)a->url;
+	    fl = fi->parent;
+	    if (pf->action && (!fl->action || Strcmp_charp(fl->action, pf->action)))
+	        continue;
+	    for (pi = pf->item; pi; pi = pi->next) {
+		if (pi->type != fi->type)
+		    continue;
+		if (pi->type == FORM_INPUT_SUBMIT) {
+		    if (!pi->name || !*pi->name ||
+			(fi->name && !Strcmp_charp(fi->name, pi->name)))
+		    	buf->submit = a;
+		    continue;
+		}
+		if (!pi->name || !fi->name || Strcmp_charp(fi->name, pi->name))
+		    continue;
+		switch (pi->type) {
+		case FORM_INPUT_TEXT:
+		case FORM_INPUT_FILE:
+		case FORM_INPUT_PASSWORD:
+		    fi->value = Strnew_charp(pi->value);
+		    formUpdateBuffer(a, buf, fi);
+		    break;
+		case FORM_INPUT_CHECKBOX:
+		    if (pi->value && fi->value &&
+			!Strcmp_charp(fi->value, pi->value)) {
+			fi->checked = pi->checked;
+			formUpdateBuffer(a, buf, fi);
+		    }
+		    break;
+		case FORM_INPUT_RADIO:
+		    if (pi->value && fi->value &&
+		    	!Strcmp_charp(fi->value, pi->value))
+			formRecheckRadio(a, buf, fi);
+		    break;
+		}
+	    }
+	}
+    }
 }

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.28 2002/10/30 17:21:40 ukai Exp $ */
+/* $Id: etc.c,v 1.29 2002/11/05 15:56:12 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1034,9 +1034,10 @@ parsePasswd(FILE * fp, int netrc)
 }
 
 #define PASS_IS_READABLE_MSG "SECURITY NOTE: passwd file must not be accessible by others"
+#define openPasswdFile(fname) openSecretFile(fname, PASS_IS_READABLE_MSG)
 
-static FILE *
-openPasswdFile(char *fname)
+FILE *
+openSecretFile(char *fname, char *error_msg)
 {
     struct stat st;
     if (fname == NULL)
@@ -1049,11 +1050,11 @@ openPasswdFile(char *fname)
      */
     if ((st.st_mode & (S_IRWXG | S_IRWXO)) != 0) {
 	if (fmInitialized) {
-	    message(PASS_IS_READABLE_MSG, 0, 0);
+	    message(error_msg, 0, 0);
 	    refresh();
 	}
 	else {
-	    fputs(PASS_IS_READABLE_MSG, stderr);
+	    fputs(error_msg, stderr);
 	    fputc('\n', stderr);
 	}
 	sleep(2);

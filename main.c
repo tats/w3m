@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.116 2002/10/30 17:03:27 ukai Exp $ */
+/* $Id: main.c,v 1.117 2002/11/05 15:56:13 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -949,6 +949,13 @@ MAIN(int argc, char **argv, char **envp)
     }
     onA();
     for (;;) {
+	if (Currentbuf->submit) {
+	    Anchor *a = Currentbuf->submit;
+	    Currentbuf->submit = NULL;
+	    gotoLine(Currentbuf, a->start.line);
+	    Currentbuf->pos = a->start.pos;
+	    _followForm(TRUE);
+	}
 	/* event processing */
 	if (n_event_queue > 0) {
 	    for (i = 0; i < n_event_queue; i++) {

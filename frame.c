@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.16 2002/06/17 15:50:45 inu Exp $ */
+/* $Id: frame.c,v 1.17 2002/11/05 15:56:13 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -790,6 +790,7 @@ renderFrame(Buffer *Cbuf, int force_reload)
     buf->document_code = Cbuf->document_code;
 #endif
     copyParsedURL(&buf->currentURL, &Cbuf->currentURL);
+    preFormUpdateBuffer(buf);
     return buf;
 }
 

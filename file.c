@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.109 2002/10/30 17:04:02 ukai Exp $ */
+/* $Id: file.c,v 1.110 2002/11/05 15:56:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2022,6 +2022,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, prevtrap);
+    preFormUpdateBuffer(b);
     return b;
 }
 

@@ -1,7 +1,13 @@
-/* $Id: mktable.c,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: mktable.c,v 1.4 2001/12/21 21:37:12 ukai Exp $ */
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#ifdef HAVE_STDINT_H
+#include "stdint.h"
+#else
+typedef unsigned int uintptr_t;
+#endif
 #include "hash.h"
 #include "Str.h"
 #include <gc.h>
@@ -10,9 +16,9 @@
 
 defhash(HashItem_ss *, int, hss_i)
 #define keycomp(x,y) ((x)==(y))
-     static unsigned int hashfunc(HashItem_ss * x)
+     static uintptr_t hashfunc(HashItem_ss * x)
 {
-    return (unsigned int)x;
+    return (uintptr_t)x;
 }
 
 defhashfunc(HashItem_ss *, int, hss_i)

@@ -1,4 +1,4 @@
-/* $Id: Str.c,v 1.6 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: Str.c,v 1.7 2001/12/21 21:37:12 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -14,6 +14,7 @@
  * results obtained from use of this software.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <gc.h>
 #include <stdarg.h>
 #include <string.h>

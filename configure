@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.43 2001/12/21 20:30:54 ukai Exp $
+# $Id: configure,v 1.44 2001/12/21 21:37:12 ukai Exp $
 #	Configuration.
 #
 
@@ -945,6 +945,22 @@ else
   inflate=
 fi
 
+## Search pthread, Linux requires this (at least ia64,alpha,s390?). 
+## Other platform?
+pthreadlib=
+case $sysname in
+Linux|linux|LINUX)
+ for tlibdir in /lib /usr/lib
+ do
+  if [ -f $tlibdir/libpthread.a -o -f $tlibdir/libpthread.$so_ext ]; then
+    echo "$tlibdir/libpthread found"
+    pthreadlib="-L$tlibdir -lpthread"
+    break
+  fi
+ done
+ ;;
+esac
+
 gclib=''
 gcinclude=''
 gctarget=''
@@ -1045,19 +1061,22 @@ if [ -z "$gclib" -o -z "$gcinclude" ]; then
   gctarget="$gclib"
 fi
 
-# Apply patch.
+# arch specific flags for libgc
 gc_cflags=''
-if [ "$gclib" = "gc/gc.a" -a ! -f patch_done ]; then
+if [ "$gclib" = "gc/gc.a" ]; then
   patchfile=""
   case "$platform:$sysname" in
+  ia64:Linux|alpha:Linux|s390*:Linux)
+    gc_cflags="-DGC_LINUX_THREADS -D_REENTRANT"
+    ;;
   R3000:*System_V*|R4000:UNIX_SYSV|R*000:UNIX_SV)
     # EWS-4800
 #    patchfile=Patches/ews4800
     gc_cflags=-Dmips
     ;;
   esac
-
-  if [ -n "$patchfile" -a -f "$patchfile" ]; then
+  # Apply patch.
+  if [  ! -f patch_done -a -n "$patchfile" -a -f "$patchfile" ]; then
     patch -lp0 < $patchfile
     echo "dpatch='$patch'" >> config.param
     touch patch_done
@@ -1682,6 +1701,22 @@ else
   def_have_sys_select_h='#undef HAVE_SYS_SELECT_H'
 fi
 
+####### check for stdint.h
+cat > _zmachdep.c <<EOF
+#include <stdint.h>
+main()
+{ 
+  ;
+}
+EOF
+if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have stdint.h."
+  def_have_stdint_h='#define HAVE_STDINT_H'
+else
+  def_have_stdint_h='#undef HAVE_STDINT_H'
+fi
+
 ####### setpgrp(pid, pgrp) or setpgrp() ?
 cat > _zmachdep.c << EOF
 #include <unistd.h>
@@ -1965,7 +2000,7 @@ Z_CFLAGS=$z_cflags
 ZLIB=$zlib
 EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate
 GC_CFLAGS=$gc_cflags
-GCLIB=$gclib
+GCLIB=$gclib $pthreadlib
 GCTARGET=$gctarget
 RANLIB=$ranlib_cmd
 MKDIR=$MKDIR
@@ -2056,6 +2091,7 @@ $def_longjmp
 $def_jmpbuf
 $def_have_float_h
 $def_have_sys_select_h
+$def_have_stdint_h
 
 $def_sighandler
 $def_sig_arg

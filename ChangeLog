@@ -1,3 +1,17 @@
+2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02692] w3m on linux/ia64
+	* mktable.c: #include "config.h"
+	* mktable.c: #include "stdint.h" or uintptr_t typedef
+	* mktable.c: use uintptr_t instead of unsigned int
+	* configure: check pthread on linux
+	* configure: add gc_cflags for linux/ia64,alpha,s390
+	* configure: check stdint.h
+	* configure (config.h): add $pthreadlib to GCLIB
+	* configure (config.h): add $def_have_stdint_h
+	* config.h.dist (HAVE_STDINT_H): added
+	* Str.c: add #include <stdlib.h> for exit() on some platform (ia64)
+
 2001-12-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02690] RC_DIR in scripts
@@ -1405,4 +1419,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.157 2001/12/21 20:30:54 ukai Exp $
+$Id: ChangeLog,v 1.158 2001/12/21 21:37:12 ukai Exp $

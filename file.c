@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.93 2002/06/24 13:32:11 ukai Exp $ */
+/* $Id: file.c,v 1.94 2002/07/19 03:24:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -981,7 +981,7 @@ extract_auth_val(char **q)
 	if (*qq == ',')
 	    qq++;
     }
-    *q = qq;
+    *q = (char *)qq;
     return val;
 }
 

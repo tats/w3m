@@ -1,3 +1,9 @@
+2002-07-19  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03276] compile error on EWS4800
+	* file.c (extract_auth_val): fix warnings
+	* w3mimg/w3mimg.c: include <stdlib.h>
+
 2002-07-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03275] fix of multipart.cgi
@@ -3616,4 +3622,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.409 2002/07/18 13:12:07 ukai Exp $
+$Id: ChangeLog,v 1.410 2002/07/19 03:24:28 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.53 2002/01/30 17:48:49 ukai Exp $ */
+/* $Id: file.c,v 1.54 2002/01/31 09:43:14 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6618,6 +6618,7 @@ uncompress_stream(URLFile *uf)
 	    dup2(fd2[0], 0);
 	}
 	dup2(fd1[1], 1);
+	dup2(fd1[1], 2);
 	execlp(expand_cmd, expand_name, NULL);
 	exit(0);
     }

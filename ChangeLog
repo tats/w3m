@@ -1,5 +1,11 @@
 2002-01-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02955] compression_decoders error message
+	* file.c (uncompress_stream): redirect stderr 
+	* inflate.c (main): print error message
+
+2002-01-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02949] fix for #undef USE_MIGEMO
 	* main.c (dispincsrch): need #ifdef USE_MIGEMO
 
@@ -2462,4 +2468,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.281 2002/01/31 04:49:42 ukai Exp $
+$Id: ChangeLog,v 1.282 2002/01/31 09:43:14 ukai Exp $

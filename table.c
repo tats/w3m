@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.10 2001/11/29 10:22:58 ukai Exp $ */
+/* $Id: table.c,v 1.11 2001/12/14 17:58:40 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -779,7 +779,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 		int limit = tbl->tables[id].indent + t->total_width;
 		tbl->tables[id].ptr = NULL;
 		save_fonteffect(&h_env, h_env.obuf);
-		flushline(&h_env, &obuf, 0, 0, h_env.limit);
+		flushline(&h_env, &obuf, 0, 1, h_env.limit);
 		if (t->vspace > 0 && !(obuf.flag & RB_IGNORE_P))
 		    do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
 		if (RB_GET_ALIGN(h_env.obuf) == RB_CENTER)
@@ -2847,7 +2847,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    }
 	}
 	else
-	    suspend_or_pushdata(tbl, Strnew_m_charp(line, ANSP, NULL)->ptr);
+	    suspend_or_pushdata(tbl, line);
 	break;
     case HTML_DEL:
     case HTML_N_DEL:

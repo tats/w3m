@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.76 2003/01/17 16:58:17 ukai Exp $ */
+/* $Id: rc.c,v 1.77 2003/01/17 17:06:05 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1375,7 +1375,7 @@ init_rc(void)
     if (config_file != NULL)
 	goto open_rc;
 
-    rc_dir = expandName(RC_DIR);
+    rc_dir = expandPath(RC_DIR);
     i = strlen(rc_dir);
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
@@ -1580,53 +1580,35 @@ rcFile(char *base)
 	 (base[0] == '.'
 	  && (base[1] == '/' || (base[1] == '.' && base[2] == '/')))
 	 || (base[0] == '~' && base[1] == '/')))
-	return expandName(base);
-    else {
-	Str file = Strnew_charp(rc_dir);
-
-	if (Strlastchar(file) != '/')
-	    Strcat_char(file, '/');
-	Strcat_charp(file, base);
-	return expandName(file->ptr);
-    }
+		/* /file, ./file, ../file, ~/file */
+	return expandPath(base);
+    return expandPath(Strnew_m_charp(rc_dir, "/", base, NULL)->ptr);
 }
 
 char *
 auxbinFile(char *base)
 {
-    Str file = Strnew_charp(w3m_auxbin_dir());
-    Strcat_char(file, '/');
-    Strcat_charp(file, base);
-    return expandName(file->ptr);
+    return expandPath(Strnew_m_charp(w3m_auxbin_dir(), "/", base, NULL)->ptr);
 }
 
 #if 0				/* not used */
 char *
 libFile(char *base)
 {
-    Str file = Strnew_charp(w3m_lib_dir());
-    Strcat_char(file, '/');
-    Strcat_charp(file, base);
-    return expandName(file->ptr);
+    return expandPath(Strnew_m_charp(w3m_lib_dir(), "/", base, NULL)->ptr);
 }
 #endif
 
 char *
 etcFile(char *base)
 {
-    Str file = Strnew_charp(w3m_etc_dir());
-    Strcat_char(file, '/');
-    Strcat_charp(file, base);
-    return expandName(file->ptr);
+    return expandPath(Strnew_m_charp(w3m_etc_dir(), "/", base, NULL)->ptr);
 }
 
 #ifndef USE_HELP_CGI
 char *
 helpFile(char *base)
 {
-    Str file = Strnew_charp(w3m_help_dir());
-    Strcat_char(file, '/');
-    Strcat_charp(file, base);
-    return expandName(file->ptr);
+    return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
 }
 #endif

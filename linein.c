@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.25 2002/11/15 15:36:48 ukai Exp $ */
+/* $Id: linein.c,v 1.26 2003/01/17 17:06:03 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -309,7 +309,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	    pushHist(hist, p);
     }
     if (flag & IN_FILENAME)
-	return expandName(p);
+	return expandPath(p);
     else
 	return allocStr(p, -1);
 }
@@ -853,7 +853,7 @@ next_dcompl(int next)
 	    f = Strdup(d);
 	    Strcat_charp(f, CFileBuf[n]);
 	    addstr(conv_from_system(CFileBuf[n]));
-	    if (stat(expandName(f->ptr), &st) != -1 && S_ISDIR(st.st_mode))
+	    if (stat(expandPath(f->ptr), &st) != -1 && S_ISDIR(st.st_mode))
 		addstr("/");
 	}
 	y++;
@@ -957,7 +957,7 @@ doComplete(Str ifn, int *status, int next)
 	if (Strlastchar(CompleteBuf) == '/' && CompleteBuf->length > 1) {
 	    Strshrink(CompleteBuf, 1);
 	}
-	if ((d = opendir(expandName(CompleteBuf->ptr))) == NULL) {
+	if ((d = opendir(expandPath(CompleteBuf->ptr))) == NULL) {
 	    CompleteBuf = Strdup(ifn);
 	    *status = CPL_FAIL;
 	    if (cm_mode & CPL_ON)
@@ -1031,7 +1031,7 @@ doComplete(Str ifn, int *status, int next)
 	    else if (strncmp(p, "file:/", 6) == 0 && p[6] != '/')
 		p = &p[5];
 	}
-	if (stat(expandName(p), &st) != -1 && S_ISDIR(st.st_mode))
+	if (stat(expandPath(p), &st) != -1 && S_ISDIR(st.st_mode))
 	    Strcat_char(CompleteBuf, '/');
     }
     if (cm_mode & CPL_ON)

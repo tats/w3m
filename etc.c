@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.50 2003/01/17 16:57:18 ukai Exp $ */
+/* $Id: etc.c,v 1.51 2003/01/17 17:06:00 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1046,10 +1046,13 @@ parsePasswd(FILE * fp, int netrc)
 FILE *
 openSecretFile(char *fname)
 {
+    char *efname;
     struct stat st;
+
     if (fname == NULL)
 	return NULL;
-    if (stat(expandName(fname), &st) < 0)
+    efname = expandPath(fname);
+    if (stat(efname, &st) < 0)
 	return NULL;
 
     /* check permissions, if group or others readable or writable,
@@ -1076,7 +1079,7 @@ openSecretFile(char *fname)
 	return NULL;
     }
 
-    return fopen(expandName(fname), "r");
+    return fopen(efname, "r");
 }
 
 void
@@ -1429,35 +1432,44 @@ myEditor(char *cmd, char *file, int line)
 char *
 expandName(char *name)
 {
-    Str userName = NULL;
     char *p;
     struct passwd *passent, *getpwnam(const char *);
-    Str extpath = Strnew();
+    Str extpath = NULL;
 
+    if (name == NULL)
+	return NULL;
     p = name;
-    if (*p == '/' && *(p + 1) == '~' && IS_ALPHA(*(p + 2))) {
-	if (personal_document_root != NULL) {
-	    userName = Strnew();
+    if (*p == '/') {
+	if (*(p + 1) == '~' && IS_ALPHA(*(p + 2)) && personal_document_root) {
+	    char *q;
 	    p += 2;
-	    while (IS_ALNUM(*p) || *p == '_' || *p == '-')
-		Strcat_char(userName, *(p++));
-	    passent = getpwnam(userName->ptr);
-	    if (passent == NULL) {
-		p = name;
-		goto rest;
+	    q = strchr(p, '/');
+            if (q) {			/* /~user/dir... */
+		passent = getpwnam(allocStr(p, q - p));
+		p = q;
 	    }
-	    Strcat_charp(extpath, passent->pw_dir);
-	    Strcat_char(extpath, '/');
-	    Strcat_charp(extpath, personal_document_root);
-	    if (Strcmp_charp(extpath, "/") == 0 && *p == '/')
+	    else {			/* /~user */
+		passent = getpwnam(p);
+		p = "";
+	    }
+	    if (!passent)
+		goto rest;
+	    extpath = Strnew_m_charp(passent->pw_dir, "/",
+				     personal_document_root, NULL);
+	    if (*personal_document_root == '\0' && *p == '/')
 		p++;
 	}
+	else
+	    goto rest;
+	if (Strcmp_charp(extpath, "/") == 0 && *p == '/')
+	    p++;
+	Strcat_charp(extpath, p);
+	return extpath->ptr;
     }
     else
-	p = expandPath(p);
+	return expandPath(p);
   rest:
-    Strcat_charp(extpath, p);
-    return extpath->ptr;
+    return name;
 }
 
 char *
@@ -1471,7 +1483,7 @@ file_to_url(char *file)
     char *host = NULL;
 #endif
 
-    file = expandName(file);
+    file = expandPath(file);
 #ifdef SUPPORT_NETBIOS_SHARE
     if (file[0] == '/' && file[1] == '/') {
 	char *p;

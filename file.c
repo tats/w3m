@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.188 2003/01/17 16:57:19 ukai Exp $ */
+/* $Id: file.c,v 1.189 2003/01/17 17:06:01 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7454,7 +7454,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		p = unescape_spaces(Strnew_charp(q))->ptr;
 		p = conv_to_system(q);
 	    }
-	    p = expandName(p);
+	    p = expandPath(p);
 	    if (checkOverWrite(p) < 0)
 		return -1;
 	}
@@ -7511,7 +7511,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (*p == '|' && PermitSaveToPipe)
 	    is_pipe = TRUE;
 	else {
-	    p = expandName(p);
+	    p = expandPath(p);
 	    if (checkOverWrite(p) < 0)
 		return -1;
 	}
@@ -7606,7 +7606,7 @@ doFileSave(URLFile uf, char *defstr)
 	*(p + 1) = '\0';
 	if (*q == '\0')
 	    return -1;
-	p = expandName(q);
+	p = expandPath(q);
 	if (checkOverWrite(p) < 0)
 	    return -1;
 	if (checkSaveFile(uf.stream, p) < 0) {

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.68 2003/01/11 15:54:09 ukai Exp $ */
+/* $Id: url.c,v 1.69 2003/01/17 17:06:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -154,7 +154,7 @@ loadMimeTypes(char *filename)
     Str tmp;
     struct table2 *mtypes;
 
-    f = fopen(expandName(filename), "r");
+    f = fopen(expandPath(filename), "r");
     if (f == NULL)
 	return NULL;
     n = 0;
@@ -2103,7 +2103,7 @@ loadURIMethods(char *filename)
     struct table2 *um;
     char *up, *p;
 
-    f = fopen(expandName(filename), "r");
+    f = fopen(expandPath(filename), "r");
     if (f == NULL)
 	return NULL;
     i = 0;

@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.11 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: mailcap.c,v 1.12 2003/01/17 17:06:04 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -187,7 +187,7 @@ loadMailcap(char *filename)
     Str tmp;
     struct mailcap *mcap;
 
-    f = fopen(expandName(filename), "r");
+    f = fopen(expandPath(filename), "r");
     if (f == NULL)
 	return NULL;
     i = 0;

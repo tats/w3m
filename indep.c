@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.28 2003/01/08 17:24:12 ukai Exp $ */
+/* $Id: indep.c,v 1.29 2003/01/17 17:06:02 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -177,10 +177,9 @@ cleanupName(char *name)
 char *
 expandPath(char *name)
 {
-    Str userName = NULL;
     char *p;
     struct passwd *passent, *getpwnam(const char *);
-    Str extpath = Strnew();
+    Str extpath = NULL;
 
     if (name == NULL)
 	return NULL;
@@ -188,25 +187,31 @@ expandPath(char *name)
     if (*p == '~') {
 	p++;
 	if (IS_ALPHA(*p)) {
-	    userName = Strnew();
-	    while (IS_ALNUM(*p) || *p == '_' || *p == '-')
-		Strcat_char(userName, *(p++));
-	    passent = getpwnam(userName->ptr);
-	    if (passent == NULL) {
-		p = name;
-		goto rest;
+	    char *q = strchr(p, '/');
+	    if (q) {				/* ~user/dir... */
+	        passent = getpwnam(allocStr(p, q - p));
+		p = q;
 	    }
-	    Strcat_charp(extpath, passent->pw_dir);
+	    else {				/* ~user */
+	        passent = getpwnam(p);
+		p = "";
+	    }
+	    if (!passent)
+		goto rest;
+	    extpath = Strnew_charp(passent->pw_dir);
 	}
-	else {
-	    Strcat_charp(extpath, getenv("HOME"));
+	else if (*p == '/' || *p == '\0') {	/* ~/dir... or ~ */
+	    extpath = Strnew_charp(getenv("HOME"));
 	}
+	else
+	    goto rest;
 	if (Strcmp_charp(extpath, "/") == 0 && *p == '/')
 	    p++;
+	Strcat_charp(extpath, p);
+	return extpath->ptr;
     }
   rest:
-    Strcat_charp(extpath, p);
-    return extpath->ptr;
+    return name;
 }
 
 #ifndef HAVE_STRCHR

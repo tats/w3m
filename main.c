@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.194 2003/01/15 17:13:22 ukai Exp $ */
+/* $Id: main.c,v 1.195 2003/01/17 17:06:04 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4241,7 +4241,7 @@ svBuf(void)
 	    file = unescape_spaces(Strnew_charp(qfile))->ptr;
 	    file = conv_to_system(file);
 	}
-	file = expandName(file);
+	file = expandPath(file);
 	if (checkOverWrite(file) < 0) {
 	    displayBuffer(Currentbuf, B_NORMAL);
 	    return;
@@ -6080,7 +6080,7 @@ addDownloadList(pid_t pid, char *url, char *save, char *lock, clen_t size)
     d->url = url;
     if (save[0] != '/' && save[0] != '~')
 	save = Strnew_m_charp(CurrentDir, "/", save, NULL)->ptr;
-    d->save = expandName(save);
+    d->save = expandPath(save);
     d->lock = lock;
     d->size = size;
     d->time = time(0);

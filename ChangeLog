@@ -1,5 +1,30 @@
 2003-01-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03647] expandName() and expandPath()
+	* etc.c (openSecretFile): use expandPath
+		(expandName): rewrite
+		(file_to_url): use expandPath
+	* file.c (_doFileCopy): use expandPath
+		(doFileSave): use expandPath
+	* indep.c (expandPath): rewrite
+	* linein.c (inputLineHistSearch): use expandPath
+		(next_dcompl): use expandPath
+		(doComplete): use expandPath
+	* local.c (set_cgi_environ): rewrite
+	* mailcap.c (loadMailcap): use expandPath
+	* main.c (svBuf): use expandPath
+		(addDownloadList): use expandPath
+	* rc.c (init_rc): use expandPath
+		(rcFile): rewrite
+		(auxbinFile): use expandPath
+		(libFile): use expandPath
+		(etcFile): use expandPath
+		(helpFile): use expandPath
+	* url.c (loadMimeTypes): use expandPath
+		(loadURIMethods): use expandPath
+
+2003-01-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03646] setup child process, local CGI
 	* etc.c (reset_signals): static
 				don't ignore SIGUSR1
@@ -6553,4 +6578,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.686 2003/01/17 16:57:17 ukai Exp $
+$Id: ChangeLog,v 1.687 2003/01/17 17:05:57 ukai Exp $

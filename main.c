@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.195 2003/01/17 17:06:04 ukai Exp $ */
+/* $Id: main.c,v 1.196 2003/01/22 15:56:50 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -80,9 +80,7 @@ static char *getCurWord(Buffer *buf, int *spos, int *epos,
 			const char *badchars);
 
 static int display_ok = FALSE;
-static void dump_source(Buffer *);
-static void dump_head(Buffer *);
-static void dump_extra(Buffer *);
+static void do_dump(Buffer *);
 int prec_num = 0;
 int prev_key = -1;
 int on_target = 1;
@@ -752,6 +750,8 @@ main(int argc, char **argv, char **envp)
     if (w3m_backend)
 	backend();
 
+    if (w3m_dump)
+	signal(SIGINT, SIG_IGN);
 #ifdef SIGCHLD
     signal(SIGCHLD, sig_chld);
 #endif
@@ -900,22 +900,13 @@ main(int argc, char **argv, char **envp)
 	    Currentbuf->nextBuffer = newbuf;
 	    Currentbuf = newbuf;
 	}
-	if (w3m_dump) {
-	    if (w3m_dump & DUMP_EXTRA)
-		dump_extra(Currentbuf);
-	    if (w3m_dump & DUMP_HEAD)
-		dump_head(Currentbuf);
-	    if (w3m_dump & DUMP_SOURCE)
-		dump_source(Currentbuf);
-	    if (w3m_dump == DUMP_BUFFER) {
-		if (Currentbuf->frameset != NULL && RenderFrame)
-		    rFrame();
-		saveBuffer(Currentbuf, stdout);
-	    }
-	}
-	else {
+	if (!w3m_dump || w3m_dump == DUMP_BUFFER) {
 	    if (Currentbuf->frameset != NULL && RenderFrame)
 		rFrame();
+	}
+	if (w3m_dump)
+	    do_dump(Currentbuf);
+	else {
 	    Currentbuf = newbuf;
 #ifdef USE_BUFINFO
 	    saveBufferInfo();
@@ -1165,6 +1156,27 @@ dump_extra(Buffer *buf)
 	printf("W3m-ssl-certificate: %s", tmp->ptr);
     }
 #endif
+}
+
+static void
+do_dump(Buffer *buf)
+{
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+
+    prevtrap = signal(SIGINT, intTrap);
+    if (SETJMP(IntReturn) != 0) {
+	signal(SIGINT, prevtrap);
+	return;
+    }
+    if (w3m_dump & DUMP_EXTRA)
+	dump_extra(buf);
+    if (w3m_dump & DUMP_HEAD)
+	dump_head(buf);
+    if (w3m_dump & DUMP_SOURCE)
+	dump_source(buf);
+    if (w3m_dump == DUMP_BUFFER)
+	saveBuffer(buf, stdout);
+    signal(SIGINT, prevtrap);
 }
 
 void

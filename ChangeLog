@@ -1,3 +1,13 @@
+2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03674] -dump problem
+	* file.c (loadGeneralFile): return NULL when dump
+	* main.c (dump_source): deleted
+		(dump_head): deleted
+		(dupm_extra): deleted
+		(do_dump): added
+		(main): singal when dump
+
 2003-01-23  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03671] Re: config.param is clear when configure -help
@@ -6668,4 +6678,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.700 2003/01/22 15:53:12 ukai Exp $
+$Id: ChangeLog,v 1.701 2003/01/22 15:56:49 ukai Exp $

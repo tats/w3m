@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.195 2003/01/20 15:32:03 ukai Exp $ */
+/* $Id: file.c,v 1.196 2003/01/22 15:56:50 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2062,6 +2062,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    return NO_BUFFER;
 	}
     }
+    else if (w3m_dump & DUMP_FRAME)
+	return NULL;
 
     if (flag & RG_FRAME) {
 	if (t_buf == NULL)

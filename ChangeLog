@@ -1,3 +1,9 @@
+2001-12-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02769] <form>..</form> as block element
+	* file.c (HTMLtagproc1): CLOSE_P for <form>...</form>
+	* table.c (feed_table_tag): add feed_table_block_tag for <form></form>
+
 2001-12-28  Hironori Sakamoto <h-saka@lsi.nec.co.jp>
 
 	* [w3m-dev 02765] backend
@@ -1732,4 +1738,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.192 2001/12/27 17:50:56 ukai Exp $
+$Id: ChangeLog,v 1.193 2001/12/27 17:56:02 ukai Exp $

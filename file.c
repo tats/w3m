@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.37 2001/12/27 17:50:56 ukai Exp $ */
+/* $Id: file.c,v 1.38 2001/12/27 17:56:03 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3619,10 +3619,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_FORM:
     case HTML_FORM_INT:
+	CLOSE_P;
+	if (!(obuf->flag & RB_IGNORE_P))
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	process_form(tag);
 	return 1;
     case HTML_N_FORM:
     case HTML_N_FORM_INT:
+	CLOSE_P;
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	obuf->flag |= RB_IGNORE_P;
 	process_n_form();
 	return 1;
     case HTML_INPUT:

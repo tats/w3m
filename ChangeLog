@@ -1,3 +1,11 @@
+2002-03-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.3
+	* version.c.in: update
+	* doc/README: version 0.3, release date
+	* doc-jp/README: ditto
+	* NEWS: update
+
 2002-03-06  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03084] A temporary file remains when pipe + 'v'
@@ -3040,4 +3048,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.331 2002/03/05 16:58:09 ukai Exp $
+$Id: ChangeLog,v 1.332 2002/03/05 17:17:43 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.177 2003/01/08 17:32:54 ukai Exp $ */
+/* $Id: file.c,v 1.178 2003/01/09 15:30:34 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3122,7 +3122,8 @@ process_img(struct parsed_tag *tag, int width)
 	    parseURL2(p, &u, cur_baseURL);
 #endif
 	    image.url = parsedURL2Str(&u)->ptr;
-	    image.ext = filename_extension(u.file, TRUE);
+	    if (!uncompressed_file_type(u.file, &image.ext))
+		image.ext = filename_extension(u.file, TRUE);
 	    image.cache = NULL;
 	    image.width = w;
 	    image.height = i;
@@ -5171,7 +5172,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    parseURL2(a_img->url, &u, cur_baseURL);
 			    a_img->image = image = New(Image);
 			    image->url = parsedURL2Str(&u)->ptr;
-			    image->ext = filename_extension(u.file, TRUE);
+			    if (!uncompressed_file_type(u.file, &image->ext))
+				image->ext = filename_extension(u.file, TRUE);
 			    image->cache = NULL;
 			    image->width =
 				(w > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : w;
@@ -6843,8 +6845,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 
     loadImage(IMG_FLAG_STOP);
     image = New(Image);
-    image->url = parsedURL2Str(cur_baseURL)->ptr;
-    image->ext = filename_extension(cur_baseURL->file, 1);
+    image->url = uf->url;
+    image->ext = uf->ext;
     image->width = -1;
     image->height = -1;
     cache = getImage(image, cur_baseURL, IMG_FLAG_AUTO);
@@ -6876,7 +6878,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
     cache->loaded |= IMG_FLAG_DONT_REMOVE;
-    if (uf->scheme != SCM_LOCAL)
+    if (newBuf->sourcefile == NULL && uf->scheme != SCM_LOCAL)
 	newBuf->sourcefile = cache->file;
 
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));

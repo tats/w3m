@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.185 2003/01/08 17:24:13 ukai Exp $ */
+/* $Id: main.c,v 1.186 2003/01/09 15:30:48 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4392,6 +4392,7 @@ vwSrc(void)
 	    saveBuffer(Currentbuf, f);
 	    fclose(f);
 	    fn = tmpf->ptr;
+	    Currentbuf->sourcefile = fn;
 	}
 	else {
 	    return;
@@ -4441,6 +4442,10 @@ vwSrc(void)
 		Sprintf("HTML view of %s", Currentbuf->buffername)->ptr;
 	buf->linkBuffer[LB_SOURCE] = Currentbuf;
 	Currentbuf->linkBuffer[LB_N_SOURCE] = buf;
+#ifdef USE_IMAGE
+	if (buf->img)
+	    buf->need_reshape = TRUE;
+#endif
     }
     else {
 	return;

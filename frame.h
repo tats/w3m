@@ -1,4 +1,4 @@
-/* $Id: frame.h,v 1.4 2002/02/08 11:45:07 ukai Exp $ */
+/* $Id: frame.h,v 1.5 2003/01/09 15:30:46 ukai Exp $ */
 /*
  * frame support
  */
@@ -15,9 +15,7 @@ struct frame_element {
 struct frame_body {
     char attr;
     char flags;
-#define	FB_NOCACHE	0x01
-#define	FB_TODELETE	0x02
-#define	FB_NO_BUFFER	0x04
+#define	FB_NO_BUFFER	0x01
     char *name;
     char *url;
     ParsedURL *baseURL;

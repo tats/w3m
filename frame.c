@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.27 2002/12/14 15:28:37 ukai Exp $ */
+/* $Id: frame.c,v 1.28 2003/01/09 15:30:43 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -107,8 +107,6 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
 static void
 unloadFrame(struct frame_body *b)
 {
-    if (b->source && b->flags & FB_TODELETE)
-	pushText(fileToDelete, b->source);
     b->attr = F_UNLOADED;
 }
 
@@ -177,7 +175,6 @@ copyFrame(struct frame_body *ob)
 
     rb = New(struct frame_body);
     bcopy((const void *)ob, (void *)rb, sizeof(struct frame_body));
-    rb->flags &= ~FB_TODELETE;
     return rb;
 }
 
@@ -316,20 +313,11 @@ resetFrameElement(union frameset_element *f_element,
 	f_body->attr = F_BODY;
 	f_body->name = f_name;
 	f_body->url = parsedURL2Str(&buf->currentURL)->ptr;
+	f_body->source = buf->sourcefile;
+	buf->sourcefile = NULL;
 	if (buf->mailcap_source) {
 	    f_body->source = buf->mailcap_source;
-	    f_body->flags |= FB_TODELETE;
 	    buf->mailcap_source = NULL;
-	}
-	else if (buf->real_scheme == SCM_LOCAL) {
-	    f_body->source = buf->sourcefile;
-	}
-	else {
-	    Str tmp = tmpfname(TMPF_FRAME, NULL);
-	    rename(buf->sourcefile, tmp->ptr);
-	    f_body->source = tmp->ptr;
-	    f_body->flags |= FB_TODELETE;
-	    buf->sourcefile = NULL;
 	}
 	f_body->type = buf->type;
 	f_body->referer = referer;
@@ -345,7 +333,6 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
 {
     Buffer *buf;
     struct frameset *ret_frameset = NULL;
-    Str tmp;
     ParsedURL url;
 
     if (b == NULL || b->url == NULL || b->url[0] == '\0')
@@ -381,24 +368,12 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
 	return NULL;
     }
     b->url = parsedURL2Str(&buf->currentURL)->ptr;
-    b->source = buf->sourcefile;
     b->type = buf->type;
+    b->source = buf->sourcefile;
+    buf->sourcefile = NULL;
     if (buf->mailcap_source) {
 	b->source = buf->mailcap_source;
-	b->flags |= FB_TODELETE;
 	buf->mailcap_source = NULL;
-    }
-    else if ((buf->real_scheme != SCM_LOCAL)
-#ifdef USE_IMAGE
-	     || (activeImage && !useExtImageViewer &&
-		 buf->real_type && !strncasecmp(buf->real_type, "image/", 6))
-#endif
-	) {
-	tmp = tmpfname(TMPF_FRAME, NULL);
-	rename(buf->sourcefile, tmp->ptr);
-	b->source = tmp->ptr;
-	b->flags |= FB_TODELETE;
-	buf->sourcefile = NULL;
     }
     b->attr = F_BODY;
     if (buf->frameset) {

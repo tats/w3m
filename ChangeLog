@@ -1,3 +1,19 @@
+2003-01-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03619] Re: Error occured while reset
+	* file.c (process_img): check image.ext
+		(HTMLlineproc2body): check image.ext
+		(loadImageBuffer): url, ext is in URLFile
+	* frame.c (unloadFrame): no need to push to fileToDelete
+		(copyFrame): no need to reset FB_TODELETE
+		(resetFrameElement): f_body->source, buf->sourcefile
+		(frame_download_source): buf->source
+				buf->sourcefile reset
+	* frame.h (FB_NOCACHE): deleted
+		(FB_TODELETE): deleted
+	* main.c (vmSrc): Currentbuf->sourcefile
+			need_reshape if images exist
+
 2003-01-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03617] sourcefile when Content-Encoding: is specified.
@@ -6228,4 +6244,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.660 2003/01/08 17:32:36 ukai Exp $
+$Id: ChangeLog,v 1.661 2003/01/09 15:30:20 ukai Exp $

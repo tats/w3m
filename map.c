@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.27 2003/02/05 16:43:59 ukai Exp $ */
+/* $Id: map.c,v 1.28 2003/02/05 16:45:08 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -277,9 +277,9 @@ follow_map_panel(Buffer *buf, char *name)
 	parseURL2(a->url, &pu, baseURL(buf));
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
-        if (DecodeURL)
+	if (DecodeURL)
 	    p = html_quote(url_unquote_conv(p, buf->document_code));
-        else
+	else
 	    p = q;
 	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
@@ -411,9 +411,9 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
 	q = html_quote(parsedURL2Str(&pu)->ptr);
-        if (DecodeURL)
+	if (DecodeURL)
 	    p = html_quote(url_unquote_conv(a->url, buf->document_code));
-        else
+	else
 	    p = html_quote(a->url);
 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
 		       q, "\">",
@@ -451,7 +451,7 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	    Strcat_charp(html, "[Rev]");
 	if (!l->url)
 	    url = "(empty)";
-        else if (DecodeURL)
+	else if (DecodeURL)
 	    url = html_quote(url_unquote_conv(l->url, buf->document_code));
 	else
 	    url = html_quote(l->url);
@@ -581,8 +581,7 @@ page_info_panel(Buffer *buf)
 	    p = q;
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>URL of current image<td><a href=\"",
-		       q, "\">", p, "</a>",
-		       NULL);
+		       q, "\">", p, "</a>", NULL);
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {

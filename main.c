@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.209 2003/02/05 16:43:58 ukai Exp $ */
+/* $Id: main.c,v 1.210 2003/02/05 16:45:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3880,7 +3880,7 @@ goURL0(char *prompt, int relative)
 	    char *c_url = parsedURL2Str(current)->ptr;
 	    if (DefaultURLString == DEFAULT_URL_CURRENT) {
 		url = c_url;
-	        if (DecodeURL)
+		if (DecodeURL)
 		    url = url_unquote_conv(url, 0);
 	    }
 	    else
@@ -3893,7 +3893,7 @@ goURL0(char *prompt, int relative)
 	    a_url = parsedURL2Str(&p_url)->ptr;
 	    if (DefaultURLString == DEFAULT_URL_LINK) {
 		url = a_url;
-	        if (DecodeURL)
+		if (DecodeURL)
 		    url = url_unquote_conv(url, Currentbuf->document_code);
 	    }
 	    else

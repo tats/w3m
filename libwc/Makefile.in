@@ -164,5 +164,6 @@ wtf.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h sjis.h big5.h \
 	hkscs.h johab.h jis.h viet.h gbk.h gb18030.h uhc.h ucs.h utf8.h
 
 clean:
-	@-$(RM) -f *.o
+	@-$(RM) -f *.o $(LIBRARY)
+
 

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.1 2001/11/08 05:14:50 a-ito Exp $ */
+/* $Id: file.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -59,27 +59,29 @@ static int cur_option_selected;
 static int cur_status;
 #ifdef MENU_SELECT
 /* menu based <select>  */
-FormSelectOption select_option[MAX_SELECT];
+FormSelectOption *select_option;
+static int max_select = MAX_SELECT;
 static int n_select;
 static int cur_option_maxwidth;
 #endif				/* MENU_SELECT */
 
 static Str cur_textarea;
-Str textarea_str[MAX_TEXTAREA];
+Str *textarea_str;
 static int cur_textarea_size;
 static int cur_textarea_rows;
+static int cur_textarea_readonly;
 static int n_textarea;
+static int ignore_nl_textarea;
+static int max_textarea = MAX_TEXTAREA;
 
 static int http_response_code;
 
 #ifdef JP_CHARSET
 static char content_charset = '\0';
+static char meta_charset = '\0';
 static char guess_charset(char *p);
-#ifdef NEW_FORM
-static char check_charset(char *p);
-static char check_accept_charset(char *p);
-#endif
-char DocumentCode = '\0';
+static char check_charset(char *s);
+static char check_accept_charset(char *s);
 #endif
 
 static Str save_line = NULL;
@@ -101,16 +103,12 @@ static struct link_stack *link_stack = NULL;
 #define Str_news_endline(s) ((s)->ptr[0]=='.'&&((s)->ptr[1]=='\n'||(s)->ptr[1]=='\r'||(s)->ptr[1]=='\0'))
 #endif				/* USE_NNTP */
 
-#ifdef NEW_FORM
 #define INITIAL_FORM_SIZE 10
 static FormList **forms;
 static int *form_stack;
 static int form_max = 0;
 static int forms_size = 0;
 #define cur_form_id ((form_sp >= 0)? form_stack[form_sp] : -1)
-#else				/* not NEW_FORM */
-static FormList *form_stack[FORMSTACK_SIZE];
-#endif				/* not NEW_FORM */
 static int form_sp = 0;
 
 static int current_content_length;
@@ -131,7 +129,7 @@ char *ullevel[MAX_UL_LEVEL] =
     NBSP "*", NBSP "+", NBSP "o", NBSP "#", NBSP "@", NBSP "-",
     NBSP "=", "**", "--"
 };
-#define HR_RULE "\212"
+#define HR_RULE "-"
 #define HR_RULE_WIDTH 1
 #endif				/* not KANJI_SYMBOLS */
 
@@ -176,7 +174,8 @@ int
 currentLn(Buffer * buf)
 {
     if (buf->currentLine)
-	return buf->currentLine->real_linenumber + 1;
+/*     return buf->currentLine->real_linenumber + 1;      */
+       return buf->currentLine->linenumber + 1;
     else
 	return 1;
 }
@@ -194,7 +193,7 @@ loadSomething(URLFile * f,
 
     buf->filename = path;
     if (buf->buffername == NULL || buf->buffername[0] == '\0')
-	buf->buffername = lastFileName(path);
+	buf->buffername = conv_from_system(lastFileName(path));
     if (buf->currentURL.scheme == SCM_UNKNOWN)
 	buf->currentURL.scheme = f->scheme;
     buf->real_scheme = f->scheme;
@@ -359,8 +358,11 @@ convertLine(URLFile * uf, Str line, char *code, int mode)
 {
 #ifdef JP_CHARSET
     char ic;
-    if ((ic = checkShiftCode(line, *code)) != '\0')
-	line = conv_str(line, (*code = ic), InnerCode);
+    if ((ic = checkShiftCode(line, *code)) != '\0') {
+	if (UseAutoDetect)
+	    *code = ic;
+	line = conv_str(line, *code, InnerCode);
+    }
 #endif				/* JP_CHARSET */
     cleanup_line(line, mode);
 #ifdef USE_NNTP
@@ -382,11 +384,13 @@ loadFile(char *path)
     if (uf.stream == NULL)
 	return NULL;
     current_content_length = 0;
+#ifdef JP_CHARSET
+    content_charset = '\0';
+#endif
     return loadSomething(&uf, path, loadBuffer, NULL);
 }
 
-#ifdef USE_COOKIE
-static int
+int
 matchattr(char *p, char *attr, int len, Str * value)
 {
     int quoted;
@@ -423,7 +427,6 @@ matchattr(char *p, char *attr, int len, Str * value)
     }
     return 0;
 }
-#endif				/* USE_COOKIE */
 
 void
 readHeader(URLFile * uf,
@@ -439,7 +442,6 @@ readHeader(URLFile * uf,
 #ifdef JP_CHARSET
     char code = DocumentCode, ic;
 #endif
-    extern int w3m_dump_head;
 
     headerlist = newBuf->document_header = newTextList();
     if (uf->scheme == SCM_HTTP
@@ -476,7 +478,7 @@ readHeader(URLFile * uf,
 		break;
 	    /* last header */
 	}
-	else if (!w3m_dump_head) {
+	else if (!(w3m_dump & DUMP_HEAD)) {
 	    if (lineBuf2) {
 		Strcat(lineBuf2, tmp);
 	    }
@@ -490,8 +492,11 @@ readHeader(URLFile * uf,
 		continue;
 	    lineBuf2 = decodeMIME(lineBuf2->ptr);
 #ifdef JP_CHARSET
-	    if ((ic = checkShiftCode(lineBuf2, code)) != '\0')
-		lineBuf2 = conv_str(lineBuf2, (code = ic), InnerCode);
+	    if ((ic = checkShiftCode(lineBuf2, code)) != '\0') {
+		if (UseAutoDetect)
+		    code = ic;
+		lineBuf2 = conv_str(lineBuf2, code, InnerCode);
+	    }
 #endif				/* JP_CHARSET */
 	    /* separated with line and stored */
 	    tmp = Strnew_size(lineBuf2->length);
@@ -540,6 +545,9 @@ readHeader(URLFile * uf,
 		uf->encoding = ENC_BASE64;
 	    else if (!strncasecmp(p, "quoted-printable", 16))
 		uf->encoding = ENC_QUOTE;
+	    else if (!strncasecmp(p, "uuencode", 8) ||
+		     !strncasecmp(p, "x-uuencode", 10))
+		uf->encoding = ENC_UUENCODE;
 	    else
 		uf->encoding = ENC_7BIT;
 	}
@@ -664,7 +672,7 @@ readHeader(URLFile * uf,
 			if (msg->length > COLS - 4)
 			    Strshrink(msg, msg->length - (COLS - 4));
 			term_raw();
-			ans = inputStr(msg->ptr, FALSE);
+			ans = inputChar(msg->ptr);
 		    }
 		    if (ans == NULL || tolower(*ans) != 'y' ||
 			(err = add_cookie(pu, name, value, expires, domain, path,
@@ -748,7 +756,6 @@ checkContentType(Buffer * buf)
     while (*p && *p != ';' && !IS_SPACE(*p))
 	Strcat_char(r, *p++);
 #ifdef JP_CHARSET
-    content_charset = '\0';
     if ((p = strcasestr(p, "charset")) != NULL) {
 	p += 7;
 	SKIP_BLANKS(p);
@@ -830,18 +837,31 @@ getAuthCookie(char *realm, char *auth_header, TextList * extra_header, ParsedURL
 	    term_raw();
 	    if ((pp = inputStr(Sprintf("Username for %s: ", realm)->ptr, NULL)) == NULL)
 		return NULL;
-	    uname = Strnew_charp(pp);
+	    uname = Str_conv_to_system(Strnew_charp(pp));
 	    if ((pp = inputLine(Sprintf("Password for %s: ", realm)->ptr, NULL, IN_PASSWORD)) == NULL)
 		return NULL;
-	    pwd = Strnew_charp(pp);
+	    pwd = Str_conv_to_system(Strnew_charp(pp));
 	    term_cbreak();
 	}
 	else {
-	    printf("Username: ");
+            int proxy = !strncasecmp( "Proxy-Authorization:", auth_header, auth_header_len );
+
+            /*
+             * If post file is specified as '-', stdin is closed at this point.
+             * In this case, w3m cannot read username from stdin.
+             * So exit with error message.
+             * (This is same behavior as lwp-request.)
+             */
+            if (feof(stdin) || ferror (stdin)) {
+                fprintf(stderr, "w3m: Authorization required for %s\n", realm);
+                exit(1);
+            }
+
+            printf(proxy ? "Proxy Username for %s: " : "Username for %s: ", realm);
 	    fflush(stdout);
 	    uname = Strfgets(stdin);
 	    Strchop(uname);
-	    pwd = Strnew_charp((char *) getpass("Password: "));
+            pwd = Strnew_charp((char *) getpass(proxy ? "Proxy Password: " : "Password: "));
 	}
 	Strcat_char(uname, ':');
 	Strcat(uname, pwd);
@@ -855,6 +875,14 @@ getAuthCookie(char *realm, char *auth_header, TextList * extra_header, ParsedURL
     return ss;
 }
 
+static int
+same_url_p(ParsedURL *pu1, ParsedURL *pu2)
+{
+    return (pu1->scheme == pu2->scheme && pu1->port == pu2->port &&
+           (pu1->host ? pu2->host ? !strcasecmp(pu1->host, pu2->host) : 0 : 1) &&
+           (pu1->file ? pu2->file ? !strcmp(pu1->file, pu2->file) : 0 : 1));
+}
+
 /* 
  * loadGeneralFile: load file to buffer
  */
@@ -862,7 +890,9 @@ Buffer *
 loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormList * request)
 {
     URLFile f, *of = NULL;
-    ParsedURL pu;
+    ParsedURL pu, * volatile puv = NULL;
+    int volatile nredir = 0;
+    int volatile nredir_size = 0;
     Buffer *b = NULL, *(*proc) ();
     char *tpath;
     char *t, *p, *real_type = NULL;
@@ -877,7 +907,6 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
     unsigned char status = HTST_NORMAL;
     URLOption url_option;
     Str tmp;
-    extern int w3m_dump, w3m_dump_source;
 
     tpath = path;
     prevtrap = NULL;
@@ -919,24 +948,24 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	case SCM_LOCAL:
 	    {
 		struct stat st;
-		if (stat(pu.file, &st) < 0)
+		if (stat(pu.real_file, &st) < 0)
 		    return NULL;
 		if (S_ISDIR(st.st_mode)) {
 		    if (UseExternalDirBuffer) {
 			Str tmp = Strnew_charp(DirBufferCommand);
-			Strcat_m_charp(tmp, "?",
+			Strcat_m_charp(tmp, "?dir=",
 				       pu.file,
 				       "#current",
 				       NULL);
 			b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0, NULL);
 			if (b != NULL && b != NO_BUFFER) {
 			    copyParsedURL(&b->currentURL, &pu);
-			    b->filename = b->currentURL.file;
+			    b->filename = b->currentURL.real_file;
 			}
 			return b;
 		    }
 		    else {
-			b = dirBuffer(pu.file);
+			b = dirBuffer(pu.real_file);
 			if (b == NULL)
 			    return NULL;
 			t = "text/html";
@@ -968,6 +997,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	searchHeader = TRUE;
 	searchHeader_through = FALSE;
     }
+    if (header_string) header_string = NULL;
     if (fmInitialized) {
 	prevtrap = signal(SIGINT, KeyAbort);
 	term_cbreak();
@@ -1002,17 +1032,37 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	    t = "text/plain";
 	if (http_response_code >= 301 && http_response_code <= 303 && (p = checkHeader(t_buf, "Location:")) != NULL) {
 	    /* document moved */
-	    tmp = Strnew_charp(p);
-	    Strchop(tmp);
-	    tpath = tmp->ptr;
-	    request = NULL;
-	    UFclose(&f);
-	    add_auth_cookie_flag = 0;
-	    current = New(ParsedURL);
-	    copyParsedURL(current, &pu);
-	    t_buf->bufferprop |= BP_REDIRECTED;
-	    status = HTST_NORMAL;
-	    goto load_doc;
+           if (nredir >= FollowRedirection) {
+        tmp = Sprintf("Number of redirections exceeded %d at %s", FollowRedirection, parsedURL2Str(&pu)->ptr);
+        disp_err_message(tmp->ptr, FALSE);
+           }
+           else if (nredir_size > 0 &&
+             (same_url_p(&pu, &puv[(nredir - 1) % nredir_size]) ||
+              (!(nredir % 2) && same_url_p(&pu, &puv[(nredir / 2) % nredir_size])))) {
+        tmp = Sprintf("Redirection loop detected (%s)", parsedURL2Str(&pu)->ptr);
+        disp_err_message(tmp->ptr, FALSE);
+           }
+           else {
+        if (!puv) {
+            nredir_size = FollowRedirection / 2 + 1;
+            puv = New_N(ParsedURL, nredir_size);
+            memset(puv, 0, sizeof(ParsedURL) * nredir_size);
+        }
+
+        copyParsedURL(&puv[nredir % nredir_size], &pu);
+        ++nredir;
+        tmp = Strnew_charp(p);
+        Strchop(tmp);
+        tpath = tmp->ptr;
+        request = NULL;
+        UFclose(&f);
+        add_auth_cookie_flag = 0;
+        current = New(ParsedURL);
+        copyParsedURL(current, &pu);
+        t_buf->bufferprop |= BP_REDIRECTED;
+        status = HTST_NORMAL;
+        goto load_doc;
+           }
 	}
 	if ((p = checkHeader(t_buf, "WWW-Authenticate:")) != NULL &&
 	    http_response_code == 401) {
@@ -1099,11 +1149,14 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	if (f.compression != CMP_NOCOMPRESS) {
 	    char *t1 = uncompressed_file_type(pu.file, NULL);
 	    real_type = f.guess_type;
+/*
 	    if (t1 && strncasecmp(t1, "application/", 12) == 0) {
 		f.compression = CMP_NOCOMPRESS;
 		t = real_type;
 	    }
-	    else if (t1)
+	    else
+*/
+	    if (t1)
 		t = t1;
 	    else
 		t = real_type;
@@ -1114,6 +1167,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 		real_type = "text/plain";
 	    t = real_type;
 	}
+/*
 	if (!strncasecmp(t, "application/", 12)) {
 	    char *tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
 	    current_content_length = 0;
@@ -1124,10 +1178,11 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 		    term_raw();
 		    signal(SIGINT, prevtrap);
 		}
-		doFileMove(tmpf, guess_save_name(pu.file));
+		doFileMove(tmpf, guess_save_name(t_buf, pu.file));
 	    }
 	    return NO_BUFFER;
 	}
+*/
     }
     else if (searchHeader) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
@@ -1169,18 +1224,25 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 
     if (do_download) {
 	/* download only */
+       char *file;
 	if (fmInitialized) {
 	    term_raw();
 	    signal(SIGINT, prevtrap);
 	}
-	doFileSave(f, guess_save_name(pu.file));
+	if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
+	    f.stream = newEncodedStream(f.stream, f.encoding);
+       if (pu.scheme == SCM_LOCAL)
+           file = conv_from_system(guess_save_name(NULL, pu.real_file));
+       else
+           file = guess_save_name(t_buf, pu.file);
+       doFileSave(f, file);
 	UFclose(&f);
 	return NO_BUFFER;
     }
 
     if (f.compression != CMP_NOCOMPRESS) {
-	if (!w3m_dump_source &&
-	    (w3m_dump || is_text_type(t) || searchExtViewer(t))) {
+	if (!(w3m_dump & DUMP_SOURCE) &&
+           (w3m_dump & ~DUMP_FRAME || is_text_type(t) || searchExtViewer(t))) {
 	    gunzip_stream(&f);
 	    uncompressed_file_type(pu.file, &f.ext);
 	}
@@ -1200,8 +1262,9 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
     }
 #endif				/* USE_GOPHER */
     else if (w3m_backend) ;
-    else if (!w3m_dump || is_dump_text_type(t)) {
-	if (!do_download && doExternal(f, pu.file, t, &b, t_buf)) {
+    else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
+	if (!do_download && doExternal(f,
+		pu.real_file ? pu.real_file : pu.file, t, &b, t_buf)) {
 	    if (b && b != NO_BUFFER) {
 		b->real_scheme = f.scheme;
 		b->real_type = real_type;
@@ -1222,10 +1285,13 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	    }
 	    if (pu.scheme == SCM_LOCAL) {
 		UFclose(&f);
-		doFileCopy(pu.file, guess_save_name(pu.file));
+		doFileCopy(pu.real_file,
+			conv_from_system(guess_save_name(NULL, pu.real_file)));
 	    }
 	    else {
-		doFileSave(f, guess_save_name(pu.file));
+		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
+		    f.stream = newEncodedStream(f.stream, f.encoding);
+		doFileSave(f, guess_save_name(t_buf, pu.file));
 		UFclose(&f);
 	    }
 	    return NO_BUFFER;
@@ -1247,7 +1313,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	    t_buf->ssl_certificate = s->ptr;
     }
 #endif
-    b = loadSomething(&f, pu.file, proc, t_buf);
+    b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
     UFclose(&f);
     if (b) {
 	b->real_scheme = f.scheme;
@@ -1255,7 +1321,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
       loaded:
 	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 	    copyParsedURL(&b->currentURL, &pu);
-	if (!strcmp(t, "text/html"))
+	if (!strcasecmp(t, "text/html"))
 	    b->type = "text/html";
 	else if (w3m_backend) {
 	    Str s = Strnew_charp(t);
@@ -1273,6 +1339,11 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 #endif				/* not JP_CHARSET */
 	        if (a != NULL) {
 		    gotoLine(b, a->start.line);
+#ifdef LABEL_TOPLINE
+            b->topLine = lineSkip(b, b->topLine,
+               b->currentLine->linenumber - b->topLine->linenumber,
+               FALSE);
+#endif
 		    b->pos = a->start.pos;
 		    arrangeCursor(b);
 		}
@@ -1285,6 +1356,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	    }
 	}
     }
+    if (header_string) header_string = NULL;
     if (fmInitialized) {
 	term_raw();
 	signal(SIGINT, prevtrap);
@@ -1430,6 +1502,8 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
 #ifdef FORMAT_NICE
     obuf->bp.flag &= ~RB_FILL;
 #endif				/* FORMAT_NICE */
+    obuf->bp.top_margin = obuf->top_margin;
+    obuf->bp.bottom_margin = obuf->bottom_margin;
 
     if (!obuf->bp.init_flag)
 	return;
@@ -1457,6 +1531,8 @@ back_to_breakpoint(struct readbuffer *obuf)
     obuf->in_under = obuf->bp.in_under;
     obuf->prev_ctype = obuf->bp.prev_ctype;
     obuf->pos = obuf->bp.pos;
+    obuf->top_margin = obuf->bp.top_margin;
+    obuf->bottom_margin = obuf->bp.bottom_margin;
     if (obuf->flag & RB_NOBR)
 	obuf->nobr_level = obuf->bp.nobr_level;
 }
@@ -1593,14 +1669,16 @@ proc_mchar(struct readbuffer *obuf, int pre_mode,
 }
 
 void
-push_render_image(Str str, int width, struct html_feed_environ *h_env)
+push_render_image(Str str, int width, int limit, struct html_feed_environ *h_env)
 {
     struct readbuffer *obuf = h_env->obuf;
     int indent = h_env->envs[h_env->envc].indent;
 
+    push_spaces(obuf, 1, (limit - width) / 2);
     push_str(obuf, width, str, PC_ASCII);
+    push_spaces(obuf, 1, (limit - width + 1) / 2);
     if (width > 0)
-	flushline(h_env, obuf, indent, 0, h_env->limit);
+       flushline(h_env, obuf, indent, 0, h_env->limit);
 }
 
 static int
@@ -1760,6 +1838,26 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent, 
     if (obuf->in_under && !hidden_under)
 	Strcat_charp(line, "</u>");
 
+    if (obuf->top_margin > 0) {
+       int i;
+       struct html_feed_environ h;
+       struct readbuffer o;
+       struct environment e[1];
+
+       init_henv(&h, &o, e, 1, NULL, width, indent);
+       o.line = Strnew_size(width + 20);
+       o.pos = obuf->pos;
+       o.flag = obuf->flag;
+       o.top_margin = -1;
+       o.bottom_margin = -1;
+       Strcat_charp(o.line, "<pre_int>");
+        for (i = 0; i < o.pos; i++)
+           Strcat_char(o.line, ' ');
+       Strcat_charp(o.line, "</pre_int>");
+       for (i = 0; i < obuf->top_margin; i++)
+           flushline(h_env, &o, indent, force, width);
+    }
+
     if (force == 1 || obuf->flag & RB_NFLUSHED) {
 	TextLine *lbuf = newTextLine(line, obuf->pos);
 	if (RB_GET_ALIGN(obuf) == RB_CENTER) {
@@ -1870,8 +1968,33 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent, 
 	    pass = tmp2;
 	}
     }
+
+    if (obuf->bottom_margin > 0) {
+       int i;
+       struct html_feed_environ h;
+       struct readbuffer o;
+       struct environment e[1];
+
+       init_henv(&h, &o, e, 1, NULL, width, indent);
+       o.line = Strnew_size(width + 20);
+       o.pos = obuf->pos;
+       o.flag = obuf->flag;
+       o.top_margin = -1;
+       o.bottom_margin = -1;
+       Strcat_charp(o.line, "<pre_int>");
+       for (i = 0; i < o.pos; i++)
+           Strcat_char(o.line, ' ');
+       Strcat_charp(o.line, "</pre_int>");
+       for (i = 0; i < obuf->bottom_margin; i++)
+           flushline(h_env, &o, indent, force, width);
+    }
+    if (obuf->top_margin < 0 || obuf->bottom_margin < 0)
+       return;
+
     obuf->line = Strnew_size(256);
     obuf->pos = 0;
+    obuf->top_margin = 0;
+    obuf->bottom_margin = 0;
     obuf->prevchar = ' ';
     obuf->bp.init_flag = 1;
     obuf->flag &= ~RB_NFLUSHED;
@@ -1886,17 +2009,17 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent, 
 	if (obuf->anchor_hseq > 0)
 	    obuf->anchor_hseq = -obuf->anchor_hseq;
 	tmp = Sprintf("<A HSEQ=\"%d\" HREF=\"", obuf->anchor_hseq);
-	Strcat_charp(tmp, htmlquote_str(obuf->anchor->ptr));
+	Strcat_charp(tmp, html_quote(obuf->anchor->ptr));
 	if (obuf->anchor_target) {
 	    Strcat_charp(tmp, "\" TARGET=\"");
-	    Strcat_charp(tmp, htmlquote_str(obuf->anchor_target->ptr));
+	    Strcat_charp(tmp, html_quote(obuf->anchor_target->ptr));
 	}
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_A);
     }
     if (!hidden_img && obuf->img_alt) {
 	Str tmp = Strnew_charp("<IMG_ALT SRC=\"");
-	Strcat_charp(tmp, htmlquote_str(obuf->img_alt->ptr));
+	Strcat_charp(tmp, html_quote(obuf->img_alt->ptr));
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_IMG_ALT);
     }
@@ -2072,23 +2195,15 @@ process_img(struct parsed_tag * tag)
     tmp = Strnew_size(128);
     if (r) {
 	r2 = strchr(r, '#');
-#ifdef NEW_FORM
 	s = "<form_int method=internal action=map>";
 	process_form(parse_tag(&s, TRUE));
 	Strcat(tmp, Sprintf("<pre_int><input_alt fid=\"%d\" "
 			    "type=hidden name=link value=\"",
 			    cur_form_id));
-	Strcat_charp(tmp, htmlquote_str((r2) ? r2 + 1 : r));
+	Strcat_charp(tmp, html_quote((r2) ? r2 + 1 : r));
 	Strcat(tmp, Sprintf("\"><input_alt hseq=\"%d\" fid=\"%d\" "
 			    "type=submit no_effect=true>",
 			    cur_hseq++, cur_form_id));
-#else				/* not NEW_FORM */
-	Strcat_charp(tmp, "<form_int method=internal action=map>"
-		   "<pre_int><input_alt type=hidden name=link value=\"");
-	Strcat_charp(tmp, htmlquote_str((r2) ? r2 + 1 : r));
-	Strcat(tmp, Sprintf("\"><input_alt hseq=\"%d\" type=submit "
-			    "no_effect=true>", cur_hseq++));
-#endif				/* not NEW_FORM */
     }
     if (q != NULL && *q == '\0' && ignore_null_img_alt)
 	q = NULL;
@@ -2096,10 +2211,10 @@ process_img(struct parsed_tag * tag)
 	Strcat_charp(tmp, "<img_alt src=\"");
     else
 	Strcat_charp(tmp, "<nobr><img_alt src=\"");
-    Strcat_charp(tmp, htmlquote_str(p));
+    Strcat_charp(tmp, html_quote(p));
     Strcat_charp(tmp, "\">");
     if (q != NULL) {
-	Strcat_charp(tmp, htmlquote_str(q));
+	Strcat_charp(tmp, html_quote(q));
 	Strcat_charp(tmp, "</img_alt> ");
 	goto img_end2;
     }
@@ -2125,7 +2240,7 @@ process_img(struct parsed_tag * tag)
 	if (w > 200 && i < 13) {
 	    /* must be a horizontal line */
 #ifndef KANJI_SYMBOLS
-	    Strcat_charp(tmp, "<_RULE>");
+           Strcat_charp(tmp, "<_RULE TYPE=10>");
 #endif				/* not KANJI_SYMBOLS */
 	    w /= pixel_per_char;
 	    for (i = 0; i < w - (HR_RULE_WIDTH - 1); i += HR_RULE_WIDTH)
@@ -2160,12 +2275,8 @@ process_img(struct parsed_tag * tag)
 	Strcat_charp(tmp, "</nobr>");
   img_end2:
     if (r) {
-#ifdef NEW_FORM
 	Strcat_charp(tmp, "</input_alt></pre_int>");
 	process_n_form();
-#else				/* not NEW_FORM */
-	Strcat_charp(tmp, "</input_alt></pre_int></form_int>");
-#endif				/* not NEW_FORM */
     }
     return tmp;
 }
@@ -2187,7 +2298,7 @@ process_anchor(struct parsed_tag * tag, char *tagbuf)
 Str
 process_input(struct parsed_tag * tag)
 {
-    int i, w, v, x, y;
+    int i, w, v, x, y, z;
     char *q , *p, *r, *p2;
     Str tmp;
     char *qq = "";
@@ -2207,6 +2318,7 @@ process_input(struct parsed_tag * tag)
     parsedtag_get_value(tag, ATTR_ALT, &p2);
     x = parsedtag_exists(tag, ATTR_CHECKED);
     y = parsedtag_exists(tag, ATTR_ACCEPT);
+    z = parsedtag_exists(tag, ATTR_READONLY);
 
     v = formtype(p);
     if (v == FORM_UNKNOWN)
@@ -2223,7 +2335,7 @@ process_input(struct parsed_tag * tag)
 	    q = "RESET";
 	    break;
 	    /* if no VALUE attribute is specified in * <INPUT
-	     * TYPE=CHECHBOX> tag, then the value "on" is used * as a
+	     * TYPE=CHECKBOX> tag, then the value "on" is used * as a
 	     * default value. It is not a part of HTML4.0 * specification, 
 	     * but an imitation of Netscape * behaviour. */
 	case FORM_INPUT_CHECKBOX:
@@ -2234,7 +2346,7 @@ process_input(struct parsed_tag * tag)
     if (v == FORM_INPUT_FILE)
 	q = NULL;
     if (q) {
-	qq = htmlquote_str(q);
+	qq = html_quote(q);
 	qlen = strlen(q);
     }
 
@@ -2249,20 +2361,16 @@ process_input(struct parsed_tag * tag)
     case FORM_INPUT_RADIO:
 	Strcat_char(tmp, '(');
     }
-#ifdef NEW_FORM
     Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
 			"name=\"%s\" width=%d maxlength=%d value=\"%s\"",
 			cur_hseq++, cur_form_id,
-			p, htmlquote_str(r), w, i, qq));
-#else				/* not NEW_FORM */
-    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" type=%s "
-			"name=\"%s\" width=%d maxlength=%d value=\"%s\"",
-			cur_hseq++, p, htmlquote_str(r), w, i, qq));
-#endif				/* not NEW_FORM */
+			p, html_quote(r), w, i, qq));
     if (x)
 	Strcat_charp(tmp, " checked");
     if (y)
 	Strcat_charp(tmp, " accept");
+    if (z)
+       Strcat_charp(tmp, " readonly");
     Strcat_char(tmp, '>');
 
     if (v == FORM_INPUT_HIDDEN)
@@ -2304,7 +2412,7 @@ process_input(struct parsed_tag * tag)
 	case FORM_INPUT_SUBMIT:
 	case FORM_INPUT_BUTTON:
 	    if (p2) {
-		Strcat_charp(tmp, htmlquote_str(p2));
+		Strcat_charp(tmp, html_quote(p2));
 		i = strlen(p2);
 	    }
 	    else {
@@ -2363,17 +2471,15 @@ process_select(struct parsed_tag * tag)
     select_is_multiple = parsedtag_exists(tag, ATTR_MULTIPLE);
 	
 #ifdef MENU_SELECT
-    if (!select_is_multiple && n_select < MAX_SELECT) {
-#ifdef NEW_FORM
+    if (!select_is_multiple) {
 	select_str = Sprintf("<pre_int>[<input_alt hseq=\"%d\" "
 		"fid=\"%d\" type=select name=\"%s\" selectnumber=%d",
-		cur_hseq++, cur_form_id, htmlquote_str(p), n_select);
-#else				/* not NEW_FORM */
-	select_str = Sprintf("<pre_int><input_alt hseq=\"%d\" "
-		"type=select name=\"%s\" selectnumber=%d",
-		cur_hseq++, htmlquote_str(p), n_select);
-#endif				/* not NEW_FORM */
+		cur_hseq++, cur_form_id, html_quote(p), n_select);
 	Strcat_charp(select_str, ">");
+       if (n_select == max_select) {
+           max_select *= 2;
+           select_option = New_Reuse(FormSelectOption, select_option, max_select);
+       }
 	select_option[n_select].first = NULL;
 	select_option[n_select].last = NULL;
 	cur_option_maxwidth = 0;
@@ -2392,16 +2498,14 @@ process_n_select(void)
 	return NULL;
     process_option();
 #ifdef MENU_SELECT
-    if (!select_is_multiple && n_select < MAX_SELECT) {
-	if (select_option[n_select].first)
-	    Strcat(select_str, textfieldrep(chooseSelectOption(
-		select_option[n_select].first, CHOOSE_OPTION),
-		cur_option_maxwidth));
+    if (!select_is_multiple) {
+        if (select_option[n_select].first) {
+           FormItemList sitem;
+           chooseSelectOption(&sitem, select_option[n_select].first);
+           Strcat(select_str, textfieldrep(sitem.label, cur_option_maxwidth));
+        }
 	Strcat_charp(select_str, "</input_alt>]</pre_int>");
 	n_select++;
-	if (n_select == MAX_SELECT) {
-	    disp_err_message("Too many select in one page", FALSE);
-	}
     } else
 #endif				/* MENU_SELECT */
 	Strcat_charp(select_str, "<br>");
@@ -2489,7 +2593,7 @@ process_option(void)
     if (cur_option_label == NULL)
 	cur_option_label = cur_option;
 #ifdef MENU_SELECT
-    if (!select_is_multiple && n_select < MAX_SELECT) {
+    if (!select_is_multiple) {
 	if (cur_option_label->length > cur_option_maxwidth)
 	    cur_option_maxwidth = cur_option_label->length;
 	addSelectOption(&select_option[n_select],
@@ -2499,7 +2603,6 @@ process_option(void)
 	return;
     }
 #endif				/* MENU_SELECT */
-#ifdef NEW_FORM
     if (!select_is_multiple) {
 	begin_char = '(';
 	end_char = ')';
@@ -2507,22 +2610,15 @@ process_option(void)
     Strcat(select_str, Sprintf("<br><pre_int>%c<input_alt hseq=\"%d\" "
 		"fid=\"%d\" type=%s name=\"%s\" value=\"%s\"",
 		begin_char, cur_hseq++, cur_form_id,
-#else				/* not NEW_FORM */
-    Strcat(select_str, Sprintf("<br><pre_int><input_alt hseq=\"%d\" "
-		"type=%s name=\"%s\" value=\"%s\"",
-		cur_hseq++,
-#endif				/* not NEW_FORM */
 		select_is_multiple ? "checkbox" : "radio",
-		htmlquote_str(cur_select->ptr),
-		htmlquote_str(cur_option_value->ptr)));
+		html_quote(cur_select->ptr),
+		html_quote(cur_option_value->ptr)));
     if (cur_option_selected)
 	Strcat_charp(select_str, " checked>*</input_alt>");
     else
 	Strcat_charp(select_str, "> </input_alt>");
-#ifdef NEW_FORM
     Strcat_char(select_str, end_char);
-#endif				/* not NEW_FORM */
-    Strcat_charp(select_str, htmlquote_str(cur_option_label->ptr));
+    Strcat_charp(select_str, html_quote(cur_option_label->ptr));
     Strcat_charp(select_str, "</pre_int>");
     n_selectitem++;
 }
@@ -2530,25 +2626,32 @@ process_option(void)
 Str
 process_textarea(struct parsed_tag * tag, int width)
 {
-    char *p, *q, *r;
+    char *p;
 
-    p = "40";
-    parsedtag_get_value(tag, ATTR_COLS, &p);
-    q = "";
-    parsedtag_get_value(tag, ATTR_NAME, &q);
-    r = "10";
-    parsedtag_get_value(tag, ATTR_ROWS, &r);
-    cur_textarea = Strnew_charp(q);
-    cur_textarea_size = atoi(p);
-    if (p[strlen(p) - 1] == '%') {
-	cur_textarea_size = width * cur_textarea_size / 100 - 2;
+    p = "";
+    parsedtag_get_value(tag, ATTR_NAME, &p);
+    cur_textarea = Strnew_charp(p);
+    cur_textarea_size = 20;
+    if (parsedtag_get_value(tag, ATTR_COLS, &p)) {
+       cur_textarea_size = atoi(p);
+       if (p[strlen(p) - 1] == '%')
+           cur_textarea_size = width * cur_textarea_size / 100 - 2;
+       if (cur_textarea_size <= 0)
+           cur_textarea_size = 20;
     }
-    if (cur_textarea_size <= 0)
-	cur_textarea_size = 40;
-
-    cur_textarea_rows = atoi(r);
-    if (n_textarea < MAX_TEXTAREA)
-	textarea_str[n_textarea] = Strnew();
+    cur_textarea_rows = 1;
+    if (parsedtag_get_value(tag, ATTR_ROWS, &p)) {
+       cur_textarea_rows = atoi(p);
+       if (cur_textarea_rows <= 0)
+           cur_textarea_rows = 1;
+    }
+    cur_textarea_readonly = parsedtag_exists(tag, ATTR_READONLY);
+    if (n_textarea >= max_textarea) {
+       max_textarea *= 2;
+       textarea_str = New_Reuse(Str, textarea_str, max_textarea);
+    }
+    textarea_str[n_textarea] = Strnew();
+    ignore_nl_textarea = TRUE;
 
     return NULL;
 }
@@ -2557,29 +2660,27 @@ Str
 process_n_textarea(void)
 {
     Str tmp;
+    int i;
 
-    if (cur_textarea == NULL || n_textarea >= MAX_TEXTAREA)
+    if (cur_textarea == NULL)
 	return NULL;
 
-#ifdef NEW_FORM
-    tmp = Sprintf("<pre_int>[<input_alt hseq=\"%d\" fid=\"%d\" type=textarea "
-		  "name=\"%s\" size=%d rows=%d textareanumber=%d><u>",
-	   cur_hseq++, cur_form_id, htmlquote_str(cur_textarea->ptr),
-		  cur_textarea_size, cur_textarea_rows, n_textarea);
-#else				/* not NEW_FORM */
-    tmp = Sprintf("<pre_int>[<input_alt hseq=\"%d\" type=textarea "
-		  "name=\"%s\" size=%d rows=%d textareanumber=%d><u>",
-		  cur_hseq++, htmlquote_str(cur_textarea->ptr),
-		  cur_textarea_size, cur_textarea_rows, n_textarea);
-#endif				/* not NEW_FORM */
-    Strcat(tmp, textfieldrep(textarea_str[n_textarea], cur_textarea_size));
-    Strcat_charp(tmp, "</u></input_alt>]</pre_int>");
+    tmp = Strnew();
+    Strcat(tmp, Sprintf("<pre_int>[<input_alt hseq=\"%d\" fid=\"%d\" "
+               "type=textarea name=\"%s\" size=%d rows=%d "
+               "top_margin=%d textareanumber=%d",
+               cur_hseq, cur_form_id,
+               html_quote(cur_textarea->ptr),
+               cur_textarea_size, cur_textarea_rows,
+               cur_textarea_rows - 1, n_textarea));
+    if (cur_textarea_readonly)
+       Strcat_charp(tmp, " readonly");
+    Strcat_charp(tmp, "><u>");
+    for (i = 0; i < cur_textarea_size; i++)
+        Strcat_char(tmp, ' ');
+    Strcat_charp(tmp, "</u></input_alt>]</pre_int>\n");
+    cur_hseq++;
     n_textarea++;
-    if (n_textarea == MAX_TEXTAREA) {
-	disp_err_message("Too many textarea in one page", FALSE);
-    }
-    else
-	textarea_str[n_textarea] = Strnew();
     cur_textarea = NULL;
 
     return tmp;
@@ -2588,17 +2689,23 @@ process_n_textarea(void)
 void
 feed_textarea(char *str)
 {
-    if (n_textarea < MAX_TEXTAREA) {
-	while (*str) {
-	    if (*str == '&')
-		Strcat_charp(textarea_str[n_textarea], getescapecmd(&str));
-	    else if (*str == '\n') {
-		Strcat_charp(textarea_str[n_textarea], "\r\n");
-		str++;
-	    }
-	    else
-		Strcat_char(textarea_str[n_textarea], *(str++));
-	}
+    if (cur_textarea == NULL)
+       return;
+    if (ignore_nl_textarea) {
+       if (*str == '\r')
+           str++;
+       if (*str == '\n')
+           str++;
+    }
+    ignore_nl_textarea = FALSE;
+    while (*str) {
+       if (*str == '&')
+           Strcat_charp(textarea_str[n_textarea], getescapecmd(&str));
+       else if (*str == '\n') {
+           Strcat_charp(textarea_str[n_textarea], "\r\n");
+           str++;
+        } else if (*str != '\r')
+           Strcat_char(textarea_str[n_textarea], *(str++));
     }
 }
 
@@ -2629,7 +2736,7 @@ process_hr(struct parsed_tag *tag, int width, int indent_width)
 	break;
     }
 #ifndef KANJI_SYMBOLS
-    Strcat_charp(tmp, "<_RULE>");
+    Strcat_charp(tmp, "<_RULE TYPE=10>");
 #endif				/* not KANJI_SYMBOLS */
     w -= HR_RULE_WIDTH - 1;
     if (w <= 0)
@@ -2644,9 +2751,8 @@ process_hr(struct parsed_tag *tag, int width, int indent_width)
     return tmp;
 }
 
-#ifdef NEW_FORM
 #ifdef JP_CHARSET
-char
+static char
 check_charset(char *s)
 {
     switch (*s) {
@@ -2663,7 +2769,7 @@ check_charset(char *s)
     return 0;
 }
 
-char
+static char
 check_accept_charset(char *s)
 {
     char *e;
@@ -2684,12 +2790,12 @@ check_accept_charset(char *s)
     }
     return 0;
 }
-#endif
+#endif  /* JP_CHARSET */
 
 Str
 process_form(struct parsed_tag *tag)
 {
-    char *p, *q, *r, *s, *tg;
+    char *p, *q, *r, *s, *tg, *n;
     char cs = 0;
 
     p = "get";
@@ -2702,17 +2808,19 @@ process_form(struct parsed_tag *tag)
 	cs = check_accept_charset(r);
     if (! cs && parsedtag_get_value(tag, ATTR_CHARSET, &r))
 	cs = check_charset(r);
-#endif
+#endif  /*JP_CHARSET */
     s = NULL;
     parsedtag_get_value(tag, ATTR_ENCTYPE, &s);
     tg = NULL;
     parsedtag_get_value(tag, ATTR_TARGET, &tg);
+    n = NULL;
+    parsedtag_get_value(tag, ATTR_NAME, &n);
     form_max++;
     form_sp++;
     if (forms_size == 0) {
 	forms_size = INITIAL_FORM_SIZE;
 	forms = New_N(FormList *, forms_size);
-	form_stack = New_N(int, forms_size);
+	form_stack = NewAtom_N(int, forms_size);
     }
     else if (forms_size <= form_max) {
 	forms_size += form_max;
@@ -2720,7 +2828,7 @@ process_form(struct parsed_tag *tag)
 	form_stack = New_Reuse(int, form_stack, forms_size);
     }
     forms[form_max] =
-	newFormList(q, p, &cs, s, tg, (form_max > 0) ? forms[form_max - 1] : NULL);
+       newFormList(q, p, &cs, s, tg, n, (form_max > 0) ? forms[form_max - 1] : NULL);
     form_stack[form_sp] = form_max;
 
     return NULL;
@@ -2733,7 +2841,6 @@ process_n_form(void)
 	form_sp--;
     return NULL;
 }
-#endif				/* NEW_FORM */
 
 static void
 clear_ignore_p_flag(int cmd, struct readbuffer *obuf)
@@ -2795,9 +2902,9 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
 	return;
     if (framename)
 	idtag = Sprintf("<_id id=\"%s\" framename=\"%s\">",
-			htmlquote_str(id), htmlquote_str(framename));
+			html_quote(id), html_quote(framename));
     else
-	idtag = Sprintf("<_id id=\"%s\">", htmlquote_str(id));
+	idtag = Sprintf("<_id id=\"%s\">", html_quote(id));
     push_tag(obuf, idtag->ptr, HTML_NOP);
 }
 #endif				/* ID_EXT */
@@ -2970,8 +3077,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	if (cmd == HTML_UL)
 	    envs[h_env->envc].type = ul_type(tag, 0);
-	if (cmd == HTML_BLQ)
-	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+       flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 1;
     case HTML_N_UL:
     case HTML_N_OL:
@@ -3129,13 +3235,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	append_tags(obuf);
 	tmp = Strnew_charp(obuf->line->ptr);
 	Strremovetrailingspaces(tmp);
-	h_env->title = cleanup_str(tmp->ptr);
+	h_env->title = html_unquote(tmp->ptr);
 	obuf->line = save_line;
 	obuf->prevchar = save_prevchar;
 	back_to_breakpoint(obuf);
 	tmp = Strnew_m_charp(
 		"<title_alt title=\"",
-		htmlquote_str(h_env->title),
+		html_quote(h_env->title),
 		"\">",
 		NULL);
 	push_tag(obuf, tmp->ptr, HTML_TITLE_ALT);
@@ -3156,11 +3262,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	parsedtag_get_value(tag, ATTR_SRC, &q);
 	parsedtag_get_value(tag, ATTR_NAME, &r);
 	if (q) {
-	    q = htmlquote_str(q);
+	    q = html_quote(q);
 	    push_tag(obuf, Sprintf("<a hseq=\"%d\" href=\"%s\">",
 				   cur_hseq++, q)->ptr, HTML_A);
 	    if (r)
-		q = htmlquote_str(r);
+		q = html_quote(r);
 	    push_charp(obuf, strlen(q), q, PC_ASCII);
 	    push_tag(obuf, "</a>", HTML_N_A);
 	}
@@ -3292,6 +3398,18 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->img_alt = NULL;
 	}
 	return 1;
+    case HTML_INPUT_ALT:
+       i = 0;
+        if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
+           if (i > obuf->top_margin)
+        obuf->top_margin = i;
+       }
+       i = 0;
+       if (parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &i)) {
+           if (i > obuf->bottom_margin)
+        obuf->bottom_margin = i;
+       }
+       return 0;
     case HTML_TABLE:
 	obuf->table_level++;
 	if (obuf->table_level >= MAX_TABLE)
@@ -3371,20 +3489,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	RB_RESTORE_FLAG(obuf);
 	return 1;
     case HTML_FORM:
-#ifdef NEW_FORM
     case HTML_FORM_INT:
 	process_form(tag);
 	return 1;
-#endif				/* NEW_FORM */
     case HTML_N_FORM:
-#ifdef NEW_FORM
     case HTML_N_FORM_INT:
 	process_n_form();
 	return 1;
-#else				/* not NEW_FORM */
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	return 0;
-#endif				/* not NEW_FORM */
     case HTML_INPUT:
 	tmp = process_input(tag);
 	if (tmp)
@@ -3416,9 +3527,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	parsedtag_get_value(tag, ATTR_PROMPT, &p);
 	parsedtag_get_value(tag, ATTR_ACTION, &q);
 	tmp = Strnew_m_charp("<form method=get action=\"",
-			     htmlquote_str(q),
+			     html_quote(q),
 			     "\">",
-			     htmlquote_str(p),
+			     html_quote(p),
 			     "<input type=text name=\"\" accept></form>",
 			     NULL);
 	HTMLlineproc1(tmp->ptr, h_env);
@@ -3435,7 +3546,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    if (*q == '=') {
 		q++;
 		SKIP_BLANKS(q);
-		content_charset = guess_charset(q);
+		meta_charset = guess_charset(q);
 	    }
 	}
 	else
@@ -3469,7 +3580,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		    q++;
 	    }
 	    if (s_tmp) {
-		q = htmlquote_str(s_tmp->ptr);
+		q = html_quote(s_tmp->ptr);
 		tmp = Sprintf("Refresh (%d sec) <a hseq=\"%d\" href=\"%s\">%s</a>",
 			      refresh, cur_hseq++, q, q);
 		push_str(obuf, s_tmp->length, tmp, PC_ASCII);
@@ -3507,7 +3618,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 		Str s;
-		q = htmlquote_str(p);
+		q = html_quote(p);
 		s = Sprintf("<A HREF=\"%s\">bgsound(%s)</A>", q, q);
 		HTMLlineproc1(s->ptr, h_env);
 	    }
@@ -3517,7 +3628,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 		Str s;
-		q = htmlquote_str(p);
+		q = html_quote(p);
 		s = Sprintf("<A HREF=\"%s\">embed(%s)</A>", q, q);
 		HTMLlineproc1(s->ptr, h_env);
 	    }
@@ -3527,7 +3638,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_ARCHIVE, &p)) {
 		Str s;
-		q = htmlquote_str(p);
+		q = html_quote(p);
 		s = Sprintf("<A HREF=\"%s\">applet archive(%s)</A>", q, q);
 		HTMLlineproc1(s->ptr, h_env);
 	    }
@@ -3539,7 +3650,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_BACKGROUND, &p)) {
 		Str s;
-		q = htmlquote_str(p);
+		q = html_quote(p);
 		s = Sprintf("<IMG SRC=\"%s\" ALT=\"bg image(%s)\"><BR>", 
 			    q, q);
 		HTMLlineproc1(s->ptr, h_env);
@@ -3579,9 +3690,6 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
     char outc[LINELEN];
     char *p, *q, *r, *str;
-#ifndef NEW_FORM
-    char cs;
-#endif
     Lineprop outp[LINELEN], mode, effect;
     int pos;
     int nlines;
@@ -3594,15 +3702,16 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
     int hseq;
     Str line;
     char *endp;
+#ifndef KANJI_SYMBOLS
+    char rule;
+#endif
 
     if (w3m_debug)
 	debug = fopen("zzzerr", "a");
 
     effect = 0;
     nlines = 0;
-#ifdef NEW_FORM
     buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
-#endif				/* NEW_FORM */
     while ((line = feed()) != NULL) {
 	if (w3m_debug) {
 	    Strfputs(line, debug);
@@ -3626,8 +3735,8 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 	while (str < endp && pos < LINELEN) {
 	    mode = get_mctype(str);
 #ifndef KANJI_SYMBOLS
-	    if (effect & PC_RULE && IS_INTSPACE(*str)) {
-		PPUSH(PC_ASCII | effect, *str);
+           if (effect & PC_RULE && *str != '<') {
+        PPUSH(PC_ASCII | effect, rule | 0x80);
 		str++;
 	    } else
 #endif
@@ -3686,21 +3795,30 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		    break;
 		case HTML_A:
 		    if (renderFrameSet &&
-			parsedtag_get_value(tag, ATTR_FRAMENAME, &p) &&
-			(!idFrame || strcmp(idFrame->body->name, p))) {
-			idFrame = search_frame(renderFrameSet, p);
-			if (idFrame && idFrame->body->attr != F_BODY)
-			    idFrame = NULL;
+			parsedtag_get_value(tag, ATTR_FRAMENAME, &p)) {
+			p = url_quote_conv(p, buf->document_code);
+			if (!idFrame || strcmp(idFrame->body->name, p)) {
+			    idFrame = search_frame(renderFrameSet, p);
+			    if (idFrame && idFrame->body->attr != F_BODY)
+				idFrame = NULL;
+			}
 		    }
 		    p = r = NULL;
 		    q = buf->baseTarget;
 		    hseq = 0;
 		    id = NULL;
-		    if (parsedtag_get_value(tag, ATTR_NAME, &id))
+		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
+			id = url_quote_conv(id, buf->document_code);
 			registerName(buf, id, currentLn(buf), pos);
-		    parsedtag_get_value(tag, ATTR_HREF, &p);
-		    parsedtag_get_value(tag, ATTR_TARGET, &q);
-		    parsedtag_get_value(tag, ATTR_REFERER, &r);
+		    }
+		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+			p = remove_space(p);
+			p = url_quote_conv(p, buf->document_code);
+		    }
+		    if (parsedtag_get_value(tag, ATTR_TARGET, &q))
+			q = url_quote_conv(q, buf->document_code);
+		    if (parsedtag_get_value(tag, ATTR_REFERER, &r))
+			r = url_quote_conv(r, buf->document_code);
 		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
 		    if (hseq > 0)
 			buf->hmarklist =
@@ -3735,6 +3853,8 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		    break;
 		case HTML_IMG_ALT:
 		    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
+			p = remove_space(p);
+			p = url_quote_conv(p, buf->document_code);
 			a_img = registerImg(buf, p,
 					    currentLn(buf), pos);
 		    }
@@ -3751,28 +3871,17 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		case HTML_INPUT_ALT:
 		    {
 			FormList *form;
-#ifdef NEW_FORM
+               int top = 0, bottom = 0;
 			int form_id = -1;
-#endif				/* NEW_FORM */
 
-#ifndef NEW_FORM
-			if (form_sp < 0)
-			    break;	/* outside of <form>..</form> */
-#endif				/* not NEW_FORM */
 			hseq = 0;
 			parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-#ifdef NEW_FORM
 			parsedtag_get_value(tag, ATTR_FID, &form_id);
-#endif
-#ifdef NEW_FORM
+               parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);
+               parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &bottom);
 			if (form_id < 0 || form_id > form_max || forms == NULL)
 			    break;	/* outside of <form>..</form> */
 			form = forms[form_id];
-#else				/* not NEW_FORM */
-			if (form_sp >= FORMSTACK_SIZE)
-			    break;
-			form = form_stack[form_sp];
-#endif				/* not NEW_FORM */
 			if (hseq > 0) {
 			    int hpos = pos;
 			    if (*str == '[')
@@ -3784,7 +3893,9 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 			    form->target = buf->baseTarget;
 			a_form = registerForm(buf, form, tag, currentLn(buf), pos);
 			if (a_form) {
-			    a_form->hseq = hseq - 1;
+                            a_form->hseq = hseq - 1;
+                   a_form->y = currentLn(buf) - top;
+                   a_form->rows = 1 + top + bottom;
 			    if (!parsedtag_exists(tag, ATTR_NO_EFFECT))
 				effect |= PE_FORM;
 			    break;
@@ -3801,32 +3912,6 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		    }
 		    a_form = NULL;
 		    break;
-#ifndef NEW_FORM
-		case HTML_FORM:
-		case HTML_FORM_INT:
-		    form_sp++;
-		    if (form_sp >= FORMSTACK_SIZE)
-			break;
-		    p = "get";
-		    q = "/";
-		    s = NULL;
-		    cs = 0;
-		    parsedtag_get_value(tag, ATTR_METHOD, &p);
-		    parsedtag_get_value(tag, ATTR_ACTION, &q);
-#ifdef JP_CHARSET
-		    if (parsedtag_get_value(tag, ATTR_CHARSET, &r))
-			cs = check_charset(r);
-#endif
-		    parsedtag_get_value(tag, ATTR_ENCTYPE, &s);
-		    buf->formlist = newFormList(q, p, &cs, s, buf->formlist);
-		    form_stack[form_sp] = buf->formlist;
-		    break;
-		case HTML_N_FORM:
-		case HTML_N_FORM_INT:
-		    if (form_sp >= 0)
-			form_sp--;
-		    break;
-#endif				/* not NEW_FORM */
 		case HTML_MAP:
 		    if (parsedtag_get_value(tag, ATTR_NAME, &p)) {
 			MapList *m = New(MapList);
@@ -3845,6 +3930,8 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 						 * <map>..</map> */
 			break;
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+			p = remove_space(p);
+			p = url_quote_conv(p, buf->document_code);
 			pushText(buf->maplist->urls, p);
 		        if (parsedtag_get_value(tag, ATTR_ALT, &q))
 			    pushText(buf->maplist->alts, q);
@@ -3864,7 +3951,7 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 			    buf->frameset = frameset_s[frameset_sp];
 			}
 			else
-			    pushFrameTree(&(buf->frameQ), frameset_s[frameset_sp], 0, 0);
+                   pushFrameTree(&(buf->frameQ), frameset_s[frameset_sp], NULL);
 		    }
 		    else
 			addFrameSetElement(frameset_s[frameset_sp - 1],
@@ -3878,25 +3965,30 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		    if (frameset_sp >= 0 && frameset_sp < FRAMESTACK_SIZE) {
 			union frameset_element element;
 
-			element.body = newFrame(tag, baseURL(buf));
+			element.body = newFrame(tag, buf);
 			addFrameSetElement(frameset_s[frameset_sp], element);
 		    }
 		    break;
 		case HTML_BASE:
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+			p = remove_space(p);
+			p = url_quote_conv(p, buf->document_code);
 			if (!buf->baseURL)
 			    buf->baseURL = New(ParsedURL);
 			parseURL(p, buf->baseURL, NULL);
 		    }
-		    parsedtag_get_value(tag, ATTR_TARGET, &buf->baseTarget);
+		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
+			buf->baseTarget = url_quote_conv(p, buf->document_code);
 		    break;
 		case HTML_TITLE_ALT:
 		    if (parsedtag_get_value(tag, ATTR_TITLE, &p))
-			buf->buffername = cleanup_str(p);
+			buf->buffername = html_unquote(p);
 		    break;
 #ifndef KANJI_SYMBOLS
 		case HTML_RULE:
 		    effect |= PC_RULE;
+            if (parsedtag_get_value(tag, ATTR_TYPE, &p))
+               rule = (char)atoi(p);
 		    break;
 		case HTML_N_RULE:
 		    effect &= ~PC_RULE;
@@ -3905,14 +3997,18 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 		}
 #ifdef	ID_EXT
 		id = NULL;
-		if (parsedtag_get_value(tag, ATTR_ID, &id))
+		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
+		    id = url_quote_conv(id, buf->document_code);
 		    registerName(buf, id, currentLn(buf), pos);
+		}
 		if (renderFrameSet &&
-		    parsedtag_get_value(tag, ATTR_FRAMENAME, &p) &&
-		    (!idFrame || strcmp(idFrame->body->name, p))) {
-		    idFrame = search_frame(renderFrameSet, p);
-		    if (idFrame && idFrame->body->attr != F_BODY)
-			idFrame = NULL;
+		    parsedtag_get_value(tag, ATTR_FRAMENAME, &p)) {
+		    p = url_quote_conv(p, buf->document_code);
+		    if (!idFrame || strcmp(idFrame->body->name, p)) {
+			idFrame = search_frame(renderFrameSet, p);
+			if (idFrame && idFrame->body->attr != F_BODY)
+			    idFrame = NULL;
+		    }
 		}
 		if (id && idFrame)
 		    idFrame->body->nameList =
@@ -3938,6 +4034,8 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
     }
     if (w3m_debug)
 	fclose(debug);
+    if (n_textarea)
+       addMultirowsForm(buf, buf->formitem);
 }
 
 void
@@ -3974,16 +4072,17 @@ proc_escape(struct readbuffer *obuf, char **str_return)
     char *str = *str_return, *estr;
     int ech = getescapechar(str_return);
     int width, n_add = *str_return - str;
-    Lineprop mode = IS_CNTRL(ech) ? PC_CTRL : PC_ASCII;
+    Lineprop mode;
 
-    if (!ech) {
+    if (ech < 0) {
 	*str_return = str;
 	proc_mchar(obuf, obuf->flag & RB_SPECIAL, 1, str_return, PC_ASCII);
 	return;
     }
+    mode = IS_CNTRL(ech) ? PC_CTRL : PC_ASCII;
 
     check_breakpoint(obuf, obuf->flag & RB_SPECIAL, ech);
-    estr = conv_latin1(ech);
+    estr = conv_entity(ech);
     width = strlen(estr);
     if (width == 1 && ech == (unsigned char) *estr &&
 	ech != '&' && ech != '<' && ech != '>')
@@ -3999,7 +4098,7 @@ static int
 need_flushline(struct html_feed_environ *h_env, struct readbuffer *obuf,
 	       Lineprop mode)
 {
-    char ch = Strlastchar(obuf->line);
+    char ch;
 
     if (obuf->flag & RB_PRE_INT) {
 	if (obuf->pos > h_env->limit)
@@ -4008,6 +4107,7 @@ need_flushline(struct html_feed_environ *h_env, struct readbuffer *obuf,
 	    return 0;
     }
 
+    ch = Strlastchar(obuf->line);
     /* if (ch == ' ' && obuf->tag_sp > 0) */
     if (ch == ' ')
 	return 0;
@@ -4040,7 +4140,7 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
     struct readbuffer *obuf = h_env->obuf;
     int indent, delta;
     struct parsed_tag *tag;
-    Str tokbuf = Strnew();
+    Str tokbuf;
     struct table *tbl = NULL;
     struct table_mode *tbl_mode;
     int tbl_width;
@@ -4066,6 +4166,8 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 	if (obuf->status != R_ST_NORMAL)
 	    return;
     }
+
+    tokbuf = Strnew();
 
  table_start:
     if (obuf->table_level >= 0) {
@@ -4120,6 +4222,12 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 		    if (ST_IS_REAL_TAG(obuf->status))
 			Strcat_char(h_env->tagbuf, ' ');
 		}
+        if ((obuf->flag & RB_IGNORE) &&
+               ! TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
+               obuf->ignore_tag->length - 1))
+            /* within ignored tag, such as *
+             * <script>..</script>, don't process tag.  */
+            obuf->status = R_ST_NORMAL;
 		continue;
 	    }
 	    is_tag = TRUE;
@@ -4263,9 +4371,21 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 	mode = get_mctype(str);
 	delta = get_mclen(mode);
 	if (obuf->flag & (RB_SPECIAL & ~RB_NOBR)) {
-	    if (*str != '\n')
+           char ch = *str;
+           if (! (obuf->flag & RB_PLAINMODE) && (*str == '&')) {
+        char *p = str;
+        int ech = getescapechar(&p);
+        if (ech == '\n' || ech == '\r') {
+            ch = '\n';
+            str = p - 1;
+        } else if (ech == '\t') {
+            ch = '\t';
+            str = p - 1;
+        }
+           }
+           if (ch != '\n')
 		obuf->flag &= ~RB_IGNORE_P;
-	    if (*str == '\n') {
+           if (ch == '\n') {
 		str++;
 		if (obuf->flag & RB_IGNORE_P) {
 		    obuf->flag &= ~RB_IGNORE_P;
@@ -4276,14 +4396,14 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 		else
 		    flushline(h_env, obuf, h_env->envs[h_env->envc].indent, 1, h_env->limit);
 	    }
-	    else if (*str == '\t') {
+           else if (ch == '\t') {
 		do {
 		    PUSH(' ');
 		} while (obuf->pos % Tabstop != 0);
 		str++;
 	    }
 	    else if (obuf->flag & RB_PLAINMODE) {
-		char *p = htmlquote_char(*str);
+		char *p = html_quote_char(*str);
 		if (p) {
 		    push_charp(obuf, 1, p, PC_ASCII);
 		    str++;
@@ -4416,7 +4536,7 @@ addnewline(Buffer * buf, char *line, Lineprop * prop,
     l->next = NULL;
     if (pos > 0) {
 	l->lineBuf = allocStr(line, pos);
-	l->propBuf = New_N(Lineprop, pos);
+	l->propBuf = NewAtom_N(Lineprop, pos);
 	bcopy((void *) prop, (void *) l->propBuf, pos * sizeof(Lineprop));
     }
     else {
@@ -4425,7 +4545,7 @@ addnewline(Buffer * buf, char *line, Lineprop * prop,
     }
 #ifdef ANSI_COLOR
     if (pos > 0 && color) {
-	l->colorBuf = New_N(Linecolor, pos);
+	l->colorBuf = NewAtom_N(Linecolor, pos);
 	bcopy((void *) color, (void *) l->colorBuf, pos * sizeof(Linecolor));
     } else {
 	l->colorBuf = NULL;
@@ -4447,7 +4567,8 @@ addnewline(Buffer * buf, char *line, Lineprop * prop,
 	buf->firstLine = l;
     l->linenumber = ++buf->allLine;
     if (nlines < 0) {
-	l->real_linenumber = l->linenumber;
+/*     l->real_linenumber = l->linenumber;     */
+       l->real_linenumber = 0;
     }
     else {
 	l->real_linenumber = nlines;
@@ -4466,7 +4587,8 @@ loadHTMLBuffer(URLFile * f, Buffer * newBuf)
 
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
-    if (newBuf->sourcefile == NULL && f->scheme != SCM_LOCAL) {
+    if (newBuf->sourcefile == NULL &&
+	(f->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmp = tmpfname(TMPF_SRC, ".html");
 	src = fopen(tmp->ptr, "w");
 	if (src)
@@ -4478,6 +4600,8 @@ loadHTMLBuffer(URLFile * f, Buffer * newBuf)
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
+    if (n_textarea)
+       formResetBuffer(newBuf, newBuf->formitem);
     if (src)
 	fclose(src);
 
@@ -4528,7 +4652,7 @@ showProgress(int *linelen, int *trbyte)
 {
     int i, j, rate, duration, eta, pos;
     static time_t last_time, start_time;
-    time_t cur_time = time(0);
+    time_t cur_time;
     Str messages;
     char *fmtrbyte, *fmrate;
 
@@ -4537,6 +4661,7 @@ showProgress(int *linelen, int *trbyte)
 
     if (current_content_length > 0) {
 	double ratio;
+	cur_time = time(0);
 	if (cur_time == last_time)
 	    return;
 	last_time = cur_time;
@@ -4584,6 +4709,7 @@ showProgress(int *linelen, int *trbyte)
 	refresh();
     }
     else if (*linelen > 1000) {
+	cur_time = time(0);
 	if (cur_time == last_time)
 	    return;
 	last_time = cur_time;
@@ -4599,10 +4725,10 @@ showProgress(int *linelen, int *trbyte)
 	duration = cur_time - start_time;
 	if (duration) {
 	    fmrate = convert_size(*trbyte / duration, 1);
-	    messages = Sprintf("%7s loaded %7s/s\n", fmtrbyte, fmrate);
+	    messages = Sprintf("%7s loaded %7s/s", fmtrbyte, fmrate);
 	}
 	else {
-	    messages = Sprintf("%7s loaded\n", fmtrbyte);
+	    messages = Sprintf("%7s loaded", fmtrbyte);
 	}
 	message(messages->ptr, 0, 0);
 	refresh();
@@ -4634,6 +4760,8 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     obuf->prev_ctype = PC_ASCII;
     obuf->tag_sp = 0;
     obuf->fontstat_sp = 0;
+    obuf->top_margin = 0;
+    obuf->bottom_margin = 0;
     obuf->bp.init_flag = 1;
     set_breakpoint(obuf, 0);
 
@@ -4702,17 +4830,18 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 
     n_textarea = 0;
     cur_textarea = NULL;
+    max_textarea = MAX_TEXTAREA;
+    textarea_str = New_N(Str,max_textarea);
 #ifdef MENU_SELECT
     n_select = 0;
+    max_select = MAX_SELECT;
+    select_option = New_N(FormSelectOption,max_select);
 #endif				/* MENU_SELECT */
     cur_select = NULL;
     form_sp = -1;
-#ifdef NEW_FORM
     form_max = -1;
     forms_size = 0;
     forms = NULL;
-#endif				/* NEW_FORM */
-
     cur_hseq = 1;
 
     if (w3m_halfload) {
@@ -4739,11 +4868,11 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 #ifdef JP_CHARSET
     if (newBuf != NULL && newBuf->document_code != '\0')
 	code = newBuf->document_code;
-    else if (content_charset != '\0')
+    else if (content_charset != '\0' && UseContentCharset)
 	code = content_charset;
     else
 	code = DocumentCode;
-    content_charset = '\0';
+    meta_charset = '\0';
 #endif
 #if	0
     do_blankline(&htmlenv1, &obuf, 0, 0, htmlenv1.limit);
@@ -4757,9 +4886,10 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 	linelen += lineBuf2->length;
 	showProgress(&linelen, &trbyte);
 #ifdef JP_CHARSET
-	if (content_charset != '\0') {	/* <META> */
-	    code = content_charset;
-	    content_charset = '\0';
+	if (meta_charset != '\0') {	/* <META> */
+	    if (content_charset == '\0' && UseContentCharset)
+		code = meta_charset;
+	    meta_charset = '\0';
 	}
 #endif
 	if (!internal)
@@ -4794,10 +4924,11 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 	term_raw();
 	signal(SIGINT, prevtrap);
     }
-    HTMLlineproc2(newBuf, htmlenv1.buf);
 #ifdef JP_CHARSET
     newBuf->document_code = code;
+    content_charset = '\0';
 #endif				/* JP_CHARSET */
+    HTMLlineproc2(newBuf, htmlenv1.buf);
 }
 
 /* 
@@ -4809,6 +4940,8 @@ loadHTMLString(Str page)
     URLFile f;
     MySignalHandler(*prevtrap) ();
     Buffer *newBuf;
+    Str tmp;
+    FILE *src = NULL;
 
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
@@ -4821,8 +4954,15 @@ loadHTMLString(Str page)
 	prevtrap = signal(SIGINT, KeyAbort);
 	term_cbreak();
     }
+    if (w3m_dump & DUMP_FRAME) {
+       tmp = tmpfname(TMPF_SRC, ".html");
+       pushText(fileToDelete, tmp->ptr);
+       src = fopen(tmp->ptr, "w");
+       if (src)
+           newBuf->sourcefile = tmp->ptr;
+    }
 
-    loadHTMLstream(&f, newBuf, NULL, TRUE);
+    loadHTMLstream(&f, newBuf, src, TRUE);
 
     if (fmInitialized) {
 	term_raw();
@@ -4834,6 +4974,10 @@ loadHTMLString(Str page)
 #ifdef JP_CHARSET
     newBuf->document_code = InnerCode;
 #endif				/* JP_CHARSET */
+    if (n_textarea)
+       formResetBuffer(newBuf, newBuf->formitem);
+    if (src)
+       fclose(src);
 
     return newBuf;
 }
@@ -4861,7 +5005,7 @@ loadGopherDir(URLFile * uf, Buffer * newBuf)
 #ifdef JP_CHARSET
     if (newBuf->document_code != '\0')
 	code = newBuf->document_code;
-    else if (content_charset != '\0')
+    else if (content_charset != '\0' && UseContentCharset)
 	code = content_charset;
     else
 	code = DocumentCode;
@@ -4874,8 +5018,11 @@ loadGopherDir(URLFile * uf, Buffer * newBuf)
 	    (lbuf->ptr[1] == '\n' || lbuf->ptr[1] == '\r'))
 	    break;
 #ifdef JP_CHARSET
-	if ((ic = checkShiftCode(lbuf, code)) != '\0')
-	    lbuf = conv_str(lbuf, (code = ic), InnerCode);
+	if ((ic = checkShiftCode(lbuf, code)) != '\0') {
+	    if (UseAutoDetect)
+		code = ic;
+	    lbuf = conv_str(lbuf, code, InnerCode);
+	}
 #endif				/* JP_CHARSET */
 	cleanup_line(lbuf, HTML_MODE);
 
@@ -4929,6 +5076,9 @@ loadGopherDir(URLFile * uf, Buffer * newBuf)
 	Strcat_charp(lbuf, name->ptr + 1);
 	pushTextLine(tl, newTextLine(lbuf, visible_length(lbuf->ptr)));
     }
+#ifdef JP_CHARSET
+    newBuf->document_code = code;
+#endif				/* JP_CHARSET */
     HTMLlineproc2(newBuf, tl);
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
@@ -4968,7 +5118,8 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 	term_cbreak();
     }
 
-    if (newBuf->sourcefile == NULL && uf->scheme != SCM_LOCAL) {
+    if (newBuf->sourcefile == NULL &&
+	(uf->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmpf = tmpfname(TMPF_SRC, NULL);
 	src = fopen(tmpf->ptr, "w");
 	if (src)
@@ -4977,7 +5128,7 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 #ifdef JP_CHARSET
     if (newBuf->document_code != '\0')
 	code = newBuf->document_code;
-    else if (content_charset != '\0')
+    else if (content_charset != '\0' && UseContentCharset)
 	code = content_charset;
     else
 	code = DocumentCode;
@@ -5032,6 +5183,7 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 	term_raw();
     }
     newBuf->topLine = newBuf->firstLine;
+    newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
     newBuf->trbyte = trbyte + linelen;
 #ifdef JP_CHARSET
@@ -5100,7 +5252,7 @@ saveBufferDelNum(Buffer * buf, FILE * f, int del)
         else
 #endif
             tmp = Strnew_charp_n(l->lineBuf, l->len);
-        if (del && (p = strchr(tmp->ptr, ':')) != NULL)
+        if (del && l->real_linenumber && (p = strchr(tmp->ptr, ':')) != NULL)
             Strdelete(tmp, 0, p - tmp->ptr + 1);
 #ifdef JP_CHARSET
 	tmp = conv_str(tmp, InnerCode, DisplayCode);
@@ -5144,11 +5296,11 @@ Buffer *
 getshell(char *cmd)
 {
     Buffer *buf;
-    Str bn;
+
     buf = loadcmdout(cmd, loadBuffer, NULL);
     buf->filename = cmd;
-    bn = Sprintf("%s %s", SHELLBUFFERNAME, cmd);
-    buf->buffername = bn->ptr;
+    buf->buffername = Sprintf("%s %s", SHELLBUFFERNAME,
+	conv_from_system(cmd))->ptr;
     return buf;
 }
 
@@ -5160,7 +5312,6 @@ getpipe(char *cmd)
 {
     FILE *f, *popen(const char *, const char *);
     Buffer *buf;
-    Str bn;
 
     if (cmd == NULL || *cmd == '\0')
 	return NULL;
@@ -5170,8 +5321,8 @@ getpipe(char *cmd)
     buf = newBuffer(INIT_BUFFER_WIDTH);
     buf->pagerSource = newFileStream(f, (void (*)()) pclose);
     buf->filename = cmd;
-    bn = Sprintf("%s %s", PIPEBUFFERNAME, cmd);
-    buf->buffername = bn->ptr;
+    buf->buffername = Sprintf("%s %s", PIPEBUFFERNAME,
+	conv_from_system(cmd))->ptr;
     buf->bufferprop |= BP_PIPE;
     return buf;
 }
@@ -5189,6 +5340,8 @@ openPagerBuffer(InputStream stream, Buffer * buf)
     buf->buffername = getenv("MAN_PN");
     if (buf->buffername == NULL)
 	buf->buffername = PIPEBUFFERNAME;
+    else
+	buf->buffername = conv_from_system(buf->buffername);
     buf->bufferprop |= BP_PIPE;
 #ifdef JP_CHARSET
     buf->document_code = DocumentCode;
@@ -5227,25 +5380,29 @@ openGeneralPagerBuffer(InputStream stream)
 	t = DefaultType;
 	DefaultType = NULL;
     }
-    if (!strcmp(t, "text/html")) {
+    if (!strcasecmp(t, "text/html")) {
 	buf = loadHTMLBuffer(&uf, t_buf);
 	buf->type = "text/html";
     }
     else if (is_plain_text_type(t)) {
+       if (IStype(stream) != IST_ENCODED)
+           stream = newEncodedStream(stream, uf.encoding);
 	buf = openPagerBuffer(stream, t_buf);
 	buf->type = "text/plain";
     }
     else {
 	if (doExternal(uf, "-", t, &buf, t_buf)) {
-	    ;
+	    if (buf == NULL || buf == NO_BUFFER)
+		return buf;
 	}
 	else {			/* unknown type is regarded as text/plain */
+           if (IStype(stream) != IST_ENCODED)
+        stream = newEncodedStream(stream, uf.encoding);
 	    buf = openPagerBuffer(stream, t_buf);
 	    buf->type = "text/plain";
 	}
     }
     buf->real_type = t;
-    buf->encoding = uf.encoding;
     buf->currentURL.scheme = SCM_LOCAL;
     buf->currentURL.file = "-";
     return buf;
@@ -5294,7 +5451,7 @@ getNextPage(Buffer * buf, int plen)
 	    /* Assume that `cmd == buf->filename' */
 	    if (buf->filename)
 		buf->buffername = Sprintf("%s %s",
-		    CPIPEBUFFERNAME, buf->filename)->ptr;
+		    CPIPEBUFFERNAME, conv_from_system(buf->filename))->ptr;
 	    else if (getenv("MAN_PN") == NULL)
 		buf->buffername = CPIPEBUFFERNAME;
 	    buf->bufferprop |= BP_CLOSE;
@@ -5330,11 +5487,11 @@ getNextPage(Buffer * buf, int plen)
 	len = lineBuf2->length;
 	l = New(Line);
 	l->lineBuf = lineBuf2->ptr;
-	l->propBuf = New_N(Lineprop, len);
+	l->propBuf = NewAtom_N(Lineprop, len);
 	bcopy((void *) propBuffer, (void *) l->propBuf, len * sizeof(Lineprop));
 #ifdef ANSI_COLOR
 	if (check_color) {
-	    l->colorBuf = New_N(Linecolor, len);
+	    l->colorBuf = NewAtom_N(Linecolor, len);
 	    bcopy((void *) colorBuffer, (void *) l->colorBuf, len * sizeof(Linecolor));
 	} else {
 	    l->colorBuf = NULL;
@@ -5343,13 +5500,17 @@ getNextPage(Buffer * buf, int plen)
 	l->len = len;
 	l->width = -1;
 	l->prev = pl;
+/*
 	if (squeezeBlankLine) {
+*/
 	    l->real_linenumber = nlines;
 	    l->linenumber = (pl == NULL ? nlines : pl->linenumber + 1);
+/*
 	}
 	else {
 	    l->real_linenumber = l->linenumber = nlines;
 	}
+*/
 	if (pl == NULL) {
 	    pl = l;
 	    buf->firstLine = buf->topLine = buf->currentLine = l;
@@ -5469,6 +5630,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp, Buffer *defaultbuf
     struct mailcap *mcap;
     int stat;
     Buffer *buf = NULL;
+    char *header;
 
     if (!(mcap = searchExtViewer(type)))
 	return 0;
@@ -5476,7 +5638,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp, Buffer *defaultbuf
     tmpf = tmpfname(TMPF_DFL, NULL);
 
     if (mcap->nametemplate) {
-	Str tmp = unquote_mailcap(mcap->nametemplate, NULL, tmpf->ptr, NULL);
+	Str tmp = unquote_mailcap(mcap->nametemplate, NULL, tmpf->ptr, NULL, NULL);
 	if (Strncmp(tmpf, tmp, tmpf->length) == 0) {
 	    tmpf = tmp;
 	    goto _save;
@@ -5486,29 +5648,40 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp, Buffer *defaultbuf
 	Strcat_charp(tmpf, uf.ext);
     }
  _save:
+    if (IStype(uf.stream) != IST_ENCODED)
+       uf.stream = newEncodedStream(uf.stream, uf.encoding);
     if (save2tmp(uf, tmpf->ptr) < 0)
 	return 0;
-    command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, &stat);
+    header = checkHeader(defaultbuf, "Content-Type:");
+    if (header)
+	header = conv_to_system(header);
+    command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, header, &stat);
 #ifndef __EMX__
     if (!(stat & MCSTAT_REPNAME)) {
-	Str tmp = Sprintf("(%s) < %s", command->ptr, tmpf->ptr);
+	Str tmp = Sprintf("(%s) < %s", command->ptr, shell_quote(tmpf->ptr));
 	command = tmp;
     }
 #endif
     if (mcap->flags & (MAILCAP_HTMLOUTPUT|MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
 	    defaultbuf = newBuffer(INIT_BUFFER_WIDTH);
-	defaultbuf->sourcefile = tmpf->ptr;
+	defaultbuf->mailcap = mcap;
     }
     if (mcap->flags & MAILCAP_HTMLOUTPUT) {
 	buf = loadcmdout(command->ptr, loadHTMLBuffer, defaultbuf);
-	if (buf)
+	if (buf && buf != NO_BUFFER) {
 	    buf->type = "text/html";
+	    buf->mailcap_source = buf->sourcefile;
+	    buf->sourcefile = tmpf->ptr;
+	}
     }
     else if (mcap->flags & MAILCAP_COPIOUSOUTPUT) {
 	buf = loadcmdout(command->ptr, loadBuffer, defaultbuf);
-	if (buf)
+	if (buf && buf != NO_BUFFER) {
 	    buf->type = "text/plain";
+	    buf->mailcap_source = buf->sourcefile;
+	    buf->sourcefile = tmpf->ptr;
+	}
     }
     else {
 	if (mcap->flags & MAILCAP_NEEDSTERMINAL || !BackgroundExtViewer) {
@@ -5525,8 +5698,9 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp, Buffer *defaultbuf
     if (buf && buf != NO_BUFFER) {
 	buf->filename = path;
 	if (buf->buffername == NULL || buf->buffername[0] == '\0')
-	    buf->buffername = lastFileName(path);
+	    buf->buffername = conv_from_system(lastFileName(path));
 	buf->edit = mcap->edit;
+	buf->mailcap = mcap;
     }
     *bufp = buf;
     pushText(fileToDelete, tmpf->ptr);
@@ -5586,6 +5760,7 @@ doFileCopy(char *tmpf, char *defstr)
 		defstr, IN_COMMAND, SaveHist);
 	    if (p == NULL || *p == '\0')
 		return;
+	    p = conv_to_system(p);
 	}
 	if (*p != '|' || !PermitSaveToPipe) {
 	    p = expandName(p);
@@ -5653,6 +5828,7 @@ doFileSave(URLFile uf, char *defstr)
 		defstr, IN_FILENAME, SaveHist);
 	    if (p == NULL || *p == '\0')
 		return;
+	    p = conv_to_system(p);
 	}
 	if (checkOverWrite(p) < 0)
 	    return;
@@ -5732,7 +5908,7 @@ checkOverWrite(char *path)
     if (stat(path, &st) < 0)
 	return 0;
     if (fmInitialized) {
-	ans = inputStr("File exists. Overwrite? (y or n)", "");
+	ans = inputChar("File exists. Overwrite? (y or n)");
     }
     else {
 	printf("File exists. Overwrite? (y or n)");
@@ -5744,41 +5920,20 @@ checkOverWrite(char *path)
 	return -1;
 }
 
-static void
-sig_chld(int signo)
-{
-    int stat;
-#ifdef HAVE_WAITPID
-    pid_t pid;
-
-    while ((pid = waitpid(-1, &stat, WNOHANG)) > 0) {
-	;
-    }
-#elif HAVE_WAIT3
-    int pid;
-
-    while ((pid = wait3(&stat, WNOHANG, NULL)) > 0) {
-	;
-    }
-#else
-    wait(&stat);
-#endif
-    return;
-}
-
 #ifdef __EMX__
 #define GUNZIP_CMD  "gzip"
 #define BUNZIP2_CMD "bzip2"
+#define INFLATE_CMD  libFile("inflate.exe")
 #else				/* not __EMX__ */
 #define GUNZIP_CMD  "gunzip"
 #define BUNZIP2_CMD "bunzip2"
+#define INFLATE_CMD  libFile("inflate")
 #endif				/* not __EMX__ */
-#define INFLATE_CMD "inflate"
 #define GUNZIP_NAME  "gunzip"
 #define BUNZIP2_NAME "bunzip2"
 #define INFLATE_NAME "inflate"
 
-void
+static void
 gunzip_stream(URLFile *uf)
 {
     int pid1;
@@ -5787,6 +5942,10 @@ gunzip_stream(URLFile *uf)
     char *expand_name = GUNZIP_NAME;
     char *tmpf = NULL;
 
+    if (IStype(uf->stream) != IST_ENCODED) {
+	uf->stream = newEncodedStream(uf->stream, uf->encoding);
+	uf->encoding = ENC_7BIT;
+    }
     switch (uf->compression) {
     case CMP_COMPRESS:
     case CMP_GZIP:
@@ -5815,14 +5974,14 @@ gunzip_stream(URLFile *uf)
 	    UFclose(uf);
 	    return;
 	}
+/*
 	if (uf->scheme != SCM_FTP)
+*/
 	    UFclose(uf);
+	uf->scheme = SCM_LOCAL;
 	pushText(fileToDelete, tmpf);
     }
 	
-#ifdef	SIGCHLD
-    signal(SIGCHLD, sig_chld);
-#endif
     flush_tty();
     /* fd1[0]: read, fd1[1]: write */
     if ((pid1 = fork()) == 0) {
@@ -5844,9 +6003,6 @@ gunzip_stream(URLFile *uf)
 	    /* child */
 	    int pid2;
 	    int fd2[2];
-#ifdef	SIGCHLD
-	    signal(SIGCHLD, sig_chld);
-#endif
 	    if (fmInitialized) {
 		close_tty();
 		fmInitialized = FALSE;
@@ -5932,7 +6088,7 @@ reloadBuffer(Buffer * buf)
 	buf->pagerSource != NULL)
 	return;
     init_stream(&uf, SCM_UNKNOWN, NULL);
-    examineFile(buf->sourcefile, &uf);
+    examineFile(buf->mailcap_source ? buf->mailcap_source : buf->sourcefile, &uf);
     if (uf.stream == NULL)
 	return;
     is_redisplay = TRUE;
@@ -5974,8 +6130,8 @@ guess_charset(char *p)
 }
 #endif
 
-char *
-guess_save_name(char *file)
+static char *
+guess_filename(char *file)
 {
     char *p = NULL, *s;
 
@@ -5994,6 +6150,28 @@ guess_save_name(char *file)
 	p++;
     }
     return s;
+}
+
+char *
+guess_save_name(Buffer *buf, char *path)
+{
+    if (buf && buf->document_header) {
+	Str name = NULL;
+	char *p, *q;
+	if ((p = checkHeader(buf, "Content-Disposition:")) != NULL &&
+	    (q = strcasestr(p, "filename")) != NULL &&
+	    (q == p || IS_SPACE(*(q-1)) || *(q-1) == ';')) {
+	    if (matchattr(q, "filename", 8, &name))
+		return name->ptr;
+	}
+	if ((p = checkHeader(buf, "Content-Type:")) != NULL &&
+	    (q = strcasestr(p, "name")) != NULL &&
+	    (q == p || IS_SPACE(*(q-1)) || *(q-1) == ';')) {
+	    if (matchattr(q, "name", 4, &name))
+		return name->ptr;
+	}
+    }
+    return guess_filename(path);
 }
 
 /* Local Variables:    */

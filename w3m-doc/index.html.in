@@ -86,14 +86,14 @@
 					<LI><A HREF="@DOC.FAQ@#faq">よく聞かれる質問とその答え</A>
 					<LI><A HREF="@DOC.FAQ@#tips">Tips</A>
 				</UL>
-			<LI><A HREF="@DOC.developement@" NAME="developement">開発ドキュメント</A>
+			<LI><A HREF="@DOC.development@" NAME="development">開発ドキュメント</A>
 				<UL>
-                    <LI><A HREF="@DOC.developement@#story">w3mの開発について</A>
-					<LI><A HREF="@DOC.developement@#known_bugs">現在判明しているバグ</A>
-					<LI><A HREF="@DOC.developement@#ToDo">ToDo</A>
-					<LI><A HREF="@DOC.developement@#history">履歴</A>
-					<LI><A HREF="@DOC.developement@#policy">開発ポリシー</A>
-					<LI><A HREF="@DOC.developement@#tips">開発者向けTips</A>
+                    <LI><A HREF="@DOC.development@#story">w3mの開発について</A>
+					<LI><A HREF="@DOC.development@#known_bugs">現在判明しているバグ</A>
+					<LI><A HREF="@DOC.development@#ToDo">ToDo</A>
+					<LI><A HREF="@DOC.development@#history">履歴</A>
+					<LI><A HREF="@DOC.development@#policy">開発ポリシー</A>
+					<LI><A HREF="@DOC.development@#tips">開発者向けTips</A>
 				</UL>
 			<LI><A HREF="@DOC.community@" NAME="community">w3mコミュニティ</A>
 				<UL>

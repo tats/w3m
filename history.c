@@ -14,7 +14,7 @@ historyBuffer(Hist * hist)
     Strcat_charp(src, "<ol>\n");
     if (hist && hist->list) {
 	for (item = hist->list->last; item; item = item->prev) {
-	    q = htmlquote_str((char *)item->ptr);
+	    q = html_quote((char *)item->ptr);
 	    Strcat_charp(src, "<li><a href=\"");
 	    Strcat_charp(src, q);
 	    Strcat_charp(src, "\">");
@@ -44,7 +44,7 @@ loadHistory(Hist * hist)
 	Strremovetrailingspaces(line);
 	if (line->length == 0)
 	    continue;
-	pushHist(hist, line->ptr);
+	pushHist(hist, url_quote(line->ptr));
     }
     fclose(f);
 }

@@ -22,7 +22,7 @@
  * level tree.
  */
  
-# include "gc_priv.h"
+# include "private/gc_priv.h"
 
 bottom_index * GC_all_bottom_indices = 0;
 				/* Pointer to first (lowest addr) */
@@ -50,10 +50,8 @@ ptr_t h;
  
 static ptr_t scratch_free_ptr = 0;
  
-ptr_t GC_scratch_end_ptr = 0;
-
-ptr_t GC_scratch_last_end_ptr = 0;
-		/* End point of last obtained scratch area */
+/* GC_scratch_last_end_ptr is end point of last obtained scratch area.  */
+/* GC_scratch_end_ptr is end point of current scratch area.		*/
  
 ptr_t GC_scratch_alloc(bytes)
 register word bytes;
@@ -128,6 +126,13 @@ hdr * hhdr;
     hhdr -> hb_next = (struct hblk *) hdr_free_list;
     hdr_free_list = hhdr;
 }
+
+hdr * GC_invalid_header;
+
+#ifdef USE_HDR_CACHE
+  word GC_hdr_cache_hits = 0;
+  word GC_hdr_cache_misses = 0;
+#endif
  
 void GC_init_headers()
 {
@@ -138,6 +143,8 @@ void GC_init_headers()
     for (i = 0; i < TOP_SZ; i++) {
         GC_top_index[i] = GC_all_nils;
     }
+    GC_invalid_header = alloc_hdr();
+    GC_invalidate_map(GC_invalid_header);
 }
 
 /* Make sure that there is a bottom level index block for address addr  */
@@ -191,10 +198,10 @@ word addr;
     return(TRUE);
 }
 
-/* Install a header for block h.  */
-/* The header is uninitialized.	  */
-/* Returns FALSE on failure.	  */
-GC_bool GC_install_header(h)
+/* Install a header for block h.	*/
+/* The header is uninitialized.	  	*/
+/* Returns the header or 0 on failure.	*/
+struct hblkhdr * GC_install_header(h)
 register struct hblk * h;
 {
     hdr * result;
@@ -205,7 +212,7 @@ register struct hblk * h;
 #   ifdef USE_MUNMAP
 	result -> hb_last_reclaimed = GC_gc_no;
 #   endif
-    return(result != 0);
+    return(result);
 }
 
 /* Set up forwarding counts for block h of size sz */
@@ -253,7 +260,7 @@ register word sz; /* bytes */
 /* Apply fn to all allocated blocks */
 /*VARARGS1*/
 void GC_apply_to_all_blocks(fn, client_data)
-void (*fn)(/* struct hblk *h, word client_data */);
+void (*fn) GC_PROTO((struct hblk *h, word client_data));
 word client_data;
 {
     register int j;

@@ -6,10 +6,11 @@ BOOKMARK	Read bookmark
 CENTER_H	Move to the center line
 CENTER_V	Move to the center column
 COOKIE		View cookie list
-DELETE_PREVBUF  Delete previous buffer
+DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)
+DICT_WORD_AT   Execute dictionary command for word at cursor
 DOWN		Scroll down one line
-DOWN_LOAD	Save HTML source
+DOWNLOAD       Save HTML source
 EDIT		Edit current document
 EDIT_SCREEN	Edit currently rendered document
 END		Go to the last line
@@ -25,31 +26,46 @@ HELP		View help
 HISTORY		View history of URL
 INFO		View info of current document
 INTERRUPT	Stop loading document
-INIT_MAILCAP    Reread mailcap
+INIT_MAILCAP    Reread mailcap (mainly for local-CGI)
 LEFT		Shift screen one column
 LINE_BEGIN	Go to the beginning of line
 LINE_END	Go to the end of line
 LINE_INFO	Show current line number
+LINK_BEGIN     Go to the first link
+LINK_END       Go to the last link
 LOAD		Load local file
 MAIN_MENU	Popup menu
 MARK		Set/unset mark
 MARK_MID	Mark Message-ID-like strings as anchors
 MARK_URL	Mark URL-like strings as anchors
 MENU		Popup menu
-MOVE_DOWN	Move cursor down
-MOVE_LEFT	Move cursor left
-MOVE_RIGHT	Move cursor right
-MOVE_UP		Move cursor up
+MOUSE_TOGGLE   Toggle activity of mouse
+MOVE_DOWN      Move cursor down (a half screen scroll at the end of screen)
+MOVE_DOWN1     Move cursor down (1 line scroll at the end of screen)
+MOVE_LEFT      Move cursor left (a half screen shift at the left edge)
+MOVE_LEFT1     Move cursor left (1 columns shift at the left edge)
+MOVE_RIGHT     Move cursor right (a half screen shift at the right edge)
+MOVE_RIGHT1    Move cursor right (1 columns shift at the right edge)
+MOVE_UP                Move cursor up (a half screen scroll at the top of screen)
+MOVE_UP1       Move cursor up (1 line scrol at the top of screen)
+MSGS        Display error messages
+NEXT_DOWN      Move to next downward link 
+NEXT_LEFT      Move to next left link 
+NEXT_LEFT_UP   Move to next left (or upward) link 
 NEXT_LINK	Move to next link
 NEXT_MARK	Move to next word
 NEXT_PAGE	Move to next page
+NEXT_RIGHT     Move to next right link 
+NEXT_RIGHT_DOWN        Move to next right (or downward) link 
+NEXT_UP                Move to next upward link 
 NEXT_WORD	Move to next word
 NOTHING		Do nothing
 NULL		Do nothing
 OPTIONS		Option setting panel
 PEEK		Peek current URL
-PEEK_LINK	Peek link URL
 PEEK_IMG	Peek image URL 
+PEEK_LINK      Peek link URL
+PIPE_BUF       Send rendered document to pipe
 PIPE_SHELL	Execute shell command and browse
 PREV_LINK	Move to previous link
 PREV_MARK	Move to previous mark
@@ -72,14 +88,18 @@ SEARCH_FORE	Search forward
 SEARCH_NEXT	Search next regexp
 SEARCH_PREV	Search previous regexp
 SELECT		Go to buffer selection panel
+SELECT_MENU    Popup buffer selection menu
+SETENV        Set environment variable
+SET_OPTION     Set option
 SHELL		Execute shell command
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
 SOURCE		View HTML source
 SUSPEND		Stop loading document
 UP		Scroll up one line
+VERSION                Display version of w3m
 VIEW		View HTML source
 VIEW_BOOKMARK	View bookmark
 VIEW_IMAGE	View image
 WHEREIS		Search forward
-WRAP_TOGGLE   Toggle wrap search mode
+WRAP_TOGGLE    Toggle wrap search mode

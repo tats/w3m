@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.1 2001/11/08 05:14:53 a-ito Exp $ */
+/* $Id: fm.h,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -20,6 +20,7 @@
 
 #ifdef MENU
 #define MENU_SELECT
+#define MENU_MAP
 #endif				/* MENU */
 
 #ifndef COLOR
@@ -212,6 +213,7 @@ extern int REV_LB[];
 #define IN_PASSWORD	0x40
 #define IN_COMMAND	0x80
 #define IN_URL		0x100
+#define IN_CHAR		0x200
 
 /* 
  * Macros.
@@ -222,6 +224,7 @@ extern int REV_LB[];
 #define inputStrHist(p,d,h)	inputLineHist(p,d,IN_STRING,h)
 #define inputFilename(p,d)	inputLine(p,d,IN_FILENAME)
 #define inputFilenameHist(p,d,h)	inputLineHist(p,d,IN_FILENAME,h)
+#define inputChar(p)		inputLine(p,"",IN_CHAR)
 
 #define free(x)  GC_free(x)	/* let GC do it. */
 
@@ -289,6 +292,8 @@ typedef struct _anchor {
     BufferPoint start;
     BufferPoint end;
     int hseq;
+    short y;
+    short rows;
 } Anchor;
 
 #define NO_REFERER ((char*)-1)
@@ -320,7 +325,6 @@ typedef struct _Buffer {
     short height;
     char *type;
     char *real_type;
-    char encoding;
     int allLine;
     short bufferprop;
     short currentColumn;
@@ -354,6 +358,9 @@ typedef struct _Buffer {
     FormItemList *form_submit;
     char *savecache;
     char *edit;
+    struct mailcap *mailcap;
+    char *mailcap_source;
+    char search_header;
 #ifdef USE_SSL
     char *ssl_certificate;
 #endif
@@ -384,6 +391,8 @@ typedef struct {
     short nobr_level;
     Lineprop prev_ctype;
     char init_flag;
+    short top_margin;
+    short bottom_margin;
 } Breakpoint;
 
 struct readbuffer {
@@ -409,6 +418,8 @@ struct readbuffer {
     Breakpoint bp;
     struct cmdtable *tag_stack[TAG_STACK_SIZE];
     int tag_sp;
+    short top_margin;
+    short bottom_margin;
 };
 
 #define in_bold fontstat[0]
@@ -590,7 +601,8 @@ typedef struct http_request {
 
 extern int LINES, COLS;
 #if defined(CYGWIN) && LANG == JA
-#define LASTLINE (LINES-2)
+extern int isWinConsole;
+#define LASTLINE (LINES-(isWinConsole ? 2 : 1))
 #else				/* not defined(CYGWIN) && LANG == JA */
 #define LASTLINE (LINES-1)
 #endif				/* not defined(CYGWIN) && LANG == JA */
@@ -607,6 +619,8 @@ global char *DefaultType init(NULL);
 global char RenderFrame init(FALSE);
 global char TargetSelf init(FALSE);
 global char PermitSaveToPipe init(FALSE);
+global char DecodeCTE init(FALSE);
+global char ArgvIsURL init(FALSE);
 
 global char fmInitialized init(FALSE);
 
@@ -637,6 +651,7 @@ global int DNS_order init(0);
 extern int ai_family_order_table[3][3];		/* XXX */
 #endif				/* INET6 */
 global TextList *NO_proxy_domains;
+global char NoCache init(FALSE);
 global int Do_not_use_proxy init(FALSE);
 global int Do_not_use_ti_te init(FALSE);
 
@@ -657,9 +672,18 @@ extern char *ullevel[];
 
 extern char *version;
 
+#define DUMP_BUFFER   0x01
+#define DUMP_HEAD     0x02
+#define DUMP_SOURCE   0x04
+#define DUMP_EXTRA    0x08
+#define DUMP_HALFDUMP 0x10
+#define DUMP_FRAME    0x20
 global int w3m_debug;
-global int w3m_halfdump init(FALSE);
+global int w3m_dump init(0);
+#define w3m_halfdump (w3m_dump & DUMP_HALFDUMP)
 global int w3m_halfload init(FALSE);
+global Str header_string init(NULL);
+global int override_content_type init(FALSE);
 
 #ifdef COLOR
 global int useColor init(TRUE);
@@ -732,14 +756,29 @@ global int SaveURLHist init(TRUE);
 #endif				/* USE_HISTORY */
 global int multicolList init(FALSE);
 
+global char DisplayCode init(DISPLAY_CODE);
 #ifdef JP_CHARSET
-extern char DisplayCode;
-extern char DocumentCode;
+global char SystemCode init(SYSTEM_CODE);
+global char DocumentCode init(0);
+global char UseContentCharset init(TRUE);
+global char UseAutoDetect init(TRUE);
+#define Str_conv_from_system(x) conv_str((x), SystemCode, InnerCode)
+#define Str_conv_to_system(x) conv_str((x), InnerCode, SystemCode)
+#define conv_from_system(x) conv((x), SystemCode, InnerCode)->ptr
+#define conv_to_system(x) conv((x), InnerCode, SystemCode)->ptr
+#define url_quote_conv(x,c) url_quote(conv((x), InnerCode, (c))->ptr)
+#else
+#define Str_conv_from_system(x) (x)
+#define Str_conv_to_system(x) (x)
+#define conv_from_system(x) (x)
+#define conv_to_system(x) (x)
+#define url_quote_conv(x,c) url_quote(x)
 #endif				/* JP_CHARSET */
 #ifndef KANJI_SYMBOLS
 global int no_graphic_char init(FALSE);
 extern char alt_rule[];
 #endif				/* not KANJI_SYMBOLS */
+extern char UseAltEntity;
 global char *rc_dir;
 global int rc_dir_is_tmp init(FALSE);
 
@@ -751,7 +790,7 @@ global int reverse_mouse init(FALSE);
 
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);
-global int use_cookie init(TRUE);
+global int use_cookie init(FALSE);
 global int accept_cookie init(FALSE);
 global int accept_bad_cookie init(FALSE);
 global char *cookie_reject_domains init(NULL);
@@ -799,10 +838,14 @@ global int use_lessopen init(FALSE);
 #define get_wctype(wc) (is~wckanji(wc)?PC_ASCII:GET_PCTYPE(wc))
 #endif
 
+global int FollowRedirection init(10);
+
 global int w3m_backend init(FALSE);
 global Str backend_halfdump_str;
 global TextList *backend_batch_commands init(NULL);
 int backend( void );
+extern void deleteFiles(void);
+void w3m_exit( int i );
 
 /* 
  * Externals

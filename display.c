@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.1 2001/11/08 05:14:32 a-ito Exp $ */
+/* $Id: display.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -148,20 +148,6 @@ fmTerm(void)
     }
 }
 
-void
-deleteFiles()
-{
-    Buffer *buf;
-    char *f;
-    while (Firstbuf && Firstbuf != NO_BUFFER) {
-	buf = Firstbuf->nextBuffer;
-	discardBuffer(Firstbuf);
-	Firstbuf = buf;
-    }
-    while ((f = popText(fileToDelete)) != NULL)
-	unlink(f);
-}
-
 
 /* 
  * Initialize routine.
@@ -171,12 +157,11 @@ fmInit(void)
 {
     if (!fmInitialized) {
 	initscr();
+#if defined( __CYGWIN__ ) && defined( JP_CHARSET )
+	init_win32_console_handle();
+#endif
 	term_raw();
 	term_noecho();
-#ifdef MOUSE
-	if (use_mouse)
-	    mouse_init();
-#endif				/* MOUSE */
     }
     fmInitialized = TRUE;
 }
@@ -201,7 +186,7 @@ static Linecolor color_mode = 0;
 static Buffer *save_current_buf = NULL;
 #endif
 
-static int in_check_url = FALSE;
+int in_check_url = FALSE;
 
 void
 displayBuffer(Buffer * buf, int mode)
@@ -237,6 +222,11 @@ displayBuffer(Buffer * buf, int mode)
 		scroll(n);
 	    }
 	    else if (n < 0 && n > -LASTLINE) {
+#if defined(CYGWIN) && LANG == JA
+		move(LASTLINE + n + 1, 0);
+		clrtoeolx();
+		refresh();
+#endif				/* defined(CYGWIN) && LANG == JA */
 		rscroll(-n);
 	    }
 	    redrawNLine(buf, n);
@@ -771,7 +761,7 @@ message_list_panel(void)
 		 "<h1>List of error messages</h1><table cellpadding=0>\n");
     if (message_list)
       for (p = message_list->last ; p ; p = p->prev)
-	Strcat_m_charp(tmp, "<tr><td><pre>", htmlquote_str(p->ptr), "</pre></td></tr>\n", NULL);
+	Strcat_m_charp(tmp, "<tr><td><pre>", html_quote(p->ptr), "</pre></td></tr>\n", NULL);
     else
       Strcat_charp(tmp, "<tr><td>(no message recorded)</td></tr>\n");
     Strcat_charp(tmp, "</table></body></html>");
@@ -793,7 +783,7 @@ void
 disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
 {
     if (!fmInitialized) {
-	fprintf(stderr, "%s\n", s);
+	fprintf(stderr, "%s\n", conv_to_system(s));
 	return;
     }
     if (Currentbuf != NULL)
@@ -828,14 +818,14 @@ disp_message_nomouse(char *s, int redraw_current)
 #endif
 
 void
-cursorUp(Buffer * buf)
+cursorUp(Buffer * buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
     if (buf->cursorY > 0)
 	cursorUpDown(buf, -1);
     else {
-	buf->topLine = lineSkip(buf, buf->topLine, -(LASTLINE + 1) / 2, FALSE);
+       buf->topLine = lineSkip(buf, buf->topLine, - n, FALSE);
 	if (buf->currentLine->prev != NULL)
 	    buf->currentLine = buf->currentLine->prev;
 	arrangeLine(buf);
@@ -843,14 +833,14 @@ cursorUp(Buffer * buf)
 }
 
 void
-cursorDown(Buffer * buf)
+cursorDown(Buffer * buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
     if (buf->cursorY < LASTLINE - 1)
 	cursorUpDown(buf, 1);
     else {
-	buf->topLine = lineSkip(buf, buf->topLine, (LASTLINE + 1) / 2, FALSE);
+       buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
 	if (buf->currentLine->next != NULL)
 	    buf->currentLine = buf->currentLine->next;
 	arrangeLine(buf);
@@ -870,7 +860,7 @@ cursorUpDown(Buffer * buf, int n)
 }
 
 void
-cursorRight(Buffer * buf)
+cursorRight(Buffer * buf, int n)
 {
     int i, delta = 1, cpos, vpos2;
     Line *l = buf->currentLine;
@@ -907,15 +897,15 @@ cursorRight(Buffer * buf)
         delta = 2;
 #endif                          /* JP_CHARSET */
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
-    if (vpos2 >= COLS) {
-       columnSkip(buf, (COLS / 2) + (vpos2 - COLS) - (vpos2 - COLS) % (COLS / 2));
+    if (vpos2 >= COLS && n) {
+       columnSkip(buf, n + (vpos2 - COLS) - (vpos2 - COLS) % n);
        buf->visualpos = cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos;
 }
 
 void
-cursorLeft(Buffer * buf)
+cursorLeft(Buffer * buf, int n)
 {
     int i, delta = 1, cpos;
     Line *l = buf->currentLine;
@@ -935,8 +925,8 @@ cursorLeft(Buffer * buf)
 	buf->pos = 0;
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = cpos - buf->currentColumn;
-    if (buf->visualpos < 0) {
-	columnSkip(buf, -(COLS / 2) + buf->visualpos - buf->visualpos % (COLS / 2));
+    if (buf->visualpos < 0 && n) {
+       columnSkip(buf, - n + buf->visualpos - buf->visualpos % n);
 	buf->visualpos = cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos;
@@ -1042,19 +1032,19 @@ cursorXY(Buffer * buf, int x, int y)
 
     if (buf->cursorX > x) {
 	while (buf->cursorX > x)
-	    cursorLeft(buf);
+           cursorLeft(buf, COLS / 2);
     }
     else if (buf->cursorX < x) {
 	while (buf->cursorX < x) {
 	    oldX = buf->cursorX;
 
-	    cursorRight(buf);
+           cursorRight(buf, COLS / 2);
 
 	    if (oldX == buf->cursorX)
 		break;
 	}
 	if (buf->cursorX > x)
-	    cursorLeft(buf);
+           cursorLeft(buf, COLS / 2);
     }
 }
 

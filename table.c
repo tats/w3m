@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.1 2001/11/08 05:15:40 a-ito Exp $ */
+/* $Id: table.c,v 1.2 2001/11/09 04:59:18 a-ito Exp $ */
 /* 
  * HTML table
  */
@@ -25,32 +25,32 @@ static char *ruleB[] =
 #define HORIZONTALBAR "им"
 #define RULE_WIDTH 2
 #else				/* not KANJI_SYMBOLS */
+char alt_rule[] = {
+'+', '|', '-', '+', '|', '|', '+', ' ', '-', '+', '-', ' ', '+', ' ', ' ', ' '};
 #if defined(__EMX__)&&!defined(JP_CHARSET)
 extern int	CodePage;
 
 static char    *_rule[] =
 #else
-char alt_rule[] = {
-'+', '|', '-', '+', '|', '|', '+', ' ', '-', '+', '-', ' ', '+', ' ', ' ', ' '};
 static char    *rule[] =
 #endif
 {
-    "<_RULE>\200</_RULE>",
-    "<_RULE>\201</_RULE>",
-    "<_RULE>\202</_RULE>",
-    "<_RULE>\203</_RULE>",
-    "<_RULE>\204</_RULE>",
-    "<_RULE>\205</_RULE>",
-    "<_RULE>\206</_RULE>",
-    "<_RULE>\207</_RULE>",
-    "<_RULE>\210</_RULE>",
-    "<_RULE>\211</_RULE>",
-    "<_RULE>\212</_RULE>",
-    "<_RULE>\213</_RULE>",
-    "<_RULE>\214</_RULE>",
-    "<_RULE>\215</_RULE>",
-    "<_RULE>\216</_RULE>",
-    "<_RULE>\217</_RULE>"
+    "<_RULE TYPE=0>+</_RULE>",
+    "<_RULE TYPE=1>|</_RULE>",
+    "<_RULE TYPE=2>-</_RULE>",
+    "<_RULE TYPE=3>+</_RULE>",
+    "<_RULE TYPE=4>|</_RULE>",
+    "<_RULE TYPE=5>|</_RULE>",
+    "<_RULE TYPE=6>+</_RULE>",
+    "<_RULE TYPE=7> </_RULE>",
+    "<_RULE TYPE=8>-</_RULE>",
+    "<_RULE TYPE=9>+</_RULE>",
+    "<_RULE TYPE=10>-</_RULE>",
+    "<_RULE TYPE=11> </_RULE>",
+    "<_RULE TYPE=12>+</_RULE>",
+    "<_RULE TYPE=13> </_RULE>",
+    "<_RULE TYPE=14> </_RULE>",
+    "<_RULE TYPE=15> </_RULE>"
 };
 #if defined(__EMX__)&&!defined(JP_CHARSET)
 static char   **ruleB = _rule, **rule = _rule;
@@ -64,7 +64,7 @@ static char *ruleB850[] = {
 static char   **ruleB = rule;
 #endif				/* not __EMX__ or JP_CHARSET */
 
-#define TN_VERTICALBAR "<_RULE>\205</_RULE>"
+#define TN_VERTICALBAR "<_RULE TYPE=5>|</_RULE>"
 #define RULE_WIDTH 1
 #endif				/* not KANJI_SYMBOLS */
 
@@ -386,7 +386,7 @@ check_row(struct table *t, int row)
 	r = max(t->max_rowsize * 2, row + 1);
 	tabdata = New_N(GeneralList **, r);
 	tabattr = New_N(table_attr *, r);
-	tabheight = New_N(short, r);
+	tabheight = NewAtom_N(short, r);
 #ifdef ID_EXT
 	tabidvalue = New_N(Str *, r);
 	tridvalue = New_N(Str, r);
@@ -461,7 +461,7 @@ int visible_length_offset = 0;
 int
 visible_length(char *str)
 {
-    int len = 0;
+    int len = 0, max_len = 0;
     int status = R_ST_NORMAL;
     int prev_status = status;
     Str tagbuf = Strnew();
@@ -508,6 +508,12 @@ visible_length(char *str)
 		len++;
 	    } while ((visible_length_offset + len) % Tabstop != 0);
 	}
+        else if (*str == '\n' || *str == '\r') {
+            if (len > max_len) max_len = len;
+            len = 0;
+        }
+       else if (*str == '\n' || *str == '\r')
+           len = 0;
 	str++;
     }
     if (status == R_ST_AMP) {
@@ -518,7 +524,7 @@ visible_length(char *str)
 	    len += strlen(r2);
 	}
     }
-    return len;
+    return len > max_len ? len : max_len;
 }
 
 int
@@ -1508,20 +1514,21 @@ check_table_height(struct table *t)
 			cell.rowspan[idx] == rowspan)
 			c = idx;
 		}
-		if (c > cell.maxcell && c < MAXCELL) {
-		    cell.maxcell++;
-		    cell.row[cell.maxcell] = j;
-		    cell.rowspan[cell.maxcell] = rowspan;
-		    cell.height[cell.maxcell] = 0;
-		    if (cell.maxcell > k)
-			bcopy(cell.index + k, cell.index + k + 1, cell.maxcell - k);
-		    cell.index[k] = cell.maxcell;
+        if (c < MAXCELL) {
+            if (c > cell.maxcell) {
+               cell.maxcell++;
+               cell.row[cell.maxcell] = j;
+               cell.rowspan[cell.maxcell] = rowspan;
+               cell.height[cell.maxcell] = 0;
+               if (cell.maxcell > k)
+                   bcopy(cell.index + k, cell.index + k + 1, cell.maxcell - k);
+               cell.index[k] = cell.maxcell;
+            }
+
+            if (cell.height[c] < t_dep)
+               cell.height[c] = t_dep;
 		}
-		if (c <= cell.maxcell && c >= 0 &&
-		    cell.height[c] < t_dep) {
-		    cell.height[c] = t_dep;
-		    continue;
-		}
+        continue;
 	    }
 	    if (t->tabheight[j] < t_dep)
 		t->tabheight[j] = t_dep;
@@ -1639,33 +1646,29 @@ make_caption(struct table *t, struct html_feed_environ *h_env)
     struct html_feed_environ henv;
     struct readbuffer obuf;
     struct environment envs[MAX_ENV_LEVEL];
-    TextLineList *tl;
-    Str tmp;
+    int limit;
 
     if (t->caption->length <= 0)
 	return;
 
-    if (t->total_width <= 0)
-	t->total_width = h_env->limit;
-
+    if (t->total_width > 0)
+       limit = t->total_width;
+    else
+       limit = h_env->limit;
     init_henv(&henv, &obuf, envs, MAX_ENV_LEVEL, newTextLineList(),
-	      t->total_width, h_env->envs[h_env->envc].indent);
+             limit, h_env->envs[h_env->envc].indent);
     HTMLlineproc1("<center>", &henv);
     HTMLlineproc0(t->caption->ptr, &henv, FALSE);
     HTMLlineproc1("</center>", &henv);
 
-    tl = henv.buf;
-
-    if (tl->nitem > 0) {
-	TextLineListItem *ti;
-	tmp = Strnew_charp("<pre for_table>");
-	for (ti = tl->first; ti != NULL; ti = ti->next) {
-	    Strcat(tmp, ti->ptr->line);
-	    Strcat_char(tmp, '\n');
-	}
-	Strcat_charp(tmp, "</pre>");
-	HTMLlineproc1(tmp->ptr, h_env);
-    }
+    if (t->total_width < henv.maxlimit)
+       t->total_width = henv.maxlimit;
+    limit = h_env->limit;
+    h_env->limit = t->total_width;
+    HTMLlineproc1("<center>", h_env);
+    HTMLlineproc0(t->caption->ptr, h_env, FALSE);
+    HTMLlineproc1("</center>", h_env);
+    h_env->limit = limit;
 }
 
 void
@@ -1674,7 +1677,7 @@ renderTable(struct table *t,
 	    struct html_feed_environ *h_env)
 {
     int i, j, w, r, h;
-    Str renderbuf = Strnew();
+    Str renderbuf;
     short new_tabwidth[MAXCOL];
 #ifdef MATRIX
     int itr;
@@ -1682,6 +1685,7 @@ renderTable(struct table *t,
     MAT *mat, *minv;
     PERM *pivot;
 #endif				/* MATRIX */
+    int width;
     int rulewidth;
     Str vrulea, vruleb, vrulec;
 #ifdef ID_EXT
@@ -1830,12 +1834,14 @@ renderTable(struct table *t,
     }
 
     /* table output */
+    width = t->total_width;
+
     make_caption(t, h_env);
 
     HTMLlineproc1("<pre for_table>", h_env);
 #ifdef ID_EXT
     if (t->id != NULL) {
-	idtag = Sprintf("<_id id=\"%s\">", htmlquote_str((t->id)->ptr));
+	idtag = Sprintf("<_id id=\"%s\">", html_quote((t->id)->ptr));
 	HTMLlineproc1(idtag->ptr, h_env);
     }
 #endif				/* ID_EXT */
@@ -1844,7 +1850,7 @@ renderTable(struct table *t,
     case BORDER_THICK:
 	renderbuf = Strnew();
 	print_sep(t, -1, T_TOP, t->maxcol, renderbuf);
-	push_render_image(renderbuf, t->total_width, h_env);
+       push_render_image(renderbuf, width, t->total_width, h_env);
 	t->total_height += 1;
 	break;
     }
@@ -1883,7 +1889,7 @@ renderTable(struct table *t,
 #ifdef ID_EXT
 	    if (t->tridvalue[r] != NULL && h == 0) {
 		idtag = Sprintf("<_id id=\"%s\">",
-				htmlquote_str((t->tridvalue[r])->ptr));
+				html_quote((t->tridvalue[r])->ptr));
 		Strcat(renderbuf, idtag);
 	    }
 #endif				/* ID_EXT */
@@ -1892,7 +1898,7 @@ renderTable(struct table *t,
 #ifdef ID_EXT
 		if (t->tabidvalue[r][i] != NULL && h == 0) {
 		    idtag = Sprintf("<_id id=\"%s\">",
-				    htmlquote_str((t->tabidvalue[r][i])->ptr));
+				    html_quote((t->tabidvalue[r][i])->ptr));
 		    Strcat(renderbuf, idtag);
 		}
 #endif				/* ID_EXT */
@@ -1921,12 +1927,12 @@ renderTable(struct table *t,
 		t->total_height += 1;
 		break;
 	    }
-	    push_render_image(renderbuf, t->total_width, h_env);
+           push_render_image(renderbuf, width, t->total_width, h_env);
 	}
 	if (r < t->maxrow && t->border_mode != BORDER_NONE) {
 	    renderbuf = Strnew();
 	    print_sep(t, r, T_MIDDLE, t->maxcol, renderbuf);
-	    push_render_image(renderbuf, t->total_width, h_env);
+           push_render_image(renderbuf, width, t->total_width, h_env);
 	}
 	t->total_height += t->tabheight[r];
     }
@@ -1935,7 +1941,7 @@ renderTable(struct table *t,
     case BORDER_THICK:
 	renderbuf = Strnew();
 	print_sep(t, t->maxrow, T_BOTTOM, t->maxcol, renderbuf);
-	push_render_image(renderbuf, t->total_width, h_env);
+       push_render_image(renderbuf, width, t->total_width, h_env);
 	t->total_height += 1;
 	break;
     }
@@ -1943,7 +1949,7 @@ renderTable(struct table *t,
 	renderbuf = Strnew(" ");
 	t->total_height++;
 	t->total_width = 1;
-	push_render_image(renderbuf, t->total_width, h_env);
+       push_render_image(renderbuf, 1, t->total_width, h_env);
     }
     HTMLlineproc1("</pre>", h_env);
 }
@@ -2244,10 +2250,10 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 	else {
 	    if (c == '&') {
 		ec = getescapechar(&line);
-		if (ec) {
+		if (ec >= 0) {
 		    c = ec;
 		    ctype = IS_CNTRL(ec) ? PC_CTRL : PC_ASCII;
-		    len = strlen(conv_latin1(ec));
+		    len = strlen(conv_entity(ec));
 		    wlen = line - save;
 		}
 	    }
@@ -2411,6 +2417,19 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 
     cmd = tag->tagid;
 
+    if (mode->pre_mode & TBLM_IGNORE) {
+	switch (cmd) {
+	case HTML_N_STYLE:
+	    mode->pre_mode &= ~TBLM_STYLE;
+	    return TAG_ACTION_NONE;
+	case HTML_N_SCRIPT:
+	    mode->pre_mode &= ~TBLM_SCRIPT;
+	    return TAG_ACTION_NONE;
+	default:
+	    return TAG_ACTION_NONE;
+	}
+    }
+
     switch (cmd) {
     CASE_TABLE_TAG:
 	if (mode->caption) 
@@ -2430,17 +2449,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	    return TAG_ACTION_NONE;
 	default:
 	    return TAG_ACTION_FEED;
-	}
-    }
-
-    if (mode->pre_mode & TBLM_IGNORE) {
-	switch (cmd) {
-	case HTML_N_STYLE:
-	    mode->pre_mode &= ~TBLM_STYLE;
-	case HTML_N_SCRIPT:
-	    mode->pre_mode &= ~TBLM_SCRIPT;
-	default:
-	    return TAG_ACTION_NONE;
 	}
     }
 
@@ -2720,6 +2728,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
     case HTML_N_LISTING:
     case HTML_XMP:
     case HTML_N_XMP:
+    case HTML_PLAINTEXT:
 	feed_table_block_tag(tbl, line, mode, 0, cmd);
 	switch (cmd) {
 	case HTML_PRE:
@@ -2740,6 +2749,9 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	case HTML_N_XMP:
 	    mode->pre_mode &= ~TBLM_XMP;
 	    break;
+       case HTML_PLAINTEXT:
+           mode->pre_mode |= TBLM_PLAINTEXT;
+           break;
 	}
 	break;
     case HTML_DL:
@@ -2793,28 +2805,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode, int width
 	tok = process_img(tag);
 	feed_table1(tbl, tok, mode, width);
 	break;
-#ifdef NEW_FORM
     case HTML_FORM:
 	process_form(tag);
 	break;
     case HTML_N_FORM:
 	process_n_form();
 	break;
-#else				/* not NEW_FORM */
-    case HTML_FORM:
-    case HTML_N_FORM:
-	feed_table_block_tag(tbl, "<br>", mode, 0, HTML_BR);
-	if (line[1] == '/') {
-	    tok = Strnew_charp("</form_int ");
-	    Strcat_charp(tok, line + 6);
-	}
-	else {
-	    tok = Strnew_charp("<form_int ");
-	    Strcat_charp(tok, line + 5);
-	}
-	pushdata(tbl, tbl->row, tbl->col, tok->ptr);
-	break;
-#endif				/* not NEW_FORM */
     case HTML_INPUT:
 	tmp = process_input(tag);
 	feed_table1(tbl, tmp, mode, width);
@@ -3018,15 +3014,30 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		else {
 		    int ec;
 		    q = p;
-		    ec = getescapechar(&p);
-		    r = conv_latin1(ec);
-		    if (r != NULL && strlen(r) == 1 &&
-			ec == (unsigned char)*r) {
-			Strcat_char(tmp, *r);
-		    }
-		    else {
-			Strcat_char(tmp, *q);
-			p = q + 1;
+            switch (ec = getescapechar(&p)) {
+            case '<':
+               Strcat_charp(tmp, "<");
+               break;
+            case '>':
+               Strcat_charp(tmp, ">");
+               break;
+            case '&':
+               Strcat_charp(tmp, "&");
+               break;
+            case '\r':
+               Strcat_char(tmp, '\n');
+               break;
+            default:
+               r = conv_entity(ec);
+               if (r != NULL && strlen(r) == 1 &&
+                   ec == (unsigned char)*r) {
+                   Strcat_char(tmp, *r);
+                   break;
+               }
+            case -1:
+                   Strcat_char(tmp, *q);
+                   p = q + 1;
+                   break;
 		    }
 		}
 	    }

@@ -54,7 +54,7 @@ static int
     21,				/* ftp */
     21,				/* ftpdir */
     0,				/* local - not defined */
-    0,				/* ??? - not defined? */
+    0,                /* local-CGI - not defined? */
     0,				/* exec - not defined? */
     119,			/* nntp */
     119,			/* news */
@@ -71,7 +71,7 @@ struct cmdtable schemetable[] =
     {"ftp", SCM_FTP},
     {"local", SCM_LOCAL},
     {"file", SCM_LOCAL},
-    {"exec", SCM_LOCAL_CGI},	/* ??? */
+/*  {"exec", SCM_EXEC}, */
     {"nntp", SCM_NNTP},
     {"news", SCM_NEWS},
     {"mailto", SCM_MAILTO},
@@ -276,7 +276,9 @@ openSSLHandle(int sock)
 #endif				/* defined(USE_SSL_VERIFY) */
 	    SSL_CTX_set_default_verify_paths(ssl_ctx);
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
-	atexit(free_ssl_ctx);
+/*** by inu
+        atexit(free_ssl_ctx);
+*/
     }
     handle = SSL_new(ssl_ctx);
     SSL_set_fd(handle, sock);
@@ -362,7 +364,7 @@ openSocket(char *hostname,
     MySignalHandler(*trap) ();
 
     if (fmInitialized) {
-        message(Sprintf("Opening socket...\n")->ptr, 0, 0);
+        message(Sprintf("Opening socket...")->ptr, 0, 0);
         refresh();
     }
     if (SETJMP(AbortLoading) != 0) {
@@ -452,7 +454,7 @@ openSocket(char *hostname,
 	hostaddr.sin_family = AF_INET;
 	hostaddr.sin_port = s_port;
 	if (fmInitialized) {
-	    message(Sprintf("Connecting to %s\n", hostname)->ptr, 0, 0);
+	    message(Sprintf("Connecting to %s", hostname)->ptr, 0, 0);
 	    refresh();
 	}
 	if (connect(sock, (struct sockaddr *) &hostaddr,
@@ -467,7 +469,7 @@ openSocket(char *hostname,
 	char **h_addr_list;
 	int result;
 	if (fmInitialized) {
-	    message(Sprintf("Performing hostname lookup on %s\n", hostname)->ptr, 0, 0);
+	    message(Sprintf("Performing hostname lookup on %s", hostname)->ptr, 0, 0);
 	    refresh();
 	}
 	if ((entry = gethostbyname(hostname)) == NULL) {
@@ -489,7 +491,7 @@ openSocket(char *hostname,
 		     adr & 0xff);
 #endif
 	    if (fmInitialized) {
-		message(Sprintf("Connecting to %s\n", hostname)->ptr, 0, 0);
+		message(Sprintf("Connecting to %s", hostname)->ptr, 0, 0);
 		refresh();
 	    }
 	    if ((result = connect(sock, (struct sockaddr *) &hostaddr,
@@ -557,9 +559,8 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 {
     char *p, *q;
     Str tmp;
-#ifdef __EMX__
-    int i;
-#endif
+
+    url = url_quote(url);	/* quote 0x01-0x20, 0x7F-0xFF */
 
     p = url;
     p_url->scheme = SCM_MISSING;
@@ -569,6 +570,7 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
     p_url->host = NULL;
     p_url->is_nocache = 0;
     p_url->file = NULL;
+    p_url->real_file = NULL;
     p_url->label = NULL;
 
     if (*url == '#') {		/* label only */
@@ -576,35 +578,40 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 	    copyParsedURL(p_url, current);
 	goto do_label;
     }
-#ifdef __EMX__
-    for (i = 17; i > 0; i -= 10)
-	if (!strncmp(url, "file://localhost/", i)) {
-	    p_url->scheme = SCM_LOCAL;
-	    p += i;
-	    url += i;
-	    break;
-	}
-    if (*url == '/' && IS_ALPHA(url[1]) && (url[2] == ':' || url[2] == '|')) {
-	++p;
-	++url;
+#if defined( __EMX__ ) || defined( __CYGWIN__ )
+    if (!strncmp(url, "file://localhost/", 17)) {
+       p_url->scheme = SCM_LOCAL;
+       p += 17 - 1;
+       url += 17 - 1;
     }
-    if (IS_ALPHA(*url) && (url[1] == ':' || url[1] == '|')) {
-	p_url->scheme = SCM_LOCAL;
-	p_url->file = p = allocStr(url, 0);
-	if (p[1] == '|')
-	    p[1] = ':';
-    }
-    if (p_url->scheme == SCM_LOCAL)
-	goto analyze_file;
 #endif
+#ifdef SUPPORT_DOS_DRIVE_PREFIX
+    if (IS_ALPHA(*p) && (p[1] == ':' || p[1] == '|')) {
+	p_url->scheme = SCM_LOCAL;
+	goto analyze_file;
+    }
+#endif         /* SUPPORT_DOS_DRIVE_PREFIX */
     /* search for scheme */
     p_url->scheme = getURLScheme(&p);
     if (p_url->scheme == SCM_MISSING) {		/* scheme not found */
-	if (current)
+       if (current) {
 	    copyParsedURL(p_url, current);
-	else
+           if (p_url->scheme == SCM_LOCAL_CGI)
+        p_url->scheme = SCM_LOCAL;
+       } else
 	    p_url->scheme = SCM_LOCAL;
 	p = url;
+       if (!strncmp(p,"//",2)) {
+           /* URL begins with // */
+           /* it means that 'scheme:' is abbreviated */
+#ifdef __CYGWIN__
+           /* in CYGWIN, '//host/share' doesn't means 'http://host/share' */
+             p_url->scheme = SCM_LOCAL;
+             goto analyze_file;
+#endif /* __CYGWIN__ */
+           p += 2;
+           goto analyze_url;
+       }
 	goto analyze_file;
     }
     /* get host and port */
@@ -626,15 +633,17 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 	    goto analyze_file;
 	}
 #endif
-#ifdef CYGWIN
-	goto analyze_file;	/* file://DRIVE/foo or *
-				 * file://machine/share/foo     */
-#endif				/* CYGWIN */
+#if defined( __CYGWIN__ ) && defined( SUPPORT_DOS_DRIVE_PREFIX )
+       if (IS_ALPHA(p[2]) && (p[3] == ':' || p[3] == '|'))
+           p += 2;
+        goto analyze_file;     /* file://DRIVE/foo or
+                                  file://machine/share/foo */
+#endif                /* __CYGWIN__ && SUPPORT_DOS_DRIVE_PREFIX */
     }
     p += 2;			/* scheme://foo         */
   analyze_url:
     q = p;
-    while (*p && *p != ':' && *p != '/' && *p != '@') {
+    while (*p && *p != ':' && *p != '/' && *p != '@' && *p != '?') {
 #ifdef INET6
 	if (*p == '[') {        /* rfc2732 compliance */
 	    char *p_colon = NULL;
@@ -689,6 +698,7 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 	q = ++p;
 	goto analyze_url;
     case '/':			/* scheme://host/...            */
+    case '?':
 	/* scheme://user@host/...       */
 	/* scheme://user:pass@host/...  */
 	p_url->host = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
@@ -704,12 +714,29 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
     }
 #endif
   analyze_file:
+#ifndef __CYGWIN__
     if (p_url->scheme == SCM_LOCAL && p_url->user == NULL &&
 	p_url->host != NULL && strcmp(p_url->host, "localhost")) {
 	p_url->scheme = SCM_FTP;	/* ftp://host/... */
 	if (p_url->port == 0)
 	    p_url->port = DefaultPort[SCM_FTP];
     }
+#endif
+#ifdef SUPPORT_DOS_DRIVE_PREFIX
+    if (p_url->scheme == SCM_LOCAL) {
+       q = p;
+       if (*q == '/')
+           q++;
+       if (IS_ALPHA(q[0]) && (q[1] == ':' || q[1] == '|')) {
+           if (q[1] == '|') {
+        p = allocStr(q, 0);
+        p[1] = ':';
+           }
+           else
+        p = q;
+       }
+    }
+#endif
 
     q = p;
 #ifdef USE_GOPHER
@@ -812,6 +839,10 @@ copyParsedURL(ParsedURL * p, ParsedURL * q)
 	p->file = allocStr(q->file, 0);
     else
 	p->file = NULL;
+    if (q->real_file)
+	p->real_file = allocStr(q->real_file, 0);
+    else
+	p->real_file = NULL;
     if (q->label)
 	p->label = allocStr(q->label, 0);
     else
@@ -850,7 +881,7 @@ parseURL2(char *url, ParsedURL * pu, ParsedURL * current)
 		pu->scheme != SCM_NEWS &&
 #endif				/* USE_NNTP */
 		pu->file[0] != '/'
-#ifdef __EMX__
+#ifdef SUPPORT_DOS_DRIVE_PREFIX
 		&& !(pu->scheme == SCM_LOCAL && IS_ALPHA(pu->file[0]) && pu->file[1] == ':')
 #endif
 		) {
@@ -901,6 +932,9 @@ parseURL2(char *url, ParsedURL * pu, ParsedURL * current)
 	}
 #else
 	if (pu->scheme == SCM_LOCAL && pu->file[0] != '/' &&
+#if defined( __CYGWIN__ ) && defined( SUPPORT_DOS_DRIVE_PREFIX ) /* for 'drive:' */
+           ! (IS_ALPHA(pu->file[0]) && pu->file[1] == ':') &&
+#endif
 	    strcmp(pu->file, "-")) {
 	    tmp = Strnew_charp(CurrentDir);
 	    if (Strlastchar(tmp) != '/')
@@ -928,13 +962,15 @@ parseURL2(char *url, ParsedURL * pu, ParsedURL * current)
 		 pu->file[0] == '/') {
 	    pu->file = cleanupName(pu->file);
 	}
+	if (pu->scheme == SCM_LOCAL)
+	    pu->real_file = cleanupName2(file_unquote(pu->file), FALSE);
     }
 }
 
 static Str
 _parsedURL2Str(ParsedURL * pu, int pass)
 {
-    Str tmp = Strnew();
+    Str tmp;
     static char *scheme_str[] =
     {
 	"http", "gopher", "ftp", "ftp", "file", "file", "exec", "nntp", "news", "mailto",
@@ -989,7 +1025,7 @@ _parsedURL2Str(ParsedURL * pu, int pass)
 #ifdef USE_NNTP
 	pu->scheme != SCM_NEWS &&
 #endif				/* USE_NNTP */
-#ifdef __EMX__
+#ifdef SUPPORT_DOS_DRIVE_PREFIX
 	(pu->file == NULL || (pu->file[0] != '/' && pu->file[1] != ':')))
 #else
 	(pu->file == NULL || pu->file[0] != '/'))
@@ -1043,7 +1079,7 @@ otherinfo(ParsedURL * target, ParsedURL * current, char *referer)
     else
 	Strcat_charp(s, UserAgent);
     Strcat_charp(s, "\r\n");
-    Strcat_charp(s, "Accept: text/*, image/*, audio/*, application/*\r\n");
+    Strcat_charp(s, "Accept: text/*, image/*, audio/*, video/*, application/*\r\n");
     Strcat_charp(s, "Accept-Encoding: gzip, compress, bzip, bzip2, deflate\r\n");
     Strcat_charp(s, "Accept-Language: ");
     if (AcceptLang != NULL && *AcceptLang != '\0') {
@@ -1064,7 +1100,7 @@ otherinfo(ParsedURL * target, ParsedURL * current, char *referer)
 	    Strcat(s, Sprintf(":%d", target->port));
 	Strcat_charp(s, "\r\n");
     }
-    if (target->is_nocache) {
+    if (target->is_nocache || NoCache) {
 	Strcat_charp(s, "Pragma: no-cache\r\n");
 	Strcat_charp(s, "Cache-control: no-cache\r\n");
     }
@@ -1145,15 +1181,22 @@ HTTPrequest(ParsedURL * pu, ParsedURL * current, HRequest * hr, TextList * extra
 	    Strcat_charp(tmp, "\r\n");
 	}
 	else {
-	    Strcat_charp(tmp, "Content-type: application/x-www-form-urlencoded\r\n");
+            if (!override_content_type) {
+               Strcat_charp(tmp, "Content-type: application/x-www-form-urlencoded\r\n");
+            }
 	    Strcat(tmp, Sprintf("Content-length: %ld\r\n", hr->request->length));
+            if (header_string)
+               Strcat (tmp, header_string);
 	    Strcat_charp(tmp, "\r\n");
-	    Strcat_charp(tmp, hr->request->body);
+           Strcat_charp_n(tmp, hr->request->body, hr->request->length);
 	    Strcat_charp(tmp, "\r\n");
 	}
     }
-    else
+    else {
+        if (header_string)
+           Strcat (tmp, header_string);
 	Strcat_charp(tmp, "\r\n");
+    }
 #ifdef DEBUG
     fprintf(stderr, "HTTPrequest: [ %s ]\n\n", tmp->ptr);
 #endif				/* DEBUG */
@@ -1183,9 +1226,9 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 	URLOption * option, FormList * request, TextList * extra_header,
 	URLFile * ouf, unsigned char *status)
 {
-    Str tmp = Strnew();
-    int sock;
-    char *p, *q;
+    Str tmp;
+    int i, sock, scheme;
+    char *p, *q, *u;
     URLFile uf;
     HRequest hr;
 #ifdef USE_SSL
@@ -1193,7 +1236,6 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 #endif				/* USE_SSL */
 #ifdef USE_NNTP
     FILE *fw;
-    int i;
     char *r;
     InputStream stream;
 #endif				/* USE_NNTP */
@@ -1205,14 +1247,21 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 	init_stream(&uf, SCM_MISSING, NULL);
     }
 
+    u = url;
+    scheme = getURLScheme(&u);
+    if (current == NULL && scheme == SCM_MISSING && ! ArgvIsURL)
+	u = file_to_url(url);		/* force to local file */
+    else
+	u = url;
   retry:
-    parseURL2(url, pu, current);
+    parseURL2(u, pu, current);
     if (pu->scheme == SCM_LOCAL && pu->file == NULL) {
 	if (pu->label != NULL) {
 	    /* #hogege is not a label but a filename */
 	    Str tmp2 = Strnew_charp("#");
 	    Strcat_charp(tmp2, pu->label);
 	    pu->file = tmp2->ptr;
+	    pu->real_file = cleanupName2(file_unquote(pu->file), FALSE);
 	    pu->label = NULL;
 	}
 	else {
@@ -1238,76 +1287,79 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
     case SCM_LOCAL_CGI:
 	if (request && request->body) {
 	    /* local CGI: POST */
-	    uf.stream = newFileStream(localcgi_post(pu->file, request, option->referer),
-				      (void (*)()) pclose);
+	    uf.stream = newFileStream(localcgi_post(pu->real_file, request,
+					option->referer), (void (*)()) pclose);
 	    if (uf.stream == NULL)
 		goto ordinary_local_file;
 	    uf.is_cgi = TRUE;
-	    uf.scheme = SCM_LOCAL_CGI;
+	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
 	}
-	else if ((p = strchr(pu->file, '?')) != NULL) {
+	else if ((q = strchr(pu->file, '?')) != NULL) {
 	    /* lodal CGI: GET */
-	    for (q = pu->file; *q && *q != '?'; q++)
-		Strcat_char(tmp, *q);
-	    uf.stream = newFileStream(localcgi_get(tmp->ptr, p + 1, option->referer),
-					(void (*)()) pclose);
+	    p = Strnew_charp_n(pu->file, (int)(q - pu->file))->ptr;
+	    pu->real_file = cleanupName2(file_unquote(p), FALSE);
+	    uf.stream = newFileStream(localcgi_get(pu->real_file, q + 1,
+					option->referer), (void (*)()) pclose);
 	    if (uf.stream == NULL) {
-		pu->file = tmp->ptr;
+		pu->file = p;
 		goto ordinary_local_file;
 	    }
 	    uf.is_cgi = TRUE;
-	    uf.scheme = SCM_LOCAL_CGI;
+	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
 	}
+	else if ((i = strlen(pu->file)) > 4 &&
 #ifdef __EMX__
-	else if (!strncmp(pu->file + strlen(pu->file) - 4, ".cmd", 4))
+		!strncmp(pu->file + i - 4, ".cmd", 4))
 #else
-	else if (!strncmp(pu->file + strlen(pu->file) - 4, ".cgi", 4))
+		!strncmp(pu->file + i - 4, ".cgi", 4))
 #endif
 	{
 	    /* lodal CGI: GET */
-	    uf.stream = newFileStream(localcgi_get(pu->file, "", option->referer),
-				      (void (*)()) pclose);
+	    uf.stream = newFileStream(localcgi_get(pu->real_file, "",
+					option->referer), (void (*)()) pclose);
 	    if (uf.stream == NULL)
 		goto ordinary_local_file;
 	    uf.is_cgi = TRUE;
-	    uf.scheme = SCM_LOCAL_CGI;
+	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
 	}
 	else {
 	  ordinary_local_file:
-	    examineFile(pu->file, &uf);
+	    examineFile(pu->real_file, &uf);
 	}
 	if (uf.stream == NULL) {
-	    if (dir_exist(pu->file)) {
+	    if (dir_exist(pu->real_file)) {
 		add_index_file(pu, &uf);
 		if (uf.stream == NULL)
 		    return uf;
 	    }
 	    else if (document_root != NULL) {
-		Strcat_charp(tmp, document_root);
+		tmp = Strnew_charp(document_root);
 		if (Strlastchar(tmp) != '/' && pu->file[0] != '/')
 		    Strcat_char(tmp, '/');
 		Strcat_charp(tmp, pu->file);
-		tmp = Strnew_charp(cleanupName(tmp->ptr));
-		if (dir_exist(tmp->ptr)) {
-		    pu->file = tmp->ptr;
+		p = cleanupName(tmp->ptr);
+		q = cleanupName2(file_unquote(p), FALSE);
+		if (dir_exist(q)) {
+		    pu->file = p;
+		    pu->real_file = q;
 		    add_index_file(pu, &uf);
 		    if (uf.stream == NULL) {
 			return uf;
 		    }
 		}
 		else {
-		    examineFile(tmp->ptr, &uf);
-		    if (uf.stream)
-			pu->file = tmp->ptr;
+		    examineFile(q, &uf);
+		    if (uf.stream) {
+			pu->file = p;
+			pu->real_file = q;
+		    }
 		}
 	    }
 	}
 	if (uf.stream == NULL && retryAsHttp && url[0] != '/') {
-	    char *u = url;
-	    int scheme = getURLScheme(&u);
 	    if (scheme == SCM_MISSING || scheme == SCM_UNKNOWN) {
 		/* retry it as "http://" */
-		url = Strnew_m_charp("http://", url, NULL)->ptr;
+		u = Strnew_m_charp("http://", url, NULL)->ptr;
 		goto retry;
 	    }
 	}
@@ -1517,7 +1569,7 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 	    if (pu->file == NULL || *pu->file == '\0')
 		goto nntp_error;
 	    /* first char of pu->file is '/' */
-	    group = Strnew_charp(pu->file + 1)->ptr;
+	    group = url_unquote(Strnew_charp(pu->file + 1)->ptr);
 	    p = strchr(group, '/');
 	    if (p == NULL)
 		goto nntp_error;
@@ -1533,7 +1585,7 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 		goto nntp_error;
 	    fprintf(fw, "ARTICLE %s\r\n", p);
 	} else {
-	    fprintf(fw, "ARTICLE <%s>\r\n", pu->file);
+	    fprintf(fw, "ARTICLE <%s>\r\n", url_unquote(pu->file));
 	}
 	fflush(fw);
 	tmp = StrISgets(stream);
@@ -1562,18 +1614,20 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 static void
 add_index_file(ParsedURL * pu, URLFile *uf)
 {
-    Str tmp = Strnew_charp(pu->file);
+    char *p, *q;
 
     if (index_file == NULL || index_file[0] == '\0') {
 	uf->stream = NULL;
 	return;
     }
-    Strcat_m_charp(tmp, "/", index_file, NULL);
-    tmp->ptr = cleanupName(tmp->ptr);
-    examineFile(tmp->ptr, uf);
+    p = Strnew_m_charp(pu->file, "/", file_quote(index_file), NULL)->ptr;
+    p = cleanupName(p);
+    q = cleanupName2(file_unquote(p), FALSE);
+    examineFile(q, uf);
     if (uf->stream == NULL)
 	return;
-    pu->file = tmp->ptr;
+    pu->file = p;
+    pu->real_file = q;
     return;
 }
 

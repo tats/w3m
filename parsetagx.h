@@ -8,7 +8,6 @@
 
 struct parsed_tag {
     unsigned char 	tagid;
-    char 		*tagname;
     unsigned char 	*attrid;
     char 		**value;
     unsigned char 	*map;

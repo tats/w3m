@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.1 2001/11/08 05:15:43 a-ito Exp $ */
+/* $Id: terms.c,v 1.2 2001/11/09 04:59:18 a-ito Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -17,7 +17,13 @@
 #include <gpm.h>
 #endif				/* USE_GPM */
 #ifdef USE_SYSMOUSE
+#include <osreldate.h>
+#if (__FreeBSD_version >= 400017)
+#include <sys/consio.h>
+#include <sys/fbio.h>
+#else
 #include <machine/console.h>
+#endif
 int (*sysm_handler) (int x, int y, int nbs, int obs);
 static int cwidth = 8, cheight = 16;
 static int xpix, ypix, nbs, obs = 0;
@@ -185,8 +191,6 @@ static Screen *ScreenElem = NULL, **ScreenImage = NULL;
 static l_prop CurrentMode = 0;
 static int graph_enabled = 0;
 
-char DisplayCode = DISPLAY_CODE;
-
 static char gcmap[96];
 
 extern int tgetent(char *, char *);
@@ -250,7 +254,6 @@ set_tty(void)
 void
 ttymode_set(int mode, int imode)
 {
-    int er;
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -259,9 +262,8 @@ ttymode_set(int mode, int imode)
     IMODEFLAG(ioval) |= imode;
 #endif				/* not SGTTY */
 
-    er = TerminalSet(tty, &ioval);
-
-    if (er == -1) {
+    while (TerminalSet(tty, &ioval) == -1) {
+	if (errno == EINTR || errno == EAGAIN) continue;
 	printf("Error occured while set %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -270,7 +272,6 @@ ttymode_set(int mode, int imode)
 void
 ttymode_reset(int mode, int imode)
 {
-    int er;
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -279,9 +280,8 @@ ttymode_reset(int mode, int imode)
     IMODEFLAG(ioval) &= ~imode;
 #endif				/* not SGTTY */
 
-    er = TerminalSet(tty, &ioval);
-
-    if (er == -1) {
+    while (TerminalSet(tty, &ioval) == -1) {
+	if (errno == EINTR || errno == EAGAIN) continue;
 	printf("Error occured while reset %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -291,13 +291,12 @@ ttymode_reset(int mode, int imode)
 void
 set_cc(int spec, int val)
 {
-    int er;
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
     ioval.c_cc[spec] = val;
-    er = TerminalSet(tty, &ioval);
-    if (er == -1) {
+    while (TerminalSet(tty, &ioval) == -1) {
+	if (errno == EINTR || errno == EAGAIN) continue;
 	printf("Error occured: errno=%d\n", errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
@@ -340,7 +339,7 @@ reset_exit(SIGNAL_ARG)
     if (mouseActive)
 	mouse_end();
 #endif				/* MOUSE */
-    exit(0);
+    w3m_exit(0);
     SIGNAL_RETURN;
 }
 
@@ -427,7 +426,7 @@ getTCstr(void)
 	if (suc == NULL)
 	    GETSTR(T_kl, "kl");
     }
-    GETSTR(T_cr, "cr");		/* carrige return */
+    GETSTR(T_cr, "cr");		/* carriage return */
     GETSTR(T_ta, "ta");		/* tab */
     GETSTR(T_sc, "sc");		/* save cursor */
     GETSTR(T_rc, "rc");		/* restore cursor */
@@ -451,12 +450,16 @@ getTCstr(void)
     GETSTR(T_op, "op");		/* set default color pair to its original
 				 * * * * * * * value */
 #ifdef CYGWIN
-/* for TERM=pcansi on MS-DOS prompt. * T_as = "\033[12m"; * T_ae =
- * "\033[10m"; * T_ac =
- * "l\001k\002m\003j\004x\005q\006n\020a\024v\025w\026u\027t\031"; */
-    T_as[0] = '\0';
-    T_ae[0] = '\0';
-    T_ac[0] = '\0';
+/* for TERM=pcansi on MS-DOS prompt.
+    T_eA = "";
+    T_as = "\033[12m";
+    T_ae = "\033[10m";
+    T_ac = "l\001k\002m\003j\004x\005q\006n\020a\024v\025w\026u\027t\031";
+*/
+    T_eA = "";
+    T_as = "";
+    T_ae = "";
+    T_ac = "";
 #endif				/* CYGWIN */
 
     LINES = COLS = 0;
@@ -539,8 +542,8 @@ setupscreen(void)
     if (COLS + 1 > max_COLS) {
 	max_COLS = COLS + 1;
 	for (i = 0; i < max_LINES; i++) {
-	    ScreenElem[i].lineimage = New_N(char, max_COLS);
-	    ScreenElem[i].lineprop = New_N(l_prop, max_COLS);
+	    ScreenElem[i].lineimage = NewAtom_N(char, max_COLS);
+	    ScreenElem[i].lineprop = NewAtom_N(l_prop, max_COLS);
 	}
     }
     for (i = 0; i < LINES; i++) {
@@ -722,9 +725,6 @@ addch(char c)
     l_prop *pr;
     int dest, i;
     short *dirty;
-#ifdef __EMX__
-    extern int CodePage;
-#endif
 
     if (CurColumn == COLS)
 	wrap();
@@ -846,7 +846,7 @@ addch(char c)
     else if (c == '\n') {
 	wrap();
     }
-    else if (c == '\r') {	/* Carrige return */
+    else if (c == '\r') {	/* Carriage return */
 	CurColumn = 0;
     }
     else if (c == '\b' && CurColumn > 0) {	/* Backspace */
@@ -1090,13 +1090,13 @@ refresh(void)
 		    || (!(pr[col] & S_BCOLORED) && (mode & S_BCOLORED))
 #endif				/* BG_COLOR */
 		    || (!(pr[col] & S_GRAPHICS) && (mode & S_GRAPHICS))) {
-		    if ((!(pr[col] & S_COLORED) && (mode & S_COLORED))
+            if ((mode & S_COLORED)
 #ifdef BG_COLOR
-		      || (!(pr[col] & S_BCOLORED) && (mode & S_BCOLORED))
+              || (mode & S_BCOLORED)
 #endif				/* BG_COLOR */
 			)
 			writestr(T_op);
-		    if (!(pr[col] & S_GRAPHICS) && (mode & S_GRAPHICS))
+            if (mode & S_GRAPHICS)
 			writestr(T_ae);
 		    writestr(T_me);
 		    mode &= ~M_MEND;
@@ -1108,18 +1108,6 @@ refresh(void)
 		    else if (pcol != col)
 			MOVE(line, col);
 
-		    if ((pr[col] & S_COLORED) && (pr[col] ^ mode) & COL_FCOLOR) {
-			color = (pr[col] & COL_FCOLOR);
-			mode = ((mode & ~COL_FCOLOR) | color);
-			writestr(color_seq(color));
-		    }
-#ifdef BG_COLOR
-		    if ((pr[col] & S_BCOLORED) && (pr[col] ^ mode) & COL_BCOLOR) {
-			bcolor = (pr[col] & COL_BCOLOR);
-			mode = ((mode & ~COL_BCOLOR) | bcolor);
-			writestr(bcolor_seq(bcolor));
-		    }
-#endif				/* BG_COLOR */
 		    if ((pr[col] & S_STANDOUT) && !(mode & S_STANDOUT)) {
 			writestr(T_so);
 			mode |= S_STANDOUT;
@@ -1132,6 +1120,18 @@ refresh(void)
 			writestr(T_md);
 			mode |= S_BOLD;
 		    }
+            if ((pr[col] & S_COLORED) && (pr[col] ^ mode) & COL_FCOLOR) {
+               color = (pr[col] & COL_FCOLOR);
+               mode = ((mode & ~COL_FCOLOR) | color);
+               writestr(color_seq(color));
+            }
+#ifdef BG_COLOR
+            if ((pr[col] & S_BCOLORED) && (pr[col] ^ mode) & COL_BCOLOR) {
+               bcolor = (pr[col] & COL_BCOLOR);
+               mode = ((mode & ~COL_BCOLOR) | bcolor);
+               writestr(bcolor_seq(bcolor));
+            }
+#endif                /* BG_COLOR */
 		    if ((pr[col] & S_GRAPHICS) && !(mode & S_GRAPHICS)) {
 			if (!graph_enabled) {
 			    graph_enabled = 1;
@@ -1561,7 +1561,12 @@ getch(void)
 {
     char c;
 
-    read(tty, &c, 1);
+    while (read(tty, &c, 1) < (int)1) {
+        if (errno == EINTR || errno == EAGAIN) continue;
+        /* error happend on read(2) */
+        quitfm();
+        break;  /* unreachable */
+    }
     return c;
 }
 
@@ -1610,7 +1615,7 @@ sysm_getch()
 int
 do_getch()
 {
-    if (is_xterm)
+    if (is_xterm || ! sysm_handler)
 	return getch();
     else
 	return sysm_getch();
@@ -1760,6 +1765,7 @@ mouse_init()
 	mi.operation = MOUSE_MODE;
 	mi.u.mode.mode = 0;
 	mi.u.mode.signal = SIGUSR2;
+       sysm_handler = NULL;
 	if (ioctl(tty, CONS_MOUSECTL, &mi) != -1) {
 	    signal(SIGUSR2, sysmouse);
 	    mi.operation = MOUSE_SHOW;

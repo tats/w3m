@@ -7,7 +7,7 @@
 <CENTER>
  ******* 
  <A HREF="http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/">w3m</A>
- (WWW-wo-Miru) Version beta by
+ (WWW-wo-Miru) Version 0.2.1 by
  <A HREF="mailto:aito@ei5sun.yz.yamagata-u.ac.jp">A.ITO(伊藤彰則)</A>
  ********
  <BR>
@@ -26,15 +26,19 @@
  <TR> <TD>k,C-p</TD> <TD>カーソルを上へ移動</TD></TR>
  <TR> <TD>J</TD><TD>一行上にスクロール(進む)</TD></TR>
  <TR> <TD>K</TD><TD>一行下にスクロール(戻る)</TD></TR>
+ <TR> <TD>^,C-a</TD><TD>行頭に移動</TD></TR>
+ <TR> <TD>$,C-e</TD><TD>行末に移動</TD></TR>
  <TR> <TD>w</TD><TD>次の単語に移動</TD></TR>
  <TR> <TD>W</TD><TD>前の単語に移動</TD></TR>
  <TR> <TD>&gt;</TD> <TD>右に一画面分シフト</TD></TR>
  <TR> <TD>&lt;</TD> <TD>左に一画面分シフト</TD></TR>
  <TR> <TD>.</TD> <TD>右に一文字分シフト</TD></TR>
  <TR> <TD>,</TD> <TD>左に一文字分シフト</TD></TR>
- <TR> <TD>g</TD> <TD>ページの先頭行に移動</TD></TR>
- <TR> <TD>G</TD> <TD>ページの最終行に移動</TD></TR>
+ <TR> <TD>g,M-&lt;</TD> <TD>ページの先頭行に移動</TD></TR>
+ <TR> <TD>G,M-&gt;</TD> <TD>ページの最終行に移動</TD></TR>
  <TR> <TD>ESC g</TD> <TD>指定行に移動</TD></TR>
+ <TR> <TD>Z</TD> <TD>カーソルのある位置を行の中央に移動</TD></TR>
+ <TR> <TD>z</TD> <TD>カーソルのある行を画面の中央に移動</TD></TR>
  <TR> <TD>TAB</TD> <TD>次のハイパーリンクに移動</TD></TR>
  <TR> <TD>C-u, ESC TAB</TD> <TD>前のハイパーリンクに移動</TD></TR>
  <TR> <TD>[</TD> <TD>最初のハイパーリンクに移動</TD></TR>
@@ -48,11 +52,14 @@
  <TR> <TD>a, ESC RET</TD> <TD>リンク先の文書をファイルに保存</TD></TR>
  <TR> <TD>ESC I</TD> <TD>リンク先の画像をファイルに保存</TD></TR>
  <TR> <TD>u</TD> <TD>リンク先URLの表示</TD></TR>
+ <TR> <TD>i</TD> <TD>リンクに関連付けられた画像へのURLの表示</TD></TR>
  <TR> <TD>I</TD> <TD>インラインイメージの表示</TD></TR>
  <TR> <TD>:</TD> <TD>URLのような文字をアンカーとしてマーク</TD></TR>
  <TR> <TD>ESC :</TD> <TD>Message-IDのような文字をアンカーとしてマーク</TD></TR>
  <TR> <TD>c</TD> <TD>現ページのURLを表示</TD></TR>
  <TR> <TD>=</TD> <TD>現ドキュメントの情報を表示</TD></TR>
+ <TR> <TD>C-g</TD> <TD>ページ中での現在位置を表示</TD></TR>
+ <TR> <TD>C-h</TD> <TD>URL履歴を表示</TD></TR>
  <TR> <TD>F</TD> <TD>フレームを表示する</TD></TR>
  <TR> <TD>M</TD> <TD>現ページを外部ブラウザで表示する(2M,3Mで2番目と3番目のブラウザを呼びだす)</TD></TR>
  <TR> <TD>ESC M</TD> <TD>リンク先を外部ブラウザで表示する(2ESC M,3ESC Mで2番目と3番目のブラウザを呼びだす)</TD></TR>
@@ -72,10 +79,20 @@
  <TR> <TD>v</TD> <TD>HTMLソースを表示</TD></TR>
  <TR> <TD>s</TD> <TD>バッファを選択</TD></TR>
  <TR> <TD>E</TD> <TD>バッファのソースを編集</TD></TR>
+ <TR> <TD>C-l</TD> <TD>画面の再描画</TD></TR>
  <TR> <TD>R</TD> <TD>バッファを再読み込み</TD></TR>
  <TR> <TD>S</TD> <TD>バッファを保存</TD></TR>
  <TR> <TD>ESC s</TD> <TD>HTMLソースを保存</TD></TR>
  <TR> <TD>ESC e</TD> <TD>バッファの表示イメージを編集</TD></TR>
+</TABLE>
+
+<H2>バッファ選択モード</H2>
+"s" でバッファ選択モードに入ったときのキー操作
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>k,C-p</TD> <TD>一つ上のバッファを選択</TD></TR>
+ <TR> <TD>j,C-n</TD> <TD>一つ下のバッファを選択</TD></TR>
+ <TR> <TD>D</TD> <TD>現在選択しているバッファを削除</TD></TR>
+ <TR> <TD>RET</TD> <TD>現在選択しているバッファを表示</TD></TR>
 </TABLE>
 
 <H2>ブックマーク操作</H2>
@@ -90,6 +107,13 @@
  <TR> <TD>?,C-r</TD> <TD>後方検索</TD></TR>
  <TR> <TD>n</TD> <TD>次を検索</TD></TR>
  <TR> <TD>N</TD> <TD>前を検索</TD></TR>
+ <TR> <TD>C-w</TD> <TD>折り返し検索モードの切り換え</TD></TR>
+</TABLE>
+
+<H2>辞書検索</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>M-w</TD> <TD>入力した単語を辞書コマンドで検索</TD></TR>
+ <TR> <TD>M-W</TD> <TD>カーソル位置の単語を辞書コマンドで検索</TD></TR>
 </TABLE>
 
 <H2>マーク操作</H2>

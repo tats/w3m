@@ -1,4 +1,4 @@
-/* $Id: istream.h,v 1.1 2001/11/08 05:15:57 a-ito Exp $ */
+/* $Id: istream.h,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
@@ -145,9 +145,9 @@ extern Str ssl_get_certificate(InputStream stream);
 #define ssl_of(stream) ((stream)->ssl.handle->ssl)
 #endif
 
-#ifdef __CYGWIN__
+#ifdef USE_BINMODE_STREAM
 #define openIS(path) newInputStream(open((path),O_RDONLY|O_BINARY))
 #else
 #define openIS(path) newInputStream(open((path),O_RDONLY))
-#endif				/* __CYGWIN__ */
+#endif				/* USE_BINMODE_STREAM */
 #endif

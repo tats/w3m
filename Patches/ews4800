@@ -1,34 +1,175 @@
---- XMakefile.orig	Mon Mar 19 10:47:56 2001
-+++ XMakefile	Mon Mar 19 21:03:34 2001
-@@ -65,7 +65,7 @@
- 	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS)
- 
- gc/gc.a:
--	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS)'
-+	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS) -Dmips'
- 
- install: $(TARGETS)
- 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
---- gc/Makefile.orig	Tue Jan  4 14:46:50 2000
-+++ gc/Makefile	Thu Mar 22 18:10:10 2001
-@@ -7,7 +7,7 @@
- #      	 and runs some tests of collector and cords.  Does not add cords or
- #	 c++ interface to gc.a
- # cord/de - builds dumb editor based on cords.
--ABI_FLAG=
-+ABI_FLAG=-Kconform_pic
- CC=cc $(ABI_FLAG)
- CXX=CC $(ABI_FLAG)
- AS=as $(ABI_FLAG)
---- gc/gcconfig.h.orig	Tue Jun  6 14:39:29 2000
-+++ gc/gcconfig.h	Mon Mar 19 21:02:51 2001
-@@ -64,7 +64,8 @@
- # endif
- # if defined(mips) || defined(__mips)
- #    define MIPS
--#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
-+#    if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__) ||\
-+        defined(nec_ews)
- #	define ULTRIX
- #    else
- #       if !defined(LINUX)
+diff -bcrN gc.org/doc/README.ews4800 gc/doc/README.ews4800
+*** gc.org/doc/README.ews4800	Thu Jan  1 09:00:00 1970
+--- gc/doc/README.ews4800	Wed Jul 25 17:38:57 2001
+***************
+*** 0 ****
+--- 1,75 ----
++ GC on EWS4800
++ -------------
++ 
++ 1. About EWS4800
++    EWS4800 is 32bit/64bit workstation.
++ 
++      Vender: NEC Corporation
++      OS: UX/4800 R9.* - R13.* (SystemV R4.2)
++      CPU: R4000, R4400, R10000 (MIPS)
++ 
++ 2. Compiler
++ 
++  32bit:
++    Use ANSI C compiler.
++      CC = /usr/abiccs/bin/cc
++ 
++  64bit:
++    Use 64bit ANSI C compiler.
++      CC = /usr/ccs64/bin/cc
++      AR = /usr/ccs64/bin/ar
++ 
++ 3. ELF file format
++    *** Caution: The following infomation is empirical. ***
++ 
++  32bit:
++    ELF file has an unique format. (See a.out(4) and end(3C).)
++ 
++      &_start
++         :      text segment
++      &etext
++      DATASTART
++         :      data segment (initialized)
++      &edata
++      DATASTART2
++         :      data segment (uninitialized)
++      &end
++ 
++    Here, DATASTART and DATASTART2 are macros of GC, and are defined as
++    the following equations. (See include/private/gcconfig.h.)
++    The algorithm for DATASTART is similar with the function
++    GC_SysVGetDataStart() in os_dep.c.
++ 
++      DATASTART  = ((&etext + 0x3ffff) & ~0x3ffff) + (&etext & 0xffff)
++ 
++     Dynamically linked:
++      DATASTART2 = (&_gp + 0x8000 + 0x3ffff) & ~0x3ffff
++ 
++     Statically linked:
++      DATASTART2 = &edata
++ 
++    GC has to check addresses both between DATASTART and &edata, and
++    between DATASTART2 and &end. If a program accesses between &etext
++    and DATASTART, or between &edata and DATASTART2, the segmentation
++    error occurs and the program stops.
++ 
++    If a program is statically linked, there is not a gap between
++    &edata and DATASTART2. The global symbol &_DYNAMIC_LINKING is used
++    for the detection.
++ 
++  64bit:
++    ELF file has a simple format. (See end(3C).)
++ 
++      _ftext
++         :      text segment
++      _etext
++      _fdata = DATASTART
++         :      data segment (initialized)
++      _edata
++      _fbss
++         :      data segment (uninitialized)
++      _end = DATAEND
++ 
++ --
++ Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
++ 
+diff -bcrN gc.org/include/private/gcconfig.h gc/include/private/gcconfig.h
+*** gc.org/include/private/gcconfig.h	Sun Jul  1 06:29:27 2001
+--- gc/include/private/gcconfig.h	Wed Jul 25 17:38:57 2001
+***************
+*** 75,83 ****
+  #    endif
+  #    define mach_type_known
+  # endif
+! # if defined(mips) || defined(__mips)
+  #    define MIPS
+! #    if !defined(LINUX)
+  #      if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
+  #	 define ULTRIX
+  #      else
+--- 75,86 ----
+  #    endif
+  #    define mach_type_known
+  # endif
+! # if defined(mips) || defined(__mips) || defined(_mips)
+  #    define MIPS
+! #    if defined(nec_ews) || defined(_nec_ews)
+! #      define EWS4800
+! #    endif
+! #    if !defined(LINUX) && !defined(EWS4800)
+  #      if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
+  #	 define ULTRIX
+  #      else
+***************
+*** 1083,1088 ****
+--- 1086,1114 ----
+  	/* instead. But some kernel versions seem to give the wrong	*/
+  	/* value from /proc.						*/
+  #   endif /* Linux */
++ #   ifdef EWS4800
++ #      define HEURISTIC2
++ #      if defined(_MIPS_SZPTR) && (_MIPS_SZPTR == 64)
++          extern int _fdata[], _end[];
++ #        define DATASTART ((ptr_t)_fdata)
++ #        define DATAEND ((ptr_t)_end)
++ #        define CPP_WORDSZ _MIPS_SZPTR
++ #        define ALIGNMENT (_MIPS_SZPTR/8)
++ #      else
++          extern int etext, edata, end;
++          extern int _DYNAMIC_LINKING, _gp;
++ #        define DATASTART ((ptr_t)((((word)&etext + 0x3ffff) & ~0x3ffff) \
++                + ((word)&etext & 0xffff)))
++ #        define DATAEND (&edata)
++ #        define DATASTART2 (&_DYNAMIC_LINKING \
++                ? (ptr_t)(((word)&_gp + 0x8000 + 0x3ffff) & ~0x3ffff) \
++                : (ptr_t)&edata)
++ #        define DATAEND2 (&end)
++ #        define ALIGNMENT 4
++ #      endif
++ #      define OS_TYPE "EWS4800"
++ #      define USE_GENERIC_PUSH_REGS 1
++ #   endif
+  #   ifdef ULTRIX
+  #	define HEURISTIC2
+  #       define DATASTART (ptr_t)0x10000000
+diff -bcrN gc.org/mach_dep.c gc/mach_dep.c
+*** gc.org/mach_dep.c	Thu Jun 28 05:54:23 2001
+--- gc/mach_dep.c	Wed Jul 25 17:38:57 2001
+***************
+*** 429,435 ****
+  		    *i = 0;
+  		}
+  #	      if defined(POWERPC) || defined(MSWIN32) || defined(MSWINCE) \
+! 	         || defined(UTS4) || defined(LINUX)
+  		  (void) setjmp(regs);
+  #	      else
+  	          (void) _setjmp(regs);
+--- 429,435 ----
+  		    *i = 0;
+  		}
+  #	      if defined(POWERPC) || defined(MSWIN32) || defined(MSWINCE) \
+!                 || defined(UTS4) || defined(LINUX) || defined(EWS4800)
+  		  (void) setjmp(regs);
+  #	      else
+  	          (void) _setjmp(regs);
+diff -bcrN gc.org/os_dep.c gc/os_dep.c
+*** gc.org/os_dep.c	Tue Jun 26 11:32:26 2001
+--- gc/os_dep.c	Wed Jul 25 17:38:57 2001
+***************
+*** 1088,1093 ****
+--- 1088,1096 ----
+  	GC_add_roots_inner(DATASTART, (char *)sbrk(0), FALSE);
+  #     else
+  	GC_add_roots_inner(DATASTART, (char *)(DATAEND), FALSE);
++ #       if defined(DATASTART2)
++          GC_add_roots_inner(DATASTART2, (char *)(DATAEND2), FALSE);
++ #       endif
+  #     endif
+  #   endif
+  #   if !defined(PCR) && (defined(NEXT) || defined(MACOSX))

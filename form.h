@@ -32,10 +32,10 @@
 #define FORM_ENCTYPE_URLENCODED 0
 #define FORM_ENCTYPE_MULTIPART  1
 
-#define MAX_TEXTAREA 100	/* max number of * <textarea>..</textarea> 
+#define MAX_TEXTAREA 10        /* max number of * <textarea>..</textarea> 
 				 * within one * document */
 #ifdef MENU_SELECT
-#define MAX_SELECT 100		/* max number of <select>..</select> *
+#define MAX_SELECT 10        /* max number of <select>..</select> *
 				 * within one document */
 #endif				/* MENU_SELECT */
 
@@ -45,6 +45,7 @@ typedef struct form_list {
     int method;
     Str action;
     char *target;
+    char *name;
     int charset;
     int enctype;
     struct form_list *next;
@@ -68,29 +69,28 @@ typedef struct form_select_option {
 } FormSelectOption;
 
 void addSelectOption(FormSelectOption * fso, Str value, Str label, int chk);
-Str chooseSelectOption(FormSelectOptionItem * item, int choose_type);
-void formChooseOptionByMenu(struct form_item_list *fi, int x, int y);
-/* macros for chooseSelectOption */
-#define CHOOSE_OPTION 0
-#define CHOOSE_VALUE 1
+void chooseSelectOption(struct form_item_list *fi, FormSelectOptionItem *item);
+void updateSelectOption(struct form_item_list *fi, FormSelectOptionItem *item);
+int formChooseOptionByMenu(struct form_item_list *fi, int x, int y);
 #endif				/* MENU_SELECT */
 
 typedef struct form_item_list {
     int type;
     Str name;
-    Str value;
-    int checked;
+    Str value, init_value;
+    int checked, init_checked;
     int accept;
     int size;
     int rows;
     int maxlength;
+    int readonly;
 #ifdef MENU_SELECT
     FormSelectOptionItem *select_option;
-    Str label;
+    Str label, init_label;
+    int selected, init_selected;
 #endif				/* MENU_SELECT */
     struct form_list *parent;
     struct form_item_list *next;
-    int anchor_num;
 } FormItemList;
 
 #endif				/* not FORM_H */

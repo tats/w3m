@@ -1,7 +1,10 @@
-/* $Id: istream.c,v 1.1 2001/11/08 05:15:57 a-ito Exp $ */
+/* $Id: istream.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
+#ifdef __EMX__
+#include <strings.h>        /* for bzero() */
+#endif                /* __EMX__ */
 
 #define	uchar		unsigned char
 
@@ -156,7 +159,8 @@ InputStream
 newEncodedStream(InputStream is, char encoding)
 {
     InputStream stream;
-    if (is == NULL || (encoding != ENC_QUOTE && encoding != ENC_BASE64))
+    if (is == NULL || (encoding != ENC_QUOTE && encoding != ENC_BASE64 &&
+		       encoding != ENC_UUENCODE))
 	return is;
     stream = New(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
@@ -464,11 +468,18 @@ ens_read(struct ens_handle *handle, char *buf, int len)
 	cleanup_line(handle->s, PAGER_MODE);
 	if (handle->encoding == ENC_BASE64)
 	    Strchop(handle->s);
+	else if (handle->encoding == ENC_UUENCODE) {
+	    if (! strncmp(handle->s->ptr, "begin", 5))
+		handle->s = StrmyISgets(handle->is);
+	    Strchop(handle->s);
+	}
 	p = handle->s->ptr;
 	if (handle->encoding == ENC_QUOTE)
 	    handle->s = decodeQP(&p);
 	else if (handle->encoding == ENC_BASE64)
 	    handle->s = decodeB(&p);
+	else if (handle->encoding == ENC_UUENCODE)
+	    handle->s = decodeU(&p);
 	handle->pos = 0;
     }
     

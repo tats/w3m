@@ -20,9 +20,9 @@
 // It also doesn't yet understand the new header file names or
 // namespaces.
 //
-// This assumes the collector has been compiled with -DATOMIC_UNCOLLECTABLE
-// and -DALL_INTERIOR_POINTERS.  We also recommend
-// -DREDIRECT_MALLOC=GC_uncollectable_malloc.
+// This assumes the collector has been compiled with -DATOMIC_UNCOLLECTABLE.
+// The user should also consider -DREDIRECT_MALLOC=GC_uncollectable_malloc,
+// to ensure that object allocated through malloc are traced.
 //
 // Some of this could be faster in the explicit deallocation case.
 // In particular, we spend too much time clearing objects on the
@@ -43,11 +43,14 @@
 // problems.  The argument for changing it is that the usual default
 // allocator is usually a very bad choice for a garbage collected environment.)
 //
+// This code assumes that the collector itself has been compiled with a
+// compiler that defines __STDC__ .
+//
 
 #ifndef GC_ALLOC_H
 
 #include "gc.h"
-#include <alloc.h>
+#include <stack>  // A more portable way to get stl_alloc.h .
 
 #define GC_ALLOC_H
 
@@ -318,12 +321,10 @@ class traceable_alloc_template {
 
 typedef traceable_alloc_template < 0 > traceable_alloc;
 
-#ifdef _SGI_SOURCE
-
 // We want to specialize simple_alloc so that it does the right thing
 // for all pointerfree types.  At the moment there is no portable way to
 // even approximate that.  The following approximation should work for
-// SGI compilers, and perhaps some others.
+// SGI compilers, and recent versions of g++.
 
 # define __GC_SPECIALIZE(T,alloc) \
 class simple_alloc<T, alloc> { \
@@ -338,6 +339,8 @@ public: \
     static void deallocate(T *p) \
 	{ alloc::ptr_free_deallocate(p, sizeof (T)); } \
 };
+
+__STL_BEGIN_NAMESPACE
 
 __GC_SPECIALIZE(char, gc_alloc)
 __GC_SPECIALIZE(int, gc_alloc)
@@ -362,6 +365,8 @@ __GC_SPECIALIZE(int, single_client_traceable_alloc)
 __GC_SPECIALIZE(unsigned, single_client_traceable_alloc)
 __GC_SPECIALIZE(float, single_client_traceable_alloc)
 __GC_SPECIALIZE(double, single_client_traceable_alloc)
+
+__STL_END_NAMESPACE
 
 #ifdef __STL_USE_STD_ALLOCATORS
 
@@ -450,7 +455,5 @@ inline bool operator!=(const single_client_traceable_alloc&,
 __STL_END_NAMESPACE
 
 #endif /* __STL_USE_STD_ALLOCATORS */
-
-#endif /* _SGI_SOURCE */
 
 #endif /* GC_ALLOC_H */

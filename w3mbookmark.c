@@ -27,8 +27,8 @@ static char *bkmark_src2 = "<tr><td>New Section:</td><td><input type=text name=n
 <tr><td>Title:</td><td><input type=text name=title value=\"%s\" width=60></td></tr>\n\
 <tr><td><input type=submit name=submit value=\"≈–œø\"></td>\n\
 </table>\n\
-<input type=hidden name=cookie value=\"%s\">
-</form>
+<input type=hidden name=cookie value=\"%s\">\
+</form>\
 </body></html>\n";
 static char *default_section = "Ã§ ¨Œ‡";
 #else				/* LANG != JA */
@@ -48,8 +48,8 @@ static char *bkmark_src2 = "<tr><td>New Section:</td><td><input type=text name=n
 <tr><td>Title:</td><td><input type=text name=title value=\"%s\" width=60></td></tr>\n\
 <tr><td><input type=submit name=submit value=\"ADD\"></td>\n\
 </table>\n\
-<input type=hidden name=cookie value=\"%s\">
-</form>
+<input type=hidden name=cookie value=\"%s\">\
+</form>\
 </body></html>\n";
 static char *default_section = "Miscellaneous";
 #endif				/* LANG != JA */
@@ -84,6 +84,7 @@ print_bookmark_panel(char *bmark, char *url, char *title)
     if ((f = fopen(bmark, "r")) != NULL) {
 	printf("<tr><td>Section:<td><select name=\"section\">\n");
 	while (tmp = Strfgets(f), tmp->length > 0) {
+           Strremovefirstspaces(tmp);
 	    if (Strncasecmp_charp(tmp, "<h2>", 4) == 0) {
 		p = tmp->ptr + 4;
 		tmp2 = Strnew();
@@ -94,7 +95,7 @@ print_bookmark_panel(char *bmark, char *url, char *title)
 	}
 	printf("</select>\n");
     }
-    printf(bkmark_src2, htmlquote_str(url), htmlquote_str(title),Local_cookie);
+    printf(bkmark_src2, html_quote(url), html_quote(title),Local_cookie);
 }
 
 /* create new bookmark */
@@ -142,9 +143,9 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 	/* Bookmark not added */
 	return FALSE;
     }
-    url = htmlquote_str(url);
-    title = htmlquote_str(title);
-    section = htmlquote_str(section);
+    url = html_quote(url);
+    title = html_quote(title);
+    section = html_quote(section);
 
     f = fopen(bmark, "r");
     if (f == NULL)
@@ -157,15 +158,19 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 	    break;
 	if (Strcasecmp(tmp, section_tmp) == 0)
 	    section_found = 1;
-	if (section_found && !bmark_added && Strcmp_charp(tmp, end_section) == 0) {
-	    pushText(tl, Sprintf("<li><a href=\"%s\">%s</a>\n", url, title)->ptr);
-	    bmark_added = 1;
+       if (section_found && !bmark_added) {
+           Strremovefirstspaces(tmp);
+           if (Strcmp_charp(tmp, end_section) == 0) {
+        pushText(tl, Sprintf("<li><a href=\"%s\">%s</a>\n", url, title)->ptr);
+        bmark_added = 1;
+           }
 	}
 	if (!bmark_added && Strcasecmp_charp(tmp, "</body>\n") == 0) {
 	    pushText(tl, Sprintf("<h2>%s</h2>\n<ul>\n", section)->ptr);
 	    pushText(tl, Sprintf("<li><a href=\"%s\">%s</a>\n", url, title)->ptr);
 	    pushText(tl, end_section);
 	    pushText(tl, "</ul>\n");
+           bmark_added = 1;
 	}
 	pushText(tl, tmp->ptr);
     }

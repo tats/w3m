@@ -9,6 +9,6 @@ DOC.operation       operation.html
 DOC.configuration   configuration.html
 DOC.function        function.html
 DOC.FAQ             faq.html
-DOC.developement    developement.html
+DOC.development     development.html
 DOC.community       community.html
 @end

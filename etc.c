@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.1 2001/11/08 05:14:33 a-ito Exp $ */
+/* $Id: etc.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 #ifdef	__WATT32__
 #define	read(a,b,c)	read_s(a,b,c)
@@ -123,9 +124,11 @@ lineSkip(Buffer * buf, Line * line, int offset, int last)
     Line *l;
 
     l = currentLineSkip(buf, line, offset, last);
+#ifndef NEXTPAGE_TOPLINE
     for (i = (LASTLINE - 1) - (buf->lastLine->linenumber - l->linenumber);
 	i > 0 && l->prev != NULL;
 	i--, l = l->prev);
+#endif
     return l;
 }
 
@@ -663,6 +666,29 @@ bzero(void *ptr, int len)
 }
 #endif				/* NOBCOPY */
 
+#ifdef USE_INCLUDED_SRAND48
+static unsigned long R1 = 0x1234abcd;
+static unsigned long R2 = 0x330e;
+#define A1 0x5deec
+#define A2 0xe66d
+#define C 0xb
+
+void
+srand48(long seed)
+{
+    R1 = (unsigned long)seed;
+    R2 = 0x330e;
+}
+
+long
+lrand48(void)
+{
+    R1 = (A1 * R1 << 16) + A1 * R2 + A2 * R1 + ((A2 * R2 + C) >> 16);
+    R2 = (A2 * R2 + C) & 0xffff;
+    return (long)(R1 >> 1);
+}
+#endif
+
 char *
 mybasename(char *s)
 {
@@ -1123,36 +1149,32 @@ romanAlphabet(int n)
     return r;
 }
 
-Str
-quoteShell(char *string)
-{
-    Str str = Strnew();
-
-    while (*string != '\0') {
-	if (!IS_ALNUM(*string) && *string != '_' && *string != '.' &&
-	    *string != ':' && *string != '/')
-	    Strcat_char(str, '\\');
-	Strcat_char(str, *(string++));
-    }
-    return str;
-}
-
 void
 mySystem(char *command, int background)
 {
-#ifdef __EMX__ /* jsawa */
     if (background){
+#ifndef HAVE_SETPGRP
 	Str cmd = Strnew_charp("start /f ");
 	Strcat_charp(cmd, command);
 	system(cmd->ptr);
-    }else
-	system(command);
 #else
-    Str cmd = Strnew_charp(command);
-    if (background)
-	cmd = Sprintf("(%s) >/dev/null 2>&1 &", cmd->ptr);
-    system(cmd->ptr);
+        int pid;
+       flush_tty();
+        if ((pid = fork()) == 0) {
+#ifdef SIGCHLD
+          signal(SIGCHLD, SIG_IGN);
 #endif
+          setpgrp();
+         close_tty();
+          fclose(stdout);
+          fclose(stderr);
+          execl("/bin/sh", "sh", "-c", command, NULL);
+          exit(127);
+       }
+#endif
+    }
+    else
+       system(command);
 }
 
 char *
@@ -1187,6 +1209,37 @@ expandName(char *name)
   rest:
     Strcat_charp(extpath, p);
     return extpath->ptr;
+}
+
+char *
+file_to_url(char *file)
+{
+    Str tmp;
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+    char *drive = NULL;
+#endif
+
+    file = expandName(file);
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+    if (IS_ALPHA(file[0]) && file[1] == ':') {
+       drive = allocStr(file, 2);
+       file += 2;
+    } else
+#endif
+    if (file[0] != '/') {
+       tmp = Strnew_charp(CurrentDir);
+	if (Strlastchar(tmp) != '/')
+	    Strcat_char(tmp, '/');
+	Strcat_charp(tmp, file);
+	file = tmp->ptr;
+    }
+    tmp = Strnew_charp("file://");
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+    if (drive)
+       Strcat_charp(tmp, drive);
+#endif
+    Strcat_charp(tmp, file_quote(cleanupName(file)));
+    return tmp->ptr;
 }
 
 static char *tmpf_base[MAX_TMPF_TYPE] =

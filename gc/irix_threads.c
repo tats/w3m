@@ -1,6 +1,7 @@
 /* 
- * Copyright (c) 1994 by Xerox Corporation.  All rights reserved.
- * Copyright (c) 1996 by Silicon Graphics.  All rights reserved.
+ * Copyright (c) 1991-1995 by Xerox Corporation.  All rights reserved.
+ * Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
+ * Copyright (c) 1999 by Hewlett-Packard Company. All rights reserved.
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -16,14 +17,17 @@
  * not guaranteed by the Pthread standard.  It may or may not be portable
  * to other implementations.
  *
+ * This now also includes an initial attempt at thread support for
+ * HP/UX 11.
+ *
  * Note that there is a lot of code duplication between linux_threads.c
- * and irix_threads.c; any changes made here may need to be reflected
+ * and hpux_irix_threads.c; any changes made here may need to be reflected
  * there too.
  */
 
-# if defined(IRIX_THREADS)
+# if defined(GC_IRIX_THREADS) || defined(IRIX_THREADS)
 
-# include "gc_priv.h"
+# include "private/gc_priv.h"
 # include <pthread.h>
 # include <semaphore.h>
 # include <time.h>
@@ -35,6 +39,7 @@
 #undef pthread_create
 #undef pthread_sigmask
 #undef pthread_join
+#undef pthread_detach
 
 void GC_thr_init();
 
@@ -95,8 +100,8 @@ GC_thread GC_lookup_thread(pthread_t id);
  * The only way to suspend threads given the pthread interface is to send
  * signals.  Unfortunately, this means we have to reserve
  * a signal, and intercept client calls to change the signal mask.
+ * We use SIG_SUSPEND, defined in gc_priv.h.
  */
-# define SIG_SUSPEND (SIGRTMIN + 6)
 
 pthread_mutex_t GC_suspend_lock = PTHREAD_MUTEX_INITIALIZER;
 				/* Number of threads stopped so far	*/
@@ -169,8 +174,12 @@ ptr_t GC_stack_alloc(size_t * stack_size)
         result = (ptr_t) GC_scratch_alloc(search_sz + 2*GC_page_sz);
         result = (ptr_t)(((word)result + GC_page_sz) & ~(GC_page_sz - 1));
         /* Protect hottest page to detect overflow. */
-        /* mprotect(result, GC_page_sz, PROT_NONE); */
-        result += GC_page_sz;
+#	ifdef STACK_GROWS_UP
+          /* mprotect(result + search_sz, GC_page_sz, PROT_NONE); */
+#	else
+          /* mprotect(result, GC_page_sz, PROT_NONE); */
+          result += GC_page_sz;
+#	endif
     }
     *stack_size = search_sz;
     return(result);
@@ -196,6 +205,11 @@ void GC_stack_free(ptr_t stack, size_t size)
 # define THREAD_TABLE_SZ 128	/* Must be power of 2	*/
 volatile GC_thread GC_threads[THREAD_TABLE_SZ];
 
+void GC_push_thread_structures GC_PROTO((void))
+{
+    GC_push_all((ptr_t)(GC_threads), (ptr_t)(GC_threads)+sizeof(GC_threads));
+}
+
 /* Add a thread to GC_threads.  We assume it wasn't already there.	*/
 /* Caller holds allocation lock.					*/
 GC_thread GC_new_thread(pthread_t id)
@@ -211,7 +225,7 @@ GC_thread GC_new_thread(pthread_t id)
     	/* Dont acquire allocation lock, since we may already hold it. */
     } else {
         result = (struct GC_Thread_Rep *)
-        	 GC_generic_malloc_inner(sizeof(struct GC_Thread_Rep), NORMAL);
+        	 GC_INTERNAL_MALLOC(sizeof(struct GC_Thread_Rep), NORMAL);
     }
     if (result == 0) return(0);
     result -> id = id;
@@ -375,13 +389,14 @@ int GC_is_thread_stack(ptr_t addr)
 }
 # endif
 
-/* We hold allocation lock.  We assume the world is stopped.	*/
+/* We hold allocation lock.  Should do exactly the right thing if the	*/
+/* world is stopped.  Should not fail if it isn't.			*/
 void GC_push_all_stacks()
 {
     register int i;
     register GC_thread p;
     register ptr_t sp = GC_approx_sp();
-    register ptr_t lo, hi;
+    register ptr_t hot, cold;
     pthread_t me = pthread_self();
     
     if (!GC_thr_initialized) GC_thr_init();
@@ -390,17 +405,25 @@ void GC_push_all_stacks()
       for (p = GC_threads[i]; p != 0; p = p -> next) {
         if (p -> flags & FINISHED) continue;
         if (pthread_equal(p -> id, me)) {
-	    lo = GC_approx_sp();
+	    hot = GC_approx_sp();
 	} else {
-	    lo = p -> stack_ptr;
+	    hot = p -> stack_ptr;
 	}
         if (p -> stack_size != 0) {
-            hi = p -> stack + p -> stack_size;
+#	  ifdef STACK_GROWS_UP
+	    cold = p -> stack;
+#	  else
+            cold = p -> stack + p -> stack_size;
+#	  endif
         } else {
             /* The original stack. */
-            hi = GC_stackbottom;
+            cold = GC_stackbottom;
         }
-        GC_push_all_stack(lo, hi);
+#	ifdef STACK_GROWS_UP
+          GC_push_all_stack(cold, hot);
+#	else
+          GC_push_all_stack(hot, cold);
+#	endif
       }
     }
 }
@@ -482,10 +505,33 @@ int GC_pthread_join(pthread_t thread, void **retval)
     /* Some versions of the Irix pthreads library can erroneously 	*/
     /* return EINTR when the call succeeds.				*/
 	if (EINTR == result) result = 0;
+    if (result == 0) {
+        LOCK();
+        /* Here the pthread thread id may have been recycled. */
+        GC_delete_gc_thread(thread, thread_gc_id);
+        UNLOCK();
+    }
+    return result;
+}
+
+int GC_pthread_detach(pthread_t thread)
+{
+    int result;
+    GC_thread thread_gc_id;
+    
     LOCK();
-    /* Here the pthread thread id may have been recycled. */
-    GC_delete_gc_thread(thread, thread_gc_id);
+    thread_gc_id = GC_lookup_thread(thread);
     UNLOCK();
+    result = REAL_FUNC(pthread_detach)(thread);
+    if (result == 0) {
+      LOCK();
+      thread_gc_id -> flags |= DETACHED;
+      /* Here the pthread thread id may have been recycled. */
+      if (thread_gc_id -> flags & FINISHED) {
+        GC_delete_gc_thread(thread, thread_gc_id);
+      }
+      UNLOCK();
+    }
     return result;
 }
 
@@ -531,6 +577,8 @@ void * GC_start_routine(void * arg)
     return(result);
 }
 
+# define copy_attr(pa_ptr, source) *(pa_ptr) = *(source)
+
 int
 GC_pthread_create(pthread_t *new_thread,
 		  const pthread_attr_t *attr,
@@ -548,7 +596,9 @@ GC_pthread_create(pthread_t *new_thread,
 	/* library, which isn't visible to the collector.		 */
 
     if (0 == si) return(ENOMEM);
-    sem_init(&(si -> registered), 0, 0);
+    if (0 != sem_init(&(si -> registered), 0, 0)) {
+        ABORT("sem_init failed");
+    }
     si -> start_routine = start_routine;
     si -> arg = arg;
     LOCK();
@@ -557,7 +607,7 @@ GC_pthread_create(pthread_t *new_thread,
         stack = 0;
 	(void) pthread_attr_init(&new_attr);
     } else {
-        new_attr = *attr;
+	copy_attr(&new_attr, attr);
 	pthread_attr_getstackaddr(&new_attr, &stack);
     }
     pthread_attr_getstacksize(&new_attr, &stacksize);
@@ -586,23 +636,30 @@ GC_pthread_create(pthread_t *new_thread,
     /* This also ensures that we hold onto si until the child is done	*/
     /* with it.  Thus it doesn't matter whether it is otherwise		*/
     /* visible to the collector.					*/
-        if (0 != sem_wait(&(si -> registered))) ABORT("sem_wait failed");
+        while (0 != sem_wait(&(si -> registered))) {
+	  if (errno != EINTR) {
+	    GC_printf1("Sem_wait: errno = %ld\n", (unsigned long) errno);
+	    ABORT("sem_wait failed");
+	  }
+	}
         sem_destroy(&(si -> registered));
-    /* pthread_attr_destroy(&new_attr); */
+    pthread_attr_destroy(&new_attr);  /* Probably unnecessary under Irix */
     return(result);
 }
 
-GC_bool GC_collecting = 0; /* A hint that we're in the collector and       */
+VOLATILE GC_bool GC_collecting = 0;
+			/* A hint that we're in the collector and       */
                         /* holding the allocation lock for an           */
                         /* extended period.                             */
 
 /* Reasonably fast spin locks.  Basically the same implementation */
-/* as STL alloc.h.  This isn't really the right way to do this.   */
-/* but until the POSIX scheduling mess gets straightened out ...  */
-
-unsigned long GC_allocate_lock = 0;
+/* as STL alloc.h.						  */
 
 #define SLEEP_THRESHOLD 3
+
+unsigned long GC_allocate_lock = 0;
+# define GC_TRY_LOCK() !GC_test_and_set(&GC_allocate_lock,1)
+# define GC_LOCK_TAKEN GC_allocate_lock
 
 void GC_lock()
 {
@@ -616,7 +673,7 @@ void GC_lock()
 #   define PAUSE junk *= junk; junk *= junk; junk *= junk; junk *= junk
     int i;
 
-    if (!GC_test_and_set(&GC_allocate_lock, 1)) {
+    if (GC_TRY_LOCK()) {
         return;
     }
     junk = 0;
@@ -624,11 +681,11 @@ void GC_lock()
     my_last_spins = last_spins;
     for (i = 0; i < my_spin_max; i++) {
         if (GC_collecting) goto yield;
-        if (i < my_last_spins/2 || GC_allocate_lock) {
+        if (i < my_last_spins/2 || GC_LOCK_TAKEN) {
             PAUSE; 
             continue;
         }
-        if (!GC_test_and_set(&GC_allocate_lock, 1)) {
+        if (GC_TRY_LOCK()) {
 	    /*
              * got it!
              * Spinning worked.  Thus we're probably not being scheduled
@@ -644,7 +701,7 @@ void GC_lock()
     spin_max = low_spin_max;
 yield:
     for (i = 0;; ++i) {
-        if (!GC_test_and_set(&GC_allocate_lock, 1)) {
+        if (GC_TRY_LOCK()) {
             return;
         }
         if (i < SLEEP_THRESHOLD) {
@@ -661,8 +718,6 @@ yield:
 	}
     }
 }
-
-
 
 # else
 

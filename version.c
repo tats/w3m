@@ -1,4 +1,4 @@
-#define CURRENT_VERSION "w3m/0.2.1"
+#define CURRENT_VERSION "w3m/0.2.1-inu-1.5"
 
 #ifndef FM_H
 char *version = CURRENT_VERSION;

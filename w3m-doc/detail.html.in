@@ -21,9 +21,9 @@
 		<LI><A HREF="@DOC.configuration@">各種設定</A>
 		<LI><A HREF="@DOC.function@">機能詳細</A>
 		<LI><A HREF="@DOC.FAQ@">FAQ</A>
-		<LI><A HREF="@DOC.developement@">開発ドキュメント</A>
+		<LI><A HREF="@DOC.development@">開発ドキュメント</A>
 		<LI><A HREF="@DOC.community@">w3m コミュニティ</A>
-		<LI><A HREF="@DOC.copyright@">Copiright</A>
+		<LI><A HREF="@DOC.copyright@">Copyright</A>
 	</UL>
 <HR>
 <A HREF="@DOC.index@">トップペイジに戻る</A>

@@ -1,6 +1,8 @@
 /* 
  * Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
- * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
+ * Copyright (c) 1991-1996 by Xerox Corporation.  All rights reserved.
+ * Copyright (c) 1996-1999 by Silicon Graphics.  All rights reserved.
+ * Copyright (c) 1999 by Hewlett-Packard Company. All rights reserved.
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -11,13 +13,19 @@
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  */
-/* Boehm, February 15, 1996 2:41 pm PST */
 
 #include <stdio.h>
-#include "gc_priv.h"
+#include "private/gc_priv.h"
 
 signed_word GC_mem_found = 0;
 			/* Number of words of memory reclaimed     */
+
+#if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC)
+  word GC_fl_builder_count = 0;
+	/* Number of threads currently building free lists without 	*/
+	/* holding GC lock.  It is not safe to collect if this is 	*/
+	/* nonzero.							*/
+#endif /* PARALLEL_MARK */
 
 static void report_leak(p, sz)
 ptr_t p;
@@ -28,13 +36,8 @@ word sz;
     } else {
         GC_err_printf0("Leaked composite object at ");
     }
-    if (GC_debugging_started && GC_has_debug_info(p)) {
-        GC_print_obj(p);
-    } else {
-        GC_err_printf2("0x%lx (appr. size = %ld)\n",
-       		      (unsigned long)p,
-       		      (unsigned long)WORDS_TO_BYTES(sz));
-    }
+    GC_print_heap_obj(p);
+    GC_err_printf0("\n");
 }
 
 #   define FOUND_FREE(hblk, word_no) \
@@ -58,19 +61,207 @@ word sz;
 GC_bool GC_block_empty(hhdr)
 register hdr * hhdr;
 {
+    /* We treat hb_marks as an array of words here, even if it is 	*/
+    /* actually an array of bytes.  Since we only check for zero, there	*/
+    /* are no endian-ness issues.					*/
     register word *p = (word *)(&(hhdr -> hb_marks[0]));
     register word * plim =
-	    		(word *)(&(hhdr -> hb_marks[MARK_BITS_SZ]));
+	    (word *)(&(hhdr -> hb_marks[MARK_BITS_SZ]));
     while (p < plim) {
 	if (*p++) return(FALSE);
     }
     return(TRUE);
 }
 
-# ifdef GATHERSTATS
+/* The following functions sometimes return a DONT_KNOW value. */
+#define DONT_KNOW  2
+
+#ifdef SMALL_CONFIG
+# define GC_block_nearly_full1(hhdr, pat1) DONT_KNOW
+# define GC_block_nearly_full3(hhdr, pat1, pat2) DONT_KNOW
+# define GC_block_nearly_full(hhdr) DONT_KNOW
+#endif
+
+#if !defined(SMALL_CONFIG) && defined(USE_MARK_BYTES)
+
+# define GC_block_nearly_full1(hhdr, pat1) GC_block_nearly_full(hhdr)
+# define GC_block_nearly_full3(hhdr, pat1, pat2) GC_block_nearly_full(hhdr)
+
+ 
+GC_bool GC_block_nearly_full(hhdr)
+register hdr * hhdr;
+{
+    /* We again treat hb_marks as an array of words, even though it	*/
+    /* isn't.  We first sum up all the words, resulting in a word 	*/
+    /* containing 4 or 8 separate partial sums. 			*/
+    /* We then sum the bytes in the word of partial sums.		*/
+    /* This is still endian independant.  This fails if the partial	*/
+    /* sums can overflow.						*/
+#   if (BYTES_TO_WORDS(MARK_BITS_SZ)) >= 256
+	--> potential overflow; fix the code
+#   endif
+    register word *p = (word *)(&(hhdr -> hb_marks[0]));
+    register word * plim =
+	    (word *)(&(hhdr -> hb_marks[MARK_BITS_SZ]));
+    word sum_vector = 0;
+    unsigned sum;
+    while (p < plim) {
+	sum_vector += *p;
+	++p;
+    }
+    sum = 0;
+    while (sum_vector > 0) {
+	sum += sum_vector & 0xff;
+	sum_vector >>= 8;
+    }
+    return (sum > BYTES_TO_WORDS(7*HBLKSIZE/8)/(hhdr -> hb_sz));
+}
+#endif  /* USE_MARK_BYTES */
+
+#if !defined(SMALL_CONFIG) && !defined(USE_MARK_BYTES)
+
+/*
+ * Test whether nearly all of the mark words consist of the same
+ * repeating pattern.
+ */
+#define FULL_THRESHOLD (MARK_BITS_SZ/16)
+
+GC_bool GC_block_nearly_full1(hhdr, pat1)
+hdr *hhdr;
+word pat1;
+{
+    unsigned i;
+    unsigned misses = 0;
+    GC_ASSERT((MARK_BITS_SZ & 1) == 0);
+    for (i = 0; i < MARK_BITS_SZ; ++i) {
+	if ((hhdr -> hb_marks[i] | ~pat1) != ONES) {
+	    if (++misses > FULL_THRESHOLD) return FALSE;
+	}
+    }
+    return TRUE;
+}
+
+/*
+ * Test whether the same repeating 3 word pattern occurs in nearly
+ * all the mark bit slots.
+ * This is used as a heuristic, so we're a bit sloppy and ignore
+ * the last one or two words.
+ */
+GC_bool GC_block_nearly_full3(hhdr, pat1, pat2, pat3)
+hdr *hhdr;
+word pat1, pat2, pat3;
+{
+    unsigned i;
+    unsigned misses = 0;
+
+    if (MARK_BITS_SZ < 4) {
+      return DONT_KNOW;
+    }
+    for (i = 0; i < MARK_BITS_SZ - 2; i += 3) {
+	if ((hhdr -> hb_marks[i] | ~pat1) != ONES) {
+	    if (++misses > FULL_THRESHOLD) return FALSE;
+	}
+	if ((hhdr -> hb_marks[i+1] | ~pat2) != ONES) {
+	    if (++misses > FULL_THRESHOLD) return FALSE;
+	}
+	if ((hhdr -> hb_marks[i+2] | ~pat3) != ONES) {
+	    if (++misses > FULL_THRESHOLD) return FALSE;
+	}
+    }
+    return TRUE;
+}
+
+/* Check whether a small object block is nearly full by looking at only */
+/* the mark bits.							*/
+/* We manually precomputed the mark bit patterns that need to be 	*/
+/* checked for, and we give up on the ones that are unlikely to occur,	*/
+/* or have period > 3.							*/
+/* This would be a lot easier with a mark bit per object instead of per	*/
+/* word, but that would rewuire computing object numbers in the mark	*/
+/* loop, which would require different data structures ...		*/
+GC_bool GC_block_nearly_full(hhdr)
+hdr *hhdr;
+{
+    int sz = hhdr -> hb_sz;
+
+#   if CPP_WORDSZ != 32 && CPP_WORDSZ != 64
+      return DONT_KNOW;	/* Shouldn't be used in any standard config.	*/
+#   endif
+#   if CPP_WORDSZ == 32
+      switch(sz) {
+        case 1:
+	  return GC_block_nearly_full1(hhdr, 0xffffffffl);
+	case 2:
+	  return GC_block_nearly_full1(hhdr, 0x55555555l);
+	case 4:
+	  return GC_block_nearly_full1(hhdr, 0x11111111l);
+	case 6:
+	  return GC_block_nearly_full3(hhdr, 0x41041041l,
+					      0x10410410l,
+					       0x04104104l);
+	case 8:
+	  return GC_block_nearly_full1(hhdr, 0x01010101l);
+	case 12:
+	  return GC_block_nearly_full3(hhdr, 0x01001001l,
+					      0x10010010l,
+					       0x00100100l);
+	case 16:
+	  return GC_block_nearly_full1(hhdr, 0x00010001l);
+	case 32:
+	  return GC_block_nearly_full1(hhdr, 0x00000001l);
+	default:
+	  return DONT_KNOW;
+      }
+#   endif
+#   if CPP_WORDSZ == 64
+      switch(sz) {
+        case 1:
+	  return GC_block_nearly_full1(hhdr, 0xffffffffffffffffl);
+	case 2:
+	  return GC_block_nearly_full1(hhdr, 0x5555555555555555l);
+	case 4:
+	  return GC_block_nearly_full1(hhdr, 0x1111111111111111l);
+	case 6:
+	  return GC_block_nearly_full3(hhdr, 0x1041041041041041l,
+					       0x4104104104104104l,
+					         0x0410410410410410l);
+	case 8:
+	  return GC_block_nearly_full1(hhdr, 0x0101010101010101l);
+	case 12:
+	  return GC_block_nearly_full3(hhdr, 0x1001001001001001l,
+					       0x0100100100100100l,
+					         0x0010010010010010l);
+	case 16:
+	  return GC_block_nearly_full1(hhdr, 0x0001000100010001l);
+	case 32:
+	  return GC_block_nearly_full1(hhdr, 0x0000000100000001l);
+	default:
+	  return DONT_KNOW;
+      }
+#   endif
+}
+#endif /* !SMALL_CONFIG  && !USE_MARK_BYTES */
+
+/* We keep track of reclaimed memory if we are either asked to, or	*/
+/* we are using the parallel marker.  In the latter case, we assume	*/
+/* that most allocation goes through GC_malloc_many for scalability.	*/
+/* GC_malloc_many needs the count anyway.				*/
+# if defined(GATHERSTATS) || defined(PARALLEL_MARK)
 #   define INCR_WORDS(sz) n_words_found += (sz)
+#   define COUNT_PARAM , count
+#   define COUNT_ARG , count
+#   define COUNT_DECL signed_word * count;
+#   define NWORDS_DECL signed_word n_words_found = 0;
+#   define COUNT_UPDATE *count += n_words_found;
+#   define MEM_FOUND_ADDR , &GC_mem_found
 # else
 #   define INCR_WORDS(sz)
+#   define COUNT_PARAM
+#   define COUNT_ARG
+#   define COUNT_DECL
+#   define NWORDS_DECL
+#   define COUNT_UPDATE
+#   define MEM_FOUND_ADDR
 # endif
 /*
  * Restore unmarked small objects in h of size sz to the object
@@ -78,20 +269,20 @@ register hdr * hhdr;
  * Clears unmarked objects.
  */
 /*ARGSUSED*/
-ptr_t GC_reclaim_clear(hbp, hhdr, sz, list)
+ptr_t GC_reclaim_clear(hbp, hhdr, sz, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 register hdr * hhdr;
 register ptr_t list;
 register word sz;
+COUNT_DECL
 {
     register int word_no;
     register word *p, *q, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif        
+    NWORDS_DECL
     
+    GC_ASSERT(hhdr == GC_find_header((ptr_t)hbp));
     p = (word *)(hbp->hb_body);
-    word_no = HDR_WORDS;
+    word_no = 0;
     plim = (word *)((((word)hbp) + HBLKSIZE)
 		   - WORDS_TO_BYTES(sz));
 
@@ -106,37 +297,45 @@ register word sz;
 		    list = ((ptr_t)p);
 		/* Clear object, advance p to next object in the process */
 		    q = p + sz;
-                    p++; /* Skip link field */
-                    while (p < q) {
+#		    ifdef USE_MARK_BYTES
+		      GC_ASSERT(!(sz & 1)
+				&& !((word)p & (2 * sizeof(word) - 1)));
+		      p[1] = 0;
+                      p += 2;
+                      while (p < q) {
+			CLEAR_DOUBLE(p);
+			p += 2;
+		      }
+#		    else
+                      p++; /* Skip link field */
+                      while (p < q) {
 			*p++ = 0;
-		    }
+		      }
+#		    endif
 	    }
 	    word_no += sz;
 	}
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 }
 
-#ifndef SMALL_CONFIG
+#if !defined(SMALL_CONFIG) && !defined(USE_MARK_BYTES)
 
 /*
  * A special case for 2 word composite objects (e.g. cons cells):
  */
 /*ARGSUSED*/
-ptr_t GC_reclaim_clear2(hbp, hhdr, list)
+ptr_t GC_reclaim_clear2(hbp, hhdr, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 hdr * hhdr;
 register ptr_t list;
+COUNT_DECL
 {
-    register word * mark_word_addr = &(hhdr->hb_marks[divWORDSZ(HDR_WORDS)]);
+    register word * mark_word_addr = &(hhdr->hb_marks[0]);
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
     register word mark_word;
     register int i;
+    NWORDS_DECL
 #   define DO_OBJ(start_displ) \
 	if (!(mark_word & ((word)1 << start_displ))) { \
 	    p[start_displ] = (word)list; \
@@ -160,9 +359,7 @@ register ptr_t list;
 		mark_word >>= 8;
 	    }
 	}	        
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 #   undef DO_OBJ
 }
@@ -171,24 +368,22 @@ register ptr_t list;
  * Another special case for 4 word composite objects:
  */
 /*ARGSUSED*/
-ptr_t GC_reclaim_clear4(hbp, hhdr, list)
+ptr_t GC_reclaim_clear4(hbp, hhdr, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 hdr * hhdr;
 register ptr_t list;
+COUNT_DECL
 {
-    register word * mark_word_addr = &(hhdr->hb_marks[divWORDSZ(HDR_WORDS)]);
+    register word * mark_word_addr = &(hhdr->hb_marks[0]);
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
     register word mark_word;
+    NWORDS_DECL
 #   define DO_OBJ(start_displ) \
 	if (!(mark_word & ((word)1 << start_displ))) { \
 	    p[start_displ] = (word)list; \
 	    list = (ptr_t)(p+start_displ); \
 	    p[start_displ+1] = 0; \
-	    p[start_displ+2] = 0; \
-	    p[start_displ+3] = 0; \
+	    CLEAR_DOUBLE(p + start_displ + 2); \
 	    INCR_WORDS(4); \
 	}
     
@@ -218,31 +413,27 @@ register ptr_t list;
 #	    endif
 	    p += WORDSZ;
 	}	        
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 #   undef DO_OBJ
 }
 
-#endif /* !SMALL_CONFIG */
+#endif /* !SMALL_CONFIG && !USE_MARK_BYTES */
 
 /* The same thing, but don't clear objects: */
 /*ARGSUSED*/
-ptr_t GC_reclaim_uninit(hbp, hhdr, sz, list)
+ptr_t GC_reclaim_uninit(hbp, hhdr, sz, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 register hdr * hhdr;
 register ptr_t list;
 register word sz;
+COUNT_DECL
 {
-    register int word_no;
+    register int word_no = 0;
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
+    NWORDS_DECL
     
     p = (word *)(hbp->hb_body);
-    word_no = HDR_WORDS;
     plim = (word *)((((word)hbp) + HBLKSIZE)
 		   - WORDS_TO_BYTES(sz));
 
@@ -257,9 +448,7 @@ register word sz;
 	    p += sz;
 	    word_no += sz;
 	}
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 }
 
@@ -270,14 +459,13 @@ register struct hblk *hbp;	/* ptr to current heap block		*/
 register hdr * hhdr;
 register word sz;
 {
-    register int word_no;
+    register int word_no = 0;
     register word *p, *plim;
 #   ifdef GATHERSTATS
         register int n_words_found = 0;
 #   endif
     
     p = (word *)(hbp->hb_body);
-    word_no = HDR_WORDS;
     plim = (word *)((((word)hbp) + HBLKSIZE)
 		   - WORDS_TO_BYTES(sz));
 
@@ -291,23 +479,22 @@ register word sz;
 	}
 }
 
-#ifndef SMALL_CONFIG
+#if !defined(SMALL_CONFIG) && !defined(USE_MARK_BYTES)
 /*
  * Another special case for 2 word atomic objects:
  */
 /*ARGSUSED*/
-ptr_t GC_reclaim_uninit2(hbp, hhdr, list)
+ptr_t GC_reclaim_uninit2(hbp, hhdr, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 hdr * hhdr;
 register ptr_t list;
+COUNT_DECL
 {
-    register word * mark_word_addr = &(hhdr->hb_marks[divWORDSZ(HDR_WORDS)]);
+    register word * mark_word_addr = &(hhdr->hb_marks[0]);
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
     register word mark_word;
     register int i;
+    NWORDS_DECL
 #   define DO_OBJ(start_displ) \
 	if (!(mark_word & ((word)1 << start_displ))) { \
 	    p[start_displ] = (word)list; \
@@ -330,9 +517,7 @@ register ptr_t list;
 		mark_word >>= 8;
 	    }
 	}	        
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 #   undef DO_OBJ
 }
@@ -341,17 +526,16 @@ register ptr_t list;
  * Another special case for 4 word atomic objects:
  */
 /*ARGSUSED*/
-ptr_t GC_reclaim_uninit4(hbp, hhdr, list)
+ptr_t GC_reclaim_uninit4(hbp, hhdr, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 hdr * hhdr;
 register ptr_t list;
+COUNT_DECL
 {
-    register word * mark_word_addr = &(hhdr->hb_marks[divWORDSZ(HDR_WORDS)]);
+    register word * mark_word_addr = &(hhdr->hb_marks[0]);
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
     register word mark_word;
+    NWORDS_DECL
 #   define DO_OBJ(start_displ) \
 	if (!(mark_word & ((word)1 << start_displ))) { \
 	    p[start_displ] = (word)list; \
@@ -385,27 +569,24 @@ register ptr_t list;
 #	    endif
 	    p += WORDSZ;
 	}	        
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 #   undef DO_OBJ
 }
 
 /* Finally the one word case, which never requires any clearing: */
 /*ARGSUSED*/
-ptr_t GC_reclaim1(hbp, hhdr, list)
+ptr_t GC_reclaim1(hbp, hhdr, list COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 hdr * hhdr;
 register ptr_t list;
+COUNT_DECL
 {
-    register word * mark_word_addr = &(hhdr->hb_marks[divWORDSZ(HDR_WORDS)]);
+    register word * mark_word_addr = &(hhdr->hb_marks[0]);
     register word *p, *plim;
-#   ifdef GATHERSTATS
-        register int n_words_found = 0;
-#   endif
     register word mark_word;
     register int i;
+    NWORDS_DECL
 #   define DO_OBJ(start_displ) \
 	if (!(mark_word & ((word)1 << start_displ))) { \
 	    p[start_displ] = (word)list; \
@@ -428,14 +609,76 @@ register ptr_t list;
 		mark_word >>= 4;
 	    }
 	}	        
-#   ifdef GATHERSTATS
-	GC_mem_found += n_words_found;
-#   endif
+    COUNT_UPDATE
     return(list);
 #   undef DO_OBJ
 }
 
-#endif /* !SMALL_CONFIG */
+#endif /* !SMALL_CONFIG && !USE_MARK_BYTES */
+
+/*
+ * Generic procedure to rebuild a free list in hbp.
+ * Also called directly from GC_malloc_many.
+ */
+ptr_t GC_reclaim_generic(hbp, hhdr, sz, init, list COUNT_PARAM)
+struct hblk *hbp;	/* ptr to current heap block		*/
+hdr * hhdr;
+GC_bool init;
+ptr_t list;
+word sz;
+COUNT_DECL
+{
+    ptr_t result = list;
+
+    GC_ASSERT(GC_find_header((ptr_t)hbp) == hhdr);
+    if (init) {
+      switch(sz) {
+#      if !defined(SMALL_CONFIG) && !defined(USE_MARK_BYTES)
+        case 1:
+	    /* We now issue the hint even if GC_nearly_full returned	*/
+	    /* DONT_KNOW.						*/
+	    GC_write_hint(hbp);
+            result = GC_reclaim1(hbp, hhdr, list COUNT_ARG);
+            break;
+        case 2:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_clear2(hbp, hhdr, list COUNT_ARG);
+            break;
+        case 4:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_clear4(hbp, hhdr, list COUNT_ARG);
+            break;
+#      endif /* !SMALL_CONFIG && !USE_MARK_BYTES */
+        default:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_clear(hbp, hhdr, sz, list COUNT_ARG);
+            break;
+      }
+    } else {
+      switch(sz) {
+#      if !defined(SMALL_CONFIG) && !defined(USE_MARK_BYTES)
+        case 1:
+	    GC_write_hint(hbp);
+            result = GC_reclaim1(hbp, hhdr, list COUNT_ARG);
+            break;
+        case 2:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_uninit2(hbp, hhdr, list COUNT_ARG);
+            break;
+        case 4:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_uninit4(hbp, hhdr, list COUNT_ARG);
+            break;
+#      endif /* !SMALL_CONFIG && !USE_MARK_BYTES */
+        default:
+	    GC_write_hint(hbp);
+            result = GC_reclaim_uninit(hbp, hhdr, sz, list COUNT_ARG);
+            break;
+      }
+    } 
+    if (IS_UNCOLLECTABLE(hhdr -> hb_obj_kind)) GC_set_hdr_marks(hhdr);
+    return result;
+}
 
 /*
  * Restore unmarked small objects in the block pointed to by hbp
@@ -443,62 +686,25 @@ register ptr_t list;
  * If entirely empty blocks are to be completely deallocated, then
  * caller should perform that check.
  */
-void GC_reclaim_small_nonempty_block(hbp, report_if_found)
+void GC_reclaim_small_nonempty_block(hbp, report_if_found COUNT_PARAM)
 register struct hblk *hbp;	/* ptr to current heap block		*/
 int report_if_found;		/* Abort if a reclaimable object is found */
+COUNT_DECL
 {
-    hdr * hhdr;
-    register word sz;		/* size of objects in current block	*/
-    register struct obj_kind * ok;
-    register ptr_t * flh;
-    register int kind;
+    hdr *hhdr = HDR(hbp);
+    word sz = hhdr -> hb_sz;
+    int kind = hhdr -> hb_obj_kind;
+    struct obj_kind * ok = &GC_obj_kinds[kind];
+    ptr_t * flh = &(ok -> ok_freelist[sz]);
     
-    hhdr = HDR(hbp);
-    sz = hhdr -> hb_sz;
     hhdr -> hb_last_reclaimed = (unsigned short) GC_gc_no;
-    kind = hhdr -> hb_obj_kind;
-    ok = &GC_obj_kinds[kind];
-    flh = &(ok -> ok_freelist[sz]);
-    GC_write_hint(hbp);
 
     if (report_if_found) {
 	GC_reclaim_check(hbp, hhdr, sz);
-    } else if (ok -> ok_init) {
-      switch(sz) {
-#      ifndef SMALL_CONFIG
-        case 1:
-            *flh = GC_reclaim1(hbp, hhdr, *flh);
-            break;
-        case 2:
-            *flh = GC_reclaim_clear2(hbp, hhdr, *flh);
-            break;
-        case 4:
-            *flh = GC_reclaim_clear4(hbp, hhdr, *flh);
-            break;
-#      endif
-        default:
-            *flh = GC_reclaim_clear(hbp, hhdr, sz, *flh);
-            break;
-      }
     } else {
-      switch(sz) {
-#      ifndef SMALL_CONFIG
-        case 1:
-            *flh = GC_reclaim1(hbp, hhdr, *flh);
-            break;
-        case 2:
-            *flh = GC_reclaim_uninit2(hbp, hhdr, *flh);
-            break;
-        case 4:
-            *flh = GC_reclaim_uninit4(hbp, hhdr, *flh);
-            break;
-#      endif
-        default:
-            *flh = GC_reclaim_uninit(hbp, hhdr, sz, *flh);
-            break;
-      }
-    } 
-    if (IS_UNCOLLECTABLE(kind)) GC_set_hdr_marks(hhdr);
+        *flh = GC_reclaim_generic(hbp, hhdr, sz, ok -> ok_init,
+	 			  *flh MEM_FOUND_ADDR);
+    }
 }
 
 /*
@@ -509,9 +715,13 @@ int report_if_found;		/* Abort if a reclaimable object is found */
  * If report_if_found is TRUE, then process any block immediately, and
  * simply report free objects; do not actually reclaim them.
  */
-void GC_reclaim_block(hbp, report_if_found)
-register struct hblk *hbp;	/* ptr to current heap block		*/
-word report_if_found;		/* Abort if a reclaimable object is found */
+# if defined(__STDC__) || defined(__cplusplus)
+    void GC_reclaim_block(register struct hblk *hbp, word report_if_found)
+# else
+    void GC_reclaim_block(hbp, report_if_found)
+    register struct hblk *hbp;	/* ptr to current heap block		*/
+    word report_if_found;	/* Abort if a reclaimable object is found */
+# endif
 {
     register hdr * hhdr;
     register word sz;		/* size of objects in current block	*/
@@ -523,10 +733,14 @@ word report_if_found;		/* Abort if a reclaimable object is found */
     ok = &GC_obj_kinds[hhdr -> hb_obj_kind];
 
     if( sz > MAXOBJSZ ) {  /* 1 big object */
-        if( !mark_bit_from_hdr(hhdr, HDR_WORDS) ) {
+        if( !mark_bit_from_hdr(hhdr, 0) ) {
 	    if (report_if_found) {
-	      FOUND_FREE(hbp, HDR_WORDS);
+	      FOUND_FREE(hbp, 0);
 	    } else {
+	      word blocks = OBJ_SZ_TO_BLOCKS(sz);
+	      if (blocks > 1) {
+	        GC_large_allocd_bytes -= blocks * HBLKSIZE;
+	      }
 #	      ifdef GATHERSTATS
 	        GC_mem_found += sz;
 #	      endif
@@ -536,18 +750,23 @@ word report_if_found;		/* Abort if a reclaimable object is found */
     } else {
         GC_bool empty = GC_block_empty(hhdr);
         if (report_if_found) {
-    	  GC_reclaim_small_nonempty_block(hbp, (int)report_if_found);
+    	  GC_reclaim_small_nonempty_block(hbp, (int)report_if_found
+					  MEM_FOUND_ADDR);
         } else if (empty) {
 #	  ifdef GATHERSTATS
             GC_mem_found += BYTES_TO_WORDS(HBLKSIZE);
 #	  endif
           GC_freehblk(hbp);
-        } else {
+        } else if (TRUE != GC_block_nearly_full(hhdr)){
           /* group of smaller objects, enqueue the real work */
           rlh = &(ok -> ok_reclaim_list[sz]);
           hhdr -> hb_next = *rlh;
           *rlh = hbp;
-        }
+        } /* else not worth salvaging. */
+	/* We used to do the nearly_full check later, but we 	*/
+	/* already have the right cache context here.  Also	*/
+	/* doing it here avoids some silly lock contention in	*/
+	/* GC_malloc_many.					*/
     }
 }
 
@@ -557,6 +776,23 @@ word report_if_found;		/* Abort if a reclaimable object is found */
 /* with lock.						*/
 static size_t number_of_blocks;
 static size_t total_bytes;
+
+#ifdef USE_MARK_BYTES
+
+/* Return the number of set mark bits in the given header	*/
+int GC_n_set_marks(hhdr)
+hdr * hhdr;
+{
+    register int result = 0;
+    register int i;
+    
+    for (i = 0; i < MARK_BITS_SZ; i++) {
+        result += hhdr -> hb_marks[i];
+    }
+    return(result);
+}
+
+#else
 
 /* Number of set bits in a word.  Not performance critical.	*/
 static int set_bits(n)
@@ -585,10 +821,16 @@ hdr * hhdr;
     return(result);
 }
 
+#endif /* !USE_MARK_BYTES  */
+
 /*ARGSUSED*/
-void GC_print_block_descr(h, dummy)
-struct hblk *h;
-word dummy;
+# if defined(__STDC__) || defined(__cplusplus)
+    void GC_print_block_descr(struct hblk *h, word dummy)
+# else
+    void GC_print_block_descr(h, dummy)
+    struct hblk *h;
+    word dummy;
+# endif
 {
     register hdr * hhdr = HDR(h);
     register size_t bytes = WORDS_TO_BYTES(hhdr -> hb_sz);
@@ -596,7 +838,7 @@ word dummy;
     GC_printf3("(%lu:%lu,%lu)", (unsigned long)(hhdr -> hb_obj_kind),
     			        (unsigned long)bytes,
     			        (unsigned long)(GC_n_set_marks(hhdr)));
-    bytes += HDR_BYTES + HBLKSIZE-1;
+    bytes += HBLKSIZE-1;
     bytes &= ~(HBLKSIZE-1);
     total_bytes += bytes;
     number_of_blocks++;
@@ -624,6 +866,9 @@ int report_if_found;		/* Abort if a GC_reclaimable object is found */
 {
     int kind;
     
+#   if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC)
+      GC_ASSERT(0 == GC_fl_builder_count);
+#   endif
     /* Clear reclaim- and free-lists */
       for (kind = 0; kind < GC_n_kinds; kind++) {
         register ptr_t *fop;
@@ -654,6 +899,15 @@ int report_if_found;		/* Abort if a GC_reclaimable object is found */
   /* Go through all heap blocks (in hblklist) and reclaim unmarked objects */
   /* or enqueue the block for later processing.				   */
     GC_apply_to_all_blocks(GC_reclaim_block, (word)report_if_found);
+
+# ifdef EAGER_SWEEP
+    /* This is a very stupid thing to do.  We make it possible anyway,	*/
+    /* so that you can convince yourself that it really is very stupid.	*/
+    GC_reclaim_all((GC_stop_func)0, FALSE);
+# endif
+# if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC)
+    GC_ASSERT(0 == GC_fl_builder_count);
+# endif
     
 }
 
@@ -677,7 +931,7 @@ int kind;
     while ((hbp = *rlh) != 0) {
         hhdr = HDR(hbp);
         *rlh = hhdr -> hb_next;
-        GC_reclaim_small_nonempty_block(hbp, FALSE);
+        GC_reclaim_small_nonempty_block(hbp, FALSE MEM_FOUND_ADDR);
         if (*flh != 0) break;
     }
 }
@@ -687,7 +941,7 @@ int kind;
  * Abort and return FALSE when/if (*stop_func)() returns TRUE.
  * If this returns TRUE, then it's safe to restart the world
  * with incorrectly cleared mark bits.
- * If ignore_old is TRUE, then reclain only blocks that have been 
+ * If ignore_old is TRUE, then reclaim only blocks that have been 
  * recently reclaimed, and discard the rest.
  * Stop_func may be 0.
  */
@@ -725,7 +979,7 @@ GC_bool ignore_old;
         	    /* It's likely we'll need it this time, too	*/
         	    /* It's been touched recently, so this	*/
         	    /* shouldn't trigger paging.		*/
-        	    GC_reclaim_small_nonempty_block(hbp, FALSE);
+        	    GC_reclaim_small_nonempty_block(hbp, FALSE MEM_FOUND_ADDR);
         	}
             }
         }

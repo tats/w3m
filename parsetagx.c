@@ -1,3 +1,6 @@
+#ifdef __EMX__
+#include <strings.h>        /* for bzero() */
+#endif                /* __EMX__ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -98,8 +101,7 @@ parse_tag(char **s, int internal)
 {
     struct parsed_tag *tag = NULL;
     int tag_id;
-    char *tagname = NewAtom_N(char, MAX_TAG_LEN),
-	 attrname[MAX_TAG_LEN];
+    char tagname[MAX_TAG_LEN], attrname[MAX_TAG_LEN];
     char *p, *q;
     int i, attr_id, nattr;
 
@@ -125,7 +127,6 @@ parse_tag(char **s, int internal)
     tag = New(struct parsed_tag);
     bzero(tag, sizeof(struct parsed_tag));
     tag->tagid = tag_id;
-    tag->tagname = tagname;
 
     if ((nattr = TagMAP[tag_id].max_attribute) > 0) {
 	tag->attrid = NewAtom_N(unsigned char, nattr);
@@ -164,7 +165,7 @@ parse_tag(char **s, int internal)
 		while (*q && *q != '"') {
 		    if (*q != '\n')
 			Strcat_char(value, *q);
-		    if (!tag->need_reconstruct && htmlquote_char(*q))
+		    if (!tag->need_reconstruct && html_quote_char(*q))
 			tag->need_reconstruct = TRUE;
 		    q++;
 		}
@@ -176,7 +177,7 @@ parse_tag(char **s, int internal)
 		while (*q && *q != '\'') {
 		    if (*q != '\n')
 			Strcat_char(value, *q);
-		    if (!tag->need_reconstruct && htmlquote_char(*q))
+		    if (!tag->need_reconstruct && html_quote_char(*q))
 			tag->need_reconstruct = TRUE;
 		    q++;
 		}
@@ -206,7 +207,7 @@ parse_tag(char **s, int internal)
 	    }
 	    tag->attrid[i] = attr_id;
 	    if (value)
-		tag->value[i] = cleanup_str(value->ptr);
+		tag->value[i] = html_unquote(value->ptr);
 	    else
 		tag->value[i] = NULL;
 	}
@@ -258,14 +259,14 @@ parsedtag2str(struct parsed_tag *tag)
     int nattr = TagMAP[tag_id].max_attribute;
     Str tagstr = Strnew();
     Strcat_char(tagstr, '<');
-    Strcat_charp(tagstr, tag->tagname);
+    Strcat_charp(tagstr, TagMAP[tag_id].name);
     for (i = 0; i < nattr; i++) {
 	if (tag->attrid[i] != ATTR_UNKNOWN) {
 	    Strcat_char(tagstr, ' ');
 	    Strcat_charp(tagstr, AttrMAP[tag->attrid[i]].name);
 	    if (tag->value[i])
 		Strcat(tagstr,
-		       Sprintf("=\"%s\"", htmlquote_str(tag->value[i])));
+		       Sprintf("=\"%s\"", html_quote(tag->value[i])));
 	}
     }
     Strcat_char(tagstr, '>');

@@ -24,6 +24,8 @@ initKeymap(void)
     int c;
     int f;
     int lineno;
+    int verbose = 1;
+    extern int str_to_bool(char *value, int old);
 
     if (!w3mNFuncList)
 	w3mNFuncList = countFuncList(w3mFuncList);
@@ -43,36 +45,46 @@ initKeymap(void)
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
 	    continue;
-	if (strcmp(s, "keymap")) {	/* error */
-	    emsg = Sprintf("line %d: keymap not found\n", lineno)->ptr;
+       if (! strcmp(s, "keymap"))
+           ;
+       else if (! strcmp(s, "verbose")) {
+           s = getWord(&p);
+           if (*s)
+               verbose = str_to_bool(s, verbose);
+           continue;
+       } else {                /* error */
+           emsg = Sprintf("line %d: syntax error '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+           if (verbose)
+               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	    continue;
 	}
 	s = getQWord(&p);
 	c = getKey(s);
 	if (c < 0) {		/* error */
-	    emsg = Sprintf("line %d: unknown key '%s'\n", lineno, s)->ptr;
+           emsg = Sprintf("line %d: unknown key '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+           if (verbose)
+               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	    continue;
 	}
 	s = getWord(&p);
 	f = getFuncList(s, w3mFuncList, w3mNFuncList);
 	if (f < 0) {
-	    emsg = Sprintf("line %d: invalid command '%s'\n", lineno, s)->ptr;
+           emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
-	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
-	    f = FUNCNAME_nulcmd;
+           if (verbose)
+               disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+           continue;
 	}
 	if (c & K_ESCD)
-	    EscDKeymap[c ^ K_ESCD] = (f >= 0) ? f : FUNCNAME_nulcmd;
+           EscDKeymap[c ^ K_ESCD] = f;
 	else if (c & K_ESCB)
-	    EscBKeymap[c ^ K_ESCB] = (f >= 0) ? f : FUNCNAME_nulcmd;
+           EscBKeymap[c ^ K_ESCB] = f;
 	else if (c & K_ESC)
-	    EscKeymap[c ^ K_ESC] = (f >= 0) ? f : FUNCNAME_nulcmd;
+           EscKeymap[c ^ K_ESC] = f;
 	else
-	    GlobalKeymap[c] = (f >= 0) ? f : FUNCNAME_nulcmd;
+           GlobalKeymap[c] = f;
 	s = getQWord(&p);
 	addKeyList(&w3mKeyList, c, s);
     }

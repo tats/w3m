@@ -6,7 +6,9 @@
 #define MYCTYPE_ALPHA 4
 #define MYCTYPE_DIGIT 8
 #define MYCTYPE_PRINT 16
+#define MYCTYPE_HEX   32
 #define MYCTYPE_ALNUM (MYCTYPE_ALPHA|MYCTYPE_DIGIT)
+#define MYCTYPE_XDIGIT (MYCTYPE_HEX|MYCTYPE_DIGIT)
 
 #define GET_MYCTYPE(x) (MYCTYPE_MAP[(int)(unsigned char)(x)])
 
@@ -16,6 +18,7 @@
 #define IS_DIGIT(x) (GET_MYCTYPE(x) & MYCTYPE_DIGIT)
 #define IS_PRINT(x) (GET_MYCTYPE(x) & MYCTYPE_PRINT)
 #define IS_ALNUM(x) (GET_MYCTYPE(x) & MYCTYPE_ALNUM)
+#define IS_XDIGIT(x) (GET_MYCTYPE(x) & MYCTYPE_XDIGIT)
 
 extern unsigned char MYCTYPE_MAP[];
 

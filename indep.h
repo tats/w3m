@@ -14,25 +14,30 @@
 #define HTML_MODE	1
 #define HEADER_MODE	2
 
-extern char *conv_latin1(int ch);
+extern char *conv_entity(int ch);
 extern int getescapechar(char **s);
 extern char *getescapecmd(char **s);
 extern char *allocStr(const char *s, int len);
 extern int strCmp(const void *s1, const void *s2);
-extern void copydicname(char *s, char *fn);
 extern char *currentdir(void);
-extern char *cleanupName(char *name);
+extern char *cleanupName2(char *name, int flag);
+#define cleanupName(name) cleanupName2((name), TRUE)
+extern char *expandPath(char *name);
 extern char *strcasestr(char *s1, char *s2);
 extern int strcasemstr(char *str, char *srch[], char **ret_ptr);
-extern char *cleanup_str(char *s);
 extern char *remove_space(char *str);
-extern char *htmlquote_char(char c);
-extern char *htmlquote_str(char *str);
-extern Str form_quote(Str x);
-extern Str form_unquote(Str x);
-extern char *expandPath(char *name);
 extern int non_null(char *s);
 extern void cleanup_line(Str s, int mode);
+extern char *html_quote_char(char c);
+extern char *html_quote(char *str);
+extern char *html_unquote(char *str);
+extern char *file_quote(char *str);
+extern char *file_unquote(char *str);
+extern char *url_quote(char *str);
+extern char *url_unquote(char *str);
+extern Str Str_form_quote(Str x);
+extern Str Str_form_unquote(Str x);
+extern char *shell_quote(char *str);
 
 #define New(type)	((type*)GC_MALLOC(sizeof(type)))
 #define NewAtom(type)	((type*)GC_MALLOC_ATOMIC(sizeof(type)))

@@ -16,7 +16,7 @@
 char GlobalKeymap[128] =
 {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
-    _mark,  goLineF,backBf, nulcmd, nulcmd, goLineL,followA,nulcmd,
+    _mark,  goLineF,backBf, nulcmd, nulcmd, goLineL,followA,curlno,
 /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
     ldHist, nextA, followA, cooLst, rdrwSc, followA, nextA, nulcmd,
 /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
@@ -44,7 +44,7 @@ char GlobalKeymap[128] =
 /*  h       i       j       k       l       m       n       o        */
     movL,   peekIMG,movD,   movU,   movR,   nulcmd, srchnxt,ldOpt,
 /*  p       q       r       s       t       u       v       w        */
-    svBuf,  qquitfm,nulcmd, selBuf, nulcmd, peekURL,ldBmark,wrapToggle,
+    svBuf,  qquitfm,nulcmd, selMn,  nulcmd, peekURL,ldBmark,wrapToggle,
 /*  x       y       z       {       |       }       ~       DEL      */
     nulcmd, nulcmd, ctrCsrV,nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
@@ -70,7 +70,7 @@ char EscKeymap[128] =
 /*  @       A       B       C       D       E       F       G        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 /*  H       I       J       K       L       M       N       O        */
-    nulcmd, svI,    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, escbmap,
+    nulcmd, svI,    nulcmd, nulcmd, nulcmd, linkbrz,nulcmd, escbmap,
 /*  P       Q       R       S       T       U       V       W        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 /*  X       Y       Z       [       \       ]       ^       _        */

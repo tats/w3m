@@ -12,9 +12,10 @@
 
 keymap	C-@	MARK
 keymap	C-a	BEGIN
-keymap	C-b	PREV_PAGE
+keymap	C-b	BACK
 keymap	C-e	END
-keymap	C-f	NEXT_PAGE
+keymap	C-f	GOTO_LINK
+keymap	C-g	LINE_INFO
 keymap	C-h	HISTORY
 keymap	TAB	NEXT_LINK
 keymap	C-j	GOTO_LINK
@@ -51,6 +52,7 @@ keymap	H	HELP
 keymap	I	VIEW_IMAGE
 keymap	J	UP
 keymap	K	DOWN
+keymap	M	EXTERN
 keymap	N	NEXT_MARK
 keymap	P	PREV_MARK
 keymap	Q	EXIT
@@ -64,7 +66,7 @@ keymap	\^	LINE_BEGIN
 keymap	a	ADD_BOOKMARK
 keymap	b	PREV_PAGE
 keymap	c	PEEK
-keymap	d	SAVE
+keymap	d	SAVE_LINK
 keymap	g	GOTO
 keymap	h	MOVE_LEFT
 keymap	i	PEEK_IMG
@@ -75,9 +77,10 @@ keymap	n	SEARCH_NEXT
 keymap	o	OPTIONS
 keymap	p	SAVE_SCREEN
 keymap	q	QUIT
-keymap	s	SELECT
+keymap s       SELECT_MENU
 keymap	u	PEEK_LINK
 keymap	v	BOOKMARK
+keymap	w	WRAP_TOGGLE
 keymap	z	CENTER_V
 
 keymap	M-TAB	PREV_LINK
@@ -86,6 +89,7 @@ keymap	M-C-m	SAVE_LINK
 
 keymap	M-:	MARK_MID
 keymap	M-I	SAVE_IMAGE
+keymap	M-M	EXTERN_LINK
 keymap	M-a	ADD_BOOKMARK
 keymap	M-b	BOOKMARK
 keymap	M-e	EDIT_SCREEN

@@ -18,7 +18,7 @@ used as a text-mode WWW browser.
 
 Current problems are:
 
-* Resize behaviour is imcomplete.
+* Resize behaviour is incomplete.
 * It can't show images inline. (It seems to be impossible as far as using
   xterm)
 * It doesn't decode MIME-body of the document.

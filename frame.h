@@ -21,6 +21,7 @@ struct frame_body {
     char *url;
     ParsedURL *baseURL;
     char *source;
+    char *type;
     char *referer;
     struct _anchorList *nameList;
     FormList *request;
@@ -50,7 +51,10 @@ struct frameset_queue {
     struct frameset_queue *back;
     struct frameset *frameset;
     long linenumber;
+    long top_linenumber;
     short pos;
+    short currentColumn;
+    struct _anchorList *formitem;
 };
 
 extern struct frameset *renderFrameSet;

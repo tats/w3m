@@ -96,9 +96,9 @@ printMailcapPanel(char *mailcap)
 	    continue;
 	Strchop(tmp);
 	extractMailcapEntry(tmp->ptr, &type, &viewer);
-	printf("<tr valign=top><td><td>%s<td>%s<td>", htmlquote_str(type), htmlquote_str(viewer));
+	printf("<tr valign=top><td><td>%s<td>%s<td>", html_quote(type), html_quote(viewer));
 	printf("<input type=checkbox name=delete value=\"%s\">%s\n",
-	       htmlquote_str(type), MSG_DELETE);
+	       html_quote(type), MSG_DELETE);
     }
     printf("</table><input type=submit name=submit value=\"%s\"></form></body></html>\n",
 	   MSG_DOIT);

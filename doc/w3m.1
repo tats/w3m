@@ -65,11 +65,17 @@ EUC-JP
 .B -B
 load bookmark
 .TP
+.B -bookmark file
+specify bookmark file
+.TP
 .B -T type
 specify content-type
 .TP
 .B -m
 internet message mode
+.TP
+.B -v
+visual startup mode
 .TP
 .B -M
 monochrome display
@@ -90,8 +96,50 @@ Larger values will make tables narrower.
 .B -dump_source
 dump page source into stdout
 .TP
+.B -dump_head
+dump response of HEAD request into stdout
+.TP
+.B -dump_both
+dump HEAD and source into stdout
+.TP
+.B -dump_extra
+dump HEAD, source, and extra information into stdout
+.TP
+.B -post file
+use POST method with file content
+.TP
+.B -header string
+insert string as a header
+.TP
 .B +<num>
 goto <num> line
+.TP
+.B -num
+show line number
+.TP
+.B -no-proxy
+don't use proxy
+.TP
+.B -no-mouse
+don't use mouse
+.TP
+.B -pauth user:pass
+proxy authentication
+.TP
+.B -S
+squeeze multiple blank lines
+.TP
+.B -W
+toggle wrap search mode
+.TP
+.B -X
+don't use termcap init/deinit
+.TP
+.B -o opt=value
+assign value to config option
+.TP
+.B -config file
+specify config file
 .TP
 .B -debug
 DO NOT USE
@@ -113,7 +161,7 @@ $ cat foo.html | w3m -dump -T text/html >foo.txt
 This is the
 .I
 w3m
-990604 Release.
+0.2.1 Release.
 .PP
 Additional information about
 .I

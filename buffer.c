@@ -96,9 +96,11 @@ discardBuffer(Buffer * buf)
 	if (buf->real_scheme != SCM_LOCAL || buf->bufferprop & BP_FRAME)
 	    unlink(buf->sourcefile);
     }
+    if (buf->mailcap_source)
+	unlink(buf->mailcap_source);
     while (buf->frameset) {
 	deleteFrameSet(buf->frameset);
-	buf->frameset = popFrameTree(&(buf->frameQ), NULL, NULL);
+       buf->frameset = popFrameTree(&(buf->frameQ));
     }
 }
 
@@ -202,7 +204,7 @@ writeBufferName(Buffer * buf, int n)
 	case SCM_LOCAL_CGI:
 	    if (strcmp(buf->currentURL.file, "-")) {
 		Strcat_char(msg, ' ');
-		Strcat_charp(msg, buf->filename);
+		Strcat_charp(msg, conv_from_system(buf->currentURL.real_file));
 	    }
 	    break;
 	case SCM_UNKNOWN:
@@ -476,7 +478,6 @@ selectBuffer(Buffer * firstbuf, Buffer * currentbuf, char *selectchar)
     }
 }
 
-
 /* 
  * Reshape HTML buffer
  */
@@ -487,8 +488,10 @@ reshapeBuffer(Buffer * buf)
     int top, linenum, cursorY, pos, currentColumn;
     AnchorList *formitem;
 
+    if (buf->sourcefile == NULL)
+       return;
     init_stream(&f, SCM_LOCAL, NULL);
-    examineFile(buf->sourcefile, &f);
+    examineFile(buf->mailcap_source ? buf->mailcap_source : buf->sourcefile, &f);
     if (f.stream == NULL)
         return;
 
@@ -505,7 +508,7 @@ reshapeBuffer(Buffer * buf)
     clearBuffer(buf);
     while (buf->frameset) {
 	deleteFrameSet(buf->frameset);
-	buf->frameset = popFrameTree(&(buf->frameQ), NULL, NULL);
+       buf->frameset = popFrameTree(&(buf->frameQ));
     }
 
     formitem = buf->formitem;
@@ -515,12 +518,20 @@ reshapeBuffer(Buffer * buf)
     buf->formitem = NULL;
     buf->width = INIT_BUFFER_WIDTH;
 
-    loadHTMLstream(&f, buf, NULL, FALSE);
+#ifdef JP_CHARSET
+    UseContentCharset = FALSE;
+    UseAutoDetect = FALSE;
+#endif
+    if (! strcasecmp(buf->type, "text/html"))
+       loadHTMLBuffer(&f, buf);
+    else
+       loadBuffer(&f, buf);
     UFclose(&f);
+#ifdef JP_CHARSET
+    UseContentCharset = TRUE;
+    UseAutoDetect = TRUE;
+#endif
 
-    buf->topLine = buf->firstLine;
-    buf->lastLine = buf->currentLine;
-    buf->currentLine = buf->firstLine;
     buf->height = LASTLINE + 1;
     buf->topLine = lineSkip(buf, buf->topLine, top - 1, FALSE);
     gotoLine(buf, linenum);
@@ -651,16 +662,16 @@ readBufferCache(Buffer *buf)
 	    fread1(l->width, cache) ||
 	    fread1(l->len, cache))
 	    break;
-	l->lineBuf = New_N(char, l->len + 1);
+	l->lineBuf = NewAtom_N(char, l->len + 1);
 	fread(l->lineBuf, 1, l->len, cache);
 	l->lineBuf[l->len] = '\0';
-	l->propBuf = New_N(Lineprop, l->len);
+	l->propBuf = NewAtom_N(Lineprop, l->len);
 	fread(l->propBuf, sizeof(Lineprop), l->len, cache);
 #ifdef ANSI_COLOR
 	if (fread1(colorflag, cache))
 	    break;
 	if (colorflag) {
-	    l->colorBuf = New_N(Linecolor, l->len);
+	    l->colorBuf = NewAtom_N(Linecolor, l->len);
 	    fread(l->colorBuf, sizeof(Linecolor), l->len, cache);
 	} else {
 	    l->colorBuf = NULL;

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.1 2001/11/08 05:15:00 a-ito Exp $ */
+/* $Id: html.h,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -36,6 +36,7 @@ struct mailcap {
 
 #define MCSTAT_REPNAME          0x01
 #define MCSTAT_REPTYPE          0x02
+#define MCSTAT_REPPARAM         0x04
 
 struct table2 {
     char *item1;
@@ -54,6 +55,7 @@ typedef struct _ParsedURL {
     char *host;
     int port;
     char *file;
+    char *real_file;
     char *label;
     int is_nocache;
 } ParsedURL;
@@ -77,6 +79,7 @@ typedef struct {
 #define ENC_7BIT	0
 #define ENC_BASE64	1
 #define ENC_QUOTE	2
+#define ENC_UUENCODE	3
 
 #define HTML_UNKNOWN	0
 #define HTML_A		1
@@ -242,8 +245,11 @@ typedef struct {
 #define ATTR_START		40
 #define ATTR_SELECTED		41
 #define ATTR_LABEL		42
+#define ATTR_READONLY        43
 
 /* Internal attribute */
+#define ATTR_TOP_MARGIN        51
+#define ATTR_BOTTOM_MARGIN      52
 #define ATTR_TID		53
 #define ATTR_FID		54
 #define ATTR_FOR_TABLE		55
@@ -261,6 +267,7 @@ typedef struct {
 /* HTML Tag Information Table */
 
 typedef struct html_tag_info {
+    char 		*name;
     unsigned char 	*accept_attribute;
     unsigned char 	max_attribute;
     unsigned char 	flag;

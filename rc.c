@@ -60,9 +60,11 @@ static int rc_initialized = 0;
 #define CMT_SAVEHIST     "URL履歴の保存"
 #define CMT_KANJICODE    "表示用漢字コード"
 #define CMT_FRAME        "フレームの自動表示"
+#define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
 #define CMT_DISPLINK     "リンク先の自動表示"
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
+#define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
 #define CMT_A_COLOR      "アンカーの色"
@@ -80,6 +82,7 @@ static int rc_initialized = 0;
 #define CMT_FTP_PROXY    "FTPプロキシ(URLで入力)"
 #define CMT_NO_PROXY     "プロキシから除外するドメイン"
 #define CMT_NOPROXY_NETADDR	"ネットワークアドレスでプロキシ除外のチェック"
+#define CMT_NO_CACHE     "Cache を使わない"
 #define CMT_DNS_ORDER	"名前解決の順序"
 #define CMT_DROOT        "/ で表されるディレクトリ(document root)"
 #define CMT_PDROOT       "/~user で表されるディレクトリ"
@@ -97,6 +100,7 @@ static int rc_initialized = 0;
 #define CMT_USERAGENT    "User-Agent"
 #define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
 #define CMT_DOCUMENTCODE "文書の文字コード"
+#define CMT_SYSTEMCODE   "システムの文字コード"
 #define CMT_WRAP         "折り返し検索"
 #define CMT_VIEW_UNSEENOBJECTS "背景画像等へのリンクを作る"
 #ifdef __EMX__
@@ -109,6 +113,7 @@ static int rc_initialized = 0;
 #define CMT_IGNORE_NULL_IMG_ALT "空のIMG ALT属性の時にリンク名を表示する"
 #define CMT_IFILE        "各ディレクトリのインデックスファイル"
 #define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
+#define CMT_DECODE_CTE   "保存時に Content-Transfer-Encoding をデコードする"
 #ifdef MOUSE
 #define CMT_MOUSE         "マウスを使う"
 #define CMT_REVERSE_MOUSE "マウスのドラッグ動作を逆にする"
@@ -136,6 +141,7 @@ static int rc_initialized = 0;
 #define CMT_COOKIE_ACCEPT_DOMAINS "クッキーを受け付けるドメイン"
 #endif
 
+#define CMT_FOLLOW_REDIRECTION "従うリダイレクトの回数"
 
 #else				/* LANG != JA */
 
@@ -148,9 +154,11 @@ static int rc_initialized = 0;
 #define CMT_SAVEHIST     "Save URL history"
 /* #define CMT_KANJICODE    "Display Kanji Code" */
 #define CMT_FRAME        "Automatic rendering of frame"
+#define CMT_ARGV_IS_URL  "Force argument without scheme to URL"
 #define CMT_TSELF        "use _self as default target"
 #define CMT_DISPLINK     "Automatic display of link URL"
 #define CMT_MULTICOL     "Multi-column output of file names"
+#define CMT_ALT_ENTITY   "Use alternate expression with ASCII for entity"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
 #define CMT_A_COLOR      "Color of anchor"
@@ -168,6 +176,7 @@ static int rc_initialized = 0;
 #define CMT_FTP_PROXY    "URL of FTP proxy host"
 #define CMT_NO_PROXY     "Domains for direct access (no proxy)"
 #define CMT_NOPROXY_NETADDR	"Check noproxy by network address"
+#define CMT_NO_CACHE     "Don't use cache"
 #define CMT_DNS_ORDER	"Order of name resolution"
 #define CMT_DROOT        "Directory corresponds to / (document root)"
 #define CMT_PDROOT       "Directory corresponds to /~user"
@@ -185,6 +194,7 @@ static int rc_initialized = 0;
 #define CMT_USERAGENT    "User-Agent"
 #define CMT_ACCEPTLANG   "Accept-Language"
 /* #define CMT_DOCUMENTCODE "Document Charset" */
+/* #define CMT_SYSTEMCODE   "System Kanji Code" */
 #define CMT_WRAP         "Wrap search"
 #define CMT_VIEW_UNSEENOBJECTS "Display unseenobjects (e.g. bgimage) tag"
 #ifdef __EMX__
@@ -197,6 +207,7 @@ static int rc_initialized = 0;
 #define CMT_IGNORE_NULL_IMG_ALT	"Ignore IMG ALT=\"\" (display link name)"
 #define CMT_IFILE        "Index file for the directory"
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
+#define CMT_DECODE_CTE   "Decode Content-Transfer-Encoding when saving"
 #ifdef MOUSE
 #define CMT_MOUSE         "Use mouse"
 #define CMT_REVERSE_MOUSE "Reverse mouse dragging action"
@@ -223,6 +234,7 @@ static int rc_initialized = 0;
 #define CMT_COOKIE_REJECT_DOMAINS "Domains from which should reject cookies"
 #define CMT_COOKIE_ACCEPT_DOMAINS "Domains from which should accept cookies"
 #endif
+#define CMT_FOLLOW_REDIRECTION "Follow this number of redirections"
 #endif				/* LANG != JA */
 
 #define PI_TEXT    0
@@ -253,6 +265,13 @@ static struct sel_c dcodestr[] =
     {CODE_EUC,       "E", STR_EUC},
     {CODE_SJIS,      "S", STR_SJIS},
     {CODE_INNER_EUC, "I", STR_INNER_EUC},
+    {0, NULL, NULL}
+};
+
+static struct sel_c scodestr[] =
+{
+    {CODE_EUC,       "E", STR_EUC},
+    {CODE_SJIS,      "S", STR_SJIS},
     {0, NULL, NULL}
 };
 #endif				/* JP_CHARSET */
@@ -313,14 +332,21 @@ struct param_ptr params1[] =
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *) &pixel_per_char, CMT_PIXEL_PER_CHAR, NULL},
 #ifdef JP_CHARSET
     {"kanjicode", P_CODE, PI_SEL_C, (void *) &DisplayCode, CMT_KANJICODE, kcodestr},
+    {"document_code", P_CODE, PI_SEL_C, (void *) &DocumentCode, CMT_DOCUMENTCODE, dcodestr},
+    {"system_code", P_CODE, PI_SEL_C, (void *) &SystemCode, CMT_SYSTEMCODE, scodestr},
 #endif				/* JP_CHARSET */
-  {"frame", P_CHARINT, PI_ONOFF, (void *) &RenderFrame, CMT_FRAME, NULL},
+    {"frame", P_CHARINT, PI_ONOFF, (void *) &RenderFrame, CMT_FRAME, NULL},
     {"target_self", P_CHARINT, PI_ONOFF, (void *) &TargetSelf, CMT_TSELF, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *) &displayLink, CMT_DISPLINK, NULL},
     {"ext_dirlist", P_INT, PI_ONOFF, (void *) &UseExternalDirBuffer, CMT_EXT_DIRLIST, NULL},
     {"dirlist_cmd", P_STRING, PI_TEXT, (void *) &DirBufferCommand, CMT_DIRLIST_CMD, NULL},
-{"multicol", P_INT, PI_ONOFF, (void *) &multicolList, CMT_MULTICOL, NULL},
+    {"multicol", P_INT, PI_ONOFF, (void *) &multicolList, CMT_MULTICOL, NULL},
+    {"alt_entity", P_CHARINT, PI_ONOFF, (void *) &UseAltEntity, CMT_ALT_ENTITY, NULL},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *) &ignore_null_img_alt, CMT_IGNORE_NULL_IMG_ALT, NULL},
+#ifdef VIEW_UNSEENOBJECTS
+    {"view_unseenobject", P_INT, PI_ONOFF, (void *) &view_unseenobject, CMT_VIEW_UNSEENOBJECTS, NULL},
+#endif				/* VIEW_UNSEENOBJECTS */
+    {"show_lnum", P_INT, PI_ONOFF, (void *) &showLineNum, CMT_SHOW_NUM, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -346,34 +372,20 @@ struct param_ptr params2[] =
 
 struct param_ptr params3[] =
 {
-  {"pagerline", P_INT, PI_TEXT, (void *) &PagerMax, CMT_PAGERLINE, NULL},
+    {"pagerline", P_INT, PI_TEXT, (void *) &PagerMax, CMT_PAGERLINE, NULL},
 #ifdef USE_HISTORY
-  {"history", P_INT, PI_TEXT, (void *) &URLHistSize, CMT_HISTSIZE, NULL},
-{"save_hist", P_INT, PI_ONOFF, (void *) &SaveURLHist, CMT_SAVEHIST, NULL},
+    {"history", P_INT, PI_TEXT, (void *) &URLHistSize, CMT_HISTSIZE, NULL},
+    {"save_hist", P_INT, PI_ONOFF, (void *) &SaveURLHist, CMT_SAVEHIST, NULL},
 #endif				/* USE_HISTORY */
     {"confirm_qq", P_INT, PI_ONOFF, (void *) &confirm_on_quit, CMT_CONFIRM_QQ, NULL},
-{"show_lnum", P_INT, PI_ONOFF, (void *) &showLineNum, CMT_SHOW_NUM, NULL},
-{"ftppasswd", P_STRING, PI_TEXT, (void *) &ftppasswd, CMT_FTPPASS, NULL},
-    {"user_agent", P_STRING, PI_TEXT, (void *) &UserAgent, CMT_USERAGENT, NULL},
-    {"no_referer", P_INT, PI_ONOFF, (void *) &NoSendReferer, CMT_NOSENDREFERER, NULL},
-    {"accept_language", P_STRING, PI_TEXT, (void *) &AcceptLang, CMT_ACCEPTLANG, NULL},
-#ifdef JP_CHARSET
-    {"document_code", P_CODE, PI_SEL_C, (void *) &DocumentCode, CMT_DOCUMENTCODE, dcodestr},
-#endif
- {"wrap_search", P_INT, PI_ONOFF, (void *) &WrapDefault, CMT_WRAP, NULL},
- {"ignorecase_search", P_INT, PI_ONOFF, (void *) &IgnoreCase, CMT_IGNORE_CASE, NULL},
-#ifdef VIEW_UNSEENOBJECTS
-    {"view_unseenobject", P_INT, PI_ONOFF, (void *) &view_unseenobject, CMT_VIEW_UNSEENOBJECTS, NULL},
-#endif				/* VIEW_UNSEENOBJECTS */
+    {"wrap_search", P_INT, PI_ONOFF, (void *) &WrapDefault, CMT_WRAP, NULL},
+    {"ignorecase_search", P_INT, PI_ONOFF, (void *) &IgnoreCase, CMT_IGNORE_CASE, NULL},
 #ifdef MOUSE
     {"use_mouse", P_INT, PI_ONOFF, (void *) &use_mouse, CMT_MOUSE, NULL},
     {"reverse_mouse", P_INT, PI_ONOFF, (void *) &reverse_mouse, CMT_REVERSE_MOUSE, NULL},
 #endif				/* MOUSE */
-    {"retry_http", P_INT, PI_ONOFF, (void *) &retryAsHttp, CMT_RETRY_HTTP, NULL},
     {"clear_buffer", P_INT, PI_ONOFF, (void *) &clear_buffer, CMT_CLEAR_BUF, NULL},
-#ifdef USE_SSL
-    {"ssl_forbid_method", P_STRING, PI_TEXT, (void *) &ssl_forbid_method, CMT_SSL_FORBID_METHOD, NULL},
-#endif				/* USE_SSL */
+    {"decode_cte", P_CHARINT, PI_ONOFF, (void *) &DecodeCTE, CMT_DECODE_CTE, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -386,9 +398,8 @@ struct param_ptr params4[] =
     {"ftp_proxy", P_STRING, PI_TEXT, (void *) &FTP_proxy, CMT_FTP_PROXY, NULL},
     {"no_proxy", P_STRING, PI_TEXT, (void *) &NO_proxy, CMT_NO_PROXY, NULL},
     {"noproxy_netaddr", P_INT, PI_ONOFF, (void *) &NOproxy_netaddr, CMT_NOPROXY_NETADDR, NULL},
-#ifdef INET6
-    {"dns_order", P_INT, PI_SEL_C, (void *) &DNS_order, CMT_DNS_ORDER, dnsorders},
-#endif				/* INET6 */
+    {"no_cache", P_CHARINT, PI_ONOFF, (void *) &NoCache, CMT_NO_CACHE, NULL},
+
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -439,6 +450,23 @@ struct param_ptr params8[] =
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif
+struct param_ptr params9[] =
+{
+    {"ftppasswd", P_STRING, PI_TEXT, (void *) &ftppasswd, CMT_FTPPASS, NULL},
+    {"user_agent", P_STRING, PI_TEXT, (void *) &UserAgent, CMT_USERAGENT, NULL},
+    {"no_referer", P_INT, PI_ONOFF, (void *) &NoSendReferer, CMT_NOSENDREFERER, NULL},
+    {"accept_language", P_STRING, PI_TEXT, (void *) &AcceptLang, CMT_ACCEPTLANG, NULL},
+    {"argv_is_url", P_CHARINT, PI_ONOFF, (void *) &ArgvIsURL, CMT_ARGV_IS_URL, NULL},
+    {"retry_http", P_INT, PI_ONOFF, (void *) &retryAsHttp, CMT_RETRY_HTTP, NULL},
+    {"follow_redirection", P_INT, PI_TEXT, &FollowRedirection, CMT_FOLLOW_REDIRECTION, NULL},
+#ifdef USE_SSL
+    {"ssl_forbid_method", P_STRING, PI_TEXT, (void *) &ssl_forbid_method, CMT_SSL_FORBID_METHOD, NULL},
+#endif				/* USE_SSL */
+#ifdef INET6
+    {"dns_order", P_INT, PI_SEL_C, (void *) &DNS_order, CMT_DNS_ORDER, dnsorders},
+#endif				/* INET6 */
+    {NULL, 0, 0, NULL, NULL, NULL},
+};
 
 struct param_section sections[] =
 {
@@ -447,17 +475,15 @@ struct param_section sections[] =
 #ifdef COLOR
     {"表示色", params2},
 #endif				/* COLOR */
-    {"その他の設定", params3},
-    {"プロキシの設定", params4},
+    {"雑多な設定", params3},
     {"ディレクトリ設定", params5},
     {"外部プログラム", params6},
+    {"ネットワークの設定", params9},
+    {"プロキシの設定", params4},
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
     {"SSL認証設定", params7},
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
-#ifdef USE_SSL
-#define CMT_SSL_FORBID_METHOD "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t:TLSv1)"
-#endif
 #ifdef USE_COOKIE
     {"クッキーの設定", params8},
 #endif
@@ -466,23 +492,23 @@ struct param_section sections[] =
 #ifdef COLOR
     {"Color Setting", params2},
 #endif				/* COLOR */
-    {"Other Behavior", params3},
-    {"Proxy Setting", params4},
+    {"Miscellaneous Setting", params3},
     {"Directory Setting", params5},
     {"External Programs", params6},
+    {"Network Setting", params9},
+    {"Proxy Setting", params4},
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
     {"SSL Verification Setting", params7},
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
-#ifdef USE_SSL
-#define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL method (2: SSLv2, 3: SSLv3, t:TLSv1)")
-#endif
 #ifdef USE_COOKIE
     {"Cookie Setting", params8},
 #endif
 #endif				/* LANG != JA */
     {NULL, NULL}
 };
+
+static Str to_str(struct param_ptr *p);
 
 static int
 compare_table(struct rc_search_table *a, struct rc_search_table *b)
@@ -646,8 +672,8 @@ show_params(FILE * fp)
 }
 #endif
 
-static int
-str_to_bool(char *value)
+int
+str_to_bool(char *value, int old)
 {
     if (value == NULL)
 	return 1;
@@ -657,6 +683,18 @@ str_to_bool(char *value)
     case 'n':			/* no */
     case 'u':			/* undef */
 	return 0;
+    case 'o':
+       if (tolower(value[1]) == 'f')    /* off */
+           return 0;
+       return 1;        /* on */
+    case 't':
+       if (tolower(value[1]) == 'o')    /* toggle */
+           return ! old;
+       return 1;        /* true */
+    case '!':
+    case 'r':            /* reverse */
+    case 'x':            /* exchange */
+       return ! old;
     }
     return 1;
 }
@@ -774,13 +812,16 @@ set_param(char *name, char *value)
 	return 0;
     switch (p->type) {
     case P_INT:
-	*(int *) p->varptr = (p->inputtype == PI_ONOFF) ? str_to_bool(value) : atoi(value);
+       *(int *) p->varptr = (p->inputtype == PI_ONOFF)
+        ? str_to_bool(value, *(int *) p->varptr) : atoi(value);
 	break;
     case P_SHORT:
-	*(short *) p->varptr = (p->inputtype == PI_ONOFF) ? str_to_bool(value) : atoi(value);
+       *(short *) p->varptr = (p->inputtype == PI_ONOFF)
+        ? str_to_bool(value, *(short *) p->varptr) : atoi(value);
 	break;
     case P_CHARINT:
-	*(char *) p->varptr = (p->inputtype == PI_ONOFF) ? str_to_bool(value) : atoi(value);
+       *(char *) p->varptr = (p->inputtype == PI_ONOFF)
+        ? str_to_bool(value, *(char *) p->varptr) : atoi(value);
 	break;
     case P_CHAR:
 	*(char *) p->varptr = value[0];
@@ -817,8 +858,6 @@ set_param(char *name, char *value)
     return 1;
 }
 
-static void sync_with_option(void);
-
 int
 set_param_option(char *option)
 {
@@ -851,8 +890,16 @@ set_param_option(char *option)
 	goto option_assigned;
     return 0;
  option_assigned:
-    sync_with_option();
     return 1;
+}
+
+char *
+get_param_option(char *name)
+{
+    struct param_ptr *p;
+
+    p = search_param(name);
+    return p ? to_str(p)->ptr : NULL;
 }
 
 static void
@@ -995,7 +1042,7 @@ initMimeTypes()
 	UserMimeTypes[i] = loadMimeTypes(tl->ptr);
 }
 
-static void
+void
 sync_with_option(void)
 {
     WrapSearch = WrapDefault;
@@ -1071,7 +1118,7 @@ init_rc(char *config_file)
 
 static char optionpanel_src1[] =
 "<html><head><title>Option Setting Panel</title></head>\
-<body><center><b>Option Setting Panel</b></center><p>\n"
+<body><center><b>Option Setting Panel</b><br><b>(w3m version %s)</b></center><p>\n"
 #ifdef __EMX__
 "<a href=\"file:///$LIB/w3mhelperpanel.exe?mode=panel\">%s</a>\n"
 #else				/* not __EMX__ */
@@ -1112,7 +1159,7 @@ to_str(struct param_ptr *p)
 Buffer *
 load_option_panel(void)
 {
-    Str src = Sprintf(optionpanel_src1, CMT_HELPER);
+    Str src = Sprintf(optionpanel_src1, version, CMT_HELPER);
     struct param_ptr *p;
     struct sel_c *s;
     int x, i;
@@ -1134,7 +1181,7 @@ load_option_panel(void)
 		Strcat_m_charp(src, "<input type=text name=",
 			       p->name,
 			       " value=\"",
-			       htmlquote_str( to_str(p)->ptr ),
+			       html_quote( to_str(p)->ptr ),
 			       "\">", NULL);
 		break;
 	    case PI_ONOFF:

@@ -490,7 +490,7 @@ until f.eof?
         print "\\begin{document}\n"
 	$in_document = TRUE
       end
-      # enviconment push
+      # environment push
       if act[1].kind_of?(Hash) &&
 	  (tok.tagname != "p" || tok.switch('align') != nil) then
 	  intp.dup

@@ -54,12 +54,12 @@
 /*
  * Support NNTP
  */
-#define USE_NNTP
+#undef USE_NNTP
 
 /*
  * Support ANSI color escape sequences
  */
-#define ANSI_COLOR
+#undef ANSI_COLOR
 
 /*
  * Enable id attribute
@@ -77,11 +77,6 @@
 #undef USE_EGD
 
 /*
- * MENU_MAP enables w3m to show image map link with popup menu.
- */
-#define MENU_MAP
-
-/*
  * Use Emacs-like key binding for file name completion
  */
 #undef EMACS_LIKE_LINEEDIT
@@ -91,6 +86,16 @@
  */
 #undef ENABLE_REMOVE_TRAILINGSPACES
 
+/*
+ * Move cursor to top line when going to label.
+ */
+#undef LABEL_TOPLINE
+
+/*
+ * Move cursor to top line when moving to next page.
+ */
+#undef NEXTPAGE_TOPLINE
+
 /**********************************************************/
 #ifdef makefile_parameter
 
@@ -98,25 +103,30 @@ BIN_DIR = /usr/local/bin
 HELP_DIR = /usr/local/lib/w3m
 LIB_DIR = /usr/local/lib/w3m
 HELP_FILE = w3mhelp-w3m_ja.html
-SYS_LIBRARIES = -lgpm  -lbsd -lnsl -ltermcap  -L/usr/local/ssl/lib -lssl -lcrypto 
+SYS_LIBRARIES = -lgpm  -lbsd -lnsl -lncurses  -L/usr/lib -L/usr/lib -L/usr/local/ssl/lib -L/usr/local/ssl/lib -lssl -lcrypto 
 LOCAL_LIBRARIES = 
 CC = gcc
-MYCFLAGS = -g -Wall -I./gc/include  -I/usr/local/ssl/include/openssl -I/usr/local/ssl/include
-GCCFLAGS = -g -Wall -I./gc/include -DATOMIC_UNCOLLECTABLE -DNO_EXECUTE_PERMISSION -DALL_INTERIOR_POINTERS -DSILENT -DNO_DEBUGGING #-DNO_SIGNALS
+MYCFLAGS = -O -I./gc/include  -I/usr/local/ssl/include/openssl -I/usr/local/ssl/include
+GCCFLAGS = -O -I./gc/include -I./$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS
 KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 EXT=
 MATHLIB=-lm
+Z_CFLAGS=-I/usr/include
+ZLIB=-L/usr/lib -lz
+EXT_TARGETS=$(BOOKMARKER) $(HELPER) $(INFLATE)
+GC_CFLAGS=
 GCLIB=gc/gc.a
 GCTARGET=gc/gc.a
 RANLIB=ranlib
 MKDIR=mkdir -p
-VERSION=0.2.1
+VERSION=0.2.1-inu-1.5
 MODEL=Linux.i686-monster-ja
 #else
 
 
 #define DISPLAY_CODE 'E'
+#define SYSTEM_CODE 'E'
 
 #define JA 0
 #define EN 1
@@ -129,13 +139,13 @@ MODEL=Linux.i686-monster-ja
 #define MENU
 #define USE_COOKIE
 #define USE_SSL
-#define USE_SSL_VERIFY
-#define FTPPASS_HOSTNAMEGEN
-#define SHOW_PARAMS
+#undef USE_SSL_VERIFY
+#undef FTPPASS_HOSTNAMEGEN
+#undef SHOW_PARAMS
 
 #define DEF_EDITOR "/bin/vi"
 #define DEF_MAILER "/bin/mail"
-#define DEF_EXT_BROWSER "/usr/X11R6/bin/netscape"
+#define DEF_EXT_BROWSER "/usr/bin/netscape"
 
 #define LIB_DIR      "/usr/local/lib/w3m"
 #define HELP_DIR     "/usr/local/lib/w3m"
@@ -153,10 +163,11 @@ MODEL=Linux.i686-monster-ja
 #define USER_MAILCAP RC_DIR "/mailcap"
 #define SYS_MAILCAP  "/etc/mailcap"
 #define USER_MIMETYPES "~/.mime.types"
-#define SYS_MIMETYPES "/usr/lib/mime.types"
+#define SYS_MIMETYPES "/usr/local/lib/mime.types"
 
 #define DEF_SAVE_FILE "index.html"
 
+#undef USE_BINMODE_STREAM
 #define TERMIOS
 #define DIRENT
 #define STRCASECMP
@@ -173,6 +184,8 @@ MODEL=Linux.i686-monster-ja
 #define READLINK
 #define HAVE_SETENV
 #define HAVE_PUTENV
+#define HAVE_SRAND48
+#define HAVE_SRANDOM
 #define READLINK
 
 
@@ -184,17 +197,36 @@ typedef void MySignalHandler;
 #define SIGNAL_ARG int _dummy
 #define SIGNAL_ARGLIST 0
 #define SIGNAL_RETURN return
+#define HAVE_SETPGRP
+
 /*
    If you want to use IPv6, define this symbol.
  */
 #undef INET6
 
+
 #undef TABLE_EXPAND
 #undef TABLE_NO_COMPACT
 #define NOWRAP 1
-#define NEW_FORM 1
 #define MATRIX 1
 #undef NO_FLOAT_H
+
+#ifndef HAVE_SRAND48
+#ifdef HAVE_SRANDOM
+#define srand48 srandom
+#define lrand48 random
+#else /* HAVE_SRANDOM */
+#define USE_INCLUDED_SRAND48
+#endif /* HAVE_SRANDOM */
+#endif
+
+#if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )
+#define __CYGWIN__
+#endif
+
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+#define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
 
 #endif /* makefile_parameter */
 #endif /* _CONFIGURED_ */

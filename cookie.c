@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.1 2001/11/08 05:14:17 a-ito Exp $ */
+/* $Id: cookie.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -552,7 +552,7 @@ cookie_list_panel(void)
 
     Strcat_charp(src, "<ol>");
     for (p = First_cookie, i = 0; p; p = p->next, i++) {
-	tmp = htmlquote_str(parsedURL2Str(&p->url)->ptr);
+	tmp = html_quote(parsedURL2Str(&p->url)->ptr);
 	if (p->expires != (time_t) - 1) {
 #ifdef HAVE_STRFTIME
 	    strftime(tmp2, 80, "%a, %d %b %Y %H:%M:%S GMT", gmtime(&p->expires));
@@ -590,20 +590,20 @@ cookie_list_panel(void)
 	Strcat_charp(src, "<table cellpadding=0>");
 	if (!(p->flag & COO_SECURE)) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>Cookie:</b></td><td>");
-	    Strcat_charp(src, htmlquote_str(make_cookie(p)->ptr));
+	    Strcat_charp(src, html_quote(make_cookie(p)->ptr));
 	    Strcat_charp(src, "</td></tr>");
 	}
 	if (p->comment) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>Comment:</b></td><td>");
-	    Strcat_charp(src, htmlquote_str(p->comment->ptr));
+	    Strcat_charp(src, html_quote(p->comment->ptr));
 	    Strcat_charp(src, "</td></tr>");
 	}
 	if (p->commentURL) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>CommentURL:</b></td><td>");
 	    Strcat_charp(src, "<a href=\"");
-	    Strcat_charp(src, htmlquote_str(p->commentURL->ptr));
+	    Strcat_charp(src, html_quote(p->commentURL->ptr));
 	    Strcat_charp(src, "\">");
-	    Strcat_charp(src, htmlquote_str(p->commentURL->ptr));
+	    Strcat_charp(src, html_quote(p->commentURL->ptr));
 	    Strcat_charp(src, "</a>");
 	    Strcat_charp(src, "</td></tr>");
 	}
@@ -619,17 +619,17 @@ cookie_list_panel(void)
 	Strcat_charp(src, "</td></tr><tr><td>");
 	if (p->domain) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>Domain:</b></td><td>");
-	    Strcat_charp(src, htmlquote_str(p->domain->ptr));
+	    Strcat_charp(src, html_quote(p->domain->ptr));
 	    Strcat_charp(src, "</td></tr>");
 	}
 	if (p->path) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>Path:</b></td><td>");
-	    Strcat_charp(src, htmlquote_str(p->path->ptr));
+	    Strcat_charp(src, html_quote(p->path->ptr));
 	    Strcat_charp(src, "</td></tr>");
 	}
 	if (p->portl) {
 	    Strcat_charp(src, "<tr><td width=\"80\"><b>Port:</b></td><td>");
-	    Strcat_charp(src, htmlquote_str(portlist2str(p->portl)->ptr));
+	    Strcat_charp(src, html_quote(portlist2str(p->portl)->ptr));
 	    Strcat_charp(src, "</td></tr>");
 	}
 	Strcat_charp(src, "<tr><td width=\"80\"><b>Secure:</b></td><td>");

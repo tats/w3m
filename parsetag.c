@@ -1,3 +1,6 @@
+#ifdef __EMX__
+#include <strings.h>        /* for bzero() */
+#endif                /* __EMX__ */
 #include "myctype.h"
 #include "indep.h"
 #include "Str.h"
@@ -38,7 +41,7 @@ cgistr2tagarg(char *cgistr)
 	tag = Strnew();
 	while (*cgistr && *cgistr != '=' && *cgistr != '&')
 	    Strcat_char(tag, *cgistr++);
-	t->arg = form_unquote(tag)->ptr;
+	t->arg = Str_form_unquote(tag)->ptr;
 	t->value = NULL;
 	if (*cgistr == '\0')
 	    return t;
@@ -47,7 +50,7 @@ cgistr2tagarg(char *cgistr)
 	    value = Strnew();
 	    while (*cgistr && *cgistr != '&')
 		Strcat_char(value, *cgistr++);
-	    t->value = form_unquote(value)->ptr;
+	    t->value = Str_form_unquote(value)->ptr;
 	}
 	else if (*cgistr == '&')
 	    cgistr++;

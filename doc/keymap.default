@@ -26,7 +26,9 @@ keymap	C-n	MOVE_DOWN
 keymap	C-p	MOVE_UP
 keymap	C-r	SEARCH_BACK
 keymap	C-s	SEARCH
+keymap	C-u	PREV_LINK
 keymap	C-v	NEXT_PAGE
+keymap	C-w	WRAP_TOGGLE
 keymap	C-z	SUSPEND
 
 keymap	SPC	NEXT_PAGE
@@ -52,6 +54,7 @@ keymap	I	VIEW_IMAGE
 keymap	J	UP
 keymap	K	DOWN
 keymap	M	EXTERN
+keymap	N	SEARCH_PREV
 keymap	Q	EXIT
 keymap	R	RELOAD
 keymap	S	SAVE_SCREEN
@@ -59,6 +62,8 @@ keymap	U	GOTO
 keymap	V	LOAD
 keymap	W	PREV_WORD
 keymap	Z	CENTER_H
+keymap	[	LINK_BEGIN
+keymap	]	LINK_END
 keymap	\^	LINE_BEGIN
 keymap	a	SAVE_LINK
 keymap	b	PREV_PAGE
@@ -72,7 +77,7 @@ keymap	l	MOVE_RIGHT
 keymap	n	SEARCH_NEXT
 keymap	o	OPTIONS
 keymap	q	QUIT
-keymap	s	SELECT
+keymap s       SELECT_MENU
 keymap	u	PEEK_LINK
 keymap	v	VIEW
 keymap	w	NEXT_WORD

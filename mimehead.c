@@ -110,6 +110,33 @@ decodeB(char **ww)
     return ap;
 }
 
+Str
+decodeU(char **ww)
+{
+    unsigned char c1, c2;
+    char *w = *ww;
+    int n, i;
+    Str a;
+
+    if (*w <= 0x20 || *w >= 0x60)
+	return Strnew_size(0);
+    n = *w - 0x20;
+    a = Strnew_size(n);
+    for (w++, i = 2; *w != '\0' && n; n--) {
+	c1 = (w[0] - 0x20) % 0x40;
+	c2 = (w[1] - 0x20) % 0x40;
+	Strcat_char(a, (c1 << i) | (c2 >> (6 - i)));
+	if (i == 6) {
+	    w += 2;
+	    i = 2;
+	} else {
+	    w++;
+	    i += 2;
+	}
+    }
+    return a;
+}
+
 /* RFC2047 (4.2. The "Q" encoding) */
 Str
 decodeQ(char **ww)
@@ -166,21 +193,20 @@ decodeQP(char **ww)
 Str
 decodeWord(char **ow)
 {
-    char charset[32];
     char *p, *w = *ow;
     char method;
     Str a = Strnew();
+    Str charset = Strnew();
 
     if (*w != '=' || *(w + 1) != '?')
 	goto convert_fail;
     w += 2;
-    for (p = charset; *w != '?'; w++) {
+    for (; *w != '?'; w++) {
 	if (*w == '\0')
 	    goto convert_fail;
-	*(p++) = *w;
+       Strcat_char(charset,*w);
     }
-    *p = '\0';
-    if (strcasecmp(charset, J_CHARSET) != 0) {
+    if (Strcasecmp_charp(charset, J_CHARSET) != 0) {
 	/* NOT ISO-2022-JP encoding ... don't convert */
 	goto convert_fail;
     }

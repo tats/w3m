@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.1 2001/11/08 05:15:04 a-ito Exp $ */
+/* $Id: linein.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -15,6 +15,13 @@ extern int do_getch();
 
 #ifdef __EMX__
 #include <sys/kbdscan.h>
+#endif
+
+#if defined(__CYGWIN__) && defined(JP_CHARSET)
+#include <windows.h>
+static HANDLE hConIn;
+static int isWin95;
+int isWinConsole = FALSE;
 #endif
 
 #define STR_LEN	1024
@@ -38,8 +45,8 @@ static void insertself(char c),
   killn(void), killb(void), _inbrk(void), _esc(void),
   _prev(void), _next(void), _compl(void), _rcompl(void), _tcompl(void),
   _dcompl(void), _rdcompl(void);
-#ifdef _EMX_
-static int getcntrl();
+#ifdef __EMX__
+static int getcntrl(void);
 #endif
 
 static int terminated(unsigned char c);
@@ -76,6 +83,80 @@ static int use_hist;
 #ifdef JP_CHARSET
 static int in_kanji;
 static void ins_kanji(Str tmp);
+#endif
+
+#if defined(__CYGWIN__) && defined(JP_CHARSET)
+void
+check_win32_console(void)
+{
+    char *tty;
+
+    tty = ttyname(1);
+    if (!strncmp(tty, "/dev/con", 8)) {
+	isWinConsole = TRUE;
+    }
+    else {
+	isWinConsole = FALSE;
+    }
+}
+
+void
+init_win32_console_handle(void)
+{
+    OSVERSIONINFO winVersionInfo;
+
+    check_win32_console();
+    winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    if (GetVersionEx (&winVersionInfo) == 0) {
+        fprintf(stderr, "can't get Windows version information.\n");
+        exit(1);
+    }
+    if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
+        isWin95 = 1;
+    }
+    if (isWin95) {
+	if (isWinConsole) {
+	    if (isatty(0)) {
+		hConIn = GetStdHandle(STD_INPUT_HANDLE);
+	    }
+	    else {
+		hConIn = CreateFile("CONIN$", GENERIC_READ,
+			    FILE_SHARE_READ,
+			    NULL, OPEN_EXISTING,
+			    0, NULL);
+	    }
+	}
+    }
+}
+
+int test_ReadConsole() {
+    unsigned char buff[3];
+    DWORD p = 0;
+
+    return (ReadConsole(hConIn, buff, 1, &p, NULL) != 0);
+}
+
+char getch_Win95JP() {
+    static unsigned char buff[3];
+    static DWORD p = 0;
+    char c;
+    int i;
+
+    if (p == 0) {
+        if (ReadConsole(hConIn, buff, 1, &p, NULL) == 0) {
+            return getch();
+        }
+    }
+    if (p == 0) {
+        return getch();
+    }
+    c = buff[0];
+    for (i = 0; i < p-1; i++) {
+        buff[i] = buff[i+1];
+    }
+    p--;
+    return c;
+}
 #endif
 
 char *
@@ -138,6 +219,13 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
     cm_next = FALSE;
     cm_disp_next = -1;
     need_redraw = FALSE;
+#if defined(__CYGWIN__) && defined(JP_CHARSET)
+    if (isWin95 && (hConIn != INVALID_HANDLE_VALUE)) {
+	if (test_ReadConsole() == 0) {
+	    hConIn = INVALID_HANDLE_VALUE;
+	}
+    }
+#endif
     do {
 	x = calcPosition(strBuf->ptr, strProp, CLen, CPos, 0, CP_FORCE);
 	if (x - rpos > offset) {
@@ -163,7 +251,16 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	refresh();
 
     next_char:
+#if !defined(__CYGWIN__) || !defined(JP_CHARSET)
 	c = getch();
+#else
+    if (isWin95 && (hConIn != INVALID_HANDLE_VALUE)) {
+        c = getch_Win95JP();
+    }
+    else {
+           c = getch();
+    }
+#endif
 #ifdef __EMX__
 	if (c == 0) {
 	    if (!(c = getcntrl()))
@@ -256,6 +353,8 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	    CPos++;
 	    mode = PC_ASCII;
 	}
+	if (CLen && (flag & IN_CHAR))
+	    break;
     } while (i_cont);
 
     if (need_redraw)
@@ -288,7 +387,7 @@ getcntrl(void)
     case K_DEL:
 	return CTRL_D;
     case K_LEFT:
-	retrun CTRL_B;
+       return CTRL_B;
     case K_RIGHT:
 	return CTRL_F;
     case K_UP:
@@ -737,7 +836,7 @@ next_dcompl(int next)
 	return;
     cm_disp_next = 0;
 
-    d = Strdup(CDirBuf);
+    d = Str_conv_to_system(Strdup(CDirBuf));
     if (d->length > 0 && Strlastchar(d) != '/')
 	Strcat_char(d, '/');
     if (cm_mode & CPL_URL && d->ptr[0] == 'f') {
@@ -797,7 +896,7 @@ disp_next:
 	    clrtoeolx();
 	    f = Strdup(d);
 	    Strcat_charp(f, CFileBuf[n]);
-	    addstr(CFileBuf[n]);
+	    addstr(conv_from_system(CFileBuf[n]));
 	    if (stat(expandName(f->ptr), &st) != -1 && S_ISDIR(st.st_mode))
 		addstr("/");
 	}
@@ -827,6 +926,7 @@ doComplete(Str ifn, int *status, int next)
 
     if (!cm_next) {
 	NCFileBuf = 0;
+	ifn = Str_conv_to_system(ifn);
 	CompleteBuf = Strdup(ifn);
 	while (Strlastchar(CompleteBuf) != '/' &&
 	       CompleteBuf->length > 0)
@@ -843,7 +943,7 @@ doComplete(Str ifn, int *status, int next)
 	    else {
 		CompleteBuf = Strdup(ifn);
 		*status = CPL_FAIL;
-		return CompleteBuf;
+		return Str_conv_to_system(CompleteBuf);
 	    }
 	}
 	if (CompleteBuf->length == 0) {
@@ -869,7 +969,7 @@ doComplete(Str ifn, int *status, int next)
 	    if (!strncmp(dir->d_name, fn, fl)) {	/* match */
 		NCFileBuf++;
 		CFileBuf = New_Reuse(char *, CFileBuf, NCFileBuf);
-		CFileBuf[NCFileBuf - 1] = New_N(char, strlen(dir->d_name) + 1);
+		CFileBuf[NCFileBuf - 1] = NewAtom_N(char, strlen(dir->d_name) + 1);
 		strcpy(CFileBuf[NCFileBuf - 1], dir->d_name);
 		if (NCFileBuf == 1) {
 		    CFileName = Strnew_charp(dir->d_name);
@@ -923,7 +1023,7 @@ doComplete(Str ifn, int *status, int next)
 	if (stat(expandName(p), &st) != -1 && S_ISDIR(st.st_mode))
 	    Strcat_char(CompleteBuf, '/');
     }
-    return CompleteBuf;
+    return Str_conv_from_system(CompleteBuf);
 }
 
 static void

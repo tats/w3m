@@ -24,6 +24,15 @@ typedef struct hblkhdr hdr;
  * The 2 level tree data structure that is used to find block headers.
  * If there are more than 32 bits in a pointer, the top level is a hash
  * table.
+ *
+ * This defines HDR, GET_HDR, and SET_HDR, the main macros used to
+ * retrieve and set object headers.
+ *
+ * Since 5.0 alpha 5, we can also take advantage of a header lookup
+ * cache.  This is a locally declared direct mapped cache, used inside
+ * the marker.  The HC_GET_HDR macro uses and maintains this
+ * cache.  Assuming we get reasonable hit rates, this shaves a few
+ * memory references from each pointer validation.
  */
 
 # if CPP_WORDSZ > 32
@@ -44,6 +53,95 @@ typedef struct hblkhdr hdr;
 # endif
 # define TOP_SZ (1 << LOG_TOP_SZ)
 # define BOTTOM_SZ (1 << LOG_BOTTOM_SZ)
+
+#ifndef SMALL_CONFIG
+# define USE_HDR_CACHE
+#endif
+
+/* #define COUNT_HDR_CACHE_HITS  */
+
+extern hdr * GC_invalid_header; /* header for an imaginary block 	*/
+				/* containing no objects.		*/
+
+
+/* Check whether p and corresponding hhdr point to long or invalid	*/
+/* object.  If so, advance hhdr	to					*/
+/* beginning of	block, or set hhdr to GC_invalid_header.		*/
+#define ADVANCE(p, hhdr, source) \
+	    { \
+	      hdr * new_hdr = GC_invalid_header; \
+              p = GC_FIND_START(p, hhdr, &new_hdr, (word)source); \
+	      hhdr = new_hdr; \
+    	    }
+
+#ifdef USE_HDR_CACHE
+
+# ifdef COUNT_HDR_CACHE_HITS
+    extern word GC_hdr_cache_hits;
+    extern word GC_hdr_cache_misses;
+#   define HC_HIT() ++GC_hdr_cache_hits
+#   define HC_MISS() ++GC_hdr_cache_misses
+# else
+#   define HC_HIT()
+#   define HC_MISS()
+# endif
+
+  typedef struct hce {
+    word block_addr;  	/* right shifted by LOG_HBLKSIZE */
+    hdr * hce_hdr;
+  } hdr_cache_entry;
+
+# define HDR_CACHE_SIZE 8  /* power of 2 */
+
+# define DECLARE_HDR_CACHE \
+	hdr_cache_entry hdr_cache[HDR_CACHE_SIZE]
+
+# define INIT_HDR_CACHE BZERO(hdr_cache, sizeof(hdr_cache));
+
+# define HCE(h) hdr_cache + (((word)(h) >> LOG_HBLKSIZE) & (HDR_CACHE_SIZE-1))
+
+# define HCE_VALID_FOR(hce,h) ((hce) -> block_addr == \
+				((word)(h) >> LOG_HBLKSIZE))
+
+# define HCE_HDR(h) ((hce) -> hce_hdr)
+
+
+/* Analogous to GET_HDR, except that in the case of large objects, it	*/
+/* Returns the header for the object beginning, and updates p.		*/
+/* Returns &GC_bad_header instead of 0.  All of this saves a branch	*/
+/* in the fast path.							*/
+# define HC_GET_HDR(p, hhdr, source) \
+	{ \
+	  hdr_cache_entry * hce = HCE(p); \
+	  if (HCE_VALID_FOR(hce, p)) { \
+	    HC_HIT(); \
+	    hhdr = hce -> hce_hdr; \
+	  } else { \
+	    HC_MISS(); \
+	    GET_HDR(p, hhdr); \
+            if (IS_FORWARDING_ADDR_OR_NIL(hhdr)) { \
+	      ADVANCE(p, hhdr, source); \
+	    } else { \
+	      hce -> block_addr = (word)(p) >> LOG_HBLKSIZE; \
+	      hce -> hce_hdr = hhdr; \
+	    } \
+	  } \
+	}
+
+#else /* !USE_HDR_CACHE */
+
+# define DECLARE_HDR_CACHE
+
+# define INIT_HDR_CACHE
+
+# define HC_GET_HDR(p, hhdr, source) \
+	{ \
+	  GET_HDR(p, hhdr); \
+          if (IS_FORWARDING_ADDR_OR_NIL(hhdr)) { \
+	    ADVANCE(p, hhdr, source); \
+	  } \
+	}
+#endif
 
 typedef struct bi {
     hdr * index[BOTTOM_SZ];

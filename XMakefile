@@ -4,19 +4,20 @@ SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 OBJS=main.o file.o buffer.o display.o etc.o search.o linein.o table.o local.o\
 	form.o map.o frame.o rc.o menu.o mailcap.o\
 	func.o cookie.o history.o backend.o $(KEYBIND_OBJ)
-LSRCS=terms.c conv.c url.c ftp.c anchor.c mimehead.c hash.c parsetagx.c\
+LSRCS=terms.c conv.c url.c ftp.c anchor.c mimehead.c parsetagx.c\
 	tagtable.c istream.c
-LOBJS=terms.o conv.o url.o ftp.o anchor.o mimehead.o hash.o parsetagx.o\
+LOBJS=terms.o conv.o url.o ftp.o anchor.o mimehead.o parsetagx.o\
 	tagtable.o istream.o
 LLOBJS=version.o
-ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o
+ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o entity.o hash.o
 ALIB=libindep.a
 ALLOBJS=$(OBJS) $(LOBJS) $(LLOBJS)
 
 TARGET=w3m$(EXT)
 BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
-TARGETS=$(TARGET) $(BOOKMARKER) $(HELPER)
+INFLATE=inflate$(EXT)
+TARGETS=$(TARGET) $(EXT_TARGETS)
 
 INCLUDES=-I.
 
@@ -39,7 +40,10 @@ $(ALIB): $(ALIBOBJS)
 $(OBJS): fm.h funcname1.h
 
 tagtable.c: html.h tagtable.tab mktable$(EXT)
-	./mktable 100 tagtable.tab > tagtable.c
+	./mktable$(EXT) 100 tagtable.tab > tagtable.c
+
+# entity.h: html.h entity.tab mktable$(EXT)
+#	./mktable 100 entity.tab > entity.h
 
 func.o: funcname.c
 keybind.o: funcname2.h
@@ -47,7 +51,7 @@ keybind_lynx.o: funcname2.h
 parsetagx.o: html.c
 
 funcname.c: funcname.tab
-	awk -f funcname0.awk funcname.tab > funcname.c
+	sort funcname.tab | awk -f funcname0.awk > funcname.c
 
 funcname1.h: funcname.tab
 	awk -f funcname1.awk funcname.tab > funcname1.h
@@ -64,8 +68,14 @@ $(BOOKMARKER): w3mbookmark.o $(ALIB) $(GCTARGET)
 $(HELPER): w3mhelperpanel.o $(ALIB) $(GCTARGET)
 	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS)
 
+$(INFLATE): inflate.o
+	$(CC) $(CFLAGS) $(Z_CFLAGS) -o $(INFLATE) inflate.o $(ZLIB)
+
+inflate.o: inflate.c
+	$(CC) $(CFLAGS) $(Z_CFLAGS) -c inflate.c
+
 gc/gc.a:
-	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS)'
+	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
 
 install: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
@@ -77,7 +87,7 @@ install: $(TARGETS)
 	$(INSTALL) -m 644 w3mhelp-lynx_en.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_en.html
 	$(INSTALL) -m 644 w3mhelp-lynx_ja.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_ja.html
 	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
-	for d in $(BOOKMARKER) $(HELPER); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
+	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
 	(cd scripts; for i in *.cgi; do $(INSTALL2) -m 755 $$i $(DESTDIR)$(LIB_DIR)/$$i; done)
 
 uninstall:
@@ -87,6 +97,9 @@ uninstall:
 	-$(RM) $(HELP_DIR)/w3mhelp-w3m_en.html 
 	-$(RM) $(HELP_DIR)/w3mhelp-w3m_ja.html 
 	-$(RM) $(HELP_DIR)/w3mhelp.html
+	-$(RM) $(LIB_DIR)/$(BOOKMARKER)
+	-$(RM) $(LIB_DIR)/$(HELPER)
+	-$(RM) $(LIB_DIR)/$(INFLATE)
 
 clean: sweep
 	rm -f *.o *.a $(TARGETS) mktable$(EXT)

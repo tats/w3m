@@ -285,7 +285,7 @@ static MenuItem MainMenuItem[] =
 {
 /* type        label         variabel value func     popup keys data  */
     {MENU_FUNC, "戻る         (b)", NULL, 0, backBf, NULL, "b", NULL},
-    {MENU_FUNC, "バッファ選択 (s)", NULL, 0, selBuf, NULL, "s", NULL},
+    {MENU_POPUP, "バッファ選択 (s)", NULL, 0, NULL, &SelectMenu, "s", NULL},
     {MENU_FUNC, "ソースを表示 (v)", NULL, 0, vwSrc, NULL, "vV", NULL},
     {MENU_FUNC, "ソースを編集 (e)", NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, "ソースを保存 (S)", NULL, 0, svSrc, NULL, "S", NULL},
@@ -309,7 +309,7 @@ static MenuItem MainMenuItem[] =
 {
 /* type        label           variable value func     popup keys data  */
     {MENU_FUNC, " Back         (b) ", NULL, 0, backBf, NULL, "b", NULL},
-    {MENU_FUNC, " Select Buffer(s) ", NULL, 0, selBuf, NULL, "s", NULL},
+    {MENU_POPUP, " Select Buffer(s) ", NULL, 0, NULL, &SelectMenu, "s", NULL},
     {MENU_FUNC, " View Source  (v) ", NULL, 0, vwSrc, NULL, "vV", NULL},
     {MENU_FUNC, " Edit Source  (e) ", NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, " Save Source  (S) ", NULL, 0, svSrc, NULL, "S", NULL},
@@ -932,13 +932,16 @@ menuForwardSearch (Menu* menu, char* str, int from)
 	message (p, 0, 0);
 	return -1;
     }
+    if (from < 0)
+       from = 0;
     for (i = from; i < menu->nitem; i++)
-	if (regexMatch (menu->item[i].label, 0, 0) == 1)
-            return i;
+       if (menu->item[i].type != MENU_NOP &&
+           regexMatch (menu->item[i].label, 0, 1) == 1)
+           return i;
     return -1;
 }
 
-int
+static int
 menu_search_forward (Menu* menu, int from)
 {
     char *str;
@@ -947,15 +950,16 @@ menu_search_forward (Menu* menu, int from)
     if (str != NULL && *str == '\0')
 	str = SearchString;
     if (str == NULL || *str == '\0')
-	return (MENU_NOTHING);
+       return -1;
     SearchString = str;
-    found = menuForwardSearch (menu, SearchString, from);
+    menuSearchRoutine = menuForwardSearch;
+    found = menuForwardSearch (menu, SearchString, from + 1);
     if (WrapSearch && found == -1)
         found = menuForwardSearch (menu, SearchString, 0);
-    menuSearchRoutine = menuForwardSearch;
     if (found >= 0)
         return found;
-    return from;
+    disp_message("Not found", TRUE);
+    return -1;
 }
 
 static int
@@ -963,7 +967,8 @@ mSrchF (char c)
 {
     int select;
     select = menu_search_forward (CurrentMenu, CurrentMenu->select);
-    goto_menu (CurrentMenu, select, 1);
+    if (select >= 0)
+       goto_menu (CurrentMenu, select, 1);
     return (MENU_NOTHING);
 }
 
@@ -976,13 +981,16 @@ menuBackwardSearch (Menu* menu, char* str, int from)
 	message (p, 0, 0);
 	return -1;
     }
-    for (i = from; i >= 0 ; i--)
-	if (regexMatch (menu->item[i].label, 0, 0) == 1)
+    if (from >= menu->nitem)
+       from = menu->nitem - 1;
+    for (i = from; i >= 0; i--)
+       if (menu->item[i].type != MENU_NOP &&
+           regexMatch (menu->item[i].label, 0, 1) == 1)
             return i;
     return -1;
 }
 
-int
+static int
 menu_search_backward (Menu* menu, int from)
 {
     char *str;
@@ -993,13 +1001,14 @@ menu_search_backward (Menu* menu, int from)
     if (str == NULL || *str == '\0')
 	return (MENU_NOTHING);
     SearchString = str;
-    found = menuBackwardSearch (menu, SearchString, from);
-    if (WrapSearch && found == -1)
-        found = menuBackwardSearch (menu, SearchString, 0);
     menuSearchRoutine = menuBackwardSearch;
+    found = menuBackwardSearch (menu, SearchString, from - 1);
+    if (WrapSearch && found == -1)
+        found = menuBackwardSearch (menu, SearchString, menu->nitem);
     if (found >= 0)
         return found;
-    return from;
+    disp_message("Not found", TRUE);
+    return -1;
 }
 
 static int
@@ -1007,7 +1016,8 @@ mSrchB (char c)
 {
     int select;
     select = menu_search_backward (CurrentMenu, CurrentMenu->select);
-    goto_menu (CurrentMenu, select, -1);
+    if (select >= 0)
+       goto_menu (CurrentMenu, select, -1);
     return (MENU_NOTHING);
 }
 
@@ -1015,7 +1025,6 @@ static int
 menu_search_next_previous (Menu* menu, int from, int reverse)
 {
     int found;
-    int new_from;
     static int (*routine[2]) (Menu *, char *, int) =
     {
 	menuForwardSearch, menuBackwardSearch
@@ -1023,25 +1032,20 @@ menu_search_next_previous (Menu* menu, int from, int reverse)
 
     if (menuSearchRoutine == NULL) {
 	disp_message ("No previous regular expression", TRUE);
-	return from;
+       return -1;
     }
-    addstr(menuSearchRoutine == menuForwardSearch ? "Forward: " : "Backward: ");
-    addstr(SearchString);
     if (reverse != 0)
 	reverse = 1;
     if (menuSearchRoutine == menuBackwardSearch)
 	reverse ^= 1;
-    new_from = from - reverse * 2 + 1;
-    if (new_from >=0 && new_from < menu->nitem)
-	found = (*routine[reverse]) (menu, SearchString, new_from);
-    else
-	found = (*routine[reverse]) (menu, SearchString, from);
-    if (WrapSearch && found == -1) {
+    from += reverse ? -1 : 1;
+    found = (*routine[reverse]) (menu, SearchString, from);
+    if (WrapSearch && found == -1)
         found = (*routine[reverse]) (menu, SearchString, reverse * menu->nitem);
-    }
     if (found >= 0)
         return found;
-    return from;
+    disp_message("Not found", TRUE);
+    return -1;
 }
 
 static int
@@ -1049,7 +1053,8 @@ mSrchN (char c)
 {
     int select;
     select = menu_search_next_previous (CurrentMenu, CurrentMenu->select, 0);
-    goto_menu (CurrentMenu, select, 1);
+    if (select >= 0)
+       goto_menu (CurrentMenu, select, 1);
     return (MENU_NOTHING);
 }
 
@@ -1058,7 +1063,8 @@ mSrchP (char c)
 {
     int select;
     select = menu_search_next_previous (CurrentMenu, CurrentMenu->select, 1);
-    goto_menu (CurrentMenu, select, -1);
+    if (select >= 0)
+       goto_menu (CurrentMenu, select, -1);
     return (MENU_NOTHING);
 }
 
@@ -1248,6 +1254,12 @@ mainMn(void)
 
 /* --- SelectMenu --- */
 
+void
+selMn(void)
+{
+    popupMenu(Currentbuf->cursorX, Currentbuf->cursorY, &SelectMenu);
+}
+
 static void
 initSelectMenu(void)
 {
@@ -1273,7 +1285,7 @@ initSelectMenu(void)
 	    case SCM_LOCAL_CGI:
 		if (strcmp(buf->currentURL.file, "-")) {
 		    Strcat_char(str, ' ');
-		    Strcat_charp(str, buf->filename);
+		    Strcat_charp(str, conv_from_system(buf->currentURL.real_file));
 		}
 		break;
 	    case SCM_UNKNOWN:

@@ -203,7 +203,7 @@ static void post( TextList *argv ){
 	    url = p;
     }
     if( url ){
-	request = newFormList( NULL, "post", charset, enctype, target, NULL );
+       request = newFormList( NULL, "post", charset, enctype, target, NULL, NULL );
 	request->body = body;
 	request->boundary = boundary;
 	request->length = ( length > 0 )? length : ( body ? strlen(body) : 0 );
@@ -246,11 +246,10 @@ static void show( TextList *argv ){
 
 /* Command: quit */
 static void quit( TextList *argv ){
-    deleteFiles();
 #ifdef USE_COOKIE
     save_cookies();
 #endif /* USE_COOKIE */
-    exit(0);
+    w3m_exit(0);
 }
 
 
@@ -298,13 +297,10 @@ static void call_command_function( char *str ){
 /* Main function */
 int backend( void ){
     char *str;
-    extern int w3m_dump;		/* Declared in main.c. */
 
-    w3m_dump     = FALSE;
-    w3m_halfdump = FALSE;
+    w3m_dump     = 0;
     if (COLS == 0) COLS = 80;
 #ifdef MOUSE
-    mouse_end();
     use_mouse = FALSE;
 #endif /* MOUSE */
 

@@ -4,10 +4,17 @@
 #
 
 #
-sysname=`uname -s`
-sysversion=`uname -r`
+if ./which uname > /dev/null ; then
+  sysname=`uname -s`
+  sysversion=`uname -r`
+  platform=`uname -m`
+elif [ -f /usr/sony/bin/machine -a -f /etc/osversion ]; then
+  sysname='NEWS-OS'
+  sysversion=`sed 's/[^ ]* [^ ]* //' /etc/osversion`
+  platform=`/usr/sony/bin/machine`
+fi
+
 host=`hostname`
-platform=`uname -m`
 
 sysversion1=`echo $sysversion | awk -F. '{print $1}'`
 sysversion2=`echo $sysversion | awk -F. '{print $2}'`
@@ -22,7 +29,7 @@ if [ -f config.param ] ; then
 	fi
 fi
 
-echo "# Configuretion at $host" > config.param
+echo "# Configuration at $host" > config.param
 
 # parameters:
 
@@ -63,6 +70,9 @@ do
   -model=monster|--model=monster)
     dmodel=5
     ;;
+  -model=custom|--model=custom)
+    dmodel=6
+    ;;
   -code=*|--code=*)
     def_dcode=`expr "$1" : "-*code=\(.*\)"`
     ;;
@@ -73,10 +83,10 @@ do
     echo "-yes, -nonstop  Set all parameters to the default"
     echo "-prefix=DIR     Specify prefix (default: /usr/local)"
     echo "-lang=(en|ja)   Specify default language"
-    echo "-model=(baby|little|mouse|cookie|monster)"
+    echo "-model=(baby|little|mouse|cookie|monster|custom)"
     echo "                Specify default model"                     
     echo "-code=(S|E|j|N|n|m)"
-    echo "                Specify derault kanji code"
+    echo "                Specify default kanji code"
     echo "-cflags=FLAGS   Specify C flags"
     echo "-help           Display help"
     exit 0
@@ -89,7 +99,7 @@ done
 # version number: JMMAAA  J: major MM: minor AAA: alpha
 #   Alpha number of non-alpha version is 255.
 # version 4.14alpha1 => 414002
-mygcversion=500003
+mygcversion=600255
 
 if [ -z "`echo -n aho | grep n`" ] ; then
 Echo()
@@ -188,7 +198,7 @@ save_params() {
 
 find_ssl() {
   sslinclude=""
-  for i1 in /usr /usr/local
+  for i1 in /usr /usr/local $prefix
   do
     for i2 in /openssl /ssl / 
     do
@@ -202,7 +212,7 @@ find_ssl() {
       for i3 in lib/openssl lib
       do
         dirname=${i1}${i2}/${i3}
-        for ext in a so
+        for ext in a $so_ext
         do
           if [ -f $dirname/libssl.$ext -o -f $dirname/libcrypto.$ext ]; then
             if [ "$ssllib" = -L${dirname} ]; then
@@ -249,12 +259,8 @@ echo "% Hello $user. Let's start configuration process for w3m."
 echo "% Please answer some questions."
 echo "%"
 
-if [ -n "`echo $sysname | grep CYGWIN`" ]; then
-  sysname="CYGWIN"
-  extension='.exe'
-else
-  extension=
-fi
+extension=
+use_binstream='#undef USE_BINMODE_STREAM'
 
 topdir=$prefix
 special_sys=''
@@ -262,16 +268,34 @@ case "$sysname" in
   aix | AIX )
     special_sys="#define AIX"
   ;;
-  CYGWIN )
+  CYGWIN* )
+    sysname='CYGWIN'
     special_sys="#define CYGWIN $sysversion1"
     if [ $sysversion1 -eq 0 ]; then
-    topdir=/cygnus/cygwin-b20/H-i586-cygwin32
+      topdir=/cygnus/cygwin-b20/H-i586-cygwin32
     fi
+    extension='.exe'
+    use_binstream='#define USE_BINMODE_STREAM'
+  ;;
+  OS/2 )
+    extension='.exe'
+    use_binstream='#define USE_BINMODE_STREAM'
   ;;
   NetBSD )
 # Newer NetBSD system doesn't define 'unix' symbol anymore, but GC library
 # requires it.
     special_sys="#define unix"
+  ;;
+esac
+
+# determine shared object extension
+so_ext=so
+case "$sysname" in
+  HP-UX )
+    so_ext=sl
+  ;;
+  Darwin )
+    so_ext=dylib
   ;;
 esac
 
@@ -368,8 +392,14 @@ if [ "$lang" = ja ]; then
 	break
   done
   echo "def_dcode=$ncode" >> config.param
+  if [ "$ncode" = "S" ]; then
+	scode=S
+  else
+	scode=E
+  fi
 else
   ncode=x
+  scode=x
 fi
 
 echo "Do you want to use Lynx-like key binding?"
@@ -435,7 +465,7 @@ else
   def_use_nntp="#undef USE_NNTP"
 fi
 
-echo "Do you want ANSI color escape sequences supprot?"
+echo "Do you want ANSI color escape sequences support?"
 yesno ansi_color "$ansi_color" n
 echo "ansi_color=$ansi_color" >> config.param
 if [ "$ansi_color" = y ]; then
@@ -465,6 +495,7 @@ readanswer ans "$dmodel"
 if [ -z "$ans" -a -n "$dmodel" ]; then
   ans=$dmodel
 fi
+dmodel_save="$dmodel"
 dmodel=$ans
 case "$ans" in
   1)
@@ -514,6 +545,15 @@ case "$ans" in
     customized=y
     ;;
   6)
+    if [ "X$dmodel_save" = X6 ]
+    then
+     if [ "X$use_ssl" = Xy ]
+     then
+      find_ssl
+     fi
+     save_params
+     customized=n
+    fi
     ;;
   *)
     echo "Please input 1-6."
@@ -702,9 +742,9 @@ if [ -z "$dtermlib" ]; then
 
   for lib in $TERM_LIBS
   do
-    for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+    for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
     do
-      if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.so ] ; then 
+      if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
         # check if the lib works...
         Echo "Terminal library -l$lib found at $libdir, "
         if $cc $cflags -o _zmachdep _zmachdep.c -l$lib > /dev/null 2>&1
@@ -744,7 +784,7 @@ fi
 use_gpm=""
 gpmlib=""
 if [ "$use_mouse" = y ]; then
-  for libdir in /lib /usr/lib /usr/local/lib
+  for libdir in /lib /usr/lib /usr/local/lib $prefix/lib
   do
     if [ -f $libdir/libgpm.a -o -f $libdir/libgpm.so ]; then
       echo "GPM library found."
@@ -778,9 +818,9 @@ case $sysname in
 esac
 for lib in $searchlibs
 do
-  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
   do
-    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.so ] ; then 
+    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
       extlib="$extlib -l$lib"
       break
     fi
@@ -793,18 +833,44 @@ if [ -n "$extlib" ]; then
   echo "additional library found: $extlib"
 fi
 
+## Search zlib
+zlib=
+for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
+do
+  if [ -f $libdir/libz.a -o -f $libdir/libz.$so_ext ] ; then
+    echo "$libdir/libz found"
+    zlib="-L$libdir -lz"
+    break
+  fi
+done
+z_cflags=
+for inc in /usr/include /usr/local/include $prefix/include ${HOME}/include
+do
+  if [ -f $inc/zlib.h ]; then
+    echo "$inc/zlib.h found"
+    z_cflags="-I$inc"
+    break
+  fi
+done
+if [ -n "$zlib" -a -n "$z_cflags" ]; then
+  inflate='$(INFLATE)'
+else
+  echo "Warning: It seems you don't have zlib. Inflate cannot be installed."
+  inflate=
+fi
+
 gclib=''
 gcinclude=''
 gctarget=''
-for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib ${HOME}/lib
+for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
 do
-  if [ -f $libdir/libgc.a -o -f $libdir/libgc.so ] ; then 
+  if [ -f $libdir/libgc.a -o -f $libdir/libgc.$so_ext ] ; then 
     echo "$libdir/libgc found"
     gclib="-L$libdir -lgc"
     break
   fi
 done
-for inc in /usr/include /usr/include/gc /usr/local/include /usr/local/include/gc ${HOME}/include
+for inc in /usr/include /usr/include/gc /usr/local/include /usr/local/include/gc $prefix/include ${HOME}/include
 do
   if [ -f $inc/gc.h ]; then
     echo "$inc/gc.h found"
@@ -840,8 +906,8 @@ EOF
     echo "GC_version is $gcversion."    
     if [ $gcversion -lt $mygcversion ]; then
       echo "GC library on your system seems to be old."
-      Echo "Do you want to use GC library comes with w3m?[y] "
-      read ans
+      echo "Do you want to use GC library comes with w3m?"
+      yesno ans y y
       if [ "$ans" = 'n' -o "$ans" = 'N' ]; then
         cflags="$cflags -I$gcinclude"
       else
@@ -867,50 +933,19 @@ if [ -z "$gclib" -o -z "$gcinclude" ]; then
 fi
 
 # Apply patch.
+gc_cflags=''
 if [ "$gclib" = "gc/gc.a" -a ! -f patch_done ]; then
   patchfile=""
   case "$platform:$sysname" in
-  [Aa]lpha:Linux)
-    patchfile=Patches/alpha ;;
-  [Ss]parc:Linux|sun4*:Linux)
-      if [ "$sysversion1" = 2 -a "$sysversion2" = 2 ]
-      then
-        patchfile=Patches/linux2.2sparc
-      fi
-      ;;
-  ARM*:Linux|arm*:Linux)
-    patchfile=Patches/armlinux
-    ;;
-  [mM]ips*:Linux|MIPS*:Linux)
-    patchfile=Patches/mipsel
-    ;;
-  *:HP-UX)
-    if [ "$sysversion2" = 11 ]
-    then
-      patchfile=Patches/hpux11
-    fi
-    ;;
-  macppc:NetBSD)
-    patchfile = Patches/macppc
-    ;;
   R3000:*System_V*|R4000:UNIX_SYSV|R*000:UNIX_SV)
     # EWS-4800
     patchfile=Patches/ews4800
+    gc_cflags=-Dmips
     ;;
-  *:NEWS-OS)
-    patchfile=Patches/newsos6
-    ;;
-  *:Rhapsody|*:"Mac OS")
-    # MacOS X
-    patchfile=Patches/macosx
-    ;;
-  *:OS/2)
-    # OS/2
-    patchfile=Patches/os2
   esac
 
   if [ -n "$patchfile" -a -f "$patchfile" ]; then
-    patch -p0 < $patchfile
+    patch -lp0 < $patchfile
     echo "dpatch='$patch'" >> config.param
     touch patch_done
   fi
@@ -933,7 +968,7 @@ echo "Checking machine dependency."
 
 ###### mime.types
 MIME_TYPES=""
-for d in /usr/lib /usr/local/lib /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
+for d in /usr/lib /usr/local/lib $prefix/lib /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
 do
   if [ -f $d/mime.types ]; then
     MIME_TYPES="$d/mime.types"
@@ -1247,6 +1282,40 @@ else
   jmpbuf_def="#define JMP_BUF jmp_buf"
 fi
 
+####### srand48
+cat > _zmachdep.c << EOF
+#include <stdlib.h>
+main()
+{
+  srand48(0);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have srand48()."
+  srand48_flg="#define HAVE_SRAND48"
+else
+  echo "You don't have srand48()."
+  srand48_flg="#undef HAVE_SRAND48"
+fi
+
+####### srandom
+cat > _zmachdep.c << EOF
+#include <stdlib.h>
+main()
+{
+  srandom(0);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have srandom()."
+  srandom_flg="#define HAVE_SRANDOM"
+else
+  echo "You don't have srandom()."
+  srandom_flg="#undef HAVE_SRANDOM"
+fi
+
 ####### fclose
 cat > _zmachdep.c << EOF
 #include <stdio.h>
@@ -1385,6 +1454,66 @@ else
   no_float_h='#define NO_FLOAT_H 1'
 fi
 
+####### setpgrp(pid, pgrp) or setpgrp() ?
+cat > _zmachdep.c << EOF
+#include <unistd.h>
+int main(){
+  int pid;
+  if((pid = fork()) == 0 )
+    setpgrp();
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have setpgrp()."
+  have_setpgrp='#define HAVE_SETPGRP'
+else
+  cat > _zmachdep.c << EOF
+#include <unistd.h>
+int main(){
+  int pid;
+  if((pid = fork()) == 0 )
+    setpgrp( 0, 0 );
+}
+EOF
+  if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
+  then
+    echo "You have setpgrp( pid, pgrp )."
+    have_setpgrp='#define HAVE_SETPGRP'
+    setpgrp='#define setpgrp() setpgrp( 0, 0 )'
+  else
+    have_setpgrp=''
+  fi
+fi
+
+###### atexit/on_exit
+# cat > _zmachdep.c <<EOF
+# main()
+# {
+#   atexit( sleep(1) );
+# }
+# EOF
+# if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+# then
+#   echo "You have atexit()."
+#   atexit_flg="#define HAVE_ATEXIT"
+# else
+#   cat > _zmachdep.c <<EOF
+# #include <stdio.h>
+# main()
+# {
+#   on_exit( sleep(1), NULL );
+# }
+# EOF
+#   if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+#   then
+#     echo "You have on_exit()."
+#     atexit_flg="#define atexit(x) on_exit(x, NULL)"
+#   else
+#     echo "You don't have atexit()/on_exit()"
+#   fi
+# fi
+
 ###### IPv6 support check
 cat > _zmachdep.c <<EOF
 #include <sys/types.h>
@@ -1398,7 +1527,9 @@ main()
 }
 EOF
 ipv6="#undef INET6"
+v6_ss_family=""
 v6lib=''
+
 if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
 then
   if ./_zmachdep; then
@@ -1421,7 +1552,7 @@ EOF
     then
       echo "You have getaddrinfo() in libc."
     else
-      for libdir in /usr/local/v6/lib /usr/local/lib /usr/lib
+      for libdir in /usr/local/v6/lib /usr/local/lib /usr/lib $prefix/lib
       do
 	if [ -e $libdir/libinet6.a ]; then
 	  if [ "$libdir" != "/usr/lib" ]; then
@@ -1446,6 +1577,40 @@ EOF
     ;;
   esac
 fi
+
+####### ss_family or __ss_family ?
+if [ "$ipv6" = "#define INET6" ]; then
+  cat > _zmachdep.c <<EOF
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+    struct sockaddr_storage ss;
+    int i = ss.ss_family;
+}
+EOF
+  if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
+  then
+    echo "You have ss_family."
+  else
+  cat > _zmachdep.c <<EOF
+#include <sys/types.h>
+#include <sys/socket.h>
+int main() {
+    struct sockaddr_storage ss;
+    int i = ss.__ss_family;
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
+    then
+      echo "You have __ss_family."
+      ipv6_ss_family="#define ss_family __ss_family"
+    else
+      echo "You don't have ss_family."
+      ipv6="#undef INET6"
+    fi
+  fi
+fi
+
 if [ "$ipv6" = "#undef INET6" ]; then
   echo "You don't have IPv6 support."
 else
@@ -1566,11 +1731,6 @@ $def_ansi_color
 #undef USE_EGD
 
 /*
- * MENU_MAP enables w3m to show image map link with popup menu.
- */
-#define MENU_MAP
-
-/*
  * Use Emacs-like key binding for file name completion
  */
 #undef EMACS_LIKE_LINEEDIT
@@ -1579,6 +1739,16 @@ $def_ansi_color
  * Remove line trailing spaces in html buffer.
  */
 #undef ENABLE_REMOVE_TRAILINGSPACES
+
+/*
+ * Move cursor to top line when going to label.
+ */
+#undef LABEL_TOPLINE
+
+/*
+ * Move cursor to top line when moving to next page.
+ */
+#undef NEXTPAGE_TOPLINE
 
 /**********************************************************/
 #ifdef makefile_parameter
@@ -1591,11 +1761,15 @@ SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
 LOCAL_LIBRARIES = $ldflags
 CC = $cc
 MYCFLAGS = $cflags $bsdinclude $sslinclude
-GCCFLAGS = $cflags -DATOMIC_UNCOLLECTABLE -DNO_EXECUTE_PERMISSION -DALL_INTERIOR_POINTERS -DSILENT -DNO_DEBUGGING #-DNO_SIGNALS
+GCCFLAGS = $cflags -I./\$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS
 KEYBIND_SRC = $keymap_file.c
 KEYBIND_OBJ = $keymap_file.o
 EXT=$extension
 MATHLIB=$mathlib
+Z_CFLAGS=$z_cflags
+ZLIB=$zlib
+EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate
+GC_CFLAGS=$gc_cflags
 GCLIB=$gclib
 GCTARGET=$gctarget
 RANLIB=$ranlib_cmd
@@ -1606,6 +1780,7 @@ MODEL=$sysname.$platform-$modelname-$lang
 $special_sys
 
 #define DISPLAY_CODE '$ncode'
+#define SYSTEM_CODE '$scode'
 
 #define JA 0
 #define EN 1
@@ -1646,6 +1821,7 @@ $def_show_params
 
 #define DEF_SAVE_FILE "index.html"
 
+$use_binstream
 $term_if
 $dir_if
 $strcasecmp_flg
@@ -1662,6 +1838,8 @@ $getwd_flg
 $readlink_flg
 $setenv_flg
 $putenv_flg
+$srand48_flg
+$srandom_flg
 $readlink_flg
 $fclose_dcl
 $pclose_dcl
@@ -1673,17 +1851,36 @@ $sig_type
 $sig_arg
 $sig_arglist
 $sig_return
+$have_setpgrp
+$setpgrp
 /*
    If you want to use IPv6, define this symbol.
  */
 $ipv6
+$ipv6_ss_family
 
 #undef TABLE_EXPAND
 #undef TABLE_NO_COMPACT
 #define NOWRAP 1
-#define NEW_FORM 1
 #define MATRIX 1
 $no_float_h
+
+#ifndef HAVE_SRAND48
+#ifdef HAVE_SRANDOM
+#define srand48 srandom
+#define lrand48 random
+#else /* HAVE_SRANDOM */
+#define USE_INCLUDED_SRAND48
+#endif /* HAVE_SRANDOM */
+#endif
+
+#if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )
+#define __CYGWIN__
+#endif
+
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+#define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
 
 #endif /* makefile_parameter */
 #endif /* _CONFIGURED_ */
@@ -1699,14 +1896,7 @@ perl=`./which perl`
 if [ `expr "$perl" : 'not found'` != 0 ]; then
   perl=/usr/local/bin/perl
 fi
-if [ $sysname = CYGWIN ]; then
-  cygwin=1
-else
-  cygwin=0
-fi
 sed -e "s;@PERL@;$perl;" \
-    -e "s;@CYGWIN@;$cygwin;" \
     scripts/dirlist.in > scripts/dirlist.cgi
-
 
 echo 'Configuration done. Just type "make".'

@@ -139,7 +139,7 @@ FtpLogin(FTP * ftp_return, char *host, char *user, char *pass)
     if (atoi(tmp->ptr) != 220)
 	return -1;
     if (fmInitialized) {
-	message(Sprintf("Sending FTP username (%s) to remote server.\n", user)->ptr, 0, 0);
+	message(Sprintf("Sending FTP username (%s) to remote server.", user)->ptr, 0, 0);
 	refresh();
     }
     tmp = Sprintf("USER %s\r\n", user);
@@ -154,7 +154,7 @@ FtpLogin(FTP * ftp_return, char *host, char *user, char *pass)
     if (atoi(tmp->ptr) != 331)
 	return -1;
     if (fmInitialized) {
-	message(Sprintf("Sending FTP password to remote server.\n")->ptr, 0, 0);
+	message(Sprintf("Sending FTP password to remote server.")->ptr, 0, 0);
 	refresh();
     }
     tmp = Sprintf("PASS %s\r\n", pass);
@@ -263,17 +263,26 @@ FtpCwd(FTP ftp, char *path)
 }
 
 int
-FtpOpenRead(FTP ftp, char *path)
+FtpOpenReadBody(FTP ftp, char *path)
 {
     Str tmp;
 
-    if (ftp_pasv(ftp) < 0)
-	return -1;
     tmp = Sprintf("RETR %s\r\n", path);
     fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
     fflush(ftp->wcontrol);
     tmp = read_response(ftp);
     if (tmp->ptr[0] == '5') {
+       return -1;
+    }
+    return 0;
+}
+
+int
+FtpOpenRead(FTP ftp, char *path)
+{
+    if (ftp_pasv(ftp) < 0)
+       return -1;
+    if (FtpOpenReadBody(ftp, path) < 0) {
 	fclose(ftp->data);
 	ftp->data = NULL;
 	return -1;
@@ -292,12 +301,10 @@ Ftpfclose(FILE * f)
 }
 
 int
-FtpData(FTP ftp, char *cmd, char *arg, char *mode)
+FtpDataBody(FTP ftp, char *cmd, char *arg, char *mode)
 {
     Str tmp;
 
-    if (ftp_pasv(ftp) < 0)
-	return -1;
     tmp = Sprintf(cmd, arg);
     Strcat_charp(tmp, "\r\n");
     fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
@@ -309,6 +316,15 @@ FtpData(FTP ftp, char *cmd, char *arg, char *mode)
 	return -1;
     }
     return 0;
+}
+
+int
+FtpData(FTP ftp, char *cmd, char *arg, char *mode)
+{
+    if (ftp_pasv(ftp) < 0)
+       return -1;
+
+    return FtpDataBody(ftp, cmd, arg, mode);
 }
 
 int
@@ -409,6 +425,7 @@ openFTP(ParsedURL * pu)
 	    if (fmInitialized) {
 		term_raw();
 		pwd = Strnew_charp(inputLine("Password: ", NULL, IN_PASSWORD));
+		pwd = Str_conv_to_system(pwd);
 		term_cbreak();
 	    }
 	    else {
@@ -437,11 +454,18 @@ openFTP(ParsedURL * pu)
     if (pu->file == NULL || *pu->file == '\0')
 	goto ftp_dir;
     else
-	realpath = ftp_restore_str(pu->file);
+	realpath = file_unquote(pu->file);
+
+    if (pu->file[strlen(pu->file)-1] == '/')
+       goto ftp_dir;
 
     /* Get file */
     FtpBinary(ftp);
-    s = FtpOpenRead(ftp, realpath);
+    if (ftp_pasv(ftp) < 0) {
+       FtpBye(ftp);
+       return NULL;
+    }
+    s = FtpOpenReadBody(ftp, realpath);
     if (!FtpError(s)) {
 #ifdef JP_CHARSET
 	pathStr = Strnew_charp(realpath);
@@ -453,18 +477,24 @@ openFTP(ParsedURL * pu)
 	pu->file = realpath;
 	return FTPDATA(ftp);
     }
+    goto ftp_dir1;
 
     /* Get directory */
   ftp_dir:
+    if (ftp_pasv(ftp) < 0) {
+       FtpBye(ftp);
+       return NULL;
+    }
+  ftp_dir1:
     pu->scheme = SCM_FTPDIR;
     FTPDIRtmp = Strnew();
     sv_type = ftp_system(ftp);
     if (pu->file == NULL || *pu->file == '\0') {
 	if (sv_type == UNIXLIKE_SERVER) {
-	    s = FtpData(ftp, "LIST", NULL, "r");
+           s = FtpDataBody(ftp, "LIST", NULL, "r");
 	}
 	else {
-	    s = FtpData(ftp, "NLST", NULL, "r");
+           s = FtpDataBody(ftp, "NLST", NULL, "r");
 	}
 	curdir = Strnew_charp("/");
     }
@@ -472,11 +502,11 @@ openFTP(ParsedURL * pu)
 	if (sv_type == UNIXLIKE_SERVER) {
 	    s = FtpCwd(ftp, realpath);
 	    if (!FtpError(s)) {
-		s = FtpData(ftp, "LIST", NULL, "r");
+        s = FtpDataBody(ftp, "LIST", NULL, "r");
 	    }
 	}
 	else {
-	    s = FtpData(ftp, "NLST %s", realpath, "r");
+           s = FtpDataBody(ftp, "NLST %s", realpath, "r");
 	}
 	if (realpath[0] == '/')
 	    curdir = Strnew_charp(realpath);
@@ -496,10 +526,10 @@ openFTP(ParsedURL * pu)
     Strcat_charp(host, pu->host);
     if (Strlastchar(host) == '/')
 	Strshrink(host, 1);
-    qdir = htmlquote_str(curdir->ptr);
+    qdir = html_quote(curdir->ptr);
     FTPDIRtmp = Sprintf("<html><head><title>%s%s</title></head><body><h1>Index of %s%s</h1>\n",
 			host->ptr, qdir, host->ptr, qdir);
-    curdir = Strnew_charp(ftp_escape_str(curdir->ptr));
+    curdir = Strnew_charp(file_quote(curdir->ptr));
     qdir = curdir->ptr;
     tmp2 = Strdup(curdir);
     if (Strcmp_charp(curdir, "/") != 0) {
@@ -514,7 +544,7 @@ openFTP(ParsedURL * pu)
 	Strcat_charp(FTPDIRtmp, "<ul><li><a href=\"");
     }
     Strcat_m_charp(FTPDIRtmp, host->ptr,
-		   htmlquote_str(tmp2->ptr),
+		   html_quote(tmp2->ptr),
 		   "\">[Upper Directory]</a>\n", NULL);
 
     flist = New_N(char *, nfile_max);
@@ -578,9 +608,9 @@ openFTP(ParsedURL * pu)
 	    Strcat_m_charp(FTPDIRtmp, "<a href=\"",
 			   host->ptr,
 			   qdir,
-			   ftp_escape_str(fn),
+			   html_quote(file_quote(fn)),
 			   "\">",
-			   htmlquote_str(fn), NULL);
+			   html_quote(fn), NULL);
 	    if (ftype == FTPDIR_DIR) {
 		Strcat_charp(FTPDIRtmp, "/");
 		len++;
@@ -616,9 +646,9 @@ openFTP(ParsedURL * pu)
 	    fn = flist[i];
 	    Strcat_m_charp(FTPDIRtmp, "<li><a href=\"",
 			   host->ptr, qdir,
-			   ftp_escape_str(fn),
+			   html_quote(file_quote(fn)),
 			   "\">",
-			   htmlquote_str(fn),
+			   html_quote(fn),
 			   "</a>\n", NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</ul></body></html>\n");
@@ -779,7 +809,7 @@ ex_ftpdir_name_size_date(char *line, char **name, char **date, char **sizep)
 	    && IS_SPACE(cp[6])
 	    && (IS_SPACE(cp[7]) || IS_DIGIT(cp[7])) && IS_DIGIT(cp[8])
 	    && (cp[9] == ':' || IS_DIGIT(cp[9]))
-	    && IS_DIGIT(cp[10]) && IS_DIGIT(cp[11])
+	    && IS_DIGIT(cp[10]) && (IS_DIGIT(cp[11]) || IS_SPACE(cp[11]))
 	    && IS_SPACE(cp[12])) {
 	cp[12] = '\0';
 	date_str = Strnew_charp(cp);

@@ -3,13 +3,27 @@
 # Directory list CGI by Hironori Sakamoto (hsaka@mth.biglobe.ne.jp)
 #
 
-$CYGWIN = @CYGWIN@;
+if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
+  $WIN32 = 1;
+  $CYGPATH = 1;
+}
+elsif ( $^O =~ /cygwin|os2/i ) {
+  $WIN32 = 1;
+  $CYGPATH = 0;
+}
+else {
+  $WIN32 = 0;
+  $CYGPATH = 0;
+}
 $RC_DIR = '~/.w3m/';
 
 $RC_DIR =~ s@^~/@$ENV{'HOME'}/@;
+if ($CYGPATH) {
+  $RC_DIR = &cygwin_pathconv("$RC_DIR");
+}
 $CONFIG = "$RC_DIR/dirlist";
 $CGI = $ENV{'SCRIPT_NAME'} || $0;
-$CGI = &html_quote(&form_encode("file:$CGI"));
+$CGI = "file://" . &file_encode("$CGI");
 
 $AFMT = '<a href="%s"><nobr>%s</nobr></a>';
 $NOW = time();
@@ -39,7 +53,7 @@ if ($query eq '') {
 } else {
   $dir = $query;
   if (($dir !~ m@^/@) &&
-      ($CYGWIN && $dir !~ /^[a-z]:/i)) {
+      ($WIN32 && $dir !~ /^[a-z]:/i)) {
     $_ = `pwd`;
     chop;
     s/\r$//;
@@ -50,10 +64,16 @@ if ($query eq '') {
 if ($dir !~ m@/$@) {
   $dir .= '/';
 }
+if ($dir =~ m@^/@ && $CYGPATH) {
+  $dir = &cygwin_pathconv("$dir");
+}
 $ROOT = '';
-if ($CYGWIN) {
+if ($WIN32) {
   if (($dir =~ s@^//[^/]+@@) || ($dir =~ s@^[a-z]:@@i)) {
     $ROOT = $&;
+  }
+  if ($CYGPATH) {
+      $ROOT = &cygwin_pathconv("$ROOT");
   }
 }
 if ($cgi) {
@@ -67,8 +87,8 @@ if ($cmd) {
   &update_option($CONFIG);
 }
 
-$qdir = &html_quote("$ROOT$dir");
-$edir = &html_quote(&form_encode("$ROOT$dir"));
+$qdir = "$ROOT" . &html_quote("$dir");
+$edir = "$ROOT" . &file_encode("$dir");
 if (! opendir(DIR, "$ROOT$dir")) {
   print <<EOF;
 Content-Type: text/html
@@ -98,7 +118,7 @@ Content-Type: text/html
 <body>
 <h1>Directory list of $qdir</h1>
 EOF
-&print_form($qdir, @OPT);
+&print_form($edir, @OPT);
 print <<EOF;
 <hr>
 EOF
@@ -114,14 +134,14 @@ if ($TYPE eq $TYPE_TREE) {
 <tr valign=top><td width="160">
 <pre>
 EOF
-  $q = &html_quote("$ROOT$_");
-  $e = &html_quote(&form_encode("$ROOT$_"));
+  $q = "$ROOT". &html_quote("$_");
+  $e = "$ROOT" . &file_encode("$_");
   if ($dir =~ m@^$@) {
     $n = "\" name=\"current";
   } else {
     $n = '';
   }
-  printf("$AFMT\n", "$q$n", "<b>$q</b>");
+  printf("$AFMT\n", "$e$n", "<b>$q</b>");
   $N = 0;
   $SKIPLINE = "";
 
@@ -163,23 +183,23 @@ sub left_dir {
   local($_, $dir0, $d, $qdir, $q, $edir, $e);
 
   $dir0 = "$dir/";
-  $dir = "$ROOT$dir0";
-  opendir(DIR, $dir) || return;
+  $dir = "$dir0";
+  opendir(DIR, "$ROOT$dir") || return;
 
   foreach(sort readdir(DIR)) {
-    -d "$dir$_" || next;
+    -d "$ROOT$dir$_" || next;
     /^\.$/ && next;
     /^\.\.$/ && next;
     push(@cdirs, $_);
   }
   closedir(DIR);
 
-  $qdir = &html_quote($dir);
-  $edir = &html_quote(&form_encode($dir));
+  $qdir = "$ROOT" . &html_quote($dir);
+  $edir = "$ROOT" . &file_encode($dir);
   while(@cdirs) {
     $_ = shift @cdirs;
     $q = &html_quote($_);
-    $e = &html_quote(&form_encode($_));
+    $e = &file_encode($_);
     $N++;
     if (!$ok && $_ eq $sdirs[0]) {
       $d = $dir0 . shift @sdirs;
@@ -189,11 +209,11 @@ sub left_dir {
       } else {
         $n = '';
       }
-      printf("${pre}o-$AFMT\n", "$qdir$q$n", "<b>$q</b>");
+      printf("${pre}o-$AFMT\n", "$edir$e$n", "<b>$q</b>");
       &left_dir(@cdirs ? "$pre| " : "$pre  ", $d, @sdirs);
       $ok = 1;
     } else {
-      printf("${pre}+-$AFMT\n", "$qdir$q", $q);
+      printf("${pre}+-$AFMT\n", "$edir$e", $q);
     }
   }
 }
@@ -206,11 +226,11 @@ sub right_dir {
         $atime,$mtime,$ctime,$blksize,$blocks);
   local(%sizes, %ctimes, %prints);
 
-  $dir = "$ROOT$dir/";
-  opendir(DIR, $dir) || return;
+  $dir = "$dir/";
+  opendir(DIR, "$ROOT$dir") || return;
 
-  $qdir = &html_quote($dir);
-  $edir = &html_quote(&form_encode($dir));
+  $qdir = "$ROOT" . &html_quote($dir);
+  $edir = "$ROOT" . &file_encode($dir);
   if ($TYPE eq $TYPE_TREE) {
     print "<b>$qdir</b>\n";
   }
@@ -221,7 +241,7 @@ sub right_dir {
 #    if ($TYPE eq $TYPE_TREE) {
 #      /^\.\.$/ && next;
 #    }
-    $f = "$dir$_";
+    $f = "$ROOT$dir$_";
     (($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
       $atime,$mtime,$ctime,$blksize,$blocks) = lstat($f)) || next;
     push(@list, $_);
@@ -272,16 +292,16 @@ sub right_dir {
     $n = 0;
     print "<table>\n<tr valign=top>";
     foreach(@list) {
-      $f = "$dir$_";
+      $f = "$ROOT$dir$_";
       $q = &html_quote($_);
-      $e = &html_quote(&form_encode($_));
+      $e = &file_encode($_);
       if ($n % $nr == 0) {
         print "<td>";
       }
       if (-d $f) {
-        printf($AFMT, "$qdir$q", "$q/");
+        printf($AFMT, "$edir$e", "$q/");
       } else {
-        printf($AFMT, "$qdir$q", $q);
+        printf($AFMT, "$edir$e", $q);
       }
       $n++;
       if ($n % $nr == 0) {
@@ -294,14 +314,14 @@ sub right_dir {
     return;
   }
   foreach(@list) {
-    $f = "$dir$_";
+    $f = "$ROOT$dir$_";
     $q = &html_quote($_);
-    $e = &html_quote(&form_encode($_));
+    $e = &file_encode($_);
     print $prints{$_};
     if (-d $f) {
-      printf($AFMT, "$qdir$q", "$q/");
+      printf($AFMT, "$edir$e", "$q/");
     } else {
-      printf($AFMT, "$qdir$q", $q);
+      printf($AFMT, "$edir$e", $q);
     }
     if (-l $f) {
       print " -> ", &html_quote(readlink($f));
@@ -316,15 +336,15 @@ sub init_option {
   $OPT_FORMAT = 1;
   $OPT_SORT   = 2;
   $TYPE_TREE    = 't';
-  $TYPE_STARDRD = 'd';
+  $TYPE_STANDARD = 'd';
   $FORMAT_SHORT    = 's';
-  $FORMAT_STANDRAD = 'd';
+  $FORMAT_STANDARD = 'd';
   $FORMAT_LONG     = 'l';
   $FORMAT_COLUMN   = 'c';
   $SORT_NAME = 'n';
   $SORT_SIZE = 's';
   $SORT_TIME = 't';
-  local(@opt) = ($TYPE_TREE, $FORMAT_STANDRAD, $SORT_NAME);
+  local(@opt) = ($TYPE_TREE, $FORMAT_STANDARD, $SORT_NAME);
   local($_);
 
   open(CONFIG, "< $config") || return @opt;
@@ -416,17 +436,16 @@ sub html_quote {
   s/[<>&"]/$QUOTE{$&}/g;
   return $_;
 }
-sub form_encode {
+sub file_encode {
   local($_) = @_;
-  s/[\t\r\n%#&=+]/sprintf('%%%2x', unpack('c', $&))/eg;
-  s/ /+/g;
+  s/[\000-\040\+:#?&%<>"\177-\377]/sprintf('%%%02X', unpack('C', $&))/eg;
   return $_;
 }
 
 sub form_decode {
   local($_) = @_;
   s/\+/ /g;
-  s/%([\da-f][\da-f])/pack('c', hex($1))/egi;
+  s/%([\da-f][\da-f])/pack('C', hex($1))/egi;
   return $_;
 }
 
@@ -499,3 +518,15 @@ sub utime {
   }
 }
 
+sub cygwin_pathconv {
+  local($_) = @_;
+  local(*CYGPATH);
+
+  open(CYGPATH, '-|') or exec('cygpath', '-w', $_);
+  $_ = <CYGPATH>;
+  close(CYGPATH);
+  s/\r?\n$//;
+  s!\\!/!g;
+  s!/$!!;
+  return $_;
+}

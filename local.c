@@ -2,9 +2,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <errno.h>
 #ifdef READLINK
 #include <unistd.h>
 #endif				/* READLINK */
+#ifdef __EMX__
+#include <limits.h>
+#endif                /* __EMX__ */
 #include "local.h"
 
 #define CGIFN_NORMAL     0
@@ -18,6 +24,7 @@ setLocalCookie()
     Str buf;
     char hostname[256];
     gethostname(hostname,256);
+
     buf = Sprintf("%d.%ld@%s",getpid(),lrand48(),hostname);
     Local_cookie = buf->ptr;
 }
@@ -39,12 +46,13 @@ dirBuffer(char *dname)
     int i, l, nrow, n = 0, maxlen = 0;
     int nfile, nfile_max = 100;
     Str dirname;
+    Buffer *buf;
 
     d = opendir(dname);
     if (d == NULL)
 	return NULL;
     dirname = Strnew_charp(dname);
-    qdir = htmlquote_str(dirname->ptr);
+    qdir = html_quote(Str_conv_from_system(dirname)->ptr);
     tmp = Sprintf("<title>Directory list of %s</title><h1>Directory list of %s</h1>\n", qdir, qdir);
     flist = New_N(char *, nfile_max);
     nfile = 0;
@@ -99,10 +107,10 @@ dirBuffer(char *dname)
 	    else
 		Strcat_charp(tmp, "[FILE] ");
 	}
-	Strcat_m_charp(tmp, "<A HREF=\"", htmlquote_str(fbuf->ptr), NULL);
+	Strcat_m_charp(tmp, "<A HREF=\"", file_to_url(fbuf->ptr), NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
-	Strcat_m_charp(tmp, "\">", htmlquote_str(p), NULL);
+	Strcat_m_charp(tmp, "\">", html_quote(conv_from_system(p)), NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
 	Strcat_charp(tmp, "</a>");
@@ -120,7 +128,7 @@ dirBuffer(char *dname)
 	    if (S_ISLNK(lst.st_mode)) {
 		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf))) > 0) {
 		    lbuf[l] = '\0';
-		    Strcat_m_charp(tmp, " -> ", htmlquote_str(lbuf), NULL);
+		    Strcat_m_charp(tmp, " -> ", html_quote(conv_from_system(lbuf)), NULL);
 		    if (S_ISDIR(st.st_mode))
 			Strcat_char(tmp, '/');
 		}
@@ -133,7 +141,12 @@ dirBuffer(char *dname)
 	Strcat_charp(tmp, "</TR></TABLE>\n");
     }
 
-    return loadHTMLString(tmp);
+    buf = loadHTMLString(tmp);
+#ifdef JP_CHARSET
+    if (buf)
+	buf->document_code = SystemCode;
+#endif
+    return buf;
 }
 
 #ifdef __EMX__
@@ -157,21 +170,32 @@ check_local_cgi(char *file, int status)
 #ifdef __EMX__
     if (status != CGIFN_CGIBIN) {
 	char tmp[_MAX_PATH];
+       int len;
 
 	_abspath(tmp, lib_dir, _MAX_PATH);	/* Translate '\\'  to  '/' 
 						 * 
 						 */
-	if (strnicmp(file, tmp, strlen(tmp)))	/* and ignore case  */
+       len = strlen(tmp);
+       while (len > 1 && tmp[len-1] == '/')
+           len--;
+       if (strnicmp(file, tmp, len) ||        /* and ignore case  */
+           (file[len] != '/'))
 	    return -1;
     }
 #else				/* not __EMX__ */
-    if (status != CGIFN_CGIBIN &&
-	strncmp(file, lib_dir, strlen(lib_dir)) != 0) {
+    if (status != CGIFN_CGIBIN) {
+       char *tmp = Strnew_charp(lib_dir)->ptr;
+       int len = strlen(tmp);
+
+       while (len > 1 && tmp[len-1] == '/')
+           len--;
+       if (strncmp(file, tmp, len) ||
+           (file[len] != '/'))
 	/* 
 	 * a local-CGI script should be located on either
 	 * /cgi-bin/ directory or LIB_DIR (typically /usr/local/lib/w3m).
 	 */
-	return -1;
+           return -1;
     }
 #endif				/* not __EMX__ */
     if (stat(file, &st) < 0)
@@ -300,19 +324,85 @@ cgi_filename(char *fn, int *status)
     return fn;
 }
 
-FILE *
-localcgi_post(char *file, FormList * request, char *referer)
+static pid_t
+localcgi_popen_r(FILE **p_fp)
 {
-    FILE *f;
-    Str tmp1, tmp2;
-    int status;
+  int fd[2];
+  FILE *fp;
+  pid_t pid;
+  Str emsg;
 
-    tmp1 = Strnew_charp(file);
-    file = cgi_filename(file, &status);
+  if (pipe(fd) < 0) {
+    emsg = Sprintf("localcgi_popen_r: pipe: %s", strerror(errno));
+    disp_err_message(emsg->ptr, FALSE);
+    return (pid_t)-1;
+  }
+
+  flush_tty();
+  if ((pid = fork()) < 0) {
+    emsg = Sprintf("localcgi_popen_r: fork: %s", strerror(errno));
+    disp_err_message(emsg->ptr, FALSE);
+    close(fd[0]);
+    close(fd[1]);
+    return (pid_t)-1;
+  }
+  else if (!pid) {
+    close_tty();
+    dup2(fd[1], 1);
+
+    if (fd[1] > 1)
+      close(fd[1]);
+
+    close(fd[0]);
+  }
+  else {
+    close(fd[1]);
+
+    if (!(fp = fdopen(fd[0], "r"))) {
+      emsg = Sprintf("localcgi_popen_r: fdopen(%d, \"r\"): %s", fd[0], strerror(errno));
+      disp_err_message(emsg->ptr, FALSE);
+      kill(pid, SIGTERM);
+      close(fd[0]);
+      return (pid_t)-1;
+    }
+
+    *p_fp = fp;
+  }
+
+  return pid;
+}
+
+FILE *
+localcgi_post(char *uri, FormList * request, char *referer)
+{
+    FILE *f, *f1;
+    Str tmp1;
+    int status;
+    pid_t pid;
+    char *name, *file, *qstr;
+
+    if ((qstr = strchr(uri, '?'))) {
+       name = allocStr(uri, qstr - uri);
+       qstr = allocStr(qstr + 1, 0);
+    }
+    else
+       name = uri;
+    file = cgi_filename(name, &status);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
-    set_cgi_environ(tmp1->ptr, file, tmp1->ptr);
+    tmp1 = tmpfname(TMPF_DFL, NULL);
+    f1 = fopen(tmp1->ptr, "w");
+    if (f1 == NULL)
+       return NULL;
+    pushText(fileToDelete, tmp1->ptr);
+    if ((pid = localcgi_popen_r(&f))) {
+       fclose(f1);
+       return pid > 0 ? f : NULL;
+    }
+    set_cgi_environ(Strnew_charp(name)->ptr, file, Strnew_charp(uri)->ptr);
     set_environ("REQUEST_METHOD", "POST");
+    if (qstr)
+       set_environ("QUERY_STRING", qstr);
     set_environ("CONTENT_LENGTH", Sprintf("%d", request->length)->ptr);
     if (referer && referer != NO_REFERER)
         set_environ("HTTP_REFERER",referer);
@@ -323,66 +413,65 @@ localcgi_post(char *file, FormList * request, char *referer)
     else {
 	set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
     }
-    tmp1 = tmpfname(TMPF_DFL, NULL);
-    f = fopen(tmp1->ptr, "w");
-    if (f == NULL)
-	return NULL;
-    pushText(fileToDelete, tmp1->ptr);
     if (request->enctype == FORM_ENCTYPE_MULTIPART) {
 	FILE *fd;
 	int c;
 	fd = fopen(request->body, "r");
 	if (fd != NULL) {
 	    while ((c = fgetc(fd)) != EOF)
-		fputc(c, f);
+		fputc(c, f1);
 	    fclose(fd);
 	}
     }
     else {
-	fputs(request->body, f);
+	fputs(request->body, f1);
     }
-    fclose(f);
-    tmp2 = Sprintf("%s < %s", file, tmp1->ptr);
-#ifdef __EMX__
-    f = popen(tmp2->ptr, "r");
-#else
-    tmp1 = Strnew_charp(CurrentDir);
+    fclose(f1);
+    freopen( tmp1->ptr, "r", stdin);
+#ifndef __EMX__
     chdir(mydirname(file));
-    f = popen(tmp2->ptr, "r");
-    chdir(tmp1->ptr);
 #endif
-    return f;
+    execl(file, mybasename(file), NULL);
+    fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
+           file, mybasename(file), strerror(errno));
+    exit(1);
+    return NULL;
 }
 
 FILE *
-localcgi_get(char *file, char *request, char *referer)
+localcgi_get(char *uri, char *request, char *referer)
 {
     FILE *f;
-    Str tmp1, tmp2;
     int status;
+    pid_t pid;
+    char *file, *sh;
     
-    tmp1 = Strnew_charp(file);
-    file = cgi_filename(file, &status);
+    file = cgi_filename(uri, &status);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
+    if ((pid = localcgi_popen_r(&f)) < 0)
+       return NULL;
+    else if (pid)
+       return f;
     if (!strcmp(request, "")) {
-        set_cgi_environ(tmp1->ptr, file, tmp1->ptr);
+        set_cgi_environ(Strnew_charp(uri)->ptr, file, Strnew_charp(uri)->ptr);
     } else {
-        set_cgi_environ(tmp1->ptr, file,
-			Strnew_m_charp(tmp1->ptr, "?", request, NULL)->ptr);
+        set_cgi_environ(Strnew_charp(uri)->ptr, file,
+               Strnew_m_charp(uri, "?", request, NULL)->ptr);
     }
     if (referer && referer != NO_REFERER)
         set_environ("HTTP_REFERER",referer);
     set_environ("REQUEST_METHOD", "GET");
     set_environ("QUERY_STRING", request);
-    tmp2 = Sprintf("%s", file);
 #ifdef __EMX__
-    f = popen(tmp2->ptr, "r");
+    freopen("nul", "r", stdin);
 #else
-    tmp1 = Strnew_charp(CurrentDir);
+    freopen("/dev/null", "r", stdin);
     chdir(mydirname(file));
-    f = popen(tmp2->ptr, "r");
-    chdir(tmp1->ptr);
 #endif
-    return f;
+    execl(file, mybasename(file), NULL);
+    fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
+           file, mybasename(file), strerror(errno));
+    exit(1);
+    return NULL;
 }

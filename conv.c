@@ -141,7 +141,7 @@ static void
 n_impr(char s)
 {
     fprintf(stderr, "conv: option %c(0x%02x) is not implemented yet... sorry\n", s, s);
-    exit(1);
+    w3m_exit(1);
 }
 
 Str

@@ -1,3 +1,8 @@
+2003-04-27  qhwt@myrealbox.com
+
+	* [w3m-dev 03886] Re: POSTing patch (Re: User-Agent for Bonus/2ch.cgi)
+	* Bonus/2ch.cgi: posting
+
 2003-04-20  qhwt@myrealbox.com
 
 	* [w3m-dev 03883] User-Agent for Bonus/2ch.cgi
@@ -7770,4 +7775,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.828 2003/04/20 13:30:27 ukai Exp $
+$Id: ChangeLog,v 1.829 2003/04/26 17:01:01 ukai Exp $

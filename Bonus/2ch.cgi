@@ -11,11 +11,19 @@ if (/subback.html$/) {
 	exit;
 }
 
-s@(/\d+)(/([^/]*))?$@$1@ || exit;
+s@/(\d+)(/([^/]*))?$@/$1@ || exit;
+my $datnum = $1;
 $label = $3;
 $cgi = "$CGI?$_";
+
 s@^http://([^/]+)/test/read.cgi/([^/]+)/@$1/$2/dat/@ || exit;
 $subback = "$CGI?http://$1/$2/subback.html";
+$bbs = $2;
+if ($ENV{REQUEST_METHOD} eq "POST") {
+	&post();
+	exit;
+}
+
 $_ .= ".dat";
 $dat = "http://$_";
 $tmp = $ENV{"HOME"} . "/.w3m2ch/$_";
@@ -99,6 +107,7 @@ EOF
 print <<EOF;
 </dl>
 <hr>
+<form method=POST action="$cgi"><input type=submit value="èëÇ´çûÇﬁ" name=submit> ñºëOÅF <input name=FROM size=19> E-mail<font size=1> (è»ó™â¬) </font>: <input name=mail size=19><br><textarea rows=5 cols=70 wrap=off name=MESSAGE></textarea><input type=hidden name=bbs value=$bbs><input type=hidden name=key value=$datnum><input type=hidden name=time value=@{[time]}></form></body></html>
 EOF
 
 sub link {
@@ -132,4 +141,64 @@ EOF
 		print;
 	}
 	unlink($tmp);
+}
+
+sub post {
+	my $debug = 0;
+
+	$| = 1;
+	use IO::Socket;
+	my @POST = <>;
+	$QUERY_STRING =~ m@^http://([^/]+)@;
+	my $host = $1;
+	my $sock = IO::Socket::INET->new("$host:80") or die;
+	# retrieve posting cookie; this may not work
+	print "Content-Type: text/html\n\n";
+	print $sock
+	    "HEAD /test/bbs.cgi HTTP/1.1\n",
+	    "Host: $host\n",
+	    "Connection: keep-alive\n",
+	    "\n";
+	my $posting_cookie = undef;
+	while (<$sock>) {
+		print if ($debug);
+		s/[\n\r]+$//;
+		last if (/^$/);
+		if (/^set-cookie:.*(PON=[^;]+)/i) {
+			$posting_cookie = $1;
+		}
+	}
+	#$sock = IO::Socket::INET->new("$host:80") or die;
+	my $submit =
+	    "POST /test/bbs.cgi HTTP/1.1\n" .
+	    "Host: $host\n" .
+	    "Accept-Language: ja\n" .
+	    "User-Agent: $UserAgent\n" .
+	    "Referer: $QUERY_STRING\n" .
+	    "Cookie: $posting_cookie; NAME=nobody; MAIL=sage\n" .
+	    "Content-Length: " . length(join("", @POST)) . "\n" .
+	    "\n@POST";
+	print $sock $submit or die;
+	print "\n-- POSTed contents --\n${submit}\n-- POSTed contents --\n"
+	    if ($debug);
+	my $chunked = 0;
+	while (<$sock>) {
+		s/[\n\r]*$//;
+		last if (/^$/);
+		$chunked = 1 if (/^transfer-encoding:\s*chunked/i);
+	}
+	my $post_response = "";
+	while (<$sock>) {
+		if ($chunked) {
+			s/[ \r\n]*$//;
+			my $len = hex($_);
+			$len > 0 or last;
+			read($sock, $_, $len);
+			<$sock>;	#skip empty line at the end of chunk.
+		}
+		$post_response .= $_;
+	}
+	$post_response =~ s/<META content=(\d+);URL=(\S+) http-equiv=refresh>/<META content=$1;URL=$cgi http-equiv=refresh>/im;
+	print $post_response;
+	exit;
 }

@@ -37,7 +37,7 @@
 #define SYSTEM_CODE '@SYSTEM_CODE@'
 #define W3M_LANG @W3M_LANG@
 #define LANG W3M_LANG
-#undef USE_KANJI_SYMBOLS
+#undef KANJI_SYMBOLS
 #undef USE_COLOR
 #undef USE_ANSI_COLOR
 #undef USE_BG_COLOR
@@ -103,7 +103,12 @@
 #undef HAVE_TERMIO_H
 #undef HAVE_SGTTY_H
 #undef HAVE_DIRENT_H
+#define SIZEOF_LONG_LONG 8
+#if SIZEOF_LONG_LONG > 0
 typedef long long clen_t;
+#else
+typedef long clen_t;
+#endif
 #undef HAVE_STRTOLL
 #undef HAVE_STROQ
 #undef HAVE_ATOLL
@@ -144,8 +149,8 @@ typedef long long clen_t;
 
 #define RETSIGTYPE @RETSIGTYPE@
 typedef RETSIGTYPE MySignalHandler;
-#define SIGNAL_ARG int _dummy	// XXX
-#define SIGNAL_ARGLIST 0	// XXX
+#define SIGNAL_ARG int _dummy	/* XXX */
+#define SIGNAL_ARGLIST 0	/* XXX */
 #define SIGNAL_RETURN @SIGNAL_RETURN@
 
 #ifdef HAVE_SIGSETJMP

@@ -118,6 +118,7 @@ dnl AC_TYPE_PID_T
 dnl AC_TYPE_SIZE_T
 dnl AC_HEADER_TIME
 dnl AC_STRUCT_TM
+AC_CHECK_SIZEOF(long long, 0)
 
 dnl Checks for library functions.
 dnl AC_FUNC_ALLOCA

@@ -84,7 +84,7 @@ AC_MSG_CHECKING(if background color support is enabled)
 AC_ARG_ENABLE(bgcolor,
  [  --enable-bgcolor        enable to set background color],,
  [enable_bgcolor="no"])
- test x$enable_ansi_color = xyes && AC_DEFINE(USE_ANSI_COLOR)
+ test x$enable_bgcolor = xyes && AC_DEFINE(USE_BG_COLOR)
 AC_MSG_RESULT($enable_bgcolor)])
 #
 # ----------------------------------------------------------------
@@ -269,7 +269,7 @@ AC_DEFINE_UNQUOTED(W3M_LANG,$W3M_LANG)])
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_KANJI_SYMBOLS],
 [AC_SUBST(KANJI_SYMBOLS)
-if test x$enable_japanese = xyes; then
+if test x$enable_japanese != xno; then
  AC_MSG_CHECKING(if --enable-kanjisymbols option specified)
  AC_ARG_ENABLE(kanjisymbols,
   [   --enable-kanjisymbols   use kanji symbols],
@@ -297,7 +297,7 @@ AC_DEFUN([AC_W3M_KEYMAP],
   KEYMAP_FILE="keybind"
  fi
  AC_SUBST(HELP_FILE)
- HELP_FILE=w3mhelp-$w3m_keybind_$w3m_lang.html
+ HELP_FILE=w3mhelp-${w3m_keybind}_$w3m_lang.html
  AC_DEFINE_UNQUOTED(HELP_FILE, "$HELP_FILE")
  AC_SUBST(KEYBIND)
  AC_DEFINE_UNQUOTED(KEYBIND, $w3m_keybind)])
@@ -474,11 +474,11 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 [lib=$1
  AC_MSG_CHECKING(for -l$lib)
  extlib="not found"
- for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
+ for extlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib
  do
-   if test -f $libdir/lib$lib.a -o -f $libdir/lib$lib.so ; then 
+   if test -f $extlibdir/lib$lib.a -o -f $extlibdir/lib$lib.so ; then 
     LIBS="$LIBS -l$lib"
-    extlib="found at $libdir"
+    extlib="found at $extlibdir"
     break
    fi
  done
@@ -544,7 +544,7 @@ AC_ARG_WITH(ssl,
  [  --with-ssl=PATH        support https protocol],,
  [with_ssl="no"])
 AC_MSG_RESULT($with_ssl)
-if test "${with_ssl+set}" = xset; then
+if test x"${with_ssl+set}" = xset; then
   AC_DEFINE(USE_SSL)
   AC_MSG_CHECKING(for SSL library/header)
   test -d $with_ssl || $with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
@@ -659,6 +659,7 @@ AC_DEFUN([AC_W3M_IMAGE],
   done
   IFS="$save_ifs"
   enable_image=yes
+  AC_DEFINE(USE_IMAGE)
   if test x$IMLIB_CONFIG = x; then
     IMLIB_CONFIG=imlib-config
   fi

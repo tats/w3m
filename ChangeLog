@@ -1,6 +1,20 @@
+2003-03-11  Yuji Abe <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03801] fix autoconf
+	* acinclude.m4 (AC_W3M_BG_COLOR): fix typo
+		(AC_W3M_KANJI_SYMBOLS): check enable_japanese != 'no'
+		(AC_W3M_KEYMAP): needs {}
+		(AC_W3M_EXTLIBS): don't modify libdir, use extlibdir
+		(AC_W3M_SSL): missing x
+		(AC_W3M_IMAGE): add AC_DEFINE(USE_IMAGE)
+	* config.h.in: s/USE_KANJI_SYMBOLS/KANJI_SYMBOLS/
+		add SIZEOF_LONG_LONG
+		don't use //, use /* */
+	* configure.in: add AC_CHECK_SIZEOF(long long, 0)
+
 2003-03-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
-	* autoconficate
+	* autoconfiscate
 	* Makefile.in: added
 	* acinclude.m4: added
 	* aclocal.m4: added (generated from acinclude.m4 by aclocal)
@@ -7355,4 +7369,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.775 2003/03/09 19:40:02 ukai Exp $
+$Id: ChangeLog,v 1.776 2003/03/10 16:04:09 ukai Exp $

@@ -9,7 +9,7 @@
 	* XMakefile: modified
 	* config.h.dist: updated
 
-2002-07-18  Hiroshi Kawashima <kei@sm.sony.co.jp>
+2002-07-18  ZXB01226@nifty.com
 
 	* w3m-img for framebuffer support
 	* http://homepage3.nifty.com/slokar/fb/
@@ -3582,4 +3582,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.402 2002/07/17 20:58:48 ukai Exp $
+$Id: ChangeLog,v 1.403 2002/07/17 21:21:56 ukai Exp $

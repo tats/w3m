@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.11 2001/11/23 21:22:02 ukai Exp $ */
+/* $Id: rc.c,v 1.12 2001/11/23 21:40:19 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -96,7 +96,10 @@ static int rc_initialized = 0;
 #define CMT_VI_PREC_NUM "vi風の数値プレフィクス"
 #endif
 #ifdef LABEL_TOPLINE
-#define CMT_LABEL_TOPLINE	"ラベルに移動する時に行頭になるようにする"
+#define CMT_LABEL_TOPLINE	"ラベルに移動する時にカーソルがトップになるようにする"
+#endif
+#ifdef NEXTPAGE_TOPLINE
+#define CMT_NEXTPAGE_TOPLINE	"次のページに移動する時にカーソルがトップになるようにする"
 #endif
 #define CMT_SHOW_NUM     "行番号を表示する"
 #define CMT_MIMETYPES    "利用するmime.types"
@@ -204,6 +207,9 @@ static int rc_initialized = 0;
 #endif
 #ifdef LABEL_TOPLINE
 #define CMT_LABEL_TOPLINE	"move cursor to top line when going to label"
+#endif
+#ifdef NEXTPAGE_TOPLINE
+#define CMT_NEXTPAGE_TOPLINE	"move cursor to top line when moving to next page"
 #endif
 #define CMT_SHOW_NUM     "Show line number"
 #define CMT_MIMETYPES    "mime.types files"
@@ -413,6 +419,9 @@ struct param_ptr params3[] =
 #endif
 #ifdef LABEL_TOPLINE
     {"label_topline", P_INT, PI_ONOFF, (void *) &label_topline, CMT_LABEL_TOPLINE, NULL },
+#endif
+#ifdef NEXTPAGE_TOPLINE
+    {"nextpage_topline", P_INT, PI_ONOFF, (void *) &nextpage_topline, CMT_NEXTPAGE_TOPLINE, NULL },
 #endif
     {"wrap_search", P_INT, PI_ONOFF, (void *) &WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *) &IgnoreCase, CMT_IGNORE_CASE, NULL},

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.20 2001/11/23 21:22:02 ukai Exp $ */
+/* $Id: main.c,v 1.21 2001/11/23 21:40:19 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1110,10 +1110,11 @@ nscroll(int n, int mode)
 	tlnum = Currentbuf->topLine->linenumber;
 	llnum = Currentbuf->topLine->linenumber + LASTLINE - 1;
 #ifdef NEXTPAGE_TOPLINE
-       diff_n = 0;
-#else
-	diff_n = n - (tlnum - curtop->linenumber);
+	if (nextpage_topline)
+	    diff_n = 0;
+	else
 #endif
+	    diff_n = n - (tlnum - curtop->linenumber);
 	if (lnum < tlnum)
 	    lnum = tlnum + diff_n;
 	if (lnum > llnum)

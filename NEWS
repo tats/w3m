@@ -1,5 +1,6 @@
 w3m 0.5 or 1.0?
 
+* configuration file in $(sysconfdir)/$(package)/
 * func: NEXT_VISITED, PREV_VISITED
 * autoconfiscate
 * rc: use_history

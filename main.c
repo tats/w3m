@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.181 2002/12/25 16:06:43 ukai Exp $ */
+/* $Id: main.c,v 1.182 2002/12/27 15:50:33 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2893,7 +2893,7 @@ followA(void)
 	    delBuffer(buf);
 	else
 	    deleteTab(CurrentTab);
-	displayBuffer(Currentbuf, B_NORMAL);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
     loadLink(url, a->target, a->referer, NULL);
@@ -4074,7 +4074,7 @@ follow_map(struct parsed_tagarg *arg)
 	    delBuffer(buf);
 	else
 	    deleteTab(CurrentTab);
-	displayBuffer(Currentbuf, B_NORMAL);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
     cmd_loadURL(a->url, baseURL(Currentbuf),

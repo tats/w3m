@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.19 2002/02/14 03:47:48 ukai Exp $ */
+/* $Id: display.c,v 1.20 2002/03/09 18:07:31 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -303,6 +303,7 @@ displayBuffer(Buffer *buf, int mode)
 
 #ifdef USE_IMAGE
     if (buf->need_reshape) {
+	buf->need_reshape = 0;
 	displayBuffer(buf, B_FORCE_REDRAW);
 	return;
     }

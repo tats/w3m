@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.12 2002/12/24 17:20:48 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.13 2003/01/23 18:01:07 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -132,6 +132,9 @@ parse_tag(char **s, int internal)
 	q++;
     }
     *p = '\0';
+    while (*q && !IS_SPACE(*q) && !(tagname[0] != '/' && *q == '/') &&
+	   *q != '>')
+	q++;
 
     tag_id = getHash_si(&tagtable, tagname, HTML_UNKNOWN);
 
@@ -165,11 +168,9 @@ parse_tag(char **s, int internal)
 	    *(p++) = TOLOWER(*q);
 	    q++;
 	}
-	if (q == p) {
-	    q++;
-	    continue;
-	}
 	*p = '\0';
+	while (*q && *q != '=' && !IS_SPACE(*q) && *q != '>')
+	    q++;
 	SKIP_BLANKS(q);
 	if (*q == '=') {
 	    /* get value */
@@ -201,8 +202,12 @@ parse_tag(char **s, int internal)
 		    q++;
 	    }
 	    else if (*q) {
-		while (*q && !IS_SPACE(*q) && *q != '>')
-		    Strcat_char(value, *q++);
+		while (*q && !IS_SPACE(*q) && *q != '>') {
+		    Strcat_char(value, *q);
+		    if (!tag->need_reconstruct && html_quote_char(*q))
+			tag->need_reconstruct = TRUE;
+		    q++;
+		}
 	    }
 	}
 	for (i = 0; i < nattr; i++) {
@@ -226,6 +231,9 @@ parse_tag(char **s, int internal)
 		tag->value[i] = html_unquote(value->ptr);
 	    else
 		tag->value[i] = NULL;
+	}
+	else {
+	    tag->need_reconstruct = TRUE;
 	}
     }
 

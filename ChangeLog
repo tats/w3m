@@ -1,5 +1,22 @@
 2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* etc.c (next_status): after = is R_ST_VALUE
+			R_ST_VALUE > => R_ST_NORMAL
+			R_ST_VALUE SP => R_ST_TAG
+		(read_token): R_ST_VALUE
+		(correct_irrtag): R_ST_VALUE
+	* rm.h (R_ST_VALUE): added
+		(ST_IS_REAL_TAG): rewrite
+		(ST_IS_COMMENT): deleted
+		(ST_IS_TAG): deleted
+	* parsetagx.c (parse_tag): skip too long tagname
+				skip too long attrname
+				if attrvalue has quote char, need reconstruct
+				if unknown attr, need reconstruct
+	* table.c (visible_length): R_ST_VALUE
+
+2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03680] showProgress() on fast system
 	* file.c (showProgress): check line len, time
 
@@ -6726,4 +6743,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.707 2003/01/23 16:05:54 ukai Exp $
+$Id: ChangeLog,v 1.708 2003/01/23 18:01:01 ukai Exp $

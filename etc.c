@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.56 2003/01/23 16:02:15 ukai Exp $ */
+/* $Id: etc.c,v 1.57 2003/01/23 18:01:05 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -636,7 +636,7 @@ next_status(char c, int *status)
 	else if (c == '>')
 	    *status = R_ST_NORMAL;
 	else
-	    *status = R_ST_TAG;
+	    *status = R_ST_VALUE;
 	return 0;
     case R_ST_QUOTE:
 	if (c == '\'')
@@ -644,6 +644,12 @@ next_status(char c, int *status)
 	return 0;
     case R_ST_DQUOTE:
 	if (c == '"')
+	    *status = R_ST_TAG;
+	return 0;
+    case R_ST_VALUE:
+	if (c == '>')
+	    *status = R_ST_NORMAL;
+	else if (IS_SPACE(c))
 	    *status = R_ST_TAG;
 	return 0;
     case R_ST_AMP:
@@ -792,6 +798,7 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 	case R_ST_EQL:
 	case R_ST_QUOTE:
 	case R_ST_DQUOTE:
+	case R_ST_VALUE:
 	case R_ST_AMP:
 	    Strcat_char(buf, *p);
 	    break;
@@ -838,6 +845,7 @@ correct_irrtag(int status)
 	case R_ST_TAG:
 	case R_ST_TAG0:
 	case R_ST_EQL:		/* required ">" */
+	case R_ST_VALUE:
 	    c = '>';
 	    break;
 	case R_ST_QUOTE:

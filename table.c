@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.38 2003/01/20 15:30:21 ukai Exp $ */
+/* $Id: table.c,v 1.39 2003/01/23 18:01:08 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -484,7 +484,8 @@ visible_length(char *str)
 	    Strcat_char(tagbuf, *str);
 	}
 	else if (status == R_ST_TAG || status == R_ST_DQUOTE
-		 || status == R_ST_QUOTE || status == R_ST_EQL) {
+		 || status == R_ST_QUOTE || status == R_ST_EQL
+		 || status == R_ST_VALUE) {
 	    Strcat_char(tagbuf, *str);
 	}
 	else if (status == R_ST_AMP) {

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.88 2004/03/30 18:06:43 ukai Exp $ */
+/* $Id: url.c,v 1.89 2004/04/16 18:47:19 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1399,33 +1399,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	    }
 	    Strcat_charp(tmp, i->ptr);
 	}
-
-    if (!seen_www_auth
-#ifdef USE_SSL
-	&& hr->command != HR_COMMAND_CONNECT
-#endif
-	) {
-	Str auth_cookie = find_auth_cookie(pu->host, pu->port, pu->file, NULL);
-	if (auth_cookie)
-	    Strcat_m_charp(tmp, "Authorization: ", auth_cookie->ptr,
-			   "\r\n", NULL);
-    }
-
-    if (!seen_proxy_auth && (hr->flag & HR_FLAG_PROXY)
-#ifdef USE_SSL
-	&& (pu->scheme != SCM_HTTPS || hr->command == HR_COMMAND_CONNECT)
-#endif
-	) {
-	ParsedURL *proxy_pu = schemeToProxy(pu->scheme);
-	Str auth_cookie =
-	    find_auth_cookie(proxy_pu->host, proxy_pu->port, proxy_pu->file,
-			     NULL);
-	if (!auth_cookie && proxy_auth_cookie)
-	    auth_cookie = proxy_auth_cookie;
-	if (auth_cookie)
-	    Strcat_m_charp(tmp, "Proxy-Authorization: ", auth_cookie->ptr,
-			   "\r\n", NULL);
-    }
 
 #ifdef USE_COOKIE
     if (hr->command != HR_COMMAND_CONNECT &&

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.234 2003/12/08 16:08:01 ukai Exp $ */
+/* $Id: file.c,v 1.235 2004/04/16 18:47:19 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1388,21 +1388,25 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
     return hauth->scheme ? hauth : NULL;
 }
 
-static Str
+static void
 getAuthCookie(struct http_auth *hauth, char *auth_header,
 	      TextList *extra_header, ParsedURL *pu, HRequest *hr,
-	      FormList *request)
+	      FormList *request,
+	      volatile Str *uname, volatile Str *pwd)
 {
     Str ss = NULL;
-    Str uname, pwd;
     Str tmp;
     TextListItem *i;
     int a_found;
     int auth_header_len = strlen(auth_header);
     char *realm = NULL;
+    int proxy;
 
     if (hauth)
 	realm = qstr_unquote(get_auth_param(hauth->param, "realm"))->ptr;
+
+    if (!realm)
+	return;
 
     a_found = FALSE;
     for (i = extra_header->first; i != NULL; i = i->next) {
@@ -1411,9 +1415,9 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	    break;
 	}
     }
+    proxy = !strncasecmp("Proxy-Authorization:", auth_header,
+			 auth_header_len);
     if (a_found) {
-	if (!realm)
-	    return NULL;
 	/* This means that *-Authenticate: header is received after
 	 * Authorization: header is sent to the server. 
 	 */
@@ -1424,79 +1428,81 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	else
 	    fprintf(stderr, "Wrong username or password\n");
 	sleep(1);
-	ss = NULL;
 	/* delete Authenticate: header from extra_header */
 	delText(extra_header, i);
-
+	invalidate_auth_user_passwd(pu, realm, *uname, *pwd, proxy);
     }
-    if (realm && ss == NULL) {
-	int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
-				 auth_header_len);
+    *uname = NULL;
+    *pwd = NULL;
 
-	if (!a_found && find_auth_user_passwd(pu, realm, &uname, &pwd, proxy)) {
-	    /* found username & password in passwd file */ ;
+    if (!a_found && find_auth_user_passwd(pu, realm, (Str*)uname, (Str*)pwd, 
+					  proxy)) {
+	/* found username & password in passwd file */ ;
+    }
+    else {
+	if (QuietMessage)
+	    return;
+	/* input username and password */
+	sleep(2);
+	if (fmInitialized) {
+	    char *pp;
+	    term_raw();
+	    /* FIXME: gettextize? */
+	    if ((pp = inputStr(Sprintf("Username for %s: ", realm)->ptr,
+			       NULL)) == NULL)
+		return;
+	    *uname = Str_conv_to_system(Strnew_charp(pp));
+	    if ((pp = inputLine(Sprintf("Password for %s: ", realm)->ptr, NULL,
+				IN_PASSWORD)) == NULL) {
+		*uname = NULL;
+		return;
+	    }
+	    *pwd = Str_conv_to_system(Strnew_charp(pp));
+	    term_cbreak();
 	}
 	else {
-	    if (QuietMessage)
-		return ss;
-	    /* input username and password */
-	    sleep(2);
-	    if (fmInitialized) {
-		char *pp;
-		term_raw();
+	    /*
+	     * If post file is specified as '-', stdin is closed at this
+	     * point.
+	     * In this case, w3m cannot read username from stdin.
+	     * So exit with error message.
+	     * (This is same behavior as lwp-request.)
+	     */
+	    if (feof(stdin) || ferror(stdin)) {
 		/* FIXME: gettextize? */
-		if ((pp =
-		     inputStr(Sprintf("Username for %s: ", realm)->ptr,
-			      NULL)) == NULL)
-		    return NULL;
-		uname = Str_conv_to_system(Strnew_charp(pp));
-		if ((pp =
-		     inputLine(Sprintf("Password for %s: ", realm)->ptr, NULL,
-			       IN_PASSWORD)) == NULL)
-		    return NULL;
-		pwd = Str_conv_to_system(Strnew_charp(pp));
-		term_cbreak();
+		fprintf(stderr, "w3m: Authorization required for %s\n",
+			realm);
+		exit(1);
 	    }
-	    else {
-		/*
-		 * If post file is specified as '-', stdin is closed at this
-		 * point.
-		 * In this case, w3m cannot read username from stdin.
-		 * So exit with error message.
-		 * (This is same behavior as lwp-request.)
-		 */
-		if (feof(stdin) || ferror(stdin)) {
-		    /* FIXME: gettextize? */
-		    fprintf(stderr, "w3m: Authorization required for %s\n",
-			    realm);
-		    exit(1);
-		}
-
-		/* FIXME: gettextize? */
-		printf(proxy ? "Proxy Username for %s: " : "Username for %s: ",
-		       realm);
-		fflush(stdout);
-		uname = Strfgets(stdin);
-		Strchop(uname);
+	    
+	    /* FIXME: gettextize? */
+	    printf(proxy ? "Proxy Username for %s: " : "Username for %s: ",
+		   realm);
+	    fflush(stdout);
+	    *uname = Strfgets(stdin);
+	    Strchop(*uname);
 #ifdef HAVE_GETPASSPHRASE
-		pwd = Strnew_charp((char *)
-				   getpassphrase(proxy ? "Proxy Password: " :
-						 "Password: "));
+	    *pwd = Strnew_charp((char *)
+				getpassphrase(proxy ? "Proxy Password: " :
+					      "Password: "));
 #else
-		pwd = Strnew_charp((char *)
-				   getpass(proxy ? "Proxy Password: " :
-					   "Password: "));
+	    *pwd = Strnew_charp((char *)
+				getpass(proxy ? "Proxy Password: " :
+					"Password: "));
 #endif
-	    }
 	}
-	ss = hauth->cred(hauth, uname, pwd, pu, hr, request);
     }
+    ss = hauth->cred(hauth, *uname, *pwd, pu, hr, request);
     if (ss) {
 	tmp = Strnew_charp(auth_header);
 	Strcat_m_charp(tmp, " ", ss->ptr, "\r\n", NULL);
 	pushText(extra_header, tmp->ptr);
     }
-    return ss;
+    else {
+	*uname = NULL;
+	*pwd = NULL;
+    }
+    return;
 }
 
 static int
@@ -1566,7 +1572,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     int volatile searchHeader_through = TRUE;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     TextList *extra_header = newTextList();
-    volatile Str ss = NULL;
+    volatile Str uname = NULL;
+    volatile Str pwd = NULL;
     volatile Str realm = NULL;
     int volatile add_auth_cookie_flag;
     unsigned char status = HTST_NORMAL;
@@ -1735,10 +1742,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (t == NULL)
 	    t = "text/plain";
-	if (add_auth_cookie_flag && realm && ss) {
+	if (add_auth_cookie_flag && realm && uname && pwd) {
 	    /* If authorization is required and passed */
-	    add_auth_cookie(auth_pu->host, auth_pu->port, auth_pu->file,
-			    qstr_unquote(realm)->ptr, ss);
+	    add_auth_user_passwd(&pu, qstr_unquote(realm)->ptr, uname, pwd, 
+				  0);
 	    add_auth_cookie_flag = 0;
 	}
 	if ((p = checkHeader(t_buf, "WWW-Authenticate:")) != NULL &&
@@ -1748,9 +1755,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (findAuthentication(&hauth, t_buf, "WWW-Authenticate:") != NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
 		auth_pu = &pu;
-		ss = getAuthCookie(&hauth, "Authorization:", extra_header,
-				   auth_pu, &hr, request);
-		if (ss == NULL) {
+		getAuthCookie(&hauth, "Authorization:", extra_header,
+			      auth_pu, &hr, request, &uname, &pwd);
+		if (uname == NULL) {
 		    /* abort */
 		    TRAP_OFF;
 		    goto page_loaded;
@@ -1769,9 +1776,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		!= NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
 		auth_pu = schemeToProxy(pu.scheme);
-		ss = getAuthCookie(&hauth, "Proxy-Authorization:",
-				   extra_header, auth_pu, &hr, request);
-		if (ss == NULL) {
+		getAuthCookie(&hauth, "Proxy-Authorization:",
+			      extra_header, auth_pu, &hr, request, 
+			      &uname, &pwd);
+		if (uname == NULL) {
 		    /* abort */
 		    TRAP_OFF;
 		    goto page_loaded;

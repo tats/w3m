@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.77 2004/04/04 16:47:20 ukai Exp $ */
+/* $Id: etc.c,v 1.78 2004/04/16 18:47:19 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -20,10 +20,11 @@
 #endif				/* __WATT32__ */
 
 struct auth_pass {
+    int bad;
     int is_proxy;
     Str host;
     int port;
-    Str file;
+/*    Str file; */
     Str realm;
     Str uname;
     Str pwd;
@@ -918,48 +919,55 @@ correct_irrtag(int status)
     return tmp;
 }
 
-static int
-dir_under(const char *x, const char *y)
-{
-    size_t len = strlen(x);
-    if (strcmp(x, y) == 0)
-	return 1;
-    return x[len - 1] == '/'
-	&& strlen(y) >= len
-	&& y[len - 1] == '/' && strncasecmp(x, y, len) == 0;
-}
-
+/*
+ * RFC2617: 1.2 Access Authentication Framework
+ *
+ * The realm value (case-sensitive), in combination with the canonical root
+ * URL (the absoluteURI for the server whose abs_path is empty; see section
+ * 5.1.2 of RFC2616 ) of the server being accessed, defines the protection
+ * space. These realms allow the protected resources on a server to be
+ * partitioned into a set of protection spaces, each with its own
+ * authentication scheme and/or authorization database.
+ *
+ */
 static void
-add_auth_pass_entry(const struct auth_pass *ent, int netrc)
+add_auth_pass_entry(const struct auth_pass *ent, int netrc, int override)
 {
     if ((ent->host || netrc)	/* netrc accept default (host == NULL) */
-	&&(ent->is_proxy || ent->file || ent->realm || netrc)
+	&&(ent->is_proxy || ent->realm || netrc)
 	&& ent->uname && ent->pwd) {
 	struct auth_pass *newent = New(struct auth_pass);
 	memcpy(newent, ent, sizeof(struct auth_pass));
-	if (passwords == NULL)
+	if (override) {
+	    newent->next = passwords;
 	    passwords = newent;
-	else if (passwords->next == NULL)
-	    passwords->next = newent;
+	} 
 	else {
-	    struct auth_pass *ep = passwords;
-	    for (; ep->next; ep = ep->next) ;
-	    ep->next = newent;
+	    if (passwords == NULL)
+		passwords = newent;
+	    else if (passwords->next == NULL)
+		passwords->next = newent;
+	    else {
+		struct auth_pass *ep = passwords;
+		for (; ep->next; ep = ep->next) ;
+		ep->next = newent;
+	    }
 	}
     }
     /* ignore invalid entries */
 }
 
 static struct auth_pass *
-find_auth_pass_entry(char *host, int port, char *file, char *realm,
+find_auth_pass_entry(char *host, int port, char *realm, char *uname, 
 		     int is_proxy)
 {
     struct auth_pass *ent;
     for (ent = passwords; ent != NULL; ent = ent->next) {
 	if (ent->is_proxy == is_proxy
+	    && (ent->bad != TRUE)
 	    && (!ent->host || !Strcasecmp_charp(ent->host, host))
 	    && (!ent->port || ent->port == port)
-	    && (!ent->file || !file || dir_under(ent->file->ptr, file))
+	    && (!ent->uname || !uname || !Strcmp_charp(ent->uname, uname))
 	    && (!ent->realm || !realm || !Strcmp_charp(ent->realm, realm))
 	    )
 	    return ent;
@@ -978,7 +986,7 @@ find_auth_user_passwd(ParsedURL *pu, char *realm,
 	*pwd = Strnew_charp(pu->pass);
 	return 1;
     }
-    ent = find_auth_pass_entry(pu->host, pu->port, pu->file, realm, is_proxy);
+    ent = find_auth_pass_entry(pu->host, pu->port, realm, pu->user, is_proxy);
     if (ent) {
 	*uname = ent->uname;
 	*pwd = ent->pwd;
@@ -987,13 +995,41 @@ find_auth_user_passwd(ParsedURL *pu, char *realm,
     return 0;
 }
 
+void
+add_auth_user_passwd(ParsedURL *pu, char *realm, Str uname, Str pwd, 
+		     int is_proxy)
+{
+    struct auth_pass ent;
+    memset(&ent, 0, sizeof(ent));
+
+    ent.is_proxy = is_proxy;
+    ent.host = Strnew_charp(pu->host);
+    ent.port = pu->port;
+    ent.realm = Strnew_charp(realm);
+    ent.uname = uname;
+    ent.pwd = pwd;
+    add_auth_pass_entry(&ent, 0, 1);
+}
+
+void
+invalidate_auth_user_passwd(ParsedURL *pu, char *realm, Str uname, Str pwd, 
+			    int is_proxy)
+{
+    struct auth_pass *ent;
+    ent = find_auth_pass_entry(pu->host, pu->port, realm, NULL, is_proxy);
+    if (ent) {
+	ent->bad = TRUE;
+    }
+    return;
+}
+
 /* passwd */
 /*
  * machine <host>
  * host <host>
  * port <port>
  * proxy
- * path <file>
+ * path <file>	; not used
  * realm <realm>
  * login <login>
  * passwd <passwd>
@@ -1045,7 +1081,7 @@ parsePasswd(FILE * fp, int netrc)
 
 	if (!strcmp(p, "machine") || !strcmp(p, "host")
 	    || (netrc && !strcmp(p, "default"))) {
-	    add_auth_pass_entry(&ent, netrc);
+	    add_auth_pass_entry(&ent, netrc, 0);
 	    bzero(&ent, sizeof(struct auth_pass));
 	    if (netrc)
 		ent.port = 21;	/* XXX: getservbyname("ftp"); ? */
@@ -1067,7 +1103,7 @@ parsePasswd(FILE * fp, int netrc)
 	}
 	else if (!netrc && !strcmp(p, "path")) {
 	    line = next_token(arg);
-	    ent.file = arg;
+	    /* ent.file = arg; */
 	}
 	else if (!netrc && !strcmp(p, "realm")) {
 	    /* XXX: rest of line becomes arg for realm */
@@ -1098,7 +1134,7 @@ parsePasswd(FILE * fp, int netrc)
 	    line = NULL;
 	}
     }
-    add_auth_pass_entry(&ent, netrc);
+    add_auth_pass_entry(&ent, netrc, 0);
 }
 
 /* FIXME: gettextize? */
@@ -1162,79 +1198,6 @@ loadPasswd(void)
 	fclose(fp);
     }
     return;
-}
-
-/* authentication */
-struct auth_cookie *
-find_auth(char *host, int port, char *file, char *realm)
-{
-    struct auth_cookie *p;
-
-    for (p = Auth_cookie; p != NULL; p = p->next) {
-	if (!Strcasecmp_charp(p->host, host) &&
-	    p->port == port &&
-	    ((realm && !Strcasecmp_charp(p->realm, realm)) ||
-	     (p->file && file && dir_under(p->file->ptr, file))))
-	    return p;
-    }
-    return NULL;
-}
-
-Str
-find_auth_cookie(char *host, int port, char *file, char *realm)
-{
-    struct auth_cookie *p = find_auth(host, port, file, realm);
-    if (p)
-	return p->cookie;
-    return NULL;
-}
-
-#ifdef AUTH_DEBUG
-static void
-dump_auth_cookie(void)
-{
-    if (w3m_debug) {
-	FILE *ff = fopen("zzzauth", "a");
-	struct auth_cookie *p;
-
-	for (p = Auth_cookie; p != NULL; p = p->next) {
-	    Str tmp = Sprintf("%s, %d, %s, %s\n", p->host->ptr, p->port,
-			      p->file ? (const char *)p->file->ptr : "NULL",
-			      p->realm ? (const char *)p->realm->ptr : "NULL");
-	    fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
-	}
-	fputc('\n', ff);
-	fclose(ff);
-    }
-}
-#endif
-
-void
-add_auth_cookie(char *host, int port, char *file, char *realm, Str cookie)
-{
-    struct auth_cookie *p;
-
-    p = find_auth(host, port, file, realm);
-    if (p && (!p->file || !Strcasecmp_charp(p->file, file))) {
-	if (realm && p->realm == NULL)
-	    p->realm = Strnew_charp(realm);
-	p->cookie = cookie;
-#ifdef AUTH_DEBUG
-	dump_auth_cookie();
-#endif
-	return;
-    }
-    p = New(struct auth_cookie);
-    p->host = Strnew_charp(host);
-    p->port = port;
-    p->file = file ? Strnew_charp(file) : NULL;
-    p->realm = Strnew_charp(realm);
-    p->cookie = cookie;
-    p->next = Auth_cookie;
-    Auth_cookie = p;
-#ifdef AUTH_DEBUG
-    dump_auth_cookie();
-#endif
 }
 
 /* get last modified time */

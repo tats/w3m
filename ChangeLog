@@ -1,3 +1,40 @@
+2004-04-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 04064] authentication
+	 closes: Bug#:244029: w3m: HTTP basic authentication annoyance
+	* fm.h (auth_cookie): deleted
+	* proto.h (find_auth_cookie): deleted
+		(add_auth_cookie): deleted
+		(add_auth_user_passwd): added
+		(invalidate_auth_user_passwd): added
+	* etc.c (auth_pass): add bad flag
+			delete file
+		(dir_under): deleted
+		(add_auth_pass_entry): add override flag
+			no need to check file
+		(find_auth_pass_entry): delete file
+			check bad flag
+			check uname
+		(find_auth_user_passwd): find by pu->user
+		(add_auth_user_passwd): added
+		(invalidate_auth_user_passwd): added
+		(parsePasswd): add no override
+			ignore file
+		(find_auth): deleted
+		(find_auth_cookie): deleted
+		(dump_auth_cookie): deleted
+		(add_auth_cookie): deleted
+	* file.c (getAuthCookie): add *uname, *pwd
+			rewrite
+		(loadGeneralFile): delete ss, add uname, pwd
+			use add_auth_user_passwd instead of add_auth_cookie
+	* url.c (HTTPrequest): don't authorization here
+			it should be done in getAuthCookie in loadGeneralFile
+			through extra_header
+	* ftp.c (openFTPStream): add uname
+			use find_auth_user_passwd instead of find_auth_cookie
+			use add_auth_user_passwd instead of add_auth_cookie
+
 2004-04-10  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 
 	* [w3m-dev 04063] about Makefile
@@ -8406,4 +8443,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.918 2004/04/09 17:18:48 ukai Exp $
+$Id: ChangeLog,v 1.919 2004/04/16 18:47:18 ukai Exp $

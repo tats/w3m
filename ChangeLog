@@ -1,3 +1,8 @@
+2003-01-23  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03678] Re: config.param is clear when configure -help
+	* configure: don't override config.param
+
 2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03677] view source, edit source
@@ -6710,4 +6715,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.704 2003/01/22 16:16:18 ukai Exp $
+$Id: ChangeLog,v 1.705 2003/01/22 16:36:11 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.94 2003/01/22 15:53:12 ukai Exp $
+# $Id: configure,v 1.95 2003/01/22 16:36:11 ukai Exp $
 #	Configuration.
 #
 
@@ -22,13 +22,6 @@ sysversion3=`echo $sysversion | awk -F. '{print $3}'`
 
 echo $sysname $sysversion1 $sysversion2 $sysversion3 /$platform at $host
 
-if [ -f config.param ] ; then
-	confhost=`awk 'NR==1{print $4}' config.param`
-	if [ "$confhost" = "$host" ] ; then
-          . ./config.param
-	fi
-fi
-
 # parameters:
 
 prefix=/usr/local
@@ -37,6 +30,14 @@ ssl_libdir=
 gc_includedir=
 gc_libdir=
 mimetypes=
+
+# local overrides
+if [ -f config.param ] ; then
+	confhost=`awk 'NR==1{print $4}' config.param`
+	if [ "$confhost" = "$host" ] ; then
+          . ./config.param
+	fi
+fi
 
 all_yes=0
 while [ $# -gt 0 ]

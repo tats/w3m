@@ -1,3 +1,11 @@
+2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03413] Re: setting form on loading
+	* form.c (loadPreForm): add textarea
+		(preFormUpdateBuffer): submit if value is matched as well
+				case FORM_TEXTAREA
+				case FORM_SELECT ifdef MENU_SELECT
+
 2002-11-12  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03411] do AUXBIN_TARGETS
@@ -4547,4 +4555,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.499 2002/11/12 12:18:29 ukai Exp $
+$Id: ChangeLog,v 1.500 2002/11/12 12:22:59 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.19 2002/11/08 16:07:06 ukai Exp $ */
+/* $Id: form.c,v 1.20 2002/11/12 12:22:59 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -725,28 +725,38 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
  * passwd <name> <value>
  * checkbox <name> <value> [<checked>]
  * radio <name> <value>
- * submit [<name>]
+ * select <name> <value>
+ * submit [<name> [<value>]]
+ * textarea <name>
+ * <value>
+ * /textarea
  */
 
 void
 loadPreForm(void)
 {
     FILE *fp;
-    Str line = NULL;
+    Str line = NULL, textarea = NULL;
     struct pre_form *pf = NULL;
     struct pre_form_item *pi = NULL;
+    int type = -1;
+    char *name;
 
     PreForm = NULL;
     fp = openSecretFile(pre_form_file);
     if (fp == NULL)
 	return;
     while (1) {
-	int type = 0;
 	char *p, *s, *arg;
 
 	line = Strfgets(fp);
 	if (line->length == 0)
 	    break;
+	if (textarea && !(!strncmp(line->ptr, "/textarea", 9) &&
+	    IS_SPACE(line->ptr[9]))) {
+	    Strcat(textarea, line);
+	    continue;
+	}
 	Strchop(line);
 	Strremovefirstspaces(line);
 	p = line->ptr;
@@ -777,6 +787,19 @@ loadPreForm(void)
 	    type = FORM_INPUT_RADIO;
 	else if (!strcmp(s, "submit"))
 	    type = FORM_INPUT_SUBMIT;
+	else if (!strcmp(s, "select"))
+	    type = FORM_SELECT;
+	else if (!strcmp(s, "textarea")) {
+	    type = FORM_TEXTAREA;
+	    name = Strnew_charp(arg)->ptr;
+	    textarea = Strnew();
+	    continue;
+	}
+	else if (!strcmp(s, "/textarea")) {
+	    pi = add_pre_form_item(pf, pi, type, name, textarea->ptr, NULL);
+	    textarea = NULL;
+	    continue;
+	}
 	else
 	    continue;
 	s = getQWord(&p);
@@ -790,10 +813,11 @@ preFormUpdateBuffer(Buffer *buf)
 {
     struct pre_form *pf;
     struct pre_form_item *pi;
-    int i;
+    int i, j;
     Anchor *a;
     FormList *fl;
     FormItemList *fi;
+    FormSelectOptionItem *opt;
 
     if (!buf || !buf->formitem || !PreForm)
 	return;
@@ -812,8 +836,10 @@ preFormUpdateBuffer(Buffer *buf)
 		if (pi->type != fi->type)
 		    continue;
 		if (pi->type == FORM_INPUT_SUBMIT) {
-		    if (!pi->name || !*pi->name ||
-			(fi->name && !Strcmp_charp(fi->name, pi->name)))
+		    if ((!pi->name || !*pi->name ||
+			 (fi->name && !Strcmp_charp(fi->name, pi->name))) &&
+			(!pi->value || !*pi->value ||
+			 (fi->value && !Strcmp_charp(fi->value, pi->value))))
 			buf->submit = a;
 		    continue;
 		}
@@ -823,6 +849,7 @@ preFormUpdateBuffer(Buffer *buf)
 		case FORM_INPUT_TEXT:
 		case FORM_INPUT_FILE:
 		case FORM_INPUT_PASSWORD:
+		case FORM_TEXTAREA:
 		    fi->value = Strnew_charp(pi->value);
 		    formUpdateBuffer(a, buf, fi);
 		    break;
@@ -838,6 +865,22 @@ preFormUpdateBuffer(Buffer *buf)
 			!Strcmp_charp(fi->value, pi->value))
 			formRecheckRadio(a, buf, fi);
 		    break;
+#ifdef MENU_SELECT
+		case FORM_SELECT:
+		    for (j = 0, opt = fi->select_option; opt != NULL;
+			 j++, opt = opt->next) {
+			if (pi->value && opt->value &&
+			    !Strcmp_charp(opt->value, pi->value)) {
+			    fi->selected = j;
+			    fi->value = opt->value;
+			    fi->label = opt->label;
+			    updateSelectOption(fi, fi->select_option);
+			    formUpdateBuffer(a, buf, fi);
+			    break;
+			}
+		    }
+		    break;
+#endif
 		}
 	    }
 	}

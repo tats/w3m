@@ -1,3 +1,8 @@
+2001-12-02  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02603]
+	* scripts/w3mhelp.cgi.in: modified for perl4
+
 2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02601]

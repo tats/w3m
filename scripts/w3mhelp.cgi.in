@@ -1,15 +1,19 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.2 2001/11/30 18:06:29 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.3 2001/12/02 13:16:29 ukai Exp $
 
-$helpdir="@HELP_DIR@";
+$helpdir = "@HELP_DIR@";
 unshift(@INC, $helpdir);
-@docdirs=qw(@DOCDIRS@);
+@docdirs = split(" ", "@DOCDIRS@");
 
 require "w3mhelp-funcname.pl";
 require "w3mhelp-funcdesc.en.pl";
 $lang = 'en';
 
-%htmlesc = qw(< &lt; > &gt; & &amp;);
+%htmlesc = (
+    '<', '&lt;',
+    '>', '&gt;',
+    '&', '&amp;'
+);
 
 $keymap = "$ENV{'HOME'}/.w3m/keymap";
 $version = '*unknown*';
@@ -21,7 +25,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 	$version =~ s/w3m\///;
     }
     if ($ENV{'QUERY_STRING'} =~ /(^|&)lang=([^&]*)/) {
-	local $tlang=$2;
+	local($tlang) = $2;
 	$tlang =~ s/\+|%([0-9A-Fa-f][0-9A-Fa-f])/$& eq '+' ? ' ' : pack('C', hex($1))/ge;
 	$tlang =~ tr/A-Z/a-z/;
 	print "tlang=$tlang\n";
@@ -33,7 +37,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 }
 
 if (-f $keymap) {
-    open(KEYMAP, $keymap) or die "cannot open keymap: $keymap, $!";
+    open(KEYMAP, $keymap) || die "cannot open keymap: $keymap, $!";
     &load_keymap(*KEYMAP, $func);
     close(KEYMAP);
 }
@@ -90,47 +94,48 @@ for $otherlang (@docdirs) {
 }
 
 &show_keymap("Page/Cursor motion", 
-	     qw(pgFore pgBack movR movL movD movU lup1 ldown1 
+	     split(" ", "pgFore pgBack movR movL movD movU lup1 ldown1 
 		goLineF goLineL movRW movLW shiftl shiftr
 		col1R col1L goLine ctrCsrH ctrCsrV
 		topA lastA nextA prevA
-		nextL nextLU nextR nextRD nextD nextU));
+		nextL nextLU nextR nextRD nextD nextU"));
 
 &show_keymap("Hyperlink operation",
-	     qw(followA svA peekURL peekIMG followI svI
+	     split(" ", "followA svA peekURL peekIMG followI svI
 		chkURL chkNMID curURL pginfo curlno ldHist
-		rFrame extbrz linkbrz));
+		rFrame extbrz linkbrz"));
 
 &show_keymap("File/Stream operation",
-	     qw(goURL ldfile readsh pipesh));
+	     split(" ", "goURL ldfile readsh pipesh"));
 
 &show_keymap("Buffer operation",
-	     qw(backBf vwSrc selMn editBf rdrwSc reload 
-		svBuf svSrc editScr));
+	     split(" ", "backBf vwSrc selMn editBf rdrwSc reload 
+		svBuf svSrc editScr"));
 
 &show_keymap("Buffer selection mode",
-	     qw(buffer_prev buffer_next buffer_delete buffer_go));
+	     split(" ", "buffer_prev buffer_next buffer_delete buffer_go"));
 
 &show_keymap("Bookmark operation",
-	     qw(ldBmark adBmark));
+	     split(" ", "ldBmark adBmark"));
 
 &show_keymap("Search",
-	     qw(srchfor srchbak srchnxt srchprv));
+	     split(" ", "srchfor srchbak srchnxt srchprv"));
 
 &show_keymap("Dictionary look-up",
-	     qw(dictword dictwordat));
+	     split(" ", "dictword dictwordat"));
 
 &show_keymap("Mark operation",
-	     qw(_mark prevMk nextMk reMark));
+	     split(" ", "_mark prevMk nextMk reMark"));
 
 &show_keymap("Miscellany",
-	     qw(setAlarm execsh ldhelp ldOpt cooLst susp qquitfm quitfm));
+	     split(" ",
+		"setAlarm execsh ldhelp ldOpt cooLst susp qquitfm quitfm"));
 
 &show_keymap("Line-edit mode",
-	     qw(lineedit_forward lineedit_back lineedit_backspace 
+	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
 		lineedit_delete lineedit_kill_after lineedit_kill_before
 		lineedit_top lineedit_bottom lineedit_prev lineedit_next
-		lineedit_complete lineedit_accept));
+		lineedit_complete lineedit_accept"));
 
 print <<PAGE;
 <HR>
@@ -142,7 +147,7 @@ exit 0;
 
 sub load_keymap {
     local(*FH) = shift;
-    my ($func) = @_;
+    local($func) = @_;
 
     while (<FH>) {
 	next if /^#/;
@@ -157,9 +162,9 @@ sub load_keymap {
 }
 
 sub show_keymap {
-    my ($head, @list) = @_;
-    my ($fid);
-    my ($attr) = " WIDTH=140";
+    local($head, @list) = @_;
+    local($fid);
+    local($attr) = " WIDTH=140";
 
     if (defined($title{$head})) {
 	$head = $title{$head};

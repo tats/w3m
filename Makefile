@@ -6,6 +6,9 @@ all: XXMakefile
 install: XXMakefile
 	make -f XXMakefile install
 
+install-scripts: XXMakefile
+	make -f XXMakefile install-scripts
+
 uninstall: XXMakefile
 	make -f XXMakefile uninstall
 

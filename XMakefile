@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.8 2001/11/21 09:21:59 ukai Exp $
+# $Id: XMakefile,v 1.9 2001/11/21 09:42:23 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -19,6 +19,9 @@ BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 TARGETS=$(TARGET) $(EXT_TARGETS)
+
+SCRIPTSUBDIRS = scripts scripts/multipart scripts/w3mman
+SUBDIRS = $(SCRIPTSUBDIRS)
 
 INCLUDES=-I.
 
@@ -94,13 +97,13 @@ install: $(TARGETS) all-scripts
 	(cd scripts; for i in *.cgi; do $(INSTALL2) -m 755 $$i $(DESTDIR)$(LIB_DIR)/$$i; done)
 
 all-scripts:
-	for dir in scripts scripts/multipart scripts/w3mman;	\
+	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)');	\
 	done
 
-install-scripts:
-	for dir in scripts scripts/multipart scripts/w3mman;	\
+install-scripts: all-scripts
+	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' DESTDIR='$(DESTDIR)' INSTALL='sh $(PWD)/install.sh' install);	\
 	done
@@ -119,6 +122,10 @@ uninstall:
 clean: sweep
 	rm -f *.o *.a $(TARGETS) mktable$(EXT)
 	rm -f funcname.c funcname1.h funcname2.h tagtable.c
+	for dir in $(SCRIPTSUBDIRS);	\
+	do	\
+		(cd $$dir; $(MAKE) clean); \
+	done
 
 sweep:
 	-rm -f core *~ *.bak *.orig *.rej

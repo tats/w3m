@@ -17,9 +17,13 @@ all: $(LIB_TARGETS)
 
 .in:
 	sed 's%@PERL@%$(PERL)%' $< > $@
+	chmod +x $@
 
 install: $(LIB_TARGETS)
 	for file in $(LIB_TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DISTDIR)$(LIB_DIR);  \
 	done
+
+clean:
+	rm -f $(LIB_TARGETS)

@@ -37,6 +37,9 @@ install: $(TARGETS) $(LIB_TARGETS)
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
 	done
 
+clean:
+	rm -f $(TARGETS) $(LIB_TARGETS)
+
 dist: all
 	@-rm -fr $(distdir)/w3mman
 	mkdir -p $(distdir)/w3mman

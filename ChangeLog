@@ -1,3 +1,15 @@
+2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02473]
+	* scripts/Makefile: chmod +x
+	* scripts/Makefile: add clean target
+	* scripts/multipart/Makefile: ditto
+	* scripts/w3mman/Makefile: ditto
+	* XMakefile: clean scripts
+	* scripts/dirlist.cgi: removed from CVS
+	* Makefile (install-scripts): added
+	* XMakefile: (install-scripts): depends all-scripts
+
 2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02470]

@@ -29,6 +29,9 @@ install: $(LIB_TARGETS)
 		$(INSTALL_SCRIPT) $$file $(DISTDIR)$(LIB_DIR);	\
 	done
 
+clean:
+	rm -f $(LIB_TARGETS)
+
 dist: all
 	@-rm -fr $(distdir)/multipart
 	mkdir -p $(distdir)/multipart

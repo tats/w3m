@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.5 2002/07/29 15:25:37 ukai Exp $ */
+/* $Id: fb.c,v 1.6 2002/07/30 16:03:01 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -78,7 +78,8 @@ fb_open(void)
 	goto ERR_END;
     }
 
-    if (!(fscinfo.visual == FB_VISUAL_TRUECOLOR &&
+    if (!((fscinfo.visual == FB_VISUAL_TRUECOLOR ||
+	   fscinfo.visual == FB_VISUAL_DIRECTCOLOR) &&
 	  (vscinfo.bits_per_pixel == 15 ||
 	   vscinfo.bits_per_pixel == 16 ||
 	   vscinfo.bits_per_pixel == 24 || vscinfo.bits_per_pixel == 32))) {

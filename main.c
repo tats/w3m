@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.1 2001/11/08 05:15:13 a-ito Exp $ */
+/* $Id: main.c,v 1.1.1.1 2001/11/08 05:15:13 a-ito Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>

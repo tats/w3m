@@ -1,4 +1,4 @@
- # $Id: alpha_mach_dep.s,v 1.1 2001/11/08 05:17:06 a-ito Exp $
+ # $Id: alpha_mach_dep.s,v 1.1.1.1 2001/11/08 05:17:06 a-ito Exp $
 
 # define call_push(x)    						\
 	lda   $16, 0(x);    	/* copy x to first argument register */	\

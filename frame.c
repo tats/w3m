@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.1 2001/11/08 05:14:54 a-ito Exp $ */
+/* $Id: frame.c,v 1.1.1.1 2001/11/08 05:14:54 a-ito Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"

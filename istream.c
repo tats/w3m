@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.1 2001/11/08 05:15:57 a-ito Exp $ */
+/* $Id: istream.c,v 1.1.1.1 2001/11/08 05:15:57 a-ito Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>

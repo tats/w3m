@@ -1,4 +1,4 @@
-/* $Id: keybind.c,v 1.1 2001/11/08 05:15:02 a-ito Exp $ */
+/* $Id: keybind.c,v 1.1.1.1 2001/11/08 05:15:02 a-ito Exp $ */
 #include "funcname2.h"
 
 char GlobalKeymap[128] =

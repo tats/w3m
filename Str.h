@@ -1,4 +1,4 @@
-/* $Id: Str.h,v 1.1 2001/11/08 05:14:10 a-ito Exp $ */
+/* $Id: Str.h,v 1.1.1.1 2001/11/08 05:14:10 a-ito Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *

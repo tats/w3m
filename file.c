@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.1 2001/11/08 05:14:50 a-ito Exp $ */
+/* $Id: file.c,v 1.1.1.1 2001/11/08 05:14:50 a-ito Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"

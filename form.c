@@ -1,5 +1,5 @@
 
-/* $Id: form.c,v 1.1 2001/11/08 05:14:53 a-ito Exp $ */
+/* $Id: form.c,v 1.1.1.1 2001/11/08 05:14:53 a-ito Exp $ */
 /* 
  * HTML forms
  */

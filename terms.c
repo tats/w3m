@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.1 2001/11/08 05:15:43 a-ito Exp $ */
+/* $Id: terms.c,v 1.1.1.1 2001/11/08 05:15:43 a-ito Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995

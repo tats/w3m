@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.1 2001/11/08 05:15:04 a-ito Exp $ */
+/* $Id: mailcap.c,v 1.1.1.1 2001/11/08 05:15:04 a-ito Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>

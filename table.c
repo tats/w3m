@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.1 2001/11/08 05:15:40 a-ito Exp $ */
+/* $Id: table.c,v 1.1.1.1 2001/11/08 05:15:40 a-ito Exp $ */
 /* 
  * HTML table
  */

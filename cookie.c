@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.1 2001/11/08 05:14:17 a-ito Exp $ */
+/* $Id: cookie.c,v 1.1.1.1 2001/11/08 05:14:17 a-ito Exp $ */
 
 /*
  * References for version 0 cookie:                                  

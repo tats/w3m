@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.1 2001/11/08 05:15:01 a-ito Exp $ */
+/* $Id: indep.c,v 1.1.1.1 2001/11/08 05:15:01 a-ito Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>

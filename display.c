@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.1 2001/11/08 05:14:32 a-ito Exp $ */
+/* $Id: display.c,v 1.1.1.1 2001/11/08 05:14:32 a-ito Exp $ */
 #include <signal.h>
 #include "fm.h"
 

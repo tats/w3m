@@ -1,5 +1,5 @@
 /* -*- mode: c; c-basic-offset: 4; tab-width: 8; -*- */
-/* $Id: table.c.0,v 1.1 2001/11/08 05:15:52 a-ito Exp $ */
+/* $Id: table.c.0,v 1.1.1.1 2001/11/08 05:15:52 a-ito Exp $ */
 /* 
  * HTML table
  */

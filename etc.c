@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.1 2001/11/08 05:14:33 a-ito Exp $ */
+/* $Id: etc.c,v 1.1.1.1 2001/11/08 05:14:33 a-ito Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"

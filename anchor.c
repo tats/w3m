@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.1 2001/11/08 05:14:10 a-ito Exp $ */
+/* $Id: anchor.c,v 1.1.1.1 2001/11/08 05:14:10 a-ito Exp $ */
 #ifdef __EMX__
 #include <strings.h>
 #endif

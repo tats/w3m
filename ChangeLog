@@ -1,3 +1,9 @@
+2002-07-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03272] Re: w3m-img for framebuffer merged (Re:  Re: w3m-img for framebuffer)
+	* XMakefile (w3mimg/x11): chdir
+		(w3mimg/fb): chdir
+
 2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03273] Re: w3m-img for framebuffer merged
@@ -3587,4 +3593,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.404 2002/07/18 05:55:22 ukai Exp $
+$Id: ChangeLog,v 1.405 2002/07/18 05:59:06 ukai Exp $

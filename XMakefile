@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.25 2002/07/17 20:58:48 ukai Exp $
+# $Id: XMakefile,v 1.26 2002/07/18 05:59:06 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -107,16 +107,16 @@ w3mimgsize.o: w3mimgsize.c
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -c w3mimgsize.c
 
 w3mimg/x11/x11_w3mimg.o: w3mimg/x11/x11_w3mimg.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c w3mimg/x11/x11_w3mimg.c
+	cd w3mimg/x11 && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c x11_w3mimg.c
 
 w3mimg/fb/fb_w3mimg.o: w3mimg/fb/fb_w3mimg.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c w3mimg/fb/fb_w3mimg.c
+	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c w3mimg/fb/fb_w3mimg.c
 
 w3mimg/fb/fb.o: w3mimg/fb/fb.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c w3mimg/fb/fb.c
+	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c w3mimg/fb/fb.c
 
 w3mimg/fb/fb_img.o: w3mimg/fb/fb_img.c w3mimg/fb/fb_gdkpixbuf.c w3mimg/fb/fb_imlib2.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c w3mimg/fb/fb_img.c
+	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c w3mimg/fb/fb_img.c
 
 gc/gc.a:
 	cd gc; $(MAKE) base_lib gc.a CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'

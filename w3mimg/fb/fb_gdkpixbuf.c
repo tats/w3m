@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.13 2003/04/03 16:35:45 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.14 2003/04/03 16:36:33 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -27,9 +27,9 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 	int tmp;
 
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
- 	tmp = gdk_pixbuf_frame_get_delay_time(frame);
+	tmp = gdk_pixbuf_frame_get_delay_time(frame);
 	if (tmp > d)
-	  d = tmp;
+	    d = tmp;
 	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	iw = gdk_pixbuf_frame_get_x_offset(frame)
 	    + gdk_pixbuf_get_width(pixbuf);
@@ -41,7 +41,7 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 	    *h = ih;
     }
     if (delay)
-        *delay = d;
+	*delay = d;
 }
 
 int
@@ -76,10 +76,11 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     get_animation_size(animation, &fw, &fh, &delay);
     frame_num = n = gdk_pixbuf_animation_get_num_frames(animation);
     if (delay <= 0)
-        max_anim = -1;
+	max_anim = -1;
     if (max_anim < 0) {
-        frame_num = (-max_anim > n) ? n : -max_anim;
-    } else if (max_anim > 0) {
+	frame_num = (-max_anim > n) ? n : -max_anim;
+    }
+    else if (max_anim > 0) {
 	frame_num = n = (max_anim > n) ? n : max_anim;
     }
     if (w < 1 || h < 1) {
@@ -93,7 +94,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     }
     fb_frame = fb_frame_new(w, h, frame_num);
     if (bg_r != 0 || bg_g != 0 || bg_b != 0) {
-        fb_image_fill(fb_frame[0], bg_r, bg_g, bg_b);
+	fb_image_fill(fb_frame[0], bg_r, bg_g, bg_b);
     }
     if (fb_frame == NULL)
 	goto END;
@@ -103,8 +104,9 @@ fb_image_load(char *filename, int w, int h, int max_anim)
 	int width, height, ofstx, ofsty;
 
 	if (max_anim < 0) {
-	    i = (j - n + frame_num > 0)? (j - n + frame_num): 0;
-	} else {
+	    i = (j - n + frame_num > 0) ? (j - n + frame_num) : 0;
+	}
+	else {
 	    i = j;
 	}
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, j);
@@ -127,7 +129,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
 	if (j > 0) {
 	    switch (action) {
 	    case GDK_PIXBUF_FRAME_RETAIN:
-	        if (i > 0)
+		if (i > 0)
 		    fb_image_copy(fb_frame[i], fb_frame[i - 1]);
 		break;
 	    case GDK_PIXBUF_FRAME_DISPOSE:
@@ -136,16 +138,16 @@ fb_image_load(char *filename, int w, int h, int max_anim)
 		}
 		break;
 	    case GDK_PIXBUF_FRAME_REVERT:
-	        if (i > 0)
+		if (i > 0)
 		    fb_image_copy(fb_frame[i], fb_frame[0]);
 		break;
 	    default:
-	        if (i > 0)
+		if (i > 0)
 		    fb_image_copy(fb_frame[i], fb_frame[0]);
 	    }
 	}
 	action = gdk_pixbuf_frame_get_action(frame);
- 	fb_frame[i]->delay = gdk_pixbuf_frame_get_delay_time(frame);
+	fb_frame[i]->delay = gdk_pixbuf_frame_get_delay_time(frame);
 	draw(fb_frame[i], !i, ofstx, ofsty, width, height, pixbuf);
 	if (org_pixbuf != pixbuf)
 	    gdk_pixbuf_finalize(pixbuf);

@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.19 2003/04/03 16:35:49 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.20 2003/04/03 16:36:54 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -58,9 +58,9 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 	int tmp;
 
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
- 	tmp = gdk_pixbuf_frame_get_delay_time(frame);
+	tmp = gdk_pixbuf_frame_get_delay_time(frame);
 	if (tmp > d)
-	  d = tmp;
+	    d = tmp;
 	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	iw = gdk_pixbuf_frame_get_x_offset(frame)
 	    + gdk_pixbuf_get_width(pixbuf);
@@ -72,7 +72,7 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 	    *h = ih;
     }
     if (delay)
-        *delay = d;
+	*delay = d;
 }
 
 #endif
@@ -331,11 +331,12 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 
     get_animation_size(animation, &iw, &ih, &delay);
     if (delay <= 0)
-        max_anim = -1;
+	max_anim = -1;
 
     if (max_anim < 0) {
-        frame_num = (-max_anim > n) ? n : -max_anim;
-    } else if (max_anim > 0) {
+	frame_num = (-max_anim > n) ? n : -max_anim;
+    }
+    else if (max_anim > 0) {
 	frame_num = n = (max_anim > n) ? n : max_anim;
     }
 
@@ -359,8 +360,9 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	int width, height, ofstx, ofsty;
 
 	if (max_anim < 0) {
-	    i = (j - n + frame_num > 0)? (j - n + frame_num): 0;
-	} else {
+	    i = (j - n + frame_num > 0) ? (j - n + frame_num) : 0;
+	}
+	else {
 	    i = j;
 	}
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, j);

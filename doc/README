@@ -18,7 +18,6 @@ used as a text-mode WWW browser.
 
 Current problems are:
 
-* It can't show images inline. (See w3m-img info on the w3m homepage)
 * Online manuals are poor.
 
 w3m is known to work on these platforms.

@@ -1,3 +1,11 @@
+2001-12-26  Kazuhiro NISHIYAMA <zn@mbf.nifty.com>
+
+	* [w3m-dev 02725] bcopy, bzero
+	* etc.c (bcopy): deleted
+	* etc.c (bzero): deleted
+	* indep.c (bcopy): added
+	* indep.c (bzero): added
+
 2001-12-25  Kazuhiko <kazuhiko@archi.kyoto-u.ac.jp>
 	
 	* [w3m-dev 02727]
@@ -1538,4 +1546,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.171 2001/12/25 14:06:34 ukai Exp $
+$Id: ChangeLog,v 1.172 2001/12/25 16:11:07 ukai Exp $

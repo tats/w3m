@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.18 2001/12/14 17:10:54 ukai Exp $ */
+/* $Id: indep.c,v 1.19 2001/12/25 16:11:07 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -10,6 +10,32 @@
 #include "gc.h"
 #include "myctype.h"
 #include "entity.h"
+
+#ifndef HAVE_BCOPY
+void
+bcopy(void *src, void *dest, int len)
+{
+    int i;
+    if (src == dest)
+	return;
+    if (src < dest) {
+	for (i = len - 1; i >= 0; i--)
+	    dest[i] = src[i];
+    }
+    else {			/* src > dest */
+	for (i = 0; i < len; i++)
+	    dest[i] = src[i];
+    }
+}
+
+void
+bzero(void *ptr, int len)
+{
+    int i;
+    for (i = 0; i < len; i++)
+	*(ptr++) = 0;
+}
+#endif				/* not HAVE_BCOPY */
 
 char *
 allocStr(const char *s, int len)

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.12 2001/12/10 15:42:38 ukai Exp $ */
+/* $Id: etc.c,v 1.13 2001/12/25 16:11:07 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -547,32 +547,6 @@ lastFileName(char *path)
 
     return allocStr(q, -1);
 }
-
-#ifndef HAVE_BCOPY
-void
-bcopy(void *src, void *dest, int len)
-{
-    int i;
-    if (src == dest)
-	return;
-    if (src < dest) {
-	for (i = len - 1; i >= 0; i--)
-	    dest[i] = src[i];
-    }
-    else {			/* src > dest */
-	for (i = 0; i < len; i++)
-	    dest[i] = src[i];
-    }
-}
-
-void
-bzero(void *ptr, int len)
-{
-    int i;
-    for (i = 0; i < len; i++)
-	*(ptr++) = 0;
-}
-#endif				/* not HAVE_BCOPY */
 
 #ifdef USE_INCLUDED_SRAND48
 static unsigned long R1 = 0x1234abcd;

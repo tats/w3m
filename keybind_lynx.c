@@ -1,4 +1,4 @@
-/* $Id: keybind_lynx.c,v 1.6 2002/11/11 15:22:40 ukai Exp $ */
+/* $Id: keybind_lynx.c,v 1.7 2002/12/13 03:02:03 ukai Exp $ */
 /* 
  * Lynx-like key binding.
  *
@@ -19,33 +19,33 @@ unsigned char GlobalKeymap[128] = {
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
     ldHist, nextA, followA, cooLst, rdrwSc, followA, nextA, nulcmd,
     /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
-    prevA, nulcmd, reload, srchfor, nulcmd, nulcmd, pgFore, rdrwSc,
+    prevA, closeT, reload, srchfor, tabA, prevA, pgFore, rdrwSc,
     /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_      */
     nulcmd, nulcmd, susp, escmap, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  SPC     !       "       #       $       %       &       '        */
     pgFore, execsh, reMark, pipesh, linend, nulcmd, nulcmd, nulcmd,
     /*  (       )       *       +       ,       -       .       /        */
-    nulcmd, nulcmd, nulcmd, pgFore, nulcmd, pgBack, nulcmd, srchfor,
+    undoPos, redoPos, nulcmd, pgFore, col1L, pgBack, col1R, srchfor,
     /*  0       1       2       3       4       5       6       7        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  8       9       :       ;       <       =       >       ?        */
-    nulcmd, nulcmd, chkURL, nulcmd, shiftl, pginfo, shiftr, ldhelp,
+    nulcmd, nulcmd, chkURL, chkWORD, shiftl, pginfo, shiftr, ldhelp,
     /*  @       A       B       C       D       E       F       G        */
-    readsh, nulcmd, backBf, nulcmd, nulcmd, editBf, rFrame, goLine,
+    readsh, nulcmd, backBf, nulcmd, ldDL, editBf, rFrame, goLine,
     /*  H       I       J       K       L       M       N       O        */
-    ldhelp, followI, lup1, ldown1, nulcmd, extbrz, nextMk, nulcmd,
+    ldhelp, followI, lup1, ldown1, linkLst, extbrz, nextMk, nulcmd,
     /*  P       Q       R       S       T       U       V       W        */
-    prevMk, quitfm, reload, svBuf, nulcmd, goURL, ldfile, nulcmd,
+    prevMk, quitfm, reload, svBuf, newT, goURL, ldfile, movLW,
     /*  X       Y       Z       [       \       ]       ^       _        */
-    nulcmd, nulcmd, ctrCsrH, nulcmd, vwSrc, nulcmd, linbeg, nulcmd,
+    nulcmd, nulcmd, ctrCsrH, topA, vwSrc, lastA, linbeg, nulcmd,
     /*  `       a       b       c       d       e       f       g        */
     nulcmd, adBmark, pgBack, curURL, svA, nulcmd, nulcmd, goURL,
     /*  h       i       j       k       l       m       n       o        */
-    movL, peekIMG, movD, movU, movR, nulcmd, srchnxt, ldOpt,
+    movL, peekIMG, movD, movU, movR, msToggle, srchnxt, ldOpt,
     /*  p       q       r       s       t       u       v       w        */
-    svBuf, qquitfm, nulcmd, selMn, nulcmd, peekURL, ldBmark, wrapToggle,
+    svBuf, qquitfm, dispVer, selMn, nulcmd, peekURL, ldBmark, movRW,
     /*  x       y       z       {       |       }       ~       DEL      */
-    nulcmd, nulcmd, ctrCsrV, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, ctrCsrV, prevT, pipeBuf, nextT, nulcmd, nulcmd,
 };
 
 unsigned char EscKeymap[128] = {
@@ -64,21 +64,21 @@ unsigned char EscKeymap[128] = {
     /*  0       1       2       3       4       5       6       7        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  8       9       :       ;       <       =       >       ?        */
-    nulcmd, nulcmd, chkNMID, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, chkNMID, nulcmd, goLineF, nulcmd, goLineL, nulcmd,
     /*  @       A       B       C       D       E       F       G        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  H       I       J       K       L       M       N       O        */
     nulcmd, svI, nulcmd, nulcmd, nulcmd, linkbrz, nulcmd, escbmap,
     /*  P       Q       R       S       T       U       V       W        */
-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, dictwordat,
     /*  X       Y       Z       [       \       ]       ^       _        */
     nulcmd, nulcmd, nulcmd, escbmap, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  `       a       b       c       d       e       f       g        */
-    nulcmd, adBmark, ldBmark, nulcmd, nulcmd, editScr, nulcmd, nulcmd,
+    nulcmd, adBmark, ldBmark, execCmd, nulcmd, editScr, nulcmd, goLine,
     /*  h       i       j       k       l       m       n       o        */
-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, nulcmd, defKey, listMn, movlistMn, nextMk, setOpt,
     /*  p       q       r       s       t       u       v       w        */
-    nulcmd, nulcmd, nulcmd, svSrc, nulcmd, gorURL, pgBack, nulcmd,
+    prevMk, nulcmd, nulcmd, svSrc, tabMn, gorURL, pgBack, dictword,
     /*  x       y       z       {       |       }       ~       DEL      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
@@ -101,9 +101,9 @@ unsigned char EscBKeymap[128] = {
     /*  8       9       :       ;       <       =       >       ?        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  @       A       B       C       D       E       F       G        */
-    nulcmd, prevA, nextA, followA, backBf, nulcmd, nulcmd, nulcmd,
+    nulcmd, prevA, nextA, followA, backBf, nulcmd, goLineL, pgFore,
     /*  H       I       J       K       L       M       N       O        */
-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, mouse, nulcmd, nulcmd,
+    goLineF, pgBack, nulcmd, nulcmd, nulcmd, mouse, nulcmd, nulcmd,
     /*  P       Q       R       S       T       U       V       W        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  X       Y       Z       [       \       ]       ^       _        */

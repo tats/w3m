@@ -1,5 +1,20 @@
 2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03567] default keybinding
+	* doc-jp/keymap.default (C-q,C-t,(,),+,-,D,L,T,m,r,{,|,},
+				M-c,M-k,M-l,M-m,M-o,M-t): assign
+	* doc/keymap.default: ditto
+	* keybind.c: ditto
+	* doc-jp/keymap.lynx (C-q,C-t,C-u,(,),,,.,;,D,L,T,W,[,],
+				m,r,w,{,|,},M-<,M->,M-W,M-c,M-g,
+				M-k,M-l,M-m,M-n,M-o,M-p,M-t,M-w): assign
+	* doc/keymap.lynx: ditto
+	* keybind_lynx.c: ditto
+	* doc-jp/menu.default (Main): Select,SelectTab,TAB_LINK
+	* doc/menu.default: ditto
+
+2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03566] configure prefix
 	* configure: add X prefix for expr args
 
@@ -5815,4 +5830,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.617 2002/12/13 02:27:23 ukai Exp $
+$Id: ChangeLog,v 1.618 2002/12/13 03:02:03 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.19 2002/11/22 15:43:14 ukai Exp $ */
+/* $Id: menu.c,v 1.20 2002/11/25 16:57:17 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1263,9 +1263,9 @@ mainMn(void)
 	menu = w3mMenuList[n].menu;
     }
 #ifdef USE_MOUSE
-    if (mouse_menu && mouse_menu->in_action) {
-	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
-	y = mouse_menu->cursorY;
+    if (mouse_action.in_action) {
+	x = mouse_action.cursorX;
+	y = mouse_action.cursorY;
     }
 #endif
     popupMenu(x, y, menu);
@@ -1282,9 +1282,9 @@ selMn(void)
 	y = Currentbuf->cursorY + Currentbuf->rootY;
 
 #ifdef USE_MOUSE
-    if (mouse_menu && mouse_menu->in_action) {
-	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
-	y = mouse_menu->cursorY;
+    if (mouse_action.in_action) {
+	x = mouse_action.cursorX;
+	y = mouse_action.cursorY;
     }
 #endif
     popupMenu(x, y, &SelectMenu);
@@ -1427,9 +1427,9 @@ tabMn(void)
 	y = Currentbuf->cursorY + Currentbuf->rootY;
 
 #ifdef USE_MOUSE
-    if (mouse_menu && mouse_menu->in_action) {
-	x = mouse_menu->cursorX - FRAME_WIDTH - 1;
-	y = mouse_menu->cursorY;
+    if (mouse_action.in_action) {
+	x = mouse_action.cursorX;
+	y = mouse_action.cursorY;
     }
 #endif
     popupMenu(x, y, &SelTabMenu);
@@ -1599,7 +1599,10 @@ initMenu(void)
     w3mMenuList[1].id = "Select";
     w3mMenuList[1].menu = &SelectMenu;
     w3mMenuList[1].item = NULL;
-    w3mMenuList[2].id = NULL;
+    w3mMenuList[2].id = "SelectTab";
+    w3mMenuList[2].menu = &SelTabMenu;
+    w3mMenuList[2].item = NULL;
+    w3mMenuList[3].id = NULL;
 
     if ((mf = fopen(rcFile(MENU_FILE), "rt")) == NULL)
 	goto create_menu;

@@ -7,6 +7,7 @@ BOOKMARK	Read bookmark
 CENTER_H	Move to the center line
 CENTER_V	Move to the center column
 CLOSE_TAB	Close current tab
+CLOSE_TAB_MOUSE	Close tab on mouse cursor (for mouse action)
 COMMAND		Execute w3m command(s)
 COOKIE		View cookie list
 DEFINE_KEY	Define a binding between a key stroke and a user command
@@ -49,11 +50,13 @@ MARK_MID	Mark Message-ID-like strings as anchors
 MARK_URL	Mark URL-like strings as anchors
 MARK_WORD	Mark current word as anchor
 MENU		Popup menu
+MENU_MOUSE	Popup menu at mouse cursor (for mouse action)
 MOUSE_TOGGLE   Toggle activity of mouse
 MOVE_DOWN      Move cursor down (a half screen scroll at the end of screen)
 MOVE_DOWN1     Move cursor down (1 line scroll at the end of screen)
 MOVE_LEFT      Move cursor left (a half screen shift at the left edge)
 MOVE_LEFT1     Move cursor left (1 columns shift at the left edge)
+MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
 MOVE_RIGHT     Move cursor right (a half screen shift at the right edge)
 MOVE_RIGHT1    Move cursor right (1 columns shift at the right edge)
 MOVE_UP                Move cursor up (a half screen scroll at the top of screen)
@@ -118,6 +121,7 @@ TAB_GOTO_RELATIVE	Open relative URL on new tab
 TAB_LEFT	Move current tab left
 TAB_LINK	Open current link on new tab
 TAB_MENU	Popup tab selection menu
+TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
 TAB_RIGHT	Move current tab right
 UP		Scroll up one line
 VERSION                Display version of w3m

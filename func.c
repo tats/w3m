@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.14 2002/11/22 15:57:29 ukai Exp $ */
+/* $Id: func.c,v 1.15 2002/11/25 16:57:17 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -322,15 +322,125 @@ getQWord(char **str)
 }
 
 #ifdef USE_MOUSE
+static MouseAction default_mouse_action = {
+  NULL,
+#if LANG == JA
+  "¢ã¢¬¢­",
+#else
+  "<=UpDn",
+#endif
+  0, 6, FALSE, 0, 0,
+  { { movMs, NULL }, { backBf, NULL }, { menuMs, NULL } },	/* default */
+  { { NULL, NULL }, { NULL, NULL }, { NULL, NULL } },		/* anchor */
+  { { followA, NULL }, { NULL, NULL }, { NULL, NULL } },	/* active */
+  { { tabMs, NULL }, { closeTMs, NULL }, { NULL, NULL } },	/* tab */
+  { NULL, NULL, NULL },						/* menu */
+  { NULL, NULL, NULL }						/* lastline */
+};
+static MouseActionMap default_lastline_action[6] = {
+  { backBf, NULL },
+  { backBf, NULL },
+  { pgBack, NULL },
+  { pgBack, NULL },
+  { pgFore, NULL },
+  { pgFore, NULL }
+};
+
+static void
+setMouseAction0(char **str, int *width, MouseActionMap **map, char *p)
+{
+    char *s;
+    int b, w, x;
+
+    s = getQWord(&p);
+    if (!*s) {
+	*str = NULL;
+	width = 0;
+	for (b = 0; b < 3; b++)
+	    map[b] = NULL;
+	return;
+    }
+    w = *width;
+    *str = s;
+    *width = strlen(s);
+    if (*width >= LIMIT_MOUSE_MENU)
+	*width = LIMIT_MOUSE_MENU;
+    if (*width <= w)
+	return;
+    for (b = 0; b < 3; b++) {
+	if (!map[b])
+	    continue;
+	map[b] = New_Reuse(MouseActionMap, map[b], *width);
+	for (x = w + 1; x < *width; x++) {
+	    map[b][x].func = NULL;
+	    map[b][x].data = NULL;
+	}
+    }
+}
+
+static void
+setMouseAction1(MouseActionMap **map, int width, char *p)
+{
+    char *s;
+    int x, x2, f;
+
+    if (!*map) {
+	*map = New_N(MouseActionMap, width);
+	for (x = 0; x < width; x++) {
+	    (*map)[x].func = NULL;
+	    (*map)[x].data = NULL;
+	}
+    }
+    s = getWord(&p);
+    x = atoi(s);
+    if (!(IS_DIGIT(*s) && x >= 0 && x < width))
+	return;		/* error */
+    s = getWord(&p);
+    x2 = atoi(s);
+    if (!(IS_DIGIT(*s) && x2 >= 0 && x2 < width))
+	return;		/* error */
+    s = getWord(&p);
+    f = getFuncList(s);
+    s = getQWord(&p);
+    if (!*s)
+	s = NULL;
+    for (; x <= x2; x++) {
+	(*map)[x].func = (f >= 0) ? w3mFuncList[f].func : NULL;
+	(*map)[x].data = s;
+    }
+}
+
+static void
+setMouseAction2(MouseActionMap *map, char *p)
+{
+    char *s;
+    int f;
+
+    s = getWord(&p);
+    f = getFuncList(s);
+    s = getQWord(&p);
+    if (!*s)
+	s = NULL;
+    map->func = (f >= 0) ? w3mFuncList[f].func : NULL;
+    map->data = s;
+}
+
 void
-initMouseMenu(void)
+initMouseAction(void)
 {
     FILE *mf;
     Str line;
     char *p, *s;
-    int f, b, x, x2;
+    int b, x, width;
+    MouseActionMap *map;
 
-    mouse_menu = NULL;
+    bcopy((void *)&default_mouse_action, (void *)&mouse_action,
+	  sizeof(default_mouse_action));
+    mouse_action.lastline_map[0] = New_N(MouseActionMap, 6);
+    bcopy((void *)&default_lastline_action,
+	  (void *)mouse_action.lastline_map[0],
+	  sizeof(default_lastline_action));
+
     if ((mf = fopen(rcFile(MOUSE_FILE), "rt")) == NULL)
 	return;
 
@@ -345,50 +455,47 @@ initMouseMenu(void)
 	if (*s == '#')		/* comment */
 	    continue;
 	if (!strcmp(s, "menu")) {
-	    s = getQWord(&p);
-	    if (!*s)
-		continue;	/* error */
-	    mouse_menu = New(MouseMenu);
-	    mouse_menu->str = s;
-	    mouse_menu->width = strlen(s);
-	    mouse_menu->in_action = FALSE;
-	    if (mouse_menu->width >= LIMIT_MOUSE_MENU)
-		mouse_menu->width = LIMIT_MOUSE_MENU;
-	    for (b = 0; b < 3; b++) {
-		mouse_menu->map[b] = New_N(MouseMenuMap, mouse_menu->width);
-		for (x = 0; x < mouse_menu->width; x++) {
-		    mouse_menu->map[b][x].func = NULL;
-		    mouse_menu->map[b][x].data = NULL;
-		}
-	    }
+	    setMouseAction0(&mouse_action.menu_str, &mouse_action.menu_width,
+			    mouse_action.menu_map, p);
+	    continue;
 	}
-	if (!mouse_menu)
-	    continue;		/* "menu" is not set */
+	else if (!strcmp(s, "lastline")) {
+	    setMouseAction0(&mouse_action.lastline_str,
+			    &mouse_action.lastline_width,
+			    mouse_action.lastline_map, p);
+	    continue;
+	}
 	if (strcmp(s, "button"))
 	    continue;		/* error */
 	s = getWord(&p);
-	b = atoi(s);
-	if (!(b >= 1 && b <= 3))
+	b = atoi(s) - 1;
+	if (!(b >= 0 && b <= 2))
 	    continue;		/* error */
-	s = getWord(&p);
-	x = atoi(s);
-	if (!(IS_DIGIT(*s) && x >= 0 && x < mouse_menu->width))
-	    continue;		/* error */
-	s = getWord(&p);
-	x2 = atoi(s);
-	if (!(IS_DIGIT(*s) && x2 >= 0 && x2 < mouse_menu->width))
-	    continue;		/* error */
-	s = getWord(&p);
-	f = getFuncList(s);
-	if (f < 0)
-	    continue;		/* error */
-	s = getQWord(&p);
-	if (!*s)
-	    s = NULL;
-	for (; x <= x2; x++) {
-	    mouse_menu->map[b - 1][x].func = w3mFuncList[f].func;
-	    mouse_menu->map[b - 1][x].data = s;
+	SKIP_BLANKS(p);
+	if (IS_DIGIT(*p))
+	    s = "menu";
+	else
+	    s = getWord(&p);
+	if (!strcasecmp(s, "menu")) {
+	    if (!mouse_action.menu_str)
+		continue;
+	    setMouseAction1(&mouse_action.menu_map[b], mouse_action.menu_width,
+			    p);
 	}
+	else if (!strcasecmp(s, "lastline")) {
+	    if (!mouse_action.lastline_str)
+		continue;
+	    setMouseAction1(&mouse_action.lastline_map[b],
+			    mouse_action.lastline_width, p);
+	}
+	else if (!strcasecmp(s, "default"))
+	    setMouseAction2(&mouse_action.default_map[b], p);
+	else if (!strcasecmp(s, "anchor"))
+	    setMouseAction2(&mouse_action.anchor_map[b], p);
+	else if (!strcasecmp(s, "active"))
+	    setMouseAction2(&mouse_action.active_map[b], p);
+	else if (!strcasecmp(s, "tab"))
+	    setMouseAction2(&mouse_action.tab_map[b], p);
     }
     fclose(mf);
 }

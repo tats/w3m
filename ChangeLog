@@ -1,5 +1,60 @@
 2002-11-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03478] mouse action configuration
+	* display.c (displayBuffer): mouse_menu -> mouse_action.menu_str
+				mouse_action.lastline_str
+			(redrawNLine): mouse_menu -> mouse_action.menu_str
+	* fm.h (MouseMenuMap): deleted
+		(MouseActionMap): added
+		(MouseAction): added
+		(mouse_action): added
+	* func.c (default_mouse_action): added
+		(setMouseAction0): added
+		(setMouseAction1): added
+		(setMouseAction2): added
+		(initMouseMenu): deleted
+		(initMouseAction): added
+	* funcname.tab (CLOSE_TAB_MOUSE): added
+		(MENU_MOUSE): added
+		(MOVE_MOUSE): added
+		(TAB_MOUSE): added
+	* main.c (main): initMouseMenu() -> initMouseAction()
+			mouse_menu -> mouse_action
+		(posTab): mouse_menu -> mouse_action
+			check y > LastTab->y
+		(mouse_menu_action): deleted
+		(do_mouse_action): added
+		(process_mouse): mouse_menu -> mouse_action
+			do_mouse_action()
+		(movMs): added
+		(menuMs): added
+		(tabMs): added
+		(closeTMs): added
+		(reinit): initMouseMenu() -> initMouseAction()
+			resource: MOUSE_MENU -> MOUSE
+		(calcTabPos): mouse_menu -> mouse_action
+	* menu.c (mainMn): mouse_menu -> mouse_action
+		(selMn): mouse_menu -> mouse_action
+		(tabMn): mouse_menu -> mouse_action
+		(initMenu): add SelectTag to w3mMenuList
+	* proto.h (movMs): added
+		(menuMs): added
+		(tabMs): added
+		(closeTMs): added
+		(initMouseMenu): deleted
+		(initMouseAction): added
+	* rc.c (sync_with_option): initMouseMenu() -> initMouseAction()
+	* doc/README.func (CLOSE_TAB_MOUSE): added
+		(MENU_MOUSE): added
+		(MOVE_MOUSE): added
+		(TAB_MOUSE): added
+	* doc-jp/README.func (CLOSE_TAB_MOUSE): added
+		(MENU_MOUSE): added
+		(MOVE_MOUSE): added
+		(TAB_MOUSE): added
+
+2002-11-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03476] Re: Bug#170506: w3m: Unable to use mozilla bugzilla
 	* file.c (HTMLtagproc1): initialize ignore_tag in table_mode
 		(HTMLtagproc0): check table_level
@@ -5077,4 +5132,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.552 2002/11/25 16:39:52 ukai Exp $
+$Id: ChangeLog,v 1.553 2002/11/25 16:57:16 ukai Exp $

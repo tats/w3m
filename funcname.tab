@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.14 2002/11/21 16:15:57 ukai Exp $
+# $Id: funcname.tab,v 1.15 2002/11/25 16:57:17 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -11,6 +11,7 @@ BOOKMARK	ldBmark
 CENTER_H	ctrCsrH
 CENTER_V	ctrCsrV
 CLOSE_TAB	closeT
+CLOSE_TAB_MOUSE	closeTMs
 COMMAND		execCmd
 COOKIE		cooLst
 DEFINE_KEY	defKey
@@ -54,12 +55,14 @@ MARK_MID	chkNMID
 MARK_URL	chkURL
 MARK_WORD	chkWORD
 MENU		mainMn
+MENU_MOUSE	menuMs
 MOUSE		mouse
 MOUSE_TOGGLE	msToggle
 MOVE_DOWN	movD
 MOVE_DOWN1     movD1
 MOVE_LEFT	movL
 MOVE_LEFT1     movL1
+MOVE_MOUSE     movMs
 MOVE_RIGHT	movR
 MOVE_RIGHT1    movR1
 MOVE_UP		movU
@@ -126,6 +129,7 @@ TAB_GOTO_RELATIVE	tabrURL
 TAB_LEFT	tabL
 TAB_LINK	tabA
 TAB_MENU	tabMn
+TAB_MOUSE	tabMs
 TAB_RIGHT	tabR
 UP		lup1
 VERSION dispVer

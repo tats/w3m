@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.38 2002/11/22 15:43:13 ukai Exp $ */
+/* $Id: display.c,v 1.39 2002/11/25 16:57:16 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -254,7 +254,11 @@ displayBuffer(Buffer *buf, int mode)
     else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
-    if (nTab > 1 || mouse_menu) {
+    if (nTab > 1
+#ifdef USE_MOUSE
+	|| mouse_action.menu_str
+#endif
+	) {
 	ny = LastTab->y + 2;
 	if (ny > LASTLINE)
 	    ny = LASTLINE;
@@ -318,12 +322,8 @@ displayBuffer(Buffer *buf, int mode)
 #endif
 
 #ifdef USE_MOUSE
-    if (use_mouse)
-#if LANG == JA
-	msg = Strnew_charp("¢ã¢¬¢­");
-#else				/* LANG != JA */
-	msg = Strnew_charp("<=UpDn ");
-#endif				/* LANG != JA */
+    if (use_mouse && mouse_action.lastline_str)
+	msg = Strnew_charp(mouse_action.lastline_str);
     else
 #endif				/* not USE_MOUSE */
 	msg = Strnew();
@@ -445,14 +445,18 @@ redrawNLine(Buffer *buf, int n)
 #endif				/* USE_BG_COLOR */
     }
 #endif				/* USE_COLOR */
-    if (nTab > 1 || mouse_menu) {
+    if (nTab > 1
+#ifdef USE_MOUSE
+	|| mouse_action.menu_str
+#endif
+	) {
 	TabBuffer *t;
 	int l;
 
 	move(0, 0);
 #ifdef USE_MOUSE
-	if (mouse_menu && mouse_menu->str)
-	    addstr(mouse_menu->str);
+	if (mouse_action.menu_str)
+	    addstr(mouse_action.menu_str);
 #endif
 	clrtoeolx();
 	for (t = FirstTab; t; t = t->nextTab) {

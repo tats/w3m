@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.152 2002/11/22 15:43:14 ukai Exp $ */
+/* $Id: main.c,v 1.153 2002/11/25 16:57:17 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -754,7 +754,7 @@ main(int argc, char **argv, char **envp)
 #endif				/* not SIGWINCH */
 	initKeymap(TRUE);
 #ifdef USE_MOUSE
-	initMouseMenu();
+	initMouseAction();
 #endif				/* MOUSE */
 #ifdef USE_MENU
 	initMenu();
@@ -1017,8 +1017,7 @@ main(int argc, char **argv, char **envp)
 	CurrentKeyData = NULL;
 	/* get keypress event */
 #ifdef USE_MOUSE
-	if (mouse_menu)
-	    mouse_menu->in_action = FALSE;
+	mouse_action.in_action = FALSE;
 	if (use_mouse)
 	    mouse_active();
 #endif				/* USE_MOUSE */
@@ -4806,8 +4805,10 @@ posTab(int x, int y)
 {
     TabBuffer *tab;
 
-    if (mouse_menu && x < mouse_menu->width && y == 0)
+    if (mouse_action.menu_str && x < mouse_action.menu_width && y == 0)
 	return NO_TABBUFFER;
+    if (y > LastTab->y)
+	return NULL;
     for (tab = FirstTab; tab; tab = tab->nextTab) {
 	if (tab->x1 <= x && x <= tab->x2 && tab->y == y)
 	    return tab;
@@ -4816,10 +4817,14 @@ posTab(int x, int y)
 }
 
 static void
-mouse_menu_action(int btn, int x, int y)
+do_mouse_action(int btn, int x, int y)
 {
-    if (!mouse_menu)
-	return;
+    MouseActionMap *map = NULL;
+    int ny = -1;
+
+    if (nTab > 1 || mouse_action.menu_str)
+	ny = LastTab->y + 1;
+
     switch (btn) {
     case MOUSE_BTN1_DOWN:
 	btn = 0;
@@ -4833,14 +4838,54 @@ mouse_menu_action(int btn, int x, int y)
     default:
 	return;
     }
-    if (x >= 0 && x < mouse_menu->width && mouse_menu->map[btn][x].func) {
-	mouse_menu->in_action = TRUE;
-	mouse_menu->cursorX = x;
-	mouse_menu->cursorY = y;
+    if (y < ny) {
+	if (mouse_action.menu_str && x >= 0 && x < mouse_action.menu_width) {
+	    if (mouse_action.menu_map[btn])
+		map = &mouse_action.menu_map[btn][x];
+	}
+	else 
+	     map = &mouse_action.tab_map[btn];
+    }
+    else if (y == LASTLINE) {
+	if (mouse_action.lastline_str && x >= 0 &&
+	    x < mouse_action.lastline_width) {
+	    if (mouse_action.lastline_map[btn])
+		map = &mouse_action.lastline_map[btn][x];
+	}
+    }
+    else if (y > ny) {
+	if (y == Currentbuf->cursorY + Currentbuf->rootY &&
+	    (x == Currentbuf->cursorX + Currentbuf->rootX
+#ifdef JP_CHARSET
+             || (Currentbuf->currentLine != NULL &&
+                 (Currentbuf->currentLine->propBuf[Currentbuf->pos] & PC_KANJI1)
+                 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
+#endif				/* JP_CHARSET */
+	    )) {
+	    if (retrieveCurrentAnchor(Currentbuf) ||
+		retrieveCurrentForm(Currentbuf))
+		map = &mouse_action.active_map[btn];
+	}
+	else {
+	    int cx = Currentbuf->cursorX, cy = Currentbuf->cursorY;
+	    cursorXY(Currentbuf, x - Currentbuf->rootX,
+		     y - Currentbuf->rootY);
+	    if (retrieveCurrentAnchor(Currentbuf) ||
+		retrieveCurrentForm(Currentbuf))
+		map = &mouse_action.anchor_map[btn];
+	    cursorXY(Currentbuf, cx, cy);
+	}
+    }
+    if (!(map && map->func))
+	map = &mouse_action.default_map[btn];
+    if (map && map->func) {
+	mouse_action.in_action = TRUE;
+	mouse_action.cursorX = x;
+	mouse_action.cursorY = y;
 	CurrentKey = -1;
 	CurrentKeyData = NULL;
-	CurrentCmdData = mouse_menu->map[btn][x].data;
-	(*mouse_menu->map[btn][x].func) ();
+	CurrentCmdData = map->data;
+	(*map->func) ();
 	CurrentCmdData = NULL;
     }
 }
@@ -4851,34 +4896,17 @@ process_mouse(int btn, int x, int y)
     int delta_x, delta_y, i;
     static int press_btn = MOUSE_BTN_RESET, press_x, press_y;
     TabBuffer *t;
-    int ny = 0;
+    int ny = -1;
 
-    if (nTab > 1 || mouse_menu)
+    if (nTab > 1 || mouse_action.menu_str)
 	ny = LastTab->y + 1;
     if (btn == MOUSE_BTN_UP) {
 	switch (press_btn) {
 	case MOUSE_BTN1_DOWN:
-	    if (ny && y < ny) {
-		if (press_y == y && press_x == x) {
-#if 0
-		    if (y == 0 && x >= COLS - 2) {
-			deleteTab(CurrentTab);
-			displayBuffer(Currentbuf, B_FORCE_REDRAW);
-			return;
-		    }
-#endif
-		    t = posTab(x, y);
-		    if (t == NULL)
-			return;
-		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x, y);
-			return;
-		    }
-		    CurrentTab = t;
-		    displayBuffer(Currentbuf, B_FORCE_REDRAW);
-		    return;
-		}
-		else if (press_y < ny) {
+	    if (press_y == y && press_x == x)
+		do_mouse_action(press_btn, x, y);
+	    else if (ny > 0 && y < ny) {
+		if (press_y < ny) {
 		    moveTab(posTab(press_x, press_y), posTab(x, y),
 			    (press_y == y) ? (press_x < x) : (press_y < y));
 		    return;
@@ -4911,7 +4939,7 @@ process_mouse(int btn, int x, int y)
 		}
 		return;
 	    }
-	    if (press_x != x || press_y != y) {
+	    else {
 		delta_x = x - press_x;
 		delta_y = y - press_y;
 
@@ -4940,77 +4968,11 @@ process_mouse(int btn, int x, int y)
 		    col1R();
 		}
 	    }
-	    else {
-		if (y == LASTLINE) {
-		    switch (x) {
-		    case 0:
-		    case 1:
-			backBf();
-			break;
-		    case 2:
-		    case 3:
-			pgBack();
-			break;
-		    case 4:
-		    case 5:
-			pgFore();
-			break;
-		    }
-		    return;
-		}
-		if (y == Currentbuf->cursorY + Currentbuf->rootY &&
-		    (x == Currentbuf->cursorX + Currentbuf->rootX
-#ifdef JP_CHARSET
-		     || (Currentbuf->currentLine != NULL &&
-			 (Currentbuf->currentLine->
-			  propBuf[Currentbuf->pos] & PC_KANJI1)
-			 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
-#endif				/* JP_CHARSET */
-		    )) {
-		    followA();
-		    return;
-		}
-		if (x >= Currentbuf->rootX)
-		    cursorXY(Currentbuf, x - Currentbuf->rootX,
-			     y - Currentbuf->rootY);
-		displayBuffer(Currentbuf, B_NORMAL);
-
-	    }
 	    break;
 	case MOUSE_BTN2_DOWN:
-	    if (ny && y < ny) {
-		if (press_y == y && press_x == x) {
-		    t = posTab(x, y);
-		    if (t == NULL)
-			return;
-		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x, y);
-			return;
-		    }
-		    deleteTab(t);
-		    displayBuffer(Currentbuf, B_FORCE_REDRAW);
-		}
-		return;
-	    }
-	    backBf();
-	    break;
 	case MOUSE_BTN3_DOWN:
-	    if (ny && y < ny) {
-		if (press_y == y && press_x == x) {
-		    t = posTab(x, y);
-		    if (t == NO_TABBUFFER) {
-			mouse_menu_action(press_btn, x, y);
-			return;
-		    }
-		}
-	    }
-#ifdef USE_MENU
-	    if (x >= Currentbuf->rootX && y > ny)
-		cursorXY(Currentbuf, x - Currentbuf->rootX,
-			 y - Currentbuf->rootY);
-	    onA();
-	    mainMenu(x, y);
-#endif				/* USE_MENU */
+	    if (press_y == y && press_x == x)
+		do_mouse_action(press_btn, x, y);
 	    break;
 	case MOUSE_BTN4_DOWN_RXVT:
 	    for (i = 0; i < mouse_scroll_line(); i++)
@@ -5131,6 +5093,70 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
     return 0;
 }
 #endif				/* USE_SYSMOUSE */
+
+void
+movMs(void)
+{
+    if (!mouse_action.in_action)
+	return;
+    if ((nTab > 1 || mouse_action.menu_str) &&
+	mouse_action.cursorY < LastTab->y + 1)
+	return;
+    else if (mouse_action.cursorX >= Currentbuf->rootX &&
+	     mouse_action.cursorY < LASTLINE) {
+	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,
+		 mouse_action.cursorY - Currentbuf->rootY);
+	onA();
+    }
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+
+#ifdef USE_MENU
+void
+menuMs(void)
+{
+    if (!mouse_action.in_action)
+	return;
+    if ((nTab > 1 || mouse_action.menu_str) &&
+	mouse_action.cursorY < LastTab->y + 1)
+	mouse_action.cursorX -= 2;
+    else if (mouse_action.cursorX >= Currentbuf->rootX &&
+	     mouse_action.cursorY < LASTLINE) {
+	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,
+		 mouse_action.cursorY - Currentbuf->rootY);
+        onA();
+    }
+    mainMn();
+}
+#endif
+
+void
+tabMs(void)
+{
+    TabBuffer *tab;
+
+    if (!mouse_action.in_action)
+	return;
+    tab = posTab(mouse_action.cursorX, mouse_action.cursorY);
+    if (!tab || tab == NO_TABBUFFER)
+	return;
+    CurrentTab = tab;
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+closeTMs(void)
+{
+    TabBuffer *tab;
+
+    if (!mouse_action.in_action)
+	return;
+    tab = posTab(mouse_action.cursorX, mouse_action.cursorY);
+    if (!tab || tab == NO_TABBUFFER)
+	return;
+    deleteTab(tab);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
 #endif				/* USE_MOUSE */
 
 void
@@ -5515,7 +5541,7 @@ reinit()
 #endif
 	initKeymap(TRUE);
 #ifdef USE_MOUSE
-	initMouseMenu();
+	initMouseAction();
 #endif
 #ifdef USE_MENU
 	initMenu();
@@ -5547,8 +5573,8 @@ reinit()
     }
 
 #ifdef USE_MOUSE
-    if (!strcasecmp(resource, "MOUSE_MENU")) {
-	initMouseMenu();
+    if (!strcasecmp(resource, "MOUSE")) {
+	initMouseAction();
 	return;
     }
 #endif
@@ -5674,7 +5700,7 @@ calcTabPos(void)
     int n1, n2, na, nx, ny, ix, iy;
 
 #ifdef USE_MOUSE
-    lcol = mouse_menu ? mouse_menu->width : 0;
+    lcol = mouse_action.menu_str ? mouse_action.menu_width : 0;
 #endif
 
     if (nTab <= 0)

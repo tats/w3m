@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.66 2002/11/21 16:31:36 ukai Exp $ */
+/* $Id: rc.c,v 1.67 2002/11/25 16:57:17 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1323,7 +1323,7 @@ sync_with_option(void)
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE
-	initMouseMenu();
+	initMouseAction();
 #endif				/* MOUSE */
 #ifdef USE_MENU
 	initMenu();

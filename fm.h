@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.87 2002/11/22 15:43:14 ukai Exp $ */
+/* $Id: fm.h,v 1.88 2002/11/25 16:57:17 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -993,22 +993,27 @@ global int reverse_mouse init(FALSE);
 global int relative_wheel_scroll init(FALSE);
 global int fixed_wheel_scroll_count init(5);
 global int relative_wheel_scroll_ratio init(30);
-typedef struct _MouseMenuMap {
+typedef struct _MouseActionMap {
     void (*func) ();
     char *data;
-} MouseMenuMap;
-typedef struct _MouseMenu {
-    char *str;
-    int width;
+} MouseActionMap;
+typedef struct _MouseAction {
+    char *menu_str;
+    char *lastline_str;
+    int menu_width;
+    int lastline_width;
     int in_action;
     int cursorX;
     int cursorY;
-    MouseMenuMap *map[3];
-} MouseMenu;
-global MouseMenu *mouse_menu init(NULL);
+    MouseActionMap default_map[3];
+    MouseActionMap anchor_map[3];
+    MouseActionMap active_map[3];
+    MouseActionMap tab_map[3];
+    MouseActionMap *menu_map[3];
+    MouseActionMap *lastline_map[3];
+} MouseAction;
+global MouseAction mouse_action;
 #define LIMIT_MOUSE_MENU 100
-#else
-#define mouse_menu NULL
 #endif				/* USE_MOUSE */
 
 #ifdef USE_COOKIE

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.63 2003/02/06 17:15:11 ukai Exp $ */
+/* $Id: display.c,v 1.64 2003/02/06 17:16:56 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -259,7 +259,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     parseURL2(url, &pu, baseURL(buf));
     u = parsedURL2Str(&pu);
     if (DecodeURL)
-	u = Strnew_charp(url_unquote_conv(u->ptr, Currentbuf->document_code));
+	u = Strnew_charp(url_unquote_conv(u->ptr, buf->document_code));
 #ifdef JP_CHARSET
     u = checkType(u, &pr, NULL);
 #endif

@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.5 2001/12/21 19:21:13 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.6 2001/12/21 19:25:01 ukai Exp $
 
 $helpdir = "@HELP_DIR@";
 unshift(@INC, $helpdir);
@@ -28,7 +28,9 @@ if (defined($ENV{'QUERY_STRING'})) {
 	local($tlang) = $2;
 	$tlang =~ s/\+|%([0-9A-Fa-f][0-9A-Fa-f])/$& eq '+' ? ' ' : pack('C', hex($1))/ge;
 	$tlang =~ tr/A-Z/a-z/;
-	$tlang =~ s/([a-z][a-z]).*/$1/;	# lang code is 'en', 'ja', ...
+	if ($tlang !~ /^[a-z][a-z]$/) {
+	    $tlang = 'en';
+	}
 	print "tlang=$tlang\n";
 	eval {require "w3mhelp-funcdesc.$tlang.pl";};
 	if (defined(%funcdesc)) {

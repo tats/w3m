@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.49 2002/09/24 16:35:02 ukai Exp $ */
+/* $Id: rc.c,v 1.50 2002/10/25 20:02:41 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1238,9 +1238,9 @@ sync_with_option(void)
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 #if LANG == JA
-	AcceptLang = "ja; q=1.0, en; q=0.5";
+	AcceptLang = "ja;q=1.0, en;q=0.5";
 #else				/* LANG != JA (must be EN) */
-	AcceptLang = "en; q=1.0";
+	AcceptLang = "en;q=1.0";
 #endif
     }
     if (AcceptEncoding == NULL || *AcceptEncoding == '\0')

@@ -1,5 +1,11 @@
 2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 00781] "Clemens Fischer" <ino-waiting@gmx.net>
+	  zope doesn't recognize implied *LWS in accept-language
+	* rc.c (sync_with_option): remove optional LWS
+
+2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev-en 00780] "Carlo E. Prelz" <fluido@fluido.as>
 	  always print on screen the relative position
 	* display.c (displayBuffer): relative position
@@ -3963,4 +3969,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.447 2002/10/25 19:59:48 ukai Exp $
+$Id: ChangeLog,v 1.448 2002/10/25 20:02:30 ukai Exp $

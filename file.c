@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.124 2002/11/22 15:49:43 ukai Exp $ */
+/* $Id: file.c,v 1.125 2002/11/22 15:57:29 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7107,10 +7107,10 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 
     pushText(fileToDelete, tmpf->ptr);
 #ifdef HAVE_SETPGRP
-    if (! (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&
-	! (mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
+    if (!(mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&
+	!(mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
 	flush_tty();
-	if (! fork()) {
+	if (!fork()) {
 	    reset_signals();
 	    signal(SIGINT, SIG_IGN);
 	    close_tty();
@@ -7127,7 +7127,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 #endif
     {
 	if (save2tmp(uf, tmpf->ptr) < 0)
-	    return 0;	/* ??? */
+	    return 0;		/* ??? */
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.38 2002/11/22 15:49:43 ukai Exp $ */
+/* $Id: etc.c,v 1.39 2002/11/22 15:57:29 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1325,7 +1325,7 @@ mySystem(char *command, int background)
 	system(cmd->ptr);
 #else
 	flush_tty();
-	if (! fork())
+	if (!fork())
 	    myExec(command);
 #endif
     }

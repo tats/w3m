@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.34 2002/01/24 17:07:40 ukai Exp $ */
+/* $Id: rc.c,v 1.35 2002/01/24 17:29:45 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -139,6 +139,7 @@ static char *config_file = NULL;
 #define CMT_IGNORE_NULL_IMG_ALT "空のIMG ALT属性の時にリンク名を表示する"
 #define CMT_IFILE        "各ディレクトリのインデックスファイル"
 #define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
+#define CMT_DEFAULT_URL	 "URLを開く時のデフォルト文字列"
 #define CMT_DECODE_CTE   "保存時に Content-Transfer-Encoding をデコードする"
 #ifdef USE_MOUSE
 #define CMT_MOUSE         "マウスを使う"
@@ -262,6 +263,7 @@ static char *config_file = NULL;
 #define CMT_IGNORE_NULL_IMG_ALT	"Ignore IMG ALT=\"\" (display link name)"
 #define CMT_IFILE        "Index file for the directory"
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
+#define CMT_DEFAULT_URL  "Default string when opening URL"
 #define CMT_DECODE_CTE   "Decode Content-Transfer-Encoding when saving"
 #ifdef USE_MOUSE
 #define CMT_MOUSE         "Use mouse"
@@ -369,6 +371,18 @@ static char n_s[][2] = {
 };
 #define N_S(x) (x), n_s[(x)]
 
+static struct sel_c defaulturls[] = {
+#if LANG == JA
+    {N_S(DEFAULT_URL_EMPTY), "無し"},
+    {N_S(DEFAULT_URL_CURRENT), "現在のURL"},
+    {N_S(DEFAULT_URL_LINK), "リンク先のURL"},
+#else
+    {N_S(DEFAULT_URL_EMPTY), "empty"},
+    {N_S(DEFAULT_URL_CURRENT), "current URL"},
+    {N_S(DEFAULT_URL_LINK), "link URL"},
+#endif
+    {0, NULL, NULL}
+};
 #ifdef INET6
 static struct sel_c dnsorders[] = {
     {N_S(DNS_ORDER_UNSPEC), "unspec"},
@@ -605,6 +619,9 @@ struct param_ptr params9[] = {
      NULL},
     {"retry_http", P_INT, PI_ONOFF, (void *)&retryAsHttp, CMT_RETRY_HTTP,
      NULL},
+    {"default_url", P_INT, PI_SEL_C, (void *)&DefaultURLString,
+     CMT_DEFAULT_URL,
+     defaulturls},
     {"follow_redirection", P_INT, PI_TEXT, &FollowRedirection,
      CMT_FOLLOW_REDIRECTION, NULL},
     {"meta_refresh", P_CHARINT, PI_ONOFF, (void *)&MetaRefresh,

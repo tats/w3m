@@ -1,5 +1,23 @@
 2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02901] Default URL for GOTO*
+	* fm.h (DEFAULT_URL_*): added
+	* fm.h (DefaultURLString): added
+	* main.c (cmd_loadURL): add arg `referer'
+	* main.c (goURL0): 2nd arg is `relative' flag
+		check DefaultURLString
+		if relative, then current and referer is set
+	* main.c (ldhelp): cmd_loadURL arg changes
+	* main.c (deletePrevBuf): ditto
+	* main.c (cmd_loadBuffer): ditto
+	* main.c (adBmark): ditto
+	* main.c (follow_map): ditto
+	* rc.c (CMT_DEFAULT_URL): added
+	* rc.c (defaulturls): added
+	* rc.c (params9): add "default_url"
+
+2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02901] DNS_ORDER_*
 	* fm.h (DNS_ORDER_*): added
 	* rc.c (dnsorders): use N_S(DNS_ORDER_*)
@@ -2258,4 +2276,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.257 2002/01/24 17:07:40 ukai Exp $
+$Id: ChangeLog,v 1.258 2002/01/24 17:29:45 ukai Exp $

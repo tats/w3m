@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.70 2002/01/23 17:19:47 ukai Exp $ */
+/* $Id: main.c,v 1.71 2002/01/24 17:29:45 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -67,7 +67,7 @@ int (*searchRoutine) (Buffer *, char *);
 JMP_BUF IntReturn;
 
 static void cmd_loadfile(char *path);
-static void cmd_loadURL(char *url, ParsedURL *current);
+static void cmd_loadURL(char *url, ParsedURL *current, char *referer);
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 #ifdef USE_MARK
@@ -1833,9 +1833,9 @@ ldhelp(void)
 			"?version=%s&lang=%s",
 			Str_form_quote(Strnew_charp(w3m_version))->ptr,
 			Str_form_quote(Strnew_charp_n(lang, n))->ptr)->ptr,
-		NULL);
+		NULL, NO_REFERER);
 #else
-    cmd_loadURL(helpFile(HELP_FILE), NULL);
+    cmd_loadURL(helpFile(HELP_FILE), NULL, NO_REFERER);
 #endif
 }
 
@@ -3573,7 +3573,7 @@ deletePrevBuf()
 }
 
 static void
-cmd_loadURL(char *url, ParsedURL *current)
+cmd_loadURL(char *url, ParsedURL *current, char *referer)
 {
     Buffer *buf;
 
@@ -3597,7 +3597,7 @@ cmd_loadURL(char *url, ParsedURL *current)
 #endif				/* USE_NNTP */
 
     refresh();
-    buf = loadGeneralFile(url, current, NO_REFERER, 0, NULL);
+    buf = loadGeneralFile(url, current, referer, 0, NULL);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", conv_from_system(url))->ptr;
 	disp_err_message(emsg, FALSE);
@@ -3613,16 +3613,26 @@ cmd_loadURL(char *url, ParsedURL *current)
 
 /* go to specified URL */
 static void
-goURL0(char *prompt, ParsedURL *current)
+goURL0(char *prompt, int relative)
 {
-    char *url;
-    ParsedURL p_url;
+    char *url, *referer;
+    ParsedURL p_url, *current;
     Buffer *cur_buf = Currentbuf;
 
     url = searchKeyData();
     if (url == NULL) {
-	if (current)
-	    url = parsedURL2Str(current)->ptr;
+	if (DefaultURLString == DEFAULT_URL_CURRENT) {
+	    current = baseURL(Currentbuf);
+	    if (current)
+		url = parsedURL2Str(current)->ptr;
+	}
+	else if (DefaultURLString == DEFAULT_URL_LINK) {
+	    Anchor *a = retrieveCurrentAnchor(Currentbuf);
+	    if (a) {
+		parseURL2(a->url, &p_url, baseURL(Currentbuf));
+		url = parsedURL2Str(&p_url)->ptr;
+	    }
+	}
 	url = inputLineHist(prompt, url, IN_URL, URLHist);
 	if (url != NULL)
 	    SKIP_BLANKS(url);
@@ -3643,9 +3653,17 @@ goURL0(char *prompt, ParsedURL *current)
 	gotoLabel(url + 1);
 	return;
     }
+    if (relative) {
+	current = baseURL(Currentbuf);
+	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+    }
+    else {
+	current = NULL;
+	referer = NULL;
+    }
     parseURL2(url, &p_url, current);
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, current);
+    cmd_loadURL(url, current, referer);
     if (Currentbuf != cur_buf)	/* success */
 	pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
 }
@@ -3653,13 +3671,13 @@ goURL0(char *prompt, ParsedURL *current)
 void
 goURL(void)
 {
-    goURL0("Goto URL: ", NULL);
+    goURL0("Goto URL: ", FALSE);
 }
 
 void
 gorURL(void)
 {
-    goURL0("Goto relative URL: ", baseURL(Currentbuf));
+    goURL0("Goto relative URL: ", TRUE);
 }
 
 static void
@@ -3685,7 +3703,7 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
 void
 ldBmark(void)
 {
-    cmd_loadURL(BookmarkFile, NULL);
+    cmd_loadURL(BookmarkFile, NULL, NO_REFERER);
 }
 
 
@@ -3702,7 +3720,7 @@ adBmark(void)
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
-    cmd_loadURL(tmp->ptr, NULL);
+    cmd_loadURL(tmp->ptr, NULL, NO_REFERER);
 }
 
 /* option setting */
@@ -3788,7 +3806,8 @@ follow_map(struct parsed_tagarg *arg)
     }
     parseURL2(url, &p_url, baseURL(Currentbuf));
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, baseURL(Currentbuf));
+    cmd_loadURL(url, baseURL(Currentbuf),
+		parsedURL2Str(&Currentbuf->currentURL)->ptr);
 #else
     Buffer *buf;
 

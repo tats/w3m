@@ -1,3 +1,9 @@
+2001-11-22  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
+
+	* [w3m-dev 02497] 
+	* url.c (parseURL2): fix #ifdef __EMX__ code
+	* indep.c (cleanupName): remove #if 0 /* SUPPORT_NETBIOS_SHARE */ code
+
 2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02494]

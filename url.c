@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.7 2001/11/21 16:29:47 ukai Exp $ */
+/* $Id: url.c,v 1.8 2001/11/22 13:30:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -931,18 +931,10 @@ parseURL2(char *url, ParsedURL * pu, ParsedURL * current)
 #ifdef __EMX__
 	if (pu->scheme == SCM_LOCAL) {
 	    if (strncmp(pu->file, "/$LIB/", 6)) {
-		char *arg, abs[_MAX_PATH], tmp[_MAX_PATH];
+		char abs[_MAX_PATH];
 
-		if (!(arg = strchr(strcpy(tmp, pu->file), '?'))) {
-		    _abspath(abs, tmp, _MAX_PATH);
-		    pu->file = cleanupName(abs);
-		}
-		else {
-		    *arg = 0;
-		    _abspath(abs, tmp, _MAX_PATH);
-		    *arg = '?';
-		    pu->file = cleanupName(strcat(abs, arg));
-		}
+                _abspath(abs, pu->file, _MAX_PATH);
+                pu->file = cleanupName(abs);
 	    }
 	}
 #else

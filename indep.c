@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.6 2001/11/21 16:29:46 ukai Exp $ */
+/* $Id: indep.c,v 1.7 2001/11/22 13:30:02 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -122,13 +122,6 @@ cleanupName(char *name)
 	}
 	else if (strncmp(p, "//", 2) == 0) {	/* foo//bar */
 	    /* -> foo/bar           */
-#if 0 /* ifdef SUPPORT_NETBIOS_SHARE */
-           if (p == buf) {       /* //DRIVE/foo or //host/path */
-		p += 2;
-		q += 2;
-		continue;
-	    }
-#endif                /* SUPPORT_NETBIOS_SHARE */
 	    *p = '\0';
 	    q++;
 	    strcat(buf, q);

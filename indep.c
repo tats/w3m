@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.13 2001/11/27 18:29:24 ukai Exp $ */
+/* $Id: indep.c,v 1.14 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -18,7 +18,7 @@ allocStr(const char *s, int len)
 
     if (s == NULL)
 	return NULL;
-    if (len == 0)
+    if (len < 0)
 	len = strlen(s);
     ptr = NewAtom_N(char, len + 1);
     if (ptr == NULL) {
@@ -80,7 +80,7 @@ cleanupName(char *name)
 {
     char *buf, *p, *q;
 
-    buf = allocStr(name, 0);
+    buf = allocStr(name, -1);
     p = buf;
     q = name;
     while (*q != '\0') {

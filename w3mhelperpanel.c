@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.7 2001/12/02 16:26:08 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -46,7 +46,7 @@ extractMailcapEntry(char *mcap_entry, char **type, char **cmd)
 	j++;
     while (mcap_entry[j] && IS_SPACE(mcap_entry[j]))
 	j++;
-    *cmd = allocStr(&mcap_entry[j], 0);
+    *cmd = allocStr(&mcap_entry[j], -1);
 }
 
 static void

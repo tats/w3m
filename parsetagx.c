@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.6 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.7 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -232,7 +232,7 @@ parsedtag_set_value(struct parsed_tag *tag, int id, char *value)
     i = tag->map[id];
     tag->attrid[i] = id;
     if (value)
-	tag->value[i] = allocStr(value, 0);
+	tag->value[i] = allocStr(value, -1);
     else
 	tag->value[i] = NULL;
     tag->need_reconstruct = TRUE;

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: etc.c,v 1.9 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -640,7 +640,7 @@ lastFileName(char *path)
 	p++;
     }
 
-    return allocStr(q, 0);
+    return allocStr(q, -1);
 }
 
 #ifndef HAVE_BCOPY
@@ -704,7 +704,7 @@ mybasename(char *s)
 	p++;
     else
 	p = s;
-    return allocStr(p, 0);
+    return allocStr(p, -1);
 }
 
 char *
@@ -1518,7 +1518,7 @@ FQDN(char *host)
     if (!(entry = gethostbyname(host)))
 	return NULL;
 
-    return allocStr(entry->h_name, 0);
+    return allocStr(entry->h_name, -1);
 #else				/* INET6 */
     for (af = ai_family_order_table[DNS_order];; af++) {
 	int error;

@@ -1,3 +1,33 @@
+2001-12-03  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02605] $(PWD) / allocStr()
+	
+	* XMakefile (install-scripts): use $$TOPDIR instead of $(PWD)
+
+	* indep.c (allocStr): if len is negative, it will copy string in `s'
+	* display.c (record_err_message): pass -1 as length to allocStr
+	* etc.c (lastFileName): ditto
+	* etc.c (mybasename): ditto
+	* etc.c (FQDN): ditto
+	* file.c (push_tag): ditto
+	* func.c (addKeyList): ditto
+	* history.c (unshiftHist): ditto
+	* history.c (pushHist): ditto
+	* indep.c (cleanupName): ditto
+	* linein.c (inputLineHist): ditto
+	* local.c (dirBuffer): ditto
+	* main.c (gotoLabel): ditto
+	* main.c (searchKeyData): ditto
+	* parsetagx.c (parsedtag_set_value): ditto
+	* terms.c (GETSTR): ditto
+	* textlist.h (pushText): ditto
+	* url.c (DefaultFile): ditto
+	* url.c (parseURL): ditto
+	* url.c (ALLOC_STR): ditto
+	* url.c (parseURL2): ditto
+	* url.c (openURL): ditto
+	* w3mhelperpanel.c (extractMailcapEntry): ditto
+
 2001-12-02  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02604]

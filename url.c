@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.16 2001/11/30 14:06:27 ukai Exp $ */
+/* $Id: url.c,v 1.17 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -212,15 +212,15 @@ DefaultFile(int scheme)
 #ifdef USE_SSL
     case SCM_HTTPS:
 #endif				/* USE_SSL */
-	return allocStr(HTTP_DEFAULT_FILE, 0);
+	return allocStr(HTTP_DEFAULT_FILE, -1);
 #ifdef USE_GOPHER
     case SCM_GOPHER:
-	return allocStr("1", 0);
+	return allocStr("1", -1);
 #endif				/* USE_GOPHER */
     case SCM_LOCAL:
     case SCM_LOCAL_CGI:
     case SCM_FTP:
-	return allocStr("/", 0);
+	return allocStr("/", -1);
     }
     return NULL;
 }
@@ -830,7 +830,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    q++;
 	if (IS_ALPHA(q[0]) && (q[1] == ':' || q[1] == '|')) {
 	    if (q[1] == '|') {
-		p = allocStr(q, 0);
+		p = allocStr(q, -1);
 		p[1] = ':';
 	    }
 	    else
@@ -914,17 +914,17 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
   do_label:
     if (p_url->scheme == SCM_MISSING) {
 	p_url->scheme = SCM_LOCAL;
-	p_url->file = allocStr(p, 0);
+	p_url->file = allocStr(p, -1);
 	p_url->label = NULL;
     }
     else if (*p == '#')
-	p_url->label = allocStr(p + 1, 0);
+	p_url->label = allocStr(p + 1, -1);
     else
 	p_url->label = NULL;
 }
 
 #define initParsedURL(p) bzero(p,sizeof(ParsedURL))
-#define ALLOC_STR(s) ((s)==NULL?NULL:allocStr(s,0))
+#define ALLOC_STR(s) ((s)==NULL?NULL:allocStr(s,-1))
 
 void
 copyParsedURL(ParsedURL *p, ParsedURL *q)
@@ -997,7 +997,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 #ifdef USE_GOPHER
 	    else if (pu->scheme == SCM_GOPHER && pu->file[0] == '/') {
 		p = pu->file;
-		pu->file = allocStr(p + 1, 0);
+		pu->file = allocStr(p + 1, -1);
 	    }
 #endif				/* USE_GOPHER */
 	}
@@ -1485,7 +1485,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	return uf;
     case SCM_FTP:
 	if (pu->file == NULL)
-	    pu->file = allocStr("/", 0);
+	    pu->file = allocStr("/", -1);
 	if (non_null(FTP_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
@@ -1509,7 +1509,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     case SCM_HTTPS:
 #endif				/* USE_SSL */
 	if (pu->file == NULL)
-	    pu->file = allocStr("/", 0);
+	    pu->file = allocStr("/", -1);
 	if (request && request->method == FORM_METHOD_POST && request->body)
 	    hr.command = HR_COMMAND_POST;
 	if (request && request->method == FORM_METHOD_HEAD)

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.19 2001/11/30 10:10:24 ukai Exp $ */
+/* $Id: terms.c,v 1.20 2001/12/02 16:26:08 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -577,7 +577,7 @@ setgraphchar(void)
 
 #define graphchar(c) (((unsigned)(c)>=' ' && (unsigned)(c)<128)? gcmap[(c)-' '] : (c))
 
-#define GETSTR(v,s) {v = pt; suc = tgetstr(s,&pt); if (!suc) v = ""; else v = allocStr(suc,0); }
+#define GETSTR(v,s) {v = pt; suc = tgetstr(s,&pt); if (!suc) v = ""; else v = allocStr(suc, -1); }
 
 void
 getTCstr(void)

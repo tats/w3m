@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.9 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: linein.c,v 1.10 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -293,7 +293,7 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist *hist)
     if (flag & IN_FILENAME)
 	return expandName(p);
     else
-	return allocStr(p, 0);
+	return allocStr(p, -1);
 }
 
 #ifdef __EMX__

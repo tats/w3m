@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: func.c,v 1.5 2001/12/02 16:26:08 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -248,7 +248,7 @@ addKeyList(KeyList *list, int key, char *data)
     if (data == NULL || *data == '\0')
 	data = NULL;
     else
-	data = allocStr(data, 0);
+	data = allocStr(data, -1);
     item = searchKeyList(list, key);
     if (item == NULL) {
 	if (data == NULL)

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.10 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: display.c,v 1.11 2001/12/02 16:26:08 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -782,7 +782,7 @@ record_err_message(char *s)
 	    message_list = newGeneralList();
 	if (message_list->nitem >= LINES)
 	    popValue(message_list);
-	pushValue(message_list, allocStr(s, 0));
+	pushValue(message_list, allocStr(s, -1));
     }
 }
 

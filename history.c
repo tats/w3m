@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: history.c,v 1.5 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -89,7 +89,7 @@ unshiftHist(Hist *hist, char *ptr)
 
     if (hist == NULL || hist->list == NULL)
 	return NULL;
-    item = (HistItem *)newListItem((void *)allocStr(ptr, 0),
+    item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
 				   (ListItem *)hist->list->first, NULL);
     if (hist->list->first)
 	hist->list->first->prev = item;
@@ -107,7 +107,7 @@ pushHist(Hist *hist, char *ptr)
 
     if (hist == NULL || hist->list == NULL)
 	return NULL;
-    item = (HistItem *)newListItem((void *)allocStr(ptr, 0),
+    item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
 				   NULL, (ListItem *)hist->list->last);
     if (hist->list->last)
 	hist->list->last->next = item;

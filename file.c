@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.24 2001/12/02 14:27:11 ukai Exp $ */
+/* $Id: file.c,v 1.25 2001/12/02 16:26:08 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1675,7 +1675,7 @@ static void
 push_tag(struct readbuffer *obuf, char *cmdname, int cmd)
 {
     obuf->tag_stack[obuf->tag_sp] = New(struct cmdtable);
-    obuf->tag_stack[obuf->tag_sp]->cmdname = allocStr(cmdname, 0);
+    obuf->tag_stack[obuf->tag_sp]->cmdname = allocStr(cmdname, -1);
     obuf->tag_stack[obuf->tag_sp]->cmd = cmd;
     obuf->tag_sp++;
     if (obuf->tag_sp >= TAG_STACK_SIZE || obuf->flag & (RB_SPECIAL & ~RB_NOBR))

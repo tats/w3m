@@ -1,5 +1,12 @@
 2003-01-21  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03658] Re: Other user can see local cookie.
+	* fm.h (rc_dir): init(NULL)
+	* rc.c (config_file): deleted
+		(init_rc): use rc_dir
+
+2003-01-21  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03657] fputs -> Strfputs
 	* form.c (form_fputs_decode): use Strfputs()
 
@@ -6614,4 +6621,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.693 2003/01/20 15:22:54 ukai Exp $
+$Id: ChangeLog,v 1.694 2003/01/20 15:24:19 ukai Exp $

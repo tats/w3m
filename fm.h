@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.103 2003/01/15 17:13:22 ukai Exp $ */
+/* $Id: fm.h,v 1.104 2003/01/20 15:24:19 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1019,7 +1019,7 @@ extern char alt_rule[];
 #endif				/* not KANJI_SYMBOLS */
 extern char UseAltEntity;
 global int no_rc_dir init(FALSE);
-global char *rc_dir;
+global char *rc_dir init(NULL);
 global char *tmp_dir;
 global char *config_file init(NULL);
 

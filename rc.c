@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.78 2003/01/17 17:07:02 ukai Exp $ */
+/* $Id: rc.c,v 1.79 2003/01/20 15:24:20 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -32,8 +32,6 @@ struct rc_search_table {
 
 static struct rc_search_table *RC_search_table;
 static int RC_table_size;
-
-static char *config_file = NULL;
 
 #define P_INT      0
 #define P_SHORT    1
@@ -1372,7 +1370,7 @@ init_rc(void)
     struct stat st;
     FILE *f;
 
-    if (config_file != NULL)
+    if (rc_dir != NULL)
 	goto open_rc;
 
     rc_dir = expandPath(RC_DIR);

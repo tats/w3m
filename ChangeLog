@@ -1,3 +1,7 @@
+2002-12-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: func: ACCESSKEY, LINK_MENU
+
 2002-12-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03529] Support of title, accesskey of anchor
@@ -5533,4 +5537,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.593 2002/12/05 16:29:02 ukai Exp $
+$Id: ChangeLog,v 1.594 2002/12/05 16:32:45 ukai Exp $

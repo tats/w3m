@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* func: ACCESSKEY, LINK_MENU
 * rc: display_ins_del
 * 2 stroke keybinding
 * func: MULTIMAP

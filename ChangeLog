@@ -1,3 +1,8 @@
+2003-02-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.4 release candidate 3
+	* version.c.in: update
+
 2003-02-19  Atsushi YOKOYAMA <yoko-a@cmh.fuchu.toshiba.co.jp>
 
 	* [w3m-dev 03758] Re: SVR4 signal behavior
@@ -7197,4 +7202,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.754 2003/02/18 15:43:23 ukai Exp $
+$Id: ChangeLog,v 1.755 2003/02/19 14:50:02 ukai Exp $

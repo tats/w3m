@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.19 2001/11/30 10:49:06 ukai Exp $ */
+/* $Id: rc.c,v 1.20 2001/11/30 11:11:44 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -551,7 +551,8 @@ struct param_ptr params9[] = {
      NULL},
     {"accept_language", P_STRING, PI_TEXT, (void *)&AcceptLang, CMT_ACCEPTLANG,
      NULL},
-    {"accept_encoding", P_STRING, PI_TEXT, (void *)&AcceptEncoding, CMT_ACCEPTENCODING,
+    {"accept_encoding", P_STRING, PI_TEXT, (void *)&AcceptEncoding,
+     CMT_ACCEPTENCODING,
      NULL},
     {"accept_media", P_STRING, PI_TEXT, (void *)&AcceptMedia, CMT_ACCEPTMEDIA,
      NULL},
@@ -1090,7 +1091,7 @@ sync_with_option(void)
 #endif
     initMailcap();
     initMimeTypes();
-    if (AcceptEncoding == NULL || *AcceptEncoding == '\0') 
+    if (AcceptEncoding == NULL || *AcceptEncoding == '\0')
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();

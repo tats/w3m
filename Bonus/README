@@ -1,3 +1,19 @@
+smb.cgi
+
+  [w3m-dev 03634] smb.cgi
+  SMB にアクセスする local CGI です。
+  nmblookup,smbclient を使うので sabma がインストールされている
+  必要があります。
+  パスワードは、smbclient の -A オプションを使えるなら、
+  smbclient -A ~/.w3m/smb として、使えない場合は ~/.w3m/smb を
+  読んで環境変数 PASSWD で渡します。
+  どちらにせよ、あまり良い事ではないので SMB(CIFS)プロトコルを
+  喋る版を希望。
+
+google.cgi
+
+  [w3m-dev 03625] keymap key SEARCH string
+
 html2latex
 
   HTMLの文書をLaTeX に変換します．Rubyスクリプトです．不完全です．

@@ -1,3 +1,9 @@
+2003-01-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03634] smb.cgi
+	* Bonus/smb.cgi: added
+	* Bonus/README: update
+
 2003-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* ftp.c (ftp_pasv): ftp_command response
@@ -6378,4 +6384,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.674 2003/01/11 16:00:55 ukai Exp $
+$Id: ChangeLog,v 1.675 2003/01/11 16:05:17 ukai Exp $

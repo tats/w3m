@@ -117,6 +117,7 @@ MODEL=Linux.i686-monster-ja
 #undef USE_NNTP
 #undef USE_GOPHER
 #undef USE_ALARM
+#define USE_HELP_CGI
 
 #define DEF_EDITOR "/bin/vi"
 #define DEF_MAILER "/bin/mail"
@@ -126,6 +127,7 @@ MODEL=Linux.i686-monster-ja
 #define HELP_DIR     "/usr/local/lib/w3m"
 #define ETC_DIR	     "/usr/local/etc/w3m"
 #define HELP_FILE    "w3mhelp.html"
+#define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
 
 #define RC_DIR       "~/.w3m/"

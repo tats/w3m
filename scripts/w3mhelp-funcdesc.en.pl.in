@@ -1,0 +1,26 @@
+
+# Buffer selection mode
+
+%buf_funcdesc = (
+ 'BUF:PREV', 'Select previous buffer',
+ 'BUF:NEXT', 'Select next buffer',
+ 'BUF:DELETE', 'Delete current buffer',
+ 'BUF:GO', 'Go to the selected buffer',
+);
+
+%lineedit_funcdesc = (
+ 'LINEEDIT:FORWARD', 'Move cursor forward',
+ 'LINEEDIT:BACK', 'Move cursor backward',
+ 'LINEEDIT:BS',  'Delete previous character',
+ 'LINEEDIT:DEL', 'Delete current character',
+ 'LINEEDIT:KILL_AFTER', 'Kill everything after cursor',
+ 'LINEEDIT:KILL_BEFORE', 'Kill everything before cursor',
+ 'LINEEDIT:TOP', 'Move to the top of line',
+ 'LINEEDIT:BOTTOM', 'Move to the bottom of line',
+ 'LINEEDIT:PREV', 'Fetch the previous string from the history list',
+ 'LINEEDIT:NEXT', 'Fetch the next string from the history list',
+ 'LINEEDIT:COMPLETE', 'Complete filename',
+ 'LINEEDIT:ACCEPT', 'Accept',
+);
+
+1;

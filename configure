@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.29 2001/11/30 10:49:06 ukai Exp $
+# $Id: configure,v 1.30 2001/11/30 18:06:28 ukai Exp $
 #	Configuration.
 #
 
@@ -1108,9 +1108,13 @@ perl=`./which perl`
 if [ `expr "$perl" : 'not found'` != 0 ]; then
   echo "You don't have perl."
   perl=/usr/local/bin/perl
+  have_perl=n
 else
   echo "You have perl."
+  have_perl=y
 fi
+
+def_param use_help_cgi $have_perl
 
 ####### strcasecmp
 cat > _zmachdep.c << EOF
@@ -1971,6 +1975,7 @@ $def_ftppass_hostnamegen
 $def_use_nntp
 $def_use_gopher
 $def_use_alarm
+$def_use_help_cgi
 
 #define DEF_EDITOR "$editor"
 #define DEF_MAILER "$mailer"
@@ -1980,6 +1985,7 @@ $def_use_alarm
 #define HELP_DIR     "$helpdir"
 #define ETC_DIR	     "$sysconfdir"
 #define HELP_FILE    "w3mhelp.html"
+#define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
 
 #define RC_DIR       "~/.w3m/"

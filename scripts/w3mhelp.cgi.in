@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.1 2001/11/30 16:48:19 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.2 2001/11/30 18:06:29 ukai Exp $
 
 $helpdir="@HELP_DIR@";
 unshift(@INC, $helpdir);
@@ -40,10 +40,20 @@ if (-f $keymap) {
 
 local (%funckeydesc, $key, $fname, $desc);
 
+%funcname = (%funcname, %buf_funcname, %lineedit_funcname);
+
+%funcdesc = (%funcdesc, %buf_funcdesc, %lineedit_funcdesc);
 while (($fname, $desc) = each %funcdesc) {
     $funckeydesc{$funcname{$fname}} = "$desc\n";
 }
+
 while (($key, $fname) = each %keyfunc) {
+    $funckeydesc{$funcname{$fname}} .= "$key,";
+}
+while (($key, $fname) = each %buf_keyfunc) {
+    $funckeydesc{$funcname{$fname}} .= "$key,";
+}
+while (($key, $fname) = each %lineedit_keyfunc) {
     $funckeydesc{$funcname{$fname}} .= "$key,";
 }
 
@@ -98,15 +108,8 @@ for $otherlang (@docdirs) {
 	     qw(backBf vwSrc selMn editBf rdrwSc reload 
 		svBuf svSrc editScr));
 
-print <<PAGE;
-<H2>Buffer selection mode</H2>
-<table cellpadding=0>
-<TR><TD WIDTH=140>k, C-p<TD>Select previous buffer
-<TR><TD>j, C-n<TD>Select next buffer
-<TR><TD>D<TD>Delete current buffer
-<TR><TD>RET<TD>Go to the selected buffer
-</table>
-PAGE
+&show_keymap("Buffer selection mode",
+	     qw(buffer_prev buffer_next buffer_delete buffer_go));
 
 &show_keymap("Bookmark operation",
 	     qw(ldBmark adBmark));
@@ -123,22 +126,13 @@ PAGE
 &show_keymap("Miscellany",
 	     qw(setAlarm execsh ldhelp ldOpt cooLst susp qquitfm quitfm));
 
+&show_keymap("Line-edit mode",
+	     qw(lineedit_forward lineedit_back lineedit_backspace 
+		lineedit_delete lineedit_kill_after lineedit_kill_before
+		lineedit_top lineedit_bottom lineedit_prev lineedit_next
+		lineedit_complete lineedit_accept));
+
 print <<PAGE;
-<H2>Line-edit mode</H2>
-<table cellpadding=0>
-<TR><TD WIDTH=140>C-f<TD>Move cursor forward
-<TR><TD>C-b<TD>Move cursor backward
-<TR><TD>C-h<TD>Delete previous character
-<TR><TD>C-d<TD>Delete current character
-<TR><TD>C-k<TD>Kill everything after cursor
-<TR><TD>C-u<TD>Kill everything before cursor
-<TR><TD>C-a<TD>Move to the top of line
-<TR><TD>C-e<TD>Move to the bottom of line
-<TR><TD>C-p<TD>Fetch the previous string from the history list
-<TR><TD>C-n<TD>Fetch the next string from the history list
-<TR><TD>TAB,SPC<TD>Complete filename
-<TR><TD>RETURN<TD>Accept
-</table>
 <HR>
 </BODY>
 </HTML>
@@ -166,6 +160,11 @@ sub show_keymap {
     my ($head, @list) = @_;
     my ($fid);
     my ($attr) = " WIDTH=140";
+
+    if (defined($title{$head})) {
+	$head = $title{$head};
+	$head =~ s/[<>&]/$htmlesc{$&}/ge;
+    }
 
     print <<PAGE;
 <H2>$head</H2>

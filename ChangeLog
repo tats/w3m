@@ -1,5 +1,19 @@
 2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02601]
+	* Makefile (install-core): added
+	* Makefile (install-helpfile): added
+	* configure (use_help_cgi): default yes if perl found
+	* configure (config.h): add HELP_CGI
+	* configure (config.h): add $def_use_help_cgi
+	* main.c (ldhelp): add USE_HELP_CGI code
+	* scripts/Makefile: use w3mhelp*.pl.in
+	* scripts/w3mhelp-funcname.pl.in: added
+	* scripts/w3mhelp-funcdesc.en.pl.in: added
+	* scripts/w3mhelp-funcdesc.ja.pl.in: added
+	* scripts/w3mhelp.cgi.in: use %buf_*, %lineedit_*
+	* scripts/w3mhelp.cgi.in: use %title
+
 	* [w3m-dev 02660] (based on [w3m-dev 02577] 
 			by Kiyokazu SUTO <suto@ks-and-ks.ne.jp>)
 	* scripts/.cvsignore: add w3mhelp.cgi w3mhelp-*.pl

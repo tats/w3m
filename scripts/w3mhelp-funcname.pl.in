@@ -1,0 +1,49 @@
+
+%buf_funcname = (
+ 'BUF:PREV', 'buffer_prev',
+ 'BUF:NEXT', 'buffer_next',
+ 'BUF:DELETE', 'buffer_delete',
+ 'BUF:GO', 'buffer_go',
+);
+
+%lineedit_funcname = (
+ 'LINEEDIT:FORWARD', 'lineedit_forward',
+ 'LINEEDIT:BACK', 'lineedit_back',
+ 'LINEEDIT:BS', 'lineedit_backspace',
+ 'LINEEDIT:DEL', 'lineedit_delete',
+ 'LINEEDIT:KILL_AFTER', 'lineedit_kill_after',
+ 'LINEEDIT:KILL_BEFORE', 'lineedit_kill_before',
+ 'LINEEDIT:TOP', 'lineedit_top',
+ 'LINEEDIT:BOTTOM', 'lineedit_bottom',
+ 'LINEEDIT:PREV', 'lineedit_prev',
+ 'LINEEDIT:NEXT', 'lineedit_next',
+ 'LINEEDIT:COMPLETE', 'lineedit_complete',
+ 'LINEEDIT:ACCEPT', 'lineedit_accept',
+);
+
+%buf_keyfunc = (
+ 'k', 'BUF:PREV',
+ 'C-p', 'BUF:PREV',
+ 'j', 'BUF:NEXT',
+ 'C-n', 'BUF:NEXT',
+ 'D', 'BUF:DELETE',
+ 'RET', 'BUF:GO'
+);
+
+%lineedit_keyfunc = (
+ 'C-f', 'LINEEDIT:FORWARD',
+ 'C-b', 'LINEEDIT:BACK',
+ 'C-h', 'LINEEDIT:BS',
+ 'C-d', 'LINEEDIT:DEL',
+ 'C-k', 'LINEEDIT:KILL_AFTER',
+ 'C-u', 'LINEEDIT:KILL_BEFORE',
+ 'C-a', 'LINEEDIT:TOP',
+ 'C-e', 'LINEEDIT:BOTTOM',
+ 'C-p', 'LINEEDIT:PREV',
+ 'C-n', 'LINEEDIT:NEXT',
+ 'TAB', 'LINEEDIT:COMPLETE',
+ 'SPC', 'LINEEDIT:COMPLETE',
+ 'RET', 'LINEEDIT:ACCEPT'
+);
+
+1;

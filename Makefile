@@ -6,6 +6,12 @@ all: XXMakefile
 install: XXMakefile
 	$(MAKE) -f XXMakefile install
 
+install-core: XXMakefile
+	$(MAKE) -f XXMakefile install-core
+
+install-helpfile: XXMakefile
+	$(MAKE) -f XXMakefile install-helpfile
+
 install-scripts: XXMakefile
 	$(MAKE) -f XXMakefile install-scripts
 

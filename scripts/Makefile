@@ -41,7 +41,7 @@ helplibs:
 	 fi; \
 	done < ../doc/$$keymap >> w3mhelp-funcname.pl
 	@echo ');' >> w3mhelp-funcname.pl
-	@echo '1;' >> w3mhelp-funcname.pl
+	@cat w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
 	@echo "done"
 
 	@echo "generating w3mhelp-funcdesc*.pl..."
@@ -53,7 +53,7 @@ helplibs:
 	   case "$$func" in [a-zA-Z@]*) echo "'$$func', '$$desc', ";; esac; \
 	  done < ../$$dir/README.func >> w3mhelp-funcdesc.$$lang.pl; \
 	  echo ');' >> w3mhelp-funcdesc.$$lang.pl; \
-	  echo '1;' >> w3mhelp-funcdesc.$$lang.pl; \
+	  cat w3mhelp-funcdesc.$$lang.pl.in >> w3mhelp-funcdesc.$$lang.pl; \
 	done
 	@echo done
 

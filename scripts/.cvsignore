@@ -1,4 +1,5 @@
 dirlist.cgi
 w3mhelp.cgi
-w3hmhelp-*.pl
-
+w3hmhelp-funcdesc.en.pl
+w3hmhelp-funcdesc.ja.pl
+w3hmhelp-funcname.pl

@@ -1,3 +1,8 @@
+2001-11-25  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02535] Name conflicts in configure
+	* configure: s/libdir/tlibdir/ for loop variables
+
 2001-11-25  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* display.c: call of init_win32_console_handle is deleted

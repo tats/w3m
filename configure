@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.17 2001/11/24 15:45:33 ukai Exp $
+# $Id: configure,v 1.18 2001/11/24 19:51:54 ukai Exp $
 #	Configuration.
 #
 
@@ -787,11 +787,11 @@ if [ -z "$dtermlib" ]; then
 
   for lib in $TERM_LIBS
   do
-    for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
+    for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
     do
-      if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
+      if [ -f $tlibdir/lib$lib.a -o -f $tlibdir/lib$lib.$so_ext ] ; then 
         # check if the lib works...
-        Echo "Terminal library -l$lib found at $libdir, "
+        Echo "Terminal library -l$lib found at $tlibdir, "
         if $cc $cflags -o _zmachdep _zmachdep.c -l$lib > /dev/null 2>&1
         then
           echo "and it seems to work."
@@ -829,9 +829,9 @@ fi
 use_gpm=""
 gpmlib=""
 if [ "$use_mouse" = y ]; then
-  for libdir in /lib /usr/lib /usr/local/lib $prefix/lib
+  for tlibdir in /lib /usr/lib /usr/local/lib $prefix/lib
   do
-    if [ -f $libdir/libgpm.a -o -f $libdir/libgpm.so ]; then
+    if [ -f $tlibdir/libgpm.a -o -f $tlibdir/libgpm.so ]; then
       echo "GPM library found."
       def_use_gpm="#define USE_GPM"
       gpmlib="-lgpm"
@@ -861,9 +861,9 @@ esac
 
 for lib in $searchlibs
 do
-  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
+  for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
   do
-    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
+    if [ -f $tlibdir/lib$lib.a -o -f $tlibdir/lib$lib.$so_ext ] ; then 
       bsdlib="$bsdlib -l$lib"
       break
     fi
@@ -874,9 +874,9 @@ extlib=''
 searchlibs="socket nsl"
 for lib in $searchlibs
 do
-  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
+  for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
   do
-    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
+    if [ -f $tlibdir/lib$lib.a -o -f $tlibdir/lib$lib.$so_ext ] ; then 
       extlib="$extlib -l$lib"
       break
     fi
@@ -891,11 +891,11 @@ fi
 
 ## Search zlib
 zlib=
-for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib /usr/X11R6/lib $prefix/lib ${HOME}/lib
+for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib /usr/X11R6/lib $prefix/lib ${HOME}/lib
 do
-  if [ -f $libdir/libz.a -o -f $libdir/libz.$so_ext ] ; then
-    echo "$libdir/libz found"
-    zlib="-L$libdir -lz"
+  if [ -f $tlibdir/libz.a -o -f $tlibdir/libz.$so_ext ] ; then
+    echo "$tlibdir/libz found"
+    zlib="-L$tlibdir -lz"
     break
   fi
 done
@@ -918,11 +918,11 @@ fi
 gclib=''
 gcinclude=''
 gctarget=''
-for libdir in ${gc_libdir} /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
+for tlibdir in ${gc_libdir} /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
 do
-  if [ -f $libdir/libgc.a -o -f $libdir/libgc.$so_ext ] ; then 
-    echo "$libdir/libgc found"
-    gclib="-L$libdir -lgc"
+  if [ -f $tlibdir/libgc.a -o -f $tlibdir/libgc.$so_ext ] ; then 
+    echo "$tlibdir/libgc found"
+    gclib="-L$tlibdir -lgc"
     break
   fi
 done
@@ -1701,11 +1701,11 @@ EOF
     then
       echo "You have getaddrinfo() in libc."
     else
-      for libdir in /usr/local/v6/lib /usr/local/lib /usr/lib $prefix/lib
+      for tlibdir in /usr/local/v6/lib /usr/local/lib /usr/lib $prefix/lib
       do
-	if [ -e $libdir/libinet6.a ]; then
-	  if [ "$libdir" != "/usr/lib" ]; then
-	    v6lib="-L$libdir"
+	if [ -e $tlibdir/libinet6.a ]; then
+	  if [ "$tlibdir" != "/usr/lib" ]; then
+	    v6lib="-L$tlibdir"
 	  fi
 	  v6lib="$v6lib -linet6"
 	  if $cc $cflags -o _zmachdep _zmachdep.c $extlib $v6lib > /dev/null 2>&1

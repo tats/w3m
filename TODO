@@ -38,6 +38,11 @@ bugs
  http://bugs.debian.org/138891
  => after m17n merge
 
+* w3m: Unable to use mozilla bugzilla
+ http://bugs.debian.org/170506
+ => [w3m-dev 03469]?
+    backport from w3m-js?
+
 fixed?
 * would like "forward to next buffer"
  http://bugs.debian.org/51771

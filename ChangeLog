@@ -1,5 +1,10 @@
 2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02598]
+	* url.c (otherinfo): add missing NULL
+
+2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02597] (based on [w3m-dev 02594] by aito@fw.ipsj.or.jp)
 	* fm.h (AcceptLang): added
 	* fm.h (AcceptMedia): added

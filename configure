@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.68 2002/04/24 18:29:35 ukai Exp $
+# $Id: configure,v 1.69 2002/05/14 15:30:01 ukai Exp $
 #	Configuration.
 #
 
@@ -270,6 +270,7 @@ ask_choice() {
   list="$@"
 
   echo "$prompt"
+  dvar=
   varvar=
   # check old value
   eval "old_dvar=\$$var"

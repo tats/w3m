@@ -1,3 +1,8 @@
+2002-05-15  Tsutomu OKADA <okada@furuno.co.jp>
+
+	* [w3m-dev 03190] a tiny patch for configure
+	* configure (ask_choice): reset default value
+
 2002-04-27  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03185] Re: cmd_mark in main.c, rev 1.60 broke unmark?
@@ -3402,4 +3407,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.377 2002/04/26 16:06:34 ukai Exp $
+$Id: ChangeLog,v 1.378 2002/05/14 15:30:01 ukai Exp $

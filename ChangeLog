@@ -1,3 +1,11 @@
+2002-11-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03476] Re: Bug#170506: w3m: Unable to use mozilla bugzilla
+	* file.c (HTMLtagproc1): initialize ignore_tag in table_mode
+		(HTMLtagproc0): check table_level
+	* table.c (feed_table_tag): set mode->ignore_tag
+	* table.h (struct table_mode): add ignore_tag
+
 2002-11-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03471] Re: SETPGRP()
@@ -5069,4 +5077,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.551 2002/11/24 16:02:22 ukai Exp $
+$Id: ChangeLog,v 1.552 2002/11/25 16:39:52 ukai Exp $

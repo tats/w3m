@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.30 2002/11/15 16:00:33 ukai Exp $ */
+/* $Id: table.c,v 1.31 2002/11/25 16:39:53 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2969,9 +2969,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	break;
     case HTML_SCRIPT:
 	mode->pre_mode |= TBLM_SCRIPT;
+	mode->ignore_tag = Strnew_charp("</script>");
 	break;
     case HTML_STYLE:
 	mode->pre_mode |= TBLM_STYLE;
+	mode->ignore_tag = Strnew_charp("</style>");
 	break;
     case HTML_N_A:
 	table_close_anchor0(tbl, mode);

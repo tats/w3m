@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.127 2002/11/24 16:02:22 ukai Exp $ */
+/* $Id: file.c,v 1.128 2002/11/25 16:39:52 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4467,6 +4467,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	table_mode[obuf->table_level].indent_level = 0;
 	table_mode[obuf->table_level].nobr_level = 0;
 	table_mode[obuf->table_level].caption = 0;
+	table_mode[obuf->table_level].ignore_tag = NULL;
 #ifndef TABLE_EXPAND
 	tables[obuf->table_level]->total_width = width;
 #else
@@ -5452,7 +5453,8 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 0);
 	    }
 	    if (ST_IS_COMMENT(obuf->status)) {
-		if (obuf->flag & RB_IGNORE)
+		if ((obuf->table_level >= 0) ? tbl_mode->pre_mode & TBLM_IGNORE
+		     : obuf->flag & RB_IGNORE)
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process comment.  */
 		    obuf->status = R_ST_NORMAL;
@@ -5467,9 +5469,13 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		    if (ST_IS_REAL_TAG(obuf->status))
 			Strcat_char(h_env->tagbuf, ' ');
 		}
-		if ((obuf->flag & RB_IGNORE) &&
-		    !TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
-			    obuf->ignore_tag->length - 1))
+		if ((obuf->table_level >= 0)
+		     ? ((tbl_mode->pre_mode & TBLM_IGNORE) &&
+			!TAG_IS(h_env->tagbuf->ptr, tbl_mode->ignore_tag->ptr,
+				tbl_mode->ignore_tag->length - 1))
+		     : ((obuf->flag & RB_IGNORE) &&
+			!TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
+				obuf->ignore_tag->length - 1)))
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process tag.  */
 		    obuf->status = R_ST_NORMAL;

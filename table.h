@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.7 2002/11/15 16:00:34 ukai Exp $ */
+/* $Id: table.h,v 1.8 2002/11/25 16:39:53 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -139,6 +139,7 @@ struct table_mode {
     short nobr_offset;
     char nobr_level;
     short anchor_offset;
+    Str ignore_tag;
 };
 
 /* Local Variables:    */

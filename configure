@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.45 2001/12/21 22:02:39 ukai Exp $
+# $Id: configure,v 1.46 2001/12/22 10:02:04 ukai Exp $
 #	Configuration.
 #
 
@@ -1897,9 +1897,10 @@ cvsver=`awk '\$1 ~ /[$]Id:/ { print \$3}' ChangeLog`
 sed -e 's/^#define CURRENT_VERSION "\(.*\)+cvs.*"/#define CURRENT_VERSION "\1+cvs-'$cvsver'"/' version.c.in > version.c
 
 cur_ver=`sed -n 's/^#define CURRENT_VERSION *"w3m\/\([^"]*\)".*$/\1/p' version.c`
-for h in w3mhelp-{lynx,w3m}_{en,ja}.html
+for h_in in w3mhelp-*_*.html.in
 do
-  sed -e 's/@CURRENT_VERSION@/'$cur_ver'/' $h.in > $h
+  h=`expr "$h_in" : '\(.*\)\.in'`
+  sed -e 's/@CURRENT_VERSION@/'$cur_ver'/' $h_in > $h
 done
 
 cat > extrvers.c << EOF

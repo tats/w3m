@@ -1,3 +1,8 @@
+2001-12-22  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02696]
+	* configure: fix bashism of w3mhelp-{lynx,w3m}_{en,ja} expansion
+
 2001-12-22  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* [w3m-dev 02687] version number in w3mhelp-*.html (+[w3m-dev 02689])
@@ -1432,4 +1437,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.160 2001/12/21 22:02:39 ukai Exp $
+$Id: ChangeLog,v 1.161 2001/12/22 10:02:04 ukai Exp $

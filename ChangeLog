@@ -1,3 +1,12 @@
+2003-03-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03794] displayBuffer() when CurrentTab == NULL.
+	* display.c (displayBuffer): check buf
+	* linein.c (inputLineHistSearch): check CurrentTab
+		(next_dcompl): check CurrentTab
+		(_editor): check CurrentTab
+	* main.c (resize_screen): check CurrentTab
+
 2003-03-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03793] incremental search fix
@@ -7317,4 +7326,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.772 2003/03/05 18:56:28 ukai Exp $
+$Id: ChangeLog,v 1.773 2003/03/06 14:30:19 ukai Exp $

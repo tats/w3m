@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.27 2003/02/05 16:43:58 ukai Exp $ */
+/* $Id: linein.c,v 1.28 2003/03/06 14:30:26 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -287,8 +287,10 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	    break;
     } while (i_cont);
 
-    if (need_redraw)
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    if (CurrentTab) {
+	if (need_redraw)
+	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    }
 
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS
     disable_win9x_console_input();
@@ -755,7 +757,8 @@ next_dcompl(int next)
     if (cm_mode == CPL_NEVER || cm_mode & CPL_OFF)
 	return;
     cm_disp_clear = FALSE;
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    if (CurrentTab)
+        displayBuffer(Currentbuf, B_FORCE_REDRAW);
 
     if (LASTLINE >= 3) {
 	comment = TRUE;
@@ -1150,5 +1153,6 @@ _editor(void)
 	Strcat_char(strBuf, *p);
     }
     CLen = CPos = setStrType(strBuf, strProp);
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    if (CurrentTab)
+        displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }

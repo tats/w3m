@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.64 2003/02/06 17:16:56 ukai Exp $ */
+/* $Id: display.c,v 1.65 2003/03/06 14:30:25 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -372,6 +372,8 @@ displayBuffer(Buffer *buf, int mode)
     Str msg;
     int ny = 0;
 
+    if (!buf)
+	return;
     if (buf->topLine == NULL && readBufferCache(buf) == 0) {	/* clear_buffer */
 	mode = B_FORCE_REDRAW;
     }

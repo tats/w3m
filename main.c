@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.217 2003/03/05 18:56:28 ukai Exp $ */
+/* $Id: main.c,v 1.218 2003/03/06 14:30:27 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1375,7 +1375,7 @@ resize_screen(void)
 {
     setlinescols();
     setupscreen();
-    if (Currentbuf)
+    if (CurrentTab)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 #endif				/* SIGWINCH */

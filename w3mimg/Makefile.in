@@ -25,4 +25,7 @@ clean:
 		(cd $$dir && $(MAKE) clean RM=$(RM)); \
 	 done
 
+distclean: clean
+	-$(RM) -f Makefile
+
 #

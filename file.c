@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.61 2002/02/04 14:49:21 ukai Exp $ */
+/* $Id: file.c,v 1.62 2002/02/04 15:18:42 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2761,6 +2761,7 @@ process_img(struct parsed_tag *tag, int width)
 #else
     int w, i, nw, n;
 #endif
+    int pre_int = FALSE;
     Str tmp = Strnew();
 
     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
@@ -2872,6 +2873,7 @@ process_img(struct parsed_tag *tag, int width)
 	ni = (i > 3) ? (int)((i - 3) / pixel_per_line + 1) : 1;
 	Strcat(tmp,
 	       Sprintf("<pre_int><img_alt hseq=\"%d\" src=\"", cur_iseq++));
+	pre_int = TRUE;
     }
     else
 #endif
@@ -2879,8 +2881,10 @@ process_img(struct parsed_tag *tag, int width)
 	if (w < 0)
 	    w = 12 * pixel_per_char;
 	nw = w ? (int)((w - 1) / pixel_per_char + 1) : 1;
-	if (r)
+	if (r) {
 	    Strcat_charp(tmp, "<pre_int>");
+	    pre_int = TRUE;
+	}
 	Strcat_charp(tmp, "<img_alt src=\"");
     }
     Strcat_charp(tmp, html_quote(p));
@@ -2982,6 +2986,10 @@ process_img(struct parsed_tag *tag, int width)
 	}
 	if (w > 200 && i < 13) {
 	    /* must be a horizontal line */
+	    if (!pre_int) {
+		Strcat_charp(tmp, "<pre_int>");
+		pre_int = TRUE;
+	    }
 #ifndef KANJI_SYMBOLS
 	    Strcat_charp(tmp, "<_RULE TYPE=10>");
 #endif				/* not KANJI_SYMBOLS */
@@ -3021,13 +3029,7 @@ process_img(struct parsed_tag *tag, int width)
     }
 #endif
     Strcat_charp(tmp, "</img_alt>");
-#ifdef USE_IMAGE
-    if (use_image) {
-	Strcat_charp(tmp, "</pre_int>");
-    }
-    else
-#endif
-    if (r)
+    if (pre_int)
 	Strcat_charp(tmp, "</pre_int>");
     if (r) {
 	Strcat_charp(tmp, "</input_alt>");
@@ -5728,17 +5730,21 @@ print_internal_information(struct html_feed_environ *henv)
 	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
 			i, fp->action->ptr,
 			(fp->method == FORM_METHOD_POST) ? "post"
-			: ((fp->method == FORM_METHOD_INTERNAL) ? "internal" : "get"));
+			: ((fp->method ==
+			    FORM_METHOD_INTERNAL) ? "internal" : "get"));
 	    if (fp->target)
 		Strcat(s, Sprintf(" target=\"%s\"", fp->target));
 #ifdef JP_CHARSET
 	    if (fp->charset)
-		Strcat(s, Sprintf(" accept-charset=\"%s\"", code_to_str(fp->charset)));
+		Strcat(s,
+		       Sprintf(" accept-charset=\"%s\"",
+			       code_to_str(fp->charset)));
 #endif
 	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
 		Strcat_charp(s, " enctype=multipart/form-data");
 	    if (fp->boundary)
-		Strcat_m_charp(s, " boundary=\"", html_quote(fp->boundary), "\"", NULL);
+		Strcat_m_charp(s, " boundary=\"", html_quote(fp->boundary),
+			       "\"", NULL);
 	    Strcat_charp(s, ">");
 	    pushTextLine(tl, newTextLine(s, 0));
 	}
@@ -5751,14 +5757,14 @@ print_internal_information(struct html_feed_environ *henv)
 		s = Sprintf("<option_int selectnumber=%d"
 			    " value=\"%s\"%s>%s</option_int>",
 			    i,
-			    html_quote(ip->value ? ip->value->ptr : ip->label->ptr),
-			    ip->checked ? " selected" : "",
+			    html_quote(ip->value ? ip->value->ptr : ip->label->
+				       ptr), ip->checked ? " selected" : "",
 			    ip->label->ptr);
 		pushTextLine(tl, newTextLine(s, 0));
 	    }
 	}
     }
-#endif /* MENU_SELECT */
+#endif				/* MENU_SELECT */
     if (n_textarea > 0) {
 	for (i = 0; i < n_textarea; i++) {
 	    s = Sprintf("<textarea_int textareanumber=%d>%s</textarea_int>",

@@ -1,3 +1,29 @@
+2002-02-04  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02984] inline image improvements and cleanups
+	* config.h.dist (HAVE_SYMLINK) added
+	* config.h.dist (HAVE_LSTAT): added
+	* configure: symlink() check
+	* configure: lstat() check
+	* fm.h (maxLoadImage): added
+	* form.c (form_write_from_file): s/HAVE_READLINK/HAVE_LSTAT/
+	* image.c: include <sys/stat.h>
+	* image.c (MAX_LOAD_IMAGE): default 8
+	* image.c (max_load_image): deleted
+	* image.c (n_load_image): added
+	* image.c (showImageProgress): added
+	* image.c (loadImage): check load image count
+			s/HAVE_READLINK/HAVE_LSTAT/ (HAVE_SYMLINK)
+			showImageProgress
+	* local.c: include <sys/stat.h>
+		s/HAVE_READLINK/HAVE_LSTAT/
+	* rc.c (CMT_MAX_LOAD_IMAGE): added
+	* rc.c (max_load_image): added
+	* doc/README.img: update
+	* doc-jp/README.img: update
+	
+	* file.c (process_img): pre_int fix
+
 2002-02-04  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02985] inputAnswer() and no "ssl_forbid_method"
@@ -2762,4 +2788,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.297 2002/02/04 14:49:21 ukai Exp $
+$Id: ChangeLog,v 1.298 2002/02/04 15:18:41 ukai Exp $

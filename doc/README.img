@@ -1,16 +1,11 @@
 
 Inline image support of w3m
-                                                              2002/01/31
+                                                              2002/02/04
                                                               H. Sakamoto
 
 Introduction
 
   This is the extension for w3m to support inline image.
-  The patch for w3m-0.2.4 is available on the following site.
-
-    http://www2u.biglobe.ne.jp/~hsaka/w3m/index.html#img
-                                          patch/w3m-0.2.4-2.2.patch.gz
-                                          patch/README.img
 
 Support
 
@@ -65,6 +60,9 @@ Option panel
   auto_image
       Automatic loading of inline image. The default is ON.
       If it is OFF, loading starts with a command DISPLAY_IMAGE.
+  max_load_image
+      Maximum process for downloading of inline image. The default is 4.
+      1 to 8 can be set.
   ext_image_viewer
       Use external image viewer, when a command VIEW_IMAGE or
       view of image file which header is "Content-type: image/*".
@@ -79,26 +77,12 @@ Option panel
 
 Required programs
 
-  * w3m-0.2.4
+  * w3m-0.2.5+cvs-1.287 or later
     http://w3m.sourceforge.net/
     http://sourceforge.net/projects/w3m/
     http://prdownloads.sourceforge.net/w3m/
   * Imlib-1.9.8 (1.9.10 is recommendable.)
     libungif-4.1.0b1 is recommendable.
-
-Install
-
-  gunzip -c DIST/w3m-0.2.4.tar.gz | tar -xvf -
-  cd w3m-0.2.4
-  gunzip -c DIST/w3m-0.2.4-img-2.2.patch.gz | patch -p1
-  configure
-    # When you are asked "Inline image support (you need Imlib library)",
-    # answer "y".
-    # Select menu.
-  make
-    # To make "w3mimgdisplay" and "w3mimgsize", Imlib is required.
-  make install
-    # Must install "w3mimgdisplay" and "w3mimgsize" to $LIB(PREFIX/lib/w3m).
 
 Setting w3mimgdisplay
 
@@ -119,6 +103,12 @@ Setting w3mimgdisplay
     w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
   
 Change log
+
+2002/02/04
+ * Revised this document.
+
+2002/02/01	w3m-0.2.5+cvs-1.287
+ * Merged in the CVS repository of the original w3m.
 
 2002/01/31	w3m-0.2.4-img-2.2
  * Based on w3m-0.2.4+cvs-1.278.

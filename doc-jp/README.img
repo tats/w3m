@@ -1,15 +1,11 @@
 
 w3m でインライン画像を表示
-                                                              2002/01/31
+                                                              2002/02/04
                                                               坂本 浩則
 
 はじめに
 
-  w3m でインライン画像を表示する拡張です。以下に置いてあります。
-
-    http://www2u.biglobe.ne.jp/~hsaka/w3m/index-ja.html#img
-                                          patch/w3m-0.2.4-img-2.2.patch.gz
-                                          patch/README.img-ja
+  w3m でインライン画像を表示する拡張です。
 
 機能
 
@@ -64,6 +60,8 @@ w3m でインライン画像を表示
   auto_image
       インライン画像を自動で読み込みます。デフォルトは ON。
       OFF の場合は、コマンド DISPLAY_IMAGE で読み込みを開始します。
+  max_load_image
+      画像を読み込む時の最大プロセス数。デフォルトは 4。1〜8 まで設定可能。
   ext_image_viewer
       コマンド VIEW_IMAGE('I')の場合や Content-type: image/* である
       画像ファイルを外部ビューワで表示します。デフォルトは ON。
@@ -79,27 +77,12 @@ w3m でインライン画像を表示
 
 必要なもの
 
-  * w3m-0.2.4.tar.gz
+  * w3m-0.2.5+cvs-1.287 以上
     http://w3m.sourceforge.net/
     http://sourceforge.net/projects/w3m/
     http://prdownloads.sourceforge.net/w3m/
   * Imlib-1.9.8 (1.9.10 以上推奨)
     libungif-4.1.0b1 推奨
-
-インストール
-
-  gunzip -c DIST/w3m-0.2.4.tar.gz | tar -xvf -
-  cd w3m-0.2.4
-  gunzip -c DIST/w3m-0.2.4-img-2.2.patch.gz | patch -p1
-  configure
-    # Inline image support (you need Imlib library)
-    # と聞かれますので y と答えてください。
-    # menu は有効にしてください。
-  make
-    # w3mimgdisplay, w3mimgsize を make する時に Imlib が必要です。
-  make install
-    # w3mimgdisplay, w3mimgsize は必ず $LIB(PREFIX/lib/w3m) へ
-    # install してください。
 
 w3mimgdisplay の設定
 
@@ -122,6 +105,12 @@ w3mimgdisplay の設定
     w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
   
 更新記録
+
+2002/02/04
+ * ドキュメント改訂
+
+2002/02/01	w3m-0.2.5+cvs-1.287
+ * 本家の CVS へマージ。
 
 2002/01/31	w3m-0.2.4-img-2.2
  * w3m-0.2.4+cvs-1.278 ベース。

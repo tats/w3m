@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.38 2002/01/31 17:54:56 ukai Exp $ */
+/* $Id: rc.c,v 1.39 2002/02/04 15:18:42 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -70,6 +70,7 @@ static char *config_file = NULL;
 #ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "インライン画像を表示"
 #define CMT_AUTO_IMAGE   "インライン画像を自動で読み込む"
+#define CMT_MAX_LOAD_IMAGE "画像読み込み時の最大プロセス数"
 #define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
 #define CMT_IMAGE_SCALE  "画像のスケール(%)"
 #define CMT_IMGDISPLAY   "画像を表示するためのコマンド"
@@ -203,6 +204,7 @@ static char *config_file = NULL;
 #ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "Display of inline image"
 #define CMT_AUTO_IMAGE   "Automatic loading of inline image"
+#define CMT_MAX_LOAD_IMAGE "Maximum process for parallel image loading"
 #define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"
 #define CMT_IMAGE_SCALE  "Scale of image (%)"
 #define CMT_IMGDISPLAY   "External command to display image"
@@ -465,6 +467,8 @@ struct param_ptr params1[] = {
     {"display_image", P_INT, PI_ONOFF, (void *)&displayImage, CMT_DISP_IMAGE,
      NULL},
     {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
+    {"max_load_image", P_INT, PI_TEXT, (void *)&maxLoadImage,
+     CMT_MAX_LOAD_IMAGE, NULL},
     {"ext_image_viewer", P_INT, PI_ONOFF, (void *)&useExtImageViewer,
      CMT_EXT_IMAGE_VIEWER, NULL},
     {"image_scale", P_SCALE, PI_TEXT, (void *)&image_scale, CMT_IMAGE_SCALE,

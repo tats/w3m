@@ -175,7 +175,9 @@ MODEL=Linux.i686-monster-ja
 #define HAVE_STRFTIME
 #define HAVE_GETCWD
 #define HAVE_GETWD
+#define HAVE_SYMLINK
 #define HAVE_READLINK
+#define HAVE_LSTAT
 #define HAVE_SETENV
 #define HAVE_PUTENV
 #define HAVE_SRAND48

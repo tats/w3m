@@ -1,7 +1,8 @@
-/* $Id: image.c,v 1.3 2002/02/03 06:38:49 ukai Exp $ */
+/* $Id: image.c,v 1.4 2002/02/04 15:18:42 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
 #include <unistd.h>
@@ -264,9 +265,9 @@ clearImage()
 /* load image */
 
 #ifndef MAX_LOAD_IMAGE
-#define MAX_LOAD_IMAGE 4
+#define MAX_LOAD_IMAGE 8
 #endif
-static int max_load_image = MAX_LOAD_IMAGE;
+static int n_load_image = 0;
 static Hash_sv *image_hash = NULL;
 static Hash_sv *image_file = NULL;
 static GeneralList *image_list = NULL;
@@ -333,18 +334,51 @@ getAllImage(Buffer *buf)
 }
 
 void
+showImageProgress(Buffer *buf)
+{
+    AnchorList *al;
+    Anchor *a;
+    int i, l, n;
+
+    if (!buf)
+	return;
+    al = buf->img;
+    if (!al)
+	return;
+    for (i = 0, l = 0, n = 0, a = al->anchors; i < al->nanchor; i++, a++) {
+	if (a->image && a->hseq >= 0) {
+	    n++;
+	    if (a->image->cache && a->image->cache->loaded == IMG_FLAG_LOADED)
+		l++;
+	}
+    }
+    if (n) {
+	message(Sprintf("%d/%d images loaded", l, n)->ptr,
+		buf->cursorX + buf->rootX, buf->cursorY);
+	refresh();
+    }
+}
+
+void
 loadImage(int flag)
 {
     ImageCache *cache;
     struct stat st;
     int wait_st, i;
 
+    if (maxLoadImage > MAX_LOAD_IMAGE)
+	maxLoadImage = MAX_LOAD_IMAGE;
+    else if (maxLoadImage < 1)
+	maxLoadImage = 1;
+    if (n_load_image == 0)
+	n_load_image = maxLoadImage;
     if (!image_cache) {
-	image_cache = New_N(ImageCache *, max_load_image);
-	bzero(image_cache, sizeof(ImageCache *) * max_load_image);
+	image_cache = New_N(ImageCache *, MAX_LOAD_IMAGE);
+	bzero(image_cache, sizeof(ImageCache *) * MAX_LOAD_IMAGE);
     }
+
     if (flag == IMG_FLAG_STOP) {
-	for (i = 0; i < max_load_image; i++) {
+	for (i = 0; i < n_load_image; i++) {
 	    cache = image_cache[i];
 	    if (!cache)
 		continue;
@@ -365,16 +399,17 @@ loadImage(int flag)
 	if (image_lock)
 	    unlink(image_lock);
 	need_load_image = FALSE;
+	n_load_image = maxLoadImage;
 	return;
     }
 
     if (need_load_image) {
 	int draw = FALSE;
-	for (i = 0; i < max_load_image; i++) {
+	for (i = 0; i < n_load_image; i++) {
 	    cache = image_cache[i];
 	    if (!cache)
 		continue;
-#ifdef HAVE_READLINK
+#ifdef HAVE_LSTAT
 	    if (lstat(cache->touch, &st))
 #else
 	    if (stat(cache->touch, &st))
@@ -404,6 +439,8 @@ loadImage(int flag)
 	}
 	if (flag == IMG_FLAG_NEXT && draw)
 	    drawImage();
+	if (Currentbuf)
+	    showImageProgress(Currentbuf);
     }
 
     if (image_lock)
@@ -413,19 +450,19 @@ loadImage(int flag)
 
     if (!image_list)
 	return;
-    for (i = 0; i < max_load_image; i++) {
+    for (i = 0; i < n_load_image; i++) {
 	if (image_cache[i])
 	    continue;
 	while (1) {
 	    cache = (ImageCache *) popValue(image_list);
 	    if (!cache) {
-		for (i = 0; i < max_load_image; i++) {
+		for (i = 0; i < n_load_image; i++) {
 		    if (image_cache[i])
 			goto load_image_end;
 		}
 		image_list = NULL;
 		image_file = NULL;
-		if (Currentbuf && Currentbuf->need_reshape)
+		if (Currentbuf)
 		    displayBuffer(Currentbuf, B_NORMAL);
 		return;
 	    }
@@ -442,7 +479,7 @@ loadImage(int flag)
 	flush_tty();
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
-#ifndef HAVE_READLINK
+#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
 	    FILE *f;
 #endif
 	    reset_signals();
@@ -454,7 +491,7 @@ loadImage(int flag)
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
 		unlink(cache->file);
-#ifdef HAVE_READLINK
+#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 	    if (lstat(image_lock, &st)) {
 		symlink(cache->file, image_lock);

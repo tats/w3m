@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.48 2002/02/03 06:38:49 ukai Exp $ */
+/* $Id: fm.h,v 1.49 2002/02/04 15:18:42 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -824,6 +824,7 @@ global int activeImage init(FALSE);
 global int displayImage init(TRUE);
 global int autoImage init(TRUE);
 global int useExtImageViewer init(TRUE);
+global int maxLoadImage init(4);
 #endif
 global char *Editor init(DEF_EDITOR);
 #ifndef USE_W3MMAILER

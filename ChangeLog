@@ -1,3 +1,8 @@
+2002-10-01  Yuji Abe <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03330] Re: hang up when seeing web page that contains xbm file
+	* w3mimg/x11/x11_w3mimg.c (x11_load_image): scaling
+
 2002-09-30  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03327] gdk-pixbuf support for w3m-img/x11
@@ -3861,4 +3866,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.434 2002/09/29 15:29:12 ukai Exp $
+$Id: ChangeLog,v 1.435 2002/09/30 17:44:30 ukai Exp $

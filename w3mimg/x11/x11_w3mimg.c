@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.7 2002/09/29 15:29:12 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.8 2002/09/30 17:44:30 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -153,6 +153,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     ImlibImage *im;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbuf *pixbuf;
+    int iw, ih;
 #endif
 
     if (self == NULL)
@@ -173,10 +174,12 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     pixbuf = gdk_pixbuf_new_from_file(fname);
     if (!pixbuf)
 	return 0;
+    iw = gdk_pixbuf_get_width(pixbuf);
+    ih = gdk_pixbuf_get_height(pixbuf);
     if (w <= 0)
-	w = gdk_pixbuf_get_width(pixbuf);
+	w = iw;
     if (h <= 0)
-	h = gdk_pixbuf_get_height(pixbuf);
+	h = ih;
 #endif
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					DefaultDepth(xi->display, 0));
@@ -188,9 +191,18 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     Imlib_paste_image(xi->id, im, (Pixmap) img->pixmap, 0, 0, w, h);
     Imlib_kill_image(xi->id, im);
 #elif defined(USE_GDKPIXBUF)
-    gdk_pixbuf_xlib_render_to_drawable(pixbuf, (Drawable) img->pixmap,
-				       xi->imageGC, 0, 0, 0, 0, w, h,
-				       XLIB_RGB_DITHER_NORMAL, 0, 0);
+    if (w != iw || h != ih) {
+	GdkPixbuf *newpixbuf;
+	newpixbuf = gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_BILINEAR);
+	gdk_pixbuf_xlib_render_to_drawable(newpixbuf, (Drawable) img->pixmap,
+					   xi->imageGC, 0, 0, 0, 0, w, h,
+					   XLIB_RGB_DITHER_NORMAL, 0, 0);
+	gdk_pixbuf_finalize(newpixbuf);
+    } else {
+	gdk_pixbuf_xlib_render_to_drawable(pixbuf, (Drawable) img->pixmap,
+					   xi->imageGC, 0, 0, 0, 0, w, h,
+					   XLIB_RGB_DITHER_NORMAL, 0, 0);
+    }
     gdk_pixbuf_unref(pixbuf);
 #endif
     img->width = w;

@@ -1,3 +1,8 @@
+2001-12-11  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02650]
+	* file.c (readHeader): Strnew_charp_n() should be used
+
 2001-12-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02647]
@@ -1145,4 +1150,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.122 2001/12/10 15:42:38 ukai Exp $
+$Id: ChangeLog,v 1.123 2001/12/10 16:29:37 ukai Exp $

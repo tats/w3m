@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.30 2001/12/09 13:59:04 ukai Exp $ */
+/* $Id: file.c,v 1.31 2001/12/10 16:29:37 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -560,7 +560,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    tmp = Strnew_size(lineBuf2->length);
 	    for (p = lineBuf2->ptr; *p; p = q) {
 		for (q = p; *q && *q != '\r' && *q != '\n'; q++) ;
-		lineBuf2 = checkType(Strnew_charp(p), propBuffer,
+		lineBuf2 = checkType(Strnew_charp_n(p, q - p), propBuffer,
 #ifdef USE_ANSI_COLOR
 				     NULL, NULL,
 #endif

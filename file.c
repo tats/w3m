@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.206 2003/01/24 17:37:16 ukai Exp $ */
+/* $Id: file.c,v 1.207 2003/01/24 17:54:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7200,7 +7200,7 @@ getNextPage(Buffer *buf, int plen)
     Str lineBuf2;
     char volatile pre_lbuf = '\0';
     URLFile uf;
-    char volatile code;
+    char code;
     int volatile squeeze_flag = FALSE;
     Lineprop *propBuffer = NULL;
 #ifdef USE_ANSI_COLOR

@@ -1,3 +1,7 @@
+2003-01-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* file.c (getNextPage): no need volatile for code
+
 2003-01-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03683] interrupt in getNextPage()
@@ -6842,4 +6846,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.714 2003/01/24 17:36:44 ukai Exp $
+$Id: ChangeLog,v 1.715 2003/01/24 17:54:07 ukai Exp $

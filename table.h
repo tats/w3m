@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.8 2002/11/25 16:39:53 ukai Exp $ */
+/* $Id: table.h,v 1.9 2002/12/03 15:35:11 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -114,21 +114,17 @@ struct table {
     int sloppy_width;
 };
 
-#define TBLM_PRE 1
-#define TBLM_NOBR 2
-#define TBLM_XMP 4
-#define TBLM_LST 8
-#define TBLM_PLAINTEXT 16
-#define TBLM_PRE_INT 32
-#define TBLM_INTXTA 64
-#define TBLM_INSELECT 128
-#define TBLM_PREMODE (TBLM_PRE|TBLM_INTXTA|TBLM_INSELECT|TBLM_PLAIN)
-#define TBLM_SPECIAL (TBLM_PRE|TBLM_PRE_INT|TBLM_PLAIN)
-#define TBLM_PLAIN (TBLM_PLAINTEXT|TBLM_XMP|TBLM_LST)
-#define TBLM_SCRIPT 256
-#define TBLM_STYLE 512
-#define TBLM_IGNORE (TBLM_SCRIPT|TBLM_STYLE)
-#define TBLM_ANCHOR 1024
+#define TBLM_PRE	RB_PRE
+#define TBLM_SCRIPT	RB_SCRIPT
+#define TBLM_STYLE	RB_STYLE
+#define TBLM_PLAIN	RB_PLAIN
+#define TBLM_NOBR	RB_NOBR
+#define TBLM_PRE_INT	RB_PRE_INT
+#define TBLM_INTXTA	RB_INTXTA
+#define TBLM_INSELECT	RB_INSELECT
+#define TBLM_PREMODE	(TBLM_PRE | TBLM_PRE_INT | TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN | TBLM_INTXTA)
+#define TBLM_SPECIAL	(TBLM_PRE | TBLM_PRE_INT | TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN | TBLM_NOBR)
+#define TBLM_ANCHOR	0x100000
 
 #define  uchar           unsigned char
 #define  ushort           unsigned short
@@ -139,7 +135,7 @@ struct table_mode {
     short nobr_offset;
     char nobr_level;
     short anchor_offset;
-    Str ignore_tag;
+    unsigned char end_tag;
 };
 
 /* Local Variables:    */

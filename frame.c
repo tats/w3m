@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.22 2002/11/28 16:00:34 ukai Exp $ */
+/* $Id: frame.c,v 1.23 2002/12/03 15:35:10 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -97,7 +97,7 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
     body->baseURL = baseURL(buf);
     if (tag) {
 	if (parsedtag_get_value(tag, ATTR_SRC, &p))
-	    body->url = url_quote_conv(p, buf->document_code);
+	    body->url = url_quote_conv(remove_space(p), buf->document_code);
 	if (parsedtag_get_value(tag, ATTR_NAME, &p) && *p != '_')
 	    body->name = url_quote_conv(p, buf->document_code);
     }
@@ -412,6 +412,23 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
     return ret_frameset;
 }
 
+#define CASE_TABLE_TAG \
+	case HTML_TR:\
+	case HTML_N_TR:\
+	case HTML_TD:\
+	case HTML_N_TD:\
+	case HTML_TH:\
+	case HTML_N_TH:\
+	case HTML_THEAD:\
+	case HTML_N_THEAD:\
+	case HTML_TBODY:\
+	case HTML_N_TBODY:\
+	case HTML_TFOOT:\
+	case HTML_N_TFOOT:\
+	case HTML_COLGROUP:\
+	case HTML_N_COLGROUP:\
+	case HTML_COL
+
 static int
 createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		int force_reload)
@@ -467,8 +484,10 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 	    struct frameset *f_frameset;
 	    int i = c + r * f->col;
 	    char *p = "";
+	    int status = R_ST_NORMAL;
 	    Str tok = Strnew();
-	    int status;
+	    int pre_mode = 0;
+	    int end_tag = 0;
 
 	    frame = f->frame[i];
 
@@ -557,12 +576,13 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		    break;
 		}
 		do {
-		    status = R_ST_NORMAL;
+		    int is_tag = FALSE;
+		    char *q;
+		    struct parsed_tag *tag;
+
 		    do {
 			if (*p == '\0') {
 			    Str tmp = StrmyUFgets(&f2);
-			    if (tmp->length == 0 && status != R_ST_NORMAL)
-				tmp = correct_irrtag(status);
 			    if (tmp->length == 0)
 				break;
 #ifdef JP_CHARSET
@@ -573,21 +593,67 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    cleanup_line(tmp, HTML_MODE);
 			    p = tmp->ptr;
 			}
-			if (status == R_ST_NORMAL)
-			    read_token(tok, &p, &status, 1, 0);
-			else if (ST_IS_COMMENT(status))
-			    read_token(tok, &p, &status, 0, 0);
-			else
-			    read_token(tok, &p, &status, 1, 1);
+			read_token(tok, &p, &status, 1, status != R_ST_NORMAL);
 		    } while (status != R_ST_NORMAL);
 
 		    if (tok->length == 0)
 			continue;
 
 		    if (tok->ptr[0] == '<') {
+			is_tag = TRUE;
+			if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_SCRIPT |
+					RB_STYLE)) {
+			    q = tok->ptr;
+			    if ((tag = parse_tag(&q, FALSE)) &&
+				tag->tagid == end_tag) {
+				if (pre_mode & RB_PLAIN) {
+				    fputs("</PRE_PLAIN>", f1);
+				    pre_mode = 0;
+				    end_tag = 0;
+				    goto token_end;
+				}
+				pre_mode = 0;
+				end_tag = 0;
+				goto proc_normal;
+			    }
+			    if (strncmp(tok->ptr, "<!--", 4) &&
+				(q = strchr(tok->ptr + 1, '<'))) {
+				tok = Strnew_charp_n(tok->ptr, q - tok->ptr);
+				p = Strnew_m_charp(q, p, NULL)->ptr;
+				status = R_ST_NORMAL;
+			    }
+			    is_tag = FALSE;
+			}
+			else if (pre_mode & RB_INSELECT) {
+                            q = tok->ptr;
+			    if ((tag = parse_tag(&q, FALSE))) {
+				if ((tag->tagid == end_tag) ||
+				    (tag->tagid == HTML_N_FORM)) {
+				    if (tag->tagid == HTML_N_FORM)
+					fputs("</SELECT>", f1);
+				    pre_mode = 0;
+				    end_tag = 0;
+				    goto proc_normal;
+				}
+				if (t_stack) {
+				    switch (tag->tagid) {
+				    case HTML_TABLE:
+				    case HTML_N_TABLE:
+				    CASE_TABLE_TAG:
+					fputs("</SELECT>", f1);
+					pre_mode = 0;
+					end_tag = 0;
+				        goto proc_normal;
+				    }
+				}
+			    }
+			}
+		    }
+
+		  proc_normal:
+		    if (is_tag) {
 			char *q = tok->ptr;
 			int j, a_target = 0;
-			struct parsed_tag *tag;
 			ParsedURL url;
 
 			if (!(tag = parse_tag(&q, FALSE)))
@@ -603,7 +669,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			case HTML_BASE:
 			    /* "BASE" is prohibit tag */
 			    if (parsedtag_get_value(tag, ATTR_HREF, &q)) {
-				q = url_quote_conv(q, code);
+				q = url_quote_conv(remove_space(q), code);
 				parseURL(q, &base, NULL);
 			    }
 			    if (parsedtag_get_value(tag, ATTR_TARGET, &q)) {
@@ -660,18 +726,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				goto token_end;
 			    }
 			    break;
-			case HTML_THEAD:
-			case HTML_N_THEAD:
-			case HTML_TBODY:
-			case HTML_N_TBODY:
-			case HTML_TFOOT:
-			case HTML_N_TFOOT:
-			case HTML_TD:
-			case HTML_N_TD:
-			case HTML_TR:
-			case HTML_N_TR:
-			case HTML_TH:
-			case HTML_N_TH:
+			CASE_TABLE_TAG:
 			    /* table_tags MUST be in table stack */
 			    if (!t_stack) {
 				Strshrinkfirst(tok, 1);
@@ -682,6 +737,37 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 
 			    }
 			    break;
+			case HTML_SELECT:
+			    pre_mode = RB_INSELECT;
+			    end_tag = HTML_N_SELECT;
+			    break;
+			case HTML_TEXTAREA:
+			    pre_mode = RB_INTXTA;
+			    end_tag = HTML_N_TEXTAREA;
+			    break;
+			case HTML_SCRIPT:
+			    pre_mode = RB_SCRIPT;
+			    end_tag = HTML_N_SCRIPT;
+			    break;
+			case HTML_STYLE:
+			    pre_mode = RB_STYLE;
+			    end_tag = HTML_N_STYLE;
+			    break;
+			case HTML_LISTING:
+			    pre_mode = RB_PLAIN;
+			    end_tag = HTML_N_LISTING;
+			    fputs("<PRE_PLAIN>", f1);
+			    goto token_end;
+			case HTML_XMP:
+			    pre_mode = RB_PLAIN;
+			    end_tag = HTML_N_XMP;
+			    fputs("<PRE_PLAIN>", f1);
+			    goto token_end;
+			case HTML_PLAINTEXT:
+			    pre_mode = RB_PLAIN;
+			    end_tag = MAX_HTMLTAG;
+			    fputs("<PRE_PLAIN>", f1);
+			    goto token_end;
 			default:
 			    break;
 			}
@@ -693,7 +779,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				if (!tag->value[j])
 				    break;
 				tag->value[j] =
-				    url_quote_conv(tag->value[j], code);
+				    url_quote_conv(remove_space(tag->value[j]),
+						   code);
 				parseURL2(tag->value[j], &url, &base);
 				if (url.scheme == SCM_UNKNOWN ||
 #ifndef USE_W3MMAILER
@@ -748,11 +835,28 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    Strfputs(tok, f1);
 		    }
 		    else {
-			Strfputs(tok, f1);
+			if (pre_mode & (RB_PLAIN | RB_INTXTA))
+			    fprintf(f1, "%s", html_quote(tok->ptr));
+			else
+			    Strfputs(tok, f1);
 		    }
 		  token_end:
 		    Strclear(tok);
 		} while (*p != '\0' || !iseos(f2.stream));
+		if (pre_mode & RB_PLAIN)
+		    fputs("</PRE_PLAIN>\n", f1);
+		else if (pre_mode & RB_INTXTA)
+		    fputs("</TEXTAREA></FORM>\n", f1);
+		else if (pre_mode & RB_INSELECT)
+		    fputs("</SELECT></FORM>\n", f1);
+		else if (pre_mode & (RB_SCRIPT | RB_STYLE)) {
+		    if (status != R_ST_NORMAL)
+			fputs(correct_irrtag(status)->ptr, f1);
+		    if (pre_mode & RB_SCRIPT)
+			fputs("</SCRIPT>\n", f1);
+		    else if (pre_mode & RB_STYLE)
+			fputs("</STYLE>\n", f1);
+		}
 		while (t_stack--)
 		    fputs("</TABLE>\n", f1);
 		UFclose(&f2);

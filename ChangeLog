@@ -1,3 +1,51 @@
+2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03509] HTML parser
+	* file.c (close_textarea): delete
+		(HTMLtagproc1): rewrite 
+				delete HTML_EOL
+				move HTML_LISTING, HTML_N_LISTING
+				add HTML_PRE_PLAIN, HTML_N_PRE_PLAIN
+				add HTML_PLAINTEXT
+				end_tag
+		(HTMLlineproc0): s/str/line/
+				rewrite
+		(completeHTMLstream): </textarea> if necessary
+	* fm.h (struct readbuffer): delete ignore_tag
+				add end_tag
+		(RB_XMPMODE): deleted
+		(RB_LSTMODE): deleted
+		(RB_SCRIPT): added
+		(RB_STYLE): added
+		(RB_*): renumber
+		(R_ST_EOL): added
+		(R_ST_*): renumber
+		(ST_IS_TAG): check R_ST_EOL
+	* form.c (form_fputs_decode): remove <eol> handling
+	* frame.c (newFrame): remove_space()
+		(CASE_TABLE_TAG): added
+		(createFrameFile): rewrite
+	* html.c (TagMAP): delete eol
+			add pre_plain, /pre_plain
+	* html.h (HTML_EOL): deleted
+		(HTML_PRE_PLAIN): added
+		(HTML_N_PRE_PLAIN): added
+	* table.c (visible_length): rewrite
+		(visible_length_plain): added
+		(maximum_visible_length_plain): added
+		(do_refill): R_ST_EOL
+		(table_close_select): end_tag
+		(table_close_textarea): end_tag
+		(TAG_ACTION_PLAIN): added
+		(feed_table_tag): rewrite
+		(feed_table): rewrite
+	* table.h (TBLM_*) reassign
+		(struct table_mode): delete ignore_tag
+				add end_tag
+	* tagtable.tab (eol): deleted
+			(pre_plain): added
+			(/pre_plain): added
+
 2002-12-03  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03505] Re: coredump when ssl error
@@ -5303,4 +5351,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.575 2002/12/03 15:00:52 ukai Exp $
+$Id: ChangeLog,v 1.576 2002/12/03 15:35:09 ukai Exp $

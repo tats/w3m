@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.90 2002/12/02 17:27:37 ukai Exp $ */
+/* $Id: fm.h,v 1.91 2002/12/03 15:35:10 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -534,7 +534,7 @@ struct readbuffer {
     long flag_stack[RB_STACK_SIZE];
     int flag_sp;
     int status;
-    Str ignore_tag;
+    unsigned char end_tag;
     short table_level;
     short nobr_level;
     Str anchor;
@@ -557,33 +557,30 @@ struct readbuffer {
 #define in_stand fontstat[2]
 
 #define RB_PRE		0x01
-#define RB_XMPMODE	0x02
-#define RB_LSTMODE	0x04
+#define RB_SCRIPT	0x02
+#define RB_STYLE	0x04
 #define RB_PLAIN	0x08
-#define RB_LEFT		0x80000
-#define RB_CENTER	0x10
-#define RB_RIGHT	0x20
-#define RB_ALIGN	(RB_LEFT| RB_CENTER | RB_RIGHT)
-#define RB_NOBR		0x40
-#define RB_P		0x80
-#define RB_PRE_INT	0x100
-#define RB_PREMODE	(RB_PRE | RB_PRE_INT)
-#define RB_SPECIAL	(RB_PRE|RB_XMPMODE|RB_LSTMODE|RB_PLAIN|RB_NOBR|RB_PRE_INT)
-#define RB_PLAINMODE	(RB_XMPMODE|RB_LSTMODE|RB_PLAIN)
-
-#define RB_IN_DT	0x200
-#define RB_INTXTA	0x400
-#define RB_INSELECT	0x800
-#define RB_IGNORE	0x1000
-#define RB_INSEL	0x2000
-#define RB_IGNORE_P	0x4000
-#define RB_TITLE	0x8000
-#define RB_NFLUSHED	0x10000
-#define RB_NOFRAMES	0x20000
-#define RB_INTABLE	0x40000
+#define RB_LEFT		0x10
+#define RB_CENTER	0x20
+#define RB_RIGHT	0x40
+#define RB_ALIGN	(RB_LEFT | RB_CENTER | RB_RIGHT)
+#define RB_NOBR		0x80
+#define RB_P		0x100
+#define RB_PRE_INT	0x200
+#define RB_IN_DT	0x400
+#define RB_INTXTA	0x800
+#define RB_INSELECT	0x1000
+#define RB_IGNORE_P	0x2000
+#define RB_TITLE	0x4000
+#define RB_NFLUSHED	0x8000
+#define RB_NOFRAMES	0x10000
+#define RB_INTABLE	0x20000
+#define RB_PREMODE	(RB_PRE | RB_PRE_INT | RB_SCRIPT | RB_STYLE | RB_PLAIN | RB_INTXTA)
+#define RB_SPECIAL	(RB_PRE | RB_PRE_INT | RB_SCRIPT | RB_STYLE | RB_PLAIN | RB_NOBR)
+#define RB_PLAIN_PRE	0x40000
 
 #ifdef FORMAT_NICE
-#define RB_FILL		0x200000
+#define RB_FILL		0x80000
 #endif				/* FORMAT_NICE */
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
@@ -605,17 +602,18 @@ struct readbuffer {
 #define R_ST_DQUOTE 4		/* within double quote */
 #define R_ST_EQL    5		/* = */
 #define R_ST_AMP    6		/* within ampersand quote */
-#define R_ST_CMNT1  7		/* <!  */
-#define R_ST_CMNT2  8		/* <!- */
-#define R_ST_CMNT   9		/* within comment */
-#define R_ST_NCMNT1 10		/* comment - */
-#define R_ST_NCMNT2 11		/* comment -- */
-#define R_ST_NCMNT3 12		/* comment -- space */
-#define R_ST_IRRTAG 13		/* within irregular tag */
+#define R_ST_EOL    7		/* end of file */
+#define R_ST_CMNT1  8		/* <!  */
+#define R_ST_CMNT2  9		/* <!- */
+#define R_ST_CMNT   10		/* within comment */
+#define R_ST_NCMNT1 11		/* comment - */
+#define R_ST_NCMNT2 12		/* comment -- */
+#define R_ST_NCMNT3 13		/* comment -- space */
+#define R_ST_IRRTAG 14		/* within irregular tag */
 
 #define ST_IS_REAL_TAG(s)   ((s)==R_ST_TAG||(s)==R_ST_TAG0||(s)==R_ST_EQL)
 #define ST_IS_COMMENT(s)    ((s)>=R_ST_CMNT1)
-#define ST_IS_TAG(s)        ((s)!=R_ST_NORMAL&&(s)!=R_ST_AMP&&!ST_IS_COMMENT(s))
+#define ST_IS_TAG(s)        ((s)!=R_ST_NORMAL&&(s)!=R_ST_AMP&&!ST_IS_COMMENT(s)&&(s)!=R_ST_EOL)
 
 /* is this '<' really means the beginning of a tag? */
 #define REALLY_THE_BEGINNING_OF_A_TAG(p) \

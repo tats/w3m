@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.140 2002/12/03 15:00:53 ukai Exp $ */
+/* $Id: file.c,v 1.141 2002/12/03 15:35:10 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -34,7 +34,6 @@ static FILE *lessopen_stream(char *path);
 static Buffer *loadcmdout(char *cmd,
 			  Buffer *(*loadproc) (URLFile *, Buffer *),
 			  Buffer *defaultbuf);
-static void close_textarea(struct html_feed_environ *h_env);
 static void addnewline(Buffer *buf, char *line, Lineprop *prop,
 #ifdef USE_ANSI_COLOR
 		       Linecolor *color,
@@ -4064,10 +4063,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	flushline(h_env, obuf, envs[h_env->envc].indent, 1, h_env->limit);
 	h_env->blank_lines = 0;
 	return 1;
-    case HTML_EOL:
-	if ((obuf->flag & RB_PREMODE) && obuf->pos > envs[h_env->envc].indent)
-	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	return 1;
     case HTML_H:
 	if (!(obuf->flag & (RB_PREMODE | RB_IGNORE_P))) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
@@ -4366,46 +4361,74 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (obuf->nobr_level == 0)
 	    obuf->flag &= ~RB_NOBR;
 	return 0;
-    case HTML_LISTING:
+    case HTML_PRE_PLAIN:
 	CLOSE_P;
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	obuf->flag |= (RB_LSTMODE | RB_IGNORE_P);
-	/* istr = str; */
+	if (!(obuf->flag & RB_IGNORE_P)) {
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+			 h_env->limit);
+	}
+	obuf->flag |= (RB_PRE | RB_IGNORE_P);
+	return 1;
+    case HTML_N_PRE_PLAIN:
+	CLOSE_P;
+	if (!(obuf->flag & RB_IGNORE_P)) {
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+			 h_env->limit);
+	    obuf->flag |= RB_IGNORE_P;
+	}
+	obuf->flag &= ~RB_PRE;
+	return 1;
+    case HTML_LISTING:
+    case HTML_XMP:
+    case HTML_PLAINTEXT:
+	CLOSE_P;
+	if (!(obuf->flag & RB_IGNORE_P)) {
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+			 h_env->limit);
+	}
+	obuf->flag |= (RB_PLAIN | RB_IGNORE_P);
+	switch (cmd) {
+	case HTML_LISTING:
+	    obuf->end_tag = HTML_N_LISTING;
+	    break;
+	case HTML_XMP:
+	    obuf->end_tag = HTML_N_XMP;
+	    break;
+	case HTML_PLAINTEXT:
+	    obuf->end_tag = MAX_HTMLTAG;
+	    break;
+	}
 	return 1;
     case HTML_N_LISTING:
-	CLOSE_P;
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	obuf->flag &= ~RB_LSTMODE;
-	return 1;
-    case HTML_XMP:
-	CLOSE_P;
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	obuf->flag |= (RB_XMPMODE | RB_IGNORE_P);
-	/* istr = str; */
-	return 1;
     case HTML_N_XMP:
 	CLOSE_P;
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	obuf->flag &= ~RB_XMPMODE;
+	if (!(obuf->flag & RB_IGNORE_P)) {
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+			 h_env->limit);
+	    obuf->flag |= RB_IGNORE_P;
+	}
+	obuf->flag &= ~RB_PLAIN;
+	obuf->end_tag = 0;
 	return 1;
     case HTML_SCRIPT:
-	obuf->flag |= RB_IGNORE;
-	obuf->ignore_tag = Strnew_charp("</script>");
-	return 1;
-    case HTML_N_SCRIPT:
-	/* should not be reached */
+	obuf->flag |= RB_SCRIPT;
+	obuf->end_tag = HTML_N_SCRIPT;
 	return 1;
     case HTML_STYLE:
-	obuf->flag |= RB_IGNORE;
-	obuf->ignore_tag = Strnew_charp("</style>");
+	obuf->flag |= RB_STYLE;
+	obuf->end_tag = HTML_N_STYLE;
+	return 1;
+    case HTML_N_SCRIPT:
+	obuf->flag &= ~RB_SCRIPT;
+	obuf->end_tag = 0;
 	return 1;
     case HTML_N_STYLE:
-	/* should not be reached */
-	return 1;
-    case HTML_PLAINTEXT:
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	obuf->flag |= RB_PLAIN;
-	/* istr = str; */
+	obuf->flag &= ~RB_STYLE;
+	obuf->end_tag = 0;
 	return 1;
     case HTML_A:
 	if (obuf->anchor)
@@ -4513,7 +4536,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	table_mode[obuf->table_level].indent_level = 0;
 	table_mode[obuf->table_level].nobr_level = 0;
 	table_mode[obuf->table_level].caption = 0;
-	table_mode[obuf->table_level].ignore_tag = NULL;
+	table_mode[obuf->table_level].end_tag = 0;	/* HTML_UNKNOWN */
 #ifndef TABLE_EXPAND
 	tables[obuf->table_level]->total_width = width;
 #else
@@ -4572,9 +4595,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	obuf->flag |= RB_INSELECT;
+	obuf->end_tag = HTML_N_SELECT;
 	return 1;
     case HTML_N_SELECT:
 	obuf->flag &= ~RB_INSELECT;
+	obuf->end_tag = 0;
 	tmp = process_n_select();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
@@ -4587,9 +4612,14 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	obuf->flag |= RB_INTXTA;
+	obuf->end_tag = HTML_N_TEXTAREA;
 	return 1;
     case HTML_N_TEXTAREA:
-	close_textarea(h_env);
+	obuf->flag &= ~RB_INTXTA;
+	obuf->end_tag = 0;
+	tmp = process_n_textarea();
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_ISINDEX:
 	p = "";
@@ -5448,10 +5478,9 @@ table_width(struct html_feed_environ *h_env, int table_level)
 
 /* HTML processing first pass */
 void
-HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
+HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 {
     Lineprop mode;
-    char *q;
     int cmd;
     struct readbuffer *obuf = h_env->obuf;
     int indent, delta;
@@ -5467,24 +5496,11 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		(obuf->flag & RB_PREMODE) ? 'P' : ' ',
 		(obuf->table_level >= 0) ? 'T' : ' ',
 		(obuf->flag & RB_INTXTA) ? 'X' : ' ',
-		(obuf->flag & RB_IGNORE) ? 'I' : ' ');
-	fprintf(f, "HTMLlineproc1(\"%s\",%d,%lx)\n", str, h_env->limit,
+		(obuf->flag & (RB_SCRIPT | RB_STYLE)) ? 'S' : ' ');
+	fprintf(f, "HTMLlineproc1(\"%s\",%d,%lx)\n", line, h_env->limit,
 		(unsigned long)h_env);
 	fclose(f);
     }
-
-#if 0
-    /* comment processing */
-    if (obuf->status == R_ST_CMNT || obuf->status == R_ST_NCMNT3 ||
-	obuf->status == R_ST_IRRTAG) {
-	while (*str != '\0' && obuf->status != R_ST_NORMAL) {
-	    next_status(*str, &obuf->status);
-	    str++;
-	}
-	if (obuf->status != R_ST_NORMAL)
-	    return;
-    }
-#endif
 
     tokbuf = Strnew();
 
@@ -5496,132 +5512,93 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	tbl_width = table_width(h_env, level);
     }
 
-    while (*str != '\0') {
+    while (*line != '\0') {
+	char *str, *p;
 	int is_tag = FALSE;
-	int pre_mode = (obuf->table_level >= 0) ?
-	    tbl_mode->pre_mode & TBLM_PLAIN : obuf->flag & RB_PLAINMODE;
+	int pre_mode = (obuf->table_level >= 0) ? tbl_mode->pre_mode :
+		       obuf->flag;
+	int end_tag = (obuf->table_level >= 0) ? tbl_mode->end_tag :
+		      obuf->end_tag;
 
-	if (obuf->flag & RB_PLAIN)
-	    goto read_as_plain;	/* don't process tag */
-
-	if (ST_IS_COMMENT(obuf->status)) {
-	    read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 1);
-	    if (obuf->status != R_ST_NORMAL)
-		return;
-	    if (pre_mode) {
-		is_tag = TRUE;
-		q = h_env->tagbuf->ptr;
-		goto read_as_pre_mode;
-	    }
-	    continue;
-	}
-	if (*str == '<' || ST_IS_TAG(obuf->status)) {
+	if (*line == '<' || obuf->status != R_ST_NORMAL) {
 	    /* 
 	     * Tag processing
 	     */
-	    if (ST_IS_TAG(obuf->status)) {
-/*** continuation of a tag ***/
-		read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 1);
-	    }
+	    if (obuf->status == R_ST_EOL)
+		obuf->status = R_ST_NORMAL;
 	    else {
-		if (!REALLY_THE_BEGINNING_OF_A_TAG(str)) {
-		    /* this is NOT a beginning of a tag */
-		    obuf->status = R_ST_NORMAL;
-		    if (pre_mode)
-			goto read_as_pre_mode;
-		    HTMLlineproc1("&lt;", h_env);
-		    str++;
-		    continue;
-		}
-		read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 0);
+	        read_token(h_env->tagbuf, &line, &obuf->status,
+			   pre_mode & RB_PREMODE, obuf->status != R_ST_NORMAL);
+		if (obuf->status != R_ST_NORMAL)
+		    return;
 	    }
-#if 0
-	    if (ST_IS_COMMENT(obuf->status)) {
-		if ((obuf->table_level >= 0) ? tbl_mode->pre_mode & TBLM_IGNORE
-		    : obuf->flag & RB_IGNORE)
-		    /* within ignored tag, such as *
-		     * <script>..</script>, don't process comment.  */
-		    obuf->status = R_ST_NORMAL;
-		return;
-	    }
-#endif
 	    if (h_env->tagbuf->length == 0)
 		continue;
-	    if (obuf->status != R_ST_NORMAL) {
-		if (!pre_mode) {
-		    if (Strlastchar(h_env->tagbuf) == '\n')
-			Strchop(h_env->tagbuf);
-		    if (ST_IS_REAL_TAG(obuf->status))
-			Strcat_char(h_env->tagbuf, ' ');
+	    str = h_env->tagbuf->ptr;
+	    if (*str == '<') {
+		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
+		    is_tag = TRUE;
+		else if (!(pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT |
+				       RB_SCRIPT | RB_STYLE))) {
+		    line = Strnew_m_charp(str + 1, line, NULL)->ptr;
+		    str = "&lt;"; 
 		}
-		if ((obuf->table_level >= 0)
-		    ? ((tbl_mode->pre_mode & TBLM_IGNORE) &&
-		       !TAG_IS(h_env->tagbuf->ptr, tbl_mode->ignore_tag->ptr,
-			       tbl_mode->ignore_tag->length - 1))
-		    : ((obuf->flag & RB_IGNORE) &&
-		       !TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
-			       obuf->ignore_tag->length - 1)))
-		    /* within ignored tag, such as *
-		     * <script>..</script>, don't process tag.  */
-		    obuf->status = R_ST_NORMAL;
+	    }
+	}
+	else {
+	    read_token(tokbuf, &line, &obuf->status, pre_mode & RB_PREMODE, 0);
+	    if (obuf->status != R_ST_NORMAL)	/* R_ST_AMP ? */
+		continue;
+	    str = tokbuf->ptr;
+	}
+
+	if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT | RB_SCRIPT |
+			RB_STYLE)) {
+	    if (is_tag) {
+		p = str;
+	        if ((tag = parse_tag(&p, internal))) {
+		    if (tag->tagid == end_tag ||
+			(pre_mode & RB_INSELECT && tag->tagid == HTML_N_FORM))
+			goto proc_normal;
+		}
+	    }
+	    /* select */
+	    if (pre_mode & RB_INSELECT) {
+		if (obuf->table_level >= 0)
+		    goto proc_normal;
+		feed_select(str);
 		continue;
 	    }
-	    is_tag = TRUE;
-	    q = h_env->tagbuf->ptr;
-	}
-
-      read_as_pre_mode:
-	if (obuf->flag & (RB_INTXTA | RB_INSELECT | RB_IGNORE)) {
-	    cmd = HTML_UNKNOWN;
-	    if (!is_tag) {
-		read_token(tokbuf, &str, &obuf->status,
-			   (obuf->flag & RB_INTXTA) ? 1 : 0, 0);
-		if (obuf->status != R_ST_NORMAL)
-		    continue;
-		q = tokbuf->ptr;
+	    if (is_tag) {
+	        if (strncmp(str, "<!--", 4) && (p = strchr(str + 1, '<'))) {
+		    str = Strnew_charp_n(str, p - str)->ptr;
+		    line = Strnew_m_charp(p, line, NULL)->ptr;
+		}
+		is_tag = FALSE;
 	    }
-	    else {
-		char *p = q;
-		cmd = gethtmlcmd(&p);
-	    }
-
+	    if (obuf->table_level >= 0)
+		goto proc_normal;
 	    /* textarea */
-	    if (obuf->flag & RB_INTXTA) {
-		if (cmd == HTML_N_TEXTAREA)
-		    goto proc_normal;
-		feed_textarea(q);
-	    }
-	    else if (obuf->flag & RB_INSELECT) {
-		if (cmd == HTML_N_SELECT || cmd == HTML_N_FORM)
-		    goto proc_normal;
-		feed_select(q);
+	    if (pre_mode & RB_INTXTA) {
+		feed_textarea(str);
+	        continue;
 	    }
 	    /* script */
-	    else if (obuf->flag & RB_IGNORE) {
-		if (TAG_IS(q, obuf->ignore_tag->ptr,
-			   obuf->ignore_tag->length - 1)) {
-		    obuf->flag &= ~RB_IGNORE;
-		}
-	    }
-	    continue;
+	    if (pre_mode & RB_SCRIPT)
+		continue;
+	    /* style */
+	    if (pre_mode & RB_STYLE)
+		continue;
 	}
 
+      proc_normal:
 	if (obuf->table_level >= 0) {
 	    /* 
 	     * within table: in <table>..</table>, all input tokens
 	     * are fed to the table renderer, and then the renderer
 	     * makes HTML output.
 	     */
-
-	    if (!is_tag) {
-		read_token(tokbuf, &str, &obuf->status,
-			   tbl_mode->pre_mode & TBLM_PREMODE, 0);
-		if (obuf->status != R_ST_NORMAL)
-		    continue;
-		q = tokbuf->ptr;
-	    }
-
-	    switch (feed_table(tbl, q, tbl_mode, tbl_width, internal)) {
+	    switch (feed_table(tbl, str, tbl_mode, tbl_width, internal)) {
 	    case 0:
 		/* </table> tag */
 		obuf->table_level--;
@@ -5629,14 +5606,13 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		    continue;
 		end_table(tbl);
 		if (obuf->table_level >= 0) {
-		    Str tmp;
 		    struct table *tbl0 = tables[obuf->table_level];
-		    tmp = Sprintf("<table_alt tid=%d>", tbl0->ntable);
+		    str = Sprintf("<table_alt tid=%d>", tbl0->ntable)->ptr;
 		    pushTable(tbl0, tbl);
 		    tbl = tbl0;
 		    tbl_mode = &table_mode[obuf->table_level];
 		    tbl_width = table_width(h_env, obuf->table_level);
-		    feed_table(tbl, tmp->ptr, tbl_mode, tbl_width, TRUE);
+		    feed_table(tbl, str, tbl_mode, tbl_width, TRUE);
 		    continue;
 		    /* continue to the next */
 		}
@@ -5659,27 +5635,17 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		continue;
 	    case 1:
 		/* <table> tag */
-		goto proc_normal;
+		break;
 	    default:
 		continue;
 	    }
 	}
 
-      proc_normal:
 	if (is_tag) {
 /*** Beginning of a new tag ***/
-	    if ((tag = parse_tag(&q, internal)))
+	    if ((tag = parse_tag(&str, internal)))
 		cmd = tag->tagid;
 	    else
-		cmd = HTML_UNKNOWN;
-	    if (((obuf->flag & RB_XMPMODE) && cmd != HTML_N_XMP) ||
-		((obuf->flag & RB_LSTMODE) && cmd != HTML_N_LISTING)) {
-		Str tmp = Strdup(h_env->tagbuf);
-		Strcat_charp(tmp, str);
-		str = tmp->ptr;
-		goto read_as_plain;
-	    }
-	    if (cmd == HTML_UNKNOWN)
 		continue;
 	    /* process tags */
 	    if (HTMLtagproc1(tag, h_env) == 0) {
@@ -5701,12 +5667,12 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		continue;
 	}
 
-      read_as_plain:
+      while (*str) {
 	mode = get_mctype(str);
 	delta = get_mclen(mode);
 	if (obuf->flag & (RB_SPECIAL & ~RB_NOBR)) {
 	    char ch = *str;
-	    if (!(obuf->flag & RB_PLAINMODE) && (*str == '&')) {
+	    if (!(obuf->flag & RB_PLAIN) && (*str == '&')) {
 		char *p = str;
 		int ech = getescapechar(&p);
 		if (ech == '\n' || ech == '\r') {
@@ -5739,7 +5705,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 			 % Tabstop != 0);
 		str++;
 	    }
-	    else if (obuf->flag & RB_PLAINMODE) {
+	    else if (obuf->flag & RB_PLAIN) {
 		char *p = html_quote_char(*str);
 		if (p) {
 		    push_charp(obuf, 1, p, PC_ASCII);
@@ -5820,10 +5786,10 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 #endif				/* FORMAT_NICE */
 		HTMLlineproc1(line->ptr, h_env);
 	    }
+	  }
 	}
     }
-    if (!(obuf->flag & (RB_PREMODE | RB_NOBR | RB_INTXTA | RB_INSELECT
-			| RB_PLAINMODE | RB_IGNORE))) {
+    if (!(obuf->flag & (RB_SPECIAL | RB_INTXTA | RB_INSELECT))) {
 	char *tp;
 	int i = 0;
 
@@ -5847,17 +5813,6 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 #endif				/* FORMAT_NICE */
 	}
     }
-}
-
-static void
-close_textarea(struct html_feed_environ *h_env)
-{
-    Str tmp;
-
-    h_env->obuf->flag &= ~RB_INTXTA;
-    tmp = process_n_textarea();
-    if (tmp != NULL)
-	HTMLlineproc1(tmp->ptr, h_env);
 }
 
 extern char *NullLine;
@@ -6135,6 +6090,8 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	push_tag(obuf, "</u>", HTML_N_U);
 	obuf->in_under = 0;
     }
+    if (obuf->flag & RB_INTXTA)
+	HTMLlineproc1("</textarea>", h_env);
     /* for unbalanced select tag */
     if (obuf->flag & RB_INSELECT)
 	HTMLlineproc1("</select>", h_env);
@@ -6142,7 +6099,7 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     /* for unbalanced table tag */
     while (obuf->table_level >= 0) {
 	table_mode[obuf->table_level].pre_mode
-	    &= ~(TBLM_IGNORE | TBLM_XMP | TBLM_LST);
+	    &= ~(TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN);
 	HTMLlineproc1("</table>", h_env);
     }
 }
@@ -6351,8 +6308,10 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif				/* USE_NNTP */
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
     }
-    if (obuf.status != R_ST_NORMAL)
-	HTMLlineproc0(correct_irrtag(obuf.status)->ptr, &htmlenv1, internal);
+    if (obuf.status != R_ST_NORMAL) {
+	obuf.status = R_ST_EOL;
+	HTMLlineproc0("\n", &htmlenv1, internal);
+    }
     obuf.status = R_ST_NORMAL;
     completeHTMLstream(&htmlenv1, &obuf);
     flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);

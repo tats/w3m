@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.31 2002/11/25 16:39:53 ukai Exp $ */
+/* $Id: table.c,v 1.32 2002/12/03 15:35:11 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -490,11 +490,11 @@ visible_length(char *str)
 	else if (status == R_ST_AMP) {
 	    if (prev_status == R_ST_NORMAL) {
 		Strclear(tagbuf);
+		len--;
 		amp_len = 0;
 	    }
 	    else {
 		Strcat_char(tagbuf, *str);
-		len++;
 		amp_len++;
 	    }
 	}
@@ -502,10 +502,13 @@ visible_length(char *str)
 	    Strcat_char(tagbuf, *str);
 	    r2 = tagbuf->ptr;
 	    t = getescapecmd(&r2);
-	    len += strlen(t) - 1 - amp_len;
-	    if (*r2 != '\0') {
-		str -= strlen(r2);
+	    if (!*r2 && (*t == '\r' || *t == '\n')) {
+		if (len > max_len)
+		    max_len = len;
+		len = 0;
 	    }
+	    else
+		len += strlen(t) + strlen(r2);
 	}
 	else if (status == R_ST_NORMAL && ST_IS_REAL_TAG(prev_status)) {
 	    ;
@@ -516,22 +519,42 @@ visible_length(char *str)
 		len++;
 	    } while ((visible_length_offset + len) % Tabstop != 0);
 	}
-	else if (*str == '\n' || *str == '\r') {
+	else if (*str == '\r' || *str == '\n') {
+	    len--;
 	    if (len > max_len)
 		max_len = len;
 	    len = 0;
 	}
-	else if (*str == '\n' || *str == '\r')
-	    len = 0;
 	str++;
     }
     if (status == R_ST_AMP) {
 	r2 = tagbuf->ptr;
 	t = getescapecmd(&r2);
-	len += strlen(t) - 1 - amp_len;
-	if (*r2 != '\0') {
-	    len += strlen(r2);
+	if (*t != '\r' && *t != '\n')
+	    len += strlen(t) + strlen(r2);
+    }
+    return len > max_len ? len : max_len;
+}
+
+int
+visible_length_plain(char *str)
+{
+    int len = 0, max_len = 0;
+
+    while (*str) {
+	if (*str == '\t') {
+	    do {
+		len++;
+	    } while ((visible_length_offset + len) % Tabstop != 0);
 	}
+	else if (*str == '\r' || *str == '\n') {
+	    if (len > max_len)
+		max_len = len;
+	    len = 0;
+	}
+	else
+	    len++;
+	str++;
     }
     return len > max_len ? len : max_len;
 }
@@ -550,6 +573,28 @@ maximum_visible_length(char *str)
     for (visible_length_offset = 1; visible_length_offset < Tabstop;
 	 visible_length_offset++) {
 	len = visible_length(str);
+	if (maxlen < len) {
+	    maxlen = len;
+	    break;
+	}
+    }
+    return maxlen;
+}
+
+int
+maximum_visible_length_plain(char *str)
+{
+    int maxlen, len;
+
+    visible_length_offset = 0;
+    maxlen = visible_length_plain(str);
+
+    if (!strchr(str, '\t'))
+	return maxlen;
+
+    for (visible_length_offset = 1; visible_length_offset < Tabstop;
+	 visible_length_offset++) {
+	len = visible_length_plain(str);
 	if (maxlen < len) {
 	    maxlen = len;
 	    break;
@@ -809,6 +854,10 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 	}
 	else
 	    HTMLlineproc1(l->ptr, &h_env);
+    }
+    if (obuf.status != R_ST_NORMAL) {
+	obuf.status = R_ST_EOL;
+	HTMLlineproc1("\n", &h_env);
     }
     completeHTMLstream(&h_env, &obuf);
     flushline(&h_env, &obuf, 0, 2, h_env.limit);
@@ -2361,6 +2410,7 @@ table_close_select(struct table *tbl, struct table_mode *mode, int width)
 {
     Str tmp = process_n_select();
     mode->pre_mode &= ~TBLM_INSELECT;
+    mode->end_tag = 0;
     feed_table1(tbl, tmp, mode, width);
 }
 
@@ -2369,6 +2419,7 @@ table_close_textarea(struct table *tbl, struct table_mode *mode, int width)
 {
     Str tmp = process_n_textarea();
     mode->pre_mode &= ~TBLM_INTXTA;
+    mode->end_tag = 0;
     feed_table1(tbl, tmp, mode, width);
 }
 
@@ -2394,6 +2445,7 @@ table_close_anchor0(struct table *tbl, struct table_mode *mode)
 #define TAG_ACTION_FEED 1
 #define TAG_ACTION_TABLE 2
 #define TAG_ACTION_N_TABLE 3
+#define TAG_ACTION_PLAIN 4
 
 #define CASE_TABLE_TAG \
 	case HTML_TABLE:\
@@ -2429,52 +2481,61 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 
     cmd = tag->tagid;
 
-    if (mode->pre_mode & TBLM_IGNORE) {
-	switch (cmd) {
-	case HTML_N_STYLE:
-	    mode->pre_mode &= ~TBLM_STYLE;
-	    return TAG_ACTION_NONE;
-	case HTML_N_SCRIPT:
-	    mode->pre_mode &= ~TBLM_SCRIPT;
-	    return TAG_ACTION_NONE;
-	default:
+    if (mode->pre_mode & TBLM_PLAIN) {
+	if (mode->end_tag == cmd) {
+	    mode->pre_mode &= ~TBLM_PLAIN;
+	    mode->end_tag = 0;
+	    feed_table_block_tag(tbl, line, mode, 0, cmd);
 	    return TAG_ACTION_NONE;
 	}
+	return TAG_ACTION_PLAIN;
     }
-
-    switch (cmd) {
-      CASE_TABLE_TAG:
-	if (mode->caption)
-	    mode->caption = 0;
-	if (mode->pre_mode & (TBLM_IGNORE | TBLM_XMP | TBLM_LST))
-	    mode->pre_mode &= ~(TBLM_IGNORE | TBLM_XMP | TBLM_LST);
-	if (mode->pre_mode & TBLM_INTXTA)
+    if (mode->pre_mode & TBLM_INTXTA) {
+	if (mode->end_tag == cmd) {
 	    table_close_textarea(tbl, mode, width);
-	if (mode->pre_mode & TBLM_INSELECT)
-	    table_close_select(tbl, mode, width);
-    }
-
-    if (mode->caption) {
-	switch (cmd) {
-	case HTML_N_CAPTION:
-	    mode->caption = 0;
 	    return TAG_ACTION_NONE;
+	}
+	return TAG_ACTION_FEED;
+    }
+    if (mode->pre_mode & TBLM_SCRIPT) {
+	if (mode->end_tag == cmd) {
+	    mode->pre_mode &= ~TBLM_SCRIPT;
+	    mode->end_tag = 0;
+	    return TAG_ACTION_NONE;
+	}
+	return TAG_ACTION_PLAIN;
+    }
+    if (mode->pre_mode & TBLM_STYLE) {
+	if (mode->end_tag == cmd) {
+	    mode->pre_mode &= ~TBLM_STYLE;
+	    mode->end_tag = 0;
+	    return TAG_ACTION_NONE;
+	}
+	return TAG_ACTION_PLAIN;
+    }
+    /* failsafe: a tag other than <option></option>and </select> in *
+     * <select> environment is regarded as the end of <select>. */
+    if (mode->pre_mode & TBLM_INSELECT) {
+	switch (cmd) {
+	CASE_TABLE_TAG:
+	case HTML_N_FORM:
+	case HTML_N_SELECT:	/* mode->end_tag */
+	    table_close_select(tbl, mode, width);
+	    break;
 	default:
 	    return TAG_ACTION_FEED;
 	}
     }
-
-    /* failsafe: a tag other than <option></option>and </select> in *
-     * <select> environment is regarded as the end of <select>. */
-    if (mode->pre_mode & TBLM_INSELECT && cmd == HTML_N_FORM) {
-	table_close_select(tbl, mode, width);
+    if (mode->caption) {
+	switch (cmd) {
+	CASE_TABLE_TAG:
+	case HTML_N_CAPTION:
+	    mode->caption = 0;
+	    break;
+	default:
+	    return TAG_ACTION_FEED;
+	}
     }
-
-    if ((mode->pre_mode & TBLM_INSELECT && cmd != HTML_N_SELECT) ||
-	(mode->pre_mode & TBLM_INTXTA && cmd != HTML_N_TEXTAREA) ||
-	(mode->pre_mode & TBLM_XMP && cmd != HTML_N_XMP) ||
-	(mode->pre_mode & TBLM_LST && cmd != HTML_N_LISTING))
-	return TAG_ACTION_FEED;
 
     if (mode->pre_mode & TBLM_PRE) {
 	switch (cmd) {
@@ -2742,33 +2803,33 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_LI:
     case HTML_PRE:
     case HTML_N_PRE:
+    case HTML_HR:
     case HTML_LISTING:
-    case HTML_N_LISTING:
     case HTML_XMP:
-    case HTML_N_XMP:
     case HTML_PLAINTEXT:
+    case HTML_PRE_PLAIN:
+    case HTML_N_PRE_PLAIN:
 	feed_table_block_tag(tbl, line, mode, 0, cmd);
 	switch (cmd) {
 	case HTML_PRE:
+	case HTML_PRE_PLAIN:
 	    mode->pre_mode |= TBLM_PRE;
 	    break;
 	case HTML_N_PRE:
+	case HTML_N_PRE_PLAIN:
 	    mode->pre_mode &= ~TBLM_PRE;
 	    break;
 	case HTML_LISTING:
-	    mode->pre_mode |= TBLM_LST;
-	    break;
-	case HTML_N_LISTING:
-	    mode->pre_mode &= ~TBLM_LST;
+	    mode->pre_mode |= TBLM_PLAIN;
+	    mode->end_tag = HTML_N_LISTING;
 	    break;
 	case HTML_XMP:
-	    mode->pre_mode |= TBLM_XMP;
-	    break;
-	case HTML_N_XMP:
-	    mode->pre_mode &= ~TBLM_XMP;
+	    mode->pre_mode |= TBLM_PLAIN;
+	    mode->end_tag = HTML_N_XMP;
 	    break;
 	case HTML_PLAINTEXT:
-	    mode->pre_mode |= TBLM_PLAINTEXT;
+	    mode->pre_mode |= TBLM_PLAIN;
+	    mode->end_tag = MAX_HTMLTAG;
 	    break;
 	}
 	break;
@@ -2857,9 +2918,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	if (tmp)
 	    feed_table1(tbl, tmp, mode, width);
 	mode->pre_mode |= TBLM_INSELECT;
-	break;
-    case HTML_N_SELECT:
-	table_close_select(tbl, mode, width);
+	mode->end_tag = HTML_N_SELECT;
 	break;
     case HTML_OPTION:
 	/* nothing */
@@ -2880,9 +2939,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	if (tmp)
 	    feed_table1(tbl, tmp, mode, width);
 	mode->pre_mode |= TBLM_INTXTA;
-	break;
-    case HTML_N_TEXTAREA:
-	table_close_textarea(tbl, mode, width);
+	mode->end_tag = HTML_N_TEXTAREA;
 	break;
     case HTML_A:
 	table_close_anchor0(tbl, mode);
@@ -2969,11 +3026,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	break;
     case HTML_SCRIPT:
 	mode->pre_mode |= TBLM_SCRIPT;
-	mode->ignore_tag = Strnew_charp("</script>");
+	mode->end_tag = HTML_N_SCRIPT;
 	break;
     case HTML_STYLE:
 	mode->pre_mode |= TBLM_STYLE;
-	mode->ignore_tag = Strnew_charp("</style>");
+	mode->end_tag = HTML_N_STYLE;
 	break;
     case HTML_N_A:
 	table_close_anchor0(tbl, mode);
@@ -2994,7 +3051,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_TEXTAREA_INT:
     case HTML_N_TEXTAREA_INT:
     case HTML_IMG_ALT:
-    case HTML_EOL:
     case HTML_RULE:
     case HTML_N_RULE:
     default:
@@ -3014,25 +3070,29 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
     Str tmp;
     struct table_linfo *linfo = &tbl->linfo;
 
-    if (*line == '<') {
-	int action;
+    if (*line == '<' && line[1] && REALLY_THE_BEGINNING_OF_A_TAG(line)) {
 	struct parsed_tag *tag;
 	p = line;
 	tag = parse_tag(&p, internal);
 	if (tag) {
-	    action = feed_table_tag(tbl, line, mode, width, tag);
-	    if (action == TAG_ACTION_NONE)
+	    switch (feed_table_tag(tbl, line, mode, width, tag)) {
+	    case TAG_ACTION_NONE:
 		return -1;
-	    else if (action == TAG_ACTION_N_TABLE)
+	    case TAG_ACTION_N_TABLE:
 		return 0;
-	    else if (action == TAG_ACTION_TABLE) {
+	    case TAG_ACTION_TABLE:
 		return 1;
+	    case TAG_ACTION_PLAIN:
+		break;
+	    case TAG_ACTION_FEED:
+	    default:
+		if (parsedtag_need_reconstruct(tag))
+		    line = parsedtag2str(tag)->ptr;
 	    }
-	    else if (parsedtag_need_reconstruct(tag))
-		line = parsedtag2str(tag)->ptr;
 	}
 	else {
-	    if (!(mode->pre_mode & TBLM_PLAIN))
+	    if (!(mode->pre_mode & (TBLM_PLAIN | TBLM_INTXTA | TBLM_INSELECT |
+				    TBLM_SCRIPT | TBLM_STYLE)))
 		return -1;
 	}
     }
@@ -3040,7 +3100,9 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	Strcat_charp(tbl->caption, line);
 	return -1;
     }
-    if (mode->pre_mode & TBLM_IGNORE)
+    if (mode->pre_mode & TBLM_SCRIPT)
+	return -1;
+    if (mode->pre_mode & TBLM_STYLE)
 	return -1;
     if (mode->pre_mode & TBLM_INTXTA) {
 	feed_textarea(line);
@@ -3100,7 +3162,7 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	line = tmp->ptr;
     }
-    if (!(mode->pre_mode & TBLM_SPECIAL)) {
+    if (!(mode->pre_mode & (TBLM_SPECIAL & ~TBLM_NOBR))) {
 	if (!(tbl->flag & TBL_IN_COL) || linfo->prev_spaces != 0)
 	    while (IS_SPACE(*line))
 		line++;
@@ -3114,25 +3176,51 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	i = skip_space(tbl, line, linfo, !(mode->pre_mode & TBLM_NOBR));
 	addcontentssize(tbl, visible_length(line) - i);
 	setwidth(tbl, mode);
+	pushdata(tbl, tbl->row, tbl->col, line);
+    }
+    else if (mode->pre_mode & TBLM_PRE_INT) {
+	check_rowcol(tbl, mode);
+	if (mode->nobr_offset < 0)
+	    mode->nobr_offset = tbl->tabcontentssize;
+	addcontentssize(tbl, maximum_visible_length(line));
+	setwidth(tbl, mode);
+	pushdata(tbl, tbl->row, tbl->col, line);
     }
     else {
 	/* <pre> mode or something like it */
 	check_rowcol(tbl, mode);
-	if (mode->pre_mode & TBLM_PRE_INT && mode->nobr_offset < 0)
-	    mode->nobr_offset = tbl->tabcontentssize;
-	if (mode->pre_mode & TBLM_PLAIN)
-	    i = strlen(line);
-	else
-	    i = maximum_visible_length(line);
-	addcontentssize(tbl, i);
-	setwidth(tbl, mode);
-	if (!(mode->pre_mode & TBLM_PRE_INT)) {
-	    p = line + strlen(line) - 1;
-	    if (*p == '\r' || *p == '\n')
+	while (*line) {
+	    int nl = FALSE;
+	    if ((p = strchr(line, '\r')) || (p = strchr(line, '\n'))) {
+		if (*p == '\r' && p[1] == '\n')
+		    p++;
+		if (p[1]) {
+		    p++;
+		    tmp = Strnew_charp_n(line, p - line);
+		    line = p;
+		    p = tmp->ptr;
+		}
+		else {
+		    p = line;
+		    line = "";
+		}
+		nl = TRUE;
+	    }
+	    else {
+		p = line;
+		line = "";
+	    }
+	    if (mode->pre_mode & TBLM_PLAIN)
+	        i = maximum_visible_length_plain(p);
+	    else
+	        i = maximum_visible_length(p);
+	    addcontentssize(tbl, i);
+	    setwidth(tbl, mode);
+	    if (nl)
 		clearcontentssize(tbl, mode);
+	    pushdata(tbl, tbl->row, tbl->col, p);
 	}
     }
-    pushdata(tbl, tbl->row, tbl->col, line);
     return -1;
 }
 

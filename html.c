@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.17 2002/12/02 17:55:49 ukai Exp $ */
+/* $Id: html.c,v 1.18 2002/12/03 15:35:10 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -248,8 +248,9 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/input_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 123 HTML_N_INPUT_ALT */
     {"img_alt", ALST_IMG_ALT, MAXA_IMG_ALT, TFLG_INT},	/* 124 HTML_IMG_ALT     */
     {"/img_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 125 HTML_N_IMG_ALT   */
-    {"eol", NULL, 0, TFLG_INT},	/* 126 HTML_EOL         */
-    {" ", ALST_NOP, MAXA_NOP, TFLG_INT},	/* 127 HTML_NOP         */
+    {" ", ALST_NOP, MAXA_NOP, TFLG_INT},	/* 126 HTML_NOP         */
+    {"pre_plain", NULL, 0, TFLG_INT},	/* 127 HTML_PRE_PLAIN         */
+    {"/pre_plain", NULL, 0, TFLG_INT | TFLG_END},	/* 128 HTML_N_PRE_PLAIN         */
 };
 
 TagAttrInfo AttrMAP[MAX_TAGATTR] = {

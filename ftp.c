@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.14 2002/11/18 18:12:35 ukai Exp $ */
+/* $Id: ftp.c,v 1.15 2002/11/18 18:26:13 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -249,7 +249,7 @@ ftp_pasv(FTP ftp)
     return 0;
 }
 
-static int
+static void
 ftp_fclose(FTP ftp)
 {
     int control_closed = 0;
@@ -268,6 +268,7 @@ ftp_fclose(FTP ftp)
 	fclose(ftp->data);
 	ftp->data = NULL;
     }
+    return;
 }
 
 int

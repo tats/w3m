@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.27 2002/12/09 15:51:09 ukai Exp $ */
+/* $Id: menu.c,v 1.28 2002/12/10 15:36:11 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -2009,7 +2009,7 @@ list_menu(Buffer *buf)
 	    else if (two)
 		label[n] = Sprintf("%c%c: %s", lmKeys2[n / nlmKeys],
 				   lmKeys[n % nlmKeys], t)->ptr;
-	    else 
+	    else
 		label[n] = Sprintf("%c: %s", lmKeys[n], t)->ptr;
 	    ap[n] = a;
 	    n++;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.46 2001/12/25 12:41:08 ukai Exp $ */
+/* $Id: main.c,v 1.47 2001/12/25 13:43:51 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1341,8 +1341,6 @@ srchcore(char *str, int (*func) (Buffer *, char *))
 	    result = func(Currentbuf, SearchString);
     signal(SIGINT, prevtrap);
     term_raw();
-    displayBuffer(Currentbuf, B_NORMAL);
-    onA();
     return result;
 }
 
@@ -1359,6 +1357,90 @@ disp_srchresult(int result, char *prompt, char *str)
 	disp_message(Sprintf("%s%s", prompt, str)->ptr, FALSE);
 }
 
+static int
+dispincsrch(int ch, Str buf, short *x, short *y)
+{
+    static Buffer sbuf;
+    static Line *currentLine;
+    static short pos;
+    char *str;
+    int do_next_search = FALSE;
+
+    if (ch == 0 && buf == NULL) {
+	SAVE_BUFPOSITION(&sbuf);	/* search starting point */
+	currentLine = sbuf.currentLine;
+	pos = sbuf.pos;
+	return -1;
+    }
+
+    str = buf->ptr;
+    switch (ch) {
+    case 022:			/* C-r */
+	searchRoutine = backwardSearch;
+	do_next_search = TRUE;
+	break;
+    case 023:			/* C-s */
+	searchRoutine = forwardSearch;
+	do_next_search = TRUE;
+	break;
+    default:
+	if (ch >= 0)
+	    return ch;		/* use InputKeymap */
+    }
+
+    if (do_next_search) {
+	if (*str) {
+	    SAVE_BUFPOSITION(&sbuf);
+	    srchcore(str, searchRoutine);
+	    arrangeCursor(Currentbuf);
+	    if (Currentbuf->currentLine == currentLine
+		&& Currentbuf->pos == pos) {
+		SAVE_BUFPOSITION(&sbuf);
+		srchcore(str, searchRoutine);
+		arrangeCursor(Currentbuf);
+	    }
+	    *x = Currentbuf->cursorX;
+	    *y = Currentbuf->cursorY;
+	    displayBuffer(Currentbuf, B_NORMAL);
+	    return -1;
+	}
+	else {
+	    return 020;		/* _prev completion? */
+	}
+    }
+    else if (*str) {
+	RESTORE_BUFPOSITION(&sbuf);
+	arrangeCursor(Currentbuf);
+	srchcore(str, searchRoutine);
+	arrangeCursor(Currentbuf);
+	*x = Currentbuf->cursorX;
+	*y = Currentbuf->cursorY;
+	currentLine = Currentbuf->currentLine;
+	pos = Currentbuf->pos;
+	displayBuffer(Currentbuf, B_NORMAL);
+    }
+    else
+	displayBuffer(Currentbuf, B_NORMAL);
+    return -1;
+}
+
+void
+isrch(int (*func) (Buffer *, char *), char *prompt)
+{
+    char *str;
+    Buffer sbuf;
+    SAVE_BUFPOSITION(&sbuf);
+    dispincsrch(0, NULL, NULL, NULL);	/* initialize incremental search state */
+
+    searchRoutine = func;
+    str = inputLineHistSearch(prompt, NULL, IN_STRING, TextHist, dispincsrch);
+    if (str == NULL) {
+	RESTORE_BUFPOSITION(&sbuf);
+    }
+    displayBuffer(Currentbuf, B_NORMAL);
+    onA();
+}
+
 void
 srch(int (*func) (Buffer *, char *), char *prompt)
 {
@@ -1371,22 +1453,38 @@ srch(int (*func) (Buffer *, char *), char *prompt)
     if (str == NULL)
 	return;
     result = srchcore(str, func);
+    displayBuffer(Currentbuf, B_NORMAL);
+    onA();
     disp_srchresult(result, prompt, str);
     searchRoutine = func;
 }
 
 /* Search regular expression forward */
+
 void
 srchfor(void)
 {
     srch(forwardSearch, "Forward: ");
 }
 
+void
+isrchfor(void)
+{
+    isrch(forwardSearch, "I-search: ");
+}
+
 /* Search regular expression backward */
+
 void
 srchbak(void)
 {
     srch(backwardSearch, "Backward: ");
+}
+
+void
+isrchbak(void)
+{
+    isrch(backwardSearch, "I-search backward: ");
 }
 
 static void
@@ -1408,6 +1506,8 @@ srch_nxtprv(int reverse)
     if (searchRoutine == backwardSearch)
 	reverse ^= 1;
     result = srchcore(SearchString, routine[reverse]);
+    displayBuffer(Currentbuf, B_NORMAL);
+    onA();
     disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
 		    SearchString);
 }

@@ -28,6 +28,8 @@ HISTORY                URL履歴を表示します
 INFO		現在の文書に関する情報を表示します
 INIT_MAILCAP   mailcap を再読み込みします(主に local-CGI 用)
 INTERRUPT	文書の読み込みを中断します
+ISEARCH		ファイルの末尾にむかってインクリメンタルサーチします
+ISEARCH_BACK	ファイルの銭湯にむかってインクリメンタルサーチします
 LEFT		画面全体を1文字左にずらします
 LINE_BEGIN	行頭に移動します
 LINE_END	行末に移動します

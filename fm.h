@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.30 2001/12/23 14:44:00 ukai Exp $ */
+/* $Id: fm.h,v 1.31 2001/12/25 13:43:51 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -229,6 +229,7 @@ extern int REV_LB[];
  * Macros.
  */
 
+#define inputLineHist(p,d,f,h)	inputLineHistSearch(p,d,f,h,NULL)
 #define inputLine(p,d,f)	inputLineHist(p,d,f,NULL)
 #define inputStr(p,d)		inputLine(p,d,IN_STRING)
 #define inputStrHist(p,d,h)	inputLineHist(p,d,IN_STRING,h)
@@ -377,6 +378,19 @@ typedef struct _Buffer {
     char *ssl_certificate;
 #endif
 } Buffer;
+
+
+#define COPY_BUFPOSITION(dstbuf, srcbuf) {\
+ (dstbuf)->topLine = (srcbuf)->topLine; \
+ (dstbuf)->currentLine = (srcbuf)->currentLine; \
+ (dstbuf)->pos = (srcbuf)->pos; \
+ (dstbuf)->cursorX = (srcbuf)->cursorX; \
+ (dstbuf)->cursorY = (srcbuf)->cursorY; \
+ (dstbuf)->visualpos = (srcbuf)->visualpos; \
+ (dstbuf)->currentColumn = (srcbuf)->currentColumn; \
+}
+#define SAVE_BUFPOSITION(sbufp) COPY_BUFPOSITION(sbufp, Currentbuf)
+#define RESTORE_BUFPOSITION(sbufp) COPY_BUFPOSITION(Currentbuf, sbufp)
 
 #define NO_BUFFER ((Buffer*)1)
 

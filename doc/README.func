@@ -28,6 +28,8 @@ HISTORY		View history of URL
 INFO		View info of current document
 INTERRUPT	Stop loading document
 INIT_MAILCAP    Reread mailcap (mainly for local-CGI)
+ISEARCH		Incremental search forward
+ISEARCH_BACK	Incremental search backward
 LEFT		Shift screen one column
 LINE_BEGIN	Go to the beginning of line
 LINE_END	Go to the end of line

@@ -1,3 +1,34 @@
+2001-12-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02726] incremental search
+	* NEWS: incremental search
+	* fm.h (inputLineHist) define by inputLineHistSearch
+	* fm.h (COPY_BUFPOTISION): added
+	* fm.h (SAVE_BUFPOSITION): ditto
+	* fm.h (RESTORE_BUFPOSITION): ditto
+	* funcname.tab (ISEARCH): added
+	* funcname.tab (ISEARCH_BACK): added
+	* keybind.c (GlobalKeymap): C-s = ISEARCH, C-r = ISEARCH_BACK
+	* linein.c (inputLineHistSearch): renamed from inputLineHist,
+			new arg incrfunc() for increment search
+	* linein.c (inputLineHistSearch): add cursorX, cursorY
+	* main.c (srchcore): remove displayBuffer, onA
+	* main.c (dispincsrch): added
+	* main.c (isrch): ditto
+	* main.c (isrchfor): ditto
+	* main.c (isrchbak): ditto
+	* main.c (srch): add displayBuffer, onA
+	* main.c (srch_nxtprv): ditto
+	* proto.h (isrchfor): added
+	* proto.h (isrchbak): ditto
+	* proto.h (inputLineHistSearch): renamed
+	* doc/keymap.default (C-r): ISEARCH_BACK
+	* doc/keymap.default (C-s): ISEARCH
+	* doc/README.func (ISEARCH): added
+	* doc/README.func (ISEARCH_BACK): ditto
+	* doc-jp/README.func (ISEARCH): added
+	* doc-jp/README.func (ISEARCH_BACK): ditto
+
 2001-12-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02723] cleanup resizing
@@ -1500,4 +1531,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.169 2001/12/25 12:41:08 ukai Exp $
+$Id: ChangeLog,v 1.170 2001/12/25 13:43:51 ukai Exp $

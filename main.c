@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.121 2002/11/08 15:54:47 ukai Exp $ */
+/* $Id: main.c,v 1.122 2002/11/08 16:01:21 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -967,11 +967,11 @@ MAIN(int argc, char **argv, char **envp)
 	    mouse_active();
 #endif				/* USE_MOUSE */
 #ifdef USE_ALARM
-	if (alarm_status == AL_IMPLICIT) {
+	if (alarm_status & AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
-	    alarm_status = AL_IMPLICIT_DONE;
+	    alarm_status = AL_IMPLICIT_DONE | (AL_IMPLICIT & AL_ONCE);
 	}
-	else if (alarm_status == AL_IMPLICIT_DONE
+	else if (alarm_status & AL_IMPLICIT_DONE
 		 && alarm_buffer != Currentbuf) {
 	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
@@ -5217,13 +5217,12 @@ SigAlarm(SIGNAL_ARG)
 				      data ? data : "")->ptr,
 			      FALSE, alarm_sec - 1, FALSE, TRUE);
 	}
-	else if (alarm_status == AL_IMPLICIT) {
+	else if (alarm_status & AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
-	    alarm_status = AL_IMPLICIT_DONE;
+	    alarm_status = AL_IMPLICIT_DONE | (AL_IMPLICIT & AL_ONCE);
 	}
-	else if ((alarm_status == AL_IMPLICIT_DONE
-		  && alarm_buffer != Currentbuf)
-		 || alarm_status == AL_IMPLICIT_ONCE) {
+	else if (alarm_status & AL_IMPLICIT_DONE
+		 && (alarm_buffer != Currentbuf || alarm_status & AL_ONCE)) {
 	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
 	if (alarm_sec > 0) {
@@ -5270,8 +5269,7 @@ void
 setAlarmEvent(int sec, short status, int cmd, void *data)
 {
     if (status == AL_UNSET || status == AL_EXPLICIT
-	|| status == AL_IMPLICIT_ONCE
-	|| (status == AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
+	|| (status & AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
 	alarm_sec = sec;
 	alarm_status = status;
 	alarm_event.cmd = cmd;

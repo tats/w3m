@@ -1,5 +1,10 @@
 2001-12-15  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
+	* [w3m-dev 02657] 
+	* main.c (chkURL): accept URL ending with '='
+
+2001-12-15  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
 	* [w3m-dev 02656]
 	* XMakefile (clean): remove functable.c
 	* anchor.c (_put_anchor_new): use Strnew_size() and Strcat_charp_n()
@@ -1232,4 +1237,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.126 2001/12/14 17:10:54 ukai Exp $
+$Id: ChangeLog,v 1.127 2001/12/14 17:13:13 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.25 2001/11/29 09:34:14 ukai Exp $
+# $Id: configure,v 1.26 2001/11/29 10:22:58 ukai Exp $
 #	Configuration.
 #
 
@@ -1606,7 +1606,7 @@ fi
 
 # check alarm()
 if [ "$use_alarm" = y ]; then
-  cat > _zdmachdep.c <<EOF
+  cat > _zmachdep.c <<EOF
 #include <unistd.h>
 #include <signal.h>
 main()

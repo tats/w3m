@@ -1,7 +1,7 @@
 
 /* 
  * matrix.h, matrix.c: Liner equation solver using LU decomposition.
- * $Id: matrix.c,v 1.4 2001/11/16 22:02:00 ukai Exp $
+ * $Id: matrix.c,v 1.5 2001/11/29 10:22:58 ukai Exp $
  *
  * by K.Okabe  Aug. 1999 
  *
@@ -67,7 +67,7 @@ static double Tiny = 1.0e-30;
  */
 
 int
-LUfactor(Matrix A, int *index)
+LUfactor(Matrix A, int *indexarray)
 {
     int dim = A->dim, i, j, k, i_max, k_max;
     Vector scale;
@@ -76,7 +76,7 @@ LUfactor(Matrix A, int *index)
     scale = new_vector(dim);
 
     for (i = 0; i < dim; i++)
-	index[i] = i;
+	indexarray[i] = i;
 
     for (i = 0; i < dim; i++) {
 	mx = 0.;
@@ -107,7 +107,7 @@ LUfactor(Matrix A, int *index)
 	}
 
 	if (i_max != k) {
-	    SWAPI(index[i_max], index[k]);
+	    SWAPI(indexarray[i_max], indexarray[k]);
 	    for (j = 0; j < dim; j++)
 		SWAPD(M_VAL(A, i_max, j), M_VAL(A, k, j));
 	}
@@ -126,12 +126,12 @@ LUfactor(Matrix A, int *index)
  */
 
 int
-LUsolve(Matrix A, int *index, Vector b, Vector x)
+LUsolve(Matrix A, int *indexarray, Vector b, Vector x)
 {
     int i, dim = A->dim;
 
     for (i = 0; i < dim; i++)
-	x->ve[i] = b->ve[index[i]];
+	x->ve[i] = b->ve[indexarray[i]];
 
     if (Lsolve(A, x, x, 1.) == -1 || Usolve(A, x, x, 0.) == -1)
 	return -1;
@@ -144,16 +144,16 @@ LUsolve(Matrix A, int *index, Vector b, Vector x)
 Matrix
 m_inverse(Matrix A, Matrix out)
 {
-    int *index = NewAtom_N(int, A->dim);
+    int *indexarray = NewAtom_N(int, A->dim);
     Matrix A1 = new_matrix(A->dim);
     m_copy(A, A1);
-    LUfactor(A1, index);
-    return LUinverse(A1, index, out);
+    LUfactor(A1, indexarray);
+    return LUinverse(A1, indexarray, out);
 }
 #endif				/* 0 */
 
 Matrix
-LUinverse(Matrix A, int *index, Matrix out)
+LUinverse(Matrix A, int *indexarray, Matrix out)
 {
     int i, j, dim = A->dim;
     Vector tmp, tmp2;
@@ -166,7 +166,7 @@ LUinverse(Matrix A, int *index, Matrix out)
 	for (j = 0; j < dim; j++)
 	    tmp->ve[j] = 0.;
 	tmp->ve[i] = 1.;
-	if (LUsolve(A, index, tmp, tmp2) == -1)
+	if (LUsolve(A, indexarray, tmp, tmp2) == -1)
 	    return NULL;
 	for (j = 0; j < dim; j++)
 	    M_VAL(out, j, i) = tmp2->ve[j];

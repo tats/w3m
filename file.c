@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.17 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: file.c,v 1.18 2001/11/29 10:22:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3598,7 +3598,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 #endif
 	if (p && q && !strcasecmp(p, "refresh")) {
-	    int refresh = atoi(q);
+	    int refresh_interval = atoi(q);
 	    Str s_tmp = NULL;
 
 	    while (*q) {
@@ -3630,28 +3630,29 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		tmp =
 		    Sprintf
 		    ("Refresh (%d sec) <a hseq=\"%d\" href=\"%s\">%s</a>",
-		     refresh, cur_hseq++, q, q);
+		     refresh_interval, cur_hseq++, q, q);
 		push_str(obuf, s_tmp->length, tmp, PC_ASCII);
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);
-		if (!is_redisplay && refresh == 0 && MetaRefresh) {
+		if (!is_redisplay && refresh_interval == 0 && MetaRefresh) {
 		    pushEvent(FUNCNAME_goURL, s_tmp->ptr);
 		    /* pushEvent(deletePrevBuf,NULL); */
 		}
 #ifdef USE_ALARM
-		else if (!is_redisplay && refresh > 0 && MetaRefresh) {
-		    setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_goURL,
-				  s_tmp->ptr);
+		else if (!is_redisplay && refresh_interval > 0 && MetaRefresh) {
+		    setAlarmEvent(refresh_interval, AL_IMPLICIT,
+				  FUNCNAME_goURL, s_tmp->ptr);
 		}
 #endif
 	    }
 #ifdef USE_ALARM
-	    else if (!is_redisplay && refresh > 0 && MetaRefresh) {
-		tmp = Sprintf("Refresh (%d sec)", refresh);
+	    else if (!is_redisplay && refresh_interval > 0 && MetaRefresh) {
+		tmp = Sprintf("Refresh (%d sec)", refresh_interval);
 		push_str(obuf, 0, tmp, PC_ASCII);
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);
-		setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_reload, NULL);
+		setAlarmEvent(refresh_interval, AL_IMPLICIT, FUNCNAME_reload,
+			      NULL);
 	    }
 #endif
 	}

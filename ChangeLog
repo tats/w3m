@@ -1,5 +1,31 @@
 2001-11-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02586]
+	* configure: typo s/_zdmachdep.c/zmachdep.c/
+
+	* fix shadow variable
+	* main.c (HTMLtagproc1): s/refresh/refresh_interval/
+	* matrix.c (LUfactor): s/index/indexarray/
+	* matrix.c (LUsolve): ditto
+	* matrix.c (m_inverse): ditto
+	* matrix.c (LUinverse): ditto
+	* table.c (bsearch_2short): ditto
+	* table.c (bsearch_double): ditto
+	* table.c (dv2sv): ditto
+	* table.c (check_cell_width): ditto
+	* table.c (set_integered_width): ditto
+	* table.c (set_table_width): ditto
+	* table.c (check_table_height): ditto
+	* ftp.c: s/ftp/current_ftp/
+	* ftp.c (Ftpfclose): ditto
+	* ftp.c (openFTP): ditto
+	* ftp.c (closeFTP): ditto
+	* ftp.c (FtpLogin): save to current_ftp
+	* ftp.c (openFTP): s/realpath/realpathname/
+	* ftp.c (openFTP): remove i
+	
+	* ftp.c (ftp_pasv): s/sin/sockaddr/
+	
 	* [w3m-dev 02584] code cleanup
 
 	* linein.c (_esc): fix #ifdef EMACS_LIKE_LINEEDIT

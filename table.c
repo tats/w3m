@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.9 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: table.c,v 1.10 2001/11/29 10:22:58 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -155,7 +155,7 @@ weight3(int x)
 
 static int
 bsearch_2short(short e1, short *ent1, short e2, short *ent2, int base,
-	       char *index, int nent)
+	       char *indexarray, int nent)
 {
     int n = nent;
     int k = 0;
@@ -163,7 +163,7 @@ bsearch_2short(short e1, short *ent1, short e2, short *ent2, int base,
     int e = e1 * base + e2;
     while (n > 0) {
 	int nn = n / 2;
-	int idx = index[k + nn];
+	int idx = indexarray[k + nn];
 	int ne = ent1[idx] * base + ent2[idx];
 	if (ne == e) {
 	    k += nn;
@@ -181,14 +181,14 @@ bsearch_2short(short e1, short *ent1, short e2, short *ent2, int base,
 }
 
 static int
-bsearch_double(double e, double *ent, char *index, int nent)
+bsearch_double(double e, double *ent, char *indexarray, int nent)
 {
     int n = nent;
     int k = 0;
 
     while (n > 0) {
 	int nn = n / 2;
-	int idx = index[k + nn];
+	int idx = indexarray[k + nn];
 	double ne = ent[idx];
 	if (ne == e) {
 	    k += nn;
@@ -234,11 +234,11 @@ static void
 dv2sv(double *dv, short *iv, int size)
 {
     int i, k, iw;
-    char *index;
+    char *indexarray;
     double *edv;
     double w = 0., x;
 
-    index = NewAtom_N(char, size);
+    indexarray = NewAtom_N(char, size);
     edv = NewAtom_N(double, size);
     for (i = 0; i < size; i++) {
 	iv[i] = ceil(dv[i]);
@@ -249,17 +249,17 @@ dv2sv(double *dv, short *iv, int size)
     for (k = 0; k < size; k++) {
 	x = edv[k];
 	w += x;
-	i = bsearch_double(x, edv, index, k);
+	i = bsearch_double(x, edv, indexarray, k);
 	if (k > i)
-	    bcopy(index + i, index + i + 1, k - i);
-	index[i] = k;
+	    bcopy(indexarray + i, indexarray + i + 1, k - i);
+	indexarray[i] = k;
     }
     iw = min((int)(w + 0.5), size);
     if (iw == 0)
 	return;
-    x = edv[(int)index[iw - 1]];
+    x = edv[(int)indexarray[iw - 1]];
     for (i = 0; i < size; i++) {
-	k = index[i];
+	k = indexarray[i];
 	if (i >= iw && abs(edv[k] - x) > 1e-6)
 	    break;
 	iv[k]--;
@@ -856,13 +856,13 @@ table_rule_width(struct table *t)
 static void
 check_cell_width(short *tabwidth, short *cellwidth,
 		 short *col, short *colspan, short maxcell,
-		 char *index, int space, int dir)
+		 char *indexarray, int space, int dir)
 {
     int i, j, k, bcol, ecol;
     int swidth, width;
 
     for (k = 0; k <= maxcell; k++) {
-	j = index[k];
+	j = indexarray[k];
 	if (cellwidth[j] <= 0)
 	    continue;
 	bcol = col[j];
@@ -936,13 +936,13 @@ static void
 set_integered_width(struct table *t, double *dwidth, short *iwidth)
 {
     int i, j, k, n, bcol, ecol, step;
-    char *index, *fixed;
+    char *indexarray, *fixed;
     double *mod;
     double sum = 0., x = 0.;
     struct table_cell *cell = &t->cell;
     int rulewidth = table_rule_width(t);
 
-    index = NewAtom_N(char, t->maxcol + 1);
+    indexarray = NewAtom_N(char, t->maxcol + 1);
     mod = NewAtom_N(double, t->maxcol + 1);
     for (i = 0; i <= t->maxcol; i++) {
 	iwidth[i] = ceil_at_intervals(ceil(dwidth[i]), rulewidth);
@@ -953,10 +953,10 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
     for (k = 0; k <= t->maxcol; k++) {
 	x = mod[k];
 	sum += x;
-	i = bsearch_double(x, mod, index, k);
+	i = bsearch_double(x, mod, indexarray, k);
 	if (k > i)
-	    bcopy(index + i, index + i + 1, k - i);
-	index[i] = k;
+	    bcopy(indexarray + i, indexarray + i + 1, k - i);
+	indexarray[i] = k;
     }
 
     fixed = NewAtom_N(char, t->maxcol + 1);
@@ -969,14 +969,14 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 	    if (sum < 0.5)
 		return;
 	    for (n = 0; i + n <= t->maxcol; n++) {
-		int ii = index[i + n];
+		int ii = indexarray[i + n];
 		if (n == 0)
 		    x = mod[ii];
 		else if (fabs(mod[ii] - x) > 1e-6)
 		    break;
 	    }
 	    for (k = 0; k < n; k++) {
-		int ii = index[i + k];
+		int ii = indexarray[i + k];
 		if (fixed[ii] < 2 &&
 		    iwidth[ii] - rulewidth < t->minimum_width[ii])
 		    fixed[ii] = 2;
@@ -993,7 +993,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		ecol = bcol + cell->colspan[j];
 		m = 0;
 		for (kk = 0; kk < n; kk++) {
-		    int ii = index[i + kk];
+		    int ii = indexarray[i + kk];
 		    if (ii >= bcol && ii < ecol) {
 			idx[m] = ii;
 			m++;
@@ -1031,7 +1031,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 	    }
 	    nn = 0;
 	    for (k = 0; k < n; k++) {
-		int ii = index[i + k];
+		int ii = indexarray[i + k];
 		if (fixed[ii] <= step)
 		    nn++;
 	    }
@@ -1039,7 +1039,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 	    if (nsum < 0. && fabs(sum) <= fabs(nsum))
 		return;
 	    for (k = 0; k < n; k++) {
-		int ii = index[i + k];
+		int ii = indexarray[i + k];
 		if (fixed[ii] <= step) {
 		    iwidth[ii] -= rulewidth;
 		    fixed[ii] = 3;
@@ -1382,7 +1382,7 @@ set_table_width(struct table *t, short *newwidth, int maxwidth)
     }
 
     for (k = 0; k <= cell->maxcell; k++) {
-	j = cell->index[k];
+	j = cell->indexarray[k];
 	bcol = cell->col[j];
 	ecol = bcol + cell->colspan[j];
 
@@ -1479,7 +1479,7 @@ check_table_height(struct table *t)
     struct {
 	short row[MAXCELL];
 	short rowspan[MAXCELL];
-	char index[MAXCELL];
+	char indexarray[MAXCELL];
 	short maxcell;
 	short height[MAXCELL];
     } cell;
@@ -1504,9 +1504,10 @@ check_table_height(struct table *t)
 	    if (rowspan > 1) {
 		int c = cell.maxcell + 1;
 		k = bsearch_2short(rowspan, cell.rowspan,
-				   j, cell.row, t->maxrow + 1, cell.index, c);
+				   j, cell.row, t->maxrow + 1, cell.indexarray,
+				   c);
 		if (k <= cell.maxcell) {
-		    int idx = cell.index[k];
+		    int idx = cell.indexarray[k];
 		    if (cell.row[idx] == j && cell.rowspan[idx] == rowspan)
 			c = idx;
 		}
@@ -1517,9 +1518,9 @@ check_table_height(struct table *t)
 			cell.rowspan[cell.maxcell] = rowspan;
 			cell.height[cell.maxcell] = 0;
 			if (cell.maxcell > k)
-			    bcopy(cell.index + k, cell.index + k + 1,
+			    bcopy(cell.indexarray + k, cell.indexarray + k + 1,
 				  cell.maxcell - k);
-			cell.index[k] = cell.maxcell;
+			cell.indexarray[k] = cell.maxcell;
 		    }
 
 		    if (cell.height[c] < t_dep)
@@ -1542,7 +1543,7 @@ check_table_height(struct table *t)
 	space = 0;
     }
     check_cell_width(t->tabheight, cell.height, cell.row, cell.rowspan,
-		     cell.maxcell, cell.index, space, 1);
+		     cell.maxcell, cell.indexarray, space, 1);
 }
 
 #define CHECK_MINIMUM	1

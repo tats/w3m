@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.21 2002/12/09 15:51:10 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.22 2002/12/11 02:57:30 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -135,7 +135,8 @@ for $otherlang (@docdirs) {
 		shiftl shiftr col1L col1R linbeg linend ctrCsrH ctrCsrV
 		goLine goLineF goLineL movRW movLW
 		topA lastA nextA prevA movlistMn
-		nextR nextL nextD nextU nextRD nextLU"));
+		nextR nextL nextD nextU nextRD nextLU
+		undoPos redoPos"));
 
 &show_keymap("Hyperlink operation",
 	     split(" ", "followA tabA svA followI svI submitForm

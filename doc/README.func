@@ -97,6 +97,7 @@ PREV_WORD	Move to previous word
 PRINT		Save buffer to file
 QUIT		Quit w3m
 READ_SHELL	Execute shell command and load
+REDO		Cancel the last undo
 REDRAW		Redraw screen
 REG_MARK	Set mark using regexp
 REINIT		Reload configuration files
@@ -129,6 +130,7 @@ TAB_LINK	Open current link on new tab
 TAB_MENU	Popup tab selection menu
 TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
 TAB_RIGHT	Move current tab right
+UNDO		Cancel the last cursor movement
 UP		Scroll up one line
 VERSION                Display version of w3m
 VIEW		View HTML source

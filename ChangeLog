@@ -1,3 +1,12 @@
+2002-12-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03554] Re: Undo/Redo
+	* doc/README.func (REDO): added
+			(UNDO): added
+	* doc-jp/README.func (REDO): added
+			(UNDO): added
+	* scripts/w3mhelp.cgi.in: (Page/Cursor motion): add undoPos, redoPos
+
 2002-12-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: func: REDO, UNDO
@@ -5706,4 +5715,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.610 2002/12/10 15:53:55 ukai Exp $
+$Id: ChangeLog,v 1.611 2002/12/11 02:57:30 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.17 2002/01/21 17:57:28 ukai Exp $ */
+/* $Id: search.c,v 1.18 2002/01/31 03:55:35 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -15,13 +15,13 @@ set_mark(Line *l, int pos, int epos)
 #ifdef USE_MIGEMO
 /* Migemo: romaji --> kana+kanji in regexp */
 static FILE *migemor, *migemow;
-static int migemo_active;
+static int migemo_running;
 static int migemo_pid;
 
 void
 init_migemo()
 {
-    migemo_active = use_migemo;
+    migemo_active = migemo_running = use_migemo;
     if (migemor != NULL)
 	fclose(migemor);
     if (migemow != NULL)
@@ -75,7 +75,7 @@ open_migemo(char *migemo_command)
     close(fdr[0]);
     close(fdr[1]);
   err0:
-    migemo_active = 0;
+    migemo_active = migemo_running = 0;
     return 0;
 }
 
@@ -104,7 +104,7 @@ migemostr(char *str)
   err:
     /* XXX: backend migemo is not working? */
     init_migemo();
-    migemo_active = 0;
+    migemo_active = migemo_running = 0;
     return str;
 }
 #endif				/* USE_MIGEMO */
@@ -118,7 +118,7 @@ forwardSearch(Buffer *buf, char *str)
     int pos;
 
 #ifdef USE_MIGEMO
-    if (migemo_active) {
+    if (migemo_active > 0) {
 	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
 	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
 	    message(p, 0, 0);
@@ -196,7 +196,7 @@ backwardSearch(Buffer *buf, char *str)
     int pos;
 
 #ifdef USE_MIGEMO
-    if (migemo_active) {
+    if (migemo_active > 0) {
 	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
 	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
 	    message(p, 0, 0);

@@ -1,3 +1,20 @@
+2002-01-31  Fumitoshi UKAI <ukai@debian.or.jp>
+
+	* [w3m-dev 02946] toggle migemo
+	* fm.h (migemo_active): added
+	* proto.h (inputLineHistSearch): add arg `prop' to incrfunc()
+	* linein.c (inputLineHistSearch): ditto
+	* main.c (isrch): ditto
+	* main.c (dispincsrch): ditto
+			C-\ toggle migemo
+			underline when migemo is active
+	* search.c (migemo_active): deleted
+	* search.c (migemo_running): added
+	* search.c (init_migemo): migemo_running
+	* search.c (migemostr): ditto
+	* search.c (forwardSearch): migemo_active > 0
+	* search.c (backwardSearch): ditto
+
 2002-01-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02942] Digest qop=auth support
@@ -2440,4 +2457,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.279 2002/01/30 17:48:49 ukai Exp $
+$Id: ChangeLog,v 1.280 2002/01/31 03:55:35 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.74 2002/01/30 15:08:48 ukai Exp $ */
+/* $Id: main.c,v 1.75 2002/01/31 03:55:35 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1401,7 +1401,7 @@ disp_srchresult(int result, char *prompt, char *str)
 }
 
 static int
-dispincsrch(int ch, Str buf)
+dispincsrch(int ch, Str buf, Lineprop *prop)
 {
     static Buffer sbuf;
     static Line *currentLine;
@@ -1426,6 +1426,11 @@ dispincsrch(int ch, Str buf)
 	searchRoutine = forwardSearch;
 	do_next_search = TRUE;
 	break;
+
+    case 034:
+	migemo_active = -migemo_active;
+	goto done;
+
     default:
 	if (ch >= 0)
 	    return ch;		/* use InputKeymap */
@@ -1459,6 +1464,16 @@ dispincsrch(int ch, Str buf)
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
     clear_mark(Currentbuf->currentLine);
+  done:
+    {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+	    if (migemo_active > 0)
+		prop[i] |= PE_UNDER;
+	    else
+		prop[i] &= ~PE_UNDER;
+	}
+    }
     return -1;
 }
 
@@ -1468,7 +1483,7 @@ isrch(int (*func) (Buffer *, char *), char *prompt)
     char *str;
     Buffer sbuf;
     SAVE_BUFPOSITION(&sbuf);
-    dispincsrch(0, NULL);	/* initialize incremental search state */
+    dispincsrch(0, NULL, NULL);	/* initialize incremental search state */
 
     searchRoutine = func;
     str = inputLineHistSearch(prompt, NULL, IN_STRING, TextHist, dispincsrch);

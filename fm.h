@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.44 2002/01/24 17:29:45 ukai Exp $ */
+/* $Id: fm.h,v 1.45 2002/01/31 03:55:35 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -782,6 +782,7 @@ global int DefaultURLString init(DEFAULT_URL_EMPTY);
 
 #ifdef USE_MIGEMO
 global int use_migemo init(FALSE);
+global int migemo_active init(0);
 global char *migemo_command init(DEF_MIGEMO_COMMAND);
 #endif				/* USE_MIGEMO */
 

@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: istream.c,v 1.5 2001/11/20 08:15:22 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -229,7 +229,7 @@ StrISgets(InputStream stream)
 	    do_update(base);
 	}
 	else {
-	    if (p = memchr(&sb->buf[sb->cur], '\n', sb->next - sb->cur)) {
+	    if ((p = memchr(&sb->buf[sb->cur], '\n', sb->next - sb->cur))) {
 		len = p - &sb->buf[sb->cur] + 1;
 		if (s == NULL)
 		    s = Strnew_size(len);

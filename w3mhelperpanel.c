@@ -33,7 +33,7 @@ char *local_cookie;
 void
 extractMailcapEntry(char *mcap_entry, char **type, char **cmd)
 {
-    int j, k;
+    int j;
 
     while (*mcap_entry && IS_SPACE(*mcap_entry))
 	mcap_entry++;

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.156 2002/12/09 15:33:34 ukai Exp $ */
+/* $Id: file.c,v 1.157 2002/12/09 15:40:35 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2992,13 +2992,13 @@ process_img(struct parsed_tag *tag, int width)
     if (use_image) {
 	switch (align) {
 	case ALIGN_LEFT:
-	    Strcat_charp(tmp, "<div align=left>");
+	    Strcat_charp(tmp, "<div_int align=left>");
 	    break;
 	case ALIGN_CENTER:
-	    Strcat_charp(tmp, "<div align=center>");
+	    Strcat_charp(tmp, "<div_int align=center>");
 	    break;
 	case ALIGN_RIGHT:
-	    Strcat_charp(tmp, "<div align=right>");
+	    Strcat_charp(tmp, "<div_int align=right>");
 	    break;
 	}
     }
@@ -3225,7 +3225,7 @@ process_img(struct parsed_tag *tag, int width)
 	case ALIGN_RIGHT:
 	case ALIGN_CENTER:
 	case ALIGN_LEFT:
-	    Strcat_charp(tmp, "</div>");
+	    Strcat_charp(tmp, "</div_int>");
 	    break;
 	}
     }
@@ -3708,13 +3708,13 @@ process_hr(struct parsed_tag *tag, int width, int indent_width)
     parsedtag_get_value(tag, ATTR_ALIGN, &x);
     switch (x) {
     case ALIGN_CENTER:
-	Strcat_charp(tmp, "<div align=center>");
+	Strcat_charp(tmp, "<div_int align=center>");
 	break;
     case ALIGN_RIGHT:
-	Strcat_charp(tmp, "<div align=right>");
+	Strcat_charp(tmp, "<div_int align=right>");
 	break;
     case ALIGN_LEFT:
-	Strcat_charp(tmp, "<div align=left>");
+	Strcat_charp(tmp, "<div_int align=left>");
 	break;
     }
 #ifndef KANJI_SYMBOLS
@@ -3729,7 +3729,7 @@ process_hr(struct parsed_tag *tag, int width, int indent_width)
 #ifndef KANJI_SYMBOLS
     Strcat_charp(tmp, "</_RULE>");
 #endif				/* not KANJI_SYMBOLS */
-    Strcat_charp(tmp, "</div></nobr>");
+    Strcat_charp(tmp, "</div_int></nobr>");
     return tmp;
 }
 
@@ -3924,9 +3924,12 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
 #define CLOSE_P if (obuf->flag & RB_P) { \
       flushline(h_env, obuf, envs[h_env->envc].indent,0,h_env->limit);\
       RB_RESTORE_FLAG(obuf);\
-      close_anchor(h_env, obuf);\
       obuf->flag &= ~RB_P;\
     }
+
+#define CLOSE_A \
+    CLOSE_P; \
+    close_anchor(h_env, obuf);
 
 #define CLOSE_DT \
     if (obuf->flag & RB_IN_DT) { \
@@ -4067,7 +4070,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_P:
     case HTML_N_P:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 1, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
@@ -4105,7 +4108,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_UL:
     case HTML_OL:
     case HTML_BLQ:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    if (!(obuf->flag & RB_PREMODE) &&
@@ -4134,7 +4137,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_DL:
     case HTML_N_BLQ:
 	CLOSE_DT;
-	CLOSE_P;
+	CLOSE_A;
 	if (h_env->envc > 0) {
 	    flushline(h_env, obuf, envs[h_env->envc - 1].indent, 0,
 		      h_env->limit);
@@ -4150,7 +4153,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	close_anchor(h_env, obuf);
 	return 1;
     case HTML_DL:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    if (!(obuf->flag & RB_PREMODE))
@@ -4163,7 +4166,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	obuf->flag |= RB_IGNORE_P;
 	return 1;
     case HTML_LI:
-	CLOSE_P;
+	CLOSE_A;
 	CLOSE_DT;
 	if (h_env->envc > 0) {
 	    Str num;
@@ -4242,7 +4245,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	obuf->flag |= RB_IGNORE_P;
 	return 1;
     case HTML_DT:
-	CLOSE_P;
+	CLOSE_A;
 	if (h_env->envc == 0 ||
 	    (h_env->envc_real < h_env->nenv &&
 	     envs[h_env->envc].env != HTML_DL &&
@@ -4260,7 +4263,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	obuf->flag |= RB_IGNORE_P;
 	return 1;
     case HTML_DD:
-	CLOSE_P;
+	CLOSE_A;
 	CLOSE_DT;
 	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
 	    if (obuf->pos > envs[h_env->envc].indent)
@@ -4309,13 +4312,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 0;
     case HTML_NOFRAMES:
-	CLOSE_P;
+	CLOSE_A;
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	obuf->flag |= (RB_NOFRAMES | RB_IGNORE_P);
 	/* istr = str; */
 	return 1;
     case HTML_N_NOFRAMES:
-	CLOSE_P;
+	CLOSE_A;
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	obuf->flag &= ~RB_NOFRAMES;
 	return 1;
@@ -4342,8 +4345,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_PRE:
 	x = parsedtag_exists(tag, ATTR_FOR_TABLE);
-	if (!x)
-	    CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    if (!x)
@@ -4353,7 +4355,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 	    fillline(obuf, envs[h_env->envc].indent);
 	obuf->flag |= (RB_PRE | RB_IGNORE_P);
-	close_anchor(h_env, obuf);
 	/* istr = str; */
 	return 1;
     case HTML_N_PRE:
@@ -4393,17 +4394,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->flag &= ~RB_NOBR;
 	return 0;
     case HTML_PRE_PLAIN:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	}
 	obuf->flag |= (RB_PRE | RB_IGNORE_P);
-	close_anchor(h_env, obuf);
 	return 1;
     case HTML_N_PRE_PLAIN:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
@@ -4415,7 +4415,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_LISTING:
     case HTML_XMP:
     case HTML_PLAINTEXT:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
@@ -4433,11 +4433,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->end_tag = MAX_HTMLTAG;
 	    break;
 	}
-	close_anchor(h_env, obuf);
 	return 1;
     case HTML_N_LISTING:
     case HTML_N_XMP:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
@@ -4588,31 +4587,42 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	/* should be processed in HTMLlineproc() */
 	return 1;
     case HTML_CENTER:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & (RB_PREMODE | RB_IGNORE_P)))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	RB_SAVE_FLAG(obuf);
 	RB_SET_ALIGN(obuf, RB_CENTER);
 	return 1;
     case HTML_N_CENTER:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_PREMODE))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	RB_RESTORE_FLAG(obuf);
 	return 1;
     case HTML_DIV:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	set_alignment(obuf, tag);
 	return 1;
     case HTML_N_DIV:
+	CLOSE_A;
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	RB_RESTORE_FLAG(obuf);
+	return 1;
+    case HTML_DIV_INT:
+	CLOSE_P;
+	if (!(obuf->flag & RB_IGNORE_P))
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	set_alignment(obuf, tag);
+	return 1;
+    case HTML_N_DIV_INT:
 	CLOSE_P;
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	RB_RESTORE_FLAG(obuf);
 	return 1;
     case HTML_FORM:
-	CLOSE_P;
+	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	tmp = process_form(tag);
@@ -4620,7 +4630,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_N_FORM:
-	CLOSE_P;
+	CLOSE_A;
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	obuf->flag |= RB_IGNORE_P;
 	process_n_form();

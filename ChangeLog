@@ -1,5 +1,26 @@
 2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03548] close anchor before <img align=...>
+	* file.c (process_img): use div_int
+		(process_hr): use div_int
+		(process_idattr): don't close_anchor
+		(CLOSE_A): added
+		(HTMLtagproc1): </p> close anchor
+		  <dl>,<ul>,<ol>,<blockquote>,<li>,<dt>,<dd> close anchor
+		  <noframes> close anchor
+		  <pre> close anchor
+		  <center> close anchor
+		  <div> close anchor
+		  add DIV_INT
+		  <form> close anchor
+	* html.c (TagMAP): add div_int
+	* html.h (HTML_DIV_INT): added
+		(HTML_N_DIV_INT): added
+	* tagtable.tab (div_int): added
+			(/div_int): added
+
+2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03544] Can't display "1&2" in table
 	* file.c (HTMLlineproc0): continue -> R_ST_NORMAL
 
@@ -5611,4 +5632,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.604 2002/12/09 15:33:33 ukai Exp $
+$Id: ChangeLog,v 1.605 2002/12/09 15:40:34 ukai Exp $

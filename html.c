@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.21 2002/12/08 14:23:44 ukai Exp $ */
+/* $Id: html.c,v 1.22 2002/12/09 15:40:36 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -254,6 +254,8 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/pre_plain", NULL, 0, TFLG_INT | TFLG_END},	/* 128 HTML_N_PRE_PLAIN         */
     {"internal", NULL, 0, TFLG_INT},	/* 129 HTML_INTERNAL   */
     {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 130 HTML_N_INTERNAL   */
+    {"div_int", ALST_P, MAXA_P, TFLG_INT},	/*  131 HTML_DIV_INT    */
+    {"/div_int", NULL, 0, TFLG_INT | TFLG_END},	/*  132 HTML_N_DIV_INT  */
 };
 
 TagAttrInfo AttrMAP[MAX_TAGATTR] = {

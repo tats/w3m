@@ -168,3 +168,5 @@ textarea_int	HTML_TEXTAREA_INT
 /textarea_int	HTML_N_TEXTAREA_INT
 pre_plain	HTML_PRE_PLAIN
 /pre_plain	HTML_N_PRE_PLAIN
+div_int		HTML_DIV_INT
+/div_int	HTML_N_DIV_INT

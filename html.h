@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.14 2002/12/06 16:50:28 ukai Exp $ */
+/* $Id: html.h,v 1.15 2002/12/09 15:40:37 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -218,8 +218,10 @@ typedef struct {
 #define HTML_N_PRE_PLAIN    128
 #define HTML_INTERNAL       129
 #define HTML_N_INTERNAL     130
+#define HTML_DIV_INT        131
+#define HTML_N_DIV_INT      132
 
-#define MAX_HTMLTAG	    131
+#define MAX_HTMLTAG	    133
 
 /* Tag attribute */
 

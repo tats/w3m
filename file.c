@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.91 2002/05/14 15:31:49 ukai Exp $ */
+/* $Id: file.c,v 1.92 2002/06/09 16:11:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7112,18 +7112,22 @@ doFileCopy(char *tmpf, char *defstr)
 {
     Str msg;
     Str filen;
-    char *p, *q;
+    char *p, *q = NULL;
 
     if (fmInitialized) {
 	p = searchKeyData();
 	if (p == NULL || *p == '\0') {
-	    p = inputLineHist("(Download)Save file to: ",
+	    q = inputLineHist("(Download)Save file to: ",
 			      defstr, IN_COMMAND, SaveHist);
-	    if (p == NULL || *p == '\0')
+	    if (q == NULL || *q == '\0')
 		return;
-	    p = conv_to_system(p);
+	    p = conv_to_system(q);
 	}
 	if (*p != '|' || !PermitSaveToPipe) {
+	    if (q) {
+		p = unescape_spaces(Strnew_charp(q))->ptr;
+		p = conv_to_system(q);
+	    }
 	    p = expandName(p);
 	    if (checkOverWrite(p) < 0)
 		return;

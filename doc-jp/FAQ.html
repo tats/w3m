@@ -26,15 +26,15 @@ aito@fw.ipsj.or.jp
 <pre>
 SunOS 4.1.x
 HP-UX 9.x, 10.x
-Solaris 2.5.x, 2.6, 8
-Linux 2.0.30
+Solaris 2.5.x, 2.6, 8, 9
+Linux 2.0.*/2.2.*/2.4.*
 FreeBSD 2.2.8, 3.1, 3.2, 4.6
 NetBSD/macppc, m68k
 EWS4800 Rel.12.2 Rev.A
 Digital UNIX: v3.2D, v4.0D
 IRIX 5.3, IRIX 6.5
 OS/2 with emx
-Windows 9x/NT with Cygwin32 b20.1
+Windows 9x/NT with Cygwin b20.1, 1.1.x, 1.3.x
 MS-DOS with DJGPP and WATT32 packet driver
 MacOS X Server
 MacOS X 10.1, 10.2
@@ -46,7 +46,7 @@ version 990226 から，OS/2 で動くようです．
 version 990303 から，Windows+cygwin32 で動くようになりました．
 <P>
 <dt>Windows 9x/NT では動かないの？
-<dd><a href="http://sourceware.cygnus.com/cygwin/">Cygwin32</a>を使えば動きます．
+<dd><a href="http://www.cygwin.com/">Cygwin</a>を使えば動きます．
 <p>
 <dt>w3mに関する情報はどこから手に入るの？
 <dd><a href="http://w3m.sourceforge.net/index.ja.html">
@@ -104,22 +104,10 @@ w3mを起動すると，字が見えなくなります．<p>
 <LI><B>カラー表示モードをONにし</B>，適当な文字色を選んで，
 [OK]を選択する．
 </UL>
+<p>
 <dt>カラー表示をさせるにはどうするの？
-<dd>コンパイル時に，configure の質問
-<p>
-<pre>
-Let's do some configurations. Choose config option among the list."
-
-1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
-2 - Little model  (color, menu, no mouse, no cookie, no SSL)
-3 - Mouse model   (color, menu, mouse, no cookie, no SSL)
-4 - Cookie model  (color, menu, mouse, cookie, no SSL)
-5 - Monster model (with everything; you need openSSL library)
-6 - Customize
-Which? 
-</pre>
-<p>
-で、2,3,4,5のどれかを答えればカラー表示ができるようになります。
+<dd>コンパイル時に，configure のオプションに --disable-color を指定しな
+ければカラー表示ができるようになります。
 <p>
 <dt>白黒で表示したいんだけど？
 <dd>方法は3つあります．
@@ -128,6 +116,7 @@ Which?
 <LI>-M オプションをつけて起動する．
 <LI>"o" コマンドでオプション設定パネルを起動し，カラー表示をOFFにする．
 </OL>
+<p>
 <dt>画面をはみ出した部分を見るには？
 <dd>カーソルを画面の端に移動させれば，それに合わせて画面全体がずれます．
 また，"&gt;"と"&lt;"で画面全体をずらすことができます．

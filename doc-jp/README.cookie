@@ -8,11 +8,12 @@
     http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt)
     のクッキーをサポートしています.
    
- ・ configure スクリプト実行時, "4 - Cookie model", "5 - Monster model", "6 -
-    Customize" のいずれかを選ぶと利用可能になります.
+ ・ クッキーのサポートは configure スクリプトの実行時に自動的に選択されます。
     もしうまく動かないときは, config.h をチェックしてみてください. クッキーを利
     用するためには, config.h で USE_COOKIE マクロが定義されている必要がありま
     す.
+    なお、もしクッキーをサポートしたくない場合は --disable-cookie オプションを
+    付けて configure スクリプトを実行して下さい。
    
  ・ Option Setting Panel (通常 `o' キーにバインドされている), または起動オプシ
     ョン (-cookie, -no-cookie) で使用するか否かを選択できます.

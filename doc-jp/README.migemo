@@ -7,8 +7,8 @@ w3m で Migemo (ローマ字検索)を行う
     あらかじめ Migemo がインストールされている必要があります.
     http://migemo.namazu.org/
 
- ・ configure スクリプト実行時, "Use Migemo" に y と応えることで利用可能になり
-    ます.
+ ・ configure スクリプト実行時に --with-migemo オプションを付けることで利用可
+    能となります.
 
  ・ オプションパネルにて以下の設定をします. 辞書のパスは適切に書き換えて下さい.
 

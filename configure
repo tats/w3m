@@ -2232,7 +2232,7 @@ echo "configure:2225: checking for SSL library/header" >&5
            SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
         fi
      elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
-        SSL_CFLAGS="$SSLCFLAGS -I$dir/include"
+        SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
      fi
      if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
 	SSL_LIBS="$SSL_LIBS -L$dir/lib"

@@ -22,9 +22,9 @@ Current problems are:
 
 w3m is known to work on these platforms.
 
-      SunOS4.1.x
+      SunOS 4.1.x
       HP-UX 9.x, 10.x
-      Solaris2.5.x
+      Solaris 2.5.x, 2.6, 8, 9
       Linux 2.0.*/2.2.*/2.4.*
       FreeBSD 2.2.8, 3.1, 3.2, 4.6
       NetBSD/macppc, m68k
@@ -32,7 +32,7 @@ w3m is known to work on these platforms.
       Digital UNIX: v3.2D, v4.0D
       IRIX 5.3, IRIX 6.5
       OS/2 with emx
-      Windows 9x/NT with Cygwin32 b20.1
+      Windows 9x/NT with Cygwin b20.1, 1.1.x, 1.3.x
       MS-DOS with DJGPP and WATT32 packet driver
       MacOS X Server
       MacOS X 10.1, 10.2
@@ -42,7 +42,7 @@ w3m is known to work on these platforms.
 Follow these instructions to install w3m.  
 
  - You need latest version of GC library (at least 6.1?).
-   You can get GC libbrary from 
+   You can get GC library from 
    http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
 
    Note: if you're using GC library 6.1, you should install gc.h 

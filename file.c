@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.114 2002/11/09 21:55:24 ukai Exp $ */
+/* $Id: file.c,v 1.115 2002/11/13 15:47:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1856,6 +1856,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     copyParsedURL(cur_baseURL, &pu);
 #endif
 
+    current_content_length = 0;
+    if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
+	current_content_length = strtoclen(p);
+
     if (do_download) {
 	/* download only */
 	char *file;
@@ -1953,10 +1957,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    return NO_BUFFER;
 	}
     }
-
-    current_content_length = 0;
-    if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
-	current_content_length = strtoclen(p);
 
     if (flag & RG_FRAME) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
@@ -7008,7 +7008,6 @@ save2tmp(URLFile uf, char *tmpf)
     if (fmInitialized)
 	term_cbreak();
     check = 0;
-    current_content_length = 0;
 #ifdef USE_NNTP
     if (uf.scheme == SCM_NEWS) {
 	char c;
@@ -7048,6 +7047,7 @@ save2tmp(URLFile uf, char *tmpf)
     fclose(ff);
     if (uf.scheme == SCM_FTP)
 	FTPhalfclose(uf.stream);
+    current_content_length = 0;
     return 0;
 }
 

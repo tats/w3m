@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.210 2003/02/05 16:45:08 ukai Exp $ */
+/* $Id: main.c,v 1.211 2003/02/18 15:43:25 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -317,7 +317,7 @@ sig_chld(int signo)
 #else
     wait(&p_stat);
 #endif
-    signal(SIGCHLD, sig_chld);
+    mySignal(SIGCHLD, sig_chld);
     return;
 }
 #endif
@@ -730,7 +730,7 @@ main(int argc, char **argv, char **envp)
     if (!w3m_dump && !w3m_backend) {
 	fmInit();
 #ifdef SIGWINCH
-	signal(SIGWINCH, resize_hook);
+	mySignal(SIGWINCH, resize_hook);
 #else				/* not SIGWINCH */
 	setlinescols();
 	setupscreen();
@@ -751,12 +751,12 @@ main(int argc, char **argv, char **envp)
 	backend();
 
     if (w3m_dump)
-	signal(SIGINT, SIG_IGN);
+	mySignal(SIGINT, SIG_IGN);
 #ifdef SIGCHLD
-    signal(SIGCHLD, sig_chld);
+    mySignal(SIGCHLD, sig_chld);
 #endif
 #ifdef SIGPIPE
-    signal(SIGPIPE, SigPipe);
+    mySignal(SIGPIPE, SigPipe);
 #endif
 
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);
@@ -1024,7 +1024,7 @@ main(int argc, char **argv, char **envp)
 #endif				/* USE_MOUSE */
 #ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
-	    signal(SIGALRM, SigAlarm);
+	    mySignal(SIGALRM, SigAlarm);
 	    alarm(CurrentAlarm->sec);
 	}
 #endif
@@ -1033,7 +1033,7 @@ main(int argc, char **argv, char **envp)
 	    need_resize_screen = FALSE;
 	    resize_screen();
 	}
-	signal(SIGWINCH, resize_handler);
+	mySignal(SIGWINCH, resize_handler);
 #endif
 #ifdef USE_IMAGE
 	if (activeImage && displayImage && Currentbuf->img &&
@@ -1045,7 +1045,7 @@ main(int argc, char **argv, char **envp)
 #endif
 	c = getch();
 #ifdef SIGWINCH
-	signal(SIGWINCH, resize_hook);
+	mySignal(SIGWINCH, resize_hook);
 #endif
 #ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
@@ -1163,9 +1163,9 @@ do_dump(Buffer *buf)
 {
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
-    prevtrap = signal(SIGINT, intTrap);
+    prevtrap = mySignal(SIGINT, intTrap);
     if (SETJMP(IntReturn) != 0) {
-	signal(SIGINT, prevtrap);
+	mySignal(SIGINT, prevtrap);
 	return;
     }
     if (w3m_dump & DUMP_EXTRA)
@@ -1176,7 +1176,7 @@ do_dump(Buffer *buf)
 	dump_source(buf);
     if (w3m_dump == DUMP_BUFFER)
 	saveBuffer(buf, stdout, FALSE);
-    signal(SIGINT, prevtrap);
+    mySignal(SIGINT, prevtrap);
 }
 
 void
@@ -1358,7 +1358,7 @@ static MySignalHandler
 resize_hook(SIGNAL_ARG)
 {
     need_resize_screen = TRUE;
-    signal(SIGWINCH, resize_hook);
+    mySignal(SIGWINCH, resize_hook);
     SIGNAL_RETURN;
 }
 
@@ -1366,7 +1366,7 @@ static MySignalHandler
 resize_handler(SIGNAL_ARG)
 {
     resize_screen();
-    signal(SIGWINCH, resize_handler);
+    mySignal(SIGWINCH, resize_handler);
     SIGNAL_RETURN;
 }
 
@@ -1387,7 +1387,7 @@ SigPipe(SIGNAL_ARG)
 #ifdef USE_MIGEMO
     init_migemo();
 #endif
-    signal(SIGPIPE, SigPipe);
+    mySignal(SIGPIPE, SigPipe);
     SIGNAL_RETURN;
 }
 #endif
@@ -1564,7 +1564,7 @@ srchcore(char *str, int (*func) (Buffer *, char *))
     if (SearchString == NULL || *SearchString == '\0')
 	return SR_NOTFOUND;
 
-    prevtrap = signal(SIGINT, intTrap);
+    prevtrap = mySignal(SIGINT, intTrap);
     crmode();
     if (SETJMP(IntReturn) == 0) {
 	for (i = 0; i < PREC_NUM; i++) {
@@ -1573,7 +1573,7 @@ srchcore(char *str, int (*func) (Buffer *, char *))
 		clear_mark(Currentbuf->currentLine);
 	}
     }
-    signal(SIGINT, prevtrap);
+    mySignal(SIGINT, prevtrap);
     term_raw();
     return result;
 }
@@ -1973,10 +1973,10 @@ readsh(void)
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
-    prevtrap = signal(SIGINT, intTrap);
+    prevtrap = mySignal(SIGINT, intTrap);
     crmode();
     buf = getshell(cmd);
-    signal(SIGINT, prevtrap);
+    mySignal(SIGINT, prevtrap);
     term_raw();
     if (buf == NULL) {
 	disp_message("Execution failed", TRUE);
@@ -5581,7 +5581,7 @@ SigAlarm(SIGNAL_ARG)
 	if (!Currentbuf->event)
 	    CurrentAlarm = &DefaultAlarm;
 	if (CurrentAlarm->sec > 0) {
-	    signal(SIGALRM, SigAlarm);
+	    mySignal(SIGALRM, SigAlarm);
 	    alarm(CurrentAlarm->sec);
 	}
     }

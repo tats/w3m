@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.45 2003/02/06 17:23:18 ukai Exp $ */
+/* $Id: terms.c,v 1.46 2003/02/18 15:43:26 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -603,7 +603,7 @@ reset_exit(SIGNAL_ARG)
 MySignalHandler
 error_dump(SIGNAL_ARG)
 {
-    signal(SIGIOT, SIG_DFL);
+    mySignal(SIGIOT, SIG_DFL);
     reset_tty();
     abort();
     SIGNAL_RETURN;
@@ -612,17 +612,17 @@ error_dump(SIGNAL_ARG)
 void
 set_int(void)
 {
-    signal(SIGHUP, reset_exit);
-    signal(SIGINT, reset_exit);
-    signal(SIGQUIT, reset_exit);
-    signal(SIGTERM, reset_exit);
-    signal(SIGILL, error_dump);
-    signal(SIGIOT, error_dump);
-    signal(SIGFPE, error_dump);
+    mySignal(SIGHUP, reset_exit);
+    mySignal(SIGINT, reset_exit);
+    mySignal(SIGQUIT, reset_exit);
+    mySignal(SIGTERM, reset_exit);
+    mySignal(SIGILL, error_dump);
+    mySignal(SIGIOT, error_dump);
+    mySignal(SIGFPE, error_dump);
 #ifdef	SIGBUS
-    signal(SIGBUS, error_dump);
+    mySignal(SIGBUS, error_dump);
 #endif				/* SIGBUS */
-    /* signal(SIGSEGV, error_dump); */
+    /* mySignal(SIGSEGV, error_dump); */
 }
 
 
@@ -2082,13 +2082,13 @@ mouse_init()
 	}
 #endif				/* defined(FBIO_MODEINFO) ||
 				 * defined(CONS_MODEINFO) */
-	signal(SIGUSR2, SIG_IGN);
+	mySignal(SIGUSR2, SIG_IGN);
 	mi.operation = MOUSE_MODE;
 	mi.u.mode.mode = 0;
 	mi.u.mode.signal = SIGUSR2;
 	sysm_handler = NULL;
 	if (ioctl(tty, CONS_MOUSECTL, &mi) != -1) {
-	    signal(SIGUSR2, sysmouse);
+	    mySignal(SIGUSR2, sysmouse);
 	    mi.operation = MOUSE_SHOW;
 	    ioctl(tty, CONS_MOUSECTL, &mi);
 	    sysm_handler = sysm_process_mouse;

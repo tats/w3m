@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.20 2003/01/20 15:25:30 ukai Exp $ */
+/* $Id: istream.c,v 1.21 2003/02/18 15:43:25 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -183,9 +183,9 @@ ISclose(InputStream stream)
     if (stream == NULL || stream->base.close == NULL ||
 	stream->base.type & IST_UNCLOSE)
 	return -1;
-    prevtrap = signal(SIGINT, SIG_IGN);
+    prevtrap = mySignal(SIGINT, SIG_IGN);
     stream->base.close(stream->base.handle);
-    signal(SIGINT, prevtrap);
+    mySignal(SIGINT, prevtrap);
     return 0;
 }
 

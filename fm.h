@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.112 2003/02/05 16:43:57 ukai Exp $ */
+/* $Id: fm.h,v 1.113 2003/02/18 15:43:24 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -781,7 +781,7 @@ global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);
 global char TrapSignal init(TRUE);
 #define TRAP_ON if (TrapSignal) { \
-    prevtrap = signal(SIGINT, KeyAbort); \
+    prevtrap = mySignal(SIGINT, KeyAbort); \
     if (fmInitialized) \
 	term_cbreak(); \
 }
@@ -789,7 +789,7 @@ global char TrapSignal init(TRUE);
     if (fmInitialized) \
 	term_raw(); \
     if (prevtrap) \
-	signal(SIGINT, prevtrap); \
+	mySignal(SIGINT, prevtrap); \
 }
 
 extern unsigned char GlobalKeymap[];

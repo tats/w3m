@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.64 2003/02/06 17:21:43 ukai Exp $ */
+/* $Id: etc.c,v 1.65 2003/02/18 15:43:23 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1335,21 +1335,21 @@ romanAlphabet(int n)
 static void
 reset_signals(void)
 {
-    signal(SIGHUP, SIG_DFL);	/* terminate process */
-    signal(SIGINT, SIG_DFL);	/* terminate process */
-    signal(SIGQUIT, SIG_DFL);	/* terminate process */
-    signal(SIGTERM, SIG_DFL);	/* terminate process */
-    signal(SIGILL, SIG_DFL);	/* create core image */
-    signal(SIGIOT, SIG_DFL);	/* create core image */
-    signal(SIGFPE, SIG_DFL);	/* create core image */
+    mySignal(SIGHUP, SIG_DFL);	/* terminate process */
+    mySignal(SIGINT, SIG_DFL);	/* terminate process */
+    mySignal(SIGQUIT, SIG_DFL);	/* terminate process */
+    mySignal(SIGTERM, SIG_DFL);	/* terminate process */
+    mySignal(SIGILL, SIG_DFL);	/* create core image */
+    mySignal(SIGIOT, SIG_DFL);	/* create core image */
+    mySignal(SIGFPE, SIG_DFL);	/* create core image */
 #ifdef SIGBUS
-    signal(SIGBUS, SIG_DFL);	/* create core image */
+    mySignal(SIGBUS, SIG_DFL);	/* create core image */
 #endif				/* SIGBUS */
 #ifdef SIGCHLD
-    signal(SIGCHLD, SIG_IGN);
+    mySignal(SIGCHLD, SIG_IGN);
 #endif
 #ifdef SIGPIPE
-    signal(SIGPIPE, SIG_IGN);
+    mySignal(SIGPIPE, SIG_IGN);
 #endif
 }
 
@@ -1379,7 +1379,7 @@ void
 setup_child(int child, int i, int f)
 {
     reset_signals();
-    signal(SIGINT, SIG_IGN);
+    mySignal(SIGINT, SIG_IGN);
     if (!child)
 	SETPGRP();
     close_tty();
@@ -1450,7 +1450,7 @@ open_pipe_rw(FILE ** fr, FILE ** fw)
 void
 myExec(char *command)
 {
-    signal(SIGINT, SIG_DFL);
+    mySignal(SIGINT, SIG_DFL);
     execl("/bin/sh", "sh", "-c", command, NULL);
     exit(127);
 }
@@ -1973,3 +1973,26 @@ FQDN(char *host)
 }
 
 #endif				/* USE_COOKIE */
+
+void (*mySignal(int signal_number, void (*action)(int)))(int)
+{
+#ifdef	SA_RESTART
+    struct sigaction new_action, old_action;
+
+    sigemptyset(&new_action.sa_mask);
+    new_action.sa_handler = action;
+    if (signal_number == SIGALRM) {
+#ifdef	SA_INTERRUPT
+	new_action.sa_flags = SA_INTERRUPT;
+#else
+	new_action.sa_flags = 0;
+#endif    
+    } else {
+        new_action.sa_flags = SA_RESTART;
+    }
+    sigaction(signal_number, &new_action, &old_action);
+    return(old_action.sa_handler);
+#else
+    return(signal(signal_number, action));
+#endif
+}

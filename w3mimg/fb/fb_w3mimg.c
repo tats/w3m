@@ -1,7 +1,8 @@
-/* $Id: fb_w3mimg.c,v 1.4 2002/09/09 14:00:49 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.5 2002/10/31 09:36:22 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "w3mimg/fb/fb.h"
 #include "w3mimg/fb/fb_img.h"

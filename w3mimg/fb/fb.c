@@ -1,10 +1,11 @@
-/* $Id: fb.c,v 1.8 2002/10/10 16:16:00 ukai Exp $ */
+/* $Id: fb.c,v 1.9 2002/10/31 09:36:22 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <limits.h>

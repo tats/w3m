@@ -1,7 +1,8 @@
-/* $Id: w3mimgdisplay.c,v 1.7 2002/09/29 15:14:32 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.8 2002/10/31 09:36:22 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "config.h"
 #include "w3mimg/w3mimg.h"
 

@@ -1,5 +1,12 @@
 2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* fix compilation warnings
+	* w3mimgdisplay.c: add #include <string.h> for strlen, strcmp
+	* w3mimg/fb/fb.c: add #include <string.h> for memset
+	* w3mimg/fb/fb_w3mimg.c: add #include <string.h> for memset
+
+2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* 0.3.2 release candidate 4
 	* version.c.in: update
 
@@ -4081,4 +4088,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.463 2002/10/30 17:26:53 ukai Exp $
+$Id: ChangeLog,v 1.464 2002/10/31 09:36:21 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.36 2002/11/15 15:37:33 ukai Exp $ */
+/* $Id: terms.c,v 1.37 2002/11/15 15:44:36 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -61,18 +61,17 @@ extern int CodePage;
 #include <sys/cygwin.h>
 static int isWinConsole = 0;
 static int isLocalConsole = 0;
+#ifdef USE_MOUSE
 int cygwin_mouse_btn_swapped = 0;
+#endif
 
 #if defined(SUPPORT_WIN9X_CONSOLE_MBCS)
 static HANDLE hConIn = INVALID_HANDLE_VALUE;
-static int isWin95;
+static int isWin95 = 0;
 static char *ConInV;
 static int iConIn, nConIn, nConInMax;
-#ifdef USE_MOUSE
-static MOUSE_EVENT_RECORD lastConMouse;
-#endif
 
-void
+static void
 check_win9x(void)
 {
     OSVERSIONINFO winVersionInfo;
@@ -155,7 +154,7 @@ read_win32_console_input(void)
     return 0;
 }
 
-int
+static int
 read_win32_console(char *s, int n)
 {
     KEY_EVENT_RECORD *ker;
@@ -187,7 +186,7 @@ read_win32_console(char *s, int n)
 
 #endif				/* SUPPORT_WIN9X_CONSOLE_MBCS */
 
-HWND
+static HWND
 GetConsoleHwnd(void)
 {
 #define MY_BUFSIZE 1024
@@ -205,7 +204,8 @@ GetConsoleHwnd(void)
     return (hwndFound);
 }
 
-unsigned long
+#ifdef USE_MOUSE
+static unsigned long
 cygwin_version(void)
 {
     struct per_process *p;
@@ -216,8 +216,9 @@ cygwin_version(void)
     }
     return 0;
 }
+#endif
 
-void
+static void
 check_cygwin_console(void)
 {
     char *term = getenv("TERM");
@@ -237,10 +238,12 @@ check_cygwin_console(void)
 	check_win9x();
 #endif
     }
+#ifdef USE_MOUSE
     if (cygwin_version() <= 1003015) {
 	/* cygwin DLL 1.3.15 or earler */
 	cygwin_mouse_btn_swapped = 1;
     }
+#endif
 }
 #endif				/* __CYGWIN__ */
 
@@ -414,12 +417,21 @@ writestr(char *s)
 
 #ifdef USE_MOUSE
 #define W3M_TERM_INFO(name, title, mouse)	name, title, mouse
+#define NEED_XTERM_ON   (1)
+#define NEED_XTERM_OFF  (1<<1)
+#ifdef __CYGWIN__
+#define NEED_CYGWIN_ON  (1<<2)
+#define NEED_CYGWIN_OFF (1<<3)
+#endif
 #else
 #define W3M_TERM_INFO(name, title, mouse)	name, title
 #endif
 
-#define XTERM_TITLE	"\033]0;w3m: %s\007"
-#define SCREEN_TITLE	"\033k%s\033\134"
+static char XTERM_TITLE[]  = "\033]0;w3m: %s\007";
+static char SCREEN_TITLE[] = "\033k%s\033\134";
+#ifdef __CYGWIN__
+static char CYGWIN_TITLE[] = "w3m: %s";
+#endif
 
 /* *INDENT-OFF* */
 static struct w3m_term_info {
@@ -436,7 +448,7 @@ static struct w3m_term_info {
     {W3M_TERM_INFO("mlterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {W3M_TERM_INFO("screen", SCREEN_TITLE, 0)},
 #ifdef __CYGWIN__
-    {W3M_TERM_INFO("cygwin", XTERM_TITLE, (NEED_CYGWIN_ON|NEED_CYGWIN_OFF))},
+    {W3M_TERM_INFO("cygwin", CYGWIN_TITLE, (NEED_CYGWIN_ON|NEED_CYGWIN_OFF))},
 #endif
     {W3M_TERM_INFO(NULL, NULL, 0)}
 };
@@ -1811,12 +1823,12 @@ term_title(char *s)
         return;
     if (title_str != NULL) {
 #ifdef __CYGWIN__
-	if (isLocalConsole) {
+	if (isLocalConsole && title_str == CYGWIN_TITLE) {
 	    char buff[1024];
-	    snprintf(buff, sizeof(buff), "w3m: %s", s);
+	    snprintf(buff, sizeof(buff), title_str, s);
 	    SetConsoleTitle(buff);
 	}
-	else if (!isWinConsole)
+	else if (isLocalConsole || !isWinConsole)
 #endif
         fprintf(ttyf, title_str, s);
     }

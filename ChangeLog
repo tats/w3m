@@ -1,3 +1,28 @@
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03434] Re: cygwin console on Win9X
+	* terms.c (cygwin_mouse_btn_swapped): ifdef USE_MOUSE
+		(lastConMouse): deleted
+		(check_win9x): static
+		(read_win32_console): static
+		(GetConsoleHwnd): static
+		(cygwin_version): ifdef USE_MOUSE, static
+		(check_cygwin_console): static
+		(NEED_XTERM_ON): added
+		(NEED_XTERM_OFF): added
+		(NEED_CYGWIN_ON): added
+		(NEED_CYGWIN_OFF): added
+		(XTERM_TITLE): static char[]
+		(SCREEN_TITLE): static char[]
+		(CYGWIN_TITLE): static char[]
+		(term_title): check title_str
+	* terms.h (LASTLINE): added
+		(is_xterm): deleted
+		(enable_win9x_console_input): extern
+		(disable_win9x_console_input): extern
+		(NEED_XTERM_ON): deleted
+		(NEED_XTERM_OFF): deleted
+
 2002-11-16  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
 
 	* [w3m-dev 03433] cygwin console on Win9X
@@ -4726,4 +4751,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.517 2002/11/15 15:36:48 ukai Exp $
+$Id: ChangeLog,v 1.518 2002/11/15 15:44:36 ukai Exp $

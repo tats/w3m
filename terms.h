@@ -1,8 +1,11 @@
-/* $Id: terms.h,v 1.7 2002/11/15 15:36:48 ukai Exp $ */
+/* $Id: terms.h,v 1.8 2002/11/15 15:44:36 ukai Exp $ */
 #ifndef TERMS_H
 #define TERMS_H
 
 extern int LINES, COLS;
+#if defined(__CYGWIN__) && LANG == JA
+extern int LASTLINE;
+#endif
 
 #define CODE_ASCII	'\0'
 #define CODE_EUC	'E'
@@ -37,19 +40,16 @@ extern int LINES, COLS;
 #define MOUSE_BTN5_DOWN_XTERM 65
 #define MOUSE_BTN_UP 3
 #define MOUSE_BTN_RESET -1
+#endif
 
 #ifdef __CYGWIN__
-extern int is_xterm;
+#ifdef USE_MOUSE
 extern int cygwin_mouse_btn_swapped;
+#endif
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS
-void enable_win9x_console_input(void);
-void disable_win9x_console_input(void);
+extern void enable_win9x_console_input(void);
+extern void disable_win9x_console_input(void);
 #endif
-#define NEED_CYGWIN_ON	(1<<2)
-#define NEED_CYGWIN_OFF	(1<<3)
-#endif
-#define NEED_XTERM_ON	(1)
-#define NEED_XTERM_OFF	(1<<1)
 #endif
 
 #endif				/* not TERMS_H */

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.29 2003/01/28 16:46:54 ukai Exp $ */
+/* $Id: image.c,v 1.28 2003/01/28 16:45:19 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -340,7 +340,7 @@ loadImage(int flag)
 	    i = 0;
 	else
 	    i = maxLoadImage;
-	for (; i < n_load_image; i++) {
+	for ( ; i < n_load_image; i++) {
 	    cache = image_cache[i];
 	    if (!cache)
 		continue;

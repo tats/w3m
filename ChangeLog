@@ -1,5 +1,12 @@
 2003-01-29  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
+	* [w3m-dev 03707] Don't stop loading image when moving to next page.
+	* display.c (save_current_buf): required when defined USE_IMAGE
+		(displayBuffer): stop only buffer changed
+	* image.c (loadImage): IMG_FLAG_START load from maxLoadImage
+
+2003-01-29  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+
 	* [w3m-dev 03706] X-Image-URL: support, bug fix of reshapeBuffer()
 	* buffer.c (reshapeBuffer): rewrite
 	* file.c (readHeader): rewrite
@@ -6892,4 +6899,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.721 2003/01/28 16:40:58 ukai Exp $
+$Id: ChangeLog,v 1.722 2003/01/28 16:45:15 ukai Exp $

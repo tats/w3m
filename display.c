@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.57 2003/01/24 17:34:36 ukai Exp $ */
+/* $Id: display.c,v 1.58 2003/01/28 16:45:18 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -210,7 +210,7 @@ static int graph_mode = 0;
 static Linecolor color_mode = 0;
 #endif
 
-#ifdef USE_BUFINFO
+#if defined(USE_BUFINFO) || defined(USE_IMAGE)
 static Buffer *save_current_buf = NULL;
 #endif
 
@@ -431,7 +431,10 @@ displayBuffer(Buffer *buf, int mode)
 		if (draw_image_flag)
 		    clear();
 		clearImage();
-		loadImage(IMG_FLAG_STOP);
+		if (buf != save_current_buf)
+		    loadImage(IMG_FLAG_STOP);
+		else
+		    loadImage(IMG_FLAG_START);
 		image_touch++;
 		draw_image_flag = FALSE;
 	    }
@@ -475,9 +478,11 @@ displayBuffer(Buffer *buf, int mode)
 	drawImage();
     }
 #endif
-#ifdef USE_BUFINFO
+#if defined(USE_BUFINFO) || defined(USE_IMAGE)
     if (buf != save_current_buf) {
+#ifdef USE_BUFINFO
 	saveBufferInfo();
+#endif
 	save_current_buf = buf;
     }
 #endif

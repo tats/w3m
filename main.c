@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.160 2002/12/05 16:29:08 ukai Exp $ */
+/* $Id: main.c,v 1.161 2002/12/09 15:21:13 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2392,8 +2392,12 @@ _goLine(char *l)
 void
 goLine(void)
 {
+
+    char *str = searchKeyData();
     if (prec_num)
 	_goLine("^");
+    else if (str)
+	_goLine(str);
     else
 	_goLine(inputStr("Goto line: ", ""));
 }
@@ -5358,50 +5362,64 @@ dictwordat(void)
 void
 set_buffer_environ(Buffer *buf)
 {
-    Anchor *a;
-    Str s;
-    ParsedURL pu;
+    static Buffer *prev_buf = NULL;
+    static Line *prev_line = NULL;
+    static short prev_col = -1, prev_pos = -1;
+    Line *l;
 
     if (buf == NULL)
 	return;
-    set_environ("W3M_SOURCEFILE", buf->sourcefile);
-    set_environ("W3M_FILENAME", buf->filename);
-    set_environ("W3M_CURRENT_WORD", GetWord(buf));
-    set_environ("W3M_TITLE", buf->buffername);
-    set_environ("W3M_URL", parsedURL2Str(&buf->currentURL)->ptr);
-    if (buf->real_type)
-	set_environ("W3M_TYPE", buf->real_type);
-    else
-	set_environ("W3M_TYPE", "unknown");
+    if (buf != prev_buf) {
+	set_environ("W3M_SOURCEFILE", buf->sourcefile);
+	set_environ("W3M_FILENAME", buf->filename);
+	set_environ("W3M_TITLE", buf->buffername);
+	set_environ("W3M_URL", parsedURL2Str(&buf->currentURL)->ptr);
+	set_environ("W3M_TYPE", buf->real_type ? buf->real_type : "unknown");
 #ifdef JP_CHARSET
-    set_environ("W3M_CHARSET", code_to_str(buf->document_code));
+	set_environ("W3M_CHARSET", code_to_str(buf->document_code));
 #endif				/* JP_CHARSET */
-    a = retrieveCurrentAnchor(buf);
-    if (a == NULL) {
+    }
+    l = buf->currentLine;
+    if (l && (buf != prev_buf || l != prev_line || buf->pos != prev_pos)) {
+	Anchor *a;
+	ParsedURL pu;
+	char *s = GetWord(buf);
+	set_environ("W3M_CURRENT_WORD", s ? s : "");
+	a = retrieveCurrentAnchor(buf);
+	if (a) {
+	    parseURL2(a->url, &pu, baseURL(buf));
+	    set_environ("W3M_CURRENT_LINK", parsedURL2Str(&pu)->ptr);
+	}
+	else
+	    set_environ("W3M_CURRENT_LINK", "");
+	a = retrieveCurrentImg(buf);
+	if (a) {
+	    parseURL2(a->url, &pu, baseURL(buf));
+	    set_environ("W3M_CURRENT_IMG", parsedURL2Str(&pu)->ptr);
+	}
+	else
+	    set_environ("W3M_CURRENT_IMG", "");
+	a = retrieveCurrentForm(buf);
+	if (a)
+	    set_environ("W3M_CURRENT_FORM", form2str((FormItemList *)a->url));
+	else
+	    set_environ("W3M_CURRENT_FORM", "");
+	set_environ("W3M_CURRENT_LINE", Sprintf("%d",
+		    l->real_linenumber)->ptr);
+	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
+		    buf->currentColumn + buf->cursorX + 1)->ptr);
+    }
+    else if (!l) {
+	set_environ("W3M_CURRENT_WORD", "");
 	set_environ("W3M_CURRENT_LINK", "");
-    }
-    else {
-	parseURL2(a->url, &pu, baseURL(buf));
-	s = parsedURL2Str(&pu);
-	set_environ("W3M_CURRENT_LINK", s->ptr);
-    }
-    a = retrieveCurrentImg(buf);
-    if (a == NULL) {
 	set_environ("W3M_CURRENT_IMG", "");
-    }
-    else {
-	parseURL2(a->url, &pu, baseURL(buf));
-	s = parsedURL2Str(&pu);
-	set_environ("W3M_CURRENT_IMG", s->ptr);
-    }
-    a = retrieveCurrentForm(buf);
-    if (a == NULL) {
 	set_environ("W3M_CURRENT_FORM", "");
+	set_environ("W3M_CURRENT_LINE", "0");
+	set_environ("W3M_CURRENT_COLUMN", "0");
     }
-    else {
-	s = Strnew_charp(form2str((FormItemList *)a->url));
-	set_environ("W3M_CURRENT_FORM", s->ptr);
-    }
+    prev_buf = buf;
+    prev_line = l;
+    prev_pos = buf->pos;
 }
 
 char *

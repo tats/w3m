@@ -1,3 +1,9 @@
+2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03541] Re: W3M_LINE_NO / W3M_CURRENT_COLUMN
+	* main.c (goLine): check searchKeyData()
+		(set_buffer_environ): W3M_CURRENT_*
+
 2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03536] <del>, <s>
@@ -5583,4 +5589,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.599 2002/12/06 16:49:18 ukai Exp $
+$Id: ChangeLog,v 1.600 2002/12/09 15:21:12 ukai Exp $

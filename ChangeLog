@@ -1,3 +1,9 @@
+2003-07-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03927] deflate
+	* file.c (compression_decoder): .deflate for application/x-deflate's
+				extension
+
 2003-06-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03916] Re: charset attribute of anchor tag
@@ -7863,4 +7869,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.843 2003/06/18 16:18:42 ukai Exp $
+$Id: ChangeLog,v 1.844 2003/07/07 15:39:43 ukai Exp $

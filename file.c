@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.224 2003/05/13 17:38:47 ukai Exp $ */
+/* $Id: file.c,v 1.225 2003/07/07 15:39:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -173,7 +173,7 @@ static struct compression_decoder {
     { CMP_BZIP2, ".bz2", "application/x-bzip",
       0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2",
       {"x-bzip", "bzip", "bzip2", NULL} }, 
-    { CMP_DEFLATE, NULL, "application/x-deflate",
+    { CMP_DEFLATE, ".deflate", "application/x-deflate",
       1, INFLATE_CMDNAME, INFLATE_NAME, "deflate",
       {"deflate", "x-deflate", NULL} }, 
     { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}},

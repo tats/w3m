@@ -2,6 +2,8 @@
 Inline image support of w3m
                                                               2002/02/04
                                                               H. Sakamoto
+                                                              2002/10/16
+                                                              H. Ito
 
 Introduction
 
@@ -10,7 +12,7 @@ Introduction
 Support
 
   * Display inline image (GIF,PNG,JPEG, etc.) on terminals
-    (xterm,rxvt, etc.) of X11.
+    (xterm,rxvt, etc.) of X11 or Linux framebuffer device.
   * Support inline image of <img> tag.
     Support of attributes "width", "height", and "align".
   * Direct display of image file which header is "Content-type: image/*"
@@ -22,6 +24,8 @@ Support
     "w3m" sends coordinate of the cursor as <name>.x=<x>&<name>.y=<y>.
   * Asynchronous loading of image files.
   * Using cache of image file as pixmap.
+  * Support of GIF animation when use GdkPixbuf.
+
 
 Key functions
 
@@ -77,31 +81,61 @@ Option panel
 
 Required programs
 
-  * w3m-0.2.5+cvs-1.287 or later
-    http://w3m.sourceforge.net/
-    http://sourceforge.net/projects/w3m/
-    http://prdownloads.sourceforge.net/w3m/
-  * Imlib-1.9.8 (1.9.10 is recommendable.)
-    libungif-4.1.0b1 is recommendable.
+  for X11
+    * GdkPixbuf-0.16 or later
+
+    or
+
+    * w3m-0.2.5+cvs-1.287 or later
+      http://w3m.sourceforge.net/
+      http://sourceforge.net/projects/w3m/
+      http://prdownloads.sourceforge.net/w3m/
+    * Imlib-1.9.8 (1.9.10 is recommendable.)
+      libungif-4.1.0b1 is recommendable.
+
+  for Linux framebuffer device
+    * GdkPixbuf-0.16 or later
+
+    or
+
+    * Imlib2-1.0.6 or later
+
+    * Framebuffer device(packed pixels with 8 bpp pseudocolor
+      and 16/24/32 bpp truecolor/directcolor)
+
 
 Setting w3mimgdisplay
 
   "w3mimgdisplay" has the following options. Set options to fit terminal.
 
   -x <offset_x>
-      The X origin of display of image on terminal. The default value is 2.
+      The X origin of display of image on terminal. The default value
+      for X11 is 2.
       If the terminal is "xterm", the width of scroll bar is added.
       If the terminal is "Eterm", it may be better to specify 5.
+      The default value for Linux framebuffer device is 0.
   -y <offset_y>
-      The Y origin of display of image on terminal. The default value is 2.
+      The Y origin of display of image on terminal. The default value
+      for X11 is 2.
       If the terminal is "Eterm", it may be better to specify 5.
+      The default value for Linux framebuffer device is 0.
   -bg <background>
-      Background color of terminal. The default value is automatically
-      detected.  When the color is specified as #RRGGBB, escape '#'.
+      Background color of terminal. The default value for X11 is
+      automatically detected.
+      The default value for Linux framebuffer device is #000000 (black).
+      When the color is specified as #RRGGBB, escape '#'.
 
   ex.)
     w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
-  
+
+Notice
+    If you want to see GIF animation, please hit a suitable key, such
+    as 'h', 'l', etc., repeatedly, because a frame is rewritten
+    according to the re-drawing demand from w3m.
+
+    Some code in w3mimg/fb/fb.c was originally written by Mr. Yamasaki.
+    http://www.sainet.or.jp/~yamasaki/download/fb-sample.tar.gz
+
 Change log
 
 2002/02/04

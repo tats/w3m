@@ -15,8 +15,6 @@ Like this:
 <= => R B                 [       Bookmarks        ][ 坂本浩則のホームページ ] x
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-However, you can use at most 10 colums (0 to 9) for mouse menu.
-
 You can open URL in new tab if you drag URL to the region of mouse menu.
 
 ~/.w3m/mouse syntax:

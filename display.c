@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.48 2002/12/18 16:33:19 ukai Exp $ */
+/* $Id: display.c,v 1.49 2002/12/27 16:46:13 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -326,8 +326,8 @@ make_lastline_message(Buffer *buf)
 
     if (s) {
 	int l = COLS - 3 - s->length;
-#ifdef JP_CHARSET
 	if (msg->length > l) {
+#ifdef JP_CHARSET
 	    char *p;
 	    int i;
 	    for (p = msg->ptr; *p; p += i) {

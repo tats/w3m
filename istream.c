@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.13 2002/02/06 17:24:14 ukai Exp $ */
+/* $Id: istream.c,v 1.14 2002/02/07 14:02:12 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -461,7 +461,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	if (X509_NAME_get_text_by_NID(xn, NID_commonName,
 				      buf, sizeof(buf)) == -1)
 	    ret = Strnew_charp("Unable to get common name from peer cert");
-	else if (! ssl_match_cert_ident(buf, strlen(buf), hostname))
+	else if (!ssl_match_cert_ident(buf, strlen(buf), hostname))
 	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
 	else
 	    match_ident = TRUE;

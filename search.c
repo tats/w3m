@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.27 2003/01/30 16:26:18 ukai Exp $ */
+/* $Id: search.c,v 1.28 2003/03/05 18:19:17 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -158,9 +158,6 @@ forwardSearch(Buffer *buf, char *str)
 	    continue;
 	if (regexMatch(l->lineBuf, l->size, 1) == 1) {
 	    matchedPosition(&first, &last);
-	    if (wrapped && l == begin && buf->pos == first - l->lineBuf)
-		/* exactly same match */
-		break;
 	    pos = first - l->lineBuf;
 	    while (pos >= l->len && l->next && l->next->bpos) {
 		pos -= l->len;
@@ -268,13 +265,8 @@ backwardSearch(Buffer *buf, char *str)
 	q = l->lineBuf;
 	while (regexMatch(q, &l->lineBuf[l->size] - q, q == l->lineBuf) == 1) {
 	    matchedPosition(&first, &last);
-	    if (wrapped && l == begin && buf->pos == first - l->lineBuf)
-		/* exactly same match */
-		;
-	    else {
-		found = first;
-		found_last = last;
-	    }
+	    found = first;
+	    found_last = last;
 	    if (q - l->lineBuf >= l->size)
 		break;
 #ifdef JP_CHARSET

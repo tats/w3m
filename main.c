@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.215 2003/02/26 17:22:03 ukai Exp $ */
+/* $Id: main.c,v 1.216 2003/03/05 18:19:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1603,6 +1603,7 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
     if (ch == 0 && buf == NULL) {
 	SAVE_BUFPOSITION(&sbuf);	/* search starting point */
 	currentLine = sbuf.currentLine;
+	sbuf.pos -= 1; /* XXX start from current position */
 	pos = sbuf.pos;
 	return -1;
     }
@@ -4649,7 +4650,7 @@ void
 chkURLBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
-	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=]",
+	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=\\-]",
 	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
 #ifdef USE_GOPHER
 	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",

@@ -94,6 +94,7 @@ QUIT		Quit w3m
 READ_SHELL	Execute shell command and load
 REDRAW		Redraw screen
 REG_MARK	Set mark using regexp
+REINIT		Reload configuration files
 RELOAD		Reload buffer
 RIGHT		Shift screen one column right
 SAVE		Save document source to file

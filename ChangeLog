@@ -1,3 +1,15 @@
+2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03524] fix doc*/README.func, w3mhelp.cgi.in
+	* doc/README.func (REINIT): added
+	* doc-jp/README.func (REINIT): added
+	* scripts/w3mhelp.cgi.in (Page/Cursor motion): 
+				add moveR1 movL1 movD1 movU1 ldown1 lup1
+		(File/Stream operation): add pipeBuf
+		(Miscellany): add dispVer execCmd reinit
+		(load_keymap): rewrite
+		(norm_key): rewrite
+	
 2002-12-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: rc: display_ins_del
@@ -5437,4 +5449,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.587 2002/12/04 17:02:34 ukai Exp $
+$Id: ChangeLog,v 1.588 2002/12/04 17:08:26 ukai Exp $

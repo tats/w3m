@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.17 2002/11/26 18:03:30 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.18 2002/12/04 17:08:28 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -130,11 +130,12 @@ for $otherlang (@docdirs) {
 }
 
 &show_keymap("Page/Cursor motion", 
-	     split(" ", "pgFore pgBack movR movL movD movU ldown1 lup1
+	     split(" ", "pgFore pgBack movR movL movD movU
+		movR1 movL1 movD1 movU1 ldown1 lup1
 		shiftl shiftr col1L col1R linbeg linend ctrCsrH ctrCsrV
 		goLine goLineF goLineL movRW movLW
 		topA lastA nextA prevA
-		nextR nextRD nextL nextRD nextLU nextD nextU"));
+		nextR nextL nextD nextU nextRD nextLU"));
 
 &show_keymap("Hyperlink operation",
 	     split(" ", "followA tabA svA followI svI submitForm
@@ -142,7 +143,8 @@ for $otherlang (@docdirs) {
 		rFrame extbrz linkbrz"));
 
 &show_keymap("File/Stream operation",
-	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh"));
+	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh
+		pipeBuf"));
 
 &show_keymap("Buffer operation",
 	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
@@ -164,8 +166,9 @@ for $otherlang (@docdirs) {
 	     split(" ", "_mark nextMk prevMk reMark"));
 
 &show_keymap("Miscellany",
-	     split(" ", "mainMn ldhelp ldOpt cooLst ldHist ldDL msgs msToggle
-		wrapToggle setAlarm setOpt setEnv execsh susp qquitfm quitfm defKey"));
+	     split(" ", "mainMn ldhelp ldOpt dispVer cooLst ldHist ldDL
+		msgs msToggle wrapToggle execCmd setAlarm setOpt setEnv defKey
+		reinit execsh susp qquitfm quitfm"));
 
 &show_keymap("Buffer selection mode",
 	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
@@ -189,13 +192,14 @@ sub load_keymap {
     local($func) = @_;
 
     while (<FH>) {
-	next if /^#/;
-	next if /^\s*$/;
-	($keymap, $key, $fname, $data) = split;
-	next if $data;
-	next unless $keymap =~ /keymap/;
+	/^#/ && next;
+	s/^\s*keymap\s+// || next;
+	s/^(\"(\\\"|[^\"])+\"|\'(\\\'|[^\'])+\'|\S+)\s+(\S+)\s*// || next;
+	($key, $fname) = ($1, $4);
+	($data = $_) && next;
 	$fname =~ tr/a-z/A-Z/;
-	next unless (defined($funcdesc{$fname}));
+	defined($funcdesc{$fname}) || next;
+	$key =~ s/^["'](.*)["']$/$1/;
 	$key = &norm_key($key);
 	$keyfunc{$key} = $fname;
     }
@@ -205,19 +209,18 @@ sub norm_key {
     local($_) = @_;
 
     s/\\(.)/$1/g;
-    s/^\^(.)/C-$1/;
-    s/^(C-\[|M-)/ESC-/;
+    s/(^|\s+|-)\^(.)/${1}C-$2/g;
+    s/(^|\s+|-)(C-\[|M-)/${1}ESC-/g;
     if (/^ESC-\[/) {
 	/^ESC-\[A$/ && return "UP";
 	/^ESC-\[B$/ && return "DOWN";
 	/^ESC-\[C$/ && return "RIGHT";
 	/^ESC-\[D$/ && return "LEFT";
-	s/^ESC-/\^\[/;
-	return $_;
     }
-    s/^ESC-\^(.)/ESC-C-$1/;
-    s/^(ESC-)?C-[iI]/${1}TAB/;
-    s/^(ESC-)?C-\?/${1}DEL/;
+    s/(^|\s+|-)ESC-\[/$1\^\[\[/g;
+    s/(^|\s+|-)ESC-\^(.)/${1}ESC-C-$2/g;
+    s/(^|\s+|-)(ESC-)?C-[iI]/$1${2}TAB/g;
+    s/(^|\s+|-)(ESC-)?C-\?/$1${2}DEL/g;
     return $_;
 }
 
@@ -242,7 +245,7 @@ PAGE
 	$keys =~ s/[<>&]/$htmlesc{$&}/ge;
 	$desc =~ s/[<>&]/$htmlesc{$&}/ge;
 	print <<PAGE;
-<TR><TD$attr>$keys</TD><TD>$desc</TD></TR>
+<TR><TD$attr>$keys<TD>$desc
 PAGE
 	$attr = "";
     }

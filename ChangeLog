@@ -1,5 +1,10 @@
 2002-02-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03067] Re: https through proxy
+	* file.c (loadGeneralFile): comment out ssl_get_certificate here
+
+2002-02-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev-en 00691] Re: w3m 0.2.5.1 fails to recognize '<dt id="XXX">'
 	* html.c: ATTR_CORE for dt, dd, blockquote, caption 
 
@@ -2996,4 +3001,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.325 2002/02/25 15:55:39 ukai Exp $
+$Id: ChangeLog,v 1.326 2002/02/26 04:08:48 ukai Exp $

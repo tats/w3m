@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.70 2002/02/19 15:50:18 ukai Exp $ */
+/* $Id: file.c,v 1.71 2002/02/26 04:08:48 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1566,7 +1566,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (t_buf == NULL)
 	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
-#ifdef USE_SSL
+#if 0 /* USE_SSL */
 	if (IStype(f.stream) == IST_SSL) {
 	    Str s = ssl_get_certificate(f.stream, pu.host);
 	    if (s == NULL)

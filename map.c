@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.9 2002/11/05 17:10:07 ukai Exp $ */
+/* $Id: map.c,v 1.10 2002/11/05 17:12:02 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -60,7 +60,7 @@ inMapArea(MapArea * a, int x, int y)
 #endif
 
 MapArea *
-follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, Anchor *a_img, int x,
+follow_map_menu(Buffer *buf, struct parsed_tagarg * arg, Anchor *a_img, int x,
 		int y)
 {
     MapList *ml;

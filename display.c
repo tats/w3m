@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.26 2002/11/05 17:10:05 ukai Exp $ */
+/* $Id: display.c,v 1.27 2002/11/05 17:12:02 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -444,7 +444,7 @@ redrawNLine(Buffer *buf, int n)
 	    x = col * (i % nx) / nx;
 	    move(i / nx, x);
 	    if (t == CurrentTab)
-	        bold();
+		bold();
 	    addch('[');
 	    l = strlen(t->currentBuffer->buffername);
 	    if (col / nx - 2 > l)
@@ -459,7 +459,7 @@ redrawNLine(Buffer *buf, int n)
 	    move(i / nx, x);
 	    addch(']');
 	    if (t == CurrentTab)
-	        boldend();
+		boldend();
 	    clrtoeol();
 	}
 	move(0, col);
@@ -1221,10 +1221,11 @@ arrangeCursor(Buffer *buf)
 	return;
     /* Arrange line */
     if (buf->currentLine->linenumber - buf->topLine->linenumber >= LASTLINE -
-	buf->rootY || buf->currentLine->linenumber < buf->topLine->linenumber) {
-/*
-	buf->topLine = buf->currentLine;
-*/
+	buf->rootY
+	|| buf->currentLine->linenumber < buf->topLine->linenumber) {
+	/*
+	 * buf->topLine = buf->currentLine;
+	 */
 	buf->topLine = lineSkip(buf, buf->currentLine, 0, FALSE);
     }
     /* Arrange column */

@@ -1,3 +1,8 @@
+2002-03-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03146] Re: header option
+	* main.c (make_optional_header_string): cleanups
+
 2002-03-28  Yuuichi Teranishi <teranisi@gohome.org>
 
 	* [w3m-dev 03145] header option
@@ -3292,4 +3297,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.361 2002/03/27 15:26:09 ukai Exp $
+$Id: ChangeLog,v 1.362 2002/03/27 15:35:06 ukai Exp $

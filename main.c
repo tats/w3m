@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.93 2002/03/27 15:26:09 ukai Exp $ */
+/* $Id: main.c,v 1.94 2002/03/27 15:35:06 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -323,21 +323,18 @@ make_optional_header_string(char *s)
     char *p;
     Str hs;
 
+    if (strchr(s, '\n') || strchr(s, '\r'))
+	return NULL;
     for (p = s; *p && *p != ':'; p++) ;
     if (*p != ':' || p == s)
 	return NULL;
-    if (strchr(s, '\n')) {
-	return NULL;
-    }
-    hs = Strnew_size(p - s);
-    strncpy(hs->ptr, s, p - s);
-    hs->length = p - s;
-    if (!Strcasecmp_charp(hs, "content-type")) {
+    hs = Strnew_size(strlen(s) + 3);
+    Strcopy_charp_n(hs, s, p - s);
+    if (!Strcasecmp_charp(hs, "content-type"))
 	override_content_type = TRUE;
-    }
     Strcat_charp(hs, ": ");
-    if (*(p + 1)) {		/* not null header */
-	for (p = p + 1; isspace(*p); p++) ;	/* skip white spaces */
+    if (*(++p)) {		/* not null header */
+	SKIP_BLANKS(p);		/* skip white spaces */
 	Strcat_charp(hs, p);
     }
     Strcat_charp(hs, "\r\n");
@@ -627,9 +624,9 @@ MAIN(int argc, char **argv, char **envp)
 			Strcat(header_string, hs);
 		}
 		while (argv[i][0]) {
-                    argv[i][0] = '\0';
-                    argv[i]++;
-                }
+		    argv[i][0] = '\0';
+		    argv[i]++;
+		}
 	    }
 #ifdef USE_MOUSE
 	    else if (!strcmp("-no-mouse", argv[i])) {

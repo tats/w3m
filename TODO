@@ -12,6 +12,9 @@ new features
 	[w3m-dev 03723] Re: w3mimgdisplayfb (independent of X)
 	http://homepage3.nifty.com/slokar/fb/w3mimgfb-0.6.tar.gz
 	http://homepage3.nifty.com/slokar/stimg/stimg-0.0.0.tar.gz
+* Internationalized Domain Name support
+	[w3m-dev 03727] Re: IDN support (test)
+	idnkit (http://www.nic.ad.jp/ja/idn/) と iconv が必要です。
 
 * SMB
 * merge m17n

@@ -3,7 +3,6 @@ TODO lists
 Documentation
 
 new features
-* news:<newsgroups> support
 * Keep alive
 * incremental display, background download
 	[w3m-dev 03389] background download

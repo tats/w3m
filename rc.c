@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.61 2002/11/11 15:33:39 ukai Exp $ */
+/* $Id: rc.c,v 1.62 2002/11/12 12:42:51 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -315,7 +315,7 @@ static char *config_file = NULL;
 #define CMT_REVERSE_MOUSE "Scroll in reverse direction of mouse drag"
 #define CMT_RELATIVE_WHEEL_SCROLL "Behavior of wheel scroll speed"
 #define CMT_RELATIVE_WHEEL_SCROLL_RATIO "(A only)Scroll by # % of screen"
-#define CMT_FIXED_WHEEL_SCROLL_COUNT "(B only)Scroll by # lines" 
+#define CMT_FIXED_WHEEL_SCROLL_COUNT "(B only)Scroll by # lines"
 #endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     "Free memory of undisplayed buffers"
 #define CMT_NOSENDREFERER "Suppress `Referer:' header"
@@ -440,8 +440,7 @@ static struct sel_c defaulturls[] = {
     {0, NULL, NULL}
 };
 #ifdef USE_MOUSE
-static struct sel_c wheelmode[] =
-{
+static struct sel_c wheelmode[] = {
 #if LANG == JA
     {TRUE, "1", "A:画面サイズに比例"},
     {FALSE, "0", "B:一定の行数"},
@@ -610,11 +609,13 @@ struct param_ptr params3[] = {
     {"use_mouse", P_INT, PI_ONOFF, (void *)&use_mouse, CMT_MOUSE, NULL},
     {"reverse_mouse", P_INT, PI_ONOFF, (void *)&reverse_mouse,
      CMT_REVERSE_MOUSE, NULL},
-    {"relative_wheel_scroll", P_INT, PI_SEL_C, (void *) &relative_wheel_scroll,
+    {"relative_wheel_scroll", P_INT, PI_SEL_C, (void *)&relative_wheel_scroll,
      CMT_RELATIVE_WHEEL_SCROLL, wheelmode},
-    {"relative_wheel_scroll_ratio", P_INT, PI_TEXT, (void *) &relative_wheel_scroll_ratio,
+    {"relative_wheel_scroll_ratio", P_INT, PI_TEXT,
+     (void *)&relative_wheel_scroll_ratio,
      CMT_RELATIVE_WHEEL_SCROLL_RATIO, NULL},
-    {"fixed_wheel_scroll_count", P_INT, PI_TEXT, (void *) &fixed_wheel_scroll_count,
+    {"fixed_wheel_scroll_count", P_INT, PI_TEXT,
+     (void *)&fixed_wheel_scroll_count,
      CMT_FIXED_WHEEL_SCROLL_COUNT, NULL},
 #endif				/* USE_MOUSE */
     {"clear_buffer", P_INT, PI_ONOFF, (void *)&clear_buffer, CMT_CLEAR_BUF,
@@ -1519,7 +1520,7 @@ auxbinFile(char *base)
     return expandName(file->ptr);
 }
 
-#if 0 /* not used */
+#if 0				/* not used */
 char *
 libFile(char *base)
 {
@@ -1549,4 +1550,3 @@ helpFile(char *base)
     return expandName(file->ptr);
 }
 #endif
-

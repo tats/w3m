@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.20 2002/11/12 12:22:59 ukai Exp $ */
+/* $Id: form.c,v 1.21 2002/11/12 12:42:50 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -753,7 +753,7 @@ loadPreForm(void)
 	if (line->length == 0)
 	    break;
 	if (textarea && !(!strncmp(line->ptr, "/textarea", 9) &&
-	    IS_SPACE(line->ptr[9]))) {
+			  IS_SPACE(line->ptr[9]))) {
 	    Strcat(textarea, line);
 	    continue;
 	}

@@ -1,5 +1,11 @@
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03628] Re: Error occured while reset
+	* file.c (doExternal): bufp = NULL, return 1
+		(uncompress_stream): tempfname fileToDelete
+
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03626] Re: relative URL
 	* url.c (parseURL2): copy if scheme is local or local-cgi
 
@@ -6280,4 +6286,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.665 2003/01/10 16:29:23 ukai Exp $
+$Id: ChangeLog,v 1.666 2003/01/10 16:33:38 ukai Exp $

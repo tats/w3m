@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.180 2003/01/10 16:16:45 ukai Exp $ */
+/* $Id: file.c,v 1.181 2003/01/10 16:33:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7393,9 +7393,10 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     else
 #endif
     {
-	if (save2tmp(uf, tmpf->ptr) < 0)
-	    return 0;		/* ??? */
-	UFclose(&uf);
+	if (save2tmp(uf, tmpf->ptr) < 0) {
+	    *bufp = NULL;
+	    return 1;
+	}
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
@@ -7789,6 +7790,7 @@ uncompress_stream(URLFile *uf, char **src)
 
     if (uf->scheme != SCM_LOCAL) {
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
+	pushText(fileToDelete, tmpf);
 	if (save2tmp(*uf, tmpf) < 0) {
 	    UFclose(uf);
 	    return;
@@ -7801,7 +7803,6 @@ uncompress_stream(URLFile *uf, char **src)
 	    *src = tmpf;
 	else
 	    uf->scheme = SCM_LOCAL;
-	pushText(fileToDelete, tmpf);
     }
 
     flush_tty();

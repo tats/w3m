@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.40 2001/12/20 04:03:24 ukai Exp $
+# $Id: configure,v 1.41 2001/12/20 12:32:19 ukai Exp $
 #	Configuration.
 #
 
@@ -234,7 +234,8 @@ def_param() {
  eval "fvar=\$$flag"
  dflt=$2
  if [ -z "$fvar" ]; then
-   eval "fvar=$dflt"
+   fvar=$dflt
+   eval $flag='$fvar'
  fi
  def=`echo $flag | tr '[a-z]' '[A-Z]'`
  if [ "$fvar" = "y" ]; then
@@ -242,7 +243,7 @@ def_param() {
  else
    eval "def_$flag='#undef $def'"
  fi
- eval "echo $flag=$fvar >> config.param"
+ echo "$flag=$fvar" >> config.param
 }
 
 #
@@ -330,7 +331,7 @@ ask_choice() {
        shift
        eval "def_$var='#define $def $v'"
        eval "$var=$v"
-       eval "echo $var=$v >> config.param";
+       echo "$var=$v" >> config.param
        echo " $def=$v"
        break
        ;;

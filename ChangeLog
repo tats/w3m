@@ -1,3 +1,10 @@
+2001-12-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02683]
+	* configure (def_param): fix wrong behavior unless variable initialized
+	* configure (def_param): fix unnecessary eval
+	* configure (ask_choice): ditto
+
 2001-12-20  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
 
 	* w3mhelp-*.html, doc/README, doc-jp/README: 
@@ -1345,4 +1352,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.147 2001/12/20 11:11:49 inu Exp $
+$Id: ChangeLog,v 1.148 2001/12/20 12:32:19 ukai Exp $

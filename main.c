@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.50 2001/12/26 18:29:33 ukai Exp $ */
+/* $Id: main.c,v 1.51 2001/12/27 17:23:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4600,6 +4600,7 @@ GetWord(Buffer *buf)
 static void
 execdict(char *word)
 {
+    char *w;
     Buffer *buf;
     MySignalHandler(*prevtrap) ();
 
@@ -4607,11 +4608,15 @@ execdict(char *word)
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
+    w = conv_to_system(word);
+    if (*w == '\0') {
+	displayBuffer(Currentbuf, B_NORMAL);
+	return;
+    }
     prevtrap = signal(SIGINT, intTrap);
     crmode();
-    buf = getshell(myExtCommand(DICTCMD, shell_quote(word), FALSE)->ptr);
-    buf->filename = word;
-    word = conv_from_system(word);
+    buf = getshell(myExtCommand(DICTCMD, shell_quote(w), FALSE)->ptr);
+    buf->filename = w;
     buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
     signal(SIGINT, prevtrap);
     term_raw();
@@ -4632,13 +4637,7 @@ execdict(char *word)
 void
 dictword(void)
 {
-    char *word = inputStr("(dictionary)!", "");
-
-    if (word != NULL)
-	word = conv_to_system(word);
-    if (word == NULL || *word == '\0')
-	return;
-    execdict(word);
+    execdict(inputStr("(dictionary)!", ""));
 }
 
 void

@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.6 2002/11/12 12:41:58 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.7 2002/11/26 18:03:29 ukai Exp $ */
 #ifdef __EMX__
 #include <stdlib.h>
 #endif
@@ -190,6 +190,17 @@ main(int argc, char *argv[], char **envp)
     }
 
     cgiarg = cgistr2tagarg(qs);
+
+    Local_cookie = getenv("LOCAL_COOKIE");
+    sent_cookie = tag_get_value(cgiarg, "cookie");
+    if (sent_cookie == NULL || Local_cookie == NULL ||
+	strcmp(sent_cookie, Local_cookie) != 0) {
+	/* local cookie doesn't match: It may be an illegal invocation */
+	printf("Content-Type: text/plain\n");
+	printf("\nLocal cookie doesn't match: It may be an illegal invocation\n");
+	exit(1);
+    }
+
     mode = tag_get_value(cgiarg, "mode");
     bmark = expandPath(tag_get_value(cgiarg, "bmark"));
     url = tag_get_value(cgiarg, "url");
@@ -200,12 +211,6 @@ main(int argc, char *argv[], char **envp)
 	printf("Incomplete Request: QUERY_STRING=%s\n", qs);
 	exit(1);
     }
-    Local_cookie = getenv("LOCAL_COOKIE");
-    sent_cookie = tag_get_value(cgiarg, "cookie");
-    if (Local_cookie == NULL) {
-	/* Local cookie not provided: maybe illegal invocation */
-	Local_cookie = "";
-    }
     if (mode && !strcmp(mode, "panel")) {
 	if (title == NULL)
 	    title = "";
@@ -213,12 +218,7 @@ main(int argc, char *argv[], char **envp)
     }
     else if (mode && !strcmp(mode, "register")) {
 	printf("Content-Type: text/plain\n");
-	if (sent_cookie == NULL || Local_cookie[0] == '\0' ||
-	    strcmp(sent_cookie, Local_cookie) != 0) {
-	    /* local cookie doesn't match: It may be an illegal invocation */
-	    printf("\nBookmark not added: local cookie doesn't match\n");
-	}
-	else if (insert_bookmark(bmark, cgiarg)) {
+	if (insert_bookmark(bmark, cgiarg)) {
 	    printf("w3m-control: BACK\n");
 	    printf("w3m-control: BACK\n\n");
 	}

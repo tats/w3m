@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.9 2002/11/12 12:41:58 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.10 2002/11/26 18:03:29 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -168,11 +168,18 @@ main(int argc, char *argv[], char **envp)
 	exit(1);
 
     cgiarg = cgistr2tagarg(qs);
-    mode = tag_get_value(cgiarg, "mode");
+
     local_cookie = getenv("LOCAL_COOKIE");
+    sent_cookie = tag_get_value(cgiarg, "cookie");
+    if (local_cookie == NULL || sent_cookie == NULL ||
+	strcmp(local_cookie, sent_cookie) != 0) {
+	/* Local cookie doesn't match */
+	bye("Local cookie doesn't match: It may be an illegal execution", "");
+    }
+
+    mode = tag_get_value(cgiarg, "mode");
     mailcapfile = Strnew_charp(expandPath(RC_DIR));
     Strcat_charp(mailcapfile, "/mailcap");
-
     if (mode && !strcmp(mode, "edit")) {
 	char *referer;
 	/* check if I can edit my mailcap */
@@ -182,13 +189,6 @@ main(int argc, char *argv[], char **envp)
 		/* referer is not file: nor exec: */
 		bye("It may be an illegal execution\n referer=", referer);
 	    }
-	}
-	sent_cookie = tag_get_value(cgiarg, "cookie");
-	if (local_cookie == NULL || sent_cookie == NULL ||
-	    strcmp(local_cookie, sent_cookie) != 0) {
-	    /* Local cookie doesn't match */
-	    bye("Local cookie doesn't match: It may be an illegal execution",
-		"");
 	}
 	/* edit mailcap */
 	editMailcap(mailcapfile->ptr, cgiarg);

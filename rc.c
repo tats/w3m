@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.67 2002/11/25 16:57:17 ukai Exp $ */
+/* $Id: rc.c,v 1.68 2002/11/26 18:03:28 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1387,7 +1387,7 @@ init_rc(char *config_filename)
 
 static char optionpanel_src1[] =
     "<html><head><title>Option Setting Panel</title></head>\
-<body><center><b>Option Setting Panel</b><br><b>(w3m version %s)</b></center><p>\n" "<a href=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "?mode=panel\">%s</a>\n" "<form method=internal action=option>";
+<body><center><b>Option Setting Panel</b><br><b>(w3m version %s)</b></center><p>\n" "<a href=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "?mode=panel&cookie=%s\">%s</a>\n" "<form method=internal action=option>";
 
 static Str
 to_str(struct param_ptr *p)
@@ -1424,7 +1424,8 @@ to_str(struct param_ptr *p)
 Buffer *
 load_option_panel(void)
 {
-    Str src = Sprintf(optionpanel_src1, w3m_version, CMT_HELPER);
+    Str src = Sprintf(optionpanel_src1, w3m_version,
+		      (Str_form_quote(Local_cookie))->ptr, CMT_HELPER);
     struct param_ptr *p;
     struct sel_c *s;
     int x, i;

@@ -30,15 +30,17 @@ $NOW = time();
 @OPT = &init_option($CONFIG);
 
 $query = $ENV{'QUERY_STRING'};
+$dir = '';
 $cmd = '';
-$cgi = 0;
-if ($query eq '') {
-  $_ = `pwd`;	# insecure?
-  chop;
-  s/\r$//;
-  $dir = $_;
-  $cgi = 0;
-} elsif ($query =~ /^(opt\d+|dir|cmd)=/) {
+$cookie = '';
+# $cgi = 0;
+# if ($query eq '') {
+#   $_ = `pwd`;	# insecure?
+#   chop;
+#   s/\r$//;
+#   $dir = $_;
+#   $cgi = 0;
+# } elsif ($query =~ /^(opt\d+|dir|cmd|cookie)=/) {
   foreach(split(/\&/, $query)) {
     if (s/^dir=//) {
       $dir = &form_decode($_);
@@ -46,20 +48,31 @@ if ($query eq '') {
       $OPT[$1] = $_;
     } elsif (s/^cmd=//) {
       $cmd = $_;
+    } elsif (s/^cookie=//) {
+      $cookie = &form_decode($_);
     }
   }
-  $cgi = 1;
-} else {
-  $dir = $query;
-  if (($dir !~ m@^/@) &&
-      ($WIN32 && $dir !~ /^[a-z]:/i)) {
-    $_ = `pwd`;	# insecure?
-    chop;
-    s/\r$//;
-    $dir = "$_/$dir";
+  if (($cookie eq "") || ($cookie ne $ENV{"LOCAL_COOKIE"})) {
+    print <<EOF;
+Content-Type: text/plain
+
+Local cookie doesn't match: It may be an illegal execution
+EOF
+    exit(1);
   }
-  $cgi = -1;
-}
+ $cookie =  &html_quote($cookie);
+  $cgi = 1;
+# } else {
+#   $dir = $query;
+#   if (($dir !~ m@^/@) &&
+#       ($WIN32 && $dir !~ /^[a-z]:/i)) {
+#     $_ = `pwd`;	# insecure?
+#     chop;
+#     s/\r$//;
+#     $dir = "$_/$dir";
+#   }
+#   $cgi = -1;
+# }
 if ($dir !~ m@/$@) {
   $dir .= '/';
 }
@@ -117,7 +130,7 @@ Content-Type: text/html
 <body>
 <h1>Directory list of $qdir</h1>
 EOF
-&print_form($edir, @OPT);
+&print_form($qdir, @OPT);
 print <<EOF;
 <hr>
 EOF
@@ -420,6 +433,7 @@ EOF
 </table>
 </center>
 <input type=hidden name=dir value="$d">
+<input type=hidden name=cookie value="$cookie">
 </form>
 EOF
 }

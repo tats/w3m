@@ -1,3 +1,20 @@
+2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* use local_cookie for support local-cgi commands
+	* file.c (loadGeneralFile): pass Local_cookie to DirBufferCommand
+	* fm.h (Local_cookie): Str
+	* local.c (setLocalCookie): Str, set_environ()
+		(set_cgi_environ): remove LOCAL_COOKIE
+	* main.c (ldhelp): pass Local_cookie
+		(adBmark): ditto
+	* rc.c (optionpanel_src1): cookie
+		(load_option_panel): pass Local_cookie
+	* w3mbookmark.c (main): check Local_cookie
+	* w3mhelperpanel (main): ditto
+	* scripts/dirlist.cgi.in: ditto
+	* scripts/w3mhelp.cgi.in: ditto
+	* scripts/multipart/multipart.cgi.in: ditto
+
 2002-11-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* frame.c (createFrameFile): html_quote()
@@ -5178,4 +5195,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.562 2002/11/26 17:08:00 ukai Exp $
+$Id: ChangeLog,v 1.563 2002/11/26 18:03:18 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.14 2002/02/04 15:18:42 ukai Exp $ */
+/* $Id: local.c,v 1.15 2002/11/26 18:03:26 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -26,12 +26,11 @@
 void
 setLocalCookie()
 {
-    Str buf;
     char hostname[256];
     gethostname(hostname, 256);
 
-    buf = Sprintf("%d.%ld@%s", getpid(), lrand48(), hostname);
-    Local_cookie = buf->ptr;
+    Local_cookie = Sprintf("%d.%ld@%s", getpid(), lrand48(), hostname);
+    set_environ("LOCAL_COOKIE", Local_cookie->ptr);
 }
 
 Buffer *
@@ -268,7 +267,6 @@ set_cgi_environ(char *name, char *fn, char *req_uri)
     set_environ("SCRIPT_NAME", name);
     set_environ("SCRIPT_FILENAME", fn);
     set_environ("REQUEST_URI", req_uri);
-    set_environ("LOCAL_COOKIE", Local_cookie);
 }
 
 static Str

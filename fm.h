@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.88 2002/11/25 16:57:17 ukai Exp $ */
+/* $Id: fm.h,v 1.89 2002/11/26 18:03:26 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -936,7 +936,7 @@ global char *migemo_command init(DEF_MIGEMO_COMMAND);
 #endif				/* USE_MIGEMO */
 
 global struct auth_cookie *Auth_cookie init(NULL);
-global char *Local_cookie init(NULL);
+global Str Local_cookie init(NULL);
 #ifdef USE_COOKIE
 global struct cookie *First_cookie init(NULL);
 #endif				/* USE_COOKIE */

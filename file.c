@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.131 2002/11/26 17:12:25 ukai Exp $ */
+/* $Id: file.c,v 1.132 2002/11/26 18:03:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1544,9 +1544,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    return NULL;
 		if (S_ISDIR(st.st_mode)) {
 		    if (UseExternalDirBuffer) {
-			Str cmd = Strnew_charp(DirBufferCommand);
-			Strcat_m_charp(cmd, "?dir=",
-				       pu.file, "#current", NULL);
+			Str cmd = Sprintf("%s?cookie=%s&dir=%s#current",
+					  DirBufferCommand,
+					  (Str_form_quote(Local_cookie))->ptr,
+					  pu.file);
 			b = loadGeneralFile(cmd->ptr, NULL, NO_REFERER, 0,
 					    NULL);
 			if (b != NULL && b != NO_BUFFER) {

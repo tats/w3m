@@ -1,3 +1,9 @@
+2002-12-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03558] long title is displayed over tab region
+	* display.c (redrawNLine): check l < 0
+				use addnstr
+
 2002-12-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03554] Re: Undo/Redo
@@ -5715,4 +5721,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.611 2002/12/11 02:57:30 ukai Exp $
+$Id: ChangeLog,v 1.612 2002/12/11 15:03:06 ukai Exp $

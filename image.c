@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.35 2003/07/07 15:48:16 ukai Exp $ */
+/* $Id: image.c,v 1.36 2003/07/07 15:49:03 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -228,7 +228,7 @@ clearImage()
     for (j = 0; j < n_terminal_image; j++) {
 	i = &terminal_image[j];
 	if (!(i->cache->loaded & IMG_FLAG_LOADED &&
-	    i->width > 0 && i->height > 0))
+	      i->width > 0 && i->height > 0))
 	    continue;
 	sprintf(buf, "6;%d;%d;%d;%d\n", i->x, i->y, i->width, i->height);
 	fputs(buf, Imgdisplay_wf);

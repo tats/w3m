@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.14 2003/07/07 15:48:16 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.15 2003/07/07 15:49:03 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -61,7 +61,7 @@ main(int argc, char **argv)
     w_op->max_anim = maxAnim;
 
     if (defined_test) {
-	printf("%d %d\n", w_op->width - w_op->offset_x, 
+	printf("%d %d\n", w_op->width - w_op->offset_x,
 	       w_op->height - w_op->offset_y);
 	exit(0);
     }
@@ -98,21 +98,21 @@ main(int argc, char **argv)
 	 * +--+--+--+--+ .......+--+--+
 	 *
 	 * args is separeted by ';'
-	 * op	args
-	 *  0;  params		draw image
-	 *  1;  params		redraw image
-	 *  2;  -none-		terminate drawing
-	 *  3;  -none-		sync drawing
-	 *  4;  -none-		nop, sync communication
-	 *			response '\n'
-	 *  5;  path		get size of image,
-	 *			response "<width> <height>\n"
-	 *  6;  params(6)	clear image
+	 * op   args
+	 *  0;  params          draw image
+	 *  1;  params          redraw image
+	 *  2;  -none-          terminate drawing
+	 *  3;  -none-          sync drawing
+	 *  4;  -none-          nop, sync communication
+	 *                      response '\n'
+	 *  5;  path            get size of image,
+	 *                      response "<width> <height>\n"
+	 *  6;  params(6)       clear image
 	 *
 	 * params
-	 *	<n>;<x>;<y>;<w>;<h>;<sx>;<sy>;<sw>;<sh>;<path>
+	 *      <n>;<x>;<y>;<w>;<h>;<sx>;<sy>;<sw>;<sh>;<path>
 	 * params(6)
-	 *	<x>;<y>;<w>;<h>
+	 *      <x>;<y>;<w>;<h>
 	 *   
 	 */
 	switch (buf[0]) {
@@ -139,11 +139,13 @@ main(int argc, char **argv)
 		if (w_op->get_image_size(w_op, &img, &buf[2], &w, &h)) {
 		    fprintf(stdout, "%d %d\n", w, h);
 		    fflush(stdout);
-		} else {
+		}
+		else {
 		    fprintf(stdout, "\n");
 		    fflush(stdout);
 		}
-	    } else {
+	    }
+	    else {
 		fprintf(stdout, "\n");
 		fflush(stdout);
 	    }
@@ -253,7 +255,7 @@ DrawImage(char *buf, int redraw)
     if (n < 0 || n >= MAX_IMAGE)
 	return;
     if (redraw) {
-	if (! w_op->active(w_op) || n >= maxImage || !imageBuf[n].pixmap)
+	if (!w_op->active(w_op) || n >= maxImage || !imageBuf[n].pixmap)
 	    return;
 	goto draw_image;
     }
@@ -267,7 +269,7 @@ DrawImage(char *buf, int redraw)
 	else if (n >= maxImage)
 	    maxImage = n + 1;
 	imageBuf = (W3MImage *) realloc((void *)imageBuf,
-				     sizeof(W3MImage) * maxImage);
+					sizeof(W3MImage) * maxImage);
 	for (; i < maxImage; i++)
 	    imageBuf[i].pixmap = NULL;
     }
@@ -277,11 +279,11 @@ DrawImage(char *buf, int redraw)
     }
 
     if (w_op->load_image(w_op, &imageBuf[n], p, w, h) == 0)
-       imageBuf[n].pixmap = NULL;
+	imageBuf[n].pixmap = NULL;
 
   draw_image:
     if (imageBuf[n].pixmap)
-       w_op->show_image(w_op, &imageBuf[n], sx, sy, sw, sh, x, y);
+	w_op->show_image(w_op, &imageBuf[n], sx, sy, sw, sh, x, y);
 }
 
 void

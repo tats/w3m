@@ -1,3 +1,7 @@
+2004-03-23  Fumitoshi UKAI  <ukai@ukai.org>
+
+	* rc.c: cleanup LANG == JA
+
 2004-03-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* main.c (main): DisplayCharset also follow locale
@@ -8351,4 +8355,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.912 2004/03/22 17:12:33 ukai Exp $
+$Id: ChangeLog,v 1.913 2004/03/23 16:31:43 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.26 2003/02/11 10:36:17 ukai Exp $ */
+/* $Id: anchor.c,v 1.27 2003/03/19 16:20:11 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -304,6 +304,11 @@ reAnchorPos(Buffer *buf, Line *l, char *p1, char *p2,
     }
     for (i = spos; i < epos; i++)
 	l->propBuf[i] |= PE_ANCHOR;
+    while (spos > l->len && l->next && l->next->bpos) {
+	spos -= l->len;
+	epos -= l->len;
+	l = l->next;
+    }
     while (1) {
 	a = anchorproc(buf, p1, p2, l->linenumber, spos);
 	a->hseq = hseq;
@@ -312,7 +317,7 @@ reAnchorPos(Buffer *buf, Line *l, char *p1, char *p2,
 	    hseq = a->hseq;
 	}
 	a->end.line = l->linenumber;
-	if (epos > l->len) {
+	if (epos > l->len && l->next && l->next->bpos) {
 	    a->end.pos = l->len;
 	    spos = 0;
 	    epos -= l->len;

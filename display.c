@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.8 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: display.c,v 1.9 2001/11/24 16:32:10 inu Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -162,9 +162,6 @@ fmInit(void)
 {
     if (!fmInitialized) {
 	initscr();
-#if defined( __CYGWIN__ ) && defined( JP_CHARSET )
-	init_win32_console_handle();
-#endif
 	term_raw();
 	term_noecho();
     }

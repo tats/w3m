@@ -1,3 +1,7 @@
+2001-11-25  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
+
+	* display.c: call of init_win32_console_handle is deleted
+
 2001-11-25  Rin Okuyama <okuyama@cna.ne.jp>
 
 	* [w3m-dev 02533] setpgrp bug in configure

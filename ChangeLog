@@ -1,3 +1,8 @@
+2002-10-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03351] w3m core dump
+	* table.c (feed_table_tag): fix rendering problem (maybe security hole?)
+
 2002-10-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00796]
@@ -4004,4 +4009,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.453 2002/10/27 17:16:36 ukai Exp $
+$Id: ChangeLog,v 1.454 2002/10/28 04:53:07 ukai Exp $

@@ -1,3 +1,9 @@
+2002-02-04  TSUCHIYA Masatoshi  <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* [w3m-dev 02986]
+	* file.c (print_internal_information): Don't print boundaries.
+          Use henv->f instead of stdout.
+	
 2002-02-04  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02984] inline image improvements and cleanups
@@ -2788,4 +2794,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.298 2002/02/04 15:18:41 ukai Exp $
+$Id: ChangeLog,v 1.299 2002/02/04 15:26:44 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.62 2002/02/04 15:18:42 ukai Exp $ */
+/* $Id: file.c,v 1.63 2002/02/04 15:26:44 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5742,9 +5742,6 @@ print_internal_information(struct html_feed_environ *henv)
 #endif
 	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
 		Strcat_charp(s, " enctype=multipart/form-data");
-	    if (fp->boundary)
-		Strcat_m_charp(s, " boundary=\"", html_quote(fp->boundary),
-			       "\"", NULL);
 	    Strcat_charp(s, ">");
 	    pushTextLine(tl, newTextLine(s, 0));
 	}
@@ -5778,7 +5775,7 @@ print_internal_information(struct html_feed_environ *henv)
     else if (henv->f) {
 	TextLineListItem *p;
 	for (p = tl->first; p; p = p->next)
-	    printf("%s\n", p->ptr->line->ptr);
+	    fprintf(henv->f, "%s\n", p->ptr->line->ptr);
     }
 }
 

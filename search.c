@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.12 2002/01/16 19:18:21 ukai Exp $ */
+/* $Id: search.c,v 1.13 2002/01/17 09:26:33 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <errno.h>
@@ -35,6 +35,7 @@ open_migemo(char *migemo_command)
     if (pipe(fdw) < 0)
 	goto err1;
 
+    flush_tty();
     /* migemow:fdw[1] -|-> fdw[0]=0 {migemo} fdr[1]=1 -|-> fdr[0]:migemor */
     pid = fork();
     if (pid < 0)

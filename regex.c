@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.8 2002/01/10 15:39:21 ukai Exp $ */
+/* $Id: regex.c,v 1.9 2002/01/10 16:11:32 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -553,6 +553,9 @@ regmatch_iter(struct MatchingContext1 *c,
 	    }
 	    c->re++;
 	    c->firstp = 0;
+	}
+	if (c->str >= c->end_p) {
+	    return 0;
 	}
     }
     c->lastpos = c->str;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.241 2004/03/23 16:44:02 ukai Exp $ */
+/* $Id: main.c,v 1.242 2004/04/04 16:47:20 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -383,6 +383,7 @@ main(int argc, char **argv, char **envp)
     wc_ces CodePage;
 #endif
 #endif
+    GC_init();
     setlocale(LC_ALL, "");
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);

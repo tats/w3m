@@ -1,3 +1,18 @@
+2004-04-05  AIDA Shinra <shinra@j10n.org>
+
+	* [w3m-dev 04049] w3m-cvs-1.914-misc.patch
+	* Makefile.in (funcname.tab): dont modify when target is unchanged.
+		(CFLAGS): need $(CPPFLAGS)?
+	* config.h.in: add HAVE_STDINT_H, HAVE_INTTYPES_H
+	* configure.in: s/AC_CANONICAL_SYSTEM/AC_CANONICAL_HOST/
+		don't use AC_CYGWIN
+		don't use $CYGWIN, use $host_os *cygwin*
+		AC_DEFINE in AC_CHECK_HEADER (float.h, sys/select.h)
+		add stdint.h, inttypes.h
+	* etc.c (find_auth_pass_entry): host is case insensitive
+	* libwc/wc_types.h: use stdint.h or inttypes.h
+	* main.c (MAIN); need GC_init()
+	
 2004-04-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	Debian Bug#241192 w3m ipv6 FQDN resolution failure
@@ -8379,4 +8394,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.916 2004/03/31 16:45:39 ukai Exp $
+$Id: ChangeLog,v 1.917 2004/04/04 16:47:20 ukai Exp $

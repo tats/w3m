@@ -28,9 +28,8 @@ AC_PROG_RANLIB
 AC_PATH_PROGS(PERL, perl, /usr/local/bin/perl)
 AC_PATH_PROGS(NKF, nkf, /usr/local/bin/nkf)
 AC_PATH_PROGS(MAN, man, /usr/bin/man)
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_HOST
 
-AC_CYGWIN
 AC_EXEEXT
 AC_SUBST(EXEEXT)
 
@@ -110,9 +109,11 @@ AC_CHECK_LIB(z, zError, [AUXBIN_TARGETS="$AUXBIN_TARGETS inflate\$(EXT)"])
 AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
-if test x$CYGWIN = xyes; then
- AC_DEFINE(USE_BINMODE_STREAM)
-fi
+case "$host_os" in
+  *cygwin*)
+    AC_DEFINE(USE_BINMODE_STREAM)
+    ;;
+esac
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -121,9 +122,11 @@ dnl AC_CHECK_HEADERS(fcntl.h malloc.h sgtty.h strings.h sys/ioctl.h sys/time.h t
 AC_CHECK_HEADER(termios.h, [AC_DEFINE(HAVE_TERMIOS_H)],
 	 [AC_CHECK_HEADER(termio.h, [AC_DEFINE(HAVE_TERMIO_H)],
 	  [AC_CHECK_HEADER(sgtty.h, [AC_DEFINE(HAVE_SGTTY_H)])])])
-AC_CHECK_HEADER([float.h])
-AC_CHECK_HEADER([sys/select.h])
+AC_CHECK_HEADER([float.h], [AC_DEFINE(HAVE_FLOAT_H)])
+AC_CHECK_HEADER([sys/select.h], [AC_DEFINE(HAVE_SYS_SELECT_H)])
 AC_CHECK_HEADER([locale.h], [AC_DEFINE(HAVE_LOCALE_H)])
+AC_CHECK_HEADER([stdint.h], [AC_DEFINE(HAVE_STDINT_H)])
+AC_CHECK_HEADER([inttypes.h], [AC_DEFINE(HAVE_INTTYPES_H)])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl AC_C_CONST

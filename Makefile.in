@@ -35,7 +35,7 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
-CFLAGS = $(OPTS) @CFLAGS@ $(DEFS)
+CFLAGS = $(OPTS) @CFLAGS@ $(CPPFLAGS) $(DEFS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
@@ -145,7 +145,14 @@ funcname.tab: $(DEFUNS)
 	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) - | \
 	 awk '$$1 ~ /^[_A-Za-z]/ { \
 	       for (i=2;i<=NF;i++) { print $$i, $$1} \
-	 }' > $@
+	 }' > $@.tmp
+	@if cmp -s $@.tmp $@; then \
+		echo "$@ unchanged"; \
+		rm -f $@.tmp; \
+	else \
+		echo "$@ updated"; \
+		mv $@.tmp $@; \
+	fi
 
 funcname.c: funcname.tab
 	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname0.awk > $@

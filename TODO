@@ -1,5 +1,85 @@
 TODO lists
 
+refactoring
+ backend - ??
+ file - ??
+ local ?
+ func ?
+ indep ?
+ main
+
+utilities
+ Str - string modules
+ myctype
+ entity
+ symbol
+ hash
+ textlist
+ etc - system informations
+ history
+ inflate
+ matrix
+ regex
+
+configuration
+ rc
+
+UI
+ display
+ menu
+ search
+ keybind
+ linein
+ terms
+ mouse
+
+buffer
+ buffer
+
+loader - main controller
+ loader
+  - connection management
+  - protocol backends
+  - media management
+  - media processing
+
+URL
+ url
+  - protocol backends
+
+media management
+ mailcap
+ mimehead
+ mimetyps
+  - media procesings
+
+media processing
+ html
+  parsetag
+  parsetagx
+  anchor
+  form
+  frame
+  map
+  table
+  tagtable
+ plain
+ image
+  
+connection management
+ conn
+  ssl?
+ istream
+
+protocol backend
+ http
+  auth
+  cookie
+ ftp
+ news
+ ...
+
+
 Documentation
  release notes for w3m-0.4
 	[w3m-dev 03739]

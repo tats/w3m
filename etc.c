@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.76 2004/03/31 16:45:39 ukai Exp $ */
+/* $Id: etc.c,v 1.77 2004/04/04 16:47:20 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -957,7 +957,7 @@ find_auth_pass_entry(char *host, int port, char *file, char *realm,
     struct auth_pass *ent;
     for (ent = passwords; ent != NULL; ent = ent->next) {
 	if (ent->is_proxy == is_proxy
-	    && (!ent->host || !Strcmp_charp(ent->host, host))
+	    && (!ent->host || !Strcasecmp_charp(ent->host, host))
 	    && (!ent->port || ent->port == port)
 	    && (!ent->file || !file || dir_under(ent->file->ptr, file))
 	    && (!ent->realm || !realm || !Strcmp_charp(ent->realm, realm))

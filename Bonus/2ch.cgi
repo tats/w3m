@@ -4,6 +4,7 @@ $WGET = "wget";
 $SCRIPT_NAME = $ENV{'SCRIPT_NAME'} || $0;
 $CGI = "file://$SCRIPT_NAME";
 $_ = $QUERY_STRING = $ENV{"QUERY_STRING"};
+$UserAgent = "Monazilla/1.00 (w3m/2ch.cgi)";
 
 if (/subback.html$/) {
 	&subback();
@@ -21,7 +22,7 @@ $tmp = $ENV{"HOME"} . "/.w3m2ch/$_";
 $dat =~ s/([^\w\/.\:\-])/\\$1/g;
 $tmp =~ s/([^\w\/.\:\-])/\\$1/g;
 ($dir = $tmp) =~ s@/[^/]+$@@;
-$cmd = "mkdir -p $dir; $WGET -c -O $tmp $dat >/dev/null 2>&1";
+$cmd = "mkdir -p $dir; $WGET -c -U \"$UserAgent\" -O $tmp $dat >/dev/null 2>&1";
 system $cmd;
 $lines = (split(" ", `wc $tmp`))[0];
 $lines || exit;

@@ -1,3 +1,8 @@
+2003-04-20  qhwt@myrealbox.com
+
+	* [w3m-dev 03883] User-Agent for Bonus/2ch.cgi
+	* Bonus/2ch.cgi: User-Agent
+
 2003-04-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03882] Re: Bug#189460: w3m: <q> tag is not recognized
@@ -7765,4 +7770,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.827 2003/04/18 16:47:16 ukai Exp $
+$Id: ChangeLog,v 1.828 2003/04/20 13:30:27 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.27 2003/01/22 16:10:28 ukai Exp $ */
+/* $Id: image.c,v 1.29 2003/01/28 16:46:54 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -335,8 +335,12 @@ loadImage(int flag)
 	bzero(image_cache, sizeof(ImageCache *) * MAX_LOAD_IMAGE);
     }
 
-    if (flag == IMG_FLAG_STOP) {
-	for (i = 0; i < n_load_image; i++) {
+    if (flag == IMG_FLAG_STOP || flag == IMG_FLAG_START) {
+	if (flag == IMG_FLAG_STOP)
+	    i = 0;
+	else
+	    i = maxLoadImage;
+	for (; i < n_load_image; i++) {
 	    cache = image_cache[i];
 	    if (!cache)
 		continue;

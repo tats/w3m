@@ -1,3 +1,8 @@
+2001-11-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02596]
+	* file.c (acceptableEncoding): fix segfault if no decoder found
+
 2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02595]

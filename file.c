@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.22 2001/11/30 10:27:32 ukai Exp $ */
+/* $Id: file.c,v 1.23 2001/11/30 10:30:07 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -401,10 +401,9 @@ acceptableEncoding()
 	    pushText(l, d->encoding);
 	}
     }
+    encodings = Strnew();
     while ((p = popText(l)) != NULL) {
-	if (encodings == NULL)
-	    encodings = Strnew();
-	else
+	if (encodings->length)
 	    Strcat_charp(encodings, ", ");
 	Strcat_charp(encodings, p);
     }

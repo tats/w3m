@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.9 2003/02/05 16:43:57 ukai Exp $ */
+/* $Id: history.c,v 1.10 2003/07/22 17:29:48 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -72,7 +72,10 @@ saveHistory(Hist *hist, size_t size)
 	size++;
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
-    fclose(f);
+    if (fclose(f) == EOF) {
+	disp_err_message("Can't save history", FALSE);
+	return;
+    }
     rename(tmpf, rcFile(HISTORY_FILE));
 }
 #endif				/* USE_HISTORY */

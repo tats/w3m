@@ -1,3 +1,8 @@
+2003-07-23  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
+
+	* [w3m-dev 03942] Save history
+	* history.c (saveHistory): check tmpfile write error
+
 2003-07-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03941] fix character encoding for 'v'
@@ -7956,4 +7961,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.854 2003/07/22 17:27:19 ukai Exp $
+$Id: ChangeLog,v 1.855 2003/07/22 17:29:47 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.48 2001/12/25 16:49:42 ukai Exp $ */
+/* $Id: main.c,v 1.49 2001/12/26 18:17:57 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2222,9 +2222,10 @@ void
 editBf(void)
 {
     char *fn = Currentbuf->filename;
-    char *type = Currentbuf->type;
-    int top, linenum, cursorY, pos, currentColumn;
-    Buffer *buf, *fbuf = NULL;
+    Buffer *buf, *fbuf = NULL, sbuf;
+#ifdef JP_CHARSET
+    char old_code;
+#endif
     Str cmd;
 
     if (fn == NULL || Currentbuf->pagerSource != NULL ||	/* Behaving as a pager */
@@ -2236,17 +2237,7 @@ editBf(void)
     }
     if (Currentbuf->frameset != NULL)
 	fbuf = Currentbuf->linkBuffer[LB_FRAME];
-    if (Currentbuf->firstLine == NULL) {
-	top = 1;
-	linenum = 1;
-    }
-    else {
-	top = Currentbuf->topLine->linenumber;
-	linenum = Currentbuf->currentLine->linenumber;
-    }
-    cursorY = Currentbuf->cursorY;
-    pos = Currentbuf->pos;
-    currentColumn = Currentbuf->currentColumn;
+    copyBuffer(&sbuf, Currentbuf);
     if (Currentbuf->edit) {
 	cmd = unquote_mailcap(Currentbuf->edit,
 			      Currentbuf->real_type,
@@ -2255,6 +2246,7 @@ editBf(void)
     }
     else {
 	char *file = shell_quote(fn);
+	int linenum = CUR_LINENUMBER(Currentbuf);
 	if (strcasestr(Editor, "%s")) {
 	    if (strcasestr(Editor, "%d"))
 		cmd = Sprintf(Editor, linenum, file);
@@ -2274,11 +2266,20 @@ editBf(void)
     fmTerm();
     system(cmd->ptr);
     fmInit();
+
+#ifdef JP_CHARSET
+    old_code = DocumentCode;
+    DocumentCode = Currentbuf->document_code;
+#endif
     SearchHeader = Currentbuf->search_header;
     DefaultType = Currentbuf->real_type;
     buf = loadGeneralFile(file_to_url(fn), NULL, NO_REFERER, 0, NULL);
+#ifdef JP_CHARSET
+    DocumentCode = old_code;
+#endif
     SearchHeader = FALSE;
     DefaultType = NULL;
+
     if (buf == NULL) {
 	disp_err_message("Re-loading failed", FALSE);
 	buf = nullBuffer();
@@ -2286,29 +2287,21 @@ editBf(void)
     else if (buf == NO_BUFFER) {
 	buf = nullBuffer();
     }
-    buf->search_header = Currentbuf->search_header;
     if (fbuf != NULL)
 	Firstbuf = deleteBuffer(Firstbuf, fbuf);
     repBuffer(Currentbuf, buf);
-    if ((type != NULL) && (buf->type != NULL) &&
+    if ((buf->type != NULL) && (sbuf.type != NULL) &&
 	((!strcasecmp(buf->type, "text/plain") &&
-	  !strcasecmp(type, "text/html")) ||
+	  !strcasecmp(sbuf.type, "text/html")) ||
 	 (!strcasecmp(buf->type, "text/html") &&
-	  !strcasecmp(type, "text/plain")))) {
+	  !strcasecmp(sbuf.type, "text/plain")))) {
 	vwSrc();
 	if (Currentbuf != buf)
 	    Firstbuf = deleteBuffer(Firstbuf, buf);
     }
-    if (Currentbuf->firstLine == NULL) {
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	return;
-    }
-    Currentbuf->topLine =
-	lineSkip(Currentbuf, Currentbuf->topLine, top - 1, FALSE);
-    gotoLine(Currentbuf, linenum);
-    Currentbuf->pos = pos;
-    Currentbuf->currentColumn = currentColumn;
-    arrangeCursor(Currentbuf);
+    Currentbuf->search_header = sbuf.search_header;
+    if (Currentbuf->firstLine)
+	restorePosition(Currentbuf, &sbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -4101,10 +4094,11 @@ vwSrc(void)
 void
 reload(void)
 {
-    Buffer *buf, *fbuf = NULL;
-    char *type = Currentbuf->type;
+    Buffer *buf, *fbuf = NULL, sbuf;
+#ifdef JP_CHARSET
+    char old_code;
+#endif
     Str url;
-    int top, linenum, cursorY, pos, currentColumn;
     FormList *request;
     int multipart;
 
@@ -4118,17 +4112,7 @@ reload(void)
 	disp_err_message("Can't reload stdin", TRUE);
 	return;
     }
-    if (Currentbuf->firstLine == NULL) {
-	top = 1;
-	linenum = 1;
-    }
-    else {
-	top = Currentbuf->topLine->linenumber;
-	linenum = Currentbuf->currentLine->linenumber;
-    }
-    cursorY = Currentbuf->cursorY;
-    pos = Currentbuf->pos;
-    currentColumn = Currentbuf->currentColumn;
+    copyBuffer(&sbuf, Currentbuf);
     if (Currentbuf->bufferprop & BP_FRAME &&
 	(fbuf = Currentbuf->linkBuffer[LB_N_FRAME])) {
 	if (fmInitialized) {
@@ -4149,14 +4133,8 @@ reload(void)
 	buf->linkBuffer[LB_N_FRAME] = fbuf;
 	pushBuffer(buf);
 	Currentbuf = buf;
-	if (Currentbuf->firstLine == NULL) {
-	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	    return;
-	}
-	gotoLine(Currentbuf, linenum);
-	Currentbuf->pos = pos;
-	Currentbuf->currentColumn = currentColumn;
-	arrangeCursor(Currentbuf);
+	if (Currentbuf->firstLine)
+	    restorePosition(Currentbuf, &sbuf);
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
@@ -4181,11 +4159,20 @@ reload(void)
     url = parsedURL2Str(&Currentbuf->currentURL);
     message("Reloading...", 0, 0);
     refresh();
+
+#ifdef JP_CHARSET
+    old_code = DocumentCode;
+    DocumentCode = Currentbuf->document_code;
+#endif
     SearchHeader = Currentbuf->search_header;
     DefaultType = Currentbuf->real_type;
     buf = loadGeneralFile(url->ptr, NULL, NO_REFERER, RG_NOCACHE, request);
+#ifdef JP_CHARSET
+    DocumentCode = old_code;
+#endif
     SearchHeader = FALSE;
     DefaultType = NULL;
+
     if (multipart)
 	unlink(request->body);
     if (buf == NULL) {
@@ -4195,36 +4182,28 @@ reload(void)
     else if (buf == NO_BUFFER) {
 	return;
     }
-    buf->search_header = Currentbuf->search_header;
-    buf->form_submit = Currentbuf->form_submit;
     if (fbuf != NULL)
 	Firstbuf = deleteBuffer(Firstbuf, fbuf);
     repBuffer(Currentbuf, buf);
-    if ((type != NULL) && (buf->type != NULL) &&
+    if ((buf->type != NULL) && (sbuf.type != NULL) &&
 	((!strcasecmp(buf->type, "text/plain") &&
-	  !strcasecmp(type, "text/html")) ||
+	  !strcasecmp(sbuf.type, "text/html")) ||
 	 (!strcasecmp(buf->type, "text/html") &&
-	  !strcasecmp(type, "text/plain")))) {
+	  !strcasecmp(sbuf.type, "text/plain")))) {
 	vwSrc();
 	if (Currentbuf != buf)
 	    Firstbuf = deleteBuffer(Firstbuf, buf);
     }
-    if (Currentbuf->firstLine == NULL) {
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	return;
-    }
-    Currentbuf->topLine =
-	lineSkip(Currentbuf, Currentbuf->firstLine, top - 1, FALSE);
-    gotoLine(Currentbuf, linenum);
-    Currentbuf->pos = pos;
-    Currentbuf->currentColumn = currentColumn;
-    arrangeCursor(Currentbuf);
+    Currentbuf->search_header = sbuf.search_header;
+    Currentbuf->form_submit = sbuf.form_submit;
+    if (Currentbuf->firstLine)
+	restorePosition(Currentbuf, &sbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
 /* mark URL-like patterns as anchors */
 void
-chkURL(void)
+chkURLBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
 	"http://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*[a-zA-Z0-9_/=]",
@@ -4251,17 +4230,22 @@ chkURL(void)
     };
     int i;
     for (i = 0; url_like_pat[i]; i++) {
-	reAnchor(Currentbuf, url_like_pat[i]);
+	reAnchor(buf, url_like_pat[i]);
     }
-    Currentbuf->check_url |= CHK_URL;
+    buf->check_url |= CHK_URL;
+}
 
+void
+chkURL(void)
+{
+    chkURLBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
 #ifdef USE_NNTP
 /* mark Message-ID-like patterns as NEWS anchors */
 void
-chkNMID(void)
+chkNMIDBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
 	"<[^<> 	][^<> 	]*@[A-z0-9\\.\\-_][A-z0-9\\.\\-_]*>",
@@ -4269,10 +4253,15 @@ chkNMID(void)
     };
     int i;
     for (i = 0; url_like_pat[i]; i++) {
-	reAnchorNews(Currentbuf, url_like_pat[i]);
+	reAnchorNews(buf, url_like_pat[i]);
     }
-    Currentbuf->check_url |= CHK_NMID;
+    buf->check_url |= CHK_NMID;
+}
 
+void
+chkNMID(void)
+{
+    chkNMIDBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 #endif				/* USE_NNTP */

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.12 2001/12/04 16:33:08 ukai Exp $ */
+/* $Id: display.c,v 1.13 2001/12/26 18:17:57 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -188,8 +188,6 @@ static Linecolor color_mode = 0;
 static Buffer *save_current_buf = NULL;
 #endif
 
-int in_check_url = FALSE;
-
 char *delayed_msg = NULL;
 
 void
@@ -198,8 +196,6 @@ displayBuffer(Buffer *buf, int mode)
     Str msg;
     Anchor *aa = NULL;
 
-    if (in_check_url)
-	return;
     if (buf->topLine == NULL && readBufferCache(buf) == 0) {	/* clear_buffer */
 	mode = B_FORCE_REDRAW;
     }
@@ -209,11 +205,8 @@ displayBuffer(Buffer *buf, int mode)
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
     if (buf->width != INIT_BUFFER_WIDTH && buf->type
-	&& !strcmp(buf->type, "text/html")) {
-	in_check_url = TRUE;
+	&& !strcmp(buf->type, "text/html"))
 	reshapeBuffer(buf);
-	in_check_url = FALSE;
-    }
     if (showLineNum) {
 	if (buf->lastLine && buf->lastLine->real_linenumber > 0)
 	    buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
@@ -327,9 +320,9 @@ displayBuffer(Buffer *buf, int mode)
     standend();
     refresh();
 #ifdef USE_BUFINFO
-    if (Currentbuf != save_current_buf) {
+    if (buf != save_current_buf) {
 	saveBufferInfo();
-	save_current_buf = Currentbuf;
+	save_current_buf = buf;
     }
 #endif
 }
@@ -1056,10 +1049,10 @@ arrangeLine(Buffer *buf)
 	buf->cursorX = cpos;
 	buf->pos = i;
     }
-    else if (Currentbuf->currentLine->len > i) {
+    else if (buf->currentLine->len > i) {
 	int delta = 1;
 #ifdef JP_CHARSET
-	if (Currentbuf->currentLine->len > i + 1 &&
+	if (buf->currentLine->len > i + 1 &&
 	    CharType(buf->currentLine->propBuf[i + 1]) == PC_KANJI2)
 	    delta = 2;
 #endif
@@ -1103,6 +1096,17 @@ cursorXY(Buffer *buf, int x, int y)
 	if (buf->cursorX > x)
 	    cursorLeft(buf, buf->COLS / 2);
     }
+}
+
+void
+restorePosition(Buffer *buf, Buffer *orig)
+{
+    buf->topLine = lineSkip(buf, buf->firstLine, TOP_LINENUMBER(orig) - 1,
+			    FALSE);
+    gotoLine(buf, CUR_LINENUMBER(orig));
+    buf->pos = orig->pos;
+    buf->currentColumn = orig->currentColumn;
+    arrangeCursor(buf);
 }
 
 /* Local Variables:    */

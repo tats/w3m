@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.87 2003/12/08 16:17:21 ukai Exp $ */
+/* $Id: url.c,v 1.88 2004/03/30 18:06:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -354,7 +354,8 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 		goto eend;
 	    }
 	}
-	if (SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
+	if ((!ssl_ca_file && !ssl_ca_path)
+	    || SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
 #endif				/* defined(USE_SSL_VERIFY) */
 	    SSL_CTX_set_default_verify_paths(ssl_ctx);
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */

@@ -1,3 +1,9 @@
+2004-03-31  AIDA Shinra <shinra@j10n.org>
+
+	* [w3m-dev 04050] SSL verify
+	* url.c (openSSLHandle): don't load verify locations if 
+		both ssl_ca_file and ssl_ca_path is NULL.
+
 2004-03-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* fix search problem on different charset page than display charset
@@ -8367,4 +8373,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.914 2004/03/23 16:44:02 ukai Exp $
+$Id: ChangeLog,v 1.915 2004/03/30 18:06:42 ukai Exp $

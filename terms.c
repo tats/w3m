@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.18 2001/11/29 10:22:58 ukai Exp $ */
+/* $Id: terms.c,v 1.19 2001/11/30 10:10:24 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -635,8 +635,7 @@ getTCstr(void)
     GETSTR(T_as, "as");		/* alternative (graphic) charset start */
     GETSTR(T_ae, "ae");		/* alternative (graphic) charset end */
     GETSTR(T_ac, "ac");		/* graphics charset pairs */
-    GETSTR(T_op, "op");		/* set default color pair to its original
-				 * * * * * * * value */
+    GETSTR(T_op, "op");		/* set default color pair to its original value */
 #if defined( CYGWIN ) && CYGWIN < 1
     /* for TERM=pcansi on MS-DOS prompt. */
 #if 0

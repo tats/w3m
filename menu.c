@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.7 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: menu.c,v 1.8 2001/11/30 10:10:24 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -26,8 +26,7 @@ extern int sysm_process_mouse(int, int, int, int);
 static int X_Mouse_Selection;
 extern int do_getch();
 #define getch()	do_getch()
-#endif				/* defined(USE_GPM) || * * * * * *
-				 * defined(USE_SYSMOUSE) */
+#endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif				/* USE_MOUSE */
 
 #ifdef USE_MENU
@@ -623,8 +622,7 @@ action_menu(Menu *menu)
 	    if (mselect != MENU_NOTHING)
 		break;
 	}
-#endif				/* defined(USE_GPM) || * * * * * *
-				 * defined(USE_SYSMOUSE) */
+#endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
 	    mselect = (*menu->keymap[(int)c]) (c);

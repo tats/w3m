@@ -1,9 +1,7 @@
-/* $Id: table.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: table.h,v 1.5 2001/11/30 10:10:24 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
-#endif				/* (defined(MESCHACH) && !defined(MATRIX)) 
-				 * 
-				 * *  * *  * *  */
+#endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
 
 #ifdef MATRIX
 #ifdef MESCHACH

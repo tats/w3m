@@ -1,7 +1,7 @@
 
 /* 
  * matrix.h, matrix.c: Liner equation solver using LU decomposition.
- * $Id: matrix.c,v 1.5 2001/11/29 10:22:58 ukai Exp $
+ * $Id: matrix.c,v 1.6 2001/11/30 10:10:24 ukai Exp $
  *
  * by K.Okabe  Aug. 1999 
  *
@@ -139,7 +139,7 @@ LUsolve(Matrix A, int *indexarray, Vector b, Vector x)
 }
 
 /* m_inverse -- returns inverse of A, provided A is not too rank deficient
- * * * * * * * -- uses LU factorisation */
+ *           -- uses LU factorisation */
 #if 0
 Matrix
 m_inverse(Matrix A, Matrix out)

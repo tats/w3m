@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: regex.c,v 1.6 2001/11/30 10:10:24 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -328,24 +328,7 @@ matchWhich(longchar * pattern, longchar c)
     printf("RE pattern = %s char=%c", pattern, c);
 #endif				/* REGEX_DEBUG */
     while (*p != '\0') {
-	if (*(p + 1) == RE_WHICH_RANGE && *(p + 2) != '\0') {	/* Char  * 
-								 * 
-								 * *  * *
-								 * * * * * 
-								 * * * * 
-								 * * *  *
-								 * *  * *
-								 * *  * *
-								 * * *  *
-								 * * *  *
-								 * * * * * 
-								 * * * * * 
-								 * * *
-								 * class. 
-								 * * * *  * 
-								 * * * * *
-								 * *  * * * 
-								 */
+	if (*(p + 1) == RE_WHICH_RANGE && *(p + 2) != '\0') {	/* Char class. */
 	    if (*p <= c && c <= *(p + 2)) {
 		ans = 1;
 		break;

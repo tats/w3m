@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.154 2002/11/25 16:59:07 ukai Exp $ */
+/* $Id: main.c,v 1.155 2002/11/26 03:42:28 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4864,14 +4864,26 @@ do_mouse_action(int btn, int x, int y)
 #endif				/* JP_CHARSET */
 	    )) {
 	    if (retrieveCurrentAnchor(Currentbuf) ||
-		retrieveCurrentForm(Currentbuf))
+		retrieveCurrentForm(Currentbuf)) {
 		map = &mouse_action.active_map[btn];
+		if (!(map && map->func))
+		    map = &mouse_action.anchor_map[btn];
+	    }
 	}
 	else {
 	    int cx = Currentbuf->cursorX, cy = Currentbuf->cursorY;
 	    cursorXY(Currentbuf, x - Currentbuf->rootX, y - Currentbuf->rootY);
-	    if (retrieveCurrentAnchor(Currentbuf) ||
-		retrieveCurrentForm(Currentbuf))
+	    if (y == Currentbuf->cursorY + Currentbuf->rootY &&
+		(x == Currentbuf->cursorX + Currentbuf->rootX
+#ifdef JP_CHARSET
+		 || (Currentbuf->currentLine != NULL &&
+		     (Currentbuf->currentLine->
+		      propBuf[Currentbuf->pos] & PC_KANJI1)
+		     && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
+#endif				/* JP_CHARSET */
+		) &&
+		(retrieveCurrentAnchor(Currentbuf) ||
+		 retrieveCurrentForm(Currentbuf)))
 		map = &mouse_action.anchor_map[btn];
 	    cursorXY(Currentbuf, cx, cy);
 	}
@@ -5112,6 +5124,11 @@ movMs(void)
 }
 
 #ifdef USE_MENU
+#ifdef KANJI_SYMBOLS
+#define FRAME_WIDTH 2
+#else
+#define FRAME_WIDTH 1
+#endif
 void
 menuMs(void)
 {
@@ -5119,7 +5136,7 @@ menuMs(void)
 	return;
     if ((nTab > 1 || mouse_action.menu_str) &&
 	mouse_action.cursorY < LastTab->y + 1)
-	mouse_action.cursorX -= 2;
+	mouse_action.cursorX -= FRAME_WIDTH + 1;
     else if (mouse_action.cursorX >= Currentbuf->rootX &&
 	     mouse_action.cursorY < LASTLINE) {
 	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,

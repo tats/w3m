@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.17 2002/12/05 16:29:07 ukai Exp $
+# $Id: funcname.tab,v 1.18 2002/12/09 15:51:08 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -50,6 +50,8 @@ LINE_INFO	curlno
 LINK_BEGIN	topA
 LINK_END	lastA
 LINK_MENU	linkMn
+LIST		linkLst
+LIST_MENU	listMn
 LOAD		ldfile
 MAIN_MENU	mainMn
 MARK		_mark
@@ -64,6 +66,7 @@ MOVE_DOWN	movD
 MOVE_DOWN1     movD1
 MOVE_LEFT	movL
 MOVE_LEFT1     movL1
+MOVE_LIST_MENU	movlistMn
 MOVE_MOUSE     movMs
 MOVE_RIGHT	movR
 MOVE_RIGHT1    movR1

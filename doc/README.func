@@ -45,6 +45,8 @@ LINE_INFO	Show current line number
 LINK_BEGIN     Go to the first link
 LINK_END       Go to the last link
 LINK_MENU	Popup link element menu
+LIST		Show all links and images
+LIST_MENU	Popup link list menu and go to selected link
 LOAD		Load local file
 MAIN_MENU	Popup menu
 MARK		Set/unset mark
@@ -58,6 +60,7 @@ MOVE_DOWN      Move cursor down (a half screen scroll at the end of screen)
 MOVE_DOWN1     Move cursor down (1 line scroll at the end of screen)
 MOVE_LEFT      Move cursor left (a half screen shift at the left edge)
 MOVE_LEFT1     Move cursor left (1 columns shift at the left edge)
+MOVE_LIST_MENU	Popup link list menu and move cursor to selected link
 MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
 MOVE_RIGHT     Move cursor right (a half screen shift at the right edge)
 MOVE_RIGHT1    Move cursor right (1 columns shift at the right edge)

@@ -1,5 +1,45 @@
 2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03549] link list
+	* anchor.c (addMultirowsImg): add a->slave
+		(getAnchorText): arg AnchorList *al
+		(link_list_panel): added
+	* funcname.tab (LIST): added
+		(LIST_MENU): added
+		(MOVE_LIST_MENU): added
+	* main.c (anchorMn): added
+		(accessKey): use anchorMn()
+		(listMn): added
+		(movlistMn): added
+		(linkLst): added
+	* map.c (searchMapList): not static
+	* menu.c (accesskey_menu): pass AnchorList to getAnchorText()
+		(lmKeys): added
+		(lmKeys2): added
+		(nlmKeys): added
+		(nlmKeys2): added
+		(lmGoto): added
+		(lmSelect): added
+		(list_menu): added
+	* proto.h (linkLst): added
+		(listMn): added
+		(movlistMn): added
+		(list_menu): added
+		(searchMapList): added
+		(getAnchorText): arg AnchorList *al
+		(link_list_panel): added
+	* doc/README.func (LIST): added
+		(LIST_MENU): added
+		(MOVE_LIST_MENU): added
+	* doc-jp/README.func (LINK_MENU): fix message
+		(LIST): added
+		(LIST_MENU): added
+		(MOVE_LIST_MENU): added
+	* scripts/w3mhelp.cgi.in (Page/Cursor motion): add movlistMn
+		(Hyperlink operation): add linkLst linkMn
+
+2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03548] close anchor before <img align=...>
 	* file.c (process_img): use div_int
 		(process_hr): use div_int
@@ -5632,4 +5672,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.605 2002/12/09 15:40:34 ukai Exp $
+$Id: ChangeLog,v 1.606 2002/12/09 15:51:08 ukai Exp $

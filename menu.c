@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.26 2002/12/05 16:33:09 ukai Exp $ */
+/* $Id: menu.c,v 1.27 2002/12/09 15:51:09 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1898,7 +1898,7 @@ accesskey_menu(Buffer *buf)
     for (i = 0, n = 0; i < al->nanchor; i++) {
 	a = &al->anchors[i];
 	if (!a->slave && a->accesskey && IS_ASCII(a->accesskey)) {
-	    t = getAnchorText(buf, a);
+	    t = getAnchorText(buf, al, a);
 	    label[n] = Sprintf("%c: %s", a->accesskey, t ? t : "")->ptr;
 	    ap[n] = a;
 	    n++;
@@ -1934,6 +1934,120 @@ accesskey_menu(Buffer *buf)
 
     a = retrieveCurrentAnchor(buf);
     if (a && a->accesskey && IS_ASCII(a->accesskey)) {
+	for (i = 0; i < nitem; i++) {
+	    if (a == ap[i]) {
+		menu.initial = i;
+		break;
+	    }
+	}
+    }
+
+    popup_menu(NULL, &menu);
+
+    return (key >= 0) ? ap[key] : NULL;
+}
+
+static char lmKeys[] = "abcdefgimopqrstuvwxyz";
+static char lmKeys2[] = "1234567890ABCDEFGHILMOPQRSTUVWXYZ";
+#define nlmKeys (sizeof(lmKeys) - 1)
+#define nlmKeys2 (sizeof(lmKeys2) - 1)
+
+static int
+lmGoto(char c)
+{
+    if (IS_ASCII(c) && CurrentMenu->keyselect[(int)c] >= 0) {
+	goto_menu(CurrentMenu, CurrentMenu->nitem - 1, -1);
+	goto_menu(CurrentMenu, CurrentMenu->keyselect[(int)c] * nlmKeys, 1);
+    }
+    return (MENU_NOTHING);
+}
+
+static int
+lmSelect(char c)
+{
+    if (IS_ASCII(c))
+	return select_menu(CurrentMenu, (CurrentMenu->select / nlmKeys) *
+			   nlmKeys + CurrentMenu->keyselect[(int)c]);
+    else
+	return (MENU_NOTHING);
+}
+
+Anchor *
+list_menu(Buffer *buf)
+{
+    Menu menu;
+    AnchorList *al = buf->href;
+    Anchor *a;
+    Anchor **ap;
+    int i, n, nitem = 0, key = -1, two = FALSE;
+    char **label;
+    char *t;
+    unsigned char c;
+
+    if (!al)
+	return NULL;
+    for (i = 0; i < al->nanchor; i++) {
+	a = &al->anchors[i];
+	if (!a->slave)
+	    nitem++;
+    }
+    if (!nitem)
+	return NULL;
+
+    if (nitem >= nlmKeys)
+	two = TRUE;
+    label = New_N(char *, nitem + 1);
+    ap = New_N(Anchor *, nitem);
+    for (i = 0, n = 0; i < al->nanchor; i++) {
+	a = &al->anchors[i];
+	if (!a->slave) {
+	    t = getAnchorText(buf, al, a);
+	    if (!t)
+		t = "";
+	    if (two && n >= nlmKeys2 * nlmKeys)
+		label[n] = Sprintf("  : %s", t)->ptr;
+	    else if (two)
+		label[n] = Sprintf("%c%c: %s", lmKeys2[n / nlmKeys],
+				   lmKeys[n % nlmKeys], t)->ptr;
+	    else 
+		label[n] = Sprintf("%c: %s", lmKeys[n], t)->ptr;
+	    ap[n] = a;
+	    n++;
+	}
+    }
+    label[nitem] = NULL;
+
+    new_option_menu(&menu, label, &key, NULL);
+
+    menu.initial = 0;
+    menu.cursorX = buf->cursorX + buf->rootX;
+    menu.cursorY = buf->cursorY + buf->rootY;
+    menu.x = menu.cursorX + FRAME_WIDTH + 1;
+    menu.y = menu.cursorY + 2;
+    for (i = 0; i < 128; i++)
+	menu.keyselect[i] = -1;
+    if (two) {
+	for (i = 0; i < nlmKeys2; i++) {
+	    c = lmKeys2[i];
+	    menu.keymap[(int)c] = lmGoto;
+	    menu.keyselect[(int)c] = i;
+	}
+	for (i = 0; i < nlmKeys; i++) {
+	    c = lmKeys[i];
+	    menu.keymap[(int)c] = lmSelect;
+	    menu.keyselect[(int)c] = i;
+	}
+    }
+    else {
+	for (i = 0; i < nitem; i++) {
+	    c = lmKeys[i];
+	    menu.keymap[(int)c] = mSelect;
+	    menu.keyselect[(int)c] = i;
+	}
+    }
+
+    a = retrieveCurrentAnchor(buf);
+    if (a) {
 	for (i = 0; i < nitem; i++) {
 	    if (a == ap[i]) {
 		menu.initial = i;

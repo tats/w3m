@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.162 2002/12/09 15:32:18 ukai Exp $ */
+/* $Id: main.c,v 1.163 2002/12/09 15:51:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4177,26 +4177,63 @@ linkMn(void)
 		parsedURL2Str(&Currentbuf->currentURL)->ptr);
 }
 
-/* accesskey */
-void
-accessKey(void)
+static void
+anchorMn(Anchor * (*menu_func) (Buffer *), int go)
 {
     Anchor *a;
     BufferPoint *po;
 
     if (!Currentbuf->href || !Currentbuf->hmarklist)
 	return;
-    a = accesskey_menu(Currentbuf);
+    a = menu_func(Currentbuf);
     if (!a || a->hseq < 0)
 	return;
     po = &Currentbuf->hmarklist->marks[a->hseq];
     gotoLine(Currentbuf, po->line);
     Currentbuf->pos = po->pos;
     arrangeCursor(Currentbuf);
-    onA();
-    followA();
+    displayBuffer(Currentbuf, B_NORMAL);
+    if (go) {
+	onA();
+	followA();
+    }
+}
+
+/* accesskey */
+void
+accessKey(void)
+{
+    anchorMn(accesskey_menu, TRUE);
+}
+
+/* list menu */
+void
+listMn(void)
+{
+    anchorMn(list_menu, TRUE);
+}
+
+void
+movlistMn(void)
+{
+    anchorMn(list_menu, FALSE);
 }
 #endif
+
+/* link,anchor,image list */
+void
+linkLst(void)
+{
+    Buffer *buf;
+
+    buf = link_list_panel(Currentbuf);
+    if (buf != NULL) {
+#ifdef JP_CHARSET
+	buf->document_code = Currentbuf->document_code;
+#endif                          /* JP_CHARSET */
+	cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
+    }
+}
 
 #ifdef USE_COOKIE
 /* cookie list */

@@ -1,11 +1,11 @@
-/* $Id: map.c,v 1.20 2002/12/05 16:33:08 ukai Exp $ */
+/* $Id: map.c,v 1.21 2002/12/09 15:51:09 ukai Exp $ */
 /*
  * client-side image maps
  */
 #include "fm.h"
 #include <math.h>
 
-static MapList *
+MapList *
 searchMapList(Buffer *buf, char *name)
 {
     MapList *ml;

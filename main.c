@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.180 2002/12/25 16:05:08 ukai Exp $ */
+/* $Id: main.c,v 1.181 2002/12/25 16:06:43 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -39,6 +39,7 @@ typedef struct _Event {
     struct _Event *next;
 } Event;
 static Event *CurrentEvent = NULL;
+static Event *LastEvent = NULL;
 
 #ifdef USE_ALARM
 static AlarmEvent DefaultAlarm = {
@@ -1097,9 +1098,10 @@ pushEvent(int cmd, void *data)
     event->data = data;
     event->next = NULL;
     if (CurrentEvent)
-	CurrentEvent->next = event;
+	LastEvent->next = event;
     else
 	CurrentEvent = event;
+    LastEvent = event;
 }
 
 static void

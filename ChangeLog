@@ -1,5 +1,10 @@
 2003-01-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03682] open null file on tab
+	* display.c (displayBuffer): if empty, clear()
+
+2003-01-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03681] Re: fold patch
 	* buffer.c (reshapeBuffer): buf->pos, sbuf.currentLine fix
 				FoldLine
@@ -6832,4 +6837,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.712 2003/01/24 17:30:38 ukai Exp $
+$Id: ChangeLog,v 1.713 2003/01/24 17:34:36 ukai Exp $

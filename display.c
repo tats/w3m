@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.56 2003/01/24 17:30:57 ukai Exp $ */
+/* $Id: display.c,v 1.57 2003/01/24 17:34:36 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -456,7 +456,6 @@ displayBuffer(Buffer *buf, int mode)
     msg = make_lastline_message(buf);
     if (buf->firstLine == NULL) {
 	Strcat_charp(msg, "\tNo Line");
-	clear();
     }
     if (delayed_msg != NULL) {
 	disp_message(delayed_msg, FALSE);

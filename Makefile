@@ -49,7 +49,7 @@ KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 GCLIB=@gclib@
 
-VERSION=0.4.1+cvs-1.780
+VERSION=0.4.1+cvs-1.781
 MODEL=@W3M_TARGET@-@W3M_MODEL@-EN
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \

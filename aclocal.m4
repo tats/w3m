@@ -64,7 +64,7 @@ AC_DEFUN([AC_W3M_MENU],
 [AC_SUBST(USE_MENU)
 AC_MSG_CHECKING(if popup menu is enabled)
 AC_ARG_ENABLE(menu,
- [  --disable-menu			disable popup menu],,
+ [  --disable-menu		disable popup menu],,
  [enable_menu="yes"])
  test x$enable_menu = xyes && AC_DEFINE(USE_MENU)
  AC_MSG_RESULT($enable_menu)])
@@ -219,7 +219,7 @@ AC_DEFUN([AC_W3M_DIGEST_AUTH],
 [AC_SUBST(USE_DIGEST_AUTH)
  AC_MSG_CHECKING(if digest auth is enabled)
  AC_ARG_ENABLE(digest_auth,
- [  --disable-digest-auth	disable digest auth],,
+ [  --disable-digest-auth		disable digest auth],,
  [enable_digest_auth="yes"])
  test x$enable_digest_auth = xyes && AC_DEFINE(USE_DIGEST_AUTH)
  AC_MSG_RESULT($enable_digest_auth)])

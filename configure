@@ -26,7 +26,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-mouse		disable mouse operation"
 ac_help="$ac_help
-  --disable-menu			disable popup menu"
+  --disable-menu		disable popup menu"
 ac_help="$ac_help
   --disable-cookie		disable cookie"
 ac_help="$ac_help
@@ -34,7 +34,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-history		disable URL history"
 ac_help="$ac_help
-  --disable-digest-auth	disable digest auth"
+  --disable-digest-auth		disable digest auth"
 ac_help="$ac_help
   --disable-nntp		disable NNTP"
 ac_help="$ac_help

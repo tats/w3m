@@ -76,8 +76,6 @@ Option panel
   imgdisplay
       External command to display image". The default value is "w3mimgdisplay".
       See "Setting w3mimgdisplay".
-  imgsize
-      External command to get size of image. The default value is "w3mimgsize".
 
 Required programs
 

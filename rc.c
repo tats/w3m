@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.53 2002/10/27 16:59:33 ukai Exp $ */
+/* $Id: rc.c,v 1.54 2002/10/28 17:09:29 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -74,7 +74,6 @@ static char *config_file = NULL;
 #define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
 #define CMT_IMAGE_SCALE  "画像のスケール(%)"
 #define CMT_IMGDISPLAY   "画像を表示するためのコマンド"
-#define CMT_IMGSIZE      "画像の大きさを得るためのコマンド"
 #endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
@@ -217,7 +216,6 @@ static char *config_file = NULL;
 #define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"
 #define CMT_IMAGE_SCALE  "Scale of image (%)"
 #define CMT_IMGDISPLAY   "External command to display image"
-#define CMT_IMGSIZE      "External command to get size of image"
 #endif
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"

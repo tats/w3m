@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.80 2002/10/27 17:16:42 ukai Exp $
+# $Id: configure,v 1.81 2002/10/28 17:09:20 ukai Exp $
 #	Configuration.
 #
 
@@ -797,7 +797,7 @@ fi
 ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
-  imgtarget='$(IMGDISPLAY) $(IMGSIZE)'
+  imgtarget='$(IMGDISPLAY)'
   ask_param "X11 inline image support (you need Imlib1 or GdkPixbuf library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
   case $sysname in
@@ -2377,7 +2377,6 @@ $def_use_xface
 #define HELP_FILE    "w3mhelp.html"
 #define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
-#define IMGSIZE      "w3mimgsize"
 #define IMGDISPLAY   "w3mimgdisplay"
 #define XFACE2XPM    "xface2xpm"
 

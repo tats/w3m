@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.28 2002/10/27 17:16:40 ukai Exp $
+# $Id: XMakefile,v 1.29 2002/10/28 17:09:18 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -19,7 +19,6 @@ BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
-IMGSIZE=w3mimgsize$(EXT)
 MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
 TARGETS=$(TARGET) $(EXT_TARGETS)
@@ -96,15 +95,8 @@ $(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
 	$(CC) $(CFLAGS) $(IMGCFLAGS) $(LDFLAGS) -o $(IMGDISPLAY) \
 		w3mimgdisplay.o $(IMGOBJS) $(IMGLDFLAGS)
 
-$(IMGSIZE): w3mimgsize.o $(IMGOBJS)
-	$(CC) $(CFLAGS) $(IMGCFLAGS) $(LDFLAGS) -o $(IMGSIZE) \
-		w3mimgsize.o $(IMGOBJS) $(IMGLDFLAGS)
-
 w3mimgdisplay.o: w3mimgdisplay.c
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -c w3mimgdisplay.c
-
-w3mimgsize.o: w3mimgsize.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -c w3mimgsize.c
 
 w3mimg/w3mimg.o: w3mimg/w3mimg.c
 	cd w3mimg && $(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -c w3mimg.c

@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.10 2002/10/16 18:11:15 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.11 2002/12/14 15:37:56 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -45,7 +45,7 @@ toNumber(char *oval, int *num)
     char *ep;
     int x;
 
-    x = strtol(oval, &ep, 0);
+    x = strtol(oval, &ep, 10);
 
     if (ep > oval) {
 	*num = x;

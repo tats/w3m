@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.125 2002/11/08 17:32:52 ukai Exp $ */
+/* $Id: main.c,v 1.126 2002/11/11 15:16:38 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5646,7 +5646,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
 	    FirstTab = t;
 	t2->prevTab = t;
     }
-    displayBuffer(Currentbuf, B_NORMAL);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
 void

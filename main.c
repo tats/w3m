@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.211 2003/02/18 15:43:25 ukai Exp $ */
+/* $Id: main.c,v 1.212 2003/02/25 16:01:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3295,6 +3295,8 @@ _followForm(int submit)
 	}
 
 	if (fi->parent->method == FORM_METHOD_GET) {
+	    if ((p = strchr(tmp2->ptr, '?')) != NULL)
+		Strshrink(tmp2, (tmp2->ptr + tmp2->length) - p);
 	    Strcat_charp(tmp2, "?");
 	    Strcat(tmp2, tmp);
 	    loadLink(tmp2->ptr, a->target, NULL, NULL);

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.215 2003/01/30 16:32:00 ukai Exp $ */
+/* $Id: file.c,v 1.216 2003/01/30 16:39:36 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6128,23 +6128,9 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
     bwidth = 0;
     while (1) {
 	l = buf->currentLine;
-	l->width = COLPOS(l, l->len);
 	l->bpos = bpos;
 	l->bwidth = bwidth;
-	if (l->width <= width)
-	    return;
-	i = columnPos(l, width);
-#ifdef JP_CHARSET
-	if (CharType(p[i]) == PC_KANJI2)
-	    i--;
-#endif
-	if (i > 0 && COLPOS(l, i) > width) {
-	    i--;
-#ifdef JP_CHARSET
-	    if (CharType(p[i]) == PC_KANJI2)
-		i--;
-#endif
-	}
+	i = columnLen(l, width);
 	if (i == 0) {
 	    i++;
 #ifdef JP_CHARSET
@@ -6152,10 +6138,10 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 		i++;
 #endif
 	}
-	if (i == l->len)
-	    return;
 	l->len = i;
 	l->width = COLPOS(l, l->len);
+	if (pos <= i)
+	    return;
 	bpos += l->len;
 	bwidth += l->width;
 	s += i;

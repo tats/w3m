@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.61 2003/01/29 17:10:30 ukai Exp $ */
+/* $Id: etc.c,v 1.62 2003/01/30 16:39:34 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -478,6 +478,22 @@ checkType(Str s, Lineprop **oprop
     return s;
 }
 
+static int
+nextColumn(int n, char *p, Lineprop *pr)
+{
+    if (*p == '\t' && *pr == PC_CTRL)
+	return (n + Tabstop) / Tabstop * Tabstop;
+#ifndef KANJI_SYMBOLS
+    else if (*pr & PC_RULE)
+	return n + 1;
+#endif
+    else if (IS_UNPRINTABLE_ASCII(*p, *pr))
+	return n + 4;
+    else if (IS_UNPRINTABLE_CONTROL(*p, *pr))
+	return n + 2;
+    return n + 1;
+}
+
 int
 calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
 {
@@ -494,7 +510,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     }
     if (size < len + 1) {
 	size = (len + 1 > LINELEN) ? (len + 1) : LINELEN;
-	realColumn = New_Reuse(int, realColumn, size);
+	realColumn = New_N(int, size);
     }
     prevl = l;
     j = bpos;
@@ -502,22 +518,29 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
 	realColumn[i] = j;
 	if (i == len)
 	    break;
-	if (l[i] == '\t' && pr[i] == PC_CTRL)
-	    j = (j + Tabstop) / Tabstop * Tabstop;
-#ifndef KANJI_SYMBOLS
-	else if (pr[i] & PC_RULE)
-	    j++;
-#endif
-	else if (IS_UNPRINTABLE_ASCII(l[i], pr[i]))
-	    j = j + 4;
-	else if (IS_UNPRINTABLE_CONTROL(l[i], pr[i]))
-	    j = j + 2;
-	else
-	    j++;
+	j = nextColumn(j, &l[i], &pr[i]);
     }
     if (pos >= i)
 	return j;
     return realColumn[pos];
+}
+
+int
+columnLen(Line *line, int column)
+{
+    int i, j;
+
+    for (i = 0, j = 0; i < line->len; i++) {
+	j = nextColumn(j, &line->lineBuf[i], &line->propBuf[i]);
+	if (j > column) {
+#ifdef JP_CHARSET
+	    if (CharType(line->propBuf[i]) == PC_KANJI2)
+		return i - 1;
+#endif
+	    return i;
+	}
+    }
+    return line->len;
 }
 
 char *

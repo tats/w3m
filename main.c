@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.44 2001/12/25 09:08:58 ukai Exp $ */
+/* $Id: main.c,v 1.45 2001/12/25 09:59:39 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -47,6 +47,7 @@ static MySignalHandler SigAlarm(SIGNAL_ARG);
 
 #ifdef SIGWINCH
 static int resized = 0;
+MySignalHandler resize_handler(SIGNAL_ARG);
 #endif
 
 #ifdef USE_MARK
@@ -948,8 +949,12 @@ MAIN(int argc, char **argv, char **envp)
 	    if (Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}
+	signal(SIGWINCH, resize_handler);
 #endif
 	c = getch();
+#ifdef SIGWINCH
+	signal(SIGWINCH, resize_hook);
+#endif
 #ifdef USE_ALARM
 	if (alarm_sec > 0) {
 	    alarm(0);
@@ -1179,6 +1184,17 @@ resize_hook(SIGNAL_ARG)
 {
     resized = 1;
     signal(SIGWINCH, resize_hook);
+    SIGNAL_RETURN;
+}
+
+MySignalHandler
+resize_handler(SIGNAL_ARG)
+{
+    setlinescols();
+    setupscreen();
+    if (Currentbuf)
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    signal(SIGWINCH, resize_handler);
     SIGNAL_RETURN;
 }
 #endif				/* SIGWINCH */

@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.7 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.8 2002/06/01 17:09:05 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -153,7 +153,7 @@ editMailcap(char *mailcap, struct parsed_tagarg *args)
     fclose(f);
     printf("Content-Type: text/plain\n");
     printf("w3m-control: BACK\nw3m-control: BACK\n");
-    printf("w3m-control: INIT_MAILCAP\n");
+    printf("w3m-control: REINIT MAILCAP\n");
 }
 
 int

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.44 2002/06/01 16:50:16 ukai Exp $ */
+/* $Id: rc.c,v 1.45 2002/06/01 17:09:05 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -33,7 +33,6 @@ struct rc_search_table {
 static struct rc_search_table *RC_search_table;
 static int RC_table_size;
 
-static int rc_initialized = 0;
 static char *config_file = NULL;
 
 #define P_INT      0
@@ -1258,10 +1257,6 @@ init_rc(char *config_filename)
 	&& ((tmpdir = getenv("TEMP")) == NULL || *tmpdir == '\0')
 	&& ((tmpdir = getenv("TMPDIR")) == NULL || *tmpdir == '\0'))
 	tmpdir = "/tmp";
-
-    if (rc_initialized)
-	return;
-    rc_initialized = 1;
 
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */

@@ -1,3 +1,14 @@
+2002-06-02  Tushar Samant <scribble@pobox.com>
+
+	* [w3m-dev-en 00748] PATCH: Reinitialize w3m while running
+	* funcname.tab (INIT_MAILCAP): deleted
+		(REINIT): added
+	* main.c (config_filename): added
+		(reinit): added
+	* proto.h (reinit): added
+	* rc.c (rc_initialized): deleted
+	* w3mhelperpanel.c (editMailcap): use REINIT MAILCAP
+
 2002-06-02  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03200] Re: New configuration option ``keymap_file'' and new command ``DEFINE_KEY''
@@ -3443,4 +3454,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.381 2002/06/01 16:50:16 ukai Exp $
+$Id: ChangeLog,v 1.382 2002/06/01 17:09:04 ukai Exp $

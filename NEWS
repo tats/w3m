@@ -1,5 +1,7 @@
 w3m 0.4?
 
+* func: REINIT
+	INIT_MAILCAP deleted, use REINIT MAILCAP instead
 * func: DEFINE_KEY
 * rc: keymap_file
 * rc: use_dictcommand, dictcommand

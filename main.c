@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.100 2002/06/01 16:50:16 ukai Exp $ */
+/* $Id: main.c,v 1.101 2002/06/01 17:09:05 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -24,6 +24,8 @@ extern int do_getch();
 #endif
 
 #define DSTR_LEN	256
+
+static char *config_filename = NULL;
 
 Hist *LoadHist;
 Hist *SaveHist;
@@ -354,7 +356,6 @@ MAIN(int argc, char **argv, char **envp)
     char search_header = FALSE;
     char *default_type = NULL;
     char *post_file = NULL;
-    char *config_filename = NULL;
     Str err_msg;
 
 #ifndef HAVE_SYS_ERRLIST
@@ -5091,6 +5092,70 @@ setAlarmEvent(int sec, short status, int cmd, void *data)
     }
 }
 #endif
+
+void
+reinit()
+{
+    char *resource = searchKeyData();
+
+    if (resource == NULL) {
+	init_rc(config_filename);
+#ifdef USE_COOKIE
+	initCookie();
+#endif
+	initKeymap();
+#ifdef USE_MENU
+	initMenu();
+#endif
+	return;
+    }
+
+    if (!strcasecmp(resource, "CONFIG") || !strcasecmp(resource, "RC")) {
+	init_rc(config_filename);
+	return;
+    }
+
+#ifdef USE_COOKIE
+    if (!strcasecmp(resource, "COOKIE")) {
+	initCookie();
+	return;
+    }
+#endif
+
+    if (!strcasecmp(resource, "KEYMAP")) {
+	initKeymap();
+	return;
+    }
+
+    if (!strcasecmp(resource, "MAILCAP")) {
+	initMailcap();
+	return;
+    }
+
+#ifdef USE_MENU
+    if (!strcasecmp(resource, "MENU")) {
+	initMenu();
+	return;
+    }
+#endif
+
+    if (!strcasecmp(resource, "MIMETYPES")) {
+	initMimeTypes();
+	return;
+    }
+
+#ifdef USE_EXTERNAL_URI_LOADER
+    if (!strcasecmp(resource, "URIMETHODS")) {
+	initURIMethods();
+	return;
+    }
+#endif
+
+    disp_err_message(
+	Sprintf("Don't know how to reinitialize '%s'", resource)->ptr,
+	FALSE
+    );
+}
 
 void
 defKey(void)

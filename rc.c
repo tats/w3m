@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.27 2002/01/15 15:58:02 ukai Exp $ */
+/* $Id: rc.c,v 1.28 2002/01/15 16:07:58 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -401,6 +401,14 @@ struct param_ptr params1[] = {
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
      CMT_SHOW_SRCH_STR, NULL},
+#ifdef LABEL_TOPLINE
+    {"label_topline", P_INT, PI_ONOFF, (void *)&label_topline,
+     CMT_LABEL_TOPLINE, NULL},
+#endif
+#ifdef NEXTPAGE_TOPLINE
+    {"nextpage_topline", P_INT, PI_ONOFF, (void *)&nextpage_topline,
+     CMT_NEXTPAGE_TOPLINE, NULL},
+#endif
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -449,14 +457,6 @@ struct param_ptr params3[] = {
 #ifdef VI_PREC_NUM
     {"vi_prec_num", P_INT, PI_ONOFF, (void *)&vi_prec_num, CMT_VI_PREC_NUM,
      NULL},
-#endif
-#ifdef LABEL_TOPLINE
-    {"label_topline", P_INT, PI_ONOFF, (void *)&label_topline,
-     CMT_LABEL_TOPLINE, NULL},
-#endif
-#ifdef NEXTPAGE_TOPLINE
-    {"nextpage_topline", P_INT, PI_ONOFF, (void *)&nextpage_topline,
-     CMT_NEXTPAGE_TOPLINE, NULL},
 #endif
     {"wrap_search", P_INT, PI_ONOFF, (void *)&WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *)&IgnoreCase,
@@ -598,7 +598,7 @@ struct param_section sections[] = {
     {"ネットワークの設定", params9},
     {"プロキシの設定", params4},
 #ifdef USE_SSL
-    {"SSL認証設定", params7},
+    {"SSLの設定", params7},
 #endif
 #ifdef USE_COOKIE
     {"クッキーの設定", params8},
@@ -614,7 +614,7 @@ struct param_section sections[] = {
     {"Network Setting", params9},
     {"Proxy Setting", params4},
 #ifdef USE_SSL
-    {"SSL Verification Setting", params7},
+    {"SSL Setting", params7},
 #endif
 #ifdef USE_COOKIE
     {"Cookie Setting", params8},

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.101 2002/06/01 17:09:05 ukai Exp $ */
+/* $Id: main.c,v 1.102 2002/06/01 17:10:37 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5151,10 +5151,8 @@ reinit()
     }
 #endif
 
-    disp_err_message(
-	Sprintf("Don't know how to reinitialize '%s'", resource)->ptr,
-	FALSE
-    );
+    disp_err_message(Sprintf("Don't know how to reinitialize '%s'", resource)->
+		     ptr, FALSE);
 }
 
 void

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.45 2002/06/01 17:09:05 ukai Exp $ */
+/* $Id: rc.c,v 1.46 2002/06/01 17:10:37 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1370,8 +1370,7 @@ load_option_panel(void)
 			       (x ? " checked" : ""),
 			       ">YES&nbsp;&nbsp;<input type=radio name=",
 			       p->name,
-			       " value=0",
-			       (x ? "" : " checked"), ">NO", NULL);
+			       " value=0", (x ? "" : " checked"), ">NO", NULL);
 		break;
 	    case PI_SEL_C:
 		tmp = to_str(p);

@@ -103,6 +103,7 @@ uninstall:
 
 clean: sweep
 	rm -f *.o *.a $(TARGETS) mktable$(EXT)
+	rm -f funcname.c funcname1.h funcname2.h
 
 sweep:
 	-rm -f core *~ *.bak *.orig *.rej

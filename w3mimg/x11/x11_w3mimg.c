@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.13 2003/03/24 15:46:00 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.14 2003/03/24 15:48:09 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -267,22 +267,22 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 #elif defined(USE_IMLIB2)
     im = imlib_load_image(fname);
     if (!im)
-        return 0;
+	return 0;
     imlib_context_set_image(im);
     if (w <= 0)
-        w = imlib_image_get_width();
+	w = imlib_image_get_width();
     if (h <= 0)
-        h = imlib_image_get_height();
+	h = imlib_image_get_height();
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					DefaultDepth(xi->display, 0));
     if (!img->pixmap)
-        return 0;
+	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
     imlib_context_set_display(xi->display);
     imlib_context_set_visual(DefaultVisual(xi->display, 0));
     imlib_context_set_colormap(DefaultColormap(xi->display, 0));
-    imlib_context_set_drawable((Drawable)img->pixmap);
+    imlib_context_set_drawable((Drawable) img->pixmap);
     imlib_render_image_on_drawable_at_size(0, 0, w, h);
     imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
@@ -295,7 +295,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     ih = gdk_pixbuf_animation_get_height(animation);
 
     if (self->max_anim > 0) {
-	n = (self->max_anim > n)? n : self->max_anim;
+	n = (self->max_anim > n) ? n : self->max_anim;
     }
 
     if (w < 1 || h < 1) {
@@ -486,7 +486,7 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 #elif defined(USE_IMLIB2)
     im = imlib_load_image(fname);
     if (im == NULL)
-        return 0;
+	return 0;
 
     imlib_context_set_image(im);
     *w = imlib_image_get_width();

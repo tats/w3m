@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.9 2003/03/24 15:45:59 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.10 2003/03/24 15:47:49 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -45,7 +45,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     fh = gdk_pixbuf_animation_get_height(animation);
     n = gdk_pixbuf_animation_get_num_frames(animation);
     if (max_anim > 0) {
-     n = (max_anim > n)? n : max_anim;
+	n = (max_anim > n) ? n : max_anim;
     }
     if (w < 1 || h < 1) {
 	w = fw;

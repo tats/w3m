@@ -16,6 +16,7 @@ DICT_WORD_AT   Execute dictionary command for word at cursor
 DISPLAY_IMAGE	Restart loading and drawing of images
 DOWN		Scroll down one line
 DOWNLOAD	Save document source to file
+DOWNLOAD_LIST	Display download list panel
 EDIT		Edit current document
 EDIT_SCREEN	Edit currently rendered document
 END		Go to the last line

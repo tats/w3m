@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.14 2002/11/10 11:59:15 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.15 2002/11/18 17:43:40 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -150,7 +150,7 @@ for $otherlang (@docdirs) {
 	     split(" ", "_mark nextMk prevMk reMark"));
 
 &show_keymap("Miscellany",
-	     split(" ", "mainMn ldhelp ldOpt cooLst ldHist msgs msToggle
+	     split(" ", "mainMn ldhelp ldOpt cooLst ldHist ldDL msgs msToggle
 		wrapToggle setAlarm setOpt setEnv execsh susp qquitfm quitfm defKey"));
 
 &show_keymap("Buffer selection mode",

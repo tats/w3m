@@ -1,5 +1,12 @@
 2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03449] Add DOWNLOAD_LIST to doc*/README.func and scripts/w3mhelp.cgi.in
+	* doc-jp/README.func (DOWNLOAD_LIST): added
+	* doc/README.func (DOWNLOAD_LIST): added
+	* scripts/w3mhelp.cgi.in (Miscellany): add ldDL
+
+2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03448] Some fixes
 	* url.c (KeyAbort): SIGNAL_RETURN
 	* .cvsginore: delete w3mimgsize
@@ -4863,4 +4870,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.532 2002/11/18 17:32:18 ukai Exp $
+$Id: ChangeLog,v 1.533 2002/11/18 17:43:36 ukai Exp $

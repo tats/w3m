@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: anchor.c,v 1.5 2001/11/22 14:07:38 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -354,11 +354,7 @@ putHmarker(HmarkerList * ml, int line, int pos, int seq)
     if (ml->markmax == 0) {
 	ml->markmax = FIRST_MARKER_SIZE;
 	ml->marks = NewAtom_N(BufferPoint, ml->markmax);
-#ifdef __CYGWIN__
-	bzero((char *) ml->marks, sizeof(BufferPoint) * ml->markmax);
-#else				/* not __CYGWIN__ */
 	bzero(ml->marks, sizeof(BufferPoint) * ml->markmax);
-#endif				/* not __CYGWIN__ */
     }
     if (seq + 1 > ml->nmark)
 	ml->nmark = seq + 1;

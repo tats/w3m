@@ -1,6 +1,6 @@
 /* 
  * matrix.h, matrix.c: Liner equation solver using LU decomposition.
- * $Id: matrix.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $
+ * $Id: matrix.h,v 1.4 2001/11/22 14:07:38 ukai Exp $
  * 
  * by K.Okabe  Aug. 1999
  * 
@@ -41,11 +41,7 @@ typedef struct vector *Vector;
 
 #define m_entry(m,i,j) (M_VAL(m,i,j))
 #define v_entry(v,i) (V_VAL(v,i))
-#ifdef __CYGWIN__
-#define m_copy(m1,m2) (bcopy((const char *)(m1)->me,(char *)(m2)->me,(m1)->dim*(m1)->dim*sizeof(double)))
-#else				/* not __CYGWIN__ */
 #define m_copy(m1,m2) (bcopy((m1)->me,(m2)->me,(m1)->dim*(m1)->dim*sizeof(double)))
-#endif				/* not __CYGWIN__ */
 #define v_free(v) ((v)=NULL)
 #define m_free(m) ((m)=NULL)
 #define px_free(px) ((px)=NULL)

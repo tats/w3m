@@ -1,5 +1,12 @@
 2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02506]
+	* anchor.c (putHmarker): remove #ifdef __CYGWIN__ for bzero()
+	* matrix.h (m_copy): ditto
+	* table.c (pushTable): ditto
+
+2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02505]
 	* configure (alarm): check alarm if USE_ALARM
 

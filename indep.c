@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.20 2001/12/25 16:19:29 ukai Exp $ */
+/* $Id: indep.c,v 1.21 2001/12/26 17:57:57 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -20,11 +20,11 @@ bcopy(const void *src, void *dest, int len)
 	return;
     if (src < dest) {
 	for (i = len - 1; i >= 0; i--)
-	    dest[i] = src[i];
+	    ((char *)dest)[i] = ((const char *)src)[i];
     }
     else {			/* src > dest */
 	for (i = 0; i < len; i++)
-	    dest[i] = src[i];
+	    ((char *)dest)[i] = ((const char *)src)[i];
     }
 }
 
@@ -32,8 +32,9 @@ void
 bzero(void *ptr, int len)
 {
     int i;
+    char *p = ptr;
     for (i = 0; i < len; i++)
-	*(ptr++) = 0;
+	*(p++) = 0;
 }
 #endif				/* not HAVE_BCOPY */
 

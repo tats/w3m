@@ -1,3 +1,9 @@
+2001-12-27  "OMAE, jun" <jun-o@dai.meta.ne.jp>
+
+	* [w3m-dev 02735]
+	* indep.c (bcopy): need (chat *) cast
+	* indep.c (bzero): use char * instead of void *
+
 2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* istream.h: #include <x509v3.h> deleted
@@ -1620,4 +1626,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.181 2001/12/26 13:00:45 ukai Exp $
+$Id: ChangeLog,v 1.182 2001/12/26 17:57:57 ukai Exp $

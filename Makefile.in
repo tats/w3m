@@ -284,6 +284,7 @@ distclean: clean
 	-$(RM) w3mhelp-w3m_en.html w3mhelp-w3m_ja.html
 	-$(RM) w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 	-$(RM) version.c
+	-$(RM) posubst
 	-$(RM) config.h Makefile
 	-$(RM) -f *core
 

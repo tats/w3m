@@ -33,18 +33,11 @@ all: $(LIB_TARGETS) $(HELP_LIBS)
 w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab ../doc/keymap.default ../doc/keymap.lynx
 	@echo "generating w3mhelp-funcname.pl..."
 	@echo '%funcname = (' > w3mhelp-funcname.pl
-	@while read fname fid; do \
-	  case "$$fname" in [a-zA-Z@]*) echo "'$$fname', '$$fid',";; esac; \
-	done < ../funcname.tab >> w3mhelp-funcname.pl
+	@sed -ne "/^[a-zA-Z@]/s/\([a-zA-Z@][a-zA-Z0-9@_]*\)[ 	][ 	]*\([^ 	]*\)/'\1', '\2',/p" < ../funcname.tab >> w3mhelp-funcname.pl
 	@echo ');' >> w3mhelp-funcname.pl
 	@echo '%keyfunc = (' >> w3mhelp-funcname.pl
 	@case "$(KEYBIND_SRC)" in *lynx*) keymap=keymap.lynx;; *) keymap=keymap.default;; esac; \
-	while read keyword keys func rest; do \
-	 if [ "X$$keyword" = Xkeymap ]; then \
-	   keys=`echo "$$keys" | sed -e 's/[\\"\\\\^]/\\\\&/g'`; \
-	   echo "'$$keys', '$$func',"; \
-	 fi; \
-	done < ../doc/$$keymap >> w3mhelp-funcname.pl
+	sed -ne "/^keymap/s/^keymap[ 	][ 	]*\([^ 	]*\)[ 	][ 	]*\([a-zA-Z@][a-zA-Z0-9@_]*\)/'\1', '\2', /p" < ../doc/$$keymap >> w3mhelp-funcname.pl
 	@echo ');' >> w3mhelp-funcname.pl
 	@cat w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
 	@echo "done"
@@ -56,9 +49,7 @@ w3mhelp-funcdesc-stamp:
 	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
 	  lang=`expr "$$dirlang" : ".*:\(.*\)_.*"`; \
 	  echo '%funcdesc = (' > w3mhelp-funcdesc.$$lang.pl; \
-	  while read func desc; do \
-	   case "$$func" in [a-zA-Z@]*) echo "'$$func', '$$desc', ";; esac; \
-	  done < ../$$dir/README.func >> w3mhelp-funcdesc.$$lang.pl; \
+	  sed -ne "/^[a-zA-Z@]/s/\([a-zA-Z@][a-zA-Z0-9@_]*\)[ 	][ 	]*\(.*\)/'\1', '\2',/p" < ../$$dir/README.func >> w3mhelp-funcdesc.$$lang.pl; \
 	  echo ');' >> w3mhelp-funcdesc.$$lang.pl; \
 	  cat w3mhelp-funcdesc.$$lang.pl.in >> w3mhelp-funcdesc.$$lang.pl; \
 	done

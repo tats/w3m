@@ -1,5 +1,10 @@
 2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02827]
+	* scripts/Makefile: use sed instead of /bin/sh while read; echo loop
+
+2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02823]
 	* scripts/Makefile: don't use read -r 
 			because Solaris 8 for x86 doesn't work
@@ -1865,4 +1870,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.209 2002/01/11 20:51:21 ukai Exp $
+$Id: ChangeLog,v 1.210 2002/01/12 11:44:09 ukai Exp $

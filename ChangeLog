@@ -1,3 +1,8 @@
+2002-02-04  Fumitoshi UKAI <ukai@debian.or.jp>
+
+	* [w3m-dev 02980] Re: code_to_str not found ifndef JP_CHARSET
+	* backend.c (get_mime_charset_name): used only ifdef JP_CHARSET
+
 2002-02-04  Kazuhiko <kazuhiko@archi.kyoto-u.ac.jp>
 
 	* [w3m-dev 02979] code_to_str not found ifndef JP_CHARSET
@@ -2750,4 +2755,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.295 2002/02/03 15:22:24 ukai Exp $
+$Id: ChangeLog,v 1.296 2002/02/03 15:25:45 ukai Exp $

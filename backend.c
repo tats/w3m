@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.8 2002/02/03 06:12:41 ukai Exp $ */
+/* $Id: backend.c,v 1.9 2002/02/03 15:25:45 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -63,6 +63,7 @@ struct {
 };
 /* *INDENT-ON* */
 
+#ifdef JP_CHARSET
 static char *
 get_mime_charset_name(int coding)
 {
@@ -86,7 +87,7 @@ get_mime_charset_name(int coding)
     }
     return r->ptr;
 }
-
+#endif
 
 static void
 print_headers(Buffer *buf, int len)

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.6 2002/07/22 16:17:32 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.7 2002/09/29 15:14:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -103,7 +103,13 @@ main(int argc, char **argv)
 		if (w_op->get_image_size(w_op, &img, &buf[2], &w, &h)) {
 		    fprintf(stdout, "%d %d\n", w, h);
 		    fflush(stdout);
+		} else {
+		    fprintf(stdout, "\n");
+		    fflush(stdout);
 		}
+	    } else {
+		fprintf(stdout, "\n");
+		fflush(stdout);
 	    }
 	    break;
 	}

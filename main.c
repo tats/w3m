@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.28 2001/11/30 10:00:06 ukai Exp $ */
+/* $Id: main.c,v 1.29 2001/11/30 11:10:36 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -18,8 +18,7 @@
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
 extern int do_getch();
 #define getch()	do_getch()
-#endif				/* defined(USE_GPM) || *
-				 * defined(USE_SYSMOUSE) */
+#endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif
 
 #define DSTR_LEN	256
@@ -2034,8 +2033,7 @@ editBf(void)
 
     if (fn == NULL || Currentbuf->pagerSource != NULL ||	/* Behaving as a pager */
 	(Currentbuf->type == NULL && Currentbuf->edit == NULL) ||	/* Reading shell */
-	Currentbuf->real_scheme != SCM_LOCAL || !strcmp(Currentbuf->currentURL.file, "-") ||	/* file is std *
-												 * input  */
+	Currentbuf->real_scheme != SCM_LOCAL || !strcmp(Currentbuf->currentURL.file, "-") ||	/* file is std input  */
 	Currentbuf->bufferprop & BP_FRAME) {	/* Frame */
 	disp_err_message("Can't edit other than local file", TRUE);
 	return;

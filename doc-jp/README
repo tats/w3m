@@ -1,5 +1,5 @@
-	w3m: WWW wo Miru Tool  version 0.2.3.2
-		(C) Copyright by Akinori ITO	December 21, 2001
+	w3m: WWW wo Miru Tool  version 0.2.4
+		(C) Copyright by Akinori ITO	January 7, 2002
 
 1. はじめに
 
@@ -86,7 +86,7 @@ Windows
 3. 著作権
 
 w3m の著作権は，伊藤彰則に属しています．
-(C) Copyright 1994-2001 by Akinori Ito
+(C) Copyright 1994-2002 by Akinori Ito
 
 添付ライブラリのうち，Boehm GC library の著作権は Hans-J. Boehm,
 Alan J. Demers および Xerox Corporation, Silicon Graphics に属し

@@ -1,3 +1,11 @@
+2002-01-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.2.4
+	* version.c.in: update
+	* doc/README: version 0.2.4, release date
+	* doc-jp/README: ditto
+	* NEWS: update
+
 2002-01-06  Fumitoshi UKAI <ukai@debian.or.jp>
 
 	* [w3m-dev 02781] Re: Bug#127883: w3m tries to use xv as default
@@ -1771,4 +1779,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.198 2002/01/05 16:13:27 ukai Exp $
+$Id: ChangeLog,v 1.199 2002/01/07 13:27:21 ukai Exp $

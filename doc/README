@@ -1,5 +1,5 @@
-	w3m: WWW wo Miru Tool  version 0.2.3.2
-		(C) Copyright by Akinori ITO	December 21, 2001
+	w3m: WWW wo Miru Tool  version 0.2.4
+		(C) Copyright by Akinori ITO	January 7, 2002
 
 1. Introduction
 
@@ -73,7 +73,7 @@ Windows
 
 3. Copyright
 
-  (C) Copyright 1994-2001 by Akinori Ito.
+  (C) Copyright 1994-2002 by Akinori Ito.
 
   Hans J. Boehm, Alan J. Demers, Xerox Corp. and Silicon Graphics
   have the copyright of the GC library comes with w3m package.

@@ -1,0 +1,49 @@
+You configure in ~/.w3m/mouse as follows:
+
+menu    "<= => R B"
+button  1 0 1   PREV
+button  1 3 4   NEXT
+button  1 6 7   RELOAD
+button  1 8 8   ADD_BOOKMARK
+button  3 8 8   COMMAND "NEW_TAB; BOOKMARK; DELETE_PREVBUF"
+button  3 0 4   SELECT_MENU
+button  2 0 9   CLOSE_TAB
+
+Then, w3m will display menu for mouse on top of line, next to tab.
+Like this:
+
+<= => R B                 [       Bookmarks        ][ 坂本浩則のホームページ ] x
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+However, you can use at most 10 colums (0 to 9) for mouse menu.
+
+You can open URL in new tab if you drag URL to the region of mouse menu.
+
+~/.w3m/mouse syntax:
+
+menu <menu string>
+
+button  <num>  <left-column-pos> <right-column-pos> <func> [<arg>]
+         :
+         1 : left button
+         2 : middle button
+         3 : right button
+
+So, above example means
+
+menu    "<= => R B"
+   # menu string is "<= => R B"
+button  1 0 1   PREV
+   # On "<=" (column 0 1), left button click, go to prev buffer
+button  1 3 4   NEXT
+   # On "=>" (column 3 4), left button click, go to next buffer
+button  1 6 7   RELOAD
+   # On "R " (column 6 7), left button click, reload
+button  1 8 8   ADD_BOOKMARK
+   # On "B" (column 8), left button click, add bookmark
+button  3 8 8   COMMAND "NEW_TAB; BOOKMARK; DELETE_PREVBUF"
+   # On "B" (column 8), right button click, open bookmark in new tab
+button  3 0 4   SELECT_MENU
+   # On "<= =>" (column 0 4), right button click, select menu
+button  2 0 9   CLOSE_TAB
+   # On "<= => R B" (column 0 9), middle button click, close tab

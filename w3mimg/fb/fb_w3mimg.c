@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.12 2003/07/07 15:48:17 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.13 2003/08/29 15:06:52 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -171,7 +171,7 @@ w3mimg_fbopen()
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
 
-    if (!check_tty_console(getenv("W3M_TTY"))) {
+    if (!check_tty_console(getenv("W3M_TTY")) && strcmp("jfbterm", getenv("TERM")) != 0) {
 	fprintf(stderr, "w3mimgdisplay/fb: tty is not console\n");
 	goto error;
     }

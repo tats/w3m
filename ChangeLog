@@ -1,3 +1,8 @@
+2003-08-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03958] w3mimgdisplay on jfbterm
+	* w3mimg/fb/fb_w3mimg.c (w3mimg_fbopen): check TERM=jfbterm
+
 2003-08-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03957] Location: from local-CGI
@@ -7995,4 +8000,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.858 2003/08/29 14:49:46 ukai Exp $
+$Id: ChangeLog,v 1.859 2003/08/29 15:06:52 ukai Exp $

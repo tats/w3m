@@ -1,5 +1,13 @@
 2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 00788]
+	* fm.h (displayImage): FALSE ifndef USE_IMAGE
+	* rc.c (displayImage): display_image even if USE_IMAGE undefined
+		(sync_with_options): display_image is forced to be FALSE 
+				ifndef USE_IMAGE
+
+2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev-en 00783] hsaka@mth.biglobe.ne.jp (Hironori SAKAMOTO)
 	  add display_lineinfo option
 	* display.c (displayBuffer): check displayLineInfo
@@ -3979,4 +3987,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.449 2002/10/26 08:10:43 ukai Exp $
+$Id: ChangeLog,v 1.450 2002/10/26 11:19:47 ukai Exp $

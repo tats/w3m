@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.51 2002/10/26 08:10:43 ukai Exp $ */
+/* $Id: rc.c,v 1.52 2002/10/26 11:19:47 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -467,7 +467,7 @@ struct param_ptr params1[] = {
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
-    {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo, 
+    {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
      CMT_DISPLINEINFO, NULL},
     {"ext_dirlist", P_INT, PI_ONOFF, (void *)&UseExternalDirBuffer,
      CMT_EXT_DIRLIST, NULL},
@@ -488,9 +488,10 @@ struct param_ptr params1[] = {
      CMT_IGNORE_NULL_IMG_ALT, NULL},
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,
      CMT_VIEW_UNSEENOBJECTS, NULL},
-#ifdef USE_IMAGE
+    /* XXX: emacs-w3m force to off display_image even if image options off */
     {"display_image", P_INT, PI_ONOFF, (void *)&displayImage, CMT_DISP_IMAGE,
      NULL},
+#ifdef USE_IMAGE
     {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
     {"max_load_image", P_INT, PI_TEXT, (void *)&maxLoadImage,
      CMT_MAX_LOAD_IMAGE, NULL},
@@ -1237,6 +1238,8 @@ sync_with_option(void)
 #ifdef USE_IMAGE
     if (fmInitialized && displayImage)
 	initImage();
+#else
+    displayImage = FALSE;	/* XXX */
 #endif
     loadPasswd();
 

@@ -1,3 +1,10 @@
+2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp
+
+	* fm.h (ftppass_hostnamegen): runtime option ftppass_hostnamegen
+	* ftp.c (FtpLogin): ditto
+	* rc.c (CMT_FTPPASS_HOSTNAMEGEN): ditto
+	* rc.c (params9): ditto
+	
 2001-11-24  Akihiro Sagawa <sagawa@sohgoh.net>
 
 	* [w3m-dev 02528] RFC2732 URL Patch

@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: ftp.c,v 1.5 2001/11/23 20:23:41 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -110,7 +110,7 @@ FtpLogin(FTP * ftp_return, char *host, char *user, char *pass)
     if (fd < 0)
 	return -1;
 #ifdef FTPPASS_HOSTNAMEGEN
-    if (!strcmp(user, "anonymous")) {
+    if (ftppass_hostnamegen && !strcmp(user, "anonymous")) {
 	size_t n = strlen(pass);
 
 	if (n > 0 && pass[n - 1] == '@') {

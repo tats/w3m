@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.7 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: rc.c,v 1.8 2001/11/23 20:23:41 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -98,6 +98,9 @@ static int rc_initialized = 0;
 #define CMT_EXTBRZ2      "外部ブラウザその2"
 #define CMT_EXTBRZ3      "外部ブラウザその3"
 #define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
+#ifdef FTPPASS_HOSTNAMEGEN
+#define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
+#endif
 #define CMT_USERAGENT    "User-Agent"
 #define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
 #define CMT_DOCUMENTCODE "文書の文字コード"
@@ -193,6 +196,9 @@ static int rc_initialized = 0;
 #define CMT_EXTBRZ2      "Second External Browser"
 #define CMT_EXTBRZ3      "Third External Browser"
 #define CMT_FTPPASS      "Password for FTP(use your mail address)"
+#ifdef FTPPASS_HOSTNAMEGEN
+#define CMT_FTPPASS_HOSTNAMEGEN "generate domain part of password for FTP"
+#endif
 #define CMT_USERAGENT    "User-Agent"
 #define CMT_ACCEPTLANG   "Accept-Language"
 /* #define CMT_DOCUMENTCODE "Document Charset" */
@@ -456,6 +462,9 @@ struct param_ptr params8[] =
 struct param_ptr params9[] =
 {
     {"ftppasswd", P_STRING, PI_TEXT, (void *) &ftppasswd, CMT_FTPPASS, NULL},
+#ifdef FTPPASS_HOSTNAMEGEN
+    {"ftppass_hostnamegen", P_INT, PI_ONOFF, (void *) &ftppass_hostnamegen, CMT_FTPPASS_HOSTNAMEGEN, NULL},
+#endif
     {"user_agent", P_STRING, PI_TEXT, (void *) &UserAgent, CMT_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *) &NoSendReferer, CMT_NOSENDREFERER, NULL},
     {"accept_language", P_STRING, PI_TEXT, (void *) &AcceptLang, CMT_ACCEPTLANG, NULL},

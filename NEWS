@@ -1,5 +1,6 @@
 w3m 0.4?
 
+* configure: -mandir
 * func: COMMAND
 * -title option: set buffer name to terminal title
 * X-Face support: USE_XFACE, require uncompface

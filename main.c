@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.51 2001/12/27 17:23:07 ukai Exp $ */
+/* $Id: main.c,v 1.52 2001/12/27 17:43:24 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4616,8 +4616,6 @@ execdict(char *word)
     prevtrap = signal(SIGINT, intTrap);
     crmode();
     buf = getshell(myExtCommand(DICTCMD, shell_quote(w), FALSE)->ptr);
-    buf->filename = w;
-    buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
     signal(SIGINT, prevtrap);
     term_raw();
     if (buf == NULL) {
@@ -4628,7 +4626,11 @@ execdict(char *word)
 	disp_message(Sprintf("Word \"%s\" Not Found", word)->ptr, FALSE);
     }
     else {
+	buf->filename = w;
+	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
+	if (buf->type == NULL)
+	    buf->type = "text/plain";
 	pushBuffer(buf);
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);

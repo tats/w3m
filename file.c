@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.34 2001/12/25 18:15:00 ukai Exp $ */
+/* $Id: file.c,v 1.35 2001/12/27 17:43:23 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5437,6 +5437,8 @@ getshell(char *cmd)
     Buffer *buf;
 
     buf = loadcmdout(cmd, loadBuffer, NULL);
+    if (buf == NULL)
+	return NULL;
     buf->filename = cmd;
     buf->buffername = Sprintf("%s %s", SHELLBUFFERNAME,
 			      conv_from_system(cmd))->ptr;

@@ -1,5 +1,10 @@
 2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03510] waiting time when cookie was rejected.
+	* file.c (readHeader): display cookie warnings for only 1 sec 
+
+2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03509] HTML parser
 	* file.c (close_textarea): delete
 		(HTMLtagproc1): rewrite 
@@ -5351,4 +5356,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.576 2002/12/03 15:35:09 ukai Exp $
+$Id: ChangeLog,v 1.577 2002/12/03 15:47:38 ukai Exp $

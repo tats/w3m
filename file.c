@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.142 2002/12/03 15:45:31 ukai Exp $ */
+/* $Id: file.c,v 1.143 2002/12/03 15:47:39 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -827,7 +827,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			    emsg =
 				"This cookie was rejected to prevent security violation.";
 			record_err_message(emsg);
-			disp_message_nsec(emsg, FALSE, 10, TRUE, FALSE);
+			disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 		    }
 		    else
 			disp_message_nsec(Sprintf

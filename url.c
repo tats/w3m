@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.72 2003/01/31 16:25:10 ukai Exp $ */
+/* $Id: url.c,v 1.73 2003/02/05 16:18:23 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -766,27 +766,17 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     /*          ^p is here  */
   analyze_url:
     q = p;
-    while (*p && strchr(":/@?#", *p) == NULL) {
 #ifdef INET6
-	if (*p == '[') {	/* rfc2732 compliance */
-	    char *p_colon = NULL;
-	    do {
-		p++;
-		if ((p_colon == NULL) && (*p == ':'))
-		    p_colon = p;
-	    } while (*p && (IS_ALNUM(*p) || *p == ':' || *p == '.'));
-	    if (*p == ']') {
-		p++;
-		break;
-	    }
-	    else if (p_colon) {
-		p = p_colon;
-		break;
-	    }
-	}
-#endif
+    if (*q == '[') {		/* rfc2732,rfc2373 compliance */
 	p++;
+	while (IS_XDIGIT(*p) || *p == ':' || *p == '.')
+	    p++;
+	if (*p != ']' || (*(p + 1) && strchr(":/?#", *(p + 1)) == NULL))
+	    p = q;
     }
+#endif
+    while (*p && strchr(":/@?#", *p) == NULL)
+	p++;
     switch (*p) {
     case ':':
 	/* scheme://user:pass@host or

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.92 2003/09/25 18:09:01 ukai Exp $ */
+/* $Id: rc.c,v 1.93 2003/09/26 16:57:27 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -173,7 +173,7 @@ static int OptionEncode = FALSE;
 #define CMT_MOUSE         N_("Enable mouse")
 #define CMT_REVERSE_MOUSE N_("Scroll in reverse direction of mouse drag")
 #define CMT_RELATIVE_WHEEL_SCROLL N_("Behavior of wheel scroll speed")
-#define CMT_RELATIVE_WHEEL_SCROLL_RATIO N_("(A only)Scroll by # % of screen")
+#define CMT_RELATIVE_WHEEL_SCROLL_RATIO N_("(A only)Scroll by # (%) of screen")
 #define CMT_FIXED_WHEEL_SCROLL_COUNT N_("(B only)Scroll by # lines")
 #endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     N_("Free memory of undisplayed buffers")

@@ -1,3 +1,7 @@
+2003-09-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* conv.c ucs_eucjp.h ucs_latin1.h: deleted
+
 2003-09-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* add posubst,  compile-time message l10n
@@ -8097,4 +8101,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.872 2003/09/25 18:08:59 ukai Exp $
+$Id: ChangeLog,v 1.873 2003/09/26 16:57:27 ukai Exp $

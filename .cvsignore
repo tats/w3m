@@ -10,4 +10,4 @@ mktable
 w3m
 w3mbookmark
 w3mhelperpanel
-_zmachdep.c
+version.c

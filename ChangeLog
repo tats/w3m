@@ -1,3 +1,8 @@
+2001-12-04  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02609]
+	* proto.h: remove duplicate prototypes
+
 2001-12-04  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02608]

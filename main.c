@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.206 2003/01/30 16:21:59 ukai Exp $ */
+/* $Id: main.c,v 1.207 2003/01/30 16:35:38 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2002,6 +2002,7 @@ execsh(void)
 	cmd = conv_to_system(cmd);
     if (cmd != NULL && *cmd != '\0') {
 	fmTerm();
+	printf("\n");
 	system(cmd);
 	printf("\n[Hit any key]");
 	fflush(stdout);

@@ -1,5 +1,11 @@
 2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03535] close anchor, quote <
+	* file.c (HTMLtagproc1): close_anchor
+	* frame.c (createFrameFile): quote <
+
+2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03534] cleanup file.c
 	* file.c (HTMLlineproc2body): cleanup
 
@@ -5557,4 +5563,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.597 2002/12/06 16:33:22 ukai Exp $
+$Id: ChangeLog,v 1.598 2002/12/06 16:37:42 ukai Exp $

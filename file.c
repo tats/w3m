@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.149 2002/12/06 16:33:43 ukai Exp $ */
+/* $Id: file.c,v 1.150 2002/12/06 16:37:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4334,10 +4334,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 0;
     case HTML_HR:
+	close_anchor(h_env, obuf);
 	tmp = process_hr(tag, h_env->limit, envs[h_env->envc].indent);
 	HTMLlineproc1(tmp->ptr, h_env);
 	obuf->prevchar = ' ';
-	close_anchor(h_env, obuf);
 	return 1;
     case HTML_PRE:
 	x = parsedtag_exists(tag, ATTR_FOR_TABLE);
@@ -4352,6 +4352,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 	    fillline(obuf, envs[h_env->envc].indent);
 	obuf->flag |= (RB_PRE | RB_IGNORE_P);
+	close_anchor(h_env, obuf);
 	/* istr = str; */
 	return 1;
     case HTML_N_PRE:
@@ -4398,6 +4399,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 			 h_env->limit);
 	}
 	obuf->flag |= (RB_PRE | RB_IGNORE_P);
+	close_anchor(h_env, obuf);
 	return 1;
     case HTML_N_PRE_PLAIN:
 	CLOSE_P;
@@ -4430,6 +4432,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->end_tag = MAX_HTMLTAG;
 	    break;
 	}
+	close_anchor(h_env, obuf);
 	return 1;
     case HTML_N_LISTING:
     case HTML_N_XMP:
@@ -4528,6 +4531,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 0;
     case HTML_TABLE:
+	close_anchor(h_env, obuf);
 	obuf->table_level++;
 	if (obuf->table_level >= MAX_TABLE)
 	    break;
@@ -4621,11 +4625,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	process_n_form();
 	return 1;
     case HTML_INPUT:
+	close_anchor(h_env, obuf);
 	tmp = process_input(tag);
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_SELECT:
+	close_anchor(h_env, obuf);
 	tmp = process_select(tag);
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
@@ -4643,6 +4649,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	/* nothing */
 	return 1;
     case HTML_TEXTAREA:
+	close_anchor(h_env, obuf);
 	tmp = process_textarea(tag, h_env->limit);
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);

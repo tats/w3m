@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.17 2002/02/09 15:12:34 ukai Exp $ */
+/* $Id: display.c,v 1.18 2002/02/12 08:43:46 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -319,8 +319,10 @@ displayBuffer(Buffer *buf, int mode)
 #endif				/* not USE_MOUSE */
 	msg = Strnew();
     Strcat_charp(msg, "Viewing");
+#ifdef USE_SSL
     if (buf->ssl_certificate)
 	Strcat_charp(msg, "[SSL]");
+#endif
     Strcat_charp(msg, " <");
     Strcat_charp(msg, buf->buffername);
     if (displayLink)

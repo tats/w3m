@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.65 2003/02/18 15:43:23 ukai Exp $ */
+/* $Id: etc.c,v 1.66 2003/02/18 15:44:33 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1974,8 +1974,7 @@ FQDN(char *host)
 
 #endif				/* USE_COOKIE */
 
-void (*mySignal(int signal_number, void (*action)(int)))(int)
-{
+void (*mySignal(int signal_number, void (*action) (int))) (int) {
 #ifdef	SA_RESTART
     struct sigaction new_action, old_action;
 
@@ -1986,13 +1985,14 @@ void (*mySignal(int signal_number, void (*action)(int)))(int)
 	new_action.sa_flags = SA_INTERRUPT;
 #else
 	new_action.sa_flags = 0;
-#endif    
-    } else {
-        new_action.sa_flags = SA_RESTART;
+#endif
+    }
+    else {
+	new_action.sa_flags = SA_RESTART;
     }
     sigaction(signal_number, &new_action, &old_action);
-    return(old_action.sa_handler);
+    return (old_action.sa_handler);
 #else
-    return(signal(signal_number, action));
+    return (signal(signal_number, action));
 #endif
 }

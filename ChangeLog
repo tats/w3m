@@ -1,3 +1,8 @@
+2003-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03827] Re: checking for GC_version... no
+	* configure.in: add dl for extlibs
+
 2003-03-20  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03825] re-anchor for fold line
@@ -7558,4 +7563,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.798 2003/03/19 16:20:11 ukai Exp $
+$Id: ChangeLog,v 1.799 2003/03/22 14:58:33 ukai Exp $

@@ -53,7 +53,7 @@ AC_W3M_EXTERNAL_URI_LOADER
 AC_W3M_W3MMAILER
 
 dnl Checks for ext libs
-for lib in bsd BSD 44bsd socket nsl dld
+for lib in bsd BSD 44bsd socket nsl dld dl
 do
  AC_W3M_EXTLIBS($lib)
 done

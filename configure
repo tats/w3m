@@ -1724,7 +1724,7 @@ EOF
 
  echo "$ac_t""$enable_w3mmailer" 1>&6
 
-for lib in bsd BSD 44bsd socket nsl dld
+for lib in bsd BSD 44bsd socket nsl dld dl
 do
  lib=$lib
  echo $ac_n "checking for -l$lib""... $ac_c" 1>&6

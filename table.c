@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.32 2002/12/03 15:35:11 ukai Exp $ */
+/* $Id: table.c,v 1.33 2002/12/03 15:45:34 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2517,7 +2517,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
      * <select> environment is regarded as the end of <select>. */
     if (mode->pre_mode & TBLM_INSELECT) {
 	switch (cmd) {
-	CASE_TABLE_TAG:
+	  CASE_TABLE_TAG:
 	case HTML_N_FORM:
 	case HTML_N_SELECT:	/* mode->end_tag */
 	    table_close_select(tbl, mode, width);
@@ -2528,7 +2528,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     }
     if (mode->caption) {
 	switch (cmd) {
-	CASE_TABLE_TAG:
+	  CASE_TABLE_TAG:
 	case HTML_N_CAPTION:
 	    mode->caption = 0;
 	    break;
@@ -3211,9 +3211,9 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		line = "";
 	    }
 	    if (mode->pre_mode & TBLM_PLAIN)
-	        i = maximum_visible_length_plain(p);
+		i = maximum_visible_length_plain(p);
 	    else
-	        i = maximum_visible_length(p);
+		i = maximum_visible_length(p);
 	    addcontentssize(tbl, i);
 	    setwidth(tbl, mode);
 	    if (nl)

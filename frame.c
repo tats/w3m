@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.23 2002/12/03 15:35:10 ukai Exp $ */
+/* $Id: frame.c,v 1.24 2002/12/03 15:45:33 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -625,7 +625,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    is_tag = FALSE;
 			}
 			else if (pre_mode & RB_INSELECT) {
-                            q = tok->ptr;
+			    q = tok->ptr;
 			    if ((tag = parse_tag(&q, FALSE))) {
 				if ((tag->tagid == end_tag) ||
 				    (tag->tagid == HTML_N_FORM)) {
@@ -639,11 +639,11 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    switch (tag->tagid) {
 				    case HTML_TABLE:
 				    case HTML_N_TABLE:
-				    CASE_TABLE_TAG:
+				      CASE_TABLE_TAG:
 					fputs("</SELECT>", f1);
 					pre_mode = 0;
 					end_tag = 0;
-				        goto proc_normal;
+					goto proc_normal;
 				    }
 				}
 			    }
@@ -726,7 +726,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				goto token_end;
 			    }
 			    break;
-			CASE_TABLE_TAG:
+			  CASE_TABLE_TAG:
 			    /* table_tags MUST be in table stack */
 			    if (!t_stack) {
 				Strshrinkfirst(tok, 1);

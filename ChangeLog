@@ -1,3 +1,15 @@
+2003-03-25  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03829] w3mimgdisplay -anim
+	* w3mimgdisplay.c (maxAnim): added, default 100
+		(main): add --anim option, w_op->max_anim
+	* w3mimg/w3mimg.h (w3mimg_op): add max_anim
+	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load): add max_anim
+	* w3mimg/fb/fb_img.h (fb_image_load): add max_anim args
+	* w3mimg/fb/fb_imlib2.c (fb_image_load): add max_anim args
+	* w3mimg/fb/fb_w3mimg.c (w3mfb_load_image): pass max_anim
+	* w3mimg/x11/x11_w3mimg.c (x11_load_image): max_anim
+
 2003-03-24  Daiki Ueno <ueno@unixuser.org>
 
 	* [w3m-dev 03828] possible typo in nextA
@@ -7568,4 +7580,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.800 2003/03/23 15:21:01 ukai Exp $
+$Id: ChangeLog,v 1.801 2003/03/24 15:45:55 ukai Exp $

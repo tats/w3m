@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.12 2003/01/21 15:38:59 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.13 2003/03/24 15:46:00 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -293,6 +293,10 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     n = gdk_pixbuf_animation_get_num_frames(animation);
     iw = gdk_pixbuf_animation_get_width(animation);
     ih = gdk_pixbuf_animation_get_height(animation);
+
+    if (self->max_anim > 0) {
+	n = (self->max_anim > n)? n : self->max_anim;
+    }
 
     if (w < 1 || h < 1) {
 	w = iw;

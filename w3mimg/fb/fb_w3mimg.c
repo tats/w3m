@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.8 2002/12/25 16:18:19 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.9 2003/03/24 15:46:00 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -67,7 +67,7 @@ w3mfb_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 
     if (self == NULL)
 	return 0;
-    im = fb_image_load(fname, w, h);
+    im = fb_image_load(fname, w, h, self->max_anim);
     if (!im)
 	return 0;
     img->pixmap = im;

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.12 2003/01/17 16:57:21 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.13 2003/03/24 15:45:57 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -17,7 +17,7 @@ static char *defined_size = NULL;
 
 #define MAX_IMAGE 1000
 static W3MImage *imageBuf = NULL;
-static int maxImage = 0;
+static int maxImage = 0, maxAnim = 100;
 
 static void GetOption(int argc, char **argv);
 static void DrawImage(char *buf, int redraw);
@@ -57,6 +57,7 @@ main(int argc, char **argv)
 	w_op->offset_x = offset_x;
     if (defined_y)
 	w_op->offset_y = offset_y;
+    w_op->max_anim = maxAnim;
 
     if (defined_test) {
 	printf("%d %d\n", w_op->width - w_op->offset_x, 
@@ -176,6 +177,11 @@ GetOption(int argc, char **argv)
 	}
 	else if (!strcmp("-test", argv[i])) {
 	    defined_test = 1;
+	}
+	else if (!strcmp("-anim", argv[i])) {
+	    if (++i >= argc)
+		exit(1);
+	    maxAnim = atoi(argv[i]);
 	}
 	else if (!strcmp("-size", argv[i])) {
 	    if (++i >= argc)

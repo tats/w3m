@@ -1,4 +1,4 @@
-/* $Id: w3mimg.h,v 1.5 2002/09/09 13:59:24 ukai Exp $ */
+/* $Id: w3mimg.h,v 1.6 2003/03/24 15:45:58 ukai Exp $ */
 #include "config.h"
 
 #ifdef USE_W3MIMG_FB
@@ -16,6 +16,7 @@ typedef struct _w3mimg_op {
     void *priv;			/* driver specific data */
     int width, height;		/* window width, height */
     int offset_x, offset_y;	/* offset */
+    int max_anim;
 
     int (*init) (struct _w3mimg_op * self);
     int (*finish) (struct _w3mimg_op * self);

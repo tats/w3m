@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.46 2002/01/23 17:19:47 ukai Exp $ */
+/* $Id: file.c,v 1.47 2002/01/24 16:59:16 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -727,9 +727,10 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		    add_cookie(pu, name, value, expires, domain, path, flag,
 			       comment, version, port, commentURL);
 		if (err) {
-		    char *ans = (accept_bad_cookie == TRUE) ? "y" : NULL;
+		    char *ans = (accept_bad_cookie == ACCEPT_BAD_COOKIE_ACCEPT)
+			? "y" : NULL;
 		    if (fmInitialized && (err & COO_OVERRIDE_OK) &&
-			accept_bad_cookie == PERHAPS) {
+			accept_bad_cookie == ACCEPT_BAD_COOKIE_ASK) {
 			Str msg =
 			    Sprintf
 			    ("Accept bad cookie from %s for %s? (y or n) ",

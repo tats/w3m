@@ -1,3 +1,13 @@
+2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+	
+	* [w3m-dev 02901] ACCEPT_BAD_COOKIE_*
+	* file.c (readHeader): accept_bad_cookie is one of ACCEPT_BAD_COOKIE_*
+	* fm.h (PERHAPS): deleted
+	* fm.h (ACCEPT_BAD_COOKIE_*): added
+	* rc.c (n_s): added
+	* rc.c (N_S): added
+	* rc.c (badcookiestr): use N_S(ACCEPT_BAD_COOKIE_*)
+
 2002-01-24  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02896] fid attr value should be in sequence
@@ -2242,4 +2252,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.255 2002/01/23 17:57:10 ukai Exp $
+$Id: ChangeLog,v 1.256 2002/01/24 16:59:16 ukai Exp $

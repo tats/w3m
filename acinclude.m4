@@ -16,7 +16,7 @@ AC_DEFUN([AC_W3M_COLOR],
 [AC_SUBST(USE_COLOR)
 AC_MSG_CHECKING(if color escape sequence for kterm/pxvt is enabled)
 AC_ARG_ENABLE(color,
- [  --disable-color		disable color escape sequence for kterm/pxvt],,
+ [  --disable-color		disable color for vt100 terminal],,
  [enable_color="yes"])
 test x"$enable_color" = xyes && AC_DEFINE(USE_COLOR)
 AC_MSG_RESULT($enable_color)])
@@ -171,7 +171,7 @@ AC_DEFUN([AC_W3M_KANJI_SYMBOLS],
 if test x"$enable_japanese" != xno; then
  AC_MSG_CHECKING(if kanji symbols is used)
  AC_ARG_ENABLE(kanjisymbols,
-  [   --enable-kanjisymbols	use kanji symbols (enable japanese only)],,
+  [   --disable-kanjisymbols	use kanji symbols (enable japanese only)],,
   [enable_kanjisymbols="yes"])
  test x"$enable_kanjisymbols" = xyes && AC_DEFINE(KANJI_SYMBOLS)
  AC_MSG_RESULT($enable_kanjisymbols)
@@ -499,7 +499,7 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_SUBST(IMGFBLDFLAGS)
  AC_MSG_CHECKING(if image is enabled)
  AC_ARG_ENABLE(image,
- [  --enable-image[=x11,fb,fb+s]	enable inline image handler],,
+ [  --disable-image[=x11,fb,fb+s]	enable inline image handler],,
  [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
  if test x"$enable_image" != xno; then
@@ -604,7 +604,7 @@ AC_DEFUN([AC_W3M_XFACE],
 [AC_SUBST(USE_XFACE)
  AC_MSG_CHECKING(if xface is enabled)
  AC_ARG_ENABLE(xface,
-  [   --enable-xface		enable xface support],,
+  [   --disable-xface		enable xface support],,
   [enable_xface="$enable_image"])
  test x"$enable_xface" = xyes && AC_DEFINE(USE_XFACE)
  AC_MSG_RESULT($enable_xface)

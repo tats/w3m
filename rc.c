@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.75 2003/01/15 17:13:22 ukai Exp $ */
+/* $Id: rc.c,v 1.76 2003/01/17 16:58:17 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1378,7 +1378,7 @@ init_rc(void)
     rc_dir = expandName(RC_DIR);
     i = strlen(rc_dir);
     if (i > 1 && rc_dir[i - 1] == '/')
-        rc_dir[i - 1] = '\0';
+	rc_dir[i - 1] = '\0';
 
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */

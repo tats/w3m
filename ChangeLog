@@ -1,3 +1,7 @@
+2002-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* func.c (initMouseAction): remove unsed variables: x, width, map
+
 2002-11-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03478] mouse action configuration
@@ -5132,4 +5136,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.553 2002/11/25 16:57:16 ukai Exp $
+$Id: ChangeLog,v 1.554 2002/11/25 17:03:45 ukai Exp $

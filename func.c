@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.16 2002/11/25 16:59:07 ukai Exp $ */
+/* $Id: func.c,v 1.17 2002/11/25 17:03:45 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -431,8 +431,7 @@ initMouseAction(void)
     FILE *mf;
     Str line;
     char *p, *s;
-    int b, x, width;
-    MouseActionMap *map;
+    int b;
 
     bcopy((void *)&default_mouse_action, (void *)&mouse_action,
 	  sizeof(default_mouse_action));

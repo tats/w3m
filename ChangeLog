@@ -1,5 +1,9 @@
 2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* version.c.in: 0.2.3.2-cvs
+
+2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* w3m 0.2.3.2 - Security fix in w3m/scripts
 	* version.c.in: update
 	* w3mhelp-*.html: version 0.2.3.2
@@ -1390,4 +1394,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.155 2001/12/21 19:47:48 ukai Exp $
+$Id: ChangeLog,v 1.156 2001/12/21 20:15:58 ukai Exp $

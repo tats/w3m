@@ -1,3 +1,11 @@
+2003-07-09  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03935] Re: clear image
+	* w3mimg/fb/fb.c (fb_get_packed_color): added
+		(fb_image_pset): use fb_get_packed_color
+		(fb_image_fill): use fb_get_packed_color
+		(fb_clear): use tmp to store pixels
+
 2003-07-09  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03934] Re: clear image
@@ -7903,4 +7911,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.847 2003/07/08 17:32:12 ukai Exp $
+$Id: ChangeLog,v 1.848 2003/07/09 15:02:28 ukai Exp $

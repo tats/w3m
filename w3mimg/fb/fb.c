@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.13 2003/07/08 17:30:37 ukai Exp $ */
+/* $Id: fb.c,v 1.14 2003/07/09 15:02:28 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -49,6 +49,7 @@ static int fb_cmap_set(int fbfp, struct fb_cmap *cmap);
 static int fb_cmap_get(int fbfp, struct fb_cmap *cmap);
 static int fb_cmap_init(void);
 static int fb_get_cmap_index(int r, int g, int b);
+static unsigned long fb_get_packed_color(int r, int g, int b);
 
 static struct fb_fix_screeninfo fscinfo;
 static struct fb_var_screeninfo vscinfo;
@@ -214,16 +215,7 @@ fb_image_pset(FB_IMAGE * image, int x, int y, int r, int g, int b)
 	|| y >= image->height)
 	return;
 
-    if (pixel_size == 1) {
-	work = fb_get_cmap_index(r, g, b);
-    }
-    else {
-	work =
-	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
-	     offset) +
-	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
-    }
+    work = fb_get_packed_color(r, g, b);
     memcpy(image->data + image->rowstride * y + pixel_size * x, &work,
 	   pixel_size);
 }
@@ -237,16 +229,7 @@ fb_image_fill(FB_IMAGE * image, int r, int g, int b)
     if (image == NULL || is_open != TRUE)
 	return;
 
-    if (pixel_size == 1) {
-	work = fb_get_cmap_index(r, g, b);
-    }
-    else {
-	work =
-	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
-	     offset) +
-	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
-    }
+    work = fb_get_packed_color(r, g, b);
 
     for (offset = 0; offset < image->len; offset += pixel_size) {
 	memcpy(image->data + offset, &work, pixel_size);
@@ -368,8 +351,9 @@ fb_height(void)
 int
 fb_clear(int x, int y, int w, int h, int r, int g, int b)
 {
-    unsigned long work;
     int i, j, offset_fb;
+    static int rr = -1, gg = -1, bb = -1;
+    static char *tmp = NULL;
 
     if (is_open != TRUE || x > fb_width() || y > fb_height())
 	return 1;
@@ -378,21 +362,47 @@ fb_clear(int x, int y, int w, int h, int r, int g, int b)
     if (y + h > fb_height())
 	h = fb_height() - y;
 
+    if (tmp == NULL) {
+	tmp = malloc(fscinfo.line_length);
+	if (tmp == NULL)
+	    return 1;
+    }
+    if (rr != r || gg != g || bb != b) {
+	unsigned long work;
+	int ww = fb_width();
+
+	work = fb_get_packed_color(r, g, b);
+	for (i = 0; i < ww; i++)
+	    memcpy(tmp + pixel_size * i, &work, pixel_size);
+	rr = r;
+	gg = g;
+	bb = b;
+    }
     offset_fb = fscinfo.line_length * y + pixel_size * x;
-    work = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
     for (i = 0; i < h; i++) {
-	for (j = 0; j < w; j++)
-	    memcpy(buf + offset_fb + pixel_size * j, &work, pixel_size);
+	memcpy(buf + offset_fb, tmp, pixel_size * w);
 	offset_fb += fscinfo.line_length;
     }
     return 0;
 }
 
 /********* static functions **************/
-static
-    int
+static unsigned long
+fb_get_packed_color(int r, int g, int b)
+{
+    if (pixel_size == 1) {
+	return fb_get_cmap_index(r, g, b);
+    }
+    else {
+	return
+	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
+	     offset) +
+	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    }
+}
+
+static int
 fb_get_cmap_index(int r, int g, int b)
 {
     int work;

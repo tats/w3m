@@ -1,3 +1,17 @@
+2003-04-04  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03837] Re: gif animation with no delay_time
+	* w3mimg/fb/fb_gdkpixbuf.c (get_animation_size): add delay
+				check delay_time
+		(get_image_size): no need delay time
+		(fb_image_load): check delay 
+		(draw): no bg
+	* w3mimg/fb/fb_w3mimg.c (w3mfb_show_image): delete delay skip loop
+	* w3mimg/x11/x11_w3mimg.c (get_animation_size): add delay
+				check delay_time
+		(x11_load_image): check delay
+		(x11_get_image_size): no need delay time
+
 2003-03-28  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* doc(-jp)/keymap.default: ';' is quoted
@@ -7623,4 +7637,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.808 2003/03/28 10:26:40 inu Exp $
+$Id: ChangeLog,v 1.809 2003/04/03 16:35:42 ukai Exp $

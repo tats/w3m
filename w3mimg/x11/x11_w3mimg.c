@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.18 2003/03/27 17:12:10 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.19 2003/04/03 16:35:49 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -43,10 +43,10 @@ struct x11_image {
 };
 
 static void
-get_animation_size(GdkPixbufAnimation * animation, int *w, int *h)
+get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 {
     GList *frames;
-    int iw, ih, n, i;
+    int iw, ih, n, i, d = -1;
 
     frames = gdk_pixbuf_animation_get_frames(animation);
     n = gdk_pixbuf_animation_get_num_frames(animation);
@@ -55,8 +55,12 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h)
     for (i = 0; i < n; i++) {
 	GdkPixbufFrame *frame;
 	GdkPixbuf *pixbuf;
+	int tmp;
 
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
+ 	tmp = gdk_pixbuf_frame_get_delay_time(frame);
+	if (tmp > d)
+	  d = tmp;
 	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	iw = gdk_pixbuf_frame_get_x_offset(frame)
 	    + gdk_pixbuf_get_width(pixbuf);
@@ -67,6 +71,8 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h)
 	if (ih > *h)
 	    *h = ih;
     }
+    if (delay)
+        *delay = d;
 }
 
 #endif
@@ -266,7 +272,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 #elif defined(USE_GDKPIXBUF)
     GdkPixbufAnimation *animation;
     GList *frames;
-    int i, iw, ih, n;
+    int i, j, iw, ih, n, frame_num, delay, max_anim;
     double ratio_w, ratio_h;
     struct x11_image *ximg;
     GdkPixbufFrameAction action = GDK_PIXBUF_FRAME_REVERT;
@@ -316,15 +322,21 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     imlib_render_image_on_drawable_at_size(0, 0, w, h);
     imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
+    max_anim = self->max_anim;
     animation = gdk_pixbuf_animation_new_from_file(fname);
     if (!animation)
 	return 0;
     frames = gdk_pixbuf_animation_get_frames(animation);
-    n = gdk_pixbuf_animation_get_num_frames(animation);
-    get_animation_size(animation, &iw, &ih);
+    frame_num = n = gdk_pixbuf_animation_get_num_frames(animation);
 
-    if (self->max_anim > 0) {
-	n = (self->max_anim > n) ? n : self->max_anim;
+    get_animation_size(animation, &iw, &ih, &delay);
+    if (delay <= 0)
+        max_anim = -1;
+
+    if (max_anim < 0) {
+        frame_num = (-max_anim > n) ? n : -max_anim;
+    } else if (max_anim > 0) {
+	frame_num = n = (max_anim > n) ? n : max_anim;
     }
 
     if (w < 1 || h < 1) {
@@ -336,17 +348,22 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	ratio_w = 1.0 * w / iw;
 	ratio_h = 1.0 * h / ih;
     }
-    ximg = x11_img_new(xi, w, h, n);
+    ximg = x11_img_new(xi, w, h, frame_num);
     if (!ximg) {
 	gdk_pixbuf_animation_unref(animation);
 	return 0;
     }
-    for (i = 0; i < n; i++) {
+    for (j = 0; j < n; j++) {
 	GdkPixbufFrame *frame;
 	GdkPixbuf *org_pixbuf, *pixbuf;
-	int width, height, ofstx, ofsty, delay;
+	int width, height, ofstx, ofsty;
 
-	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
+	if (max_anim < 0) {
+	    i = (j - n + frame_num > 0)? (j - n + frame_num): 0;
+	} else {
+	    i = j;
+	}
+	frame = (GdkPixbufFrame *) g_list_nth_data(frames, j);
 	org_pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	ofstx = gdk_pixbuf_frame_get_x_offset(frame);
 	ofsty = gdk_pixbuf_frame_get_y_offset(frame);
@@ -533,7 +550,7 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     if (!animation)
 	return 0;
 
-    get_animation_size(animation, w, h);
+    get_animation_size(animation, w, h, NULL);
     gdk_pixbuf_animation_unref(animation);
 #endif
     return 1;

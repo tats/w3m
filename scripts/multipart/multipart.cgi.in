@@ -1,9 +1,12 @@
 #!@PERL@
 
-if ($use_NKF = eval "use NKF;") {
+eval { use NKF; };
+if (! $@) {
+	$use_NKF = 1;
 	$CONV = "-e";
 	$MIME_DECODE = "-m -e";
 } else {
+	$use_NKF = 0;
 #	$CONV = "w3m -dump -e";
 	$CONV = "@NKF@ -e";
 	$MIME_DECODE = "@NKF@ -m -e";

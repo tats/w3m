@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.17 2002/12/14 15:26:44 ukai Exp $ */
+/* $Id: ftp.c,v 1.18 2002/12/15 12:12:47 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -357,7 +357,7 @@ getFtpModtime(FTP ftp, char *path)
     Str tmp;
     char *p;
     struct tm tm;
-    time_t t;
+    time_t t, lt, gt;
 
     memset(&tm, 0, sizeof(struct tm));
     tmp = Sprintf("MDTM %s\r\n", path);
@@ -374,8 +374,9 @@ getFtpModtime(FTP ftp, char *path)
     tm.tm_year -= 1900;
     tm.tm_mon--;
     t = mktime(&tm);
-    t += mktime(localtime(&t)) - mktime(gmtime(&t));
-    return t;
+    lt = mktime(localtime(&t));
+    gt = mktime(gmtime(&t));
+    return t + (lt - gt);
 }
 
 int

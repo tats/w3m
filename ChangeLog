@@ -1,3 +1,8 @@
+2002-12-15  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
+
+	* [w3m-dev 03574] Re: preserve timestamp
+	* ftp.c (getFtpModtime): don't call localtime,gettime in same expr
+
 2002-12-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03573] Re: Bug#172851: w3m: In form, takes hostname as baseref for relative URI action
@@ -5873,4 +5878,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.623 2002/12/14 16:09:51 ukai Exp $
+$Id: ChangeLog,v 1.624 2002/12/15 12:12:47 ukai Exp $

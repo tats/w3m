@@ -1,3 +1,7 @@
+2003-02-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: rc: decode_url
+
 2003-02-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03730] display decoded URL
@@ -7083,4 +7087,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.738 2003/02/05 16:43:56 ukai Exp $
+$Id: ChangeLog,v 1.739 2003/02/05 16:45:57 ukai Exp $

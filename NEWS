@@ -1,5 +1,6 @@
 w3m 0.4?
 
+* rc: decode_url
 * func: RESHAPE
 * rc: fold_line
 * local cookie: passed via file named $LOCAL_COOKIE or posted not in url query

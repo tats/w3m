@@ -6,14 +6,14 @@
 
 <HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>OPERATION&nbsp;-w3m操作法-</TITLE>
+<TITLE>OPERATION&nbsp;- w3m 操作法 -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">w3m操作法</A></H1>
+<H1><A NAME="index">w3m 操作法</A></H1>
 <DIV>
-<!-- w3mを操作する上での詳細を記す -->
+<!-- w3m を操作する上での詳細を記す -->
 </DIV>
 	<UL>
 		<LI><A HREF="#buffer">バッファ操作</A>
@@ -30,13 +30,13 @@
 <H2><A NAME="buffer">バッファ操作</A></H2>
 <!-- バッファ操作時の説明 -->
 
-<H3><A NAME="mouse">マウス操作</A><H3>
+<H3><A NAME="mouse">マウス操作</A></H3>
 <!-- マウス操作時の説明 -->
 
-<H3><A NAME="line_edit">最下行入力</A><H3>
+<H3><A NAME="line_edit">最下行入力</A></H3>
 <!-- 最下行入力時の操作についての説明 -->
 
-<H3><A NAME="menu">メニュー操作</A><H3>
+<H3><A NAME="menu">メニュー操作</A></H3>
 <!-- メニュー操作時の説明 -->
 
 <DIV>

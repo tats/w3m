@@ -6,21 +6,21 @@
 
 <HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>FUNCTION&nbsp;-機能詳細-</TITLE>
+<TITLE>FUNCTION&nbsp;- 機能詳細 -</TITLE>
 </HEAD>
 
 <BODY>
 
 <H1><A NAME="index">機能詳細</A></H1>
 <DIV>
-<!-- w3mの各機能についての詳細説明を記す -->
+<!-- w3m の各機能についての詳細説明を記す -->
 </DIV>
 	<UL>
-		<LI><A HREF="#url">対応しているURL</A>
-		<LI><A HREF="#html">対応しているHTML</A>
+		<LI><A HREF="#url">対応している URL</A>
+		<LI><A HREF="#html">対応している HTML</A>
 		<LI><A HREF="#ssl">SSL</A>
 		<LI><A HREF="#cookie">cookie</A>
-		<LI><A HREF="#local_CGI">ローカルCGI機能</A>
+		<LI><A HREF="#local_CGI">ローカル CGI 機能</A>
 	</UL>
 
 <DIV>
@@ -28,37 +28,37 @@
 </DIV>
 <HR>
 
-<H2><A NAME="url">対応しているURL</A></H2>
-<!-- w3mが解釈可能なURLについての説明 -->
+<H2><A NAME="url">対応している URL</A></H2>
+<!-- w3m が解釈可能な URL についての説明 -->
 <DIV>
 <A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="html">対応しているHTML</A><H2>
-<!-- w3mが対応しているHTMLについて -->
+<H2><A NAME="html">対応している HTML</A></H2>
+<!-- w3m が対応している HTML について -->
 <DIV>
 <A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="ssl">SSL</A><H2>
-<!-- SSLについての説明 -->
+<H2><A NAME="ssl">SSL</A></H2>
+<!-- SSL についての説明 -->
 <DIV>
 <A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="cookie">cookie</A><H2>
-<!-- cookieについての説明 -->
+<H2><A NAME="cookie">cookie</A></H2>
+<!-- cookie についての説明 -->
 
 <DIV>
 <A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="local_CGI">ローカルCGI機能</A><H2>
-<!-- ローカルCGI機能についての説明 -->
+<H2><A NAME="local_CGI">ローカル CGI 機能</A></H2>
+<!-- ローカル CGI 機能についての説明 -->
 
 <DIV>
 <A HREF="#index">このページの先頭に戻る</A>

@@ -6,7 +6,7 @@
 
 <HEAD>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>DETAIL&nbsp;-詳細編-</TITLE>
+<TITLE>DETAIL&nbsp;- 詳細編 -</TITLE>
 </HEAD>
 
 <BODY>
@@ -17,13 +17,13 @@
 </DIV>
 	<UL>
 		<LI><A HREF="@DOC.install@">インストールの詳細</A>
-		<LI><A HREF="@DOC.operation@">w3m操作法</A> <!-- キー操作説明 -->
+		<LI><A HREF="@DOC.operation@">w3m 操作法</A> <!-- キー操作説明 -->
 		<LI><A HREF="@DOC.configuration@">各種設定</A>
 		<LI><A HREF="@DOC.function@">機能詳細</A>
 		<LI><A HREF="@DOC.FAQ@">FAQ</A>
-		<LI><A HREF="@DOC.development@">開発ドキュメント</A>
+		<LI><A HREF="@DOC.developement@">開発ドキュメント</A>
 		<LI><A HREF="@DOC.community@">w3m コミュニティ</A>
-		<LI><A HREF="@DOC.copyright@">Copyright</A>
+		<LI><A HREF="@DOC.copyright@">Copiright</A>
 	</UL>
 <HR>
 <A HREF="@DOC.index@">トップペイジに戻る</A>

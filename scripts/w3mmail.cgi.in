@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.8 2002/01/29 16:31:09 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.9 2002/01/29 17:16:35 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -25,8 +25,16 @@ if ($query =~ s/^\w+://) {
     @to = ($to);
     push(@to, $opt{'to'}) if ($opt{'to'});
     $opt{'to'} = join(',', @to);
-    $body = $opt{'body'};
-    delete $opt{'body'};
+    if ($ENV{'REQUEST_METHOD'} eq 'POST') {
+	sysread(STDIN, $body, $ENV{'CONTENT_LENGTH'});
+	$content_type = $ENV{'CONTENT_TYPE'};
+	if ($content_type =~ /^multipart\/form-data;\s+boundary=(.*)$/) {
+	    $boundary = $1;
+	}
+    } else {
+	$body = $opt{'body'};
+	delete $opt{'body'};
+    }
     &lang_setup;
 
     print "Content-Type: text/html\r\n";
@@ -48,6 +56,10 @@ if ($query =~ s/^\w+://) {
 	$v = &lang_html_quote($opt{$h});
 	print "<tr><td>\u$h:<td><input type='text' name=\"$h\" value=\"$v\">\n";
 	delete $opt{$h};
+    }
+    if ($boundary) {
+	print "<tr><td>Content-Type:<td>multipart/form-data; boundary=\"$boundary\"\n";
+	print "<input type='hidden' name='boundary' value=\"$boundary\">\n";
     }
     foreach $h (keys %opt) {
 	$qh = &html_quote($h);
@@ -80,6 +92,8 @@ if ($query =~ s/^\w+://) {
     delete $opt{'body'};
     $act = $opt{'action'};
     delete $opt{'action'};
+    $boundary = $opt{'boundary'};
+    delete $opt{'boundary'};
     &lang_setup;
 
     if ($act eq "Preview") {
@@ -103,7 +117,12 @@ if ($query =~ s/^\w+://) {
 	}
 	($cs,$cte,$body) = &lang_body(&lang_html_quote($body), 0);
 	print "Mime-Version: 1.0\n";
-	print "Content-Type: text/plain; charset=$cs\n";
+	if ($boundary) {
+	    print "Content-Type: multipart/form-data;\n";
+	    print "    boundary=\"$boundary\"\n";
+	} else {
+	    print "Content-Type: text/plain; charset=$cs\n";
+	}
 #	print "Content-Transfer-Encoding: $cte\n";
 	print "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
 	print "\n";
@@ -121,6 +140,10 @@ if ($query =~ s/^\w+://) {
 	foreach $h ('to', 'cc', 'bcc', 'subject') {
 	    print "<tr><td>\u$h:<td><input type='text' name=\"$h\" value=\"$v{$h}\">\n";
 	    delete $opt{$h};
+	}
+	if ($boundary) {
+	    print "<tr><td>Content-Type:<td>Content-Type: multipart/form-data; boundary=\"$boundary\"\n";
+	    print "<input type='hidden' name=\"boundary\" value=\"$boundary\">\n";
 	}
 	foreach $h (keys %opt) {
 	    $qh = &html_quote($h);
@@ -154,7 +177,12 @@ if ($query =~ s/^\w+://) {
 	}
 	($cs,$cte,$body) = &lang_body($body, 1);
 	print MAIL "Mime-Version: 1.0\n";
-	print MAIL "Content-Type: text/plain; charset=$cs\n";
+	if ($boundary) {
+	    print MAIL "Content-Type: multipart/form-data;\n";
+	    print MAIL "    boundary=\"$boundary\"\n";
+	} else {
+	    print MAIL "Content-Type: text/plain; charset=$cs\n";
+	}
 	print MAIL "Content-Transfer-Encoding: $cte\n";
 	print MAIL "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
 	print MAIL "\n";

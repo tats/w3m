@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.47 2002/01/24 16:59:16 ukai Exp $ */
+/* $Id: file.c,v 1.48 2002/01/29 17:16:35 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1082,7 +1082,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	case SCM_UNKNOWN:
 	    tmp = searchURIMethods(&pu);
 	    if (tmp != NULL) {
-		b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0, NULL);
+		b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0, request);
 		if (b != NO_BUFFER)
 		    return b;
 	    }

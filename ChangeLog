@@ -1,3 +1,10 @@
+2002-01-30  SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+
+	* [w3m-dev 02927] mailto: POST method with w3mmail.cgi
+	* file.c (loadGeneralFile): pass request even if SCM_UNKNOWN 
+			(for external URI loader)
+	* scripts/w3mmail.cgi.in: support POST method
+
 2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02926] fixed w3mmail.cgi
@@ -2355,4 +2362,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.271 2002/01/29 16:31:09 ukai Exp $
+$Id: ChangeLog,v 1.272 2002/01/29 17:16:35 ukai Exp $

@@ -1,3 +1,12 @@
+2002-01-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02876] w3mmail.cgi.in backport from w3mmee
+	* action='file://$0'
+	* don't add \n to $body's tail
+	* $body =~ s/\r+\n/\n/g;
+	* s/@cmd/@opt/
+	* url_unquote: + should be unquote too
+
 2002-01-18  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02873] delete "decode MIME-body" in doc{,-jp}/README
@@ -2140,4 +2149,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.243 2002/01/18 13:09:07 ukai Exp $
+$Id: ChangeLog,v 1.244 2002/01/20 17:06:42 ukai Exp $

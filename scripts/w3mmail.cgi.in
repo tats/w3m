@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.3 2002/01/15 17:46:01 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.4 2002/01/20 17:06:42 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -35,7 +35,7 @@ if ($query =~ s/^\w+://) {
     print "\r\n";
     print "<html><head><title>W3M Mailer: $qurl</title></head>\n";
     print "<body><h1>W3M Mailer: $qurl</h1>\n";
-    print "<form action='$0' method='POST'>\n";
+    print "<form action='file://$0' method='POST'>\n";
     print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
     print "<table>\n";
     if ($opt{'from'}) {
@@ -108,7 +108,7 @@ if ($query =~ s/^\w+://) {
 	print "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
 	print "\n";
 	print $body;
-	print "\n";
+	print "\n" if ($body !~ /\n$/);
 	print "</pre>\n";
 	print "<input type='submit' name='action' value='Send'>\n";
 	print "<hr>\n";
@@ -256,6 +256,7 @@ sub conv_nkf {
 	return nkf(@opt);
     }
     local($body) = pop(@opt);
+    $body =~ s/\r+\n/\n/g;
     $| = 1;
     pipe(R, W2);
     pipe(R2, W);
@@ -265,7 +266,7 @@ sub conv_nkf {
 	close(W);
 	open(STDIN, "<&R2");
 	open(STDOUT, ">&W2");
-	exec "nkf", @cmd;
+	exec "nkf", @opt;
 	die;
     }
     close(R2);
@@ -309,6 +310,6 @@ sub html_quote {
 
 sub url_unquote {
     local($_) = @_;
-    s/%([0-9A-Fa-f][0-9A-Fa-f])/chr(hex($1))/ge;
+    s/\+|%([0-9A-Fa-f][0-9A-Fa-f])/$& eq '+' ? ' ' : chr(hex($1))/ge;
     return $_;
 }

@@ -25,9 +25,6 @@ bugs
 
 [bugs] http://bugs.debian.org/w3m
 
-* when <img usemap> is inside a link, the map is not used
- http://bugs.debian.org/96349
-
 * parsing bug: omitting </p> should not matter, but it does
  http://bugs.debian.org/115521
 

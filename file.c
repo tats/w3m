@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.97 2002/09/10 17:27:46 ukai Exp $ */
+/* $Id: file.c,v 1.98 2002/09/10 18:11:30 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1388,7 +1388,7 @@ find_auth_user_passwd(char *host, int port, char *file, char *realm,
 	    continue;
 	if (strcmp(tok, "machine") == 0) {
 	    if (matched && *uname && *pwd)
-		return 1;
+		break;
 	    *uname = NULL;
 	    *pwd = NULL;
 	    if (strcmp(d, host) == 0)
@@ -1419,6 +1419,7 @@ find_auth_user_passwd(char *host, int port, char *file, char *realm,
 	    /* ignore? */ ;
 	}
     }
+    fclose(fp);
     if (matched && *uname && *pwd)
 	return 1;
 

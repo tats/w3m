@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.22 2002/11/27 16:29:14 ukai Exp $ */
+/* $Id: menu.c,v 1.23 2002/12/02 17:27:41 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -287,6 +287,11 @@ static void smChTab(void);
 static int smDelTab(char c);
 
 /* --- SelTabMenu (END) --- */
+
+static Menu LinkMenu;
+static int LinkV = 0;
+static void initLinkMenu(void);
+static void lmGoURL(void);
 
 /* --- MainMenu --- */
 
@@ -1313,6 +1318,7 @@ popupMenu(int x, int y, Menu *menu)
 {
     initSelectMenu();
     initSelTabMenu();
+    initLinkMenu();
 
     menu->cursorX = Currentbuf->cursorX + Currentbuf->rootX;
     menu->cursorY = Currentbuf->cursorY + Currentbuf->rootY;
@@ -1642,6 +1648,69 @@ smDelTab(char c)
 
 /* --- SelectMenu (END) --- */
 
+/* --- LinkMenu --- */
+
+static void
+initLinkMenu(void)
+{
+    LinkList *l;
+    int i, nitem, len = 0;
+    char **label;
+    Str str;
+
+    if (!Currentbuf->linklist) {
+	LinkMenu.item = NULL;
+	LinkMenu.nitem = 0;
+	return;
+    }
+    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) ;
+    nitem = i;
+
+    label = New_N(char *, nitem + 1);
+    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) {
+	str = Strnew_charp(l->title ? l->title : "(empty)");
+	if (l->type == LINK_TYPE_REL)
+	    Strcat_charp(str, " [Rel] ");
+	else if (l->type == LINK_TYPE_REV)
+	    Strcat_charp(str, " [Rev] ");
+	else
+	    Strcat_charp(str, " ");
+	Strcat_charp(str, l->url ? l->url : "");
+	label[i] = str->ptr;
+	if (len < str->length)
+	    len = str->length;
+    }
+    label[nitem + 1] = NULL;
+    LinkV = 0;
+
+    new_option_menu(&LinkMenu, label, &LinkV, lmGoURL);
+    LinkMenu.initial = LinkV;
+    LinkMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
+    LinkMenu.cursorY = Currentbuf->cursorY + Currentbuf->rootY;
+}
+
+static void
+lmGoURL(void)
+{
+    LinkList *l;
+    int i;
+    ParsedURL pu;
+
+    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) {
+	if (i == LinkV)
+	    break;
+    }
+    if (l == NULL || l->url == NULL)
+	return;
+    CurrentKey = -1;
+    CurrentKeyData = NULL;
+    CurrentCmdData = l->url;
+    gorURL();
+    CurrentCmdData = NULL;
+}
+
+/* --- LinkMenu (END) --- */
+
 /* --- OptionMenu --- */
 
 void
@@ -1674,7 +1743,7 @@ initMenu(void)
     MenuItem *item = NULL;
     MenuList *list;
 
-    w3mMenuList = New_N(MenuList, 3);
+    w3mMenuList = New_N(MenuList, 4);
     w3mMenuList[0].id = "Main";
     w3mMenuList[0].menu = &MainMenu;
     w3mMenuList[0].item = MainMenuItem;
@@ -1684,7 +1753,10 @@ initMenu(void)
     w3mMenuList[2].id = "SelectTab";
     w3mMenuList[2].menu = &SelTabMenu;
     w3mMenuList[2].item = NULL;
-    w3mMenuList[3].id = NULL;
+    w3mMenuList[3].id = "Link";
+    w3mMenuList[3].menu = &LinkMenu;
+    w3mMenuList[3].item = NULL;
+    w3mMenuList[4].id = NULL;
 
     if ((mf = fopen(rcFile(MENU_FILE), "rt")) == NULL)
 	goto create_menu;

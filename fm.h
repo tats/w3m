@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.89 2002/11/26 18:03:26 ukai Exp $ */
+/* $Id: fm.h,v 1.90 2002/12/02 17:27:37 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -384,6 +384,17 @@ typedef struct {
     int prevhseq;
 } HmarkerList;
 
+#define LINK_TYPE_NONE 0
+#define LINK_TYPE_REL  1
+#define LINK_TYPE_REV  2
+typedef struct _LinkList {
+    char *url;
+    char *title;	/* Next, Contents, ... */
+    char *ctype;	/* Content-Type */
+    char type;		/* Rel, Rev */
+    struct _LinkList *next;
+} LinkList;
+
 typedef struct _Buffer {
     char *filename;
     char *buffername;
@@ -413,6 +424,7 @@ typedef struct _Buffer {
     AnchorList *name;
     AnchorList *img;
     AnchorList *formitem;
+    LinkList *linklist;
     FormList *formlist;
     MapList *maplist;
     HmarkerList *hmarklist;

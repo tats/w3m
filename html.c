@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.15 2002/11/05 17:10:05 ukai Exp $ */
+/* $Id: html.c,v 1.16 2002/12/02 17:27:38 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -18,6 +18,9 @@ unsigned char ALST_LI[] = { ATTR_TYPE, ATTR_VALUE, ATTR_CORE };
 #define MAXA_LI		MAXA_CORE + 2
 unsigned char ALST_HR[] = { ATTR_WIDTH, ATTR_ALIGN, ATTR_CORE };
 #define MAXA_HR		MAXA_CORE + 2
+unsigned char ALST_LINK[] = { ATTR_HREF, ATTR_HSEQ, ATTR_REL, ATTR_REV,
+    ATTR_TITLE, ATTR_TYPE, ATTR_CORE };
+#define MAXA_LINK	MAXA_CORE + sizeof ALST_LINK/sizeof ALST_LINK[0] - 1
 unsigned char ALST_DL[] = { ATTR_COMPACT, ATTR_CORE };
 #define MAXA_DL		MAXA_CORE + 1
 unsigned char ALST_PRE[] = { ATTR_FOR_TABLE, ATTR_CORE };
@@ -220,7 +223,7 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/sup", NULL, 0, 0},	/* 101 HTML_N_SUP       */
     {"sub", NULL, 0, 0},	/* 102 HTML_SUB       */
     {"/sub", NULL, 0, 0},	/* 103 HTML_N_SUB       */
-    {NULL, NULL, 0, 0},		/* 104 Undefined       */
+    {"link", ALST_LINK, MAXA_LINK, 0},  /*  104 HTML_LINK      */
     {NULL, NULL, 0, 0},		/* 105 Undefined       */
 
     /* pseudo tag */
@@ -296,24 +299,23 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"shape", VTYPE_STR, 0},	/* 44 ATTR_SHAPE          */
     {"coords", VTYPE_STR, 0},	/* 45 ATTR_COORDS         */
     {"ismap", VTYPE_NONE, 0},	/* 46 ATTR_ISMAP          */
-
-    {NULL, VTYPE_NONE, 0},	/* 47 Undefined           */
-    {NULL, VTYPE_NONE, 0},	/* 48 Undefined           */
+    {"rel", VTYPE_STR, 0},	/* 47 ATTR_REL            */
+    {"rev", VTYPE_STR, 0},	/* 48 ATTR_REV            */
+    {"title", VTYPE_STR, 0},	/* 49 ATTR_TITLE          */
 
     /* Internal attribute */
-    {"xoffset", VTYPE_NUMBER, AFLG_INT},	/* 49 ATTR_XOFFSET        */
-    {"yoffset", VTYPE_NUMBER, AFLG_INT},	/* 50 ATTR_YOFFSET        */
-    {"top_margin", VTYPE_NUMBER, AFLG_INT},	/* 51 ATTR_TOP_MARGIN,    */
-    {"bottom_margin", VTYPE_NUMBER, AFLG_INT},	/* 52 ATTR_BOTTOM_MARGIN, */
-    {"tid", VTYPE_NUMBER, AFLG_INT},	/* 53 ATTR_TID            */
-    {"fid", VTYPE_NUMBER, AFLG_INT},	/* 54 ATTR_FID            */
-    {"for_table", VTYPE_NONE, AFLG_INT},	/* 55 ATTR_FOR_TABLE      */
-    {"framename", VTYPE_STR, AFLG_INT},	/* 56 ATTR_FRAMENAME      */
-    {"hborder", VTYPE_NONE, 0},	/* 57 ATTR_HBORDER        */
-    {"hseq", VTYPE_NUMBER, AFLG_INT},	/* 58 ATTR_HSEQ           */
-    {"no_effect", VTYPE_NONE, AFLG_INT},	/* 59 ATTR_NO_EFFECT      */
-    {"referer", VTYPE_STR, AFLG_INT},	/* 60 ATTR_REFERER        */
-    {"selectnumber", VTYPE_NUMBER, AFLG_INT},	/* 61 ATTR_SELECTNUMBER   */
-    {"textareanumber", VTYPE_NUMBER, AFLG_INT},	/* 62 ATTR_TEXTAREANUMBER */
-    {"title", VTYPE_STR, AFLG_INT},	/* 63 ATTR_TITLE          */
+    {"xoffset", VTYPE_NUMBER, AFLG_INT},	/* 50 ATTR_XOFFSET        */
+    {"yoffset", VTYPE_NUMBER, AFLG_INT},	/* 51 ATTR_YOFFSET        */
+    {"top_margin", VTYPE_NUMBER, AFLG_INT},	/* 52 ATTR_TOP_MARGIN,    */
+    {"bottom_margin", VTYPE_NUMBER, AFLG_INT},	/* 53 ATTR_BOTTOM_MARGIN, */
+    {"tid", VTYPE_NUMBER, AFLG_INT},	/* 54 ATTR_TID            */
+    {"fid", VTYPE_NUMBER, AFLG_INT},	/* 55 ATTR_FID            */
+    {"for_table", VTYPE_NONE, AFLG_INT},	/* 56 ATTR_FOR_TABLE      */
+    {"framename", VTYPE_STR, AFLG_INT},	/* 57 ATTR_FRAMENAME      */
+    {"hborder", VTYPE_NONE, 0},	/* 58 ATTR_HBORDER        */
+    {"hseq", VTYPE_NUMBER, AFLG_INT},	/* 59 ATTR_HSEQ           */
+    {"no_effect", VTYPE_NONE, AFLG_INT},	/* 60 ATTR_NO_EFFECT      */
+    {"referer", VTYPE_STR, AFLG_INT},	/* 61 ATTR_REFERER        */
+    {"selectnumber", VTYPE_NUMBER, AFLG_INT},	/* 62 ATTR_SELECTNUMBER   */
+    {"textareanumber", VTYPE_NUMBER, AFLG_INT},	/* 63 ATTR_TEXTAREANUMBER */
 };

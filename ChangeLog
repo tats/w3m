@@ -1,3 +1,42 @@
+2002-12-03  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03501] link tag support
+	* buffer.c (reshapeBuffer): initialize formlist, linklist,
+					maplist, hmarklist, imarklist
+	* file.c (addLink): added
+		(HTMLlineproc2body): add HTML_LINK
+		(loadHTMLstream): use HTMLlineproc0 not in R_ST_NORMAL
+		(reloadBuffer): initialize linklist, maplist, 
+				hmarklist, imarklist
+	* fm.h (LINK_TYPE_NONE): added
+		(LINK_TYPE_REL): added
+		(LINK_TYPE_REV): added
+		(LinkList): added
+		(Buffer): add linklist
+	* html.c (ALST_LINK): added
+		(TagMAP): add link
+		(AtrMAP): add rel, rev, title
+	* html.h (HTML_LINK): added
+		(ATTR_REL): added
+		(ATTR_REV): added
+		(ATTR_TITLE): added
+	* map.c (append_map_info): anchor
+		(append_link_info): added
+		(page_info_panel): append_link_info
+	* menu.c (LinkMenu): added
+		(linkV): added
+		(initLinkMenu): added
+		(lmGoURL): added
+		(popupMenu): initLinkMenu()
+		(initMenu): w3mMenuList new 4
+				add "Link"
+	* tagtable.tab (link): added
+
+2002-11-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m bug] internal tag
+	* display.c (loadHTMLstream): HTMLlineproc0 internal
+
 2002-11-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03498] Re: parse <!-- ... --> in <script>
@@ -5248,4 +5287,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.571 2002/11/28 16:00:33 ukai Exp $
+$Id: ChangeLog,v 1.572 2002/12/02 17:27:34 ukai Exp $

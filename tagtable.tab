@@ -117,6 +117,7 @@ style		HTML_STYLE
 wbr		HTML_WBR
 head           HTML_HEAD
 /head          HTML_N_HEAD
+link           HTML_LINK
 body		HTML_BODY
 /body		HTML_N_BODY
 html		HTML_BODY

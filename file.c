@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.135 2002/11/28 16:00:33 ukai Exp $ */
+/* $Id: file.c,v 1.136 2002/12/02 17:27:36 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -40,6 +40,7 @@ static void addnewline(Buffer *buf, char *line, Lineprop *prop,
 		       Linecolor *color,
 #endif
 		       int pos, int nlines);
+static void addLink(Buffer *buf, struct parsed_tag *tag);
 
 static Lineprop propBuffer[LINELEN];
 #ifdef USE_ANSI_COLOR
@@ -4941,6 +4942,11 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			a_href = NULL;
 		    }
 		    break;
+
+		case HTML_LINK:
+		    addLink(buf, tag);
+		    break;
+
 		case HTML_IMG_ALT:
 		    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 #ifdef USE_IMAGE
@@ -5300,6 +5306,49 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_IMAGE
     addMultirowsImg(buf, buf->img);
 #endif
+}
+
+static void
+addLink(Buffer *buf, struct parsed_tag *tag)
+{
+    struct parsed_tag *t;
+    char *href = NULL, *title = NULL, *ctype = NULL, *rel = NULL, *rev = NULL;
+    char type = LINK_TYPE_NONE;
+    LinkList *l;
+
+    parsedtag_get_value(tag, ATTR_HREF, &href);
+    if (href)
+	href = url_quote_conv(remove_space(href), buf->document_code);
+    parsedtag_get_value(tag, ATTR_TITLE, &title);
+    parsedtag_get_value(tag, ATTR_TYPE, &ctype);
+    parsedtag_get_value(tag, ATTR_REL, &rel);
+    if (rel != NULL) {
+	/* forward link type */
+	type = LINK_TYPE_REL;
+	if (title == NULL)
+	    title = rel;
+    }
+    parsedtag_get_value(tag, ATTR_REV, &rev);
+    if (rev != NULL) {
+	/* reverse link type */
+	type = LINK_TYPE_REV;
+	if (title == NULL)
+	    title = rev;
+    }
+
+    l = New(LinkList);
+    l->url = href;
+    l->title = title;
+    l->ctype = ctype;
+    l->type = type;
+    l->next = NULL;
+    if (buf->linklist) {
+	LinkList *i;
+	for (i = buf->linklist; i->next; i = i->next) ;
+	i->next = l;
+    }
+    else
+        buf->linklist = l;
 }
 
 void
@@ -6300,7 +6349,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
     }
     if (obuf.status != R_ST_NORMAL)
-	HTMLlineproc1(correct_irrtag(obuf.status)->ptr, &htmlenv1);
+	HTMLlineproc0(correct_irrtag(obuf.status)->ptr, &htmlenv1, internal);
     obuf.status = R_ST_NORMAL;
     completeHTMLstream(&htmlenv1, &obuf);
     flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
@@ -7674,6 +7723,12 @@ reloadBuffer(Buffer *buf)
     buf->name = NULL;
     buf->img = NULL;
     buf->formitem = NULL;
+    buf->linklist = NULL;
+    buf->maplist = NULL;
+    if (buf->hmarklist)
+	buf->hmarklist->nmark = 0;
+    if (buf->imarklist)
+	buf->imarklist->nmark = 0;
     if (!strcasecmp(buf->type, "text/html"))
 	loadHTMLBuffer(&uf, buf);
     else

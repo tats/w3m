@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.16 2002/11/25 17:10:52 ukai Exp $ */
+/* $Id: map.c,v 1.17 2002/12/02 17:27:39 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -408,11 +408,47 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
 	url = html_quote(parsedURL2Str(&pu)->ptr);
-	Strcat_m_charp(tmp, "<tr><td>&nbsp;&nbsp;<td>",
-		       html_quote(a->alt), "<td><a href=\"", url, "\">", url,
-		       "</a>\n", NULL);
+	Strcat_m_charp(tmp, "<tr><td>&nbsp;&nbsp;<td><a href=\"", url, "\">",
+		       html_quote(a->alt), "</a><td>", html_quote(a->url),
+		       "\n", NULL);
     }
     Strcat_charp(tmp, "</table>");
+}
+
+/* append links */
+static void
+append_link_info(Buffer *buf, Str html, LinkList *link)
+{
+    LinkList  *l;
+    ParsedURL pu;
+    char *url;
+
+    if (!link)
+	return;
+
+    Strcat_charp(html, "<hr width=50%><h1>Link information</h1>");
+    Strcat_charp(html, "<TABLE>\n");
+    for (l = link; l; l = l->next) {
+	if (l->url) {
+	    parseURL2(l->url, &pu, baseURL(buf));
+	    url = html_quote(parsedURL2Str(&pu)->ptr);
+	}
+	else
+	    url = "(empty)";
+	Strcat_m_charp(html, "<TR><TD><A HREF=\"", url, "\">",
+		       l->title ? html_quote(l->title) : "(empty)", "</A><TD>",
+		       NULL);
+	if (l->type == LINK_TYPE_REL)
+	    Strcat_charp(html, "[Rel]");
+	else if (l->type == LINK_TYPE_REV)
+	    Strcat_charp(html, "[Rev]");
+	Strcat_m_charp(html, "<TD>", l->url ? html_quote(l->url) : "(empty)",
+		       NULL);
+	if (l->ctype)
+	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")", NULL);
+	Strcat_charp(html, "\n");
+    }
+    Strcat_charp(html, "</TABLE>\n");
 }
 
 /* append frame URL */
@@ -539,6 +575,9 @@ page_info_panel(Buffer *buf)
 	    append_map_info(buf, tmp, fi->parent->item);
     }
     Strcat_charp(tmp, "</table>\n");
+
+    append_link_info(buf, tmp, buf->linklist);
+
     if (buf->document_header != NULL) {
 	Strcat_charp(tmp, "<hr width=50%>\n");
 	Strcat_charp(tmp, "<h1>Header information</h1>\n");
@@ -547,6 +586,7 @@ page_info_panel(Buffer *buf)
 	    Strcat_charp(tmp, "<br>");
 	}
     }
+
     if (buf->frameset != NULL)
 	f_set = buf->frameset;
     else if (buf->bufferprop & BP_FRAME &&

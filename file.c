@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.118 2002/11/15 15:51:23 ukai Exp $ */
+/* $Id: file.c,v 1.119 2002/11/15 15:56:36 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2926,6 +2926,8 @@ process_img(struct parsed_tag *tag, int width)
 		w = (int)(w * image_scale / 100 + 0.5);
 		if (w == 0)
 		    w = 1;
+		else if (w > MAX_IMAGE_SIZE)
+		    w = MAX_IMAGE_SIZE;
 	    }
 	}
 #endif
@@ -2938,6 +2940,8 @@ process_img(struct parsed_tag *tag, int width)
 		i = (int)(i * image_scale / 100 + 0.5);
 		if (i == 0)
 		    i = 1;
+		else if (i > MAX_IMAGE_SIZE)
+		    i = MAX_IMAGE_SIZE;
 	    }
 	    else {
 		i = -1;
@@ -4949,8 +4953,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    image->url = parsedURL2Str(&u)->ptr;
 			    image->ext = filename_extension(u.file, TRUE);
 			    image->cache = NULL;
-			    image->width = w;
-			    image->height = h;
+			    image->width = (w > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: w;
+			    image->height = (h > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: h;
 			    image->xoffset = xoffset;
 			    image->yoffset = yoffset;
 			    image->y = currentLn(buf) - top;

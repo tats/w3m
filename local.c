@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.16 2002/11/27 16:35:18 ukai Exp $ */
+/* $Id: local.c,v 1.17 2003/01/10 16:42:50 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@ setLocalCookie()
     char hostname[256];
     gethostname(hostname, 256);
 
-    Local_cookie = Sprintf("%d.%ld@%s", getpid(), lrand48(), hostname);
+    Local_cookie = Sprintf("%d.%ld@%s", CurrentPid, lrand48(), hostname);
     set_environ("LOCAL_COOKIE", Local_cookie->ptr);
 }
 
@@ -400,7 +400,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     f1 = fopen(tmp1->ptr, "w");
     if (f1 == NULL)
 	return NULL;
-    pushText(fileToDelete, tmp1->ptr);
     if ((pid = localcgi_popen_r(&f))) {
 	fclose(f1);
 	return pid > 0 ? f : NULL;

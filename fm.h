@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.101 2003/01/10 16:08:22 ukai Exp $ */
+/* $Id: fm.h,v 1.102 2003/01/10 16:42:40 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -829,6 +829,7 @@ global char *cgi_bin init(NULL);
 global char *index_file init(NULL);
 
 global char *CurrentDir;
+global int CurrentPid;
 /*
 global Buffer *Currentbuf;
 global Buffer *Firstbuf;

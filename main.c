@@ -1,10 +1,11 @@
-/* $Id: main.c,v 1.188 2003/01/10 16:23:59 ukai Exp $ */
+/* $Id: main.c,v 1.189 2003/01/10 16:42:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
 #include <setjmp.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include <fcntl.h>
 #if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
 #include <sys/wait.h>
@@ -380,6 +381,7 @@ main(int argc, char **argv, char **envp)
     load_argc = 0;
 
     CurrentDir = currentdir();
+    CurrentPid = (int)getpid();
     BookmarkFile = NULL;
     rc_dir = expandName(RC_DIR);
     i = strlen(rc_dir);
@@ -1868,7 +1870,6 @@ pipeBuf(void)
     }
     saveBuffer(Currentbuf, f);
     fclose(f);
-    pushText(fileToDelete, tmpf);
     buf = getpipe(myExtCommand(cmd, tmpf, TRUE)->ptr);
     if (buf == NULL) {
 	disp_message("Execution failed", TRUE);
@@ -3051,7 +3052,7 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	}
 	fi->parent->body = (*query)->ptr;
 	fi->parent->boundary =
-	    Sprintf("------------------------------%d%ld%ld%ld", getpid(),
+	    Sprintf("------------------------------%d%ld%ld%ld", CurrentPid,
 		    fi->parent, fi->parent->body, fi->parent->boundary)->ptr;
     }
     *query = Strnew();
@@ -4395,7 +4396,6 @@ vwSrc(void)
 	    !strcasecmp(Currentbuf->type, "text/plain")) {
 	    FILE *f;
 	    Str tmpf = tmpfname(TMPF_SRC, NULL);
-	    pushText(fileToDelete, tmpf->ptr);
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;

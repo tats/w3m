@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.181 2003/01/10 16:33:46 ukai Exp $ */
+/* $Id: file.c,v 1.182 2003/01/10 16:42:29 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -543,7 +543,6 @@ xface2xpm(char *xface)
     pclose(f);
     if (stat(xpm, &st))
 	return NULL;
-    pushText(fileToDelete, xpm);
     if (!st.st_size)
 	return NULL;
     return xpm;
@@ -579,7 +578,6 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 
     if (thru && !newBuf->header_source) {
 	Str tmpf = tmpfname(TMPF_DFL, NULL);
-	pushText(fileToDelete, tmpf->ptr);
 	src = fopen(tmpf->ptr, "w");
 	if (src)
 	    newBuf->header_source = tmpf->ptr;
@@ -1537,7 +1535,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ftpdir && ftpdir->length > 0) {
 		    FILE *src;
 		    tmp = tmpfname(TMPF_SRC, ".html");
-		    pushText(fileToDelete, tmp->ptr);
 		    src = fopen(tmp->ptr, "w");
 		    if (src) {
 			Strfputs(ftpdir, src);
@@ -1593,7 +1590,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (group && group->length > 0) {
 		    FILE *src;
 		    tmp = tmpfname(TMPF_SRC, ".html");
-		    pushText(fileToDelete, tmp->ptr);
 		    src = fopen(tmp->ptr, "w");
 		    if (src) {
 			Strfputs(group, src);
@@ -6091,7 +6087,6 @@ loadHTMLBuffer(URLFile *f, Buffer *newBuf)
     if (newBuf->sourcefile == NULL &&
 	(f->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmp = tmpfname(TMPF_SRC, ".html");
-	pushText(fileToDelete, tmp->ptr);
 	src = fopen(tmp->ptr, "w");
 	if (src)
 	    newBuf->sourcefile = tmp->ptr;
@@ -6586,7 +6581,6 @@ loadHTMLString(Str page)
 
     if (w3m_dump & DUMP_FRAME) {
 	tmp = tmpfname(TMPF_SRC, ".html");
-	pushText(fileToDelete, tmp->ptr);
 	src = fopen(tmp->ptr, "w");
 	if (src)
 	    newBuf->sourcefile = tmp->ptr;
@@ -6713,7 +6707,6 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
     file = tmpfname(TMPF_SRC, ".html");
     src = fopen(file->ptr, "w");
     newBuf->sourcefile = file->ptr;
-    pushText(fileToDelete, file->ptr);
 
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
@@ -6893,7 +6886,6 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
     newBuf->mailcap_source = tmpf->ptr;
-    pushText(fileToDelete, tmpf->ptr);
 
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
@@ -7338,26 +7330,18 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     struct mailcap *mcap;
     int mc_stat;
     Buffer *buf = NULL;
-    char *header, *src = NULL;
+    char *header, *src = NULL, *ext = uf.ext;
 
     if (!(mcap = searchExtViewer(type)))
 	return 0;
 
-    tmpf = tmpfname(TMPF_DFL, NULL);
-
     if (mcap->nametemplate) {
-	Str tmp =
-	    unquote_mailcap(mcap->nametemplate, NULL, tmpf->ptr, NULL, NULL);
-	if (Strncmp(tmpf, tmp, tmpf->length) == 0) {
-	    tmpf = tmp;
-	    goto _save;
-	}
+	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
+	if (tmpf->ptr[0] == '.')
+	    ext = tmpf->ptr;
     }
-    if (uf.ext && *uf.ext) {
-	Strcat_charp(tmpf, uf.ext);
-    }
+    tmpf = tmpfname(TMPF_DFL, (ext && *ext) ? ext : NULL);
 
-  _save:
     if (IStype(uf.stream) != IST_ENCODED)
 	uf.stream = newEncodedStream(uf.stream, uf.encoding);
     header = checkHeader(defaultbuf, "Content-Type:");
@@ -7371,7 +7355,6 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     }
 #endif
 
-    pushText(fileToDelete, tmpf->ptr);
 #ifdef HAVE_SETPGRP
     if (!(mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&
 	!(mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
@@ -7543,7 +7526,6 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (f)
 	    fclose(f);
 #endif
-	pushText(fileToDelete, lock);
 	flush_tty();
 	pid = fork();
 	if (!pid) {
@@ -7646,7 +7628,6 @@ doFileSave(URLFile uf, char *defstr)
 	if (f)
 	    fclose(f);
 #endif
-	pushText(fileToDelete, lock);
 	flush_tty();
 	pid = fork();
 	if (!pid) {
@@ -7790,7 +7771,6 @@ uncompress_stream(URLFile *uf, char **src)
 
     if (uf->scheme != SCM_LOCAL) {
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
-	pushText(fileToDelete, tmpf);
 	if (save2tmp(*uf, tmpf) < 0) {
 	    UFclose(uf);
 	    return;

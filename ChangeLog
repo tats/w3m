@@ -1,5 +1,28 @@
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03629] delete tmp file
+	* etc.c (tempfname): always file to delete
+	* file.c (xface2xpm): no need fileToDelete
+		(readHeader): ditto
+		(loadGeneralFile): ditto
+		(loadHTMLBuffer): ditto
+		(loadHTMLString): ditto
+		(loadGopherDir): ditto
+		(loadImageBuffer): ditto
+		(doExternal): rewrite
+		(doFileSave): no need fileToDelete
+		(uncompress_stream): ditto
+	* fm.h (CurrentPid): added
+	* image.c (getImage): cache->touch to delete
+	* local.c (setLocalCookie): use CurrentPid
+		(localcgi_post): fileToDelete
+	* main.c (main): CurrentPid
+		(pipeBuf): no need fileToDelete
+		(query_from_followform): CurrentPid
+		(vmSrc): no need fileToDelete
+
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03628] Re: Error occured while reset
 	* file.c (doExternal): bufp = NULL, return 1
 		(uncompress_stream): tempfname fileToDelete
@@ -6286,4 +6309,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.666 2003/01/10 16:33:38 ukai Exp $
+$Id: ChangeLog,v 1.667 2003/01/10 16:42:14 ukai Exp $

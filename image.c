@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.23 2002/12/11 15:08:47 ukai Exp $ */
+/* $Id: image.c,v 1.24 2003/01/10 16:42:46 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -518,8 +518,6 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->width = image->width;
 	cache->height = image->height;
 	putHash_sv(image_hash, key->ptr, (void *)cache);
-	pushText(fileToDelete, cache->file);
-	pushText(fileToDelete, cache->touch);
     }
     if (flag != IMG_FLAG_SKIP) {
 	if (cache->loaded == IMG_FLAG_UNLOADED) {

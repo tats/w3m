@@ -1,3 +1,9 @@
+2002-11-12  Yuji Abe <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03411] do AUXBIN_TARGETS
+	* scripts/Makefile (all): add AUXBIN_TARGETS
+			(clean): add AUXBIN_TARGETS
+
 2002-11-12  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
 	* [w3m-dev 03408] edit From in w3mail.cgi 
@@ -4541,4 +4547,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.498 2002/11/11 15:50:28 ukai Exp $
+$Id: ChangeLog,v 1.499 2002/11/12 12:18:29 ukai Exp $

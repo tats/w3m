@@ -22,7 +22,7 @@ DOCDIRS = doc:en_English doc-jp:ja_Japanese
 
 .SUFFIXES: .in
 
-all: $(LIB_TARGETS) $(HELP_TARGETS)
+all: $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS)
 
 .in:
 	@echo "generating $@..."
@@ -89,4 +89,4 @@ uninstall:
 	done
 
 clean:
-	-rm -f $(LIB_TARGETS) $(HELP_TARGETS) w3mhelp-*.pl
+	-rm -f $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS) w3mhelp-*.pl

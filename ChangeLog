@@ -1,3 +1,8 @@
+2003-04-09  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03864] doc/README
+	* doc/README doc-jp/README: update
+
 2003-04-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m] local cookie string is too easy to guess.
@@ -7704,4 +7709,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.817 2003/04/08 16:01:37 ukai Exp $
+$Id: ChangeLog,v 1.818 2003/04/08 16:19:59 ukai Exp $

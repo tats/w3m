@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.51 2003/01/20 15:30:19 ukai Exp $ */
+/* $Id: display.c,v 1.52 2003/01/20 15:32:02 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -1178,7 +1178,8 @@ message(char *s, int return_x, int return_y)
     move(return_y, return_x);
 }
 
-void disp_err_message(char *s, int redraw_current)
+void
+disp_err_message(char *s, int redraw_current)
 {
     record_err_message(s);
     disp_message(s, redraw_current);

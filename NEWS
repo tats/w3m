@@ -1,4 +1,4 @@
-w3m 0.3.2 (release candidate)
+w3m 0.3.2 - 2002-11-05
 
 * ~/.netrc: password for ftp
 * rc: display_lineinfo: display current line number

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.199 2003/01/22 16:11:03 ukai Exp $ */
+/* $Id: file.c,v 1.200 2003/01/22 16:16:20 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -497,8 +497,6 @@ loadFile(char *path)
     if (uf.stream == NULL)
 	return NULL;
     buf = newBuffer(INIT_BUFFER_WIDTH);
-    if (SkipHeader)
-	readHeader(&uf, buf, TRUE, NULL);
     current_content_length = 0;
 #ifdef JP_CHARSET
     content_charset = '\0';
@@ -1955,11 +1953,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
     if (real_type == NULL)
 	real_type = t;
-    if (SkipHeader) {
-	if (t_buf == NULL)
-	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
-	readHeader(&f, t_buf, TRUE, NULL);
-    }
     proc = loadBuffer;
 #ifdef USE_IMAGE
     cur_baseURL = New(ParsedURL);

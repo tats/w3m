@@ -1,5 +1,15 @@
 2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03677] view source, edit source
+	* buffer.c (discardBuffer): unlink header source
+	* file.c (loadFile): delete skip header
+	* fm.h (BP_SOURCE): deleted
+		(SkipHeader): deleted
+	* main (editBf): cleanup
+		(vmSrc): cleanup
+
+2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03676] cleanup for pipe
 	* etc.c (open_pipe_rw): added
 	* file.c (uncompress_stream): rewrite using open_pipe_rw
@@ -6700,4 +6710,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.703 2003/01/22 16:10:27 ukai Exp $
+$Id: ChangeLog,v 1.704 2003/01/22 16:16:18 ukai Exp $

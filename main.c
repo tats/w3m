@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.196 2003/01/22 15:56:50 ukai Exp $ */
+/* $Id: main.c,v 1.197 2003/01/22 16:16:20 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2471,10 +2471,6 @@ void
 editBf(void)
 {
     char *fn = Currentbuf->filename;
-    Buffer *buf, *fbuf = NULL, sbuf;
-#ifdef JP_CHARSET
-    char old_code;
-#endif
     Str cmd;
 
     if (fn == NULL || Currentbuf->pagerSource != NULL ||	/* Behaving as a pager */
@@ -2484,9 +2480,6 @@ editBf(void)
 	disp_err_message("Can't edit other than local file", TRUE);
 	return;
     }
-    if (Currentbuf->frameset != NULL)
-	fbuf = Currentbuf->linkBuffer[LB_FRAME];
-    copyBuffer(&sbuf, Currentbuf);
     if (Currentbuf->edit)
 	cmd = unquote_mailcap(Currentbuf->edit, Currentbuf->real_type, fn,
 			      checkHeader(Currentbuf, "Content-Type:"), NULL);
@@ -2496,42 +2489,8 @@ editBf(void)
     system(cmd->ptr);
     fmInit();
 
-#ifdef JP_CHARSET
-    old_code = DocumentCode;
-    DocumentCode = Currentbuf->document_code;
-#endif
-    SearchHeader = Currentbuf->search_header;
-    DefaultType = Currentbuf->real_type;
-    buf = loadGeneralFile(file_to_url(fn), NULL, NO_REFERER, 0, NULL);
-#ifdef JP_CHARSET
-    DocumentCode = old_code;
-#endif
-    SearchHeader = FALSE;
-    DefaultType = NULL;
-
-    if (buf == NULL) {
-	disp_err_message("Re-loading failed", FALSE);
-	buf = nullBuffer();
-    }
-    else if (buf == NO_BUFFER) {
-	buf = nullBuffer();
-    }
-    if (fbuf != NULL)
-	Firstbuf = deleteBuffer(Firstbuf, fbuf);
-    repBuffer(Currentbuf, buf);
-    if ((buf->type != NULL) && (sbuf.type != NULL) &&
-	((!strcasecmp(buf->type, "text/plain") &&
-	  !strcasecmp(sbuf.type, "text/html")) ||
-	 (!strcasecmp(buf->type, "text/html") &&
-	  !strcasecmp(sbuf.type, "text/plain")))) {
-	vwSrc();
-	if (Currentbuf != buf)
-	    Firstbuf = deleteBuffer(Firstbuf, buf);
-    }
-    Currentbuf->search_header = sbuf.search_header;
-    if (Currentbuf->firstLine)
-	restorePosition(Currentbuf, &sbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    reload();
 }
 
 /* Run editor on the current screen */
@@ -4393,7 +4352,6 @@ curURL(void)
 void
 vwSrc(void)
 {
-    char *fn;
     Buffer *buf;
 
     if (Currentbuf->type == NULL || Currentbuf->bufferprop & BP_FRAME)
@@ -4414,78 +4372,55 @@ vwSrc(void)
 		return;
 	    saveBuffer(Currentbuf, f);
 	    fclose(f);
-	    fn = tmpf->ptr;
-	    Currentbuf->sourcefile = fn;
+	    Currentbuf->sourcefile = tmpf->ptr;
 	}
 	else {
 	    return;
 	}
     }
-    else if (Currentbuf->real_scheme == SCM_LOCAL &&
-	     !(Currentbuf->real_type &&
-	       !strcasecmp(Currentbuf->real_type, "local:directory"))) {
-	fn = Currentbuf->filename;
-    }
-    else {
-	fn = Currentbuf->sourcefile;
-    }
+
+    buf = newBuffer(INIT_BUFFER_WIDTH);
+
     if (!strcasecmp(Currentbuf->type, "text/html")) {
-#ifdef JP_CHARSET
-	char old_code = DocumentCode;
-	DocumentCode = Currentbuf->document_code;
-#endif
-	SkipHeader = Currentbuf->search_header;
-	buf = loadFile(fn);
-#ifdef JP_CHARSET
-	DocumentCode = old_code;
-#endif
-	SkipHeader = FALSE;
-	if (buf == NULL)
-	    return;
-	buf->search_header = Currentbuf->search_header;
 	buf->type = "text/plain";
 	if (Currentbuf->real_type &&
 	    !strcasecmp(Currentbuf->real_type, "text/html"))
 	    buf->real_type = "text/plain";
 	else
 	    buf->real_type = Currentbuf->real_type;
-	buf->bufferprop |= BP_SOURCE;
 	buf->buffername = Sprintf("source of %s", Currentbuf->buffername)->ptr;
 	buf->linkBuffer[LB_N_SOURCE] = Currentbuf;
 	Currentbuf->linkBuffer[LB_SOURCE] = buf;
     }
     else if (!strcasecmp(Currentbuf->type, "text/plain")) {
-	SkipHeader = Currentbuf->search_header;
-	DefaultType = "text/html";
-	buf = loadGeneralFile(file_to_url(fn), NULL, NO_REFERER, 0, NULL);
-	SkipHeader = FALSE;
-	DefaultType = NULL;
-	if (buf == NULL || buf == NO_BUFFER)
-	    return;
-	buf->search_header = Currentbuf->search_header;
+	buf->type = "text/html";
 	if (Currentbuf->real_type &&
 	    !strcasecmp(Currentbuf->real_type, "text/plain"))
 	    buf->real_type = "text/html";
 	else
 	    buf->real_type = Currentbuf->real_type;
-	if (!strcmp(buf->buffername, conv_from_system(lastFileName(fn))))
-	    buf->buffername =
-		Sprintf("HTML view of %s", Currentbuf->buffername)->ptr;
+	buf->buffername = Sprintf("HTML view of %s",
+				  Currentbuf->buffername)->ptr;
 	buf->linkBuffer[LB_SOURCE] = Currentbuf;
 	Currentbuf->linkBuffer[LB_N_SOURCE] = buf;
-#ifdef USE_IMAGE
-	if (buf->img)
-	    buf->need_reshape = TRUE;
-#endif
     }
     else {
 	return;
     }
     buf->currentURL = Currentbuf->currentURL;
     buf->real_scheme = Currentbuf->real_scheme;
+    buf->filename = Currentbuf->filename;
     buf->sourcefile = Currentbuf->sourcefile;
+    buf->header_source = Currentbuf->header_source;
+    buf->search_header = Currentbuf->search_header;
+#ifdef JP_CHARSET
+    buf->document_code = Currentbuf->document_code;
+#endif
     buf->clone = Currentbuf->clone;
     (*buf->clone)++;
+
+    buf->need_reshape = TRUE;
+    reshapeBuffer(buf);
     pushBuffer(buf);
     displayBuffer(Currentbuf, B_NORMAL);
 }

@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.18 2003/01/10 16:11:01 ukai Exp $ */
+/* $Id: buffer.c,v 1.19 2003/01/22 16:16:19 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -102,6 +102,8 @@ discardBuffer(Buffer *buf)
 	if (buf->real_scheme != SCM_LOCAL || buf->bufferprop & BP_FRAME)
 	    unlink(buf->sourcefile);
     }
+    if (buf->header_source)
+	unlink(buf->header_source);
     if (buf->mailcap_source)
 	unlink(buf->mailcap_source);
     while (buf->frameset) {

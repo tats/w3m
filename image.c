@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.31 2003/01/29 17:26:52 ukai Exp $ */
+/* $Id: image.c,v 1.32 2003/01/29 17:31:22 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -324,7 +324,8 @@ loadImage(Buffer *buf, int flag)
 {
     ImageCache *cache;
     struct stat st;
-    int wait_st, i, draw = FALSE;
+    int i, draw = FALSE;
+    /* int wait_st; */
 
     if (maxLoadImage > MAX_LOAD_IMAGE)
 	maxLoadImage = MAX_LOAD_IMAGE;

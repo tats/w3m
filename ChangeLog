@@ -1,3 +1,7 @@
+2003-03-13  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
+
+	* etc.c: treatment for "%7E" is added to  expandName()
+
 2003-03-13  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03819] support cd build && ../configure
@@ -7521,4 +7525,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.791 2003/03/12 18:27:03 ukai Exp $
+$Id: ChangeLog,v 1.792 2003/03/13 15:15:40 inu Exp $

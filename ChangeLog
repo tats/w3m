@@ -1,5 +1,59 @@
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	[w3m-dev 02479]
+	* rc.c (init_rc): remove #ifdef __EMX__ for tmpdir
+	* config.h.dit: updated
+	* url.c (openURL): use CGI_EXTENSION
+	  add extlen
+	* rc.c (helpFile): remove #ifdef __EMX__
+	  use w3m_help_dir()
+	* w3mbookmark.c (lib_dir): removed
+	* w3mbookmark.c (print_bookmark_panel): use w3m_lib_dir()
+	* rc.c (libFile): remove #ifdef __EMX__
+	  use w3m_lib_dir() 
+	* local.c (get_os2_dft): removed
+	* local.c (check_local_cgi): use w3m_lib_dir() instead of lib_dir
+	* local.c (cgi_filename): ditto
+	* indep.c (w3m_dir): added
+	* indep.c (w3m_lib_dir w3m_help_dir): ditto
+	* indep.h (w3m_lib_dir w3m_help_dir): ditto
+	* terms.c (set_tty): remove #ifdef __EMX__
+	  use DEV_TTY_PATH
+	* local.c (localcgi_get): use DEV_NULL_PATH
+	* w3mhelperpanel.c (printMailcapPanal): remove #ifdef __EMX__
+	  use W3mHELPERPANEL_CMDNAME
+	* rc.c (optionpanel_src1): ditto
+	* w3mbookmark.c (bkmark_src1): remove #ifdef __EMX__
+	  use W3MBOOKMARK_CMDNAME
+	* main.c (adBmark): ditto
+	  use w3m_lib_dir()
+	* terms.c (getTCstr): remove #ifdef __DJGPP__
+	  use DEFAULT_TERM
+	  check ent is NULL
+	* main.c (fusage): remove #ifdef SHOW_PARAMS
+	* main.c (MAIN): ditto
+	* rc.c (show_params): ditto
+	* fm.h (view_unseenobject): remove #ifdef VIEW_UNSEENOBJECTS
+	* url.c (check_no_proxy): remove #ifdef NOPROXY_NETADDR
+	* configure (show_params): removed
+	* configure (config.h): 
+	  - fix comment for USE_MARK
+	  - add MENU_THIN_FRAME
+	  - move $def_nntp (USE_NNTP), $def_ansi_color (ANSI_COLOR)
+	  - remove VIEW_UNSEENOBJECTS
+	  - remove $def_show_params (SHOW_PARAMS)
+	  - define DEFAULT_TERM
+	  - define W3MBOOKMARK_CMDNAME
+	  - define W3MHELPERPANEL_CMDNAME
+	  - define DEV_NULL_PATH
+	  - define DEV_TTY_PATH
+	  - define CGI_EXTENSION
+
+	[w3m-dev 02478]
+	* Makefile: make -> $(MAKE)
+	
+2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02473]
 	* scripts/Makefile: chmod +x
 	* scripts/Makefile: add clean target

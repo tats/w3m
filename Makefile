@@ -1,29 +1,29 @@
 GCLIBTGZ=gc5.0alpha3.tar.gz
 
 all: XXMakefile
-	make -f XXMakefile 
+	$(MAKE) -f XXMakefile 
 
 install: XXMakefile
-	make -f XXMakefile install
+	$(MAKE) -f XXMakefile install
 
 install-scripts: XXMakefile
-	make -f XXMakefile install-scripts
+	$(MAKE) -f XXMakefile install-scripts
 
 uninstall: XXMakefile
-	make -f XXMakefile uninstall
+	$(MAKE) -f XXMakefile uninstall
 
 proto: XXMakefile
-	make -f XXMakefile proto
+	$(MAKE) -f XXMakefile proto
 
 clean: XXMakefile
-	make -f XXMakefile clean
+	$(MAKE) -f XXMakefile clean
 
 sweep: XXMakefile
-	make -f XXMakefile sweep
+	$(MAKE) -f XXMakefile sweep
 
 veryclean: clean sweep
 	rm XXMakefile
-	(cd gc; make clean)
+	(cd gc; $(MAKE) clean)
 	rm -f config.param
 	rm -f */*~ */*.orig */*.rej
 
@@ -33,10 +33,10 @@ prepare:
 	cp XMakefile.dist XMakefile
 
 dist: XXMakefile
-	make -f XXMakefile dist
+	$(MAKE) -f XXMakefile dist
 
 bindist: XXMakefile
-	make -f XXMakefile bindist
+	$(MAKE) -f XXMakefile bindist
 
 indent:
 	indent -orig -nce -ncdb -i4 -di1 -nbc *.c *.h

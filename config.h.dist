@@ -15,8 +15,8 @@
 #undef DICT
 
 /*
-   If you define USE_MARK, you can use set-mark (C-SPC),
-   goto-next-mark (ESC p), goto-next-mark (ESC n) and
+   If you define USE_MARK, you can use set-mark MARK (C-SPC),
+   goto-prev-mark PREV_MARK (ESC p), goto-next-mark NEXT_MARK (ESC n) and
    mark-by-regexp (").
 */
 #undef USE_MARK
@@ -32,12 +32,6 @@
 #define BG_COLOR
 
 /*
-   VIEW_UNSEENOBJECTS enables w3m to make a link to unseen objects.
-   e.g. background image.
- */
-#undef VIEW_UNSEENOBJECTS
-
-/*
    VI_PREC_NUM enables vi-like behavior for '2 SPC' or '2 b'
  */
 #undef VI_PREC_NUM
@@ -51,16 +45,6 @@
  * Support Gopher protocol
  */
 #undef USE_GOPHER
-
-/*
- * Support NNTP
- */
-#undef USE_NNTP
-
-/*
- * Support ANSI color escape sequences
- */
-#undef ANSI_COLOR
 
 /*
  * Enable id attribute
@@ -96,6 +80,16 @@
  * Move cursor to top line when moving to next page.
  */
 #undef NEXTPAGE_TOPLINE
+
+/*
+ * Use alarm function.
+ */
+#undef USE_ALARM
+
+/*
+ * thin chars for menu frame
+ */
+#undef MENU_THIN_FRAME
 
 /**********************************************************/
 #ifdef makefile_parameter
@@ -143,7 +137,8 @@ MODEL=Linux.i686-monster-ja
 #define USE_SSL
 #undef USE_SSL_VERIFY
 #undef FTPPASS_HOSTNAMEGEN
-#undef SHOW_PARAMS
+#undef USE_NNTP
+#undef ANSI_COLOR
 
 #define DEF_EDITOR "/bin/vi"
 #define DEF_MAILER "/bin/mail"
@@ -188,6 +183,8 @@ MODEL=Linux.i686-monster-ja
 #define HAVE_PUTENV
 #define HAVE_SRAND48
 #define HAVE_SRANDOM
+#undef HAVE_GETPASSPHRASE
+
 
 #define SETJMP(env) sigsetjmp(env,1)
 #define LONGJMP(env,val) siglongjmp(env,val)
@@ -226,6 +223,30 @@ typedef void MySignalHandler;
 
 #if defined( __CYGWIN__ ) || defined( __EMX__ )
 #define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
+
+#if defined( __CYGWIN__ )
+#define SUPPORT_NETBIOS_SHARE 1
+#endif
+
+#if defined(__DJGPP__)
+#define DEFAULT_TERM	"dosansi"
+#else
+#define DEFAULT_TERM	0	/* XXX */
+#endif
+
+#if defined(__EMX__) /* use $extension? */
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark.exe"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel.exe"
+#define DEV_NULL_PATH	"nul"
+#define DEV_TTY_PATH	"con"
+#define CGI_EXTENSION	".cmd"
+#else
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel"
+#define DEV_NULL_PATH	"/dev/null"
+#define DEV_TTY_PATH	"/dev/tty"
+#define CGI_EXTENSION	".cgi"
 #endif
 
 #endif /* makefile_parameter */

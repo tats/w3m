@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.9 2001/11/21 09:21:59 ukai Exp $
+# $Id: configure,v 1.10 2001/11/21 16:29:46 ukai Exp $
 #	Configuration.
 #
 
@@ -445,15 +445,6 @@ if [ "$ftppass_hostnamegen" = y ]; then
   def_ftppass_hostnamegen="#define FTPPASS_HOSTNAMEGEN"
 else
   def_ftppass_hostnamegen="#undef FTPPASS_HOSTNAMEGEN"
-fi
-
-echo "Do you want listing of options"
-yesno show_params "$show_params" n
-echo "show_params=$show_params" >> config.param
-if [ "$show_params" = y ]; then
-  def_show_params="#define SHOW_PARAMS"
-else
-  def_show_params="#undef SHOW_PARAMS"
 fi
 
 echo "Do you want NNTP support"
@@ -1705,8 +1696,8 @@ cat > config.h << END_OF_CONFIG_H
 #undef DICT
 
 /*
-   If you define USE_MARK, you can use set-mark (C-SPC),
-   goto-next-mark (ESC p), goto-next-mark (ESC n) and
+   If you define USE_MARK, you can use set-mark MARK (C-SPC),
+   goto-prev-mark PREV_MARK (ESC p), goto-next-mark NEXT_MARK (ESC n) and
    mark-by-regexp (").
 */
 #undef USE_MARK
@@ -1722,12 +1713,6 @@ cat > config.h << END_OF_CONFIG_H
 #define BG_COLOR
 
 /*
-   VIEW_UNSEENOBJECTS enables w3m to make a link to unseen objects.
-   e.g. background image.
- */
-#undef VIEW_UNSEENOBJECTS
-
-/*
    VI_PREC_NUM enables vi-like behavior for '2 SPC' or '2 b'
  */
 #undef VI_PREC_NUM
@@ -1741,16 +1726,6 @@ cat > config.h << END_OF_CONFIG_H
  * Support Gopher protocol
  */
 #undef USE_GOPHER
-
-/*
- * Support NNTP
- */
-$def_use_nntp
-
-/*
- * Support ANSI color escape sequences
- */
-$def_ansi_color
 
 /*
  * Enable id attribute
@@ -1788,9 +1763,14 @@ $def_ansi_color
 #undef NEXTPAGE_TOPLINE
 
 /*
-   Use alarm function.
+ * Use alarm function.
  */
 #undef USE_ALARM
+
+/*
+ * thin chars for menu frame
+ */
+#undef MENU_THIN_FRAME
 
 /**********************************************************/
 #ifdef makefile_parameter
@@ -1838,7 +1818,8 @@ $def_cookie
 $def_ssl
 $def_use_ssl_verify
 $def_ftppass_hostnamegen
-$def_show_params
+$def_use_nntp
+$def_ansi_color
 
 #define DEF_EDITOR "$editor"
 #define DEF_MAILER "$mailer"
@@ -1927,6 +1908,26 @@ $no_float_h
 
 #if defined( __CYGWIN__ )
 #define SUPPORT_NETBIOS_SHARE 1
+#endif
+
+#if defined(__DJGPP__)
+#define DEFAULT_TERM	"dosansi"
+#else
+#define DEFAULT_TERM	0	/* XXX */
+#endif
+
+#if defined(__EMX__) /* use \$extension? */
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark.exe"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel.exe"
+#define DEV_NULL_PATH	"nul"
+#define DEV_TTY_PATH	"con"
+#define CGI_EXTENSION	".cmd"
+#else
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel"
+#define DEV_NULL_PATH	"/dev/null"
+#define DEV_TTY_PATH	"/dev/tty"
+#define CGI_EXTENSION	".cgi"
 #endif
 
 #endif /* makefile_parameter */

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.6 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: url.c,v 1.7 2001/11/21 16:29:47 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -30,8 +30,6 @@
 #ifdef	__WATT32__
 #define	write(a,b,c)	write_s(a,b,c)
 #endif				/* __WATT32__ */
-
-#define NOPROXY_NETADDR		/* allow IP address for no_proxy */
 
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */
@@ -1288,6 +1286,7 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
     char *r;
     InputStream stream;
 #endif				/* USE_NNTP */
+    int extlen = strlen(CGI_EXTENSION);
 
     if (ouf) {
 	uf = *ouf;
@@ -1362,12 +1361,8 @@ openURL(char *url, ParsedURL * pu, ParsedURL * current,
 	    uf.is_cgi = TRUE;
 	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
 	}
-	else if ((i = strlen(pu->file)) > 4 &&
-#ifdef __EMX__
-		!strncmp(pu->file + i - 4, ".cmd", 4))
-#else
-		!strncmp(pu->file + i - 4, ".cgi", 4))
-#endif
+	else if ((i = strlen(pu->file)) > extlen &&
+		 !strncmp(pu->file + i - extlen, CGI_EXTENSION, extlen))
 	{
 	    /* lodal CGI: GET */
 	    uf.stream = newFileStream(localcgi_get(pu->real_file, "",
@@ -1783,7 +1778,6 @@ check_no_proxy(char *domain)
 	if (domain_match(tl->ptr, domain))
 	    return 1;
     }
-#ifdef NOPROXY_NETADDR
     if (!NOproxy_netaddr) {
 	return 0;
     }
@@ -1860,7 +1854,6 @@ check_no_proxy(char *domain)
 	}
 #endif				/* INET6 */
     }
-#endif				/* NOPROXY_NETADDR */
     return 0;
 }
 

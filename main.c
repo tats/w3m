@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.12 2001/11/21 04:29:14 a-ito Exp $ */
+/* $Id: main.c,v 1.13 2001/11/21 16:29:46 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -63,10 +63,8 @@ static void keyPressEventProc(int c);
 #ifdef USE_MARK
 static void cmd_mark(Lineprop * p);
 #endif				/* USE_MARK */
-#ifdef SHOW_PARAMS
 int show_params_p = 0;
 void show_params(FILE * fp);
-#endif
 
 static int display_ok = FALSE;
 static void dump_source(Buffer *);
@@ -147,10 +145,8 @@ fusage(FILE *f, int err)
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -debug           DO NOT USE\n");
-#ifdef SHOW_PARAMS
     if (show_params_p)
 	show_params(f);
-#endif
     exit(err);
 }
 
@@ -554,24 +550,15 @@ MAIN(int argc, char **argv, char **envp)
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
 	    else if (!strcmp("-o", argv[i])) {
-#ifdef SHOW_PARAMS
 		if (++i >= argc || !strcmp(argv[i], "?")) {
 		    show_params_p = 1;
 		    usage();
 		}
-#else
-		if (++i >= argc)
-		    usage();
-#endif
 		if (!set_param_option(argv[i])) {
 		    /* option set failed */
 		    fprintf(stderr, "%s: bad option\n", argv[i]);
-#ifdef SHOW_PARAMS
 		    show_params_p = 1;
 		    usage();
-#else
-		    exit(1);
-#endif
 		}
 		option_assigned = 1;
 	    }
@@ -3494,13 +3481,9 @@ adBmark(void)
 {
     Str tmp;
 
-#ifdef __EMX__
-    tmp = Sprintf("file://%s/w3mbookmark.exe?mode=panel&bmark=%s&url=%s&title=%s",
-		get_os2_dft("W3M_LIB_DIR", LIB_DIR),
-#else				/* not __EMX__ */
-    tmp = Sprintf("file://%s/w3mbookmark?mode=panel&bmark=%s&url=%s&title=%s",
-		LIB_DIR,
-#endif				/* not __EMX__ */
+    tmp = Sprintf("file://%s/" W3MBOOKMARK_CMDNAME 
+		  "?mode=panel&bmark=%s&url=%s&title=%s", 
+		  w3m_lib_dir(),
        (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
        (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->ptr,
        (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);

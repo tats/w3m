@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.8 2001/11/21 09:09:10 ukai Exp $ */
+/* $Id: fm.h,v 1.9 2001/11/21 16:29:46 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -803,9 +803,7 @@ global TextList *Cookie_reject_domains;
 global TextList *Cookie_accept_domains;
 #endif				/* USE_COOKIE */
 
-#ifdef VIEW_UNSEENOBJECTS
 global int view_unseenobject init(TRUE);
-#endif				/* VIEW_UNSEENOBJECTS */
 
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
 global int ssl_verify_server init(FALSE);

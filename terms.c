@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.10 2001/11/21 09:09:10 ukai Exp $ */
+/* $Id: terms.c,v 1.11 2001/11/21 16:29:47 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -237,11 +237,7 @@ set_tty(void)
     if (isatty(0))		/* stdin */
 	ttyn = ttyname(0);
     else
-#ifndef __EMX__
-	ttyn = "/dev/tty";
-#else				/* __EMX__ */
-	ttyn = "con";
-#endif				/* __EMX__ */
+	ttyn = DEV_TTY_PATH;
     tty = open(ttyn, O_RDWR);
     if (tty < 0) {
 	/* use stderr instead of stdin... is it OK???? */
@@ -413,11 +409,12 @@ getTCstr(void)
     char *pt = funcstr;
     int r;
 
-#ifdef	__DJGPP__
-    ent = getenv("TERM") ? getenv("TERM") : "dosansi";
-#else
-    ent = getenv("TERM");
-#endif				/* __DJGPP__ */
+    ent = getenv("TERM") ? getenv("TERM") : DEFAULT_TERM;
+    if (ent == NULL) {
+	fprintf(stderr, "TERM is not set\n");
+	reset_exit(SIGNAL_ARGLIST);
+    }
+
     r = tgetent(bp, ent);
     if (r != 1) {
 	/* Can't find termcap entry */

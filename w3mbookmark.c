@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.4 2001/11/21 16:29:47 ukai Exp $ */
 #ifdef __EMX__
 #include <stdlib.h>
 #endif
@@ -14,11 +14,7 @@
 #if LANG == JA
 static char *bkmark_src1 = "<html><head><title>Bookmark Registration</title>\n\
 <body><h1>ブックマークの登録</h1>\n\n"
-#ifdef __EMX__
-"<form method=get action=\"file://%s/w3mbookmark.exe\">\n\n"
-#else
-"<form method=get action=\"file://%s/w3mbookmark\">\n\n"
-#endif
+"<form method=get action=\"file://%s/" W3MBOOKMARK_CMDNAME "\">\n\n"
 "<input type=hidden name=mode value=register>\n\
 <input type=hidden name=bmark value=\"%s\">\n\
 <table cellpadding=0>\n";
@@ -35,11 +31,7 @@ static char *default_section = "未分類";
 #else				/* LANG != JA */
 static char *bkmark_src1 = "<html><head><title>Bookmark Registration</title>\n\
 <body><h1>Register to my bookmark</h1>\n\n"
-#ifdef __EMX__
-"<form method=get action=\"file://%s/w3mbookmark.exe\">\n\n"
-#else
-"<form method=get action=\"file://%s/w3mbookmark\">\n\n"
-#endif
+"<form method=get action=\"file://%s/" W3MBOOKMARK_CMDNAME "\">\n\n"
 "<input type=hidden name=mode value=register>\n\
 <input type=hidden name=bmark value=\"%s\">\n\
 <table cellpadding=0>\n";
@@ -62,17 +54,6 @@ static char end_section[] = "<!--End of section (do not delete this comment)-->\
 
 char *Local_cookie;
 
-#ifdef __EMX__
-static char *
-lib_dir()
-{
-    char *value = getenv("W3M_LIB_DIR");
-    return value ? value : LIB_DIR;
-}
-#else
-#define lib_dir() LIB_DIR
-#endif
-
 void
 print_bookmark_panel(char *bmark, char *url, char *title)
 {
@@ -81,7 +62,7 @@ print_bookmark_panel(char *bmark, char *url, char *title)
     char *p;
 
     printf("Content-Type: text/html\n\n");
-    printf(bkmark_src1, lib_dir(), bmark);
+    printf(bkmark_src1, w3m_lib_dir(), bmark);
     if ((f = fopen(bmark, "r")) != NULL) {
 	printf("<tr><td>Section:<td><select name=\"section\">\n");
 	while (tmp = Strfgets(f), tmp->length > 0) {

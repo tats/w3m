@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.9 2001/11/20 16:46:32 ukai Exp $ */
+/* $Id: file.c,v 1.10 2001/11/21 16:29:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3614,7 +3614,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_FONT:
     case HTML_NOP:
 	return 1;
-#ifdef VIEW_UNSEENOBJECTS
     case HTML_BGSOUND:
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
@@ -3645,9 +3644,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    }
 	}
 	return 1;
-#endif				/* VIEW_UNSEENOBJECTS */
     case HTML_BODY:
-#ifdef VIEW_UNSEENOBJECTS
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_BACKGROUND, &p)) {
 		Str s;
@@ -3657,7 +3654,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		HTMLlineproc1(s->ptr, h_env);
 	    }
 	}
-#endif				/* VIEW_UNSEENOBJECTS */
     case HTML_N_BODY:
 	obuf->flag |= RB_IGNORE_P;
 	return 1;

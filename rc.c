@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.5 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: rc.c,v 1.6 2001/11/21 16:29:47 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -607,7 +607,6 @@ search_param(char *name)
     return NULL;
 }
 
-#ifdef SHOW_PARAMS
 void
 show_params(FILE * fp)
 {
@@ -675,7 +674,6 @@ show_params(FILE * fp)
 	}
     }
 }
-#endif
 
 int
 str_to_bool(char *value, int old)
@@ -1069,16 +1067,12 @@ init_rc(char *config_file)
 {
     struct stat st;
     FILE *f;
-#ifndef __EMX__ /* jsawa */
-    char           *tmpdir = "/tmp";
-#else
     char	   *tmpdir;
 
-    if ( (tmpdir = getenv("TMP")) == NULL || *tmpdir == '\0' )
-	if ( (tmpdir = getenv("TEMP")) == NULL || *tmpdir == '\0' )
-	    if ( (tmpdir = getenv("TMPDIR")) == NULL || *tmpdir == '\0' )
-		*tmpdir = "/tmp";
-#endif /* __EMX__ */
+    if (((tmpdir = getenv("TMP")) == NULL || *tmpdir == '\0')
+	&& ((tmpdir = getenv("TEMP")) == NULL || *tmpdir == '\0')
+	&& ((tmpdir = getenv("TMPDIR")) == NULL || *tmpdir == '\0'))
+	    tmpdir = "/tmp";
 
     if (rc_initialized)
 	return;
@@ -1129,11 +1123,7 @@ init_rc(char *config_file)
 static char optionpanel_src1[] =
 "<html><head><title>Option Setting Panel</title></head>\
 <body><center><b>Option Setting Panel</b><br><b>(w3m version %s)</b></center><p>\n"
-#ifdef __EMX__
-"<a href=\"file:///$LIB/w3mhelperpanel.exe?mode=panel\">%s</a>\n"
-#else				/* not __EMX__ */
-"<a href=\"file:///$LIB/w3mhelperpanel?mode=panel\">%s</a>\n"
-#endif				/* not __EMX__ */
+"<a href=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "?mode=panel\">%s</a>\n"
 "<form method=internal action=option>";
 
 static Str
@@ -1289,12 +1279,7 @@ rcFile(char *base)
 char *
 libFile(char *base)
 {
-#ifdef __EMX__
-    Str file = Strnew_charp(get_os2_dft("W3M_LIB_DIR", LIB_DIR));
-#else
-    Str file = Strnew_charp(LIB_DIR);
-#endif				/* __EMX__ */
-
+    Str file = Strnew_charp(w3m_lib_dir());
     Strcat_char(file, '/');
     Strcat_charp(file, base);
     return expandName(file->ptr);
@@ -1303,11 +1288,7 @@ libFile(char *base)
 char *
 helpFile(char *base)
 {
-#ifdef __EMX__
-    Str file = Strnew_charp(get_os2_dft("W3M_HELP_DIR", HELP_DIR));
-#else				/* not __EMX__ */
-    Str file = Strnew_charp(HELP_DIR);
-#endif				/* not __EMX__ */
+    Str file = Strnew_charp(w3m_help_dir());
     Strcat_char(file, '/');
     Strcat_charp(file, base);
     return expandName(file->ptr);

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.6 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: local.c,v 1.7 2001/11/21 16:29:46 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -10,7 +10,7 @@
 #include <unistd.h>
 #endif				/* HAVE_READLINK */
 #ifdef __EMX__
-#include <limits.h>
+#include <limits.h>	/* _MAX_PATH ? */
 #endif                /* __EMX__ */
 #include "local.h"
 
@@ -153,19 +153,6 @@ dirBuffer(char *dname)
     return buf;
 }
 
-#ifdef __EMX__
-char *
-get_os2_dft(const char *name, char *dft)
-{
-    char *value = getenv(name);
-    return value ? value : dft;
-}
-
-#define lib_dir get_os2_dft("W3M_LIB_DIR",LIB_DIR)
-#else				/* not __EMX__ */
-#define lib_dir LIB_DIR
-#endif				/* not __EMX__ */
-
 static int
 check_local_cgi(char *file, int status)
 {
@@ -182,9 +169,9 @@ check_local_cgi(char *file, int status)
 	char tmp[_MAX_PATH];
        int len;
 
-	_abspath(tmp, lib_dir, _MAX_PATH);	/* Translate '\\'  to  '/' 
-						 * 
-						 */
+	_abspath(tmp, w3m_lib_dir(), _MAX_PATH); /* Translate '\\'  to  '/' 
+						  * 
+						  */
        len = strlen(tmp);
        while (len > 1 && tmp[len-1] == '/')
            len--;
@@ -194,7 +181,7 @@ check_local_cgi(char *file, int status)
     }
 #else				/* not __EMX__ */
     if (CGIFN_MODE(status) != CGIFN_CGIBIN) {
-       char *tmp = Strnew_charp(lib_dir)->ptr;
+       char *tmp = Strnew_charp(w3m_lib_dir())->ptr;
        int len = strlen(tmp);
 
        while (len > 1 && tmp[len-1] == '/')
@@ -318,7 +305,7 @@ cgi_filename(char *fn, int *status)
     }
     if (strncmp(fn, "/$LIB/", 6) == 0) {
 	*status = CGIFN_NORMAL;
-	tmp = Strnew_charp(lib_dir);
+	tmp = Strnew_charp(w3m_lib_dir());
 	fn += 5;
 	if (strchr(fn+1,'/'))
 	    *status |= CGIFN_CONTAIN_SLASH;
@@ -444,7 +431,7 @@ localcgi_post(char *uri, char *qstr, FormList * request, char *referer)
     }
     fclose(f1);
     freopen( tmp1->ptr, "r", stdin);
-#ifndef __EMX__
+#ifndef __EMX__ /* ifndef HAVE_CHDIR? */
     chdir(mydirname(file));
 #endif
     execl(file, mybasename(file), NULL);
@@ -479,10 +466,8 @@ localcgi_get(char *uri, char *request, char *referer)
         set_environ("HTTP_REFERER",referer);
     set_environ("REQUEST_METHOD", "GET");
     set_environ("QUERY_STRING", request);
-#ifdef __EMX__
-    freopen("nul", "r", stdin);
-#else
-    freopen("/dev/null", "r", stdin);
+    freopen(DEV_NULL_PATH, "r", stdin);
+#ifndef __EMX__ /* #ifdef HAVE_CHDIR? */
     chdir(mydirname(file));
 #endif
     execl(file, mybasename(file), NULL);

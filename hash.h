@@ -1,4 +1,4 @@
-/* $Id: hash.h,v 1.4 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: hash.h,v 1.5 2003/07/22 17:33:16 ukai Exp $ */
 #ifndef HASH_H
 #define HASH_H
 
@@ -19,7 +19,7 @@ extern void putHash_##sym(Hash_##sym *t, keytype key, type value); \
 extern type getHash_##sym(Hash_##sym *t, keytype key, type failval);
 
 defhash(char *, int, si)
-defhash(char *, char *, ss)
+    defhash(char *, char *, ss)
 defhash(char *, void *, sv)
 defhash(int, void *, iv)
 #define defhashfunc(keytype,type,sym) \

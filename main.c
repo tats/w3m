@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.228 2003/07/22 17:27:19 ukai Exp $ */
+/* $Id: main.c,v 1.229 2003/07/22 17:33:16 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3500,7 +3500,7 @@ _nextA(int visited)
     x = Currentbuf->pos;
 
     if (visited == TRUE) {
-        n = hl->nmark;
+	n = hl->nmark;
     }
 
     for (i = 0; i < n; i++) {
@@ -3509,8 +3509,8 @@ _nextA(int visited)
 	    int hseq = an->hseq + 1;
 	    do {
 		if (hseq >= hl->nmark) {
-                    if (visited == TRUE)
-                        return;
+		    if (visited == TRUE)
+			return;
 		    an = pan;
 		    goto _end;
 		}
@@ -3520,36 +3520,36 @@ _nextA(int visited)
 		    an = retrieveAnchor(Currentbuf->formitem, po->line,
 					po->pos);
 		hseq++;
-                if (visited == TRUE && an) {
-                    parseURL2(an->url, &url, baseURL(Currentbuf));
-                    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
-                        goto _end;
-                    }
-                }
+		if (visited == TRUE && an) {
+		    parseURL2(an->url, &url, baseURL(Currentbuf));
+		    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+			goto _end;
+		    }
+		}
 	    } while (an == NULL || an == pan);
 	}
 	else {
 	    an = closest_next_anchor(Currentbuf->href, NULL, x, y);
-            if (visited != TRUE) 
-	    an = closest_next_anchor(Currentbuf->formitem, an, x, y);
+	    if (visited != TRUE)
+		an = closest_next_anchor(Currentbuf->formitem, an, x, y);
 	    if (an == NULL) {
-                if (visited == TRUE)
-                    return;
+		if (visited == TRUE)
+		    return;
 		an = pan;
 		break;
 	    }
 	    x = an->start.pos;
 	    y = an->start.line;
-            if (visited == TRUE) {
-                parseURL2(an->url, &url, baseURL(Currentbuf));
-                if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
-                    goto _end;
-                }
-            }
+	    if (visited == TRUE) {
+		parseURL2(an->url, &url, baseURL(Currentbuf));
+		if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+		    goto _end;
+		}
+	    }
 	}
     }
     if (visited == TRUE)
-        return;
+	return;
 
   _end:
     if (an == NULL || an->hseq < 0)
@@ -3584,7 +3584,7 @@ _prevA(int visited)
     x = Currentbuf->pos;
 
     if (visited == TRUE) {
-        n = hl->nmark;
+	n = hl->nmark;
     }
 
     for (i = 0; i < n; i++) {
@@ -3593,8 +3593,8 @@ _prevA(int visited)
 	    int hseq = an->hseq - 1;
 	    do {
 		if (hseq < 0) {
-                    if (visited == TRUE)
-                        return;
+		    if (visited == TRUE)
+			return;
 		    an = pan;
 		    goto _end;
 		}
@@ -3604,36 +3604,36 @@ _prevA(int visited)
 		    an = retrieveAnchor(Currentbuf->formitem, po->line,
 					po->pos);
 		hseq--;
-                if (visited == TRUE && an) {
-                    parseURL2(an->url, &url, baseURL(Currentbuf));
-                    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
-                        goto _end;
-                    }
-                }
+		if (visited == TRUE && an) {
+		    parseURL2(an->url, &url, baseURL(Currentbuf));
+		    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+			goto _end;
+		    }
+		}
 	    } while (an == NULL || an == pan);
 	}
 	else {
 	    an = closest_prev_anchor(Currentbuf->href, NULL, x, y);
-            if (visited != TRUE)
-	    an = closest_prev_anchor(Currentbuf->formitem, an, x, y);
+	    if (visited != TRUE)
+		an = closest_prev_anchor(Currentbuf->formitem, an, x, y);
 	    if (an == NULL) {
-                if (visited == TRUE)
-                    return;
+		if (visited == TRUE)
+		    return;
 		an = pan;
 		break;
 	    }
 	    x = an->start.pos;
 	    y = an->start.line;
-            if (visited == TRUE && an) {
-                parseURL2(an->url, &url, baseURL(Currentbuf));
-                if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
-                    goto _end;
-                }
+	    if (visited == TRUE && an) {
+		parseURL2(an->url, &url, baseURL(Currentbuf));
+		if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+		    goto _end;
+		}
+	    }
 	}
     }
-    }
     if (visited == TRUE)
-        return;
+	return;
 
   _end:
     if (an == NULL || an->hseq < 0)

@@ -1,4 +1,4 @@
-/* $Id: istream.h,v 1.10 2003/01/10 17:06:24 ukai Exp $ */
+/* $Id: istream.h,v 1.11 2003/07/22 17:33:16 ukai Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
@@ -126,7 +126,7 @@ extern int ISfileno(InputStream stream);
 extern int ISeos(InputStream stream);
 #ifdef USE_SSL
 extern void ssl_accept_this_site(char *hostname);
-extern Str ssl_get_certificate(SSL *ssl, char *hostname);
+extern Str ssl_get_certificate(SSL * ssl, char *hostname);
 #endif
 
 #define IST_BASIC	0

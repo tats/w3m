@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.17 2003/07/13 16:19:10 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.18 2003/07/13 16:20:42 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -336,6 +336,5 @@ ClearImage(char *buf)
     w_op->clear(w_op,
 		x + offset_x - w_op->clear_margin,
 		y + offset_y - w_op->clear_margin,
-		w + w_op->clear_margin * 2,
-		h + w_op->clear_margin * 2);
+		w + w_op->clear_margin * 2, h + w_op->clear_margin * 2);
 }

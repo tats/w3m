@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: frame.c,v 1.5 2001/11/20 13:17:13 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -38,8 +38,10 @@ newFrameSet(struct parsed_tag *tag)
     if (cols) {
 	length[i] = p = cols;
 	while (*p != '\0')
-	    if (*p++ == ',')
+	    if (*p++ == ',') {
 		length[++i] = p;
+		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+	    }
 	length[++i] = p + 1;
     }
     if (i > 1) {
@@ -74,8 +76,10 @@ newFrameSet(struct parsed_tag *tag)
     if (rows) {
 	length[i] = p = rows;
 	while (*p != '\0')
-	    if (*p++ == ',')
+	    if (*p++ == ',') {
 		length[++i] = p;
+		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+	    }
 	length[++i] = p + 1;
     }
     if (i > 1) {

@@ -1,3 +1,7 @@
+2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* frame.c (newFrameSet): fix possible buffer overrun
+
 2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* XXMakefile config.h: removed from CVS

@@ -1,5 +1,12 @@
 2003-04-14  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03875] Re: SSL & compressed stream
+	* file.c (loadGeneralFile): check t_buf != NULL
+	* url.c (openURL): don't initialize URLFile here
+		(init_stream): 0 clear URLFile
+
+2003-04-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03873] SSL & compressed stream
 	* file.c (loadGeneralFile): always update ssl_certificate 
 	* url.c (openURL): initialize URLFile
@@ -7738,4 +7745,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.823 2003/04/13 18:36:50 ukai Exp $
+$Id: ChangeLog,v 1.824 2003/04/14 03:29:37 ukai Exp $

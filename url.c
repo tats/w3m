@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.77 2003/04/13 18:36:51 ukai Exp $ */
+/* $Id: url.c,v 1.78 2003/04/14 03:29:38 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1437,6 +1437,7 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 void
 init_stream(URLFile *uf, int scheme, InputStream stream)
 {
+    memset(uf, 0, sizeof(URLFile));
     uf->stream = stream;
     uf->scheme = scheme;
     uf->encoding = ENC_7BIT;
@@ -1497,7 +1498,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	}
     }
 
-    memset(&uf, 0, sizeof uf);
     uf.scheme = pu->scheme;
     uf.url = parsedURL2Str(pu)->ptr;
     pu->is_nocache = (option->flag & RG_NOCACHE);

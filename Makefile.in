@@ -191,7 +191,7 @@ w3mimg/w3mimg.a:
 	(cd w3mimg && $(MAKE) CC="$(CC0)" CFLAGS="$(CFLAGS)")
 
 po:
-	(cd $@ && $(MAKE))
+	(cd $@ && $(MAKE) && $(MAKE) update-po)
 
 install: install-core install-scripts install-po
 

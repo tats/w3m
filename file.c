@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.102 2002/09/28 16:30:07 ukai Exp $ */
+/* $Id: file.c,v 1.103 2002/10/10 16:59:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4590,6 +4590,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_N_INS:
 	HTMLlineproc1("<U>:INS]</U>", h_env);
+	return 1;
+    case HTML_SUP:
+	HTMLlineproc1("^", h_env);
+	return 1;
+    case HTML_N_SUP:
+	return 1;
+    case HTML_SUB:
+	HTMLlineproc1("[", h_env);
+	return 1;
+    case HTML_N_SUB:
+	HTMLlineproc1("]", h_env);
 	return 1;
     case HTML_FONT:
     case HTML_N_FONT:

@@ -139,6 +139,10 @@ tfoot           HTML_TFOOT
 colgroup        HTML_COLGROUP
 /colgroup       HTML_N_COLGROUP
 col             HTML_COL
+sup		HTML_SUP
+/sup		HTML_N_SUP
+sub		HTML_SUB
+/sub		HTML_N_SUB
 table_alt	HTML_TABLE_ALT
 _rule		HTML_RULE
 /_rule		HTML_N_RULE

@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.12 2002/02/28 16:15:41 ukai Exp $ */
+/* $Id: html.c,v 1.13 2002/10/10 16:59:33 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -216,10 +216,10 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"noframes", ALST_NOFRAMES, MAXA_NOFRAMES, 0},	/*  98 HTML_NOFRAMES   */
     {"/noframes", NULL, 0, TFLG_END},	/*  99 HTML_N_NOFRAMES */
 
-    {NULL, NULL, 0, 0},		/* 100 Undefined       */
-    {NULL, NULL, 0, 0},		/* 101 Undefined       */
-    {NULL, NULL, 0, 0},		/* 102 Undefined       */
-    {NULL, NULL, 0, 0},		/* 103 Undefined       */
+    {"sup", NULL, 0, 0},		/* 100 HTML_SUP       */
+    {"/sup", NULL, 0, 0},		/* 101 HTML_N_SUP       */
+    {"sub", NULL, 0, 0},		/* 102 HTML_SUB       */
+    {"/sub", NULL, 0, 0},		/* 103 HTML_N_SUB       */
     {NULL, NULL, 0, 0},		/* 104 Undefined       */
     {NULL, NULL, 0, 0},		/* 105 Undefined       */
 

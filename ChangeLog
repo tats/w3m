@@ -1,3 +1,18 @@
+2002-10-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03339] Re: Debian Bug#164098 w3m: <sup> is not properly supported
+	* file.c (HTMLtagproc1): HTML_SUP, HTML_N_SUP, HTML_SUB, HTML_N_SUB
+	* html.c (TagMAP): sup, /sup, sub, /sub
+	* html.c (HTML_SUP): added
+		(HTML_N_SUP): added
+		(HTML_SUB): added
+		(HTML_N_SUB): added
+	* table.c (feed_table_tag): HTML_SUP, HTML_N_SUP, HTML_SUB, HTML_N_SUB
+	* tagtable.tab (sup): added
+		(/sup): added
+		(sub): added
+		(/sub): added
+
 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03337] delete unused functions in fb.c etc. (Re: canna patch)
@@ -3915,4 +3930,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.441 2002/10/10 16:32:06 ukai Exp $
+$Id: ChangeLog,v 1.442 2002/10/10 16:59:32 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.27 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: html.c,v 1.28 2003/09/26 20:48:21 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -7,7 +7,7 @@
 #define MAXA_CORE	1
 unsigned char ALST_A[] = {
     ATTR_NAME, ATTR_HREF, ATTR_REL, ATTR_CHARSET, ATTR_TARGET, ATTR_HSEQ,
-	ATTR_REFERER,
+    ATTR_REFERER,
     ATTR_FRAMENAME, ATTR_TITLE, ATTR_ACCESSKEY, ATTR_CORE
 };
 #define MAXA_A		MAXA_CORE + 10

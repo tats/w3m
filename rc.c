@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.93 2003/09/26 16:57:27 ukai Exp $ */
+/* $Id: rc.c,v 1.94 2003/09/26 20:48:22 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -53,7 +53,7 @@ static int RC_table_size;
 
 /* FIXME: gettextize here */
 #ifdef USE_M17N
-static wc_ces OptionCharset = WC_CES_US_ASCII; /* FIXME: charset of source code */
+static wc_ces OptionCharset = WC_CES_US_ASCII;	/* FIXME: charset of source code */
 static int OptionEncode = FALSE;
 #endif
 

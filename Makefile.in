@@ -46,10 +46,9 @@ INSTALL_W3MIMGDISPLAY=@INSTALL_W3MIMGDISPLAY@
 HELP_FILE = @HELP_FILE@
 KEYBIND_SRC = @KEYMAP_FILE@.c
 KEYBIND_OBJ = @KEYMAP_FILE@.o
-GCLIB=@gclib@
 
 VERSION=@CURRENT_VERSION@
-MODEL=@W3M_TARGET@-@W3M_MODEL@-@W3M_LANG@
+MODEL=@W3M_TARGET@-@W3M_LANG@
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \

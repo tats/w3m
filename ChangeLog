@@ -1,3 +1,8 @@
+2003-03-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Makefile.in (MODEL): delete @W3M_TARGET@
+	* configure.in: AC_SUBST(W3M_TARGET)
+
 2003-03-11  Fumitoshi UKAI  <ukai@debian.or.jp>	
 	
 	* which: deleted
@@ -7439,4 +7444,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.782 2003/03/10 18:07:20 ukai Exp $
+$Id: ChangeLog,v 1.783 2003/03/10 18:30:24 ukai Exp $

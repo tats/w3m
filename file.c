@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.98 2002/09/10 18:11:30 ukai Exp $ */
+/* $Id: file.c,v 1.99 2002/09/10 18:21:36 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1470,7 +1470,8 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     else
 	ss = find_auth_cookie(pu->host, pu->port, pu->file, realm);
     if (realm && ss == NULL) {
-	if (find_auth_user_passwd(pu->host, pu->port, pu->file, realm,
+	if (!a_found &&
+	    find_auth_user_passwd(pu->host, pu->port, pu->file, realm,
 				  &uname, &pwd)) {
 	    /* found username & password in passwd file */ ;
 	}

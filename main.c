@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.201 2003/01/27 16:18:53 ukai Exp $ */
+/* $Id: main.c,v 1.202 2003/01/28 16:34:25 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3894,7 +3894,7 @@ goURL0(char *prompt, int relative)
     }
 #ifdef JP_CHARSET
     if (url != NULL) {
-	if (Currentbuf->document_code)
+	if ((relative || *url == '#') && Currentbuf->document_code)
 	    url = conv(url, InnerCode, Currentbuf->document_code)->ptr;
 	else
 	    url = conv_to_system(url);

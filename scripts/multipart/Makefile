@@ -1,27 +1,33 @@
 
 prefix		= /usr/local
-bindir		= $(prefix)/bin
-libdir		= $(prefix)/lib
+DESTDIR		=
+BIN_DIR		= $(prefix)/bin
+LIB_DIR		= $(prefix)/lib/w3m
 distdir		= ./distfiles
 
-W3M_LIBDIR	= $(libdir)/w3m
+LIB_TARGETS	= multipart.cgi
 
 INSTALL		= install -c
 INSTALL_SCRIPT	= $(INSTALL) -m 755
 
 PERL		= /usr/local/bin/perl
-NKF		= /usr/local/bin/nkf
+NKF		= nkf
 
-all: multipart.cgi
+.SUFFIXES: .in
 
-multipart.cgi: multipart.cgi.in Makefile
+all: $(LIB_TARGETS)
+
+.in:
 	sed -e 's%@PERL@%$(PERL)%g'	\
 	    -e 's%@NKF@%$(NKF)%g'	\
-	multipart.cgi.in > multipart.cgi
-	chmod +x multipart.cgi
+	$< > $@
+	chmod +x $@
 
-install: multipart.cgi
-	$(INSTALL_SCRIPT) multipart.cgi $(W3M_LIBDIR)
+install: $(LIB_TARGETS)
+	for file in $(LIB_TARGETS);	\
+	do	\
+		$(INSTALL_SCRIPT) $$file $(DISTDIR)$(LIB_DIR);	\
+	done
 
 dist: all
 	@-rm -fr $(distdir)/multipart

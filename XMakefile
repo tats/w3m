@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.7 2001/11/20 17:49:23 ukai Exp $
+# $Id: XMakefile,v 1.8 2001/11/21 09:21:59 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -30,7 +30,7 @@ INSTALL=sh install.sh
 INSTALL2=sh ../install.sh
 AR=ar
 
-all: $(TARGETS)
+all: $(TARGETS) all-scripts
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(GCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LIBS)
@@ -77,9 +77,10 @@ inflate.o: inflate.c
 	$(CC) $(CFLAGS) $(Z_CFLAGS) -c inflate.c
 
 gc/gc.a:
-	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
+	cd gc; $(MAKE) CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
 
-install: $(TARGETS)
+
+install: $(TARGETS) all-scripts
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
@@ -91,6 +92,18 @@ install: $(TARGETS)
 	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
 	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
 	(cd scripts; for i in *.cgi; do $(INSTALL2) -m 755 $$i $(DESTDIR)$(LIB_DIR)/$$i; done)
+
+all-scripts:
+	for dir in scripts scripts/multipart scripts/w3mman;	\
+	do	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)');	\
+	done
+
+install-scripts:
+	for dir in scripts scripts/multipart scripts/w3mman;	\
+	do	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' DESTDIR='$(DESTDIR)' INSTALL='sh $(PWD)/install.sh' install);	\
+	done
 
 uninstall:
 	-$(RM) $(BIN_DIR)/$(TARGET)

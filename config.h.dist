@@ -121,6 +121,7 @@ GCLIB=gc/gc.a
 GCTARGET=gc/gc.a
 RANLIB=ranlib
 MKDIR=mkdir -p
+PERL=/usr/local/bin/perl
 VERSION=0.2.2
 MODEL=Linux.i686-monster-ja
 #else

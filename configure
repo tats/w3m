@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.8 2001/11/21 03:58:32 ukai Exp $
+# $Id: configure,v 1.9 2001/11/21 09:21:59 ukai Exp $
 #	Configuration.
 #
 
@@ -1014,6 +1014,15 @@ else
 fi
 rm -rf hogege 2>&1 >/dev/null
 
+####### perl
+perl=`./which perl`
+if [ `expr "$perl" : 'not found'` != 0 ]; then
+  echo "You don't have perl."
+  perl=/usr/local/bin/perl
+else
+  echo "You have perl."
+fi
+
 ####### strcasecmp
 cat > _zmachdep.c << EOF
 #include <string.h>
@@ -1807,6 +1816,7 @@ GCLIB=$gclib
 GCTARGET=$gctarget
 RANLIB=$ranlib_cmd
 MKDIR=$MKDIR
+PERL=$perl
 VERSION=$w3mversion
 MODEL=$sysname.$platform-$modelname-$lang
 #else
@@ -1928,13 +1938,5 @@ echo ''
 echo 'config.h is created. See config.h for further configuration.'
 echo ''
 echo 'Generating scripts/dirlist.cgi'
-
-perl=`./which perl`
-if [ `expr "$perl" : 'not found'` != 0 ]; then
-  perl=/usr/local/bin/perl
-fi
-sed -e "s;@PERL@;$perl;" \
-    scripts/dirlist.cgi.in > scripts/dirlist.cgi
-chmod +x scripts/dirlist.cgi
 
 echo 'Configuration done. Just type "make".'

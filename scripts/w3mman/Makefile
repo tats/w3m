@@ -1,10 +1,12 @@
 
 prefix		= /usr/local
-bindir		= $(prefix)/bin
-libdir		= $(prefix)/lib
+BIN_DIR		= $(prefix)/bin
+LIB_DIR		= $(prefix)/lib/w3m
+DESTDIR		=
 distdir		= ./distfiles
 
-W3M_LIBDIR	= $(libdir)/w3m
+TARGETS		= w3mman
+LIB_TARGETS	= w3mman2html.cgi
 
 INSTALL		= install -c
 INSTALL_SCRIPT	= $(INSTALL) -m 755
@@ -14,24 +16,26 @@ W3M		= w3m
 # W3M		= w3m -X -o confirm_qq=0
 MAN		= man
 
-all: w3mman w3mman2html.cgi
+.SUFFIXES: .in
 
-w3mman: w3mman.in Makefile
+all: $(TARGETS) $(LIB_TARGETS)
+
+.in:
 	sed -e 's%@PERL@%$(PERL)%g'	\
 	    -e 's%@W3M@%$(W3M)%g'	\
 	    -e 's%@MAN@%$(MAN)%g'	\
-	w3mman.in > w3mman
-	chmod +x w3mman
-	
-w3mman2html.cgi: w3mman2html.cgi.in Makefile
-	sed -e 's%@PERL@%$(PERL)%g'	\
-	    -e 's%@MAN@%$(MAN)%g'	\
-	w3mman2html.cgi.in > w3mman2html.cgi
-	chmod +x w3mman2html.cgi
+	$< > $@
+	chmod +x $@
 
-install: w3mman w3mman2html.cgi
-	$(INSTALL_SCRIPT) w3mman $(bindir)
-	$(INSTALL_SCRIPT) w3mman2html.cgi $(W3M_LIBDIR)
+install: $(TARGETS) $(LIB_TARGETS)
+	for file in $(TARGETS);     \
+	do      \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(BIN_DIR);	\
+	done
+	for file in $(LIB_TARGETS);     \
+	do      \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
+	done
 
 dist: all
 	@-rm -fr $(distdir)/w3mman

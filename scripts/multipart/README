@@ -7,7 +7,7 @@ Content-Type: multipart/* を扱う local-CGI
 インストール
 
   * make install
-    必要なら PERL, NKF, W3M_LIBDIR を設定してください。
+    必要なら PERL, NKF, LIBDIR を設定してください。
 
   * mailcap を ~/.w3m/mailcap にマージ
     multipart.cgi のパスに注意

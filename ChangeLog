@@ -1,5 +1,10 @@
 2004-03-22  Akihiro Sagawa <sagawa@sohgoh.net>
 
+	* [w3m-dev 04046]
+	* configure.in (AC_W3M_IPv6): should check it after ext libs
+
+2004-03-22  Akihiro Sagawa <sagawa@sohgoh.net>
+
 	* [w3m-dev 04045]
 	* Makefile.in (DEFUNS): need $(top_srcdir)
 
@@ -8309,4 +8314,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.900 2004/03/21 15:09:56 ukai Exp $
+$Id: ChangeLog,v 1.901 2004/03/21 15:12:18 ukai Exp $

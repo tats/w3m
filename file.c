@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.107 2002/10/30 15:39:41 ukai Exp $ */
+/* $Id: file.c,v 1.108 2002/10/30 15:46:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4602,7 +4602,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 #ifdef USE_ALARM
 		else if (!is_redisplay && refresh_interval > 0 && MetaRefresh
 			 && !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
-		    setAlarmEvent(refresh_interval, AL_IMPLICIT,
+		    setAlarmEvent(refresh_interval, AL_IMPLICIT_ONCE,
 				  FUNCNAME_gorURL, s_tmp->ptr);
 		}
 #endif

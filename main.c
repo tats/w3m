@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.114 2002/09/28 16:32:49 ukai Exp $ */
+/* $Id: main.c,v 1.115 2002/10/30 15:46:29 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4992,6 +4992,8 @@ searchKeyData(void)
 	data = CurrentCmdData;
     else if (CurrentKey >= 0)
 	data = getKeyData(CurrentKey);
+    CurrentKeyData = NULL;
+    CurrentCmdData = NULL;
     if (data == NULL || *data == '\0')
 	return NULL;
     return allocStr(data, -1);
@@ -5084,10 +5086,12 @@ execCmd(void)
 static MySignalHandler
 SigAlarm(SIGNAL_ARG)
 {
+    char *data;
+
     if (alarm_sec > 0) {
 	CurrentKey = -1;
 	CurrentKeyData = NULL;
-	CurrentCmdData = (char *)alarm_event.user_data;
+	CurrentCmdData = data = (char *)alarm_event.user_data;
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
@@ -5099,15 +5103,18 @@ SigAlarm(SIGNAL_ARG)
 #endif
 	CurrentCmdData = NULL;
 	onA();
-	disp_message_nsec(Sprintf("%s %s", w3mFuncList[alarm_event.cmd].id,
-				  CurrentCmdData ? CurrentCmdData : "")->ptr,
-			  FALSE, alarm_sec - 1, FALSE, TRUE);
-	if (alarm_status == AL_IMPLICIT) {
+	if (alarm_status == AL_EXPLICIT) {
+	    disp_message_nsec(Sprintf("%s %s", w3mFuncList[alarm_event.cmd].id,
+				      data ? data : "")->ptr,
+			      FALSE, alarm_sec - 1, FALSE, TRUE);
+	}
+	else if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE;
 	}
-	else if (alarm_status == AL_IMPLICIT_DONE
-		 && alarm_buffer != Currentbuf) {
+	else if ((alarm_status == AL_IMPLICIT_DONE
+		 && alarm_buffer != Currentbuf)
+		 || alarm_status == AL_IMPLICIT_ONCE) {
 	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
 	if (alarm_sec > 0) {
@@ -5154,6 +5161,7 @@ void
 setAlarmEvent(int sec, short status, int cmd, void *data)
 {
     if (status == AL_UNSET || status == AL_EXPLICIT
+	|| status == AL_IMPLICIT_ONCE
 	|| (status == AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
 	alarm_sec = sec;
 	alarm_status = status;

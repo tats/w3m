@@ -71,7 +71,7 @@
 
 BIN_DIR = /usr/local/bin
 AUXBIN_DIR = /usr/local/lib/w3m
-LIB_DIR = /usr/local/lib/w3m/cgi-bin
+CGIBIN_DIR = /usr/local/lib/w3m/cgi-bin
 HELP_DIR = /usr/local/share/w3m
 MAN_DIR = /usr/local/man
 MAN1_DIR = $(MAN_DIR)/man1
@@ -154,7 +154,7 @@ INSTALL_W3MIMGDISPLAY=$(INSTALL_PROGRAM)
 #define DEF_MIGEMO_COMMAND	"migemo -t egrep /usr/share/migemo/migemo-dict"
 
 #define AUXBIN_DIR   "/usr/local/lib/w3m"
-#define LIB_DIR      "/usr/local/lib/w3m/cgi-bin"
+#define CGIBIN_DIR      "/usr/local/lib/w3m/cgi-bin"
 #define HELP_DIR     "/usr/local/lib/w3m"
 #define ETC_DIR	     "/usr/local/etc/w3m"
 #define HELP_FILE    "w3mhelp.html"

@@ -1,3 +1,15 @@
+2004-04-10  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 04063] about Makefile
+	* Makefile.in (DEFS): use CGIBIN_DIR instead of LIB_DIR
+		(MAKE_ARGS): ditto
+		(distclean): rm -f
+	* config.h.dist: use CGIBIN_DIR instead of LIB_DIR
+	* indep.c (w3m_lib_dir): ditto
+	* scripts/Makefile.in: ditto
+	* scripts/multipart/Makefile.in: ditto
+	* w3mimg/Makefile.in (clearn): remove w3mimg.a
+
 2004-04-05  AIDA Shinra <shinra@j10n.org>
 
 	* [w3m-dev 04049] w3m-cvs-1.914-misc.patch
@@ -8394,4 +8406,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.917 2004/04/04 16:47:20 ukai Exp $
+$Id: ChangeLog,v 1.918 2004/04/09 17:18:48 ukai Exp $

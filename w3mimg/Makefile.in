@@ -31,13 +31,13 @@ clean:
 	@for dir in fb x11; do \
 		(cd $$dir && $(MAKE) clean RM=$(RM)); \
 	 done
+	-$(RM) -f w3mimg.a
 
 distclean: clean
 	for subdir in fb x11; \
 	do \
 		(cd $$subdir && $(MAKE) distclean); \
 	done
-	-$(RM) -f w3mimg.a
 	-$(RM) -f Makefile
 
 

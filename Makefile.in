@@ -39,7 +39,7 @@ CFLAGS = $(OPTS) @CFLAGS@ $(CPPFLAGS) $(DEFS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
-	-DLIB_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
+	-DCGIBIN_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
 	-DETC_DIR=\"$(ETC_DIR)\" -DCONF_DIR=\"$(CONF_DIR)\" \
 	-DRC_DIR=\"$(RC_DIR)\" \
         -DLOCALEDIR=\"$(localedir)\"
@@ -51,7 +51,7 @@ NLSTARGET = @NLSTARGET@
 
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
-	LIB_DIR='$(CGIBIN_DIR)' \
+	CGIBIN_DIR='$(CGIBIN_DIR)' \
 	HELP_DIR='$(HELP_DIR)' MAN_DIR='$(mandir)' ETC_DIR='$(ETC_DIR)' \
 	CONF_DIR='$(CONF_DIR)' \
 	RC_DIR='$(RC_DIR)' DESTDIR='$(DESTDIR)' KEYBIND_SRC='$(KEYBIND_SRC)'
@@ -292,12 +292,12 @@ distclean: clean
 	do \
 		(cd $$subdir && $(MAKE) distclean); \
 	done
-	-$(RM) config.cache config.log config.status
-	-$(RM) w3mhelp-w3m_en.html w3mhelp-w3m_ja.html
-	-$(RM) w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
-	-$(RM) version.c
-	-$(RM) posubst
-	-$(RM) config.h Makefile
+	-$(RM) -f config.cache config.log config.status
+	-$(RM) -f w3mhelp-w3m_en.html w3mhelp-w3m_ja.html
+	-$(RM) -f w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
+	-$(RM) -f version.c
+	-$(RM) -f posubst
+	-$(RM) -f config.h Makefile
 	-$(RM) -f *core
 
 sweep:

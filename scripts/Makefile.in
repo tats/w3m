@@ -81,7 +81,7 @@ $(SUBDIRS):
 
 install: $(LIB_TARGETS) $(HELP_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(AUXBIN_DIR)
-	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
+	-$(MKDIR) $(DESTDIR)$(CGIBIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	for file in $(AUXBIN_TARGETS);     \
 	do      \
@@ -89,7 +89,7 @@ install: $(LIB_TARGETS) $(HELP_TARGETS)
 	done
 	for file in $(LIB_TARGETS);     \
 	do      \
-		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);  \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);  \
 	done
 	for file in w3mhelp-*.pl; \
 	do \

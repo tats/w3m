@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.34 2003/07/26 17:16:24 ukai Exp $ */
+/* $Id: indep.c,v 1.35 2004/04/09 17:18:49 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -723,7 +723,8 @@ w3m_auxbin_dir()
 char *
 w3m_lib_dir()
 {
-    return w3m_dir("W3M_LIB_DIR", LIB_DIR);
+    /* FIXME: use W3M_CGIBIN_DIR? */
+    return w3m_dir("W3M_LIB_DIR", CGIBIN_DIR);
 }
 
 char *

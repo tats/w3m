@@ -47,16 +47,16 @@ all: $(LIB_TARGETS)
 $(LIB_TARGETS):
 
 install: $(LIB_TARGETS)
-	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
+	-$(MKDIR) $(DESTDIR)$(CGIBIN_DIR)
 	for file in $(LIB_TARGETS);	\
 	do	\
-		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);	\
 	done
 
 uninstall:
 	-for file in $(LIB_TARGETS);	\
 	do	\
-		rm -f $(LIB_DIR)/$$file;	\
+		rm -f $(CGIBIN_DIR)/$$file;	\
 	done
 
 clean:

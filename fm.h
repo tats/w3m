@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.29 2001/12/14 17:35:08 ukai Exp $ */
+/* $Id: fm.h,v 1.30 2001/12/23 14:44:00 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -183,6 +183,11 @@ void bzero(void *, int);
 #define LB_SOURCE	4	/* vwSrc() */
 #define LB_N_SOURCE	LB_SOURCE
 #define MAX_LB		5
+
+/* Search Result */
+#define SR_FOUND       0x1
+#define SR_NOTFOUND    0x2
+#define SR_WRAPPED     0x4
 
 #ifdef MAINPROGRAM
 int REV_LB[MAX_LB] = {

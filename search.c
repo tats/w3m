@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: search.c,v 1.5 2001/12/23 14:44:00 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 
@@ -12,12 +12,11 @@ forwardSearch(Buffer *buf, char *str)
 
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
-	return FALSE;
+	return SR_NOTFOUND;
     }
     l = begin = buf->currentLine;
     if (l == NULL) {
-	disp_message("Not found", FALSE);
-	return FALSE;
+	return SR_NOTFOUND;
     }
     pos = buf->pos + 1;
 #ifdef JP_CHARSET
@@ -28,7 +27,7 @@ forwardSearch(Buffer *buf, char *str)
 	matchedPosition(&first, &last);
 	buf->pos = first - l->lineBuf;
 	arrangeCursor(buf);
-	return FALSE;
+	return SR_FOUND;
     }
     for (l = l->next;; l = l->next) {
 	if (l == NULL) {
@@ -61,13 +60,12 @@ forwardSearch(Buffer *buf, char *str)
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    return wrapped;
+	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */
 	    break;
     }
-    disp_message("Not found", FALSE);
-    return FALSE;
+    return SR_NOTFOUND;
 }
 
 int
@@ -80,12 +78,11 @@ backwardSearch(Buffer *buf, char *str)
 
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
-	return FALSE;
+	return SR_NOTFOUND;
     }
     l = begin = buf->currentLine;
     if (l == NULL) {
-	disp_message("Not found", FALSE);
-	return FALSE;
+	return SR_NOTFOUND;
     }
     if (buf->pos > 0) {
 	pos = buf->pos - 1;
@@ -112,7 +109,7 @@ backwardSearch(Buffer *buf, char *str)
 	if (found) {
 	    buf->pos = found - l->lineBuf;
 	    arrangeCursor(buf);
-	    return FALSE;
+	    return SR_FOUND;
 	}
     }
     for (l = l->prev;; l = l->prev) {
@@ -146,11 +143,10 @@ backwardSearch(Buffer *buf, char *str)
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    return wrapped;
+	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */
 	    break;
     }
-    disp_message("Not found", FALSE);
-    return FALSE;
+    return SR_NOTFOUND;
 }

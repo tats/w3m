@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.41 2001/12/23 14:24:22 ukai Exp $ */
+/* $Id: main.c,v 1.42 2001/12/23 14:44:00 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1308,78 +1308,82 @@ rdrwSc(void)
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-/* Search regular expression forward */
-void
-srchfor(void)
+/* search by regular expression */
+static int
+srchcore(char *str, int (*func) (Buffer *, char *))
 {
     MySignalHandler(*prevtrap) ();
-    char *str;
-    int i, n = searchKeyNum();
-    volatile int wrapped = 0;
+    volatile int i, result = SR_NOTFOUND;
 
-    str = inputStrHist("Forward: ", NULL, TextHist);
-    if (str != NULL && *str == '\0')
-	str = SearchString;
-    if (str == NULL || *str == '\0') {
-	displayBuffer(Currentbuf, B_NORMAL);
-	return;
-    }
-    SearchString = str;
+    if (str != NULL && str != SearchString)
+	SearchString = str;
+    if (SearchString == NULL || *SearchString == '\0')
+	return SR_NOTFOUND;
+
     prevtrap = signal(SIGINT, intTrap);
     crmode();
     if (SETJMP(IntReturn) == 0)
-	for (i = 0; i < n; i++)
-	    wrapped = forwardSearch(Currentbuf, SearchString);
+	for (i = 0; i < PREC_NUM; i++)
+	    result = func(Currentbuf, SearchString);
     signal(SIGINT, prevtrap);
     term_raw();
     displayBuffer(Currentbuf, B_NORMAL);
     onA();
-    if (wrapped) {
-	disp_message("Search wrapped", FALSE);
-    }
-    searchRoutine = forwardSearch;
+    return result;
+}
+
+void
+disp_srchresult(int result, char *prompt, char *str)
+{
+    if (str == NULL)
+	str = "";
+    if (result & SR_NOTFOUND)
+	disp_message(Sprintf("Not found: %s", str)->ptr, FALSE);
+    else if (result & SR_WRAPPED)
+	disp_message(Sprintf("Search wrapped: %s", str)->ptr, FALSE);
+    else if (show_srch_str)
+	disp_message(Sprintf("%s%s", prompt, str)->ptr, FALSE);
+}
+
+void
+srch(int (*func) (Buffer *, char *), char *prompt)
+{
+    char *str;
+    int result;
+
+    str = inputStrHist(prompt, NULL, TextHist);
+    if (str != NULL && *str == '\0')
+	str = SearchString;
+    if (str == NULL)
+	return;
+    result = srchcore(str, func);
+    disp_srchresult(result, prompt, str);
+    searchRoutine = func;
+}
+
+/* Search regular expression forward */
+void
+srchfor(void)
+{
+    srch(forwardSearch, "Forward: ");
 }
 
 /* Search regular expression backward */
 void
 srchbak(void)
 {
-    MySignalHandler(*prevtrap) ();
-    char *str;
-    int i, n = searchKeyNum();
-    volatile int wrapped = 0;
-
-    str = inputStrHist("Backward: ", NULL, TextHist);
-    if (str != NULL && *str == '\0')
-	str = SearchString;
-    if (str == NULL || *str == '\0') {
-	displayBuffer(Currentbuf, B_NORMAL);
-	return;
-    }
-    SearchString = str;
-    prevtrap = signal(SIGINT, intTrap);
-    crmode();
-    if (SETJMP(IntReturn) == 0)
-	for (i = 0; i < n; i++)
-	    wrapped = backwardSearch(Currentbuf, SearchString);
-    signal(SIGINT, prevtrap);
-    term_raw();
-    displayBuffer(Currentbuf, B_NORMAL);
-    onA();
-    if (wrapped) {
-	disp_message("Search wrapped", FALSE);
-    }
-    searchRoutine = backwardSearch;
+    srch(backwardSearch, "Backward: ");
 }
 
 static void
-srch_nxtprv(volatile int reverse)
+srch_nxtprv(int reverse)
 {
-    int i;
-    volatile int wrapped = 0;
+    int result;
+    /* *INDENT-OFF* */
     static int (*routine[2]) (Buffer *, char *) = {
-    forwardSearch, backwardSearch};
-    MySignalHandler(*prevtrap) ();
+	forwardSearch, backwardSearch
+    };
+    /* *INDENT-ON* */
 
     if (searchRoutine == NULL) {
 	disp_message("No previous regular expression", TRUE);
@@ -1389,24 +1393,9 @@ srch_nxtprv(volatile int reverse)
 	reverse = 1;
     if (searchRoutine == backwardSearch)
 	reverse ^= 1;
-    prevtrap = signal(SIGINT, intTrap);
-    crmode();
-    if (SETJMP(IntReturn) == 0)
-	for (i = 0; i < PREC_NUM; i++)
-	    wrapped = (*routine[reverse]) (Currentbuf, SearchString);
-    signal(SIGINT, prevtrap);
-    term_raw();
-    displayBuffer(Currentbuf, B_NORMAL);
-    onA();
-    if (wrapped) {
-	disp_message("Search wrapped", FALSE);
-    }
-    else if (show_srch_str) {
-	disp_message(Sprintf("%s%s",
-			     routine[reverse] ==
-			     forwardSearch ? "Forward: " : "Backward: ",
-			     SearchString)->ptr, FALSE);
-    }
+    result = srchcore(SearchString, routine[reverse]);
+    disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
+		    SearchString);
 }
 
 /* Search next matching */

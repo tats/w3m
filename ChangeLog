@@ -1,5 +1,19 @@
 2001-12-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02700] search refactoring
+	* based on http://www.nmn.jp/~hidai/software/w3m/
+	* fm.h: add SR_* constants, result value for search
+	* main.c (srchcore): added
+	* main.c (disp_srchresult): added
+	* main.c (srch): added
+	* main.c (srchfor): use srch()
+	* main.c (srchbak): use srch()
+	* main.c (srch_nxtprv): use srchcore() & disp_srch_result()
+	* search.c (forwardSearch): return SR_* result value
+	* search.c (backwardSearch): ditto
+
+2001-12-23  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02699] initialization too late
 	* main.c (MAIN): initializations moved before arg processing
 	* debian bug closes: Bug##102445: ignores SIGWINCH while downloading
@@ -1443,4 +1457,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.162 2001/12/23 14:24:22 ukai Exp $
+$Id: ChangeLog,v 1.163 2001/12/23 14:44:00 ukai Exp $

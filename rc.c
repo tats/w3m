@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.40 2002/02/19 15:25:19 ukai Exp $ */
+/* $Id: rc.c,v 1.41 2002/03/29 16:39:37 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -138,6 +138,7 @@ static char *config_file = NULL;
 #define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
 #define CMT_DOCUMENTCODE "文書の文字コード"
 #define CMT_SYSTEMCODE   "システムの文字コード"
+#define CMT_MARK_ALL_PAGES "全てのページのURL風の文字列をリンクにする"
 #define CMT_WRAP         "折り返し検索"
 #define CMT_VIEW_UNSEENOBJECTS "背景画像等へのリンクを作る"
 #ifdef __EMX__
@@ -272,6 +273,7 @@ static char *config_file = NULL;
 #define CMT_ACCEPTLANG   "Accept-Language"
 /* #define CMT_DOCUMENTCODE "Document Charset" */
 /* #define CMT_SYSTEMCODE   "System Kanji Code" */
+#define CMT_MARK_ALL_PAGES "Mark URL-like strings as anchors in all pages"
 #define CMT_WRAP         "Wrap search"
 #define CMT_VIEW_UNSEENOBJECTS "Display unseenobjects (e.g. bgimage) tag"
 #ifdef __EMX__
@@ -539,6 +541,8 @@ struct param_ptr params3[] = {
     {"vi_prec_num", P_INT, PI_ONOFF, (void *)&vi_prec_num, CMT_VI_PREC_NUM,
      NULL},
 #endif
+    {"mark_all_pages", P_INT, PI_ONOFF, (void *)&MarkAllPages,
+     CMT_MARK_ALL_PAGES, NULL},
     {"wrap_search", P_INT, PI_ONOFF, (void *)&WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *)&IgnoreCase,
      CMT_IGNORE_CASE, NULL},

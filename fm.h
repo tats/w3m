@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.57 2002/03/19 16:06:52 ukai Exp $ */
+/* $Id: fm.h,v 1.58 2002/03/29 16:39:37 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -866,6 +866,7 @@ global int FoldTextarea init(FALSE);
 #define DEFAULT_URL_CURRENT	1
 #define DEFAULT_URL_LINK	2
 global int DefaultURLString init(DEFAULT_URL_EMPTY);
+global int MarkAllPages init(FALSE);
 
 #ifdef USE_MIGEMO
 global int use_migemo init(FALSE);

@@ -1,5 +1,6 @@
 w3m 0.4?
 
+* rc: mark_all_pages
 * configure: -mandir
 * func: COMMAND
 * -title option: set buffer name to terminal title

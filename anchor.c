@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.9 2002/01/31 18:28:24 ukai Exp $ */
+/* $Id: anchor.c,v 1.10 2002/03/29 16:39:37 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -295,7 +295,9 @@ reAnchorAny(Buffer *buf, char *re,
     if ((re = regexCompile(re, 1)) != NULL) {
 	return re;
     }
-    for (l = buf->firstLine; l != NULL; l = l->next) {
+    for (l = MarkAllPages ? buf->firstLine : buf->topLine; l != NULL &&
+	 (MarkAllPages || l->linenumber < buf->topLine->linenumber + LASTLINE);
+	 l = l->next) {
 	p = l->lineBuf;
 	for (;;) {
 	    if (regexMatch(p, &l->lineBuf[l->len] - p, p == l->lineBuf) == 1) {

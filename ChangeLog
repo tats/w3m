@@ -1,5 +1,14 @@
 2002-03-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03160] Re: "ttp:" is marked instead of "http:" by MARL_URL
+	* NEWS: 
+	* anchor.c (reAnchorAny): check MarkAllPages
+	* fm.h (MarkAllPages): added
+	* rc.c (CMT_MARK_ALL_PAGES): added
+		(mark_all_pages): added
+
+2002-03-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03159] "ttp:" is marked instead of "http:" by MARL_URL
 	* main.c (chkURLBuffer): check internal URLs first
 
@@ -3308,4 +3317,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.364 2002/03/29 16:32:00 ukai Exp $
+$Id: ChangeLog,v 1.365 2002/03/29 16:39:37 ukai Exp $

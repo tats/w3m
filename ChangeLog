@@ -13,13 +13,13 @@
 	   add CMT_META_REFRESH
 
 	* file.c (loadHTMLBuffer): [w3m-dev 02415] 
-	  clean up temporary files
+	  pushText() to clean up temporary files
 	
 	* file.c (loadHTMLstream): [w3m-dev 02414]
-	  stable SIGINT handling in HTMLlineproc0()
+	  SETJMP and signal after buffer is initialized
 	
 	* main.c (reMark): [w3m-dev 02413] 
-	  mark history bug
+	  don't save invalid regexp to MarkString
 
 2001-11-15  aito@eie.yz.yamagata-u.ac.jp
 

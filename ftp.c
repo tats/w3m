@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.32 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: ftp.c,v 1.33 2003/10/05 18:52:51 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -416,8 +416,13 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
     return NULL;
 }
 
+#ifdef USE_M17N
 Str
 loadFTPDir(ParsedURL *pu, wc_ces * charset)
+#else
+Str
+loadFTPDir0(ParsedURL *pu)
+#endif
 {
     Str FTPDIRtmp;
     Str tmp;

@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.16 2003/09/22 21:02:20 ukai Exp $ */
+/* $Id: news.c,v 1.17 2003/10/05 18:52:51 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -302,8 +302,14 @@ openNewsStream(ParsedURL *pu)
     return NULL;
 }
 
+
+#ifdef USE_M17N
 Str
 loadNewsgroup(ParsedURL *pu, wc_ces * charset)
+#else
+Str
+loadNewsgroup0(ParsedURL *pu)
+#endif
 {
     volatile Str page;
     Str tmp;

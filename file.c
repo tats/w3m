@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.229 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: file.c,v 1.230 2003/10/05 18:52:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -454,9 +454,14 @@ acceptableEncoding()
 /* 
  * convert line
  */
+#ifdef USE_M17N
 Str
 convertLine(URLFile *uf, Str line, int mode, wc_ces * charset,
 	    wc_ces doc_charset)
+#else
+Str
+convertLine0(URLFile *uf, Str line, int mode)
+#endif
 {
 #ifdef USE_M17N
     line = wc_Str_conv_with_detect(line, charset, doc_charset, InnerCharset);
@@ -1904,7 +1909,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	tmp = tmpfname(TMPF_SRC, ".html");
 	src = fopen(tmp->ptr, "w");
 	if (src) {
-	    Str s = wc_Str_conv_strict(page, InnerCharset, charset);
+	    Str s;
+	    s = wc_Str_conv_strict(page, InnerCharset, charset);
 	    Strfputs(s, src);
 	    fclose(src);
 	}
@@ -6597,12 +6603,10 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	    }
 	    meta_charset = 0;
 	}
-	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
-#ifdef USE_IMAGE
-	cur_document_charset = charset;
 #endif
-#else
-	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE);
+	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
+#ifdef USE_M17N
+	cur_document_charset = charset;
 #endif
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
     }
@@ -6841,12 +6845,8 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	showProgress(&linelen, &trbyte);
 	if (frame_source)
 	    continue;
-#ifdef USE_M17N
 	lineBuf2 =
 	    convertLine(uf, lineBuf2, PAGER_MODE, &charset, doc_charset);
-#else
-	lineBuf2 = convertLine(uf, lineBuf2, PAGER_MODE);
-#endif
 	if (squeezeBlankLine) {
 	    if (lineBuf2->ptr[0] == '\n' && pre_lbuf == '\n') {
 		++nlines;
@@ -7260,12 +7260,8 @@ getNextPage(Buffer *buf, int plen)
 	}
 	linelen += lineBuf2->length;
 	showProgress(&linelen, &trbyte);
-#ifdef USE_M17N
 	lineBuf2 =
 	    convertLine(&uf, lineBuf2, PAGER_MODE, &charset, doc_charset);
-#else
-	lineBuf2 = convertLine(&uf, lineBuf2, PAGER_MODE);
-#endif
 	if (squeezeBlankLine) {
 	    squeeze_flag = FALSE;
 	    if (lineBuf2->ptr[0] == '\n' && pre_lbuf == '\n') {

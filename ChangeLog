@@ -1,5 +1,32 @@
 2003-10-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* fix build error --disbable-m17n
+	* config.h.in: undef USE_M17N, USE_UNICODE
+	* etc.c (url_unquote_conv): USE_M17N
+	* file.c (convertLine): USE_M17N
+		(loadHTMLStream): fix ifdef USE_IMAGE->USE_M17N
+		(loadBuffer): fix USE_M17N
+		(getNextPage): fix USE_M17N
+	* fm.h (USE_M17N): don't define USE_M17N in case LANG == JA
+			(this should be done by configure)
+		(wc_ces): dummy typedef
+		(wc_Str_conv): fix non-m17n macro args
+		(wc_Str_conv_strict): ditto
+	* ftp.c (loadFTPDir): fix undefined USE_M17N
+	* mimehead.c (decodeWord): ditto
+		(decodeMIME): ditto
+	* news.c (loadNewsgroup): ditto
+	* proto.h (convertLine): ditto
+		(loadGopherDir): ditto
+		(loadFTPDir): ditto
+		(loadNewsgroup): ditto
+		(decodeWord): ditto
+		(decodeMIME): ditto
+		(url_unquote_conv): ditto
+	* terms.c (SETCH): ditto
+
+2003-10-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* --with-imagelib request on [w3m-dev 03981]
 	 from Mamoru KOMACHI <usata@sodan.ecc.u-tokyo.ac.jp>
 	* acinclude.m4 (AC_W3M_IMAGE): add --with-imagelib
@@ -8144,4 +8171,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.880 2003/10/05 16:59:37 ukai Exp $
+$Id: ChangeLog,v 1.881 2003/10/05 18:52:50 ukai Exp $

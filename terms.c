@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.49 2003/09/22 21:02:22 ukai Exp $ */
+/* $Id: terms.c,v 1.50 2003/10/05 18:52:51 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -305,7 +305,7 @@ typedef struct sgttyb TerminalMode;
 #define SETCH(var,ch,len)	((var) = New_Reuse(char, (var), (len) + 1), \
 				strncpy((var), (ch), (len)), (var)[len] = '\0')
 #else
-#define SETCH(var,ch)	((var) = (ch))
+#define SETCH(var,ch,len)	((var) = (ch))
 #endif
 
 /* Charactor Color */

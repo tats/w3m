@@ -1,4 +1,4 @@
-/* $Id: mimehead.c,v 1.9 2003/09/22 21:02:20 ukai Exp $ */
+/* $Id: mimehead.c,v 1.10 2003/10/05 18:52:51 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
@@ -191,8 +191,13 @@ decodeQP(char **ww)
     return a;
 }
 
+#ifdef USE_M17N
 Str
 decodeWord(char **ow, wc_ces * charset)
+#else
+Str
+decodeWord0(char **ow)
+#endif
 {
 #ifdef USE_M17N
     wc_ces c;
@@ -215,7 +220,7 @@ decodeWord(char **ow, wc_ces * charset)
     if (!c)
 	goto convert_fail;
 #else
-    if (strcasecmp(buf, "ISO-8859-1") != 0 && strcasecmp(buf, "US_ASCII") != 0)
+    if (strcasecmp(tmp->ptr, "ISO-8859-1") != 0 && strcasecmp(tmp->ptr, "US_ASCII") != 0)
 	/* NOT ISO-8859-1 encoding ... don't convert */
 	goto convert_fail;
 #endif
@@ -255,8 +260,13 @@ decodeWord(char **ow, wc_ces * charset)
 /* 
  * convert MIME encoded string to the original one
  */
+#ifdef USE_M17N
 Str
 decodeMIME(Str orgstr, wc_ces * charset)
+#else
+Str
+decodeMIME0(Str orgstr)
+#endif
 {
     char *org = orgstr->ptr, *endp = org + orgstr->length;
     char *org0, *p;

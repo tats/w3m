@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.74 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: etc.c,v 1.75 2003/10/05 18:52:51 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1649,8 +1649,13 @@ file_to_url(char *file)
     return tmp->ptr;
 }
 
+#ifdef USE_M17N
 char *
 url_unquote_conv(char *url, wc_ces charset)
+#else
+char *
+url_unquote_conv0(char *url)
+#endif
 {
 #ifdef USE_M17N
     wc_uint8 old_auto_detect = WcOption.auto_detect;

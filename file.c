@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.15 2001/11/25 17:41:57 ukai Exp $ */
+/* $Id: file.c,v 1.16 2001/11/27 18:23:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2324,8 +2324,9 @@ process_anchor(struct parsed_tag *tag, char *tagbuf)
 Str
 process_input(struct parsed_tag *tag)
 {
-    int i, w, v, x, y, z;
+    int i, w, v, x, y, z, iw, ih;
     char *q, *p, *r, *p2;
+    char *pi = NULL;
     Str tmp;
     char *qq = "";
     int qlen = 0;
@@ -2360,10 +2361,11 @@ process_input(struct parsed_tag *tag)
 	case FORM_INPUT_RESET:
 	    q = "RESET";
 	    break;
-	    /* if no VALUE attribute is specified in * <INPUT
-	     * TYPE=CHECKBOX> tag, then the value "on" is used * as a
-	     * default value. It is not a part of HTML4.0 * specification, 
-	     * but an imitation of Netscape * behaviour. */
+	    /* if no VALUE attribute is specified in 
+	     * <INPUT TYPE=CHECKBOX> tag, then the value "on" is used 
+	     * as a default value. It is not a part of HTML4.0 
+	     * specification, but an imitation of Netscape behaviour. 
+	     */
 	case FORM_INPUT_CHECKBOX:
 	    q = "on";
 	}
@@ -2434,20 +2436,31 @@ process_input(struct parsed_tag *tag)
 	    }
 	    break;
 	case FORM_INPUT_IMAGE:
+	    parsedtag_get_value(tag, ATTR_SRC, &pi);
+	    if (pi) {
+		Strcat(tmp, Sprintf("<img_alt src=\"%s\"", html_quote(pi)));
+		if (parsedtag_get_value(tag, ATTR_WIDTH, &iw))
+		    Strcat(tmp, Sprintf(" width=\"%d\"", iw));
+		if (parsedtag_get_value(tag, ATTR_HEIGHT, &ih))
+		    Strcat(tmp, Sprintf(" height=\"%d\"", ih));
+		Strcat_charp(tmp, ">");
+		if (p2)
+		    Strcat_charp(tmp, html_quote(p2));
+		else
+		    Strcat_charp(tmp, qq);
+		Strcat_charp(tmp, "</img_alt>");
+		break;
+	    }
+	    /* FALL THROUGH */
 	case FORM_INPUT_SUBMIT:
 	case FORM_INPUT_BUTTON:
-	    if (p2) {
+	    if (p2)
 		Strcat_charp(tmp, html_quote(p2));
-		i = strlen(p2);
-	    }
-	    else {
+	    else
 		Strcat_charp(tmp, qq);
-		i = qlen;
-	    }
 	    break;
 	case FORM_INPUT_RESET:
 	    Strcat_charp(tmp, qq);
-	    i = qlen;
 	    break;
 	case FORM_INPUT_RADIO:
 	case FORM_INPUT_CHECKBOX:
@@ -3963,8 +3976,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    /* nothing to do */
 		    break;
 		case HTML_AREA:
-		    if (buf->maplist == NULL)	/* outside of *
-						 * * * * * <map>..</map> */
+		    if (buf->maplist == NULL)	/* outside of <map>..</map> */
 			break;
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
 			p = remove_space(p);

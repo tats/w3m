@@ -1,3 +1,16 @@
+2001-11-28  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02578]
+	* file.c (process_anchor): support <input type="image">
+	* html.c (ALST_INPUT): add ATTR_SRC, ATTR_WIDTH, ATTR_HEIGHT
+	* html.c (MAXA_INPUT): +3
+	
+	* conv.c (checkShiftCode): fix comments for indent(1)
+	* main.c (loadLink): ditto
+	* fm.h: ditto
+	* file.c (process_anchor); ditto
+	* file.c (HTMLlineproc2body): ditto
+
 2001-11-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 	
 	* [w3m-dev 02576]

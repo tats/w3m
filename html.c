@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: html.c,v 1.6 2001/11/27 18:23:33 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -43,9 +43,10 @@ unsigned char ALST_FORM[] =
 #define MAXA_FORM       MAXA_CORE + 7
 unsigned char ALST_INPUT[] =
     { ATTR_TYPE, ATTR_VALUE, ATTR_NAME, ATTR_CHECKED, ATTR_ACCEPT, ATTR_SIZE,
-    ATTR_MAXLENGTH, ATTR_ALT, ATTR_READONLY, ATTR_CORE
+    ATTR_MAXLENGTH, ATTR_ALT, ATTR_READONLY, ATTR_SRC, ATTR_WIDTH, ATTR_HEIGHT,
+    ATTR_CORE
 };
-#define MAXA_INPUT      MAXA_CORE + 9
+#define MAXA_INPUT      MAXA_CORE + 12
 unsigned char ALST_TEXTAREA[] =
     { ATTR_COLS, ATTR_ROWS, ATTR_NAME, ATTR_READONLY, ATTR_CORE };
 #define MAXA_TEXTAREA   MAXA_CORE + 4

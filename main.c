@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.24 2001/11/27 04:45:28 ukai Exp $ */
+/* $Id: main.c,v 1.25 2001/11/27 18:23:33 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2362,12 +2362,9 @@ loadLink(char *url, char *target, char *referer, FormList *request)
     if (do_download)		/* download (thus no need to render frame) */
 	return loadNormalBuf(buf, FALSE);
 
-    if (target == NULL ||	/* no target specified (that means * this
-				 * page is not a frame page) */
-	!strcmp(target, "_top") ||	/* this link is specified to * be
-					 * opened as an indivisual * page */
-	!(Currentbuf->bufferprop & BP_FRAME)	/* This page is not a *
-						 * * * * * frame page */
+    if (target == NULL ||	/* no target specified (that means this page is not a frame page) */
+	!strcmp(target, "_top") ||	/* this link is specified to be opened as an indivisual * page */
+	!(Currentbuf->bufferprop & BP_FRAME)	/* This page is not a frame page */
 	) {
 	return loadNormalBuf(buf, TRUE);
     }

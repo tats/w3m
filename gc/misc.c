@@ -1,6 +1,7 @@
 /* 
  * Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
  * Copyright (c) 1991-1994 by Xerox Corporation.  All rights reserved.
+ * Copyright (c) 1999-2001 by Hewlett-Packard Company. All rights reserved.
  *
  * THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
  * OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
@@ -22,7 +23,7 @@
 #define I_HIDE_POINTERS	/* To make GC_call_with_alloc_lock visible */
 #include "private/gc_pmark.h"
 
-#ifdef SOLARIS_THREADS
+#ifdef GC_SOLARIS_THREADS
 # include <sys/syscall.h>
 #endif
 #if defined(MSWIN32) || defined(MSWINCE)
@@ -41,29 +42,27 @@
 	/* Critical section counter is defined in the M3 runtime 	*/
 	/* That's all we use.						*/
 #     else
-#	ifdef SOLARIS_THREADS
+#	ifdef GC_SOLARIS_THREADS
 	  mutex_t GC_allocate_ml;	/* Implicitly initialized.	*/
 #	else
-#          ifdef WIN32_THREADS
+#          ifdef GC_WIN32_THREADS
 #	      if !defined(GC_NOT_DLL) && (defined(_DLL) || defined(GC_DLL))
 		 __declspec(dllexport) CRITICAL_SECTION GC_allocate_ml;
 #	      else
 		 CRITICAL_SECTION GC_allocate_ml;
 #	      endif
 #          else
-#             if defined(IRIX_THREADS) \
-		 || (defined(LINUX_THREADS) && defined(USE_SPIN_LOCK))
-	        pthread_t GC_lock_holder = NO_THREAD;
-#	      else
-#	        if defined(HPUX_THREADS) \
-		   || defined(LINUX_THREADS) && !defined(USE_SPIN_LOCK)
+#             if defined(GC_PTHREADS) && !defined(GC_SOLARIS_THREADS)
+#		if defined(USE_SPIN_LOCK)
+	          pthread_t GC_lock_holder = NO_THREAD;
+#	        else
 		  pthread_mutex_t GC_allocate_ml = PTHREAD_MUTEX_INITIALIZER;
 	          pthread_t GC_lock_holder = NO_THREAD;
 			/* Used only for assertions, and to prevent	 */
 			/* recursive reentry in the system call wrapper. */
-#		else 
+#		endif 
+#    	      else
 	          --> declare allocator lock here
-#		endif
 #	      endif
 #	   endif
 #	endif
@@ -98,6 +97,8 @@ GC_bool GC_dont_precollect = 0;
 GC_bool GC_quiet = 0;
 
 GC_bool GC_print_stats = 0;
+
+GC_bool GC_print_back_height = 0;
 
 #ifdef FIND_LEAK
   int GC_find_leak = 1;
@@ -499,6 +500,9 @@ void GC_init_inner()
     if (0 != GETENV("GC_DONT_GC")) {
       GC_dont_gc = 1;
     }
+    if (0 != GETENV("GC_PRINT_BACK_HEIGHT")) {
+      GC_print_back_height = 1;
+    }
 #   ifdef UNIX_LIKE
       if (0 != GETENV("GC_LOOP_ON_ABORT")) {
         GC_set_and_save_fault_handler(looping_handler);
@@ -524,20 +528,18 @@ void GC_init_inner()
 #   if defined(SEARCH_FOR_DATA_START)
 	GC_init_linux_data_start();
 #   endif
-#   if defined(NETBSD) && defined(__ELF__)
+#   if (defined(NETBSD) || defined(OPENBSD)) && defined(__ELF__)
 	GC_init_netbsd_elf();
 #   endif
-#   if defined(IRIX_THREADS) || defined(LINUX_THREADS) \
-       || defined(HPUX_THREADS) || defined(SOLARIS_THREADS)
+#   if defined(GC_PTHREADS) || defined(GC_SOLARIS_THREADS)
         GC_thr_init();
 #   endif
-#   ifdef SOLARIS_THREADS
+#   ifdef GC_SOLARIS_THREADS
 	/* We need dirty bits in order to find live stack sections.	*/
         GC_dirty_init();
 #   endif
-#   if !defined(THREADS) || defined(SOLARIS_THREADS) || defined(WIN32_THREADS) \
-       || defined(IRIX_THREADS) || defined(LINUX_THREADS) \
-       || defined(HPUX_THREADS)
+#   if !defined(THREADS) || defined(GC_PTHREADS) || defined(GC_WIN32_THREADS) \
+	|| defined(GC_SOLARIS_THREADS)
       if (GC_stackbottom == 0) {
 	GC_stackbottom = GC_get_stack_base();
 #       if defined(LINUX) && defined(IA64)
@@ -652,7 +654,7 @@ void GC_enable_incremental GC_PROTO(())
 	if (GC_is_win32s()) goto out;
       }
 #   endif /* MSWIN32 */
-#   ifndef SOLARIS_THREADS
+#   ifndef GC_SOLARIS_THREADS
         GC_dirty_init();
 #   endif
     if (!GC_is_initialized) {
@@ -753,7 +755,7 @@ size_t len;
      register int result;
      
      while (bytes_written < len) {
-#	ifdef SOLARIS_THREADS
+#	ifdef GC_SOLARIS_THREADS
 	    result = syscall(SYS_write, fd, buf + bytes_written,
 	    			  	    len - bytes_written);
 #	else

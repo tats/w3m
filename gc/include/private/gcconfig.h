@@ -33,6 +33,11 @@
 #    define NETBSD
 # endif
 
+/* And one for OpenBSD: */
+# if defined(__OpenBSD__)
+#    define OPENBSD
+# endif
+
 /* Determine the machine type: */
 # if defined(sun) && defined(mc68000)
 #    define M68K
@@ -44,25 +49,23 @@
 #    define HP
 #    define mach_type_known
 # endif
-# if defined(__OpenBSD__) && defined(m68k)
+# if defined(OPENBSD) && defined(m68k)
 #    define M68K
-#    define OPENBSD
 #    define mach_type_known
 # endif
-# if defined(__OpenBSD__) && defined(__sparc__)
+# if defined(OPENBSD) && defined(__sparc__)
 #    define SPARC
-#    define OPENBSD
 #    define mach_type_known
 # endif
-# if defined(__NetBSD__) && defined(m68k)
+# if defined(NETBSD) && defined(m68k)
 #    define M68K
 #    define mach_type_known
 # endif
-# if defined(__NetBSD__) && defined(__powerpc__)
+# if defined(NETBSD) && defined(__powerpc__)
 #    define POWERPC
 #    define mach_type_known
 # endif
-# if defined(__NetBSD__) && defined(__arm32__)
+# if defined(NETBSD) && defined(__arm32__)
 #    define ARM32
 #    define mach_type_known
 # endif
@@ -75,9 +78,12 @@
 #    endif
 #    define mach_type_known
 # endif
-# if defined(mips) || defined(__mips)
+# if defined(mips) || defined(__mips) || defined(_mips)
 #    define MIPS
-#    if !defined(LINUX)
+#    if defined(nec_ews) || defined(_nec_ews)
+#      define EWS4800
+#    endif
+#    if !defined(LINUX) && !defined(EWS4800)
 #      if defined(ultrix) || defined(__ultrix) || defined(__NetBSD__)
 #	 define ULTRIX
 #      else
@@ -161,6 +167,11 @@
 #   endif
 #   define mach_type_known
 # endif
+# if defined(__ia64) && defined(_HPUX_SOURCE)
+#   define IA64
+#   define HPUX
+#   define mach_type_known
+# endif
 # if defined(__BEOS__) && defined(_X86_)
 #    define I386
 #    define BEOS
@@ -196,7 +207,7 @@
 # endif
 # if defined(__alpha) || defined(__alpha__)
 #   define ALPHA
-#   if !defined(LINUX) && !defined(NETBSD)
+#   if !defined(LINUX) && !defined(NETBSD) && !defined(OPENBSD)
 #     define OSF1	/* a.k.a Digital Unix */
 #   endif
 #   define mach_type_known
@@ -386,7 +397,7 @@
                     /*		   RS6000     ==> IBM RS/6000 AIX3.X	*/
                     /*		   RT	      ==> IBM PC/RT		*/
                     /*		   HP_PA      ==> HP9000/700 & /800	*/
-                    /*				  HP/UX, LINUX			*/
+                    /*				  HP/UX, LINUX		*/
 		    /*		   SPARC      ==> SPARC	v7/v8/v9	*/
 		    /*			(SUNOS4, SUNOS5, LINUX,		*/
 		    /*			 DRSNX variants)		*/
@@ -398,8 +409,11 @@
 		    /* 			running Amdahl UTS4		*/
 		    /*			or a 390 running LINUX		*/
 		    /* 		   ARM32      ==> Intel StrongARM	*/
-		    /* 		   IA64	      ==> Intel IA64		*/
+		    /* 		   IA64	      ==> Intel IPF		*/
 		    /*				  (e.g. Itanium)	*/
+		    /*			(LINUX and HPUX)	        */
+		    /* 		   IA64_32    ==> IA64 w/32 bit ABI	*/
+		    /* 			(HPUX)				*/
 		    /*		   SH	      ==> Hitachi SuperH	*/
 		    /* 			(LINUX & MSWINCE)		*/
 
@@ -533,7 +547,7 @@
 #   ifdef LINUX
 #       define OS_TYPE "LINUX"
 #       define STACKBOTTOM ((ptr_t)0xf0000000)
-#       define MPROTECT_VDB
+/* #       define MPROTECT_VDB - Reported to not work  9/17/01 */
 #       ifdef __ELF__
 #            define DYNAMIC_LOADING
 #	     include <features.h>
@@ -715,8 +729,12 @@
 	extern char * GC_SysVGetDataStart();
 #       define DATASTART (ptr_t)GC_SysVGetDataStart(0x10000, &_etext)
 #	define DATAEND (&_end)
-#	ifndef USE_MMAP
+#	if !defined(USE_MMAP) && defined(REDIRECT_MALLOC)
 #	    define USE_MMAP
+	    /* Otherwise we now use calloc.  Mmap may result in the	*/
+	    /* heap interleaved with thread stacks, which can result in	*/
+	    /* excessive blacklisting.  Sbrk is unusable since it	*/
+	    /* doesn't interact correctly with the system malloc.	*/
 #	endif
 #       ifdef USE_MMAP
 #         define HEAP_START (ptr_t)0x40000000
@@ -838,21 +856,29 @@
 #   endif
 #   ifdef SUNOS5
 #	define OS_TYPE "SUNOS5"
-  	extern int etext, _start;
+        extern int _etext, _end;
   	extern char * GC_SysVGetDataStart();
-#       define DATASTART GC_SysVGetDataStart(0x1000, &etext)
+#       define DATASTART GC_SysVGetDataStart(0x1000, &_etext)
+#	define DATAEND (&_end)
 /*	# define STACKBOTTOM ((ptr_t)(&_start)) worked through 2.7,  	*/
 /*      but reportedly breaks under 2.8.  It appears that the stack	*/
 /* 	base is a property of the executable, so this should not break	*/
 /* 	old executables.						*/
 /*  	HEURISTIC2 probably works, but this appears to be preferable.	*/
-#       include <sys/vmparam.h>
+#       include <sys/vm.h>
 #	define STACKBOTTOM USRSTACK
-/** At least in Solaris 2.5, PROC_VDB gives wrong values for dirty bits. */
-/*#	define PROC_VDB*/
+/* At least in Solaris 2.5, PROC_VDB gives wrong values for dirty bits. */
+/* It appears to be fixed in 2.8 and 2.9.				*/
+#	ifdef SOLARIS25_PROC_VDB_BUG_FIXED
+#	  define PROC_VDB
+#	endif
 #	define DYNAMIC_LOADING
-#	ifndef USE_MMAP
+#	if !defined(USE_MMAP) && defined(REDIRECT_MALLOC)
 #	    define USE_MMAP
+	    /* Otherwise we now use calloc.  Mmap may result in the	*/
+	    /* heap interleaved with thread stacks, which can result in	*/
+	    /* excessive blacklisting.  Sbrk is unusable since it	*/
+	    /* doesn't interact correctly with the system malloc.	*/
 #	endif
 #       ifdef USE_MMAP
 #         define HEAP_START (ptr_t)0x40000000
@@ -888,7 +914,7 @@
 	  /* with 2GB physical memory will usually move the user	*/
 	  /* address space limit, and hence initial SP to 0x80000000.	*/
 #       endif
-#       if !defined(LINUX_THREADS) || !defined(REDIRECT_MALLOC)
+#       if !defined(GC_LINUX_THREADS) || !defined(REDIRECT_MALLOC)
 #	    define MPROTECT_VDB
 #	else
 	    /* We seem to get random errors in incremental mode,	*/
@@ -1003,8 +1029,17 @@
 #   endif
 #   ifdef FREEBSD
 #	define OS_TYPE "FREEBSD"
-#	define MPROTECT_VDB
+#	ifndef GC_FREEBSD_THREADS
+#	    define MPROTECT_VDB
+#	endif
+#	define SIG_SUSPEND SIGUSR1
+#	define SIG_THR_RESTART SIGUSR2
 #	define FREEBSD_STACKBOTTOM
+#	ifdef __ELF__
+#	    define DYNAMIC_LOADING
+#	endif
+	extern char etext;
+#	define DATASTART ((ptr_t)(&etext))
 #   endif
 #   ifdef NETBSD
 #	define OS_TYPE "NETBSD"
@@ -1015,7 +1050,7 @@
 #   ifdef BSDI
 #	define OS_TYPE "BSDI"
 #   endif
-#   if defined(OPENBSD) || defined(NETBSD) || defined(FREEBSD) \
+#   if defined(OPENBSD) || defined(NETBSD) \
         || defined(THREE86BSD) || defined(BSDI)
 #	define HEURISTIC2
 	extern char etext;
@@ -1083,6 +1118,29 @@
 	/* instead. But some kernel versions seem to give the wrong	*/
 	/* value from /proc.						*/
 #   endif /* Linux */
+#   ifdef EWS4800
+#      define HEURISTIC2
+#      if defined(_MIPS_SZPTR) && (_MIPS_SZPTR == 64)
+         extern int _fdata[], _end[];
+#        define DATASTART ((ptr_t)_fdata)
+#        define DATAEND ((ptr_t)_end)
+#        define CPP_WORDSZ _MIPS_SZPTR
+#        define ALIGNMENT (_MIPS_SZPTR/8)
+#      else
+         extern int etext, edata, end;
+         extern int _DYNAMIC_LINKING, _gp;
+#        define DATASTART ((ptr_t)((((word)&etext + 0x3ffff) & ~0x3ffff) \
+               + ((word)&etext & 0xffff)))
+#        define DATAEND (&edata)
+#        define DATASTART2 (&_DYNAMIC_LINKING \
+               ? (ptr_t)(((word)&_gp + 0x8000 + 0x3ffff) & ~0x3ffff) \
+               : (ptr_t)&edata)
+#        define DATAEND2 (&end)
+#        define ALIGNMENT 4
+#      endif
+#      define OS_TYPE "EWS4800"
+#      define USE_GENERIC_PUSH_REGS 1
+#   endif
 #   ifdef ULTRIX
 #	define HEURISTIC2
 #       define DATASTART (ptr_t)0x10000000
@@ -1161,7 +1219,6 @@
 
 # ifdef HP_PA
 #   define MACH_TYPE "HP_PA"
-#   define OS_TYPE "HPUX"
 #   ifdef __LP64__
 #     define CPP_WORDSZ 64
 #     define ALIGNMENT 8
@@ -1170,8 +1227,7 @@
 #     define ALIGNMENT 4
 #     define ALIGN_DOUBLE
 #   endif
-#   if !defined(GC_HPUX_THREADS) && !defined(HPUX_THREADS) \
-       && !defined(GC_LINUX_THREADS) && !defined(LINUX_THREADS)
+#   if !defined(GC_HPUX_THREADS) && !defined(GC_LINUX_THREADS)
 #     ifndef LINUX /* For now. */
 #       define MPROTECT_VDB
 #     endif
@@ -1186,6 +1242,7 @@
 #   endif
 #   define STACK_GROWS_UP
 #   ifdef HPUX
+#     define OS_TYPE "HPUX"
       extern int __data_start;
 #     define DATASTART ((ptr_t)(&__data_start))
 #     if 0
@@ -1242,6 +1299,19 @@
 #   	define CPP_WORDSZ 64
 #       define DYNAMIC_LOADING
 #   endif
+#   ifdef OPENBSD
+#	define OS_TYPE "OPENBSD"
+#	define HEURISTIC2
+#   	define CPP_WORDSZ 64
+#   	ifdef __ELF__	/* since OpenBSD/Alpha 2.9 */
+#	   define DATASTART GC_data_start
+#   	   define ELFCLASS32 32
+#   	   define ELFCLASS64 64
+#   	   define ELF_CLASS ELFCLASS64
+#       else		/* ECOFF, until OpenBSD/Alpha 2.7 */
+#   	   define DATASTART ((ptr_t) 0x140000000)
+#   	endif
+#   endif
 #   ifdef OSF1
 #	define OS_TYPE "OSF1"
 #   	define DATASTART ((ptr_t) 0x140000000)
@@ -1284,9 +1354,6 @@
 
 # ifdef IA64
 #   define MACH_TYPE "IA64"
-#   define ALIGN_DOUBLE
-	/* Requires 16 byte alignment for malloc */
-#   define ALIGNMENT 8
 #   define USE_GENERIC_PUSH_REGS
 	/* We need to get preserved registers in addition to register   */
 	/* windows.   That's easiest to do with setjmp.			*/
@@ -1296,11 +1363,47 @@
 	    /* setting mark bits.					*/
 #   endif
 #   ifdef HPUX
-	--> needs work
+#	ifdef _ILP32
+#	  define CPP_WORDSZ 32
+#         define ALIGN_DOUBLE
+	    /* Requires 8 byte alignment for malloc */
+#   	  define ALIGNMENT 4
+#       else
+#	  ifndef _LP64
+		---> unknown ABI
+#         endif
+#	  define CPP_WORDSZ 64
+#   	  define ALIGN_DOUBLE
+	    /* Requires 16 byte alignment for malloc */
+#         define ALIGNMENT 8
+#       endif
+#       define OS_TYPE "HPUX"	
+        extern int __data_start;
+#       define DATASTART ((ptr_t)(&__data_start))
+        /* Gustavo Rodriguez-Rivera suggested changing HEURISTIC2	*/
+        /* to this.  Note that the GC must be initialized before the	*/
+    	/* first putenv call.						*/
+	extern char ** environ;
+#       define STACKBOTTOM ((ptr_t)environ)
+#       define DYNAMIC_LOADING
+#       include <unistd.h>
+#       define GETPAGESIZE() sysconf(_SC_PAGE_SIZE)
+ 	/* The following was empirically determined, and is probably	*/
+	/* not very robust.						*/
+	/* Note that the backing store base seems to be at a nice 	*/
+	/* address minus one page.					*/
+#	define BACKING_STORE_DISPLACEMENT 0x1000000
+#	define BACKING_STORE_ALIGNMENT 0x1000
+#       define BACKING_STORE_BASE \
+	  (ptr_t)(((word)GC_stackbottom - BACKING_STORE_DISPLACEMENT - 1) \
+			& ~(BACKING_STORE_ALIGNMENT - 1))
 #   endif
 #   ifdef LINUX
+#   	define CPP_WORDSZ 64
+#   	define ALIGN_DOUBLE
+	  /* Requires 16 byte alignment for malloc */
+#   	define ALIGNMENT 8
 #       define OS_TYPE "LINUX"
-#       define CPP_WORDSZ 64
 	/* The following works on NUE and older kernels:	*/
 /* #       define STACKBOTTOM ((ptr_t) 0xa000000000000000l)	*/
 	/* This does not work on NUE:				*/
@@ -1315,7 +1418,13 @@
 #	define BACKING_STORE_BASE ((ptr_t)GC_register_stackbottom)
 #	define SEARCH_FOR_DATA_START
 #	define DATASTART GC_data_start
-#       define DYNAMIC_LOADING
+#	ifdef __GNUC__
+#         define DYNAMIC_LOADING
+#	else
+	  /* In the Intel compiler environment, we seem to end up with  */
+	  /* statically linked executables and an undefined reference	*/
+	  /* to _DYNAMIC						*/
+#  	endif
 #	define MPROTECT_VDB
 		/* Requires Linux 2.3.47 or later.	*/
 	extern int _end;
@@ -1581,57 +1690,33 @@
 	((word*)x)[1] = 0;
 # endif /* CLEAR_DOUBLE */
 
-/* Internally to the collector we test only the XXX_THREADS macros	*/
-/* not the GC_XXX_THREADS versions.  Here we make sure the latter	*/
-/* are treated as equivalent.						*/
-#if defined(GC_SOLARIS_THREADS) && !defined(_SOLARIS_THREADS)
-#   define _SOLARIS_THREADS
-#endif
-#if defined(GC_SOLARIS_THREADS) && !defined(_SOLARIS_PTHREADS)
-#   define _SOLARIS_PTHREADS
-#endif
-#if defined(GC_IRIX_THREADS) && !defined(IRIX_THREADS)
-#   define IRIX_THREADS
-#endif
-#if defined(GC_LINUX_THREADS) && !defined(LINUX_THREADS)
-#   define LINUX_THREADS
-#endif
-#if defined(GC_WIN32_THREADS) && !defined(WIN32_THREADS)
-#   define WIN32_THREADS
-#endif
-#if defined(GC_HPUX_THREADS) && !defined(HPUX_THREADS)
-#   define HPUX_THREADS
-#endif
-#if defined(GC_OSF1_THREADS) && !defined(OSF1_THREADS)
-#   define OSF1_THREADS
-#endif
+/* Internally we use GC_SOLARIS_THREADS to test for either old or pthreads. */
+# if defined(GC_SOLARIS_PTHREADS) && !defined(GC_SOLARIS_THREADS)
+#   define GC_SOLARIS_THREADS
+# endif
 
-/* Internally we use SOLARIS_THREADS to test for either old or pthreads. */
-# if defined(_SOLARIS_PTHREADS) && !defined(SOLARIS_THREADS)
-#   define SOLARIS_THREADS
-# endif
-# if defined(IRIX_THREADS) && !defined(IRIX5)
+# if defined(GC_IRIX_THREADS) && !defined(IRIX5)
 --> inconsistent configuration
 # endif
-# if defined(LINUX_THREADS) && !defined(LINUX)
+# if defined(GC_LINUX_THREADS) && !defined(LINUX)
 --> inconsistent configuration
 # endif
-# if defined(SOLARIS_THREADS) && !defined(SUNOS5)
+# if defined(GC_SOLARIS_THREADS) && !defined(SUNOS5)
 --> inconsistent configuration
 # endif
-# if defined(HPUX_THREADS) && !defined(HPUX)
+# if defined(GC_HPUX_THREADS) && !defined(HPUX)
 --> inconsistent configuration
 # endif
-# if defined(WIN32_THREADS) && !defined(MSWIN32)
-    /* Ideally CYGWIN32 should work, in addition to MSWIN32.  I suspect the necessary code	*/
-    /* is mostly there, but nobody has actually made sure the right combination of pieces is	*/
-    /* compiled in, etc.									*/
+# if defined(GC_WIN32_THREADS) && !defined(MSWIN32)
+    /* Ideally CYGWIN32 should work, in addition to MSWIN32.  I suspect	*/
+    /* the necessary code is mostly there, but nobody has actually made */
+    /* sure the right combination of pieces is compiled in, etc.	*/
 --> inconsistent configuration
 # endif
+
 # if defined(PCR) || defined(SRC_M3) || \
-	defined(SOLARIS_THREADS) || defined(WIN32_THREADS) || \
-	defined(IRIX_THREADS) || defined(LINUX_THREADS) || \
-	defined(HPUX_THREADS) || defined(OSF1_THREADS)
+	defined(GC_SOLARIS_THREADS) || defined(GC_WIN32_THREADS) || \
+	defined(GC_PTHREADS)
 #   define THREADS
 # endif
 
@@ -1654,6 +1739,10 @@
 #   define SAVE_CALL_CHAIN
 #   define ASM_CLEAR_CODE	/* Stack clearing is crucial, and we 	*/
 				/* include assembly code to do it well.	*/
+# endif
+
+# if defined(MAKE_BACK_GRAPH) && !defined(DBG_HDRS_ALL)
+#   define DBG_HDRS_ALL
 # endif
 
 # endif /* GCCONFIG_H */

@@ -16,7 +16,7 @@
  */
 /* Boehm, September 14, 1994 4:44 pm PDT */
 
-# if defined(GC_SOLARIS_THREADS) || defined(SOLARIS_THREADS)
+# if defined(GC_SOLARIS_THREADS)
 
 # include "private/gc_priv.h"
 # include "private/solaris_threads.h"
@@ -621,7 +621,18 @@ GC_thread GC_lookup_thread(thread_t id)
     return(p);
 }
 
+/* Solaris 2/Intel uses an initial stack size limit slightly bigger than the
+   SPARC default of 8 MB.  Account for this to warn only if the user has
+   raised the limit beyond the default.
+
+   This is identical to DFLSSIZ defined in <sys/vm_machparam.h>.  This file
+   is installed in /usr/platform/`uname -m`/include, which is not in the
+   default include directory list, so copy the definition here.  */
+#ifdef I386
+# define MAX_ORIG_STACK_SIZE (8 * 1024 * 1024 + ((USRSTACK) & 0x3FFFFF))
+#else
 # define MAX_ORIG_STACK_SIZE (8 * 1024 * 1024)
+#endif
 
 word GC_get_orig_stack_size() {
     struct rlimit rl;
@@ -938,7 +949,7 @@ GC_thr_create(void *stack_base, size_t stack_size,
     return(result);
 }
 
-# else /* SOLARIS_THREADS */
+# else /* !GC_SOLARIS_THREADS */
 
 #ifndef LINT
   int GC_no_sunOS_threads;

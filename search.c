@@ -1,6 +1,7 @@
-/* $Id: search.c,v 1.13 2002/01/17 09:26:33 ukai Exp $ */
+/* $Id: search.c,v 1.14 2002/01/17 10:29:14 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
+#include <signal.h>
 #include <errno.h>
 
 static void
@@ -42,12 +43,14 @@ open_migemo(char *migemo_command)
 	goto err2;
     if (pid == 0) {
 	/* child */
+	signal(SIGINT, SIG_IGN);
+	close_tty();
 	close(fdr[0]);
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
 	close(2);
-	system(migemo_command);
+	execl("/bin/sh", "sh", "-c", migemo_command, NULL);
 	exit(1);
     }
     close(fdr[1]);

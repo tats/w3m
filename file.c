@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.115 2002/11/13 15:47:12 ukai Exp $ */
+/* $Id: file.c,v 1.116 2002/11/15 15:19:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1944,9 +1944,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    signal(SIGINT, prevtrap);
 	    if (pu.scheme == SCM_LOCAL) {
 		UFclose(&f);
-		doFileCopy(pu.real_file,
+		_doFileCopy(pu.real_file,
 			   conv_from_system(guess_save_name
-					    (NULL, pu.real_file)));
+					    (NULL, pu.real_file)), TRUE);
 	    }
 	    else {
 		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
@@ -7178,11 +7178,18 @@ _MoveFile(char *path1, char *path2)
 }
 
 void
-doFileCopy(char *tmpf, char *defstr)
+_doFileCopy(char *tmpf, char *defstr, int download)
 {
     Str msg;
     Str filen;
     char *p, *q = NULL;
+    pid_t pid;
+    char *lock;
+#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
+    FILE *f;
+#endif
+    struct stat st;
+    clen_t size = 0;
 
     if (fmInitialized) {
 	p = searchKeyData();
@@ -7207,10 +7214,40 @@ doFileCopy(char *tmpf, char *defstr)
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
-	if (_MoveFile(tmpf, p) < 0) {
-	    msg = Sprintf("Can't save to %s", p);
-	    disp_err_message(msg->ptr, FALSE);
+	if (!download) {
+	    if (_MoveFile(tmpf, p) < 0) {
+		msg = Sprintf("Can't save to %s", p);
+		disp_err_message(msg->ptr, FALSE);
+	    }
+	    return;
 	}
+	lock = tmpfname(TMPF_DFL, ".lock")->ptr;
+#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
+	symlink(p, lock);
+#else
+	f = fopen(lock, "w");
+	if (f)
+	    fclose(f);
+#endif
+	pushText(fileToDelete, lock);
+	flush_tty();
+	pid = fork();
+	if (!pid) {
+	    reset_signals();
+	    signal(SIGINT, SIG_IGN);
+#ifdef HAVE_SETPGRP
+	    SETPGRP();
+#endif
+	    close_tty();
+	    QuietMessage = TRUE;
+	    fmInitialized = FALSE;
+	    _MoveFile(tmpf, p);
+	    unlink(lock);
+	    exit(0);
+	}
+	if (!stat(tmpf, &st))
+	    size = st.st_size;
+	addDownloadList(pid, tmpf, p, lock, size);
     }
     else {
 	q = searchKeyData();
@@ -7255,6 +7292,11 @@ doFileSave(URLFile uf, char *defstr)
     Str msg;
     Str filen;
     char *p, *q;
+    pid_t pid;
+    char *lock;
+#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
+    FILE *f;
+#endif
 
     if (fmInitialized) {
 	p = searchKeyData();
@@ -7272,10 +7314,38 @@ doFileSave(URLFile uf, char *defstr)
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
+/*
 	if (save2tmp(uf, p) < 0) {
 	    msg = Sprintf("Can't save to %s", p);
 	    disp_err_message(msg->ptr, FALSE);
 	}
+*/
+	lock = tmpfname(TMPF_DFL, ".lock")->ptr;
+#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
+	symlink(p, lock);
+#else
+	f = fopen(lock, "w");
+	if (f)
+	    fclose(f);
+#endif
+	pushText(fileToDelete, lock);
+	flush_tty();
+	pid = fork();
+	if (!pid) {
+	    reset_signals();
+	    signal(SIGINT, SIG_IGN);
+#ifdef HAVE_SETPGRP
+	    SETPGRP();
+#endif
+	    close_tty();
+	    QuietMessage = TRUE;
+	    fmInitialized = FALSE;
+	    save2tmp(uf, p);
+	    UFclose(&uf);
+	    unlink(lock);
+	    exit(0);
+	}
+	addDownloadList(pid, uf.url, p, lock, current_content_length);
     }
     else {
 	q = searchKeyData();

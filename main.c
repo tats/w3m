@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.131 2002/11/14 17:01:29 ukai Exp $ */
+/* $Id: main.c,v 1.132 2002/11/15 15:19:46 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -85,6 +85,7 @@ static void dump_extra(Buffer *);
 int prec_num = 0;
 int prev_key = -1;
 int on_target = 1;
+static int add_download_list = FALSE;
 
 void set_buffer_environ(Buffer *);
 
@@ -1026,6 +1027,10 @@ main(int argc, char **argv, char **envp)
 		set_buffer_environ(Currentbuf);
 		keyPressEventProc((int)c);
 		prec_num = 0;
+		if (add_download_list) {
+		    add_download_list = FALSE;
+		    ldDL();
+		}
 	    }
 	}
 	prev_key = CurrentKey;
@@ -2165,23 +2170,21 @@ movRW(void)
     displayBuffer(Currentbuf, B_NORMAL);
 }
 
-/* Question and Quit */
-void
-qquitfm(void)
+static void
+_quitfm(int confirm)
 {
-    char *ans;
-    if (!confirm_on_quit)
-	quitfm();
-    ans = inputChar("Do you want to exit w3m? (y/n)");
-    if (ans && tolower(*ans) == 'y')
-	quitfm();
-    displayBuffer(Currentbuf, B_NORMAL);
-}
+    char *ans = "y";
 
-/* Quit */
-void
-quitfm(void)
-{
+    if (checkDownloadList())
+	ans = inputChar("Download process retains. "
+			"Do you want to exit w3m? (y/n)");
+    else if (confirm)
+	ans = inputChar("Do you want to exit w3m? (y/n)");
+    if (!(ans && tolower(*ans) == 'y')) {
+	displayBuffer(Currentbuf, B_NORMAL);
+	return;
+    }
+
     term_title("");		/* XXX */
 #ifdef USE_IMAGE
     if (activeImage)
@@ -2196,6 +2199,20 @@ quitfm(void)
 	saveHistory(URLHist, URLHistSize);
 #endif				/* USE_HISTORY */
     w3m_exit(0);
+}
+
+/* Quit */
+void
+quitfm(void)
+{
+    _quitfm(FALSE);
+}
+
+/* Question and Quit */
+void
+qquitfm(void)
+{
+    _quitfm(confirm_on_quit);
 }
 
 /* Select buffer */
@@ -5158,6 +5175,7 @@ w3m_exit(int i)
 #ifdef USE_MIGEMO
     init_migemo();		/* close pipe to migemo */
 #endif
+    stopDownload();
     deleteFiles();
 #ifdef USE_SSL
     free_ssl_ctx();
@@ -5682,4 +5700,211 @@ tabL(void)
     for (tab = CurrentTab, i = 0; tab && i < PREC_NUM;
 	 tab = tab->prevTab, i++) ;
     moveTab(CurrentTab, tab ? tab : FirstTab, FALSE);
+}
+
+void
+addDownloadList(pid_t pid, char *url, char *save, char *lock, clen_t size)
+{
+    DownloadList *d;
+
+    d = New(DownloadList);
+    d->pid = pid;
+    d->url = url;
+    if (save[0] != '/' && save[0] != '~')
+	save = Strnew_m_charp(CurrentDir, "/", save, NULL)->ptr;
+    d->save = expandName(save);
+    d->lock = lock;
+    d->size = size;
+    d->time = time(0);
+    d->ok = FALSE;
+    d->next = NULL;
+    d->prev = LastDL;
+    if (LastDL)
+	LastDL->next = d;
+    else
+	FirstDL = d;
+    LastDL = d;
+    add_download_list = TRUE;
+}
+
+int
+checkDownloadList(void)
+{
+    DownloadList *d;
+    struct stat st;
+
+    if (!FirstDL)
+	return FALSE;
+    for (d = FirstDL; d != NULL; d = d->next) {
+#ifdef HAVE_LSTAT
+	if (!d->ok && !lstat(d->lock, &st))
+#else
+	if (!d->ok && !stat(d->lock, &st))
+#endif
+	    return TRUE;
+    }
+    return FALSE;
+}
+
+static char *
+convert_size3(clen_t size)
+{
+    Str tmp = Strnew();
+    int n;
+
+    do {
+	n = size % 1000;
+	size /= 1000;
+	tmp = Sprintf(size ? ",%.3d%s" : "%d%s", n, tmp->ptr);
+    } while (size);
+    return tmp->ptr;
+}
+
+static Buffer *
+DownloadListBuffer(void)
+{
+    DownloadList *d;
+    Str src = NULL;
+    struct stat st;
+    time_t cur_time;
+    int duration, rate, eta;
+    size_t size;
+
+    if (!FirstDL)
+	return NULL;
+    cur_time = time(0);
+    src = Strnew_charp("<html><head><title>Download Panel</title></head>\
+<body><h1 align=center>Download Panel</h1>\
+<form method=internal action=download>\
+<input type=submit name=update value=Update><hr>\n");
+    for (d = LastDL; d != NULL; d = d->prev) {
+#ifdef HAVE_LSTAT
+	if (lstat(d->lock, &st))
+#else
+	if (stat(d->lock, &st))
+#endif
+	    d->ok = TRUE;
+	Strcat_charp(src, "<pre>\n");
+	Strcat(src, Sprintf("%s\n  --&gt; %s\n  ", html_quote(d->url),
+			    html_quote(d->save)));
+	duration = cur_time - d->time;
+	if (!stat(d->save, &st)) {
+	    size = st.st_size;
+	    if (d->ok) {
+		d->size = size;
+		duration = st.st_mtime - d->time;
+	    }
+	}
+	else
+	    size = 0;
+	if (d->size) {
+	    int i, l = COLS - 6;
+	    if (size < d->size)
+		i = l * size / d->size;
+	    else
+		i = l;
+	    l -= i;
+	    while (i-- > 0)
+		Strcat_char(src, '#');
+	    while (l-- > 0)
+		Strcat_char(src, '_');
+	    Strcat_char(src, '\n');
+	}
+	if (!d->ok && size < d->size)
+	    Strcat(src, Sprintf("  %s / %s bytes (%d%%)",
+				convert_size3(size), convert_size3(d->size),
+				(int)(100.0 * size / d->size)));
+	else
+	    Strcat(src, Sprintf("  %s bytes loaded", convert_size3(size)));
+	if (duration > 0) {
+	    rate = size / duration;
+	    Strcat(src, Sprintf("  %02d:%02d:%02d  rate %s/sec",
+				duration / (60 * 60), (duration / 60) % 60,
+				duration % 60, convert_size(rate, 1)));
+	    if (!d->ok && size < d->size && rate) {
+	    	eta = (d->size - size) / rate;
+		Strcat(src, Sprintf("  eta %02d:%02d:%02d", eta / (60 * 60),
+				    (eta / 60) % 60, eta % 60));
+	    }
+	}
+	Strcat_char(src, '\n');
+	if (d->ok) {
+	    Strcat(src, Sprintf("<input type=submit name=ok%d value=OK>",
+				d->pid));
+	    if (size < d->size)
+	        Strcat_charp(src, " Download incompleted");
+	    else
+	        Strcat_charp(src, " Download completed");
+	} else
+	    Strcat(src, Sprintf("<input type=submit name=stop%d value=STOP>",
+				d->pid));
+	Strcat_charp(src, "\n</pre><hr>\n");
+    }
+    Strcat_charp(src, "</form></body></html>");
+    return loadHTMLString(src);
+}
+
+void
+download_action(struct parsed_tagarg *arg)
+{
+    DownloadList *d;
+    pid_t pid;
+
+    for (; arg; arg = arg->next) {
+	if (!strcmp(arg->arg, "update"))
+	    break;
+	else if (!strncmp(arg->arg, "stop", 4)) {
+	    pid = (pid_t)atoi(&arg->arg[4]);
+	    kill(pid, SIGKILL);
+	}
+	else if (!strncmp(arg->arg, "ok", 2))
+	    pid = (pid_t)atoi(&arg->arg[2]);
+	else
+	    continue;
+	for (d = FirstDL; d; d = d->next) {
+	    if (d->pid == pid) {
+		unlink(d->lock);
+		if (d->prev)
+		    d->prev->next = d->next;
+		else
+		    FirstDL = d->next;
+		if (d->next)
+		    d->next->prev = d->prev;
+		else
+		    LastDL = d->prev;
+		break;
+	    }
+	}
+    }
+    if (FirstDL) {
+	ldDL();
+	deletePrevBuf();
+    }
+    else
+	backBf();
+}
+
+void
+stopDownload(void)
+{
+    DownloadList *d;
+
+    if (!FirstDL)
+	return;
+    for (d = FirstDL; d != NULL; d = d->next) {
+	if (d->ok)
+	    continue;
+	kill(d->pid, SIGKILL);
+	unlink(d->lock);
+    }
+}
+
+/* download panel */
+void
+ldDL(void)
+{
+    if (!FirstDL)
+	return;
+    cmd_loadBuffer(DownloadListBuffer(), BP_NO_URL, LB_NOLINK);
+    nextA();
 }

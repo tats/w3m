@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.12 2002/11/05 17:10:05 ukai Exp $
+# $Id: funcname.tab,v 1.13 2002/11/15 15:19:45 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -20,6 +20,7 @@ DICT_WORD_AT	dictwordat
 DISPLAY_IMAGE	dispI
 DOWN		ldown1
 DOWNLOAD	svSrc
+DOWNLOAD_LIST	ldDL
 EDIT		editBf
 EDIT_SCREEN	editScr
 END		goLineL

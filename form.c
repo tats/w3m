@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.22 2002/11/12 13:06:14 ukai Exp $ */
+/* $Id: form.c,v 1.23 2002/11/15 15:19:44 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -31,6 +31,7 @@ struct {
 #ifdef USE_COOKIE
     {"cookie", set_cookie_flag},
 #endif				/* USE_COOKIE */
+    {"download", download_action},
     {"none", NULL},
     {NULL, NULL},
 };

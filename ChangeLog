@@ -1,3 +1,42 @@
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03431] save file by background process
+	* file.c (loadGeneralFile): use _doFileCopy()
+		(_doFileCopy): renamed from doFileCopy()
+				lock
+				fork & save
+		(doFileSave): lock
+				fork & save
+	* fm.h (DownloadList): added
+		(FirstDL): added
+		(LastDL): added
+	* form.c (struct internal_action): add download
+	* funcname.tab (DOWNLOAD_LIST): added
+	* html.h (URLFile): add url
+	* main.c (dump_extra): add add_download_list
+		(main): add_download_list, ldDL()
+		(_quitfm): added
+		(quitfm): rewrite with _quitfm()
+		(qquitfm): ditto
+		(w3m_exit): stopDownload()
+		(addDownloadList): added
+		(checkDownloadList): added
+		(convert_size3): added
+		(DownloadListBuffer): added
+		(download_action): added
+		(stopDownload): added
+		(ldDL): added
+	* proto.h (ldDL): added
+		(convert_size): added
+		(convert_size2): added
+		(doFileCopy): deleted
+		(_doFileCopy): added
+		(addDownloadList): added
+		(stopDownload): added
+		(checkDownloadList): added
+		(download_action): added
+	* url.c (openURL): save url in uf
+
 2002-11-15  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03430] disable display of alarm command
@@ -4643,4 +4682,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.513 2002/11/14 17:01:25 ukai Exp $
+$Id: ChangeLog,v 1.514 2002/11/15 15:19:43 ukai Exp $

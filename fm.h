@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.76 2002/11/14 16:56:23 ukai Exp $ */
+/* $Id: fm.h,v 1.77 2002/11/15 15:19:44 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -453,6 +453,18 @@ typedef struct _TabBuffer {
     Buffer *firstBuffer;
 } TabBuffer;
 
+typedef struct _DownloadList {
+    pid_t pid;
+    char *url;
+    char *save;
+    char *lock;
+    clen_t size;
+    time_t time;
+    int ok;
+    struct _DownloadList *next;
+    struct _DownloadList *prev;
+} DownloadList;
+
 #define COPY_BUFPOSITION(dstbuf, srcbuf) {\
  (dstbuf)->topLine = (srcbuf)->topLine; \
  (dstbuf)->currentLine = (srcbuf)->currentLine; \
@@ -795,6 +807,8 @@ global int TabCols init(10);
 	: (nTab - 1) / ((nTab * TabCols - 1) / (COLS - 2) + 1) + 1)
 #define Currentbuf (CurrentTab->currentBuffer)
 #define Firstbuf (CurrentTab->firstBuffer)
+global DownloadList *FirstDL init(NULL);
+global DownloadList *LastDL init(NULL);
 global int CurrentKey;
 global char *CurrentKeyData;
 global char *CurrentCmdData;

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.56 2002/11/14 16:56:24 ukai Exp $ */
+/* $Id: url.c,v 1.57 2002/11/15 15:19:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1476,6 +1476,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     }
 
     uf.scheme = pu->scheme;
+    uf.url = parsedURL2Str(pu)->ptr;
     pu->is_nocache = (option->flag & RG_NOCACHE);
     uf.ext = filename_extension(pu->file, 1);
 

@@ -1,0 +1,61 @@
+~/.w3m/mouse syntax:
+
+menu <menu string - default empty>
+lastline <lastline string - default "<=UpDn">
+button <num> <pos> <func> [<arg>]
+
+<num>:   1 : left button
+         2 : middle button
+         3 : right button
+
+<pos>:	menu <x1> <x2>		: click on menu
+	lastline <x1> <x2>	: click on last line
+	default			: default action
+	anchor			: click on anchor
+	active			: click on active anchor
+	tab			: click on tab
+
+<x1>: left column pos 
+<x2>: right column pos
+
+menu in <pos> can be omited for backward compatibility.
+
+default configuration (in func.c)
+
+
+button	1 default	MOVE_MOUSE
+button	2 default	BACK
+button	3 default	MENU_MOUSE
+
+button	1 active	GOTO_LINK
+
+button	1 tab		TAB_MOUSE
+button	2 tab		CLOSE_TAB_MOUSE
+
+lastline	"<=UpDn"
+button	1 lastline 0 1	BACK
+button	1 lastline 2 3	PREV_PAGE
+button	1 lastline 4 5	NEXT_PAGE
+
+For example
+ 
+- In ~/.w3m/mouse
+
+   button 1 anchor COMMAND "MOVE_MOUSE; GOTO_LINK"
+
+ you can jump to link by left click on non-active anchor.
+
+- In ~/.w3m/menu
+
+  menu Active
+   func   "Display LInk       (a)"        GOTO_LINK       "a"
+   func   "Open in new tag    (t)"        TAB_LINK        "t"
+   func   "Save link          (d)"        SAVE_LINK       "d"
+   func   "External browser   (m)"        EXTERN_LINK     "m"
+  end
+
+  and ~/.w3m/mouse
+
+   button  3 anchor	MENU_MOUSE	Active
+
+  then you can open menu by right click on anchor.

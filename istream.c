@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.12 2002/01/30 15:08:48 ukai Exp $ */
+/* $Id: istream.c,v 1.13 2002/02/06 17:24:14 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -368,6 +368,36 @@ ssl_accept_this_site(char *hostname)
 	accept_this_site = NULL;
 }
 
+static int
+ssl_match_cert_ident(char *ident, int ilen, char *hostname)
+{
+    /* RFC2818 3.1.  Server Identity
+     * Names may contain the wildcard
+     * character * which is considered to match any single domain name
+     * component or component fragment. E.g., *.a.com matches foo.a.com but
+     * not bar.foo.a.com. f*.com matches foo.com but not bar.com.
+     */
+    int hlen = strlen(hostname);
+    int i, c;
+
+    /* Is this an exact match? */
+    if ((ilen == hlen) && strncasecmp(ident, hostname, hlen) == 0)
+	return TRUE;
+
+    for (i = 0; i < ilen; i++) {
+	if (ident[i] == '*' && ident[i + 1] == '.') {
+	    while ((c = *hostname++) != '\0')
+		if (c == '.')
+		    break;
+	    i++;
+	}
+	else {
+	    if (ident[i] != *hostname++)
+		return FALSE;
+	}
+    }
+    return *hostname == '\0';
+}
 
 static Str
 ssl_check_cert_ident(X509 * x, char *hostname)
@@ -393,17 +423,12 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	ex = X509_get_ext(x, i);
 	alt = X509V3_EXT_d2i(ex);
 	if (alt) {
-	    int n, len1, len2 = 0;
-	    char *domain;
+	    int n;
 	    GENERAL_NAME *gn;
 	    X509V3_EXT_METHOD *method;
 	    Str seen_dnsname = NULL;
 
-	    len1 = strlen(hostname);
 	    n = sk_GENERAL_NAME_num(alt);
-	    domain = strchr(hostname, '.');
-	    if (domain)
-		len2 = len1 - (domain - hostname);
 	    for (i = 0; i < n; i++) {
 		gn = sk_GENERAL_NAME_value(alt, i);
 		if (gn->type == GEN_DNS) {
@@ -413,13 +438,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 		    if (!seen_dnsname)
 			seen_dnsname = Strnew();
 		    Strcat_m_charp(seen_dnsname, sn, " ", NULL);
-		    /* Is this an exact match? */
-		    if ((len1 == sl) && !strncasecmp(hostname, sn, len1))
-			break;
-
-		    /* Is this a wildcard match? */
-		    if ((*sn == '*') && domain && (len2 == sl - 1) &&
-			!strncasecmp(domain, sn + 1, len2))
+		    if (ssl_match_cert_ident(sn, sl, hostname))
 			break;
 		}
 	    }
@@ -442,7 +461,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	if (X509_NAME_get_text_by_NID(xn, NID_commonName,
 				      buf, sizeof(buf)) == -1)
 	    ret = Strnew_charp("Unable to get common name from peer cert");
-	else if (strcasecmp(hostname, buf))
+	else if (! ssl_match_cert_ident(buf, strlen(buf), hostname))
 	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
 	else
 	    match_ident = TRUE;

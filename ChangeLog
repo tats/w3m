@@ -1,3 +1,9 @@
+2002-02-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03005] fix Bad cert ident
+	* istream.c (ssl_match_cert_ident): added
+	* istream.c (ssl_check_cert_ident): use ssl_match_cert_ident()
+
 2002-02-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02999] don't ask accept bad cert when background downloading
@@ -2848,4 +2854,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.303 2002/02/06 16:20:25 ukai Exp $
+$Id: ChangeLog,v 1.304 2002/02/06 17:24:14 ukai Exp $

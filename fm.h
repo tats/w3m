@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.31 2001/12/25 13:43:51 ukai Exp $ */
+/* $Id: fm.h,v 1.32 2001/12/25 16:19:29 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -47,7 +47,7 @@
 #include "terms.h"
 
 #ifndef HAVE_BCOPY
-void bcopy(void *, void *, int);
+void bcopy(const void *, void *, int);
 void bzero(void *, int);
 #endif				/* HAVE_BCOPY */
 #ifdef __EMX__

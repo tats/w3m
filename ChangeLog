@@ -5,6 +5,8 @@
 	* etc.c (bzero): deleted
 	* indep.c (bcopy): added
 	* indep.c (bzero): added
+	* indep.c (bcopy): src should be const
+	* fm.h (bcopy): ditto
 
 2001-12-25  Kazuhiko <kazuhiko@archi.kyoto-u.ac.jp>
 	
@@ -1546,4 +1548,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.172 2001/12/25 16:11:07 ukai Exp $
+$Id: ChangeLog,v 1.173 2001/12/25 16:19:28 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.19 2001/12/25 16:11:07 ukai Exp $ */
+/* $Id: indep.c,v 1.20 2001/12/25 16:19:29 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -13,7 +13,7 @@
 
 #ifndef HAVE_BCOPY
 void
-bcopy(void *src, void *dest, int len)
+bcopy(const void *src, void *dest, int len)
 {
     int i;
     if (src == dest)

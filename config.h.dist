@@ -117,6 +117,7 @@ MODEL=Linux.i686-monster-ja
 #undef FTPPASS_HOSTNAMEGEN
 #undef USE_NNTP
 #undef USE_GOPHER
+#define USE_EXTERNAL_URI_LOADER
 #undef USE_ALARM
 #define USE_HELP_CGI
 
@@ -147,6 +148,8 @@ MODEL=Linux.i686-monster-ja
 #define SYS_MAILCAP  "/etc/mailcap"
 #define USER_MIMETYPES "~/.mime.types"
 #define SYS_MIMETYPES "/usr/local/lib/mime.types"
+#define USER_URIMETHODMAP RC_DIR "/urimethodmap"
+#define SYS_URIMETHODMAP  ETC_DIR "/urimethodmap"
 
 #define DEF_SAVE_FILE "index.html"
 

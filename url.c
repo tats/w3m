@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.32 2002/01/12 15:34:34 ukai Exp $ */
+/* $Id: url.c,v 1.33 2002/01/14 15:59:17 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -709,6 +709,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	goto analyze_file;
     }
     /* scheme part has been found */
+    if (p_url->scheme == SCM_UNKNOWN) {
+	p_url->file = allocStr(url, -1);
+	return;
+    }
     /* get host and port */
     if (p[0] != '/' || p[1] != '/') {	/* scheme:foo or scheme:/foo */
 	p_url->host = NULL;
@@ -1083,8 +1087,11 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 #endif				/* USE_SSL */
     };
 
-    if (pu->scheme == SCM_UNKNOWN || pu->scheme == SCM_MISSING) {
+    if (pu->scheme == SCM_MISSING) {
 	return Strnew_charp("???");
+    }
+    else if (pu->scheme == SCM_UNKNOWN) {
+	return Strnew_charp(pu->file);
     }
     if (pu->host == NULL && pu->file == NULL && pu->label != NULL) {
 	/* local label */
@@ -1945,3 +1952,107 @@ filename_extension(char *path, int is_url)
     else
 	return last_dot;
 }
+
+#ifdef USE_EXTERNAL_URI_LOADER
+static struct table2 **urimethods;
+
+static struct table2 *
+loadURIMethods(char *filename)
+{
+    FILE *f;
+    int i, n;
+    Str tmp;
+    struct table2 *um;
+    char *up, *p;
+
+    f = fopen(expandName(filename), "r");
+    if (f == NULL)
+	return NULL;
+    i = 0;
+    while (tmp = Strfgets(f), tmp->length > 0) {
+	if (tmp->ptr[0] != '#')
+	    i++;
+    }
+    fseek(f, 0, 0);
+    n = i;
+    um = New_N(struct table2, n + 1);
+    i = 0;
+    while (tmp = Strfgets(f), tmp->length > 0) {
+	if (tmp->ptr[0] == '#')
+	    continue;
+	while (IS_SPACE(Strlastchar(tmp)))
+	    Strshrink(tmp, 1);
+	for (up = p = tmp->ptr; *p != '\0'; p++) {
+	    if (*p == ':') {
+		um[i].item1 = Strnew_charp_n(up, p - up)->ptr;
+		p++;
+		break;
+	    }
+	}
+	if (*p == '\0')
+	    continue;
+	while (*p != '\0' && IS_SPACE(*p))
+	    p++;
+	um[i].item2 = Strnew_charp(p)->ptr;
+	i++;
+    }
+    um[i].item1 = NULL;
+    um[i].item2 = NULL;
+    fclose(f);
+    return um;
+}
+
+void
+initURIMethods()
+{
+    TextList *methodmap_list = NULL;
+    TextListItem *tl;
+    int i;
+
+    if (non_null(urimethodmap_files))
+	methodmap_list = make_domain_list(urimethodmap_files);
+    if (methodmap_list == NULL)
+	return;
+    urimethods = New_N(struct table2 *, (methodmap_list->nitem + 1));
+    for (i = 0, tl = methodmap_list->first; tl; tl = tl->next) {
+	urimethods[i] = loadURIMethods(tl->ptr);
+	if (urimethods[i])
+	    i++;
+    }
+    urimethods[i] = NULL;
+}
+
+Str
+searchURIMethods(ParsedURL *pu)
+{
+    struct table2 *ump;
+    int i;
+    Str scheme = NULL;
+    Str url;
+    char *p;
+
+    if (pu->scheme != SCM_UNKNOWN)
+	return NULL;		/* use internal */
+    if (urimethods == NULL)
+	return NULL;
+    url = parsedURL2Str(pu);
+    for (p = url->ptr; *p != '\0'; p++) {
+	if (*p == ':') {
+	    scheme = Strnew_charp_n(url->ptr, p - url->ptr);
+	    break;
+	}
+    }
+    if (scheme == NULL)
+	return NULL;
+
+    for (i = 0; (ump = urimethods[i]) != NULL; i++) {
+	while (ump->item1 != NULL) {
+	    if (strcmp(ump->item1, scheme->ptr) == 0) {
+		return Sprintf(ump->item2, url_quote(url->ptr));
+	    }
+	    ump++;
+	}
+    }
+    return NULL;
+}
+#endif

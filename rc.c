@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.24 2001/12/27 17:37:49 ukai Exp $ */
+/* $Id: rc.c,v 1.25 2002/01/14 15:59:17 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -110,6 +110,7 @@ static char *config_file = NULL;
 #define CMT_SHOW_SRCH_STR "検索文字列を表示する"
 #define CMT_MIMETYPES    "利用するmime.types"
 #define CMT_MAILCAP      "利用するmailcap"
+#define CMT_URIMETHODMAP "利用するurimethodmap"
 #define CMT_EDITOR       "利用するエディタ"
 #define CMT_MAILER       "利用するメーラ"
 #define CMT_EXTBRZ       "外部ブラウザ"
@@ -227,6 +228,7 @@ static char *config_file = NULL;
 #define CMT_SHOW_SRCH_STR "Show search strings"
 #define CMT_MIMETYPES    "mime.types files"
 #define CMT_MAILCAP      "mailcap files"
+#define CMT_URIMETHODMAP "urimethodmap files"
 #define CMT_EDITOR       "Editor"
 #define CMT_MAILER       "Mailer"
 #define CMT_EXTBRZ       "External Browser"
@@ -503,6 +505,10 @@ struct param_ptr params6[] = {
     {"mime_types", P_STRING, PI_TEXT, (void *)&mimetypes_files, CMT_MIMETYPES,
      NULL},
     {"mailcap", P_STRING, PI_TEXT, (void *)&mailcap_files, CMT_MAILCAP, NULL},
+#ifdef USE_EXTERNAL_URI_LOADER
+    {"urimethodmap", P_STRING, PI_TEXT, (void *)&urimethodmap_files,
+     CMT_URIMETHODMAP, NULL},
+#endif
     {"editor", P_STRING, PI_TEXT, (void *)&Editor, CMT_EDITOR, NULL},
     {"mailer", P_STRING, PI_TEXT, (void *)&Mailer, CMT_MAILER, NULL},
     {"extbrowser", P_STRING, PI_TEXT, (void *)&ExtBrowser, CMT_EXTBRZ, NULL},
@@ -1099,6 +1105,9 @@ sync_with_option(void)
 #endif
     initMailcap();
     initMimeTypes();
+#ifdef USE_EXTERNAL_URI_LOADER
+    initURIMethods();
+#endif
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 #if LANG == JA

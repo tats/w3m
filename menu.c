@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.11 2002/01/10 15:43:11 ukai Exp $ */
+/* $Id: menu.c,v 1.12 2002/01/14 15:59:17 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1281,7 +1281,7 @@ initSelectMenu(void)
 				 conv_from_system(buf->currentURL.real_file));
 		}
 		break;
-	    case SCM_UNKNOWN:
+		// case SCM_UNKNOWN:
 	    case SCM_MISSING:
 		break;
 	    default:

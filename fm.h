@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.36 2001/12/27 17:50:56 ukai Exp $ */
+/* $Id: fm.h,v 1.37 2002/01/14 15:59:17 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -784,6 +784,9 @@ global struct cookie *First_cookie init(NULL);
 
 global char *mailcap_files init(USER_MAILCAP ", " SYS_MAILCAP);
 global char *mimetypes_files init(USER_MIMETYPES ", " SYS_MIMETYPES);
+#ifdef USE_EXTERNAL_URI_LOADER
+global char *urimethodmap_files init(USER_URIMETHODMAP ", " SYS_URIMETHODMAP);
+#endif
 
 global TextList *fileToDelete;
 

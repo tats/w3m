@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.47 2002/01/05 16:13:27 ukai Exp $
+# $Id: configure,v 1.48 2002/01/14 15:59:17 ukai Exp $
 #	Configuration.
 #
 
@@ -698,6 +698,7 @@ else
 fi
 
 # protocols?
+ask_param "External URI loader support" use_external_uri_loader y
 ask_param "NNTP support" use_nntp $include_opt
 ask_param "Gopher support" use_gopher $include_opt
 
@@ -2044,6 +2045,7 @@ $def_use_cookie
 $def_use_ssl
 $def_use_ssl_verify
 $def_ftppass_hostnamegen
+$def_use_external_uri_loader
 $def_use_nntp
 $def_use_gopher
 $def_use_alarm
@@ -2076,6 +2078,8 @@ $def_use_help_cgi
 #define SYS_MAILCAP  "/etc/mailcap"
 #define USER_MIMETYPES "~/.mime.types"
 #define SYS_MIMETYPES "$MIME_TYPES"
+#define USER_URIMETHODMAP RC_DIR "/urimethodmap"
+#define SYS_URIMETHODMAP  ETC_DIR "/urimethodmap"
 
 #define DEF_SAVE_FILE "index.html"
 

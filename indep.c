@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.21 2001/12/26 17:57:57 ukai Exp $ */
+/* $Id: indep.c,v 1.22 2002/06/07 15:46:44 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -192,6 +192,50 @@ expandPath(char *name)
     Strcat_charp(extpath, p);
     return extpath->ptr;
 }
+
+#ifndef HAVE_STRCHR
+char *
+strchr(const char *s, int c)
+{
+    while (*s) {
+	if ((unsigned char)*s == c)
+	    return (char *)s;
+	s++;
+    }
+    return NULL;
+}
+#endif				/* not HAVE_STRCHR */
+
+#ifndef HAVE_STRCASECMP
+int
+strcasecmp(const char *s1, const char *s2)
+{
+    int x;
+    while (*s1) {
+	x = tolower(*s1) - tolower(*s2);
+	if (x != 0)
+	    return x;
+	s1++;
+	s2++;
+    }
+    return -tolower(*s2);
+}
+
+int
+strncasecmp(const char *s1, const char *s2, size_t n)
+{
+    int x;
+    while (*s1 && n) {
+	x = tolower(*s1) - tolower(*s2);
+	if (x != 0)
+	    return x;
+	s1++;
+	s2++;
+	n--;
+    }
+    return n ? -tolower(*s2) : 0;
+}
+#endif				/* not HAVE_STRCASECMP */
 
 #ifndef HAVE_STRCASESTR
 /* string search using the simplest algorithm */

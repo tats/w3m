@@ -1,3 +1,8 @@
+2002-10-02  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03331] Re: hang up when seeing web page that contains	 xbm file
+	* configure: check gdk-pixbuf-config existence
+
 2002-10-01  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03330] Re: hang up when seeing web page that contains xbm file
@@ -3866,4 +3871,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.435 2002/09/30 17:44:30 ukai Exp $
+$Id: ChangeLog,v 1.436 2002/10/01 15:29:05 ukai Exp $

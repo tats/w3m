@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.77 2002/09/29 15:29:12 ukai Exp $
+# $Id: configure,v 1.78 2002/10/01 15:29:05 ukai Exp $
 #	Configuration.
 #
 
@@ -486,7 +486,12 @@ find_gdkpixbuf() {
   if [ "x$GDKPIXBUF_CONFIG" = x ]; then
     GDKPIXBUF_CONFIG=gdk-pixbuf-config
   fi
-  version=`$GDKPIXBUF_CONFIG --version`
+  if ./which $GDKPIXBUF_CONFIG > /dev/null
+  then
+    version=`$GDKPIXBUF_CONFIG --version`
+  else
+    version=""
+  fi
   if [ "x$version" = x ]; then
     echo "You don't have GdkPixbuf. Install GdkPixbuf (version >= $gdkpixbuf_version)."
     return 1

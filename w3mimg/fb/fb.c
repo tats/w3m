@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.7 2002/09/09 14:03:45 ukai Exp $ */
+/* $Id: fb.c,v 1.8 2002/10/10 16:16:00 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -287,51 +287,6 @@ fb_image_draw(FB_IMAGE * image, int x, int y, int sx, int sy, int width,
 }
 
 void
-fb_image_rotate(FB_IMAGE * image, int direction)
-{
-    unsigned char *src, *dest, *tmp;
-    int x, y, i, ofst;
-
-    if (image == NULL)
-	return;
-
-    tmp = malloc(image->len);
-    if (tmp == NULL)
-	return;
-
-    src = image->data;
-    dest = tmp;
-
-    if (direction) {
-	int ofst2 = image->rowstride * (image->height - 1);
-	for (x = 0; x < image->rowstride; x += pixel_size) {
-	    ofst = ofst2 + x;
-	    for (y = image->height - 1; y >= 0; y--) {
-		memcpy(dest, src + ofst, pixel_size);
-		dest += pixel_size;
-		ofst -= image->rowstride;
-	    }
-	}
-    }
-    else {
-	for (x = image->rowstride - pixel_size; x >= 0; x -= pixel_size) {
-	    ofst = x;
-	    for (y = 0; y < image->height; y++) {
-		memcpy(dest, src + ofst, pixel_size);
-		dest += pixel_size;
-		ofst += image->rowstride;
-	    }
-	}
-    }
-    memcpy(src, tmp, image->len);
-    i = image->width;
-    image->width = image->height;
-    image->height = i;
-    image->rowstride = image->width * pixel_size;
-    free(tmp);
-}
-
-void
 fb_image_copy(FB_IMAGE * dest, FB_IMAGE * src)
 {
     if (dest == NULL || src == NULL)
@@ -391,94 +346,6 @@ fb_frame_free(FB_IMAGE ** frame)
     free(frame);
 }
 
-void
-fb_frame_rotate(FB_IMAGE ** frame, int direction)
-{
-    int i, n;
-
-    n = frame[0]->num;
-    for (i = 0; i < n; i++) {
-	fb_image_rotate(frame[i], direction);
-    }
-}
-
-void
-fb_pset(int x, int y, int r, int g, int b)
-{
-    unsigned long work;
-    int offset;
-
-    if (is_open != TRUE || x >= vscinfo.xres || y >= vscinfo.yres)
-	return;
-
-    offset = fscinfo.line_length * y + pixel_size * x;
-
-    if (offset >= fscinfo.smem_len)
-	return;
-
-    if (pixel_size == 1) {
-	work = fb_get_cmap_index(r, g, b);
-    }
-    else {
-	work =
-	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
-	     offset) +
-	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
-    }
-    memcpy(buf + offset, &work, pixel_size);
-}
-
-int
-fb_get_color(int x, int y, int *r, int *g, int *b)
-{
-    unsigned long work = 0;
-    int offset;
-
-    if (is_open != TRUE || x >= vscinfo.xres || y >= vscinfo.yres)
-	return 1;
-
-    offset = fscinfo.line_length * y + pixel_size * x;
-
-    if (offset >= fscinfo.smem_len)
-	return 1;
-
-    memcpy(&work, buf + offset, pixel_size);
-
-    if (pixel_size == 1) {
-	if (cmap == NULL)
-	    return 1;
-	if (cmap->red)
-	    *r = *(cmap->red + work) >> CHAR_BIT;
-	if (cmap->green)
-	    *g = *(cmap->green + work) >> CHAR_BIT;
-	if (cmap->blue)
-	    *b = *(cmap->blue + work) >> CHAR_BIT;
-    }
-    else {
-	*r = ((work >> vscinfo.red.
-	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.red.length)))
-	    << (CHAR_BIT - vscinfo.red.length);
-	*g = ((work >> vscinfo.green.
-	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.green.length)))
-	    << (CHAR_BIT - vscinfo.green.length);
-	*b = ((work >> vscinfo.blue.
-	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.blue.length)))
-	    << (CHAR_BIT - vscinfo.blue.length);
-    }
-    return 0;
-}
-
-void
-fb_clear(void)
-{
-    if (is_open != TRUE)
-	return;
-
-    memset(buf, 0,
-	   (vscinfo.xres * vscinfo.yres * vscinfo.bits_per_pixel) / CHAR_BIT);
-}
-
 int
 fb_width(void)
 {
@@ -495,270 +362,6 @@ fb_height(void)
 	return 0;
 
     return vscinfo.yres;
-}
-
-void
-fb_cmap_disp(void)
-{
-    int lp;
-
-    if (is_open != TRUE)
-	return;
-
-    printf("cmap DUMP\n");
-    printf("start		:[%08x]\n", cmap->start);
-    printf("len		:[%08x]\n", cmap->len);
-    printf("red		:[%8p]\n", cmap->red);
-    if (cmap->red) {
-	for (lp = 0; lp < cmap->len; lp++) {
-	    if ((lp + 1) % 16 == 0)
-		printf("%04x\n", *(cmap->red + lp));
-	    else
-		printf("%04x ", *(cmap->red + lp));
-	}
-	if (lp % 16)
-	    printf("\n");
-    }
-    printf("green		:[%8p]\n", cmap->green);
-    if (cmap->green) {
-	for (lp = 0; lp < cmap->len; lp++) {
-	    if ((lp + 1) % 16 == 0)
-		printf("%04x\n", *(cmap->green + lp));
-	    else
-		printf("%04x ", *(cmap->green + lp));
-	}
-	if (lp % 16)
-	    printf("\n");
-    }
-    printf("blue		:[%8p]\n", cmap->blue);
-    if (cmap->blue) {
-	for (lp = 0; lp < cmap->len; lp++) {
-	    if ((lp + 1) % 16 == 0)
-		printf("%04x\n", *(cmap->blue + lp));
-	    else
-		printf("%04x ", *(cmap->blue + lp));
-	}
-	if (lp % 16)
-	    printf("\n");
-    }
-    printf("transp		:[%8p]\n", cmap->transp);
-    if (cmap->transp) {
-	for (lp = 0; lp < cmap->len; lp++) {
-	    if ((lp + 1) % 16 == 0)
-		printf("%04x\n", *(cmap->transp + lp));
-	    else
-		printf("%04x ", *(cmap->transp + lp));
-	}
-	if (lp % 16)
-	    printf("\n");
-    }
-    return;
-}
-
-
-void
-fb_fscrn_disp(void)
-{
-    if (is_open != TRUE)
-	return;
-
-    printf("scinfo[%8p] DUMP\n", &fscinfo);
-    printf("id		:[%s]\n", fscinfo.id);
-    printf("smem_start	:[%08lx]\n", fscinfo.smem_start);
-    printf("smem_len	:[%d]\n", fscinfo.smem_len);
-    printf("type		:[%d] ", fscinfo.type);
-    switch (fscinfo.type) {
-    case FB_TYPE_PACKED_PIXELS:
-	printf("FB_TYPE_PACKED_PIXELS\n");
-	break;
-    case FB_TYPE_PLANES:
-	printf("FB_TYPE_PLANES\n");
-	break;
-    case FB_TYPE_INTERLEAVED_PLANES:
-	printf("FB_TYPE_INTERLEAVED_PLANES\n");
-	break;
-    case FB_TYPE_TEXT:
-	printf("FB_TYPE_TEXT\n");
-	break;
-    default:
-	printf("Unknown type.\n");
-    }
-    printf("type_aux	:[%d] ", fscinfo.type_aux);
-    switch (fscinfo.type_aux) {
-    case FB_AUX_TEXT_MDA:
-	printf("FB_AUX_TEXT_MDA\n");
-	break;
-    case FB_AUX_TEXT_CGA:
-	printf("FB_AUX_TEXT_CGA\n");
-	break;
-    case FB_AUX_TEXT_S3_MMIO:
-	printf("FB_AUX_TEXT_S3_MMIO\n");
-	break;
-    case FB_AUX_TEXT_MGA_STEP16:
-	printf("FB_AUX_TEXT_MGA_STEP16\n");
-	break;
-    case FB_AUX_TEXT_MGA_STEP8:
-	printf("FB_AUX_TEXT_MGA_STEP8\n");
-	break;
-    default:
-	printf("Unknown type_aux.\n");
-    }
-    printf("visual		:[%d] ", fscinfo.visual);
-    switch (fscinfo.visual) {
-    case FB_VISUAL_MONO01:
-	printf("FB_VISUAL_MONO01\n");
-	break;
-    case FB_VISUAL_MONO10:
-	printf("FB_VISUAL_MONO10\n");
-	break;
-    case FB_VISUAL_TRUECOLOR:
-	printf("FB_VISUAL_TRUECOLOR\n");
-	break;
-    case FB_VISUAL_PSEUDOCOLOR:
-	printf("FB_VISUAL_PSEUDOCOLOR\n");
-	break;
-    case FB_VISUAL_DIRECTCOLOR:
-	printf("FB_VISUAL_DIRECTCOLOR\n");
-	break;
-    case FB_VISUAL_STATIC_PSEUDOCOLOR:
-	printf("FB_VISUAL_STATIC_PSEUDOCOLOR\n");
-	break;
-    default:
-	printf("Unknown Visual mode.\n");
-    }
-    printf("xpanstep	:[%d]\n", fscinfo.xpanstep);
-    printf("ypanstep	:[%d]\n", fscinfo.ypanstep);
-    printf("ywrapstep	:[%d]\n", fscinfo.ywrapstep);
-    printf("line_length	:[%d]\n", fscinfo.line_length);
-    printf("mmio_start	:[%08lx]\n", fscinfo.mmio_start);
-    printf("mmio_len	:[%d]\n", fscinfo.mmio_len);
-    printf("accel		:[%d] ", fscinfo.accel);
-    switch (fscinfo.accel) {
-    case FB_ACCEL_NONE:
-	printf("FB_ACCEL_NONE\n");
-	break;
-    case FB_ACCEL_ATARIBLITT:
-	printf("FB_ACCEL_ATARIBLITT\n");
-	break;
-    case FB_ACCEL_AMIGABLITT:
-	printf("FB_ACCEL_AMIGABLITT\n");
-	break;
-    case FB_ACCEL_S3_TRIO64:
-	printf("FB_ACCEL_S3_TRIO64\n");
-	break;
-    case FB_ACCEL_NCR_77C32BLT:
-	printf("FB_ACCEL_NCR_77C32BLT\n");
-	break;
-    case FB_ACCEL_S3_VIRGE:
-	printf("FB_ACCEL_S3_VIRGE\n");
-	break;
-    case FB_ACCEL_ATI_MACH64GX:
-	printf("FB_ACCEL_ATI_MACH64GX\n");
-	break;
-    case FB_ACCEL_DEC_TGA:
-	printf("FB_ACCEL_DEC_TGA\n");
-	break;
-    case FB_ACCEL_ATI_MACH64CT:
-	printf("FB_ACCEL_ATI_MACH64CT\n");
-	break;
-    case FB_ACCEL_ATI_MACH64VT:
-	printf("FB_ACCEL_ATI_MACH64VT\n");
-	break;
-    case FB_ACCEL_ATI_MACH64GT:
-	printf("FB_ACCEL_ATI_MACH64GT\n");
-	break;
-    case FB_ACCEL_SUN_CREATOR:
-	printf("FB_ACCEL_SUN_CREATOR\n");
-	break;
-    case FB_ACCEL_SUN_CGSIX:
-	printf("FB_ACCEL_SUN_CGSIX\n");
-	break;
-    case FB_ACCEL_SUN_LEO:
-	printf("FB_ACCEL_SUN_LEO\n");
-	break;
-    case FB_ACCEL_IMS_TWINTURBO:
-	printf("FB_ACCEL_IMS_TWINTURBO\n");
-	break;
-    case FB_ACCEL_3DLABS_PERMEDIA2:
-	printf("FB_ACCEL_3DLABS_PERMEDIA2\n");
-	break;
-    case FB_ACCEL_MATROX_MGA2064W:
-	printf("FB_ACCEL_MATROX_MGA2064W\n");
-	break;
-    case FB_ACCEL_MATROX_MGA1064SG:
-	printf("FB_ACCEL_MATROX_MGA1064SG\n");
-	break;
-    case FB_ACCEL_MATROX_MGA2164W:
-	printf("FB_ACCEL_MATROX_MGA2164W\n");
-	break;
-    case FB_ACCEL_MATROX_MGA2164W_AGP:
-	printf("FB_ACCEL_MATROX_MGA2164W_AGP\n");
-	break;
-    case FB_ACCEL_MATROX_MGAG100:
-	printf("FB_ACCEL_MATROX_MGAG100\n");
-	break;
-    case FB_ACCEL_MATROX_MGAG200:
-	printf("FB_ACCEL_MATROX_MGAG200\n");
-	break;
-    case FB_ACCEL_SUN_CG14:
-	printf("FB_ACCEL_SUN_CG14\n");
-	break;
-    case FB_ACCEL_SUN_BWTWO:
-	printf("FB_ACCEL_SUN_BWTWO\n");
-	break;
-    case FB_ACCEL_SUN_CGTHREE:
-	printf("FB_ACCEL_SUN_CGTHREE\n");
-	break;
-    case FB_ACCEL_SUN_TCX:
-	printf("FB_ACCEL_SUN_TCX\n");
-	break;
-    default:
-	printf("Unknown Visual mode.\n");
-    }
-    return;
-}
-
-void
-fb_vscrn_disp(void)
-{
-    if (is_open != TRUE)
-	return;
-    printf("vscinfo DUMP\n");
-    printf("xres		:[%d]\n", vscinfo.xres);
-    printf("yres		:[%d]\n", vscinfo.yres);
-    printf("xres_virtual	:[%d]\n", vscinfo.xres_virtual);
-    printf("yres_virtual	:[%d]\n", vscinfo.yres_virtual);
-    printf("xoffset		:[%d]\n", vscinfo.xoffset);
-    printf("yoffset		:[%d]\n", vscinfo.yoffset);
-    printf("bits_per_pixel	:[%d]\n", vscinfo.bits_per_pixel);
-    printf("grayscale	:[%d]\n", vscinfo.grayscale);
-    printf("red.offset	:[%d]\n", vscinfo.red.offset);
-    printf("red.length	:[%d]\n", vscinfo.red.length);
-    printf("red.msb_right	:[%d]\n", vscinfo.red.msb_right);
-    printf("green.offset	:[%d]\n", vscinfo.green.offset);
-    printf("green.length	:[%d]\n", vscinfo.green.length);
-    printf("green.msb_right	:[%d]\n", vscinfo.green.msb_right);
-    printf("blue.offset	:[%d]\n", vscinfo.blue.offset);
-    printf("blue.length	:[%d]\n", vscinfo.blue.length);
-    printf("blue.msb_right	:[%d]\n", vscinfo.blue.msb_right);
-    printf("transp.offset	:[%d]\n", vscinfo.transp.offset);
-    printf("transp.length	:[%d]\n", vscinfo.transp.length);
-    printf("transp.msb_right:[%d]\n", vscinfo.transp.msb_right);
-    printf("nonstd		:[%d]\n", vscinfo.nonstd);
-    printf("activate	:[%d]\n", vscinfo.activate);
-    printf("height		:[%d]\n", vscinfo.height);
-    printf("width		:[%d]\n", vscinfo.width);
-    printf("accel_flags	:[%d]\n", vscinfo.accel_flags);
-    printf("pixclock	:[%d]\n", vscinfo.pixclock);
-    printf("left_margin	:[%d]\n", vscinfo.left_margin);
-    printf("right_margin	:[%d]\n", vscinfo.right_margin);
-    printf("upper_margin	:[%d]\n", vscinfo.upper_margin);
-    printf("lower_margin	:[%d]\n", vscinfo.lower_margin);
-    printf("hsync_len	:[%d]\n", vscinfo.hsync_len);
-    printf("vsync_len	:[%d]\n", vscinfo.vsync_len);
-    printf("sync		:[%d]\n", vscinfo.sync);
-    printf("vmode		:[%d]\n", vscinfo.vmode);
-    return;
 }
 
 /********* static functions **************/
@@ -851,13 +454,12 @@ fb_cmap_init(void)
 }
 
 /*
- * (struct fb_cmap)デバイスに依存しないカラーマップ情報
+ * (struct fb_cmap) Device independent colormap information.
  * 
- * fb_cmap_create()     新規のカラーマップ情報
- * fb_cmap_destroy()    カラーマップ情報の破棄
- * fb_cmap_disp()               情報の表示
- * fb_cmap_get()                情報の獲得
- * fb_cmap_set()                情報の設定
+ * fb_cmap_create()     create colormap information
+ * fb_cmap_destroy()    destroy colormap information
+ * fb_cmap_get()        get information
+ * fb_cmap_set()        set information
  */
 
 #define	LUT_MAX		(256)
@@ -869,7 +471,7 @@ fb_cmap_create(struct fb_fix_screeninfo *fscinfo,
     struct fb_cmap *cmap;
     int cmaplen = LUT_MAX;
 
-    /* カラーマップの存在チェック */
+    /* check the existence of colormap */
     if (fscinfo->visual == FB_VISUAL_MONO01 ||
 	fscinfo->visual == FB_VISUAL_MONO10 ||
 	fscinfo->visual == FB_VISUAL_TRUECOLOR)
@@ -882,7 +484,7 @@ fb_cmap_create(struct fb_fix_screeninfo *fscinfo,
     }
     memset(cmap, 0, sizeof(struct fb_cmap));
 
-    /* 各分色が存在しそうだったらカラーマップ用の領域を確保 */
+    /* Allocates memory for a colormap */
     if (vscinfo->red.length) {
 	cmap->red = (__u16 *) malloc(sizeof(__u16) * cmaplen);
 	if (!cmap->red) {
@@ -962,10 +564,10 @@ fb_cmap_set(int fbfp, struct fb_cmap *cmap)
 }
 
 /*
- * フレームバッファに対するアクセス
+ * access to framebuffer
  * 
- * fb_mmap()            フレームバッファのメモリ上へのマップ
- * fb_munmap()          フレームバッファのメモリ上からのアンマップ
+ * fb_mmap()            map from framebuffer into memory
+ * fb_munmap()          deletes the mappings
  */
 
 static void *
@@ -989,10 +591,9 @@ fb_munmap(void *buf, struct fb_fix_screeninfo *scinfo)
 }
 
 /*
- * (struct fb_fix_screeninfo)デバイスに依存しない固定された情報
+ * (struct fb_fix_screeninfo) device independent fixed information
  * 
- * fb_fscrn_disp()              情報の表示
- * fb_fscrn_get()               情報の獲得
+ * fb_fscrn_get()               get information
  */
 static int
 fb_fscrn_get(int fbfp, struct fb_fix_screeninfo *scinfo)
@@ -1005,11 +606,9 @@ fb_fscrn_get(int fbfp, struct fb_fix_screeninfo *scinfo)
 }
 
 /*
- * (struct fb_var_screeninfo)デバイスに依存しない変更可能な情報
+ * (struct fb_var_screeninfo) device independent variable information
  * 
- * fb_vscrn_disp()              情報の表示
- * fb_vscrn_get()               情報の獲得
- * fb_vscrn_set()               情報の設定
+ * fb_vscrn_get()               get information
  */
 static int
 fb_vscrn_get(int fbfp, struct fb_var_screeninfo *scinfo)
@@ -1020,15 +619,3 @@ fb_vscrn_get(int fbfp, struct fb_var_screeninfo *scinfo)
     }
     return 0;
 }
-
-#if 0
-static int
-fb_vscrn_set(int fbfp, struct fb_var_screeninfo *scinfo)
-{
-    if (ioctl(fbfp, FBIOPUT_VSCREENINFO, scinfo)) {
-	perror("ioctl FBIOPUT_VSCREENINFO error\n");
-	return -1;
-    }
-    return 0;
-}
-#endif

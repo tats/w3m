@@ -1,3 +1,25 @@
+2002-10-11  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03337] delete unused functions in fb.c etc. (Re: canna patch)
+	* w3mimg/fb/fb.c (fb_image_rotate): delete
+		(fb_frame_rotate): delete
+		(fb_pset): delete
+		(fb_get_color): delete
+		(fb_clear): delete
+		(fb_cmap_disp): delete
+		(fb_fscrn_disp): delete
+		(fb_vscrn_disp): delete
+	* w3mimg/fb/fb.h (fb_image_rotate): delete
+		(fb_frame_rotate): delete
+		(fb_pset): delete
+		(fb_get_color): delete
+		(fb_clear): delete
+		(fb_cmap_disp): delete
+		(fb_fscrn_disp): delete
+		(fb_vscrn_disp): delete
+	* w3mimg/fb/fb_img.c (fb_image_draw_simple): delete
+	* w3mimg/fb/fb_img.h (fb_image_draw_simple): delete
+
 2002-10-09  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
 	* [w3m-dev 03336] proxy check for https authorization:
@@ -3891,4 +3913,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.439 2002/10/08 15:28:37 ukai Exp $
+$Id: ChangeLog,v 1.440 2002/10/10 16:15:55 ukai Exp $

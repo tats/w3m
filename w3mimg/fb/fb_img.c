@@ -1,4 +1,4 @@
-/* $Id: fb_img.c,v 1.4 2002/07/22 16:17:32 ukai Exp $ */
+/* $Id: fb_img.c,v 1.5 2002/10/10 16:16:04 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -16,12 +16,6 @@ static int bg_r = 0, bg_g = 0, bg_b = 0;
 #else
 #error no Imlib2 and GdkPixbuf support
 #endif
-
-int
-fb_image_draw_simple(FB_IMAGE * img, int x, int y)
-{
-    return fb_image_draw(img, x, y, 0, 0, img->width, img->height);
-}
 
 void
 fb_image_set_bg(int r, int g, int b)

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.4 2002/07/18 06:27:23 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.5 2002/07/18 06:49:39 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -57,6 +57,28 @@ main(int argc, char **argv)
 	    if (buf[len - 1] == '\r')
 		buf[--len] = '\0';
 	}
+	/*
+	 * w3mimg protocol
+	 *  0  1  2 ....
+	 * +--+--+--+--+ ...... +--+--+
+	 * |op|; |args             |\n|
+	 * +--+--+--+--+ .......+--+--+
+	 *
+	 * args is separeted by ';'
+	 * op	args
+	 *  0;  params		draw image
+	 *  1;  params		redraw image
+	 *  2;  -none-		clear image
+	 *  3;  -none-		sync drawing
+	 *  4;  -none-		nop, sync communication
+	 *			response '\n'
+	 *  5;  path		get size of image,
+	 *			response "<width> <height>\n"
+	 *
+	 * params
+	 *	<n>;<x>;<y>;<w>;<h>;<sx>;<sy>;<sw>;<sh>;<path>
+	 *   
+	 */
 	switch (buf[0]) {
 	case '0':
 	    DrawImage(&buf[2], 0);

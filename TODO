@@ -32,6 +32,8 @@ bugs
 
 * wishlist? [w3m-dev 03507] save space in JP chars
 
+* [w3m-dev-en 00875] USE_RAW_SCROLL
+
 [sf.net] http://sf.net/projects/w3m
 
 [bugs] http://bugs.debian.org/w3m

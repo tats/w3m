@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.164 2002/12/18 16:25:11 ukai Exp $ */
+/* $Id: file.c,v 1.165 2002/12/20 20:20:53 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -95,8 +95,7 @@ static char check_charset(char *s);
 static char check_accept_charset(char *s);
 #endif
 
-static Str save_line = NULL;
-static int save_prevchar = ' ';
+static struct readbuffer save_obuf;
 
 struct link_stack {
     int cmd;
@@ -4301,9 +4300,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_TITLE:
 	append_tags(obuf);
-	save_line = obuf->line;
-	save_prevchar = obuf->prevchar;
 	set_breakpoint(obuf, 0);
+	bcopy((void *)obuf, (void *)&save_obuf, sizeof(struct readbuffer));
 	obuf->line = Strnew();
 	discardline(obuf, 0);
 	obuf->flag |= (RB_NOBR | RB_TITLE);
@@ -4312,12 +4310,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (!(obuf->flag & RB_TITLE))
 	    return 1;
 	obuf->flag &= ~(RB_NOBR | RB_TITLE);
-	append_tags(obuf);
 	tmp = Strnew_charp(obuf->line->ptr);
 	Strremovetrailingspaces(tmp);
 	h_env->title = html_unquote(tmp->ptr);
-	obuf->line = save_line;
-	obuf->prevchar = save_prevchar;
+	bcopy((void *)&save_obuf, (void *)obuf, sizeof(struct readbuffer));
+	append_tags(obuf);
 	back_to_breakpoint(obuf);
 	tmp = Strnew_m_charp("<title_alt title=\"",
 			     html_quote(h_env->title), "\">", NULL);

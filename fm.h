@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.55 2002/03/14 16:12:07 ukai Exp $ */
+/* $Id: fm.h,v 1.56 2002/03/15 18:33:32 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -816,6 +816,7 @@ global int label_topline init(FALSE);
 #ifdef NEXTPAGE_TOPLINE
 global int nextpage_topline init(FALSE);
 #endif
+global char *displayTitleTerm init(NULL);
 global int displayLink init(FALSE);
 global int retryAsHttp init(TRUE);
 global int showLineNum init(FALSE);

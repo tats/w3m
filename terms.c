@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.28 2002/01/31 17:54:56 ukai Exp $ */
+/* $Id: terms.c,v 1.29 2002/03/15 18:33:32 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -41,6 +41,8 @@ int is_xterm = 0;
 void mouse_init(), mouse_end();
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
+
+static char *title_str = NULL;
 
 static int tty;
 
@@ -474,22 +476,34 @@ writestr(char *s)
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
 #ifdef USE_MOUSE
-static struct mouse_term_info {
+#define TERM_INFO(name, title, mouse)	name, title, mouse
+#else
+#define TERM_INFO(name, title, mouse)	name, title
+#endif
+
+#define XTERM_TITLE	"\033]0;w3m: %s\007"
+#define SCREEN_TITLE	"\033k%s\033\134"
+
+static struct term_info {
     char *term;
-    int flag;
-} xterm_mouse_term[] = {
-    {
-    "xterm", NEED_XTERM_ON | NEED_XTERM_OFF}, {
-    "kterm", NEED_XTERM_ON | NEED_XTERM_OFF}, {
-    "rxvt", NEED_XTERM_ON | NEED_XTERM_OFF},
+    char *title_str;
+#ifdef USE_MOUSE
+    int mouse_flag;
+#endif
+} term_info_list[] = {
+    /* *INDENT-OFF* */
+    {TERM_INFO("xterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
+    {TERM_INFO("kterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
+    {TERM_INFO("rxvt", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
+    {TERM_INFO("Eterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
+    {TERM_INFO("screen", SCREEN_TITLE, 0)},
 #ifdef __CYGWIN__
-    {
-    "cygwin", NEED_XTERM_ON},
+    {TERM_INFO("cygwin", NULL, NEED_XTERM_ON)},
 #endif
-    {
-    NULL, 0}
+    {TERM_INFO(NULL, NULL, 0)}
+    /* *INDENT-ON * */
 };
-#endif
+#undef TERM_INFO
 
 int
 set_tty(void)
@@ -510,13 +524,22 @@ set_tty(void)
     init_win32_console_handle();
 #endif
     TerminalGet(tty, &d_ioval);
+    if (displayTitleTerm != NULL) {
+	struct term_info *p;
+	for (p = term_info_list; p->term != NULL; p++) {
+	    if (!strncmp(displayTitleTerm, p->term, strlen(p->term))) {
+		title_str = p->title_str;
+		break;
+	    }
+	}
+    }
 #ifdef USE_MOUSE
     {
 	char *term = getenv("TERM");
-	struct mouse_term_info *p;
-	for (p = xterm_mouse_term; p->term != NULL; p++) {
+	struct term_info *p;
+	for (p = term_info_list; p->term != NULL; p++) {
 	    if (!strncmp(term, p->term, strlen(p->term))) {
-		is_xterm = p->flag;
+		is_xterm = p->mouse_flag;
 		break;
 	    }
 	}
@@ -1835,6 +1858,15 @@ term_cbreak(void)
 {
     term_cooked();
     term_noecho();
+}
+
+void
+term_title(char *s)
+{
+    if (!fmInitialized)
+        return;
+    if (title_str != NULL)
+        fprintf(stderr, title_str, s);
 }
 
 char

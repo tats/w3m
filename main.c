@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.88 2002/03/15 16:35:46 ukai Exp $ */
+/* $Id: main.c,v 1.89 2002/03/15 18:33:32 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -230,6 +230,7 @@ fusage(FILE * f, int err)
 #endif
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
+    fprintf(f, "    -title[=TERM]    set buffer name to terminal title string\n");
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -help            print this usage message\n");
@@ -659,6 +660,10 @@ MAIN(int argc, char **argv, char **envp)
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
+	    else if (!strcmp("-title", argv[i]))
+		displayTitleTerm = getenv("TERM");
+	    else if (!strncmp("-title=", argv[i], 7))
+		displayTitleTerm = argv[i]+7;
 	    else if (!strcmp("-o", argv[i])) {
 		if (++i >= argc || !strcmp(argv[i], "?")) {
 		    show_params_p = 1;
@@ -2168,6 +2173,7 @@ qquitfm(void)
 void
 quitfm(void)
 {
+    term_title(""); /* XXX */
 #ifdef USE_IMAGE
     if (activeImage)
 	termImage();

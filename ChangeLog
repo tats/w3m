@@ -1,3 +1,23 @@
+2002-03-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* -title support
+	  modified [w3m-dev-en 00710] contrib: unofficial "xterm title" patch, updated for w3m-0.3
+	  by Moritz Barsnick <barsnick@gmx.net>
+	* NEWS: -title
+	* fm.h (displayTitleTerm): added
+	* proto.h (term_title): added
+	* main.c (fusage): add -title
+		(MAIN): add -title
+		(quitfm): term_title("")
+	* display.c (displayBuffer): term_title()
+	* terms.c (title_str): added
+		(TERM_INFO): added
+		(term_info): modified from mouse_term_info
+		(term_info_list): modified from xterm_mouse_term
+				add "screen"
+		(set_tty): check displayTitleTerm
+		(term_title): added
+
 2002-03-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03132] Re: Reload image
@@ -3207,4 +3227,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.353 2002/03/15 16:35:46 ukai Exp $
+$Id: ChangeLog,v 1.354 2002/03/15 18:33:31 ukai Exp $

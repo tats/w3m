@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.28 2003/02/08 18:23:53 ukai Exp $ */
+/* $Id: local.c,v 1.29 2003/04/08 16:01:39 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -20,6 +20,7 @@
 #define CGIFN_LIBDIR     1
 #define CGIFN_CGIBIN     2
 
+static Str Local_cookie = NULL;
 static char *Local_cookie_file = NULL;
 
 static void
@@ -36,19 +37,24 @@ writeLocalCookie()
     f = fopen(Local_cookie_file, "wb");
     if (!f)
 	return;
+    localCookie();
     fwrite(Local_cookie->ptr, sizeof(char), Local_cookie->length, f);
     fclose(f);
     chmod(Local_cookie_file, S_IRUSR | S_IWUSR);
 }
 
 /* setup cookie for local CGI */
-void
-setLocalCookie()
+Str
+localCookie()
 {
     char hostname[256];
-    gethostname(hostname, 256);
 
-    Local_cookie = Sprintf("%d.%ld@%s", CurrentPid, lrand48(), hostname);
+    if (Local_cookie)
+        return Local_cookie;
+    gethostname(hostname, 256);
+    srand48((long)New(char) + (long)time(NULL));
+    Local_cookie = Sprintf("%ld@%s", lrand48(), hostname);
+    return Local_cookie;
 }
 
 Str

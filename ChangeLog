@@ -1,3 +1,17 @@
+2003-04-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m] local cookie string is too easy to guess.
+	* fm.h (Local_cookie): deleted
+	* local.c (Local_cookie): static
+		(writeLocalCookie): localCookie()
+		(setLocalCookie): deleted
+		(localCookie): added
+	* main.c (main): delete srand48(), setLocalCookie()
+		(adBmark): s/Local_cookie/localCookie()/
+	* proto.h (setLocalCookie): deleted
+		(localCookie): added
+	* rc.c (load_option_panel): s/Local_cookie/localCookie()/
+
 2003-04-08  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03858] configure cleanup
@@ -7690,4 +7704,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.816 2003/04/07 16:39:23 ukai Exp $
+$Id: ChangeLog,v 1.817 2003/04/08 16:01:37 ukai Exp $

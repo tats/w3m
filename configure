@@ -9255,7 +9255,7 @@ _ACEOF
  fi
 
 
-HELP_DIR=`eval echo "$datadir/$PACKAGE"`
+HELP_DIR="$datadir/$PACKAGE"
 cat >>confdefs.h <<\_ACEOF
 #define HELP_DIR "$HELP_DIR"
 _ACEOF

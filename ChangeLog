@@ -1,3 +1,9 @@
+2003-10-21  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 03996] HELP_DIR and funcname.tab
+	* configure.in (HELP_DIR): don't eval 
+	* scripts/w3mhelp.cgi: subst @prefix@ for $helpdir
+
 2003-10-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* #include <openssl/...>
@@ -8225,4 +8231,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.886 2003/10/20 16:41:56 ukai Exp $
+$Id: ChangeLog,v 1.887 2003/10/20 16:49:10 ukai Exp $

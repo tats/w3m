@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.220 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: file.c,v 1.221 2003/04/13 18:36:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2043,8 +2043,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	t_buf->bufferprop |= BP_FRAME;
     }
 #ifdef USE_SSL
-    if (IStype(f.stream) == IST_SSL)
-	t_buf->ssl_certificate = f.ssl_certificate;
+    t_buf->ssl_certificate = f.ssl_certificate;
 #endif
     frame_source = flag & RG_FRAME_SRC;
     b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);

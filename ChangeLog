@@ -1,3 +1,9 @@
+2003-04-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03873] SSL & compressed stream
+	* file.c (loadGeneralFile): always update ssl_certificate 
+	* url.c (openURL): initialize URLFile
+
 2003-04-12  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
 
 	* [w3m-dev 03872] goodict.cgi
@@ -7732,4 +7738,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.822 2003/04/12 14:28:55 ukai Exp $
+$Id: ChangeLog,v 1.823 2003/04/13 18:36:50 ukai Exp $

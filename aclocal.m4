@@ -498,7 +498,6 @@ AC_ARG_WITH(ssl,
  [with_ssl="yes"])
 AC_MSG_RESULT($with_ssl)
 if test x"$with_ssl" != xno; then
-  AC_DEFINE(USE_SSL)
   PKG_CHECK_MODULES(SSL, openssl,,[
     AC_MSG_CHECKING(for SSL library/header)
     test x"$with_ssl" = xyes && with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
@@ -524,6 +523,7 @@ if test x"$with_ssl" != xno; then
 	[$SSL_LIBS -lcrypto])
 
   if test x"$w3m_ssl" = xfound; then
+    AC_DEFINE(USE_SSL)
     AC_MSG_CHECKING(if SSL certificate verify is enabled)
     AC_ARG_ENABLE(sslverify,
       [   --disable-sslverify		verify SSL certificate],,

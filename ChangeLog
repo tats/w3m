@@ -1,3 +1,8 @@
+2005-02-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 01045] From newbie: problem with w3m-0.5.1 installation
+	* acinclude.m4 (AC_W3M_SSL): define USE_SSL after ssl library found
+
 2005-01-19  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 04133] mouse_end() should preced reset_tty()?
@@ -8626,4 +8631,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.944 2005/01/18 16:37:58 ukai Exp $
+$Id: ChangeLog,v 1.945 2005/02/14 16:36:29 ukai Exp $

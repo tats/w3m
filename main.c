@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.190 2003/01/11 15:54:09 ukai Exp $ */
+/* $Id: main.c,v 1.191 2003/01/11 16:17:43 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -888,7 +888,8 @@ main(int argc, char **argv, char **envp)
 	}
 	else if (newbuf == NO_BUFFER)
 	    continue;
-	if (newbuf->pagerSource || strcmp(newbuf->currentURL.file, "-"))
+	if (newbuf->pagerSource ||
+	    (newbuf->currentURL.file && strcmp(newbuf->currentURL.file, "-")))
 	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();

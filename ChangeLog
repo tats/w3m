@@ -1,3 +1,8 @@
+2003-01-12  qhwt@myrealbox.com
+
+	* [w3m-dev 03636] segfault in main.c
+	* main.c (main): check newbuf->currentURL.file
+
 2003-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Bonus/README.eng: sync with Bonus/README
@@ -6398,4 +6403,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.678 2003/01/11 16:14:59 ukai Exp $
+$Id: ChangeLog,v 1.679 2003/01/11 16:17:43 ukai Exp $

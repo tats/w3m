@@ -1,3 +1,10 @@
+2001-12-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02647]
+	* proto.h (arg_is): deleted
+	* etc.c (arg_is): ditto
+	* etc.c (searchAnchorArg): ditto
+
 2001-12-11  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02648] rewrite strCmp() with strcmp()
@@ -1138,4 +1145,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.121 2001/12/10 15:27:58 ukai Exp $
+$Id: ChangeLog,v 1.122 2001/12/10 15:42:38 ukai Exp $

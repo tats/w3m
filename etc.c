@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.11 2001/12/10 15:04:09 ukai Exp $ */
+/* $Id: etc.c,v 1.12 2001/12/10 15:42:38 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -70,20 +70,6 @@ strncasecmp(char *s1, char *s2, int n)
     return 0;
 }
 #endif				/* not HAVE_STRCASECMP */
-
-int
-arg_is(char *str, char *tag)
-{
-    while (*tag) {
-	if (tolower(*tag) != tolower(*str))
-	    return 0;
-	tag++;
-	str++;
-    }
-    while (*str && (*str == ' ' || *str == '\t'))
-	str++;
-    return (*str == '=');
-}
 
 int
 columnSkip(Buffer *buf, int offset)
@@ -205,25 +191,6 @@ gethtmlcmd(char **s)
     if (**s == '>')
 	(*s)++;
     return cmd;
-}
-
-static char *
-searchAnchorArg(char **arg)
-{
-    char *p;
-    if (**arg == '"') {
-	(*arg)++;
-	p = *arg;
-	while (*p && *p != '"')
-	    p++;
-    }
-    else {
-	p = *arg;
-	while (*p && *p != '>' && *p != ' ' && *p != ',' &&
-	       *p != '\t' && *p != '\n')
-	    p++;
-    }
-    return p;
 }
 
 #ifdef USE_ANSI_COLOR

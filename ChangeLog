@@ -1,5 +1,10 @@
 2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03048] garbage of images on the right edge of termical.
+	* display.c (redrawLineImage): fix width calculation
+
+2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03053] Re: SSL indicator
 	* main.c (dump_extra): Output SSL certificate.
 
@@ -2926,4 +2931,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.316 2002/02/13 17:24:24 ukai Exp $
+$Id: ChangeLog,v 1.317 2002/02/14 03:47:48 ukai Exp $

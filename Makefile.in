@@ -246,6 +246,12 @@ clean: sweep
 		(cd $$dir; $(MAKE) clean); \
 	done
 
+distclean: clean
+	-$(RM) config.cache config.log config.status
+	-$(RM) w3mhelp-w3m_en.html w3mhelp-w3m_ja.html
+	-$(RM) w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
+	-$(RM) version.c
+	-$(RM) config.h Makefile
 
 sweep:
 	-$(RM) -f core *~ *.bak *.orig *.rej

@@ -1,3 +1,7 @@
+2003-03-13  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Makefile.in (distclean): added
+
 2003-03-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03818] fix autoconf
@@ -7507,4 +7511,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.789 2003/03/12 17:20:39 ukai Exp $
+$Id: ChangeLog,v 1.790 2003/03/12 17:29:00 ukai Exp $

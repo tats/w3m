@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.26 2001/12/27 02:28:17 ukai Exp $ */
+/* $Id: url.c,v 1.27 2001/12/27 02:32:08 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -280,9 +280,9 @@ openSSLHandle(int sock, char *hostname)
     Str amsg = NULL;
     char *ans;
     static char *old_ssl_forbid_method = NULL;
+    static Str accept_this_site = NULL;
 #ifdef USE_SSL_VERIFY
     static int old_ssl_verify_server = -1;
-    static Str accept_this_site = NULL;
 #endif
 
     if (!old_ssl_forbid_method || !ssl_forbid_method ||

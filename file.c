@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.125 2002/11/22 15:57:29 ukai Exp $ */
+/* $Id: file.c,v 1.126 2002/11/22 19:24:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7118,6 +7118,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	    fmInitialized = FALSE;
 	    if (save2tmp(uf, tmpf->ptr) < 0)
 		exit(1);
+	    UFclose(&uf);
 	    myExec(command->ptr);
 	}
 	*bufp = NO_BUFFER;
@@ -7128,6 +7129,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     {
 	if (save2tmp(uf, tmpf->ptr) < 0)
 	    return 0;		/* ??? */
+	UFclose(&uf);
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.231 2003/10/08 14:51:34 ukai Exp $ */
+/* $Id: file.c,v 1.232 2003/10/21 17:12:10 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1393,7 +1393,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	      TextList *extra_header, ParsedURL *pu, HRequest *hr,
 	      FormList *request)
 {
-    Str ss;
+    Str ss = NULL;
     Str uname, pwd;
     Str tmp;
     TextListItem *i;
@@ -1429,8 +1429,6 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	delText(extra_header, i);
 
     }
-    else
-	ss = find_auth_cookie(pu->host, pu->port, pu->file, realm);
     if (realm && ss == NULL) {
 	int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
 				 auth_header_len);

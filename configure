@@ -6799,10 +6799,10 @@ echo "$as_me: error: gc.h not found" >&2;}
    { (exit 1); exit 1; }; }
    fi
  fi
- unset ac_cv_lib_gc_GC_version
- echo "$as_me:$LINENO: checking for GC_version in -lgc" >&5
-echo $ECHO_N "checking for GC_version in -lgc... $ECHO_C" >&6
-if test "${ac_cv_lib_gc_GC_version+set}" = set; then
+ unset ac_cv_lib_gc_GC_init
+ echo "$as_me:$LINENO: checking for GC_init in -lgc" >&5
+echo $ECHO_N "checking for GC_init in -lgc... $ECHO_C" >&6
+if test "${ac_cv_lib_gc_GC_init+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -6821,11 +6821,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char GC_version ();
+char GC_init ();
 int
 main ()
 {
-GC_version ();
+GC_init ();
   ;
   return 0;
 }
@@ -6842,23 +6842,23 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_gc_GC_version=yes
+  ac_cv_lib_gc_GC_init=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_gc_GC_version=no
+ac_cv_lib_gc_GC_init=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_version" >&5
-echo "${ECHO_T}$ac_cv_lib_gc_GC_version" >&6
-if test $ac_cv_lib_gc_GC_version = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_init" >&5
+echo "${ECHO_T}$ac_cv_lib_gc_GC_init" >&6
+if test $ac_cv_lib_gc_GC_init = yes; then
   LIBS="$LIBS -lgc"
 fi
 
- if test x"$ac_cv_lib_gc_GC_version" = xno; then
+ if test x"$ac_cv_lib_gc_GC_init" = xno; then
     echo "$as_me:$LINENO: checking GC library location" >&5
 echo $ECHO_N "checking GC library location... $ECHO_C" >&6
     echo "$as_me:$LINENO: result: $with_gc" >&5
@@ -6869,10 +6869,10 @@ echo "${ECHO_T}$with_gc" >&6
       LDFLAGS="$LDFLAGS -L$dir/lib"
       echo "$as_me:$LINENO: checking $dir" >&5
 echo $ECHO_N "checking $dir... $ECHO_C" >&6
-      unset ac_cv_lib_gc_GC_version
-      echo "$as_me:$LINENO: checking for GC_version in -lgc" >&5
-echo $ECHO_N "checking for GC_version in -lgc... $ECHO_C" >&6
-if test "${ac_cv_lib_gc_GC_version+set}" = set; then
+      unset ac_cv_lib_gc_GC_init
+      echo "$as_me:$LINENO: checking for GC_init in -lgc" >&5
+echo $ECHO_N "checking for GC_init in -lgc... $ECHO_C" >&6
+if test "${ac_cv_lib_gc_GC_init+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -6891,11 +6891,11 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char GC_version ();
+char GC_init ();
 int
 main ()
 {
-GC_version ();
+GC_init ();
   ;
   return 0;
 }
@@ -6912,19 +6912,19 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_gc_GC_version=yes
+  ac_cv_lib_gc_GC_init=yes
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_gc_GC_version=no
+ac_cv_lib_gc_GC_init=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_version" >&5
-echo "${ECHO_T}$ac_cv_lib_gc_GC_version" >&6
-if test $ac_cv_lib_gc_GC_version = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_init" >&5
+echo "${ECHO_T}$ac_cv_lib_gc_GC_init" >&6
+if test $ac_cv_lib_gc_GC_init = yes; then
   gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break
 fi
 

@@ -455,9 +455,9 @@ AC_ARG_WITH(gc,
      AC_MSG_ERROR([gc.h not found])
    fi
  fi
- unset ac_cv_lib_gc_GC_version
- AC_CHECK_LIB(gc, GC_version, [LIBS="$LIBS -lgc"])
- if test x"$ac_cv_lib_gc_GC_version" = xno; then
+ unset ac_cv_lib_gc_GC_init
+ AC_CHECK_LIB(gc, GC_init, [LIBS="$LIBS -lgc"])
+ if test x"$ac_cv_lib_gc_GC_init" = xno; then
     AC_MSG_CHECKING(GC library location)
     AC_MSG_RESULT($with_gc)
     gclibdir=no
@@ -465,8 +465,8 @@ AC_ARG_WITH(gc,
       ldflags="$LDFLAGS"
       LDFLAGS="$LDFLAGS -L$dir/lib"
       AC_MSG_CHECKING($dir)
-      unset ac_cv_lib_gc_GC_version
-      AC_CHECK_LIB(gc, GC_version, [gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break])
+      unset ac_cv_lib_gc_GC_init
+      AC_CHECK_LIB(gc, GC_init, [gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break])
       LDFLAGS="$ldflags"
     done
     if test x"$gclibdir" = xno; then

@@ -1,3 +1,8 @@
+2001-11-16  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
+
+	* configure: [w3m-dev-en 00641] Re: w3m-0.2.1-inu-1.6
+	   add some dirs for zlib and mime.types
+
 2001-11-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* terms.c (mouse_init): fix mouse handling on TERM=linux

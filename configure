@@ -835,7 +835,7 @@ fi
 
 ## Search zlib
 zlib=
-for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
+for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib /usr/X11R6/lib $prefix/lib ${HOME}/lib
 do
   if [ -f $libdir/libz.a -o -f $libdir/libz.$so_ext ] ; then
     echo "$libdir/libz found"
@@ -968,7 +968,7 @@ echo "Checking machine dependency."
 
 ###### mime.types
 MIME_TYPES=""
-for d in /usr/lib /usr/local/lib $prefix/lib /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
+for d in /etc /usr/lib /usr/local/lib /usr/local/etc $prefix/lib /usr/local/etc/apache /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
 do
   if [ -f $d/mime.types ]; then
     MIME_TYPES="$d/mime.types"

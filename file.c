@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.109.2.1 2002/12/05 16:44:56 ukai Exp $ */
+/* $Id: file.c,v 1.109.2.2 2002/12/05 16:53:19 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6241,7 +6241,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
     }
     if (obuf.status != R_ST_NORMAL)
-	HTMLlineproc1(correct_irrtag(obuf.status)->ptr, &htmlenv1);
+	HTMLlineproc0(correct_irrtag(obuf.status)->ptr, &htmlenv1, internal);
     obuf.status = R_ST_NORMAL;
     completeHTMLstream(&htmlenv1, &obuf);
     flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);

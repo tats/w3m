@@ -1,3 +1,7 @@
+2002-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: options: -N
+
 2002-11-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03457] open URL of command line on each new tabs
@@ -5000,4 +5004,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.544 2002/11/21 17:11:15 ukai Exp $
+$Id: ChangeLog,v 1.545 2002/11/21 17:13:27 ukai Exp $

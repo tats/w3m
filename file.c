@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.209 2003/01/24 17:57:54 ukai Exp $ */
+/* $Id: file.c,v 1.210 2003/01/28 16:41:05 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -669,24 +669,34 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		for (; *q && (*q == '\r' || *q == '\n'); q++) ;
 	    }
 #ifdef USE_IMAGE
+	    if (thru && activeImage && displayImage) {
+		Str src = NULL;
+		if (!strncasecmp(tmp->ptr, "X-Image-URL:", 12)) {
+		    tmpf = &tmp->ptr[12];
+		    SKIP_BLANKS(tmpf);
+		    src = Strnew_m_charp("<img src=\"", html_quote(tmpf),
+					 "\" alt=\"X-Image-URL\">", NULL);
+		}
 #ifdef USE_XFACE
-	    if (thru && activeImage && displayImage &&
-		!strncasecmp(tmp->ptr, "X-Face:", 7) &&
-		(tmpf = xface2xpm(&tmp->ptr[7])) != NULL) {
-		Str src;
-		URLFile f;
-		Line *l;
-
-		src = Strnew_m_charp("<img src=\"file:", html_quote(tmpf),
-				     "\" alt=\"X-Face\" width=48 height=48>",
-				     NULL);
-		init_stream(&f, SCM_LOCAL, newStrStream(src));
-		loadHTMLstream(&f, newBuf, NULL, TRUE);
-		for (l = newBuf->lastLine; l && l->real_linenumber;
-		     l = l->prev)
-		    l->real_linenumber = 0;
-	    }
+		else if (!strncasecmp(tmp->ptr, "X-Face:", 7)) {
+		    tmpf = xface2xpm(&tmp->ptr[7]);
+		    if (tmpf)
+			src = Strnew_m_charp("<img src=\"file:",
+					     html_quote(tmpf),
+					     "\" alt=\"X-Face\"",
+					     " width=48 height=48>", NULL);
+		}
 #endif
+		if (src) {
+		    URLFile f;
+		    Line *l;
+		    init_stream(&f, SCM_LOCAL, newStrStream(src));
+		    loadHTMLstream(&f, newBuf, NULL, TRUE);
+		    for (l = newBuf->lastLine; l && l->real_linenumber;
+			 l = l->prev)
+			l->real_linenumber = 0;
+		}
+	    }
 #endif
 	    lineBuf2 = tmp;
 	}

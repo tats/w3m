@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.24 2003/01/25 18:06:25 ukai Exp $ */
+/* $Id: buffer.c,v 1.25 2003/01/28 16:41:03 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -527,10 +527,6 @@ reshapeBuffer(Buffer *buf)
 	buf->imarklist->nmark = 0;
     buf->width = INIT_BUFFER_WIDTH;
 
-#ifdef JP_CHARSET
-    UseContentCharset = FALSE;
-    UseAutoDetect = FALSE;
-#endif
     if (buf->header_source) {
 	if (buf->currentURL.scheme != SCM_LOCAL ||
 	    buf->mailcap_source || !strcmp(buf->currentURL.file, "-")) {
@@ -546,6 +542,10 @@ reshapeBuffer(Buffer *buf)
 	    readHeader(&f, buf, TRUE, NULL);
     }
 
+#ifdef JP_CHARSET
+    UseContentCharset = FALSE;
+    UseAutoDetect = FALSE;
+#endif
     if (!strcasecmp(buf->type, "text/html"))
 	loadHTMLBuffer(&f, buf);
     else
@@ -558,20 +558,27 @@ reshapeBuffer(Buffer *buf)
 
     buf->height = LASTLINE + 1;
     if (buf->firstLine && sbuf.firstLine) {
+	Line *cur = sbuf.currentLine;
 	int n;
-	buf->pos = sbuf.pos;
-	if (sbuf.currentLine)
-	    buf->pos += sbuf.currentLine->bpos;
-	while (sbuf.currentLine->bpos && sbuf.currentLine->prev)
-	    sbuf.currentLine = sbuf.currentLine->prev;
-	gotoRealLine(buf, sbuf.currentLine->real_linenumber);
+
+	buf->pos = sbuf.pos + cur->bpos;
+	while (cur->bpos && cur->prev)
+	    cur = cur->prev;
+	if (cur->real_linenumber > 0)
+	    gotoRealLine(buf, cur->real_linenumber);
+	else
+	    gotoLine(buf, cur->linenumber);
 	n = (buf->currentLine->linenumber - buf->topLine->linenumber)
-	    - (sbuf.currentLine->linenumber - sbuf.topLine->linenumber);
+	    - (cur->linenumber - sbuf.topLine->linenumber);
 	if (n) {
 	    buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
-	    gotoRealLine(buf, sbuf.currentLine->real_linenumber);
+	    if (cur->real_linenumber > 0)
+	        gotoRealLine(buf, cur->real_linenumber);
+	    else
+		gotoLine(buf, cur->linenumber);
 	}
-	if (FoldLine)
+	buf->pos -= buf->currentLine->bpos;
+	if (FoldLine && strcasecmp(buf->type, "text/html"))
 	    buf->currentColumn = 0;
 	else
 	    buf->currentColumn = sbuf.currentColumn;
@@ -582,6 +589,8 @@ reshapeBuffer(Buffer *buf)
 #ifdef USE_NNTP
     if (buf->check_url & CHK_NMID)
 	chkNMIDBuffer(buf);
+    if (buf->real_scheme == SCM_NNTP || buf->real_scheme == SCM_NEWS)
+	reAnchorNewsheader(buf);
 #endif
     formResetBuffer(buf, sbuf.formitem);
 }

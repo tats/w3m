@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.150 2002/11/21 17:11:16 ukai Exp $ */
+/* $Id: main.c,v 1.151 2002/11/21 17:12:18 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -207,7 +207,8 @@ fusage(FILE * f, int err)
 #ifdef USE_COLOR
     fprintf(f, "    -M               monochrome display\n");
 #endif				/* USE_COLOR */
-    fprintf(f, "    -N               open URL of command line on each new tab\n");
+    fprintf(f,
+	    "    -N               open URL of command line on each new tab\n");
     fprintf(f, "    -F               automatically render frame\n");
     fprintf(f,
 	    "    -cols width      specify column width (used with -dump)\n");

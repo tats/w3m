@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.229 2003/07/22 17:33:16 ukai Exp $ */
+/* $Id: main.c,v 1.230 2003/09/22 17:37:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -221,6 +221,10 @@ fusage(FILE * f, int err)
     fprintf(f, "    +<num>           goto <num> line\n");
     fprintf(f, "    -num             show line number\n");
     fprintf(f, "    -no-proxy        don't use proxy\n");
+#ifdef INET6
+    fprintf(f, "    -4               IPv4 only (-o dns_order=4)\n");
+    fprintf(f, "    -6               IPv6 only (-o dns_order=6)\n");
+#endif
 #ifdef USE_MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
 #endif				/* USE_MOUSE */
@@ -608,6 +612,10 @@ main(int argc, char **argv, char **envp)
 		showLineNum = TRUE;
 	    else if (!strcmp("-no-proxy", argv[i]))
 		use_proxy = FALSE;
+#ifdef INET6
+	    else if (!strcmp("-4", argv[i]) || !strcmp("-6", argv[i]))
+		set_param_option(Sprintf("dns_order=%c", argv[i][1])->ptr);
+#endif
 	    else if (!strcmp("-post", argv[i])) {
 		if (++i >= argc)
 		    usage();

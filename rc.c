@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.85 2003/07/26 17:16:24 ukai Exp $ */
+/* $Id: rc.c,v 1.86 2003/09/22 17:37:41 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -470,6 +470,8 @@ static struct sel_c dnsorders[] = {
     {N_S(DNS_ORDER_UNSPEC), "unspecified"},
     {N_S(DNS_ORDER_INET_INET6), "inet inet6"},
     {N_S(DNS_ORDER_INET6_INET), "inet6 inet"},
+    {N_S(DNS_ORDER_INET_ONLY), "inet only"},
+    {N_S(DNS_ORDER_INET6_ONLY), "inet6 only"},
     {0, NULL, NULL}
 };
 #endif				/* INET6 */

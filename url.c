@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.81 2003/06/17 18:03:55 ukai Exp $ */
+/* $Id: url.c,v 1.82 2003/09/22 17:37:41 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -33,10 +33,14 @@
 
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */
-int ai_family_order_table[3][3] = {
+int ai_family_order_table[7][3] = {
     {PF_UNSPEC, PF_UNSPEC, PF_UNSPEC},	/* 0:unspec */
     {PF_INET, PF_INET6, PF_UNSPEC},	/* 1:inet inet6 */
-    {PF_INET6, PF_INET, PF_UNSPEC}	/* 2:inet6 inet */
+    {PF_INET6, PF_INET, PF_UNSPEC},	/* 2:inet6 inet */
+    {PF_UNSPEC, PF_UNSPEC, PF_UNSPEC},  /* 3: --- */
+    {PF_INET, PF_UNSPEC, PF_UNSPEC},    /* 4:inet */
+    {PF_UNSPEC, PF_UNSPEC, PF_UNSPEC},  /* 5: --- */
+    {PF_INET6, PF_UNSPEC, PF_UNSPEC},   /* 6:inet6 */
 };
 #endif				/* INET6 */
 

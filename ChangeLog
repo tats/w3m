@@ -1,5 +1,7 @@
 2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02660] (based on [w3m-dev 02577] 
+			by Kiyokazu SUTO <suto@ks-and-ks.ne.jp>)
 	* scripts/.cvsignore: add w3mhelp.cgi w3mhelp-*.pl
 	* scripts/Makefile (HELP_DIR): added
 	* scripts/Makefile (LIB_TARGETS): add w3mhelp.cgi

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.56 2002/11/05 17:10:07 ukai Exp $ */
+/* $Id: rc.c,v 1.57 2002/11/05 17:34:29 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -78,6 +78,7 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
+#define CMT_PRE_FORM_FILE	"pre_formファイル"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
@@ -222,6 +223,7 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
+#define CMT_PRE_FORM_FILE	"pre_form file"
 #define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
@@ -486,6 +488,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
+    {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file, 
+     CMT_PRE_FORM_FILE, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *)&ignore_null_img_alt,

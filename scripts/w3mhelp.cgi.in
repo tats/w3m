@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.27 2003/10/20 16:49:11 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.28 2004/03/22 17:03:13 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -16,6 +16,7 @@ unshift(@INC, $helpdir);
 require "w3mhelp-funcname.pl";
 require "w3mhelp-funcdesc.en.pl";
 $lang = 'en';
+$charset = 'US-ASCII';
 
 %htmlesc = (
     '<', '&lt;',
@@ -44,7 +45,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 	if ($tlang !~ /^[a-z][a-z]$/) {
 	    $tlang = 'en';
 	}
-	print "tlang=$tlang\n";
+	# print "tlang=$tlang\n";
 	eval {require "w3mhelp-funcdesc.$tlang.pl";};
 	if (defined(%funcdesc)) {
 	    $lang = $tlang;
@@ -89,7 +90,7 @@ while (($key, $fname) = each %menu_keyfunc) {
 }
 
 print <<HEADING;
-Content-Type: text/html
+Content-Type: text/html; charset=$charset
 
 <HTML>
 <HEAD>

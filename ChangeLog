@@ -1,3 +1,8 @@
+2004-03-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Makefile.in (install-po): fix for broken sh.
+	  reported in [w3m-dev 04043] Re: w3m 0.5
+
 2004-03-13  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 04041] spell-miss in configure
@@ -8299,4 +8304,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.898 2004/03/12 17:52:58 ukai Exp $
+$Id: ChangeLog,v 1.899 2004/03/21 14:03:41 ukai Exp $

@@ -227,7 +227,7 @@ install-helpfile:
 	done
 
 install-po:
-	for subdir in $(NLSTARGET); \
+	NLSTARGET="$(NLSTARGET)"; for subdir in $$NLSTARGET; \
 	do \
 	 (cd $$subdir && $(MAKE) install); \
 	done

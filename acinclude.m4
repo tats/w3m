@@ -487,23 +487,25 @@ AC_ARG_WITH(ssl,
 AC_MSG_RESULT($with_ssl)
 if test x"$with_ssl" != xno; then
   AC_DEFINE(USE_SSL)
-  AC_MSG_CHECKING(for SSL library/header)
-  test x"$with_ssl" = xyes && with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
-  AC_MSG_RESULT($with_ssl)
-  for dir in $with_ssl
-  do
-     if test -f "$dir/include/openssl/ssl.h"; then
-        SSL_CFLAGS="$SSL_CFLAGS -I$dir/include/openssl"
-        if test "$dir" != "/usr"; then
-           SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
-        fi
-     elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
-        SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
-     fi
-     if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
-	SSL_LIBS="$SSL_LIBS -L$dir/lib"
-     fi
-  done
+  PKG_CHECK_MODULES(SSL, openssl,,[
+    AC_MSG_CHECKING(for SSL library/header)
+    test x"$with_ssl" = xyes && with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
+    AC_MSG_RESULT($with_ssl)
+    for dir in $with_ssl
+    do
+       if test -f "$dir/include/openssl/ssl.h"; then
+          SSL_CFLAGS="$SSL_CFLAGS -I$dir/include/openssl"
+          if test "$dir" != "/usr"; then
+             SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
+          fi
+       elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
+          SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
+       fi
+       if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
+	  SSL_LIBS="$SSL_LIBS -L$dir/lib"
+       fi
+    done
+  ])
   AC_CHECK_LIB(ssl, SSL_new,
 	[w3m_ssl="found"; CFLAGS="$CFLAGS $SSL_CFLAGS" W3M_LIBS="$W3M_LIBS $SSL_LIBS -lssl -lcrypto"],
 	[w3m_ssl="not found"],

@@ -1,3 +1,7 @@
+2003-10-01  Akira TAGOH <at@gclab.org>
+
+	* acinclude.m4 (AC_W3M_SSL): use PKG_CHECK_MODULES
+
 2003-09-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Makefile.in (distclean): remove posubst
@@ -8108,4 +8112,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.876 2003/09/29 16:34:08 ukai Exp $
+$Id: ChangeLog,v 1.877 2003/09/30 15:42:38 ukai Exp $

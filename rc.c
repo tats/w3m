@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.94 2003/09/26 20:48:22 ukai Exp $ */
+/* $Id: rc.c,v 1.95 2004/03/22 17:20:16 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -246,19 +246,6 @@ struct sel_c {
 
 #ifdef USE_COLOR
 static struct sel_c colorstr[] = {
-#if LANG == JA
-    {0, "black", "黒"},
-    {1, "red", "赤"},
-    {2, "green", "緑"},
-    {3, "yellow", "黄"},
-    {4, "blue", "青"},
-    {5, "magenta", "紫"},
-    {6, "cyan", "空色"},
-    {7, "white", "白"},
-    {8, "terminal", "端末"},
-    {0, NULL, NULL}
-#else				/* LANG != JA */
-    /* FIXME: gettextize here */
     {0, "black", N_("black")},
     {1, "red", N_("red")},
     {2, "green", N_("green")},
@@ -269,7 +256,6 @@ static struct sel_c colorstr[] = {
     {7, "white", N_("white")},
     {8, "terminal", N_("terminal")},
     {0, NULL, NULL}
-#endif				/* LANG != JA */
 };
 #endif				/* USE_COLOR */
 
@@ -287,31 +273,17 @@ static char n_s[][2] = {
 
 
 static struct sel_c defaulturls[] = {
-#if LANG == JA
-    {N_S(DEFAULT_URL_EMPTY), "無し"},
-    {N_S(DEFAULT_URL_CURRENT), "現在のURL"},
-    {N_S(DEFAULT_URL_LINK), "リンク先のURL"},
-#else
-    /* FIXME: gettextize here */
     {N_S(DEFAULT_URL_EMPTY), N_("none")},
     {N_S(DEFAULT_URL_CURRENT), N_("current URL")},
     {N_S(DEFAULT_URL_LINK), N_("link URL")},
-#endif
     {0, NULL, NULL}
 };
 
 #ifdef USE_MOUSE
 static struct sel_c wheelmode[] = {
-#if LANG == JA
-    {TRUE, "1", "A:画面サイズに比例"},
-    {FALSE, "0", "B:一定の行数"},
-    {0, NULL, NULL}
-#else				/* LANG != JA */
-    /* FIXME: gettextize here */
     {TRUE, "1", N_("A:relative to screen height")},
     {FALSE, "0", N_("B:fixed speed")},
     {0, NULL, NULL}
-#endif				/* LANG != JA */
 };
 #endif				/* MOUSE */
 
@@ -691,29 +663,6 @@ struct param_ptr params10[] = {
 #endif
 
 struct param_section sections[] = {
-#if LANG == JA
-    {"表示関係", params1},
-#ifdef USE_COLOR
-    {"表示色", params2},
-#endif				/* USE_COLOR */
-    {"雑多な設定", params3},
-    {"ディレクトリ設定", params5},
-    {"外部プログラム", params6},
-    {"ネットワークの設定", params9},
-    {"プロキシの設定", params4},
-#ifdef USE_SSL
-    {"SSLの設定", params7},
-#endif
-#ifdef USE_COOKIE
-    {"クッキーの設定", params8},
-#endif
-#ifdef USE_M17N
-    {"文字コードの設定", params10},
-#endif
-
-#else				/* LANG != JA */
-    /* FIXME: gettextize here */
-
     {N_("Display Settings"), params1},
 #ifdef USE_COLOR
     {N_("Color Settings"), params2},
@@ -732,7 +681,6 @@ struct param_section sections[] = {
 #ifdef USE_M17N
     {N_("Charset Settings"), params10},
 #endif
-#endif				/* LANG != JA */
     {NULL, NULL}
 };
 
@@ -1194,17 +1142,12 @@ sync_with_option(void)
     loadPreForm();
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
-#if LANG == JA
-	/* FIXME: gettextize here */
-	AcceptLang = "ja;q=1.0, en;q=0.5";
-#else				/* LANG != JA (must be EN) */
 	/* TRANSLATORS: 
 	 * AcceptLang default: this is used in Accept-Language: HTTP request 
 	 * header. For example, ja.po should translate it as
 	 * "ja;q=1.0, en;q=0.5" like that.
 	 */
 	AcceptLang = _("en;q=1.0");
-#endif
     }
     if (AcceptEncoding == NULL || *AcceptEncoding == '\0')
 	AcceptEncoding = acceptableEncoding();

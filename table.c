@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.45 2003/05/14 16:02:41 ukai Exp $ */
+/* $Id: table.c,v 1.46 2003/07/13 16:13:29 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2799,12 +2799,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	return TAG_ACTION_NONE;
     case HTML_P:
     case HTML_BR:
-    case HTML_DT:
-    case HTML_DD:
     case HTML_CENTER:
     case HTML_N_CENTER:
     case HTML_DIV:
     case HTML_N_DIV:
+	if (!(tbl->flag & TBL_IN_ROW))
+	    break;
+    case HTML_DT:
+    case HTML_DD:
     case HTML_H:
     case HTML_N_H:
     case HTML_LI:
@@ -2852,9 +2854,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_N_UL:
 	feed_table_block_tag(tbl, line, mode, -1, cmd);
 	break;
-    case HTML_PRE_INT:
     case HTML_NOBR:
     case HTML_WBR:
+	if (!(tbl->flag & TBL_IN_ROW))
+	    break;
+    case HTML_PRE_INT:
 	feed_table_inline_tag(tbl, line, mode, -1);
 	switch (cmd) {
 	case HTML_NOBR:
@@ -2877,6 +2881,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	break;
     case HTML_N_NOBR:
+	if (!(tbl->flag & TBL_IN_ROW))
+	    break;
 	feed_table_inline_tag(tbl, line, mode, -1);
 	if (mode->nobr_level > 0)
 	    mode->nobr_level--;
@@ -2888,6 +2894,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	mode->pre_mode &= ~TBLM_PRE_INT;
 	break;
     case HTML_IMG:
+	check_rowcol(tbl, mode);
 	w = tbl->fixed_width[tbl->col];
 	if (w < 0) {
 	    if (tbl->total_width > 0)

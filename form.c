@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.33 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: form.c,v 1.34 2004/02/05 17:23:07 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -360,6 +360,9 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	else {
 	    if (w + c_width > width)
 		break;
+#else
+	}
+	else {
 #endif
 	    buf[pos] = *p;
 	    prop[pos] = effect | c_type;

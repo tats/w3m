@@ -1,3 +1,8 @@
+2004-02-06  MANTANI Nobutaka <nobutaka@nobutaka.com>
+
+	* [w3m-dev 04038] --disable-m17n problem in form.c
+	* form.c (form_update_line): fix for disable-m17n
+
 2004-01-10  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 04030] PUSH_TAG macro
@@ -8288,4 +8293,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.896 2004/01/09 15:46:49 ukai Exp $
+$Id: ChangeLog,v 1.897 2004/02/05 17:23:06 ukai Exp $

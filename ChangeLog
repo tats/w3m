@@ -1,3 +1,8 @@
+2001-11-26  Tsutomu Okada <okada@furuno.co.jp>
+	
+	* [w3m-dev 02537]
+	* configure: s/$def_egd/def_use_egd/
+
 2001-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02556]

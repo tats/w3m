@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.20 2001/11/26 09:01:08 ukai Exp $
+# $Id: configure,v 1.21 2001/11/26 09:59:16 ukai Exp $
 #	Configuration.
 #
 
@@ -1860,7 +1860,7 @@ $def_use_bufinfo
 /*
  * Support EGD (Entropy Gathering Daemon)
  */
-$def_egd
+$def_use_egd
 
 /*
  * Remove line trailing spaces in html buffer.

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.86 2003/10/22 18:48:09 ukai Exp $ */
+/* $Id: url.c,v 1.87 2003/12/08 16:17:21 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1001,8 +1001,19 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	}
 	return;
     }
-    if (pu->scheme == SCM_LOCAL)
-	pu->file = file_quote(expandName(file_unquote(pu->file)));
+    if (pu->scheme == SCM_LOCAL) {
+	char *q = expandName(file_unquote(pu->file));
+#ifdef SUPPORT_DOS_DRIVE_PREFIX
+	Str drive;
+	if (IS_ALPHA(q[0]) && q[1] == ':') {
+	    drive = Strnew_charp_n(q, 2);
+	    Strcat_charp(drive, file_quote(q+2));
+	    pu->file = drive->ptr;
+	}
+	else
+#endif
+	    pu->file = file_quote(q);
+    }
 
     if (current && (pu->scheme == current->scheme ||
 		    (pu->scheme == SCM_FTP && current->scheme == SCM_FTPDIR) ||

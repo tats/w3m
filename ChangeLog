@@ -1,4 +1,16 @@
-2004-03-23  Fumitoshi UKAI  <ukai@ukai.org>
+2004-03-24  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* fix search problem on different charset page than display charset
+	* proto.h (conv_search_string): added
+	* search.c (migemostr): use conv_search_string
+		(conv_search_string): added
+	* main.c (srchcore): use conv_search_string
+		(reMark): ditto
+	* menu.c (menu_search_forward): ditto
+		(menu_search_backward): ditto
+		(menu_search_next_previous): ditto
+
+2004-03-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* rc.c: cleanup LANG == JA
 
@@ -8355,4 +8367,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.913 2004/03/23 16:31:43 ukai Exp $
+$Id: ChangeLog,v 1.914 2004/03/23 16:44:02 ukai Exp $

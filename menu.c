@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.40 2003/09/26 20:45:53 ukai Exp $ */
+/* $Id: menu.c,v 1.41 2004/03/23 16:44:02 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -954,11 +954,7 @@ menu_search_forward(Menu *menu, int from)
     if (str == NULL || *str == '\0')
 	return -1;
     SearchString = str;
-#ifdef USE_M17N
-    if (SearchConv && !WcOption.pre_conv &&
-	Currentbuf->document_charset != DisplayCharset)
-	str = wtf_conv_fit(str, Currentbuf->document_charset);
-#endif
+    str = conv_search_string(str, DisplayCharset);
     menuSearchRoutine = menuForwardSearch;
     found = menuForwardSearch(menu, str, from + 1);
     if (WrapSearch && found == -1)
@@ -1008,11 +1004,7 @@ menu_search_backward(Menu *menu, int from)
     if (str == NULL || *str == '\0')
 	return -1;
     SearchString = str;
-#ifdef USE_M17N
-    if (SearchConv && !WcOption.pre_conv &&
-	Currentbuf->document_charset != DisplayCharset)
-	str = wtf_conv_fit(str, Currentbuf->document_charset);
-#endif
+    str = conv_search_string(str, DisplayCharset);
     menuSearchRoutine = menuBackwardSearch;
     found = menuBackwardSearch(menu, str, from - 1);
     if (WrapSearch && found == -1)
@@ -1045,12 +1037,7 @@ menu_search_next_previous(Menu *menu, int from, int reverse)
 	disp_message("No previous regular expression", TRUE);
 	return -1;
     }
-#ifdef USE_M17N
-    str = SearchString;
-    if (SearchConv && !WcOption.pre_conv &&
-	Currentbuf->document_charset != DisplayCharset)
-	str = wtf_conv_fit(str, Currentbuf->document_charset);
-#endif
+    str = conv_search_string(SearchString, DisplayCharset);
     if (reverse != 0)
 	reverse = 1;
     if (menuSearchRoutine == menuBackwardSearch)

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.30 2003/09/22 21:02:21 ukai Exp $ */
+/* $Id: search.c,v 1.31 2004/03/23 16:44:02 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -72,7 +72,7 @@ migemostr(char *str)
     Strchop(tmp);
     if (tmp->length == 0)
 	goto err;
-    return tmp->ptr;
+    return conv_search_string(tmp->ptr, SystemCharset);
   err:
     /* XXX: backend migemo is not working? */
     init_migemo();
@@ -80,6 +80,18 @@ migemostr(char *str)
     return str;
 }
 #endif				/* USE_MIGEMO */
+
+#ifdef USE_M17N
+/* normalize search string */
+char *
+conv_search_string(char *str, wc_ces f_ces)
+{
+    if (SearchConv && !WcOption.pre_conv &&
+	Currentbuf->document_charset != f_ces)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
+    return str;
+}
+#endif
 
 int
 forwardSearch(Buffer *buf, char *str)

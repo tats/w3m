@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.240 2004/03/22 17:12:33 ukai Exp $ */
+/* $Id: main.c,v 1.241 2004/03/23 16:44:02 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1604,13 +1604,7 @@ srchcore(char *volatile str, int (*func) (Buffer *, char *))
     if (SearchString == NULL || *SearchString == '\0')
 	return SR_NOTFOUND;
 
-#ifdef USE_M17N
-    if (SearchConv && !WcOption.pre_conv &&
-	Currentbuf->document_charset != DisplayCharset)
-	str = wtf_conv_fit(str, Currentbuf->document_charset);
-    else
-#endif
-	str = SearchString;
+    str = conv_search_string(SearchString, DisplayCharset);
     prevtrap = mySignal(SIGINT, intTrap);
     crmode();
     if (SETJMP(IntReturn) == 0) {
@@ -2707,11 +2701,7 @@ DEFUN(reMark, REG_MARK, "Set mark using regexp")
 	    return;
 	}
     }
-#ifdef USE_M17N
-    if (SearchConv && !WcOption.pre_conv &&
-	Currentbuf->document_charset != DisplayCharset)
-	str = wtf_conv_fit(str, Currentbuf->document_charset);
-#endif
+    str = conv_search_string(str, DisplayCharset);
     if ((str = regexCompile(str, 1)) != NULL) {
 	disp_message(str, TRUE);
 	return;

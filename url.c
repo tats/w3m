@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.71 2003/01/29 17:33:28 ukai Exp $ */
+/* $Id: url.c,v 1.72 2003/01/31 16:25:10 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1463,14 +1463,13 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	URLFile *ouf, HRequest *hr, unsigned char *status)
 {
     Str tmp;
-    int i, sock, scheme;
+    int sock, scheme;
     char *p, *q, *u;
     URLFile uf;
     HRequest hr0;
 #ifdef USE_SSL
     SSL *sslh = NULL;
 #endif				/* USE_SSL */
-    int extlen = strlen(CGI_EXTENSION);
 
     if (hr == NULL)
 	hr = &hr0;
@@ -1521,49 +1520,22 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     switch (pu->scheme) {
     case SCM_LOCAL:
     case SCM_LOCAL_CGI:
-	if (request && request->body) {
+	if (request && request->body)
 	    /* local CGI: POST */
-	    if ((q = strchr(pu->file, '?')) != NULL) {
-		p = Strnew_charp_n(pu->file, (int)(q - pu->file))->ptr;
-		pu->real_file = cleanupName(file_unquote(p));
-		q++;
-	    }
-	    uf.stream = newFileStream(localcgi_post(pu->real_file,
-						    pu->query,
-						    request,
-						    option->referer),
+	    uf.stream = newFileStream(localcgi_post(pu->real_file, pu->query,
+						    request, option->referer),
 				      (void (*)())pclose);
-	    if (uf.stream == NULL)
-		goto ordinary_local_file;
-	    uf.is_cgi = TRUE;
-	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
-	}
-	else if (pu->query != NULL) {
+	else
 	    /* lodal CGI: GET */
 	    uf.stream = newFileStream(localcgi_get(pu->real_file, pu->query,
 						   option->referer),
 				      (void (*)())pclose);
-	    if (uf.stream == NULL) {
-		goto ordinary_local_file;
-	    }
+	if (uf.stream) {
 	    uf.is_cgi = TRUE;
 	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
+	    return uf;
 	}
-	else if ((i = strlen(pu->file)) > extlen &&
-		 !strncmp(pu->file + i - extlen, CGI_EXTENSION, extlen)) {
-	    /* lodal CGI: GET */
-	    uf.stream = newFileStream(localcgi_get(pu->real_file, NULL,
-						   option->referer),
-				      (void (*)())pclose);
-	    if (uf.stream == NULL)
-		goto ordinary_local_file;
-	    uf.is_cgi = TRUE;
-	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;
-	}
-	else {
-	  ordinary_local_file:
-	    examineFile(pu->real_file, &uf);
-	}
+	examineFile(pu->real_file, &uf);
 	if (uf.stream == NULL) {
 	    if (dir_exist(pu->real_file)) {
 		add_index_file(pu, &uf);

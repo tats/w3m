@@ -3,9 +3,12 @@
 # Workgroup list: file:/$LIB/smb.cgi
 # Server list:    file:/$LIB/smb.cgi?workgroup
 # Sahre list:     file:/$LIB/smb.cgi?//server
+#                 file:/$LIB/smb.cgi/server
 # Directory:      file:/$LIB/smb.cgi?//server/share
 #                 file:/$LIB/smb.cgi?//server/share/dir...
+#                 file:/$LIB/smb.cgi/server/share
 # Get file:       file:/$LIB/smb.cgi?//server/share/dir.../file
+#                 file:/$LIB/smb.cgi/server/share/dir.../file
 #
 # ----- ~/.w3m/smb -----
 # workgroup = <workgroup>
@@ -64,9 +67,22 @@ $FILE = "F000";
 
 $CGI = "file://" . &file_encode($ENV{"SCRIPT_NAME"} || $0);
 $QUERY = $ENV{"QUERY_STRING"};
+$PATH_INFO = $ENV{"PATH_INFO"};
 
-$_ = &file_decode($QUERY);
-$DEBUG && print "DEBUG: QUERY_STRING=\"$_\"\n";
+if ($PATH_INFO =~ m@^/@) {
+	$_ = $PATH_INFO;
+	if (! m@^//@) {
+		$_ = "/$_";
+	}
+	s@[\r\n\0\\"]@@g;
+	$DEBUG && print "DEBUG: PATH_INFO=\"$_\"\n";
+	$Q = "";
+}
+else {
+	$_ = &file_decode($QUERY);
+	$DEBUG && print "DEBUG: QUERY_STRING=\"$_\"\n";
+	$Q = "?";
+}
 if (s@^//([^/]+)@@) {
 	$server = $1;
 #	if (!$USE_OPT_A && !defined($PASSWD)) {
@@ -138,7 +154,7 @@ $DEBUG && print "DEBUG: $_";
 		$c = $&;
 		s/^  //;
 		$_ eq "." && next;
-		print "<a href=\"$CGI?$service"
+		print "<a href=\"$CGI$Q$service"
 			. &cleanup("$file/" . &file_encode($_)) . "\">"
 			. &html_quote($_) . "</a>"
 			. &html_quote($c) . "\n";
@@ -183,7 +199,7 @@ sub share_list {
 	for (sort @share) {
 		($_, $d, @c) = split(" ");
 		if ($d eq 'Disk') {
-			print "<tr><td>+ <a href=\"$CGI?//$server/"
+			print "<tr><td>+ <a href=\"$CGI$Q//$server/"
 				. &file_encode($_) . "\">"
 				. &html_quote($_) . "</a>";
 		} else {
@@ -213,7 +229,7 @@ sub server_list {
 	print "<tr><td colspan=3><b>$group</b>\n";
 	for (sort @server) {
 		($_, @c) = split(" ");
-		print "<tr><td>+ <a href=\"$CGI?//"
+		print "<tr><td>+ <a href=\"$CGI$Q//"
 			. &file_encode($_) . "\">"
 			. &html_quote($_) . "</a><td><td>"
 			. &html_quote("@c") . "\n";
@@ -335,7 +351,7 @@ sub print_form {
 Content-Type: text/html
 
 <h1>$q</h1>
-<form action="$CGI?$_" method=POST>
+<form action="$CGI$Q$_" method=POST>
 <table>
 <tr><td>Workgroup	<td>User	<td>Password
 <tr><td><input type=text size=8 name=group value="$WORKGROUP">

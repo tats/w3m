@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.25 2003/01/22 16:10:28 ukai Exp $ */
+/* $Id: local.c,v 1.26 2003/01/31 16:25:09 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -17,11 +17,8 @@
 #include "hash.h"
 
 #define CGIFN_NORMAL     0
-#define CGIFN_DROOT      1
+#define CGIFN_LIBDIR     1
 #define CGIFN_CGIBIN     2
-#define CGIFN_MODE(x) ((x)&3)
-
-#define CGIFN_CONTAIN_SLASH 4
 
 static char *Local_cookie_file = NULL;
 
@@ -183,45 +180,16 @@ check_local_cgi(char *file, int status)
 {
     struct stat st;
 
-    if (status & CGIFN_CONTAIN_SLASH) {
-	/* local CGI file must be just under /cgi-bin/
-	 * or /$LIB/
-	 */
+    if (status != CGIFN_LIBDIR && status != CGIFN_CGIBIN)
 	return -1;
-    }
-#ifdef __EMX__
-    if (CGIFN_MODE(status) != CGIFN_CGIBIN) {
-	char tmp[_MAX_PATH];
-	int len;
-
-	_abspath(tmp, w3m_lib_dir(), _MAX_PATH);	/* Translate '\\' to '/' */
-	len = strlen(tmp);
-	while (len > 1 && tmp[len - 1] == '/')
-	    len--;
-	if (strnicmp(file, tmp, len) ||	/* and ignore case  */
-	    (file[len] != '/'))
-	    return -1;
-    }
-#else				/* not __EMX__ */
-    if (CGIFN_MODE(status) != CGIFN_CGIBIN) {
-	char *tmp = Strnew_charp(w3m_lib_dir())->ptr;
-	int len = strlen(tmp);
-
-	while (len > 1 && tmp[len - 1] == '/')
-	    len--;
-	if (strncmp(file, tmp, len) || (file[len] != '/'))
-	    /* 
-	     * a local-CGI script should be located on either
-	     * /cgi-bin/ directory or LIB_DIR (typically /usr/local/lib/w3m).
-	     */
-	    return -1;
-    }
-#endif				/* not __EMX__ */
     if (stat(file, &st) < 0)
 	return -1;
-    if ((st.st_uid == geteuid() && (st.st_mode & S_IXUSR)) || (st.st_gid == getegid() && (st.st_mode & S_IXGRP)) || (st.st_mode & S_IXOTH)) {	/* executable */
+    if (S_ISDIR(st.st_mode))
+	return -1;
+    if ((st.st_uid == geteuid() && (st.st_mode & S_IXUSR)) ||
+	(st.st_gid == getegid() && (st.st_mode & S_IXGRP)) ||
+	(st.st_mode & S_IXOTH))	/* executable */
 	return 0;
-    }
     return -1;
 }
 
@@ -316,43 +284,60 @@ checkPath(char *fn, char *path)
     return NULL;
 }
 
-static char *
-cgi_filename(char *fn, int *status)
+static int
+cgi_filename(char *uri, char **fn, char **name, char **path_info)
 {
     Str tmp;
-    struct stat st;
-    if (cgi_bin != NULL && strncmp(fn, "/cgi-bin/", 9) == 0) {
-	*status = CGIFN_CGIBIN;
-	if (strchr(fn + 9, '/'))
-	    *status |= CGIFN_CONTAIN_SLASH;
-	tmp = checkPath(fn + 9, cgi_bin);
+    int offset;
+
+    *fn = uri;
+    *name = uri;
+    *path_info = NULL;
+
+    if (cgi_bin != NULL && strncmp(uri, "/cgi-bin/", 9) == 0) {
+	offset = 9;
+	if ((*path_info = strchr(uri + offset, '/')))
+	    *name = allocStr(uri, *path_info - uri);
+	tmp = checkPath(*name + offset, cgi_bin);
 	if (tmp == NULL)
-	    return fn;
-	return tmp->ptr;
+	    return CGIFN_NORMAL;
+	*fn = tmp->ptr;
+	return CGIFN_CGIBIN;
     }
-    if (strncmp(fn, "/$LIB/", 6) == 0) {
-	*status = CGIFN_NORMAL;
-	tmp = Strnew_charp(w3m_lib_dir());
-	fn += 5;
-	if (strchr(fn + 1, '/'))
-	    *status |= CGIFN_CONTAIN_SLASH;
-	if (Strlastchar(tmp) == '/')
-	    fn++;
-	Strcat_charp(tmp, fn);
-	return tmp->ptr;
+
+#ifdef __EMX__
+    {
+	char lib[_MAX_PATH];
+	_abspath(lib, w3m_lib_dir(), _MAX_PATH);	/* Translate '\\' to '/' */
+	tmp = Strnew_charp(lib);
     }
-    if (*fn == '/' && document_root != NULL && stat(fn, &st) < 0) {
-	*status = CGIFN_DROOT;
-	if (strchr(fn + 1, '/'))
-	    *status |= CGIFN_CONTAIN_SLASH;
-	tmp = Strnew_charp(document_root);
-	if (Strlastchar(tmp) != '/')
-	    Strcat_char(tmp, '/');
-	Strcat_charp(tmp, fn);
-	return tmp->ptr;
+#else
+    tmp = Strnew_charp(w3m_lib_dir());
+#endif
+    if (Strlastchar(tmp) != '/')
+	Strcat_char(tmp, '/');
+    if (strncmp(uri, "/$LIB/", 6) == 0)
+	offset = 6;
+    else if (strncmp(uri, tmp->ptr, tmp->length) == 0)
+	offset = tmp->length;
+    else if (*uri == '/' && document_root != NULL) {
+	Str tmp2 = Strnew_charp(document_root);
+	if (Strlastchar(tmp2) != '/')
+	    Strcat_char(tmp2, '/');
+        Strcat_charp(tmp2, uri + 1);
+	if (strncmp(tmp2->ptr, tmp->ptr, tmp->length) != 0)
+	    return CGIFN_NORMAL;
+	uri = tmp2->ptr;
+	*name = uri;
+	offset = tmp->length;
     }
-    *status = CGIFN_NORMAL;
-    return fn;
+    else
+	return CGIFN_NORMAL;
+    if ((*path_info = strchr(uri + offset, '/')))
+	*name = allocStr(uri, *path_info - uri);
+    Strcat_charp(tmp, *name + offset);
+    *fn = tmp->ptr;
+    return CGIFN_LIBDIR;
 }
 
 FILE *
@@ -361,9 +346,9 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     FILE *fr = NULL, *fw = NULL;
     int status;
     pid_t pid;
-    char *file;
+    char *file = uri, *name = uri, *path_info = NULL;
 
-    file = cgi_filename(uri, &status);
+    status = cgi_filename(uri, &file, &name, &path_info);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
     writeLocalCookie();
@@ -382,10 +367,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     }
     setup_child(TRUE, 2, -1);
 
-    if (qstr == NULL)
-	set_cgi_environ(uri, file, uri);
-    else
-	set_cgi_environ(uri, file, Strnew_m_charp(uri, "?", qstr, NULL)->ptr);
+    if (qstr)
+	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
+    set_cgi_environ(name, file, uri);
+    if (path_info)
+	set_environ("PATH_INFO", path_info);
     if (referer && referer != NO_REFERER)
 	set_environ("HTTP_REFERER", referer);
     if (request) {

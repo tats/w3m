@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.30 2002/01/10 15:39:21 ukai Exp $ */
+/* $Id: url.c,v 1.31 2002/01/12 13:33:47 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -240,6 +240,7 @@ free_ssl_ctx()
     if (ssl_ctx != NULL)
 	SSL_CTX_free(ssl_ctx);
     ssl_ctx = NULL;
+    ssl_accept_this_site(NULL);
 }
 
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
@@ -276,11 +277,7 @@ static SSL *
 openSSLHandle(int sock, char *hostname)
 {
     SSL *handle = NULL;
-    Str emsg;
-    Str amsg = NULL;
-    char *ans;
     static char *old_ssl_forbid_method = NULL;
-    static Str accept_this_site = NULL;
 #ifdef USE_SSL_VERIFY
     static int old_ssl_verify_server = -1;
 #endif
@@ -301,7 +298,6 @@ openSSLHandle(int sock, char *hostname)
     }
     if (ssl_path_modified) {
 	free_ssl_ctx();
-	accept_this_site = NULL;
 	ssl_path_modified = 0;
     }
 #endif				/* defined(USE_SSL_VERIFY) */
@@ -363,105 +359,15 @@ openSSLHandle(int sock, char *hostname)
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
     init_PRNG();
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
-    if (SSL_connect(handle) <= 0)
-	goto eend;
-#ifdef USE_SSL_VERIFY
-    /* check the cert chain.
-     * The chain length is automatically checked by OpenSSL when we
-     * set the verify depth in the ctx.
-     */
-    if (ssl_verify_server) {
-	X509 *x;
-	x = SSL_get_peer_certificate(handle);
-	if (x == NULL) {
-	    if (accept_this_site
-		&& strcasecmp(accept_this_site->ptr, hostname) == 0)
-		ans = "y";
-	    else {
-		emsg = Strnew_charp("No SSL peer certificate: accept (y/n)?");
-		term_raw();
-		ans = inputChar(emsg->ptr);
-	    }
-	    if (tolower(*ans) == 'y')
-		amsg =
-		    Strnew_charp
-		    ("Accept SSL session without any peer certificate");
-	    else {
-		char *e = "This SSL session was rejected "
-		    "to prevent security violation: no peer certificate";
-		disp_err_message(e, FALSE);
-		free_ssl_ctx();
-		return NULL;
-	    }
-	}
-	else {
-	    long verr;
-	    X509_free(x);
-	    if ((verr = SSL_get_verify_result(handle)) != X509_V_OK) {
-		const char *em = X509_verify_cert_error_string(verr);
-		if (accept_this_site
-		    && strcasecmp(accept_this_site->ptr, hostname) == 0)
-		    ans = "y";
-		else {
-		    emsg = Sprintf("%s: accept (y/n)?", em);
-		    term_raw();
-		    ans = inputChar(emsg->ptr);
-		}
-		if (tolower(*ans) == 'y') {
-		    amsg = Sprintf("Accept unsecure SSL session: "
-				   "unverified: %s", em);
-		}
-		else {
-		    char *e =
-			Sprintf("This SSL session was rejected: %s", em)->ptr;
-		    disp_err_message(e, FALSE);
-		    free_ssl_ctx();
-		    return NULL;
-		}
-	    }
-	}
-    }
-    else
-#endif
-	amsg = Strnew_charp("Certificate is not verified");
-
-    emsg = ssl_check_cert_ident(handle, hostname);
-    if (emsg != NULL) {
-	if (accept_this_site
-	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
-	    ans = "y";
-	else {
-	    Str ep = Strdup(emsg);
-	    if (ep->length > COLS - 16)
-		Strshrink(ep, ep->length - (COLS - 16));
-	    term_raw();
-	    Strcat_charp(ep, ": accept(y/n)?");
-	    ans = inputChar(ep->ptr);
-	}
-	if (tolower(*ans) == 'y') {
-	    amsg = Strnew_charp("Accept unsecure SSL session:");
-	    Strcat(amsg, emsg);
-	}
-	else {
-	    char *e = "This SSL session was rejected "
-		"to prevent security violation";
-	    disp_err_message(e, FALSE);
-	    free_ssl_ctx();
-	    return NULL;
-	}
-    }
-    ssl_set_certificate_validity(amsg);
-    if (amsg)
-	disp_err_message(amsg->ptr, FALSE);
-    accept_this_site = Strnew_charp(hostname);
-    return handle;
+    if (SSL_connect(handle) > 0)
+	return handle;
   eend:
     close(sock);
     if (handle)
 	SSL_free(handle);
-    accept_this_site = NULL;
-    emsg = Sprintf("SSL error: %s", ERR_error_string(ERR_get_error(), NULL));
-    disp_err_message(emsg->ptr, FALSE);
+    disp_err_message(Sprintf
+		     ("SSL error: %s",
+		      ERR_error_string(ERR_get_error(), NULL))->ptr, FALSE);
     return NULL;
 }
 

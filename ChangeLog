@@ -1,5 +1,21 @@
 2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02829]
+	* file.c (loadGeneralFile): return NO_BUFFER
+	* file.c (loadGeneralFile): if ssl_get_certificate() fails, 
+			no buffer created
+	* istream.c (ssl_certificate_validity): deleted
+	* istream.c (ssl_set_certificate_validity): ditto
+	* istream.c (accept_this_site): added
+	* istream.c (ssl_accept_this_site): ditto
+	* istream.c (ssl_check_cert_ident): 1st arg is `X509 *'
+	* istream.c (ssl_get_certificate): 2nd arg is `char *hostname'
+			cert check code moved here from openSSLHandle()
+	* url.c (free_ssl_ctx): accept_this_site initialized
+	* url.c (openSSLHandle): remove cert check code here
+	
+2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02827]
 	* scripts/Makefile: use sed instead of /bin/sh while read; echo loop
 
@@ -1870,4 +1886,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.210 2002/01/12 11:44:09 ukai Exp $
+$Id: ChangeLog,v 1.211 2002/01/12 13:33:47 ukai Exp $

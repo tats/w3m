@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.41 2002/01/11 20:11:48 ukai Exp $ */
+/* $Id: file.c,v 1.42 2002/01/12 13:33:47 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1052,7 +1052,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    {
 		struct stat st;
 		if (stat(pu.real_file, &st) < 0)
-		    return NULL;
+		    return NO_BUFFER;
 		if (S_ISDIR(st.st_mode)) {
 		    if (UseExternalDirBuffer) {
 			Str cmd = Strnew_charp(DirBufferCommand);
@@ -1077,7 +1077,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		}
 	    }
 	}
-	return NULL;
+	return NO_BUFFER;
     }
 
     /* openURL() succeeded */
@@ -1090,7 +1090,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (b)
 	    discardBuffer(b);
 	UFclose(&f);
-	return NULL;
+	return NO_BUFFER;
     }
 
     b = NULL;
@@ -1125,8 +1125,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 #ifdef USE_SSL
 	if (IStype(f.stream) == IST_SSL) {
-	    Str s = ssl_get_certificate(f.stream);
-	    if (s != NULL)
+	    Str s = ssl_get_certificate(f.stream, pu.host);
+	    if (s == NULL)
+		return NO_BUFFER;
+	    else
 		t_buf->ssl_certificate = s->ptr;
 	}
 #endif
@@ -1185,7 +1187,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    /* abort */
 		    UFclose(&f);
 		    signal(SIGINT, prevtrap);
-		    return NULL;
+		    return NO_BUFFER;
 		}
 		UFclose(&f);
 		add_auth_cookie_flag = 1;
@@ -1206,7 +1208,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    /* abort */
 		    UFclose(&f);
 		    signal(SIGINT, prevtrap);
-		    return NULL;
+		    return NO_BUFFER;
 		}
 		UFclose(&f);
 		status = HTST_NORMAL;
@@ -1421,8 +1423,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 #ifdef USE_SSL
     if (IStype(f.stream) == IST_SSL) {
-	Str s = ssl_get_certificate(f.stream);
-	if (s != NULL)
+	Str s = ssl_get_certificate(f.stream, pu.host);
+	if (s == NULL)
+	    return NO_BUFFER;
+	else
 	    t_buf->ssl_certificate = s->ptr;
     }
 #endif

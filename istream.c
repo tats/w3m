@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.10 2001/12/27 18:22:59 ukai Exp $ */
+/* $Id: istream.c,v 1.11 2002/01/12 13:33:47 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -357,61 +357,21 @@ ISeos(InputStream stream)
 }
 
 #ifdef USE_SSL
-static Str ssl_certificate_validity;
+static Str accept_this_site;
 
 void
-ssl_set_certificate_validity(Str msg)
+ssl_accept_this_site(char *hostname)
 {
-    ssl_certificate_validity = msg;
+    if (hostname)
+	accept_this_site = Strnew_charp(hostname);
+    else
+	accept_this_site = NULL;
 }
 
-Str
-ssl_get_certificate(InputStream stream)
-{
-    BIO *bp;
-    X509 *x;
-    X509_NAME *xn;
-    char *p;
-    int len;
-    Str s;
-    char buf[2048];
 
-    if (stream == NULL)
-	return NULL;
-    if (IStype(stream) != IST_SSL)
-	return NULL;
-    if (stream->ssl.handle == NULL)
-	return NULL;
-    x = SSL_get_peer_certificate(stream->ssl.handle->ssl);
-    if (x == NULL)
-	return Strnew_charp("no peer certificate");
-    bp = BIO_new(BIO_s_mem());
-    X509_print(bp, x);
-    len = (int)BIO_ctrl(bp, BIO_CTRL_INFO, 0, (char *)&p);
-    s = ssl_certificate_validity ? Strdup(ssl_certificate_validity)
-	: Strnew_charp("valid certificate");
-    Strcat_charp(s, "\n");
-    xn = X509_get_subject_name(x);
-    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
-	Strcat_charp(s, " subject=<unknown>");
-    else
-	Strcat_m_charp(s, " subject=", buf, NULL);
-    xn = X509_get_issuer_name(x);
-    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
-	Strcat_charp(s, ": issuer=<unnown>");
-    else
-	Strcat_m_charp(s, ": issuer=", buf, NULL);
-    Strcat_charp(s, "\n\n");
-    Strcat_charp_n(s, p, len);
-    BIO_free_all(bp);
-    X509_free(x);
-    return s;
-}
-
-Str
-ssl_check_cert_ident(SSL * handle, char *hostname)
+static Str
+ssl_check_cert_ident(X509 * x, char *hostname)
 {
-    X509 *x;
     int i;
     Str ret = NULL;
     int match_ident = FALSE;
@@ -425,12 +385,6 @@ ssl_check_cert_ident(SSL * handle, char *hostname)
      * the use of the Common Name is existing practice, it is deprecated and
      * Certification Authorities are encouraged to use the dNSName instead.
      */
-    x = SSL_get_peer_certificate(handle);
-    if (!x) {
-	ret = Strnew_charp("Unable to get peer certificate");
-	return ret;
-    }
-
     i = X509_get_ext_by_NID(x, NID_subject_alt_name, -1);
     if (i >= 0) {
 	X509_EXTENSION *ex;
@@ -493,8 +447,136 @@ ssl_check_cert_ident(SSL * handle, char *hostname)
 	else
 	    match_ident = TRUE;
     }
-    X509_free(x);
     return ret;
+}
+
+Str
+ssl_get_certificate(InputStream stream, char *hostname)
+{
+    BIO *bp;
+    X509 *x;
+    X509_NAME *xn;
+    char *p;
+    int len;
+    Str s;
+    char buf[2048];
+    Str amsg = NULL;
+    Str emsg;
+    char *ans;
+
+    if (stream == NULL)
+	return NULL;
+    if (IStype(stream) != IST_SSL)
+	return NULL;
+    if (stream->ssl.handle == NULL)
+	return NULL;
+    x = SSL_get_peer_certificate(stream->ssl.handle->ssl);
+    if (x == NULL) {
+	if (accept_this_site
+	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
+	    ans = "y";
+	else {
+	    emsg = Strnew_charp("No SSL peer certificate: accept (y/n)?");
+	    term_raw();
+	    ans = inputChar(emsg->ptr);
+	}
+	if (tolower(*ans) == 'y')
+	    amsg = Strnew_charp
+		("Accept SSL session without any peer certificate");
+	else {
+	    char *e = "This SSL session was rejected "
+		"to prevent security violation: no peer certificate";
+	    disp_err_message(e, FALSE);
+	    free_ssl_ctx();
+	    return NULL;
+	}
+	if (amsg)
+	    disp_err_message(amsg->ptr, FALSE);
+	ssl_accept_this_site(hostname);
+	s = amsg ? amsg : Strnew_charp("valid certificate");
+	return s;
+    }
+#ifdef USE_SSL_VERIFY
+    /* check the cert chain.
+     * The chain length is automatically checked by OpenSSL when we
+     * set the verify depth in the ctx.
+     */
+    if (ssl_verify_server) {
+	long verr;
+	if ((verr = SSL_get_verify_result(stream->ssl.handle->ssl))
+	    != X509_V_OK) {
+	    const char *em = X509_verify_cert_error_string(verr);
+	    if (accept_this_site
+		&& strcasecmp(accept_this_site->ptr, hostname) == 0)
+		ans = "y";
+	    else {
+		emsg = Sprintf("%s: accept (y/n)?", em);
+		term_raw();
+		ans = inputChar(emsg->ptr);
+	    }
+	    if (tolower(*ans) == 'y') {
+		amsg = Sprintf("Accept unsecure SSL session: "
+			       "unverified: %s", em);
+	    }
+	    else {
+		char *e =
+		    Sprintf("This SSL session was rejected: %s", em)->ptr;
+		disp_err_message(e, FALSE);
+		free_ssl_ctx();
+		return NULL;
+	    }
+	}
+    }
+#endif
+    emsg = ssl_check_cert_ident(x, hostname);
+    if (emsg != NULL) {
+	if (accept_this_site
+	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
+	    ans = "y";
+	else {
+	    Str ep = Strdup(emsg);
+	    if (ep->length > COLS - 16)
+		Strshrink(ep, ep->length - (COLS - 16));
+	    term_raw();
+	    Strcat_charp(ep, ": accept(y/n)?");
+	    ans = inputChar(ep->ptr);
+	}
+	if (tolower(*ans) == 'y') {
+	    amsg = Strnew_charp("Accept unsecure SSL session:");
+	    Strcat(amsg, emsg);
+	}
+	else {
+	    char *e = "This SSL session was rejected "
+		"to prevent security violation";
+	    disp_err_message(e, FALSE);
+	    free_ssl_ctx();
+	    return NULL;
+	}
+    }
+    if (amsg)
+	disp_err_message(amsg->ptr, FALSE);
+    ssl_accept_this_site(hostname);
+    s = amsg ? amsg : Strnew_charp("valid certificate");
+    Strcat_charp(s, "\n");
+    xn = X509_get_subject_name(x);
+    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
+	Strcat_charp(s, " subject=<unknown>");
+    else
+	Strcat_m_charp(s, " subject=", buf, NULL);
+    xn = X509_get_issuer_name(x);
+    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
+	Strcat_charp(s, ": issuer=<unnown>");
+    else
+	Strcat_m_charp(s, ": issuer=", buf, NULL);
+    Strcat_charp(s, "\n\n");
+
+    bp = BIO_new(BIO_s_mem());
+    X509_print(bp, x);
+    len = (int)BIO_ctrl(bp, BIO_CTRL_INFO, 0, (char *)&p);
+    Strcat_charp_n(s, p, len);
+    BIO_free_all(bp);
+    X509_free(x);
+    return s;
 }
 #endif
 

@@ -1,5 +1,12 @@
+2001-11-24  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02523]
+	* table.c (feed_table_tag): 
+	  fix problem of anchor tag with name attribute only
+
 2001-11-23  Tsutomu Okada <okada@furuno.co.jp>
 
+	* [w3m-dev 02511]
 	* terms.c (isWinConsole): added
 
 2001-11-22  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>

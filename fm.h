@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.108 2003/01/25 17:42:17 ukai Exp $ */
+/* $Id: fm.h,v 1.109 2003/01/27 16:18:52 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -471,6 +471,7 @@ typedef struct _BufferPos {
     long cur_linenumber;
     int currentColumn;
     int pos;
+    int bpos;
     struct _BufferPos *next;
     struct _BufferPos *prev;
 } BufferPos;

@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.7 2002/01/29 16:23:37 ukai Exp $ */
+/* $Id: mktable.c,v 1.8 2002/01/29 19:16:00 ukai Exp $ */
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,7 +19,7 @@ defhash(HashItem_ss *, int, hss_i)
 static unsigned long
 hashfunc(HashItem_ss * x)
 {
-    return (unsigned long) x;
+    return (unsigned long)x;
 }
 
 /* *INDENT-OFF* */

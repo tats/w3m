@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.35 2001/12/09 13:59:04 ukai Exp $
+# $Id: configure,v 1.36 2001/12/17 16:18:18 ukai Exp $
 #	Configuration.
 #
 
@@ -1416,7 +1416,7 @@ then
 else
   echo "You don't have sigsetjmp()."
   def_setjmp="#define SETJMP(env) setjmp(env)"
-  def_longjmp="#define LONGJMP(env,val) longjmp(env)"
+  def_longjmp="#define LONGJMP(env,val) longjmp(env,val)"
   def_jmpbuf="#define JMP_BUF jmp_buf"
 fi
 

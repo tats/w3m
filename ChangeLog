@@ -1,5 +1,11 @@
 2001-12-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [#493911] too few arguments to function `longjmp' 
+		by Kazuhiro NISHIYAMA (znz)
+	* configure (LONGJMP): need val argument
+
+2001-12-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [#493906] missing #ifdef by Kazuhiro NISHIYAMA (znz)
 	* main.c (sig_chld): #ifdef SIGCHLD
 	* main.c (SigAlarm): #ifdef USE_ALARM
@@ -1291,4 +1297,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.136 2001/12/17 16:13:40 ukai Exp $
+$Id: ChangeLog,v 1.137 2001/12/17 16:18:18 ukai Exp $

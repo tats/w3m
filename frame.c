@@ -1,12 +1,9 @@
-/* $Id: frame.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: frame.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
 #include <signal.h>
 #include <setjmp.h>
-#ifdef __EMX__
-#include <strings.h>        /* for bzero() and bcopy() */
-#endif                /* __EMX__ */
 
 #ifdef KANJI_SYMBOLS
 #define RULE_WIDTH 2

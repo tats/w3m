@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: table.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -6,10 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#ifdef __EMX__
-#include <strings.h>
-#endif				/* __EMX__ */
-
 #include "fm.h"
 #include "html.h"
 #include "parsetagx.h"

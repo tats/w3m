@@ -1,13 +1,10 @@
-/* $Id: indep.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: indep.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#ifdef __EMX__
-#include <strings.h>        /* for bcopy() */
-#endif                /* __EMX__ */
 #include "indep.h"
 #include "Str.h"
 #include "gc.h"
@@ -50,14 +47,14 @@ char *
 currentdir()
 {
     char *path;
-#ifdef GETCWD
+#ifdef HAVE_GETCWD
     path = NewAtom_N(char, MAXPATHLEN);
     getcwd(path, MAXPATHLEN);
-#else				/* not GETCWD */
-#ifdef GETWD
+#else				/* not HAVE_GETCWD */
+#ifdef HAVE_GETWD
     path = NewAtom_N(char, 1024);
     getwd(path);
-#else				/* not GETWD */
+#else				/* not HAVE_GETWD */
     FILE *f;
     char *p;
     path = NewAtom_N(char, 1024);
@@ -69,8 +66,8 @@ currentdir()
 	    *p = '\0';
 	    break;
 	}
-#endif				/* not GETWD */
-#endif				/* not GETCWD */
+#endif				/* not HAVE_GETWD */
+#endif				/* not HAVE_GETCWD */
     return path;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: Str.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: Str.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -17,7 +17,7 @@
 #include <gc.h>
 #include <stdarg.h>
 #include <string.h>
-#ifdef __EMX__
+#ifdef __EMX__	/* or include "fm.h" for HAVE_BCOPY? */
 #include <strings.h>
 #endif
 #include "Str.h"

@@ -11,8 +11,7 @@
 
 #include <sys/stat.h>
 #ifdef __EMX__
-#include <io.h>
-#include <strings.h>
+#include <io.h> /* ?? */
 #endif				/* __EMX__ */
 
 #include "html.h"

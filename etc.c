@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: etc.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -7,10 +7,10 @@
 #include "hash.h"
 #include "terms.h"
 
-#ifdef GETCWD
+#ifdef HAVE_GETCWD /* ??? ukai */
 #include <unistd.h>
 #include <sys/param.h>
-#endif				/* GETCWD */
+#endif				/* HAVE_GETCWD */
 
 #include <sys/types.h>
 #include <time.h>
@@ -22,7 +22,21 @@
 #define	close(x)	close_s(x)
 #endif				/* __WATT32__ */
 
-#ifndef STRCASECMP
+
+#ifndef HAVE_STRCHR
+char *
+strchr(char *s, char c)
+{
+    while (*s) {
+	if (*s == c)
+	    return s;
+	s++;
+    }
+    return NULL;
+}
+#endif				/* not HAVE_STRCHR */
+
+#ifndef HAVE_STRCASECMP
 int
 strcasecmp(char *s1, char *s2)
 {
@@ -55,7 +69,7 @@ strncasecmp(char *s1, char *s2, int n)
 	return x;
     return 0;
 }
-#endif				/* not STRCASECMP */
+#endif				/* not HAVE_STRCASECMP */
 
 int
 arg_is(char *str, char *tag)
@@ -640,7 +654,7 @@ lastFileName(char *path)
     return allocStr(q, 0);
 }
 
-#ifdef NOBCOPY
+#ifndef HAVE_BCOPY
 void
 bcopy(void *src, void *dest, int len)
 {
@@ -664,7 +678,7 @@ bzero(void *ptr, int len)
     for (i = 0; i < len; i++)
 	*(ptr++) = 0;
 }
-#endif				/* NOBCOPY */
+#endif				/* not HAVE_BCOPY */
 
 #ifdef USE_INCLUDED_SRAND48
 static unsigned long R1 = 0x1234abcd;
@@ -723,16 +737,16 @@ mydirname(char *s)
     return allocStr(s, strlen(s) - strlen(p) + 1);
 }
 
-#ifndef STRERROR
+#ifndef HAVE_STRERROR
 char *
 strerror(int errno)
 {
     extern char *sys_errlist[];
     return sys_errlist[errno];
 }
-#endif				/* not STRERROR */
+#endif				/* not HAVE_STRERROR */
 
-#ifndef SYS_ERRLIST
+#ifndef HAVE_SYS_ERRLIST
 char **sys_errlist;
 
 prepare_sys_errlist()
@@ -748,7 +762,7 @@ prepare_sys_errlist()
     for (i = 1; i < n; i++)
 	sys_errlist[i] = strerror(i);
 }
-#endif				/* not SYS_ERRLIST */
+#endif				/* not HAVE_SYS_ERRLIST */
 
 int
 next_status(char c, int *status)

@@ -10,9 +10,6 @@
 #endif				/* REGEX_DEBUG */
 #include <ctype.h>
 #include <gc.h>
-#ifdef __EMX__
-#include <strings.h>
-#endif
 #include "fm.h"
 #include "regex.h"
 

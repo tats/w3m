@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.6 2001/11/16 03:58:49 ukai Exp $ */
+/* $Id: file.c,v 1.7 2001/11/16 22:02:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7,9 +7,6 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <time.h>
-#ifdef __EMX__
-#include <strings.h>
-#endif				/* __EMX__ */
 #include <sys/stat.h>
 #include <fcntl.h>
 /* foo */
@@ -149,19 +146,6 @@ char           *violations[COO_EMAX] = {
 #endif
 
 #define SAVE_BUF_SIZE 1536
-
-#ifndef STRCHR
-char *
-strchr(char *s, char c)
-{
-    while (*s) {
-	if (*s == c)
-	    return s;
-	s++;
-    }
-    return NULL;
-}
-#endif				/* not STRCHR */
 
 static MySignalHandler
 KeyAbort(SIGNAL_ARG)

@@ -1,6 +1,3 @@
-#ifdef __EMX__
-#include <strings.h>        /* for bzero() */
-#endif                /* __EMX__ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"

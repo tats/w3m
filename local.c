@@ -5,9 +5,9 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <errno.h>
-#ifdef READLINK
+#ifdef HAVE_READLINK
 #include <unistd.h>
-#endif				/* READLINK */
+#endif				/* HAVE_READLINK */
 #ifdef __EMX__
 #include <limits.h>
 #endif                /* __EMX__ */
@@ -42,10 +42,10 @@ dirBuffer(char *dname)
     char **flist;
     char *p, *qdir;
     Str fbuf = Strnew();
-#ifdef READLINK
+#ifdef HAVE_READLINK
     struct stat lst;
     char lbuf[1024];
-#endif				/* READLINK */
+#endif				/* HAVE_READLINK */
     int i, l, nrow, n = 0, maxlen = 0;
     int nfile, nfile_max = 100;
     Str dirname;
@@ -90,7 +90,7 @@ dirBuffer(char *dname)
 	if (Strlastchar(fbuf) != '/')
 	    Strcat_char(fbuf, '/');
 	Strcat_charp(fbuf, p);
-#ifdef READLINK
+#ifdef HAVE_READLINK /* readlink == lstat() ? (ukai) */
 	if (lstat(fbuf->ptr, &lst) < 0)
 	    continue;
 #endif				/* READLINK */
@@ -103,10 +103,10 @@ dirBuffer(char *dname)
 	else {
 	    if (S_ISDIR(st.st_mode))
 		Strcat_charp(tmp, "[DIR]&nbsp; ");
-#ifdef READLINK
+#ifdef HAVE_READLINK
 	    else if (S_ISLNK(lst.st_mode))
 		Strcat_charp(tmp, "[LINK] ");
-#endif				/* READLINE */
+#endif				/* HAVE_READLINE */
 	    else
 		Strcat_charp(tmp, "[FILE] ");
 	}
@@ -127,7 +127,7 @@ dirBuffer(char *dname)
 	    }
 	}
 	else {
-#ifdef READLINK
+#ifdef HAVE_READLINK
 	    if (S_ISLNK(lst.st_mode)) {
 		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf))) > 0) {
 		    lbuf[l] = '\0';
@@ -136,7 +136,7 @@ dirBuffer(char *dname)
 			Strcat_char(tmp, '/');
 		}
 	    }
-#endif				/* READLINK */
+#endif				/* HAVE_READLINK */
 	    Strcat_charp(tmp, "<br>\n");
 	}
     }

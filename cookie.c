@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: cookie.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -11,10 +11,6 @@
 
 #include "fm.h"
 #include "html.h"
-
-#ifdef __EMX__
-#include <strings.h>
-#endif
 
 #ifdef USE_COOKIE
 #include <time.h>

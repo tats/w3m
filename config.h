@@ -168,26 +168,24 @@ MODEL=Linux.i686-monster-ja
 #define DEF_SAVE_FILE "index.html"
 
 #undef USE_BINMODE_STREAM
-#define TERMIOS
-#define DIRENT
-#define STRCASECMP
-#define STRCHR
-#define STRERROR
-#define SYS_ERRLIST
-#undef NOBCOPY
+#define HAVE_TERMIOS_H
+#define HAVE_DIRENT_H
+#define HAVE_STRCASECMP
+#define HAVE_STRCHR
+#define HAVE_STRERROR
+#define HAVE_SYS_ERRLIST
+#define HAVE_BCOPY
 #define HAVE_WAITPID
 #define HAVE_WAIT3
 #define HAVE_STRFTIME
 
-#define GETCWD
-#define GETWD
-#define READLINK
+#define HAVE_GETCWD
+#define HAVE_GETWD
+#define HAVE_READLINK
 #define HAVE_SETENV
 #define HAVE_PUTENV
 #define HAVE_SRAND48
 #define HAVE_SRANDOM
-#define READLINK
-
 
 #define SETJMP(env) sigsetjmp(env,1)
 #define LONGJMP(env,val) siglongjmp(env,val)
@@ -209,7 +207,7 @@ typedef void MySignalHandler;
 #undef TABLE_NO_COMPACT
 #define NOWRAP 1
 #define MATRIX 1
-#undef NO_FLOAT_H
+#define HAVE_FLOAT_H
 
 #ifndef HAVE_SRAND48
 #ifdef HAVE_SRANDOM

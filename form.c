@@ -1,5 +1,5 @@
 
-/* $Id: form.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: form.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -648,10 +648,10 @@ form_write_from_file(FILE * f, char *boundary, char *name, char *filename, char 
     fprintf(f, "Content-Type: %s\r\n\r\n",
 	type ? type : "application/octet-stream");
 
-#ifdef	READLINK
+#ifdef	HAVE_READLINK /* readline == lstat ? (ukai) */
     if (lstat(file, &st) < 0)
 	goto write_end;
-#endif				/* READLINK */
+#endif				/* HAVE_READLINK */
     if (S_ISDIR(st.st_mode))
 	goto write_end;
     fd = fopen(file, "r");

@@ -6,13 +6,13 @@
 #define LOCAL_H
 
 #include <sys/types.h>
-#ifdef DIRENT
+#ifdef HAVE_DIRENT_H
 #include <dirent.h>
 typedef struct dirent Directory;
-#else				/* not DIRENT */
+#else				/* not HAVE_DIRENT_H */
 #include <sys/dir.h>
 typedef struct direct Directory;
-#endif				/* not DIRENT */
+#endif				/* not HAVE_DIRENT_H */
 #include <sys/stat.h>
 
 #ifndef S_IFMT
@@ -32,13 +32,13 @@ typedef struct direct Directory;
 #define S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)
 #endif				/* not S_ISDIR */
 
-#ifdef READLINK
+#ifdef HAVE_READLINK
 #ifndef S_IFLNK
 #define S_IFLNK 0120000
 #endif				/* not S_IFLNK */
 #ifndef S_ISLNK
 #define S_ISLNK(m)	(((m) & S_IFMT) == S_IFLNK)
 #endif				/* not S_ISLNK */
-#endif				/* not READLINK */
+#endif				/* not HAVE_READLINK */
 
 #endif				/* not LOCAL_H */

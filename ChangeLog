@@ -1,5 +1,45 @@
 2001-11-17  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* configure: follow autoconf conventions
+	  STRCASECMP -> HAVE_STRCASECMP
+	  STRCHR -> HAVE_STRCHR
+	  STRERROR -> HAVE_STRERROR
+	  SYS_ERRLIST -> HAVE_SYS_ERRLIST
+	  NOBCOPY -> HAVE_BCOPY
+	  GETCWD -> HAVE_GETCWD
+	  GETWD -> HAVE_GETWD
+	  READLINK -> HAVE_READLINK (HAVE_LSTAT?)
+	  TERMIO -> HAVE_TERMIO_H
+	  TERMIOS -> HAVE_TERMIOS_H
+	  SGTTY -> HAVE_SGTTY_H
+	  DIRENT -> HAVE_DIRENT_H
+	  NO_FLOAT_H -> HAVE_FLOAT_H
+	* etc.c fm.h config.h: HAVE_STRCASECMP
+	* etc.c config.h file.c: HAVE_STRCHR
+	    strchr() moved from file.c to etc.c
+	* etc.c config.h: HAVE_STRERROR
+	* etc.c config.h main.c (MAIN): HAVE_SYS_ERRLIST
+	* etc.c fm.h: HAVE_BCOPY
+	* etc.c indep.c (currentdir) config.h: HAVE_GETCWD
+	* indep.c (currentdir) config.h: HAVE_GETWD
+	* form.c (form_write_from_file) local.c (dirBuffer) 
+	  config.h: HAVE_READLINK
+	* config.h terms.c: HAVE_TERMIO_H, HAVE_TERMIOS_H, HAVE_SGTTY_H
+	* config.h local.h: HAVE_DIRENT_H
+	* config.h matric.c: HAVE_FLOAT_H
+
+	* anchor.c cookie.c file.c parsetagx.c regex.c table.c url.c: 
+	  remove include <strings.h> ifdef __EMX__
+	   it will be included in fm.h
+	* frame.c: remove include <strings.h> for bzero() and bcopy()
+	    these are declared in fm.h
+	* indep.c: remove include <strings.h> for bcopy()
+	    this is declared in fm.h
+	* istream.c mailcap.c: remove include <strings.h> for bzero()
+	    this is declared in fm.h
+	* parsetag.c: remove include <strings.h> for bzero()
+	    no bzero() used in this file
+
 	* terms.c (set_tty): "rxvt" is xterm
 	  (getTCstr): tgetstr("Km", &pt) is not xterm, removed
 	  (mouse_init): check Gpm_Open() == -2 to detect xterm when USE_GPM

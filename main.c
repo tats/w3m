@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.6 2001/11/16 17:25:52 ukai Exp $ */
+/* $Id: main.c,v 1.7 2001/11/16 22:02:00 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -13,7 +13,7 @@
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
-#ifdef __EMX__
+#ifdef __EMX__	/* HAVE_TIME_H? */
 #include <time.h>                /* for time() */
 #endif                /* __EMX__ */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
@@ -263,9 +263,9 @@ MAIN(int argc, char **argv, char **envp)
     char *post_file = NULL;
     Str err_msg;
 
-#ifndef SYS_ERRLIST
+#ifndef HAVE_SYS_ERRLIST
     prepare_sys_errlist();
-#endif				/* not SYS_ERRLIST */
+#endif				/* not HAVE_SYS_ERRLIST */
 
     srand48(time(0));
 

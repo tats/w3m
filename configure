@@ -1015,10 +1015,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have strcasecmp()."
-  strcasecmp_flg="#define STRCASECMP"
+  strcasecmp_flg="#define HAVE_STRCASECMP"
 else
   echo "You don't have strcasecmp()."
-  strcasecmp_flg="#undef STRCASECMP"
+  strcasecmp_flg="#undef HAVE_STRCASECMP"
 fi
 
 ####### strchr
@@ -1033,10 +1033,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have strchr()."
-  strchr_flg="#define STRCHR"
+  strchr_flg="#define HAVE_STRCHR"
 else
   echo "You don't have strchr()."
-  strchr_flg="#undef STRCHR"
+  strchr_flg="#undef HAVE_STRCHR"
 fi
 
 ####### strerror
@@ -1050,10 +1050,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have strerror()."
-  strerror_flg="#define STRERROR"
+  strerror_flg="#define HAVE_STRERROR"
 else
   echo "You don't have strerror()."
-  strerror_flg="#undef STRERROR"
+  strerror_flg="#undef HAVE_STRERROR"
 fi
 
 
@@ -1067,10 +1067,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have sys_errlist[]."
-  syserrlist_flg="#define SYS_ERRLIST"
+  syserrlist_flg="#define HAVE_SYS_ERRLIST"
 else
   echo "You don't have sys_errlist[]."
-  syserrlist_flg="#undef SYS_ERRLIST"
+  syserrlist_flg="#undef HAVE_SYS_ERRLIST"
 fi
 
 ####### bcopy
@@ -1085,10 +1085,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have bcopy()."
-  bcopy_flg="#undef NOBCOPY"
+  bcopy_flg="#define HAVE_BCOPY"
 else
   echo "You don't have bcopy()."
-  bcopy_flg="#define NOBCOPY"
+  bcopy_flg="#undef HAVE_BCOPY"
 fi
 
 ####### waitpid
@@ -1183,10 +1183,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have getcwd()."
-  getcwd_flg="#define GETCWD"
+  getcwd_flg="#define HAVE_GETCWD"
 else
   echo "You don't have getcwd()."
-  getcwd_flg="#undef GETCWD"
+  getcwd_flg="#undef HAVE_GETCWD"
 fi
 
 ####### getwd
@@ -1200,10 +1200,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have getwd()."
-  getwd_flg="#define GETWD"
+  getwd_flg="#define HAVE_GETWD"
 else
   echo "You don't have getwd()."
-  getwd_flg="#undef GETWD"
+  getwd_flg="#undef HAVE_GETWD"
 fi
 
 ####### readlink
@@ -1217,10 +1217,10 @@ EOF
 if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
 then
   echo "You have readlink()."
-  readlink_flg="#define READLINK"
+  readlink_flg="#define HAVE_READLINK"
 else
   echo "You don't have readlink()."
-  readlink_flg="#undef READLINK"
+  readlink_flg="#undef HAVE_READLINK"
 fi
 
 ####### setenv
@@ -1373,22 +1373,22 @@ fi
 term_if='#define SGTTY'
 if [ $sysname = "HP-UX" ]; then
 	echo "Your OS is HP-UX; using termio"
-	term_if="#define TERMIO"
+	term_if="#define HAVE_TERMIO_H"
 elif [ $sysname = "CYGWIN" ]; then
 	echo "Your OS is CYGWIN; using termios"
-	term_if="#define TERMIOS"
+	term_if="#define HAVE_TERMIOS_H"
 elif [ $sysname = "OS/2" ]; then
 	echo "Your OS is OS/2; using termios"
-	term_if='#define TERMIOS'
+	term_if='#define HAVE_TERMIOS_H'
 elif [ -r /usr/include/termios.h ]; then
 	echo "You have termios."
-	term_if='#define TERMIOS'
+	term_if='#define HAVE_TERMIOS_H'
 elif [ -r /usr/include/termio.h ]; then
 	echo "You have termio."
-	term_if='#define TERMIO'
+	term_if='#define HAVE_TERMIO_H'
 elif [ -r /usr/include/sgtty.h ]; then
 	echo "You have sgtty."
-	term_if='#define SGTTY'
+	term_if='#define HAVE_SGTTY_H'
 else
 	echo "Do you have tty interface? I can't find one but I hope sgtty works..."
 fi
@@ -1397,13 +1397,13 @@ fi
 dir_if=''
 if [ $sysname = "CYGWIN" ]; then
 	echo "Your OS is CYGWIN; using dirent.h"
-	dir_if='#define DIRENT'
+	dir_if='#define HAVE_DIRENT_H'
 elif [ $sysname = "OS/2" ]; then
 	echo "Your OS is OS/2; using dirent.h"
-	dir_if='#define DIRENT'
+	dir_if='#define HAVE_DIRENT_H'
 elif [ -r /usr/include/dirent.h ]; then
 	echo "You have dirent.h."
-	dir_if='#define DIRENT'
+	dir_if='#define HAVE_DIRENT_H'
 elif [ -r /usr/include/sys/dir.h ]; then
 	echo "You have sys/dir.h."
 	dir_if=''
@@ -1466,9 +1466,9 @@ EOF
 if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
 then
   echo "You have float.h."
-  no_float_h='#undef NO_FLOAT_H'
+  no_float_h='#define HAVE_FLOAT_H'
 else
-  no_float_h='#define NO_FLOAT_H 1'
+  no_float_h='#undef HAVE_FLOAT_H'
 fi
 
 ####### setpgrp(pid, pgrp) or setpgrp() ?

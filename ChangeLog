@@ -1,3 +1,8 @@
+2002-10-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.3.2 release candidate 2
+	* version.c.in: update
+
 2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00788]
@@ -3987,4 +3992,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.450 2002/10/26 11:19:47 ukai Exp $
+$Id: ChangeLog,v 1.451 2002/10/27 14:47:35 ukai Exp $

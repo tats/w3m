@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.207 2003/01/30 16:35:38 ukai Exp $ */
+/* $Id: main.c,v 1.208 2003/01/31 16:14:26 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1566,9 +1566,13 @@ srchcore(char *str, int (*func) (Buffer *, char *))
 
     prevtrap = signal(SIGINT, intTrap);
     crmode();
-    if (SETJMP(IntReturn) == 0)
-	for (i = 0; i < PREC_NUM; i++)
+    if (SETJMP(IntReturn) == 0) {
+	for (i = 0; i < PREC_NUM; i++) {
 	    result = func(Currentbuf, SearchString);
+	    if (i < PREC_NUM - 1 && result & SR_FOUND)
+		clear_mark(Currentbuf->currentLine);
+	}
+    }
     signal(SIGINT, prevtrap);
     term_raw();
     return result;

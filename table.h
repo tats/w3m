@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.6 2002/11/05 15:45:53 ukai Exp $ */
+/* $Id: table.h,v 1.7 2002/11/15 16:00:34 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -34,6 +34,7 @@ typedef unsigned short table_attr;
 #define TBL_IN_COL     4
 
 #define MAXCELL 20
+#define MAXROWCELL 1000
 struct table_cell {
     short col[MAXCELL];
     short colspan[MAXCELL];

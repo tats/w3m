@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.16 2002/11/05 17:10:07 ukai Exp $ */
+/* $Id: menu.c,v 1.17 2002/11/11 15:33:38 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1085,7 +1085,6 @@ mSrchP(char c)
 #define MOUSE_BTN5_DOWN_XTERM 65
 #define MOUSE_BTN_UP 3
 #define MOUSE_BTN_RESET -1
-#define MOUSE_SCROLL_LINE 5
 
 static int
 process_mMouse(int btn, int x, int y)

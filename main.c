@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.126 2002/11/11 15:16:38 ukai Exp $ */
+/* $Id: main.c,v 1.127 2002/11/11 15:33:36 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4656,6 +4656,15 @@ stopI(void)
 
 #ifdef USE_MOUSE
 
+static int
+mouse_scroll_line(void)
+{
+    if (relative_wheel_scroll)
+	return (relative_wheel_scroll_ratio * LASTLINE + 99) / 100;
+    else
+	return fixed_wheel_scroll_count;
+}
+
 static TabBuffer *
 posTab(int x, int y)
 {
@@ -4814,21 +4823,21 @@ process_mouse(int btn, int x, int y)
 #endif				/* USE_MENU */
 	    break;
 	case MOUSE_BTN4_DOWN_RXVT:
-	    for (i = 0; i < MOUSE_SCROLL_LINE; i++)
+	    for (i = 0; i < mouse_scroll_line(); i++)
 		ldown1();
 	    break;
 	case MOUSE_BTN5_DOWN_RXVT:
-	    for (i = 0; i < MOUSE_SCROLL_LINE; i++)
+	    for (i = 0; i < mouse_scroll_line(); i++)
 		lup1();
 	    break;
 	}
     }
     else if (btn == MOUSE_BTN4_DOWN_XTERM) {
-	for (i = 0; i < MOUSE_SCROLL_LINE; i++)
+	for (i = 0; i < mouse_scroll_line(); i++)
 	    ldown1();
     }
     else if (btn == MOUSE_BTN5_DOWN_XTERM) {
-	for (i = 0; i < MOUSE_SCROLL_LINE; i++)
+	for (i = 0; i < mouse_scroll_line(); i++)
 	    lup1();
     }
 

@@ -1,3 +1,23 @@
+2002-11-12  AIDA Shinra <aida-s@jcom.home.ne.jp>
+
+	* [w3m-dev 03408] fix Bug#87472
+	    MOUSE_SCROLL_LINE should be a run-time option
+	* fm.h (relative_wheel_scroll): added
+		(fixed_wheel_scroll_count): added
+		(relative_wheel_scroll_ratio): added
+	* main.c (mouse_scroll_line): added
+		(process_mouse): s/MOUSE_SCROLL_LINE/mouse_scroll_line()/
+	* menu.c (MOUSE_SCROLL_LINE): deleted
+	* terms.h (MOUSE_SCROLL_LINE): deleted
+	* rc.c (CMT_RELATIVE_WHEEL_SCROLL): added
+		(CMT_RELATIVE_WHEEL_SCROLL_RATIO): added
+		(CMT_FIXED_WHEEL_SCROLL_COUNT): added
+		(wheelmode): added
+		(params3): add relative_wheel_scroll,
+				relative_wheel_scroll_ratio,
+				fixed_wheel_scroll_count
+	* NEWS: updated
+
 2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03407] char GlobalKeymap -> unsigned char GlobalKeymap
@@ -4516,4 +4536,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.496 2002/11/11 15:22:37 ukai Exp $
+$Id: ChangeLog,v 1.497 2002/11/11 15:33:28 ukai Exp $

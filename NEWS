@@ -1,5 +1,8 @@
 w3m 0.3.3 or 0.4?
 
+* rc: relative_wheel_scroll
+* rc: relative_wheel_scroll_ratio
+* rc: fixed_wheel_scroll_count
 * separate auxbindir and libdir (local-CGI, file:///$LIB/)
 * configure: -auxbindir
 * rc: disable_secret_security_check (for windows?)

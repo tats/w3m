@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.10 2003/07/22 17:29:48 ukai Exp $ */
+/* $Id: history.c,v 1.11 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -9,6 +9,7 @@ historyBuffer(Hist *hist)
     HistItem *item;
     char *p, *q;
 
+    /* FIXME: gettextize? */
     Strcat_charp(src, "<html>\n<head><title>History Page</title></head>\n");
     Strcat_charp(src, "<body>\n<h1>History Page</h1>\n<hr>\n");
     Strcat_charp(src, "<ol>\n");
@@ -64,6 +65,7 @@ saveHistory(Hist *hist, size_t size)
 	return;
     tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
     if ((f = fopen(tmpf, "w")) == NULL) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't open history", FALSE);
 	return;
     }
@@ -73,6 +75,7 @@ saveHistory(Hist *hist, size_t size)
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
     if (fclose(f) == EOF) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't save history", FALSE);
 	return;
     }

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.32 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: form.c,v 1.33 2003/09/26 17:59:51 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -572,6 +572,7 @@ input_textarea(FormItemList *fi)
 
     f = fopen(tmpf, "w");
     if (f == NULL) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't open temporary file", FALSE);
 	return;
     }
@@ -587,6 +588,7 @@ input_textarea(FormItemList *fi)
 	goto input_end;
     f = fopen(tmpf, "r");
     if (f == NULL) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't open temporary file", FALSE);
 	goto input_end;
     }

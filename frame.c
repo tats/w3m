@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.33 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: frame.c,v 1.34 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -472,6 +472,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 	    }
 	    switch (frame.element->attr) {
 	    default:
+		/* FIXME: gettextize? */
 		fprintf(f1, "Frameset \"%s\" frame %d: type unrecognized",
 			html_quote(f->name), i + 1);
 		break;
@@ -498,12 +499,15 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		if (f2.stream == NULL) {
 		    frame.body->attr = F_UNLOADED;
 		    if (frame.body->flags & FB_NO_BUFFER)
+			/* FIXME: gettextize? */
 			fprintf(f1, "Open %s with other method",
 				html_quote(frame.body->url));
 		    else if (frame.body->url)
+			/* FIXME: gettextize? */
 			fprintf(f1, "Can't open %s",
 				html_quote(frame.body->url));
 		    else
+			/* FIXME: gettextize? */
 			fprintf(f1,
 				"This frame (%s) contains no src attribute",
 				frame.body->name ? html_quote(frame.body->name)

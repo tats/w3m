@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.228 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: file.c,v 1.229 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -134,6 +134,7 @@ static int cur_iseq;
 
 #ifdef USE_COOKIE
 /* This array should be somewhere else */
+/* FIXME: gettextize? */
 char *violations[COO_EMAX] = {
     "internal error",
     "tail match failed",
@@ -1440,6 +1441,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	    if (fmInitialized) {
 		char *pp;
 		term_raw();
+		/* FIXME: gettextize? */
 		if ((pp =
 		     inputStr(Sprintf("Username for %s: ", realm)->ptr,
 			      NULL)) == NULL)
@@ -1461,11 +1463,13 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 		 * (This is same behavior as lwp-request.)
 		 */
 		if (feof(stdin) || ferror(stdin)) {
+		    /* FIXME: gettextize? */
 		    fprintf(stderr, "w3m: Authorization required for %s\n",
 			    realm);
 		    exit(1);
 		}
 
+		/* FIXME: gettextize? */
 		printf(proxy ? "Proxy Username for %s: " : "Username for %s: ",
 		       realm);
 		fflush(stdout);
@@ -1516,6 +1520,7 @@ checkRedirection(ParsedURL *pu)
 	return TRUE;
     }
     if (nredir >= FollowRedirection) {
+	/* FIXME: gettextize? */
 	tmp = Sprintf("Number of redirections exceeded %d at %s",
 		      FollowRedirection, parsedURL2Str(pu)->ptr);
 	disp_err_message(tmp->ptr, FALSE);
@@ -1525,6 +1530,7 @@ checkRedirection(ParsedURL *pu)
 	     (same_url_p(pu, &puv[(nredir - 1) % nredir_size]) ||
 	      (!(nredir % 2)
 	       && same_url_p(pu, &puv[(nredir / 2) % nredir_size])))) {
+	/* FIXME: gettextize? */
 	tmp = Sprintf("Redirection loop detected (%s)",
 		      parsedURL2Str(pu)->ptr);
 	disp_err_message(tmp->ptr, FALSE);
@@ -1634,6 +1640,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		return b;
 	    }
 #endif
+	    /* FIXME: gettextize? */
 	    disp_err_message(Sprintf("Unknown URI: %s",
 				     parsedURL2Str(&pu)->ptr)->ptr, FALSE);
 	    break;
@@ -1681,6 +1688,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
 	if (fmInitialized) {
 	    term_cbreak();
+	    /* FIXME: gettextize? */
 	    message(Sprintf("%s contacted. Waiting for reply...", pu.host)->
 		    ptr, 0, 0);
 	    refresh();
@@ -2528,6 +2536,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
 	*hidden_under = NULL, *hidden = NULL;
 
+#ifdef DEBUG
     if (w3m_debug) {
 	FILE *df = fopen("zzzproc1", "a");
 	fprintf(df, "flushline(%s,%d,%d,%d)\n", obuf->line->ptr, indent, force,
@@ -2540,6 +2549,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	}
 	fclose(df);
     }
+#endif
 
     if (!(obuf->flag & (RB_SPECIAL & ~RB_NOBR)) && Strlastchar(line) == ' ') {
 	Strshrink(line, 1);
@@ -4910,7 +4920,9 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     Lineprop mode, effect;
     int pos;
     int nlines;
+#ifdef DEBUG
     FILE *debug = NULL;
+#endif
     struct frameset *frameset_s[FRAMESTACK_SIZE];
     int frameset_sp = -1;
     union frameset_element *idFrame = NULL;
@@ -4946,16 +4958,20 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     }
 #endif
 
+#ifdef DEBUG
     if (w3m_debug)
 	debug = fopen("zzzerr", "a");
+#endif
 
     effect = 0;
     nlines = 0;
     while ((line = feed()) != NULL) {
+#ifdef DEBUG
 	if (w3m_debug) {
 	    Strfputs(line, debug);
 	    fputc('\n', debug);
 	}
+#endif
 	if (n_textarea >= 0 && *(line->ptr) != '<') {	/* halfload */
 	    Strcat(textarea_str[n_textarea], line);
 	    continue;
@@ -5516,8 +5532,10 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	    goto proc_again;
 	}
     }
+#ifdef DEBUG
     if (w3m_debug)
 	fclose(debug);
+#endif
     for (form_id = 1; form_id <= form_max; form_id++)
 	forms[form_id]->next = forms[form_id - 1];
     buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
@@ -5682,6 +5700,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
     int is_hangul, prev_is_hangul = 0;
 #endif
 
+#ifdef DEBUG
     if (w3m_debug) {
 	FILE *f = fopen("zzzproc1", "a");
 	fprintf(f, "%c%c%c%c",
@@ -5693,6 +5712,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		(unsigned long)h_env);
 	fclose(f);
     }
+#endif
 
     tokbuf = Strnew();
 
@@ -7519,6 +7539,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
     if (fmInitialized) {
 	p = searchKeyData();
 	if (p == NULL || *p == '\0') {
+	    /* FIXME: gettextize? */
 	    q = inputLineHist("(Download)Save file to: ",
 			      defstr, IN_COMMAND, SaveHist);
 	    if (q == NULL || *q == '\0')
@@ -7537,6 +7558,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		return -1;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
+	    /* FIXME: gettextize? */
 	    msg = Sprintf("Can't copy. %s and %s are identical.",
 			  conv_from_system(tmpf), conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
@@ -7544,6 +7566,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	}
 	if (!download) {
 	    if (_MoveFile(tmpf, p) < 0) {
+		/* FIXME: gettextize? */
 		msg = Sprintf("Can't save to %s", conv_from_system(p));
 		disp_err_message(msg->ptr, FALSE);
 	    }
@@ -7574,6 +7597,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
     else {
 	q = searchKeyData();
 	if (q == NULL || *q == '\0') {
+	    /* FIXME: gettextize? */
 	    printf("(Download)Save file to: ");
 	    fflush(stdout);
 	    filen = Strfgets(stdin);
@@ -7594,10 +7618,12 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		return -1;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
+	    /* FIXME: gettextize? */
 	    printf("Can't copy. %s and %s are identical.", tmpf, p);
 	    return -1;
 	}
 	if (_MoveFile(tmpf, p) < 0) {
+	    /* FIXME: gettextize? */
 	    printf("Can't save to %s\n", p);
 	    return -1;
 	}
@@ -7630,6 +7656,7 @@ doFileSave(URLFile uf, char *defstr)
     if (fmInitialized) {
 	p = searchKeyData();
 	if (p == NULL || *p == '\0') {
+	    /* FIXME: gettextize? */
 	    p = inputLineHist("(Download)Save file to: ",
 			      defstr, IN_FILENAME, SaveHist);
 	    if (p == NULL || *p == '\0')
@@ -7639,6 +7666,7 @@ doFileSave(URLFile uf, char *defstr)
 	if (checkOverWrite(p) < 0)
 	    return -1;
 	if (checkSaveFile(uf.stream, p) < 0) {
+	    /* FIXME: gettextize? */
 	    msg = Sprintf("Can't save. Load file and %s are identical.",
 			  conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
@@ -7673,6 +7701,7 @@ doFileSave(URLFile uf, char *defstr)
     else {
 	q = searchKeyData();
 	if (q == NULL || *q == '\0') {
+	    /* FIXME: gettextize? */
 	    printf("(Download)Save file to: ");
 	    fflush(stdout);
 	    filen = Strfgets(stdin);
@@ -7688,10 +7717,12 @@ doFileSave(URLFile uf, char *defstr)
 	if (checkOverWrite(p) < 0)
 	    return -1;
 	if (checkSaveFile(uf.stream, p) < 0) {
+	    /* FIXME: gettextize? */
 	    printf("Can't save. Load file and %s are identical.", p);
 	    return -1;
 	}
 	if (save2tmp(uf, p) < 0) {
+	    /* FIXME: gettextize? */
 	    printf("Can't save to %s\n", p);
 	    return -1;
 	}
@@ -7738,6 +7769,7 @@ checkOverWrite(char *path)
 
     if (stat(path, &st) < 0)
 	return 0;
+    /* FIXME: gettextize? */
     ans = inputAnswer("File exists. Overwrite? (y/n)");
     if (ans && TOLOWER(*ans) == 'y')
 	return 0;

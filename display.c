@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.67 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: display.c,v 1.68 2003/09/26 17:59:51 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -334,6 +334,7 @@ make_lastline_message(Buffer *buf)
 	Strcat(msg, Sprintf("%d/%d (%d%%)", cl, ll, r));
     }
     else
+	/* FIXME: gettextize? */
 	Strcat_charp(msg, "Viewing");
 #ifdef USE_SSL
     if (buf->ssl_certificate)
@@ -475,6 +476,7 @@ displayBuffer(Buffer *buf, int mode)
 
     msg = make_lastline_message(buf);
     if (buf->firstLine == NULL) {
+	/* FIXME: gettextize? */
 	Strcat_charp(msg, "\tNo Line");
     }
     if (delayed_msg != NULL) {
@@ -1194,6 +1196,7 @@ message_list_panel(void)
     Str tmp = Strnew_size(LINES * COLS);
     ListItem *p;
 
+    /* FIXME: gettextize? */
     Strcat_charp(tmp,
 		 "<html><head><title>List of error messages</title></head><body>"
 		 "<h1>List of error messages</h1><table cellpadding=0>\n");

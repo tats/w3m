@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.21 2003/02/18 15:43:25 ukai Exp $ */
+/* $Id: istream.c,v 1.22 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -454,6 +454,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	    if (i < n)		/* Found a match */
 		match_ident = TRUE;
 	    else if (seen_dnsname)
+		/* FIXME: gettextize? */
 		ret = Sprintf("Bad cert ident from %s: dNSName=%s", hostname,
 			      seen_dnsname->ptr);
 	}
@@ -467,8 +468,10 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 
 	if (X509_NAME_get_text_by_NID(xn, NID_commonName,
 				      buf, sizeof(buf)) == -1)
+	    /* FIXME: gettextize? */
 	    ret = Strnew_charp("Unable to get common name from peer cert");
 	else if (!ssl_match_cert_ident(buf, strlen(buf), hostname))
+	    /* FIXME: gettextize? */
 	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
 	else
 	    match_ident = TRUE;
@@ -498,13 +501,16 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
 	    ans = "y";
 	else {
+	    /* FIXME: gettextize? */
 	    emsg = Strnew_charp("No SSL peer certificate: accept? (y/n)");
 	    ans = inputAnswer(emsg->ptr);
 	}
 	if (ans && TOLOWER(*ans) == 'y')
+	    /* FIXME: gettextize? */
 	    amsg = Strnew_charp
 		("Accept SSL session without any peer certificate");
 	else {
+	    /* FIXME: gettextize? */
 	    char *e = "This SSL session was rejected "
 		"to prevent security violation: no peer certificate";
 	    disp_err_message(e, FALSE);
@@ -514,6 +520,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	if (amsg)
 	    disp_err_message(amsg->ptr, FALSE);
 	ssl_accept_this_site(hostname);
+	/* FIXME: gettextize? */
 	s = amsg ? amsg : Strnew_charp("valid certificate");
 	return s;
     }
@@ -531,14 +538,17 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 		&& strcasecmp(accept_this_site->ptr, hostname) == 0)
 		ans = "y";
 	    else {
+		/* FIXME: gettextize? */
 		emsg = Sprintf("%s: accept? (y/n)", em);
 		ans = inputAnswer(emsg->ptr);
 	    }
 	    if (ans && TOLOWER(*ans) == 'y') {
+		/* FIXME: gettextize? */
 		amsg = Sprintf("Accept unsecure SSL session: "
 			       "unverified: %s", em);
 	    }
 	    else {
+		/* FIXME: gettextize? */
 		char *e =
 		    Sprintf("This SSL session was rejected: %s", em)->ptr;
 		disp_err_message(e, FALSE);
@@ -561,10 +571,12 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	    ans = inputAnswer(ep->ptr);
 	}
 	if (ans && TOLOWER(*ans) == 'y') {
+	    /* FIXME: gettextize? */
 	    amsg = Strnew_charp("Accept unsecure SSL session:");
 	    Strcat(amsg, emsg);
 	}
 	else {
+	    /* FIXME: gettextize? */
 	    char *e = "This SSL session was rejected "
 		"to prevent security violation";
 	    disp_err_message(e, FALSE);
@@ -575,6 +587,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
     if (amsg)
 	disp_err_message(amsg->ptr, FALSE);
     ssl_accept_this_site(hostname);
+    /* FIXME: gettextize? */
     s = amsg ? amsg : Strnew_charp("valid certificate");
     Strcat_charp(s, "\n");
     xn = X509_get_subject_name(x);

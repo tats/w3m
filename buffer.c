@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.28 2003/09/22 21:02:16 ukai Exp $ */
+/* $Id: buffer.c,v 1.29 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -207,6 +207,7 @@ writeBufferName(Buffer *buf, int n)
     if (all == 0 && buf->lastLine != NULL)
 	all = buf->lastLine->linenumber;
     move(n, 0);
+    /* FIXME: gettextize? */
     msg = Sprintf("<%s> [%d lines]", buf->buffername, all);
     if (buf->filename != NULL) {
 	switch (buf->currentURL.scheme) {
@@ -248,6 +249,7 @@ gotoLine(Buffer *buf, int n)
 	       (getNextPage(buf, 1) != NULL)) ;
     }
     if (l->linenumber > n) {
+	/* FIXME: gettextize? */
 	sprintf(msg, "First line is #%ld", l->linenumber);
 	set_delayed_message(msg);
 	buf->topLine = buf->currentLine = l;
@@ -255,6 +257,7 @@ gotoLine(Buffer *buf, int n)
     }
     if (buf->lastLine->linenumber < n) {
 	l = buf->lastLine;
+	/* FIXME: gettextize? */
 	sprintf(msg, "Last line is #%ld", buf->lastLine->linenumber);
 	set_delayed_message(msg);
 	buf->currentLine = l;
@@ -291,6 +294,7 @@ gotoRealLine(Buffer *buf, int n)
 	       (getNextPage(buf, 1) != NULL)) ;
     }
     if (l->real_linenumber > n) {
+	/* FIXME: gettextize? */
 	sprintf(msg, "First line is #%ld", l->real_linenumber);
 	set_delayed_message(msg);
 	buf->topLine = buf->currentLine = l;
@@ -298,6 +302,7 @@ gotoRealLine(Buffer *buf, int n)
     }
     if (buf->lastLine->real_linenumber < n) {
 	l = buf->lastLine;
+	/* FIXME: gettextize? */
 	sprintf(msg, "Last line is #%ld", buf->lastLine->real_linenumber);
 	set_delayed_message(msg);
 	buf->currentLine = l;
@@ -355,6 +360,7 @@ listBuffer(Buffer *top, Buffer *current)
 	buf = buf->nextBuffer;
     }
     standout();
+    /* FIXME: gettextize? */
     message("Buffer selection mode: SPC for select / D for delete buffer", 0,
 	    0);
     standend();

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.73 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: etc.c,v 1.74 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1101,6 +1101,7 @@ parsePasswd(FILE * fp, int netrc)
     add_auth_pass_entry(&ent, netrc);
 }
 
+/* FIXME: gettextize? */
 #define FILE_IS_READABLE_MSG "SECURITY NOTE: file %s must not be accessible by others"
 
 FILE *

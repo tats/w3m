@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.33 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: linein.c,v 1.34 2003/09/26 17:59:51 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -810,6 +810,7 @@ next_dcompl(int next)
 	move(y, 0);
 	clrtoeolx();
 	bold();
+	/* FIXME: gettextize? */
 	addstr("----- Completion list -----");
 	boldend();
 	y++;
@@ -834,8 +835,10 @@ next_dcompl(int next)
 	clrtoeolx();
 	bold();
 	if (emacs_like_lineedit)
+	    /* FIXME: gettextize? */
 	    addstr("----- Press TAB to continue -----");
 	else
+	    /* FIXME: gettextize? */
 	    addstr("----- Press CTRL-D to continue -----");
 	boldend();
     }

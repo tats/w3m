@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.234 2003/09/25 03:38:14 ukai Exp $ */
+/* $Id: main.c,v 1.235 2003/09/26 17:59:51 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -177,6 +177,7 @@ static void
 fusage(FILE * f, int err)
 {
     fversion(f);
+    /* FIXME: gettextize? */
     fprintf(f, "usage: w3m [options] [URL or filename]\noptions:\n");
     fprintf(f, "    -t tab           set tab width\n");
     fprintf(f, "    -r               ignore backspace effect\n");
@@ -708,6 +709,7 @@ main(int argc, char **argv, char **envp)
 		}
 		if (!set_param_option(argv[i])) {
 		    /* option set failed */
+		    /* FIXME: gettextize? */
 		    fprintf(stderr, "%s: bad option\n", argv[i]);
 		    show_params_p = 1;
 		    usage();
@@ -783,7 +785,8 @@ main(int argc, char **argv, char **envp)
 #ifdef USE_M17N
     wtf_init(DocumentCharset, DisplayCharset);
     /*  if (w3m_dump)
-     * WcOption.pre_conv = WC_TRUE; */
+     *    WcOption.pre_conv = WC_TRUE; 
+     */
 #endif
 
     if (w3m_backend)
@@ -813,6 +816,7 @@ main(int argc, char **argv, char **envp)
 		Strcat_charp(err_msg, "w3m: Can't load bookmark.\n");
 	}
 	else if (visual_start) {
+	    /* FIXME: gettextize? */
 	    Str s_page;
 	    s_page =
 		Strnew_charp
@@ -880,6 +884,7 @@ main(int argc, char **argv, char **envp)
 		    else
 			fp = fopen(post_file, "r");
 		    if (fp == NULL) {
+			/* FIXME: gettextize? */
 			Strcat(err_msg,
 			       Sprintf("w3m: Can't open %s.\n", post_file));
 			continue;
@@ -902,6 +907,7 @@ main(int argc, char **argv, char **envp)
 				    request);
 	    }
 	    if (newbuf == NULL) {
+		/* FIXME: gettextize? */
 		Strcat(err_msg,
 		       Sprintf("w3m: Can't load %s.\n", load_argv[i]));
 		continue;
@@ -982,6 +988,7 @@ main(int argc, char **argv, char **envp)
     if (!FirstTab || !Firstbuf || Firstbuf == NO_BUFFER) {
 	if (newbuf == NO_BUFFER) {
 	    if (fmInitialized)
+		/* FIXME: gettextize? */
 		inputChar("Hit any key to quit w3m:");
 	}
 	if (fmInitialized)
@@ -1804,6 +1811,7 @@ srch_nxtprv(int reverse)
     /* *INDENT-ON* */
 
     if (searchRoutine == NULL) {
+	/* FIXME: gettextize? */
 	disp_message("No previous regular expression", TRUE);
 	return;
     }
@@ -1949,6 +1957,7 @@ pipeBuf(void)
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
+	/* FIXME: gettextize? */
 	cmd = inputLineHist("Pipe buffer to: ", "", IN_COMMAND, ShellHist);
     }
     if (cmd != NULL)
@@ -1960,6 +1969,7 @@ pipeBuf(void)
     tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
     f = fopen(tmpf, "w");
     if (f == NULL) {
+	/* FIXME: gettextize? */
 	disp_message(Sprintf("Can't save buffer to %s", cmd)->ptr, TRUE);
 	return;
     }
@@ -2039,6 +2049,7 @@ readsh(void)
     mySignal(SIGINT, prevtrap);
     term_raw();
     if (buf == NULL) {
+	/* FIXME: gettextize? */
 	disp_message("Execution failed", TRUE);
 	return;
     }
@@ -2068,6 +2079,7 @@ execsh(void)
 	fmTerm();
 	printf("\n");
 	system(cmd);
+	/* FIXME: gettextize? */
 	printf("\n[Hit any key]");
 	fflush(stdout);
 	fmInit();
@@ -2084,6 +2096,7 @@ ldfile(void)
 
     fn = searchKeyData();
     if (fn == NULL || *fn == '\0') {
+	/* FIXME: gettextize? */
 	fn = inputFilenameHist("(Load)Filename? ", NULL, LoadHist);
     }
     if (fn != NULL)
@@ -2122,6 +2135,7 @@ cmd_loadfile(char *fn)
 
     buf = loadGeneralFile(file_to_url(fn), NULL, NO_REFERER, 0, NULL);
     if (buf == NULL) {
+	/* FIXME: gettextize? */
 	char *emsg = Sprintf("%s not found", conv_from_system(fn))->ptr;
 	disp_err_message(emsg, FALSE);
     }
@@ -2232,8 +2246,8 @@ movR1(void)
 /* movLW, movRW */
 /* 
  * From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp> Date: Mon, 14 Jun
- * 1999 09:29:56 +0900 */
-
+ * 1999 09:29:56 +0900 
+ */
 #define IS_WORD_CHAR(c,p) (IS_ALNUM(c) && CharType(p) == PC_ASCII)
 
 static int
@@ -2370,9 +2384,11 @@ _quitfm(int confirm)
     char *ans = "y";
 
     if (checkDownloadList())
+	/* FIXME: gettextize? */
 	ans = inputChar("Download process retains. "
 			"Do you want to exit w3m? (y/n)");
     else if (confirm)
+	/* FIXME: gettextize? */
 	ans = inputChar("Do you want to exit w3m? (y/n)");
     if (!(ans && TOLOWER(*ans) == 'y')) {
 	displayBuffer(Currentbuf, B_NORMAL);
@@ -2518,6 +2534,7 @@ goLine(void)
     else if (str)
 	_goLine(str);
     else
+	/* FIXME: gettextize? */
 	_goLine(inputStr("Goto line: ", ""));
 }
 
@@ -2614,6 +2631,7 @@ editScr(void)
     tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
     f = fopen(tmpf, "w");
     if (f == NULL) {
+	/* FIXME: gettextize? */
 	disp_err_message(Sprintf("Can't open %s", tmpf)->ptr, TRUE);
 	return;
     }
@@ -2673,6 +2691,7 @@ nextMk(void)
 	l = l->next;
 	i = 0;
     }
+    /* FIXME: gettextize? */
     disp_message("No mark exist after here", TRUE);
 }
 
@@ -2708,6 +2727,7 @@ prevMk(void)
 	if (l != NULL)
 	    i = l->len - 1;
     }
+    /* FIXME: gettextize? */
     disp_message("No mark exist before here", TRUE);
 }
 
@@ -2866,6 +2886,7 @@ gotoLabel(char *label)
 
     al = searchURLLabel(Currentbuf, label);
     if (al == NULL) {
+	/* FIXME: gettextize? */
 	disp_message(Sprintf("%s is not found", label)->ptr, TRUE);
 	return;
     }
@@ -2949,6 +2970,7 @@ followA(void)
 #ifndef USE_W3MMAILER
 	char *pos;
 	if (!non_null(Mailer)) {
+	    /* FIXME: gettextize? */
 	    disp_err_message("no mailer is specified", TRUE);
 	    return;
 	}
@@ -2966,6 +2988,7 @@ followA(void)
 #if 0
     else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
 	/* news:newsgroup is not supported */
+	/* FIXME: gettextize? */
 	disp_err_message("news:newsgroup_name is not supported", TRUE);
 	return;
     }
@@ -3018,10 +3041,12 @@ followI(void)
     a = retrieveCurrentImg(Currentbuf);
     if (a == NULL)
 	return;
+    /* FIXME: gettextize? */
     message(Sprintf("loading %s", a->url)->ptr, 0, 0);
     refresh();
     buf = loadGeneralFile(a->url, baseURL(Currentbuf), NULL, 0, NULL);
     if (buf == NULL) {
+	/* FIXME: gettextize? */
 	char *emsg = Sprintf("Can't load %s", a->url)->ptr;
 	disp_err_message(emsg, FALSE);
     }
@@ -3282,7 +3307,9 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly)
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
+	/* FIXME: gettextize? */
 	p = inputStrHist("TEXT:", fi->value ? fi->value->ptr : NULL, TextHist);
 	if (p == NULL || fi->readonly)
 	    break;
@@ -3295,7 +3322,9 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly)
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
+	/* FIXME: gettextize? */
 	p = inputFilenameHist("Filename:", fi->value ? fi->value->ptr : NULL,
 			      NULL);
 	if (p == NULL || fi->readonly)
@@ -3309,9 +3338,11 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly) {
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	    break;
 	}
+	/* FIXME: gettextize? */
 	p = inputLine("Password:", fi->value ? fi->value->ptr : NULL,
 		      IN_PASSWORD);
 	if (p == NULL)
@@ -3325,6 +3356,7 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly)
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	input_textarea(fi);
 	formUpdateBuffer(a, Currentbuf, fi);
@@ -3333,6 +3365,7 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly) {
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	    break;
 	}
@@ -3342,6 +3375,7 @@ _followForm(int submit)
 	if (submit)
 	    goto do_submit;
 	if (fi->readonly) {
+	    /* FIXME: gettextize? */
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	    break;
 	}
@@ -3928,6 +3962,7 @@ backBf(void)
 	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}
 	else
+	    /* FIXME: gettextize? */
 	    disp_message("Can't back...", TRUE);
 	return;
     }
@@ -3989,6 +4024,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 #ifndef USE_W3MMAILER
 	char *pos;
 	if (!non_null(Mailer)) {
+	    /* FIXME: gettextize? */
 	    disp_err_message("no mailer is specified", TRUE);
 	    return;
 	}
@@ -4006,6 +4042,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 #if 0
     if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
 	/* news:newsgroup is not supported */
+	/* FIXME: gettextize? */
 	disp_err_message("news:newsgroup_name is not supported", TRUE);
 	return;
     }
@@ -4014,6 +4051,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
     refresh();
     buf = loadGeneralFile(url, current, referer, 0, request);
     if (buf == NULL) {
+	/* FIXME: gettextize? */
 	char *emsg = Sprintf("Can't load %s", conv_from_system(url))->ptr;
 	disp_err_message(emsg, FALSE);
     }
@@ -4409,6 +4447,7 @@ svBuf(void)
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     file = searchKeyData();
     if (file == NULL || *file == '\0') {
+	/* FIXME: gettextize? */
 	qfile = inputLineHist("Save buffer to: ", NULL, IN_COMMAND, SaveHist);
 	if (qfile == NULL || *qfile == '\0') {
 	    displayBuffer(Currentbuf, B_NORMAL);
@@ -4434,6 +4473,7 @@ svBuf(void)
 	is_pipe = FALSE;
     }
     if (f == NULL) {
+	/* FIXME: gettextize? */
 	char *emsg = Sprintf("Can't open %s", conv_from_system(file))->ptr;
 	disp_err_message(emsg, TRUE);
 	return;
@@ -4698,12 +4738,14 @@ reload(void)
 	    ldDL();
 	    return;
 	}
+	/* FIXME: gettextize? */
 	disp_err_message("Can't reload...", TRUE);
 	return;
     }
     if (Currentbuf->currentURL.scheme == SCM_LOCAL &&
 	!strcmp(Currentbuf->currentURL.file, "-")) {
 	/* file is std input */
+	/* FIXME: gettextize? */
 	disp_err_message("Can't reload stdin", TRUE);
 	return;
     }
@@ -4754,6 +4796,7 @@ reload(void)
 	request = NULL;
     }
     url = parsedURL2Str(&Currentbuf->currentURL);
+    /* FIXME: gettextize? */
     message("Reloading...", 0, 0);
     refresh();
 #ifdef USE_M17N
@@ -4773,6 +4816,7 @@ reload(void)
     if (multipart)
 	unlink(request->body);
     if (buf == NULL) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't reload...", TRUE);
 	return;
     }
@@ -4851,6 +4895,7 @@ docCSet(void)
 
     cs = searchKeyData();
     if (cs == NULL || *cs == '\0')
+	/* FIXME: gettextize? */
 	cs = inputStr("Document charset: ",
 		      wc_ces_to_charset(Currentbuf->document_charset));
     charset = wc_guess_charset_short(cs, 0);
@@ -4869,6 +4914,7 @@ defCSet(void)
 
     cs = searchKeyData();
     if (cs == NULL || *cs == '\0')
+	/* FIXME: gettextize? */
 	cs = inputStr("Default document charset: ",
 		      wc_ces_to_charset(DocumentCharset));
     charset = wc_guess_charset_short(cs, 0);
@@ -5043,12 +5089,14 @@ void
 extbrz()
 {
     if (Currentbuf->bufferprop & BP_INTERNAL) {
+	/* FIXME: gettextize? */
 	disp_err_message("Can't browse...", TRUE);
 	return;
     }
     if (Currentbuf->currentURL.scheme == SCM_LOCAL &&
 	!strcmp(Currentbuf->currentURL.file, "-")) {
 	/* file is std input */
+	/* FIXME: gettextize? */
 	disp_err_message("Can't browse stdin", TRUE);
 	return;
     }
@@ -5534,10 +5582,12 @@ wrapToggle(void)
 {
     if (WrapSearch) {
 	WrapSearch = FALSE;
+	/* FIXME: gettextize? */
 	disp_message("Wrap search off", TRUE);
     }
     else {
 	WrapSearch = TRUE;
+	/* FIXME: gettextize? */
 	disp_message("Wrap search on", TRUE);
     }
 }
@@ -6433,6 +6483,7 @@ DownloadListBuffer(void)
     if (!FirstDL)
 	return NULL;
     cur_time = time(0);
+    /* FIXME: gettextize? */
     src = Strnew_charp("<html><head><title>" DOWNLOAD_LIST_TITLE
 		       "</title></head>\n<body><h1 align=center>"
 		       DOWNLOAD_LIST_TITLE "</h1>\n"

@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.8 2003/01/15 17:13:21 ukai Exp $ */
+/* $Id: cookie.c,v 1.9 2003/09/26 17:59:51 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -537,6 +537,7 @@ initCookie(void)
 Buffer *
 cookie_list_panel(void)
 {
+    /* FIXME: gettextize? */
     Str src = Strnew_charp("<html><head><title>Cookies</title></head>"
 			   "<body><center><b>Cookies</b></center>"
 			   "<p><form method=internal action=cookie>");

@@ -1,3 +1,8 @@
+2002-10-31  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03362] Re: support for http://user:pass@www.url.com
+	* etc.c (loadPasswd): accept host, passwd
+
 2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03359] support for http://user:pass@www.url.com
@@ -4043,4 +4048,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.459 2002/10/30 15:39:41 ukai Exp $
+$Id: ChangeLog,v 1.460 2002/10/30 15:41:51 ukai Exp $

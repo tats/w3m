@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.26 2002/10/30 15:39:41 ukai Exp $ */
+/* $Id: etc.c,v 1.27 2002/10/30 15:41:51 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -912,13 +912,15 @@ find_auth_user_passwd(ParsedURL *pu, char *realm,
 
 /* passwd */
 /*
- * machine <name>
+ * machine <host>
+ * host <host>
  * port <port>
  * proxy
  * path <file>
  * realm <realm>
  * login <login>
  * passwd <passwd>
+ * password <passwd>
  */
 
 #define PASS_IS_READABLE_MSG "SECURITY NOTE: password file must not be accessible by others"
@@ -978,7 +980,7 @@ loadPasswd(void)
 		arg = Strnew_charp(q);
 	}
 
-	if (!strcmp(p, "machine")) {
+	if (!strcmp(p, "machine") || !strcmp(p, "host")) {
 	    add_auth_pass_entry(&ent);
 	    bzero(&ent, sizeof(struct auth_pass));
 	    ent.host = arg;
@@ -993,7 +995,7 @@ loadPasswd(void)
 	    ent.realm = arg;
 	else if (!strcmp(p, "login"))
 	    ent.uname = arg;
-	else if (!strcmp(p, "password"))
+	else if (!strcmp(p, "password") || !strcmp(p, "passwd"))
 	    ent.pwd = arg;
 	/* ignore */
     }

@@ -1,5 +1,5 @@
-	w3m: WWW wo Miru Tool  version beta-990323
-		(C) Copyright by Akinori ITO	March 23, 1999
+	w3m: WWW wo Miru Tool  version 0.2.2
+		(C) Copyright by Akinori ITO	November 2001
 
 1. はじめに
 
@@ -22,7 +22,7 @@
 
   現在の問題点は以下のようなものです．
 
-  ・インライン画像表示ができない(これは原理的に無理でしょう)．
+  ・インライン画像表示ができない(w3m homepageの w3m-img を参照！)．
   ・MIME-body のデコードができない．7bit 以外の Content-Transfer-encoding
     に対応していない．
   ・オンラインマニュアルが貧弱．簡単な使い方については，MANUAL.html をお読み
@@ -86,7 +86,7 @@ Windows
 3. 著作権
 
 w3m の著作権は，伊藤彰則に属しています．
-(C) Copyright 1994-1999 by Akinori Ito
+(C) Copyright 1994-2001 by Akinori Ito
 
 添付ライブラリのうち，Boehm GC library の著作権は Hans-J. Boehm,
 Alan J. Demers および Xerox Corporation, Silicon Graphics に属し
@@ -105,5 +105,5 @@ Alan J. Demers および Xerox Corporation, Silicon Graphics に属し
 
 	山形大学工学部電子情報工学科
 	伊藤 彰則
-	aito@ei5sun.yz.yamagata-u.ac.jp
-	http://ei5nazha.yz.yamagata-u.ac.jp/
+	aito@fw.ipsj.or.jp
+	http://w3m.sourceforge.net/

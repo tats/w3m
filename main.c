@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.11 2001/11/20 16:46:33 ukai Exp $ */
+/* $Id: main.c,v 1.12 2001/11/21 04:29:14 a-ito Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -648,15 +648,11 @@ MAIN(int argc, char **argv, char **envp)
 	else if (visual_start) {
 	    Str s_page;
 	    s_page = Strnew_charp("<title>W3M startup page</title><center><b>Welcome to ");
-#ifdef JP_CHARSET
-	    Strcat_charp(s_page, "<a href='http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/'>");
-#else
-	    Strcat_charp(s_page, "<a href='http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/eng/'>");
-#endif				/* JP_CHARSET */
+	    Strcat_charp(s_page, "<a href='http://w3m.sourceforge.net/'>");
 	    Strcat_m_charp(s_page,
 			   "w3m</a>!<p><p>This is w3m version ",
 			   version,
-			   "<br>Written by <a href='mailto:aito@ei5sun.yz.yamagata-u.ac.jp'>Akinori Ito</a>",
+			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
 			   NULL);
 #ifdef DEBIAN
 	    Strcat_m_charp(s_page,

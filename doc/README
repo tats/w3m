@@ -1,5 +1,5 @@
-	w3m: WWW wo Miru Tool  version beta-990323
-		(C) Copyright by Akinori ITO	March 23, 1999
+	w3m: WWW wo Miru Tool  version 0.2.2
+		(C) Copyright by Akinori ITO	November 21, 2001
 
 1. Introduction
 
@@ -18,9 +18,7 @@ used as a text-mode WWW browser.
 
 Current problems are:
 
-* Resize behaviour is incomplete.
-* It can't show images inline. (It seems to be impossible as far as using
-  xterm)
+* It can't show images inline. (See w3m-img info on the w3m homepage)
 * It doesn't decode MIME-body of the document.
 * Online manuals are poor.
 
@@ -79,7 +77,7 @@ MS-DOS
 
 3. Copyright
 
-  (C) Copyright 1994-1999 by Akinori Ito.
+  (C) Copyright 1994-2001 by Akinori Ito.
 
   Hans J. Boehm, Alan J. Demers, Xerox Corp. and Silicon Graphics
   have the copyright of the GC library comes with w3m package.
@@ -102,5 +100,5 @@ Feel free to send your opinion to the author.
 
 	Akinori Ito
 	Faculty of Engineering, Yamagata University
-	aito@ei5sun.yz.yamagata-u.ac.jp
-	http://ei5nazha.yz.yamagata-u.ac.jp/
+	aito@fw.ipsj.or.jp
+	http://w3m.sourceforge.net/

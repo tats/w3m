@@ -1,5 +1,8 @@
 @SET_MAKE@
 SHELL=@SHELL@
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+DOMAIN = $(PACKAGE)
 srcidr=@srcdir@
 top_srcdir=@top_srcdir@
 VPATH= $(srcdir):.
@@ -22,36 +25,41 @@ top_srcdir = @top_srcdir@
 VPATH = $(top_srcdir):.
 DESTDIR = 
 
-CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
-AUXBIN_DIR = $(libexecdir)/$(package)
-HELP_DIR = $(datadir)/$(package)
-RC_DIR = ~/.$(package)
+CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
+HELP_DIR = @HELP_DIR@
+RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
-CONF_DIR = $(sysconfdir)/$(package)
+CONF_DIR = $(sysconfdir)/$(PACKAGE)
+BIN_DIR = $(bindir)
+MAN1_DIR = $(mandir)/man1
 
 TARGETS		= w3mman
-LIB_TARGETS	= w3mman2html.cgi
+CGIBIN_TARGETS	= w3mman2html.cgi
 MAN1_TARGETS	= w3mman.1
 MAN_TARGETS	= $(MAN1_TARGETS)
 
 MKDIR		= mkdir -p
 INSTALL		= @INSTALL@
 INSTALL_SCRIPT	= @INSTALL_SCRIPT@
-INSTALL_MAN	= @INSTALL_MAN@
+INSTALL_MAN	= @INSTALL_DATA@
 
-all: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
+all: $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
 
-install: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
+# do nothing
+$(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS):
+
+install: $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
-	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
+	-$(MKDIR) $(DESTDIR)$(CGIBIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(MAN1_DIR)
 	for file in $(TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(BIN_DIR);	\
 	done
-	for file in $(LIB_TARGETS);     \
+	for file in $(CGIBIN_TARGETS);     \
 	do      \
-		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);	\
 	done
 	for file in $(MAN1_TARGETS); \
 	do	\
@@ -63,9 +71,9 @@ uninstall:
 	do      \
 		rm -f $(BIN_DIR)/$$file;	\
 	done
-	-for file in $(LIB_TARGETS);     \
+	-for file in $(CGIBIN_TARGETS);     \
 	do      \
-		rm -f $(LIB_DIR)/$$file;	\
+		rm -f $(CGIBIN_DIR)/$$file;	\
 	done
 	-for file in $(MAN1_TARGETS); \
 	do \
@@ -75,7 +83,7 @@ uninstall:
 clean:
 
 distclean:
-	-rm -f $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
+	-rm -f $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
 
 dist: all
 	@-rm -fr $(distdir)/w3mman

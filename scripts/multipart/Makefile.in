@@ -1,5 +1,8 @@
 @SET_MAKE@
 SHELL=@SHELL@
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+DOMAIN = $(PACKAGE)
 srcidr=@srcdir@
 top_srcdir=@top_srcdir@
 VPATH= $(srcdir):.
@@ -22,12 +25,12 @@ top_srcdir = @top_srcdir@
 VPATH = $(top_srcdir):.
 DESTDIR = 
 
-CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
-AUXBIN_DIR = $(libexecdir)/$(package)
-HELP_DIR = $(datadir)/$(package)
-RC_DIR = ~/.$(package)
+CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
+HELP_DIR = @HELP_DIR@
+RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
-CONF_DIR = $(sysconfdir)/$(package)
+CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
 LIB_TARGETS	= multipart.cgi
 
@@ -39,6 +42,9 @@ PERL		= @PERL@
 NKF		= @NKF@
 
 all: $(LIB_TARGETS)
+
+# do nothing
+$(LIB_TARGETS):
 
 install: $(LIB_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)

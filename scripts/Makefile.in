@@ -1,5 +1,8 @@
 @SET_MAKE@
 SHELL=@SHELL@
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+DOMAIN = $(PACKAGE)
 srcidr=@srcdir@
 top_srcdir=@top_srcdir@
 VPATH= $(srcdir):.
@@ -22,17 +25,19 @@ top_srcdir = @top_srcdir@
 VPATH = $(srcdir):.
 DESTDIR = 
 
-CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
-AUXBIN_DIR = $(libexecdir)/$(package)
-HELP_DIR = $(datadir)/$(package)
-RC_DIR = ~/.$(package)
+CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
+HELP_DIR = @HELP_DIR@
+RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
-CONF_DIR = $(sysconfdir)/$(package)
+CONF_DIR = $(sysconfdir)/$(PACKAGE)
 DOCDIRS = @DOCDIRS@
 
 AUXBIN_TARGETS	= xface2xpm
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
 HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
+SUBDIRS = multipart w3mman
+.PHONY: $(SUBDIRS)
 
 MKDIR		= mkdir -p
 INSTALL		= @INSTALL@
@@ -41,7 +46,7 @@ INSTALL_DATA	= @INSTALL_DATA@
 
 PERL		= @PERL@
 
-all: $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS)
+all: $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS) $(SUBDIRS)
 
 w3mhelp-funcname.pl: w3mhelp-funcname.pl.in $(top_srcdir)/funcname.tab $(top_srcdir)/doc/keymap.default $(top_srcdir)/doc/keymap.lynx
 	@echo "generating w3mhelp-funcname.pl..."
@@ -68,6 +73,12 @@ w3mhelp-funcdesc-stamp: $(top_srcdir)/doc/README.func $(top_srcdir)/doc-jp/READM
 	@echo done
 	@touch w3mhelp-funcdesc-stamp
 
+$(SUBDIRS):
+	for subdir in $(SUBDIRS); \
+	do \
+		(cd $$subdir && $(MAKE)); \
+	done
+
 install: $(LIB_TARGETS) $(HELP_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(AUXBIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
@@ -84,6 +95,10 @@ install: $(LIB_TARGETS) $(HELP_TARGETS)
 	do \
 		$(INSTALL_DATA) $$file $(DESTDIR)$(HELP_DIR); \
 	done
+	for subdir in $(SUBDIRS); \
+	do \
+		(cd $$subdir && $(MAKE) install); \
+	done
 
 uninstall:
 	-for file in $(AUXBIN_TARGETS); \
@@ -98,17 +113,21 @@ uninstall:
 	do \
 		rm -f $(HELP_DIR)/$$file; \
 	done
+	-for subdir in $(SUBDIRS); \
+	do \
+		(cd $$subdir && $(MAKE) uninstall); \
+	done
 
 clean:
 	-rm -f $(HELP_TARGETS) w3mhelp-*.pl
-	-for dir in multipart w3mman; \
+	-for subdir in $(SUBDIRS); \
 	do \
-	  (cd $$dir && $(MAKE) clean); \
+	  (cd $$subdir && $(MAKE) clean); \
 	done
 
 distclean:
 	-rm -f $(LIB_TARGETS) $(AUXBIN_TARGETS) 
-	-for dir in multipart w3mman; \
+	-for subdir in $(SUBDIRS); \
 	do \
-	  (cd $$dir && $(MAKE) distclean); \
+	  (cd $$subdir && $(MAKE) distclean); \
 	done

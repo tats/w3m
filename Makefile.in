@@ -30,7 +30,7 @@ DESTDIR =
 
 CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
 AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
-HELP_DIR = $(datadir)/$(PACKAGE)
+HELP_DIR = @HELP_DIR@
 RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)

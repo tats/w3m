@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.25 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: file.c,v 1.26 2001/12/05 17:29:26 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5104,6 +5104,8 @@ loadHTMLString(Str page)
 #ifdef JP_CHARSET
     newBuf->document_code = InnerCode;
 #endif				/* JP_CHARSET */
+    newBuf->type = "text/html";
+    newBuf->real_type = newBuf->type;
     if (n_textarea)
 	formResetBuffer(newBuf, newBuf->formitem);
     if (src)

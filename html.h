@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.17 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: html.h,v 1.18 2003/01/06 15:36:59 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -361,11 +361,12 @@ struct environment {
 #define SCM_LOCAL_CGI	5
 #define SCM_EXEC	6
 #define SCM_NNTP	7
-#define SCM_NEWS	8
-#define SCM_NEWS_GROUP	9
-#define SCM_MAILTO      10
+#define SCM_NNTP_GROUP	8
+#define SCM_NEWS	9
+#define SCM_NEWS_GROUP	10
+#define SCM_MAILTO      11
 #ifdef USE_SSL
-#define SCM_HTTPS       11
+#define SCM_HTTPS       12
 #endif				/* USE_SSL */
 
 #endif				/* _HTML_H */

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.174 2002/12/27 16:30:54 ukai Exp $ */
+/* $Id: file.c,v 1.175 2003/01/06 15:36:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -215,8 +215,11 @@ loadSomething(URLFile *f,
 	return NULL;
 
     buf->filename = path;
-    if (buf->buffername == NULL || buf->buffername[0] == '\0')
-	buf->buffername = conv_from_system(lastFileName(path));
+    if (buf->buffername == NULL || buf->buffername[0] == '\0') {
+	buf->buffername = checkHeader(buf, "Subject:");
+	if (buf->buffername == NULL)
+	    buf->buffername = conv_from_system(lastFileName(path));
+    }
     if (buf->currentURL.scheme == SCM_UNKNOWN)
 	buf->currentURL.scheme = f->scheme;
     buf->real_scheme = f->scheme;
@@ -889,7 +892,7 @@ checkHeader(Buffer *buf, char *field)
     TextListItem *i;
     char *p;
 
-    if (buf == NULL || field == NULL)
+    if (buf == NULL || field == NULL || buf->document_header == NULL)
 	return NULL;
     for (i = buf->document_header->first; i != NULL; i = i->next) {
 	if (!strncasecmp(i->ptr, field, len)) {
@@ -2089,6 +2092,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
     if (header_string)
 	header_string = NULL;
+#ifdef USE_NNTP
+    if (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS)
+	reAnchorNewsheader(b);
+#endif
     preFormUpdateBuffer(b);
     if (fmInitialized)
 	term_raw();

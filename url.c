@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.62 2002/12/27 16:30:54 ukai Exp $ */
+/* $Id: url.c,v 1.63 2003/01/06 15:37:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -53,6 +53,7 @@ static int
     0,				/* local-CGI - not defined? */
     0,				/* exec - not defined? */
     119,			/* nntp */
+    119,			/* nntp group */
     119,			/* news */
     119,			/* news group */
     0,				/* mailto - not defined */
@@ -69,6 +70,7 @@ struct cmdtable schemetable[] = {
     {"file", SCM_LOCAL},
     /*  {"exec", SCM_EXEC}, */
     {"nntp", SCM_NNTP},
+    /*  {"nntp", SCM_NNTP_GROUP}, */
     {"news", SCM_NEWS},
     /*  {"news", SCM_NEWS_GROUP}, */
 #ifndef USE_W3MMAILER
@@ -972,8 +974,24 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	return;
 #endif
     if (pu->scheme == SCM_NEWS) {
-	if (pu->file && !strchr(pu->file, '@'))
+	if (pu->file && !strchr(pu->file, '@') &&
+	    (!(p = strchr(pu->file, '/')) || strchr(p + 1, '-') ||
+	     *(p + 1) == '\0'))
 	    pu->scheme = SCM_NEWS_GROUP;
+	return;
+    }
+    if (pu->scheme == SCM_NNTP) {
+	if (pu->file && !strchr(pu->file, '@') &&
+	    (!(p = strchr(pu->file + 1, '/')) || strchr(p + 1, '-') ||
+	     *(p + 1) == '\0'))
+	    pu->scheme = SCM_NNTP_GROUP;
+	if (current && (current->scheme == SCM_NNTP ||
+			current->scheme == SCM_NNTP_GROUP)) {
+	    if (pu->host == NULL)
+		pu->host = current->host;
+	    if (pu->port == NULL)
+		pu->port = current->port;
+	}
 	return;
     }
     if (pu->scheme == SCM_LOCAL)
@@ -995,9 +1013,6 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 #ifdef USE_GOPHER
 		   pu->scheme != SCM_GOPHER &&
 #endif				/* USE_GOPHER */
-#ifdef USE_NNTP
-		   pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
-#endif				/* USE_NNTP */
 		   pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
 		   && !(pu->scheme == SCM_LOCAL && IS_ALPHA(pu->file[0])
@@ -1076,9 +1091,6 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 #ifdef USE_GOPHER
 		    pu->scheme != SCM_GOPHER &&
 #endif				/* USE_GOPHER */
-#ifdef USE_NNTP
-		    pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
-#endif				/* USE_NNTP */
 		    pu->file[0] == '/') {
 	    /*
 	     * this happens on the following conditions:
@@ -1108,8 +1120,8 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 {
     Str tmp;
     static char *scheme_str[] = {
-	"http", "gopher", "ftp", "ftp", "file", "file", "exec", "nntp", "news",
-	"news", "mailto",
+	"http", "gopher", "ftp", "ftp", "file", "file", "exec", "nntp", "nntp",
+	"news", "news", "mailto",
 #ifdef USE_SSL
 	"https",
 #endif				/* USE_SSL */
@@ -1766,16 +1778,14 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #endif				/* USE_GOPHER */
 #ifdef USE_NNTP
     case SCM_NNTP:
-	/* nntp://<host>:<port>/<newsgroup-name>/<article-number> */
+    case SCM_NNTP_GROUP:
     case SCM_NEWS:
-        /* news:<unique>@<full_domain_name> */
     case SCM_NEWS_GROUP:
-        /* news:<newsgroup-name> */
-	uf.stream = openNewsStream(pu);
-	if (uf.stream)
-	    uf.scheme = SCM_NEWS;	/* XXX */
+	if (pu->scheme == SCM_NNTP || pu->scheme == SCM_NEWS)
+	    uf.scheme = SCM_NEWS;
 	else
-	    uf.scheme = pu->scheme;
+	    uf.scheme = SCM_NEWS_GROUP;
+	uf.stream = openNewsStream(pu);
 	return uf;
 #endif				/* USE_NNTP */
     case SCM_UNKNOWN:

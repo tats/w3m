@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.183 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: main.c,v 1.184 2003/01/06 15:36:59 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -874,11 +874,6 @@ main(int argc, char **argv, char **envp)
 	    else if (newbuf == NO_BUFFER)
 		continue;
 	    switch (newbuf->real_scheme) {
-#ifdef USE_NNTP
-	    case SCM_NNTP:
-	    case SCM_NEWS:
-	    case SCM_NEWS_GROUP:
-#endif				/* USE_NNTP */
 	    case SCM_MAILTO:
 		break;
 	    case SCM_LOCAL:
@@ -4636,7 +4631,7 @@ void
 chkNMIDBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
-	"<[!-;=?-~]+@[A-z0-9\\.\\-_]+>",
+	"<[!-;=?-~]+@[a-zA-Z0-9\\.\\-_]+>",
 	NULL,
     };
     int i;

@@ -1,3 +1,24 @@
+2003-01-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03610] Re: news:<newsgroup>
+	* anchor.c (_put_anchor_news): check '<'
+		(reAnchorNewsheader): added
+	* file.c (loadSomething): Subject: as buffername
+		(checkHeader): check buf->document_header
+		(loadGeneralFile): reAnchorNewsheader
+	* html.h (SCM_NNTP_GROUP): added
+	* main.c (main): delete USE_NNTP in switch (newbuf->real_scheme)
+		(chkNMIDBuffer): lowercase in url_like_pat
+	* news.c (add_news_message): add scheme, group as arg
+		(openNewsStream): check SCM_NNTP_GROUP
+				check current_news.host
+		(readNewsgroup): rewrite to support nntp:,news: extension
+	* proto.h (reAnchorNewsheader): added
+	* url.c (DefaultPort): add 119 for nntp group
+		(parseURL2): rewrite to support nntp:,news: extension
+		(_parsedURL2Str): add for SCM_NNTP_GROUP
+		(openURL): rewrite to support nntp:,news: extension
+
 2002-12-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* fix build errors
@@ -6157,4 +6178,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.655 2002/12/27 16:46:13 ukai Exp $
+$Id: ChangeLog,v 1.656 2003/01/06 15:36:56 ukai Exp $

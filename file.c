@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.146 2002/12/05 16:29:05 ukai Exp $ */
+/* $Id: file.c,v 1.147 2002/12/05 16:33:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2759,9 +2759,9 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	    char *c = html_quote_char(obuf->anchor.accesskey);
 	    Strcat_charp(tmp, "\" ACCESSKEY=\"");
 	    if (c)
-	        Strcat_charp(tmp, c);
+		Strcat_charp(tmp, c);
 	    else
-	        Strcat_char(tmp, obuf->anchor.accesskey);
+		Strcat_char(tmp, obuf->anchor.accesskey);
 	}
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_A);

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.19 2002/12/05 16:08:34 ukai Exp $ */
+/* $Id: map.c,v 1.20 2002/12/05 16:33:08 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -285,7 +285,7 @@ follow_map_panel(Buffer *buf, char *name)
 	parseURL2(a->url, &pu, baseURL(buf));
 	url = html_quote(parsedURL2Str(&pu)->ptr);
 	Strcat_m_charp(mappage, "<tr><td><a href=\"", url, "\">",
-		       html_quote(*a->alt ? a->alt : mybasename(a->url)), 
+		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
 		       "</a><td>", url, NULL);
     }
     Strcat_charp(mappage, "</table></body></html>");

@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.25 2002/12/05 16:29:10 ukai Exp $ */
+/* $Id: menu.c,v 1.26 2002/12/05 16:33:09 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1934,7 +1934,7 @@ accesskey_menu(Buffer *buf)
 
     a = retrieveCurrentAnchor(buf);
     if (a && a->accesskey && IS_ASCII(a->accesskey)) {
-        for (i = 0; i < nitem; i++) {
+	for (i = 0; i < nitem; i++) {
 	    if (a == ap[i]) {
 		menu.initial = i;
 		break;

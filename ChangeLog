@@ -1,3 +1,9 @@
+2001-12-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02640]
+	* linein.c (escape_spaces): rewrite
+	* linein.c (unescape_spaces): rewrite
+
 2001-12-07  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02638] completion for ! and/or @
@@ -1080,4 +1086,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.112 2001/12/07 07:20:26 ukai Exp $
+$Id: ChangeLog,v 1.113 2001/12/07 07:24:22 ukai Exp $

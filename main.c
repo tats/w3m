@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.148 2002/11/21 17:05:01 ukai Exp $ */
+/* $Id: main.c,v 1.149 2002/11/21 17:05:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4789,7 +4789,7 @@ static TabBuffer *
 posTab(int x, int y)
 {
     TabBuffer *tab;
-  
+
     for (tab = FirstTab; tab; tab = tab->nextTab) {
 	if (tab->x1 <= x && x <= tab->x2 && tab->y == y)
 	    return tab;

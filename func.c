@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.18 2002/12/03 16:01:31 ukai Exp $ */
+/* $Id: func.c,v 1.19 2002/12/03 16:07:40 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -14,7 +14,7 @@
 
 #define KEYDATA_HASH_SIZE 16
 static Hash_iv *keyData = NULL;
-static char keymap_initialized;
+static char keymap_initialized = FALSE;
 static struct stat current_keymap_file;
 
 void
@@ -104,6 +104,8 @@ setKeymap(char *p, int lineno, int verbose)
 	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
 	putHash_iv(keyData, c, (void *)s);
     }
+    else if (getKeyData(c))
+	putHash_iv(keyData, c, NULL);
 }
 
 void

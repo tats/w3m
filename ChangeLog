@@ -1,3 +1,9 @@
+2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03516] Re: 2 stroke keybinding
+	* func.c (keymap_initialized): initialized to FALSE
+		(setKeymap): push KeyData
+
 2002-12-04  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: 2 stroke keybinding
@@ -5388,4 +5394,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.581 2002/12/03 16:03:46 ukai Exp $
+$Id: ChangeLog,v 1.582 2002/12/03 16:07:37 ukai Exp $

@@ -1,3 +1,16 @@
+2001-12-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02723] cleanup resizing
+	* main.c (resized): renamed to need_resize_screen
+	* main.c (need_resize_screen): added
+	* main.c (resize_hook): prototype here
+	* main.c (resize_handler): ditto
+	* main.c (MAIN): move signal initialization
+	* main.c (MAIN): remove duplicate signal initialization
+	* main.c (resize_screen): added
+	* proto.h (resize_hook): deleted
+	* terms.c (mouse_init): remove signal
+
 2001-12-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02721]
@@ -1487,4 +1500,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.168 2001/12/25 09:59:38 ukai Exp $
+$Id: ChangeLog,v 1.169 2001/12/25 12:41:08 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.45 2001/12/25 09:59:39 ukai Exp $ */
+/* $Id: main.c,v 1.46 2001/12/25 12:41:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -46,8 +46,10 @@ static MySignalHandler SigAlarm(SIGNAL_ARG);
 #endif
 
 #ifdef SIGWINCH
-static int resized = 0;
-MySignalHandler resize_handler(SIGNAL_ARG);
+static int need_resize_screen = FALSE;
+static MySignalHandler resize_hook(SIGNAL_ARG);
+static MySignalHandler resize_handler(SIGNAL_ARG);
+static void resize_screen(void);
 #endif
 
 #ifdef USE_MARK
@@ -673,18 +675,6 @@ MAIN(int argc, char **argv, char **envp)
 	    COLS = 80;
     }
 
-    if (isatty(1) && !w3m_dump) {
-#ifdef SIGWINCH
-	signal(SIGWINCH, resize_hook);
-#else				/* not SIGWINCH */
-	setlinescols();
-	setupscreen();
-#endif				/* not SIGWINCH */
-    }
-#ifdef SIGCHLD
-    signal(SIGCHLD, sig_chld);
-#endif
-
 #ifdef USE_BINMODE_STREAM
     setmode(fileno(stdout), O_BINARY);
 #endif
@@ -697,7 +687,17 @@ MAIN(int argc, char **argv, char **envp)
 	CurrentMenuData = NULL;
 #endif				/* MENU */
 	fmInit();
+#ifdef SIGWINCH
+	signal(SIGWINCH, resize_hook);
+#else				/* not SIGWINCH */
+	setlinescols();
+	setupscreen();
+#endif				/* not SIGWINCH */
     }
+#ifdef SIGCHLD
+    signal(SIGCHLD, sig_chld);
+#endif
+
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);
     err_msg = Strnew();
     if (load_argc == 0) {
@@ -895,13 +895,6 @@ MAIN(int argc, char **argv, char **envp)
     UseAutoDetect = TRUE;
 #endif
 
-#ifdef SIGWINCH
-    signal(SIGWINCH, resize_hook);
-#else				/* not SIGWINCH */
-    setlinescols();
-    setupscreen();
-#endif				/* not SIGWINCH */
-
     Currentbuf = Firstbuf;
     displayBuffer(Currentbuf, B_NORMAL);
     if (line_str) {
@@ -942,12 +935,9 @@ MAIN(int argc, char **argv, char **envp)
 	}
 #endif
 #ifdef SIGWINCH
-	if (resized) {
-	    resized = 0;
-	    setlinescols();
-	    setupscreen();
-	    if (Currentbuf)
-		displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	if (need_resize_screen) {
+	    need_resize_screen = FALSE;
+	    resize_screen();
 	}
 	signal(SIGWINCH, resize_handler);
 #endif
@@ -1179,23 +1169,29 @@ intTrap(SIGNAL_ARG)
 }
 
 #ifdef SIGWINCH
-MySignalHandler
+static MySignalHandler
 resize_hook(SIGNAL_ARG)
 {
-    resized = 1;
+    need_resize_screen = TRUE;
     signal(SIGWINCH, resize_hook);
     SIGNAL_RETURN;
 }
 
-MySignalHandler
+static MySignalHandler
 resize_handler(SIGNAL_ARG)
+{
+    resize_screen();
+    signal(SIGWINCH, resize_handler);
+    SIGNAL_RETURN;
+}
+
+static void
+resize_screen(void)
 {
     setlinescols();
     setupscreen();
     if (Currentbuf)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-    signal(SIGWINCH, resize_handler);
-    SIGNAL_RETURN;
 }
 #endif				/* SIGWINCH */
 

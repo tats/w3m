@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.31 2002/11/13 15:49:01 ukai Exp $ */
+/* $Id: display.c,v 1.32 2002/11/15 15:23:45 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -281,7 +281,7 @@ displayBuffer(Buffer *buf, int mode)
 	    }
 	    else if (n < 0 && n > -buf->LINES) {
 #if defined(__CYGWIN__) && LANG == JA
-		move(buf->LINES + n + 1, 0);
+		move(LASTLINE + n + 1, 0);
 		clrtoeolx();
 		refresh();
 #endif				/* defined(__CYGWIN__) && LANG == JA */

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.28 2001/12/06 16:36:54 ukai Exp $ */
+/* $Id: file.c,v 1.29 2001/12/06 22:25:30 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1043,7 +1043,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    if (UseExternalDirBuffer) {
 			Str cmd = Strnew_charp(DirBufferCommand);
 			Strcat_m_charp(cmd, "?dir=",
-				       pu.real_file, "#current", NULL);
+				       pu.file, "#current", NULL);
 			b = loadGeneralFile(cmd->ptr, NULL, NO_REFERER, 0,
 					    NULL);
 			if (b != NULL && b != NO_BUFFER) {

@@ -522,7 +522,7 @@ sub cygwin_pathconv {
   local($_) = @_;
   local(*CYGPATH);
 
-  open(CYGPATH, '-|') or exec('cygpath', '-w', $_);
+  open(CYGPATH, '-|') || exec('cygpath', '-w', $_);
   $_ = <CYGPATH>;
   close(CYGPATH);
   s/\r?\n$//;

@@ -1,5 +1,11 @@
 2002-12-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03598] restore cursor when download list panel is updated.
+	* main.c (stopDownload): delete->replace
+		(ldDL): use DownloadListBuffer()
+
+2002-12-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03597] Re: meta refresh
 	* main.c (Event): next, linked list
 		(N_EVENT_QUEUE): deleted
@@ -6062,4 +6068,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.644 2002/12/24 17:28:48 ukai Exp $
+$Id: ChangeLog,v 1.645 2002/12/24 17:33:31 ukai Exp $

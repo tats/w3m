@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.28 2002/12/10 15:36:11 ukai Exp $ */
+/* $Id: menu.c,v 1.29 2002/12/10 15:41:32 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1935,7 +1935,7 @@ accesskey_menu(Buffer *buf)
     a = retrieveCurrentAnchor(buf);
     if (a && a->accesskey && IS_ASCII(a->accesskey)) {
 	for (i = 0; i < nitem; i++) {
-	    if (a == ap[i]) {
+	    if (a->hseq == ap[i]->hseq) {
 		menu.initial = i;
 		break;
 	    }
@@ -2049,7 +2049,7 @@ list_menu(Buffer *buf)
     a = retrieveCurrentAnchor(buf);
     if (a) {
 	for (i = 0; i < nitem; i++) {
-	    if (a == ap[i]) {
+	    if (a->hseq == ap[i]->hseq) {
 		menu.initial = i;
 		break;
 	    }

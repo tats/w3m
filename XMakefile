@@ -54,10 +54,10 @@ funcname.c: funcname.tab
 	sort funcname.tab | awk -f funcname0.awk > funcname.c
 
 funcname1.h: funcname.tab
-	awk -f funcname1.awk funcname.tab > funcname1.h
+	sort funcname.tab | awk -f funcname1.awk > funcname1.h
 
 funcname2.h: funcname.tab
-	awk -f funcname2.awk funcname.tab > funcname2.h
+	sort funcname.tab | awk -f funcname2.awk > funcname2.h
 
 mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
 	$(CC) $(CFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS)

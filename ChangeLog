@@ -1,3 +1,7 @@
+2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* XMakefile (funcname1.h funcname2.h): sort as well as funcname.c
+
 2001-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* terms.c (xterm_mouse_term set_tty): add cygwin as xterm-style

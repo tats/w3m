@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.122 2002/11/08 16:01:21 ukai Exp $ */
+/* $Id: main.c,v 1.123 2002/11/08 16:07:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3091,7 +3091,8 @@ _followForm(int submit)
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	    return;
 	}
-	p = inputLine("TEXT:", fi->value ? fi->value->ptr : NULL, IN_PASSWORD);
+	p = inputLine("Password:", fi->value ? fi->value->ptr : NULL,
+		      IN_PASSWORD);
 	if (p == NULL)
 	    return;
 	fi->value = Strnew_charp(p);

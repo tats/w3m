@@ -1,5 +1,12 @@
 2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03390] some fixes related with form
+	* form.c (input_textarea): goto input_end
+			unlink(tmpf);
+	* main.c (_followForm): s/TEXT/Password/
+
+2002-11-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03388] meta refresh problem
 	* fm.h (AL_IMPLICIT_DONE): 3->4
 		(AL_ONCE): 8
@@ -4428,4 +4435,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.487 2002/11/08 16:01:18 ukai Exp $
+$Id: ChangeLog,v 1.488 2002/11/08 16:07:03 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.51 2003/12/08 16:06:34 ukai Exp $ */
+/* $Id: terms.c,v 1.52 2004/07/15 16:32:38 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -56,8 +56,11 @@ static int tty;
 #include <windows.h>
 #include <sys/cygwin.h>
 static int isWinConsole = 0;
+#define TERM_CYGWIN 1
+#define TERM_CYGWIN_RESERVE_IME 2
 static int isLocalConsole = 0;
-#ifdef USE_MOUSE
+
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
 int cygwin_mouse_btn_swapped = 0;
 #endif
 
@@ -79,9 +82,6 @@ check_win9x(void)
     }
     if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
 	isWin95 = 1;
-	if (ttyslot() != -1) {
-	    isLocalConsole = 0;
-	}
     }
     else {
 	isWin95 = 0;
@@ -200,7 +200,7 @@ GetConsoleHwnd(void)
     return (hwndFound);
 }
 
-#ifdef USE_MOUSE
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
 static unsigned long
 cygwin_version(void)
 {
@@ -223,7 +223,7 @@ check_cygwin_console(void)
     if (term == NULL)
 	term = DEFAULT_TERM;
     if (term && strncmp(term, "cygwin", 6) == 0) {
-	isWinConsole = 1;
+	isWinConsole = TERM_CYGWIN;
     }
     if (isWinConsole) {
 	hWnd = GetConsoleHwnd();
@@ -232,11 +232,17 @@ check_cygwin_console(void)
 		isLocalConsole = 1;
 	    }
 	}
+	if (strncmp(getenv("LANG"), "ja", 2) == 0) {
+	    isWinConsole = TERM_CYGWIN_RESERVE_IME;
+	}
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS
 	check_win9x();
+	if (isWin95 && ttyslot() != -1) {
+	    isLocalConsole = 0;
+	}
 #endif
     }
-#ifdef USE_MOUSE
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
     if (cygwin_version() <= 1003015) {
 	/* cygwin DLL 1.3.15 or earler */
 	cygwin_mouse_btn_swapped = 1;
@@ -382,9 +388,10 @@ char *T_cd, *T_ce, *T_kr, *T_kl, *T_cr, *T_bt, *T_ta, *T_sc, *T_rc,
     *T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
 
 int LINES, COLS;
-#if defined(__CYGWIN__) && LANG == JA
+#if defined(__CYGWIN__)
 int LASTLINE;
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#endif				/* defined(__CYGWIN__) */
+
 static int max_LINES = 0, max_COLS = 0;
 static int tab_step = 8;
 static int CurLine, CurColumn;
@@ -763,9 +770,9 @@ setlinescols(void)
 	COLS = MAX_COLUMN;
     if (LINES > MAX_LINE)
 	LINES = MAX_LINE;
-#if defined(__CYGWIN__) && LANG == JA
-    LASTLINE = LINES - (isWinConsole ? 2 : 1);
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#if defined(__CYGWIN__)
+    LASTLINE = LINES - (isWinConsole == TERM_CYGWIN_RESERVE_IME ? 2 : 1);
+#endif				/* defined(__CYGWIN__) */
 }
 
 void
@@ -1285,9 +1292,7 @@ refresh(void)
 		 * (COLS-1,LINES-1).
 		 */
 #if !defined(USE_BG_COLOR) || defined(__CYGWIN__)
-#if defined(__CYGWIN__) && LANG == JA
 		if (isWinConsole)
-#endif				/* defined(__CYGWIN__) && LANG == JA */
 		    if (line == LINES - 1 && col == COLS - 1)
 			break;
 #endif				/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */

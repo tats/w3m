@@ -1,5 +1,11 @@
 2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
+	* [w3m-dev 04092] remove __CYGWIN__ && LANG == JA
+	* remove condition LANG == JA && __CYGWIN__
+	* cygwin_mouse_btn_swapped enabled when before 1.5.x 
+
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
 	* [w3m-dev 04091] option panel: gettextize select list
 	* rc.c: gettextize option select list.
 	* rc.c: add gettextize message.
@@ -8512,4 +8518,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.929 2004/07/15 16:26:03 ukai Exp $
+$Id: ChangeLog,v 1.930 2004/07/15 16:32:38 ukai Exp $

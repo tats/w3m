@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.242 2004/04/04 16:47:20 ukai Exp $ */
+/* $Id: main.c,v 1.243 2004/07/15 16:32:38 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5323,7 +5323,7 @@ DEFUN(mouse, MOUSE, "mouse operation")
     int btn, x, y;
 
     btn = (unsigned char)getch() - 32;
-#if defined(__CYGWIN__)
+#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
     if (cygwin_mouse_btn_swapped) {
 	if (btn == MOUSE_BTN2_DOWN)
 	    btn = MOUSE_BTN3_DOWN;

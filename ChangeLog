@@ -1,3 +1,8 @@
+2003-07-09  ABE Yuji <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03934] Re: clear image
+	* w3mimg/x11/x11_w3mimg.c (x11_clear): s/FALSE/False/
+
 2003-07-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03931] Re: clear image
@@ -7898,4 +7903,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.846 2003/07/08 17:29:56 ukai Exp $
+$Id: ChangeLog,v 1.847 2003/07/08 17:32:12 ukai Exp $

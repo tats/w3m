@@ -1,10 +1,11 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.1 2002/01/15 05:36:24 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.2 2002/01/15 16:13:39 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
 $query = $ENV{'QUERY_STRING'};
+$local_cookie = $ENV{'LOCAL_COOKIE'};
 $url = $query;
 $SENDMAIL = '/usr/lib/sendmail';
 $SENDMAIL = '/usr/sbin/sendmail' if -x '/usr/sbin/sendmail';
@@ -26,7 +27,6 @@ if ($query =~ s/^\w+://) {
     $body = $opt{'body'};
     delete $opt{'body'};
 
-    print "200 HTTP/1.0 OK\r\n";
     print "Content-Type: text/html\r\n";
     print "w3m-control: END\r\n";
     print "w3m-control: PREV_LINK\r\n";
@@ -35,6 +35,7 @@ if ($query =~ s/^\w+://) {
     print "<body><h1>W3M Mailer: $qurl</h1>\n";
     print "<form action='$0' method='POST'>\n";
     print "<input type='hidden' name='action' value='preview'>\n";
+    print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
     print "<table border='1'>\n";
     if ($opt{'from'}) {
 	print "<tr><th>From:</th><td>" . &html_quote($opt{'from'}) 
@@ -69,9 +70,15 @@ if ($query =~ s/^\w+://) {
     print "</body></html>\n";
     exit(0);
 } else {
-    print "200 HTTP/1.0 OK\r\n";
     sysread(STDIN, $req, $ENV{'CONTENT_LENGTH'});
     %opt = &parse_opt($req);
+    if ($local_cookie ne $opt{'cookie'}) {
+	print "Content-Type: text/plain\r\n";
+	print "\r\n";
+	print "Local cookie doesn't match: It may be an illegal execution\n";
+	exit 1;
+    }
+    delete $opt{'cookie'};
     $body = &html_quote($opt{'body'});
     delete $opt{'body'};
     $act = $opt{'action'};
@@ -87,6 +94,7 @@ if ($query =~ s/^\w+://) {
 	print "<h1>W3M Mailer: preview</h1>\n";
 	print "<form action='$0' method='POST'>\n";
 	print "<input type='hidden' name='action' value='send'>\n";
+	print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
 	print "<hr>\n";
 	print "<pre>\n";
 	foreach $h (keys %opt) {
@@ -116,7 +124,6 @@ if ($query =~ s/^\w+://) {
 	print "</body></html>\n";
     } else {
 	unless (open(MAIL, "|$SENDMAIL -t")) {
-	    print "200 HTTP/1.0 OK\r\n";
 	    print "Content-Type: text/html\r\n";
 	    print "\r\n";
 	    print "<html><head><title>W3M Mailer</title></head>\n";
@@ -144,7 +151,6 @@ if ($query =~ s/^\w+://) {
 	    print "w3m-control: BACK\r\n";
 	    print "\r\n";
 	} else {
-	    print "200 HTTP/1.0 OK\r\n";
 	    print "Content-Type: text/html\r\n";
 	    print "\r\n";
 	    print "<html><head><title>W3M Mailer</title></head>\n";
@@ -158,11 +164,11 @@ if ($query =~ s/^\w+://) {
 sub lang_setup {
     $lang = $ENV{'LANG'};
     if ($lang =~ /^ja/i) {
-	eval { use NKF; };
+	eval "use NKF;";
 	if (! $@) {
 	    $use_NKF = 1;
 	} else {
-	    $nkf_NKF = 0;
+	    $use_NKF = 0;
 	}
     }
 }

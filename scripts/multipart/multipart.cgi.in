@@ -1,6 +1,6 @@
 #!@PERL@
 
-eval { use NKF; };
+eval "use NKF;";
 if (! $@) {
 	$use_NKF = 1;
 	$CONV = "-e";

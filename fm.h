@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.102 2003/01/10 16:42:40 ukai Exp $ */
+/* $Id: fm.h,v 1.103 2003/01/15 17:13:22 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -742,7 +742,8 @@ typedef struct http_request {
 #define TMPF_SRC	1
 #define TMPF_FRAME	2
 #define TMPF_CACHE	3
-#define MAX_TMPF_TYPE	4
+#define TMPF_COOKIE	4
+#define MAX_TMPF_TYPE	5
 
 #define set_no_proxy(domains) (NO_proxy_domains=make_domain_list(domains))
 
@@ -1017,8 +1018,10 @@ global char UseGraphicChar init(TRUE);
 extern char alt_rule[];
 #endif				/* not KANJI_SYMBOLS */
 extern char UseAltEntity;
+global int no_rc_dir init(FALSE);
 global char *rc_dir;
-global int rc_dir_is_tmp init(FALSE);
+global char *tmp_dir;
+global char *config_file init(NULL);
 
 #ifdef USE_MOUSE
 global int use_mouse init(TRUE);

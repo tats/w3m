@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.74 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: rc.c,v 1.75 2003/01/15 17:13:22 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -847,7 +847,7 @@ compare_table(struct rc_search_table *a, struct rc_search_table *b)
     return strcmp(a->param->name, b->param->name);
 }
 
-void
+static void
 create_option_search_table()
 {
     int i, j, k;
@@ -1366,24 +1366,25 @@ sync_with_option(void)
 }
 
 void
-init_rc(char *config_filename)
+init_rc(void)
 {
+    int i;
     struct stat st;
     FILE *f;
-    char *tmpdir;
 
-    if (((tmpdir = getenv("TMP")) == NULL || *tmpdir == '\0')
-	&& ((tmpdir = getenv("TEMP")) == NULL || *tmpdir == '\0')
-	&& ((tmpdir = getenv("TMPDIR")) == NULL || *tmpdir == '\0'))
-	tmpdir = "/tmp";
+    if (config_file != NULL)
+	goto open_rc;
+
+    rc_dir = expandName(RC_DIR);
+    i = strlen(rc_dir);
+    if (i > 1 && rc_dir[i - 1] == '/')
+        rc_dir[i - 1] = '\0';
 
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */
 	    if (do_mkdir(rc_dir, 0700) < 0) {
 		fprintf(stderr, "Can't create config directory (%s)!", rc_dir);
-		rc_dir = tmpdir;
-		rc_dir_is_tmp = TRUE;
-		return;
+		goto rc_dir_err;
 	    }
 	    else {
 		stat(rc_dir, &st);
@@ -1391,37 +1392,56 @@ init_rc(char *config_filename)
 	}
 	else {
 	    fprintf(stderr, "Can't open config directory (%s)!", rc_dir);
-	    rc_dir = tmpdir;
-	    rc_dir_is_tmp = TRUE;
-	    return;
+	    goto rc_dir_err;
 	}
     }
     if (!S_ISDIR(st.st_mode)) {
 	/* not a directory */
 	fprintf(stderr, "%s is not a directory!", rc_dir);
-	rc_dir = tmpdir;
-	rc_dir_is_tmp = TRUE;
-	return;
+	goto rc_dir_err;
     }
+    if (!(st.st_mode & S_IWUSR)) {
+	fprintf(stderr, "%s is not writable!", rc_dir);
+	goto rc_dir_err;
+    }
+    no_rc_dir = FALSE;
+    tmp_dir = rc_dir;
 
+    if (config_file == NULL)
+	config_file = rcFile(CONFIG_FILE);
+
+    create_option_search_table();
+
+  open_rc:
     /* open config file */
     if ((f = fopen(etcFile(W3MCONFIG), "rt")) != NULL) {
 	interpret_rc(f);
 	fclose(f);
     }
-    config_file = config_filename;
-    if (config_file == NULL)
-	config_file = rcFile(CONFIG_FILE);
     if ((f = fopen(config_file, "rt")) != NULL) {
 	interpret_rc(f);
 	fclose(f);
     }
+    return;
+
+  rc_dir_err:
+    no_rc_dir = TRUE;
+    if (((tmp_dir = getenv("TMPDIR")) == NULL || *tmp_dir == '\0') &&
+	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
+	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
+	tmp_dir = "/tmp";
 }
 
 
 static char optionpanel_src1[] =
-    "<html><head><title>Option Setting Panel</title></head>\
-<body><center><b>Option Setting Panel</b><br><b>(w3m version %s)</b></center><p>\n" "<a href=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "?mode=panel&cookie=%s\">%s</a>\n" "<form method=internal action=option>";
+    "<html><head><title>Option Setting Panel</title></head><body>\
+<h1 align=center>Option Setting Panel<br>(w3m version %s)</b></h1>\
+<form method=post action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME "\">\
+<input type=hidden name=mode value=panel>\
+<input type=hidden name=cookie value=\"%s\">\
+<input type=submit value=\"%s\">\
+</form><br>\
+<form method=internal action=option>";
 
 static Str
 to_str(struct param_ptr *p)
@@ -1458,8 +1478,8 @@ to_str(struct param_ptr *p)
 Buffer *
 load_option_panel(void)
 {
-    Str src = Sprintf(optionpanel_src1, w3m_version,
-		      (Str_form_quote(Local_cookie))->ptr, CMT_HELPER);
+    Str src = Sprintf(optionpanel_src1, html_quote(w3m_version),
+		      html_quote(Local_cookie->ptr), CMT_HELPER);
     struct param_ptr *p;
     struct sel_c *s;
     int x, i;
@@ -1530,7 +1550,7 @@ panel_set_option(struct parsed_tagarg *arg)
 {
     FILE *f = NULL;
 
-    if (rc_dir_is_tmp) {
+    if (no_rc_dir) {
 	disp_message("There's no ~/.w3m directory... config not saved", FALSE);
     }
     else {

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.20 2003/01/15 16:24:25 ukai Exp $ */
+/* $Id: local.c,v 1.21 2003/01/15 17:13:22 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -23,6 +23,25 @@
 
 #define CGIFN_CONTAIN_SLASH 4
 
+static char *Local_cookie_file = NULL;
+
+static void
+writeLocalCookie()
+{
+    FILE *f;
+
+    if (no_rc_dir)
+	return;
+    Local_cookie_file = tmpfname(TMPF_COOKIE, NULL)->ptr;
+    set_environ("LOCAL_COOKIE_FILE", Local_cookie_file);
+    f = fopen(Local_cookie_file, "wb");
+    if (!f)
+	return;
+    fwrite(Local_cookie->ptr, sizeof(char), Local_cookie->length, f);
+    fclose(f);
+    chmod(Local_cookie_file, S_IRUSR | S_IWUSR);
+}
+
 /* setup cookie for local CGI */
 void
 setLocalCookie()
@@ -31,7 +50,6 @@ setLocalCookie()
     gethostname(hostname, 256);
 
     Local_cookie = Sprintf("%d.%ld@%s", CurrentPid, lrand48(), hostname);
-    set_environ("LOCAL_COOKIE", Local_cookie->ptr);
 }
 
 Str
@@ -395,6 +413,7 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     file = cgi_filename(uri, &status);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
+    writeLocalCookie();
     tmp1 = tmpfname(TMPF_DFL, NULL);
     if ((pid = localcgi_popen_r(&f)) < 0)
 	return NULL;
@@ -459,6 +478,7 @@ localcgi_get(char *uri, char *request, char *referer)
     file = cgi_filename(uri, &status);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
+    writeLocalCookie();
     if ((pid = localcgi_popen_r(&f)) < 0)
 	return NULL;
     else if (pid)

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.48 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: etc.c,v 1.49 2003/01/15 17:13:21 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1503,7 +1503,7 @@ file_to_url(char *file)
 }
 
 static char *tmpf_base[MAX_TMPF_TYPE] = {
-    "tmp", "src", "frame", "cache"
+    "tmp", "src", "frame", "cache", "cookie",
 };
 static unsigned int tmpf_seq[MAX_TMPF_TYPE];
 
@@ -1512,7 +1512,7 @@ tmpfname(int type, char *ext)
 {
     Str tmpf;
     tmpf = Sprintf("%s/w3m%s%d-%d%s",
-		   rc_dir,
+		   tmp_dir,
 		   tmpf_base[type],
 		   CurrentPid, tmpf_seq[type]++, (ext) ? ext : "");
     pushText(fileToDelete, tmpf->ptr);

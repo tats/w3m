@@ -1,3 +1,46 @@
+2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03644] Re: Other user can see local cookie.
+	* cookie.c (save_cookies): return if no_rc_dir
+	* etc.c (tmpf_base): add cookie
+		(tmpfname): use tmp_dir instead of rc_dir
+	* file.c (loadGeneralFile): cookie is not passed via URL
+	* fm.h (TMPF_COOKIE): incl
+		(MAX_TMPF_TYPE): incl
+		(no_rc_dir): added
+		(tmp_dir): added
+		(config_file): added
+	* local.c (Local_cookie_file): added
+		(writeLocalCookie): added
+		(setLocalCookie): dont set environment LOCAL_COOKIE
+		(localcgi_post): writeLocalCookie
+		(localcgi_get): writeLocalCookie
+	* main.c (config_filename): deleted
+		(cmd_loadURL): arg FormList
+		(main): rewrite config_file, rc
+		(ldhelp): no cookie in URL
+		(cmd_loadURL): arg FormList
+		(goURL0): cmd_loadURL change
+		(cmd_loadBuffer): cmd_loadURL change
+		(adBmark): cookie is posted
+		(follow_map): cmd_loadURL change
+		(linkMn): cmd_loadURL change
+		(reinit): init_rc change
+	* proto.h (create_option_search_table): deleted
+		(init_rc): no args
+	* rc.c (create_option_search_table): static
+		(init_rc): no args
+			rewrite
+		(optionpanel_src1): rewrite
+		(load_option_panel): html_quote
+		(panel_set_option): no_rc_dir
+	* w3mbookmark.c: rewrite
+	* w3mhelperpanel.c: rewrite
+	* scripts/dirlist.cgi.in: rewrite
+	* scripts/w3mhelp.cgi.in: rewrite
+	* scripts/w3mmail.cgi.in: rewrite
+	* scripts/multipart/multipart.cgi.in: rewrite
+
 2003-01-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* file.c (loadGopherDir): convertLine RAW_MODE
@@ -6476,4 +6519,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.684 2003/01/15 16:24:25 ukai Exp $
+$Id: ChangeLog,v 1.685 2003/01/15 17:13:21 ukai Exp $

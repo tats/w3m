@@ -1,7 +1,5 @@
-/* $Id: w3mbookmark.c,v 1.7 2002/11/26 18:03:29 ukai Exp $ */
-#ifdef __EMX__
+/* $Id: w3mbookmark.c,v 1.8 2003/01/15 17:13:22 ukai Exp $ */
 #include <stdlib.h>
-#endif
 #include <stdio.h>
 #include "config.h"
 #include "Str.h"
@@ -10,46 +8,47 @@
 #include "parsetag.h"
 
 #if LANG == JA
-static char *bkmark_src1 = "<html><head><title>Bookmark Registration</title>\n\
-<body><h1>•÷•√•Ø•ﬁ°º•Ø§Œ≈–œø</h1>\n\n" "<form method=get action=\"file://%s/" W3MBOOKMARK_CMDNAME "\">\n\n" "<input type=hidden name=mode value=register>\n\
+#define BKMARK_TITLE "•÷•√•Ø•ﬁ°º•Ø§Œ≈–œø"
+#define BKMARK_ADD "≈–œø"
+#define DEFAULT_SECTION "Ã§ ¨Œ‡"
+#else
+#define BKMARK_TITLE "Register to my bookmark"
+#define BKMARK_ADD "ADD"
+#define DEFAULT_SECTION "Miscellaneous"
+#endif
+
+static char *bkmark_src1 =
+    "<html>\n\
+<head>\n\
+<title>" BKMARK_TITLE "</title>\n\
+</head>\n\
+<body>\n\
+<h1>" BKMARK_TITLE "</h1>\n\
+<form method=post action=\"file:///$LIB/" W3MBOOKMARK_CMDNAME "\">\n\
+<input type=hidden name=mode value=register>\n\
 <input type=hidden name=bmark value=\"%s\">\n\
+<input type=hidden name=cookie value=\"%s\">\n\
 <table cellpadding=0>\n";
 
 static char *bkmark_src2 =
-    "<tr><td>New Section:</td><td><input type=text name=newsection width=60></td></tr>\n\
-<tr><td>URL:</td><td><input type=text name=url value=\"%s\" width=60></td></tr>\n\
-<tr><td>Title:</td><td><input type=text name=title value=\"%s\" width=60></td></tr>\n\
-<tr><td><input type=submit name=submit value=\"≈–œø\"></td>\n\
+    "<tr><td>New&nbsp;Section:<td><input type=text name=newsection size=60>\n\
+<tr><td>URL:<td><input type=text name=url value=\"%s\" size=60>\n\
+<tr><td>Title:<td><input type=text name=title value=\"%s\" size=60>\n\
+<tr><td><input type=submit value=\"" BKMARK_ADD "\">\n\
 </table>\n\
-<input type=hidden name=cookie value=\"%s\">\
-</form>\
-</body></html>\n";
-static char *default_section = "Ã§ ¨Œ‡";
-#else				/* LANG != JA */
-static char *bkmark_src1 = "<html><head><title>Bookmark Registration</title>\n\
-<body><h1>Register to my bookmark</h1>\n\n" "<form method=get action=\"file://%s/" W3MBOOKMARK_CMDNAME "\">\n\n" "<input type=hidden name=mode value=register>\n\
-<input type=hidden name=bmark value=\"%s\">\n\
-<table cellpadding=0>\n";
+</form>\n\
+</body>\n\
+</html>\n";
 
-static char *bkmark_src2 =
-    "<tr><td>New Section:</td><td><input type=text name=newsection width=60></td></tr>\n\
-<tr><td>URL:</td><td><input type=text name=url value=\"%s\" width=60></td></tr>\n\
-<tr><td>Title:</td><td><input type=text name=title value=\"%s\" width=60></td></tr>\n\
-<tr><td><input type=submit name=submit value=\"ADD\"></td>\n\
-</table>\n\
-<input type=hidden name=cookie value=\"%s\">\
-</form>\
-</body></html>\n";
-static char *default_section = "Miscellaneous";
-#endif				/* LANG != JA */
-
+#undef FALSE
 #define FALSE 0
-#define T   1
+#undef TRUE
+#define TRUE 1
 
 static char end_section[] =
     "<!--End of section (do not delete this comment)-->\n";
 
-char *Local_cookie;
+static char *Local_cookie = NULL;
 
 void
 print_bookmark_panel(char *bmark, char *url, char *title)
@@ -59,7 +58,7 @@ print_bookmark_panel(char *bmark, char *url, char *title)
     char *p;
 
     printf("Content-Type: text/html\n\n");
-    printf(bkmark_src1, w3m_lib_dir(), bmark);
+    printf(bkmark_src1, html_quote(bmark), html_quote(Local_cookie));
     if ((f = fopen(bmark, "r")) != NULL) {
 	printf("<tr><td>Section:<td><select name=\"section\">\n");
 	while (tmp = Strfgets(f), tmp->length > 0) {
@@ -69,13 +68,13 @@ print_bookmark_panel(char *bmark, char *url, char *title)
 		tmp2 = Strnew();
 		while (*p && *p != '<')
 		    Strcat_char(tmp2, *p++);
-		printf("<option value=\"%s\">%s</option>", tmp2->ptr,
+		printf("<option value=\"%s\">%s\n", tmp2->ptr,
 		       tmp2->ptr);
 	    }
 	}
 	printf("</select>\n");
     }
-    printf(bkmark_src2, html_quote(url), html_quote(title), Local_cookie);
+    printf(bkmark_src2, html_quote(url), html_quote(title));
 }
 
 /* create new bookmark */
@@ -117,7 +116,7 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
     if (section == NULL || *section == '\0')
 	section = tag_get_value(data, "section");
     if (section == NULL || *section == '\0')
-	section = default_section;
+	section = DEFAULT_SECTION;
 
     if (url == NULL || *url == '\0' || title == NULL || *title == '\0') {
 	/* Bookmark not added */
@@ -175,7 +174,9 @@ int
 main(int argc, char *argv[], char **envp)
 {
     extern char *getenv();
-    char *qs;
+    char *p;
+    int length;
+    Str qs = NULL;
     struct parsed_tagarg *cgiarg;
     char *mode;
     char *bmark;
@@ -183,21 +184,33 @@ main(int argc, char *argv[], char **envp)
     char *title;
     char *sent_cookie;
 
-    if ((qs = getenv("QUERY_STRING")) == NULL) {
-	printf("Content-Type: text/plain\n\n");
-	printf("Incomplete Request: no QUERY_STRING\n");
-	exit(1);
+    p = getenv("REQUEST_METHOD");
+    if (p == NULL || strcasecmp(p, "post"))
+	goto request_err;
+    p = getenv("CONTENT_LENGTH");
+    if (p == NULL || (length = atoi(p)) <= 0)
+	goto request_err;
+
+    qs = Strfgets(stdin);
+    Strchop(qs);
+    if (qs->length != length)
+	goto request_err;
+    cgiarg = cgistr2tagarg(qs->ptr);
+
+    p = getenv("LOCAL_COOKIE_FILE");
+    if (p) {
+	FILE *f = fopen(p, "r");
+	if (f) {
+	    Local_cookie = Strfgets(f)->ptr;
+	    fclose(f);
+	}
     }
-
-    cgiarg = cgistr2tagarg(qs);
-
-    Local_cookie = getenv("LOCAL_COOKIE");
     sent_cookie = tag_get_value(cgiarg, "cookie");
     if (sent_cookie == NULL || Local_cookie == NULL ||
 	strcmp(sent_cookie, Local_cookie) != 0) {
 	/* local cookie doesn't match: It may be an illegal invocation */
-	printf("Content-Type: text/plain\n");
-	printf("\nLocal cookie doesn't match: It may be an illegal invocation\n");
+	printf("Content-Type: text/plain\n\n");
+	printf("Local cookie doesn't match: It may be an illegal invocation\n");
 	exit(1);
     }
 
@@ -205,12 +218,8 @@ main(int argc, char *argv[], char **envp)
     bmark = expandPath(tag_get_value(cgiarg, "bmark"));
     url = tag_get_value(cgiarg, "url");
     title = tag_get_value(cgiarg, "title");
-    if (bmark == NULL || url == NULL) {
-	/* incomplete request */
-	printf("Content-Type: text/plain\n\n");
-	printf("Incomplete Request: QUERY_STRING=%s\n", qs);
-	exit(1);
-    }
+    if (bmark == NULL || url == NULL)
+	goto request_err;
     if (mode && !strcmp(mode, "panel")) {
 	if (title == NULL)
 	    title = "";
@@ -220,8 +229,14 @@ main(int argc, char *argv[], char **envp)
 	printf("Content-Type: text/plain\n");
 	if (insert_bookmark(bmark, cgiarg)) {
 	    printf("w3m-control: BACK\n");
-	    printf("w3m-control: BACK\n\n");
+	    printf("w3m-control: BACK\n");
 	}
+	printf("\n");
     }
     return 0;
+
+  request_err:
+    printf("Content-Type: text/plain\n\n");
+    printf("Incomplete Request: %s\n", qs ? qs->ptr : "(null)");
+    exit(1);
 }

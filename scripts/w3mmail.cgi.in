@@ -1,15 +1,21 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.11 2002/11/11 15:50:28 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.12 2003/01/15 17:13:22 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
 $query = $ENV{'QUERY_STRING'};
-$local_cookie = $ENV{'LOCAL_COOKIE'};
+$cookie_file = $ENV{'LOCAL_COOKIE_FILE'};
+$local_cookie = '';
 $SENDMAIL = '/usr/lib/sendmail';
 $SENDMAIL = '/usr/sbin/sendmail' if -x '/usr/sbin/sendmail';
 $SENDMAIL_OPT = '-oi -t';
 
+if (-f $cookie_file) {
+    open(F, "< $cookie_file");
+    $local_cookie = <F>;
+    close(F);
+}
 if ($query =~ s/^\w+://) {
     $url = $query;
     $qurl = &html_quote($url);
@@ -43,8 +49,9 @@ if ($query =~ s/^\w+://) {
     print "\r\n";
     print "<html><head><title>W3M Mailer: $qurl</title></head>\n";
     print "<body><h1>W3M Mailer: $qurl</h1>\n";
-    print "<form action='file://$0' method='POST'>\n";
-    print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
+    print "<form action=\"file://$0\" method='POST'>\n";
+    $local_cookie = &html_quote($local_cookie);
+    print "<input type='hidden' name='cookie' value=\"$local_cookie\">\n";
     print "<table>\n";
     foreach $h ('from', 'to', 'cc', 'bcc', 'subject') {
 	$v = &lang_html_quote($opt{$h});
@@ -52,6 +59,7 @@ if ($query =~ s/^\w+://) {
 	delete $opt{$h};
     }
     if ($boundary) {
+	$boundary = &html_quote($boundary);
 	print "<tr><td>Content-Type:<td>multipart/form-data; boundary=\"$boundary\"\n";
 	print "<input type='hidden' name='boundary' value=\"$boundary\">\n";
     }
@@ -98,8 +106,9 @@ if ($query =~ s/^\w+://) {
 	print "<html><head><title>W3M Mailer</title></head>\n";
 	print "<body>\n";
 	print "<h1>W3M Mailer: preview</h1>\n";
-	print "<form action='$0' method='POST'>\n";
-	print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
+	print "<form action=\"file://$0\" method='POST'>\n";
+	$local_cookie = &html_quote($local_cookie);
+	print "<input type='hidden' name='cookie' value=\"$local_cookie\">\n";
 	print "<hr>\n";
 	print "<pre>\n";
 	foreach $h (keys %opt) {
@@ -112,13 +121,15 @@ if ($query =~ s/^\w+://) {
 	($cs,$cte,$body) = &lang_body(&lang_html_quote($body), 0);
 	print "Mime-Version: 1.0\n";
 	if ($boundary) {
+	    $boundary = &html_quote($boundary);
 	    print "Content-Type: multipart/form-data;\n";
 	    print "    boundary=\"$boundary\"\n";
 	} else {
 	    print "Content-Type: text/plain; charset=$cs\n";
 	}
 #	print "Content-Transfer-Encoding: $cte\n";
-	print "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
+	print "User-Agent: ", &html_quote("$ENV{'SERVER_SOFTWARE'} $prog/$id"),
+		"\n";
 	print "\n";
 	print $body;
 	print "\n" if ($body !~ /\n$/);
@@ -137,10 +148,10 @@ if ($query =~ s/^\w+://) {
 	foreach $h (keys %opt) {
 	    $qh = &html_quote($h);
 	    print "<tr><td>\u$qh:<td>$v{$h}\n";
-	    print "<input type='hidden' name=\"$qh\" value=\"$v\">\n";
+	    print "<input type='hidden' name=\"$qh\" value=\"$v{$h}\">\n";
 	}
 	print "<tr><td colspan=2>\n";
-	print "<textarea cols=40 rows=10 name='body'>\n";
+	print "<textarea cols=40 rows=10 name=body>\n";
 	if ($body) {
 	    print $body;
 	}
@@ -158,7 +169,7 @@ if ($query =~ s/^\w+://) {
 	    print "\r\n";
 	    print "<html><head><title>W3M Mailer</title></head>\n";
 	    print "<body><h1>W3M Mailer: open sendmail failed</h1>\n";
-	    print "<p>$@</p>\n";
+	    print "<p>", &html_quote($@), "</p>\n";
 	    print "</body></html>\n";
 	    exit(0);
 	}
@@ -189,7 +200,7 @@ if ($query =~ s/^\w+://) {
 	    print "\r\n";
 	    print "<html><head><title>W3M Mailer</title></head>\n";
 	    print "<body><h1>W3M Mailer: close sendmail failed</h1>\n";
-	    print "<p>$@</p>\n";
+	    print "<p>", &html_quote($@), "</p>\n";
 	    print "</body></html>\n";
 	}
     }

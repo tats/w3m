@@ -1,7 +1,8 @@
-/* $Id: w3mhelperpanel.c,v 1.10 2002/11/26 18:03:29 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.11 2003/01/15 17:13:22 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "config.h"
 #include "Str.h"
 #include "indep.h"
@@ -18,7 +19,7 @@
 #define MSG_DELETE		"ºï½ü"
 #define MSG_DOIT		"¼Â¹Ô"
 #else				/* LANG != JA */
-#define MSG_TITLE		"External Viewers"
+#define MSG_TITLE		"External Viewers Setup"
 #define MSG_NEW_ENTRY		"New Entry"
 #define MSG_TYPE		"Type"
 #define MSG_COMMAND		"Command"
@@ -81,32 +82,33 @@ printMailcapPanel(char *mailcap)
 	}
     }
     printf("Content-Type: text/html\n\n");
-    printf
-	("<html><head><title>External Viewer Setup</title></head><body><h1>%s</h1>\n",
-	 MSG_TITLE);
-    printf("<form method=get action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME
+    printf("<html>\n<head>\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1>\n",
+	   MSG_TITLE, MSG_TITLE);
+    printf("<form method=post action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME
 	   "\">\n");
     printf("<input type=hidden name=mode value=edit>\n");
-    printf("<input type=hidden name=cookie value=\"%s\">\n", local_cookie);
-    printf
-	("%s: %s=<input type=text name=newtype><br>%s=<input type=text name=newcmd><br><input type=submit name=submit value=\"%s\">\n",
-	 MSG_NEW_ENTRY, MSG_TYPE, MSG_COMMAND, MSG_REGISTER);
-    printf
-	("<p><hr width=50%%><p><table border='0' cellpadding='0'><tr><th>&nbsp;&nbsp;<th><b>%s</b><th><b>%s</b>\n",
-	 MSG_TYPE, MSG_COMMAND);
+    printf("<input type=hidden name=cookie value=\"%s\">\n",
+	   html_quote(local_cookie));
+    printf("<table>\n<tr><td>%s:<td>%s=<input type=text name=newtype size=40>\n\
+<tr><td><td>%s=<input type=text name=newcmd size=40>\n\
+<tr><td><input type=submit name=submit value=\"%s\">\n</table>\n",
+	   MSG_NEW_ENTRY, MSG_TYPE, MSG_COMMAND, MSG_REGISTER);
+    printf("<p><hr width=50%%><p>\n<table border='0' cellpadding='0'>\n\
+<tr><th align=left><b>%s</b><th><b>%s</b>\n",
+	   MSG_TYPE, MSG_COMMAND);
     while (tmp = Strfgets(f), tmp->length > 0) {
 	if (tmp->ptr[0] == '#')
 	    continue;
 	Strchop(tmp);
 	extractMailcapEntry(tmp->ptr, &type, &viewer);
-	printf("<tr valign=top><td><td>%s<td>%s<td>", html_quote(type),
+	printf("<tr valign=top><td>%s<td>%s<td nowrap>", html_quote(type),
 	       html_quote(viewer));
 	printf("<input type=checkbox name=delete value=\"%s\">%s\n",
 	       html_quote(type), MSG_DELETE);
     }
-    printf
-	("</table><input type=submit name=submit value=\"%s\"></form></body></html>\n",
-	 MSG_DOIT);
+    printf("</table>\n<input type=submit name=submit value=\"%s\">\n</form>\n\
+</body>\n</html>\n",
+	   MSG_DOIT);
 }
 
 void
@@ -159,17 +161,34 @@ main(int argc, char *argv[], char **envp)
 {
     Str mailcapfile;
     extern char *getenv();
-    char *qs;
+    char *p;
+    int length;
+    Str qs = NULL;
     struct parsed_tagarg *cgiarg;
     char *mode;
     char *sent_cookie;
 
-    if ((qs = getenv("QUERY_STRING")) == NULL)
-	exit(1);
+    p = getenv("REQUEST_METHOD");
+    if (p == NULL || strcasecmp(p, "post"))
+	goto request_err;
+    p = getenv("CONTENT_LENGTH");
+    if (p == NULL || (length = atoi(p)) <= 0)
+	goto request_err;
 
-    cgiarg = cgistr2tagarg(qs);
+    qs = Strfgets(stdin);
+    Strchop(qs);
+    if (qs->length != length)
+	goto request_err;
+    cgiarg = cgistr2tagarg(qs->ptr);
 
-    local_cookie = getenv("LOCAL_COOKIE");
+    p = getenv("LOCAL_COOKIE_FILE");
+    if (p) {
+	FILE *f = fopen(p, "r");
+	if (f) {
+	    local_cookie = Strfgets(f)->ptr;
+	    fclose(f);
+	}
+    }
     sent_cookie = tag_get_value(cgiarg, "cookie");
     if (local_cookie == NULL || sent_cookie == NULL ||
 	strcmp(local_cookie, sent_cookie) != 0) {
@@ -178,8 +197,7 @@ main(int argc, char *argv[], char **envp)
     }
 
     mode = tag_get_value(cgiarg, "mode");
-    mailcapfile = Strnew_charp(expandPath(RC_DIR));
-    Strcat_charp(mailcapfile, "/mailcap");
+    mailcapfile = Strnew_charp(expandPath(USER_MAILCAP));
     if (mode && !strcmp(mode, "edit")) {
 	char *referer;
 	/* check if I can edit my mailcap */
@@ -198,4 +216,8 @@ main(int argc, char *argv[], char **envp)
 	printMailcapPanel(mailcapfile->ptr);
     }
     return 0;
+
+  request_err:
+    bye("Incomplete Request:", qs ? qs->ptr : "(null)");
+    exit(1);
 }

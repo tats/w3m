@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.193 2003/01/15 16:24:25 ukai Exp $ */
+/* $Id: main.c,v 1.194 2003/01/15 17:13:22 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -25,8 +25,6 @@ extern int do_getch();
 #endif
 
 #define DSTR_LEN	256
-
-static char *config_filename = NULL;
 
 Hist *LoadHist;
 Hist *SaveHist;
@@ -71,7 +69,8 @@ JMP_BUF IntReturn;
 
 static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
-static void cmd_loadURL(char *url, ParsedURL *current, char *referer);
+static void cmd_loadURL(char *url, ParsedURL *current, char *referer,
+			FormList *request);
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 int show_params_p = 0;
@@ -383,12 +382,7 @@ main(int argc, char **argv, char **envp)
     CurrentDir = currentdir();
     CurrentPid = (int)getpid();
     BookmarkFile = NULL;
-    rc_dir = expandName(RC_DIR);
-    i = strlen(rc_dir);
-    if (i > 1 && rc_dir[i - 1] == '/')
-	rc_dir[i - 1] = '\0';
-    config_filename = rcFile(CONFIG_FILE);
-    create_option_search_table();
+    config_file = NULL;
 
     /* argument search 1 */
     for (i = 1; i < argc; i++) {
@@ -397,7 +391,7 @@ main(int argc, char **argv, char **envp)
 		argv[i] = "-dummy";
 		if (++i >= argc)
 		    usage();
-		config_filename = argv[i];
+		config_file = argv[i];
 		argv[i] = "-dummy";
 	    }
 	    else if (!strcmp("-h", argv[i]) || !strcmp("-help", argv[i]))
@@ -410,7 +404,7 @@ main(int argc, char **argv, char **envp)
     }
 
     /* initializations */
-    init_rc(config_filename);
+    init_rc();
 
     LoadHist = newHist();
     SaveHist = newHist();
@@ -2007,17 +2001,16 @@ ldhelp(void)
 #ifdef USE_HELP_CGI
     char *lang;
     int n;
+    Str tmp;
 
     lang = AcceptLang;
     n = strcspn(lang, ";, \t");
-    cmd_loadURL(Sprintf("file:///$LIB/" HELP_CGI CGI_EXTENSION
-			"?cookie=%s&version=%s&lang=%s",
-			Str_form_quote(Local_cookie)->ptr,
-			Str_form_quote(Strnew_charp(w3m_version))->ptr,
-			Str_form_quote(Strnew_charp_n(lang, n))->ptr)->ptr,
-		NULL, NO_REFERER);
+    tmp = Sprintf("file:///$LIB/" HELP_CGI CGI_EXTENSION "?version=%s&lang=%s",
+		  Str_form_quote(Strnew_charp(w3m_version))->ptr,
+		  Str_form_quote(Strnew_charp_n(lang, n))->ptr);
+    cmd_loadURL(tmp->ptr, NULL, NO_REFERER, NULL);
 #else
-    cmd_loadURL(helpFile(HELP_FILE), NULL, NO_REFERER);
+    cmd_loadURL(helpFile(HELP_FILE), NULL, NO_REFERER, NULL);
 #endif
 }
 
@@ -3813,7 +3806,7 @@ deletePrevBuf()
 }
 
 static void
-cmd_loadURL(char *url, ParsedURL *current, char *referer)
+cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 {
     Buffer *buf;
 
@@ -3850,7 +3843,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 #endif				/* USE_NNTP */
 
     refresh();
-    buf = loadGeneralFile(url, current, referer, 0, NULL);
+    buf = loadGeneralFile(url, current, referer, 0, request);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", conv_from_system(url))->ptr;
 	disp_err_message(emsg, FALSE);
@@ -3925,7 +3918,7 @@ goURL0(char *prompt, int relative)
     }
     parseURL2(url, &p_url, current);
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, current, referer);
+    cmd_loadURL(url, current, referer, NULL);
     if (Currentbuf != cur_buf)	/* success */
 	pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
 }
@@ -3965,7 +3958,7 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
 void
 ldBmark(void)
 {
-    cmd_loadURL(BookmarkFile, NULL, NO_REFERER);
+    cmd_loadURL(BookmarkFile, NULL, NO_REFERER, NULL);
 }
 
 
@@ -3974,15 +3967,19 @@ void
 adBmark(void)
 {
     Str tmp;
+    FormList *request;
 
-    tmp = Sprintf("file://%s/" W3MBOOKMARK_CMDNAME
-		  "?mode=panel&cookie=%s&bmark=%s&url=%s&title=%s",
-		  w3m_lib_dir(), (Str_form_quote(Local_cookie))->ptr,
+    tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s",
+		  (Str_form_quote(Local_cookie))->ptr,
 		  (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
-    cmd_loadURL(tmp->ptr, NULL, NO_REFERER);
+    request = newFormList(NULL, "post", NULL, NULL, NULL, NULL, NULL);
+    request->body = tmp->ptr;
+    request->length = tmp->length;
+    cmd_loadURL("file:///$LIB/" W3MBOOKMARK_CMDNAME, NULL, NO_REFERER,
+		request);
 }
 
 /* option setting */
@@ -4086,7 +4083,7 @@ follow_map(struct parsed_tagarg *arg)
 	_newT();
 	buf = Currentbuf;
 	cmd_loadURL(a->url, baseURL(Currentbuf),
-		    parsedURL2Str(&Currentbuf->currentURL)->ptr);
+		    parsedURL2Str(&Currentbuf->currentURL)->ptr, NULL);
 	if (buf != Currentbuf)
 	    delBuffer(buf);
 	else
@@ -4095,7 +4092,7 @@ follow_map(struct parsed_tagarg *arg)
 	return;
     }
     cmd_loadURL(a->url, baseURL(Currentbuf),
-		parsedURL2Str(&Currentbuf->currentURL)->ptr);
+		parsedURL2Str(&Currentbuf->currentURL)->ptr, NULL);
 #endif
 }
 
@@ -4116,7 +4113,7 @@ linkMn(void)
     parseURL2(l->url, &p_url, baseURL(Currentbuf));
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
     cmd_loadURL(l->url, baseURL(Currentbuf),
-		parsedURL2Str(&Currentbuf->currentURL)->ptr);
+		parsedURL2Str(&Currentbuf->currentURL)->ptr, NULL);
 }
 
 static void
@@ -5621,7 +5618,7 @@ reinit()
     char *resource = searchKeyData();
 
     if (resource == NULL) {
-	init_rc(config_filename);
+	init_rc();
 	sync_with_option();
 #ifdef USE_COOKIE
 	initCookie();
@@ -5631,7 +5628,7 @@ reinit()
     }
 
     if (!strcasecmp(resource, "CONFIG") || !strcasecmp(resource, "RC")) {
-	init_rc(config_filename);
+	init_rc();
 	sync_with_option();
 	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 	return;

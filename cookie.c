@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.7 2002/01/10 15:39:21 ukai Exp $ */
+/* $Id: cookie.c,v 1.8 2003/01/15 17:13:21 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -417,7 +417,7 @@ save_cookies(void)
 
     check_expired_cookies();
 
-    if (!First_cookie || is_saved || rc_dir_is_tmp)
+    if (!First_cookie || is_saved || no_rc_dir)
 	return;
 
     cookie_file = rcFile(COOKIE_FILE);

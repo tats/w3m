@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.22 2002/12/11 02:57:30 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.23 2003/01/15 17:13:22 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -49,18 +49,6 @@ if (defined($ENV{'QUERY_STRING'})) {
 	    $lang = $tlang;
 	}
     }
-    if ($ENV{'QUERY_STRING'} =~ /(^|&)cookie=([^&]*)/) {
-	$cookie = $2;
-	$cookie =~ s/\+|%([0-9A-Fa-f][0-9A-Fa-f])/$& eq '+' ? ' ' : pack('C', hex($1))/ge;
-    }
-}
-if (($cookie eq "") || ($cookie ne $ENV{"LOCAL_COOKIE"})) {
-    print <<EOF;
-Content-Type: text/plain
-
-Local cookie doesn't match: It may be an illegal execution
-EOF
-    exit(1);
 }
 
 %f = %keyfunc;
@@ -115,9 +103,7 @@ HEADING
 
 $q_version = $version;
 $q_version =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
-$q_cookie = $cookie;
-$q_cookie =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
-$script = "<A HREF=\"$ENV{'SCRIPT_NAME'}?cookie=$q_cookie&version=$q_version&amp;lang=";
+$script = "<A HREF=\"$ENV{'SCRIPT_NAME'}?version=$q_version&amp;lang=";
 
 # doc:en_English doc-jp:ja_Japanese
 for $otherlang (@docdirs) {

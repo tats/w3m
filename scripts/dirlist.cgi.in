@@ -33,15 +33,16 @@ $query = $ENV{'QUERY_STRING'};
 $dir = '';
 $cmd = '';
 $cookie = '';
-# $cgi = 0;
-# if ($query eq '') {
-#   $_ = `pwd`;	# insecure?
-#   chop;
-#   s/\r$//;
-#   $dir = $_;
-#   $cgi = 0;
-# } elsif ($query =~ /^(opt\d+|dir|cmd|cookie)=/) {
-  foreach(split(/\&/, $query)) {
+$local_cookie = '';
+foreach(split(/\&/, $query)) {
+  if (s/^dir=//) {
+    $dir = &form_decode($_);
+  }
+}
+$body = undef;
+if ($ENV{'REQUEST_METHOD'} eq 'POST') {
+  sysread(STDIN, $body, $ENV{'CONTENT_LENGTH'});
+  foreach(split(/\&/, $body)) {
     if (s/^dir=//) {
       $dir = &form_decode($_);
     } elsif (s/^opt(\d+)=//) {
@@ -52,27 +53,22 @@ $cookie = '';
       $cookie = &form_decode($_);
     }
   }
-  if (($cookie eq "") || ($cookie ne $ENV{"LOCAL_COOKIE"})) {
-    print <<EOF;
+}
+$cookie_file = $ENV{'LOCAL_COOKIE_FILE'};
+if (-f $cookie_file) {
+   open(F, "< $cookie_file");
+   $local_cookie = <F>;
+   close(F);
+}
+if ($local_cookie eq '' || (defined($body) && $cookie ne $local_cookie)) {
+  print <<EOF;
 Content-Type: text/plain
 
 Local cookie doesn't match: It may be an illegal execution
 EOF
-    exit(1);
-  }
- $cookie =  &html_quote($cookie);
-  $cgi = 1;
-# } else {
-#   $dir = $query;
-#   if (($dir !~ m@^/@) &&
-#       ($WIN32 && $dir !~ /^[a-z]:/i)) {
-#     $_ = `pwd`;	# insecure?
-#     chop;
-#     s/\r$//;
-#     $dir = "$_/$dir";
-#   }
-#   $cgi = -1;
-# }
+  exit(1);
+}
+$local_cookie =  &html_quote($local_cookie);
 if ($dir !~ m@/$@) {
   $dir .= '/';
 }
@@ -88,9 +84,7 @@ if ($WIN32) {
       $ROOT = &cygwin_pathconv("$ROOT");
   }
 }
-if ($cgi) {
-  $dir = &cleanup($dir);
-}
+$dir = &cleanup($dir);
 
 $TYPE   = $OPT[$OPT_TYPE];
 $FORMAT = $OPT[$OPT_FORMAT];
@@ -117,9 +111,6 @@ EOF
   exit 1;
 }
 
-# ($cgi > 0) && print <<EOF;
-# w3m-control: DELETE_PREVBUF
-# EOF
 print <<EOF;
 Content-Type: text/html
 
@@ -404,9 +395,9 @@ sub print_form {
   local($_, @vs, @os, $v, $o);
 
   print <<EOF;
-<form action=\"$CGI\">
+<form method=post action=\"$CGI#current\">
 <center>
-<table>
+<table cellpadding=0>
 <tr valign=top>
 EOF
   foreach(0 .. 2) {
@@ -433,7 +424,7 @@ EOF
 </table>
 </center>
 <input type=hidden name=dir value="$d">
-<input type=hidden name=cookie value="$cookie">
+<input type=hidden name=cookie value="$local_cookie">
 </form>
 EOF
 }

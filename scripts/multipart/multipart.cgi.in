@@ -28,24 +28,14 @@ if (defined($query)) {
 	}
 	$file = &form_decode($v{'file'});
 	$boundary = &form_decode($v{'boundary'});
-	$cookie = &form_decode($v{'cookie'});
-	if (($cookie eq "") || ($cookie ne $ENV{"LOCAL_COOKIE"})) {
-		print <<EOF;
-Content-Type: text/plain
-
-Local cookie doesn't match: It may be an illegal execution
-EOF
-		exit(1);
-	}
 } else {
 	$file = $ARGV[0];
 	if (@ARGV >= 2) {
 		$boundary = $ARGV[1];
 	}
-	$cookie = $ENV{'LOCAL_COOKIE'};
 }
-
-open(F, "< $file");
+(-f $file) || exit(1);
+open(F, "< $file") || exit(1);
 $end = 0;
 $mbody = '';
 if (defined($boundary)) {
@@ -131,7 +121,6 @@ if (defined($v{'count'})) {
 $qcgi = &html_quote($CGI);
 $qfile = &html_quote($file);
 $qboundary = &html_quote($boundary);
-$qcookie = &html_quote($cookie);
 
 if ($mbody =~ /\S/) {
 	$_ = $mbody;
@@ -196,20 +185,16 @@ while(! $end) {
 		s/\>/\&gt;/g;
 		print "<pre>\n";
 		print $_;
-		print "\n</pre>\n";
+		print "</pre>\n";
 		if ($type =~ /name=\"?([^\"]+)\"?/ ||
 			$dispos =~ /filename=\"?([^\"]+)\"?/) {
 			$name = $1;
 		} else {
 			$name = "Content";
 		}
-		print "<form method=POST action=\"$qcgi?$count\">\n";
-		print "<input type=hidden name=file value=\"$qfile\">\n";
-		print "<input type=hidden name=boundary value=\"$qboundary\">\n";
-		print "<input type=hidden name=cookie value=\"$qcookie\">\n";
-		print "<input type=hidden name=count value=\"$count\">\n";
+		print "<form action=\"$qcgi?file=$qfile&amp;boundary=$qboundary&amp;count=$count\">\n";
 		if ($image) {
-			print "<input type=image name=submit src=\"$CGI?file=$qfile&amp;boundary=$qboundary&amp;cookie=$qcookie&amp;count=$count\" alt=\"",
+			print "<input type=image name=submit src=\"$qcgi?file=$qfile&amp;boundary=$qboundary&amp;count=$count\" alt=\"",
 				&html_quote($name), "\">\n";
 		} else {
 			print "<input type=submit name=submit value=\"",

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.89 2002/04/09 14:45:58 ukai Exp $ */
+/* $Id: file.c,v 1.90 2002/04/17 02:32:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1634,6 +1634,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
 	readHeader(&f, t_buf, FALSE, &pu);
 	t = checkContentType(t_buf);
+	if (t == NULL && pu.file != NULL)
+	    t = guessContentType(pu.file);
 	if (t == NULL)
 	    t = "text/plain";
 	if (http_response_code >= 301 && http_response_code <= 303

@@ -1,3 +1,8 @@
+2002-04-17  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 03176] no Content-Type in http response header
+	* file.c (loadGeneralFile): guess content-type from filename
+
 2002-04-09  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03169] Can't calculate table height if number of cells > 20.
@@ -3340,4 +3345,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.369 2002/04/09 14:53:54 ukai Exp $
+$Id: ChangeLog,v 1.370 2002/04/17 02:32:13 ukai Exp $

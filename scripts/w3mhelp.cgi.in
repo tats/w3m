@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.18 2002/12/04 17:08:28 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.19 2002/12/05 16:02:00 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -208,6 +208,7 @@ sub load_keymap {
 sub norm_key {
     local($_) = @_;
 
+    s/(ESC|SPC|TAB|DEL|UP|DOWN|RIGHT|LEFT)/\U$1/i;
     s/\\(.)/$1/g;
     s/(^|\s+|-)\^(.)/${1}C-$2/g;
     s/(^|\s+|-)(C-\[|M-)/${1}ESC-/g;

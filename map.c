@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.28 2003/02/05 16:45:08 ukai Exp $ */
+/* $Id: map.c,v 1.29 2003/09/22 21:02:20 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -264,6 +264,7 @@ follow_map_panel(Buffer *buf, char *name)
     MapArea *a;
     ParsedURL pu;
     char *p, *q;
+    Buffer *newbuf;
 
     ml = searchMapList(buf, name);
     if (ml == NULL)
@@ -278,7 +279,7 @@ follow_map_panel(Buffer *buf, char *name)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	    p = html_quote(url_unquote_conv(p, buf->document_charset));
 	else
 	    p = q;
 	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
@@ -287,7 +288,12 @@ follow_map_panel(Buffer *buf, char *name)
     }
     Strcat_charp(mappage, "</table></body></html>");
 
-    return loadHTMLString(mappage);
+    newbuf = loadHTMLString(mappage);
+#ifdef USE_M17N
+    if (newbuf)
+	newbuf->document_charset = buf->document_charset;
+#endif
+    return newbuf;
 }
 #endif
 
@@ -412,7 +418,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	parseURL2(a->url, &pu, baseURL(buf));
 	q = html_quote(parsedURL2Str(&pu)->ptr);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(a->url, buf->document_code));
+	    p = html_quote(url_unquote_conv(a->url, buf->document_charset));
 	else
 	    p = html_quote(a->url);
 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
@@ -452,7 +458,7 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	if (!l->url)
 	    url = "(empty)";
 	else if (DecodeURL)
-	    url = html_quote(url_unquote_conv(l->url, buf->document_code));
+	    url = html_quote(url_unquote_conv(l->url, buf->document_charset));
 	else
 	    url = html_quote(l->url);
 	Strcat_m_charp(html, "<td>", url, NULL);
@@ -488,12 +494,12 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		Strcat_m_charp(html, "<a href=\"", q, "\">", NULL);
 		if (frame.body->name) {
 		    p = html_quote(url_unquote_conv(frame.body->name,
-						    buf->document_code));
+						    buf->document_charset));
 		    Strcat_charp(html, p);
 		}
 		if (DecodeURL)
 		    p = html_quote(url_unquote_conv(frame.body->url,
-						    buf->document_code));
+						    buf->document_charset));
 		else
 		    p = q;
 		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", NULL);
@@ -526,6 +532,11 @@ page_info_panel(Buffer *buf)
     struct frameset *f_set = NULL;
     int all;
     char *p, *q;
+#ifdef USE_M17N
+    wc_ces_list *list;
+    char charset[16];
+#endif
+    Buffer *newbuf;
 
     Strcat_charp(tmp, "<html><head>\
 <title>Information about current page</title>\
@@ -536,6 +547,9 @@ page_info_panel(Buffer *buf)
     all = buf->allLine;
     if (all == 0 && buf->lastLine)
 	all = buf->lastLine->linenumber;
+#ifdef USE_M17N
+    Strcat_charp(tmp, "<form method=internal action=charset>");
+#endif
     p = parsedURL2Str(&buf->currentURL)->ptr;
     if (DecodeURL)
 	p = url_unquote_conv(p, 0);
@@ -548,10 +562,24 @@ page_info_panel(Buffer *buf)
 		   buf->real_type ? html_quote(buf->real_type) : "unknown",
 		   "<tr valign=top><td nowrap>Last Modified<td>",
 		   html_quote(last_modified(buf)),
-#ifdef JP_CHARSET
-		   "<tr valign=top><td nowrap>Document Code<td>",
-		   code_to_str(buf->document_code),
-#endif				/* JP_CHARSET */
+		   NULL);
+#ifdef USE_M17N
+    if (buf->document_charset != InnerCharset) {
+	list = wc_get_ces_list();
+	Strcat_charp(tmp,
+		     "<tr><td nowrap>Document Charset<td><select name=charset>");
+	for (; list->name != NULL; list++) {
+	    sprintf(charset, "%d", (unsigned int)list->id);
+	    Strcat_m_charp(tmp, "<option value=", charset,
+			   (buf->document_charset == list->id) ? " selected>"
+							       : ">",
+			   list->desc, NULL);
+	}
+	Strcat_charp(tmp, "</select>");
+	Strcat_charp(tmp, "<tr><td><td><input type=submit value=Change>");
+    }
+#endif
+    Strcat_m_charp(tmp,
 		   "<tr valign=top><td nowrap>Number of lines<td>",
 		   Sprintf("%d", all)->ptr,
 		   "<tr valign=top><td nowrap>Transferred bytes<td>",
@@ -563,7 +591,7 @@ page_info_panel(Buffer *buf)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	    p = html_quote(url_unquote_conv(p, buf->document_charset));
 	else
 	    p = q;
 	Strcat_m_charp(tmp,
@@ -576,7 +604,7 @@ page_info_panel(Buffer *buf)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	    p = html_quote(url_unquote_conv(p, buf->document_charset));
 	else
 	    p = q;
 	Strcat_m_charp(tmp,
@@ -588,7 +616,7 @@ page_info_panel(Buffer *buf)
 	FormItemList *fi = (FormItemList *)a->url;
 	p = form2str(fi);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	    p = html_quote(url_unquote_conv(p, buf->document_charset));
 	else
 	    p = html_quote(p);
 	Strcat_m_charp(tmp,
@@ -599,6 +627,9 @@ page_info_panel(Buffer *buf)
 	    append_map_info(buf, tmp, fi->parent->item);
     }
     Strcat_charp(tmp, "</table>\n");
+#ifdef USE_M17N
+    Strcat_charp(tmp, "</form>");
+#endif
 
     append_link_info(buf, tmp, buf->linklist);
 
@@ -627,5 +658,10 @@ page_info_panel(Buffer *buf)
 #endif
   end:
     Strcat_charp(tmp, "</body></html>");
-    return loadHTMLString(tmp);
+    newbuf = loadHTMLString(tmp);
+#ifdef USE_M17N
+    if (newbuf)
+	newbuf->document_charset = buf->document_charset;
+#endif
+    return newbuf;
 }

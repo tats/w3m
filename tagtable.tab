@@ -147,8 +147,8 @@ sup		HTML_SUP
 sub		HTML_SUB
 /sub		HTML_N_SUB
 table_alt	HTML_TABLE_ALT
-_rule		HTML_RULE
-/_rule		HTML_N_RULE
+_symbol		HTML_SYMBOL
+/_symbol	HTML_N_SYMBOL
 title_alt	HTML_TITLE_ALT
 form_int	HTML_FORM_INT
 /form_int	HTML_N_FORM_INT

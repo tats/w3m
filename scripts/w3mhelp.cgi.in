@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.25 2003/04/07 15:19:46 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.26 2003/09/22 21:02:29 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -166,6 +166,7 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
 
 &show_keymap("Miscellany",
 	     split(" ", "mainMn ldhelp ldOpt dispVer cooLst ldHist ldDL
+		docCSet defCSet
 		msgs msToggle wrapToggle execCmd setAlarm setOpt setEnv defKey
 		reinit execsh susp qquitfm quitfm"));
 

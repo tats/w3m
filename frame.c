@@ -1,15 +1,9 @@
-/* $Id: frame.c,v 1.32 2003/05/12 16:33:18 ukai Exp $ */
+/* $Id: frame.c,v 1.33 2003/09/22 21:02:18 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
 #include <signal.h>
 #include <setjmp.h>
-
-#ifdef KANJI_SYMBOLS
-#define RULE_WIDTH 2
-#else				/* not KANJI_SYMBOLS */
-#define RULE_WIDTH 1
-#endif				/* not KANJI_SYMBOLS */
 
 static JMP_BUF AbortLoading;
 struct frameset *renderFrameSet = NULL;
@@ -97,9 +91,9 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
     body->baseURL = baseURL(buf);
     if (tag) {
 	if (parsedtag_get_value(tag, ATTR_SRC, &p))
-	    body->url = url_quote_conv(remove_space(p), buf->document_code);
+	    body->url = url_quote_conv(remove_space(p), buf->document_charset);
 	if (parsedtag_get_value(tag, ATTR_NAME, &p) && *p != '_')
-	    body->name = url_quote_conv(p, buf->document_code);
+	    body->name = url_quote_conv(p, buf->document_charset);
     }
     return body;
 }
@@ -410,10 +404,9 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 {
     int r, c, t_stack;
     URLFile f2;
-    char code;
-#ifdef JP_CHARSET
-    char charset[2];
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    wc_ces charset, doc_charset;
+#endif
     char *d_target, *p_target, *s_target, *t_target;
     ParsedURL *currentURL, base;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
@@ -445,9 +438,6 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 	fputs("<table hborder>\n", f1);
 
     currentURL = f->currentURL ? f->currentURL : &current->currentURL;
-#ifdef JP_CHARSET
-    charset[1] = '\0';
-#endif
     for (r = 0; r < f->row; r++) {
 	fputs("<tr valign=top>\n", f1);
 	for (c = 0; c < f->col; c++) {
@@ -525,8 +515,12 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		s_target = frame.body->name;
 		t_target = "_blank";
 		d_target = TargetSelf ? s_target : t_target;
-#ifdef JP_CHARSET
-		code = DocumentCode;
+#ifdef USE_M17N
+		charset = WC_CES_US_ASCII;
+		if (current->document_charset != WC_CES_US_ASCII)
+		    doc_charset = current->document_charset;
+		else
+		    doc_charset = DocumentCharset;
 #endif
 		t_stack = 0;
 		if (frame.body->type &&
@@ -534,7 +528,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		    Str tmp;
 		    fprintf(f1, "<pre>\n");
 		    while ((tmp = StrmyUFgets(&f2))->length) {
-			tmp = convertLine(NULL, tmp, &code, HTML_MODE);
+			tmp = convertLine(NULL, tmp, HTML_MODE, &charset,
+					  doc_charset);
 			fprintf(f1, "%s", html_quote(tmp->ptr));
 		    }
 		    fprintf(f1, "</pre>\n");
@@ -551,7 +546,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    Str tmp = StrmyUFgets(&f2);
 			    if (tmp->length == 0)
 				break;
-			    tmp = convertLine(NULL, tmp, &code, HTML_MODE);
+			    tmp = convertLine(NULL, tmp, HTML_MODE, &charset,
+					      doc_charset);
 			    p = tmp->ptr;
 			}
 			read_token(tok, &p, &status, 1, status != R_ST_NORMAL);
@@ -639,7 +635,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			case HTML_BASE:
 			    /* "BASE" is prohibit tag */
 			    if (parsedtag_get_value(tag, ATTR_HREF, &q)) {
-				q = url_quote_conv(remove_space(q), code);
+				q = url_quote_conv(remove_space(q), charset);
 				parseURL(q, &base, NULL);
 			    }
 			    if (parsedtag_get_value(tag, ATTR_TARGET, &q)) {
@@ -648,7 +644,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				else if (!strcasecmp(q, "_parent"))
 				    d_target = p_target;
 				else
-				    d_target = url_quote_conv(q, code);
+				    d_target = url_quote_conv(q, charset);
 			    }
 			    Strshrinkfirst(tok, 1);
 			    Strshrink(tok, 1);
@@ -670,6 +666,25 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    }
 				}
 			    }
+#ifdef USE_M17N
+			    if (UseContentCharset &&
+				parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &q)
+				&& !strcasecmp(q, "Content-Type")
+				&& parsedtag_get_value(tag, ATTR_CONTENT, &q)
+				&& (q = strcasestr(q, "charset")) != NULL) {
+				q += 7;
+				SKIP_BLANKS(q);
+				if (*q == '=') {
+				    wc_ces c;
+				    q++;
+				    SKIP_BLANKS(q);
+				    if ((c = wc_guess_charset(q, 0)) != 0) {
+					doc_charset = c;
+					charset = WC_CES_US_ASCII;
+				    }
+				}
+			    }
+#endif
 			    /* fall thru, "META" is prohibit tag */
 			case HTML_HEAD:
 			case HTML_N_HEAD:
@@ -750,7 +765,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    break;
 				tag->value[j] =
 				    url_quote_conv(remove_space(tag->value[j]),
-						   code);
+						   charset);
 				tag->need_reconstruct = TRUE;
 				parseURL2(tag->value[j], &url, &base);
 				if (url.scheme == SCM_UNKNOWN ||
@@ -764,12 +779,13 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				parsedtag_set_value(tag,
 						    ATTR_REFERER,
 						    parsedURL2Str(&base)->ptr);
-#ifdef JP_CHARSET
-				if (code != '\0') {
-				    charset[0] = code;
+#ifdef USE_M17N
+				if (tag->attrid[j] == ATTR_ACTION &&
+				    charset != WC_CES_US_ASCII)
 				    parsedtag_set_value(tag,
-							ATTR_CHARSET, charset);
-				}
+							ATTR_CHARSET,
+							wc_ces_to_charset
+							(charset));
 #endif
 				break;
 			    case ATTR_TARGET:
@@ -863,6 +879,9 @@ renderFrame(Buffer *Cbuf, int force_reload)
     Buffer *buf;
     int flag;
     struct frameset *fset;
+#ifdef USE_M17N
+    wc_ces doc_charset = DocumentCharset;
+#endif
 
     tmp = tmpfname(TMPF_FRAME, ".html");
     f = fopen(tmp->ptr, "w");
@@ -879,13 +898,19 @@ renderFrame(Buffer *Cbuf, int force_reload)
 	flag |= RG_NOCACHE;
     renderFrameSet = Cbuf->frameset;
     flushFrameSet(renderFrameSet);
+#ifdef USE_M17N
+    DocumentCharset = InnerCharset;
+#endif
     buf = loadGeneralFile(tmp->ptr, NULL, NULL, flag, NULL);
+#ifdef USE_M17N
+    DocumentCharset = doc_charset;
+#endif
     renderFrameSet = NULL;
     if (buf == NULL || buf == NO_BUFFER)
 	return NULL;
     buf->sourcefile = tmp->ptr;
-#ifdef JP_CHARSET
-    buf->document_code = Cbuf->document_code;
+#ifdef USE_M17N
+    buf->document_charset = Cbuf->document_charset;
 #endif
     copyParsedURL(&buf->currentURL, &Cbuf->currentURL);
     preFormUpdateBuffer(buf);

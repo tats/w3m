@@ -1,9 +1,14 @@
-/* $Id: regex.h,v 1.5 2002/01/10 15:39:21 ukai Exp $ */
+/* $Id: regex.h,v 1.6 2003/09/22 21:02:21 ukai Exp $ */
 #define REGEX_MAX	64
 #define STORAGE_MAX	256
 
-
-typedef unsigned short longchar;
+typedef struct {
+    char type;
+#ifdef USE_M17N
+    wc_wchar_t wch;
+#endif
+    unsigned char ch;
+} longchar;
 
 typedef struct regexchar {
     union {

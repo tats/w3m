@@ -1,4 +1,4 @@
-/* $Id: indep.h,v 1.15 2003/07/26 17:16:24 ukai Exp $ */
+/* $Id: indep.h,v 1.16 2003/09/22 21:02:19 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include <gc.h>
@@ -33,7 +33,7 @@ extern char *HTML_QUOTE_MAP[];
 #define html_quote_char(c) HTML_QUOTE_MAP[(int)is_html_quote(c)]
 
 extern clen_t strtoclen(const char *s);
-extern char *conv_entity(int ch);
+extern char *conv_entity(unsigned int ch);
 extern int getescapechar(char **s);
 extern char *getescapecmd(char **s);
 extern char *allocStr(const char *s, int len);

@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.20 2002/12/24 17:20:48 ukai Exp $ */
+/* $Id: regex.c,v 1.21 2003/09/22 21:02:21 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -14,6 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <gc.h>
+#include "config.h"
+#ifdef USE_M17N
+#include "wc.h"
+#include "wtf.h"
+#ifdef USE_UNICODE
+#include "ucs.h"
+#endif
+#endif
 #include "regex.h"
 #include "config.h"
 #include "myctype.h"
@@ -21,10 +29,6 @@
 #ifndef NULL
 #define NULL	0
 #endif				/* not NULL */
-
-#if LANG == JA
-#define JP_CHARSET
-#endif
 
 #define RE_ITER_LIMIT   65535
 
@@ -51,26 +55,64 @@ char *lc2c(longchar *, int);
 int verbose;
 #endif				/* REGEX_DEBUG */
 
-#ifndef IS_KANJI1
+#ifdef USE_M17N
+#define get_mclen(c) wtf_len1((wc_uchar *)(c))
+#else
+#define get_mclen(c) 1
+#endif
+
+#ifndef TOLOWER
 #include <ctype.h>
-#define IS_KANJI1(x) ((x)&0x80)
 #define TOLOWER(x) tolower(x)
 #define TOUPPER(x) toupper(x)
 #endif
 
-#ifdef JP_CHARSET
-#define RE_KANJI(p)	(((unsigned char)*(p) << 8) | (unsigned char)*((p)+1))
-#endif
+#define RE_TYPE_END     0
+#define RE_TYPE_CHAR    1
+#define RE_TYPE_WCHAR_T 2
+#define RE_WHICH_RANGE  3
+#define RE_TYPE_SYMBOL  4
 
-#define RE_WHICH_RANGE	0xffff
+static longchar
+set_longchar(char *str)
+{
+    unsigned char *p = (unsigned char *)str;
+    longchar r;
+
+#ifdef USE_M17N
+    if (*p & 0x80) {
+	r.wch = wtf_parse1(&p);
+	if (r.wch.ccs == WC_CCS_SPECIAL || r.wch.ccs == WC_CCS_SPECIAL_W) {
+	    r.type = RE_TYPE_SYMBOL;
+	    return r;
+	}
+#ifdef USE_UNICODE
+	if (WC_CCS_IS_UNICODE(r.wch.ccs)) {
+	    if (WC_CCS_SET(r.wch.ccs) == WC_CCS_UCS_TAG)
+		r.wch.code = wc_ucs_tag_to_ucs(r.wch.code);
+	    r.wch.ccs = WC_CCS_UCS4;
+	}
+	else
+#endif
+	    r.wch.ccs = WC_CCS_SET(r.wch.ccs);
+	r.type = RE_TYPE_WCHAR_T;
+	return r;
+    }
+#endif
+    r.ch = *p;
+    r.type = RE_TYPE_CHAR;
+    return r;
+}
 
 static Regex DefaultRegex;
 #define CompiledRegex DefaultRegex.re
 #define Cstorage DefaultRegex.storage
 
 static int regmatch(regexchar *, char *, char *, int, char **);
-static int regmatch1(regexchar *, longchar);
-static int matchWhich(longchar *, longchar, int);
+static int regmatch1(regexchar *, longchar *);
+static int matchWhich(longchar *, longchar *, int);
+static int match_longchar(longchar *, longchar *, int);
+static int match_range_longchar(longchar *, longchar *, longchar *, int);
 
 /* 
  * regexCompile: compile regular expression
@@ -153,21 +195,15 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 	    else
 		m = RE_WHICH;
 	    if (*p == '-' || *p == ']')
-		*(st_ptr++) = (unsigned char)*(p++);
+		*(st_ptr++) = set_longchar(p);
 	    while (*p != ']') {
 		if (*p == '\\') {
 		    p++;
-#ifdef JP_CHARSET
-		    if (IS_KANJI1(*p)) {
-			*(st_ptr++) = RE_KANJI(p);
-			p += 2;
-		    }
-		    else
-#endif
-			*(st_ptr++) = (unsigned char)*(p++);
+		    *(st_ptr++) = set_longchar(p);
+		    p += get_mclen(p);
 		}
 		else if (*p == '-' && *(p + 1) != ']') {
-		    *(st_ptr++) = RE_WHICH_RANGE;
+		    (st_ptr++)->type = RE_WHICH_RANGE;
 		    p++;
 		}
 		else if (*p == '\0') {
@@ -175,21 +211,17 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 			*msg = "Missing ]";
 		    return NULL;
 		}
-#ifdef JP_CHARSET
-		else if (IS_KANJI1(*p)) {
-		    *(st_ptr++) = RE_KANJI(p);
-		    p += 2;
+		else {
+		    *(st_ptr++) = set_longchar(p);
+		    p += get_mclen(p);
 		}
-#endif
-		else
-		    *(st_ptr++) = (unsigned char)*(p++);
 		if (st_ptr >= &regex->storage[STORAGE_MAX]) {
 		    if (msg)
 			*msg = "Regular expression too long";
 		    return NULL;
 		}
 	    }
-	    *(st_ptr++) = '\0';
+	    (st_ptr++)->type = RE_TYPE_END;
 	    re->p.pattern = r;
 	    RE_SET_MODE(re, m);
 	    if (igncase)
@@ -226,14 +258,8 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 	case '\\':
 	    p++;
 	default:
-#ifdef JP_CHARSET
-	    if (IS_KANJI1(*p)) {
-		*(st_ptr) = RE_KANJI(p);
-		p++;
-	    }
-	    else
-#endif
-		*st_ptr = (unsigned char)*p;
+	    *(st_ptr) = set_longchar(p);
+	    p += get_mclen(p) - 1;
 	    re->p.pattern = st_ptr;
 	    st_ptr++;
 	    RE_SET_MODE(re, RE_NORMAL);
@@ -302,10 +328,7 @@ RegexMatch(Regex *re, char *str, int len, int firstp)
 	    /* matched */
 	    return 1;
 	}
-#ifdef JP_CHARSET
-	if (IS_KANJI1(*p))
-	    p++;
-#endif
+	p += get_mclen(p) - 1;
     }
     return 0;
 }
@@ -471,24 +494,11 @@ regmatch_iter(struct MatchingContext1 *c,
 			}
 			return 0;
 		    }
-#ifdef JP_CHARSET
-		    else if (IS_KANJI1(c->str[c->n_any])) {
-			longchar k;
-			k = RE_KANJI(c->str + c->n_any);
-			if (regmatch1(c->re, k)) {
-			    c->n_any += 2;
-			}
-			else {
-			    return 0;
-			}
-			c->firstp = 0;
-		    }
-#endif
 		    else {
 			longchar k;
-			k = (unsigned char)c->str[c->n_any];
-			if (regmatch1(c->re, k)) {
-			    c->n_any++;
+			k = set_longchar(c->str + c->n_any);
+			if (regmatch1(c->re, &k)) {
+			    c->n_any += get_mclen(c->str + c->n_any);
 			}
 			else {
 			    return 0;
@@ -553,20 +563,11 @@ regmatch_iter(struct MatchingContext1 *c,
 	    }
 	    return 0;
 	default:
-#ifdef JP_CHARSET
-	    if (IS_KANJI1(*c->str)) {
-		longchar k;
-		k = RE_KANJI(c->str);
-		c->str += 2;
-		if (!regmatch1(c->re, k))
-		    return 0;
-	    }
-	    else
-#endif
 	    {
 		longchar k;
-		k = (unsigned char)*(c->str++);
-		if (!regmatch1(c->re, k))
+		k = set_longchar(c->str);
+		c->str += get_mclen(c->str);
+		if (!regmatch1(c->re, &k))
 		    return 0;
 	    }
 	    c->re++;
@@ -613,29 +614,29 @@ regmatch(regexchar * re, char *str, char *end_p, int firstp, char **lastpos)
 
 
 static int
-regmatch1(regexchar * re, longchar c)
+regmatch1(regexchar * re, longchar * c)
 {
+    int ans;
+
+#ifdef USE_M17N
+    if (c->type == RE_TYPE_SYMBOL)
+	return 0;
+#endif
     switch (RE_MODE(re)) {
     case RE_ANY:
 #ifdef REGEX_DEBUG
 	if (verbose)
-	    printf("%c vs any. -> 1\n", c);
+	    printf("%s vs any. -> 1\n", lc2c(c, 1));
 #endif				/* REGEX_DEBUG */
 	return 1;
     case RE_NORMAL:
+	ans = match_longchar(re->p.pattern, c, re->mode & RE_IGNCASE);
 #ifdef REGEX_DEBUG
 	if (verbose)
-	    printf("RE=%c vs %c -> %d\n", *re->p.pattern, c,
-		   *re->p.pattern == c);
-#endif				/* REGEX_DEBUG */
-	if (re->mode & RE_IGNCASE) {
-	    if (*re->p.pattern < 127 && c < 127)
-		return TOLOWER(*re->p.pattern) == TOLOWER(c);
-	    else
-		return *re->p.pattern == c;
-	}
-	else
-	    return (*re->p.pattern == c);
+	    printf("RE=%s vs %s -> %d\n", lc2c(re->p.pattern, 1), lc2c(c, 1),
+		   ans);
+#endif                         /* REGEX_DEBUG */
+	return ans;
     case RE_WHICH:
 	return matchWhich(re->p.pattern, c, re->mode & RE_IGNCASE);
     case RE_EXCEPT:
@@ -645,36 +646,25 @@ regmatch1(regexchar * re, longchar c)
 }
 
 static int
-matchWhich(longchar * pattern, longchar c, int igncase)
+matchWhich(longchar * pattern, longchar * c, int igncase)
 {
     longchar *p = pattern;
     int ans = 0;
 
 #ifdef REGEX_DEBUG
     if (verbose)
-	printf("RE pattern = %s char=%s", lc2c(pattern, 10000), lc2c(&c, 1));
+	printf("RE pattern = %s char=%s", lc2c(pattern, 10000), lc2c(c, 1));
 #endif				/* REGEX_DEBUG */
-    while (*p != '\0') {
-	if (*(p + 1) == RE_WHICH_RANGE && *(p + 2) != '\0') {	/* Char class. */
-	    if (*p <= c && c <= *(p + 2)) {
-		ans = 1;
-		break;
-	    }
-	    else if (igncase && c < 127 &&
-		     ((*p <= TOLOWER(c) && TOLOWER(c) <= *(p + 2)) ||
-		      (*p <= TOUPPER(c) && TOUPPER(c) <= *(p + 2)))) {
+    while (p->type != RE_TYPE_END) {
+	if ((p + 1)->type == RE_WHICH_RANGE && (p + 2)->type != RE_TYPE_END) {
+	    if (match_range_longchar(p, p + 2, c, igncase)) {
 		ans = 1;
 		break;
 	    }
 	    p += 3;
 	}
 	else {
-	    if (*p == c) {
-		ans = 1;
-		break;
-	    }
-	    else if (igncase && c < 127 &&
-		     (*p == TOLOWER(c) || *p == TOUPPER(c))) {
+	    if (match_longchar(p, c, igncase)) {
 		ans = 1;
 		break;
 	    }
@@ -688,23 +678,60 @@ matchWhich(longchar * pattern, longchar c, int igncase)
     return ans;
 }
 
+static int
+match_longchar(longchar * a, longchar * b, int ignore)
+{
+#ifdef USE_M17N
+    if (a->type != b->type)
+	return 0;
+    if (a->type == RE_TYPE_WCHAR_T)
+	return (a->wch.ccs == b->wch.ccs) && (a->wch.code == b->wch.code);
+#endif
+    if (ignore && IS_ALPHA(b->ch))
+	return (a->ch == TOLOWER(b->ch) || a->ch == TOUPPER(b->ch));
+    else
+        return a->ch == b->ch;
+}
+
+static int
+match_range_longchar(longchar * a, longchar * b, longchar * c, int ignore)
+{
+#ifdef USE_M17N
+    if (a->type != b->type || a->type != c->type)
+	return 0;
+    if (a->type == RE_TYPE_WCHAR_T)
+	return ((a->wch.ccs == c->wch.ccs && c->wch.ccs == b->wch.ccs) &&
+		(a->wch.code <= c->wch.code && c->wch.code <= b->wch.code));
+#endif
+    if (ignore && IS_ALPHA(c->ch))
+	return ((a->ch <= TOLOWER(c->ch) && TOLOWER(c->ch) <= b->ch) ||
+		(a->ch <= TOUPPER(c->ch) && TOUPPER(c->ch) <= b->ch));
+    else
+	return (a->ch <= c->ch && c->ch <= b->ch);
+}
+
 #ifdef REGEX_DEBUG
 char *
 lc2c(longchar * x, int len)
 {
     static char y[100];
-    int i = 0;
+    int i = 0, j = 0;
     char *r;
 
-    while (x[i] && i < len) {
-	if (x[i] == RE_WHICH_RANGE)
+    while (x[j].type != RE_TYPE_END && j < len) {
+	if (x[j].type == RE_WHICH_RANGE)
 	    y[i++] = '-';
-	else if (x[i] >= 128) {
-	    y[i++] = ((x[i] >> 8) & 0xff);
-	    y[i++] = (x[i] & 0xff);
+#ifdef USE_M17N
+	else if (x[j].type == RE_TYPE_WCHAR_T) {
+	    char buf[20];
+	    sprintf(buf, "[%x-%x]", x[j].wch.ccs, x[j].wch.code);
+	    strcpy(&y[i], buf);
+	    i += strlen(buf);
 	}
+#endif
 	else
-	    y[i++] = x[i];
+	    y[i++] = x[j].ch;
+	j++;
     }
     y[i] = '\0';
     r = GC_malloc_atomic(i + 1);
@@ -774,6 +801,9 @@ main(int argc, char **argv)
     FILE *f = stdin;
     int i = 1;
 
+#ifdef USE_M17N
+    wtf_init(WC_CES_EUC_JP, WC_CES_EUC_JP);
+#endif
 #ifdef REGEX_DEBUG
     for (i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "-v") == 0)

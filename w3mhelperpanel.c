@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.11 2003/01/15 17:13:22 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.12 2003/09/22 21:02:22 ukai Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -81,7 +81,11 @@ printMailcapPanel(char *mailcap)
 	    }
 	}
     }
+#if LANG == JA
+    printf("Content-Type: text/html; charset=EUC-JP\n\n");
+#else
     printf("Content-Type: text/html\n\n");
+#endif
     printf("<html>\n<head>\n<title>%s</title>\n</head>\n<body>\n<h1>%s</h1>\n",
 	   MSG_TITLE, MSG_TITLE);
     printf("<form method=post action=\"file:///$LIB/" W3MHELPERPANEL_CMDNAME

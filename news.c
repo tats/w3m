@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.15 2003/01/29 17:10:49 ukai Exp $ */
+/* $Id: news.c,v 1.16 2003/09/22 21:02:20 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -111,7 +111,7 @@ static char *
 name_from_address(char *str, int n)
 {
     char *s, *p;
-    int i, l, space = TRUE;
+    int l, space = TRUE;
 
     s = allocStr(str, -1);
     SKIP_BLANKS(s);
@@ -135,8 +135,7 @@ name_from_address(char *str, int n)
 	*p = '\0';
 	s++;
     }
-    for (p = s, l = 0; *p; p += i) {
-	i = get_mclen(get_mctype(p));
+    for (p = s, l = 0; *p; p += get_mclen(p)) {
 	if (IS_SPACE(*p)) {
 	    if (space)
 		continue;
@@ -144,7 +143,7 @@ name_from_address(char *str, int n)
 	}
 	else
 	    space = FALSE;
-	l += i;
+	l += get_mcwidth(p);
 	if (l > n)
 	    break;
     }
@@ -304,7 +303,7 @@ openNewsStream(ParsedURL *pu)
 }
 
 Str
-loadNewsgroup(ParsedURL *pu, char *code)
+loadNewsgroup(ParsedURL *pu, wc_ces * charset)
 {
     volatile Str page;
     Str tmp;
@@ -315,12 +314,13 @@ loadNewsgroup(ParsedURL *pu, char *code)
     int status, i, first, last;
     volatile int flag = 0, start = 0, end = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+#ifdef USE_M17N
+    wc_ces doc_charset = DocumentCharset, mime_charset;
 
+    *charset = WC_CES_US_ASCII;
+#endif
     if (current_news.host == NULL || !pu->file || *pu->file == '\0')
 	return NULL;
-#ifdef JP_CHARSET
-    *code = DocumentCode;
-#endif
     group = allocStr(pu->file, -1);
     if (pu->scheme == SCM_NNTP_GROUP)
 	scheme = "/";
@@ -411,8 +411,14 @@ loadNewsgroup(ParsedURL *pu, char *code)
 	    if (!(q = strchr(p, '>')) && !(q = strchr(p, '\t')))
 		continue;
 	    *q = '\0';
-	    s = convertLine(&f, decodeMIME(s), code, HEADER_MODE)->ptr;
-	    n = convertLine(&f, decodeMIME(n), code, HEADER_MODE)->ptr;
+	    tmp = decodeMIME(Strnew_charp(s), &mime_charset);
+	    s = convertLine(&f, tmp, HEADER_MODE,
+			    mime_charset ? &mime_charset : charset,
+			    mime_charset ? mime_charset : doc_charset)->ptr;
+	    tmp = decodeMIME(Strnew_charp(n), &mime_charset);
+	    n = convertLine(&f, tmp, HEADER_MODE,
+			    mime_charset ? &mime_charset : charset,
+			    mime_charset ? mime_charset : doc_charset)->ptr;
 	    add_news_message(page, i, t, n, s, p, scheme,
 			     pu->scheme == SCM_NNTP_GROUP ? qgroup : NULL);
 	}

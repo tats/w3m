@@ -142,52 +142,112 @@ AC_DEFUN([AC_W3M_GOPHER],
  AC_MSG_RESULT($enable_gopher)])
 #
 # ----------------------------------------------------------------
-# AC_W3M_LANG
+# AC_W3M_M17N
 # ----------------------------------------------------------------
-# Checks for Japanese 
-AC_DEFUN([AC_W3M_LANG],
-[AC_SUBST(W3M_LANG)
-AC_SUBST(DISPLAY_CODE)
-AC_SUBST(SYSTEM_CODE)
-AC_MSG_CHECKING(if japanese support is enabled)
-AC_ARG_ENABLE(japanese,
- [  --enable-japanese=CODE	support Japanese character sets
-				CODE=(S|E|j|N|n|m)],,
- [enable_japanese="no"])
-AC_MSG_RESULT($enable_japanese)
-if test x"$enable_japanese" = xno; then
+# m17n enable?
+AC_DEFUN([AC_W3M_M17N],
+[AC_SUBST(USE_M17N)
+AC_SUBST(USE_UNICODE)
+AC_SUBST(WCTARGET)
+AC_SUBST(WCCFLAGS)
+AC_SUBST(DISPLAY_CHARSET)
+AC_SUBST(SYSTEM_CHARSET)
+AC_SUBST(DOCUMENT_CHARSET)
+WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
+AC_MSG_CHECKING(if m17n support is enabled)
+AC_ARG_ENABLE(m17n,
+ [  --disable-m17n		support m17n],,
+ [enable_m17n="yes"])
+AC_MSG_RESULT($enable_m17n)
+if test x"$enable_m17n" = xno; then
   w3m_lang="en"
-  AC_DEFINE(DISPLAY_CODE, 'x')
-  AC_DEFINE(SYSTEM_CODE, 'x')
+  WCTARGET=""
+  WCCFLAGS=""
+  wcinclude=""
+  wclib=""
+  display_charset='WC_CES_US_ASCII'
+  system_charset='WC_CES_US_ASCII'
+  document_charset='WC_CES_US_ASCII'
 else
-  w3m_lang="ja";
-  case x"$enable_japanese" in
-  xS) AC_DEFINE_UNQUOTED(DISPLAY_CODE, '$enable_japanese')
-      AC_DEFINE(SYSTEM_CODE, 'S');;
-  xE|xj|xN|xn|xm) 
-      AC_DEFINE_UNQUOTED(DISPLAY_CODE, '$enable_japanese')
-      AC_DEFINE(SYSTEM_CODE, 'E');;
-  *) AC_DEFINE(DISPLAY_CODE, 'E')
-     AC_DEFINE(SYSTEM_CODE, 'E');;
-  esac;
+ AC_DEFINE(USE_M17N)
+ WCTARGET="wctarget"
+ WCCFLAGS="-I. -I.."
+ wcinclude="-I./libwc"
+ wclib="-L./libwc -lwc"
+ AC_MSG_CHECKING(if unicode support is enabled)
+ AC_ARG_ENABLE(unicode,
+  [   --disable-unicode		support unicode],,
+  [enable_unicode="yes"])
+ AC_MSG_RESULT($enable_unicode)
+ charset=US-ASCII
+ if test x"$enable_unicode" = xyes; then
+    WCCFLAGS="-DUSE_UNICODE $WCCFLAGS"
+    charset=UTF-8
+    AC_DEFINE(USE_UNICODE)
+ fi
+ AC_MSG_CHECKING(if japanese support is enabled)
+ AC_ARG_ENABLE(japanese,
+   [   --enable-japanese=CODE	support Japanese character sets
+				CODE=(S|E|J|U)],,
+   [enable_japanese="no"])
+ AC_MSG_RESULT($enable_japanese)
+ if test x"$enable_japanese" = xno; then
+   w3m_lang="en"
+ else
+   w3m_lang="ja"
+   case "$enable_japanese" in
+   E*) charset=EUC-JP;;
+   S*) charset=Shift_JIS;;
+   J*) charset=ISO-2022-JP;;
+   U*) charset=UTF-8;;
+   esac 
+ fi
+ display_charset=$charset
+ AC_MSG_CHECKING(which charset is used for display)
+ AC_ARG_WITH(charset,
+  [  --with-charset=CHARSET],
+  [test x"with_charset" = xyes || display_charset="$with_charset"])
+ AC_MSG_RESULT($display_charset)
+ display_charset=`awk '$[1] == "'$display_charset'" {print $[2]}' charset-list`
+ case "$display_charset" in
+   WC_CES_ISO_2022_JP*)
+     system_charset=WC_CES_EUC_JP
+     document_charset=WC_CES_EUC_JP
+     ;;
+   WC_CES_SHIFT_JIS)
+     system_charset=$display_charset
+     # for auto-detect
+     document_charset=WC_CES_EUC_JP
+     ;;
+   WC_CES_ISO_2022_CN|WC_CES_HZ_GB_2312)
+     system_charset=WC_CES_EUC_CN
+     document_charset=WC_CES_EUC_CN
+     ;;
+   WC_CES_BIG5)
+     system_charset=$display_charset
+     # for auto-detect
+     document_charset=WC_CES_EUC_TW
+     ;;
+  WC_CES_ISO_2022_KR)
+     system_charset=WC_CES_EUC_KR
+     document_charset=WC_CES_EUC_KR
+     ;;
+  *)
+     system_charset=$display_charset
+     document_charset=$display_charset
+     ;;
+ esac
 fi
 W3M_LANGDEF=`echo $w3m_lang | tr 'a-z' 'A-Z'`
 W3M_LANG=$W3M_LANGDEF
-AC_DEFINE_UNQUOTED(W3M_LANG,$W3M_LANG)])
-#
-# ----------------------------------------------------------------
-# AC_W3M_KANJI_SYMBOLS
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_KANJI_SYMBOLS],
-[AC_SUBST(KANJI_SYMBOLS)
-if test x"$enable_japanese" != xno; then
- AC_MSG_CHECKING(if kanji symbols is used)
- AC_ARG_ENABLE(kanjisymbols,
-  [   --disable-kanjisymbols	use kanji symbols (enable japanese only)],,
-  [enable_kanjisymbols="yes"])
- test x"$enable_kanjisymbols" = xyes && AC_DEFINE(KANJI_SYMBOLS)
- AC_MSG_RESULT($enable_kanjisymbols)
-fi])
+AC_DEFINE_UNQUOTED(W3M_LANG, $W3M_LANG)
+AC_DEFINE_UNQUOTED(WCTARGET, "$WCTARGET")
+AC_DEFINE_UNQUOTED(WCCFLAGS, "$WCCFLAGS")
+CFLAGS="$CFLAGS $wcinclude"
+W3M_LIBS="$W3M_LIBS $wclib"
+AC_DEFINE_UNQUOTED(DISPLAY_CHARSET, $display_charset)
+AC_DEFINE_UNQUOTED(SYSTEM_CHARSET, $system_charset)
+AC_DEFINE_UNQUOTED(DOCUMENT_CHARSET, $document_charset)])
 #
 # ----------------------------------------------------------------
 # AC_W3M_KEYMAP

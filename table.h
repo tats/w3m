@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.11 2002/12/06 16:50:49 ukai Exp $ */
+/* $Id: table.h,v 1.12 2003/09/22 21:02:21 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -62,7 +62,7 @@ struct table_in {
 struct table_linfo {
     Lineprop prev_ctype;
     signed char prev_spaces;
-    int prevchar;
+    Str prevchar;
     short length;
 };
 
@@ -128,8 +128,6 @@ struct table {
 #define TBLM_S		RB_S
 #define TBLM_ANCHOR	0x1000000
 
-#define  uchar           unsigned char
-#define  ushort           unsigned short
 struct table_mode {
     unsigned int pre_mode;
     char indent_level;

@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.31 2003/04/07 15:26:15 ukai Exp $ */
+/* $Id: ftp.c,v 1.32 2003/09/22 21:02:18 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -417,7 +417,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
 }
 
 Str
-loadFTPDir(ParsedURL *pu, char *code)
+loadFTPDir(ParsedURL *pu, wc_ces * charset)
 {
     Str FTPDIRtmp;
     Str tmp;
@@ -427,9 +427,10 @@ loadFTPDir(ParsedURL *pu, char *code)
     char **flist;
     int i, nfile, nfile_max;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+#ifdef USE_M17N
+    wc_ces doc_charset = DocumentCharset;
 
-#ifdef JP_CHARSET
-    *code = DocumentCode;
+    *charset = WC_CES_US_ASCII;
 #endif
     if (current_ftp.data == NULL)
 	return NULL;
@@ -467,8 +468,8 @@ loadFTPDir(ParsedURL *pu, char *code)
 	Strcat_char(tmp, '/');
     fn = html_quote(tmp->ptr);
     tmp =
-	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), code,
-		    RAW_MODE);
+	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), RAW_MODE,
+		    charset, doc_charset);
     q = html_quote(tmp->ptr);
     FTPDIRtmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", fn,
 			       "\">\n<title>", q,
@@ -547,18 +548,20 @@ loadFTPDir(ParsedURL *pu, char *code)
 		*(date - 1) = '\0';
 	    }
 	    date++;
-	    tmp = convertLine(NULL, Strnew_charp(fn), code, RAW_MODE);
+	    tmp = convertLine(NULL, Strnew_charp(fn), RAW_MODE, charset,
+			      doc_charset);
 	    if (ftype == FTPDIR_LINK)
 		Strcat_char(tmp, '@');
 	    Strcat_m_charp(FTPDIRtmp, "<a href=\"", html_quote(file_quote(fn)),
 			   "\">", html_quote(tmp->ptr), "</a>", NULL);
-	    for (i = tmp->length; i <= max_len; i++) {
+	    for (i = get_Str_strwidth(tmp); i <= max_len; i++) {
 		if ((max_len % 2 + i) % 2)
 		    Strcat_char(FTPDIRtmp, '.');
 		else
 		    Strcat_char(FTPDIRtmp, ' ');
 	    }
-	    tmp = convertLine(NULL, Strnew_charp(date), code, RAW_MODE);
+	    tmp = convertLine(NULL, Strnew_charp(date), RAW_MODE, charset,
+			      doc_charset);
 	    Strcat_m_charp(FTPDIRtmp, html_quote(tmp->ptr), "\n", NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</pre>\n");
@@ -575,7 +578,8 @@ loadFTPDir(ParsedURL *pu, char *code)
 	qsort(flist, nfile, sizeof(char *), strCmp);
 	for (i = 0; i < nfile; i++) {
 	    fn = flist[i];
-	    tmp = convertLine(NULL, Strnew_charp(fn), code, RAW_MODE);
+	    tmp = convertLine(NULL, Strnew_charp(fn), RAW_MODE, charset,
+			      doc_charset);
 	    Strcat_m_charp(FTPDIRtmp, "<li><a href=\"",
 			   html_quote(file_quote(fn)), "\">",
 			   html_quote(tmp->ptr), "</a>\n", NULL);

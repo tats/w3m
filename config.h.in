@@ -32,11 +32,13 @@
 #define DEF_SAVE_FILE "index.html"
 
 /* User Configuration */
-#define DISPLAY_CODE '@DISPLAY_CODE@'
-#define SYSTEM_CODE '@SYSTEM_CODE@'
+#define DISPLAY_CHARSET @DISPLAY_CHARSET@
+#define SYSTEM_CHARSET @SYSTEM_CHARSET@
+#define DOCUMENT_CHARSET @DOCUMENT_CHARSET@
+#define USE_M17N
+#define USE_UNICODE
 #define W3M_LANG @W3M_LANG@
 #define LANG W3M_LANG
-#undef KANJI_SYMBOLS
 #undef USE_COLOR
 #undef USE_ANSI_COLOR
 #undef USE_BG_COLOR

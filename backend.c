@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.12 2003/04/07 16:27:09 ukai Exp $ */
+/* $Id: backend.c,v 1.13 2003/09/22 21:02:16 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -62,32 +62,6 @@ struct {
 };
 /* *INDENT-ON* */
 
-#ifdef JP_CHARSET
-static char *
-get_mime_charset_name(int coding)
-{
-    Str r;
-    switch (coding) {
-    case CODE_EUC:
-	r = Strnew_charp("euc-japan");
-	break;
-    case CODE_SJIS:
-	r = Strnew_charp("shift_jis");
-	break;
-    case CODE_JIS_m:
-    case CODE_JIS_n:
-    case CODE_JIS_N:
-    case CODE_JIS_j:
-    case CODE_JIS_J:
-	r = Strnew_charp("iso-2022-jp");
-	break;
-    default:
-	return NULL;
-    }
-    return r->ptr;
-}
-#endif
-
 static void
 print_headers(Buffer *buf, int len)
 {
@@ -101,10 +75,10 @@ print_headers(Buffer *buf, int len)
     if (buf->baseURL)
 	printf("w3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
     printf("w3m-content-type: %s\n", buf->type);
-#ifdef JP_CHARSET
-    if (buf->document_code)
+#ifdef USE_M17N
+    if (buf->document_charset)
 	printf("w3m-content-charset: %s\n",
-	       get_mime_charset_name(buf->document_code));
+	       wc_ces_to_charset(buf->document_charset));
 #endif
     if (len > 0)
 	printf("w3m-content-length: %d\n", len);
@@ -125,8 +99,10 @@ internal_get(char *url, int flag, FormList *request)
 	    TextLineListItem *p;
 	    Str first, last;
 	    int len = 0;
-	    for (p = backend_halfdump_buf->first; p; p = p->next)
+	    for (p = backend_halfdump_buf->first; p; p = p->next) {
+		p->ptr->line = Str_conv_to_halfdump(p->ptr->line);
 		len += p->ptr->line->length + 1;
+	    }
 	    first = Strnew_charp("<pre>\n");
 	    last = Strnew_m_charp("</pre><title>", html_quote(buf->buffername),
 				  "</title>\n", NULL);

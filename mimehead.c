@@ -1,9 +1,10 @@
-/* $Id: mimehead.c,v 1.8 2003/01/23 18:37:21 ukai Exp $ */
+/* $Id: mimehead.c,v 1.9 2003/09/22 21:02:20 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
 
 #include <sys/types.h>
+#include "fm.h"
 #include "myctype.h"
 #include "Str.h"
 
@@ -191,12 +192,15 @@ decodeQP(char **ww)
 }
 
 Str
-decodeWord(char **ow)
+decodeWord(char **ow, wc_ces * charset)
 {
+#ifdef USE_M17N
+    wc_ces c;
+#endif
     char *p, *w = *ow;
     char method;
     Str a = Strnew();
-    Str charset = Strnew();
+    Str tmp = Strnew();
 
     if (*w != '=' || *(w + 1) != '?')
 	goto convert_fail;
@@ -204,12 +208,17 @@ decodeWord(char **ow)
     for (; *w != '?'; w++) {
 	if (*w == '\0')
 	    goto convert_fail;
-	Strcat_char(charset, *w);
+	Strcat_char(tmp, *w);
     }
-    if (Strcasecmp_charp(charset, J_CHARSET) != 0) {
-	/* NOT ISO-2022-JP encoding ... don't convert */
+#ifdef USE_M17N
+    c = wc_guess_charset(tmp->ptr, 0);
+    if (!c)
 	goto convert_fail;
-    }
+#else
+    if (strcasecmp(buf, "ISO-8859-1") != 0 && strcasecmp(buf, "US_ASCII") != 0)
+	/* NOT ISO-8859-1 encoding ... don't convert */
+	goto convert_fail;
+#endif
     w++;
     method = *(w++);
     if (*w != '?')
@@ -234,6 +243,9 @@ decodeWord(char **ow)
 	    w++;
     }
     *ow = w;
+#ifdef USE_M17N
+    *charset = c;
+#endif
     return a;
 
   convert_fail:
@@ -244,17 +256,24 @@ decodeWord(char **ow)
  * convert MIME encoded string to the original one
  */
 Str
-decodeMIME(char *orgstr)
+decodeMIME(Str orgstr, wc_ces * charset)
 {
-    char *org = orgstr;
+    char *org = orgstr->ptr, *endp = org + orgstr->length;
     char *org0, *p;
-    Str cnv = Strnew_size(strlen(orgstr));
+    Str cnv = NULL;
 
-    while (*org) {
+#ifdef USE_M17N
+    *charset = 0;
+#endif
+    while (org < endp) {
 	if (*org == '=' && *(org + 1) == '?') {
+	    if (cnv == NULL) {
+		cnv = Strnew_size(orgstr->length);
+		Strcat_charp_n(cnv, orgstr->ptr, org - orgstr->ptr);
+	    }
 	  nextEncodeWord:
 	    p = org;
-	    Strcat(cnv, decodeWord(&org));
+	    Strcat(cnv, decodeWord(&org, charset));
 	    if (org == p) {	/* Convert failure */
 		Strcat_charp(cnv, org);
 		return cnv;
@@ -277,9 +296,14 @@ decodeMIME(char *orgstr)
 		break;
 	    }
 	}
-	else
-	    Strcat_char(cnv, *(org++));
+	else {
+	    if (cnv != NULL)
+		Strcat_char(cnv, *org);
+	    org++;
+	}
     }
+    if (cnv == NULL)
+	return orgstr;
     return cnv;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.27 2003/03/19 16:20:11 ukai Exp $ */
+/* $Id: anchor.c,v 1.28 2003/09/22 21:02:16 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -198,7 +198,8 @@ _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
 	if (*(p2 - 1) == '>')
 	    p2--;
     }
-    tmp = conv_str(Strnew_charp_n(p1, p2 - p1), InnerCode, buf->document_code);
+    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
+			     buf->document_charset);
     tmp = Sprintf("news:%s", file_quote(tmp->ptr));
     return registerHref(buf, tmp->ptr, NULL, NO_REFERER, NULL, '\0', line,
 			pos);
@@ -210,7 +211,8 @@ _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
 {
     Str tmp;
 
-    tmp = conv_str(Strnew_charp_n(p1, p2 - p1), InnerCode, buf->document_code);
+    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
+			     buf->document_charset);
     return registerHref(buf, url_quote(tmp->ptr), NULL, NO_REFERER, NULL,
 			'\0', line, pos);
 }
@@ -514,6 +516,44 @@ closest_prev_anchor(AnchorList *a, Anchor *an, int x, int y)
     return an;
 }
 
+void
+shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
+		    int shift)
+{
+    Anchor *a;
+    size_t b, e, s = 0;
+    int cmp;
+
+    if (al == NULL || al->nanchor == 0)
+	return;
+
+    s = al->nanchor / 2;
+    for (b = 0, e = al->nanchor - 1; b <= e; s = (b + e + 1) / 2) {
+	a = &al->anchors[s];
+	cmp = onAnchor(a, line, pos);
+	if (cmp == 0)
+	    break;
+	else if (cmp > 0)
+	    b = s + 1;
+	else if (s == 0)
+	    break;
+	else
+	    e = s - 1;
+    }
+    for (; s < al->nanchor; s++) {
+	a = &al->anchors[s];
+	if (a->start.line > line)
+	    break;
+	if (a->start.pos > pos) {
+	    a->start.pos += shift;
+	    if (hl->marks[a->hseq].line == line)
+		hl->marks[a->hseq].pos = a->start.pos;
+	}
+	if (a->end.pos >= pos)
+	    a->end.pos += shift;
+    }
+}
+
 #ifdef USE_IMAGE
 void
 addMultirowsImg(Buffer *buf, AnchorList *al)
@@ -712,7 +752,7 @@ link_list_panel(Buffer *buf)
 		p = parsedURL2Str(&pu)->ptr;
 		u = html_quote(p);
 		if (DecodeURL)
-		    p = html_quote(url_unquote_conv(p, buf->document_code));
+		    p = html_quote(url_unquote_conv(p, buf->document_charset));
 		else
 		    p = u;
 	    }
@@ -743,7 +783,7 @@ link_list_panel(Buffer *buf)
 	    p = parsedURL2Str(&pu)->ptr;
 	    u = html_quote(p);
 	    if (DecodeURL)
-		p = html_quote(url_unquote_conv(p, buf->document_code));
+		p = html_quote(url_unquote_conv(p, buf->document_charset));
 	    else
 		p = u;
 	    t = getAnchorText(buf, al, a);
@@ -765,13 +805,13 @@ link_list_panel(Buffer *buf)
 	    p = parsedURL2Str(&pu)->ptr;
 	    u = html_quote(p);
 	    if (DecodeURL)
-		p = html_quote(url_unquote_conv(p, buf->document_code));
+		p = html_quote(url_unquote_conv(p, buf->document_charset));
 	    else
 		p = u;
 	    if (a->title && *a->title)
 		t = html_quote(a->title);
 	    else if (DecodeURL)
-		t = html_quote(url_unquote_conv(a->url, buf->document_code));
+		t = html_quote(url_unquote_conv(a->url, buf->document_charset));
 	    else
 		t = html_quote(a->url);
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
@@ -798,14 +838,14 @@ link_list_panel(Buffer *buf)
 		    u = html_quote(p);
 		    if (DecodeURL)
 			p = html_quote(url_unquote_conv(p,
-							buf->document_code));
+							buf->document_charset));
 		    else
 			p = u;
 		    if (m->alt && *m->alt)
 			t = html_quote(m->alt);
 		    else if (DecodeURL)
 			t = html_quote(url_unquote_conv(m->url,
-							buf->document_code));
+							buf->document_charset));
 		    else
 			t = html_quote(m->url);
 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,

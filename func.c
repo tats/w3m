@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.24 2003/07/26 17:17:28 ukai Exp $ */
+/* $Id: func.c,v 1.25 2003/09/22 21:02:18 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -79,13 +79,13 @@ setKeymap(char *p, int lineno, int verbose)
 	if (keyData == NULL)
 	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
 	putHash_iv(keyData, m, (void *)mmap);
-	if (c & K_ESCD)
+    if (c & K_ESCD)
 	    map = mmap[3];
-	else if (c & K_ESCB)
+    else if (c & K_ESCB)
 	    map = mmap[2];
-	else if (c & K_ESC)
+    else if (c & K_ESC)
 	    map = mmap[1];
-	else
+    else
 	    map = mmap[0];
     }
     else {
@@ -117,6 +117,9 @@ interpret_keymap(FILE * kf, struct stat *current, int force)
     Str line;
     char *p, *s, *emsg;
     int lineno;
+#ifdef USE_M17N
+    wc_ces charset = SystemCharset;
+#endif
     int verbose = 1;
     extern int str_to_bool(char *value, int old);
 
@@ -136,11 +139,22 @@ interpret_keymap(FILE * kf, struct stat *current, int force)
 	Strremovefirstspaces(line);
 	if (line->length == 0)
 	    continue;
+#ifdef USE_M17N
+	line = wc_Str_conv(line, charset, InnerCharset);
+#endif
 	p = line->ptr;
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
 	    continue;
 	if (!strcmp(s, "keymap")) ;
+#ifdef USE_M17N
+	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
+	    s = getQWord(&p);
+	    if (*s)
+		charset = wc_guess_charset(s, charset);
+	    continue;
+	}
+#endif
 	else if (!strcmp(s, "verbose")) {
 	    s = getWord(&p);
 	    if (*s)
@@ -419,11 +433,7 @@ getQWord(char **str)
 #ifdef USE_MOUSE
 static MouseAction default_mouse_action = {
     NULL,
-#if LANG == JA
-    "¢ã¢¬¢­",
-#else
     "<=UpDn",
-#endif
     0, 6, FALSE, 0, 0,
     {{movMs, NULL}, {backBf, NULL}, {menuMs, NULL}},	/* default */
     {{NULL, NULL}, {NULL, NULL}, {NULL, NULL}},	/* anchor */
@@ -457,7 +467,7 @@ setMouseAction0(char **str, int *width, MouseActionMap ** map, char *p)
     }
     w = *width;
     *str = s;
-    *width = strlen(s);
+    *width = get_strwidth(s);
     if (*width >= LIMIT_MOUSE_MENU)
 	*width = LIMIT_MOUSE_MENU;
     if (*width <= w)
@@ -593,6 +603,15 @@ initMouseAction(void)
     bcopy((void *)&default_lastline_action,
 	  (void *)mouse_action.lastline_map[0],
 	  sizeof(default_lastline_action));
+    {
+#ifdef USE_M17N
+	int w = 0;
+	char **symbol = get_symbol(DisplayCharset, &w);
+#else
+	char **symbol = get_symbol();
+#endif
+	mouse_action.lastline_str = Strnew_charp(symbol[N_GRAPH_SYMBOL + 13])->ptr;
+    }
 
     if ((mf = fopen(confFile(MOUSE_FILE), "rt")) != NULL) {
 	interpret_mouse_action(mf);

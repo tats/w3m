@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.33 2003/07/26 17:17:28 ukai Exp $ */
+/* $Id: menu.c,v 1.34 2003/09/22 21:02:20 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -31,46 +31,11 @@ extern int do_getch();
 
 #ifdef USE_MENU
 
-#ifdef KANJI_SYMBOLS
-static char *FRAME[] = {
-#ifdef MENU_THIN_FRAME
-    "┌", "─", "┐",
-    "│", "  ", "│",
-    "└", "─", "┘",
-#else				/* not MENU_THIN_FRAME */
-    "┏", "━", "┓",
-    "┃", "  ", "┃",
-    "┗", "━", "┛",
-#endif				/* not MENU_THIN_FRAME */
-    "：", "："
-};
-#define FRAME_WIDTH 2
-
-#define G_start
- /**/
-#define G_end /**/
-#else				/* not KANJI_SYMBOLS */
-static char *N_FRAME[] = {
-    "+", "-", "+",
-    "|", " ", "|",
-    "+", "-", "+",
-    ":", ":"
-};
-#define FRAME_WIDTH 1
-
-static char *G_FRAME[] = {
-    "l", "q", "k",
-    "x", " ", "x",
-    "m", "q", "j",
-    ":", ":"
-};
-
-static char **FRAME = NULL;
+static char **FRAME;
+static int FRAME_WIDTH;
 static int graph_mode = FALSE;
-
 #define G_start  {if (graph_mode) graphstart();}
 #define G_end    {if (graph_mode) graphend();}
-#endif				/* not KANJI_SYMBOLS */
 
 static int mEsc(char c);
 static int mEscB(char c);
@@ -292,6 +257,8 @@ static int smDelTab(char c);
 
 static Menu MainMenu;
 #if LANG == JA
+static wc_ces MainMenuCharset = WC_CES_EUC_JP;
+static int MainMenuEncode = FALSE;
 static MenuItem MainMenuItem[] = {
     /* type        label         variabel value func     popup keys data  */
     {MENU_FUNC, "戻る         (b)", NULL, 0, backBf, NULL, "b", NULL},
@@ -301,22 +268,27 @@ static MenuItem MainMenuItem[] = {
     {MENU_FUNC, "ソースを編集 (e)", NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, "ソースを保存 (S)", NULL, 0, svSrc, NULL, "S", NULL},
     {MENU_FUNC, "再読み込み   (r)", NULL, 0, reload, NULL, "rR", NULL},
-    {MENU_NOP, "────────", NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
     {MENU_FUNC, "リンクを表示 (a)", NULL, 0, followA, NULL, "a", NULL},
     {MENU_FUNC, "新タブで表示 (n)", NULL, 0, tabA, NULL, "nN", NULL},
     {MENU_FUNC, "リンクを保存 (A)", NULL, 0, svA, NULL, "A", NULL},
     {MENU_FUNC, "画像を表示   (i)", NULL, 0, followI, NULL, "i", NULL},
     {MENU_FUNC, "画像を保存   (I)", NULL, 0, svI, NULL, "I", NULL},
     {MENU_FUNC, "フレーム表示 (f)", NULL, 0, rFrame, NULL, "fF", NULL},
-    {MENU_NOP, "────────", NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
     {MENU_FUNC, "ブックマーク (B)", NULL, 0, ldBmark, NULL, "B", NULL},
     {MENU_FUNC, "ヘルプ       (h)", NULL, 0, ldhelp, NULL, "hH", NULL},
     {MENU_FUNC, "オプション   (o)", NULL, 0, ldOpt, NULL, "oO", NULL},
-    {MENU_NOP, "────────", NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
     {MENU_FUNC, "終了         (q)", NULL, 0, qquitfm, NULL, "qQ", NULL},
     {MENU_END, "", NULL, 0, nulcmd, NULL, "", NULL},
 };
 #else				/* LANG != JA */
+
+#ifdef USE_M17N
+static wc_ces MainMenuCharset = WC_CES_US_ASCII;
+static int MainMenuEncode = TRUE;
+#endif
 static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
     {MENU_FUNC, " Back         (b) ", NULL, 0, backBf, NULL, "b", NULL},
@@ -389,7 +361,7 @@ new_menu(Menu *menu, MenuItem *item)
 		p++;
 	    }
 	}
-	l = strlen(item[i].label);
+	l = get_strwidth(item[i].label);
 	if (l > menu->width)
 	    menu->width = l;
     }
@@ -452,43 +424,31 @@ draw_menu(Menu *menu)
     w = menu->width + 2 * FRAME_WIDTH;
     y = menu->y - 1;
 
-#ifndef KANJI_SYMBOLS
-    if (FRAME == NULL) {
-	if (graph_ok()) {
-	    graph_mode = TRUE;
-	    FRAME = G_FRAME;
-	}
-	else {
-	    FRAME = N_FRAME;
-	}
-    }
-#endif				/* not KANJI_SYMBOLS */
-
     if (menu->offset == 0) {
 	G_start;
-	mvaddstr(y, x, FRAME[0]);
+	mvaddstr(y, x, FRAME[3]);
 	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i += FRAME_WIDTH)
-	    mvaddstr(y, x + i, FRAME[1]);
-	mvaddstr(y, x + i, FRAME[2]);
+	    mvaddstr(y, x + i, FRAME[10]);
+	mvaddstr(y, x + i, FRAME[6]);
 	G_end;
     }
     else {
 	G_start;
-	mvaddstr(y, x, FRAME[3]);
+	mvaddstr(y, x, FRAME[5]);
 	G_end;
-	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i += FRAME_WIDTH)
-	    mvaddstr(y, x + i, FRAME[4]);
+	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i++)
+	    mvaddstr(y, x + i, " ");
 	G_start;
 	mvaddstr(y, x + i, FRAME[5]);
 	G_end;
 	i = (w / 2 - 1) / FRAME_WIDTH * FRAME_WIDTH;
-	mvaddstr(y, x + i, FRAME[9]);
+	mvaddstr(y, x + i, ":");
     }
 
     for (j = 0; j < menu->height; j++) {
 	y++;
 	G_start;
-	mvaddstr(y, x, FRAME[3]);
+	mvaddstr(y, x, FRAME[5]);
 	G_end;
 	draw_menu_item(menu, menu->offset + j);
 	G_start;
@@ -498,23 +458,23 @@ draw_menu(Menu *menu)
     y++;
     if (menu->offset + menu->height == menu->nitem) {
 	G_start;
-	mvaddstr(y, x, FRAME[6]);
+	mvaddstr(y, x, FRAME[9]);
 	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i += FRAME_WIDTH)
-	    mvaddstr(y, x + i, FRAME[7]);
-	mvaddstr(y, x + i, FRAME[8]);
+	    mvaddstr(y, x + i, FRAME[10]);
+	mvaddstr(y, x + i, FRAME[12]);
 	G_end;
     }
     else {
 	G_start;
-	mvaddstr(y, x, FRAME[3]);
+	mvaddstr(y, x, FRAME[5]);
 	G_end;
-	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i += FRAME_WIDTH)
-	    mvaddstr(y, x + i, FRAME[4]);
+	for (i = FRAME_WIDTH; i < w - FRAME_WIDTH; i++)
+	    mvaddstr(y, x + i, " ");
 	G_start;
 	mvaddstr(y, x + i, FRAME[5]);
 	G_end;
 	i = (w / 2 - 1) / FRAME_WIDTH * FRAME_WIDTH;
-	mvaddstr(y, x + i, FRAME[10]);
+	mvaddstr(y, x + i, ":");
     }
 }
 
@@ -762,6 +722,28 @@ new_option_menu(Menu *menu, char **label, int *variable, void (*func) ())
     new_menu(menu, item);
 }
 
+static void
+set_menu_frame(void)
+{
+    if (graph_ok()) {
+	graph_mode = TRUE;
+	FRAME_WIDTH = 1;
+	FRAME = graph_symbol;
+    }
+    else {
+	graph_mode = FALSE;
+#ifdef USE_M17N
+	FRAME_WIDTH = 0;
+	FRAME = get_symbol(DisplayCharset, &FRAME_WIDTH);
+	if (!WcOption.use_wide)
+	    FRAME_WIDTH = 1;
+#else
+	FRAME_WIDTH = 1;
+	FRAME = get_symbol();
+#endif
+    }
+}
+
 /* --- MenuFunctions --- */
 
 #ifdef __EMX__
@@ -998,10 +980,15 @@ menu_search_forward(Menu *menu, int from)
     if (str == NULL || *str == '\0')
 	return -1;
     SearchString = str;
+#ifdef USE_M17N
+    if (SearchConv && !WcOption.pre_conv &&
+	Currentbuf->document_charset != DisplayCharset)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
+#endif
     menuSearchRoutine = menuForwardSearch;
-    found = menuForwardSearch(menu, SearchString, from + 1);
+    found = menuForwardSearch(menu, str, from + 1);
     if (WrapSearch && found == -1)
-	found = menuForwardSearch(menu, SearchString, 0);
+	found = menuForwardSearch(menu, str, 0);
     if (found >= 0)
 	return found;
     disp_message("Not found", TRUE);
@@ -1045,12 +1032,17 @@ menu_search_backward(Menu *menu, int from)
     if (str != NULL && *str == '\0')
 	str = SearchString;
     if (str == NULL || *str == '\0')
-	return (MENU_NOTHING);
+	return -1;
     SearchString = str;
+#ifdef USE_M17N
+    if (SearchConv && !WcOption.pre_conv &&
+	Currentbuf->document_charset != DisplayCharset)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
+#endif
     menuSearchRoutine = menuBackwardSearch;
-    found = menuBackwardSearch(menu, SearchString, from - 1);
+    found = menuBackwardSearch(menu, str, from - 1);
     if (WrapSearch && found == -1)
-	found = menuBackwardSearch(menu, SearchString, menu->nitem);
+	found = menuBackwardSearch(menu, str, menu->nitem);
     if (found >= 0)
 	return found;
     disp_message("Not found", TRUE);
@@ -1073,20 +1065,26 @@ menu_search_next_previous(Menu *menu, int from, int reverse)
     int found;
     static int (*routine[2]) (Menu *, char *, int) = {
     menuForwardSearch, menuBackwardSearch};
+    char *str;
 
     if (menuSearchRoutine == NULL) {
 	disp_message("No previous regular expression", TRUE);
 	return -1;
     }
+#ifdef USE_M17N
+    str = SearchString;
+    if (SearchConv && !WcOption.pre_conv &&
+	Currentbuf->document_charset != DisplayCharset)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
+#endif
     if (reverse != 0)
 	reverse = 1;
     if (menuSearchRoutine == menuBackwardSearch)
 	reverse ^= 1;
     from += reverse ? -1 : 1;
-    found = (*routine[reverse]) (menu, SearchString, from);
+    found = (*routine[reverse]) (menu, str, from);
     if (WrapSearch && found == -1)
-	found =
-	    (*routine[reverse]) (menu, SearchString, reverse * menu->nitem);
+	found = (*routine[reverse]) (menu, str, reverse * menu->nitem);
     if (found >= 0)
 	return found;
     disp_message("Not found", TRUE);
@@ -1311,6 +1309,8 @@ mMouse(char c)
 void
 popupMenu(int x, int y, Menu *menu)
 {
+    set_menu_frame();
+
     initSelectMenu();
     initSelTabMenu();
 
@@ -1417,7 +1417,7 @@ initSelectMenu(void)
 	if (len < str->length)
 	    len = str->length;
     }
-    l = strlen(comment);
+    l = get_strwidth(comment);
     if (len < l + 4)
 	len = l + 4;
     if (len > COLS - 2 * FRAME_WIDTH)
@@ -1655,6 +1655,8 @@ optionMenu(int x, int y, char **label, int *variable, int initial,
 {
     Menu menu;
 
+    set_menu_frame();
+
     new_option_menu(&menu, label, variable, func);
     menu.cursorX = COLS - 1;
     menu.cursorY = LASTLINE;
@@ -1683,6 +1685,9 @@ interpret_menu(FILE * mf)
 	Strremovefirstspaces(line);
 	if (line->length == 0)
 	    continue;
+#ifdef USE_M17N
+	line = wc_Str_conv(line, charset, InnerCharset);
+#endif
 	p = line->ptr;
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
@@ -1700,9 +1705,7 @@ interpret_menu(FILE * mf)
 		item[nitem].type = MENU_END;
 	    }
 	}
-	else {
-	    if (strcmp(s, "menu"))	/* error */
-		continue;
+	else if (!strcmp(s, "menu")) {
 	    s = getQWord(&p);
 	    if (*s == '\0')	/* error */
 		continue;
@@ -1723,6 +1726,9 @@ initMenu(void)
 {
     FILE *mf;
     MenuList *list;
+#ifdef USE_M17N
+    wc_ces charset = SystemCharset;
+#endif
 
     w3mMenuList = New_N(MenuList, 3);
     w3mMenuList[0].id = "Main";
@@ -1736,6 +1742,14 @@ initMenu(void)
     w3mMenuList[2].item = NULL;
     w3mMenuList[3].id = NULL;
 
+#ifdef USE_M17N
+    if (!MainMenuEncode) {
+	for (item = MainMenuItem; item->type != MENU_END; item++)
+	    item->label =
+		wc_conv(item->label, MainMenuCharset, InnerCharset)->ptr;
+	MainMenuEncode = TRUE;
+    }
+#endif
     if ((mf = fopen(confFile(MENU_FILE), "rt")) != NULL) {
 	interpret_menu(mf);
 	fclose(mf);
@@ -1860,7 +1874,7 @@ link_menu(Buffer *buf)
 	if (!l->url)
 	    p = "";
 	else if (DecodeURL)
-	    p = url_unquote_conv(l->url, buf->document_code);
+ 	    p = url_unquote_conv(l->url, buf->document_charset);
 	else
 	    p = l->url;
 	Strcat_charp(str, p);
@@ -1870,6 +1884,7 @@ link_menu(Buffer *buf)
     }
     label[nitem] = NULL;
 
+    set_menu_frame();
     new_option_menu(&menu, label, &linkV, NULL);
 
     menu.initial = 0;
@@ -1923,6 +1938,14 @@ accesskey_menu(Buffer *buf)
 	    ap[n] = a;
 	    n++;
 	}
+#ifdef USE_M17N
+	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
+	    s = getQWord(&p);
+	    if (*s == '\0')	/* error */
+		continue;
+	    charset = wc_guess_charset(s, charset);
+	}
+#endif
     }
     label[nitem] = NULL;
 
@@ -2037,6 +2060,8 @@ list_menu(Buffer *buf)
     }
     label[nitem] = NULL;
 
+    set_menu_frame();
+    set_menu_frame();
     new_option_menu(&menu, label, &key, NULL);
 
     menu.initial = 0;

@@ -1,11 +1,10 @@
-/* $Id: etc.c,v 1.71 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: etc.c,v 1.72 2003/09/22 21:02:18 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
 #include "html.h"
 #include "local.h"
 #include "hash.h"
-#include "terms.h"
 
 #include <fcntl.h>
 #include <sys/types.h>
@@ -66,15 +65,15 @@ columnPos(Line *line, int column)
     int i;
 
     for (i = 1; i < line->len; i++) {
-	if (COLPOS(line, i) > column) {
-#ifdef JP_CHARSET
-	    if (CharType(line->propBuf[i - 1]) == PC_KANJI2)
-		return i - 2;
-#endif
-	    return i - 1;
-	}
+	if (COLPOS(line, i) > column)
+	    break;
     }
+#ifdef USE_M17N
+    for (i--; i > 0 && line->propBuf[i] & PC_WCHAR2; i--) ;
+    return i;
+#else
     return i - 1;
+#endif
 }
 
 Line *
@@ -228,7 +227,6 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
     return 1;
 }
 #endif
-
 /* 
  * Check character type
  */
@@ -252,6 +250,8 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
     char *es = NULL;
 #endif
     int do_copy = FALSE;
+    int i;
+    int plen = 0, clen;
 
     if (prop_size < s->length) {
 	prop_size = (s->length > LINELEN) ? s->length : LINELEN;
@@ -279,15 +279,34 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    || (es != NULL)
 #endif
 	    ) {
+	    char *sp = str, *ep;
 	    s = Strnew_size(s->length);
 	    do_copy = TRUE;
+	    ep = bs ? (bs - 2) : endp;
+#ifdef USE_ANSI_COLOR
+	    if (es && ep > es - 2)
+		ep = es - 2;
+#endif
+	    for (; str < ep && IS_ASCII(*str); str++) {
+		*(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
+#ifdef USE_ANSI_COLOR
+		if (color)
+		    *(color++) = 0;
+#endif
+	    }
+	    Strcat_charp_n(s, sp, (int)(str - sp));
 	}
+    }
+    if (!do_copy) {
+	for (; str < endp && IS_ASCII(*str); str++)
+	    *(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
     }
 
     while (str < endp) {
 	if (prop - prop_buffer >= prop_size)
 	    break;
 	if (bs != NULL) {
+#ifdef USE_M17N
 	    if (str == bs - 2 && !strncmp(str, "__\b\b", 4)) {
 		str += 4;
 		effect = PE_UNDER;
@@ -295,7 +314,9 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 		    bs = memchr(str, '\b', endp - str);
 		continue;
 	    }
-	    else if (str == bs - 1 && *str == '_') {
+	    else
+#endif
+	    if (str == bs - 1 && *str == '_') {
 		str += 2;
 		effect = PE_UNDER;
 		if (str < endp)
@@ -304,63 +325,42 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    }
 	    else if (str == bs) {
 		if (*(str + 1) == '_') {
-#ifdef JP_CHARSET
-		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
+		    if (s->length) {
 			str += 2;
+#ifdef USE_M17N
+			for (i = 1; i <= plen; i++)
+			    *(prop - i) |= PE_UNDER;
+#else
 			*(prop - 1) |= PE_UNDER;
-			*(prop - 2) |= PE_UNDER;
-		    }
-		    else
-#endif				/* JP_CHARSET */
-		    if (s->length > 0) {
-			str += 2;
-			*(prop - 1) |= PE_UNDER;
+#endif
 		    }
 		    else {
 			str++;
 		    }
 		}
+#ifdef USE_M17N
 		else if (!strncmp(str + 1, "\b__", 3)) {
-#ifdef JP_CHARSET
-		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
-			str += 4;
-			*(prop - 1) |= PE_UNDER;
-			*(prop - 2) |= PE_UNDER;
-		    }
-		    else
-#endif				/* JP_CHARSET */
-		    if (s->length > 0) {
-			str += 3;
-			*(prop - 1) |= PE_UNDER;
+		    if (s->length) {
+			str += (plen == 1) ? 3 : 4;
+			for (i = 1; i <= plen; i++)
+			    *(prop - i) |= PE_UNDER;
 		    }
 		    else {
 			str += 2;
 		    }
 		}
 		else if (*(str + 1) == '\b') {
-#ifdef JP_CHARSET
-		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
-			if (str + 4 <= endp && !strncmp(str - 2, str + 2, 2)) {
-			    *(prop - 1) |= PE_BOLD;
-			    *(prop - 2) |= PE_BOLD;
-			    str += 4;
+		    if (s->length) {
+			clen = get_mclen(str + 2);
+			if (plen == clen &&
+			    !strncmp(str - plen, str + 2, plen)) {
+			    for (i = 1; i <= plen; i++)
+				*(prop - i) |= PE_BOLD;
+			    str += 2 + clen;
 			}
 			else {
-			    Strshrink(s, 2);
-			    prop -= 2;
-			    str += 2;
-			}
-		    }
-		    else
-#endif				/* JP_CHARSET */
-		    if (s->length > 0) {
-			if (str + 3 <= endp && *(str - 1) == *(str + 2)) {
-			    *(prop - 1) |= PE_BOLD;
-			    str += 3;
-			}
-			else {
-			    Strshrink(s, 1);
-			    prop--;
+			    Strshrink(s, plen);
+			    prop -= plen;
 			    str += 2;
 			}
 		    }
@@ -368,24 +368,24 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			str += 2;
 		    }
 		}
+#endif
 		else {
-#ifdef JP_CHARSET
-		    if (s->length > 1 && CharType(*(prop - 2)) == PC_KANJI1) {
-			if (str + 3 <= endp && !strncmp(str - 2, str + 1, 2)) {
-			    *(prop - 1) |= PE_BOLD;
-			    *(prop - 2) |= PE_BOLD;
-			    str += 3;
+		    if (s->length) {
+#ifdef USE_M17N
+			clen = get_mclen(str + 1);
+			if (plen == clen &&
+			    !strncmp(str - plen, str + 1, plen)) {
+			    for (i = 1; i <= plen; i++)
+				*(prop - i) |= PE_BOLD;
+			    str += 1 + clen;
 			}
 			else {
-			    Strshrink(s, 2);
-			    prop -= 2;
+			    Strshrink(s, plen);
+			    prop -= plen;
 			    str++;
 			}
-		    }
-		    else
-#endif				/* JP_CHARSET */
-		    if (s->length > 0) {
-			if (str + 2 <= endp && *(str - 1) == *(str + 1)) {
+#else
+			if (*(str - 1) == *(str + 1)) {
 			    *(prop - 1) |= PE_BOLD;
 			    str += 2;
 			}
@@ -394,6 +394,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			    prop--;
 			    str++;
 			}
+#endif
 		    }
 		    else {
 			str++;
@@ -425,42 +426,35 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	}
 #endif
 
-	mode = get_mctype(str);
+	plen = get_mclen(str);
+	mode = get_mctype(str) | effect;
 #ifdef USE_ANSI_COLOR
-	effect |= ceffect;
+	if (color) {
+	    *(color++) = cmode;
+	    mode |= ceffect;
+	}
 #endif
-#ifdef JP_CHARSET
-	if (mode == PC_KANJI) {
-	    prop[0] = (effect | PC_KANJI1);
-	    prop[1] = (effect | PC_KANJI2);
-	    if (do_copy) {
-		Strcat_char(s, str[0]);
-		Strcat_char(s, str[1]);
-	    }
-	    prop += 2;
-	    str += 2;
+	*(prop++) = mode;
+#ifdef USE_M17N
+	if (plen > 1) {
+	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
+	    for (i = 1; i < plen; i++) {
+		*(prop++) = mode;
 #ifdef USE_ANSI_COLOR
-	    if (color) {
-		color[0] = cmode;
-		color[1] = cmode;
-		color += 2;
-	    }
+		if (color)
+		    *(color++) = cmode;
 #endif
+	    }
+	    if (do_copy)
+		Strcat_charp_n(s, (char *)str, plen);
+	    str += plen;
 	}
 	else
-#endif				/* JP_CHARSET */
-	{
-	    *prop = (effect | mode);
-	    if (do_copy)
-		Strcat_char(s, *str);
-	    prop++;
-	    str++;
-#ifdef USE_ANSI_COLOR
-	    if (color) {
-		*color = cmode;
-		color++;
-	    }
 #endif
+	{
+	    if (do_copy)
+		Strcat_char(s, (char)*str);
+	    str++;
 	}
 	effect = PE_NORMAL;
     }
@@ -475,17 +469,22 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 static int
 nextColumn(int n, char *p, Lineprop *pr)
 {
-    if (*p == '\t' && *pr == PC_CTRL)
-	return (n + Tabstop) / Tabstop * Tabstop;
-#ifndef KANJI_SYMBOLS
-    else if (*pr & PC_RULE)
-	return n + 1;
-#endif
-    else if (IS_UNPRINTABLE_ASCII(*p, *pr))
+    if (*pr & PC_CTRL) {
+	if (*p == '\t')
+	    return (n + Tabstop) / Tabstop * Tabstop;
+	else if (*p == '\n')
+	    return n + 1;
+	else if (*p != '\r')
+	    return n + 2;
+	return n;
+    }
+#ifdef USE_M17N
+    if (*pr & PC_UNKNOWN)
 	return n + 4;
-    else if (IS_UNPRINTABLE_CONTROL(*p, *pr))
-	return n + 2;
+    return n + wtf_width((wc_uchar *)p);
+#else
     return n + 1;
+#endif
 }
 
 int
@@ -507,12 +506,26 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
 	realColumn = New_N(int, size);
     }
     prevl = l;
+    i = 0;
     j = bpos;
-    for (i = 0;; i++) {
+#ifdef USE_M17N
+    if (pr[i] & PC_WCHAR2) {
+	for (; i < len && pr[i] & PC_WCHAR2; i++)
+	    realColumn[i] = j;
+	if (i > 0 && pr[i - 1] & PC_KANJI && WcOption.use_wide)
+	    j++;
+    }
+#endif
+    while (1) {
 	realColumn[i] = j;
 	if (i == len)
 	    break;
 	j = nextColumn(j, &l[i], &pr[i]);
+	i++;
+#ifdef USE_M17N
+	for (; i < len && pr[i] & PC_WCHAR2; i++)
+	    realColumn[i] = realColumn[i - 1];
+#endif
     }
     if (pos >= i)
 	return j;
@@ -524,15 +537,15 @@ columnLen(Line *line, int column)
 {
     int i, j;
 
-    for (i = 0, j = 0; i < line->len; i++) {
+    for (i = 0, j = 0; i < line->len; ) {
 	j = nextColumn(j, &line->lineBuf[i], &line->propBuf[i]);
-	if (j > column) {
-#ifdef JP_CHARSET
-	    if (CharType(line->propBuf[i]) == PC_KANJI2)
-		return i - 1;
-#endif
+	if (j > column)
 	    return i;
-	}
+	i++;
+#ifdef USE_M17N
+	while (i < line->len && line->propBuf[i] & PC_WCHAR2)
+	    i++;
+#endif
     }
     return line->len;
 }
@@ -803,7 +816,7 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 		    Strclear(buf);
 		if (pre)
 		    Strcat_char(buf, *p);
-		p++;
+			p++;
 		goto proc_end;
 	    }
 	    Strcat_char(buf, (!pre && IS_SPACE(*p)) ? ' ' : *p);
@@ -1636,14 +1649,19 @@ file_to_url(char *file)
 }
 
 char *
-url_unquote_conv(char *url, char code)
+url_unquote_conv(char *url, wc_ces charset)
 {
+#ifdef USE_M17N
+    wc_uint8 old_auto_detect = WcOption.auto_detect;
+#endif
     Str tmp;
     tmp = Str_url_unquote(Strnew_charp(url), FALSE, TRUE);
-#ifdef JP_CHARSET
-    if (code == CODE_INNER_EUC)
-	code = CODE_EUC;
-    tmp = convertLine(NULL, tmp, &code, RAW_MODE);
+#ifdef USE_M17N
+    if (!charset || charset == WC_CES_US_ASCII)
+	charset = SystemCharset;
+    WcOption.auto_detect = WC_OPT_DETECT_ON;
+    tmp = convertLine(NULL, tmp, RAW_MODE, &charset, charset);
+    WcOption.auto_detect = old_auto_detect;
 #endif
     return tmp->ptr;
 }

@@ -7,10 +7,12 @@ BEGIN		Go to the first line
 BOOKMARK	Read bookmark
 CENTER_H	Move to the center line
 CENTER_V	Move to the center column
+CHARSET		Change the current document charset
 CLOSE_TAB	Close current tab
 CLOSE_TAB_MOUSE	Close tab on mouse cursor (for mouse action)
 COMMAND		Execute w3m command(s)
 COOKIE		View cookie list
+DEFAULT_CHARSET	Change the default document charset
 DEFINE_KEY	Define a binding between a key stroke and a user command
 DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.230 2003/09/22 17:37:41 ukai Exp $ */
+/* $Id: main.c,v 1.231 2003/09/22 21:02:19 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -110,11 +110,11 @@ fversion(FILE * f)
     fprintf(f, "w3m version %s, options %s\n", w3m_version,
 #if LANG == JA
 	    "lang=ja"
-#ifdef KANJI_SYMBOLS
-	    ",kanji-symbols"
-#endif
 #else
 	    "lang=en"
+#endif
+#ifdef USE_M17N
+	    ",m17n"
 #endif
 #ifdef USE_IMAGE
 	    ",image"
@@ -181,15 +181,15 @@ fusage(FILE * f, int err)
     fprintf(f, "    -t tab           set tab width\n");
     fprintf(f, "    -r               ignore backspace effect\n");
     fprintf(f, "    -l line          # of preserved line (default 10000)\n");
-#ifdef JP_CHARSET
+#ifdef USE_M17N
+    fprintf(f, "    -I charset       document charset\n");
+    fprintf(f, "    -O charset       display/output charset\n");
 #ifndef DEBIAN			/* disabled by ukai: -s is used for squeeze multi lines */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
 #endif
-    fprintf(f, "    -O e|s|j|N|m|n   display code\n");
-    fprintf(f, "    -I e|s           document code\n");
-#endif				/* JP_CHARSET */
+#endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
     fprintf(f, "    -T type          specify content-type\n");
@@ -233,9 +233,8 @@ fusage(FILE * f, int err)
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
     fprintf(f, "    -pauth user:pass proxy authentication\n");
-#ifndef KANJI_SYMBOLS
+    fprintf(f, "    -graph           use graphic character\n");
     fprintf(f, "    -no-graph        don't use graphic character\n");
-#endif				/* not KANJI_SYMBOLS */
 #ifdef DEBIAN			/* replaced by ukai: pager requires -s */
     fprintf(f, "    -s               squeeze multiple blank lines\n");
 #else
@@ -255,6 +254,12 @@ fusage(FILE * f, int err)
 	show_params(f);
     exit(err);
 }
+
+#ifdef USE_M17N
+#ifdef __EMX__
+static char *getCodePage(void);
+#endif
+#endif
 
 static GC_warn_proc orig_GC_warn_proc = NULL;
 #define GC_WARN_KEEP_MAX (20)
@@ -370,6 +375,13 @@ main(int argc, char **argv, char **envp)
     char *default_type = NULL;
     char *post_file = NULL;
     Str err_msg;
+#ifdef USE_M17N
+    char *Locale = NULL;
+    wc_uint8 auto_detect;
+#ifdef __EMX__
+    wc_ces CodePage;
+#endif
+#endif
 
 #ifndef HAVE_SYS_ERRLIST
     prepare_sys_errlist();
@@ -405,6 +417,18 @@ main(int argc, char **argv, char **envp)
 	}
     }
 
+#ifdef USE_M17N
+    if (non_null(Locale = getenv("LC_ALL")) ||
+	non_null(Locale = getenv("LC_CTYPE")) ||
+	non_null(Locale = getenv("LANG")))
+	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
+#ifdef __EMX__
+    CodePage = wc_guess_charset(getCodePage(), 0);
+    if (CodePage)
+	DisplayCharset = DocumentCharset = SystemCharset = CodePage;
+#endif
+#endif
+
     /* initializations */
     init_rc();
 
@@ -413,6 +437,12 @@ main(int argc, char **argv, char **envp)
     ShellHist = newHist();
     TextHist = newHist();
     URLHist = newHist();
+
+#ifdef USE_M17N
+    if (FollowLocale && Locale)
+	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
+    auto_detect = WcOption.auto_detect;
+#endif
 
     if (!non_null(HTTP_proxy) &&
 	((p = getenv("HTTP_PROXY")) ||
@@ -470,50 +500,42 @@ main(int argc, char **argv, char **envp)
 		if (atoi(argv[i]) > 0)
 		    PagerMax = atoi(argv[i]);
 	    }
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 #ifndef DEBIAN			/* XXX: use -o kanjicode={S|J|E} */
 	    else if (!strcmp("-s", argv[i]))
-		DisplayCode = CODE_SJIS;
+		DisplayCharset = WC_CES_SHIFT_JIS;
 	    else if (!strcmp("-j", argv[i]))
-		DisplayCode = CODE_JIS_n;
+		DisplayCharset = WC_CES_ISO_2022_JP;
 	    else if (!strcmp("-e", argv[i]))
-		DisplayCode = CODE_EUC;
+		DisplayCharset = WC_CES_EUC_JP;
 #endif
 	    else if (!strncmp("-I", argv[i], 2)) {
-		if (argv[i][2])
-		    argv[i] += 2;
-		else if (++i >= argc)
-		    usage();
-		c = str_to_code(argv[i]);
-		switch (c) {
-		case CODE_EUC:
-		case CODE_SJIS:
-		case CODE_INNER_EUC:
-		    DocumentCode = c;
-		    UseContentCharset = FALSE;
-		    UseAutoDetect = FALSE;
-		    break;
-		default:
-		    DocumentCode = '\0';
-		    UseContentCharset = TRUE;
-		    UseAutoDetect = TRUE;
-		    break;
+		if (argv[i][2] != '\0')
+		    p = argv[i] + 2;
+		else {
+		    if (++i >= argc)
+			usage();
+		    p = argv[i];
 		}
+		DocumentCharset = wc_guess_charset_short(p, DocumentCharset);
+		WcOption.auto_detect = WC_OPT_DETECT_OFF;
+		UseContentCharset = FALSE;
 	    }
 	    else if (!strncmp("-O", argv[i], 2)) {
-		if (argv[i][2])
-		    argv[i] += 2;
-		else if (++i >= argc)
-		    usage();
-		c = str_to_code(argv[i]);
-		if (c != CODE_INNER_EUC && c != CODE_ASCII)
-		    DisplayCode = c;
+		if (argv[i][2] != '\0')
+		    p = argv[i] + 2;
+		else {
+		    if (++i >= argc)
+			usage();
+		    p = argv[i];
+		}
+		DisplayCharset = wc_guess_charset_short(p, DisplayCharset);
 	    }
-#endif				/* JP_CHARSET */
-#ifndef KANJI_SYMBOLS
+#endif
+	    else if (!strcmp("-graph", argv[i]))
+		UseGraphicChar = TRUE;
 	    else if (!strcmp("-no-graph", argv[i]))
 		UseGraphicChar = FALSE;
-#endif				/* not KANJI_SYMBOLS */
 	    else if (!strcmp("-T", argv[i])) {
 		if (++i >= argc)
 		    usage();
@@ -755,6 +777,12 @@ main(int argc, char **argv, char **envp)
 	loadHistory(URLHist);
 #endif				/* not USE_HISTORY */
 
+#ifdef USE_M17N
+    wtf_init(DocumentCharset, DisplayCharset);
+    /*  if (w3m_dump)
+     * WcOption.pre_conv = WC_TRUE; */
+#endif
+
     if (w3m_backend)
 	backend();
 
@@ -971,9 +999,9 @@ main(int argc, char **argv, char **envp)
 
     SearchHeader = FALSE;
     DefaultType = NULL;
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     UseContentCharset = TRUE;
-    UseAutoDetect = TRUE;
+    WcOption.auto_detect = auto_detect;
 #endif
 
     Currentbuf = Firstbuf;
@@ -1133,7 +1161,13 @@ dump_head(Buffer *buf)
 	return;
     }
     for (ti = buf->document_header->first; ti; ti = ti->next) {
+#ifdef USE_M17N
+	printf("%s",
+	       wc_conv_strict(ti->ptr, InnerCharset,
+			      buf->document_charset)->ptr);
+#else
 	printf("%s", ti->ptr);
+#endif
     }
     puts("");
 }
@@ -1144,8 +1178,9 @@ dump_extra(Buffer *buf)
     printf("W3m-current-url: %s\n", parsedURL2Str(&buf->currentURL)->ptr);
     if (buf->baseURL)
 	printf("W3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
-#ifdef JP_CHARSET
-    printf("W3m-document-charset: %s\n", code_to_str(buf->document_code));
+#ifdef USE_M17N
+    printf("W3m-document-charset: %s\n",
+	   wc_ces_to_charset(buf->document_charset));
 #endif
 #ifdef USE_SSL
     if (buf->ssl_certificate) {
@@ -1556,7 +1591,7 @@ clear_mark(Line *l)
 
 /* search by regular expression */
 static int
-srchcore(char *str, int (*func) (Buffer *, char *))
+srchcore(char *volatile str, int (*func) (Buffer *, char *))
 {
     MySignalHandler(*prevtrap) ();
     volatile int i, result = SR_NOTFOUND;
@@ -1566,11 +1601,18 @@ srchcore(char *str, int (*func) (Buffer *, char *))
     if (SearchString == NULL || *SearchString == '\0')
 	return SR_NOTFOUND;
 
+#ifdef USE_M17N
+    if (SearchConv && !WcOption.pre_conv &&
+        Currentbuf->document_charset != DisplayCharset)
+        str = wtf_conv_fit(str, Currentbuf->document_charset);
+    else
+#endif
+	str = SearchString;
     prevtrap = mySignal(SIGINT, intTrap);
     crmode();
     if (SETJMP(IntReturn) == 0) {
 	for (i = 0; i < PREC_NUM; i++) {
-	    result = func(Currentbuf, SearchString);
+	    result = func(Currentbuf, str);
 	    if (i < PREC_NUM - 1 && result & SR_FOUND)
 		clear_mark(Currentbuf->currentLine);
 	}
@@ -2684,8 +2726,13 @@ reMark(void)
 	    return;
 	}
     }
-    if ((p = regexCompile(str, 1)) != NULL) {
-	disp_message(p, TRUE);
+#ifdef USE_M17N
+    if (SearchConv && !WcOption.pre_conv &&
+	Currentbuf->document_charset != DisplayCharset)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
+#endif
+    if ((str = regexCompile(str, 1)) != NULL) {
+	disp_message(str, TRUE);
 	return;
     }
     MarkString = str;
@@ -3001,7 +3048,9 @@ save_submit_formlist(FormItemList *src)
     list = New(FormList);
     list->method = srclist->method;
     list->action = Strdup(srclist->action);
+#ifdef USE_M17N
     list->charset = srclist->charset;
+#endif
     list->enctype = srclist->enctype;
     list->nitems = srclist->nitems;
     list->body = srclist->body;
@@ -3058,12 +3107,17 @@ save_submit_formlist(FormItemList *src)
     return ret;
 }
 
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 static Str
 conv_form_encoding(Str val, FormItemList *fi, Buffer *buf)
 {
-    return conv_str(val, InnerCode, fi->parent->charset ? fi->parent->charset
-		    : (buf->document_code ? buf->document_code : CODE_EUC));
+    wc_ces charset = SystemCharset;
+
+    if (fi->parent->charset)
+	charset = fi->parent->charset;
+    else if (buf->document_charset && buf->document_charset != WC_CES_US_ASCII)
+	charset = buf->document_charset;
+    return wc_Str_conv_strict(val, InnerCharset, charset);
 }
 #else
 #define conv_form_encoding(val, fi, buf) (val)
@@ -4001,7 +4055,7 @@ goURL0(char *prompt, int relative)
 	    if (DefaultURLString == DEFAULT_URL_LINK) {
 		url = a_url;
 		if (DecodeURL)
-		    url = url_unquote_conv(url, Currentbuf->document_code);
+		    url = url_unquote_conv(url, Currentbuf->document_charset);
 	    }
 	    else
 		pushHist(hist, a_url);
@@ -4010,10 +4064,11 @@ goURL0(char *prompt, int relative)
 	if (url != NULL)
 	    SKIP_BLANKS(url);
     }
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     if (url != NULL) {
-	if ((relative || *url == '#') && Currentbuf->document_code)
-	    url = conv(url, InnerCode, Currentbuf->document_code)->ptr;
+	if ((relative || *url == '#') && Currentbuf->document_charset)
+	    url = wc_conv_strict(url, InnerCharset,
+				 Currentbuf->document_charset)->ptr;
 	else
 	    url = conv_to_system(url);
     }
@@ -4092,7 +4147,17 @@ adBmark(void)
 		  (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
+#ifdef USE_M17N
+#if LANG == JA
+		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
+					  InnerCharset, WC_CES_EUC_JP)))->ptr);
+#else
+		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
+					  InnerCharset, SystemCharset)))->ptr);
+#endif
+#else
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
+#endif
     request = newFormList(NULL, "post", NULL, NULL, NULL, NULL, NULL);
     request->body = tmp->ptr;
     request->length = tmp->length;
@@ -4152,10 +4217,6 @@ pginfo(void)
     if ((buf = Currentbuf->linkBuffer[LB_INFO]) != NULL)
 	delBuffer(buf);
     buf = page_info_panel(Currentbuf);
-#ifdef JP_CHARSET
-    if (buf != NULL)
-	buf->document_code = Currentbuf->document_code;
-#endif				/* JP_CHARSET */
     cmd_loadBuffer(buf, BP_NORMAL, LB_INFO);
 }
 
@@ -4178,12 +4239,8 @@ follow_map(struct parsed_tagarg *arg)
 #ifndef MENU_MAP
 	Buffer *buf = follow_map_panel(Currentbuf, name);
 
-	if (buf != NULL) {
-#ifdef JP_CHARSET
-	    buf->document_code = Currentbuf->document_code;
-#endif				/* JP_CHARSET */
+	if (buf != NULL)
 	    cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
-	}
 #endif
 #if defined(MENU_MAP) || defined(USE_IMAGE)
 	return;
@@ -4283,9 +4340,9 @@ linkLst(void)
 
     buf = link_list_panel(Currentbuf);
     if (buf != NULL) {
-#ifdef JP_CHARSET
-	buf->document_code = Currentbuf->document_code;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+	buf->document_charset = Currentbuf->document_charset;
+#endif
 	cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
     }
 }
@@ -4408,7 +4465,7 @@ _peekURL(int only_img)
     Anchor *a;
     ParsedURL pu;
     static Str s = NULL;
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     static Lineprop *p = NULL;
     Lineprop *pp;
 #endif
@@ -4443,8 +4500,8 @@ _peekURL(int only_img)
 	s = parsedURL2Str(&pu);
     }
     if (DecodeURL)
-	s = Strnew_charp(url_unquote_conv(s->ptr, Currentbuf->document_code));
-#ifdef JP_CHARSET
+	s = Strnew_charp(url_unquote_conv(s->ptr, Currentbuf->document_charset));
+#ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
     bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
@@ -4453,8 +4510,8 @@ _peekURL(int only_img)
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
 	offset = (n - 1) * (COLS - 1);
-#ifdef JP_CHARSET
-    if (CharType(p[offset]) == PC_KANJI2)
+#ifdef USE_M17N
+    while (offset < s->length && p[offset] & PC_WCHAR2)
 	offset++;
 #endif
     disp_message_nomouse(&s->ptr[offset], TRUE);
@@ -4487,7 +4544,7 @@ void
 curURL(void)
 {
     static Str s = NULL;
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     static Lineprop *p = NULL;
     Lineprop *pp;
 #endif
@@ -4506,7 +4563,7 @@ curURL(void)
 	s = currentURL();
 	if (DecodeURL)
 	    s = Strnew_charp(url_unquote_conv(s->ptr, 0));
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);
 	bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
@@ -4515,14 +4572,14 @@ curURL(void)
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
 	offset = (n - 1) * (COLS - 1);
-#ifdef JP_CHARSET
-    if (CharType(p[offset]) == PC_KANJI2)
+#ifdef USE_M17N
+    while (offset < s->length && p[offset] & PC_WCHAR2)
 	offset++;
 #endif
     disp_message_nomouse(&s->ptr[offset], TRUE);
 }
-
 /* view HTML source */
+
 void
 vwSrc(void)
 {
@@ -4539,21 +4596,26 @@ vwSrc(void)
     if (Currentbuf->sourcefile == NULL) {
 	if (Currentbuf->pagerSource &&
 	    !strcasecmp(Currentbuf->type, "text/plain")) {
-#ifdef JP_CHARSET
-	    char old_code;
+#ifdef USE_M17N
+	    wc_ces old_charset;
+	    wc_bool old_fix_width_conv;
 #endif
 	    FILE *f;
 	    Str tmpf = tmpfname(TMPF_SRC, NULL);
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;
-#ifdef JP_CHARSET
-	    old_code = DisplayCode;
-	    DisplayCode = Currentbuf->document_code;
+#ifdef USE_M17N
+	    old_charset = DisplayCharset;
+	    old_fix_width_conv = WcOption.fix_width_conv;
+	    DisplayCharset = (Currentbuf->document_charset != WC_CES_US_ASCII)
+			     ? Currentbuf->document_charset : 0;
+	    WcOption.fix_width_conv = WC_FALSE;
 #endif
 	    saveBufferBody(Currentbuf, f, TRUE);
-#ifdef JP_CHARSET
-	    DisplayCode = old_code;
+#ifdef USE_M17N
+	    DisplayCharset = old_charset;
+	    WcOption.fix_width_conv = old_fix_width_conv;
 #endif
 	    fclose(f);
 	    Currentbuf->sourcefile = tmpf->ptr;
@@ -4597,8 +4659,8 @@ vwSrc(void)
     buf->sourcefile = Currentbuf->sourcefile;
     buf->header_source = Currentbuf->header_source;
     buf->search_header = Currentbuf->search_header;
-#ifdef JP_CHARSET
-    buf->document_code = Currentbuf->document_code;
+#ifdef USE_M17N
+    buf->document_charset = Currentbuf->document_charset;
 #endif
     buf->clone = Currentbuf->clone;
     (*buf->clone)++;
@@ -4614,8 +4676,8 @@ void
 reload(void)
 {
     Buffer *buf, *fbuf = NULL, sbuf;
-#ifdef JP_CHARSET
-    char old_code;
+#ifdef USE_M17N
+    wc_ces old_charset;
 #endif
     Str url;
     FormList *request;
@@ -4684,16 +4746,16 @@ reload(void)
     url = parsedURL2Str(&Currentbuf->currentURL);
     message("Reloading...", 0, 0);
     refresh();
-
-#ifdef JP_CHARSET
-    old_code = DocumentCode;
-    DocumentCode = Currentbuf->document_code;
+#ifdef USE_M17N
+    old_charset = DocumentCharset;
+    if (Currentbuf->document_charset != WC_CES_US_ASCII)
+	DocumentCharset = Currentbuf->document_charset;
 #endif
     SearchHeader = Currentbuf->search_header;
     DefaultType = Currentbuf->real_type;
     buf = loadGeneralFile(url->ptr, NULL, NO_REFERER, RG_NOCACHE, request);
-#ifdef JP_CHARSET
-    DocumentCode = old_code;
+#ifdef USE_M17N
+    DocumentCharset = old_charset;
 #endif
     SearchHeader = FALSE;
     DefaultType = NULL;
@@ -4735,6 +4797,76 @@ reshape(void)
     reshapeBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
+
+#ifdef USE_M17N
+static void
+_docCSet(wc_ces charset)
+{
+    if (Currentbuf->bufferprop & BP_INTERNAL)
+	return;
+    if (Currentbuf->sourcefile == NULL) {
+	disp_message("Can't reload...", FALSE);
+	return;
+    }
+    Currentbuf->document_charset = charset;
+    Currentbuf->need_reshape = TRUE;
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+change_charset(struct parsed_tagarg *arg)
+{
+    Buffer *buf = Currentbuf->linkBuffer[LB_N_INFO];
+    wc_ces charset;
+
+    if (buf == NULL)
+	return;
+    delBuffer(Currentbuf);
+    Currentbuf = buf;
+    if (Currentbuf->bufferprop & BP_INTERNAL)
+	return;
+    charset = Currentbuf->document_charset;
+    for (; arg; arg = arg->next) {
+	if (!strcmp(arg->arg, "charset"))
+	    charset = atoi(arg->value);
+    }
+    _docCSet(charset);
+}
+
+void
+docCSet(void)
+{
+    char *cs;
+    wc_ces charset;
+
+    cs = searchKeyData();
+    if (cs == NULL || *cs == '\0')
+	cs = inputStr("Document charset: ",
+		      wc_ces_to_charset(Currentbuf->document_charset));
+    charset = wc_guess_charset_short(cs, 0);
+    if (charset == 0) {
+	displayBuffer(Currentbuf, B_NORMAL);
+	return;
+    }
+    _docCSet(charset);
+}
+
+void
+defCSet(void)
+{
+    char *cs;
+    wc_ces charset;
+
+    cs = searchKeyData();
+    if (cs == NULL || *cs == '\0')
+	cs = inputStr("Default document charset: ",
+		      wc_ces_to_charset(DocumentCharset));
+    charset = wc_guess_charset_short(cs, 0);
+    if (charset != 0)
+	DocumentCharset = charset;
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+#endif
 
 /* mark URL-like patterns as anchors */
 void
@@ -4953,10 +5085,10 @@ curlno()
 	tmp = Sprintf("line %d/%d (%d%%) col %d/%d", cur, all,
 		      (int)((double)cur * 100.0 / (double)(all ? all : 1)
 			    + 0.5), col, len);
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     Strcat_charp(tmp, "  ");
-    Strcat_charp(tmp, code_to_str(Currentbuf->document_code));
-#endif				/* not JP_CHARSET */
+    Strcat_charp(tmp, wc_ces_to_charset_desc(Currentbuf->document_charset));
+#endif
 
     disp_message(tmp->ptr, FALSE);
 }
@@ -5060,12 +5192,12 @@ do_mouse_action(int btn, int x, int y)
     else if (y > ny) {
 	if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 	    (x == Currentbuf->cursorX + Currentbuf->rootX
-#ifdef JP_CHARSET
-	     || (Currentbuf->currentLine != NULL &&
-		 (Currentbuf->currentLine->
-		  propBuf[Currentbuf->pos] & PC_KANJI1)
+#ifdef USE_M17N
+	     || (WcOption.use_wide && Currentbuf->currentLine != NULL &&
+		 (CharType(Currentbuf->currentLine->propBuf[Currentbuf->pos])
+		  == PC_KANJI1)
 		 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
-#endif				/* JP_CHARSET */
+#endif
 	    )) {
 	    if (retrieveCurrentAnchor(Currentbuf) ||
 		retrieveCurrentForm(Currentbuf)) {
@@ -5079,12 +5211,12 @@ do_mouse_action(int btn, int x, int y)
 	    cursorXY(Currentbuf, x - Currentbuf->rootX, y - Currentbuf->rootY);
 	    if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 		(x == Currentbuf->cursorX + Currentbuf->rootX
-#ifdef JP_CHARSET
-		 || (Currentbuf->currentLine != NULL &&
-		     (Currentbuf->currentLine->
-		      propBuf[Currentbuf->pos] & PC_KANJI1)
+#ifdef USE_M17N
+		 || (WcOption.use_wide && Currentbuf->currentLine != NULL &&
+		     (CharType(Currentbuf->currentLine->
+		      propBuf[Currentbuf->pos]) == PC_KANJI1)
 		     && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
-#endif				/* JP_CHARSET */
+#endif
 		) &&
 		(retrieveCurrentAnchor(Currentbuf) ||
 		 retrieveCurrentForm(Currentbuf)))
@@ -5140,10 +5272,12 @@ process_mouse(int btn, int x, int y)
 			     press_y - Currentbuf->rootY);
 		    if (Currentbuf->cursorY == press_y - Currentbuf->rootY &&
 			(Currentbuf->cursorX == press_x - Currentbuf->rootX
-#ifdef JP_CHARSET
-			 || (Currentbuf->currentLine != NULL &&
-			     (Currentbuf->currentLine->propBuf[Currentbuf->pos]
-			      & PC_KANJI1) && Currentbuf->cursorX == press_x
+#ifdef USE_M17N
+			 || (WcOption.use_wide &&
+			     Currentbuf->currentLine != NULL &&
+			     (CharType(Currentbuf->currentLine->
+			      propBuf[Currentbuf->pos]) == PC_KANJI1)
+			     && Currentbuf->cursorX == press_x
 			     - Currentbuf->rootX - 1)
 #endif
 			)) {
@@ -5508,9 +5642,9 @@ set_buffer_environ(Buffer *buf)
 	set_environ("W3M_TITLE", buf->buffername);
 	set_environ("W3M_URL", parsedURL2Str(&buf->currentURL)->ptr);
 	set_environ("W3M_TYPE", buf->real_type ? buf->real_type : "unknown");
-#ifdef JP_CHARSET
-	set_environ("W3M_CHARSET", code_to_str(buf->document_code));
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+	set_environ("W3M_CHARSET", wc_ces_to_charset(buf->document_charset));
+#endif
     }
     l = buf->currentLine;
     if (l && (buf != prev_buf || l != prev_line || buf->pos != prev_pos)) {
@@ -5585,6 +5719,20 @@ searchKeyNum(void)
 	n = atoi(d);
     return n * PREC_NUM;
 }
+
+#ifdef __EMX__
+#ifdef USE_M17N
+static char *
+getCodePage(void)
+{
+    ULONG CpList[8], CpSize;
+
+    if (!getenv("WINDOWID") && !DosQueryCp(sizeof(CpList), CpList, &CpSize))
+	return Sprintf("CP%d", *CpList)->ptr;
+    return NULL;
+}
+#endif
+#endif
 
 void
 deleteFiles()

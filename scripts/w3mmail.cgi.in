@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.12 2003/01/15 17:13:22 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.13 2003/09/22 21:02:29 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -43,7 +43,7 @@ if ($query =~ s/^\w+://) {
     }
     &lang_setup;
 
-    print "Content-Type: text/html\r\n";
+    print "Content-Type: text/html; charset=$charset\r\n";
     print "w3m-control: END\r\n";
     print "w3m-control: PREV_LINK\r\n";
     print "\r\n";
@@ -99,7 +99,7 @@ if ($query =~ s/^\w+://) {
     &lang_setup;
 
     if ($act eq "Preview") {
-	print "Content-Type: text/html\r\n";
+	print "Content-Type: text/html; charset=$charset\r\n";
 	print "w3m-control: DELETE_PREVBUF\r\n";
 	print "w3m-control: NEXT_LINK\r\n";
 	print "\r\n";
@@ -215,6 +215,9 @@ sub lang_setup {
 	} else {
 	    $use_NKF = 0;
 	}
+	$charset = "EUC-JP";
+    } else {
+	$charset = &guess_charset($lang);
     }
 }
 
@@ -247,7 +250,7 @@ sub lang_html_quote {
 sub lang_header_default {
     local($h) = @_;
     if ($h =~ s/([=_?\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
-	return "=?iso-8859-1?Q?$h?=";
+	return "=?$charset?Q?$h?=";
     } else {
 	return $h;
     }
@@ -258,9 +261,9 @@ sub lang_body_default {
     if ($body =~ /[\x80-\xFF]/) {
 	if ($_7bit) {
 	    $body =~ s/([=\x80-\xFF])/sprintf("=%02x", ord($1))/ge;
-	    return ("iso-8859-1", "quoted-printable", $body);
+	    return ($charset, "quoted-printable", $body);
 	} else {
-	    return ("iso-8859-1", "8bit", $body);
+	    return ($charset, "8bit", $body);
 	}
     } else {
 	return ("US-ASCII", "7bit", $body);
@@ -350,5 +353,51 @@ sub html_quote {
 sub url_unquote {
     local($_) = @_;
     s/\+|%([0-9A-Fa-f][0-9A-Fa-f])/$& eq '+' ? ' ' : pack('c', hex($1))/ge;
+    return $_;
+}
+
+sub guess_charset {
+    local(%lang_charset) = (
+	'cs', 'iso-8859-2',
+	'el', 'iso-8859-7',
+	'iw', 'iso-8859-8',
+	'ja', 'EUC-JP',
+	'ko', 'EUC-KR',
+	'hu', 'iso-8859-2',
+	'pl', 'iso-8859-2',
+	'ro', 'iso-8859-2',
+	'ru', 'iso-8859-5',
+	'sk', 'iso-8859-2',
+	'sl', 'iso-8859-2',
+	'tr', 'iso-8859-9',
+	'zh', 'GB2312',
+    );
+    local($_) = @_;
+    local($lang);
+
+    if (! s/\.(.*)$//) {
+        if (/^zh_tw/i) {
+	    return 'Big5';
+	}
+	/^(..)/;
+	return $lang_charset{$1} || 'iso-8859-1';
+    }
+    $lang = $_;
+    $_ = $1;
+    if (/^euc/i) {
+	if (/^euc$/i) {
+	    $lang =~ /^zh_tw/ && return 'EUC-TW';
+	    $lang =~ /^zh/ && return 'GB2312';
+	    $lang =~ /^ko/ && return 'EUC-KR';
+	    return 'EUC-JP';
+	}
+	/^euccn/i && return 'GB2312';
+	s/[\-_]//g;
+	s/^euc/EUC-/i;
+	tr/a-z/A-Z/;
+    } elsif (/^iso8859/i) {
+	s/[\-_]//g;
+	s/^iso8859/iso-8859-/i;
+    }
     return $_;
 }

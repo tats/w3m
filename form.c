@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.31 2003/05/12 16:24:53 ukai Exp $ */
+/* $Id: form.c,v 1.32 2003/09/22 21:02:18 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -26,6 +26,9 @@ struct {
     {"cookie", set_cookie_flag},
 #endif				/* USE_COOKIE */
     {"download", download_action},
+#ifdef USE_M17N
+    { "charset", change_charset },
+#endif
     {"none", NULL},
     {NULL, NULL},
 };
@@ -39,7 +42,9 @@ newFormList(char *action, char *method, char *charset, char *enctype,
     Str a = Strnew_charp(action);
     int m = FORM_METHOD_GET;
     int e = FORM_ENCTYPE_URLENCODED;
-    int c = 0;
+#ifdef USE_M17N
+    wc_ces c = 0;
+#endif
 
     if (method == NULL || !strcasecmp(method, "get"))
 	m = FORM_METHOD_GET;
@@ -55,14 +60,18 @@ newFormList(char *action, char *method, char *charset, char *enctype,
 	    m = FORM_METHOD_POST;
     }
 
+#ifdef USE_M17N
     if (charset != NULL)
-	c = *charset;
+	c = wc_guess_charset(charset, 0);
+#endif
 
     l = New(struct form_list);
     l->item = l->lastitem = NULL;
     l->action = a;
     l->method = m;
+#ifdef USE_M17N
     l->charset = c;
+#endif
     l->enctype = e;
     l->target = target;
     l->name = name;
@@ -221,6 +230,8 @@ formResetBuffer(Buffer *buf, AnchorList *formitem)
 	return;
     for (i = 0; i < buf->formitem->nanchor && i < formitem->nanchor; i++) {
 	a = &buf->formitem->anchors[i];
+	if (a->y != a->start.line)
+	    continue;
 	f1 = (FormItemList *)a->url;
 	f2 = (FormItemList *)formitem->anchors[i].url;
 	if (f1->type != f2->type ||
@@ -258,14 +269,147 @@ formResetBuffer(Buffer *buf, AnchorList *formitem)
     }
 }
 
+static int
+form_update_line(Line *line, char **str, int spos, int epos, int width,
+		 int newline, int password)
+{
+    int c_len = 1, c_width = 1, w, i, len, pos;
+    char *p, *buf;
+    Lineprop c_type, effect, *prop;
+
+    for (p = *str, w = 0, pos = 0; *p && w < width;) {
+	c_type = get_mctype((unsigned char *)p);
+#ifdef USE_M17N
+	c_len = get_mclen(p);
+	c_width = get_mcwidth(p);
+#endif
+	if (c_type == PC_CTRL) {
+	    if (newline && *p == '\n')
+		break;
+	    if (*p != '\r') {
+		w++;
+		pos++;
+	    }
+	}
+	else if (password) {
+#ifdef USE_M17N
+	    if (w + c_width > width)
+		break;
+#endif
+	    w += c_width;
+	    pos += c_width;
+#ifdef USE_M17N
+	}
+	else if (c_type & PC_UNKNOWN) {
+	    w++;
+	    pos++;
+	}
+	else {
+	    if (w + c_width > width)
+		break;
+#endif
+	    w += c_width;
+	    pos += c_len;
+	}
+	p += c_len;
+    }
+    pos += width - w;
+
+    len = line->len + pos + spos - epos;
+    buf = New_N(char, len);
+    prop = New_N(Lineprop, len);
+    bcopy((void *)line->lineBuf, (void *)buf, spos * sizeof(char));
+    bcopy((void *)line->propBuf, (void *)prop, spos * sizeof(Lineprop));
+
+    effect = CharEffect(line->propBuf[spos]);
+    for (p = *str, w = 0, pos = spos; *p && w < width;) {
+	c_type = get_mctype((unsigned char *)p);
+#ifdef USE_M17N
+	c_len = get_mclen(p);
+	c_width = get_mcwidth(p);
+#endif
+	if (c_type == PC_CTRL) {
+	    if (newline && *p == '\n')
+		break;
+	    if (*p != '\r') {
+		buf[pos] = password ? '*' : ' ';
+		prop[pos] = effect | PC_ASCII;
+		pos++;
+		w++;
+	    }
+	}
+	else if (password) {
+#ifdef USE_M17N
+	    if (w + c_width > width)
+		break;
+#endif
+	    for (i = 0; i < c_width; i++) {
+		buf[pos] = '*';
+		prop[pos] = effect | PC_ASCII;
+		pos++;
+		w++;
+	    }
+#ifdef USE_M17N
+	}
+	else if (c_type & PC_UNKNOWN) {
+	    buf[pos] = ' ';
+	    prop[pos] = effect | PC_ASCII;
+	    pos++;
+	    w++;
+	}
+	else {
+	    if (w + c_width > width)
+		break;
+#endif
+	    buf[pos] = *p;
+	    prop[pos] = effect | c_type;
+	    pos++;
+#ifdef USE_M17N
+	    c_type = (c_type & ~PC_WCHAR1) | PC_WCHAR2;
+	    for (i = 1; i < c_len; i++) {
+		buf[pos] = p[i];
+		prop[pos] = effect | c_type;
+		pos++;
+	    }
+#endif
+	    w += c_width;
+	}
+	p += c_len;
+    }
+    for (; w < width; w++) {
+	buf[pos] = ' ';
+	prop[pos] = effect | PC_ASCII;
+	pos++;
+    }
+    if (newline) {
+	if (!FoldTextarea) {
+	    while (*p && *p != '\r' && *p != '\n')
+		p++;
+	}
+	if (*p == '\r')
+	    p++;
+	if (*p == '\n')
+	    p++;
+    }
+    *str = p;
+
+    bcopy((void *)&line->lineBuf[epos], (void *)&buf[pos],
+	  (line->len - epos) * sizeof(char));
+    bcopy((void *)&line->propBuf[epos], (void *)&prop[pos],
+	  (line->len - epos) * sizeof(Lineprop));
+    line->lineBuf = buf;
+    line->propBuf = prop;
+    line->len = len;
+
+    return pos;
+}
+
 void
 formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 {
-    int i, j, k;
     Buffer save;
     char *p;
-    int spos, epos, c_len, rows, c_rows, pos, col = 0;
-    Lineprop c_type;
+    int spos, epos, rows, c_rows, pos, col = 0;
     Line *l;
 
     copyBuffer(&save, buf);
@@ -280,20 +424,20 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 #ifdef MENU_SELECT
     case FORM_SELECT:
 #endif				/* MENU_SELECT */
-	spos = a->start.pos - 1;
+	spos = a->start.pos;
 	epos = a->end.pos;
 	break;
     default:
-	spos = a->start.pos;
+	spos = a->start.pos + 1;
 	epos = a->end.pos - 1;
     }
     switch (form->type) {
     case FORM_INPUT_CHECKBOX:
     case FORM_INPUT_RADIO:
 	if (form->checked)
-	    buf->currentLine->lineBuf[spos + 1] = '*';
+	    buf->currentLine->lineBuf[spos] = '*';
 	else
-	    buf->currentLine->lineBuf[spos + 1] = ' ';
+	    buf->currentLine->lineBuf[spos] = ' ';
 	break;
     case FORM_INPUT_TEXT:
     case FORM_INPUT_FILE:
@@ -308,7 +452,6 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 	else
 #endif				/* MENU_SELECT */
 	    p = form->value->ptr;
-	j = 0;
 	l = buf->currentLine;
 	if (form->type == FORM_TEXTAREA) {
 	    int n = a->y - buf->currentLine->linenumber;
@@ -320,67 +463,34 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 		break;
 	}
 	rows = form->rows ? form->rows : 1;
-	if (rows > 1)
-	    col = COLPOS(l, a->start.pos);
+	col = COLPOS(l, a->start.pos);
 	for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
 	    if (rows > 1) {
 		pos = columnPos(l, col);
 		a = retrieveAnchor(buf->formitem, l->linenumber, pos);
 		if (a == NULL)
 		    break;
-		spos = a->start.pos - 1;
+		spos = a->start.pos;
 		epos = a->end.pos;
 	    }
-	    i = spos + 1;
-	    while (p[j]) {
-		if (rows > 1 && (p[j] == '\r' || p[j] == '\n'))
-		    break;
-		if (p[j] == '\r') {
-		    j++;
-		    continue;
-		}
-		c_type = get_mctype(&p[j]);
-		c_len = get_mclen(c_type);
-		k = i + c_len;
-		if (k > epos)
-		    break;
-#ifdef JP_CHARSET
-		if (c_type == PC_KANJI && form->type != FORM_INPUT_PASSWORD) {
-		    SetCharType(l->propBuf[i], PC_KANJI1);
-		    SetCharType(l->propBuf[i + 1], PC_KANJI2);
-		}
-		else
-#endif				/* JP_CHARSET */
-		    SetCharType(l->propBuf[i], PC_ASCII);
-
-		for (; i < k; i++, j++) {
-		    if (form->type == FORM_INPUT_PASSWORD)
-			l->lineBuf[i] = '*';
-		    else if (c_type == PC_CTRL ||
-			     IS_UNPRINTABLE_ASCII(p[j], c_type))
-			l->lineBuf[i] = ' ';
-		    else
-			l->lineBuf[i] = p[j];
-		}
-	    }
-	    if (rows > 1) {
-		if (!FoldTextarea) {
-		    while (p[j] && p[j] != '\r' && p[j] != '\n')
-			j++;
-		}
-		if (p[j] == '\r')
-		    j++;
-		if (p[j] == '\n')
-		    j++;
-	    }
-	    for (; i < epos; i++) {
-		l->lineBuf[i] = ' ';
-		SetCharType(l->propBuf[i], PC_ASCII);
+	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
+				   rows > 1,
+				   form->type == FORM_INPUT_PASSWORD);
+	    if (pos != epos) {
+		shiftAnchorPosition(buf->href, buf->hmarklist,
+				    a->start.line, spos, pos - epos);
+		shiftAnchorPosition(buf->name, buf->hmarklist,
+				    a->start.line, spos, pos - epos);
+		shiftAnchorPosition(buf->img, buf->hmarklist,
+				    a->start.line, spos, pos - epos);
+		shiftAnchorPosition(buf->formitem, buf->hmarklist,
+				    a->start.line, spos, pos - epos);
 	    }
 	}
 	break;
     }
     copyBuffer(buf, &save);
+    arrangeLine(buf);
 }
 
 
@@ -393,17 +503,19 @@ textfieldrep(Str s, int width)
 
     j = 0;
     for (i = 0; i < s->length; i += c_len) {
-	c_type = get_mctype(&s->ptr[i]);
-	c_len = get_mclen(c_type);
-	if (s->ptr[i] == '\r') {
+	c_type = get_mctype((unsigned char *)&s->ptr[i]);
+	c_len = get_mclen(&s->ptr[i]);
+	if (s->ptr[i] == '\r')
 	    continue;
-	}
-	k = j + c_len;
+	k = j + get_mcwidth(&s->ptr[i]);
 	if (k > width)
 	    break;
-	if (IS_CNTRL(s->ptr[i])) {
+	if (c_type == PC_CTRL)
 	    Strcat_char(n, ' ');
-	}
+#ifdef USE_M17N
+	else if (c_type & PC_UNKNOWN)
+	    Strcat_char(n, ' ');
+#endif
 	else if (s->ptr[i] == '&')
 	    Strcat_charp(n, "&amp;");
 	else if (s->ptr[i] == '<')
@@ -440,7 +552,9 @@ form_fputs_decode(Str s, FILE * f)
 	    break;
 	}
     }
-    z = conv_str(z, InnerCode, DisplayCode);
+#ifdef USE_M17N
+    z = wc_Str_conv_strict(z, InnerCharset, DisplayCharset);
+#endif
     Strfputs(z, f);
 }
 
@@ -451,8 +565,9 @@ input_textarea(FormItemList *fi)
     char *tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
     Str tmp;
     FILE *f;
-#ifdef JP_CHARSET
-    char code = DisplayCode;
+#ifdef USE_M17N
+    wc_ces charset = DisplayCharset;
+    wc_uint8 auto_detect;
 #endif
 
     f = fopen(tmpf, "w");
@@ -476,6 +591,10 @@ input_textarea(FormItemList *fi)
 	goto input_end;
     }
     fi->value = Strnew();
+#ifdef USE_M17N
+    auto_detect = WcOption.auto_detect;
+    WcOption.auto_detect = WC_OPT_DETECT_ON;
+#endif
     while (tmp = Strfgets(f), tmp->length > 0) {
 	if (tmp->length == 1 && tmp->ptr[tmp->length - 1] == '\n') {
 	    /* null line with bare LF */
@@ -486,11 +605,12 @@ input_textarea(FormItemList *fi)
 	    Strshrink(tmp, 1);
 	    Strcat_charp(tmp, "\r\n");
 	}
-#ifdef JP_CHARSET
-	tmp = convertLine(NULL, tmp, &code, RAW_MODE);
-#endif				/* not JP_CHARSET */
+	tmp = convertLine(NULL, tmp, RAW_MODE, &charset, DisplayCharset);
 	Strcat(fi->value, tmp);
     }
+#ifdef USE_M17N
+    WcOption.auto_detect = auto_detect;
+#endif
     fclose(f);
   input_end:
     unlink(tmpf);

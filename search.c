@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.29 2003/03/05 18:56:30 ukai Exp $ */
+/* $Id: search.c,v 1.30 2003/09/22 21:02:21 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -58,7 +58,7 @@ migemostr(char *str)
     if (migemor == NULL || migemow == NULL)
 	if (open_migemo(migemo_command) == 0)
 	    return str;
-    fprintf(migemow, "%s\n", str);
+    fprintf(migemow, "%s\n", conv_to_system(str));
   again:
     if (fflush(migemow) != 0) {
 	switch (errno) {
@@ -68,7 +68,7 @@ migemostr(char *str)
 	    goto err;
 	}
     }
-    tmp = Strfgets(migemor);
+    tmp = Str_conv_from_system(Strfgets(migemor));
     Strchop(tmp);
     if (tmp->length == 0)
 	goto err;
@@ -114,8 +114,8 @@ forwardSearch(Buffer *buf, char *str)
 	    l = l->prev;
     }
     begin = l;
-#ifdef JP_CHARSET
-    if (l->propBuf[pos] & PC_KANJI2)
+#ifdef USE_M17N
+    while (pos < l->size && l->propBuf[pos] & PC_WCHAR2)
 	pos++;
 #endif
     if (pos < l->size && regexMatch(&l->lineBuf[pos], l->size - pos, 0) == 1) {
@@ -211,8 +211,8 @@ backwardSearch(Buffer *buf, char *str)
     begin = l;
     if (pos > 0) {
 	pos--;
-#ifdef JP_CHARSET
-	if (l->propBuf[pos] & PC_KANJI2)
+#ifdef USE_M17N
+	while (pos > 0 && l->propBuf[pos] & PC_WCHAR2)
 	    pos--;
 #endif
 	p = &l->lineBuf[pos];
@@ -227,12 +227,12 @@ backwardSearch(Buffer *buf, char *str)
 	    }
 	    if (q - l->lineBuf >= l->size)
 		break;
-#ifdef JP_CHARSET
-	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
-		q += 2;
-	    else
-#endif
+	    q++;
+#ifdef USE_M17N
+	    while (q - l->lineBuf < l->size
+		   && l->propBuf[q - l->lineBuf] & PC_WCHAR2)
 		q++;
+#endif
 	    if (q > p)
 		break;
 	}
@@ -269,12 +269,12 @@ backwardSearch(Buffer *buf, char *str)
 	    found_last = last;
 	    if (q - l->lineBuf >= l->size)
 		break;
-#ifdef JP_CHARSET
-	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
-		q += 2;
-	    else
-#endif
+	    q++;
+#ifdef USE_M17N
+	    while (q - l->lineBuf < l->size
+		   && l->propBuf[q - l->lineBuf] & PC_WCHAR2)
 		q++;
+#endif
 	}
 	if (found) {
 	    pos = found - l->lineBuf;

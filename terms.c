@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.48 2003/02/23 16:00:15 ukai Exp $ */
+/* $Id: terms.c,v 1.49 2003/09/22 21:02:22 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -50,10 +50,6 @@ static int tty;
 #ifdef __EMX__
 #define INCL_DOSNLS
 #include <os2.h>
-
-#ifndef JP_CHARSET
-extern int CodePage;
-#endif				/* !JP_CHARSET */
 #endif				/* __EMX__ */
 
 #if defined(__CYGWIN__)
@@ -297,14 +293,20 @@ typedef struct sgttyb TerminalMode;
 /* Sort of Character */
 #define C_WHICHCHAR     0xc0
 #define C_ASCII         0x00
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 #define C_WCHAR1        0x40
 #define C_WCHAR2        0x80
-#endif				/* JP_CHARSET */
+#endif
 #define C_CTRL          0xc0
 
 #define CHMODE(c)       ((c)&C_WHICHCHAR)
-#define SETCHMODE(var,mode)     var = (((var)&~C_WHICHCHAR) | mode)
+#define SETCHMODE(var,mode)	((var) = (((var)&~C_WHICHCHAR) | mode))
+#ifdef USE_M17N
+#define SETCH(var,ch,len)	((var) = New_Reuse(char, (var), (len) + 1), \
+				strncpy((var), (ch), (len)), (var)[len] = '\0')
+#else
+#define SETCH(var,ch)	((var) = (ch))
+#endif
 
 /* Charactor Color */
 #define COL_FCOLOR      0xf00
@@ -356,7 +358,11 @@ typedef struct sgttyb TerminalMode;
 typedef unsigned short l_prop;
 
 typedef struct scline {
+#ifdef USE_M17N
+    char **lineimage;
+#else
     char *lineimage;
+#endif
     l_prop *lineprop;
     short isdirty;
     short eol;
@@ -392,20 +398,13 @@ extern int tgetflag(char *);
 extern char *tgetstr(char *, char **);
 extern char *tgoto(char *, int, int);
 extern int tputs(char *, int, int (*)(char));
-void putchars(unsigned char, unsigned char, FILE *);
 void clear(), wrap(), touch_line(), touch_column(int);
-#ifdef JP_CHARSET
-void switch_wchar(FILE *);
-void switch_ascii(FILE *);
-#endif
 #if 0
 void need_clrtoeol(void);
 #endif
 void clrtoeol(void);		/* conflicts with curs_clear(3)? */
 
-int write1(char);
-
-/* #define writestr(s)  tputs(s,1,write1) */
+static int write1(char);
 
 static void
 writestr(char *s)
@@ -569,11 +568,6 @@ ttyname_tty(void)
 void
 reset_tty(void)
 {
-    if (DisplayCode != CODE_EUC && DisplayCode != CODE_SJIS)
-#if defined(__EMX__)&&!defined(JP_CHARSET)
-	if (!CodePage)
-#endif
-	    writestr("\033(B");	/* designate US_ASCII */
     writestr(T_op);		/* turn off */
     writestr(T_me);
     if (!Do_not_use_ti_te) {
@@ -646,7 +640,6 @@ setgraphchar(void)
 }
 
 #define graphchar(c) (((unsigned)(c)>=' ' && (unsigned)(c)<128)? gcmap[(c)-' '] : (c))
-
 #define GETSTR(v,s) {v = pt; suc = tgetstr(s,&pt); if (!suc) v = ""; else v = allocStr(suc, -1); }
 
 void
@@ -744,14 +737,6 @@ setlinescols(void)
 		pclose(fd);
 	    }
 	}
-#ifndef JP_CHARSET
-	else {
-	    ULONG CpList[8], CpSize;
-	    CodePage = -1;
-	    if (!DosQueryCp(sizeof(CpList), CpList, &CpSize))
-		CodePage = *CpList;
-	}
-#endif
     }
 #elif defined(HAVE_TERMIOS_H) && defined(TIOCGWINSZ)
     struct winsize wins;
@@ -793,8 +778,13 @@ setupscreen(void)
     if (COLS + 1 > max_COLS) {
 	max_COLS = COLS + 1;
 	for (i = 0; i < max_LINES; i++) {
-	    ScreenElem[i].lineimage = NewAtom_N(char, max_COLS);
-	    ScreenElem[i].lineprop = NewAtom_N(l_prop, max_COLS);
+#ifdef USE_M17N
+	    ScreenElem[i].lineimage = New_N(char *, max_COLS);
+	    bzero((void *)ScreenElem[i].lineimage, max_COLS * sizeof(char *));
+#else
+	    ScreenElem[i].lineimage = New_N(char, max_COLS);
+#endif
+	    ScreenElem[i].lineprop = New_N(l_prop, max_COLS);
 	}
     }
     for (i = 0; i < LINES; i++) {
@@ -825,118 +815,15 @@ initscr(void)
     return 0;
 }
 
-#ifdef JP_CHARSET
-static int wmode = C_ASCII;
-static char wbuf;
-#endif
-
-int
+static int
 write1(char c)
 {
-#ifdef SCREEN_DEBUG
-    usleep(50);
-#endif				/* SCREEN_DEBUG */
-#ifdef JP_CHARSET
-    if (IS_KANJI(c)) {
-	switch (wmode) {
-	case C_ASCII:
-	    switch_wchar(ttyf);
-	case C_WCHAR2:
-	    wmode = C_WCHAR1;
-	    wbuf = c;
-	    break;
-	case C_WCHAR1:
-	    wmode = C_WCHAR2;
-	    putchars((unsigned char)wbuf, (unsigned char)c, ttyf);
-	    break;
-	}
-    }
-    else {
-	switch (wmode) {
-	case C_ASCII:
-	    break;
-	case C_WCHAR1:
-	    /* ignore byte */
-	    wmode = C_ASCII;
-	    switch_ascii(ttyf);
-	    break;
-	case C_WCHAR2:
-	    wmode = C_ASCII;
-	    switch_ascii(ttyf);
-	    break;
-	}
-	putc(c, ttyf);
-    }
-#else				/* not JP_CHARSET */
     putc(c, ttyf);
-#endif				/* not JP_CHARSET */
 #ifdef SCREEN_DEBUG
     flush_tty();
 #endif				/* SCREEN_DEBUG */
     return 0;
 }
-
-#ifdef JP_CHARSET
-void
-endline(void)
-{				/* End of line */
-    if (wmode != C_ASCII) {
-	switch_ascii(ttyf);
-	wmode = C_ASCII;
-    }
-}
-
-void
-switch_ascii(FILE * f)
-{
-    extern char *GetSOCode(char);
-    if (CODE_JIS(DisplayCode)) {
-	fputs(GetSOCode(DisplayCode), f);
-    }
-}
-
-void
-switch_wchar(FILE * f)
-{
-    extern char *GetSICode(char);
-    if (CODE_JIS(DisplayCode)) {
-	fputs(GetSICode(DisplayCode), f);
-    }
-}
-
-void
-putchars(unsigned char c1, unsigned char c2, FILE * f)
-{
-    Str s = NULL;
-    char *p;
-
-    switch (DisplayCode) {
-    case CODE_EUC:
-	putc(c1, f);
-	putc(c2, f);
-	return;
-    case CODE_JIS_n:
-    case CODE_JIS_m:
-    case CODE_JIS_N:
-    case CODE_JIS_j:
-    case CODE_JIS_J:
-	putc(c1 & 0x7f, f);
-	putc(c2 & 0x7f, f);
-	return;
-    case CODE_SJIS:
-	s = Strnew_size(3);
-	put_sjis(s, c1 & 0x7f, c2 & 0x7f);
-	break;
-    }
-    if (!s->length) {
-	putc('?', f);
-	putc('?', f);
-	return;
-    }
-    for (p = s->ptr; *p != '\0'; p++)
-	putc(*p, f);
-}
-#endif				/* JP_CHARSET */
 
 void
 move(int line, int column)
@@ -954,11 +841,19 @@ move(int line, int column)
 #endif				/* not USE_BG_COLOR */
 
 static int
+#ifdef USE_M17N
+need_redraw(char *c1, l_prop pr1, char *c2, l_prop pr2)
+{
+    if (!c1 || !c2 || strcmp(c1, c2))
+	return 1;
+    if (*c1 == ' ')
+#else
 need_redraw(char c1, l_prop pr1, char c2, l_prop pr2)
 {
     if (c1 != c2)
 	return 1;
     if (c1 == ' ')
+#endif
 	return (pr1 ^ pr2) & M_SPACE & ~S_DIRTY;
 
     if ((pr1 ^ pr2) & ~S_DIRTY)
@@ -969,13 +864,43 @@ need_redraw(char c1, l_prop pr1, char c2, l_prop pr2)
 
 #define M_CEOL (~(M_SPACE|C_WHICHCHAR))
 
+#ifdef USE_M17N
+#define SPACE " "
+#else
+#define SPACE ' '
+#endif
+
+#ifdef USE_M17N
 void
 addch(char c)
 {
-    char *p;
+    addmch(&c, 1);
+}
+
+void
+addmch(char *pc, size_t len)
+#else
+void
+addch(char pc)
+#endif
+{
     l_prop *pr;
     int dest, i;
     short *dirty;
+#ifdef USE_M17N
+    static Str tmp = NULL;
+    char **p;
+    char c = *pc;
+    int width = wtf_width((wc_uchar *) pc);
+
+    if (tmp == NULL)
+	tmp = Strnew();
+    Strcopy_charp_n(tmp, pc, len);
+    pc = tmp->ptr;
+#else
+    char *p;
+    char c = pc;
+#endif
 
     if (CurColumn == COLS)
 	wrap();
@@ -985,34 +910,30 @@ addch(char c)
     pr = ScreenImage[CurLine]->lineprop;
     dirty = &ScreenImage[CurLine]->isdirty;
 
+#ifndef USE_M17N
     /* Eliminate unprintables according to * iso-8859-*.
      * Particularly 0x96 messes up T.Dickey's * (xfree-)xterm */
-    if (IS_INTERNAL(c))
+    if (IS_INTSPACE(c))
 	c = ' ';
+#endif
 
     if (pr[CurColumn] & S_EOL) {
-	if (c == ' ' &&
-#ifdef JP_CHARSET
-	    CHMODE(CurrentMode) != C_WCHAR1 &&
-#endif				/* JP_CHARSET */
-	    !(CurrentMode & M_SPACE)) {
+	if (c == ' ' && !(CurrentMode & M_SPACE)) {
 	    CurColumn++;
 	    return;
 	}
 	for (i = CurColumn; i >= 0 && (pr[i] & S_EOL); i--) {
-	    p[i] = ' ';
+	    SETCH(p[i], SPACE, 1);
 	    SETPROP(pr[i], (pr[i] & M_CEOL) | C_ASCII);
 	}
     }
 
     if (c == '\t' || c == '\n' || c == '\r' || c == '\b')
 	SETCHMODE(CurrentMode, C_CTRL);
-#ifdef JP_CHARSET
-    else if (CHMODE(CurrentMode) == C_WCHAR1)
-	SETCHMODE(CurrentMode, C_WCHAR2);
-    else if (IS_KANJI1(c))
+#ifdef USE_M17N
+    else if (len > 1)
 	SETCHMODE(CurrentMode, C_WCHAR1);
-#endif				/* JP_CHARSET */
+#endif
     else if (!IS_CNTRL(c))
 	SETCHMODE(CurrentMode, C_ASCII);
     else
@@ -1020,64 +941,81 @@ addch(char c)
 
     /* Required to erase bold or underlined character for some * terminal
      * emulators. */
-    if (((pr[CurColumn] & S_BOLD) &&
-	 need_redraw(p[CurColumn], pr[CurColumn], c, CurrentMode)) ||
-	((pr[CurColumn] & S_UNDERLINE) && !(CurrentMode & S_UNDERLINE))) {
+#ifdef USE_M17N
+    i = CurColumn + width - 1;
+#else
+    i = CurColumn;
+#endif
+    if (i < COLS &&
+	(((pr[i] & S_BOLD) && need_redraw(p[i], pr[i], pc, CurrentMode)) ||
+	 ((pr[i] & S_UNDERLINE) && !(CurrentMode & S_UNDERLINE)))) {
 	touch_line();
-	if (CurColumn < COLS - 1) {
-	    touch_column(CurColumn + 1);
-	    if (pr[CurColumn + 1] & S_EOL) {
-		p[CurColumn + 1] = ' ';
-		SETPROP(pr[CurColumn + 1],
-			(pr[CurColumn + 1] & M_CEOL) | C_ASCII);
+	i++;
+	if (i < COLS) {
+	    touch_column(i);
+	    if (pr[i] & S_EOL) {
+		SETCH(p[i], SPACE, 1);
+		SETPROP(pr[i], (pr[i] & M_CEOL) | C_ASCII);
 	    }
-#ifdef JP_CHARSET
-	    else if (CHMODE(pr[CurColumn + 1]) == C_WCHAR1
-		     && CurColumn < COLS - 2)
-		touch_column(CurColumn + 2);
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+	    else {
+		for (i++; i < COLS && CHMODE(pr[i]) == C_WCHAR2; i++)
+		    touch_column(i);
+	    }
+#endif
 	}
     }
 
-#ifdef JP_CHARSET
-    if (CurColumn >= 1 && CHMODE(pr[CurColumn - 1]) == C_WCHAR1 &&
-	CHMODE(CurrentMode) != C_WCHAR2) {
-	p[CurColumn - 1] = ' ';
-	SETPROP(pr[CurColumn - 1],
-		(pr[CurColumn - 1] & ~C_WHICHCHAR) | C_ASCII);
+#ifdef USE_M17N
+    if (CurColumn + width > COLS) {
 	touch_line();
-	touch_column(CurColumn - 1);
-    }
-
-    if (CurColumn < COLS - 1 && CHMODE(pr[CurColumn + 1]) == C_WCHAR2 &&
-	CHMODE(CurrentMode) != C_WCHAR1) {
-	p[CurColumn + 1] = ' ';
-	SETPROP(pr[CurColumn + 1],
-		(pr[CurColumn + 1] & ~C_WHICHCHAR) | C_ASCII);
-	touch_line();
-	touch_column(CurColumn + 1);
-    }
-
-    if (CurColumn == COLS - 1 && CHMODE(CurrentMode) == C_WCHAR1) {
+	for (i = CurColumn; i < COLS; i++) {
+	    SETCH(p[i], SPACE, 1);
+	    SETPROP(pr[i], (pr[i] & ~C_WHICHCHAR) | C_ASCII);
+	    touch_column(i);
+	}
 	wrap();
+	if (CurColumn + width > COLS)
+	    return;
 	p = ScreenImage[CurLine]->lineimage;
 	pr = ScreenImage[CurLine]->lineprop;
     }
-#endif				/* JP_CHARSET */
+    if (CHMODE(pr[CurColumn]) == C_WCHAR2) {
+	touch_line();
+	for (i = CurColumn - 1; i >= 0; i--) {
+	    l_prop l = CHMODE(pr[i]);
+	    SETCH(p[i], SPACE, 1);
+	    SETPROP(pr[i], (pr[i] & ~C_WHICHCHAR) | C_ASCII);
+	    touch_column(i);
+	    if (l != C_WCHAR2)
+		break;
+	}
+    }
+#endif
     if (CHMODE(CurrentMode) != C_CTRL) {
-	if (need_redraw(p[CurColumn], pr[CurColumn], c, CurrentMode)) {
-	    p[CurColumn] = c;
+	if (need_redraw(p[CurColumn], pr[CurColumn], pc, CurrentMode)) {
+	    SETCH(p[CurColumn], pc, len);
 	    SETPROP(pr[CurColumn], CurrentMode);
 	    touch_line();
 	    touch_column(CurColumn);
-#ifdef JP_CHARSET
-	    if (CHMODE(CurrentMode) == C_WCHAR1)
-		touch_column(CurColumn + 1);
-	    else if (CHMODE(CurrentMode) == C_WCHAR2)
-		touch_column(CurColumn - 1);
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+	    SETCHMODE(CurrentMode, C_WCHAR2);
+	    for (i = CurColumn + 1; i < CurColumn + width; i++) {
+		SETCH(p[i], SPACE, 1);
+		SETPROP(pr[i], (pr[CurColumn] & ~C_WHICHCHAR) | C_WCHAR2);
+		touch_column(i);
+	    }
+	    for (; i < COLS && CHMODE(pr[i]) == C_WCHAR2; i++) {
+		SETCH(p[i], SPACE, 1);
+		SETPROP(pr[i], (pr[i] & ~C_WHICHCHAR) | C_ASCII);
+		touch_column(i);
+	    }
+	}
+	CurColumn += width;
+#else
 	}
 	CurColumn++;
+#endif
     }
     else if (c == '\t') {
 	dest = (CurColumn + tab_step) / tab_step * tab_step;
@@ -1089,8 +1027,8 @@ addch(char c)
 	    pr = ScreenImage[CurLine]->lineprop;
 	}
 	for (i = CurColumn; i < dest; i++) {
-	    if (need_redraw(p[i], pr[i], ' ', CurrentMode)) {
-		p[i] = ' ';
+	    if (need_redraw(p[i], pr[i], SPACE, CurrentMode)) {
+		SETCH(p[i], SPACE, 1);
 		SETPROP(pr[i], CurrentMode);
 		touch_line();
 		touch_column(i);
@@ -1106,10 +1044,10 @@ addch(char c)
     }
     else if (c == '\b' && CurColumn > 0) {	/* Backspace */
 	CurColumn--;
-#ifdef JP_CHARSET
-	if (CurColumn > 0 && CHMODE(pr[CurColumn]) == C_WCHAR2)
+#ifdef USE_M17N
+	while (CurColumn > 0 && CHMODE(pr[CurColumn]) == C_WCHAR2)
 	    CurColumn--;
-#endif				/* JP_CHARSET */
+#endif
     }
 }
 
@@ -1156,12 +1094,17 @@ standend(void)
 void
 toggle_stand(void)
 {
+#ifdef USE_M17N
+    int i;
+#endif
     l_prop *pr = ScreenImage[CurLine]->lineprop;
     pr[CurColumn] ^= S_STANDOUT;
-#ifdef JP_CHARSET
-    if (CHMODE(pr[CurColumn]) == C_WCHAR1)
-	pr[CurColumn + 1] ^= S_STANDOUT;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    if (CHMODE(pr[CurColumn]) != C_WCHAR2) {
+	for (i = CurColumn + 1; CHMODE(pr[i]) == C_WCHAR2; i++)
+	    pr[i] ^= S_STANDOUT;
+    }
+#endif
 }
 
 void
@@ -1203,10 +1146,8 @@ graphend(void)
 int
 graph_ok(void)
 {
-#ifndef KANJI_SYMBOLS
     if (!UseGraphicChar)
 	return 0;
-#endif				/* not KANJI_SYMBOLS */
     return T_as[0] != 0 && T_ae[0] != 0 && T_ac[0] != 0;
 }
 
@@ -1258,7 +1199,11 @@ refresh(void)
     int line, col, pcol;
     int pline = CurLine;
     int moved = RF_NEED_TO_MOVE;
+#ifdef USE_M17N
+    char **pc;
+#else
     char *pc;
+#endif
     l_prop *pr, mode = 0;
     l_prop color = COL_FTERM;
 #ifdef USE_BG_COLOR
@@ -1266,6 +1211,9 @@ refresh(void)
 #endif				/* USE_BG_COLOR */
     short *dirty;
 
+#ifdef USE_M17N
+    wc_putc_init(InnerCharset, DisplayCharset);
+#endif
     for (line = 0; line <= LASTLINE; line++) {
 	dirty = &ScreenImage[line]->isdirty;
 	if (*dirty & L_DIRTY) {
@@ -1274,7 +1222,7 @@ refresh(void)
 	    pr = ScreenImage[line]->lineprop;
 	    for (col = 0; col < COLS && !(pr[col] & S_EOL); col++) {
 		if (*dirty & L_NEED_CE && col >= ScreenImage[line]->eol) {
-		    if (need_redraw(pc[col], pr[col], ' ', 0))
+		    if (need_redraw(pc[col], pr[col], SPACE, 0))
 			break;
 		}
 		else {
@@ -1359,7 +1307,7 @@ refresh(void)
 		    mode &= ~M_MEND;
 		}
 		if ((*dirty & L_NEED_CE && col >= ScreenImage[line]->eol) ?
-		    need_redraw(pc[col], pr[col], ' ',
+		    need_redraw(pc[col], pr[col], SPACE,
 				0) : (pr[col] & S_DIRTY)) {
 		    if (pcol == col - 1)
 			writestr(T_nd);
@@ -1392,6 +1340,9 @@ refresh(void)
 		    }
 #endif				/* USE_BG_COLOR */
 		    if ((pr[col] & S_GRAPHICS) && !(mode & S_GRAPHICS)) {
+#ifdef USE_M17N
+			wc_putc_end(ttyf);
+#endif
 			if (!graph_enabled) {
 			    graph_enabled = 1;
 			    writestr(T_eA);
@@ -1399,8 +1350,15 @@ refresh(void)
 			writestr(T_as);
 			mode |= S_GRAPHICS;
 		    }
+#ifdef USE_M17N
+		    if (pr[col] & S_GRAPHICS)
+			write1(graphchar(*pc[col]));
+		    else if (CHMODE(pr[col]) != C_WCHAR2)
+			wc_putc(pc[col], ttyf);
+#else
 		    write1((pr[col] & S_GRAPHICS) ? graphchar(pc[col]) :
 			   pc[col]);
+#endif
 		    pcol = col + 1;
 		}
 	    }
@@ -1417,15 +1375,19 @@ refresh(void)
 #endif				/* USE_BG_COLOR */
 		))
 		writestr(T_op);
-	    if (mode & S_GRAPHICS)
+	    if (mode & S_GRAPHICS) {
 		writestr(T_ae);
+#ifdef USE_M17N
+		wc_putc_clear_status();
+#endif
+	    }
 	    writestr(T_me);
 	    mode &= ~M_MEND;
 	}
-#ifdef JP_CHARSET
-	endline();
-#endif				/* JP_CHARSET */
     }
+#ifdef USE_M17N
+    wc_putc_end(ttyf);
+#endif
     MOVE(CurLine, CurColumn);
     flush_tty();
 }
@@ -1657,64 +1619,62 @@ no_clrtoeol(void)
 void
 addstr(char *s)
 {
+#ifdef USE_M17N
+    int len;
+
+    while (*s != '\0') {
+	len = wtf_len((wc_uchar *) s);
+	addmch(s, len);
+	s += len;
+    }
+#else
     while (*s != '\0')
 	addch(*(s++));
+#endif
 }
 
 void
 addnstr(char *s, int n)
 {
     int i;
+#ifdef USE_M17N
+    int len, width;
 
-#ifdef JP_CHARSET
-    for (i = 0; i < n - 1 && *s != '\0'; i++)
-	addch(*(s++));
-    if (*s != '\0') {
-	if (IS_KANJI2(*s)) {
-	    /* WCHAR */
-	    if (CHMODE(CurrentMode) == C_WCHAR1) {
-		/* WCHAR second byte */
-		addch(*s);
-	    }
-	}
-	else {
-	    /* Ascii or WCHAR2 */
-	    addch(*s);
-	}
+    for (i = 0; *s != '\0';) {
+	width = wtf_width((wc_uchar *) s);
+	if (i + width > n)
+	    break;
+	len = wtf_len((wc_uchar *) s);
+	addmch(s, len);
+	s += len;
+	i += width;
     }
-#else				/* not JP_CHARSET */
+#else
     for (i = 0; i < n && *s != '\0'; i++)
 	addch(*(s++));
-#endif				/* not JP_CHARSET */
+#endif
 }
 
 void
 addnstr_sup(char *s, int n)
 {
     int i;
+#ifdef USE_M17N
+    int len, width;
 
-#ifdef JP_CHARSET
-    for (i = 0; i < n - 1 && *s != '\0'; i++)
-	addch(*(s++));
-    if (*s != '\0') {
-	if (IS_KANJI2(*s)) {
-	    /* WCHAR */
-	    if (CHMODE(CurrentMode) == C_WCHAR1) {
-		/* WCHAR second byte */
-		addch(*s);
-		i++;
-	    }
-	}
-	else {
-	    /* Ascii or WCHAR2 */
-	    addch(*s);
-	    i++;
-	}
+    for (i = 0; *s != '\0';) {
+	width = wtf_width((wc_uchar *) s);
+	if (i + width > n)
+	    break;
+	len = wtf_len((wc_uchar *) s);
+	addmch(s, len);
+	s += len;
+	i += width;
     }
-#else				/* not JP_CHARSET */
+#else
     for (i = 0; i < n && *s != '\0'; i++)
 	addch(*(s++));
-#endif				/* not JP_CHARSET */
+#endif
     for (; i < n; i++)
 	addch(' ');
 }
@@ -2183,15 +2143,23 @@ flush_tty()
 void
 touch_cursor()
 {
+#ifdef USE_M17N
+    int i;
+#endif
     touch_line();
+#ifdef USE_M17N
+    for (i = CurColumn; i >= 0; i--) {
+	touch_column(i);
+	if (CHMODE(ScreenImage[CurLine]->lineprop[i]) != C_WCHAR2) 
+	    break;
+    }
+    for (i = CurColumn + 1; i < COLS; i++) {
+	if (CHMODE(ScreenImage[CurLine]->lineprop[i]) != C_WCHAR2) 
+	    break;
+	touch_column(i);
+    }
+#else
     touch_column(CurColumn);
-#ifdef JP_CHARSET
-    if (CurColumn > 0 &&
-	CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR2)
-	touch_column(CurColumn - 1);
-    else if (CurColumn < COLS - 1 &&
-	     CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR1)
-	touch_column(CurColumn + 1);
 #endif
 }
 #endif

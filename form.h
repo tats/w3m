@@ -1,4 +1,4 @@
-/* $Id: form.h,v 1.5 2001/11/30 10:10:24 ukai Exp $ */
+/* $Id: form.h,v 1.6 2003/09/22 21:02:18 ukai Exp $ */
 /*
  * HTML forms 
  */
@@ -47,7 +47,9 @@ typedef struct form_list {
     Str action;
     char *target;
     char *name;
-    int charset;
+#ifdef USE_M17N
+    wc_ces charset;
+#endif
     int enctype;
     struct form_list *next;
     int nitems;

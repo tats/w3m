@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.31 2003/04/14 16:19:28 ukai Exp $ */
+/* $Id: linein.c,v 1.32 2003/09/22 21:02:19 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -75,9 +75,10 @@ static int move_word;
 static Hist *CurrentHist;
 static Str strCurrentBuf;
 static int use_hist;
-#ifdef JP_CHARSET
-static int in_kanji;
-static void ins_kanji(Str tmp);
+#ifdef USE_M17N
+static void ins_char(Str str);
+#else
+static void ins_char(char c);
 #endif
 
 char *
@@ -87,15 +88,10 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
     int opos, x, y, lpos, rpos, epos;
     unsigned char c;
     char *p;
-    Lineprop mode;
-#ifdef JP_CHARSET
-    Str tmp = Strnew();
-#endif				/* JP_CHARSET */
-
-    mode = PC_ASCII;
-#ifdef JP_CHARSET
-    in_kanji = FALSE;
+#ifdef USE_M17N
+    Str tmp;
 #endif
+
     is_passwd = FALSE;
     move_word = TRUE;
 
@@ -122,7 +118,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	cm_mode = CPL_ON;
     else
 	cm_mode = CPL_OFF;
-    opos = strlen(prompt);
+    opos = get_strwidth(prompt);
     epos = CLEN - opos;
     if (epos < 0)
 	epos = 0;
@@ -148,6 +144,10 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
     cm_next = FALSE;
     cm_disp_next = -1;
     need_redraw = FALSE;
+
+#ifdef USE_M17N
+    wc_char_conv_init(wc_guess_8bit_charset(DisplayCharset), InnerCharset);
+#endif
     do {
 	x = calcPosition(strBuf->ptr, strProp, CLen, CPos, 0, CP_FORCE);
 	if (x - rpos > offset) {
@@ -183,21 +183,6 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 #endif
 	cm_clear = TRUE;
 	cm_disp_clear = TRUE;
-#ifdef JP_CHARSET
-	if (mode == PC_KANJI1) {
-	    mode = PC_KANJI2;
-	    if (CLen >= STR_LEN)
-		goto next_char;
-	    Strcat_char(tmp, (c | (DisplayCode == CODE_SJIS ? 0 : 0x80)));
-	    tmp = conv_str(tmp,
-			   (DisplayCode == CODE_SJIS ? CODE_SJIS : CODE_EUC),
-			   InnerCode);
-	    ins_kanji(tmp);
-	    if (incrfunc)
-		incrfunc(-1, strBuf, strProp);
-	}
-	else
-#endif
 	if (!i_quote &&
 		(((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
 		     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
@@ -233,31 +218,23 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	    if (cm_disp_clear)
 		cm_disp_next = -1;
 	}
-#ifdef JP_CHARSET
-	else if (DisplayCode == CODE_SJIS && 0xa0 <= c && c <= 0xdf) {
-	    i_quote = FALSE;
-	    cm_next = FALSE;
-	    if (CLen >= STR_LEN)
+#ifdef USE_M17N
+	else {
+	    tmp = wc_char_conv(c);
+	    if (tmp == NULL) {
+		i_quote = TRUE;
 		goto next_char;
-	    Strclear(tmp);
-	    Strcat_char(tmp, c);
-	    tmp = conv_str(tmp, DisplayCode, InnerCode);
-	    ins_kanji(tmp);
-	    if (incrfunc)
-		incrfunc(-1, strBuf, strProp);
-	}
-	else if ((c & 0x80) || in_kanji) {	/* Kanji 1 */
+	    }
 	    i_quote = FALSE;
 	    cm_next = FALSE;
 	    cm_disp_next = -1;
-	    if (CLen >= STR_LEN - 1)
+	    if (CLen + tmp->length > STR_LEN || !tmp->length)
 		goto next_char;
-	    Strclear(tmp);
-	    Strcat_char(tmp, (c | 0x80));
-	    mode = PC_KANJI1;
-	    goto next_char;
+	    ins_char(tmp);
+	    if (incrfunc)
+		incrfunc(-1, strBuf, strProp);
 	}
-#endif				/* JP_CHARSET */
+#else
 	else {
 	    i_quote = FALSE;
 	    cm_next = FALSE;
@@ -266,15 +243,15 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 		goto next_char;
 	    insC();
 	    strBuf->ptr[CPos] = c;
-	    if (!is_passwd && IS_CNTRL(c))
+	    if (!is_passwd && get_mctype(&c) == PC_CTRL)
 		strProp[CPos] = PC_CTRL;
 	    else
 		strProp[CPos] = PC_ASCII;
 	    CPos++;
-	    mode = PC_ASCII;
 	    if (incrfunc)
 		incrfunc(-1, strBuf, strProp);
 	}
+#endif
 	if (CLen && (flag & IN_CHAR))
 	    break;
     } while (i_cont);
@@ -366,8 +343,8 @@ addStr(char *p, Lineprop *pr, int len, int offset, int limit)
 	}
 	if (i >= len)
 	    return;
-#ifdef JP_CHARSET
-	while (pr[i] == PC_KANJI2)
+#ifdef USE_M17N
+	while (pr[i] & PC_WCHAR2)
 	    i++;
 #endif
 	addChar('{', 0);
@@ -377,11 +354,8 @@ addStr(char *p, Lineprop *pr, int len, int offset, int limit)
 	    addChar(' ', 0);
     }
     for (; i < len; i += delta) {
-#ifdef JP_CHARSET
-	if (CharType(pr[i]) == PC_KANJI1)
-	    delta = 2;
-	else
-	    delta = 1;
+#ifdef USE_M17N
+	delta = wtf_len((wc_uchar *) & p[i]);
 #endif
 	ncol = calcPosition(p, pr, len, i + delta, 0, CP_AUTO);
 	if (ncol - offset > limit)
@@ -390,33 +364,51 @@ addStr(char *p, Lineprop *pr, int len, int offset, int limit)
 	    for (; rcol < ncol; rcol++)
 		addChar(' ', 0);
 	    continue;
-#ifdef JP_CHARSET
 	}
-	else if (delta == 2) {
+	else {
+#ifdef USE_M17N
+	    addMChar(&p[i], pr[i], delta);
+#else
 	    addChar(p[i], pr[i]);
-	    addChar(p[i + 1], pr[i + 1]);
 #endif
 	}
-	else
-	    addChar(p[i], pr[i]);
 	rcol = ncol;
     }
 }
 
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 static void
-ins_kanji(Str tmp)
+ins_char(Str str)
 {
-    if (tmp->length != 2)
+    char *p = str->ptr, *ep = p + str->length;
+    Lineprop ctype;
+    int len;
+
+    if (CLen + str->length >= STR_LEN)
 	return;
-    insC();
-    strBuf->ptr[CPos] = tmp->ptr[0];
-    strProp[CPos] = PC_KANJI1;
-    CPos++;
-    insC();
-    strBuf->ptr[CPos] = tmp->ptr[1];
-    strProp[CPos] = PC_KANJI2;
-    CPos++;
+    while (p < ep) {
+	len = get_mclen(p);
+	ctype = get_mctype(p);
+	if (is_passwd) {
+	    if (ctype & PC_CTRL)
+		ctype = PC_ASCII;
+	    if (ctype & PC_UNKNOWN)
+		ctype = PC_WCHAR1;
+	}
+	insC();
+	strBuf->ptr[CPos] = *(p++);
+	strProp[CPos] = ctype;
+	CPos++;
+	if (--len) {
+	    ctype = (ctype & ~PC_WCHAR1) | PC_WCHAR2;
+	    while (len--) {
+		insC();
+		strBuf->ptr[CPos] = *(p++);
+		strProp[CPos] = ctype;
+		CPos++;
+	    }
+	}
+    }
 }
 #endif
 
@@ -424,9 +416,6 @@ static void
 _esc(void)
 {
     char c;
-#ifdef JP_CHARSET
-    char c2;
-#endif
 
     switch (c = getch()) {
     case '[':
@@ -473,17 +462,10 @@ _esc(void)
 	if (emacs_like_lineedit)
 	    _bsw();
 	break;
-#ifdef JP_CHARSET
-    case '$':
-	/* ISO-2022-jp characters */
-	c2 = getch();
-	in_kanji = TRUE;
-	break;
-    case '(':
-	/* ISO-2022-jp characters */
-	c2 = getch();
-	in_kanji = FALSE;
-	break;
+#ifdef USE_M17N
+    default:
+	if (wc_char_conv(ESC_CODE) == NULL && wc_char_conv(c) == NULL)
+	    i_quote = TRUE;
 #endif
     }
 }
@@ -508,10 +490,10 @@ delC(void)
 
     if (CLen == CPos)
 	return;
-#ifdef JP_CHARSET
-    if (strProp[i] == PC_KANJI1)
-	delta = 2;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    while (i + delta < CLen && strProp[i + delta] & PC_WCHAR2)
+	delta++;
+#endif
     for (i = CPos; i < CLen; i++) {
 	strProp[i] = strProp[i + delta];
     }
@@ -524,10 +506,10 @@ _mvL(void)
 {
     if (CPos > 0)
 	CPos--;
-#ifdef JP_CHARSET
-    if (strProp[CPos] == PC_KANJI2)
+#ifdef USE_M17N
+    while (CPos > 0 && strProp[CPos] & PC_WCHAR2)
 	CPos--;
-#endif				/* JP_CHARSET */
+#endif
 }
 
 static void
@@ -537,10 +519,10 @@ _mvLw(void)
     while (CPos > 0 && (first || !terminated(strBuf->ptr[CPos - 1]))) {
 	CPos--;
 	first = 0;
-#ifdef JP_CHARSET
-	if (strProp[CPos] == PC_KANJI2)
+#ifdef USE_M17N
+	if (CPos > 0 && strProp[CPos] & PC_WCHAR2)
 	    CPos--;
-#endif				/* JP_CHARSET */
+#endif
 	if (!move_word)
 	    break;
     }
@@ -553,10 +535,10 @@ _mvRw(void)
     while (CPos < CLen && (first || !terminated(strBuf->ptr[CPos - 1]))) {
 	CPos++;
 	first = 0;
-#ifdef JP_CHARSET
-	if (strProp[CPos] == PC_KANJI2)
+#ifdef USE_M17N
+	if (CPos < CLen && strProp[CPos] & PC_WCHAR2)
 	    CPos++;
-#endif				/* JP_CHARSET */
+#endif
 	if (!move_word)
 	    break;
     }
@@ -567,10 +549,10 @@ _mvR(void)
 {
     if (CPos < CLen)
 	CPos++;
-#ifdef JP_CHARSET
-    if (strProp[CPos] == PC_KANJI2)
+#ifdef USE_M17N
+    while (CPos < CLen && strProp[CPos] & PC_WCHAR2)
 	CPos++;
-#endif				/* JP_CHARSET */
+#endif
 }
 
 static void
@@ -745,7 +727,6 @@ next_dcompl(int next)
     cm_disp_clear = FALSE;
     if (CurrentTab)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-
     if (LASTLINE >= 3) {
 	comment = TRUE;
 	nline = LASTLINE - 2;
@@ -757,6 +738,7 @@ next_dcompl(int next)
     else {
 	return;
     }
+
     if (cm_disp_next >= 0) {
 	if (next == 1) {
 	    cm_disp_next += col * nline;
@@ -1000,14 +982,9 @@ doComplete(Str ifn, int *status, int next)
 	*status = CPL_MENU;
     }
     CompleteBuf = Strdup(CDirBuf);
-    if (CompleteBuf->length == 0)
-	Strcat(CompleteBuf, CFileName);
-    else if (Strlastchar(CompleteBuf) == '/')
-	Strcat(CompleteBuf, CFileName);
-    else {
+    if (CompleteBuf->length && Strlastchar(CompleteBuf) != '/')
 	Strcat_char(CompleteBuf, '/');
-	Strcat(CompleteBuf, CFileName);
-    }
+    Strcat(CompleteBuf, CFileName);
     if (*status != CPL_AMBIG) {
 	p = CompleteBuf->ptr;
 	if (cm_mode & CPL_URL) {
@@ -1080,22 +1057,35 @@ static int
 setStrType(Str str, Lineprop *prop)
 {
     Lineprop ctype;
-    int i = 0, delta;
-    char *s = str->ptr;
+    char *p = str->ptr, *ep = p + str->length;
+    int i, len = 1;
 
-    for (; *s != '\0' && i < STR_LEN; s += delta, i += delta) {
-	ctype = get_mctype(s);
-	if (is_passwd && ctype & PC_CTRL)
-	    ctype = PC_ASCII;
-	delta = get_mclen(ctype);
-#ifdef JP_CHARSET
-	if (ctype == PC_KANJI) {
-	    prop[i] = PC_KANJI1;
-	    prop[i + 1] = PC_KANJI2;
-	}
-	else
+    for (i = 0; p < ep;) {
+#ifdef USE_M17N
+	len = get_mclen(p);
 #endif
-	    prop[i] = ctype;
+	if (i + len > STR_LEN)
+	    break;
+	ctype = get_mctype(p);
+	if (is_passwd) {
+	    if (ctype & PC_CTRL)
+		ctype = PC_ASCII;
+#ifdef USE_M17N
+	    if (ctype & PC_UNKNOWN)
+		ctype = PC_WCHAR1;
+#endif
+	}
+	prop[i++] = ctype;
+#ifdef USE_M17N
+	p += len;
+	if (--len) {
+	    ctype = (ctype & ~PC_WCHAR1) | PC_WCHAR2;
+	    while (len--)
+		prop[i++] = ctype;
+	}
+#else
+	p++;
+#endif
     }
     return i;
 }

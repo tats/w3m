@@ -1,0 +1,159 @@
+
+LIBRARY = libwc.a
+CC = cc
+CPPFLAGS = -I. -I.. -I../gc/include
+CFLAGS = -g -O -Wall -DUSE_UNICODE $(CPPFLAGS)
+AR = ar
+RANLIB = ranlib
+
+SRCS = big5.c \
+		ces.c \
+		char_conv.c \
+		charset.c \
+		combining.c \
+		conv.c \
+		detect.c \
+		gb18030.c \
+		gbk.c \
+		hkscs.c \
+		hz.c \
+		iso2022.c \
+		jis.c \
+		johab.c \
+		priv.c \
+		putc.c \
+		search.c \
+		sjis.c \
+		status.c \
+		ucs.c \
+		uhc.c \
+		utf7.c \
+		utf8.c \
+		viet.c \
+		wtf.c
+HDRS = big5.h \
+		ccs.h \
+		ces.h \
+		gb18030.h \
+		gbk.h \
+		hkscs.h \
+		hz.h \
+		iso2022.h \
+		jis.h \
+		johab.h \
+		priv.h \
+		search.h \
+		sjis.h \
+		ucs.h \
+		uhc.h \
+		utf7.h \
+		utf8.h \
+		viet.h \
+		wc.h \
+		wc_types.h \
+		wtf.h
+OBJS = big5.o \
+		ces.o \
+		char_conv.o \
+		charset.o \
+		combining.o \
+		conv.o \
+		detect.o \
+		gb18030.o \
+		gbk.o \
+		hkscs.o \
+		hz.o \
+		iso2022.o \
+		jis.o \
+		johab.o \
+		priv.o \
+		putc.o \
+		search.o \
+		sjis.o \
+		status.o \
+		ucs.o \
+		uhc.o \
+		utf7.o \
+		utf8.o \
+		viet.o \
+		wtf.o
+
+all: $(LIBRARY)
+
+dist:
+	(cd ..; tar -czf libwc.tar.gz libwc/Makefile libwc/*.[ch] libwc/*.map libwc/map)
+
+$(LIBRARY): $(OBJS)
+	$(AR) rv $(LIBRARY) $(OBJS)
+	$(RANLIB) $(LIBRARY)
+
+test: $(LIBRARY) test.o ../Str.o ../myctype.o
+	$(CC) -o wctest test.o ../Str.o ../myctype.o $(LIBRARY) ../gc/gc.a
+
+###
+big5.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h big5.h search.h wtf.h \
+	ucs.h
+ces.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h sjis.h hz.h big5.h \
+	hkscs.h johab.h gbk.h gb18030.h uhc.h viet.h utf8.h utf7.h
+char_conv.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h
+charset.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h
+combining.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h \
+	map/iso88596_combining.map map/iso885911_combining.map \
+	map/cp864_combining.map map/cp874_combining.map \
+	map/cp1255_combining.map map/cp1256_combining.map \
+	map/cp1258_combining.map map/tcvn5712_combining.map
+conv.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h hz.h ucs.h utf8.h \
+	utf7.h
+detect.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h sjis.h big5.h hz.h \
+	viet.h utf8.h
+gb18030.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h gb18030.h gbk.h \
+	search.h wtf.h ucs.h map/gb18030_ucs.map
+gbk.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h gbk.h search.h wtf.h \
+	ucs.h map/gb2312_gbk.map
+hkscs.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h big5.h hkscs.h search.h \
+	wtf.h ucs.h
+hz.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h hz.h wtf.h ucs.h
+iso2022.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h jis.h big5.h johab.h \
+	wtf.h ucs.h
+jis.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h jis.h search.h ucs.h \
+	map/jisx0201k_jisx0208.map map/jisx0208_jisx02131.map
+johab.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h johab.h wtf.h ucs.h
+priv.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h
+putc.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h
+search.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h
+sjis.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h sjis.h jis.h wtf.h ucs.h \
+	map/jisx02132_sjis.map
+status.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h
+test.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h
+ucs.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h search.h big5.h \
+	hkscs.h sjis.h johab.h gbk.h gb18030.h uhc.h viet.h wtf.h ucs.map \
+	map/jisx0201k_ucs.map map/iso88591_ucs.map map/iso88592_ucs.map \
+	map/iso88593_ucs.map map/iso88594_ucs.map map/iso88595_ucs.map \
+	map/iso88596_ucs.map map/iso88597_ucs.map map/iso88598_ucs.map \
+	map/iso88599_ucs.map map/iso885910_ucs.map map/iso885911_ucs.map \
+	map/iso885913_ucs.map map/iso885914_ucs.map map/iso885915_ucs.map \
+	map/iso885916_ucs.map map/cp437_ucs.map map/cp737_ucs.map \
+	map/cp775_ucs.map map/cp850_ucs.map map/cp852_ucs.map \
+	map/cp855_ucs.map map/cp856_ucs.map map/cp857_ucs.map \
+	map/cp860_ucs.map map/cp861_ucs.map map/cp862_ucs.map \
+	map/cp863_ucs.map map/cp864_ucs.map map/cp865_ucs.map \
+	map/cp866_ucs.map map/cp869_ucs.map map/cp874_ucs.map \
+	map/cp1006_ucs.map map/cp1250_ucs.map map/cp1251_ucs.map \
+	map/cp1252_ucs.map map/cp1253_ucs.map map/cp1254_ucs.map \
+	map/cp1255_ucs.map map/cp1256_ucs.map map/cp1257_ucs.map \
+	map/cp1258_ucs.map map/tcvn5712_ucs.map map/viscii11_ucs.map \
+	map/vps_ucs.map map/koi8r_ucs.map map/koi8u_ucs.map \
+	map/nextstep_ucs.map map/jisx0208x0212x0213_ucs.map \
+	map/jisx0213_ucs_p2.map map/gb2312_ucs.map map/cns11643_ucs.map \
+	map/ksx1001_ucs.map map/big5_ucs.map map/hkscs_ucs.map \
+	map/hkscs_ucs_p2.map map/gb12345_ucs.map map/johab_ucs.map \
+	map/sjis_ext_ucs.map map/gbk_ucs.map map/uhc_ucs.map map/ucs_wide.map \
+	map/ucs_combining.map map/ucs_precompose.map map/ucs_hangul.map \
+	map/ucs_fullwidth.map
+uhc.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h uhc.h wtf.h ucs.h
+utf7.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h utf7.h wtf.h
+utf8.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h utf8.h wtf.h
+viet.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h viet.h wtf.h search.h \
+	ucs.h map/tcvn57123_tcvn5712.map
+wtf.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h sjis.h big5.h \
+	hkscs.h johab.h jis.h viet.h gbk.h gb18030.h uhc.h ucs.h utf8.h

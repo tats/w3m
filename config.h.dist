@@ -79,6 +79,7 @@ MAN1_JA_DIR = $(MAN_DIR)/ja/man1
 ETC_DIR = /usr/local/etc/w3m
 RC_DIR = ~/.w3m
 HELP_FILE = w3mhelp-w3m_ja.html
+RC_DIR = ~/.w3m/
 SYS_LIBRARIES = -lgpm  -lbsd -lnsl -lncurses  -L/usr/lib -L/usr/lib -L/usr/local/ssl/lib -L/usr/local/ssl/lib -lssl -lcrypto 
 LOCAL_LIBRARIES = 
 CC = gcc

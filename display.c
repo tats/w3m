@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.65 2003/03/06 14:30:25 ukai Exp $ */
+/* $Id: display.c,v 1.66 2003/09/22 21:02:17 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -147,14 +147,9 @@ EFFECT_VISITED_END
 #define EFFECT_MARK_START         standout()
 #define EFFECT_MARK_END           standend()
 #endif				/* not USE_COLOR */
-#ifndef KANJI_SYMBOLS
-static char g_rule[] = "ntwluxkavmqajaaa";
-#endif				/* not KANJI_SYMBOLS */
-
 /* 
  * Terminate routine.
  */
-
 void
 fmTerm(void)
 {
@@ -202,10 +197,7 @@ static int ccolumn = -1;
 
 static int ulmode = 0, somode = 0, bomode = 0;
 static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
-    active_mode = 0, visited_mode = 0, mark_mode = 0;
-#ifndef KANJI_SYMBOLS
-static int graph_mode = 0;
-#endif				/* not KANJI_SYMBOLS */
+    active_mode = 0, visited_mode = 0, mark_mode = 0, graph_mode = 0;
 #ifdef USE_ANSI_COLOR
 static Linecolor color_mode = 0;
 #endif
@@ -235,7 +227,7 @@ static Str
 make_lastline_link(Buffer *buf, char *title, char *url)
 {
     Str s = NULL, u;
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     Lineprop *pr;
 #endif
     ParsedURL pu;
@@ -250,7 +242,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
 	}
 	if (url)
 	    Strcat_charp(s, " ");
-	l -= s->length;
+	l -= get_Str_strwidth(s);
 	if (l <= 0)
 	    return s;
     }
@@ -259,11 +251,11 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     parseURL2(url, &pu, baseURL(buf));
     u = parsedURL2Str(&pu);
     if (DecodeURL)
-	u = Strnew_charp(url_unquote_conv(u->ptr, buf->document_code));
-#ifdef JP_CHARSET
+	u = Strnew_charp(url_unquote_conv(u->ptr, buf->document_charset));
+#ifdef USE_M17N
     u = checkType(u, &pr, NULL);
 #endif
-    if (l <= 4 || l >= u->length) {
+    if (l <= 4 || l >= get_Str_strwidth(u)) {
 	if (!s)
 	    return u;
 	Strcat(s, u);
@@ -272,19 +264,15 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     if (!s)
 	s = Strnew_size(COLS);
     i = (l - 2) / 2;
-#ifdef JP_CHARSET
-    if (CharType(pr[i]) == PC_KANJI2)
+#ifdef USE_M17N
+    while (i && pr[i] & PC_WCHAR2)
 	i--;
 #endif
     Strcat_charp_n(s, u->ptr, i);
-#if LANG == JA
-    Strcat_charp(s, "¡Ä");
-#else				/* LANG != JA */
     Strcat_charp(s, "..");
-#endif				/* LANG != JA */
-    i = u->length - (COLS - 1 - s->length);
-#ifdef JP_CHARSET
-    if (CharType(pr[i]) == PC_KANJI2)
+    i = get_Str_strwidth(u) - (COLS - 1 - get_Str_strwidth(s));
+#ifdef USE_M17N
+    while (i < u->length && pr[i] & PC_WCHAR2)
 	i++;
 #endif
     Strcat_charp(s, &u->ptr[i]);
@@ -295,6 +283,7 @@ static Str
 make_lastline_message(Buffer *buf)
 {
     Str msg, s = NULL;
+    int sl = 0;
 
     if (displayLink) {
 #ifdef USE_IMAGE
@@ -316,8 +305,11 @@ make_lastline_message(Buffer *buf)
 	    if (p || a)
 		s = make_lastline_link(buf, p, a ? a->url : NULL);
 	}
-	if (s && s->length >= COLS - 3)
-	    return s;
+	if (s) {
+	    sl = get_Str_strwidth(s);
+	    if (sl >= COLS - 3)
+		return s;
+	}
     }
 
 #ifdef USE_MOUSE
@@ -342,14 +334,12 @@ make_lastline_message(Buffer *buf)
     Strcat_charp(msg, buf->buffername);
 
     if (s) {
-	int l = COLS - 3 - s->length;
-	if (msg->length > l) {
-#ifdef JP_CHARSET
+	int l = COLS - 3 - sl;
+	if (get_Str_strwidth(msg) > l) {
+#ifdef USE_M17N
 	    char *p;
-	    int i;
-	    for (p = msg->ptr; *p; p += i) {
-		i = get_mclen(get_mctype(p));
-		l -= i;
+	    for (p = msg->ptr; *p; p += get_mclen(p)) {
+		l -= get_mcwidth(p);
 		if (l < 0)
 		    break;
 	    }
@@ -610,7 +600,7 @@ redrawNLine(Buffer *buf, int n)
 	    if (t == CurrentTab)
 		bold();
 	    addch('[');
-	    l = t->x2 - t->x1 - 1 - strlen(t->currentBuffer->buffername);
+	    l = t->x2 - t->x1 - 1 - get_strwidth(t->currentBuffer->buffername);
 	    if (l < 0)
 		l = 0;
 	    if (l / 2 > 0)
@@ -658,12 +648,10 @@ redrawNLine(Buffer *buf, int n)
 #endif
 }
 
-#define addKanji(pc,pr) (addChar((pc)[0],(pr)[0]),addChar((pc)[1],(pr)[1]))
-
 static Line *
 redrawLine(Buffer *buf, Line *l, int i)
 {
-    int j, pos, rcol, ncol, delta;
+    int j, pos, rcol, ncol, delta = 1;
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
@@ -723,9 +711,6 @@ redrawLine(Buffer *buf, Line *l, int i)
 #endif
     rcol = COLPOS(l, pos);
 
-#ifndef JP_CHARSET
-    delta = 1;
-#endif
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
 #ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
@@ -740,11 +725,8 @@ redrawLine(Buffer *buf, Line *l, int i)
 	    }
 	}
 #endif
-#ifdef JP_CHARSET
-	if (CharType(pr[j]) == PC_KANJI1)
-	    delta = 2;
-	else
-	    delta = 1;
+#ifdef USE_M17N
+	delta = wtf_len((wc_uchar *) & p[j]);
 #endif
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
@@ -762,13 +744,12 @@ redrawLine(Buffer *buf, Line *l, int i)
 	    for (; rcol < ncol; rcol++)
 		addChar(' ', 0);
 	}
-#ifdef JP_CHARSET
-	else if (delta == 2) {
-	    addKanji(&p[j], &pr[j]);
-	}
-#endif
 	else {
+#ifdef USE_M17N
+	    addMChar(&p[j], pr[j], delta);
+#else
 	    addChar(p[j], pr[j]);
+#endif
 	}
 	rcol = ncol;
     }
@@ -813,12 +794,10 @@ redrawLine(Buffer *buf, Line *l, int i)
 	mark_mode = FALSE;
 	EFFECT_MARK_END;
     }
-#ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graph_mode = FALSE;
 	graphend();
     }
-#endif				/* not KANJI_SYMBOLS */
 #ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
@@ -902,7 +881,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 static int
 redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 {
-    int j, pos, rcol, ncol, delta;
+    int j, pos, rcol, ncol, delta = 1;
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
@@ -931,9 +910,6 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
     bcol = bpos - pos;
     ecol = epos - pos;
 
-#ifndef JP_CHARSET
-    delta = 1;
-#endif
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
 #ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
@@ -948,11 +924,8 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 	    }
 	}
 #endif
-#ifdef JP_CHARSET
-	if (CharType(pr[j]) == PC_KANJI1)
-	    delta = 2;
-	else
-	    delta = 1;
+#ifdef USE_M17N
+	delta = wtf_len((wc_uchar *) & p[j]);
 #endif
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
@@ -973,14 +946,12 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 		for (; rcol < ncol; rcol++)
 		    addChar(' ', 0);
 	    }
-#ifdef JP_CHARSET
-	    else if (delta == 2) {
-		addKanji(&p[j], &pr[j]);
-	    }
-#endif
-	    else {
+	    else
+#ifdef USE_M17N
+		addMChar(&p[j], pr[j], delta);
+#else
 		addChar(p[j], pr[j]);
-	    }
+#endif
 	}
 	rcol = ncol;
     }
@@ -1025,12 +996,10 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 	mark_mode = FALSE;
 	EFFECT_MARK_END;
     }
-#ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graph_mode = FALSE;
 	graphend();
     }
-#endif				/* not KANJI_SYMBOLS */
 #ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
@@ -1067,12 +1036,10 @@ do_effects(Lineprop m)
 	       EFFECT_VISITED_END);
     do_effect2(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
     do_effect2(PE_MARK, mark_mode, EFFECT_MARK_START, EFFECT_MARK_END);
-#ifndef KANJI_SYMBOLS
     if (graph_mode) {
 	graphend();
 	graph_mode = FALSE;
     }
-#endif				/* not KANJI_SYMBOLS */
 
     /* effect start */
     do_effect1(PE_UNDER, ulmode, underline(), underlineend());
@@ -1086,14 +1053,6 @@ do_effects(Lineprop m)
 	       EFFECT_VISITED_END);
     do_effect1(PE_ACTIVE, active_mode, EFFECT_ACTIVE_START, EFFECT_ACTIVE_END);
     do_effect1(PE_MARK, mark_mode, EFFECT_MARK_START, EFFECT_MARK_END);
-#ifndef KANJI_SYMBOLS
-    if (m & PC_RULE) {
-	if (!graph_mode && graph_ok()) {
-	    graphstart();
-	    graph_mode = TRUE;
-	}
-    }
-#endif				/* not KANJI_SYMBOLS */
 }
 
 #ifdef USE_ANSI_COLOR
@@ -1114,40 +1073,93 @@ do_color(Linecolor c)
 }
 #endif
 
+#ifdef USE_M17N
 void
 addChar(char c, Lineprop mode)
 {
-    Lineprop m = CharEffect(mode);
+    addMChar(&c, mode, 1);
+}
 
-#ifdef JP_CHARSET
-    if (CharType(mode) != PC_KANJI2)
-#endif				/* JP_CHARSET */
-	do_effects(m);
-#ifndef KANJI_SYMBOLS
-    if (m & PC_RULE) {
-	if (graph_mode)
-	    addch(g_rule[c & 0xF]);
-	else
-	    addch(alt_rule[c & 0xF]);
+void
+addMChar(char *p, Lineprop mode, size_t len)
+#else
+void
+addChar(char c, Lineprop mode)
+#endif
+{
+    Lineprop m = CharEffect(mode);
+#ifdef USE_M17N
+    char c = *p;
+
+    if (mode & PC_WCHAR2)
+	return;
+#endif
+    do_effects(m);
+    if (mode & PC_SYMBOL) {
+	char **symbol;
+#ifdef USE_M17N
+	int w = (mode & PC_KANJI) ? 2 : 1;
+
+	c = ((char)wtf_get_code((wc_uchar *) p) & 0x7f) - SYMBOL_BASE;
+#else
+	c -= SYMBOL_BASE;
+#endif
+	if (graph_ok() && c < N_GRAPH_SYMBOL) {
+	    if (!graph_mode) {
+		graphstart();
+		graph_mode = TRUE;
+	    }
+#ifdef USE_M17N
+	    if (w == 2 && WcOption.use_wide)
+		addstr(graph2_symbol[(int)c]);
+	    else
+#endif
+		addch(*graph_symbol[(int)c]);
+	}
+	else {
+#ifdef USE_M17N
+	    symbol = get_symbol(DisplayCharset, &w);
+	    addstr(symbol[(int)c]);
+#else
+	    symbol = get_symbol();
+	    addch(*symbol[(int)c]);
+#endif
+	}
+    }
+    else if (mode & PC_CTRL) {
+	switch (c) {
+	case '\t':
+	    addch(c);
+	    break;
+	case '\n':
+	    addch(' ');
+	    break;
+	case '\r':
+	    break;
+	case DEL_CODE:
+	    addstr("^?");
+	    break;
+	default:
+	    addch('^');
+	    addch(c + '@');
+	    break;
+	}
+    }
+#ifdef USE_M17N
+    else if (mode & PC_UNKNOWN) {
+	char buf[5];
+	sprintf(buf, "[%.2X]",
+		(unsigned char)wtf_get_code((wc_uchar *) p) | 0x80);
+	addstr(buf);
     }
     else
-#endif				/* not KANJI_SYMBOLS */
-    if (IS_UNPRINTABLE_ASCII(c, mode)) {
-	addstr(Sprintf("\\%3o", (unsigned char)c)->ptr);
-    }
-    else if (c == '\t') {
-	addch(c);
-    }
-    else if (c == DEL_CODE)
-	addstr("^?");
-    else if (IS_UNPRINTABLE_CONTROL(c, mode)) {	/* Control code */
-	addch('^');
-	addch(c + '@');
-    }
-    else if (c != '\n')
-	addch(c);
-    else			/* \n */
+	addmch(p, len);
+#else
+    else if (0x80 <= (unsigned char)c && (unsigned char)c <= NBSP_CODE)
 	addch(' ');
+    else
+	addch(c);
+#endif
 }
 
 static GeneralList *message_list = NULL;
@@ -1341,10 +1353,10 @@ cursorRight(Buffer *buf, int n)
 	return;
     i = buf->pos;
     p = l->propBuf;
-#ifdef JP_CHARSET
-    if (CharType(p[i]) == PC_KANJI1)
-	delta = 2;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    while (i + delta < l->len && p[i + delta] & PC_WCHAR2)
+	delta++;
+#endif
     if (i + delta < l->len) {
 	buf->pos = i + delta;
     }
@@ -1359,18 +1371,18 @@ cursorRight(Buffer *buf, int n)
     }
     else {
 	buf->pos = l->len - 1;
-#ifdef JP_CHARSET
-	if (CharType(p[buf->pos]) == PC_KANJI2)
+#ifdef USE_M17N
+	while (buf->pos && p[buf->pos] & PC_WCHAR2)
 	    buf->pos--;
-#endif				/* JP_CHARSET */
+#endif
     }
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     delta = 1;
-#ifdef JP_CHARSET
-    if (CharType(p[buf->pos]) == PC_KANJI1)
-	delta = 2;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    while (buf->pos + delta < l->len && p[buf->pos + delta] & PC_WCHAR2)
+	delta++;
+#endif
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
     if (vpos2 >= buf->COLS && n) {
 	columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
@@ -1390,10 +1402,10 @@ cursorLeft(Buffer *buf, int n)
 	return;
     i = buf->pos;
     p = l->propBuf;
-#ifdef JP_CHARSET
-    if (i >= 2 && CharType(p[i - 1]) == PC_KANJI2)
-	delta = 2;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    while (i - delta > 0 && p[i - delta] & PC_WCHAR2)
+	delta++;
+#endif
     if (i >= delta)
 	buf->pos = i - delta;
     else if (l->prev && l->bpos) {
@@ -1458,15 +1470,16 @@ arrangeCursor(Buffer *buf)
 	buf->pos = 0;
     else if (buf->pos >= buf->currentLine->len)
 	buf->pos = buf->currentLine->len - 1;
-#ifdef JP_CHARSET
-    if (CharType(buf->currentLine->propBuf[buf->pos]) == PC_KANJI2)
+#ifdef USE_M17N
+    while (buf->pos > 0 && buf->currentLine->propBuf[buf->pos] & PC_WCHAR2)
 	buf->pos--;
-#endif				/* JP_CHARSET */
+#endif
     col = COLPOS(buf->currentLine, buf->pos);
-#ifdef JP_CHARSET
-    if (CharType(buf->currentLine->propBuf[buf->pos]) == PC_KANJI1)
-	delta = 2;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    while (buf->pos + delta < buf->currentLine->len &&
+	   buf->currentLine->propBuf[buf->pos + delta] & PC_WCHAR2)
+	delta++;
+#endif
     col2 = COLPOS(buf->currentLine, buf->pos + delta);
     if (col < buf->currentColumn || col2 > buf->COLS + buf->currentColumn) {
 	buf->currentColumn = 0;
@@ -1502,16 +1515,8 @@ arrangeLine(Buffer *buf)
 	buf->pos = i;
     }
     else if (buf->currentLine->len > i) {
-	int delta = 1;
-#ifdef JP_CHARSET
-	if (buf->currentLine->len > i + 1 &&
-	    CharType(buf->currentLine->propBuf[i + 1]) == PC_KANJI2)
-	    delta = 2;
-#endif
 	buf->cursorX = 0;
-	buf->pos = i;
-	if (COLPOS(buf->currentLine, i + delta) <= buf->currentColumn)
-	    buf->pos += delta;
+	buf->pos = i + 1;
     }
     else {
 	buf->cursorX = 0;

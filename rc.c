@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.86 2003/09/22 17:37:41 ukai Exp $ */
+/* $Id: rc.c,v 1.87 2003/09/22 21:02:20 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -8,7 +8,6 @@
 #include <errno.h>
 #include "parsetag.h"
 #include "local.h"
-#include "terms.h"
 #include <stdlib.h>
 
 struct param_ptr {
@@ -17,7 +16,7 @@ struct param_ptr {
     int inputtype;
     void *varptr;
     char *comment;
-    struct sel_c *select;
+    void *select;
 };
 
 struct param_section {
@@ -44,7 +43,7 @@ static int RC_table_size;
 #ifdef USE_COLOR
 #define P_COLOR    6
 #endif
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 #define P_CODE     7
 #endif
 #define P_PIXELS   8
@@ -52,15 +51,18 @@ static int RC_table_size;
 #define P_SCALE    10
 
 #if LANG == JA
+static wc_ces OptionCharset = WC_CES_EUC_JP;
+static int OptionEncode = FALSE;
+ 
 #define CMT_HELPER	 "外部ビューアの編集"
 #define CMT_TABSTOP      "タブ幅"
+#define CMT_INDENT_INCR  "HTML整形時のインデント幅"
 #define CMT_PIXEL_PER_CHAR      "文字幅 (4.0...32.0)"
 #define CMT_PIXEL_PER_LINE      "一行の高さ (4.0...64.0)"
 #define CMT_PAGERLINE    "ページャとして利用した時に保存される行数"
 #define CMT_HISTORY	 "履歴を使う"
 #define CMT_HISTSIZE     "保持するURL履歴の数"
 #define CMT_SAVEHIST     "URL履歴の保存"
-#define CMT_KANJICODE    "表示用漢字コード"
 #define CMT_FRAME        "フレームの自動表示"
 #define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
@@ -144,8 +146,6 @@ static int RC_table_size;
 #define CMT_ACCEPTENCODING	"圧縮方法(Accept-Encoding:)"
 #define CMT_ACCEPTMEDIA	 "受けつけるメディアタイプ(Accept:)"
 #define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
-#define CMT_DOCUMENTCODE "文書の文字コード"
-#define CMT_SYSTEMCODE   "システムの文字コード"
 #define CMT_MARK_ALL_PAGES "全てのページのURL風の文字列をリンクにする"
 #define CMT_WRAP         "折り返し検索"
 #define CMT_VIEW_UNSEENOBJECTS "背景画像等へのリンクを作る"
@@ -203,6 +203,30 @@ static int RC_table_size;
 #define CMT_MIGEMO_COMMAND "Migemoコマンド"
 #endif				/* USE_MIGEMO */
 
+#ifdef USE_M17N
+#define CMT_DISPLAY_CHARSET  "表示用文字コード"
+#define CMT_DOCUMENT_CHARSET "文書の標準の文字コード"
+#define CMT_AUTO_DETECT      "文書の読み込み時に文字コードの自動判定を行う"
+#define CMT_SYSTEM_CHARSET   "システムの文字コード"
+#define CMT_FOLLOW_LOCALE    "Locale(LC_CTYPE) に従ってシステムの文字コードを設定"
+#define CMT_EXT_HALFDUMP     "表示用文字コードで halfdump の出力を行う"
+#define CMT_USE_WIDE         "複数カラムの文字を使う"
+#define CMT_USE_COMBINING    "結合文字を使う"
+#define CMT_USE_LANGUAGE_TAG "Unicode の言語タグを使う"
+#define CMT_UCS_CONV         "Unicodeを介したコード変換"
+#define CMT_PRE_CONV         "文書の読み込み時に文字コードを変換する"
+#define CMT_SEARCH_CONV      "検索文字列を文書の文字コードに変換する"
+#define CMT_FIX_WIDTH_CONV   "文字幅の変わる変換をしない"
+#define CMT_USE_GB12345_MAP  "GB 12345 の Unicode マップを GB 2312 用に使う"
+#define CMT_USE_JISX0201     "ISO-2022-JP で JIS X 0201-Roman を使う"
+#define CMT_USE_JISC6226     "ISO-2022-JP で JIS C 6226:1978(旧JIS) を使う"
+#define CMT_USE_JISX0201K    "JIS X 0201-Katakana を使う"
+#define CMT_USE_JISX0212     "JIS X 0212:1990(補助漢字) を使う"
+#define CMT_USE_JISX0213     "JIS X 0213:2000(2000JIS) を使う"
+#define CMT_STRICT_ISO2022   "厳格な ISO-2022-JP/KR/CN を使う"
+#define CMT_GB18030_AS_UCS   "GB18030 の 4バイト文字を Unicode として扱う"
+#endif
+
 #define CMT_KEYMAP_FILE "keymapファイル"
 
 #else				/* LANG != JA */
@@ -210,13 +234,13 @@ static int RC_table_size;
 
 #define CMT_HELPER	 "External Viewer Setup"
 #define CMT_TABSTOP      "Tab width in characters"
+#define CMT_INDENT_INCR  "Indent for HTML rendering"
 #define CMT_PIXEL_PER_CHAR      "Number of pixels per character (4.0...32.0)"
 #define CMT_PIXEL_PER_LINE      "Number of pixels per line (4.0...64.0)"
 #define CMT_PAGERLINE    "Number of remembered lines when used as a pager"
 #define CMT_HISTORY	 "Use URL history"
 #define CMT_HISTSIZE     "Number of remembered URL"
 #define CMT_SAVEHIST     "Save URL history"
-/* #define CMT_KANJICODE    "Display Kanji Code" */
 #define CMT_FRAME        "Render frames automatically"
 #define CMT_ARGV_IS_URL  "Treat argument without scheme as URL"
 #define CMT_TSELF        "Use _self as default target"
@@ -300,8 +324,6 @@ static int RC_table_size;
 #define CMT_ACCEPTENCODING	"Accept-Encoding header"
 #define CMT_ACCEPTMEDIA	 "Accept header"
 #define CMT_ACCEPTLANG   "Accept-Language header"
-/* #define CMT_DOCUMENTCODE "Document Charset" */
-/* #define CMT_SYSTEMCODE   "System Kanji Code" */
 #define CMT_MARK_ALL_PAGES "Treat URL-like strings as links in all pages"
 #define CMT_WRAP         "Wrap search"
 #define CMT_VIEW_UNSEENOBJECTS "Display unseen objects (e.g. bgimage tag)"
@@ -358,6 +380,30 @@ static int RC_table_size;
 #define CMT_MIGEMO_COMMAND "Migemo command"
 #endif				/* USE_MIGEMO */
 
+#ifdef USE_M17N
+#define CMT_DISPLAY_CHARSET  "Display charset"
+#define CMT_DOCUMENT_CHARSET "Default document charset"
+#define CMT_AUTO_DETECT      "Automatic charset detect when loading"
+#define CMT_SYSTEM_CHARSET   "System charset"
+#define CMT_FOLLOW_LOCALE    "System charset follows locale(LC_CTYPE)"
+#define CMT_EXT_HALFDUMP     "Output halfdump with display charset"
+#define CMT_USE_WIDE         "Use multi column characters"
+#define CMT_USE_COMBINING    "Use combining characters"
+#define CMT_USE_LANGUAGE_TAG "Use Unicode language tags"
+#define CMT_UCS_CONV         "Charset conversion using Unicode map"
+#define CMT_PRE_CONV         "Charset conversion when loading"
+#define CMT_SEARCH_CONV      "Adjust search string for document charset"
+#define CMT_FIX_WIDTH_CONV   "Fix character width when conversion"
+#define CMT_USE_GB12345_MAP  "Use GB 12345 Unicode map instead of GB 2312's"
+#define CMT_USE_JISX0201     "Use JIS X 0201 Roman for ISO-2022-JP"
+#define CMT_USE_JISC6226     "Use JIS C 6226:1978 for ISO-2022-JP"
+#define CMT_USE_JISX0201K    "Use JIS X 0201 Katakana"
+#define CMT_USE_JISX0212     "Use JIS X 0212:1990 (Supplemental Kanji)"
+#define CMT_USE_JISX0213     "Use JIS X 0213:2000 (2000JIS)"
+#define CMT_STRICT_ISO2022   "Strict ISO-2022-JP/KR/CN"
+#define CMT_GB18030_AS_UCS   "Treat 4 bytes char. of GB18030 as Unicode"
+#endif
+
 #define CMT_KEYMAP_FILE "keymap file"
 
 #endif				/* LANG != JA */
@@ -365,38 +411,15 @@ static int RC_table_size;
 #define PI_TEXT    0
 #define PI_ONOFF   1
 #define PI_SEL_C   2
+#ifdef USE_M17N
+#define PI_CODE    3
+#endif
 
 struct sel_c {
     int value;
     char *cvalue;
     char *text;
 };
-
-#ifdef JP_CHARSET
-static struct sel_c kcodestr[] = {
-    {CODE_EUC, "E", STR_EUC},
-    {CODE_SJIS, "S", STR_SJIS},
-    {CODE_JIS_j, "j", STR_JIS_j},
-    {CODE_JIS_N, "N", STR_JIS_N},
-    {CODE_JIS_m, "m", STR_JIS_m},
-    {CODE_JIS_n, "n", STR_JIS_n},
-    {0, NULL, NULL}
-};
-
-static struct sel_c dcodestr[] = {
-    {'\0', "0", "auto detect"},
-    {CODE_EUC, "E", STR_EUC},
-    {CODE_SJIS, "S", STR_SJIS},
-    {CODE_INNER_EUC, "I", STR_INNER_EUC},
-    {0, NULL, NULL}
-};
-
-static struct sel_c scodestr[] = {
-    {CODE_EUC, "E", STR_EUC},
-    {CODE_SJIS, "S", STR_SJIS},
-    {0, NULL, NULL}
-};
-#endif				/* JP_CHARSET */
 
 #ifdef USE_COLOR
 static struct sel_c colorstr[] = {
@@ -451,6 +474,7 @@ static struct sel_c defaulturls[] = {
 #endif
     {0, NULL, NULL}
 };
+
 #ifdef USE_MOUSE
 static struct sel_c wheelmode[] = {
 #if LANG == JA
@@ -487,22 +511,28 @@ static struct sel_c badcookiestr[] = {
 };
 #endif				/* USE_COOKIE */
 
+#ifdef USE_M17N
+static wc_ces_list *display_charset_str = NULL;
+static wc_ces_list *document_charset_str = NULL;
+static wc_ces_list *system_charset_str = NULL;
+static struct sel_c auto_detect_str[] = {
+    {N_S(WC_OPT_DETECT_OFF), "OFF"},
+    {N_S(WC_OPT_DETECT_ISO_2022), "Only ISO 2022"},
+    {N_S(WC_OPT_DETECT_ON), "ON"},
+    {0, NULL, NULL}
+};
+#endif
+
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
+    {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
+      NULL},
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *)&pixel_per_char,
      CMT_PIXEL_PER_CHAR, NULL},
 #ifdef USE_IMAGE
     {"pixel_per_line", P_PIXELS, PI_TEXT, (void *)&pixel_per_line,
      CMT_PIXEL_PER_LINE, NULL},
 #endif
-#ifdef JP_CHARSET
-    {"kanjicode", P_CODE, PI_SEL_C, (void *)&DisplayCode, CMT_KANJICODE,
-     kcodestr},
-    {"document_code", P_CODE, PI_SEL_C, (void *)&DocumentCode,
-     CMT_DOCUMENTCODE, dcodestr},
-    {"system_code", P_CODE, PI_SEL_C, (void *)&SystemCode, CMT_SYSTEMCODE,
-     scodestr},
-#endif				/* JP_CHARSET */
     {"frame", P_CHARINT, PI_ONOFF, (void *)&RenderFrame, CMT_FRAME, NULL},
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
     {"open_tab_blank", P_INT, PI_ONOFF, (void *)&open_tab_blank,
@@ -527,10 +557,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-#ifndef KANJI_SYMBOLS
     {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
      CMT_GRAPHIC_CHAR, NULL},
-#endif
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_ONOFF, (void *)&displayInsDel,
@@ -570,26 +598,27 @@ struct param_ptr params1[] = {
 struct param_ptr params2[] = {
     {"color", P_INT, PI_ONOFF, (void *)&useColor, CMT_COLOR, NULL},
     {"basic_color", P_COLOR, PI_SEL_C, (void *)&basic_color, CMT_B_COLOR,
-     colorstr},
+     (void *)colorstr},
     {"anchor_color", P_COLOR, PI_SEL_C, (void *)&anchor_color, CMT_A_COLOR,
-     colorstr},
+     (void *)colorstr},
     {"image_color", P_COLOR, PI_SEL_C, (void *)&image_color, CMT_I_COLOR,
-     colorstr},
+     (void *)colorstr},
     {"form_color", P_COLOR, PI_SEL_C, (void *)&form_color, CMT_F_COLOR,
-     colorstr},
+     (void *)colorstr},
 #ifdef USE_BG_COLOR
     {"mark_color", P_COLOR, PI_SEL_C, (void *)&mark_color, CMT_MARK_COLOR,
-     colorstr},
-    {"bg_color", P_COLOR, PI_SEL_C, (void *)&bg_color, CMT_BG_COLOR, colorstr},
+     (void *)colorstr},
+    {"bg_color", P_COLOR, PI_SEL_C, (void *)&bg_color, CMT_BG_COLOR,
+     (void *)colorstr},
 #endif				/* USE_BG_COLOR */
     {"active_style", P_INT, PI_ONOFF, (void *)&useActiveColor,
      CMT_ACTIVE_STYLE, NULL},
     {"active_color", P_COLOR, PI_SEL_C, (void *)&active_color, CMT_C_COLOR,
-     colorstr},
+     (void *)colorstr},
     {"visited_anchor", P_INT, PI_ONOFF, (void *)&useVisitedColor,
      CMT_VISITED_ANCHOR, NULL},
     {"visited_color", P_COLOR, PI_SEL_C, (void *)&visited_color, CMT_V_COLOR,
-     colorstr},
+     (void *)colorstr},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif				/* USE_COLOR */
@@ -629,7 +658,7 @@ struct param_ptr params3[] = {
     {"reverse_mouse", P_INT, PI_ONOFF, (void *)&reverse_mouse,
      CMT_REVERSE_MOUSE, NULL},
     {"relative_wheel_scroll", P_INT, PI_SEL_C, (void *)&relative_wheel_scroll,
-     CMT_RELATIVE_WHEEL_SCROLL, wheelmode},
+     CMT_RELATIVE_WHEEL_SCROLL, (void *)wheelmode},
     {"relative_wheel_scroll_ratio", P_INT, PI_TEXT,
      (void *)&relative_wheel_scroll_ratio,
      CMT_RELATIVE_WHEEL_SCROLL_RATIO, NULL},
@@ -728,7 +757,7 @@ struct param_ptr params8[] = {
     {"accept_cookie", P_INT, PI_ONOFF, (void *)&accept_cookie,
      CMT_ACCEPTCOOKIE, NULL},
     {"accept_bad_cookie", P_INT, PI_SEL_C, (void *)&accept_bad_cookie,
-     CMT_ACCEPTBADCOOKIE, badcookiestr},
+     CMT_ACCEPTBADCOOKIE, (void *)badcookiestr},
     {"cookie_reject_domains", P_STRING, PI_TEXT,
      (void *)&cookie_reject_domains, CMT_COOKIE_REJECT_DOMAINS, NULL},
     {"cookie_accept_domains", P_STRING, PI_TEXT,
@@ -736,6 +765,7 @@ struct param_ptr params8[] = {
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif
+
 struct param_ptr params9[] = {
     {"passwd_file", P_STRING, PI_TEXT, (void *)&passwd_file, CMT_PASSWDFILE,
      NULL},
@@ -762,15 +792,14 @@ struct param_ptr params9[] = {
     {"retry_http", P_INT, PI_ONOFF, (void *)&retryAsHttp, CMT_RETRY_HTTP,
      NULL},
     {"default_url", P_INT, PI_SEL_C, (void *)&DefaultURLString,
-     CMT_DEFAULT_URL,
-     defaulturls},
+     CMT_DEFAULT_URL, (void *)defaulturls},
     {"follow_redirection", P_INT, PI_TEXT, &FollowRedirection,
      CMT_FOLLOW_REDIRECTION, NULL},
     {"meta_refresh", P_CHARINT, PI_ONOFF, (void *)&MetaRefresh,
      CMT_META_REFRESH, NULL},
 #ifdef INET6
     {"dns_order", P_INT, PI_SEL_C, (void *)&DNS_order, CMT_DNS_ORDER,
-     dnsorders},
+     (void *)dnsorders},
 #endif				/* INET6 */
 #ifdef USE_NNTP
     {"nntpserver", P_STRING, PI_TEXT, (void *)&NNTP_server, CMT_NNTP_SERVER,
@@ -780,6 +809,60 @@ struct param_ptr params9[] = {
 #endif
     {NULL, 0, 0, NULL, NULL, NULL},
 };
+
+#ifdef USE_M17N
+struct param_ptr params10[] = {
+    {"display_charset", P_CODE, PI_CODE, (void *)&DisplayCharset,
+     CMT_DISPLAY_CHARSET, (void *)&display_charset_str},
+    {"document_charset", P_CODE, PI_CODE, (void *)&DocumentCharset,
+     CMT_DOCUMENT_CHARSET, (void *)&document_charset_str},
+    {"auto_detect", P_CHARINT, PI_SEL_C, (void *)&WcOption.auto_detect,
+     CMT_AUTO_DETECT, (void *)auto_detect_str},
+    {"system_charset", P_CODE, PI_CODE, (void *)&SystemCharset,
+     CMT_SYSTEM_CHARSET, (void *)&system_charset_str},
+    {"follow_locale", P_CHARINT, PI_ONOFF, (void *)&FollowLocale,
+     CMT_FOLLOW_LOCALE, NULL},
+    {"ext_halfdump", P_CHARINT, PI_ONOFF, (void *)&ExtHalfdump,
+     CMT_EXT_HALFDUMP, NULL},
+    {"use_wide", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_wide, CMT_USE_WIDE,
+     NULL},
+    {"use_combining", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_combining,
+     CMT_USE_COMBINING, NULL},
+#ifdef USE_UNICODE
+    {"use_language_tag", P_CHARINT, PI_ONOFF,
+     (void *)&WcOption.use_language_tag, CMT_USE_LANGUAGE_TAG, NULL},
+    {"ucs_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.ucs_conv, CMT_UCS_CONV,
+     NULL},
+#endif
+    {"pre_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.pre_conv, CMT_PRE_CONV,
+     NULL},
+    {"search_conv", P_CHARINT, PI_ONOFF, (void *)&SearchConv, CMT_SEARCH_CONV,
+     NULL},
+    {"fix_width_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.fix_width_conv,
+     CMT_FIX_WIDTH_CONV, NULL},
+#ifdef USE_UNICODE
+    {"use_gb12345_map", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_gb12345_map,
+     CMT_USE_GB12345_MAP, NULL},
+#endif
+    {"use_jisx0201", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisx0201,
+     CMT_USE_JISX0201, NULL},
+    {"use_jisc6226", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisc6226,
+     CMT_USE_JISC6226, NULL},
+    {"use_jisx0201k", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisx0201k,
+     CMT_USE_JISX0201K, NULL},
+    {"use_jisx0212", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisx0212,
+     CMT_USE_JISX0212, NULL},
+    {"use_jisx0213", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisx0213,
+     CMT_USE_JISX0213, NULL},
+    {"strict_iso2022", P_CHARINT, PI_ONOFF, (void *)&WcOption.strict_iso2022,
+     CMT_STRICT_ISO2022, NULL},
+#ifdef USE_UNICODE
+    {"gb18030_as_ucs", P_CHARINT, PI_ONOFF, (void *)&WcOption.gb18030_as_ucs,
+     CMT_GB18030_AS_UCS, NULL},
+#endif
+    {NULL, 0, 0, NULL, NULL, NULL},
+};
+#endif
 
 struct param_section sections[] = {
 #if LANG == JA
@@ -798,6 +881,10 @@ struct param_section sections[] = {
 #ifdef USE_COOKIE
     {"クッキーの設定", params8},
 #endif
+#ifdef USE_M17N
+    {"文字コードの設定", params10},
+#endif
+
 #else				/* LANG != JA */
     {"Display Settings", params1},
 #ifdef USE_COLOR
@@ -813,6 +900,9 @@ struct param_section sections[] = {
 #endif
 #ifdef USE_COOKIE
     {"Cookie Settings", params8},
+#endif
+#ifdef USE_M17N
+    {"Charset Settings", params10},
 #endif
 #endif				/* LANG != JA */
     {NULL, NULL}
@@ -919,13 +1009,13 @@ show_params(FILE * fp)
 
     fputs("\nconfiguration parameters\n", fp);
     for (j = 0; sections[j].name != NULL; j++) {
-#ifdef JP_CHARSET
-	if (InnerCode != DisplayCode)
-	    cmt = conv(sections[j].name, InnerCode, DisplayCode)->ptr;
+#if LANG == JA
+	if (!OptionEncode)
+	    cmt = wc_conv(sections[j].name, OptionCharset, InnerCharset)->ptr;
 	else
-#endif				/* JP_CHARSET */
+#endif
 	    cmt = sections[j].name;
-	fprintf(fp, "  section[%d]: %s\n", j, cmt);
+	fprintf(fp, "  section[%d]: %s\n", j, conv_to_system(cmt));
 	i = 0;
 	while (sections[j].params[i].name) {
 	    switch (sections[j].params[i].type) {
@@ -952,9 +1042,9 @@ show_params(FILE * fp)
 		t = "color";
 		break;
 #endif
-#ifdef JP_CHARSET
+#ifdef USE_M17N
 	    case P_CODE:
-		t = "E|S|j|N|m|n";
+		t = "charset";
 		break;
 #endif
 	    case P_PIXELS:
@@ -964,18 +1054,19 @@ show_params(FILE * fp)
 		t = "percent";
 		break;
 	    }
-#ifdef JP_CHARSET
-	    if (InnerCode != DisplayCode)
-		cmt = conv(sections[j].params[i].comment,
-			   InnerCode, DisplayCode)->ptr;
+#if LANG == JA
+	    if (!OptionEncode)
+		cmt = wc_conv(sections[j].params[i].comment,
+			      OptionCharset, InnerCharset)->ptr;
 	    else
-#endif				/* JP_CHARSET */
+#endif
 		cmt = sections[j].params[i].comment;
 	    l = 30 - (strlen(sections[j].params[i].name) + strlen(t));
 	    if (l < 0)
 		l = 1;
 	    fprintf(fp, "    -o %s=<%s>%*s%s\n",
-		    sections[j].params[i].name, t, l, " ", cmt);
+		    sections[j].params[i].name, t, l, " ",
+		    conv_to_system(cmt));
 	    i++;
 	}
     }
@@ -1050,64 +1141,6 @@ str_to_color(char *value)
 }
 #endif
 
-#ifdef JP_CHARSET
-char
-str_to_code(char *str)
-{
-    if (str == NULL)
-	return CODE_ASCII;
-    switch (*str) {
-    case CODE_ASCII:
-	return CODE_ASCII;
-    case CODE_EUC:
-    case 'e':
-	return CODE_EUC;
-    case CODE_SJIS:
-    case 's':
-	return CODE_SJIS;
-    case CODE_JIS_n:
-	return CODE_JIS_n;
-    case CODE_JIS_m:
-	return CODE_JIS_m;
-    case CODE_JIS_N:
-	return CODE_JIS_N;
-    case CODE_JIS_j:
-	return CODE_JIS_j;
-    case CODE_JIS_J:
-	return CODE_JIS_J;
-    case CODE_INNER_EUC:
-	return CODE_INNER_EUC;
-    }
-    return CODE_ASCII;
-}
-
-char *
-code_to_str(char code)
-{
-    switch (code) {
-    case CODE_ASCII:
-	return STR_ASCII;
-    case CODE_EUC:
-	return STR_EUC;
-    case CODE_SJIS:
-	return STR_SJIS;
-    case CODE_JIS_n:
-	return STR_JIS_n;
-    case CODE_JIS_m:
-	return STR_JIS_m;
-    case CODE_JIS_N:
-	return STR_JIS_N;
-    case CODE_JIS_j:
-	return STR_JIS_j;
-    case CODE_JIS_J:
-	return STR_JIS_J;
-    case CODE_INNER_EUC:
-	return STR_INNER_EUC;
-    }
-    return "unknown";
-}
-#endif
-
 static int
 set_param(char *name, char *value)
 {
@@ -1157,9 +1190,10 @@ set_param(char *name, char *value)
 	*(int *)p->varptr = str_to_color(value);
 	break;
 #endif
-#ifdef JP_CHARSET
+#ifdef USE_M17N
     case P_CODE:
-	*(char *)p->varptr = str_to_code(value);
+	*(wc_ces *) p->varptr =
+	    wc_guess_charset_short(value, *(wc_ces *) p->varptr);
 	break;
 #endif
     case P_PIXELS:
@@ -1258,7 +1292,7 @@ parse_proxy()
 #ifdef USE_GOPHER
     if (non_null(GOPHER_proxy))
 	parseURL(GOPHER_proxy, &GOPHER_proxy_parsed, NULL);
-#endif				/* USE_GOPHER */
+#endif
     if (non_null(FTP_proxy))
 	parseURL(FTP_proxy, &FTP_proxy_parsed, NULL);
     if (non_null(NO_proxy))
@@ -1361,6 +1395,12 @@ init_rc(void)
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
 
+#ifdef USE_M17N
+    display_charset_str = wc_get_ces_list();
+    document_charset_str = display_charset_str;
+    system_charset_str = display_charset_str;
+#endif
+
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */
 	    if (do_mkdir(rc_dir, 0700) < 0) {
@@ -1428,6 +1468,8 @@ static char optionpanel_src1[] =
 </form><br>\
 <form method=internal action=option>";
 
+static Str optionpanel_str = NULL;
+
 static Str
 to_str(struct param_ptr *p)
 {
@@ -1436,6 +1478,10 @@ to_str(struct param_ptr *p)
 #ifdef USE_COLOR
     case P_COLOR:
 #endif
+#ifdef USE_M17N
+    case P_CODE:
+	return Sprintf("%d", (int)(*(wc_ces *)p->varptr));
+#endif
     case P_NZINT:
 	return Sprintf("%d", *(int *)p->varptr);
     case P_SHORT:
@@ -1443,15 +1489,13 @@ to_str(struct param_ptr *p)
     case P_CHARINT:
 	return Sprintf("%d", *(char *)p->varptr);
     case P_CHAR:
-#ifdef JP_CHARSET
-    case P_CODE:
-#endif
 	return Sprintf("%c", *(char *)p->varptr);
     case P_STRING:
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
     case P_SSLPATH:
 #endif
-	return Strnew_charp(*(char **)p->varptr);
+	/*  SystemCharset -> InnerCharset */
+	return Strnew_charp(conv_from_system(*(char **)p->varptr));
     case P_PIXELS:
     case P_SCALE:
 	return Sprintf("%g", *(double *)p->varptr);
@@ -1463,12 +1507,36 @@ to_str(struct param_ptr *p)
 Buffer *
 load_option_panel(void)
 {
-    Str src = Sprintf(optionpanel_src1, html_quote(w3m_version),
-		      html_quote(localCookie()->ptr), CMT_HELPER);
+    Str str;
     struct param_ptr *p;
     struct sel_c *s;
+#ifdef USE_M17N
+    wc_ces_list *c;
+#endif
     int x, i;
     Str tmp;
+    Buffer *buf;
+
+    if (optionpanel_str == NULL)
+	optionpanel_str = Sprintf(optionpanel_src1, w3m_version,
+				  html_quote(Local_cookie->ptr), CMT_HELPER);
+#ifdef LANG == JA
+    if (!OptionEncode) {
+	optionpanel_str =
+	    wc_Str_conv(optionpanel_str, OptionCharset, InnerCharset);
+	for (i = 0; sections[i].name != NULL; i++) {
+	    sections[i].name =
+		wc_conv(sections[i].name, OptionCharset, InnerCharset)->ptr;
+	    for (p = sections[i].params; p->name; p++)
+		p->comment =
+		    wc_conv(p->comment, OptionCharset, InnerCharset)->ptr;
+	}
+	for (s = colorstr; s->text; s++)
+	    s->text = wc_conv(s->text, OptionCharset, InnerCharset)->ptr;
+	OptionEncode = TRUE;
+    }
+#endif
+    src = Strdup(optionpanel_str);
 
     Strcat_charp(src, "<table><tr><td>");
     for (i = 0; sections[i].name != NULL; i++) {
@@ -1499,25 +1567,32 @@ load_option_panel(void)
 	    case PI_SEL_C:
 		tmp = to_str(p);
 		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
-		for (s = p->select; s->text != NULL; s++) {
+		for (s = (struct sel_c *)p->select; s->text != NULL; s++) {
 		    Strcat_charp(src, "<option value=");
 		    Strcat(src, Sprintf("%s\n", s->cvalue));
-		    if ((p->type != P_CHAR &&
-#ifdef JP_CHARSET
-			 p->type != P_CODE &&
-#endif
-			 s->value == atoi(tmp->ptr)) || ((p->type == P_CHAR
-#ifdef JP_CHARSET
-							  || p->type == P_CODE
-#endif
-							 )
-							 && (char)(s->value) ==
-							 *(tmp->ptr)))
+		    if ((p->type != P_CHAR && s->value == atoi(tmp->ptr)) ||
+			(p->type == P_CHAR && (char)s->value == *(tmp->ptr)))
 			Strcat_charp(src, " selected");
 		    Strcat_char(src, '>');
 		    Strcat_charp(src, s->text);
 		}
 		Strcat_charp(src, "</select>");
+		break;
+#ifdef USE_M17N
+	    case PI_CODE:
+		tmp = to_str(p);
+		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
+		for (c = *(wc_ces_list **)p->select; c->desc != NULL; c++) {
+		    Strcat_charp(src, "<option value=");
+		    Strcat(src, Sprintf("%s\n", c->name));
+		    if (c->id == atoi(tmp->ptr))
+			Strcat_charp(src, " selected");
+		    Strcat_char(src, '>');
+		    Strcat_charp(src, c->desc);
+		}
+		Strcat_charp(src, "</select>");
+		break;
+#endif
 	    }
 	    Strcat_charp(src, "</td></tr>\n");
 	    p++;
@@ -1527,13 +1602,23 @@ load_option_panel(void)
 	Strcat_charp(src, "</table><hr width=50%>");
     }
     Strcat_charp(src, "</table></form></body></html>");
-    return loadHTMLString(src);
+    buf = loadHTMLString(src);
+#ifdef USE_M17N
+    if (buf)
+#if LANG == JA
+	buf->document_charset = OptionCharset;
+#else
+	buf->document_charset = SystemCharset;
+#endif
+#endif
+    return buf;
 }
 
 void
 panel_set_option(struct parsed_tagarg *arg)
 {
     FILE *f = NULL;
+    char *p;
 
     if (no_rc_dir) {
 	disp_message("There's no ~/.w3m directory... config not saved", FALSE);
@@ -1545,9 +1630,13 @@ panel_set_option(struct parsed_tagarg *arg)
 	}
     }
     while (arg) {
-	if (set_param(arg->arg, arg->value)) {
-	    if (f)
-		fprintf(f, "%s %s\n", arg->arg, arg->value);
+	/*  InnerCharset -> SystemCharset */
+	if (arg->value) {
+	    p = conv_to_system(arg->value);
+	    if (set_param(arg->arg, p)) {
+		if (f)
+		    fprintf(f, "%s %s\n", arg->arg, p);
+	    }
 	}
 	arg = arg->next;
     }

@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.25 2003/08/11 17:33:08 ukai Exp $ */
+/* $Id: html.c,v 1.26 2003/09/22 21:02:18 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -94,8 +94,8 @@ unsigned char ALST_SELECT_INT[] = { ATTR_SELECTNUMBER };
 #define MAXA_SELECT_INT	1
 unsigned char ALST_TABLE_ALT[] = { ATTR_TID };
 #define MAXA_TABLE_ALT	1
-unsigned char ALST_RULE[] = { ATTR_TYPE };
-#define MAXA_RULE       1
+unsigned char ALST_SYMBOL[] = { ATTR_TYPE };
+#define MAXA_SYMBOL	1
 unsigned char ALST_TITLE_ALT[] = { ATTR_TITLE };
 #define MAXA_TITLE_ALT	1
 unsigned char ALST_FORM_INT[] =
@@ -239,8 +239,8 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"textarea_int", ALST_TEXTAREA_INT, MAXA_TEXTAREA_INT, TFLG_INT},	/* 113 HTML_TEXTAREA_INT   */
     {"/textarea_int", NULL, 0, TFLG_INT | TFLG_END},	/* 114 HTML_N_TEXTAREA_INT */
     {"table_alt", ALST_TABLE_ALT, MAXA_TABLE_ALT, TFLG_INT},	/* 115 HTML_TABLE_ALT   */
-    {"rule", ALST_RULE, MAXA_RULE, TFLG_INT},	/* 116 HTML_RULE        */
-    {"/rule", NULL, 0, TFLG_INT | TFLG_END},	/* 117 HTML_N_RULE      */
+    {"symbol", ALST_SYMBOL, MAXA_SYMBOL, TFLG_INT},	/* 116 HTML_SYMBOL */
+    {"/symbol", NULL, 0, TFLG_INT | TFLG_END},	/* 117 HTML_N_SYMBOL      */
     {"pre_int", NULL, 0, TFLG_INT},	/* 118 HTML_PRE_INT     */
     {"/pre_int", NULL, 0, TFLG_INT | TFLG_END},	/* 119 HTML_N_PRE_INT   */
     {"title_alt", ALST_TITLE_ALT, MAXA_TITLE_ALT, TFLG_INT},	/* 120 HTML_TITLE_ALT   */

@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.27 2003/02/03 15:49:19 ukai Exp $ */
+/* $Id: buffer.c,v 1.28 2003/09/22 21:02:16 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -43,6 +43,9 @@ newBuffer(int width)
     n->trbyte = 0;
 #ifdef USE_SSL
     n->ssl_certificate = NULL;
+#endif
+#ifdef USE_M17N
+    n->auto_detect = WcOption.auto_detect;
 #endif
     return n;
 }
@@ -496,6 +499,9 @@ reshapeBuffer(Buffer *buf)
 {
     URLFile f;
     Buffer sbuf;
+#ifdef USE_M17N
+    wc_uint8 old_auto_detect = WcOption.auto_detect;
+#endif
 
     if (!buf->need_reshape)
 	return;
@@ -542,18 +548,18 @@ reshapeBuffer(Buffer *buf)
 	    readHeader(&f, buf, TRUE, NULL);
     }
 
-#ifdef JP_CHARSET
+#ifdef USE_M17N
+    WcOption.auto_detect = WC_OPT_DETECT_OFF;
     UseContentCharset = FALSE;
-    UseAutoDetect = FALSE;
 #endif
     if (!strcasecmp(buf->type, "text/html"))
 	loadHTMLBuffer(&f, buf);
     else
 	loadBuffer(&f, buf);
     UFclose(&f);
-#ifdef JP_CHARSET
+#ifdef USE_M17N
+    WcOption.auto_detect = old_auto_detect;
     UseContentCharset = TRUE;
-    UseAutoDetect = TRUE;
 #endif
 
     buf->height = LASTLINE + 1;

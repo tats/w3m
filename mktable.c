@@ -1,9 +1,10 @@
-/* $Id: mktable.c,v 1.13 2003/03/13 15:33:40 ukai Exp $ */
+/* $Id: mktable.c,v 1.14 2003/09/22 21:02:20 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "myctype.h"
 #include "config.h"
 #include "hash.h"
+#include "myctype.h"
 #include "Str.h"
 #include <gc.h>
 

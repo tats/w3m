@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS W3M_LANG DISPLAY_CODE SYSTEM_CODE KANJI_SYMBOLS USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -844,9 +844,10 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-japanese=CODE	support Japanese character sets
-				CODE=(S|E|j|N|n|m)
-   --disable-kanjisymbols	use kanji symbols (enable japanese only)
+  --disable-m17n		support m17n
+   --disable-unicode		support unicode
+   --enable-japanese=CODE	support Japanese character sets
+				CODE=(S|E|J|U)
   --disable-color		disable color for vt100 terminal
    --disable-ansi-color		disable ansi color escape sequence
    --disable-bgcolor		disable to set background color
@@ -874,6 +875,7 @@ Optional Features:
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-charset=CHARSET
   --with-migemo=MIGEMO_COMMAND	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
@@ -2815,56 +2817,122 @@ _ACEOF
 
 
 
-echo "$as_me:$LINENO: checking if japanese support is enabled" >&5
+
+
+
+
+WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
+echo "$as_me:$LINENO: checking if m17n support is enabled" >&5
+echo $ECHO_N "checking if m17n support is enabled... $ECHO_C" >&6
+# Check whether --enable-m17n or --disable-m17n was given.
+if test "${enable_m17n+set}" = set; then
+  enableval="$enable_m17n"
+
+else
+  enable_m17n="yes"
+fi;
+echo "$as_me:$LINENO: result: $enable_m17n" >&5
+echo "${ECHO_T}$enable_m17n" >&6
+if test x"$enable_m17n" = xno; then
+  w3m_lang="en"
+  WCTARGET=""
+  WCCFLAGS=""
+  wcinclude=""
+  wclib=""
+  display_charset='WC_CES_US_ASCII'
+  system_charset='WC_CES_US_ASCII'
+  document_charset='WC_CES_US_ASCII'
+else
+ cat >>confdefs.h <<\_ACEOF
+#define USE_M17N 1
+_ACEOF
+
+ WCTARGET="wctarget"
+ WCCFLAGS="-I. -I.."
+ wcinclude="-I./libwc"
+ wclib="-L./libwc -lwc"
+ echo "$as_me:$LINENO: checking if unicode support is enabled" >&5
+echo $ECHO_N "checking if unicode support is enabled... $ECHO_C" >&6
+ # Check whether --enable-unicode or --disable-unicode was given.
+if test "${enable_unicode+set}" = set; then
+  enableval="$enable_unicode"
+
+else
+  enable_unicode="yes"
+fi;
+ echo "$as_me:$LINENO: result: $enable_unicode" >&5
+echo "${ECHO_T}$enable_unicode" >&6
+ charset=US-ASCII
+ if test x"$enable_unicode" = xyes; then
+    WCCFLAGS="-DUSE_UNICODE $WCCFLAGS"
+    charset=UTF-8
+    cat >>confdefs.h <<\_ACEOF
+#define USE_UNICODE 1
+_ACEOF
+
+ fi
+ echo "$as_me:$LINENO: checking if japanese support is enabled" >&5
 echo $ECHO_N "checking if japanese support is enabled... $ECHO_C" >&6
-# Check whether --enable-japanese or --disable-japanese was given.
+ # Check whether --enable-japanese or --disable-japanese was given.
 if test "${enable_japanese+set}" = set; then
   enableval="$enable_japanese"
 
 else
   enable_japanese="no"
 fi;
-echo "$as_me:$LINENO: result: $enable_japanese" >&5
+ echo "$as_me:$LINENO: result: $enable_japanese" >&5
 echo "${ECHO_T}$enable_japanese" >&6
-if test x"$enable_japanese" = xno; then
-  w3m_lang="en"
-  cat >>confdefs.h <<\_ACEOF
-#define DISPLAY_CODE 'x'
-_ACEOF
+ if test x"$enable_japanese" = xno; then
+   w3m_lang="en"
+ else
+   w3m_lang="ja"
+   case "$enable_japanese" in
+   E*) charset=EUC-JP;;
+   S*) charset=Shift_JIS;;
+   J*) charset=ISO-2022-JP;;
+   U*) charset=UTF-8;;
+   esac
+ fi
+ display_charset=$charset
+ echo "$as_me:$LINENO: checking which charset is used for display" >&5
+echo $ECHO_N "checking which charset is used for display... $ECHO_C" >&6
 
-  cat >>confdefs.h <<\_ACEOF
-#define SYSTEM_CODE 'x'
-_ACEOF
-
-else
-  w3m_lang="ja";
-  case x"$enable_japanese" in
-  xS) cat >>confdefs.h <<_ACEOF
-#define DISPLAY_CODE '$enable_japanese'
-_ACEOF
-
-      cat >>confdefs.h <<\_ACEOF
-#define SYSTEM_CODE 'S'
-_ACEOF
-;;
-  xE|xj|xN|xn|xm)
-      cat >>confdefs.h <<_ACEOF
-#define DISPLAY_CODE '$enable_japanese'
-_ACEOF
-
-      cat >>confdefs.h <<\_ACEOF
-#define SYSTEM_CODE 'E'
-_ACEOF
-;;
-  *) cat >>confdefs.h <<\_ACEOF
-#define DISPLAY_CODE 'E'
-_ACEOF
-
-     cat >>confdefs.h <<\_ACEOF
-#define SYSTEM_CODE 'E'
-_ACEOF
-;;
-  esac;
+# Check whether --with-charset or --without-charset was given.
+if test "${with_charset+set}" = set; then
+  withval="$with_charset"
+  test x"with_charset" = xyes || display_charset="$with_charset"
+fi;
+ echo "$as_me:$LINENO: result: $display_charset" >&5
+echo "${ECHO_T}$display_charset" >&6
+ display_charset=`awk '$1 == "'$display_charset'" {print $2}' charset-list`
+ case "$display_charset" in
+   WC_CES_ISO_2022_JP*)
+     system_charset=WC_CES_EUC_JP
+     document_charset=WC_CES_EUC_JP
+     ;;
+   WC_CES_SHIFT_JIS)
+     system_charset=$display_charset
+     # for auto-detect
+     document_charset=WC_CES_EUC_JP
+     ;;
+   WC_CES_ISO_2022_CN|WC_CES_HZ_GB_2312)
+     system_charset=WC_CES_EUC_CN
+     document_charset=WC_CES_EUC_CN
+     ;;
+   WC_CES_BIG5)
+     system_charset=$display_charset
+     # for auto-detect
+     document_charset=WC_CES_EUC_TW
+     ;;
+  WC_CES_ISO_2022_KR)
+     system_charset=WC_CES_EUC_KR
+     document_charset=WC_CES_EUC_KR
+     ;;
+  *)
+     system_charset=$display_charset
+     document_charset=$display_charset
+     ;;
+ esac
 fi
 W3M_LANGDEF=`echo $w3m_lang | tr 'a-z' 'A-Z'`
 W3M_LANG=$W3M_LANGDEF
@@ -2872,24 +2940,28 @@ cat >>confdefs.h <<_ACEOF
 #define W3M_LANG $W3M_LANG
 _ACEOF
 
-
-if test x"$enable_japanese" != xno; then
- echo "$as_me:$LINENO: checking if kanji symbols is used" >&5
-echo $ECHO_N "checking if kanji symbols is used... $ECHO_C" >&6
- # Check whether --enable-kanjisymbols or --disable-kanjisymbols was given.
-if test "${enable_kanjisymbols+set}" = set; then
-  enableval="$enable_kanjisymbols"
-
-else
-  enable_kanjisymbols="yes"
-fi;
- test x"$enable_kanjisymbols" = xyes && cat >>confdefs.h <<\_ACEOF
-#define KANJI_SYMBOLS 1
+cat >>confdefs.h <<_ACEOF
+#define WCTARGET "$WCTARGET"
 _ACEOF
 
- echo "$as_me:$LINENO: result: $enable_kanjisymbols" >&5
-echo "${ECHO_T}$enable_kanjisymbols" >&6
-fi
+cat >>confdefs.h <<_ACEOF
+#define WCCFLAGS "$WCCFLAGS"
+_ACEOF
+
+CFLAGS="$CFLAGS $wcinclude"
+W3M_LIBS="$W3M_LIBS $wclib"
+cat >>confdefs.h <<_ACEOF
+#define DISPLAY_CHARSET $display_charset
+_ACEOF
+
+cat >>confdefs.h <<_ACEOF
+#define SYSTEM_CHARSET $system_charset
+_ACEOF
+
+cat >>confdefs.h <<_ACEOF
+#define DOCUMENT_CHARSET $document_charset
+_ACEOF
+
 
 
 echo "$as_me:$LINENO: checking if color escape sequence for kterm/pxvt is enabled" >&5
@@ -7743,10 +7815,13 @@ s,@target_vendor@,$target_vendor,;t t
 s,@target_os@,$target_os,;t t
 s,@W3M_TARGET@,$W3M_TARGET,;t t
 s,@W3M_LIBS@,$W3M_LIBS,;t t
-s,@W3M_LANG@,$W3M_LANG,;t t
-s,@DISPLAY_CODE@,$DISPLAY_CODE,;t t
-s,@SYSTEM_CODE@,$SYSTEM_CODE,;t t
-s,@KANJI_SYMBOLS@,$KANJI_SYMBOLS,;t t
+s,@USE_M17N@,$USE_M17N,;t t
+s,@USE_UNICODE@,$USE_UNICODE,;t t
+s,@WCTARGET@,$WCTARGET,;t t
+s,@WCCFLAGS@,$WCCFLAGS,;t t
+s,@DISPLAY_CHARSET@,$DISPLAY_CHARSET,;t t
+s,@SYSTEM_CHARSET@,$SYSTEM_CHARSET,;t t
+s,@DOCUMENT_CHARSET@,$DOCUMENT_CHARSET,;t t
 s,@USE_COLOR@,$USE_COLOR,;t t
 s,@USE_ANSI_COLOR@,$USE_ANSI_COLOR,;t t
 s,@USE_BG_COLOR@,$USE_BG_COLOR,;t t

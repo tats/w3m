@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.46 2003/07/13 16:13:29 ukai Exp $ */
+/* $Id: table.c,v 1.47 2003/09/22 21:02:21 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -12,68 +12,12 @@
 #include "Str.h"
 #include "myctype.h"
 
-#ifdef KANJI_SYMBOLS
-static char *rule[] =
-    { "ил", "из", "ии", "иг", "ий", "ив", "ид", "07", "ик", "иж", "иб", "0B",
-    "ие", "0D", "0E", "  "
-};
-static char *ruleB[] =
-    { "00", "и╖", "и╕", "ио", "и╣", "ин", "ип", "07", "и║", "и▒", "им", "0B",
-    "и░", "0D", "0E", "  "
-};
-#define TN_VERTICALBAR "ив"
-#define HORIZONTALBAR "им"
-#define RULE_WIDTH 2
-#else				/* not KANJI_SYMBOLS */
-char alt_rule[] = {
-    '+', '|', '-', '+', '|', '|', '+', ' ', '-', '+', '-', ' ', '+', ' ', ' ',
-    ' '
-};
-#if defined(__EMX__)&&!defined(JP_CHARSET)
-extern int CodePage;
+int symbol_width = 0;
+int symbol_width0 = 0;
 
-static char *_rule[] =
-#else
-static char *rule[] =
-#endif
-{
-    "<_RULE TYPE=0>+</_RULE>",
-    "<_RULE TYPE=1>|</_RULE>",
-    "<_RULE TYPE=2>-</_RULE>",
-    "<_RULE TYPE=3>+</_RULE>",
-    "<_RULE TYPE=4>|</_RULE>",
-    "<_RULE TYPE=5>|</_RULE>",
-    "<_RULE TYPE=6>+</_RULE>",
-    "<_RULE TYPE=7> </_RULE>",
-    "<_RULE TYPE=8>-</_RULE>",
-    "<_RULE TYPE=9>+</_RULE>",
-    "<_RULE TYPE=10>-</_RULE>",
-    "<_RULE TYPE=11> </_RULE>",
-    "<_RULE TYPE=12>+</_RULE>",
-    "<_RULE TYPE=13> </_RULE>",
-    "<_RULE TYPE=14> </_RULE>",
-    "<_RULE TYPE=15> </_RULE>"
-};
-#if defined(__EMX__)&&!defined(JP_CHARSET)
-static char **ruleB = _rule, **rule = _rule;
-static char *rule850[] = {
-    "\305", "\303", "\302", "\332", "\264", "\263", "\277", "07",
-    "\301", "\300", "\304", "0B", "\331", "0D", "0E", " "
-};
-static char *ruleB850[] = {
-    "\316", "\314", "\313", "\311" "\271", "\272", "\273", "07",
-    "\312", "\310", "\315", "0B", "\274", "0D", "0E", " "
-};
-#else				/* not __EMX__ or JP_CHARSET */
-static char **ruleB = rule;
-#endif				/* not __EMX__ or JP_CHARSET */
-
-#define TN_VERTICALBAR "<_RULE TYPE=5>|</_RULE>"
-#define RULE_WIDTH 1
-#endif				/* not KANJI_SYMBOLS */
-
-#define RULE(mode) (((mode)==BORDER_THICK)?ruleB:rule)
-#define TK_VERTICALBAR(mode) (RULE(mode)[5])
+#define RULE_WIDTH symbol_width
+#define RULE(mode,n) (((mode) == BORDER_THICK) ? ((n) + 16) : (n))
+#define TK_VERTICALBAR(mode) RULE(mode,5)
 
 #define BORDERWIDTH     2
 #define BORDERHEIGHT    1
@@ -106,6 +50,9 @@ static char **ruleB = rule;
 #ifndef abs
 #define abs(a)          ((a) >= 0. ? (a) : -(a))
 #endif				/* not abs */
+
+#define set_prevchar(x,y,n) Strcopy_charp_n((x),(y),(n))
+#define set_space_to_prevchar(x) Strcopy_charp_n((x)," ",1)
 
 #ifdef MATRIX
 #ifndef MESCHACH
@@ -365,8 +312,9 @@ newTable()
     t->indent = 0;
     t->linfo.prev_ctype = PC_ASCII;
     t->linfo.prev_spaces = -1;
-    t->linfo.prevchar = ' ';
 #endif
+    t->linfo.prevchar = Strnew_size(8);
+    set_prevchar(t->linfo.prevchar, "", 0);
     t->trattr = 0;
 
     t->caption = Strnew();
@@ -464,11 +412,17 @@ suspend_or_pushdata(struct table *tbl, char *line)
     }
 }
 
+#ifndef USE_M17N
+#define PUSH_TAG(str,n) Strcat_charp_n(tagbuf, str, n)
+#else
+#define PUSH_TAG(str,n) Strcat_char(tagbuf, *str)
+#endif
+
 int visible_length_offset = 0;
 int
 visible_length(char *str)
 {
-    int len = 0, max_len = 0;
+    int len = 0, n, max_len = 0;
     int status = R_ST_NORMAL;
     int prev_status = status;
     Str tagbuf = Strnew();
@@ -478,15 +432,26 @@ visible_length(char *str)
     t = str;
     while (*str) {
 	prev_status = status;
-	len += next_status(*str, &status);
+	if (next_status(*str, &status)) {
+#ifdef USE_M17N
+	    len += get_mcwidth(str);
+	    n = get_mclen(str);
+	}
+	else {
+	    n = 1;
+	}
+#else
+	    len++;
+	}
+#endif
 	if (status == R_ST_TAG0) {
 	    Strclear(tagbuf);
-	    Strcat_char(tagbuf, *str);
+	    PUSH_TAG(str, n);
 	}
 	else if (status == R_ST_TAG || status == R_ST_DQUOTE
 		 || status == R_ST_QUOTE || status == R_ST_EQL
 		 || status == R_ST_VALUE) {
-	    Strcat_char(tagbuf, *str);
+	    PUSH_TAG(str, n);
 	}
 	else if (status == R_ST_AMP) {
 	    if (prev_status == R_ST_NORMAL) {
@@ -495,12 +460,12 @@ visible_length(char *str)
 		amp_len = 0;
 	    }
 	    else {
-		Strcat_char(tagbuf, *str);
+		PUSH_TAG(str, n);
 		amp_len++;
 	    }
 	}
 	else if (status == R_ST_NORMAL && prev_status == R_ST_AMP) {
-	    Strcat_char(tagbuf, *str);
+	    PUSH_TAG(str, n);
 	    r2 = tagbuf->ptr;
 	    t = getescapecmd(&r2);
 	    if (!*r2 && (*t == '\r' || *t == '\n')) {
@@ -509,7 +474,7 @@ visible_length(char *str)
 		len = 0;
 	    }
 	    else
-		len += strlen(t) + strlen(r2);
+		len += get_strwidth(t) + get_strwidth(r2);
 	}
 	else if (status == R_ST_NORMAL && ST_IS_REAL_TAG(prev_status)) {
 	    ;
@@ -526,13 +491,17 @@ visible_length(char *str)
 		max_len = len;
 	    len = 0;
 	}
+#ifdef USE_M17N
+	str += n;
+#else
 	str++;
+#endif
     }
     if (status == R_ST_AMP) {
 	r2 = tagbuf->ptr;
 	t = getescapecmd(&r2);
 	if (*t != '\r' && *t != '\n')
-	    len += strlen(t) + strlen(r2);
+	    len += get_strwidth(t) + get_strwidth(r2);
     }
     return len > max_len ? len : max_len;
 }
@@ -547,15 +516,23 @@ visible_length_plain(char *str)
 	    do {
 		len++;
 	    } while ((visible_length_offset + len) % Tabstop != 0);
+	    str++;
 	}
 	else if (*str == '\r' || *str == '\n') {
 	    if (len > max_len)
 		max_len = len;
 	    len = 0;
+	    str++;
 	}
-	else
+	else {
+#ifdef USE_M17N
+	    len += get_mcwidth(str);
+	    str += get_mclen(str);
+#else
 	    len++;
-	str++;
+	    str++;
+#endif
+	}
     }
     return len > max_len ? len : max_len;
 }
@@ -685,23 +662,17 @@ void
 print_sep(struct table *t, int row, int type, int maxcol, Str buf)
 {
     int forbid;
-    char **rulep;
-    int i, j, k, l, m;
+    int rule_mode;
+    int i, k, l, m;
 
-#if defined(__EMX__)&&!defined(JP_CHARSET)
-    if (CodePage == 850) {
-	ruleB = ruleB850;
-	rule = rule850;
-    }
-#endif
     if (row >= 0)
 	check_row(t, row);
     check_row(t, row + 1);
     if ((type == T_TOP || type == T_BOTTOM) && t->border_mode == BORDER_THICK) {
-	rulep = ruleB;
+	rule_mode = BORDER_THICK;
     }
     else {
-	rulep = rule;
+	rule_mode = BORDER_THIN;
     }
     forbid = 1;
     if (type == T_TOP)
@@ -711,8 +682,9 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
     else if (t->tabattr[row + 1][0] & HTT_Y) {
 	forbid |= 4;
     }
-    if (t->border_mode != BORDER_NOWIN)
-	Strcat_charp(buf, RULE(t->border_mode)[forbid]);
+    if (t->border_mode != BORDER_NOWIN) {
+	push_symbol(buf, RULE(t->border_mode, forbid), symbol_width, 1);
+    }
     for (i = 0; i <= maxcol; i++) {
 	forbid = 10;
 	if (type != T_BOTTOM && (t->tabattr[row + 1][i] & HTT_Y)) {
@@ -731,10 +703,10 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
 	    }
 	}
 	else {
-	    for (j = 0; j < t->tabwidth[i] + 2 * t->cellpadding;
-		 j += RULE_WIDTH) {
-		Strcat_charp(buf, rulep[forbid]);
-	    }
+	    int w = t->tabwidth[i] + 2 * t->cellpadding;
+	    if (RULE_WIDTH == 2)
+		w = (w + 1) / RULE_WIDTH;
+	    push_symbol(buf, RULE(rule_mode, forbid), symbol_width, w);
 	}
       do_last_sep:
 	if (i < maxcol) {
@@ -758,7 +730,7 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
 		}
 	    }
 	    if (forbid != 15)	/* forbid==15 means 'no rule at all' */
-		Strcat_charp(buf, rulep[forbid]);
+		push_symbol(buf, RULE(rule_mode, forbid), symbol_width, 1);
 	}
     }
     forbid = 4;
@@ -770,7 +742,7 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
 	forbid |= 1;
     }
     if (t->border_mode != BORDER_NOWIN)
-	Strcat_charp(buf, RULE(t->border_mode)[forbid]);
+	push_symbol(buf, RULE(t->border_mode, forbid), symbol_width, 1);
 }
 
 static int
@@ -1931,19 +1903,15 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
     case BORDER_THICK:
 	vrulea = Strnew();
 	vrulec = Strnew();
-	Strcat_charp(vrulea, TK_VERTICALBAR(t->border_mode));
+	push_symbol(vrulea, TK_VERTICALBAR(t->border_mode), symbol_width, 1);
 	for (i = 0; i < t->cellpadding; i++) {
 	    Strcat_char(vrulea, ' ');
 	    Strcat_char(vruleb, ' ');
 	    Strcat_char(vrulec, ' ');
 	}
-	Strcat_charp(vrulec, TK_VERTICALBAR(t->border_mode));
+	push_symbol(vrulec, TK_VERTICALBAR(t->border_mode), symbol_width, 1);
     case BORDER_NOWIN:
-#if defined(__EMX__)&&!defined(JP_CHARSET)
-	Strcat_charp(vruleb, CodePage == 850 ? "\263" : TN_VERTICALBAR);
-#else
-	Strcat_charp(vruleb, TN_VERTICALBAR);
-#endif
+	push_symbol(vruleb, TK_VERTICALBAR(BORDER_THIN), symbol_width, 1);
 	for (i = 0; i < t->cellpadding; i++)
 	    Strcat_char(vruleb, ' ');
 	break;
@@ -2224,7 +2192,7 @@ clearcontentssize(struct table *t, struct table_mode *mode)
     table_close_anchor0(t, mode);
     mode->nobr_offset = 0;
     t->linfo.prev_spaces = -1;
-    t->linfo.prevchar = ' ';
+    set_space_to_prevchar(t->linfo.prevchar);
     t->linfo.prev_ctype = PC_ASCII;
     t->linfo.length = 0;
     t->tabcontentssize = 0;
@@ -2291,7 +2259,7 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 {
     int skip = 0, s = linfo->prev_spaces;
     Lineprop ctype, prev_ctype = linfo->prev_ctype;
-    int prevchar = linfo->prevchar;
+    Str prevchar = linfo->prevchar;
     int w = linfo->length;
     int min = 1;
 
@@ -2302,45 +2270,48 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
     }
 
     while (*line) {
-	char *save = line;
-	int ec = '\0', len, wlen, c;
+	char *save = line, *c = line;
+	int ec, len, wlen, plen;
 	ctype = get_mctype(line);
-	wlen = len = get_mclen(ctype);
-	c = mctowc(line, ctype);
+	len = get_mcwidth(line);
+	wlen = plen = get_mclen(line);
+
 	if (min < w)
 	    min = w;
-	if (ctype == PC_ASCII && IS_SPACE(c)) {
+	if (ctype == PC_ASCII && IS_SPACE(*c)) {
 	    w = 0;
 	    s++;
 	}
 	else {
-	    if (c == '&') {
+	    if (*c == '&') {
 		ec = getescapechar(&line);
 		if (ec >= 0) {
-		    c = ec;
-		    ctype = IS_CNTRL(ec) ? PC_CTRL : PC_ASCII;
-		    len = strlen(conv_entity(ec));
+		    c = conv_entity(ec);
+		    ctype = get_mctype(c);
+		    len = get_strwidth(c);
 		    wlen = line - save;
+		    plen = get_mclen(c);
 		}
 	    }
-	    if (prevchar && is_boundary(prevchar, c)) {
+	    if (prevchar->length && is_boundary((unsigned char *)prevchar->ptr,
+						(unsigned char *)c)) {
 		w = len;
 	    }
 	    else {
 		w += len;
 	    }
 	    if (s > 0) {
-#ifdef JP_CHARSET
-		if (ctype == PC_KANJI && prev_ctype == PC_KANJI)
+#ifdef USE_M17N
+		if (ctype == PC_KANJI1 && prev_ctype == PC_KANJI1)
 		    skip += s;
 		else
-#endif				/* JP_CHARSET */
+#endif
 		    skip += s - 1;
 	    }
 	    s = 0;
 	    prev_ctype = ctype;
 	}
-	prevchar = c;
+	set_prevchar(prevchar, c, plen);
 	line = save + wlen;
     }
     if (s > 1) {
@@ -2519,8 +2490,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     /* failsafe: a tag other than <option></option>and </select> in *
      * <select> environment is regarded as the end of <select>. */
     if (mode->pre_mode & TBLM_INSELECT) {
-	switch (cmd) {
-	  CASE_TABLE_TAG:
+    switch (cmd) {
+      CASE_TABLE_TAG:
 	case HTML_N_FORM:
 	case HTML_N_SELECT:	/* mode->end_tag */
 	    table_close_select(tbl, mode, width);
@@ -2537,7 +2508,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	case HTML_N_CAPTION:
 	    mode->caption = 0;
 	    if (cmd == HTML_N_CAPTION)
-		return TAG_ACTION_NONE;
+	    return TAG_ACTION_NONE;
 	    break;
 	default:
 	    return TAG_ACTION_FEED;
@@ -3094,8 +3065,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_TEXTAREA_INT:
     case HTML_N_TEXTAREA_INT:
     case HTML_IMG_ALT:
-    case HTML_RULE:
-    case HTML_N_RULE:
+    case HTML_SYMBOL:
+    case HTML_N_SYMBOL:
     default:
 	/* unknown tag: put into table */
 	return TAG_ACTION_FEED;
@@ -3130,8 +3101,8 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	    case TAG_ACTION_FEED:
 	    default:
 		if (parsedtag_need_reconstruct(tag))
-		    line = parsedtag2str(tag)->ptr;
-	    }
+		line = parsedtag2str(tag)->ptr;
+	}
 	}
 	else {
 	    if (!(mode->pre_mode & (TBLM_PLAIN | TBLM_INTXTA | TBLM_INSELECT |
@@ -3257,12 +3228,12 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		p = line;
 		line = "";
 	    }
-	    if (mode->pre_mode & TBLM_PLAIN)
+	if (mode->pre_mode & TBLM_PLAIN)
 		i = maximum_visible_length_plain(p);
-	    else
+	else
 		i = maximum_visible_length(p);
-	    addcontentssize(tbl, i);
-	    setwidth(tbl, mode);
+	addcontentssize(tbl, i);
+	setwidth(tbl, mode);
 	    if (nl)
 		clearcontentssize(tbl, mode);
 	    pushdata(tbl, tbl->row, tbl->col, p);

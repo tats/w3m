@@ -32,6 +32,7 @@ ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(package)
 
 CFLAGS = $(OPTS) @CFLAGS@ $(DEFS)
+WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DLIB_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
@@ -40,6 +41,7 @@ DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 LDFLAGS = @LDFLAGS@
 LIBS = -L. -lindep @LIBS@
 W3M_LIBS = @W3M_LIBS@
+WCTARGET = @WCTARGET@
 
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
@@ -74,16 +76,16 @@ MODEL=@W3M_TARGET@-@W3M_LANG@
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \
+	symbol.c entity.c terms.c url.c ftp.c mimehead.c regex.c news.c \
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
 OBJS=main.o file.o buffer.o display.o etc.o search.o linein.o table.o local.o\
 	form.o map.o frame.o rc.o menu.o mailcap.o image.o \
+	symbol.o entity.o terms.o url.o ftp.o mimehead.o regex.o news.o \
 	func.o cookie.o history.o backend.o $(KEYBIND_OBJ)
-LSRCS=terms.c conv.c url.c anchor.c mimehead.c hash.c parsetagx.c \
-	tagtable.c istream.c ftp.c news.c
-LOBJS=terms.o conv.o url.o anchor.o mimehead.o hash.o parsetagx.o \
-	tagtable.o istream.o ftp.o news.o
+LSRCS=anchor.c parsetagx.c tagtable.c istream.c
+LOBJS=anchor.o parsetagx.o tagtable.o istream.o
 LLOBJS=version.o
-ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o entity.o hash.o
+ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o hash.o
 ALIB=libindep.a
 ALLOBJS=$(OBJS) $(LOBJS) $(LLOBJS)
 IMGOBJS=@IMGOBJS@
@@ -111,7 +113,7 @@ SUBDIRS = $(SCRIPTSUBDIRS)
 
 all: $(TARGETS) all-scripts
 
-$(TARGET): $(ALLOBJS) $(ALIB)
+$(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
 
 $(ALIB): $(ALIBOBJS)
@@ -142,20 +144,29 @@ functable.c: funcname.tab mktable$(EXT)
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
-mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o mktable mktable.o hash.o $(LDFLAGS) $(LIBS)
+mktable$(EXT): mktable.o dummy.o $(ALIB) $(GCTARGET)
+	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o $(LDFLAGS) $(LIBS)
 
-$(BOOKMARKER): w3mbookmark.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o $(LDFLAGS) $(LIBS)
+$(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB) $(GCTARGET)
+	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS)
 
-$(HELPER): w3mhelperpanel.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o $(LDFLAGS) $(LIBS)
+$(HELPER): w3mhelperpanel.o dummy.o $(ALIB) $(GCTARGET)
+	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)
 
 $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
+
+wctarget:
+	cd libwc; $(MAKE) \
+		CC='$(CC)' CFLAGS='$(WCCFLAGS) $(CFLAGS)' \
+		AR='$(AR)' \
+		RANLIB='$(RANLIB)'
+ 
+dummy.o: entity.c
+	$(CC) $(CFLAGS) -DDUMMY -o $@ $?
 
 $(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
 	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)

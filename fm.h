@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.119 2003/09/22 17:37:41 ukai Exp $ */
+/* $Id: fm.h,v 1.120 2003/09/22 21:02:18 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -39,6 +39,13 @@
 #include "html.h"
 #include <gc.h>
 #include "Str.h"
+#if LANG == JA
+#define USE_M17N
+#endif				/* LANG == JA */
+#ifdef USE_M17N
+#include "wc.h"
+#include "wtf.h"
+#endif
 #include "form.h"
 #include "frame.h"
 #include "parsetag.h"
@@ -64,10 +71,6 @@ void bzero(void *, int);
 #define global extern
 #define init(x)
 #endif				/* not MAINPROGRAM */
-
-#if LANG == JA
-#define JP_CHARSET
-#endif				/* LANG == JA */
 
 /* 
  * Constants.
@@ -108,30 +111,26 @@ void bzero(void *, int);
 /* 
  * Line Property
  */
-/* Character type */
-#define PC_ASCII	0x0000
-#define PC_CTRL		0x2000
 
-#ifdef JP_CHARSET
-#define PC_KANJI1	0x4000
-#define PC_KANJI2	0x8000
-#define PC_KANJI	(PC_KANJI1|PC_KANJI2)
-#define P_CHARTYPE	(PC_ASCII|PC_CTRL|PC_KANJI)
-#else				/* ISO-8859-1 charset (not JP_CHARSET) */
-#define P_CHARTYPE	(PC_ASCII|PC_CTRL)
-#endif				/* not JP_CHARSET */
-#if 0
-#define GET_PCTYPE(c)   ((GET_MYCTYPE(c)&MYCTYPE_CNTRL)<<13)
+#define P_CHARTYPE	0x3f00
+#ifdef USE_M17N
+#define PC_ASCII	(WTF_TYPE_ASCII << 8)
+#define PC_CTRL		(WTF_TYPE_CTRL << 8)
+#define PC_WCHAR1	(WTF_TYPE_WCHAR1 << 8)
+#define PC_WCHAR2	(WTF_TYPE_WCHAR2 << 8)
+#define PC_KANJI	(WTF_TYPE_WIDE << 8)
+#define PC_KANJI1	(PC_WCHAR1 | PC_KANJI)
+#define PC_KANJI2	(PC_WCHAR2 | PC_KANJI)
+#define PC_UNKNOWN	(WTF_TYPE_UNKNOWN << 8)
+#define PC_UNDEF	(WTF_TYPE_UNDEF << 8)
 #else
-#define GET_PCTYPE(c)   ((GET_MYCTYPE(c)&MYCTYPE_CNTRL)?PC_CTRL:PC_ASCII)
+#define PC_ASCII	0x0000
+#define PC_CTRL		0x0100
 #endif
-
-#ifndef KANJI_SYMBOLS
-#define PC_RULE         0x1000
-#endif				/* not KANJI_SYMBOLS */
+#define PC_SYMBOL       0x8000
 
 /* Effect ( standout/underline ) */
-#define P_EFFECT	0x01ff
+#define P_EFFECT	0x40ff
 #define PE_NORMAL	0x00
 #define PE_MARK		0x01
 #define PE_UNDER	0x02
@@ -142,24 +141,14 @@ void bzero(void *, int);
 #define PE_IMAGE        0x20
 #define PE_FORM         0x40
 #define PE_ACTIVE	0x80
-#define PE_VISITED	0x0100
+#define PE_VISITED	0x4000
 
 #define CharType(c)	((c)&P_CHARTYPE)
-#ifdef KANJI_SYMBOLS
-#define CharEffect(c)	((c)&P_EFFECT)
-#else				/* not KANJI_SYMBOLS */
-#define CharEffect(c)	((c)&(P_EFFECT|PC_RULE))
-#endif				/* not KANJI_SYMBOLS */
+#define CharEffect(c)	((c)&(P_EFFECT|PC_SYMBOL))
 #define SetCharType(v,c)	((v)=(((v)&~P_CHARTYPE)|(c)))
 
 
 #define COLPOS(l,c)	calcPosition(l->lineBuf,l->propBuf,l->len,c,0,CP_AUTO)
-#define IS_UNPRINTABLE_CONTROL(c,m) (CharType(m)==PC_CTRL&&(c)!=CTRL_I&&(c)!=CTRL_J)
-#ifdef JP_CHARSET
-#define IS_UNPRINTABLE_ASCII(c,m) (!IS_ASCII(c)&&CharType(m)==PC_ASCII)
-#else
-#define IS_UNPRINTABLE_ASCII(c,m) (!IS_LATIN1(c))
-#endif
 
 /* Flags for displayBuffer() */
 #define B_NORMAL	0
@@ -443,9 +432,10 @@ typedef struct _Buffer {
     int *clone;
     size_t trbyte;
     char check_url;
-#ifdef JP_CHARSET
-    char document_code;
-#endif				/* JP_CHARSET */
+#ifdef USE_M17N
+    wc_ces document_charset;
+    wc_uint8 auto_detect;
+#endif
     TextList *document_header;
     FormItemList *form_submit;
     char *savecache;
@@ -547,7 +537,7 @@ struct readbuffer {
     Str line;
     Lineprop cprop;
     short pos;
-    int prevchar;
+    Str prevchar;
     long flag;
     long flag_stack[RB_STACK_SIZE];
     int flag_sp;
@@ -579,7 +569,7 @@ struct readbuffer {
 #define RB_LEFT		0x10
 #define RB_CENTER	0x20
 #define RB_RIGHT	0x40
-#define RB_ALIGN	(RB_LEFT | RB_CENTER | RB_RIGHT)
+#define RB_ALIGN	(RB_LEFT| RB_CENTER | RB_RIGHT)
 #define RB_NOBR		0x80
 #define RB_P		0x100
 #define RB_PRE_INT	0x200
@@ -762,11 +752,9 @@ extern int LASTLINE;
 #endif				/* not defined(__CYGWIN__) || LANG != JA */
 
 global int Tabstop init(8);
+global int IndentIncr init(4);
 global int ShowEffect init(TRUE);
 global int PagerMax init(PAGER_MAX_LINE);
-#ifdef JP_CHARSET
-global char InnerCode init(CODE_INNER_EUC);	/* use EUC-JP internally; do not change */
-#endif				/* JP_CHARSET */
 
 global char SearchHeader init(FALSE);
 global char *DefaultType init(NULL);
@@ -867,7 +855,6 @@ global DownloadList *LastDL init(NULL);
 global int CurrentKey;
 global char *CurrentKeyData;
 global char *CurrentCmdData;
-extern char *ullevel[];
 
 extern char *w3m_version;
 
@@ -1003,29 +990,39 @@ global int SaveURLHist init(TRUE);
 #endif				/* USE_HISTORY */
 global int multicolList init(FALSE);
 
-global char DisplayCode init(DISPLAY_CODE);
-#ifdef JP_CHARSET
-global char SystemCode init(SYSTEM_CODE);
-global char DocumentCode init(0);
+#ifdef USE_M17N
+global wc_ces InnerCharset init(WC_CES_WTF);	/* Don't change */
+global wc_ces DisplayCharset init(DISPLAY_CHARSET);
+global wc_ces DocumentCharset init(DOCUMENT_CHARSET);
+global wc_ces SystemCharset init(SYSTEM_CHARSET);
+global char ExtHalfdump init(FALSE);
+global char FollowLocale init(TRUE);
 global char UseContentCharset init(TRUE);
-global char UseAutoDetect init(TRUE);
-#define Str_conv_from_system(x) conv_str((x), SystemCode, InnerCode)
-#define Str_conv_to_system(x) conv_str((x), InnerCode, SystemCode)
-#define conv_from_system(x) conv((x), SystemCode, InnerCode)->ptr
-#define conv_to_system(x) conv((x), InnerCode, SystemCode)->ptr
-#define url_quote_conv(x,c) url_quote(conv((x), InnerCode, (c))->ptr)
+global char SearchConv init(TRUE);
+#define Str_conv_from_system(x) wc_Str_conv((x), SystemCharset, InnerCharset)
+#define Str_conv_to_system(x) wc_Str_conv_strict((x), InnerCharset, SystemCharset)
+#define Str_conv_to_halfdump(x) (ExtHalfdump ? wc_Str_conv((x), InnerCharset, DisplayCharset) : (x))
+#define conv_from_system(x) wc_conv((x), SystemCharset, InnerCharset)->ptr
+#define conv_to_system(x) wc_conv_strict((x), InnerCharset, SystemCharset)->ptr
+#define url_quote_conv(x,c) url_quote(wc_conv_strict((x), InnerCharset, (c))->ptr)
 #else
 #define Str_conv_from_system(x) (x)
 #define Str_conv_to_system(x) (x)
+#define Str_conv_to_halfdump(x) (x)
 #define conv_from_system(x) (x)
 #define conv_to_system(x) (x)
 #define url_quote_conv(x,c) url_quote(x)
-#endif				/* JP_CHARSET */
-#ifndef KANJI_SYMBOLS
-global char UseGraphicChar init(TRUE);
-extern char alt_rule[];
-#endif				/* not KANJI_SYMBOLS */
-extern char UseAltEntity;
+#define wc_Str_conv(x) (x)
+#define wc_Str_conv_strict(x) (x)
+#endif
+global char UseAltEntity init(TRUE);
+global char UseGraphicChar init(FALSE);
+extern char *graph_symbol[];
+extern char *graph2_symbol[];
+extern int symbol_width;
+extern int symbol_width0;
+#define N_GRAPH_SYMBOL 32
+#define SYMBOL_BASE 0x20
 global int no_rc_dir init(FALSE);
 global char *rc_dir init(NULL);
 global char *tmp_dir;
@@ -1107,21 +1104,18 @@ global int use_lessopen init(FALSE);
 
 global char *keymap_file init(KEYMAP_FILE);
 
-#ifdef JP_CHARSET
-#define is_kanji(s)    (IS_KANJI1((s)[0])&&IS_KANJI2((s)[1]))
-#define get_mctype(s)  (is_kanji(s)?PC_KANJI:GET_PCTYPE(*(s)))
-#define get_mclen(m)   (((m)==PC_KANJI)?2:1)
-#define mctowc(s,m) \
-    (((m)==PC_KANJI)?((unsigned char)(s)[0]|((unsigned char)(s)[1]<<8)): \
-                     (unsigned char)(s)[0])
-#define is_wckanji(wc) ((wc)&~0xff)
-#define get_wctype(wc) (is~wckanji(wc)?PC_KANJI:GET_PCTYPE(wc))
+#ifdef USE_M17N
+#define get_mctype(c) ((Lineprop)wtf_type((wc_uchar *)(c)) << 8)
+#define get_mclen(c) wtf_len1((wc_uchar *)(c))
+#define get_mcwidth(c) wtf_width((wc_uchar *)(c))
+#define get_strwidth(c) wtf_strwidth((wc_uchar *)(c))
+#define get_Str_strwidth(c) wtf_strwidth((wc_uchar *)((c)->ptr))
 #else
-#define get_mctype(s)  GET_PCTYPE(*(s))
-#define get_mclen(m)   1
-#define mctowc(s,m)    ((unsigned char)*(s))
-#define is_wckanji(wc) ((wc)&~0xff)
-#define get_wctype(wc) (is~wckanji(wc)?PC_ASCII:GET_PCTYPE(wc))
+#define get_mctype(c) (IS_CNTRL(*(c)) ? PC_CTRL : PC_ASCII)
+#define get_mclen(c) 1
+#define get_mcwidth(c) 1
+#define get_strwidth(c) strlen(c)
+#define get_Str_strwidth(c) ((c)->length)
 #endif
 
 global int FollowRedirection init(10);

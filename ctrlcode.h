@@ -1,4 +1,4 @@
-/* $Id: ctrlcode.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: ctrlcode.h,v 1.3 2003/09/22 21:02:17 ukai Exp $ */
 /* control characters */
 
 #define CTRL_A          1
@@ -129,21 +129,13 @@
 #define thorn_CODE	254
 #define yUML_CODE	255
 
-/* EUC control characters */
-
-#define EUC_SS2_CODE	0x8e
-#define EUC_SS3_CODE	0x8f
-
 /* internally used characters  */
-
-/* 0x80-0x8F: use for rule */
-
-#define ANSP_CODE	0x90	/* use for empty anchor */
-#define IMSP_CODE	0x91	/* blank around image */
+#define ANSP_CODE	0x9e	/* use for empty anchor */
+#define IMSP_CODE	0x9f	/* blank around image */
 
 #define NBSP		"\xa0"
-#define ANSP		"\x90"
-#define IMSP		"\x91"
+#define ANSP		"\x9e"
+#define IMSP		"\x9f"
 
 #include "myctype.h"
 

@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.18 2003/01/10 17:06:23 ukai Exp $ */
+/* $Id: istream.c,v 1.19 2003/01/18 18:40:32 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -446,7 +446,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 		}
 	    }
 	    method = X509V3_EXT_get(ex);
-	    method->ext_free(alt);
+	    sk_GENERAL_NAME_free(alt);
 	    if (i < n)		/* Found a match */
 		match_ident = TRUE;
 	    else if (seen_dnsname)

@@ -1,3 +1,8 @@
+2003-02-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03737] local-CGI POST
+	* local.c (localcgi_post): use tmp file
+
 2003-02-08  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03736] dirlist sort
@@ -7123,4 +7128,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.743 2003/02/07 15:06:15 ukai Exp $
+$Id: ChangeLog,v 1.744 2003/02/08 18:23:52 ukai Exp $

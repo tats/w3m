@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.27 2003/01/31 16:26:41 ukai Exp $ */
+/* $Id: local.c,v 1.28 2003/02/08 18:23:53 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -344,26 +344,27 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     FILE *fr = NULL, *fw = NULL;
     int status;
     pid_t pid;
-    char *file = uri, *name = uri, *path_info = NULL;
+    char *file = uri, *name = uri, *path_info = NULL, *tmpf = NULL;
 
     status = cgi_filename(uri, &file, &name, &path_info);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
     writeLocalCookie();
-    if (request && request->enctype != FORM_ENCTYPE_MULTIPART)
-	pid = open_pipe_rw(&fr, &fw);
-    else
-	pid = open_pipe_rw(&fr, NULL);
+    if (request && request->enctype != FORM_ENCTYPE_MULTIPART) {
+	tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+	fw = fopen(tmpf, "w");
+	if (!fw)
+	    return NULL;
+    }
+    pid = open_pipe_rw(&fr, NULL);
     if (pid < 0)
 	return NULL;
     else if (pid) {
-	if (fw) {
-	    fwrite(request->body, sizeof(char), request->length, fw);
+	if (fw)
 	    fclose(fw);
-	}
 	return fr;
     }
-    setup_child(TRUE, 2, -1);
+    setup_child(TRUE, 2, fw ? fileno(fw) : -1);
 
     if (qstr)
 	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
@@ -383,8 +384,12 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 				request->boundary)->ptr);
 	    freopen(request->body, "r", stdin);
 	}
-	else
+	else {
 	    set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
+	    fwrite(request->body, sizeof(char), request->length, fw);
+	    fclose(fw);
+	    freopen(tmpf, "r", stdin);
+	}
     }
     else {
 	set_environ("REQUEST_METHOD", "GET");

@@ -1,3 +1,11 @@
+2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* XMakefile (w3mimg/w3mimg): added
+		(w3img/fb) fixed
+	* w3mimg/w3mimg.h (w3mimg_open): deleted to avoid compilation warnings
+	* w3mimg/w3mimg.c: added
+	* configure (imgobjs): add w3mimg/w3mimg.o 
+
 2002-07-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03272] Re: w3m-img for framebuffer merged (Re:  Re: w3m-img for framebuffer)
@@ -3593,4 +3601,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.405 2002/07/18 05:59:06 ukai Exp $
+$Id: ChangeLog,v 1.406 2002/07/18 06:07:25 ukai Exp $

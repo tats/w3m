@@ -1,4 +1,4 @@
-/* $Id: w3mimg.h,v 1.1 2002/07/17 20:58:48 ukai Exp $ */
+/* $Id: w3mimg.h,v 1.2 2002/07/18 06:07:25 ukai Exp $ */
 #include "config.h"
 
 #ifdef USE_W3MIMG_FB
@@ -32,21 +32,10 @@ typedef struct _w3mimg_op {
 } w3mimg_op;
 
 #ifdef USE_W3MIMG_X11
-w3mimg_op *w3mimg_x11open();
+extern w3mimg_op *w3mimg_x11open();
 #endif
 #ifdef USE_W3MIMG_FB
-w3mimg_op *w3mimg_fbopen();
+extern w3mimg_op *w3mimg_fbopen();
 #endif
 
-static w3mimg_op *w3mimg_open() {
-    w3mimg_op *w_op = NULL;
-#ifdef USE_W3MIMG_X11
-    if (w_op == NULL)
-	w_op = w3mimg_x11open();
-#endif
-#ifdef USE_W3MIMG_FB
-    if (w_op == NULL)
-	w_op = w3mimg_fbopen();
-#endif
-    return w_op;
-}
+extern w3mimg_op *w3mimg_open();

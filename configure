@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.71 2002/07/18 05:55:22 ukai Exp $
+# $Id: configure,v 1.72 2002/07/18 06:07:25 ukai Exp $
 #	Configuration.
 #
 
@@ -2046,7 +2046,7 @@ imgx11cflags=''
 imgfbcflags=''
 imgx11ldflags=''
 imgfbldflags=''
-imbobjs=''
+imgobjs='w3mimg/w3mimg.o'
 
 if [ "$use_image" = y ]; then
   if [ "$use_w3mimg_x11" = y ]; then

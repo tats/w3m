@@ -1,13 +1,8 @@
-/* $Id: mktable.c,v 1.6 2002/01/29 03:23:44 ukai Exp $ */
+/* $Id: mktable.c,v 1.7 2002/01/29 16:23:37 ukai Exp $ */
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#else
-typedef unsigned long uintptr_t;
-#endif
 #include "hash.h"
 #include "Str.h"
 #include <gc.h>
@@ -20,10 +15,11 @@ defhash(HashItem_ss *, int, hss_i)
 
 #define keycomp(x,y) ((x)==(y))
 
-static uintptr_t
+/* XXX: we assume sizeof(unsigned long) >= sizeof(void *) */
+static unsigned long
 hashfunc(HashItem_ss * x)
 {
-    return (uintptr_t) x;
+    return (unsigned long) x;
 }
 
 /* *INDENT-OFF* */

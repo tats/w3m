@@ -1,3 +1,10 @@
+2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02920] don't use inttypes.h and/or stdint.h
+	* mktable.c: remove inttypes.h, uintptr_t, use unsigned long instead
+	* configure: remove inttypes.h detection
+	* config.h.dist: remove HAVE_INTTYPES_H
+
 2002-01-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02921] use inttypes.h instead of stdint.h
@@ -2339,4 +2346,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.269 2002/01/29 03:23:43 ukai Exp $
+$Id: ChangeLog,v 1.270 2002/01/29 16:23:37 ukai Exp $

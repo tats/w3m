@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.56 2002/01/29 03:23:44 ukai Exp $
+# $Id: configure,v 1.57 2002/01/29 16:23:37 ukai Exp $
 #	Configuration.
 #
 
@@ -1717,23 +1717,6 @@ else
   def_have_sys_select_h='#undef HAVE_SYS_SELECT_H'
 fi
 
-####### check for inttypes
-cat > _zmachdep.c <<EOF
-#include <inttypes.h>
-main()
-{ 
-  uintptr_t p;
-  ;
-}
-EOF
-if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
-then
-  echo "You have inttypes.h."
-  def_have_inttypes_h='#define HAVE_INTTYPES_H'
-else
-  def_have_inttypes_h='#undef HAVE_INTTYPES_H'
-fi
-
 ####### setpgrp(pid, pgrp) or setpgrp() ?
 cat > _zmachdep.c << EOF
 #include <unistd.h>
@@ -2135,7 +2118,6 @@ $def_longjmp
 $def_jmpbuf
 $def_have_float_h
 $def_have_sys_select_h
-$def_have_inttypes_h
 
 $def_sighandler
 $def_sig_arg

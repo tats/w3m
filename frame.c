@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.18 2002/11/26 16:58:49 ukai Exp $ */
+/* $Id: frame.c,v 1.19 2002/11/26 17:05:24 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -599,6 +599,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    fputs("-->", f1);
 			    goto token_end;
 			case HTML_BASE:
+			    /* "BASE" is prohibit tag */
 			    if (parsedtag_get_value(tag, ATTR_HREF, &q)) {
 				q = url_quote_conv(q, code);
 				parseURL(q, &base, NULL);
@@ -611,12 +612,29 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				else
 				    d_target = url_quote_conv(q, code);
 			    }
-			    /* fall thru, "BASE" is prohibit tag */
+			    Strshrinkfirst(tok, 1);
+			    Strshrink(tok, 1);
+			    fprintf(f1, "<!-- %s -->", tok->ptr);
+			    goto token_end;
+			case HTML_META:
+			    parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &q);
+			    if (q && !strcasecmp(q, "refresh")) {
+				parsedtag_get_value(tag, ATTR_CONTENT, &q);
+				if (q) {
+				    Str s_tmp;
+				    int refresh_interval = getMetaRefreshParam(q, &s_tmp);
+				    if (s_tmp) {
+				        q = html_quote(s_tmp->ptr);
+				        fprintf(f1, "Refresh (%d sec) <a href=\"%s\">%s</a>\n",
+						refresh_interval, q, q);
+				    }
+				}
+			    }
+			    /* fall thru, "META" is prohibit tag */
 			case HTML_HEAD:
 			case HTML_N_HEAD:
 			case HTML_BODY:
 			case HTML_N_BODY:
-			case HTML_META:
 			case HTML_DOCTYPE:
 			    /* prohibit_tags */
 			    Strshrinkfirst(tok, 1);

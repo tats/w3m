@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.129 2002/11/25 16:59:07 ukai Exp $ */
+/* $Id: file.c,v 1.130 2002/11/26 17:05:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3940,6 +3940,46 @@ ul_type(struct parsed_tag *tag, int default_type)
 }
 
 int
+getMetaRefreshParam(char *q, Str *refresh_uri)
+{
+    int refresh_interval;
+    char *r;
+    Str s_tmp = NULL;
+
+    if(q == NULL || refresh_uri == NULL)
+	return 0;
+
+    refresh_interval = atoi(q);
+
+    while (*q) {
+	if (!strncasecmp(q, "url=", 4)) {
+	    q += 4;
+	    if (*q == '\"')	/* " */
+		q++;
+	    r = q;
+	    while (*r && !IS_SPACE(*r) && *r != ';')
+		r++;
+	    s_tmp = Strnew_charp_n(q, r - q);
+	    
+	    if (s_tmp->ptr[s_tmp->length - 1] == '\"') {	/* " 
+								 */
+		s_tmp->length--;
+			s_tmp->ptr[s_tmp->length] = '\0';
+	    }
+	    q = r;
+	}
+	while (*q && *q != ';')
+	    q++;
+	if (*q == ';')
+	    q++;
+	while (*q && *q == ' ')
+	    q++;
+    }
+    *refresh_uri = s_tmp;
+    return refresh_interval;
+}
+
+int
 HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 {
     char *p, *q, *r;
@@ -4576,33 +4616,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 #endif
 	if (p && q && !strcasecmp(p, "refresh")) {
-	    int refresh_interval = atoi(q);
 	    Str s_tmp = NULL;
-
-	    while (*q) {
-		if (!strncasecmp(q, "url=", 4)) {
-		    q += 4;
-		    if (*q == '\"')	/* " */
-			q++;
-		    r = q;
-		    while (*r && !IS_SPACE(*r) && *r != ';')
-			r++;
-		    s_tmp = Strnew_charp_n(q, r - q);
-
-		    if (s_tmp->ptr[s_tmp->length - 1] == '\"') {	/* " 
-									 */
-			s_tmp->length--;
-			s_tmp->ptr[s_tmp->length] = '\0';
-		    }
-		    q = r;
-		}
-		while (*q && *q != ';')
-		    q++;
-		if (*q == ';')
-		    q++;
-		while (*q && *q == ' ')
-		    q++;
-	    }
+	    int refresh_interval = getMetaRefreshParam(q, &s_tmp);
 	    if (s_tmp) {
 		q = html_quote(s_tmp->ptr);
 		tmp =

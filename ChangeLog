@@ -1,3 +1,9 @@
+2004-09-30  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04108] PIPE_BUF
+	* main.c (pipeBuf): set buf->currentURL.file to prevent
+		segfault by "PIPE_BUF cat;VIEW SOURCE;"
+
 2004-08-31  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 
 	* [w3m-dev 04104] w3mmail.cgi
@@ -8574,4 +8580,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.937 2004/08/30 16:32:23 ukai Exp $
+$Id: ChangeLog,v 1.938 2004/09/29 15:44:03 ukai Exp $

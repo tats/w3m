@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.245 2004/08/02 15:40:50 ukai Exp $ */
+/* $Id: main.c,v 1.246 2004/09/29 15:44:03 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1966,6 +1966,7 @@ DEFUN(pipeBuf, PIPE_BUF, "Send rendered document to pipe")
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
 	if (buf->type == NULL)
 	    buf->type = "text/plain";
+	buf->currentURL.file = "-";
 	pushBuffer(buf);
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);

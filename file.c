@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.20 2001/11/30 09:54:22 ukai Exp $ */
+/* $Id: file.c,v 1.21 2001/11/30 10:00:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -143,6 +143,7 @@ char *violations[COO_EMAX] = {
 };
 #endif
 
+/* *INDENT-OFF* */
 static struct compression_decoder {
     int type;
     char *ext;
@@ -152,16 +153,17 @@ static struct compression_decoder {
     char *name;
     char *encoding;
 } compression_decoders[] = {
-    {CMP_COMPRESS, ".gz", "application/x-gzip",
-     0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip"},
-    {CMP_COMPRESS, ".Z", "application/x-compress",
-     0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress"},
-    {CMP_BZIP2, ".bz2", "application/x-bzip",
-     0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2"},
-    {CMP_DEFLATE, NULL, "application/x-deflate",
-     1, INFLATE_CMDNAME, INFLATE_NAME, "deflate"},
-    {CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL},
+    { CMP_COMPRESS, ".gz", "application/x-gzip",
+      0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip"}, 
+    { CMP_COMPRESS, ".Z", "application/x-compress",
+      0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress"}, 
+    { CMP_BZIP2, ".bz2", "application/x-bzip",
+      0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2"}, 
+    { CMP_DEFLATE, NULL, "application/x-deflate",
+      1, INFLATE_CMDNAME, INFLATE_NAME, "deflate"}, 
+    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL},
 };
+/* *INDENT-ON* */
 
 #define SAVE_BUF_SIZE 1536
 
@@ -267,7 +269,7 @@ static char *
 compress_application_type(int compression)
 {
     struct compression_decoder *d;
-    
+
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
 	if (d->type == compression)
 	    return d->mime_type;
@@ -371,8 +373,7 @@ check_command(char *cmd, int libfile_p)
 	Strcat_charp(pathname, p);
 	Strcat_char(pathname, '/');
 	Strcat_charp(pathname, cmd);
-	if (stat(pathname->ptr, &st) == 0 
-	    && S_ISREG(st.st_mode) 
+	if (stat(pathname->ptr, &st) == 0 && S_ISREG(st.st_mode)
 	    && (st.st_mode & S_IXANY) != 0)
 	    return 1;
     }

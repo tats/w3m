@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.8 2001/11/30 09:54:22 ukai Exp $ */
+/* $Id: mailcap.c,v 1.9 2001/11/30 10:00:06 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -251,7 +251,7 @@ acceptableMimeTypes()
 
     /* generate acceptable media types */
     l = newTextList();
-    mhash = newHash_si(16); /* XXX */
+    mhash = newHash_si(16);	/* XXX */
     pushText(l, "text");
     putHash_si(mhash, "text", 1);
     pushText(l, "image");

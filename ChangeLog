@@ -1,3 +1,18 @@
+2001-12-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02729]
+	* doc-jp/README.func (DOWNLOAD): update
+	* doc-jp/README.func (EDIT): ditto
+	* doc-jp/README.func (EDIT_SCREEN): ditto
+	* doc-jp/README.func (SAVE): ditto
+	* doc/README.func (DOWNLOAD): ditto
+	* doc/README.func (SAVE): ditto
+	* doc/README.func (SUBMIT): ditto
+	* scripts/w3mhelp.cgi.in: $key is normalized by &norm_key
+	* scripts/w3mhelp.cgi.in: keyfunc update
+	* scripts/w3mhelp.cgi.in (load_keymap): check data, &norm_key
+	* scripts/w3mhelp.cgi.in (norm_key): added
+
 2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [#496613] LASTLINE in terms.c
@@ -1563,4 +1578,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.175 2001/12/25 16:54:45 ukai Exp $
+$Id: ChangeLog,v 1.176 2001/12/25 17:29:31 ukai Exp $

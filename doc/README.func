@@ -11,7 +11,7 @@ DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)
 DICT_WORD_AT   Execute dictionary command for word at cursor
 DOWN		Scroll down one line
-DOWNLOAD       Save HTML source
+DOWNLOAD	Save document source to file
 EDIT		Edit current document
 EDIT_SCREEN	Edit currently rendered document
 END		Go to the last line
@@ -81,7 +81,7 @@ REDRAW		Redraw screen
 REG_MARK	Set mark using regexp
 RELOAD		Reload buffer
 RIGHT		Shift screen one column right
-SAVE		Save HTML source to file
+SAVE		Save document source to file
 SAVE_IMAGE	Save image to file
 SAVE_LINK	Save link to file
 SAVE_SCREEN	Save rendered document to file
@@ -98,7 +98,7 @@ SHELL		Execute shell command
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
 SOURCE		View HTML source
-SUBMIT		submit
+SUBMIT		Submit form
 SUSPEND		Stop loading document
 UP		Scroll up one line
 VERSION                Display version of w3m

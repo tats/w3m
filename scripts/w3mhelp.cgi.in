@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.8 2001/12/25 09:16:23 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.9 2001/12/25 17:29:31 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -49,6 +49,13 @@ if (defined($ENV{'QUERY_STRING'})) {
 	    $lang = $tlang;
 	}
     }
+}
+
+%f = %keyfunc;
+%keyfunc = ();
+while (($key, $fname) = each %f) {
+	$key = &norm_key($key);
+	$keyfunc{$key} = $fname;
 }
 
 if (-f $keymap) {
@@ -109,42 +116,42 @@ for $otherlang (@docdirs) {
 }
 
 &show_keymap("Page/Cursor motion", 
-	     split(" ", "pgFore pgBack movR movL movD movU lup1 ldown1 
-		goLineF goLineL movRW movLW shiftl shiftr
-		col1R col1L goLine ctrCsrH ctrCsrV
+	     split(" ", "pgFore pgBack movR movL movD movU ldown1 lup1
+		shiftl shiftr col1L col1R linbeg linend ctrCsrH ctrCsrV
+		goLine goLineF goLineL movRW movLW
 		topA lastA nextA prevA
-		nextL nextLU nextR nextRD nextD nextU"));
+		nextR nextRD nextL nextRD nextLU nextD nextU"));
 
 &show_keymap("Hyperlink operation",
-	     split(" ", "followA svA peekURL peekIMG followI svI
-		chkURL chkNMID curURL pginfo curlno ldHist
+	     split(" ", "followA svA followI svI submitForm
+		curURL peekURL peekIMG pginfo curlno chkURL chkNMID
 		rFrame extbrz linkbrz"));
 
 &show_keymap("File/Stream operation",
 	     split(" ", "goURL ldfile readsh pipesh"));
 
 &show_keymap("Buffer operation",
-	     split(" ", "backBf vwSrc selMn editBf rdrwSc reload 
-		svBuf svSrc editScr"));
-
-&show_keymap("Buffer selection mode",
-	     split(" ", "buffer_prev buffer_next buffer_delete buffer_go"));
+	     split(" ", "backBf selMn selBuf vwSrc svSrc svBuf
+		editBf editScr reload rdrwSc"));
 
 &show_keymap("Bookmark operation",
 	     split(" ", "ldBmark adBmark"));
 
 &show_keymap("Search",
-	     split(" ", "srchfor srchbak srchnxt srchprv"));
+	     split(" ", "srchfor srchbak srchnxt srchprv isrchfor isrchbak"));
 
 &show_keymap("Dictionary look-up",
 	     split(" ", "dictword dictwordat"));
 
 &show_keymap("Mark operation",
-	     split(" ", "_mark prevMk nextMk reMark"));
+	     split(" ", "_mark nextMk prevMk reMark"));
 
 &show_keymap("Miscellany",
-	     split(" ",
-		"setAlarm execsh ldhelp ldOpt cooLst susp qquitfm quitfm"));
+	     split(" ", "mainMn ldhelp ldOpt cooLst ldHist msgs msToggle
+		wrapToggle setAlarm setOpt setEnv execsh susp qquitfm quitfm"));
+
+&show_keymap("Buffer selection mode",
+	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
 
 &show_keymap("Line-edit mode",
 	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
@@ -167,13 +174,34 @@ sub load_keymap {
     while (<FH>) {
 	next if /^#/;
 	next if /^\s*$/;
-	($keymap, $key, $fname) = split;
+	($keymap, $key, $fname, $data) = split;
+	next if $data;
 	next unless $keymap =~ /keymap/;
 	$fname =~ tr/a-z/A-Z/;
 	next unless (defined($funcdesc{$fname}));
-	$key =~ s/^\\//;
+	$key = &norm_key($key);
 	$keyfunc{$key} = $fname;
     }
+}
+
+sub norm_key {
+    local($_) = @_;
+
+    s/^\^/C-/;
+    s/^(C-\[|M-)/ESC-/;
+    if (/^ESC-\[/) {
+	/^ESC-\[A$/ && return "UP";
+	/^ESC-\[B$/ && return "DOWN";
+	/^ESC-\[C$/ && return "RIGHT";
+	/^ESC-\[D$/ && return "LEFT";
+	s/^ESC-/\^\[/;
+	return $_;
+    }
+    s/^(ESC-)\^/ESC-C-/;
+    s/^(ESC-)?C-[iI]/${1}TAB/;
+    s/^(ESC-)?C-\?/${1}DEL/;
+    s/^\\//;
+    return $_;
 }
 
 sub show_keymap {

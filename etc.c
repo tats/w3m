@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.20 2002/03/06 03:32:11 ukai Exp $ */
+/* $Id: etc.c,v 1.21 2002/03/07 16:10:22 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1143,7 +1143,7 @@ myEditor(char *cmd, char *file, int line)
     if (!set_file) {
 	if (tmp == NULL)
 	    tmp = Strnew_charp(cmd);
-	if (!set_line && line > 0 && strcasestr(cmd, "vi"))
+	if (!set_line && line > 1 && strcasestr(cmd, "vi"))
 	    Strcat(tmp, Sprintf(" +%d", line));
 	Strcat_m_charp(tmp, " ", file, NULL);
     }

@@ -1,3 +1,8 @@
+2002-03-08  YAMAMOTO Takashi <yamt@mwd.biglobe.ne.jp>
+
+	* [w3m-dev 03087] vi +1 emptyfile
+	* etc.c (myEditor): line > 1
+
 2002-03-06  Christian Weisgerber <w3m-dev-en@mips.inka.de>
 
 	* [w3m-dev-en 00699]
@@ -3063,4 +3068,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.334 2002/03/06 03:32:10 ukai Exp $
+$Id: ChangeLog,v 1.335 2002/03/07 16:10:22 ukai Exp $

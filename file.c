@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.132 2002/11/26 18:03:24 ukai Exp $ */
+/* $Id: file.c,v 1.133 2002/11/27 16:39:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5421,6 +5421,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	fclose(f);
     }
 
+#if 0
     /* comment processing */
     if (obuf->status == R_ST_CMNT || obuf->status == R_ST_NCMNT3 ||
 	obuf->status == R_ST_IRRTAG) {
@@ -5431,6 +5432,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	if (obuf->status != R_ST_NORMAL)
 	    return;
     }
+#endif
 
     tokbuf = Strnew();
 
@@ -5444,13 +5446,25 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 
     while (*str != '\0') {
 	int is_tag = FALSE;
+	int pre_mode = (obuf->table_level >= 0) ?
+		       tbl_mode->pre_mode & TBLM_PLAIN :
+		       obuf->flag & RB_PLAINMODE;
 
 	if (obuf->flag & RB_PLAIN)
 	    goto read_as_plain;	/* don't process tag */
 
+	if (ST_IS_COMMENT(obuf->status)) {
+	    read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 1);
+	    if (obuf->status != R_ST_NORMAL)
+		return;
+	    if (pre_mode) {
+		is_tag = TRUE;
+		q = h_env->tagbuf->ptr;
+		goto read_as_pre_mode;
+	    }
+	    continue;
+	}
 	if (*str == '<' || ST_IS_TAG(obuf->status)) {
-	    int pre_mode = (obuf->table_level >= 0) ?
-		tbl_mode->pre_mode & TBLM_PLAIN : obuf->flag & RB_PLAINMODE;
 	    /* 
 	     * Tag processing
 	     */
@@ -5462,12 +5476,15 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		if (!REALLY_THE_BEGINNING_OF_A_TAG(str)) {
 		    /* this is NOT a beginning of a tag */
 		    obuf->status = R_ST_NORMAL;
+		    if (pre_mode)
+			goto read_as_pre_mode;
 		    HTMLlineproc1("&lt;", h_env);
 		    str++;
 		    continue;
 		}
 		read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 0);
 	    }
+#if 0
 	    if (ST_IS_COMMENT(obuf->status)) {
 		if ((obuf->table_level >= 0) ? tbl_mode->pre_mode & TBLM_IGNORE
 		    : obuf->flag & RB_IGNORE)
@@ -5476,6 +5493,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		    obuf->status = R_ST_NORMAL;
 		return;
 	    }
+#endif
 	    if (h_env->tagbuf->length == 0)
 		continue;
 	    if (obuf->status != R_ST_NORMAL) {
@@ -5501,6 +5519,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    q = h_env->tagbuf->ptr;
 	}
 
+    read_as_pre_mode:
 	if (obuf->flag & (RB_INTXTA | RB_INSELECT | RB_IGNORE)) {
 	    cmd = HTML_UNKNOWN;
 	    if (!is_tag) {
@@ -5519,6 +5538,8 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    if (obuf->flag & RB_INTXTA) {
 		if (cmd == HTML_N_TEXTAREA)
 		    goto proc_normal;
+		if (is_tag)
+		    continue;
 		feed_textarea(q);
 	    }
 	    else if (obuf->flag & RB_INSELECT) {

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.13 2001/11/30 09:54:22 ukai Exp $ */
+/* $Id: url.c,v 1.14 2001/11/30 10:49:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1198,13 +1198,8 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	Strcat_charp(s, UserAgent);
     Strcat_charp(s, "\r\n");
 
-    Strcat_charp(s, "Accept: ");
-    Strcat_charp(s, acceptableMimeTypes());
-    Strcat_charp(s, "\r\n");
-
-    Strcat_charp(s, "Accept-Encoding: ");
-    Strcat_charp(s, acceptableEncoding());
-    Strcat_charp(s, "\r\n");
+    Strcat_m_charp(s, "Accept: ", AcceptMedia, "\r\n");
+    Strcat_m_charp(s, "Accept-Encoding: ", AcceptEncoding, "\r\n");
 
     Strcat_charp(s, "Accept-Language: ");
     if (AcceptLang != NULL && *AcceptLang != '\0') {

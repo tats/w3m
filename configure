@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.28 2001/11/30 09:54:22 ukai Exp $
+# $Id: configure,v 1.29 2001/11/30 10:49:06 ukai Exp $
 #	Configuration.
 #
 
@@ -92,7 +92,7 @@ do
     dmodel=6
     ;;
   -code=*|--code=*)
-    dcode=`expr "$1" : "-*code=\(.*\)"`
+    display_code=`expr "$1" : "-*code=\(.*\)"`
     ;;
   -cflags=*|--cflags=*)
     dcflags=`echo $1 | sed -e 's/-*cflags=//'`

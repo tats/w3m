@@ -1,3 +1,19 @@
+2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02597] (based on [w3m-dev 02594] by aito@fw.ipsj.or.jp)
+	* fm.h (AcceptLang): added
+	* fm.h (AcceptMedia): added
+	* rc.c (CMT_ACCEPTENCODING): added
+	* rc.c (CMT_ACCEPTMEDIA): added
+	* rc.c (params9): add accept_encoding, accept_media
+	* rc.c (sync_with_option): initialize AcceptEncoding and AcceptMedia
+	* url.c (otherinfo): use Strcat_m_charp()
+
+2001-11-30  aito@fw.ipsj.or.jp
+
+	* [w3m-dev 02594]
+	* configure: s/dcode/display_code/
+
 2001-11-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02596]

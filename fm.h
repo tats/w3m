@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.24 2001/11/30 09:54:22 ukai Exp $ */
+/* $Id: fm.h,v 1.25 2001/11/30 10:49:06 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -736,6 +736,8 @@ global int do_download init(FALSE);
 global char *UserAgent init(NULL);
 global int NoSendReferer init(FALSE);
 global char *AcceptLang init(NULL);
+global char *AcceptEncoding init(NULL);
+global char *AcceptMedia init(NULL);
 global int WrapDefault init(FALSE);
 global int IgnoreCase init(TRUE);
 global int WrapSearch init(FALSE);

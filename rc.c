@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.18 2001/11/30 09:54:22 ukai Exp $ */
+/* $Id: rc.c,v 1.19 2001/11/30 10:49:06 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -118,6 +118,8 @@ static char *config_file = NULL;
 #define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
 #endif
 #define CMT_USERAGENT    "User-Agent"
+#define CMT_ACCEPTENCODING	"圧縮方法(Accept-Encoding:)"
+#define CMT_ACCEPTMEDIA	 "受けつけるメディアタイプ(Accept:)"
 #define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
 #define CMT_DOCUMENTCODE "文書の文字コード"
 #define CMT_SYSTEMCODE   "システムの文字コード"
@@ -231,6 +233,8 @@ static char *config_file = NULL;
 #define CMT_FTPPASS_HOSTNAMEGEN "generate domain part of password for FTP"
 #endif
 #define CMT_USERAGENT    "User-Agent"
+#define CMT_ACCEPTENCODING	"Accept-Encoding"
+#define CMT_ACCEPTMEDIA	 "Accept"
 #define CMT_ACCEPTLANG   "Accept-Language"
 /* #define CMT_DOCUMENTCODE "Document Charset" */
 /* #define CMT_SYSTEMCODE   "System Kanji Code" */
@@ -546,6 +550,10 @@ struct param_ptr params9[] = {
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
     {"accept_language", P_STRING, PI_TEXT, (void *)&AcceptLang, CMT_ACCEPTLANG,
+     NULL},
+    {"accept_encoding", P_STRING, PI_TEXT, (void *)&AcceptEncoding, CMT_ACCEPTENCODING,
+     NULL},
+    {"accept_media", P_STRING, PI_TEXT, (void *)&AcceptMedia, CMT_ACCEPTMEDIA,
      NULL},
     {"argv_is_url", P_CHARINT, PI_ONOFF, (void *)&ArgvIsURL, CMT_ARGV_IS_URL,
      NULL},
@@ -1082,6 +1090,10 @@ sync_with_option(void)
 #endif
     initMailcap();
     initMimeTypes();
+    if (AcceptEncoding == NULL || *AcceptEncoding == '\0') 
+	AcceptEncoding = acceptableEncoding();
+    if (AcceptMedia == NULL || *AcceptMedia == '\0')
+	AcceptMedia = acceptableMimeTypes();
 }
 
 void

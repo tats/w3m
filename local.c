@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.15 2002/11/26 18:03:26 ukai Exp $ */
+/* $Id: local.c,v 1.16 2002/11/27 16:35:18 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -14,6 +14,7 @@
 #include <limits.h>		/* _MAX_PATH ? */
 #endif				/* __EMX__ */
 #include "local.h"
+#include "hash.h"
 
 #define CGIFN_NORMAL     0
 #define CGIFN_DROOT      1
@@ -214,7 +215,12 @@ set_environ(char *var, char *value)
 	setenv(var, value, 1);
 #else				/* not HAVE_SETENV */
 #ifdef HAVE_PUTENV
+    static Hash_sv *env_hash = NULL;
     Str tmp = Strnew_m_charp(var, "=", value, NULL);
+
+    if (env_hash == NULL)
+	env_hash = newHash_sv(20);
+    putHash_sv(env_hash, var, (void *)tmp->ptr);
     putenv(tmp->ptr);
 #else				/* not HAVE_PUTENV */
     extern char **environ;

@@ -1,5 +1,11 @@
 2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03495] local CGI can't work
+	* local.c: #include "hash.h"
+		(set_environ): env string put in hash
+
+2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03494] Number of line is few when pager mode.
 	* display.c (redrawLine): buf->rootY
 
@@ -5220,4 +5226,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.567 2002/11/27 16:32:51 ukai Exp $
+$Id: ChangeLog,v 1.568 2002/11/27 16:35:18 ukai Exp $

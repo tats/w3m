@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.20 2002/11/25 16:57:17 ukai Exp $ */
+/* $Id: menu.c,v 1.21 2002/11/27 16:28:37 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -85,6 +85,8 @@ static int mNext(char c);
 static int mPrev(char c);
 static int mFore(char c);
 static int mBack(char c);
+static int mLineU(char c);
+static int mLineD(char c);
 static int mOk(char c);
 static int mCancel(char c);
 static int mClose(char c);
@@ -109,7 +111,7 @@ static int (*MenuKeymap[128]) (char c) = {
 /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
     mCancel,mNull,  mOk,    mNull,  mNull,  mOk,    mDown,  mNull,
 /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
-    mUp,    mNull,  mNull,  mNull,  mNull,  mNull,  mNext,  mNull,
+    mUp,    mNull,  mSrchB, mSrchF, mNull,  mNull,  mNext,  mNull,
 /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_      */
     mNull,  mNull,  mSusp,  mEsc,   mNull,  mNull,  mNull,  mNull,
 /*  SPC     !       "       #       $       %       &       '        */
@@ -123,7 +125,7 @@ static int (*MenuKeymap[128]) (char c) = {
 /*  @       A       B       C       D       E       F       G        */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 /*  H       I       J       K       L       M       N       O        */
-    mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mSrchP, mNull,
+    mNull,  mNull,  mLineU, mLineD, mNull,  mNull,  mSrchP, mNull,
 /*  P       Q       R       S       T       U       V       W        */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 /*  X       Y       Z       [       \       ]       ^       _        */
@@ -897,6 +899,42 @@ mBack(char c)
 }
 
 static int
+mLineU(char c)
+{
+    int mselect = CurrentMenu->select;
+
+    if (mselect >= CurrentMenu->nitem)
+	return mLast(c);
+    if (CurrentMenu->offset + CurrentMenu->height >= CurrentMenu->nitem)
+	mselect++;
+    else {
+	down_menu(CurrentMenu, 1);
+	if (mselect < CurrentMenu->offset)
+	    mselect++;
+    }
+    goto_menu(CurrentMenu, mselect, 1);
+    return (MENU_NOTHING);
+}
+
+static int
+mLineD(char c)
+{
+    int mselect = CurrentMenu->select;
+
+    if (mselect <= 0)
+	return mTop(c);
+    if (CurrentMenu->offset <= 0)
+	mselect--;
+    else {
+	up_menu(CurrentMenu, 1);
+	if (mselect >= CurrentMenu->offset + CurrentMenu->height)
+	    mselect--;
+    }
+    goto_menu(CurrentMenu, mselect, -1);
+    return (MENU_NOTHING);
+}
+
+static int
 mOk(char c)
 {
     int mselect = CurrentMenu->select;
@@ -1087,10 +1125,21 @@ mSrchP(char c)
 #define MOUSE_BTN_RESET -1
 
 static int
+mMouse_scroll_line(void)
+{
+    int i = 0;
+    if (relative_wheel_scroll)
+        i = (relative_wheel_scroll_ratio * CurrentMenu->height + 99) / 100;
+    else
+        i = fixed_wheel_scroll_count;
+    return i ? i : 1;
+}
+
+static int
 process_mMouse(int btn, int x, int y)
 {
     Menu *menu;
-    int mselect;
+    int mselect, i;
     static int press_btn = MOUSE_BTN_RESET, press_x, press_y;
     char c = ' ';
 
@@ -1100,7 +1149,9 @@ process_mMouse(int btn, int x, int y)
 	return (MENU_NOTHING);
 
     if (btn == MOUSE_BTN_UP) {
-	if (press_btn == MOUSE_BTN1_DOWN || press_btn == MOUSE_BTN3_DOWN) {
+	switch (press_btn) {
+	case MOUSE_BTN1_DOWN:
+	case MOUSE_BTN3_DOWN:
 	    if (x < menu->x - FRAME_WIDTH ||
 		x >= menu->x + menu->width + FRAME_WIDTH ||
 		y < menu->y - 1 || y >= menu->y + menu->height + 1) {
@@ -1110,6 +1161,16 @@ process_mMouse(int btn, int x, int y)
 		      x < menu->x) ||
 		     (x >= menu->x + menu->width &&
 		      x < menu->x + menu->width + FRAME_WIDTH)) {
+		return (MENU_NOTHING);
+	    }
+	    else if (press_y > y) {
+		for (i = 0; i < press_y - y; i++)
+		    mLineU(c);
+		return (MENU_NOTHING);
+	    }
+	    else if (press_y < y) {
+		for (i = 0; i < y - press_y; i++)
+		    mLineD(c);
 		return (MENU_NOTHING);
 	    }
 	    else if (y == menu->y - 1) {
@@ -1126,12 +1187,33 @@ process_mMouse(int btn, int x, int y)
 		    return (MENU_NOTHING);
 		return (select_menu(menu, mselect));
 	    }
+	    break;
+	case MOUSE_BTN4_DOWN_RXVT:
+	    for (i = 0; i < mMouse_scroll_line(); i++)
+		 mLineD(c);
+	    break;
+	case MOUSE_BTN5_DOWN_RXVT:
+	    for (i = 0; i < mMouse_scroll_line(); i++)
+		mLineU(c);
+	    break;
 	}
     }
-    else {
+    else if (btn == MOUSE_BTN4_DOWN_XTERM) {
+	for (i = 0; i < mMouse_scroll_line(); i++)
+	    mLineD(c);
+    }
+    else if (btn == MOUSE_BTN5_DOWN_XTERM) {
+	for (i = 0; i < mMouse_scroll_line(); i++)
+	    mLineU(c);
+    }
+
+    if (btn != MOUSE_BTN4_DOWN_RXVT || press_btn == MOUSE_BTN_RESET) {
 	press_btn = btn;
 	press_x = x;
 	press_y = y;
+    }
+    else {
+	press_btn = MOUSE_BTN_RESET;
     }
     return (MENU_NOTHING);
 }

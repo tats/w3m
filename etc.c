@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.25 2002/09/28 16:30:07 ukai Exp $ */
+/* $Id: etc.c,v 1.26 2002/10/30 15:39:41 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -891,11 +891,17 @@ find_auth_pass_entry(char *host, int port, char *file, char *realm,
 }
 
 int
-find_auth_user_passwd(char *host, int port, char *file, char *realm,
+find_auth_user_passwd(ParsedURL *pu, char *realm,
 		      Str *uname, Str *pwd, int is_proxy)
 {
     struct auth_pass *ent;
-    ent = find_auth_pass_entry(host, port, file, realm, is_proxy);
+
+    if (pu->user && pu->pass) {
+	*uname = Strnew_charp(pu->user);
+	*pwd = Strnew_charp(pu->pass);
+	return 1;
+    }
+    ent = find_auth_pass_entry(pu->host, pu->port, pu->file, realm, is_proxy);
     if (ent) {
 	*uname = ent->uname;
 	*pwd = ent->pwd;

@@ -1,5 +1,9 @@
 2002-03-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* scripts/.cvsignore: add xface2xbm
+
+2002-03-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03130] w3mman.1
 	* scripts/w3mman/.cvsignore: add w3mman.1
 	* scripts/w3mman/Makefile (MAN_DIR): added
@@ -3183,4 +3187,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.350 2002/03/14 17:51:41 ukai Exp $
+$Id: ChangeLog,v 1.351 2002/03/14 17:53:29 ukai Exp $

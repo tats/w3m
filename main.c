@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.108 2002/07/01 10:51:58 inu Exp $ */
+/* $Id: main.c,v 1.109 2002/07/01 11:12:14 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3314,9 +3314,9 @@ lastA(void)
     if (!hl || hl->nmark == 0)
 	return;
 
-    if( prec_num >= hl->nmark )
+    if (prec_num >= hl->nmark)
 	hseq = 0;
-    else if( prec_num > 0 )
+    else if (prec_num > 0)
 	hseq = hl->nmark - prec_num;
     do {
 	if (hseq < 0)

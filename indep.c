@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: indep.c,v 1.5 2001/11/20 04:11:16 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -280,7 +280,7 @@ cleanup_line(Str s, int mode)
 int
 getescapechar(char **str)
 {
-    int i, dummy = -1;
+    int dummy = -1;
     char *p = *str, *q;
 
     if (*p == '&')

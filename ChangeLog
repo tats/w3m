@@ -1,3 +1,18 @@
+2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* main.c (MAIN): add braces to avoid ambiguous `else'
+	* main.c (set_buffer_environ): remove unused variables
+	* linein.c (_rcompl): not EMACS_LIKE_LINEEDIT only
+	* local.c (localcgi_get): remove unused variables
+	* mailcap.c (unquote_mailcap_loop): remove unused variables
+	* url.c (init_PRNG) add parentheses around assignment used as true value
+	* url.c (parseURL): remove unsed label
+	* url.c (parseURL2): remove unused variables
+	* ftp.c (ftp_escape_str ftp_restore_str): remove not used functions
+	* indep.c (getescapechar): remove unused variable
+	
+	* proto.h: add missin prototypes
+
 2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* terms.c (skip_escseq): [w3m-dev 02447]

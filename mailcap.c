@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: mailcap.c,v 1.5 2001/11/20 04:11:16 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -303,7 +303,7 @@ static Str
 unquote_mailcap_loop(char *qstr, char *type, char *name, char *attr, int *stat, int flag0)
 {
     Str str, tmp, test, then;
-    char *p, *q;
+    char *p;
     int status = MC_NORMAL, prev_status = MC_NORMAL, sp = 0, flag;
 
     if (stat)

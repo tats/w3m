@@ -376,8 +376,6 @@ Str FTPDIRtmp;
 
 static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
 static int ftp_system(FTP);
-static char *ftp_escape_str(char *);
-static char *ftp_restore_str(char *);
 
 #define	SERVER_NONE	0
 #define	UNIXLIKE_SERVER	1
@@ -676,29 +674,6 @@ ftp_system(FTP ftp)
     return (sv_type);
 }
 
-static char *
-ftp_escape_str(char *str)
-{
-    Str s = Strnew();
-    char *p, buf[5];
-    unsigned char c;
-
-    for (; (c = (unsigned char) *str) != '\0'; str++) {
-	p = NULL;
-	if (c < '!' || c > '~'
-	    || c == '#' || c == '?' || c == '+'
-	    || c == '&' || c == '<' || c == '>' || c == '"' || c == '%') {
-	    sprintf(buf, "%%%02X", c);
-	    p = buf;
-	}
-	if (p)
-	    Strcat_charp(s, p);
-	else
-	    Strcat_char(s, *str);
-    }
-    return s->ptr;
-}
-
 #define XD_CTOD(c) {\
   if (c >= '0' && c <= '9') {\
     c -= (unsigned char)'0';\
@@ -709,35 +684,6 @@ ftp_escape_str(char *str)
   } else {\
     goto skip;\
   }\
-}
-
-static char *
-ftp_restore_str(char *str)
-{
-    Str s = Strnew();
-    char *p;
-    unsigned char c, code[2];
-
-    for (; *str; str++) {
-	p = NULL;
-	if (*str == '%' && str[1] != '\0' && str[2] != '\0') {
-	    c = (unsigned char) str[1];
-	    XD_CTOD(c)
-		code[0] = c * (unsigned char) 16;
-	    c = (unsigned char) str[2];
-	    XD_CTOD(c)
-		code[0] += c;
-	    code[1] = '\0';
-	    p = (char *) code;
-	    str += 2;
-	}
-      skip:
-	if (p)
-	    Strcat_charp(s, p);
-	else
-	    Strcat_char(s, *str);
-    }
-    return s->ptr;
 }
 
 #define EX_SKIP_SPACE(cp) {\

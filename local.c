@@ -459,7 +459,7 @@ localcgi_get(char *uri, char *request, char *referer)
     FILE *f;
     int status;
     pid_t pid;
-    char *file, *sh;
+    char *file;
     
     file = cgi_filename(uri, &status);
     if (check_local_cgi(file, status) < 0)

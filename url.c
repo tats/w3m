@@ -178,7 +178,7 @@ free_ssl_ctx()
 
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
 #include <rand.h>
-void
+static void
 init_PRNG()
 {
     char buffer[256];
@@ -186,7 +186,7 @@ init_PRNG()
     long l;
     if (RAND_status())
 	return;
-    if (file = RAND_file_name(buffer, sizeof(buffer))) {
+    if ((file = RAND_file_name(buffer, sizeof(buffer)))) {
 #ifdef USE_EGD
 	if (RAND_egd(file) > 0)
 	    return;
@@ -206,7 +206,7 @@ init_PRNG()
 }
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
-SSL *
+static SSL *
 openSSLHandle(int sock)
 {
     SSL *handle;
@@ -824,7 +824,7 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 	else
 	    p_url->file = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
     }
- do_query:
+
     if (*p == '?') {
 	q = ++p;
 	while (*p && *p != '#')
@@ -864,7 +864,7 @@ copyParsedURL(ParsedURL * p, ParsedURL * q)
 void
 parseURL2(char *url, ParsedURL * pu, ParsedURL * current)
 {
-    char *p, *q;
+    char *p;
     Str tmp;
     int relative_uri = FALSE;
 
@@ -1165,7 +1165,7 @@ otherinfo(ParsedURL * target, ParsedURL * current, char *referer)
     return s->ptr;
 }
 
-Str
+static Str
 HTTPrequest(ParsedURL * pu, ParsedURL * current, HRequest * hr, TextList * extra)
 {
     Str tmp;
@@ -1685,7 +1685,7 @@ add_index_file(ParsedURL * pu, URLFile *uf)
     return;
 }
 
-char *
+static char *
 guessContentTypeFromTable(struct table2 *table, char *filename)
 {
     char *p;

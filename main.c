@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.8 2001/11/19 07:58:24 ukai Exp $ */
+/* $Id: main.c,v 1.9 2001/11/20 04:11:16 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include "terms.h"
 #include "myctype.h"
+#include "regex.h"
 #ifdef MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -505,11 +506,12 @@ MAIN(int argc, char **argv, char **envp)
                Str hs;
                if (++i >= argc)
                    usage();
-               if ((hs = make_optional_header_string(argv[i])) != NULL)
+               if ((hs = make_optional_header_string(argv[i])) != NULL) {
                    if (header_string == NULL)
                        header_string = hs;
                    else
                        Strcat (header_string, hs);
+	       }
            }       
 #ifdef MOUSE
 	    else if (!strcmp("-no-mouse", argv[i])) {
@@ -4497,9 +4499,6 @@ set_buffer_environ(Buffer *buf)
     Anchor *a;
     Str s;
     ParsedURL pu;
-    TextListItem *ti;
-    struct frameset *f_set = NULL;
-    int all;
 
     if (buf == NULL)
 	return;

@@ -1,3 +1,8 @@
+2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.3.2 release candidate 1
+	* version.c.in: update
+
 2002-10-26  Gary Johnson <garyjohn@spk.agilent.com>
 
 	* [w3m-dev-en 00777] patch to fix w3m-0.3.1 word break problem
@@ -330,7 +335,7 @@
 
 2002-07-19  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
-	* [w3m-dev 03276] compile error on EWS4800
+a	* [w3m-dev 03276] compile error on EWS4800
 	* file.c (extract_auth_val): fix warnings
 	* w3mimg/w3mimg.c: include <stdlib.h>
 
@@ -3952,4 +3957,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.445 2002/10/25 16:00:52 ukai Exp $
+$Id: ChangeLog,v 1.446 2002/10/25 16:11:20 ukai Exp $

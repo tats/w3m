@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.7 2001/11/20 17:49:23 ukai Exp $
+# $Id: configure,v 1.8 2001/11/21 03:58:32 ukai Exp $
 #	Configuration.
 #
 
@@ -1927,13 +1927,14 @@ END_OF_CONFIG_H
 echo ''
 echo 'config.h is created. See config.h for further configuration.'
 echo ''
-echo 'Generating dirlist.cgi'
+echo 'Generating scripts/dirlist.cgi'
 
 perl=`./which perl`
 if [ `expr "$perl" : 'not found'` != 0 ]; then
   perl=/usr/local/bin/perl
 fi
 sed -e "s;@PERL@;$perl;" \
-    scripts/dirlist.in > scripts/dirlist.cgi
+    scripts/dirlist.cgi.in > scripts/dirlist.cgi
+chmod +x scripts/dirlist.cgi
 
 echo 'Configuration done. Just type "make".'

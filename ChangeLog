@@ -1,5 +1,13 @@
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* XMakefile: update scripts/dirlist.cgi generation
+	* scripts/multipart/multipart.cgi: removed
+	* scripts/w3mman/w3mman scripts/w3mman/w3mman2html.cgi: removed
+	* scripts/dirlist.in scripts/dirlist.cgi: removed
+	* scripts/dirlist.cgi.in: added
+
+2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* add rcsids
 
 2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>

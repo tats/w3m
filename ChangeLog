@@ -6,6 +6,10 @@
 	* doc-jp/README: ditto
 	* NEWS: update
 
+2002-11-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* scripts/w3mhelp.cgi.in: add chkWORD
+
 2002-11-04  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00827] Re: w3m-cvs segfaults on news://<mid> URLs
@@ -4101,4 +4105,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.467 2002/11/04 17:14:18 ukai Exp $
+$Id: ChangeLog,v 1.468 2002/11/05 13:25:31 ukai Exp $

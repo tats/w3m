@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.34 2002/01/15 03:45:02 ukai Exp $ */
+/* $Id: url.c,v 1.35 2002/01/17 11:06:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -2067,5 +2067,34 @@ searchURIMethods(ParsedURL *pu)
 	}
     }
     return NULL;
+}
+
+/*
+ * RFC2396: Uniform Resource Identifiers (URI): Generic Syntax
+ * Appendix A. Collected BNF for URI
+ * uric          = reserved | unreserved | escaped
+ * reserved      = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" |
+ *                 "$" | ","
+ * unreserved    = alphanum | mark
+ * mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" |
+ *                  "(" | ")"
+ * escaped       = "%" hex hex
+ */
+
+#define URI_PATTERN	"[-;/?:@&=+$,a-zA-Z0-9_.!~*'()%]*"
+void
+chkExternalURIBuffer(Buffer *buf)
+{
+    int i;
+    struct table2 *ump;
+
+    for (i = 0; (ump = urimethods[i]) != NULL; i++) {
+	for (; ump->item1 != NULL; ump++) {
+	    reAnchor(buf, Sprintf("%s:" URI_PATTERN, ump->item1)->ptr);
+	}
+    }
+    for (ump = default_urimethods; ump->item1 != NULL; ump++) {
+	reAnchor(buf, Sprintf("%s:" URI_PATTERN, ump->item1)->ptr);
+    }
 }
 #endif

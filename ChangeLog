@@ -1,3 +1,10 @@
+2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02867] mark URL for external URIs
+	* main.c (chkURLBuffer): chkExternalURIBuffer()
+	* proto.h (chkExternalURIBuffer): added
+	* url.c (chkExternalURIBuffer): added
+
 2002-01-17  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02866]
@@ -2098,4 +2105,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.238 2002/01/17 10:29:14 ukai Exp $
+$Id: ChangeLog,v 1.239 2002/01/17 11:06:45 ukai Exp $

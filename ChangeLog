@@ -1,5 +1,11 @@
 2002-12-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03607] mymktime: time zone support
+	* etc.c (get_zone): added
+		(mymktime): parse timezone
+
+2002-12-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03606] Re: clean up displayBuffer()
 	* main.c (followA): B_FORCE_REDRAW
 		(follow_map): ditto
@@ -6097,4 +6103,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.650 2002/12/27 15:50:32 ukai Exp $
+$Id: ChangeLog,v 1.651 2002/12/27 15:53:03 ukai Exp $

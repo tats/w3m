@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.44 2002/12/24 17:20:46 ukai Exp $ */
+/* $Id: etc.c,v 1.45 2002/12/27 15:53:04 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1646,12 +1646,38 @@ get_time(char **s, int *hour, int *min, int *sec)
     return 0;
 }
 
+static int
+get_zone(char **s, int *z_hour, int *z_min)
+{
+    Str tmp = Strnew();
+    int zone;
+    char *ss = *s;
+
+    if (!**s)
+	return -1;
+
+    if (**s == '+' || **s == '-')
+	Strcat_char(tmp, *((*s)++));
+    while (**s && IS_DIGIT(**s))
+	Strcat_char(tmp, *((*s)++));
+    if (!(tmp->length == 4 && IS_DIGIT(*ss)) &&
+	!(tmp->length == 5 && (*ss == '+' || *ss == '-'))) {
+	*s = ss;
+	return -1;
+    }
+
+    zone = atoi(tmp->ptr);
+    *z_hour = zone / 100;
+    *z_min = zone - (zone / 100) * 100;
+    return 0;
+}
+
 /* RFC 1123 or RFC 850 or ANSI C asctime() format string -> time_t */
 time_t
 mymktime(char *timestr)
 {
     char *s;
-    int day, mon, year, hour, min, sec;
+    int day, mon, year, hour, min, sec, z_hour = 0, z_min = 0;
 
     if (!(timestr && *timestr))
 	return -1;
@@ -1688,8 +1714,12 @@ mymktime(char *timestr)
 	    min = 0;
 	    sec = 0;
 	}
-	else if (get_time(&s, &hour, &min, &sec) == -1) {
-	    return -1;
+	else {
+	    if (get_time(&s, &hour, &min, &sec) == -1)
+		return -1;
+	    while (*s && !IS_DIGIT(*s) && *s != '+' && *s != '-')
+		s++;
+	    get_zone(&s, &z_hour, &z_min);
 	}
     }
     else {
@@ -1715,8 +1745,8 @@ mymktime(char *timestr)
 	    return -1;
     }
 #ifdef DEBUG
-    fprintf(stderr, "year=%d month=%d day=%d hour:min:sec=%d:%d:%d\n",
-	    year, mon, day, hour, min, sec);
+    fprintf(stderr, "year=%d month=%d day=%d hour:min:sec=%d:%d:%d zone=%d:%d\n",
+	    year, mon, day, hour, min, sec, z_hour, z_min);
 #endif				/* DEBUG */
 
     mon -= 3;
@@ -1726,6 +1756,8 @@ mymktime(char *timestr)
     }
     day += (year - 1968) * 1461 / 4;
     day += ((((mon * 153) + 2) / 5) - 672);
+    hour -= z_hour;
+    min -= z_min;
     return (time_t) ((day * 60 * 60 * 24) +
 		     (hour * 60 * 60) + (min * 60) + sec);
 }

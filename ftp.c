@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.28 2003/02/26 17:38:00 ukai Exp $ */
+/* $Id: ftp.c,v 1.29 2003/03/06 14:26:14 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -283,7 +283,8 @@ ftp_quit(FTP ftp)
     return 0;
 }
 
-static int ex_ftpdir_name_size_date(char *, char **, char **, char **, char **);
+static int ex_ftpdir_name_size_date(char *, char **, char **, char **,
+				    char **);
 
 #define	SERVER_NONE	0
 #define	UNIXLIKE_SERVER	1
@@ -483,8 +484,8 @@ loadFTPDir(ParsedURL *pu, char *code)
 	    Strcat_charp(FTPDIRtmp, "</a></pre>\n");
 	else
 	    Strcat_charp(FTPDIRtmp, "</a></ul>\n");
-        Strcat_charp(FTPDIRtmp, "<p>Transfer Interrupted!\n");
-        goto ftp_end;
+	Strcat_charp(FTPDIRtmp, "<p>Transfer Interrupted!\n");
+	goto ftp_end;
     }
     TRAP_ON;
 
@@ -504,8 +505,9 @@ loadFTPDir(ParsedURL *pu, char *code)
 	max_len = 20;
 	while (tmp = Strfgets(current_ftp.data), tmp->length > 0) {
 	    Strchop(tmp);
-	    if ((ftype = ex_ftpdir_name_size_date(tmp->ptr, &name, &link, &date,
-						  &size)) == FTPDIR_NONE)
+	    if ((ftype =
+		 ex_ftpdir_name_size_date(tmp->ptr, &name, &link, &date,
+					  &size)) == FTPDIR_NONE)
 		continue;
 	    if (!strcmp(".", name) || !strcmp("..", name))
 		continue;
@@ -653,7 +655,7 @@ ex_ftpdir_name_size_date(char *line, char **name, char **link, char **date,
     EX_SKIP_SPACE(cp);
     p = cp;
     EX_COUNT_DIGIT(cp);
-    if (*cp == ',') {	/* device file ? */
+    if (*cp == ',') {		/* device file ? */
 	cp++;
 	EX_SKIP_SPACE(cp);
 	EX_SKIP_NONE_SPACE(cp);
@@ -684,7 +686,7 @@ ex_ftpdir_name_size_date(char *line, char **name, char **link, char **date,
 	if ((p = strstr(cp, " -> ")) == NULL)
 	    goto done;
 	*name = allocStr(cp, p - cp);
-	*link = allocStr(p, - 1);
+	*link = allocStr(p, -1);
 	*sizep = "";
 	break;
     case 'd':

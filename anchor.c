@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.28 2003/09/22 21:02:16 ukai Exp $ */
+/* $Id: anchor.c,v 1.29 2003/09/24 18:48:58 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -811,7 +811,8 @@ link_list_panel(Buffer *buf)
 	    if (a->title && *a->title)
 		t = html_quote(a->title);
 	    else if (DecodeURL)
-		t = html_quote(url_unquote_conv(a->url, buf->document_charset));
+		t = html_quote(url_unquote_conv
+			       (a->url, buf->document_charset));
 	    else
 		t = html_quote(a->url);
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
@@ -838,14 +839,16 @@ link_list_panel(Buffer *buf)
 		    u = html_quote(p);
 		    if (DecodeURL)
 			p = html_quote(url_unquote_conv(p,
-							buf->document_charset));
+							buf->
+							document_charset));
 		    else
 			p = u;
 		    if (m->alt && *m->alt)
 			t = html_quote(m->alt);
 		    else if (DecodeURL)
 			t = html_quote(url_unquote_conv(m->url,
-							buf->document_charset));
+							buf->
+							document_charset));
 		    else
 			t = html_quote(m->url);
 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,

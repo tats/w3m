@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.90 2003/09/24 18:35:06 ukai Exp $ */
+/* $Id: rc.c,v 1.91 2003/09/24 18:49:00 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -52,7 +52,7 @@ static int RC_table_size;
 #define P_SCALE    10
 
 #if LANG == JA
-static wc_ces OptionCharset = WC_CES_EUC_JP; /* charset of source code */
+static wc_ces OptionCharset = WC_CES_EUC_JP;	/* charset of source code */
 static int OptionEncode = FALSE;
 
 #define CMT_HELPER	 "外部ビューアの編集"
@@ -534,7 +534,7 @@ static struct sel_c auto_detect_str[] = {
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
-      NULL},
+     NULL},
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *)&pixel_per_char,
      CMT_PIXEL_PER_CHAR, NULL},
 #ifdef USE_IMAGE
@@ -1019,14 +1019,16 @@ show_params(FILE * fp)
     char *cmt;
 
 #if ENABLE_NLS
-    OptionCharset = SystemCharset; /* FIXME */
-#endif	
+    OptionCharset = SystemCharset;	/* FIXME */
+#endif
 
     fputs("\nconfiguration parameters\n", fp);
     for (j = 0; sections[j].name != NULL; j++) {
 #if LANG == JA || ENABLE_NLS
 	if (!OptionEncode)
-	    cmt = wc_conv(gettext(sections[j].name), OptionCharset, InnerCharset)->ptr;
+	    cmt =
+		wc_conv(gettext(sections[j].name), OptionCharset,
+			InnerCharset)->ptr;
 	else
 #endif
 	    cmt = sections[j].name;
@@ -1379,9 +1381,9 @@ sync_with_option(void)
 	AcceptLang = "ja;q=1.0, en;q=0.5";
 #else				/* LANG != JA (must be EN) */
 	/* TRANSLATORS: 
-	   AcceptLang default: this is used in Accept-Language: HTTP request 
-	   header. For example, ja.po should translate it as
-	   "ja;q=1.0, en;q=0.5" like that.
+	 * AcceptLang default: this is used in Accept-Language: HTTP request 
+	 * header. For example, ja.po should translate it as
+	 * "ja;q=1.0, en;q=0.5" like that.
 	 */
 	AcceptLang = _("en;q=1.0");
 #endif
@@ -1501,7 +1503,7 @@ to_str(struct param_ptr *p)
 #endif
 #ifdef USE_M17N
     case P_CODE:
-	return Sprintf("%d", (int)(*(wc_ces *)p->varptr));
+	return Sprintf("%d", (int)(*(wc_ces *) p->varptr));
 #endif
     case P_NZINT:
 	return Sprintf("%d", *(int *)p->varptr);
@@ -1542,7 +1544,7 @@ load_option_panel(void)
 	optionpanel_str = Sprintf(optionpanel_src1, w3m_version,
 				  html_quote(localCookie()->ptr), CMT_HELPER);
 #if ENABLE_NLS
-    OptionCharset = SystemCharset; /* FIXME */
+    OptionCharset = SystemCharset;	/* FIXME */
 #endif
 #if LANG == JA || ENABLE_NLS
     if (!OptionEncode) {
@@ -1550,15 +1552,15 @@ load_option_panel(void)
 	    wc_Str_conv(optionpanel_str, OptionCharset, InnerCharset);
 	for (i = 0; sections[i].name != NULL; i++) {
 	    sections[i].name =
-		wc_conv(gettext(sections[i].name), OptionCharset, 
+		wc_conv(gettext(sections[i].name), OptionCharset,
 			InnerCharset)->ptr;
 	    for (p = sections[i].params; p->name; p++)
 		p->comment =
-		    wc_conv(gettext(p->comment), OptionCharset, 
+		    wc_conv(gettext(p->comment), OptionCharset,
 			    InnerCharset)->ptr;
 	}
 	for (s = colorstr; s->text; s++)
-	    s->text = wc_conv(gettext(s->text), OptionCharset, 
+	    s->text = wc_conv(gettext(s->text), OptionCharset,
 			      InnerCharset)->ptr;
 	OptionEncode = TRUE;
     }
@@ -1609,7 +1611,7 @@ load_option_panel(void)
 	    case PI_CODE:
 		tmp = to_str(p);
 		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
-		for (c = *(wc_ces_list **)p->select; c->desc != NULL; c++) {
+		for (c = *(wc_ces_list **) p->select; c->desc != NULL; c++) {
 		    Strcat_charp(src, "<option value=");
 		    Strcat(src, Sprintf("%s\n", c->name));
 		    if (c->id == atoi(tmp->ptr))
@@ -1634,7 +1636,7 @@ load_option_panel(void)
     if (buf)
 #if LANG == JA
 	buf->document_charset = OptionCharset;
-#else   /* XXX: ENABLE_NLS is ok for SystemCharset */
+#else				/* XXX: ENABLE_NLS is ok for SystemCharset */
 	buf->document_charset = SystemCharset;
 #endif
 #endif

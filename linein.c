@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.32 2003/09/22 21:02:19 ukai Exp $ */
+/* $Id: linein.c,v 1.33 2003/09/24 18:48:59 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -184,8 +184,8 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	cm_clear = TRUE;
 	cm_disp_clear = TRUE;
 	if (!i_quote &&
-		(((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
-		     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
+	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
+	     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
 	    if (emacs_like_lineedit && cm_next) {
 		_dcompl();
 		need_redraw = TRUE;

@@ -1,10 +1,11 @@
-/* $Id: display.c,v 1.66 2003/09/22 21:02:17 ukai Exp $ */
+/* $Id: display.c,v 1.67 2003/09/24 18:48:59 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
 #define MAX(a, b)  ((a) > (b) ? (a) : (b))
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
+/* *INDENT-OFF* */
 #ifdef USE_COLOR
 
 #define EFFECT_ANCHOR_START       effect_anchor_start()
@@ -20,8 +21,17 @@
 #define EFFECT_MARK_START         effect_mark_start()
 #define EFFECT_MARK_END           effect_mark_end()
 
-/* color: *     0  black *      1  red *        2  green *      3  yellow
- * *    4  blue *       5  magenta *    6  cyan *       7  white */
+/*-
+ * color: 
+ *     0  black 
+ *     1  red 
+ *     2  green 
+ *     3  yellow
+ *     4  blue 
+ *     5  magenta 
+ *     6  cyan 
+ *     7  white 
+ */
 
 #define EFFECT_ANCHOR_START_C       setfcolor(anchor_color)
 #define EFFECT_IMAGE_START_C        setfcolor(image_color)
@@ -62,6 +72,7 @@
 #define define_effect(name_start,name_end,color_start,color_end,mono_start,mono_end) \
 static void name_start { if (useColor) { color_start; } else { mono_start; }}\
 static void name_end { if (useColor) { color_end; } else { mono_end; }}
+
 define_effect(EFFECT_ANCHOR_START, EFFECT_ANCHOR_END, EFFECT_ANCHOR_START_C,
 	      EFFECT_ANCHOR_END_C, EFFECT_ANCHOR_START_M, EFFECT_ANCHOR_END_M)
 define_effect(EFFECT_IMAGE_START, EFFECT_IMAGE_END, EFFECT_IMAGE_START_C,
@@ -72,7 +83,6 @@ define_effect(EFFECT_MARK_START, EFFECT_MARK_END, EFFECT_MARK_START_C,
 	      EFFECT_MARK_END_C, EFFECT_MARK_START_M, EFFECT_MARK_END_M)
 
 /*****************/
-/* *INDENT-OFF* */
 static void
 EFFECT_ACTIVE_START
 {
@@ -131,7 +141,7 @@ EFFECT_VISITED_END
 	}
     }
 }
-/* *INDENT-ON* */
+
 #else				/* not USE_COLOR */
 
 #define EFFECT_ANCHOR_START       underline()
@@ -147,9 +157,8 @@ EFFECT_VISITED_END
 #define EFFECT_MARK_START         standout()
 #define EFFECT_MARK_END           standend()
 #endif				/* not USE_COLOR */
-/* 
- * Terminate routine.
- */
+/* *INDENT-ON* */
+
 void
 fmTerm(void)
 {

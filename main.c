@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.232 2003/09/23 18:42:25 ukai Exp $ */
+/* $Id: main.c,v 1.233 2003/09/24 18:48:59 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1606,8 +1606,8 @@ srchcore(char *volatile str, int (*func) (Buffer *, char *))
 
 #ifdef USE_M17N
     if (SearchConv && !WcOption.pre_conv &&
-        Currentbuf->document_charset != DisplayCharset)
-        str = wtf_conv_fit(str, Currentbuf->document_charset);
+	Currentbuf->document_charset != DisplayCharset)
+	str = wtf_conv_fit(str, Currentbuf->document_charset);
     else
 #endif
 	str = SearchString;
@@ -4159,10 +4159,12 @@ adBmark(void)
 		   *   WC_CES_SHIFT_JIS, shouldn't it? - ukai
 		   */
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
-					  InnerCharset, WC_CES_EUC_JP)))->ptr);
+						 InnerCharset,
+						 WC_CES_EUC_JP)))->ptr);
 #else
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
-					  InnerCharset, SystemCharset)))->ptr);
+						 InnerCharset,
+						 SystemCharset)))->ptr);
 #endif
 #else
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
@@ -4509,7 +4511,8 @@ _peekURL(int only_img)
 	s = parsedURL2Str(&pu);
     }
     if (DecodeURL)
-	s = Strnew_charp(url_unquote_conv(s->ptr, Currentbuf->document_charset));
+	s = Strnew_charp(url_unquote_conv
+			 (s->ptr, Currentbuf->document_charset));
 #ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
@@ -4618,7 +4621,7 @@ vwSrc(void)
 	    old_charset = DisplayCharset;
 	    old_fix_width_conv = WcOption.fix_width_conv;
 	    DisplayCharset = (Currentbuf->document_charset != WC_CES_US_ASCII)
-			     ? Currentbuf->document_charset : 0;
+		? Currentbuf->document_charset : 0;
 	    WcOption.fix_width_conv = WC_FALSE;
 #endif
 	    saveBufferBody(Currentbuf, f, TRUE);
@@ -5223,7 +5226,7 @@ do_mouse_action(int btn, int x, int y)
 #ifdef USE_M17N
 		 || (WcOption.use_wide && Currentbuf->currentLine != NULL &&
 		     (CharType(Currentbuf->currentLine->
-		      propBuf[Currentbuf->pos]) == PC_KANJI1)
+			       propBuf[Currentbuf->pos]) == PC_KANJI1)
 		     && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
 #endif
 		) &&
@@ -5285,7 +5288,7 @@ process_mouse(int btn, int x, int y)
 			 || (WcOption.use_wide &&
 			     Currentbuf->currentLine != NULL &&
 			     (CharType(Currentbuf->currentLine->
-			      propBuf[Currentbuf->pos]) == PC_KANJI1)
+				       propBuf[Currentbuf->pos]) == PC_KANJI1)
 			     && Currentbuf->cursorX == press_x
 			     - Currentbuf->rootX - 1)
 #endif

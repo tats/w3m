@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.47 2003/09/22 21:02:21 ukai Exp $ */
+/* $Id: table.c,v 1.48 2003/09/24 18:49:00 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2490,8 +2490,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     /* failsafe: a tag other than <option></option>and </select> in *
      * <select> environment is regarded as the end of <select>. */
     if (mode->pre_mode & TBLM_INSELECT) {
-    switch (cmd) {
-      CASE_TABLE_TAG:
+	switch (cmd) {
+	  CASE_TABLE_TAG:
 	case HTML_N_FORM:
 	case HTML_N_SELECT:	/* mode->end_tag */
 	    table_close_select(tbl, mode, width);
@@ -2508,7 +2508,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	case HTML_N_CAPTION:
 	    mode->caption = 0;
 	    if (cmd == HTML_N_CAPTION)
-	    return TAG_ACTION_NONE;
+		return TAG_ACTION_NONE;
 	    break;
 	default:
 	    return TAG_ACTION_FEED;
@@ -3101,8 +3101,8 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	    case TAG_ACTION_FEED:
 	    default:
 		if (parsedtag_need_reconstruct(tag))
-		line = parsedtag2str(tag)->ptr;
-	}
+		    line = parsedtag2str(tag)->ptr;
+	    }
 	}
 	else {
 	    if (!(mode->pre_mode & (TBLM_PLAIN | TBLM_INTXTA | TBLM_INSELECT |
@@ -3228,12 +3228,12 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		p = line;
 		line = "";
 	    }
-	if (mode->pre_mode & TBLM_PLAIN)
+	    if (mode->pre_mode & TBLM_PLAIN)
 		i = maximum_visible_length_plain(p);
-	else
+	    else
 		i = maximum_visible_length(p);
-	addcontentssize(tbl, i);
-	setwidth(tbl, mode);
+	    addcontentssize(tbl, i);
+	    setwidth(tbl, mode);
 	    if (nl)
 		clearcontentssize(tbl, mode);
 	    pushdata(tbl, tbl->row, tbl->col, p);

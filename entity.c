@@ -1,10 +1,10 @@
-/* $Id: entity.c,v 1.6 2003/09/22 21:27:42 ukai Exp $ */
+/* $Id: entity.c,v 1.7 2003/09/24 18:48:59 ukai Exp $ */
 #ifdef DUMMY
 #include "Str.h"
 #define NBSP " "
 #define UseAltEntity 1
 #undef USE_M17N
-#else /* DUMMY */
+#else				/* DUMMY */
 #include "fm.h"
 #ifdef USE_M17N
 #ifdef USE_UNICODE
@@ -12,7 +12,7 @@
 #include "utf8.h"
 #endif
 #endif
-#endif /* DUMMY */
+#endif				/* DUMMY */
 
 /* *INDENT-OFF* */
 static char *alt_latin1[ 96 ] = {

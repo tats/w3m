@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.29 2003/09/22 21:02:20 ukai Exp $ */
+/* $Id: map.c,v 1.30 2003/09/24 18:49:00 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -561,8 +561,7 @@ page_info_panel(Buffer *buf)
 		   "<tr valign=top><td nowrap>Document Type<td>",
 		   buf->real_type ? html_quote(buf->real_type) : "unknown",
 		   "<tr valign=top><td nowrap>Last Modified<td>",
-		   html_quote(last_modified(buf)),
-		   NULL);
+		   html_quote(last_modified(buf)), NULL);
 #ifdef USE_M17N
     if (buf->document_charset != InnerCharset) {
 	list = wc_get_ces_list();
@@ -572,8 +571,7 @@ page_info_panel(Buffer *buf)
 	    sprintf(charset, "%d", (unsigned int)list->id);
 	    Strcat_m_charp(tmp, "<option value=", charset,
 			   (buf->document_charset == list->id) ? " selected>"
-							       : ">",
-			   list->desc, NULL);
+			   : ">", list->desc, NULL);
 	}
 	Strcat_charp(tmp, "</select>");
 	Strcat_charp(tmp, "<tr><td><td><input type=submit value=Change>");

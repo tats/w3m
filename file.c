@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.227 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: file.c,v 1.228 2003/09/24 18:48:59 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -641,7 +641,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    lineBuf2 = convertLine(NULL, lineBuf2, RAW_MODE,
 				   mime_charset ? &mime_charset : &charset,
 				   mime_charset ? mime_charset
-						: DocumentCharset);
+				   : DocumentCharset);
 	    /* separated with line and stored */
 	    tmp = Strnew_size(lineBuf2->length);
 	    for (p = lineBuf2->ptr; *p; p = q) {
@@ -4430,7 +4430,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_PRE_PLAIN:
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	}
@@ -4439,7 +4439,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_PRE_PLAIN:
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
@@ -4451,7 +4451,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_PLAINTEXT:
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	}
@@ -4472,7 +4472,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_XMP:
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
@@ -4776,13 +4776,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 0;
     case HTML_DEL:
 	if (displayInsDel)
-	HTMLlineproc1("<U>[DEL:</U>", h_env);
+	    HTMLlineproc1("<U>[DEL:</U>", h_env);
 	else
 	    obuf->flag |= RB_DEL;
 	return 1;
     case HTML_N_DEL:
 	if (displayInsDel)
-	HTMLlineproc1("<U>:DEL]</U>", h_env);
+	    HTMLlineproc1("<U>:DEL]</U>", h_env);
 	else
 	    obuf->flag &= ~RB_DEL;
 	return 1;
@@ -4800,11 +4800,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_INS:
 	if (displayInsDel)
-	HTMLlineproc1("<U>[INS:</U>", h_env);
+	    HTMLlineproc1("<U>[INS:</U>", h_env);
 	return 1;
     case HTML_N_INS:
 	if (displayInsDel)
-	HTMLlineproc1("<U>:INS]</U>", h_env);
+	    HTMLlineproc1("<U>:INS]</U>", h_env);
 	return 1;
     case HTML_SUP:
 	if (!(obuf->flag & (RB_DEL | RB_S)))
@@ -5717,32 +5717,32 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	     * Tag processing
 	     */
 	    if (obuf->status == R_ST_EOL)
-		    obuf->status = R_ST_NORMAL;
+		obuf->status = R_ST_NORMAL;
 	    else {
 		read_token(h_env->tagbuf, &line, &obuf->status,
 			   pre_mode & RB_PREMODE, obuf->status != R_ST_NORMAL);
 		if (obuf->status != R_ST_NORMAL)
-		return;
+		    return;
 	    }
 	    if (h_env->tagbuf->length == 0)
 		continue;
 	    str = h_env->tagbuf->ptr;
 	    if (*str == '<') {
 		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
-	    is_tag = TRUE;
+		    is_tag = TRUE;
 		else if (!(pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT |
 				       RB_SCRIPT | RB_STYLE | RB_TITLE))) {
 		    line = Strnew_m_charp(str + 1, line, NULL)->ptr;
 		    str = "&lt;";
 		}
-	}
 	    }
-	    else {
+	}
+	else {
 	    read_token(tokbuf, &line, &obuf->status, pre_mode & RB_PREMODE, 0);
 	    if (obuf->status != R_ST_NORMAL)	/* R_ST_AMP ? */
 		obuf->status = R_ST_NORMAL;
 	    str = tokbuf->ptr;
-	    }
+	}
 
 	if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT | RB_SCRIPT |
 			RB_STYLE | RB_TITLE)) {
@@ -5775,7 +5775,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    line = Strnew_m_charp(p, line, NULL)->ptr;
 		}
 		is_tag = FALSE;
-		}
+	    }
 	    if (obuf->table_level >= 0)
 		goto proc_normal;
 	    /* textarea */
@@ -5788,7 +5788,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		continue;
 	    /* style */
 	    if (pre_mode & RB_STYLE)
-	    continue;
+		continue;
 	}
 
       proc_normal:
@@ -5872,132 +5872,132 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	if (obuf->flag & (RB_DEL | RB_S))
 	    continue;
 	while (*str) {
-	mode = get_mctype(str);
-	delta = get_mcwidth(str);
-	if (obuf->flag & (RB_SPECIAL & ~RB_NOBR)) {
-	    char ch = *str;
+	    mode = get_mctype(str);
+	    delta = get_mcwidth(str);
+	    if (obuf->flag & (RB_SPECIAL & ~RB_NOBR)) {
+		char ch = *str;
 		if (!(obuf->flag & RB_PLAIN) && (*str == '&')) {
-		char *p = str;
-		int ech = getescapechar(&p);
-		if (ech == '\n' || ech == '\r') {
-		    ch = '\n';
-		    str = p - 1;
+		    char *p = str;
+		    int ech = getescapechar(&p);
+		    if (ech == '\n' || ech == '\r') {
+			ch = '\n';
+			str = p - 1;
+		    }
+		    else if (ech == '\t') {
+			ch = '\t';
+			str = p - 1;
+		    }
 		}
-		else if (ech == '\t') {
-		    ch = '\t';
-		    str = p - 1;
-		}
-	    }
-	    if (ch != '\n')
-		obuf->flag &= ~RB_IGNORE_P;
-	    if (ch == '\n') {
-		str++;
-		if (obuf->flag & RB_IGNORE_P) {
+		if (ch != '\n')
 		    obuf->flag &= ~RB_IGNORE_P;
-		    continue;
-		}
-		if (obuf->flag & RB_PRE_INT)
-		    PUSH(' ');
-		else
+		if (ch == '\n') {
+		    str++;
+		    if (obuf->flag & RB_IGNORE_P) {
+			obuf->flag &= ~RB_IGNORE_P;
+			continue;
+		    }
+		    if (obuf->flag & RB_PRE_INT)
+			PUSH(' ');
+		    else
 			flushline(h_env, obuf, h_env->envs[h_env->envc].indent,
 				  1, h_env->limit);
-	    }
-	    else if (ch == '\t') {
-		do {
-		    PUSH(' ');
-		} while ((h_env->envs[h_env->envc].indent + obuf->pos)
-			 % Tabstop != 0);
-		str++;
-	    }
+		}
+		else if (ch == '\t') {
+		    do {
+			PUSH(' ');
+		    } while ((h_env->envs[h_env->envc].indent + obuf->pos)
+			     % Tabstop != 0);
+		    str++;
+		}
 		else if (obuf->flag & RB_PLAIN) {
-		char *p = html_quote_char(*str);
-		if (p) {
-		    push_charp(obuf, 1, p, PC_ASCII);
+		    char *p = html_quote_char(*str);
+		    if (p) {
+			push_charp(obuf, 1, p, PC_ASCII);
+			str++;
+		    }
+		    else {
+			proc_mchar(obuf, 1, delta, &str, mode);
+		    }
+		}
+		else {
+		    if (*str == '&')
+			proc_escape(obuf, &str);
+		    else
+			proc_mchar(obuf, 1, delta, &str, mode);
+		}
+		if (obuf->flag & (RB_SPECIAL & ~RB_PRE_INT))
+		    continue;
+	    }
+	    else {
+		if (!IS_SPACE(*str))
+		    obuf->flag &= ~RB_IGNORE_P;
+		if ((mode == PC_ASCII || mode == PC_CTRL) && IS_SPACE(*str)) {
+		    if (*obuf->prevchar->ptr != ' ') {
+			PUSH(' ');
+		    }
 		    str++;
 		}
 		else {
-		    proc_mchar(obuf, 1, delta, &str, mode);
-		}
-	    }
-	    else {
-		if (*str == '&')
-		    proc_escape(obuf, &str);
-		else
-		    proc_mchar(obuf, 1, delta, &str, mode);
-	    }
-	    if (obuf->flag & (RB_SPECIAL & ~RB_PRE_INT))
-		continue;
-	}
-	else {
-	    if (!IS_SPACE(*str))
-		obuf->flag &= ~RB_IGNORE_P;
-	    if ((mode == PC_ASCII || mode == PC_CTRL) && IS_SPACE(*str)) {
-		if (*obuf->prevchar->ptr != ' ') {
-		    PUSH(' ');
-		}
-		str++;
-	    }
-	    else {
 #ifdef USE_M17N
-		if (mode == PC_KANJI1)
-		    is_hangul = wtf_is_hangul((wc_uchar *) str);
-		else
-		    is_hangul = 0;
-		if (mode == PC_KANJI1 &&
-		    !is_hangul && !prev_is_hangul &&
-		    obuf->pos > h_env->envs[h_env->envc].indent &&
-		    Strlastchar(obuf->line) == ' ') {
-		    while (obuf->line->length >= 2 &&
+		    if (mode == PC_KANJI1)
+			is_hangul = wtf_is_hangul((wc_uchar *) str);
+		    else
+			is_hangul = 0;
+		    if (mode == PC_KANJI1 &&
+			!is_hangul && !prev_is_hangul &&
+			obuf->pos > h_env->envs[h_env->envc].indent &&
+			Strlastchar(obuf->line) == ' ') {
+			while (obuf->line->length >= 2 &&
 			       !strncmp(obuf->line->ptr + obuf->line->length -
 					2, "  ", 2)
-			   && obuf->pos >= h_env->envs[h_env->envc].indent) {
-			Strshrink(obuf->line, 1);
-			obuf->pos--;
+			       && obuf->pos >= h_env->envs[h_env->envc].indent) {
+			    Strshrink(obuf->line, 1);
+			    obuf->pos--;
+			}
+			if (obuf->line->length >= 3 &&
+			    obuf->prev_ctype == PC_KANJI1 &&
+			    Strlastchar(obuf->line) == ' ' &&
+			    obuf->pos >= h_env->envs[h_env->envc].indent) {
+			    Strshrink(obuf->line, 1);
+			    obuf->pos--;
+			}
 		    }
-		    if (obuf->line->length >= 3 &&
-			obuf->prev_ctype == PC_KANJI1 &&
-			Strlastchar(obuf->line) == ' ' &&
-			obuf->pos >= h_env->envs[h_env->envc].indent) {
-			Strshrink(obuf->line, 1);
-			obuf->pos--;
-		    }
-		}
-		prev_is_hangul = is_hangul;
+		    prev_is_hangul = is_hangul;
 #endif
-		if (*str == '&')
-		    proc_escape(obuf, &str);
-		else
-		    proc_mchar(obuf, obuf->flag & RB_SPECIAL, delta, &str,
-			       mode);
+		    if (*str == '&')
+			proc_escape(obuf, &str);
+		    else
+			proc_mchar(obuf, obuf->flag & RB_SPECIAL, delta, &str,
+				   mode);
+		}
+	    }
+	    if (need_flushline(h_env, obuf, mode)) {
+		char *bp = obuf->line->ptr + obuf->bp.len;
+		char *tp = bp - obuf->bp.tlen;
+		int i = 0;
+
+		if (tp > obuf->line->ptr && tp[-1] == ' ')
+		    i = 1;
+
+		indent = h_env->envs[h_env->envc].indent;
+		if (obuf->bp.pos - i > indent) {
+		    Str line;
+		    append_tags(obuf);
+		    line = Strnew_charp(bp);
+		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
+#ifdef FORMAT_NICE
+		    if (obuf->pos - i > h_env->limit)
+			obuf->flag |= RB_FILL;
+#endif				/* FORMAT_NICE */
+		    back_to_breakpoint(obuf);
+		    flushline(h_env, obuf, indent, 0, h_env->limit);
+#ifdef FORMAT_NICE
+		    obuf->flag &= ~RB_FILL;
+#endif				/* FORMAT_NICE */
+		    HTMLlineproc1(line->ptr, h_env);
+		}
 	    }
 	}
-	if (need_flushline(h_env, obuf, mode)) {
-	    char *bp = obuf->line->ptr + obuf->bp.len;
-	    char *tp = bp - obuf->bp.tlen;
-	    int i = 0;
-
-	    if (tp > obuf->line->ptr && tp[-1] == ' ')
-		i = 1;
-
-	    indent = h_env->envs[h_env->envc].indent;
-	    if (obuf->bp.pos - i > indent) {
-		Str line;
-		append_tags(obuf);
-		line = Strnew_charp(bp);
-		Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
-#ifdef FORMAT_NICE
-		if (obuf->pos - i > h_env->limit)
-		    obuf->flag |= RB_FILL;
-#endif				/* FORMAT_NICE */
-		back_to_breakpoint(obuf);
-		flushline(h_env, obuf, indent, 0, h_env->limit);
-#ifdef FORMAT_NICE
-		obuf->flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
-		HTMLlineproc1(line->ptr, h_env);
-	    }
-	}
-    }
     }
     if (!(obuf->flag & (RB_SPECIAL | RB_INTXTA | RB_INSELECT))) {
 	char *tp;
@@ -6664,7 +6664,7 @@ loadHTMLString(Str page)
  * loadGopherDir: get gopher directory
  */
 Str
-loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces *charset)
+loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 {
     Str volatile tmp;
     Str lbuf, name, file, host, port;

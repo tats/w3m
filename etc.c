@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.72 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: etc.c,v 1.73 2003/09/24 18:48:59 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -481,7 +481,7 @@ nextColumn(int n, char *p, Lineprop *pr)
 #ifdef USE_M17N
     if (*pr & PC_UNKNOWN)
 	return n + 4;
-    return n + wtf_width((wc_uchar *)p);
+    return n + wtf_width((wc_uchar *) p);
 #else
     return n + 1;
 #endif
@@ -537,7 +537,7 @@ columnLen(Line *line, int column)
 {
     int i, j;
 
-    for (i = 0, j = 0; i < line->len; ) {
+    for (i = 0, j = 0; i < line->len;) {
 	j = nextColumn(j, &line->lineBuf[i], &line->propBuf[i]);
 	if (j > column)
 	    return i;
@@ -816,7 +816,7 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 		    Strclear(buf);
 		if (pre)
 		    Strcat_char(buf, *p);
-			p++;
+		p++;
 		goto proc_end;
 	    }
 	    Strcat_char(buf, (!pre && IS_SPACE(*p)) ? ' ' : *p);

@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.37 2003/09/24 18:35:06 ukai Exp $ */
+/* $Id: menu.c,v 1.38 2003/09/24 18:49:00 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -257,7 +257,7 @@ static int smDelTab(char c);
 
 static Menu MainMenu;
 #if LANG == JA
-static wc_ces MainMenuCharset = WC_CES_EUC_JP; /* charset of source code */
+static wc_ces MainMenuCharset = WC_CES_EUC_JP;	/* charset of source code */
 static int MainMenuEncode = FALSE;
 static MenuItem MainMenuItem[] = {
     /* type        label         variabel value func     popup keys data  */
@@ -296,9 +296,11 @@ static int MainMenuEncode = TRUE;
 #endif
 static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
-    {MENU_FUNC,  N_(" Back         (b) "), NULL, 0, backBf, NULL, "b", NULL},
-    {MENU_POPUP, N_(" Select Buffer(s) "), NULL, 0, NULL, &SelectMenu, "s", NULL},
-    {MENU_POPUP, N_(" Select Tab   (t) "), NULL, 0, NULL, &SelTabMenu, "tT", NULL},
+    {MENU_FUNC, N_(" Back         (b) "), NULL, 0, backBf, NULL, "b", NULL},
+    {MENU_POPUP, N_(" Select Buffer(s) "), NULL, 0, NULL, &SelectMenu, "s",
+     NULL},
+    {MENU_POPUP, N_(" Select Tab   (t) "), NULL, 0, NULL, &SelTabMenu, "tT",
+     NULL},
     {MENU_FUNC, N_(" View Source  (v) "), NULL, 0, vwSrc, NULL, "vV", NULL},
     {MENU_FUNC, N_(" Edit Source  (e) "), NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, N_(" Save Source  (S) "), NULL, 0, svSrc, NULL, "S", NULL},
@@ -1729,7 +1731,7 @@ interpret_menu(FILE * mf)
 #ifdef USE_M17N
 	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
 	    s = getQWord(&p);
-	    if (*s == '\0')     /* error */
+	    if (*s == '\0')	/* error */
 		continue;
 	    charset = wc_guess_charset(s, charset);
 	}
@@ -1760,11 +1762,11 @@ initMenu(void)
 	MenuItem *item;
 #if ENABLE_NLS
 	/* FIXME: charset that gettext(3) returns */
-	MainMenuCharset = SystemCharset; 
+	MainMenuCharset = SystemCharset;
 #endif
 	for (item = MainMenuItem; item->type != MENU_END; item++)
 	    item->label =
-		wc_conv(gettext(item->label), MainMenuCharset, 
+		wc_conv(gettext(item->label), MainMenuCharset,
 			InnerCharset)->ptr;
 	MainMenuEncode = TRUE;
     }
@@ -1893,7 +1895,7 @@ link_menu(Buffer *buf)
 	if (!l->url)
 	    p = "";
 	else if (DecodeURL)
- 	    p = url_unquote_conv(l->url, buf->document_charset);
+	    p = url_unquote_conv(l->url, buf->document_charset);
 	else
 	    p = l->url;
 	Strcat_charp(str, p);

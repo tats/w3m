@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.8 2002/01/16 15:37:07 ukai Exp $ */
+/* $Id: search.c,v 1.9 2002/01/16 16:49:55 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 
@@ -9,6 +9,75 @@ set_mark(Line *l, int pos, int epos)
         l->propBuf[pos] |= PE_MARK;
 }
 
+#ifdef USE_MIGEMO
+/* Migemo: romaji --> kana+kanji in regexp */
+static FILE *migemor, *migemow;
+
+void
+init_migemo()
+{
+    if (migemor != NULL)
+	fclose(migemor);
+    if (migemow != NULL)
+	fclose(migemow);
+    migemor = migemow = NULL;
+}
+
+static int
+open_migemo(char *migemo_command)
+{
+    int fdr[2];
+    int fdw[2];
+    int pid;
+    if (pipe(fdr) < 0)
+	goto err0;
+    if (pipe(fdw) < 0)
+	goto err1;
+
+    /* migemow:fdw[1] -|-> fdw[0]=0 {migemo} fdr[1]=1 -|-> fdr[0]:migemor */
+    pid = fork();
+    if (pid < 0)
+	goto err2;
+    if (pid == 0) {
+	/* child */
+	close(fdr[0]);
+	close(fdw[1]);
+	dup2(fdw[0], 0);
+	dup2(fdr[1], 1);
+	system(migemo_command);
+	exit(1);
+    }
+    close(fdr[1]);
+    close(fdw[0]);
+    migemor = fdopen(fdr[0], "r");
+    migemow = fdopen(fdw[1], "w");
+    return 1;
+err2:
+    close(fdw[0]);
+    close(fdw[1]);
+err1:
+    close(fdr[0]);
+    close(fdr[1]);
+err0:
+    use_migemo = 0;
+    return 0;
+}
+
+static char *
+migemostr(char *str)
+{
+    Str tmp = NULL;
+    if (migemor == NULL || migemow == NULL)
+	if (open_migemo(migemo_command) == 0)
+	    return str;
+    fprintf(migemow, "%s\n", str);
+    fflush(migemow);
+    tmp = Strfgets(migemor);
+    Strchop(tmp);
+    return tmp->ptr;
+}
+#endif				/* USE_MIGEMO */
+
 int
 forwardSearch(Buffer *buf, char *str)
 {
@@ -17,6 +86,16 @@ forwardSearch(Buffer *buf, char *str)
     int wrapped = FALSE;
     int pos;
 
+#ifdef USE_MIGEMO
+    if (use_migemo) {
+	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
+	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
+	    message(p, 0, 0);
+	    return SR_NOTFOUND;
+	}
+    }
+    else
+#endif
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
 	return SR_NOTFOUND;
@@ -85,6 +164,16 @@ backwardSearch(Buffer *buf, char *str)
     int wrapped = FALSE;
     int pos;
 
+#ifdef USE_MIGEMO
+    if (use_migemo) {
+	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
+	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
+	    message(p, 0, 0);
+	    return SR_NOTFOUND;
+	}
+    }
+    else
+#endif
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
 	return SR_NOTFOUND;

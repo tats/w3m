@@ -1,5 +1,22 @@
 2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02859]
+	* config.h.dist (DEF_MIGEMO_COMMAND): added
+	* configure (DEF_MIGEMO_COMMAND): added
+	* fm.h (migemo_command): initial value is DEF_MIGEMO_COMMAND
+	* main.c (migemostr): remove here, move search.c
+	* main.c (srchcore): dont migemostr() here
+	* proto.h (init_migemo): added
+	* rc.c (sync_with_option): init_migemo()
+	* search.c (init_migemo): added
+	* search.c (open_migemo): added
+	* search.c (migemostr): communicate background migemo
+	* search.c (forwardSearch): if regexCompile for migemostr failed, 
+		try original str
+	* search.c (backwardSearch): ditto
+
+2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02855]
 	* main.c (dispincsrch): for C-s C-s, revert some changes
 
@@ -2040,4 +2057,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.230 2002/01/16 16:11:35 ukai Exp $
+$Id: ChangeLog,v 1.231 2002/01/16 16:49:53 ukai Exp $

@@ -130,6 +130,9 @@ MODEL=Linux.i686-monster-ja
 #define DEF_IMAGE_VIEWER	"xv"
 #define DEF_AUDIO_PLAYER	"showaudio"
 
+/* for USE_MIGEMO */
+#define DEF_MIGEMO_COMMAND	"migemo -t egrep /usr/share/migemo/migemo-dict"
+
 #define LIB_DIR      "/usr/local/lib/w3m"
 #define HELP_DIR     "/usr/local/lib/w3m"
 #define ETC_DIR	     "/usr/local/etc/w3m"

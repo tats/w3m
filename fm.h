@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.39 2002/01/16 15:37:06 ukai Exp $ */
+/* $Id: fm.h,v 1.40 2002/01/16 16:49:54 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -777,7 +777,7 @@ global int FoldTextarea init(FALSE);
 
 #ifdef USE_MIGEMO
 global int use_migemo init(FALSE);
-global char *migemo_command init("migemoc");
+global char *migemo_command init(DEF_MIGEMO_COMMAND);
 #endif				/* USE_MIGEMO */
 
 global struct auth_cookie *Auth_cookie init(NULL);

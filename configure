@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.50 2002/01/15 17:23:29 ukai Exp $
+# $Id: configure,v 1.51 2002/01/16 16:49:54 ukai Exp $
 #	Configuration.
 #
 
@@ -2065,6 +2065,9 @@ $def_use_help_cgi
 /* fallback viewer. mailcap override these configuration */
 #define DEF_IMAGE_VIEWER	"$def_image_viewer"
 #define DEF_AUDIO_PLAYER	"$def_audio_player"
+
+/* for USE_MIGEMO */
+#define DEF_MIGEMO_COMMAND	"migemo -t egrep /usr/share/migemo/migemo-dict"
 
 #define LIB_DIR      "$libdir"
 #define HELP_DIR     "$helpdir"

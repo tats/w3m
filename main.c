@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.61 2002/01/16 16:11:38 ukai Exp $ */
+/* $Id: main.c,v 1.62 2002/01/16 16:49:54 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1333,24 +1333,6 @@ rdrwSc(void)
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-#ifdef USE_MIGEMO
-/* Migemo: romaji --> kana+kanji in regexp */
-static char *
-migemostr(char *str)
-{
-    FILE *f;
-    Str tmp;
-
-    tmp = Strnew_m_charp(migemo_command, " ", shell_quote(str), NULL);
-    if (!(f = popen(tmp->ptr, "r")))
-	return str;
-    tmp = Strfgets(f);
-    Strchop(tmp);
-    pclose(f);
-    return tmp->ptr;
-}
-#endif				/* USE_MIGEMO */
-
 static void
 clear_mark(Line *l)
 {
@@ -1369,11 +1351,7 @@ srchcore(char *str, int (*func) (Buffer *, char *))
     volatile int i, result = SR_NOTFOUND;
 
     if (str != NULL && str != SearchString)
-	SearchString =
-#ifdef USE_MIGEMO
-	    use_migemo ? migemostr(str) :
-#endif				/* USE_MIGEMO */
-	    str;
+	SearchString = str;
     if (SearchString == NULL || *SearchString == '\0')
 	return SR_NOTFOUND;
 

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.30 2002/01/16 15:37:07 ukai Exp $ */
+/* $Id: rc.c,v 1.31 2002/01/16 16:49:54 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1123,6 +1123,9 @@ sync_with_option(void)
     initMimeTypes();
 #ifdef USE_EXTERNAL_URI_LOADER
     initURIMethods();
+#endif
+#ifdef USE_MIGEMO
+    init_migemo();
 #endif
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {

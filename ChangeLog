@@ -1,3 +1,7 @@
+2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* config.h.dist: updated
+
 2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* url.c (otherinfo): use AcceptLang

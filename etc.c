@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.30 2002/11/05 16:03:13 ukai Exp $ */
+/* $Id: etc.c,v 1.31 2002/11/05 17:10:05 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -42,7 +42,7 @@ columnSkip(Buffer *buf, int offset)
 {
     int i, maxColumn;
     int column = buf->currentColumn + offset;
-    int nlines = LASTLINE + 1;
+    int nlines = LASTLINE + 1 - buf->rootY;
     Line *l;
 
     maxColumn = 0;
@@ -91,8 +91,8 @@ lineSkip(Buffer *buf, Line *line, int offset, int last)
 #ifdef NEXTPAGE_TOPLINE
     if (!nextpage_topline)
 #endif
-	for (i = (LASTLINE - 1) - (buf->lastLine->linenumber - l->linenumber);
-	     i > 0 && l->prev != NULL; i--, l = l->prev) ;
+	for (i = (LASTLINE - 1 - buf->rootY) - (buf->lastLine->linenumber
+	     - l->linenumber); i > 0 && l->prev != NULL; i--, l = l->prev) ;
     return l;
 }
 
@@ -103,7 +103,7 @@ currentLineSkip(Buffer *buf, Line *line, int offset, int last)
     Line *l = line;
 
     if (buf->pagerSource && !(buf->bufferprop & BP_CLOSE)) {
-	n = line->linenumber + offset + LASTLINE;
+	n = line->linenumber + offset + LASTLINE - buf->rootY;
 	if (buf->lastLine->linenumber < n)
 	    getNextPage(buf, n - buf->lastLine->linenumber);
 	while ((last || (buf->lastLine->linenumber < n)) &&

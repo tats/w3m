@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.55 2002/11/05 15:56:14 ukai Exp $ */
+/* $Id: rc.c,v 1.56 2002/11/05 17:10:07 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -65,6 +65,7 @@ static char *config_file = NULL;
 #define CMT_FRAME        "フレームの自動表示"
 #define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
+#define CMT_OPEN_TAB_BLANK "targetが_blankか_newの場合は新しいタブで開く"
 #define CMT_DISPLINK     "リンク先の自動表示"
 #define CMT_DISPLINEINFO "現在の行番号の表示"
 #define CMT_DISP_IMAGE   "インライン画像を表示"
@@ -102,6 +103,7 @@ static char *config_file = NULL;
 #define CMT_PDROOT       "/~user で表されるディレクトリ"
 #define CMT_CGIBIN       "/cgi-bin で表されるディレクトリ"
 #define CMT_CONFIRM_QQ   "q での終了時に確認する"
+#define CMT_CLOSE_TAB_BACK "戻る時にバッファが最後ならタブを閉じる"
 #ifdef USE_MARK
 #define CMT_USE_MARK	"マーク機能を有効にする"
 #endif
@@ -207,6 +209,7 @@ static char *config_file = NULL;
 #define CMT_FRAME        "Render frames automatically"
 #define CMT_ARGV_IS_URL  "Treat argument without scheme as URL"
 #define CMT_TSELF        "Use _self as default target"
+#define CMT_OPEN_TAB_BLANK "Open link on new tab if target is _blank or _new"
 #define CMT_DISPLINK     "Display link URL automatically"
 #define CMT_DISPLINEINFO "Display current line number"
 #define CMT_DISP_IMAGE   "Display inline images"
@@ -244,6 +247,7 @@ static char *config_file = NULL;
 #define CMT_PDROOT       "Directory corresponding to /~user"
 #define CMT_CGIBIN       "Directory corresponding to /cgi-bin"
 #define CMT_CONFIRM_QQ   "Confirm when quitting with q"
+#define CMT_CLOSE_TAB_BACK "Close tab if buffer is last when back"
 #ifdef USE_MARK
 #define CMT_USE_MARK	"Enable mark operations"
 #endif
@@ -463,6 +467,8 @@ struct param_ptr params1[] = {
 #endif				/* JP_CHARSET */
     {"frame", P_CHARINT, PI_ONOFF, (void *)&RenderFrame, CMT_FRAME, NULL},
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
+    {"open_tab_blank", P_INT, PI_ONOFF, (void *)&open_tab_blank,
+     CMT_OPEN_TAB_BLANK, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
@@ -551,6 +557,8 @@ struct param_ptr params3[] = {
 #endif				/* USE_HISTORY */
     {"confirm_qq", P_INT, PI_ONOFF, (void *)&confirm_on_quit, CMT_CONFIRM_QQ,
      NULL},
+    {"close_tab_back", P_INT, PI_ONOFF, (void *)&close_tab_back,
+     CMT_CLOSE_TAB_BACK, NULL},
 #ifdef USE_MARK
     {"mark", P_INT, PI_ONOFF, (void *)&use_mark, CMT_USE_MARK, NULL},
 #endif

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.68 2002/11/05 15:56:13 ukai Exp $ */
+/* $Id: fm.h,v 1.69 2002/11/05 17:10:05 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -285,6 +285,7 @@ typedef unsigned char Linecolor;
 
 typedef struct _MapArea {
     char *url;
+    char *target;
     char *alt;
 #ifdef MENU_MAP
 #ifdef USE_IMAGE
@@ -401,6 +402,7 @@ typedef struct _Buffer {
     short pos;
     short visualpos;
     short rootX;
+    short rootY;
     short COLS;
     InputStream pagerSource;
     AnchorList *href;
@@ -441,6 +443,12 @@ typedef struct _Buffer {
     Anchor *submit;
 } Buffer;
 
+typedef struct _TabBuffer {
+    struct _TabBuffer *nextTab;
+    struct _TabBuffer *prevTab;
+    Buffer *currentBuffer;
+    Buffer *firstBuffer;
+} TabBuffer;
 
 #define COPY_BUFPOSITION(dstbuf, srcbuf) {\
  (dstbuf)->topLine = (srcbuf)->topLine; \
@@ -466,7 +474,7 @@ typedef struct _Buffer {
 
 #define FONTSTAT_SIZE 4
 
-#define INIT_BUFFER_WIDTH (COLS-1)
+#define INIT_BUFFER_WIDTH (COLS - 1)
 
 typedef struct {
     int pos;
@@ -763,8 +771,21 @@ global char *cgi_bin init(NULL);
 global char *index_file init(NULL);
 
 global char *CurrentDir;
+/*
 global Buffer *Currentbuf;
 global Buffer *Firstbuf;
+*/
+global TabBuffer *CurrentTab;
+global TabBuffer *FirstTab;
+global TabBuffer *LastTab;
+global int open_tab_blank init(FALSE);
+global int close_tab_back init(FALSE);
+global int nTab;
+global int TabCols init(10);
+#define N_TAB ((COLS - 2 > TabCols * nTab) ? nTab	\
+	: (nTab - 1) / ((nTab * TabCols - 1) / (COLS - 2) + 1) + 1)
+#define Currentbuf (CurrentTab->currentBuffer)
+#define Firstbuf (CurrentTab->firstBuffer)
 global int CurrentKey;
 global char *CurrentKeyData;
 global char *CurrentCmdData;

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.8 2002/03/15 18:48:55 ukai Exp $ */
+/* $Id: map.c,v 1.9 2002/11/05 17:10:07 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -59,7 +59,7 @@ inMapArea(MapArea * a, int x, int y)
 }
 #endif
 
-char *
+MapArea *
 follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, Anchor *a_img, int x,
 		int y)
 {
@@ -122,7 +122,7 @@ follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, Anchor *a_img, int x,
     if (selected >= 0) {
 	for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
 	    if (al->ptr && i == selected)
-		return ((MapArea *) al->ptr)->url;
+		return (MapArea *) al->ptr;
 	}
     }
     return NULL;
@@ -193,7 +193,7 @@ getMapXY(Buffer *buf, Anchor *a, int *x, int *y)
 #endif
 
 MapArea *
-newMapArea(char *url, char *alt, char *shape, char *coords)
+newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 {
     MapArea *a = New(MapArea);
 #ifdef MENU_MAP
@@ -204,6 +204,7 @@ newMapArea(char *url, char *alt, char *shape, char *coords)
 #endif
 
     a->url = url;
+    a->target = target;
     a->alt = alt ? alt : "";
 #ifdef MENU_MAP
 #ifdef USE_IMAGE

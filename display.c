@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.25 2002/10/29 16:19:41 ukai Exp $ */
+/* $Id: display.c,v 1.26 2002/11/05 17:10:05 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -227,6 +227,7 @@ displayBuffer(Buffer *buf, int mode)
 {
     Str msg;
     Anchor *aa = NULL;
+    int ny = 0;
 
     if (buf->topLine == NULL && readBufferCache(buf) == 0) {	/* clear_buffer */
 	mode = B_FORCE_REDRAW;
@@ -253,6 +254,12 @@ displayBuffer(Buffer *buf, int mode)
     else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
+    if (nTab > 1)
+	ny = (nTab - 1) / N_TAB + 2;
+    if (buf->rootY != ny) {
+	buf->rootY = ny;
+	arrangeCursor(buf);
+    }
     if (mode == B_FORCE_REDRAW || mode == B_SCROLL ||
 #ifdef USE_IMAGE
 	mode == B_REDRAW_IMAGE ||
@@ -388,7 +395,7 @@ displayBuffer(Buffer *buf, int mode)
 	refresh();
     }
     standout();
-    message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY);
+    message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
     standend();
     term_title(buf->buffername);
     refresh();
@@ -428,8 +435,41 @@ redrawNLine(Buffer *buf, int n)
 #endif				/* USE_BG_COLOR */
     }
 #endif				/* USE_COLOR */
-    for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
-	if (i >= LASTLINE - n || i < -n)
+    if (nTab > 1) {
+	TabBuffer *t;
+	int nx = N_TAB, col = COLS - 2, x, l;
+
+	move(0, 0);
+	for (t = FirstTab, i = 0; t; t = t->nextTab, i++) {
+	    x = col * (i % nx) / nx;
+	    move(i / nx, x);
+	    if (t == CurrentTab)
+	        bold();
+	    addch('[');
+	    l = strlen(t->currentBuffer->buffername);
+	    if (col / nx - 2 > l)
+		addnstr_sup(" ", (col / nx - 2 - l) / 2);
+	    if (t == CurrentTab)
+		EFFECT_ACTIVE_START;
+	    addstr(t->currentBuffer->buffername);
+	    if (t == CurrentTab)
+		EFFECT_ACTIVE_END;
+	    clrtoeol();
+	    x = col * (i % nx + 1) / nx - 1;
+	    move(i / nx, x);
+	    addch(']');
+	    if (t == CurrentTab)
+	        boldend();
+	    clrtoeol();
+	}
+	move(0, col);
+	addstr(" x");
+	move((nTab - 1) / nx + 1, 0);
+	for (i = 0; i < COLS; i++)
+	    addch('~');
+    }
+    for (i = buf->rootY, l = buf->topLine; i < LASTLINE; i++) {
+	if (i >= LASTLINE - n || (i - buf->rootY) < -n)
 	    l0 = redrawLine(buf, l, i);
 	else {
 	    l0 = (l) ? l->next : NULL;
@@ -444,7 +484,7 @@ redrawNLine(Buffer *buf, int n)
 #ifdef USE_IMAGE
     if (!(activeImage && displayImage && buf->img))
 	return;
-    move(buf->cursorY, buf->cursorX);
+    move(buf->cursorY + buf->rootY, buf->cursorX + buf->rootX);
     for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
 	if (i >= LASTLINE - n || i < -n)
 	    l0 = redrawLineImage(buf, l, i);
@@ -666,7 +706,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 		    buf->need_reshape = TRUE;
 		}
 		x = (int)((rcol - column + buf->rootX) * pixel_per_char);
-		y = (int)(i * pixel_per_line);
+		y = (int)((i + buf->rootY) * pixel_per_line);
 		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
 		sy = (int)((l->linenumber - image->y) * pixel_per_line);
 		if (sx == 0 && x + image->xoffset >= 0)
@@ -1009,7 +1049,7 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
     }
     if (Currentbuf != NULL)
 	message(s, Currentbuf->cursorX + Currentbuf->rootX,
-		Currentbuf->cursorY);
+		Currentbuf->cursorY + Currentbuf->rootY);
     else
 	message(s, LASTLINE, 0);
     refresh();
@@ -1065,7 +1105,7 @@ cursorDown(Buffer *buf, int n)
 {
     if (buf->firstLine == NULL)
 	return;
-    if (buf->cursorY < LASTLINE - 1)
+    if (buf->cursorY + buf->rootY < LASTLINE - 1)
 	cursorUpDown(buf, 1);
     else {
 	buf->topLine = lineSkip(buf, buf->topLine, n, FALSE);
@@ -1180,9 +1220,12 @@ arrangeCursor(Buffer *buf)
     if (buf == NULL || buf->currentLine == NULL)
 	return;
     /* Arrange line */
-    if (buf->currentLine->linenumber - buf->topLine->linenumber >= LASTLINE ||
-	buf->currentLine->linenumber < buf->topLine->linenumber) {
+    if (buf->currentLine->linenumber - buf->topLine->linenumber >= LASTLINE -
+	buf->rootY || buf->currentLine->linenumber < buf->topLine->linenumber) {
+/*
 	buf->topLine = buf->currentLine;
+*/
+	buf->topLine = lineSkip(buf, buf->currentLine, 0, FALSE);
     }
     /* Arrange column */
     if (buf->currentLine->len == 0)

@@ -6,6 +6,7 @@ BEGIN		Go to the first line
 BOOKMARK	Read bookmark
 CENTER_H	Move to the center line
 CENTER_V	Move to the center column
+CLOSE_TAB	Close current tab
 COMMAND		Execute w3m command(s)
 COOKIE		View cookie list
 DEFINE_KEY	Define a binding between a key stroke and a user command
@@ -57,6 +58,7 @@ MOVE_RIGHT1    Move cursor right (1 columns shift at the right edge)
 MOVE_UP                Move cursor up (a half screen scroll at the top of screen)
 MOVE_UP1       Move cursor up (1 line scrol at the top of screen)
 MSGS        Display error messages
+NEW_TAB		Open new tab
 NEXT_DOWN      Move to next downward link 
 NEXT_LEFT      Move to next left link 
 NEXT_LEFT_UP   Move to next left (or upward) link 
@@ -65,6 +67,7 @@ NEXT_MARK	Move to next word
 NEXT_PAGE	Move to next page
 NEXT_RIGHT     Move to next right link 
 NEXT_RIGHT_DOWN        Move to next right (or downward) link 
+NEXT_TAB	Move to next tab
 NEXT_UP                Move to next upward link 
 NEXT_WORD	Move to next word
 NOTHING		Do nothing
@@ -78,6 +81,7 @@ PIPE_SHELL	Execute shell command and browse
 PREV_LINK	Move to previous link
 PREV_MARK	Move to previous mark
 PREV_PAGE	Move to previous page
+PREV_TAB	Move to previous tab
 PREV_WORD	Move to previous word
 PRINT		Save buffer to file
 QUIT		Quit w3m
@@ -106,6 +110,12 @@ SOURCE		View HTML source
 STOP_IMAGE	Stop loading and drawing of images
 SUBMIT		Submit form
 SUSPEND		Stop loading document
+TAB_GOTO	Open URL on new tab
+TAB_GOTO_RELATIVE	Open relative URL on new tab
+TAB_LEFT	Move current tab left
+TAB_LINK	Open current link on new tab
+TAB_MENU	Popup tab selection menu
+TAB_RIGHT	Move current tab right
 UP		Scroll up one line
 VERSION                Display version of w3m
 VIEW		View HTML source

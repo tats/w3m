@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.117 2002/11/05 15:56:13 ukai Exp $ */
+/* $Id: main.c,v 1.118 2002/11/05 17:10:06 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -90,6 +90,10 @@ void set_buffer_environ(Buffer *);
 
 static void _followForm(int);
 static void _goLine(char *);
+static void _newT(void);
+static void followTab(TabBuffer *tab);
+static void moveTab(TabBuffer *t, TabBuffer *t2, int right);
+static int check_target = TRUE; 
 #define PREC_NUM (prec_num ? prec_num : 1)
 #define PREC_LIMIT 10000
 static int searchKeyNum(void);
@@ -707,8 +711,10 @@ MAIN(int argc, char **argv, char **envp)
     sock_init();
 #endif
 
-    Firstbuf = NULL;
-    Currentbuf = NULL;
+    FirstTab = NULL;
+    LastTab = NULL;
+    nTab = 0;
+    CurrentTab = NULL;
     CurrentKey = -1;
     if (BookmarkFile == NULL)
 	BookmarkFile = rcFile(BOOKMARK);
@@ -879,8 +885,11 @@ MAIN(int argc, char **argv, char **envp)
 	else if (newbuf == NO_BUFFER)
 	    continue;
 	newbuf->search_header = search_header;
-	if (Currentbuf == NULL)
+	if (CurrentTab == NULL) {
+	    FirstTab = LastTab = CurrentTab = newTab();
+	    nTab = 1;
 	    Firstbuf = Currentbuf = newbuf;
+	}
 	else {
 	    Currentbuf->nextBuffer = newbuf;
 	    Currentbuf = newbuf;
@@ -914,7 +923,7 @@ MAIN(int argc, char **argv, char **envp)
 	w3m_exit(0);
     }
 
-    if (!Firstbuf || Firstbuf == NO_BUFFER) {
+    if (!FirstTab || !Firstbuf || Firstbuf == NO_BUFFER) {
 	if (newbuf == NO_BUFFER) {
 	    if (fmInitialized)
 		inputChar("Hit any key to quit w3m:");
@@ -1313,7 +1322,8 @@ nscroll(int n, int mode)
     }
     else {
 	tlnum = Currentbuf->topLine->linenumber;
-	llnum = Currentbuf->topLine->linenumber + LASTLINE - 1;
+	llnum = Currentbuf->topLine->linenumber + LASTLINE - Currentbuf->rootY
+		- 1;
 #ifdef NEXTPAGE_TOPLINE
 	if (nextpage_topline)
 	    diff_n = 0;
@@ -1336,10 +1346,11 @@ pgFore(void)
 {
 #ifdef VI_PREC_NUM
     if (vi_prec_num)
-	nscroll(searchKeyNum() * (LASTLINE - 1), B_NORMAL);
+	nscroll(searchKeyNum() * (LASTLINE - Currentbuf->rootY - 1), B_NORMAL);
     else
 #endif
-	nscroll(prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1),
+	nscroll(prec_num ? searchKeyNum() : searchKeyNum()
+		* (LASTLINE - Currentbuf->rootY - 1),
 		prec_num ? B_SCROLL : B_NORMAL);
 }
 
@@ -1349,10 +1360,11 @@ pgBack(void)
 {
 #ifdef VI_PREC_NUM
     if (vi_prec_num)
-	nscroll(-searchKeyNum() * (LASTLINE - 1), B_NORMAL);
+	nscroll(-searchKeyNum() * (LASTLINE - Currentbuf->rootY - 1), B_NORMAL);
     else
 #endif
-	nscroll(-(prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1)),
+	nscroll(-(prec_num ? searchKeyNum() : searchKeyNum()
+		* (LASTLINE - Currentbuf->rootY - 1)),
 		prec_num ? B_SCROLL : B_NORMAL);
 }
 
@@ -1377,7 +1389,7 @@ ctrCsrV(void)
     int offsety;
     if (Currentbuf->firstLine == NULL)
 	return;
-    offsety = LASTLINE / 2 - Currentbuf->cursorY;
+    offsety = (LASTLINE - Currentbuf->rootY) / 2 - Currentbuf->cursorY;
     if (offsety != 0) {
 #if 0
 	Currentbuf->currentLine = lineSkip(Currentbuf,
@@ -1971,7 +1983,7 @@ _movD(int n)
 void
 movD(void)
 {
-    _movD((LASTLINE + 1) / 2);
+    _movD((LASTLINE - Currentbuf->rootY + 1) / 2);
 }
 
 void
@@ -1995,7 +2007,7 @@ _movU(int n)
 void
 movU(void)
 {
-    _movU((LASTLINE + 1) / 2);
+    _movU((LASTLINE - Currentbuf->rootY + 1) / 2);
 }
 
 void
@@ -2285,8 +2297,8 @@ _goLine(char *l)
     }
     else if (*l == '$') {
 	Currentbuf->topLine =
-	    lineSkip(Currentbuf, Currentbuf->lastLine, -(LASTLINE + 1) / 2,
-		     TRUE);
+	    lineSkip(Currentbuf, Currentbuf->lastLine,
+		     -(LASTLINE - Currentbuf->rootY + 1) / 2, TRUE);
 	Currentbuf->currentLine = Currentbuf->lastLine;
     }
     else
@@ -2441,7 +2453,8 @@ _mark(void)
 	return;
     l = Currentbuf->currentLine;
     l->propBuf[Currentbuf->pos] ^= PE_MARK;
-    redrawLine(Currentbuf, l, l->linenumber - Currentbuf->topLine->linenumber);
+    redrawLine(Currentbuf, l, l->linenumber - Currentbuf->topLine->linenumber
+	       + Currentbuf->rootY);
 }
 
 /* Go to next mark */
@@ -2766,6 +2779,21 @@ followA(void)
     if (map)
 	url = Sprintf("%s?%d,%d", a->url, x, y)->ptr;
 #endif
+
+    if (check_target && open_tab_blank && a->target &&
+	(!strcasecmp(a->target, "_new") || !strcasecmp(a->target, "_blank"))) {
+	Buffer *buf;
+
+	_newT();
+	buf = Currentbuf;
+	loadLink(url, a->target, a->referer, NULL);
+	if (buf != Currentbuf)
+	    delBuffer(buf);
+	else
+	    deleteTab(CurrentTab);
+	displayBuffer(Currentbuf, B_NORMAL);
+	return;
+    }
     loadLink(url, a->target, a->referer, NULL);
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -3123,7 +3151,7 @@ _followForm(int submit)
 	if (!formChooseOptionByMenu(fi,
 				    Currentbuf->cursorX - Currentbuf->pos +
 				    a->start.pos + Currentbuf->rootX,
-				    Currentbuf->cursorY))
+				    Currentbuf->cursorY + Currentbuf->rootY))
 	    break;
 	formUpdateBuffer(a, Currentbuf, fi);
 	if (fi->parent->nitems == 1)
@@ -3241,12 +3269,12 @@ drawAnchorCursor0(Buffer *buf, int hseq, int prevhseq, int tline, int eline,
 		}
 	    }
 	    if (active)
-		redrawLineRegion(buf, l, l->linenumber - tline,
+		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
 				 an->start.pos, an->end.pos);
 	}
 	else if (prevhseq >= 0 && an->hseq == prevhseq) {
 	    if (active)
-		redrawLineRegion(buf, l, l->linenumber - tline,
+		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
 				 an->start.pos, an->end.pos);
 	}
     }
@@ -3271,7 +3299,7 @@ drawAnchorCursor(Buffer *buf)
     else
 	hseq = -1;
     tline = buf->topLine->linenumber;
-    eline = tline + LASTLINE;
+    eline = tline + LASTLINE - buf->rootY;
     prevhseq = buf->hmarklist->prevhseq;
 
     drawAnchorCursor0(buf, hseq, prevhseq, tline, eline, 1);
@@ -3652,7 +3680,12 @@ backBf(void)
     Buffer *buf = Currentbuf->linkBuffer[LB_N_FRAME];
 
     if (!checkBackBuffer(Currentbuf)) {
-	disp_message("Can't back...", TRUE);
+	if (close_tab_back && nTab >= 1) {
+	    deleteTab(CurrentTab);
+	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	}
+	else
+	    disp_message("Can't back...", TRUE);
 	return;
     }
 
@@ -3938,23 +3971,39 @@ void
 follow_map(struct parsed_tagarg *arg)
 {
 #ifdef MENU_MAP
-    Anchor *a;
-    char *url;
-    int x;
+    Anchor *an;
+    MapArea *a;
+    int x, y;
     ParsedURL p_url;
 
-    a = retrieveCurrentImg(Currentbuf);
+    an = retrieveCurrentImg(Currentbuf);
     x = Currentbuf->cursorX + Currentbuf->rootX;
-    url = follow_map_menu(Currentbuf, arg, a, x, Currentbuf->cursorY);
-    if (url == NULL || *url == '\0')
+    y = Currentbuf->cursorY + Currentbuf->rootY;
+    a = follow_map_menu(Currentbuf, arg, an, x, y);
+    if (a == NULL || a->url == NULL || *(a->url) == '\0')
 	return;
-    if (*url == '#') {
-	gotoLabel(url + 1);
+    if (*(a->url) == '#') {
+	gotoLabel(a->url + 1);
 	return;
     }
-    parseURL2(url, &p_url, baseURL(Currentbuf));
+    parseURL2(a->url, &p_url, baseURL(Currentbuf));
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, baseURL(Currentbuf),
+    if (check_target && open_tab_blank && a->target &&
+	(!strcasecmp(a->target, "_new") || !strcasecmp(a->target, "_blank"))) {
+	Buffer *buf;
+
+	_newT();
+	buf = Currentbuf;
+	cmd_loadURL(a->url, baseURL(Currentbuf),
+		parsedURL2Str(&Currentbuf->currentURL)->ptr);
+	if (buf != Currentbuf)
+	    delBuffer(buf);
+	else
+	    deleteTab(CurrentTab);
+	displayBuffer(Currentbuf, B_NORMAL);
+	return;
+    }
+    cmd_loadURL(a->url, baseURL(Currentbuf),
 		parsedURL2Str(&Currentbuf->currentURL)->ptr);
 #else
     Buffer *buf;
@@ -4629,15 +4678,76 @@ stopI(void)
 
 #ifdef USE_MOUSE
 
+static TabBuffer *
+posTab(int x, int y)
+{
+    TabBuffer *t;
+    int i, n, col = COLS - 2;
+
+    if (col <= 0)
+	return NULL;
+    n = x * N_TAB / col + y * N_TAB;
+    for (t = FirstTab, i = 0; t && i < n; t = t->nextTab, i++)
+	;
+    return t;
+}
+
 static void
 process_mouse(int btn, int x, int y)
 {
     int delta_x, delta_y, i;
     static int press_btn = MOUSE_BTN_RESET, press_x, press_y;
+    TabBuffer *t;
+    int ny = 0;
 
+    if (nTab > 1)
+	ny = (nTab - 1) / N_TAB + 1;
     if (btn == MOUSE_BTN_UP) {
 	switch (press_btn) {
 	case MOUSE_BTN1_DOWN:
+	    if (nTab > 1 && y < ny) {
+		if (press_y == y && press_x == x) {
+		    if (y == 0 && x >= COLS - 2) {
+			deleteTab(CurrentTab);
+			displayBuffer(Currentbuf, B_NORMAL);
+		    }
+		    t = posTab(x, y);
+		    if (t)
+			CurrentTab = t;
+		    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+		    return;
+		}
+		else if (press_y < ny) {
+		    moveTab(posTab(press_x, press_y), posTab(x, y),
+		    	    (press_y == y) ? (press_x < x) : (press_y < y));
+		    return;
+		}
+		else if (press_x >= Currentbuf->rootX) {
+		    Buffer *buf = Currentbuf;
+		    int cx = Currentbuf->cursorX, cy = Currentbuf->cursorY;
+
+		    t = posTab(x, y);
+		    if (t == NULL)
+			return;
+		    cursorXY(Currentbuf, press_x - Currentbuf->rootX,
+			     press_y - Currentbuf->rootY);
+		    if (Currentbuf->cursorY == press_y - Currentbuf->rootY &&
+			(Currentbuf->cursorX == press_x - Currentbuf->rootX
+#ifdef JP_CHARSET
+			 || (Currentbuf->currentLine != NULL &&
+			     (Currentbuf->currentLine->propBuf[Currentbuf->pos]
+			      & PC_KANJI1) && Currentbuf->cursorX == press_x
+			     - Currentbuf->rootX - 1)
+#endif
+			)) {
+			onA();
+			followTab(t);
+		    }
+		    if (buf == Currentbuf)
+			cursorXY(Currentbuf, cx, cy);
+		}
+		return;
+	    }
 	    if (press_x != x || press_y != y) {
 		delta_x = x - press_x;
 		delta_y = y - press_y;
@@ -4685,7 +4795,7 @@ process_mouse(int btn, int x, int y)
 		    }
 		    return;
 		}
-		if (y == Currentbuf->cursorY &&
+		if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 		    (x == Currentbuf->cursorX + Currentbuf->rootX
 #ifdef JP_CHARSET
 		     || (Currentbuf->currentLine != NULL &&
@@ -4698,18 +4808,30 @@ process_mouse(int btn, int x, int y)
 		    return;
 		}
 		if (x >= Currentbuf->rootX)
-		    cursorXY(Currentbuf, x - Currentbuf->rootX, y);
+		    cursorXY(Currentbuf, x - Currentbuf->rootX,
+			     y - Currentbuf->rootY);
 		displayBuffer(Currentbuf, B_NORMAL);
 
 	    }
 	    break;
 	case MOUSE_BTN2_DOWN:
+	    if (nTab > 1 && y < ny) {
+		if (press_y == y && press_x == x) {
+		    t = posTab(x, y);
+		    if (t) {
+			deleteTab(t);
+			displayBuffer(Currentbuf, B_FORCE_REDRAW);
+		    }
+		}
+		return;
+	    }
 	    backBf();
 	    break;
 	case MOUSE_BTN3_DOWN:
 #ifdef USE_MENU
-	    if (x >= Currentbuf->rootX)
-		cursorXY(Currentbuf, x - Currentbuf->rootX, y);
+	    if (x >= Currentbuf->rootX && y > ny)
+		cursorXY(Currentbuf, x - Currentbuf->rootX,
+			 y - Currentbuf->rootY);
 	    onA();
 	    mainMenu(x, y);
 #endif				/* USE_MENU */
@@ -5023,10 +5145,13 @@ deleteFiles()
 {
     Buffer *buf;
     char *f;
-    while (Firstbuf && Firstbuf != NO_BUFFER) {
-	buf = Firstbuf->nextBuffer;
-	discardBuffer(Firstbuf);
-	Firstbuf = buf;
+
+    for (CurrentTab = FirstTab; CurrentTab; CurrentTab = CurrentTab->nextTab) {
+	while (Firstbuf && Firstbuf != NO_BUFFER) {
+	    buf = Firstbuf->nextBuffer;
+	    discardBuffer(Firstbuf);
+	    Firstbuf = buf;
+	}
     }
     while ((f = popText(fileToDelete)) != NULL)
 	unlink(f);
@@ -5257,3 +5382,316 @@ defKey(void)
     setKeymap(allocStr(data, -1), -1, TRUE);
     displayBuffer(Currentbuf, B_NORMAL);
 }
+
+TabBuffer *
+newTab(void)
+{
+    TabBuffer *n;
+
+    n = New(TabBuffer);
+    if (n == NULL)
+        return NULL;
+    n->nextTab = NULL;
+    n->currentBuffer = NULL;
+    n->firstBuffer = NULL;
+    return n;
+}
+
+static void
+_newT(void)
+{
+    TabBuffer *tag;
+    Buffer *buf;
+    int i;
+
+    tag = newTab();
+    if (! tag)
+	return;
+
+    buf = newBuffer(Currentbuf->width);
+    copyBuffer(buf, Currentbuf);
+    buf->nextBuffer = NULL;
+    for (i = 0; i < MAX_LB; i++)
+	buf->linkBuffer[i] = NULL;
+    (*buf->clone)++;
+    tag->firstBuffer = tag->currentBuffer = buf;
+
+    tag->nextTab = CurrentTab->nextTab;
+    tag->prevTab = CurrentTab;
+    if (CurrentTab->nextTab)
+	CurrentTab->nextTab->prevTab = tag;
+    else
+	LastTab = tag;
+    CurrentTab->nextTab = tag;
+    CurrentTab = tag;
+    nTab++;
+}
+
+void
+newT(void)
+{
+    _newT();
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+TabBuffer *
+numTab(int n)
+{
+    TabBuffer *tab;
+    int i;
+
+    if (n == 0)
+	return CurrentTab;
+    if (n == 1)
+	return FirstTab;
+    if (nTab <= 1)
+	return NULL;
+    for (tab = FirstTab, i = 1; tab && i < n; tab = tab->nextTab, i++)
+	;
+    return tab;
+}
+
+TabBuffer *
+deleteTab(TabBuffer *tab)
+{
+    Buffer *buf, *next;
+
+    if (nTab <= 1)
+	return FirstTab;
+    if (tab->prevTab) {
+	if (tab->nextTab)
+	    tab->nextTab->prevTab = tab->prevTab;
+	else
+	    LastTab = tab->prevTab;
+	tab->prevTab->nextTab = tab->nextTab;
+	if (tab == CurrentTab)
+	    CurrentTab = tab->prevTab;
+    }
+    else {	/* tab == FirstTab */
+	tab->nextTab->prevTab = NULL;
+	FirstTab = tab->nextTab;
+	if (tab == CurrentTab)
+	    CurrentTab = tab->nextTab;
+    }
+    nTab--;
+    buf = tab->firstBuffer;
+    while (buf && buf != NO_BUFFER) {
+	next = buf->nextBuffer;
+	discardBuffer(buf);
+	buf = next;
+    }
+    return FirstTab;
+}
+
+void
+closeT(void)
+{
+    TabBuffer *tab;
+
+    if (nTab <= 1)
+	return;
+    if (prec_num)
+	tab = numTab(PREC_NUM);
+    else
+	tab = CurrentTab;
+    if (tab)
+	deleteTab(tab);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+nextT(void)
+{
+    int i;
+
+    if (nTab <= 1)
+	return;
+    for (i = 0; i < PREC_NUM; i++) {
+	if (CurrentTab->nextTab)
+	    CurrentTab = CurrentTab->nextTab;
+	else
+	    CurrentTab = FirstTab;
+    }
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+prevT(void)
+{
+    int i;
+
+    if (nTab <= 1)
+	return;
+    for (i = 0; i < PREC_NUM; i++) {
+	if (CurrentTab->prevTab)
+	    CurrentTab = CurrentTab->prevTab;
+	else
+	    CurrentTab = LastTab;
+    }
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+followTab(TabBuffer *tab)
+{
+    Buffer *buf;
+    Anchor *a;
+ 
+#ifdef USE_IMAGE
+    a = retrieveCurrentImg(Currentbuf);
+    if (! (a && a->image && a->image->map))
+#endif
+	a = retrieveCurrentAnchor(Currentbuf);
+    if (a == NULL)
+	return;
+
+    if (tab == CurrentTab) {
+	check_target = FALSE;
+	followA();
+	check_target = TRUE;
+	return;
+    }
+    _newT();
+    buf = Currentbuf;
+    check_target = FALSE;
+    followA();
+    check_target = TRUE;
+    if (tab == NULL) {
+	if (buf != Currentbuf)
+	    delBuffer(buf);
+	else
+	    deleteTab(CurrentTab);
+    }
+    else if (buf != Currentbuf) {
+	/* buf <- p <- ... <- Currentbuf = c */
+	Buffer *c, *p;
+
+	c = Currentbuf;
+	p = prevBuffer(c, buf);
+	p->nextBuffer = NULL;
+	Firstbuf = buf;
+	deleteTab(CurrentTab);
+	CurrentTab = tab;
+	for (buf = p; buf; buf = p) {
+	    p = prevBuffer(c, buf);
+	    pushBuffer(buf);
+	}
+    }
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+tabA(void)
+{
+    followTab(prec_num ? numTab(PREC_NUM) : NULL);
+}
+
+static void
+tabURL0(TabBuffer *tab, char *prompt, int relative)
+{
+    Buffer *buf;
+
+    if (tab == CurrentTab) {
+	goURL0(prompt, relative);
+	return;
+    }
+    _newT();
+    buf = Currentbuf;
+    goURL0(prompt, relative);
+    if (tab == NULL) {
+	if (buf != Currentbuf)
+	    delBuffer(buf);
+	else
+	    deleteTab(CurrentTab);
+    }
+    else if (buf != Currentbuf) {
+	/* buf <- p <- ... <- Currentbuf = c */
+	Buffer *c, *p;
+
+	c = Currentbuf;
+	p = prevBuffer(c, buf);
+	p->nextBuffer = NULL;
+	Firstbuf = buf;
+	deleteTab(CurrentTab);
+	CurrentTab = tab;
+	for (buf = p; buf; buf = p) {
+	    p = prevBuffer(c, buf);
+	    pushBuffer(buf);
+	}
+    }
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+tabURL(void)
+{
+    tabURL0(prec_num ? numTab(PREC_NUM) : NULL,
+	    "Goto URL on new tab: ", FALSE);
+}
+
+void
+tabrURL(void)
+{
+    tabURL0(prec_num ? numTab(PREC_NUM) : NULL,
+	    "Goto relative URL on new tab: ", TRUE);
+}
+
+void
+moveTab(TabBuffer *t, TabBuffer *t2, int right)
+{
+    if (!t || !t2 || t == t2)
+	return;
+    if (t->prevTab) {
+	if (t->nextTab)
+	    t->nextTab->prevTab = t->prevTab;
+	else
+	    LastTab = t->prevTab;
+	t->prevTab->nextTab = t->nextTab;
+    }
+    else {
+	t->nextTab->prevTab = NULL;
+	FirstTab = t->nextTab;
+    }
+    if (right) {
+	t->nextTab = t2->nextTab;
+	t->prevTab = t2;
+	if (t2->nextTab)
+	    t2->nextTab->prevTab = t;
+	else
+	    LastTab = t;
+ 	t2->nextTab = t;
+    }
+    else {
+	t->prevTab = t2->prevTab;
+	t->nextTab = t2;
+	if (t2->prevTab)
+	    t2->prevTab->nextTab = t;
+	else
+	    FirstTab = t;
+ 	t2->prevTab = t;
+    }
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+tabR(void)
+{
+    TabBuffer *tab;
+    int i;
+
+    for (tab = CurrentTab, i = 0; tab && i < PREC_NUM; tab = tab->nextTab, i++)
+	;
+    moveTab(CurrentTab, tab ? tab : LastTab, TRUE);
+}
+
+void
+tabL(void)
+{
+    TabBuffer *tab;
+    int i;
+
+    for (tab = CurrentTab, i = 0; tab && i < PREC_NUM; tab = tab->prevTab, i++)
+	;
+    moveTab(CurrentTab, tab ? tab : FirstTab, FALSE);
+}
+

@@ -6,6 +6,7 @@ BEGIN		文書のいちばん上の行に移動します
 BOOKMARK	ブックマークを読み込みます
 CENTER_H	カーソルのある位置を行の中央に移動します
 CENTER_V	カーソルのある行を画面の中央に移動します
+CLOSE_TAB	現在のタブを閉じます
 COMMAND		w3mのコマンドを実行します
 COOKIE		クッキー一覧を表示します
 DEFINE_KEY	キー入力とコマンドの対応を定義します
@@ -57,6 +58,7 @@ MOVE_RIGHT1    カーソルを右に移動します(右端の場合には１文字分シフト)
 MOVE_UP                カーソルを上に移動します(改ページ時には半ページスクロール)
 MOVE_UP1       カーソルを上に移動します(改ページ時には１行スクロール)
 MSGS        エラーメッセージの一覧の表示
+NEW_TAB		新しいタブを開きます
 NEXT_DOWN      カーソルの下側にあるリンクに移動します
 NEXT_LEFT      カーソルの左側にあるリンクに移動します
 NEXT_LEFT_UP   カーソルの左側(無ければ前の行以前)にあるリンクに移動します
@@ -65,6 +67,7 @@ NEXT_MARK	一つ後のマークに移動します
 NEXT_PAGE	次のページを表示します
 NEXT_RIGHT     カーソルの右側にあるリンクに移動します
 NEXT_RIGHT_DOWN        カーソルの右側(無ければ次行以降)にあるリンクに移動します
+NEXT_TAB	次のタブに移動します
 NEXT_UP                カーソルの上側にあるリンクに移動します
 NEXT_WORD	次の単語に移動します
 NOTHING		何もしません
@@ -78,6 +81,7 @@ PIPE_SHELL	コマンドを実行し，結果を読みこみながら表示します
 PREV_LINK	前のリンクに移動します
 PREV_MARK	一つ前のマークに移動します
 PREV_PAGE	前のページを表示します
+PREV_TAB	前のタブに移動します
 PREV_WORD	前の単語に移動します
 PRINT		バッファの表示内容をファイルに保存します
 QUIT		w3mを終了します
@@ -106,6 +110,12 @@ SOURCE		HTMLのソースを表示します
 STOP_IMAGE	画像の読込/表示を停止します
 SUBMIT		フォームにサブミットします
 SUSPEND		サスペンド
+TAB_GOTO	URLを指定して新しいタブで開きます
+TAB_GOTO_RELATIVE	相対URLを指定して新しいタブで開きます
+TAB_LEFT	現在のタブを左に移動します
+TAB_LINK	リンクが指す先の文書を新しいタブで開きます
+TAB_MENU	タブ選択メニューを立ち上げます
+TAB_RIGHT	現在のタブを右に移動します
 UP		画面を1行上にスクロールします
 VERSION                w3m のバージョンを表示します
 VIEW		HTMLのソースを表示します

@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.11 2002/09/05 15:43:21 ukai Exp $
+# $Id: funcname.tab,v 1.12 2002/11/05 17:10:05 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -10,6 +10,7 @@ BEGIN		goLineF
 BOOKMARK	ldBmark
 CENTER_H	ctrCsrH
 CENTER_V	ctrCsrV
+CLOSE_TAB	closeT
 COMMAND		execCmd
 COOKIE		cooLst
 DEFINE_KEY	defKey
@@ -63,6 +64,7 @@ MOVE_RIGHT1    movR1
 MOVE_UP		movU
 MOVE_UP1       movU1
 MSGS		msgs
+NEW_TAB		newT
 NEXT_DOWN      nextD
 NEXT_LEFT      nextL
 NEXT_LEFT_UP   nextLU
@@ -71,6 +73,7 @@ NEXT_MARK	nextMk
 NEXT_PAGE	pgFore
 NEXT_RIGHT     nextR
 NEXT_RIGHT_DOWN        nextRD
+NEXT_TAB	nextT
 NEXT_UP                nextU
 NEXT_WORD	movRW
 NOTHING		nulcmd
@@ -85,6 +88,7 @@ PIPE_SHELL	pipesh
 PREV_LINK	prevA
 PREV_MARK	prevMk
 PREV_PAGE	pgBack
+PREV_TAB	prevT
 PREV_WORD	movLW
 PRINT		svBuf
 QUIT		qquitfm
@@ -114,6 +118,12 @@ SOURCE		vwSrc
 STOP_IMAGE	stopI
 SUBMIT        submitForm
 SUSPEND		susp
+TAB_GOTO	tabURL
+TAB_GOTO_RELATIVE	tabrURL
+TAB_LEFT	tabL
+TAB_LINK	tabA
+TAB_MENU	tabMn
+TAB_RIGHT	tabR
 UP		lup1
 VERSION dispVer
 VIEW		vwSrc

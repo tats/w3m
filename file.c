@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.110 2002/11/05 15:56:13 ukai Exp $ */
+/* $Id: file.c,v 1.111 2002/11/05 17:10:05 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4730,7 +4730,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 {
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
     char outc[LINELEN];
-    char *p, *q, *r, *s, *str;
+    char *p, *q, *r, *s, *t, *str;
     Lineprop outp[LINELEN], mode, effect;
     int pos;
     int nlines;
@@ -5081,6 +5081,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			MapArea *a;
 			p = remove_space(p);
 			p = url_quote_conv(p, buf->document_code);
+			t = NULL;
+			parsedtag_get_value(tag, ATTR_TARGET, &t);
 			q = "";
 			parsedtag_get_value(tag, ATTR_ALT, &q);
 			r = NULL;
@@ -5089,7 +5091,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			parsedtag_get_value(tag, ATTR_SHAPE, &r);
 			parsedtag_get_value(tag, ATTR_COORDS, &s);
 #endif
-			a = newMapArea(p, q, r, s);
+			a = newMapArea(p, t, q, r, s);
 			pushValue(buf->maplist->area, (void *)a);
 		    }
 		    break;

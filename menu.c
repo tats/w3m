@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.15 2002/03/19 16:06:52 ukai Exp $ */
+/* $Id: menu.c,v 1.16 2002/11/05 17:10:07 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -276,6 +276,16 @@ static int smDelBuf(char c);
 
 /* --- SelectMenu (END) --- */
 
+/* --- SelTabMenu --- */
+
+static Menu SelTabMenu;
+static int SelTabV = 0;
+static void initSelTabMenu(void);
+static void smChTab(void);
+static int smDelTab(char c);
+
+/* --- SelTabMenu (END) --- */
+
 /* --- MainMenu --- */
 
 static Menu MainMenu;
@@ -284,12 +294,14 @@ static MenuItem MainMenuItem[] = {
     /* type        label         variabel value func     popup keys data  */
     {MENU_FUNC, "戻る         (b)", NULL, 0, backBf, NULL, "b", NULL},
     {MENU_POPUP, "バッファ選択 (s)", NULL, 0, NULL, &SelectMenu, "s", NULL},
+    {MENU_POPUP, "タブ選択     (t)", NULL, 0, NULL, &SelTabMenu, "tT", NULL},
     {MENU_FUNC, "ソースを表示 (v)", NULL, 0, vwSrc, NULL, "vV", NULL},
     {MENU_FUNC, "ソースを編集 (e)", NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, "ソースを保存 (S)", NULL, 0, svSrc, NULL, "S", NULL},
     {MENU_FUNC, "再読み込み   (r)", NULL, 0, reload, NULL, "rR", NULL},
     {MENU_NOP, "────────", NULL, 0, nulcmd, NULL, "", NULL},
     {MENU_FUNC, "リンクを表示 (a)", NULL, 0, followA, NULL, "a", NULL},
+    {MENU_FUNC, "新タブで表示 (n)", NULL, 0, tabA, NULL, "nN", NULL},
     {MENU_FUNC, "リンクを保存 (A)", NULL, 0, svA, NULL, "A", NULL},
     {MENU_FUNC, "画像を表示   (i)", NULL, 0, followI, NULL, "i", NULL},
     {MENU_FUNC, "画像を保存   (I)", NULL, 0, svI, NULL, "I", NULL},
@@ -307,12 +319,14 @@ static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
     {MENU_FUNC, " Back         (b) ", NULL, 0, backBf, NULL, "b", NULL},
     {MENU_POPUP, " Select Buffer(s) ", NULL, 0, NULL, &SelectMenu, "s", NULL},
+    {MENU_POPUP, " Select Tab   (t) ", NULL, 0, NULL, &SelTabMenu, "tT", NULL},
     {MENU_FUNC, " View Source  (v) ", NULL, 0, vwSrc, NULL, "vV", NULL},
     {MENU_FUNC, " Edit Source  (e) ", NULL, 0, editBf, NULL, "eE", NULL},
     {MENU_FUNC, " Save Source  (S) ", NULL, 0, svSrc, NULL, "S", NULL},
     {MENU_FUNC, " Reload       (r) ", NULL, 0, reload, NULL, "rR", NULL},
     {MENU_NOP, " ---------------- ", NULL, 0, nulcmd, NULL, "", NULL},
     {MENU_FUNC, " Go Link      (a) ", NULL, 0, followA, NULL, "a", NULL},
+    {MENU_FUNC, "   on New Tab (n) ", NULL, 0, tabA, NULL, "nN", NULL},
     {MENU_FUNC, " Save Link    (A) ", NULL, 0, svA, NULL, "A", NULL},
     {MENU_FUNC, " View Image   (i) ", NULL, 0, followI, NULL, "i", NULL},
     {MENU_FUNC, " Save Image   (I) ", NULL, 0, svI, NULL, "I", NULL},
@@ -1209,9 +1223,10 @@ void
 popupMenu(int x, int y, Menu *menu)
 {
     initSelectMenu();
+    initSelTabMenu();
 
     menu->cursorX = Currentbuf->cursorX + Currentbuf->rootX;
-    menu->cursorY = Currentbuf->cursorY;
+    menu->cursorY = Currentbuf->cursorY + Currentbuf->rootY;
     menu->x = x + FRAME_WIDTH + 1;
     menu->y = y + 2;
 
@@ -1238,8 +1253,8 @@ mainMn(void)
 	    return;
 	menu = w3mMenuList[n].menu;
     }
-    popupMenu(Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY,
-	      menu);
+    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
+	      Currentbuf->cursorY + Currentbuf->rootY, menu);
 }
 
 /* --- MainMenu (END) --- */
@@ -1249,7 +1264,8 @@ mainMn(void)
 void
 selMn(void)
 {
-    popupMenu(Currentbuf->cursorX, Currentbuf->cursorY, &SelectMenu);
+    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
+	      Currentbuf->cursorY + Currentbuf->rootY, &SelectMenu);
 }
 
 static void
@@ -1312,7 +1328,7 @@ initSelectMenu(void)
     new_option_menu(&SelectMenu, label, &SelectV, smChBuf);
     SelectMenu.initial = SelectV;
     SelectMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
-    SelectMenu.cursorY = Currentbuf->cursorY;
+    SelectMenu.cursorY = Currentbuf->cursorY + Currentbuf->rootY;
     SelectMenu.keymap['D'] = smDelBuf;
     SelectMenu.item[nitem].type = MENU_NOP;
 }
@@ -1363,6 +1379,140 @@ smDelBuf(char c)
     mselect = CurrentMenu->select;
 
     initSelectMenu();
+
+    CurrentMenu->x = x;
+    CurrentMenu->y = y;
+
+    geom_menu(CurrentMenu, x, y, 0);
+
+    CurrentMenu->select = (mselect <= CurrentMenu->nitem - 2) ? mselect
+	: (CurrentMenu->nitem - 2);
+
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    draw_all_menu(CurrentMenu);
+    select_menu(CurrentMenu, CurrentMenu->select);
+    return (MENU_NOTHING);
+}
+
+/* --- SelectMenu (END) --- */
+
+/* --- SelTabMenu --- */
+
+void
+tabMn(void)
+{
+    popupMenu(Currentbuf->cursorX + Currentbuf->rootX,
+	      Currentbuf->cursorY + Currentbuf->rootY, &SelTabMenu);
+}
+
+static void
+initSelTabMenu(void)
+{
+    int i, nitem, len = 0, l;
+    TabBuffer *tab;
+    Buffer *buf;
+    Str str;
+    char **label;
+    static char *comment = " SPC for select / D for delete tab ";
+
+    SelTabV = -1;
+    for (i = 0, tab = LastTab; tab != NULL; i++, tab = tab->prevTab) {
+	if (tab == CurrentTab)
+	    SelTabV = i;
+    }
+    nitem = i;
+
+    label = New_N(char *, nitem + 2);
+    for (i = 0, tab = LastTab; i < nitem; i++, tab = tab->prevTab) {
+	buf = tab->currentBuffer;
+	str = Sprintf("<%s>", buf->buffername);
+	if (buf->filename != NULL) {
+	    switch (buf->currentURL.scheme) {
+	    case SCM_LOCAL:
+	    case SCM_LOCAL_CGI:
+		if (strcmp(buf->currentURL.file, "-")) {
+		    Strcat_char(str, ' ');
+		    Strcat_charp(str,
+				 conv_from_system(buf->currentURL.real_file));
+		}
+		break;
+		/* case SCM_UNKNOWN: */
+	    case SCM_MISSING:
+		break;
+	    default:
+		Strcat_char(str, ' ');
+		Strcat(str, parsedURL2Str(&buf->currentURL));
+		break;
+	    }
+	}
+	label[i] = str->ptr;
+	if (len < str->length)
+	    len = str->length;
+    }
+    l = strlen(comment);
+    if (len < l + 4)
+	len = l + 4;
+    if (len > COLS - 2 * FRAME_WIDTH)
+	len = COLS - 2 * FRAME_WIDTH;
+    len = (len > 1) ? ((len - l + 1) / 2) : 0;
+    str = Strnew();
+    for (i = 0; i < len; i++)
+	Strcat_char(str, '-');
+    Strcat_charp(str, comment);
+    for (i = 0; i < len; i++)
+	Strcat_char(str, '-');
+    label[nitem] = str->ptr;
+    label[nitem + 1] = NULL;
+
+    new_option_menu(&SelTabMenu, label, &SelTabV, smChTab);
+    SelTabMenu.initial = SelTabV;
+    SelTabMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
+    SelTabMenu.cursorY = Currentbuf->cursorY + Currentbuf->rootY;
+    SelTabMenu.keymap['D'] = smDelTab;
+    SelTabMenu.item[nitem].type = MENU_NOP;
+}
+
+static void
+smChTab(void)
+{
+    int i;
+    TabBuffer *tab;
+    Buffer *buf;
+
+    if (SelTabV < 0 || SelTabV >= SelTabMenu.nitem)
+	return;
+    for (i = 0, tab = LastTab; i < SelTabV && tab != NULL;
+	 i++, tab = tab->prevTab) ;
+    CurrentTab = tab;
+    for (tab = LastTab; tab != NULL; tab = tab->prevTab) {
+	if (tab == CurrentTab)
+	    continue;
+	buf = tab->currentBuffer;
+#ifdef USE_IMAGE
+	deleteImage(buf);
+#endif
+	if (clear_buffer)
+	    tmpClearBuffer(buf);
+    }
+}
+
+static int
+smDelTab(char c)
+{
+    int i, x, y, mselect;
+    TabBuffer *tab;
+
+    if (CurrentMenu->select < 0 || CurrentMenu->select >= SelTabMenu.nitem)
+	return (MENU_NOTHING);
+    for (i = 0, tab = LastTab; i < CurrentMenu->select && tab != NULL;
+	 i++, tab = tab->prevTab) ;
+    deleteTab(tab);
+
+    x = CurrentMenu->x;
+    y = CurrentMenu->y;
+    mselect = CurrentMenu->select;
+
+    initSelTabMenu();
 
     CurrentMenu->x = x;
     CurrentMenu->y = y;

@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.14 2002/10/16 18:11:15 ukai Exp $ */
+/* $Id: html.c,v 1.15 2002/11/05 17:10:05 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -64,8 +64,8 @@ unsigned char ALST_ISINDEX[] = { ATTR_ACTION, ATTR_PROMPT, ATTR_CORE };
 unsigned char ALST_MAP[] = { ATTR_NAME, ATTR_CORE };
 #define MAXA_MAP	MAXA_CORE + 1
 unsigned char ALST_AREA[] =
-    { ATTR_HREF, ATTR_ALT, ATTR_SHAPE, ATTR_COORDS, ATTR_CORE };
-#define MAXA_AREA	MAXA_CORE + 4
+    { ATTR_HREF, ATTR_TARGET, ATTR_ALT, ATTR_SHAPE, ATTR_COORDS, ATTR_CORE };
+#define MAXA_AREA	MAXA_CORE + 5
 unsigned char ALST_BASE[] = { ATTR_HREF, ATTR_TARGET, ATTR_CORE };
 #define MAXA_BASE	MAXA_CORE + 2
 unsigned char ALST_BODY[] = { ATTR_BACKGROUND, ATTR_CORE };

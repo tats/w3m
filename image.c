@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.11 2002/07/29 15:25:37 ukai Exp $ */
+/* $Id: image.c,v 1.12 2002/11/05 17:10:05 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -358,7 +358,7 @@ showImageProgress(Buffer *buf)
     }
     if (n) {
 	message(Sprintf("%d/%d images loaded", l, n)->ptr,
-		buf->cursorX + buf->rootX, buf->cursorY);
+		buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
 	refresh();
     }
 }

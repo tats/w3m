@@ -1,3 +1,126 @@
+2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03372] tab browser
+	* display.c (displayBuffer): add ny
+				rootY offset by tab
+				tab line
+		(cursorDown): offset rootY
+		(arrangeCursor): offset rootY
+	* etc.c (columnSkip): offset rootY
+		(lineSkip): offset rootY
+		(currentLineSkip): offset rootY
+	* file.c (HTMLlineproc2body): ATTR_TARGET
+	* fm.h (MapArea): add target
+		(Buffer): add rootY
+		(TabBuffer): added
+		(Currentbuf): comment out
+		(Firstbuf): comment out
+		(CurrentTab): added
+		(FirstTab): added
+		(LastTab): added
+		(open_tab_blank): added
+		(close_tab_back): added
+		(nTab): added
+		(TabCols): added
+		(N_TAB): added
+		(Currentbuf): CurrentTab->currentBuffer
+		(Firstbuf): CurrentTab->firstBuffer
+	* funcname.tab (CLOSE_TAB): added
+		(NEW_TAB): added
+		(NEXT_TAB): added
+		(PREV_TAB): added
+		(TAB_GOTO): added
+		(TAB_GOTO_RELATIVE): added
+		(TAB_LEFT): added
+		(TAB_LINK): added
+		(TAB_MENU): added
+		(TAB_RIGHT): added
+	* html.c (ALST_AREA): add ATTR_TARGET
+	* image.c (showImageProgress): offset rootY
+	* main.c (_newT): added
+		(followTab): added
+		(moveTab): added
+		(check_target): added
+		(MAIN): init tab related values
+			buf => tab
+		(nscroll): offset rootY
+		(pgFore): offset rootY
+		(pgBack): offset rootY
+		(ctrCsrV): offset rootY
+		(_movD): offset rootY
+		(_movU): offset rootY
+		(_goLine): offset rootY
+		(_mark): offset rootY
+		(followA): check target
+		(_followForm): offset rootY
+		(drawAnchorCursor0): offset rootY
+		(drawAnchorCursor): offset rootY
+		(backBf): check close_tab_back
+		(follow_map): rewrite for tab, check target
+		(posTab): added
+		(process_mouse): tab operation
+				offset rootY
+		(deleteFiles): for all buffers in all tabs
+		(newTab): added
+		(newT): added
+		(numTab): added
+		(deleteTab): added
+		(closeT): added
+		(nextT): added
+		(prevT): added
+		(followTab): added
+		(tabA): added
+		(tabURL0): added
+		(tabURL): added
+		(tabrURL): added
+		(moveTab): added
+		(tabR): added
+		(tabL): added
+	* map.c (follow_map_menu): return MapArea
+		(newMapArea): add target args
+	* menu.c (SelTabMenu): added
+		(SelTabV): added
+		(initSelTabMenu): added
+		(smChTab): added
+		(smDelTab): added
+		(MainMenuItem): add Select Tab
+					on New Tab
+		(popupMenu): add initSelTabMenu()
+				offset rootY
+		(mainMn): offset rootY
+		(selMn): offset rootY
+		(initSelectMenu): offset rootY
+		(tabMn): added
+	* proto.h (newT): added
+		(closeT): added
+		(nextT): added
+		(prevT): added
+		(tabA): added
+		(tabURL): added
+		(tabrURL): added
+		(tabR): added
+		(tabL): added
+		(newTab): added
+		(deleteTab): added
+		(follow_map_menu): return MapArea
+		(newMapArea): add target arg
+		(tabMn): added
+	* rc.c (CMT_OPEN_TAB_BLANK): added
+		(CMT_CLOSE_TAB_BACK): added
+		(open_tab_blank): added
+		(close_tab_back): added
+	* doc/README.func (CLOSE_TAB): added
+		(NEW_TAB): added
+		(NEXT_TAB): added
+		(PREV_TAB): added
+		(TAB_GOTO): added
+		(TAB_GOTO_RELATIVE): added
+		(TAB_LEFT): added
+		(TAB_LINK): added
+		(TAB_MENU): added
+		(TAB_RIGHT): added
+	* doc-jp/README.func: ditto doc/README.func
+
 2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc-jp/README.pre_form: added [w3m-dev 03373]
@@ -4159,4 +4282,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.472 2002/11/05 16:37:36 ukai Exp $
+$Id: ChangeLog,v 1.473 2002/11/05 17:10:04 ukai Exp $

@@ -1,3 +1,8 @@
+2002-11-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03382] Interrupt in no_proxy_check()
+	* url.c (check_no_proxy): SIGINT trap by KeyAbort
+
 2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03380] fix configure
@@ -4360,4 +4365,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.481 2002/11/06 14:58:02 ukai Exp $
+$Id: ChangeLog,v 1.482 2002/11/06 15:03:25 ukai Exp $

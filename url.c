@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.54 2002/11/04 08:47:38 ukai Exp $ */
+/* $Id: url.c,v 1.55 2002/11/06 15:03:26 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1943,6 +1943,8 @@ int
 check_no_proxy(char *domain)
 {
     TextListItem *tl;
+    volatile int ret = 0;
+    MySignalHandler(*volatile trap) (SIGNAL_ARG) = NULL;
 
     if (NO_proxy_domains == NULL || NO_proxy_domains->nitem == 0 ||
 	domain == NULL)
@@ -1957,6 +1959,13 @@ check_no_proxy(char *domain)
     /* 
      * to check noproxy by network addr
      */
+    if (SETJMP(AbortLoading) != 0) {
+	ret = 0;
+	goto end;
+    }
+    trap = signal(SIGINT, KeyAbort);
+    if (fmInitialized)
+	term_cbreak();
     {
 #ifndef INET6
 	struct hostent *he;
@@ -1965,8 +1974,10 @@ check_no_proxy(char *domain)
 	char addr[4 * 16], buf[5];
 
 	he = gethostbyname(domain);
-	if (!he)
-	    return (0);
+	if (!he) {
+	    ret = 0;
+	    goto end;
+	}
 	for (h_addr_list = (unsigned char **)he->h_addr_list; *h_addr_list;
 	     h_addr_list++) {
 	    sprintf(addr, "%d", h_addr_list[0][0]);
@@ -1975,8 +1986,10 @@ check_no_proxy(char *domain)
 		strcat(addr, buf);
 	    }
 	    for (tl = NO_proxy_domains->first; tl != NULL; tl = tl->next) {
-		if (strncmp(tl->ptr, addr, strlen(tl->ptr)) == 0)
-		    return (1);
+		if (strncmp(tl->ptr, addr, strlen(tl->ptr)) == 0) {
+		    ret = 1;
+		    goto end;
+		}
 	    }
 	}
 #else				/* INET6 */
@@ -2016,7 +2029,8 @@ check_no_proxy(char *domain)
 		for (tl = NO_proxy_domains->first; tl != NULL; tl = tl->next) {
 		    if (strncmp(tl->ptr, addr, strlen(tl->ptr)) == 0) {
 			freeaddrinfo(res0);
-			return 1;
+			ret = 1;
+			goto end;
 		    }
 		}
 	    }
@@ -2027,7 +2041,11 @@ check_no_proxy(char *domain)
 	}
 #endif				/* INET6 */
     }
-    return 0;
+  end:
+    if (fmInitialized)
+	term_raw();
+    signal(SIGINT, trap);
+    return ret;
 }
 
 char *

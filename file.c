@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.50 2002/01/30 04:25:02 ukai Exp $ */
+/* $Id: file.c,v 1.51 2002/01/30 15:08:48 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -731,16 +731,14 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			? "y" : NULL;
 		    if (fmInitialized && (err & COO_OVERRIDE_OK) &&
 			accept_bad_cookie == ACCEPT_BAD_COOKIE_ASK) {
-			Str msg =
-			    Sprintf
-			    ("Accept bad cookie from %s for %s? (y or n) ",
-			     pu->host,
-			     domain
-			     && domain->ptr ? domain->ptr : "<localdomain>");
-			if (msg->length > COLS - 4)
-			    Strshrink(msg, msg->length - (COLS - 4));
-			term_raw();
-			ans = inputChar(msg->ptr);
+			Str msg = Sprintf("Accept bad cookie from %s for %s?",
+					  pu->host,
+					  ((domain && domain->ptr)
+					   ? domain->ptr : "<localdomain>"));
+			if (msg->length > COLS - 10)
+			    Strshrink(msg, msg->length - (COLS - 10));
+			Strcat_charp(msg, " (y/n)");
+			ans = inputAnswer(msg->ptr);
 		    }
 		    if (ans == NULL || tolower(*ans) != 'y' ||
 			(err =
@@ -1222,7 +1220,6 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 			   IN_PASSWORD)) == NULL)
 		return NULL;
 	    pwd = Str_conv_to_system(Strnew_charp(pp));
-	    term_cbreak();
 	}
 	else {
 	    int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
@@ -6393,22 +6390,34 @@ int
 checkOverWrite(char *path)
 {
     struct stat st;
-    char buf[2];
-    char *ans = NULL;
+    char *ans;
 
     if (stat(path, &st) < 0)
 	return 0;
-    if (fmInitialized) {
-	ans = inputChar("File exists. Overwrite? (y or n)");
-    }
-    else {
-	printf("File exists. Overwrite? (y or n)");
-	ans = fgets(buf, 2, stdin);
-    }
-    if (ans != NULL && (*ans == '\0' || tolower(*ans) == 'y'))
+    ans = inputAnswer("File exists. Overwrite? (y/n)");
+    if (ans && tolower(*ans) == 'y')
 	return 0;
     else
 	return -1;
+}
+
+char *
+inputAnswer(char *prompt)
+{
+    char *ans;
+    char buf[2];
+
+    if (fmInitialized) {
+	term_raw();
+	ans = inputChar(prompt);
+    }
+    else {
+	printf(prompt);
+	fflush(stdout);
+	fgets(buf, 2, stdin);
+	ans = allocStr(buf, 1);
+    }
+    return ans;
 }
 
 static void

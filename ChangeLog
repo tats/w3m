@@ -1,3 +1,14 @@
+2002-01-31  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02933] segmentation fault when w3m -dump https:
+	* file.c (readHeader): use inputAnswer()
+	* file.c (getAuthCookie): remove term_cbreak()
+	* file.c (checkOverWrite): use inputAnswer()
+	* file.c (inputAnswer): added
+	* istream.c (ssl_get_certificate): use inputAnswer()
+	* main.c (qquitfm): change prompt 
+	* proto.h (inputAnswer): added
+
 2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02931] use POST in multipart.cgi
@@ -2410,4 +2421,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.276 2002/01/30 04:42:38 ukai Exp $
+$Id: ChangeLog,v 1.277 2002/01/30 15:08:48 ukai Exp $

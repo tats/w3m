@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.11 2002/01/12 13:33:47 ukai Exp $ */
+/* $Id: istream.c,v 1.12 2002/01/30 15:08:48 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -476,11 +476,10 @@ ssl_get_certificate(InputStream stream, char *hostname)
 	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
 	    ans = "y";
 	else {
-	    emsg = Strnew_charp("No SSL peer certificate: accept (y/n)?");
-	    term_raw();
-	    ans = inputChar(emsg->ptr);
+	    emsg = Strnew_charp("No SSL peer certificate: accept? (y/n)");
+	    ans = inputAnswer(emsg->ptr);
 	}
-	if (tolower(*ans) == 'y')
+	if (ans && tolower(*ans) == 'y')
 	    amsg = Strnew_charp
 		("Accept SSL session without any peer certificate");
 	else {
@@ -510,11 +509,10 @@ ssl_get_certificate(InputStream stream, char *hostname)
 		&& strcasecmp(accept_this_site->ptr, hostname) == 0)
 		ans = "y";
 	    else {
-		emsg = Sprintf("%s: accept (y/n)?", em);
-		term_raw();
-		ans = inputChar(emsg->ptr);
+		emsg = Sprintf("%s: accept? (y/n)", em);
+		ans = inputAnswer(emsg->ptr);
 	    }
-	    if (tolower(*ans) == 'y') {
+	    if (ans && tolower(*ans) == 'y') {
 		amsg = Sprintf("Accept unsecure SSL session: "
 			       "unverified: %s", em);
 	    }
@@ -537,11 +535,10 @@ ssl_get_certificate(InputStream stream, char *hostname)
 	    Str ep = Strdup(emsg);
 	    if (ep->length > COLS - 16)
 		Strshrink(ep, ep->length - (COLS - 16));
-	    term_raw();
-	    Strcat_charp(ep, ": accept(y/n)?");
-	    ans = inputChar(ep->ptr);
+	    Strcat_charp(ep, ": accept? (y/n)");
+	    ans = inputAnswer(ep->ptr);
 	}
-	if (tolower(*ans) == 'y') {
+	if (ans && tolower(*ans) == 'y') {
 	    amsg = Strnew_charp("Accept unsecure SSL session:");
 	    Strcat(amsg, emsg);
 	}

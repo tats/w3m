@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.25 2003/01/19 09:04:33 ukai Exp $ */
+/* $Id: map.c,v 1.26 2003/01/20 15:54:11 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -196,15 +196,14 @@ retrieveCurrentMap(Buffer *buf)
     return NULL;
 }
 
+#if defined(USE_IMAGE) || defined(MENU_MAP)
 MapArea *
 follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
 {
     MapList *ml;
     ListItem *al;
     int i, selected = -1;
-#if defined(USE_IMAGE) || defined(MENU_MAP)
     int initial = 0;
-#endif
 #ifdef MENU_MAP
     MapArea *a;
     char **label;
@@ -249,6 +248,7 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
     }
     return NULL;
 }
+#endif
 
 #ifndef MENU_MAP
 char *map1 = "<HTML><HEAD><TITLE>Image map links</TITLE></HEAD>\

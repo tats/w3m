@@ -1,3 +1,8 @@
+2003-01-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* map.c (follow_map_menu): if USE_IMAGE or MENU_MAP
+	* proto.h (follow_map_menu): ditto
+
 2003-01-21  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03660] Re: fputs -> Strfputs
@@ -6642,4 +6647,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.696 2003/01/20 15:30:18 ukai Exp $
+$Id: ChangeLog,v 1.697 2003/01/20 15:54:08 ukai Exp $

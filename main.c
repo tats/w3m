@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.238 2004/03/21 16:37:08 ukai Exp $ */
+/* $Id: main.c,v 1.239 2004/03/22 03:32:27 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -424,8 +424,11 @@ main(int argc, char **argv, char **envp)
 #ifdef USE_M17N
     if (non_null(Locale = getenv("LC_ALL")) ||
 	non_null(Locale = getenv("LC_CTYPE")) ||
-	non_null(Locale = getenv("LANG")))
-	DisplayCharset = DocumentCharset = SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
+	non_null(Locale = getenv("LANG"))) {
+	DisplayCharset = wc_guess_locale_charset(Locale, DisplayCharset);
+	DocumentCharset = wc_guess_locale_charset(Locale, DocumentCharset);
+	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
+    }
 #ifdef __EMX__
     CodePage = wc_guess_charset(getCodePage(), 0);
     if (CodePage)

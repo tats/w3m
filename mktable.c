@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.11 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: mktable.c,v 1.12 2003/03/12 18:27:07 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "myctype.h"
@@ -48,7 +48,10 @@ main(int argc, char *argv[], char **envp)
 	fprintf(stderr, "Can't open %s\n", argv[2]);
 	exit(1);
     }
-    fbase = Strnew_charp(argv[2]);
+    p = argv[2];
+    if (strrchr(p, '/') != NULL)
+	p = strrchr(p, '/')+1;
+    fbase = Strnew_charp(p);
     if (strchr(fbase->ptr, '.'))
 	while (Strlastchar(fbase) != '.')
 	    Strshrink(fbase, 1);

@@ -19,6 +19,7 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 top_srcdir = @top_srcdir@
+VPATH = $(top_srcdir):.
 DESTDIR = 
 
 CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
@@ -48,6 +49,7 @@ RANLIB=@RANLIB@
 AWK = @AWK@
 PERL = @PERL@
 MKDIR=mkdir -p
+MV=mv
 RM=rm
 AR=ar
 INSTALL=@INSTALL@
@@ -111,8 +113,8 @@ $(ALIB): $(ALIBOBJS)
 
 $(OBJS): fm.h funcname1.h
 
-tagtable.c: html.h tagtable.tab mktable$(EXT)
-	./mktable$(EXT) 100 tagtable.tab > tagtable.c
+tagtable.c: tagtable.tab mktable$(EXT) html.h 
+	./mktable$(EXT) 100 $< > $@
 
 func.o: funcname.c functable.c funcname1.h
 keybind.o: funcname2.h
@@ -120,17 +122,17 @@ keybind_lynx.o: funcname2.h
 parsetagx.o: html.c
 
 funcname.c: funcname.tab
-	sort funcname.tab | $(AWK) -f funcname0.awk > funcname.c
+	sort $< | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
 
 funcname1.h: funcname.tab
-	sort funcname.tab | $(AWK) -f funcname1.awk > funcname1.h
+	sort $< | $(AWK) -f $(top_srcdir)/funcname1.awk > $@
 
 funcname2.h: funcname.tab
-	sort funcname.tab | $(AWK) -f funcname2.awk > funcname2.h
+	sort $< | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
 
 functable.c: funcname.tab mktable$(EXT)
-	sort funcname.tab | $(AWK) -f functable.awk > functable.tab
-	./mktable$(EXT) 100 functable.tab > functable.c
+	sort $< | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
+	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
 mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
@@ -146,28 +148,48 @@ $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 
 inflate.o: inflate.c
-	$(CC) $(CFLAGS) -o inflate.o -c inflate.c
+	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
 	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
 w3mimgdisplay.o: w3mimgdisplay.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -c w3mimgdisplay.c
+	$(CC) $(CFLAGS) $(IMGCFLAGS) -c $<
 
 w3mimg/w3mimg.o: w3mimg/w3mimg.c
-	cd w3mimg && $(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -c w3mimg.c
+	-@$(MKDIR) w3mimg
+	-@$(RM) -f $@
+	cd $(top_srcdir)/w3mimg && \
+		$(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -c w3mimg.c
+	-@$(MV) $(top_srcdir)/w3mimg/w3mimg.o w3mimg/w3mimg.o
 
 w3mimg/x11/x11_w3mimg.o: w3mimg/x11/x11_w3mimg.c
-	cd w3mimg/x11 && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c x11_w3mimg.c
+	-@$(MKDIR) w3mimg/x11
+	-@$(RM) -f $@
+	cd $(top_srcdir)/w3mimg/x11 && \
+		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c x11_w3mimg.c
+	-@$(MV) $(top_srcdir)/w3mimg/x11/x11_w3mimg.o w3mimg/x11/x11_w3mimg.o
 
 w3mimg/fb/fb_w3mimg.o: w3mimg/fb/fb_w3mimg.c
-	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_w3mimg.c
+	-@$(MKDIR) w3mimg/fb
+	-@$(RM) -f $@
+	cd $(top_srcdir)/w3mimg/fb && \
+		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_w3mimg.c
+	-@$(MV) $(top_srcdir)/w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb_w3mimg.o
 
 w3mimg/fb/fb.o: w3mimg/fb/fb.c
-	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb.c
+	-@$(MKDIR) w3mimg/fb
+	-@$(RM) -f $@
+	cd $(top_srcdir)/w3mimg/fb && \
+		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb.c
+	-@$(MV) $(top_srcdir)/w3mimg/fb/fb.o w3mimg/fb/fb.o
 
 w3mimg/fb/fb_img.o: w3mimg/fb/fb_img.c w3mimg/fb/fb_gdkpixbuf.c w3mimg/fb/fb_imlib2.c
-	cd w3mimg/fb && $(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_img.c
+	-@$(MKDIR) w3mimg/fb
+	-@$(RM) -f $@
+	cd $(top_srcdir)/w3mimg/fb && \
+		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_img.c
+	-@$(MV) $(top_srcdir)/w3mimg/fb/fb_img.o w3mimg/fb/fb_img.o
 
 install: install-core install-scripts
 
@@ -205,14 +227,14 @@ install-helpfile:
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) $(MAKE_ARGS)); \
+		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS)); \
 	done
 
 install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) $(MAKE_ARGS) install); \
+		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS) install); \
 	done
 
 uninstall:
@@ -234,7 +256,7 @@ uninstall:
 	-$(RM) -f $(mandir)/ja/man1/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) $(MAKE_ARGS) uninstall); \
+		(cd $(top_srcdir)/$$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
 	done
 
 clean: sweep
@@ -243,7 +265,7 @@ clean: sweep
 	-$(RM) -f w3mimg/*.o w3mimg/*/*.o 
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) clean); \
+		(cd $(top_srcdir)/$$dir && $(MAKE) clean); \
 	done
 
 distclean: clean

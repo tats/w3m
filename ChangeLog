@@ -1,3 +1,8 @@
+2003-01-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03664] config.param is clear when configure -help
+	* configure: config.param created after arg parsing
+
 2003-01-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* map.c (follow_map_menu): if USE_IMAGE or MENU_MAP
@@ -6647,4 +6652,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.697 2003/01/20 15:54:08 ukai Exp $
+$Id: ChangeLog,v 1.698 2003/01/21 15:33:16 ukai Exp $

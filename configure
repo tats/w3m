@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.91 2002/12/13 02:27:23 ukai Exp $
+# $Id: configure,v 1.92 2003/01/21 15:33:19 ukai Exp $
 #	Configuration.
 #
 
@@ -28,8 +28,6 @@ if [ -f config.param ] ; then
           . ./config.param
 	fi
 fi
-
-echo "# Configuration at $host" > config.param
 
 # parameters:
 
@@ -149,6 +147,9 @@ do
   esac
   shift
 done
+
+mv -f config.param config.param.bak
+echo "# Configuration at $host" > config.param
 
 if [ "x$IMLIB_CONFIG" = x ]; then
   IMLIB_CONFIG=imlib-config

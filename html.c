@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.19 2002/12/05 16:29:07 ukai Exp $ */
+/* $Id: html.c,v 1.20 2002/12/06 16:50:19 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -226,11 +226,11 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"sub", NULL, 0, 0},	/* 102 HTML_SUB       */
     {"/sub", NULL, 0, 0},	/* 103 HTML_N_SUB       */
     {"link", ALST_LINK, MAXA_LINK, 0},	/*  104 HTML_LINK      */
-    {NULL, NULL, 0, 0},		/* 105 Undefined       */
+    {"s", NULL, 0, 0},	/*  105 HTML_S        */
+    {"/s", NULL, 0, TFLG_END},	/*  106 HTML_N_S      */
+    {NULL, NULL, 0, 0},		/* 107 Undefined       */
 
     /* pseudo tag */
-    {"internal", NULL, 0, TFLG_INT},	/* 106 HTML_INTERNAL   */
-    {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 107 HTML_N_INTERNAL   */
     {"select_int", ALST_SELECT_INT, MAXA_SELECT_INT, TFLG_INT},	/* 108 HTML_SELECT_INT   */
     {"/select_int", NULL, 0, TFLG_INT | TFLG_END},	/* 109 HTML_N_SELECT_INT */
     {"option_int", ALST_OPTION, MAXA_OPTION, TFLG_INT},	/* 110 HTML_OPTION_INT   */
@@ -252,6 +252,8 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {" ", ALST_NOP, MAXA_NOP, TFLG_INT},	/* 126 HTML_NOP         */
     {"pre_plain", NULL, 0, TFLG_INT},	/* 127 HTML_PRE_PLAIN         */
     {"/pre_plain", NULL, 0, TFLG_INT | TFLG_END},	/* 128 HTML_N_PRE_PLAIN         */
+    {"internal", NULL, 0, TFLG_INT},	/* 129 HTML_INTERNAL   */
+    {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 130 HTML_N_INTERNAL   */
 };
 
 TagAttrInfo AttrMAP[MAX_TAGATTR] = {

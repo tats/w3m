@@ -1,5 +1,25 @@
 2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03536] <del>, <s>
+	* file.c (HTMLtagproc1): <s>..</s> is [S:...:S]
+		(HTMLtagproc0): <del> will delete <table>
+	* fm.h (RB_S): added
+	* html.c (TagMAP): <s>,</s>
+			move <internal>, </internal>
+	* html.h (HTML_S): added
+		(HTML_N_S): added
+		(HTML_INTERNAL): renumed
+		(HTML_N_INTERNAL): ditto
+		(MAX_HTMLTAG): add 2
+	* rc.c (CMT_DISP_INS_DEL): update
+	* table.c (feed_table_tag): add HTML_S, HTML_N_S
+	* table.h (TBLM_S): added
+		(TBLM_ANCHOR): renum
+	* tagtable.tab: (strike, s): HTML_S
+		(/strike, /s): HTML_N_S
+
+2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03535] close anchor, quote <
 	* file.c (HTMLtagproc1): close_anchor
 	* frame.c (createFrameFile): quote <
@@ -5563,4 +5583,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.598 2002/12/06 16:37:42 ukai Exp $
+$Id: ChangeLog,v 1.599 2002/12/06 16:49:18 ukai Exp $

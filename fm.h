@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.93 2002/12/05 16:29:06 ukai Exp $ */
+/* $Id: fm.h,v 1.94 2002/12/06 16:50:13 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -582,6 +582,7 @@ struct readbuffer {
 #define RB_FILL		0x80000
 #endif				/* FORMAT_NICE */
 #define RB_DEL		0x100000
+#define RB_S		0x200000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
 #define RB_SET_ALIGN(obuf,align) {(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }

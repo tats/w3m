@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.35 2002/12/04 17:00:53 ukai Exp $ */
+/* $Id: table.c,v 1.36 2002/12/06 16:50:41 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2980,6 +2980,18 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	else
 	    mode->pre_mode &= ~TBLM_DEL;
 	break;
+    case HTML_S:
+	if (displayInsDel)
+	    feed_table_inline_tag(tbl, line, mode, 3);	/* [S: */
+	else
+	    mode->pre_mode |= TBLM_S;
+	break;
+    case HTML_N_S:
+	if (displayInsDel)
+	    feed_table_inline_tag(tbl, line, mode, 3);	/* :S] */
+	else
+	    mode->pre_mode &= ~TBLM_S;
+	break;
     case HTML_INS:
     case HTML_N_INS:
 	if (displayInsDel)
@@ -2988,7 +3000,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_SUP:
     case HTML_SUB:
     case HTML_N_SUB:
-	if (!(mode->pre_mode & TBLM_DEL))
+	if (!(mode->pre_mode & (TBLM_DEL | TBLM_S)))
 	    feed_table_inline_tag(tbl, line, mode, 1);	/* ^, [, ] */
 	break;
     case HTML_N_SUP:
@@ -3118,7 +3130,7 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	}
     }
     else {
-	if (mode->pre_mode & TBLM_DEL)
+	if (mode->pre_mode & (TBLM_DEL | TBLM_S))
 	    return -1;
     }
     if (mode->caption) {

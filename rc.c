@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.69 2002/12/04 17:00:51 ukai Exp $ */
+/* $Id: rc.c,v 1.70 2002/12/06 16:50:34 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -81,7 +81,7 @@ static char *config_file = NULL;
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
-#define CMT_DISP_INS_DEL "DEL タグの内容を表示する。"
+#define CMT_DISP_INS_DEL "DEL, S, STRIKE 要素の内容を表示する。"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
 #define CMT_A_COLOR      "アンカーの色"
@@ -236,7 +236,7 @@ static char *config_file = NULL;
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
 #define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
-#define CMT_DISP_INS_DEL "Display INS and DEL tag"
+#define CMT_DISP_INS_DEL "Display DEL, S and STRIKE element"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
 #define CMT_A_COLOR      "Color of anchor"

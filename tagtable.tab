@@ -104,10 +104,10 @@ script		HTML_SCRIPT
 base		HTML_BASE
 del		HTML_DEL
 /del		HTML_N_DEL
-strike		HTML_DEL
-/strike		HTML_N_DEL
-s		HTML_DEL
-/s		HTML_N_DEL
+strike		HTML_S
+/strike		HTML_N_S
+s		HTML_S
+/s		HTML_N_S
 ins		HTML_INS
 /ins		HTML_N_INS
 u		HTML_U

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.150 2002/12/06 16:37:54 ukai Exp $ */
+/* $Id: file.c,v 1.151 2002/12/06 16:49:49 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4756,6 +4756,18 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 	    obuf->flag &= ~RB_DEL;
 	return 1;
+    case HTML_S:
+	if (displayInsDel)
+	    HTMLlineproc1("<U>[S:</U>", h_env);
+	else
+	    obuf->flag |= RB_S;
+	return 1;
+    case HTML_N_S:
+	if (displayInsDel)
+	    HTMLlineproc1("<U>:S]</U>", h_env);
+	else
+	    obuf->flag &= ~RB_S;
+	return 1;
     case HTML_INS:
 	if (displayInsDel)
 	    HTMLlineproc1("<U>[INS:</U>", h_env);
@@ -4765,17 +4777,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>:INS]</U>", h_env);
 	return 1;
     case HTML_SUP:
-	if (!(obuf->flag & RB_DEL))
+	if (!(obuf->flag & (RB_DEL | RB_S)))
 	    HTMLlineproc1("^", h_env);
 	return 1;
     case HTML_N_SUP:
 	return 1;
     case HTML_SUB:
-	if (!(obuf->flag & RB_DEL))
+	if (!(obuf->flag & (RB_DEL | RB_S)))
 	    HTMLlineproc1("[", h_env);
 	return 1;
     case HTML_N_SUB:
-	if (!(obuf->flag & RB_DEL))
+	if (!(obuf->flag & (RB_DEL | RB_S)))
 	    HTMLlineproc1("]", h_env);
 	return 1;
     case HTML_FONT:
@@ -5667,6 +5679,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    continue;
 		    /* continue to the next */
 		}
+		if (obuf->flag & RB_DEL)
+		    continue;
 		/* all tables have been read */
 		if (tbl->vspace > 0 && !(obuf->flag & RB_IGNORE_P)) {
 		    int indent = h_env->envs[h_env->envc].indent;
@@ -5718,7 +5732,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		continue;
 	}
 
-	if (obuf->flag & RB_DEL)
+	if (obuf->flag & (RB_DEL | RB_S))
 	    continue;
 	while (*str) {
 	    mode = get_mctype(str);

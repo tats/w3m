@@ -1,3 +1,7 @@
+2003-02-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* doc/README: update
+
 2003-02-21  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* [w3m-dev 03762] Re: README.cygwin
@@ -7218,4 +7222,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.758 2003/02/20 15:49:10 ukai Exp $
+$Id: ChangeLog,v 1.759 2003/02/20 15:49:58 ukai Exp $

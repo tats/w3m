@@ -70,8 +70,7 @@ OS/2
 Windows
 	To compile w3m on MS-Windows, you have to use Cygwin with
 	development tools.
-	You can get it from http://sourceware.cygnus.com/cygwin/ .
-	
+	Read README.cygwin for more details.
 
 3. Copyright
 

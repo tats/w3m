@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.12 2001/12/03 18:15:12 ukai Exp $ */
+/* $Id: local.c,v 1.13 2001/12/03 18:29:37 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -173,9 +173,7 @@ check_local_cgi(char *file, int status)
 	char tmp[_MAX_PATH];
 	int len;
 
-	_abspath(tmp, w3m_lib_dir(), _MAX_PATH);	/* Translate '\\'  to  '/' 
-							 * 
-							 */
+	_abspath(tmp, w3m_lib_dir(), _MAX_PATH);	/* Translate '\\' to '/' */
 	len = strlen(tmp);
 	while (len > 1 && tmp[len - 1] == '/')
 	    len--;

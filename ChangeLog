@@ -1,5 +1,13 @@
 2001-12-04  Tsutomu Okada <okada@furuno.co.jp>
 
+	* [w3m-dev 02611] a improvement of find_cookie()
+	* cookie.c (make_cookie): domainname is passed as argument
+	* cookie.c (find_cookie): FQDN(pu->host) done only once
+	* func.c (getQWord): comment reformat
+	* local.c (check_local_cgi): ditto
+
+2001-12-04  Tsutomu Okada <okada@furuno.co.jp>
+
 	* [w3m-dev 02609]
 	* proto.h: remove duplicate prototypes
 

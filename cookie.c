@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.5 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: cookie.c,v 1.6 2001/12/03 18:29:37 ukai Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -161,10 +161,8 @@ make_cookie(struct cookie *cookie)
 }
 
 static int
-match_cookie(ParsedURL *pu, struct cookie *cookie)
+match_cookie(ParsedURL *pu, struct cookie *cookie, char *domainname)
 {
-    char *domainname = (cookie->version == 0) ? FQDN(pu->host) : pu->host;
-
     if (!domainname)
 	return 0;
 
@@ -204,10 +202,13 @@ find_cookie(ParsedURL *pu)
     Str tmp;
     struct cookie *p, *p1, *fco = NULL;
     int version = 0;
+    char *fq_domainname, *domainname;
 
+    fq_domainname = FQDN(pu->host);
     check_expired_cookies();
     for (p = First_cookie; p; p = p->next) {
-	if (p->flag & COO_USE && match_cookie(pu, p)) {
+	domainname = (p->version == 0) ? fq_domainname : pu->host;
+	if (p->flag & COO_USE && match_cookie(pu, p, domainname)) {
 	    for (p1 = fco; p1 && Strcasecmp(p1->name, p->name);
 		 p1 = p1->next) ;
 	    if (p1)

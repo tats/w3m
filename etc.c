@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.24 2002/09/24 17:35:52 ukai Exp $ */
+/* $Id: etc.c,v 1.25 2002/09/28 16:30:07 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -854,6 +854,8 @@ static int
 dir_under(const char *x, const char *y)
 {
     size_t len = strlen(x);
+    if (strcmp(x, y) == 0)
+	return 1;
     return x[len - 1] == '/'
 	&& strlen(y) >= len
 	&& y[len - 1] == '/' && strncasecmp(x, y, len) == 0;

@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.14 2002/02/07 14:02:12 ukai Exp $ */
+/* $Id: istream.c,v 1.15 2002/09/28 16:30:07 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -470,7 +470,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 }
 
 Str
-ssl_get_certificate(InputStream stream, char *hostname)
+ssl_get_certificate(SSL * ssl, char *hostname)
 {
     BIO *bp;
     X509 *x;
@@ -483,13 +483,9 @@ ssl_get_certificate(InputStream stream, char *hostname)
     Str emsg;
     char *ans;
 
-    if (stream == NULL)
+    if (ssl == NULL)
 	return NULL;
-    if (IStype(stream) != IST_SSL)
-	return NULL;
-    if (stream->ssl.handle == NULL)
-	return NULL;
-    x = SSL_get_peer_certificate(stream->ssl.handle->ssl);
+    x = SSL_get_peer_certificate(ssl);
     if (x == NULL) {
 	if (accept_this_site
 	    && strcasecmp(accept_this_site->ptr, hostname) == 0)
@@ -521,7 +517,7 @@ ssl_get_certificate(InputStream stream, char *hostname)
      */
     if (ssl_verify_server) {
 	long verr;
-	if ((verr = SSL_get_verify_result(stream->ssl.handle->ssl))
+	if ((verr = SSL_get_verify_result(ssl))
 	    != X509_V_OK) {
 	    const char *em = X509_verify_cert_error_string(verr);
 	    if (accept_this_site

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.7 2002/02/05 12:31:27 ukai Exp $ */
+/* $Id: html.h,v 1.8 2002/09/28 16:30:07 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -69,6 +69,9 @@ typedef struct {
     char *ext;
     int compression;
     char *guess_type;
+#ifdef USE_SSL
+    char *ssl_certificate;
+#endif
 } URLFile;
 
 #define CMP_NOCOMPRESS   0

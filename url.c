@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.50 2002/09/24 17:06:05 ukai Exp $ */
+/* $Id: url.c,v 1.51 2002/09/28 16:30:07 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -276,7 +276,7 @@ init_PRNG()
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
 static SSL *
-openSSLHandle(int sock, char *hostname)
+openSSLHandle(int sock, char *hostname, char **p_cert)
 {
     SSL *handle = NULL;
     static char *old_ssl_forbid_method = NULL;
@@ -362,8 +362,16 @@ openSSLHandle(int sock, char *hostname)
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
     init_PRNG();
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
-    if (SSL_connect(handle) > 0)
-	return handle;
+    if (SSL_connect(handle) > 0) {
+	Str serv_cert = ssl_get_certificate(handle, hostname);
+	if (serv_cert) {
+	    *p_cert = serv_cert->ptr;
+	    return handle;
+	}
+	close(sock);
+	SSL_free(handle);
+	return NULL;
+    }
   eend:
     close(sock);
     if (handle)
@@ -1312,8 +1320,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 
     if (!seen_www_auth) {
 	Str auth_cookie = find_auth_cookie(pu->host, pu->port, pu->file, NULL);
-	if (!auth_cookie && proxy_auth_cookie)
-	    auth_cookie = proxy_auth_cookie;
 	if (auth_cookie)
 	    Strcat_m_charp(tmp, "Authorization: ", auth_cookie->ptr,
 			   "\r\n", NULL);
@@ -1323,6 +1329,8 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	ParsedURL *proxy_pu = schemeToProxy(pu->scheme);
 	Str auth_cookie = find_auth_cookie(
 		proxy_pu->host, proxy_pu->port, proxy_pu->file, NULL);
+	if (!auth_cookie && proxy_auth_cookie)
+	    auth_cookie = proxy_auth_cookie;
 	if (auth_cookie)
 	    Strcat_m_charp(tmp, "Proxy-Authorization: ", auth_cookie->ptr,
 			   "\r\n", NULL);
@@ -1580,7 +1588,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS && *status == HTST_CONNECT) {
 		sock = ssl_socket_of(ouf->stream);
-		if (!(sslh = openSSLHandle(sock, pu->host))) {
+		if (!(sslh = openSSLHandle(sock, pu->host,
+				&uf.ssl_certificate))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}
@@ -1634,7 +1643,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    }
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS) {
-		if (!(sslh = openSSLHandle(sock, pu->host))) {
+		if (!(sslh = openSSLHandle(sock, pu->host,
+				&uf.ssl_certificate))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}
@@ -1651,6 +1661,17 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		SSL_write(sslh, tmp->ptr, tmp->length);
 	    else
 		write(sock, tmp->ptr, tmp->length);
+#ifdef HTTP_DEBUG
+	    {
+		FILE *ff = fopen("zzrequest", "a");
+		if (sslh)
+		    fputs("HTTPS: request via SSL\n", ff);
+		else
+		    fputs("HTTPS: request without SSL\n", ff);
+		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
+		fclose(ff);
+	    }
+#endif				/* HTTP_DEBUG */
 	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART) {
 		if (sslh)

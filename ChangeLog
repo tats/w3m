@@ -1,5 +1,9 @@
 2002-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* NEWS: func: CLOSE_TAB_MOUSE, MENU_MOUSE, MOVE_MOUSE, TAB_MOUSE
+
+2002-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* doc/README.mouse_menu: deleted
 	* doc/README.mouse: added
 	* doc-jp/README.mouse_menu: deleted
@@ -5144,4 +5148,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.556 2002/11/25 17:23:42 ukai Exp $
+$Id: ChangeLog,v 1.557 2002/11/26 02:21:14 ukai Exp $

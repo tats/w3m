@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* func: CLOSE_TAB_MOUSE, MENU_MOUSE, MOVE_MOUSE, TAB_MOUSE
 * options: -N
 * func: NEXT, PREV
 * rc: image_map_list

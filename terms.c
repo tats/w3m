@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.30 2002/03/15 19:02:40 ukai Exp $ */
+/* $Id: terms.c,v 1.31 2002/03/20 17:53:00 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1866,7 +1866,7 @@ term_title(char *s)
     if (!fmInitialized)
         return;
     if (title_str != NULL)
-        fprintf(stderr, title_str, s);
+        fprintf(ttyf, title_str, s);
 }
 
 char

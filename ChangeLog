@@ -1,3 +1,7 @@
+2002-03-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* terms.c (term_title): use ttyf instead of stderr
+
 2002-03-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03137] Re: w3mman.1
@@ -3277,4 +3281,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.358 2002/03/19 16:27:20 ukai Exp $
+$Id: ChangeLog,v 1.359 2002/03/20 17:53:00 ukai Exp $

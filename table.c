@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.14 2002/01/23 17:57:10 ukai Exp $ */
+/* $Id: table.c,v 1.15 2002/01/25 15:10:14 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -3180,11 +3180,38 @@ correct_table_matrix3(struct table *t, int col, char *flags, double s,
 }
 
 static void
+correct_table_matrix4(struct table *t, int col, int cspan, char *flags,
+		      double s, double b)
+{
+    int i, j;
+    double ss;
+    int ecol = col + cspan;
+    int size = t->maxcol + 1;
+    double w = 1. / (b * b);
+
+    for (i = 0; i < size; i++) {
+	if (flags[i] && !(i >= col && i < ecol))
+	    continue;
+	for (j = i; j < size; j++) {
+	    if (flags[j] && !(j >= col && j < ecol))
+		continue;
+	    if (i >= col && i < ecol && j >= col && j < ecol)
+		ss = (1. - s) * (1. - s);
+	    else if ((i >= col && i < ecol) || (j >= col && j < ecol))
+		ss = -(1. - s) * s;
+	    else
+		ss = s * s;
+	    m_add_val(t->matrix, i, j, w * ss);
+	}
+    }
+}
+
+static void
 set_table_matrix0(struct table *t, int maxwidth)
 {
     int size = t->maxcol + 1;
     int i, j, k, bcol, ecol;
-    int swidth, width, a;
+    int width, a;
     double w0, w1, w, s, b;
 #ifdef __GNUC__
     double we[size];
@@ -3218,26 +3245,27 @@ set_table_matrix0(struct table *t, int maxwidth)
 	j = cell->eindex[k];
 	bcol = cell->col[j];
 	ecol = bcol + cell->colspan[j];
-	swidth = 0;
 	for (i = bcol; i < ecol; i++) {
-	    swidth += t->tabwidth[i];
 	    expand[i]++;
 	}
-	width = cell->width[j] - (cell->colspan[j] - 1) * t->cellspacing;
-	w = weight(width);
-	w1 = 0.;
-	for (i = bcol; i < ecol; i++)
-	    w1 += we[i];
-	s = w / (w0 + w - w1);
-	a = (int)(s * maxwidth);
-	b = sigma_td_nw(a);
-	correct_table_matrix2(t, bcol, cell->colspan[j], s, b);
     }
 
     w1 = 0.;
     for (i = 0; i < size; i++)
 	if (expand[i] == 0)
 	    w1 += we[i];
+
+    for (k = 0; k < cell->necell; k++) {
+	j = cell->eindex[k];
+	bcol = cell->col[j];
+	width = cell->width[j] - (cell->colspan[j] - 1) * t->cellspacing;
+	w = weight(width);
+	s = w / (w1 + w);
+	a = (int)(s * maxwidth);
+	b = sigma_td_nw(a);
+	correct_table_matrix4(t, bcol, cell->colspan[j], expand, s, b);
+    }
+
     for (i = 0; i < size; i++) {
 	if (expand[i] == 0) {
 	    s = we[i] / max(w1, 1.);

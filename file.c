@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.147 2002/12/05 16:33:06 ukai Exp $ */
+/* $Id: file.c,v 1.148 2002/12/06 03:40:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3139,11 +3139,11 @@ process_img(struct parsed_tag *tag, int width)
 		Strcat_charp(tmp, html_quote(Strnew_charp_n(q, nw)->ptr));
 	    }
 	    else
-		Strcat_charp(tmp, q);
+		Strcat_charp(tmp, html_quote(q));
 	}
 	else
 #endif
-	    Strcat_charp(tmp, q);
+	    Strcat_charp(tmp, html_quote(q));
 	goto img_end;
     }
     if (w > 0 && i > 0) {

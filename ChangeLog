@@ -1,3 +1,14 @@
+2002-10-26  Gary Johnson <garyjohn@spk.agilent.com>
+
+	* [w3m-dev-en 00777] patch to fix w3m-0.3.1 word break problem
+	* file.c (is_period_char): 
+		0x203A - SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
+		(is_beginning_char):
+		0x2018 - LEFT SINGLE QUOTATION MARK
+		0x2039 - SINGLE LEFT-POINTING ANGLE QUOTATION MARK
+		(is_word_char): add several chars ifndef JP_CHARSET
+			add ':' and '*'
+
 2002-10-17  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03342]
@@ -3941,4 +3952,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.444 2002/10/16 18:13:42 ukai Exp $
+$Id: ChangeLog,v 1.445 2002/10/25 16:00:52 ukai Exp $

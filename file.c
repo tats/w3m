@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.103 2002/10/10 16:59:33 ukai Exp $ */
+/* $Id: file.c,v 1.104 2002/10/25 16:00:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2077,6 +2077,9 @@ is_period_char(int ch)
     case ']':
     case '}':
     case '>':
+#ifndef JP_CHARSET
+    case 0x203A:	/* ">" */
+#endif
 	return 1;
     default:
 	return 0;
@@ -2092,6 +2095,10 @@ is_beginning_char(int ch)
     case '{':
     case '`':
     case '<':
+#ifndef JP_CHARSET
+    case 0x2018:	/* "`" */
+    case 0x2039:	/* "<" */
+#endif
 	return 1;
     default:
 	return 0;
@@ -2101,6 +2108,52 @@ is_beginning_char(int ch)
 static int
 is_word_char(int ch)
 {
+#ifndef JP_CHARSET
+    switch (ch) {
+    case 0x0152:	/* "OE"   */
+    case 0x0153:	/* "oe"   */
+	return 1;
+    case 0x0178:	/* "Y:"   */ /* ? */
+    case 0x0192:	/* "f"    */ /* ? */
+    case 0x02C6:	/* "^"    */ /* ? */
+	return 0;
+    case 0x02DC:	/* "~"    */
+    case 0x03BC:	/* "\xB5" "mu" */
+	return 1;
+    case 0x2002:	/* " "    "ensp" */
+    case 0x2003:	/* " "    "emsp" */
+	return 0;
+    case 0x2013:	/* "\xAD" "ndash" */
+    case 0x2014:	/* "-"    "mdash" */
+    case 0x2018:	/* "`"    "lsquo" */
+    case 0x2019:	/* "'"    "rsquo" */
+    case 0x201A:	/* "\xB8" "sbquo" */
+    case 0x201C:	/* "\""   "ldquo" */
+    case 0x201D:	/* "\""   "rdquo" */
+    case 0x201E:	/* ",,"   "bdquo" */
+    case 0x2022:	/* "*"    "bull" */ /* ? */
+    case 0x2030:	/* "0/00" "permil" */
+    case 0x2032:	/* "'"    "prime" */
+    case 0x2033:	/* "\""   "Prime" */
+    case 0x2039:	/* "<"    "lsaquo" */
+    case 0x203A:	/* ">"    "rsaquo" */
+    case 0x2044:	/* "/"    "frasl" */
+    case 0x20AC:	/* "=C="  "euro" */
+    case 0x2122:	/* "TM"   "trade" */
+	return 1;
+    case 0x2205:	/* "\xF8" "empty" */ /* ? */
+	return 0;
+    case 0x2212:	/* "-"    */
+    case 0x223C:	/* "~"    */
+	return 1;
+    case 0x2260:	/* "!="   */ /* ? */
+    case 0x2261:	/* "="    */ /* ? */
+    case 0x2264:	/* "<="   */ /* ? */
+    case 0x2265:	/* ">="   */ /* ? */
+	return 0;
+    }
+#endif
+
 #ifdef JP_CHARSET
     if (is_wckanji(ch) || IS_CNTRL(ch))
 	return 0;
@@ -2115,10 +2168,12 @@ is_word_char(int ch)
     switch (ch) {
     case ',':
     case '.':
+    case ':':
     case '\"':			/* " */
     case '\'':
     case '$':
     case '%':
+    case '*':
     case '+':
     case '-':
     case '@':

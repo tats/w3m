@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.167 2002/12/21 16:17:13 ukai Exp $ */
+/* $Id: file.c,v 1.168 2002/12/21 16:19:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2796,19 +2796,6 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	push_tag(obuf, "<B>", HTML_B);
     if (!hidden_under && obuf->in_under)
 	push_tag(obuf, "<U>", HTML_U);
-}
-
-static void
-discardline(struct readbuffer *obuf, int indent)
-{
-    append_tags(obuf);
-    Strclear(obuf->line);
-    obuf->pos = 0;
-    obuf->prevchar = ' ';
-    obuf->bp.init_flag = 1;
-    set_breakpoint(obuf, 0);
-    obuf->prev_ctype = PC_ASCII;
-    fillline(obuf, indent);
 }
 
 void

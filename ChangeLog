@@ -1,3 +1,7 @@
+2002-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* file.c (discardline): not used
+
 2002-12-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03593] Re: segmentation fault when <title> exist after <img>
@@ -5996,4 +6000,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.638 2002/12/21 16:16:43 ukai Exp $
+$Id: ChangeLog,v 1.639 2002/12/21 16:19:33 ukai Exp $

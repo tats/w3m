@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.12 2001/11/27 16:55:46 ukai Exp $ */
+/* $Id: indep.c,v 1.13 2001/11/27 18:29:24 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -693,6 +693,12 @@ char *
 w3m_lib_dir()
 {
     return w3m_dir("W3M_LIB_DIR", LIB_DIR);
+}
+
+char *
+w3m_etc_dir()
+{
+    return w3m_dir("W3M_ETC_DIR", ETC_DIR);
 }
 
 char *

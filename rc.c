@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.14 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: rc.c,v 1.15 2001/11/27 18:29:24 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1196,7 +1196,7 @@ init_rc(char *config_file)
     }
 
     /* open config file */
-    if ((f = fopen(libFile(W3MCONFIG), "rt")) != NULL) {
+    if ((f = fopen(etcFile(W3MCONFIG), "rt")) != NULL) {
 	interpret_rc(f);
 	fclose(f);
     }
@@ -1365,6 +1365,15 @@ char *
 libFile(char *base)
 {
     Str file = Strnew_charp(w3m_lib_dir());
+    Strcat_char(file, '/');
+    Strcat_charp(file, base);
+    return expandName(file->ptr);
+}
+
+char *
+etcFile(char *base)
+{
+    Str file = Strnew_charp(w3m_etc_dir());
     Strcat_char(file, '/');
     Strcat_charp(file, base);
     return expandName(file->ptr);

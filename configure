@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.22 2001/11/27 17:00:41 ukai Exp $
+# $Id: configure,v 1.23 2001/11/27 18:29:24 ukai Exp $
 #	Configuration.
 #
 
@@ -55,6 +55,18 @@ do
   -prefix=*|--prefix=*)
     prefix=`expr "$1" : "-*prefix=\(.*\)"`
     ;;
+  -bindir=*|--bindir=*)
+    bindir=`expr "$1" : "-*bindir=\(.*\)"`
+    ;;
+  -libdir=*|--libdir=*)
+    libdir=`expr "$1" : "-*libdir=\(.*\)"`
+    ;;
+  -helpdir=*|--helpdir=*)
+    helpdir=`expr "$1" : "-*helpdir=\(.*\)"`
+    ;;
+  -sysconfdir=*|--sysconfdir=*)
+    sysconfdir=`expr "$1" : "-*sysconfdir=\(.*\)"`
+    ;;
   -lang=en|--lang=en|-lang=EN|--lang=EN)
     lang=EN
     ;;
@@ -104,6 +116,10 @@ do
   -help|--help)
     echo "-yes, -nonstop  Set all parameters to the default"
     echo "-prefix=DIR     Specify prefix (default: /usr/local)"
+    echo "-bindir=DIR     user executable in DIR (default: PREFIX/bin)"
+    echo "-libdir=DIR     program executables in DIR (default: PREFIX/lib/w3m)"
+    echo "-helpdir=DIR    help file in DIR (default: PREFIX/share/w3m)"
+    echo "-sysconfdir=DIR w3mconfig in DIR [PREFIX/etc/w3m]"
     echo "-lang=(en|ja)   Specify default language"
     echo "-model=(baby|little|mouse|cookie|monster|custom)"
     echo "                Specify default model"                     
@@ -501,6 +517,16 @@ Echo "(default: $d_helpdir) "
 readdir "$d_helpdir"
 helpdir=$_dir
 echo "helpdir='$helpdir'" >> config.param
+
+d_sysconfdir=$sysconfdir
+if [ -z "$d_sysconfdir" ]; then
+  d_sysconfdir="$topdir/etc/w3m"
+fi
+echo "Which directory do you want to put the system wide w3m configuration file?"
+Echo "(default: $d_sysconfdir) "
+readdir "$d_sysconfdir"
+sysconfdir=$_dir
+echo "sysconfdir='$sysconfdir'" >> config.param
 
 ask_choice "Which language do you prefer?" lang \
     1 JA "Japanese (charset ISO-2022-JP, EUC-JP, Shift_JIS)" . \
@@ -1889,6 +1915,7 @@ $def_matrix
 BIN_DIR = $bindir
 HELP_DIR = $helpdir
 LIB_DIR = $libdir
+ETC_DIR = $sysconfdir
 HELP_FILE = $helpfile
 SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
 LOCAL_LIBRARIES = $bsdlib $ldflags
@@ -1945,6 +1972,7 @@ $def_use_alarm
 
 #define LIB_DIR      "$libdir"
 #define HELP_DIR     "$helpdir"
+#define ETC_DIR	     "$sysconfdir"
 #define HELP_FILE    "w3mhelp.html"
 #define W3MCONFIG    "w3mconfig"
 

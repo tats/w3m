@@ -1,5 +1,16 @@
 2001-11-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02574] sysconfdir
+	* configure: add -bindir=* -libdir=* -helpdir=* -sysconfdir=*
+	* configure: add ETC_DIR
+	* indep.c (w3m_etc_dir): added
+	* indep.h: ditto
+	* rc.c (init_rc): use etcFile() instead of libFile()
+	* rc.c (etcFile): added
+	* proto.h: ditto
+
+2001-11-28  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02578]
 	* file.c (process_anchor): support <input type="image">
 	* html.c (ALST_INPUT): add ATTR_SRC, ATTR_WIDTH, ATTR_HEIGHT

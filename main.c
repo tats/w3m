@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.94 2002/03/27 15:35:06 ukai Exp $ */
+/* $Id: main.c,v 1.95 2002/03/29 16:32:00 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4362,12 +4362,12 @@ chkURLBuffer(Buffer *buf)
 	NULL
     };
     int i;
-#ifdef USE_EXTERNAL_URI_LOADER
-    chkExternalURIBuffer(buf);
-#endif
     for (i = 0; url_like_pat[i]; i++) {
 	reAnchor(buf, url_like_pat[i]);
     }
+#ifdef USE_EXTERNAL_URI_LOADER
+    chkExternalURIBuffer(buf);
+#endif
     buf->check_url |= CHK_URL;
 }
 

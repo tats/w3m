@@ -1,3 +1,8 @@
+2002-03-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03159] "ttp:" is marked instead of "http:" by MARL_URL
+	* main.c (chkURLBuffer): check internal URLs first
+
 2002-03-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* terms.c (set_tty): s/term_info/w3m_term_info/g;
@@ -3303,4 +3308,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.363 2002/03/27 15:41:37 ukai Exp $
+$Id: ChangeLog,v 1.364 2002/03/29 16:32:00 ukai Exp $

@@ -1,5 +1,14 @@
 2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03374] disable_secret_security_check
+	* etc.c (openSecurityFile): disable_secret_security_check
+	* fm.h (disable_secret_security_check): added
+	* rc.c (CMT_DISABLE_SECRET_SECURITY_CHECK): added
+		(disable_secret_security_check): added
+	* NEWS: rc: disable_secret_security_check
+
+2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* NEWS: update
 
 2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
@@ -4296,4 +4305,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.476 2002/11/05 17:35:09 ukai Exp $
+$Id: ChangeLog,v 1.477 2002/11/05 17:54:38 ukai Exp $

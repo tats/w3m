@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* rc: disable_secret_security_check (for windows?)
 * tab browsing
 * rc: open_tab_blank, close_tab_back
 * func: CLOSE_TAB, NEW_TAB, NEXT_TAB, PREV_TAB, 

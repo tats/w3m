@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.57 2002/11/05 17:34:29 ukai Exp $ */
+/* $Id: rc.c,v 1.58 2002/11/05 17:54:39 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -130,6 +130,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ       "外部ブラウザ"
 #define CMT_EXTBRZ2      "外部ブラウザその2"
 #define CMT_EXTBRZ3      "外部ブラウザその3"
+#define CMT_DISABLE_SECRET_SECURITY_CHECK	"パスワードファイルのパーミッションをチェックしない"
 #define CMT_PASSWDFILE	 "パスワードファイル"
 #define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
 #ifdef FTPPASS_HOSTNAMEGEN
@@ -275,6 +276,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ       "External Browser"
 #define CMT_EXTBRZ2      "Second External Browser"
 #define CMT_EXTBRZ3      "Third External Browser"
+#define CMT_DISABLE_SECRET_SECURITY_CHECK	"Disable secret file security check"
 #define CMT_PASSWDFILE	 "Password file"
 #define CMT_FTPPASS      "Password for anonymous FTP (your mail address)"
 #ifdef FTPPASS_HOSTNAMEGEN
@@ -488,7 +490,7 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file, 
+    {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
      CMT_PRE_FORM_FILE, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
@@ -683,6 +685,9 @@ struct param_ptr params8[] = {
 #endif
 struct param_ptr params9[] = {
     {"passwd_file", P_STRING, PI_TEXT, (void *)&passwd_file, CMT_PASSWDFILE,
+     NULL},
+    {"disable_secret_security_check", P_INT, PI_ONOFF,
+     (void *)&disable_secret_security_check, CMT_DISABLE_SECRET_SECURITY_CHECK,
      NULL},
     {"ftppasswd", P_STRING, PI_TEXT, (void *)&ftppasswd, CMT_FTPPASS, NULL},
 #ifdef FTPPASS_HOSTNAMEGEN

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.46 2001/12/22 10:02:04 ukai Exp $
+# $Id: configure,v 1.47 2002/01/05 16:13:27 ukai Exp $
 #	Configuration.
 #
 
@@ -769,6 +769,11 @@ Echo "(Default: $dbrowser) "
 readdir "$dbrowser"
 brz=$_dir
 echo "dbrowser='$brz'" >> config.param
+
+def_image_viewer=${def_image_viewer-xv}
+echo "def_image_viewer='$def_image_viewer'" >> config.param
+def_audio_player=${def_audio_player-showaudio}
+echo "def_audio_player='$def_audio_player'" >> config.param
 
 if [ -z "$dcc" ]; then 
   if [ -n "$CC" ]; then
@@ -2047,6 +2052,10 @@ $def_use_help_cgi
 #define DEF_EDITOR "$editor"
 #define DEF_MAILER "$mailer"
 #define DEF_EXT_BROWSER "$brz"
+
+/* fallback viewer. mailcap override these configuration */
+#define DEF_IMAGE_VIEWER	"$def_image_viewer"
+#define DEF_AUDIO_PLAYER	"$def_audio_player"
 
 #define LIB_DIR      "$libdir"
 #define HELP_DIR     "$helpdir"

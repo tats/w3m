@@ -124,6 +124,10 @@ MODEL=Linux.i686-monster-ja
 #define DEF_MAILER "/bin/mail"
 #define DEF_EXT_BROWSER "/usr/bin/netscape"
 
+/* fallback viewer. mailcap override these configuration */
+#define DEF_IMAGE_VIEWER	"xv"
+#define DEF_AUDIO_PLAYER	"showaudio"
+
 #define LIB_DIR      "/usr/local/lib/w3m"
 #define HELP_DIR     "/usr/local/lib/w3m"
 #define ETC_DIR	     "/usr/local/etc/w3m"

@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.9 2001/11/30 10:00:06 ukai Exp $ */
+/* $Id: mailcap.c,v 1.10 2002/01/05 16:13:27 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -7,8 +7,8 @@
 #include "local.h"
 
 static struct mailcap DefaultMailcap[] = {
-    {"image/*", "xv %s", 0, NULL, NULL, NULL},	/* */
-    {"audio/basic", "showaudio %s", 0, NULL, NULL, NULL},
+    {"image/*", DEF_IMAGE_VIEWER " %s", 0, NULL, NULL, NULL},	/* */
+    {"audio/basic", DEF_AUDIO_PLAYER " %s", 0, NULL, NULL, NULL},
     {NULL, NULL, 0, NULL, NULL, NULL}
 };
 

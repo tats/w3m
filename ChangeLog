@@ -1,3 +1,14 @@
+2002-01-06  Fumitoshi UKAI <ukai@debian.or.jp>
+
+	* [w3m-dev 02781] Re: Bug#127883: w3m tries to use xv as default
+	* config.h.dist (DEF_IMAGE_VIEWER): added
+	* config.h.dist (DEF_AUDIO_PLAYER): added
+	* configure (def_image_viewer): added
+	* configure (def_audio_player): added
+	* configure (DEF_IMAGE_VIEWER): added
+	* configure (DEF_AUDIO_PLAYER): added
+	* mailcap.c (DefaultMailcap): use DEF_IMAGE_VIEWER, DEF_AUDIO_PLAYER
+
 2002-01-05  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02779] `;' is valid in URL
@@ -1760,4 +1771,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.197 2002/01/04 19:14:35 ukai Exp $
+$Id: ChangeLog,v 1.198 2002/01/05 16:13:27 ukai Exp $

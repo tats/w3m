@@ -1,3 +1,4 @@
+/* $Id: w3mbookmark.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 #ifdef __EMX__
 #include <stdlib.h>
 #endif

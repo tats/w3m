@@ -1,3 +1,4 @@
+/* $Id: regex.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
 #define REGEX_MAX	64
 #define STORAGE_MAX	256
 

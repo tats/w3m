@@ -1,4 +1,4 @@
-
+/* $Id: rc.c,v 1.5 2001/11/20 17:49:23 ukai Exp $ */
 /* 
  * Initialization file etc.
  */

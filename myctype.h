@@ -1,3 +1,4 @@
+/* $Id: myctype.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef _MYCTYPE_H
 #define _MYCTYPE_H
 

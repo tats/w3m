@@ -1,3 +1,4 @@
+/* $Id: search.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 

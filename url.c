@@ -1,3 +1,4 @@
+/* $Id: url.c,v 1.6 2001/11/20 17:49:23 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>

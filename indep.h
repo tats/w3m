@@ -1,3 +1,4 @@
+/* $Id: indep.h,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include "gc.h"

@@ -1,4 +1,4 @@
-
+/* $Id: history.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef HISTORY_H
 #define HISTORY_H
 

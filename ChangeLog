@@ -1,3 +1,7 @@
+2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* add rcsids
+
 2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* buffer.c (newBuffer): set COLS

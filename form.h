@@ -1,5 +1,6 @@
-/* 
- * HTML forms
+/* $Id: form.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/*
+ * HTML forms 
  */
 #ifndef FORM_H
 #define FORM_H

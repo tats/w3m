@@ -1,3 +1,4 @@
+/* $Id: parsetagx.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef PARSETAGX_H
 #define PARSETAGX_H
 

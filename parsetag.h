@@ -1,3 +1,4 @@
+/* $Id: parsetag.h,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef PARSETAG_H
 #define PARSETAG_H
 struct parsed_tagarg {

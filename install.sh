@@ -1,4 +1,5 @@
 #! /bin/sh
+# $Id: install.sh,v 1.2 2001/11/20 17:49:23 ukai Exp $
 
 while :
 do

@@ -1,4 +1,4 @@
-
+/* $Id: myctype.c,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 unsigned char MYCTYPE_MAP[ 0x100 ] = {
 /* NUL SOH STX ETX EOT ENQ ACK BEL   BS  HT  LF  VT  FF  CR  SO  SI */
      1,  1,  1,  1,  1,  1,  1,  1,   1,  3,  3,  3,  3,  3,  1,  1, 

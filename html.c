@@ -1,3 +1,4 @@
+/* $Id: html.c,v 1.4 2001/11/20 17:49:23 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */

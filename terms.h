@@ -1,3 +1,4 @@
+/* $Id: terms.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef TERMS_H
 #define TERMS_H
 

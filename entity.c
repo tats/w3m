@@ -1,4 +1,4 @@
-
+/* $Id: entity.c,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include "indep.h"

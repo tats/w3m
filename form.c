@@ -1,5 +1,4 @@
-
-/* $Id: form.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: form.c,v 1.5 2001/11/20 17:49:23 ukai Exp $ */
 /* 
  * HTML forms
  */

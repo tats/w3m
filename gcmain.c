@@ -1,3 +1,4 @@
+/* $Id: gcmain.c,v 1.2 2001/11/20 17:49:23 ukai Exp $ */
 #ifndef GC_MAIN
 #define GC_MAIN
 

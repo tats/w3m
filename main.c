@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.171 2002/12/18 16:20:53 ukai Exp $ */
+/* $Id: main.c,v 1.172 2002/12/18 16:25:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -43,7 +43,7 @@ static int n_event_queue;
 
 #ifdef USE_ALARM
 static AlarmEvent DefaultAlarm = {
-    0, FUNCNAME_nulcmd, NULL, AL_UNSET,
+    0, AL_UNSET, FUNCNAME_nulcmd, NULL
 };
 static AlarmEvent *CurrentAlarm = &DefaultAlarm;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
@@ -5511,7 +5511,7 @@ SigAlarm(SIGNAL_ARG)
 #endif
 	CurrentCmdData = NULL;
 	if (CurrentAlarm->status == AL_IMPLICIT_ONCE) {
-	    CurrentAlarm->sec  = 0;
+	    CurrentAlarm->sec = 0;
 	    CurrentAlarm->status = AL_UNSET;
 	}
 	if (CurrentAlarm->sec > 0) {
@@ -5555,7 +5555,7 @@ setAlarm(void)
 }
 
 AlarmEvent *
-setAlarmEvent(AlarmEvent *event, int sec, short status, int cmd, void *data)
+setAlarmEvent(AlarmEvent * event, int sec, short status, int cmd, void *data)
 {
     if (event == NULL)
 	event = New(AlarmEvent);

@@ -616,9 +616,11 @@ AC_DEFUN([AC_W3M_CHECK_VER],
    set -- $version
    IFS="$save_ifs"
    if test "$[1]" -ne "$3" -o "$[2]" -lt "$4" -o "$[3]" -lt "$5"; then
-    AC_MSG_ERROR([$1 is too old Install $1 (version >= $3.$4.$5)])
+     AC_MSG_WARN([$1 is too old Install $1 (version >= $3.$4.$5)])
+     $7
+   else
+     $6
    fi
-   $6
  else
    $7
  fi])

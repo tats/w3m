@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.41 2003/05/13 17:08:20 ukai Exp $ */
+/* $Id: table.c,v 1.42 2003/05/13 17:09:58 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -3491,12 +3491,12 @@ set_table_matrix0(struct table *t, int maxwidth)
 }
 
 void
-check_relative_width(struct table *t,int maxwidth)
+check_relative_width(struct table *t, int maxwidth)
 {
     int i;
     double rel_total = 0;
-    int size = t->maxcol+1;
-    double *rcolwidth = New_N(double,size);
+    int size = t->maxcol + 1;
+    double *rcolwidth = New_N(double, size);
     struct table_cell *cell = &t->cell;
     int n_leftcol = 0;
 
@@ -3505,33 +3505,33 @@ check_relative_width(struct table *t,int maxwidth)
 
     for (i = 0; i < size; i++) {
 	if (t->fixed_width[i] < 0)
-	    rcolwidth[i] = -(double)t->fixed_width[i]/100.0;
+	    rcolwidth[i] = -(double)t->fixed_width[i] / 100.0;
 	else if (t->fixed_width[i] > 0)
-	    rcolwidth[i] = (double)t->fixed_width[i]/maxwidth;
+	    rcolwidth[i] = (double)t->fixed_width[i] / maxwidth;
 	else
 	    n_leftcol++;
     }
     for (i = 0; i <= cell->maxcell; i++) {
 	if (cell->fixed_width[i] < 0) {
-	    double w = -(double)cell->fixed_width[i]/100.0;
+	    double w = -(double)cell->fixed_width[i] / 100.0;
 	    double r;
-	    int j,k;
+	    int j, k;
 	    int n_leftcell = 0;
 	    k = cell->col[i];
 	    r = 0.0;
 	    for (j = 1; j < cell->colspan[i]; j++) {
-		if (rcolwidth[j+k] > 0)
-		    r += rcolwidth[j+k];
+		if (rcolwidth[j + k] > 0)
+		    r += rcolwidth[j + k];
 		else
 		    n_leftcell++;
 	    }
 	    if (w < r || (w == r && n_leftcell > 0)) {
-		cell->fixed_width[i] = -100*r;
+		cell->fixed_width[i] = -100 * r;
 	    }
 	    else {
 		for (j = 1; j < cell->colspan[i]; j++) {
-		    if (rcolwidth[j+k] == 0)
-			 rcolwidth[j+k] = (w-r)/n_leftcell;
+		    if (rcolwidth[j + k] == 0)
+			rcolwidth[j + k] = (w - r) / n_leftcell;
 		}
 	    }
 	}
@@ -3549,17 +3549,17 @@ check_relative_width(struct table *t,int maxwidth)
 	}
 	for (i = 0; i < size; i++) {
 	    if (t->fixed_width[i] < 0)
-		t->fixed_width[i] = -rcolwidth[i]*100;
+		t->fixed_width[i] = -rcolwidth[i] * 100;
 	}
 	for (i = 0; i <= cell->maxcell; i++) {
 	    if (cell->fixed_width[i] < 0) {
 		double r;
-		int j,k;
+		int j, k;
 		k = cell->col[i];
 		r = 0.0;
 		for (j = 1; j < cell->colspan[i]; j++)
-		    r += rcolwidth[j+k];
-		cell->fixed_width[i] = -r*100;
+		    r += rcolwidth[j + k];
+		cell->fixed_width[i] = -r * 100;
 	    }
 	}
     }
@@ -3585,7 +3585,7 @@ set_table_matrix(struct table *t, int width)
 	v_set_val(t->vector, i, 0.);
     }
 
-    check_relative_width(t,width);
+    check_relative_width(t, width);
 
     for (i = 0; i < size; i++) {
 	if (t->fixed_width[i] > 0) {

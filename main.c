@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.184 2003/01/06 15:36:59 ukai Exp $ */
+/* $Id: main.c,v 1.185 2003/01/08 17:24:13 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2864,7 +2864,7 @@ followA(void)
 	    Strtruncate(to, pos - to->ptr);
 #endif
 	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(url_unquote(to->ptr)),
+	system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
 			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -3819,7 +3819,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 	    Strtruncate(to, pos - to->ptr);
 #endif
 	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(url_unquote(to->ptr)),
+	system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
 			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);

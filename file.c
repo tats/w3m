@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.175 2003/01/06 15:36:58 ukai Exp $ */
+/* $Id: file.c,v 1.176 2003/01/08 17:24:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1869,6 +1869,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    return NO_BUFFER;
 	}
 #endif
+    }
+    else if (pu.scheme == SCM_DATA) {
+	t = f.guess_type;
     }
     else if (searchHeader) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
@@ -6867,13 +6870,13 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     cache->index = 0;
 
   image_buffer:
+    if (newBuf == NULL)
+	newBuf = newBuffer(INIT_BUFFER_WIDTH);
     cache->loaded |= IMG_FLAG_DONT_REMOVE;
     if (uf->scheme != SCM_LOCAL)
 	newBuf->sourcefile = cache->file;
 
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
-    if (newBuf == NULL)
-	newBuf = newBuffer(INIT_BUFFER_WIDTH);
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
     newBuf->mailcap_source = tmpf->ptr;

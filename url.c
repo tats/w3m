@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.65 2003/01/07 15:53:43 ukai Exp $ */
+/* $Id: url.c,v 1.66 2003/01/08 17:24:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -56,6 +56,7 @@ static int
     119,			/* nntp group */
     119,			/* news */
     119,			/* news group */
+    0,				/* data - not defined */
     0,				/* mailto - not defined */
 #ifdef USE_SSL
     443,			/* https */
@@ -73,6 +74,7 @@ struct cmdtable schemetable[] = {
     /*  {"nntp", SCM_NNTP_GROUP}, */
     {"news", SCM_NEWS},
     /*  {"news", SCM_NEWS_GROUP}, */
+    {"data", SCM_DATA},
 #ifndef USE_W3MMAILER
     {"mailto", SCM_MAILTO},
 #endif
@@ -226,6 +228,7 @@ DefaultFile(int scheme)
     case SCM_LOCAL:
     case SCM_LOCAL_CGI:
     case SCM_FTP:
+    case SCM_FTPDIR:
 	return allocStr("/", -1);
     }
     return NULL;
@@ -708,9 +711,29 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	 * denotes a filename (therefore the scheme is SCM_LOCAL).
 	 */
 	if (current) {
-	    p_url->scheme = current->scheme;
-	    if (p_url->scheme == SCM_LOCAL_CGI)
-		p_url->scheme = SCM_LOCAL;
+	    switch (current->scheme) {
+		case SCM_LOCAL:
+		case SCM_LOCAL_CGI:
+		    p_url->scheme = SCM_LOCAL;
+		    break;
+		case SCM_FTP:
+		case SCM_FTPDIR:
+		    p_url->scheme = SCM_FTP;
+		    break;
+#ifdef USE_NNTP
+		case SCM_NNTP:
+		case SCM_NNTP_GROUP:
+		    p_url->scheme = SCM_NNTP;
+		    break;
+		case SCM_NEWS:
+		case SCM_NEWS_GROUP:
+		    p_url->scheme = SCM_NEWS;
+		    break;
+#endif
+		default:
+		    p_url->scheme = current->scheme;
+		    break;
+	    }
 	}
 	else
 	    p_url->scheme = SCM_LOCAL;
@@ -970,6 +993,8 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     if (pu->scheme == SCM_MAILTO)
 	return;
 #endif
+    if (pu->scheme == SCM_DATA)
+	return;
     if (pu->scheme == SCM_NEWS || pu->scheme == SCM_NEWS_GROUP) {
 	if (pu->file && !strchr(pu->file, '@') &&
 	    (!(p = strchr(pu->file, '/')) || strchr(p + 1, '-') ||
@@ -1000,7 +1025,9 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     if (pu->scheme == SCM_LOCAL)
 	pu->file = expandName(pu->file);
 
-    if (current && pu->scheme == current->scheme && pu->host == NULL) {
+    if (current && (pu->scheme == current->scheme ||
+		    (pu->scheme == SCM_FTP && current->scheme == SCM_FTPDIR))
+	&& pu->host == NULL) {
 	/* Copy omitted element from the current URL */
 	pu->user = current->user;
 	pu->pass = current->pass;
@@ -1120,7 +1147,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     Str tmp;
     static char *scheme_str[] = {
 	"http", "gopher", "ftp", "ftp", "file", "file", "exec", "nntp", "nntp",
-	"news", "news", "mailto",
+	"news", "news", "data", "mailto",
 #ifdef USE_SSL
 	"https",
 #endif				/* USE_SSL */
@@ -1156,6 +1183,10 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 	return tmp;
     }
 #endif
+    if (pu->scheme == SCM_DATA) {
+	Strcat_charp(tmp, pu->file);
+	return tmp;
+    }
 #ifdef USE_NNTP
     if (pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP)
 #endif				/* USE_NNTP */
@@ -1593,6 +1624,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	}
 	return uf;
     case SCM_FTP:
+    case SCM_FTPDIR:
 	if (pu->file == NULL)
 	    pu->file = allocStr("/", -1);
 	if (non_null(FTP_proxy) &&
@@ -1769,7 +1801,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		return uf;
 	    if (pu->file == NULL)
 		pu->file = "1";
-	    tmp = Strnew_charp(url_unquote(pu->file));
+	    tmp = Strnew_charp(file_unquote(pu->file));
 	    Strcat_char(tmp, '\n');
 	}
 	write(sock, tmp->ptr, tmp->length);
@@ -1787,6 +1819,26 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	uf.stream = openNewsStream(pu);
 	return uf;
 #endif				/* USE_NNTP */
+    case SCM_DATA:
+	if (pu->file == NULL)
+	    return uf;
+	p = Strnew_charp(pu->file)->ptr;
+	q = strchr(p, ',');
+	if (q == NULL)
+	    return uf;
+	*q++ = '\0';
+	tmp = Strnew_charp(q);
+	q = strrchr(p, ';');
+	if (q != NULL && !strcmp(q, ";base64"))
+	{
+	    *q = '\0';
+	    uf.encoding = ENC_BASE64;
+	}
+	else
+	    tmp = Str_url_unquote(tmp, FALSE);
+	uf.stream = newStrStream(tmp);
+	uf.guess_type = (*p != '\0') ? p : "text/plain";
+	return uf;
     case SCM_UNKNOWN:
     default:
 	return uf;

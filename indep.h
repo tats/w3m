@@ -1,4 +1,4 @@
-/* $Id: indep.h,v 1.10 2002/11/09 21:55:24 ukai Exp $ */
+/* $Id: indep.h,v 1.11 2003/01/08 17:24:12 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include "gc.h"
@@ -45,9 +45,9 @@ extern char *html_unquote(char *str);
 extern char *file_quote(char *str);
 extern char *file_unquote(char *str);
 extern char *url_quote(char *str);
-extern char *url_unquote(char *str);
+extern Str Str_url_unquote(Str x, int is_form);
 extern Str Str_form_quote(Str x);
-extern Str Str_form_unquote(Str x);
+#define Str_form_unquote(x) Str_url_unquote((x), TRUE)
 extern char *shell_quote(char *str);
 
 extern char *w3m_auxbin_dir();

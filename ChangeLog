@@ -1,3 +1,29 @@
+2003-01-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03616] Re: data: URL scheme
+	* file.c (loadGeneralFile): check SCM_DATA
+		(loadImageBuffer): newBuffer()
+	* html.h (SCM_DATA): added
+	* indep.c (url_unquote): deleted
+		(Str_url_unquote): renamed from Str_form_unquote
+				+ is decoded is_form only
+	* indep.h (url_unquote): deleted
+		(Str_url_unquote): added
+		(Str_form_unquote): define by Str_url_unquote
+	* main.c (followA): file_unquote
+		(cmd_loadURL): file_unquote
+	* url.c (DefaultPort): add for data:
+		(schemetable): add "data"
+		(DefaultFile): SCM_FTPDIR
+		(parseURL): scheme copied from current
+		(parseURL2): SCM_DATA
+			check SCM_FTP, SCM_FTPDIR
+		(_parsedURL2Str): add data in scheme_str
+			handle SCM_DATA
+			SCM_FTPDIR
+		(openURL): file_unquote
+			handle SCM_DATA
+
 2003-01-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03611] relative URL
@@ -6192,4 +6218,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.658 2003/01/07 15:53:42 ukai Exp $
+$Id: ChangeLog,v 1.659 2003/01/08 17:24:11 ukai Exp $

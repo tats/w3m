@@ -1,5 +1,9 @@
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* file.c (loadGeneralFile): return NULL, not NO_BUFFER
+
+2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02833] ssl_forbid_method in SSL Setting
 	* rc.c (params7): ssl_forbid_method moved here
 	* rc.c (params8): ssl_forbid_method removed here
@@ -1922,4 +1926,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.215 2002/01/14 16:31:26 ukai Exp $
+$Id: ChangeLog,v 1.216 2002/01/15 03:45:02 ukai Exp $

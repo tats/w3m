@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.43 2002/01/14 15:59:17 ukai Exp $ */
+/* $Id: file.c,v 1.44 2002/01/15 03:45:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1052,7 +1052,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    {
 		struct stat st;
 		if (stat(pu.real_file, &st) < 0)
-		    return NO_BUFFER;
+		    return NULL;
 		if (S_ISDIR(st.st_mode)) {
 		    if (UseExternalDirBuffer) {
 			Str cmd = Strnew_charp(DirBufferCommand);
@@ -1069,7 +1069,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    else {
 			b = dirBuffer(pu.real_file);
 			if (b == NULL)
-			    return NO_BUFFER;
+			    return NULL;
 			t = "text/html";
 			b->real_scheme = pu.scheme;
 			goto loaded;
@@ -1090,7 +1090,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	disp_err_message(Sprintf("Unknown URI: %s",
 				 parsedURL2Str(&pu)->ptr)->ptr, FALSE);
-	return NO_BUFFER;
+	return NULL;
     }
 
     /* openURL() succeeded */
@@ -1103,7 +1103,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (b)
 	    discardBuffer(b);
 	UFclose(&f);
-	return NO_BUFFER;
+	return NULL;
     }
 
     b = NULL;
@@ -1140,7 +1140,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (IStype(f.stream) == IST_SSL) {
 	    Str s = ssl_get_certificate(f.stream, pu.host);
 	    if (s == NULL)
-		return NO_BUFFER;
+		return NULL;
 	    else
 		t_buf->ssl_certificate = s->ptr;
 	}
@@ -1200,7 +1200,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    /* abort */
 		    UFclose(&f);
 		    signal(SIGINT, prevtrap);
-		    return NO_BUFFER;
+		    return NULL;
 		}
 		UFclose(&f);
 		add_auth_cookie_flag = 1;
@@ -1221,7 +1221,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    /* abort */
 		    UFclose(&f);
 		    signal(SIGINT, prevtrap);
-		    return NO_BUFFER;
+		    return NULL;
 		}
 		UFclose(&f);
 		status = HTST_NORMAL;
@@ -1438,7 +1438,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (IStype(f.stream) == IST_SSL) {
 	Str s = ssl_get_certificate(f.stream, pu.host);
 	if (s == NULL)
-	    return NO_BUFFER;
+	    return NULL;
 	else
 	    t_buf->ssl_certificate = s->ptr;
     }

@@ -159,8 +159,8 @@ if test x"$enable_m17n" = xno; then
 else
  AC_DEFINE(USE_M17N)
  WCTARGET="libwc"
- WCCFLAGS="-I. -I.."
- wcinclude="-I./libwc"
+ WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
+ wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
  AC_MSG_CHECKING(if unicode support is enabled)
  AC_ARG_ENABLE(unicode,
@@ -196,7 +196,7 @@ else
   [  --with-charset=CHARSET],
   [test x"with_charset" = xyes || display_charset="$with_charset"])
  AC_MSG_RESULT($display_charset)
- display_charset=`awk '$[1] == "'$display_charset'" {print $[2]}' charset-list`
+ display_charset=`awk '$[1] == "'$display_charset'" {print $[2]}' $srcdir/charset-list`
  case "$display_charset" in
    WC_CES_ISO_2022_JP*)
      system_charset=WC_CES_EUC_JP

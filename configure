@@ -2951,8 +2951,8 @@ else
 _ACEOF
 
  WCTARGET="libwc"
- WCCFLAGS="-I. -I.."
- wcinclude="-I./libwc"
+ WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
+ wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
  echo "$as_me:$LINENO: checking if unicode support is enabled" >&5
 echo $ECHO_N "checking if unicode support is enabled... $ECHO_C" >&6
@@ -3007,7 +3007,7 @@ if test "${with_charset+set}" = set; then
 fi;
  echo "$as_me:$LINENO: result: $display_charset" >&5
 echo "${ECHO_T}$display_charset" >&6
- display_charset=`awk '$1 == "'$display_charset'" {print $2}' charset-list`
+ display_charset=`awk '$1 == "'$display_charset'" {print $2}' $srcdir/charset-list`
  case "$display_charset" in
    WC_CES_ISO_2022_JP*)
      system_charset=WC_CES_EUC_JP

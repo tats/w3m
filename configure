@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.76 2002/09/11 14:54:33 ukai Exp $
+# $Id: configure,v 1.77 2002/09/29 15:29:12 ukai Exp $
 #	Configuration.
 #
 
@@ -791,7 +791,7 @@ ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
   imgtarget='$(IMGDISPLAY) $(IMGSIZE)'
-  ask_param "X11 inline image support (you need Imlib1 library)" use_w3mimg_x11 y
+  ask_param "X11 inline image support (you need Imlib1 or GdkPixbuf library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
   case $sysname in
   Linux|linux|LINUX)
@@ -2132,7 +2132,13 @@ imgobjs='w3mimg/w3mimg.o'
 
 if [ "$use_image" = y ]; then
   if [ "$use_w3mimg_x11" = y ]; then
-      if find_imlib; then
+      if find_gdkpixbuf; then
+	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
+	  def_use_gdkpixbuf='#define USE_GDKPIXBUF'
+	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
+	  imgx11cflags='`gdk-pixbuf-config --cflags`'
+	  imgx11ldflags='`gdk-pixbuf-config --libs` -lgdk_pixbuf_xlib'
+      elif find_imlib; then
 	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
 	  def_use_imlib='#define USE_IMLIB'
 	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"

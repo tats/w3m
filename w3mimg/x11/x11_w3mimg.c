@@ -1,9 +1,16 @@
-/* $Id: x11_w3mimg.c,v 1.6 2002/09/09 13:59:09 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.7 2002/09/29 15:29:12 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include "config.h"
 
+#if defined(USE_IMLIB)
 #include <Imlib.h>
+#elif defined(USE_GDKPIXBUF)
+#include <gdk-pixbuf/gdk-pixbuf-xlib.h>
+#else
+#error no Imlib and GdkPixbuf support
+#endif
 
 #include "w3mimg/w3mimg.h"
 
@@ -15,7 +22,11 @@ struct x11_info {
     Window window, parent;
     unsigned long background_pixel;
     GC imageGC;
+#if defined(USE_IMLIB)
     ImlibData *id;
+#elif defined(USE_GDKPIXBUF)
+    int init_flag;
+#endif
 };
 
 static int
@@ -27,11 +38,18 @@ x11_init(w3mimg_op * self)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
+#if defined(USE_IMLIB)
     if (!xi->id) {
 	xi->id = Imlib_init(xi->display);
 	if (!xi->id)
 	    return 0;
     }
+#elif defined(USE_GDKPIXBUF)
+    if (!xi->init_flag) {
+	gdk_pixbuf_xlib_init(xi->display, 0);
+	xi->init_flag = TRUE;
+    }
+#endif
     if (!xi->imageGC) {
 	xi->imageGC = XCreateGC(xi->display, xi->parent, 0, NULL);
 	if (!xi->imageGC)
@@ -131,7 +149,11 @@ static int
 x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 {
     struct x11_info *xi;
+#if defined(USE_IMLIB)
     ImlibImage *im;
+#elif defined(USE_GDKPIXBUF)
+    GdkPixbuf *pixbuf;
+#endif
 
     if (self == NULL)
 	return 0;
@@ -139,6 +161,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     if (xi == NULL)
 	return 0;
 
+#if defined(USE_IMLIB)
     im = Imlib_load_image(xi->id, fname);
     if (!im)
 	return 0;
@@ -146,14 +169,30 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	w = im->rgb_width;
     if (h <= 0)
 	h = im->rgb_height;
+#elif defined(USE_GDKPIXBUF)
+    pixbuf = gdk_pixbuf_new_from_file(fname);
+    if (!pixbuf)
+	return 0;
+    if (w <= 0)
+	w = gdk_pixbuf_get_width(pixbuf);
+    if (h <= 0)
+	h = gdk_pixbuf_get_height(pixbuf);
+#endif
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					DefaultDepth(xi->display, 0));
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
+#if defined(USE_IMLIB)
     Imlib_paste_image(xi->id, im, (Pixmap) img->pixmap, 0, 0, w, h);
     Imlib_kill_image(xi->id, im);
+#elif defined(USE_GDKPIXBUF)
+    gdk_pixbuf_xlib_render_to_drawable(pixbuf, (Drawable) img->pixmap,
+				       xi->imageGC, 0, 0, 0, 0, w, h,
+				       XLIB_RGB_DITHER_NORMAL, 0, 0);
+    gdk_pixbuf_unref(pixbuf);
+#endif
     img->width = w;
     img->height = h;
     return 1;
@@ -199,7 +238,11 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 		   int *h)
 {
     struct x11_info *xi;
+#if defined(USE_IMLIB)
     ImlibImage *im;
+#elif defined(USE_GDKPIXBUF)
+    GdkPixbuf *pixbuf;
+#endif
 
     if (self == NULL)
 	return 0;
@@ -207,6 +250,7 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     if (xi == NULL)
 	return 0;
 
+#if defined(USE_IMLIB)
     im = Imlib_load_image(xi->id, fname);
     if (!im)
 	return 0;
@@ -214,6 +258,16 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     *w = im->rgb_width;
     *h = im->rgb_height;
     Imlib_kill_image(xi->id, im);
+#elif defined(USE_GDKPIXBUF)
+    pixbuf = gdk_pixbuf_new_from_file(fname);
+    if (!pixbuf)
+	return 0;
+
+    *w = gdk_pixbuf_get_width(pixbuf);
+    *h = gdk_pixbuf_get_height(pixbuf);
+
+    gdk_pixbuf_unref(pixbuf);
+#endif
     return 1;
 }
 

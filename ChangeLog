@@ -1,3 +1,13 @@
+2002-09-30  Yuji Abe <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03327] gdk-pixbuf support for w3m-img/x11
+	* configure (use_w3mimg_x11) Imlib1 or GdkPixbuf
+		check gdkpixbuf
+	* w3mimg/x11/x11_w3mimg.c (USE_GDKPIXBUF): added
+		(x11_init): USE_GDKPIXBUF
+		(x11_load_image): USE_GDKPIXBUF
+		(x11_get_image_size): USE_GDKPIXBUF
+
 2002-09-30  qhwt@myrealbox.com
 
 	* [w3m-dev 03325] Re: hang up when seeing web page that contains xbm file
@@ -3851,4 +3861,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.433 2002/09/29 15:14:32 ukai Exp $
+$Id: ChangeLog,v 1.434 2002/09/29 15:29:12 ukai Exp $

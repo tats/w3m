@@ -1,6 +1,7 @@
-/* $Id: search.c,v 1.9 2002/01/16 16:49:55 ukai Exp $ */
+/* $Id: search.c,v 1.10 2002/01/16 19:02:16 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
+#include <errno.h>
 
 static void
 set_mark(Line *l, int pos, int epos)
@@ -71,10 +72,23 @@ migemostr(char *str)
 	if (open_migemo(migemo_command) == 0)
 	    return str;
     fprintf(migemow, "%s\n", str);
-    fflush(migemow);
+again:
+    if (fflush(migemow) != 0) {
+	switch (errno) {
+	case EINTR: goto again;
+	default: goto err;
+	}
+    }
     tmp = Strfgets(migemor);
     Strchop(tmp);
+    if (tmp->length == 0)
+	goto err;
     return tmp->ptr;
+err:
+    /* XXX: backend migemo is not working? */
+    init_migemo();
+    use_migemo = 0;
+    return str;
 }
 #endif				/* USE_MIGEMO */
 

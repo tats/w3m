@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.62 2002/01/16 16:49:54 ukai Exp $ */
+/* $Id: main.c,v 1.63 2002/01/16 19:02:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -52,6 +52,10 @@ static int need_resize_screen = FALSE;
 static MySignalHandler resize_hook(SIGNAL_ARG);
 static MySignalHandler resize_handler(SIGNAL_ARG);
 static void resize_screen(void);
+#endif
+
+#ifdef SIGPIPE
+static MySignalHandler SigPipe(SIGNAL_ARG);
 #endif
 
 #ifdef USE_MARK
@@ -708,6 +712,9 @@ MAIN(int argc, char **argv, char **envp)
 #ifdef SIGCHLD
     signal(SIGCHLD, sig_chld);
 #endif
+#ifdef SIGPIPE
+    signal(SIGPIPE, SigPipe);
+#endif
 
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);
     err_msg = Strnew();
@@ -1205,6 +1212,18 @@ resize_screen(void)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 #endif				/* SIGWINCH */
+
+#ifdef SIGPIPE
+static MySignalHandler
+SigPipe(SIGNAL_ARG)
+{
+#ifdef USE_MIGEMO
+    init_migemo();
+#endif
+    signal(SIGPIPE, SigPipe);
+    SIGNAL_RETURN;
+}
+#endif
 
 /* 
  * Command functions: These functions are called with a keystroke.

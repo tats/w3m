@@ -12,6 +12,7 @@
 	* url.c (searchURIMethods): check default_urimethods
 	* scripts/Makefile: add w3mmail.cgi
 	* scritps/w3mmail.cgi.in: added
+	* scripts/.cvsignore: ignore w3mmail.cgi
 
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
@@ -1941,4 +1942,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.217 2002/01/15 05:40:08 ukai Exp $
+$Id: ChangeLog,v 1.218 2002/01/15 05:41:14 ukai Exp $

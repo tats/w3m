@@ -1455,7 +1455,7 @@ if test "${with_migemo+set}" = set; then
   test x"$with_migemo" = xyes || migemo_command="$with_migemo"
 fi
 
- if test "${with_migemo+set}" = set; then
+ if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    cat >> confdefs.h <<\EOF
 #define USE_MIGEMO 1
 EOF

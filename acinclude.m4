@@ -224,7 +224,7 @@ AC_DEFUN([AC_W3M_MIGEMO],
  AC_ARG_WITH(migemo,
   [  --with-migemo=MIGEMO_COMMAND	migemo command],
   [test x"$with_migemo" = xyes || migemo_command="$with_migemo"])
- if test "${with_migemo+set}" = set; then
+ if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    AC_DEFINE(USE_MIGEMO)
  fi
  AC_MSG_RESULT($migemo_command)

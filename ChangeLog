@@ -1,3 +1,9 @@
+2003-03-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00908] Re: autoconf: --without-migemo is a nop
+	* acinclude.m4 (AC_W3M_MIGEMO): dont define USE_MIGEMO 
+				when with_migemo=no
+
 2003-03-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03823] Re: etc.c: treatment for "%7E" is added to  expandName()
@@ -7541,4 +7547,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.795 2003/03/13 17:47:45 ukai Exp $
+$Id: ChangeLog,v 1.796 2003/03/18 15:25:47 ukai Exp $

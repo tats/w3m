@@ -1,3 +1,9 @@
+2002-02-08  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03021] Bug#132934: w3m should recognize file:/uris
+				in chkURLBuffer function
+	* main.c (chkURLBuffer): add "file:" 
+
 2002-02-08  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03017] URI scheme is case insensitive
@@ -2880,4 +2886,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.308 2002/02/08 11:20:14 ukai Exp $
+$Id: ChangeLog,v 1.309 2002/02/08 11:37:09 ukai Exp $

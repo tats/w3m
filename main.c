@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.80 2002/02/07 14:44:47 ukai Exp $ */
+/* $Id: main.c,v 1.81 2002/02/08 11:37:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4314,6 +4314,7 @@ chkURLBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
 	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=]",
+	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
 #ifdef USE_GOPHER
 	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_GOPHER */

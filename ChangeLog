@@ -1,5 +1,12 @@
 2003-02-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03782] real linenumber for EDIT and EDIT_SCREEN
+	* main.c (cur_real_linenumber): added
+		(editBf): use cur_real_linenumber instead of CUR_LINENUMBER
+		(editScr): ditto
+
+2003-02-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03781] Debian Bug report logs - #181897: w3m submits query urls with "extra"
 	* main.c (_followForm): remove tailling '?'
 
@@ -7256,4 +7263,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.765 2003/02/25 16:01:38 ukai Exp $
+$Id: ChangeLog,v 1.766 2003/02/25 16:05:43 ukai Exp $

@@ -1,3 +1,9 @@
+2001-11-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* terms.c (set_tty): "rxvt" is xterm
+	  (getTCstr): tgetstr("Km", &pt) is not xterm, removed
+	  (mouse_init): check Gpm_Open() == -2 to detect xterm when USE_GPM
+
 2001-11-16  Tsutomu Okada <okada@furuno.co.jp>
 
 	* main.c (chkURL): add mailto: like pattern to mark as anchor

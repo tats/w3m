@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.19 2002/02/19 15:50:18 ukai Exp $ */
+/* $Id: etc.c,v 1.20 2002/03/06 03:32:11 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1075,7 +1075,7 @@ mySystem(char *command, int background)
 	flush_tty();
 	if ((pid = fork()) == 0) {
 	    reset_signals();
-	    setpgrp();
+	    SETPGRP();
 	    close_tty();
 	    fclose(stdout);
 	    fclose(stderr);

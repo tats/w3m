@@ -1,3 +1,14 @@
+2002-03-06  Christian Weisgerber <w3m-dev-en@mips.inka.de>
+
+	* [w3m-dev-en 00699]
+	* configure: define SETPGRP() instead of setpgrp()
+	* etc.c (mySystem): use SETPGRP() instead of setpgrp()
+	* image.c (openImgdisplay): ditto
+	* search.c (open_migemo): ditto
+	* url.c: revert changes by Dai Sato on 2002-02-01
+		since stdio.h and config.h is included with this order
+		in fm.h
+
 2002-03-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* version.c.in: 0.3+cvs
@@ -3052,4 +3063,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.333 2002/03/05 18:10:49 ukai Exp $
+$Id: ChangeLog,v 1.334 2002/03/06 03:32:10 ukai Exp $

@@ -1,6 +1,4 @@
-/* $Id: url.c,v 1.46 2002/02/28 16:15:42 ukai Exp $ */
-#include <stdio.h>
-#include "config.h"
+/* $Id: url.c,v 1.47 2002/03/06 03:32:11 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.18 2002/01/31 03:55:35 ukai Exp $ */
+/* $Id: search.c,v 1.19 2002/03/06 03:32:11 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -52,7 +52,7 @@ open_migemo(char *migemo_command)
 	/* child */
 	reset_signals();
 #ifdef HAVE_SETPGRP
-	setpgrp();
+	SETPGRP();
 #endif
 	close_tty();
 	close(fdr[0]);

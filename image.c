@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.7 2002/02/14 03:50:03 ukai Exp $ */
+/* $Id: image.c,v 1.8 2002/03/06 03:32:11 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -106,7 +106,7 @@ openImgdisplay()
 	reset_signals();
 	signal(SIGINT, SIG_IGN);
 #ifdef HAVE_SETPGRP
-	setpgrp();
+	SETPGRP();
 #endif
 	close_tty();
 	close(fdr[0]);

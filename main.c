@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.18 2001/11/23 20:06:40 ukai Exp $ */
+/* $Id: main.c,v 1.19 2001/11/23 21:05:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1129,11 +1129,12 @@ void
 pgFore(void)
 {
 #ifdef VI_PREC_NUM
-    nscroll(searchKeyNum() * (LASTLINE - 1), B_NORMAL);
-#else				/* not VI_PREC_NUM */
-    nscroll(prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1),
-	prec_num ? B_SCROLL : B_NORMAL);
-#endif				/* not VI_PREC_NUM */
+    if (vi_prec_num)
+	nscroll(searchKeyNum() * (LASTLINE - 1), B_NORMAL);
+    else
+#endif
+	nscroll(prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1),
+		prec_num ? B_SCROLL : B_NORMAL);
 }
 
 /* Move page backward */
@@ -1141,11 +1142,12 @@ void
 pgBack(void)
 {
 #ifdef VI_PREC_NUM
-    nscroll(- searchKeyNum() * (LASTLINE - 1), B_NORMAL);
-#else				/* not VI_PREC_NUM */
-    nscroll(- (prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1)),
-	prec_num ? B_SCROLL : B_NORMAL);
-#endif				/* not VI_PREC_NUM */
+    if (vi_prec_num)
+	nscroll(- searchKeyNum() * (LASTLINE - 1), B_NORMAL);
+    else
+#endif
+	nscroll(-(prec_num ? searchKeyNum() : searchKeyNum() * (LASTLINE - 1)),
+		prec_num ? B_SCROLL : B_NORMAL);
 }
 
 /* 1 line up */

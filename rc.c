@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.9 2001/11/23 20:50:59 ukai Exp $ */
+/* $Id: rc.c,v 1.10 2001/11/23 21:05:52 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -91,6 +91,9 @@ static int rc_initialized = 0;
 #define CMT_CONFIRM_QQ   "q での終了時に確認する"
 #ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Emacs風の行編集にする"
+#endif
+#ifdef VI_PREC_NUM
+#define CMT_VI_PREC_NUM "vi風の数値プレフィクス"
 #endif
 #define CMT_SHOW_NUM     "行番号を表示する"
 #define CMT_MIMETYPES    "利用するmime.types"
@@ -192,6 +195,9 @@ static int rc_initialized = 0;
 #define CMT_CONFIRM_QQ   "Confirm when quitting with q"
 #ifdef EMACS_LIKE_LINEEDIT
 #define CMT_EMACS_LIKE_LINEEDIT	"Emacs-style line editing"
+#endif
+#ifdef VI_PREC_NUM
+#define CMT_VI_PREC_NUM	 "vi-like numeric prefix"
 #endif
 #define CMT_SHOW_NUM     "Show line number"
 #define CMT_MIMETYPES    "mime.types files"
@@ -395,6 +401,9 @@ struct param_ptr params3[] =
     {"confirm_qq", P_INT, PI_ONOFF, (void *) &confirm_on_quit, CMT_CONFIRM_QQ, NULL},
 #ifdef EMACS_LIKE_LINEEDIT
     {"emacs_like_lineedit", P_INT, PI_ONOFF, (void *) &emacs_like_lineedit, CMT_EMACS_LIKE_LINEEDIT, NULL },
+#endif
+#ifdef VI_PREC_NUM
+    {"vi_prec_num", P_INT, PI_ONOFF, (void *) &vi_prec_num, CMT_VI_PREC_NUM },
 #endif
     {"wrap_search", P_INT, PI_ONOFF, (void *) &WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *) &IgnoreCase, CMT_IGNORE_CASE, NULL},

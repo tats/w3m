@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.23 2001/11/27 18:29:24 ukai Exp $
+# $Id: configure,v 1.24 2001/11/28 12:23:40 ukai Exp $
 #	Configuration.
 #
 
@@ -769,9 +769,10 @@ readdir "$dbrowser"
 brz=$_dir
 echo "dbrowser='$brz'" >> config.param
 
-if [ -z "$dcc" ] ; then 
-  if ./which gcc >/dev/null
-  then
+if [ -z "$dcc" ]; then 
+  if [ -n "$CC" ]; then
+    dcc="$CC"
+  elif ./which gcc >/dev/null ; then
     dcc=gcc
   else
     dcc=cc
@@ -782,7 +783,9 @@ Echo "(Default: $dcc) "
 readanswer cc "$dcc"
 echo "dcc='$cc'" >> config.param
 
-if [ -z "$dcflags" ] ; then dcflags="-O" ; fi
+if [ -z "$dcflags" ]; then
+  dcflags=${CFLAGS-"-O"}
+fi
 echo "Input your favorite C flags."
 Echo "(Default: $dcflags) "
 readanswer cflags "$dcflags"
@@ -1042,6 +1045,9 @@ fi
 
 
 echo "Input additional LD flags other than listed above, if any:"
+if [ -z "$dldflags" ]; then
+  dldflags=${LDFLAGS-""}
+fi
 if [ -n "$dldflags" ]; then
   Echo "(default: $dldflags) : "
 else

@@ -1,5 +1,13 @@
 2003-02-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03729] buf fix of reAnchorNewsheader()
+	* anchor.c (reAnchorAny): check l->bpos
+		 (reAnchorNewsheader): check l->bpos
+					strlen(*q)
+					lineBuf[l->size]
+
+2003-02-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03728] IPv6 hostname
 	* url.c (parseURL): rewrite IPv6 address parser
 
@@ -7019,4 +7027,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.736 2003/02/05 16:18:23 ukai Exp $
+$Id: ChangeLog,v 1.737 2003/02/05 16:23:27 ukai Exp $

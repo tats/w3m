@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.21 2003/01/23 18:37:20 ukai Exp $ */
+/* $Id: anchor.c,v 1.22 2003/02/05 16:23:28 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -339,7 +339,7 @@ reAnchorAny(Buffer *buf, char *re,
 	    Anchor *(*anchorproc) (Buffer *, char *, char *, int, int))
 {
     Line *l;
-    char *p, *p1, *p2;
+    char *p = NULL, *p1, *p2;
 
     if (re == NULL || *re == '\0') {
 	return NULL;
@@ -350,6 +350,8 @@ reAnchorAny(Buffer *buf, char *re,
     for (l = MarkAllPages ? buf->firstLine : buf->topLine; l != NULL &&
 	 (MarkAllPages || l->linenumber < buf->topLine->linenumber + LASTLINE);
 	 l = l->next) {
+	if (p && l->bpos)
+	    continue;
 	p = l->lineBuf;
 	for (;;) {
 	    if (regexMatch(p, &l->lineBuf[l->size] - p, p == l->lineBuf) == 1) {
@@ -403,11 +405,13 @@ reAnchorNewsheader(Buffer *buf)
 	}
 	for (l = buf->firstLine; l != NULL && l->real_linenumber == 0;
 	     l = l->next) {
+	    if (l->bpos)
+		continue;
 	    p = l->lineBuf;
 	    if (!IS_SPACE(*p)) {
 		search = FALSE;
 		for (q = header; *q; q++) {
-		    if (!strncasecmp(p, *q, sizeof(*q) - 1)) {
+		    if (!strncasecmp(p, *q, strlen(*q))) {
 			search = TRUE;
 			p = strchr(p, ':') + 1;
 			break;
@@ -417,7 +421,7 @@ reAnchorNewsheader(Buffer *buf)
 	    if (!search)
 		continue;
 	    for (;;) {
-		if (regexMatch(p, &l->lineBuf[l->len] - p, p == l->lineBuf)
+		if (regexMatch(p, &l->lineBuf[l->size] - p, p == l->lineBuf)
 		    == 1) {
 		    matchedPosition(&p1, &p2);
 		    p = reAnchorPos(buf, l, p1, p2, _put_anchor_news);

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.51 2002/01/16 16:49:54 ukai Exp $
+# $Id: configure,v 1.52 2002/01/16 17:22:49 ukai Exp $
 #	Configuration.
 #
 
@@ -1808,6 +1808,14 @@ if $cc $cflags -o _zmachdep _zmachdep.c $extlib > /dev/null 2>&1
 then
   if ./_zmachdep; then
     def_ipv6="#define INET6"
+  else
+    # even if build machine doesnt have IPv6 support, it may works
+    # Required for package builds
+    if [ "$use_ipv6" = "y" ]; then
+      echo "Your build machine doesn't have IPv6 support, but it is enabled by config.param"
+      def_ipv6="#define INET6"
+      echo "use_ipv6=y" >> config.param
+    fi
   fi
   case $sysname in
   *BSD|*bsd)

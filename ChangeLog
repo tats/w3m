@@ -1,5 +1,11 @@
 2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02861] IPv6 configuration check
+	* configure: force "#define INET6" if socket(AF_INET6, SOCK_STREAM, 0)
+			failed but use_ipv6=y in config.param
+
+2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02859]
 	* config.h.dist (DEF_MIGEMO_COMMAND): added
 	* configure (DEF_MIGEMO_COMMAND): added
@@ -2058,4 +2064,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.232 2002/01/16 16:52:05 ukai Exp $
+$Id: ChangeLog,v 1.233 2002/01/16 17:22:49 ukai Exp $

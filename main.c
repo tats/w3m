@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.243 2004/07/15 16:32:38 ukai Exp $ */
+/* $Id: main.c,v 1.244 2004/07/15 16:44:37 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -452,6 +452,7 @@ main(int argc, char **argv, char **envp)
 	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
     }
     auto_detect = WcOption.auto_detect;
+    BookmarkCharset = DocumentCharset;
 #endif
 
     if (!non_null(HTTP_proxy) &&
@@ -4110,25 +4111,20 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
     Str tmp;
     FormList *request;
 
-    tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s",
+    tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s"
+#ifdef USE_M17N
+		    "&charset=%s"
+#endif
+		    ,
 		  (Str_form_quote(localCookie()))->ptr,
 		  (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
 #ifdef USE_M17N
-#if LANG == JA
-		  /* FIXME: why WC_CES_EUC_JP hardcoded? 
-		   *  backward compatibility.
-		   *  w3mbookmark takes arguments as EUC-JP only?
-		   */
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
 						 InnerCharset,
-						 WC_CES_EUC_JP)))->ptr);
-#else
-		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
-						 InnerCharset,
-						 SystemCharset)))->ptr);
-#endif
+						 BookmarkCharset)))->ptr,
+		  wc_ces_to_charset(BookmarkCharset));
 #else
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
 #endif

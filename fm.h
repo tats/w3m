@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.126 2004/07/15 16:32:38 ukai Exp $ */
+/* $Id: fm.h,v 1.127 2004/07/15 16:44:37 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1009,6 +1009,7 @@ global wc_ces InnerCharset init(WC_CES_WTF);	/* Don't change */
 global wc_ces DisplayCharset init(DISPLAY_CHARSET);
 global wc_ces DocumentCharset init(DOCUMENT_CHARSET);
 global wc_ces SystemCharset init(SYSTEM_CHARSET);
+global wc_ces BookmarkCharset init(SYSTEM_CHARSET);
 global char ExtHalfdump init(FALSE);
 global char FollowLocale init(TRUE);
 global char UseContentCharset init(TRUE);

@@ -1,5 +1,14 @@
 2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
+	* [w3m-dev 04093] bookmark charset
+	* add global variable: BookmarkCharset.
+	* main.c:adBmark(): remove condition LANG = JA.
+	* main.c: buffername encode by BookmarkCharset when add bookmark.
+	* main.c: BookmarkCharset pass to w3mbookmark.
+	* w3mbookmark.c: ditto.
+
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
 	* [w3m-dev 04092] remove __CYGWIN__ && LANG == JA
 	* remove condition LANG == JA && __CYGWIN__
 	* cygwin_mouse_btn_swapped enabled when before 1.5.x 
@@ -8518,4 +8527,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.930 2004/07/15 16:32:38 ukai Exp $
+$Id: ChangeLog,v 1.931 2004/07/15 16:44:37 ukai Exp $

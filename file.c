@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.76 2002/03/08 15:16:02 ukai Exp $ */
+/* $Id: file.c,v 1.77 2002/03/08 15:59:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6201,7 +6201,7 @@ loadHTMLString(Str page)
  * loadGopherDir: get gopher directory
  */
 Buffer *
-loadGopherDir(URLFile *uf, Buffer * volatile newBuf)
+loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 {
     Str tmp, lbuf, name, file, host, port;
     char code;
@@ -6215,10 +6215,10 @@ loadGopherDir(URLFile *uf, Buffer * volatile newBuf)
     tmp = Strnew_charp("<pre>\n");
 
     if (SETJMP(AbortLoading) != 0)
-        goto gopher_end;
+	goto gopher_end;
     prevtrap = signal(SIGINT, KeyAbort);
     if (fmInitialized)
-        term_cbreak();
+	term_cbreak();
 
 #ifdef JP_CHARSET
     if (newBuf->document_code != '\0')
@@ -6252,7 +6252,7 @@ loadGopherDir(URLFile *uf, Buffer * volatile newBuf)
 	if (!*q)
 	    continue;
 	p = q + 1;
-	for (q = p; *q && *q != '\t'&& *q != '\r' && *q != '\n'; q++) ;
+	for (q = p; *q && *q != '\t' && *q != '\r' && *q != '\n'; q++) ;
 	port = Strnew_charp_n(p, q - p);
 
 	switch (name->ptr[0]) {
@@ -6278,28 +6278,29 @@ loadGopherDir(URLFile *uf, Buffer * volatile newBuf)
 	    p = "[unsupported]";
 	    break;
 	}
- 	q = Strnew_m_charp("gopher://", host, ":", port, "/", file, NULL)->ptr;
- 	Strcat_m_charp(tmp, "<a href=\"", html_quote(q), "\">", p,
- 			      html_quote(name->ptr + 1), "</a>\n", NULL);
+	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
+			   "/", file->ptr, NULL)->ptr;
+	Strcat_m_charp(tmp, "<a href=\"", url_quote(q), "\">", p,
+		       html_quote(name->ptr + 1), "</a>\n", NULL);
     }
- 
-   gopher_end:
-     if (fmInitialized)
-         term_raw();
-     signal(SIGINT, prevtrap);
- 
-     Strcat_charp(tmp, "</pre>\n");
- 
-     file = tmpfname(TMPF_SRC, ".html");
-     src = fopen(file->ptr, "w");
-     newBuf->sourcefile = file->ptr;
-     pushText(fileToDelete, file->ptr);
- 
-     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
-     loadHTMLstream(&f, newBuf, src, TRUE);
-     if (src)
-         fclose(src);
- 
+
+  gopher_end:
+    if (fmInitialized)
+	term_raw();
+    signal(SIGINT, prevtrap);
+
+    Strcat_charp(tmp, "</pre>\n");
+
+    file = tmpfname(TMPF_SRC, ".html");
+    src = fopen(file->ptr, "w");
+    newBuf->sourcefile = file->ptr;
+    pushText(fileToDelete, file->ptr);
+
+    init_stream(&f, SCM_LOCAL, newStrStream(tmp));
+    loadHTMLstream(&f, newBuf, src, TRUE);
+    if (src)
+	fclose(src);
+
 #ifdef JP_CHARSET
     newBuf->document_code = code;
 #endif				/* JP_CHARSET */
@@ -6458,16 +6459,16 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
-/*
-    if (frame_source) {
-*/
-	tmpf = tmpfname(TMPF_SRC, ".html");
-	src = fopen(tmpf->ptr, "w");
-	newBuf->sourcefile = tmpf->ptr;
-	pushText(fileToDelete, tmpf->ptr);
-/*
-    }
-*/
+    /*
+     * if (frame_source) {
+     */
+    tmpf = tmpfname(TMPF_SRC, ".html");
+    src = fopen(tmpf->ptr, "w");
+    newBuf->sourcefile = tmpf->ptr;
+    pushText(fileToDelete, tmpf->ptr);
+    /*
+     * }
+     */
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
     if (src)

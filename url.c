@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.47 2002/03/06 03:32:11 ukai Exp $ */
+/* $Id: url.c,v 1.48 2002/03/08 15:59:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1677,7 +1677,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		return uf;
 	    if (pu->file == NULL)
 		pu->file = "1";
-	    tmp = Strnew_charp(pu->file);
+	    tmp = Strnew_charp(url_unquote(pu->file));
 	    Strcat_char(tmp, '\n');
 	}
 	write(sock, tmp->ptr, tmp->length);

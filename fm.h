@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.80 2002/11/15 15:58:27 ukai Exp $ */
+/* $Id: fm.h,v 1.81 2002/11/15 16:05:15 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1070,6 +1070,7 @@ void w3m_exit(int i);
 #define AL_IMPLICIT_DONE 4
 #define AL_ONCE          8
 #define AL_IMPLICIT_ONCE (AL_IMPLICIT|AL_ONCE)
+#define AL_RESTORE       16
 #endif
 
 /* 

@@ -1,5 +1,22 @@
 2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03439] restore alarm event
+	* fm.h (AL_RESTORE): added
+	* main.c (alarm_sec): deleted
+		(alarm_status): deleted
+		(alarm_buffer): deleted
+		(alarm_event): deleted
+		(AlarmEvent): added
+		(CurrentAlarm): added
+		(PrevAlarm): added
+		(main): rewrite with CurrentAlarm
+		(SigAlarm): rewrite with CurrentAlarm
+		(copyAlarmEvent): added
+		(setAlarm): if AL_RESTORE, copy back from PrevAlarm
+			rewrite with CurrentAlarm
+
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03438] Re: segmentation fault by large complex table.
 	* table.c (check_table_height): check MAXROWCELL
 	* table.h (MAXROWCELL): added
@@ -4785,4 +4802,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.522 2002/11/15 16:00:33 ukai Exp $
+$Id: ChangeLog,v 1.523 2002/11/15 16:05:13 ukai Exp $

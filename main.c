@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.135 2002/11/15 15:51:24 ukai Exp $ */
+/* $Id: main.c,v 1.136 2002/11/15 16:05:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -42,10 +42,19 @@ static Event eventQueue[N_EVENT_QUEUE];
 static int n_event_queue;
 
 #ifdef USE_ALARM
-static int alarm_sec = 0;
-static short alarm_status = AL_UNSET;
-static Buffer *alarm_buffer;
-static Event alarm_event;
+typedef struct {
+    int sec;
+    int cmd;
+    void *data;
+    short status;
+    Buffer *buffer;
+} AlarmEvent;
+static AlarmEvent CurrentAlarm = {
+    0, FUNCNAME_nulcmd, NULL, AL_UNSET, NULL
+};
+static AlarmEvent PrevAlarm = {
+    0, FUNCNAME_nulcmd, NULL, AL_UNSET, NULL
+};
 static MySignalHandler SigAlarm(SIGNAL_ARG);
 #endif
 
@@ -977,16 +986,18 @@ main(int argc, char **argv, char **envp)
 	    mouse_active();
 #endif				/* USE_MOUSE */
 #ifdef USE_ALARM
-	if (alarm_status & AL_IMPLICIT) {
-	    alarm_buffer = Currentbuf;
-	    alarm_status = AL_IMPLICIT_DONE | (alarm_status & AL_ONCE);
+	if (CurrentAlarm.status & AL_IMPLICIT) {
+	    CurrentAlarm.buffer = Currentbuf;
+	    CurrentAlarm.status = AL_IMPLICIT_DONE
+				  | (CurrentAlarm.status & AL_ONCE);
 	}
-	else if (alarm_status & AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
-	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
+	else if (CurrentAlarm.status & AL_IMPLICIT_DONE &&
+		 CurrentAlarm.buffer != Currentbuf) {
+	    setAlarmEvent(0, AL_RESTORE, FUNCNAME_nulcmd, NULL);
 	}
-	if (alarm_sec > 0) {
+	if (CurrentAlarm.sec > 0) {
 	    signal(SIGALRM, SigAlarm);
-	    alarm(alarm_sec);
+	    alarm(CurrentAlarm.sec);
 	}
 #endif
 #ifdef SIGWINCH
@@ -1009,7 +1020,7 @@ main(int argc, char **argv, char **envp)
 	signal(SIGWINCH, resize_hook);
 #endif
 #ifdef USE_ALARM
-	if (alarm_sec > 0) {
+	if (CurrentAlarm.sec > 0) {
 	    alarm(0);
 	}
 #endif
@@ -5237,35 +5248,49 @@ SigAlarm(SIGNAL_ARG)
 {
     char *data;
 
-    if (alarm_sec > 0) {
+    if (CurrentAlarm.sec > 0) {
 	CurrentKey = -1;
 	CurrentKeyData = NULL;
-	CurrentCmdData = data = (char *)alarm_event.user_data;
+	CurrentCmdData = data = (char *)CurrentAlarm.data;
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
 #endif
-	w3mFuncList[alarm_event.cmd].func();
+	w3mFuncList[CurrentAlarm.cmd].func();
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
 #endif
 	CurrentCmdData = NULL;
 	onA();
-	if (alarm_status & AL_IMPLICIT) {
-	    alarm_buffer = Currentbuf;
-	    alarm_status = AL_IMPLICIT_DONE | (alarm_status & AL_ONCE);
+	if (CurrentAlarm.status & AL_IMPLICIT) {
+	    CurrentAlarm.buffer = Currentbuf;
+	    CurrentAlarm.status = AL_IMPLICIT_DONE
+				 | (CurrentAlarm.status & AL_ONCE);
 	}
-	else if (alarm_status & AL_IMPLICIT_DONE
-		 && (alarm_buffer != Currentbuf || alarm_status & AL_ONCE)) {
-	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
+	else if (CurrentAlarm.status & AL_IMPLICIT_DONE
+		 && (CurrentAlarm.buffer != Currentbuf ||
+		     CurrentAlarm.status & AL_ONCE)) {
+	    setAlarmEvent(0, AL_RESTORE, FUNCNAME_nulcmd, NULL);
 	}
-	if (alarm_sec > 0) {
+	if (CurrentAlarm.sec > 0) {
 	    signal(SIGALRM, SigAlarm);
-	    alarm(alarm_sec);
+	    alarm(CurrentAlarm.sec);
 	}
     }
     SIGNAL_RETURN;
+}
+
+static void
+copyAlarmEvent(AlarmEvent *src, AlarmEvent *dst)
+{
+    if (!src || !dst)
+	return;
+    dst->sec = src->sec;
+    dst->cmd = src->cmd;
+    dst->data = src->data;
+    dst->status = src->status;
+    dst->buffer = src->buffer;
 }
 
 void
@@ -5303,13 +5328,20 @@ setAlarm(void)
 void
 setAlarmEvent(int sec, short status, int cmd, void *data)
 {
-    if (status == AL_UNSET || status == AL_EXPLICIT
-	|| (status & AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
-	alarm_sec = sec;
-	alarm_status = status;
-	alarm_event.cmd = cmd;
-	alarm_event.user_data = data;
+    if (status == AL_RESTORE) {
+	copyAlarmEvent(&PrevAlarm, &CurrentAlarm);
+	PrevAlarm.sec = 0;
+	PrevAlarm.status = AL_UNSET;
+	return;
     }
+    if (CurrentAlarm.status == AL_EXPLICIT &&
+	(status == AL_IMPLICIT || status == AL_IMPLICIT_ONCE))
+	copyAlarmEvent(&CurrentAlarm, &PrevAlarm);
+    CurrentAlarm.sec = sec;
+    CurrentAlarm.cmd = cmd;
+    CurrentAlarm.data = data;
+    CurrentAlarm.status = status;
+    CurrentAlarm.buffer = NULL;
 }
 #endif
 

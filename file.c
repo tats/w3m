@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.85 2002/03/14 16:12:06 ukai Exp $ */
+/* $Id: file.c,v 1.86 2002/03/15 16:35:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1977,11 +1977,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 #ifdef USE_IMAGE
 	else if (proc == loadImageBuffer)
-	    b->type = b->real_type;
+	    b->type = "text/html";
 #endif
 #ifdef USE_GOPHER
 	else if (proc == loadGopherDir)
-	    b->type = b->real_type;
+	    b->type = "text/html";
 #endif
 	else
 	    b->type = "text/plain";
@@ -6518,7 +6518,9 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 
     cache->loaded = IMG_FLAG_LOADED;
     cache->index = 0;
+/*
     getImageSize(cache);
+*/
 
   image_buffer:
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
@@ -6542,6 +6544,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
+    newBuf->image_flag = IMG_FLAG_AUTO;
     return newBuf;
 }
 #endif
@@ -6738,7 +6741,7 @@ openGeneralPagerBuffer(InputStream stream)
 	cur_baseURL = New(ParsedURL);
 	parseURL("-", cur_baseURL, NULL);
 	buf = loadImageBuffer(&uf, t_buf);
-	buf->type = t;
+	buf->type = "text/html";
     }
 #endif
     else {

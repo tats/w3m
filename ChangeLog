@@ -1,3 +1,14 @@
+2002-03-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03132] Re: Reload image
+	* file.c (loadGeneralFile): b->type = "text/html"
+	* file.c (loadImageBuffer): comment out getImageSize()
+				image_flag = IMG_FLAG_AUTO
+	* file.c (openGeneralPagerBuffer): buf->type = "text/html"
+	* frame.c (resetFrameElement): if (buf->mailcap_source) ...
+	* frame.c (frame_download_source): if (buf->mailcap_source) ...
+	* main.c (vwSrc): #ifdef USE_IMAGE
+
 2002-03-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03133] Re: w3mman.1
@@ -3196,4 +3207,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.352 2002/03/15 16:10:26 ukai Exp $
+$Id: ChangeLog,v 1.353 2002/03/15 16:35:46 ukai Exp $

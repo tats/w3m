@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.87 2002/03/14 16:12:07 ukai Exp $ */
+/* $Id: main.c,v 1.88 2002/03/15 16:35:46 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4139,6 +4139,10 @@ vwSrc(void)
 
     if (Currentbuf->type == NULL || Currentbuf->bufferprop & BP_FRAME)
 	return;
+#ifdef USE_IMAGE
+    if (!strncasecmp(Currentbuf->real_type, "image/", 6))
+	return;
+#endif
     if ((buf = Currentbuf->linkBuffer[LB_SOURCE]) != NULL ||
 	(buf = Currentbuf->linkBuffer[LB_N_SOURCE]) != NULL) {
 	Currentbuf = buf;

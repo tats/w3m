@@ -19,8 +19,8 @@ new features
 	requires idnkit (http://www.nic.ad.jp/ja/idn/) and iconv.
 * SMB
 	Bonus/smb.cgi
-* merge m17n
 * JavaScript
+* gettextize
 
 cleanups
 * autoconfisicate
@@ -55,3 +55,5 @@ wishlist?
 * w3mman -l doesn't work
  http://bugs.debian.org/138805
 
+done
+* merge m17n

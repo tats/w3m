@@ -61,6 +61,7 @@ IMGLDFLAGS = @IMGX11LDFLAGS@ @IMGFBLDFLAGS@
 
 CC0 = @CC@
 CC = @POSUBST@ $(CC0)
+CPP = @CPP@
 RANLIB=@RANLIB@
 AWK = @AWK@
 PERL = @PERL@
@@ -138,17 +139,21 @@ keybind.o: funcname2.h
 keybind_lynx.o: funcname2.h
 parsetagx.o: html.c
 
+funcname.tab: main.c menu.c
+	(echo '#define DEFUN(x,y,z) x y'; grep -h '^DEFUN' $^) | $(CPP) - | \
+	 awk '$$1 ~ /^[_A-Za-z]/ { for (i=2;i<=NF;i++) { print $$i, $$1} }' > $@
+
 funcname.c: funcname.tab
-	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
 
 funcname1.h: funcname.tab
-	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname1.awk > $@
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname1.awk > $@
 
 funcname2.h: funcname.tab
-	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
 
 functable.c: funcname.tab mktable$(EXT)
-	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
@@ -260,6 +265,7 @@ uninstall:
 
 clean: sweep
 	-$(RM) -f *.o *.a $(TARGETS) mktable$(EXT)
+	-$(RM) -f funcname.tab
 	-$(RM) -f funcname.c funcname1.h funcname2.h tagtable.c functable.c
 	-for dir in w3mimg libwc; \
 	do \

@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.39 2003/09/25 18:09:01 ukai Exp $ */
+/* $Id: menu.c,v 1.40 2003/09/26 20:45:53 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -258,7 +258,7 @@ static int smDelTab(char c);
 static Menu MainMenu;
 #ifdef USE_M17N
 /* FIXME: gettextize here */
-static wc_ces MainMenuCharset = WC_CES_US_ASCII; /* FIXME: charset of source code */
+static wc_ces MainMenuCharset = WC_CES_US_ASCII;	/* FIXME: charset of source code */
 static int MainMenuEncode = FALSE;
 #endif
 
@@ -1302,8 +1302,7 @@ mainMenu(int x, int y)
     popupMenu(x, y, &MainMenu);
 }
 
-void
-mainMn(void)
+DEFUN(mainMn, MAIN_MENU MENU, "Popup menu")
 {
     Menu *menu = &MainMenu;
     char *data;
@@ -1331,8 +1330,7 @@ mainMn(void)
 
 /* --- SelectMenu --- */
 
-void
-selMn(void)
+DEFUN(selMn, SELECT_MENU, "Popup buffer selection menu")
 {
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;
@@ -1479,8 +1477,7 @@ smDelBuf(char c)
 
 /* --- SelTabMenu --- */
 
-void
-tabMn(void)
+DEFUN(tabMn, TAB_MENU, "Popup tab selection menu")
 {
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;

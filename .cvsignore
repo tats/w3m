@@ -5,6 +5,7 @@ config.log
 config.status
 config.h
 config.param
+funcname.tab
 funcname.c
 funcname1.h
 funcname2.h

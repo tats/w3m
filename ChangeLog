@@ -1,5 +1,7 @@
 2003-09-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* funcname.tab: generated from DEFUN
+	* main.c menu.c: use DEFUN
 	* conv.c ucs_eucjp.h ucs_latin1.h: deleted
 
 2003-09-26  Fumitoshi UKAI  <ukai@debian.or.jp>
@@ -8101,4 +8103,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.873 2003/09/26 16:57:27 ukai Exp $
+$Id: ChangeLog,v 1.874 2003/09/26 20:45:53 ukai Exp $

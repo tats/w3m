@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.122 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: fm.h,v 1.123 2003/09/26 20:45:53 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -93,6 +93,8 @@ void bzero(void *, int);
 #define global extern
 #define init(x)
 #endif				/* not MAINPROGRAM */
+
+#define DEFUN(funcname, macroname, docstring) void funcname(void)
 
 /* 
  * Constants.

@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.11 2002/02/08 11:45:07 ukai Exp $ */
+/* $Id: frame.c,v 1.12 2002/02/09 15:27:14 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -388,7 +388,8 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
 			      b->referer, flag | RG_FRAME_SRC, b->request);
 #ifdef USE_SSL
 	/* XXX certificate? */
-	b->ssl_certificate = buf->ssl_certificate;
+	if (buf && buf != NO_BUFFER)
+	    b->ssl_certificate = buf->ssl_certificate;
 #endif
 	w3m_dump &= ~DUMP_FRAME;
 	is_redisplay = FALSE;

@@ -1,5 +1,11 @@
 2002-02-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03034] check buf
+	* frame.c (frame_download_source): buf->ssl_certificate can be used
+			only if buf != NULL && buf != NO_BUFFER
+
+2002-02-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03033] SSL indicator
 	* display.c (displayBuffer): show SSL indicator
 
@@ -2904,4 +2910,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.312 2002/02/09 15:12:34 ukai Exp $
+$Id: ChangeLog,v 1.313 2002/02/09 15:27:14 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.30 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: linein.c,v 1.31 2003/04/14 16:19:28 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -226,7 +226,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	    if (incrfunc == NULL
 		|| (c = incrfunc((int)c, strBuf, strProp)) < 0x20)
 		(*InputKeymap[(int)c]) (c);
-	    if (incrfunc)
+	    if (incrfunc && c != (unsigned char)-1 && c != CTRL_J)
 		incrfunc(-1, strBuf, strProp);
 	    if (cm_clear)
 		cm_next = FALSE;

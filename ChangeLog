@@ -1,3 +1,9 @@
+2003-04-15  Masanori Kobayasi <zap03216@nifty.ne.jp>
+
+	* [w3m-dev 03878] I-search problem
+	* linein.c (inputLineHistSearch): don't call incrfunc twice
+	* main.c (dispincsrch): fix search loop problem
+
 2003-04-14  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03875] Re: SSL & compressed stream
@@ -7745,4 +7751,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.824 2003/04/14 03:29:37 ukai Exp $
+$Id: ChangeLog,v 1.825 2003/04/14 16:19:27 ukai Exp $

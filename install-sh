@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Id: install-sh,v 1.5 2002/11/06 03:50:49 ukai Exp $
+# $Id: install-sh,v 1.6 2002/11/06 15:09:16 ukai Exp $
 
 set -e
 
@@ -54,7 +54,7 @@ fi
 if [ -n "$owner" ]; then
   chown $owner $dest
 fi
-if [ -n '$group" ]; then
+if [ -n "$group" ]; then
   chgrp $group $dest
 fi
 if [ -n "$mode" ]; then

@@ -1,3 +1,29 @@
+2001-12-13  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02541] mouse support on cygwin
+	* linein.c (_esc): ignore ESC M <ch> <ch> <ch> on cygwin
+	* terms.c (is_xterm): not static on cygwin
+	* terms.c (ConInV): INPUT_RECORD * -> char *
+	* terms.c (MouseConToXTerm): deleted
+	* terms.c (iMouseConXTerm): deleted
+	* terms.c (expand_win32_console_input_buffer): added
+	* terms.c (read_win32_console_input): use PeekConsoleInput 
+						and ReadConsole
+	* terms.c (read_win32_console): use read_win32_console_input()
+	* terms.c (cmp_tv): added
+	* terms.c (subtract_tv): added
+	* terms.c (select_or_poll_win32_console): added
+	* terms.c (select_win32_console): added
+	* terms.c (xterm_mouse_term): deleted
+	* terms.c (mouse_term_info): added
+	* terms.c (set_tty): modified to use mouse_term_info
+	* terms.c (sleep_till_anykey): use select_win32_console on cygwin
+	* terms.c (mouse_init): check is_xterm flag
+	* terms.c (mouse_end): check is_xterm flag
+	* terms.h (is_xterm): if cygwin
+	* terms.h (NEED_XTERM_ON): added
+	* terms.h (NEED_XTERM_OFF): added
+
 2001-12-11  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02651] search keymap using hash
@@ -1199,4 +1225,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.124 2001/12/10 17:02:43 ukai Exp $
+$Id: ChangeLog,v 1.125 2001/12/12 17:04:20 ukai Exp $

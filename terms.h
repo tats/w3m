@@ -1,4 +1,4 @@
-/* $Id: terms.h,v 1.4 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: terms.h,v 1.5 2001/12/12 17:04:21 ukai Exp $ */
 #ifndef TERMS_H
 #define TERMS_H
 
@@ -38,6 +38,12 @@ extern int LINES, COLS;
 #define MOUSE_BTN_UP 3
 #define MOUSE_BTN_RESET -1
 #define MOUSE_SCROLL_LINE 5
+
+#ifdef __CYGWIN__
+extern int is_xterm;
+#endif
+#define NEED_XTERM_ON	(1)
+#define NEED_XTERM_OFF	(1<<1)
 #endif
 
 #endif				/* not TERMS_H */

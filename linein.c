@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.16 2001/12/07 08:01:33 ukai Exp $ */
+/* $Id: linein.c,v 1.17 2001/12/12 17:04:21 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -432,6 +432,15 @@ _esc(void)
 	case 'D':
 	    _mvL();
 	    break;
+#if defined(__CYGWIN__) && defined(USE_MOUSE)
+	case 'M':
+	    if ((is_xterm & (NEED_XTERM_ON | NEED_XTERM_OFF)) == NEED_XTERM_ON) {
+		getch();
+		getch();
+		getch();
+	    }
+	    break;
+#endif
 	}
 	break;
     case CTRL_I:

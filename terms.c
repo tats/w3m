@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.21 2001/12/09 13:59:04 ukai Exp $ */
+/* $Id: terms.c,v 1.22 2001/12/12 17:04:21 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -33,7 +33,11 @@ static int cwidth = 8, cheight = 16;
 static int xpix, ypix, nbs, obs = 0;
 #endif				/* use_SYSMOUSE */
 
-static int is_xterm = 0;
+#ifndef __CYGWIN__
+static
+#endif
+int is_xterm = 0;
+
 void mouse_init(), mouse_end();
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
@@ -58,11 +62,9 @@ extern int CodePage;
 static HANDLE hConIn;
 static int isWin95;
 static int isWinConsole;
-static INPUT_RECORD *ConInV;
+static char *ConInV;
 static int iConIn, nConIn, nConInMax;
 #ifdef USE_MOUSE
-static char MouseConToXTerm[sizeof("\033[M !!") - sizeof("")];
-static int iMouseConToXTerm;
 static MOUSE_EVENT_RECORD lastConMouse;
 #endif
 
@@ -109,42 +111,73 @@ init_win32_console_handle(void)
     }
 }
 
+static void
+expand_win32_console_input_buffer(int n)
+{
+  if (nConIn + n >= nConInMax) {
+    char *oldv;
+
+    nConInMax = ((nConIn + n) / 2 + 1) * 3;
+    oldv = ConInV;
+    ConInV = GC_MALLOC_ATOMIC(nConInMax);
+    memcpy(ConInV, oldv, nConIn);
+  }
+}
+
 static int
 read_win32_console_input(void)
 {
-    INPUT_RECORD *p;
+    INPUT_RECORD rec;
     DWORD nevents;
 
-    if (nConIn >= nConInMax) {
-	INPUT_RECORD *oldv;
+    if (PeekConsoleInput(hConIn, &rec, 1, &nevents) && nevents) {
+	switch (rec.EventType) {
+	case KEY_EVENT:
+	    expand_win32_console_input_buffer(3);
 
-	nConInMax = (nConInMax / 2 + 1) * 3;
-	oldv = ConInV;
-	ConInV = GC_MALLOC_ATOMIC(sizeof(ConInV[0]) * nConInMax);
-	memcpy(ConInV, oldv, sizeof(ConInV[0]) * nConIn);
+	    if (ReadConsole(hConIn, &ConInV[nConIn], 1, &nevents, NULL)) {
+	      nConIn += nevents;
+	      return nevents;
     }
 
-    p = &ConInV[nConIn];
-
-    if (ReadConsoleInput(hConIn, p, 1, &nevents) && nevents) {
-	switch (p->EventType) {
-	case KEY_EVENT:
-	    if (p->Event.KeyEvent.bKeyDown
-		|| !p->Event.KeyEvent.uChar.AsciiChar)
 		break;
 #ifdef USE_MOUSE
-	  event_found:
-#endif
-	    ++nConIn;
-	    return 1;
-#ifdef USE_MOUSE
 	case MOUSE_EVENT:
-	    if (mouseActive && p->Event.MouseEvent.dwButtonState & ~(~0 << 5))
-		goto event_found;
+	    if ((lastConMouse.dwButtonState ^ rec.Event.MouseEvent.dwButtonState) & ~(~0 << 5)) {
+	      int down;
+	      MOUSE_EVENT_RECORD *mer;
+	      INPUT_RECORD dummy;
+
+	      expand_win32_console_input_buffer(6);
+	      mer = &rec.Event.MouseEvent;
+	      ConInV[nConIn] = '\033';
+	      ConInV[nConIn + 1] = '[';
+	      ConInV[nConIn + 2] = 'M';
+
+	      if (~(mer->dwButtonState) & lastConMouse.dwButtonState & ~(~0 << 5))
+		ConInV[nConIn + 3] = MOUSE_BTN_UP + ' ';
+	      else if (!(down = mer->dwButtonState & ~lastConMouse.dwButtonState & ~(~0 << 5)))
+		break;
+	      else
+		ConInV[nConIn + 3] = (down & (1 << 0) ? MOUSE_BTN1_DOWN :
+				      down & (1 << 1) ? MOUSE_BTN3_DOWN :
+				      down & (1 << 2) ? MOUSE_BTN2_DOWN :
+				      down & (1 << 3) ? MOUSE_BTN4_DOWN_XTERM :
+				      MOUSE_BTN5_DOWN_XTERM) + ' ';
+
+	      ConInV[nConIn + 4] = mer->dwMousePosition.X + '!';
+	      ConInV[nConIn + 5] = mer->dwMousePosition.Y + '!';
+	      nConIn += 6;
+	      lastConMouse = *mer;
+	      ReadConsoleInput(hConIn, &rec, 1, &nevents);
+	      return 6;
+	    }
 #endif
 	default:
 	    break;
 	}
+
+	ReadConsoleInput(hConIn, &rec, 1, &nevents);
     }
     return 0;
 }
@@ -152,76 +185,115 @@ read_win32_console_input(void)
 int
 read_win32_console(char *s, int n)
 {
-    int i;
     KEY_EVENT_RECORD *ker;
-#ifdef USE_MOUSE
-    int down, btn;
-    MOUSE_EVENT_RECORD *mer;
-#endif
 
     if (hConIn == INVALID_HANDLE_VALUE)
 	return read(tty, s, n);
 
-    for (i = 0; i < n;)
-#ifdef USE_MOUSE
-	if (iMouseConToXTerm) {
-	    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
+  if (n > 0)
+    for (;;) {
+      if (iConIn < nConIn) {
+	if (n > nConIn - iConIn)
+	  n = nConIn - iConIn;
 
-	    if (iMouseConToXTerm >= sizeof(MouseConToXTerm))
-		iMouseConToXTerm = 0;
-	}
-	else
-#endif
-	if (iConIn < nConIn)
-	    switch (ConInV[iConIn].EventType) {
-#ifdef USE_MOUSE
-	    case MOUSE_EVENT:
-		if (mouseActive) {
-		    mer = &ConInV[iConIn++].Event.MouseEvent;
-		    MouseConToXTerm[0] = '\033';
-		    MouseConToXTerm[1] = '[';
-		    MouseConToXTerm[2] = 'M';
-		    MouseConToXTerm[4] = mer->dwMousePosition.X + '!';
-		    MouseConToXTerm[5] = mer->dwMousePosition.Y + '!';
-		    if (~(mer->dwButtonState) & lastConMouse.dwButtonState)
-			MouseConToXTerm[3] = MOUSE_BTN_UP + ' ';
-		    else if (!
-			     (down =
-			      mer->dwButtonState & ~lastConMouse.
-			      dwButtonState & ~(~0 << 5))) {
-			lastConMouse = *mer;
+	memcpy(s, ConInV, n);
+
+	if ((iConIn += n) >= nConIn)
+	  iConIn = nConIn = 0;
+
 			break;
 		    }
-		    else
-			MouseConToXTerm[3] =
-			    (down & (1 << 0) ? MOUSE_BTN1_DOWN : down &
-			     (1 << 1) ? MOUSE_BTN3_DOWN : down & (1 << 2) ?
-			     MOUSE_BTN2_DOWN : down & (1 << 3) ?
-			     MOUSE_BTN4_DOWN_XTERM : MOUSE_BTN5_DOWN_XTERM) +
-			    ' ';
 
-		    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
-		    lastConMouse = *mer;
+      iConIn = nConIn = 0;
+
+      while (!read_win32_console_input())
+	;
 		}
-		else
-		    ++iConIn;
-		break;
-#endif
-	    default:
-		s[i++] = ConInV[iConIn++].Event.KeyEvent.uChar.AsciiChar;
-		break;
+
+  return n;
+}
+
+static int
+cmp_tv(const struct timeval *tv_a, const struct timeval *tv_b)
+{
+  return ((tv_a->tv_sec < tv_b->tv_sec) ? -1 :
+	  (tv_a->tv_sec > tv_b->tv_sec) ? 1 :
+	  (tv_a->tv_usec < tv_b->tv_usec) ? -1 :
+	  (tv_a->tv_usec > tv_b->tv_usec) ? 1 :
+	  0);
+}
+
+static int
+subtract_tv(struct timeval *dst, const struct timeval *src)
+{
+  if ((dst->tv_usec -= src->tv_usec) < 0) {
+    --(dst->tv_sec);
+    dst->tv_usec += 1000000;
+  }
+
+  return ((dst->tv_sec -= src->tv_sec) < 0 ? -1 :
+	  !dst->tv_sec ? (dst->tv_usec < 0 ? -1 : !dst->tv_usec ? 0 : 1) : 1);
+}
+
+int
+select_or_poll_win32_console(int n, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *tout)
+{
+  int m;
+  DWORD nevents;
+
+  if ((m = select(n, rfds, wfds, efds, tout)) < 0)
+    return m;
+
+  if (iConIn < nConIn) {
+    FD_SET(tty, rfds);
+    ++m;
 	    }
 	else {
 	    iConIn = nConIn = 0;
 
-	    if (!read_win32_console_input())
-		break;
+    while (GetNumberOfConsoleInputEvents(hConIn, &nevents) && nevents)
+      read_win32_console_input();
+
+    if (nConIn) {
+      FD_SET(tty, rfds);
+      ++m;
+    }
 	}
 
-    if (iConIn >= nConIn)
-	iConIn = nConIn = 0;
+  return m;
+}
 
-    return i;
+int
+select_win32_console(int n, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *tout)
+{
+  static struct timeval polltv = {0, 1000000 / CLOCKS_PER_SEC};
+  int m;
+  struct timeval tv;
+
+  if (hConIn == INVALID_HANDLE_VALUE || tty < 0 || tty >= n || !rfds || !FD_ISSET(tty, rfds))
+    return select(n, rfds, wfds, efds, tout);
+
+  FD_CLR(tty, rfds);
+
+  if (tout) {
+    while (cmp_tv(tout, &polltv) > 0) {
+      tv = polltv;
+
+      if ((m = select_or_poll_win32_console(n, rfds, wfds, efds, &tv)))
+	return m;
+
+      subtract_tv(tout, &polltv);
+    }
+
+    return select_or_poll_win32_console(n, rfds, wfds, efds, tout);
+  }
+  else
+    for (;;) {
+      tv = polltv;
+
+      if ((m = select_or_poll_win32_console(n, rfds, wfds, efds, &tv)))
+	return m;
+    }
 }
 #endif
 
@@ -394,9 +466,17 @@ writestr(char *s)
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
 #ifdef USE_MOUSE
-static char *xterm_mouse_term[] = {
-    "xterm", "kterm", "rxvt", "cygwin",
-    NULL
+static struct mouse_term_info {
+    char *term;
+    int flag;
+} xterm_mouse_term[] = {
+	{"xterm", NEED_XTERM_ON|NEED_XTERM_OFF},
+	{"kterm", NEED_XTERM_ON|NEED_XTERM_OFF},
+	{"rxvt", NEED_XTERM_ON|NEED_XTERM_OFF},
+#ifdef __CYGWIN__
+	{"cygwin", NEED_XTERM_ON},
+#endif
+	{NULL, 0}
 };
 #endif
 
@@ -422,10 +502,10 @@ set_tty(void)
 #ifdef USE_MOUSE
     {
 	char *term = getenv("TERM");
-	char **p;
-	for (p = xterm_mouse_term; *p != NULL; p++) {
-	    if (!strncmp(term, *p, strlen(*p))) {
-		is_xterm = 1;
+	struct mouse_term_info *p;
+	for (p = xterm_mouse_term; p->term != NULL; p++) {
+	     if (!strncmp(term, p->term, strlen(p->term))) {
+		  is_xterm = p->flag;
 		break;
 	    }
 	}
@@ -1883,7 +1963,13 @@ sleep_till_anykey(int sec, int purge)
     FD_ZERO(&rfd);
     FD_SET(tty, &rfd);
 
-    if (select(tty + 1, &rfd, 0, 0, &tim) > 0 && purge) {
+    if (
+#ifdef __CYGWIN__
+	select_win32_console(tty + 1, &rfd, 0, 0, &tim)
+#else
+	select(tty + 1, &rfd, 0, 0, &tim)
+#endif
+	> 0 && purge) {
 	c = getch();
 	if (c == ESC_CODE)
 	    skip_escseq();
@@ -2017,11 +2103,7 @@ mouse_init()
 {
     if (mouseActive)
 	return;
-    if (is_xterm
-#ifdef __CYGWIN__
-	&& hConIn == INVALID_HANDLE_VALUE
-#endif
-	) {
+    if (is_xterm & NEED_XTERM_ON) {
 	XTERM_ON;
     }
     mouseActive = 1;
@@ -2032,11 +2114,7 @@ mouse_end()
 {
     if (mouseActive == 0)
 	return;
-    if (is_xterm
-#ifdef __CYGWIN__
-	&& hConIn == INVALID_HANDLE_VALUE
-#endif
-	) {
+    if (is_xterm & NEED_XTERM_OFF) {
 	XTERM_OFF;
     }
     mouseActive = 0;

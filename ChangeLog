@@ -1,3 +1,14 @@
+2004-08-06  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04097] Re: w3m-img gtk2
+	* w3mimg/fb/fb_gdkpixbuf.c (draw): no need bg
+		(get_animation_size): use GTimeVal
+		(fb_image_load): use GTimeVal
+				fix for animation
+	* w3mimg/x11/x11_w3mimg.c (get_animation_size): use GTimeVal
+		(x11_load_image): use GTimeVal
+				fix for animation
+
 2004-08-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 04096] w3m-img gtk2
@@ -8553,4 +8564,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.934 2004/08/04 17:32:27 ukai Exp $
+$Id: ChangeLog,v 1.935 2004/08/05 18:22:15 ukai Exp $

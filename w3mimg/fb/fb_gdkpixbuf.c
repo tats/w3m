@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.17 2004/08/04 17:32:28 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.18 2004/08/05 18:22:15 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -12,7 +12,7 @@
 #include "fb.h"
 #include "fb_img.h"
 
-static void draw(FB_IMAGE * img, int bg, int x, int y, int w, int h,
+static void draw(FB_IMAGE * img, int x, int y, int w, int h,
 		 GdkPixbuf * pixbuf);
 static GdkPixbuf *resize_image(GdkPixbuf * pixbuf, int width, int height);
 
@@ -21,9 +21,11 @@ static int
 get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 {
     GdkPixbufAnimationIter *iter;
-    int iw, ih, n, i, d = -1;
+    int n, i, d = -1;
+    GTimeVal time;
 
-    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
+    g_get_current_time(&time);
+    iter = gdk_pixbuf_animation_get_iter(animation, &time);
     *w = gdk_pixbuf_animation_get_width(animation);
     *h = gdk_pixbuf_animation_get_height(animation);
     for (i = 1; 
@@ -31,9 +33,10 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 	 i++) {
 	int tmp;
 	tmp = gdk_pixbuf_animation_iter_get_delay_time(iter);
+	g_time_val_add(&time, tmp * 1000);
 	if (tmp > d)
 	    d = tmp;
-	gdk_pixbuf_animation_iter_advance(iter, NULL);
+	gdk_pixbuf_animation_iter_advance(iter, &time);
     }
     if (delay)
 	*delay = d;
@@ -113,6 +116,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     GdkPixbufAnimation *animation;
 #if defined(USE_GTK2)
     GdkPixbufAnimationIter *iter;
+    GTimeVal time;
 #else
     GList *frames;
 #endif
@@ -164,41 +168,29 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     }
 
 #if defined(USE_GTK2)
-    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
+    g_get_current_time(&time);
+    iter = gdk_pixbuf_animation_get_iter(animation, &time);
 
+    if (max_anim < 0 && n > -max_anim) {
+	max_anim = n + max_anim;
+	for (j = 0; j < max_anim; j++) {
+	    g_time_val_add(&time, 
+			   gdk_pixbuf_animation_iter_get_delay_time(iter) * 1000);
+	    gdk_pixbuf_animation_iter_advance(iter, &time);
+	}
+    }
     for (j = 0; j < n; j++) {
 	GdkPixbuf *org_pixbuf, *pixbuf;
-	int width, height;
 
-	if (max_anim < 0) {
-	    i = (j - n + frame_num > 0) ? (j - n + frame_num) : 0;
-	}
-	else {
-	    i = j;
-	}
-
-	if (gdk_pixbuf_animation_iter_on_currently_loading_frame(iter)) {
-	    g_object_unref(G_OBJECT(iter));
-	    iter = gdk_pixbuf_animation_get_iter(animation, NULL);
-	}
 	org_pixbuf = gdk_pixbuf_animation_iter_get_pixbuf(iter);
-	width = gdk_pixbuf_get_width(org_pixbuf);
-	height = gdk_pixbuf_get_height(org_pixbuf);
-	if (width == fw && height == fh) {
-	    pixbuf = resize_image(org_pixbuf, w, h);
-	} else {
-	    pixbuf = resize_image(org_pixbuf, width * ratio_w, height * ratio_h);
-	}
-	width = gdk_pixbuf_get_width(pixbuf);
-	height = gdk_pixbuf_get_height(pixbuf);
+	pixbuf = resize_image(org_pixbuf, fw, fh);
 
-	fb_frame[i]->delay = gdk_pixbuf_animation_iter_get_delay_time(iter);
-	fb_image_copy(fb_frame[i], tmp_image);
-	draw(fb_frame[i], !i, 0, 0, width, height, pixbuf);
-	fb_image_copy(tmp_image, fb_frame[0]); /* ??? default */
+	fb_frame[j]->delay = gdk_pixbuf_animation_iter_get_delay_time(iter);
+	g_time_val_add(&time, fb_frame[j]->delay * 1000);
+	draw(fb_frame[j], 0, 0, fw, fh, pixbuf);
 	if (org_pixbuf != pixbuf)
 	    g_object_unref(G_OBJECT(pixbuf));
-	gdk_pixbuf_animation_iter_advance(iter, NULL);
+	gdk_pixbuf_animation_iter_advance(iter, &time);
     }
 #else
     frames = gdk_pixbuf_animation_get_frames(animation);
@@ -234,7 +226,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
 
 	fb_frame[i]->delay = gdk_pixbuf_frame_get_delay_time(frame);
 	fb_image_copy(fb_frame[i], tmp_image);
-	draw(fb_frame[i], !i, ofstx, ofsty, width, height, pixbuf);
+	draw(fb_frame[i], ofstx, ofsty, width, height, pixbuf);
 
 	switch (gdk_pixbuf_frame_get_action(frame)) {
 	case GDK_PIXBUF_FRAME_RETAIN:
@@ -264,7 +256,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     return fb_frame;
 }
 static void
-draw(FB_IMAGE * img, int bg, int x, int y, int w, int h, GdkPixbuf * pixbuf)
+draw(FB_IMAGE * img, int x, int y, int w, int h, GdkPixbuf * pixbuf)
 {
     int i, j, r, g, b, offset, bpp, rowstride;
     guchar *pixels;

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.99 2002/09/10 18:21:36 ukai Exp $ */
+/* $Id: file.c,v 1.100 2002/09/11 15:08:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1363,6 +1363,8 @@ find_auth_user_passwd(char *host, int port, char *file, char *realm,
 
     *uname = NULL;
     *pwd = NULL;
+    if (passwd_file == NULL)
+	return 0;
     if (stat(expandName(passwd_file), &st) < 0)
 	return 0;
 

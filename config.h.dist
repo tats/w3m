@@ -167,6 +167,7 @@ MODEL=Linux.i686-monster-ja
 #define COOKIE_FILE  "cookie"
 #define HISTORY_FILE "history"
 
+#define PASSWD_FILE RC_DIR "/passwd"
 #define USER_MAILCAP RC_DIR "/mailcap"
 #define SYS_MAILCAP  "/etc/mailcap"
 #define USER_MIMETYPES "~/.mime.types"

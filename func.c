@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.9 2002/03/22 15:05:18 ukai Exp $ */
+/* $Id: func.c,v 1.10 2002/06/01 16:50:16 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -14,20 +14,77 @@
 
 #define KEYDATA_HASH_SIZE 16
 static Hash_iv *keyData = NULL;
+static char keymap_initialized;
+static struct stat current_keymap_file;
 
 void
-initKeymap(void)
+setKeymap(char *p, int lineno, int verbose)
+{
+    char *s, *emsg;
+    int c, f;
+
+    s = getQWord(&p);
+    c = getKey(s);
+    if (c < 0) {		/* error */
+	if (lineno > 0)
+	    emsg = Sprintf("line %d: unknown key '%s'", lineno, s)->ptr;
+	else
+	    emsg = Sprintf("defkey: unknown key '%s'", s)->ptr;
+	record_err_message(emsg);
+	if (verbose)
+	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+	return;
+    }
+    s = getWord(&p);
+    f = getFuncList(s);
+    if (f < 0) {
+	if (lineno > 0)
+	    emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
+	else
+	    emsg = Sprintf("defkey: invalid command '%s'", s)->ptr;
+	record_err_message(emsg);
+	if (verbose)
+	    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+	return;
+    }
+    if (c & K_ESCD)
+	EscDKeymap[c ^ K_ESCD] = f;
+    else if (c & K_ESCB)
+	EscBKeymap[c ^ K_ESCB] = f;
+    else if (c & K_ESC)
+	EscKeymap[c ^ K_ESC] = f;
+    else
+	GlobalKeymap[c] = f;
+    s = getQWord(&p);
+    if (*s) {
+	if (keyData == NULL)
+	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
+	putHash_iv(keyData, c, (void *)s);
+    }
+}
+
+void
+initKeymap(int force)
 {
     FILE *kf;
     Str line;
     char *p, *s, *emsg;
-    int c;
-    int f;
     int lineno;
     int verbose = 1;
+    int fd;
+    struct stat kstat;
     extern int str_to_bool(char *value, int old);
 
-    if ((kf = fopen(rcFile(KEYMAP_FILE), "rt")) == NULL)
+    if (!force && !keymap_initialized)
+	return;
+
+    if ((kf = fopen(rcFile(keymap_file), "rt")) == NULL ||
+	((fd = fileno(kf)) < 0 || fstat(fd, &kstat) ||
+	 (!force && keymap_initialized &&
+	  kstat.st_mtime == current_keymap_file.st_mtime &&
+	  kstat.st_dev == current_keymap_file.st_dev &&
+	  kstat.st_ino == current_keymap_file.st_ino &&
+	  kstat.st_size == current_keymap_file.st_size)))
 	return;
 
     lineno = 0;
@@ -56,40 +113,11 @@ initKeymap(void)
 		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 	    continue;
 	}
-	s = getQWord(&p);
-	c = getKey(s);
-	if (c < 0) {		/* error */
-	    emsg = Sprintf("line %d: unknown key '%s'", lineno, s)->ptr;
-	    record_err_message(emsg);
-	    if (verbose)
-		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
-	    continue;
-	}
-	s = getWord(&p);
-	f = getFuncList(s);
-	if (f < 0) {
-	    emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
-	    record_err_message(emsg);
-	    if (verbose)
-		disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
-	    continue;
-	}
-	if (c & K_ESCD)
-	    EscDKeymap[c ^ K_ESCD] = f;
-	else if (c & K_ESCB)
-	    EscBKeymap[c ^ K_ESCB] = f;
-	else if (c & K_ESC)
-	    EscKeymap[c ^ K_ESC] = f;
-	else
-	    GlobalKeymap[c] = f;
-	s = getQWord(&p);
-	if (*s) {
-	    if (keyData == NULL)
-		keyData = newHash_iv(KEYDATA_HASH_SIZE);
-	    putHash_iv(keyData, c, (void *)s);
-	}
+	setKeymap(p, lineno, verbose);
     }
     fclose(kf);
+    current_keymap_file = kstat;
+    keymap_initialized = TRUE;
 }
 
 int

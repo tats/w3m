@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.59 2002/04/24 18:29:35 ukai Exp $ */
+/* $Id: fm.h,v 1.60 2002/06/01 16:50:16 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -20,6 +20,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "config.h"
 #include "history.h"
 
@@ -977,6 +979,8 @@ global int set_pixel_per_line init(FALSE);
 global double image_scale init(100);
 #endif
 global int use_lessopen init(FALSE);
+
+global char *keymap_file init(KEYMAP_FILE);
 
 #ifdef JP_CHARSET
 #define is_kanji(s)    (IS_KANJI1((s)[0])&&IS_KANJI2((s)[1]))

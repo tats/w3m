@@ -1,3 +1,28 @@
+2002-06-02  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 03200] Re: New configuration option ``keymap_file'' and new command ``DEFINE_KEY''
+	* fm.h: add <sts/stat.h>, unistd.h>
+	* fm.h (keymap_file): added
+	* func.c (keymap_initialized): added
+		(current_keymap_file): added
+		(setKeymap): added
+		(initKeymap): rewrite to use setKeymap()
+	* funcname.tab (DEFINE_KEY): added
+	* main.c (MAIN): initKeymap(TRUE)
+		(defKey): added
+	* proto.h (defKey): added
+		(setKeymap): added
+		(initKeymap): add force param
+	* rc.c (CMT_KEYMAP_FILE): added
+		(params3): add keymap_file
+		(sync_with_option): add initKeymap(FALSE)
+	* doc/README.func (DEFINE_KEY): added
+	* doc-jp/README.func: (DEFINE_KEY): added
+	* scripts/w3mhelp.cgi.in: add defKey
+	* NEWS:
+		func: DEFINE_KEY
+		rc: keymap_file
+
 2002-06-02  Hiroaki Shimotsu <shim@d5.bs1.fc.nec.co.jp>
 
 	* [w3m-dev 03196] C-w
@@ -3418,4 +3443,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.380 2002/06/01 16:31:54 ukai Exp $
+$Id: ChangeLog,v 1.381 2002/06/01 16:50:16 ukai Exp $

@@ -8,6 +8,7 @@ CENTER_H	カーソルのある位置を行の中央に移動します
 CENTER_V	カーソルのある行を画面の中央に移動します
 COMMAND		w3mのコマンドを実行します
 COOKIE		クッキー一覧を表示します
+DEFINE_KEY	キー入力とコマンドの対応を定義します
 DELETE_PREVBUF 前のバッファを消去します(主に local-CGI 用)
 DICT_WORD	入力した単語を辞書コマンドで調べます
 DICT_WORD_AT	カーソル位置の単語を辞書コマンドで調べます

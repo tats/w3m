@@ -1,5 +1,7 @@
 w3m 0.4?
 
+* func: DEFINE_KEY
+* rc: keymap_file
 * rc: use_dictcommand, dictcommand
 * rc: mark_all_pages
 * configure: -mandir

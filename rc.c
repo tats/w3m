@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.43 2002/04/25 16:26:59 ukai Exp $ */
+/* $Id: rc.c,v 1.44 2002/06/01 16:50:16 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -191,6 +191,8 @@ static char *config_file = NULL;
 #define CMT_MIGEMO_COMMAND "Migemoコマンド"
 #endif				/* USE_MIGEMO */
 
+#define CMT_KEYMAP_FILE "keymapファイル"
+
 #else				/* LANG != JA */
 
 
@@ -328,6 +330,8 @@ static char *config_file = NULL;
 #define CMT_USE_MIGEMO "Enable Migemo (Roma-ji search)"
 #define CMT_MIGEMO_COMMAND "Migemo command"
 #endif				/* USE_MIGEMO */
+
+#define CMT_KEYMAP_FILE "keymap file"
 
 #endif				/* LANG != JA */
 
@@ -574,6 +578,8 @@ struct param_ptr params3[] = {
     {"clear_buffer", P_INT, PI_ONOFF, (void *)&clear_buffer, CMT_CLEAR_BUF,
      NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *)&DecodeCTE, CMT_DECODE_CTE,
+     NULL},
+    {"keymap_file", P_STRING, PI_TEXT, (void *)&keymap_file, CMT_KEYMAP_FILE,
      NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
@@ -1238,6 +1244,7 @@ sync_with_option(void)
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();
+    initKeymap(FALSE);
 }
 
 void

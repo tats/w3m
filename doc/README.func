@@ -8,6 +8,7 @@ CENTER_H	Move to the center line
 CENTER_V	Move to the center column
 COMMAND		Execute w3m command(s)
 COOKIE		View cookie list
+DEFINE_KEY	Define a binding between a key stroke and a user command
 DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)
 DICT_WORD_AT   Execute dictionary command for word at cursor

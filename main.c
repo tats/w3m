@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.99 2002/04/26 16:06:34 ukai Exp $ */
+/* $Id: main.c,v 1.100 2002/06/01 16:50:16 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -724,7 +724,7 @@ MAIN(int argc, char **argv, char **envp)
     if (w3m_backend)
 	backend();
     if (!w3m_dump) {
-	initKeymap();
+	initKeymap(TRUE);
 #ifdef USE_MENU
 	initMenu();
 #endif				/* MENU */
@@ -5091,3 +5091,21 @@ setAlarmEvent(int sec, short status, int cmd, void *data)
     }
 }
 #endif
+
+void
+defKey(void)
+{
+    char *data;
+
+    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
+    data = searchKeyData();
+    if (data == NULL || *data == '\0') {
+	data = inputStrHist("Key definition: ", "", TextHist);
+	if (data == NULL || *data == '\0') {
+	    displayBuffer(Currentbuf, B_NORMAL);
+	    return;
+	}
+    }
+    setKeymap(allocStr(data, -1), -1, TRUE);
+    displayBuffer(Currentbuf, B_NORMAL);
+}

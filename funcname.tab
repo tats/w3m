@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.8 2002/03/19 16:06:52 ukai Exp $
+# $Id: funcname.tab,v 1.9 2002/06/01 16:50:16 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -12,6 +12,7 @@ CENTER_H	ctrCsrH
 CENTER_V	ctrCsrV
 COMMAND		execCmd
 COOKIE		cooLst
+DEFINE_KEY	defKey
 DELETE_PREVBUF	deletePrevBuf
 DICT_WORD	dictword
 DICT_WORD_AT	dictwordat

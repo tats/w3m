@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.16 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: istream.c,v 1.17 2003/01/10 16:58:31 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -578,7 +578,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	Strcat_m_charp(s, " subject=", buf, NULL);
     xn = X509_get_issuer_name(x);
     if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
-	Strcat_charp(s, ": issuer=<unnown>");
+	Strcat_charp(s, ": issuer=<unknown>");
     else
 	Strcat_m_charp(s, ": issuer=", buf, NULL);
     Strcat_charp(s, "\n\n");

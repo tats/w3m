@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.26 2003/01/10 16:48:49 ukai Exp $ */
+/* $Id: form.c,v 1.27 2003/01/10 16:58:31 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -160,8 +160,8 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
 }
 
 static char *_formtypetbl[] = {
-    "text", "password", "checkbox", "radio", "submit",
-    "reset", "hidden", "image", "select", "textarea", "button", "file", 0,
+    "text", "password", "checkbox", "radio", "submit", "reset", "hidden",
+    "image", "select", "textarea", "button", "file", NULL
 };
 
 static char *_formmethodtbl[] = {
@@ -171,16 +171,19 @@ static char *_formmethodtbl[] = {
 char *
 form2str(FormItemList *fi)
 {
-    Str tmp;
-    if (fi->type == FORM_INPUT_SUBMIT ||
-	fi->type == FORM_INPUT_IMAGE || fi->type == FORM_INPUT_BUTTON) {
-	tmp = Strnew_charp(_formmethodtbl[fi->parent->method]);
-	Strcat_char(tmp, ' ');
-	Strcat(tmp, fi->parent->action);
-	return tmp->ptr;
-    }
-    else
-	return _formtypetbl[fi->type];
+    Str tmp = Strnew();
+
+    if (fi->type != FORM_SELECT && fi->type != FORM_TEXTAREA)
+	Strcat_charp(tmp, "input type=");
+    Strcat_charp(tmp, _formtypetbl[fi->type]);
+    if (fi->name && fi->name->length)
+	Strcat_m_charp(tmp, " name=\"", fi->name->ptr, "\"", NULL);
+    if ((fi->type == FORM_INPUT_RADIO || fi->type == FORM_INPUT_CHECKBOX ||
+	 fi->type == FORM_SELECT) && fi->value)
+	Strcat_m_charp(tmp, " value=\"", fi->value->ptr, "\"", NULL);
+    Strcat_m_charp(tmp, " (", _formmethodtbl[fi->parent->method], " ",
+		   fi->parent->action->ptr, ")", NULL);
+    return tmp->ptr;
 }
 
 int

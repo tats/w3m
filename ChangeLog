@@ -1,3 +1,15 @@
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03631] display current form item
+	* form.c (form2str): rewrite
+	* istream.c (ssl_get_certificate): fix typo
+	* map.c (follow_map_panel): valign=top
+		(append_map_info): valign=top
+		(append_link_info): valign=top
+		(append_frame_info): <pre_int>
+				html_quote ssl_certificate
+		(page_info_panel): rewrite, html_quote
+
 2003-01-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc/README.pre_form: update
@@ -6323,4 +6335,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.669 2003/01/10 16:51:08 ukai Exp $
+$Id: ChangeLog,v 1.670 2003/01/10 16:58:30 ukai Exp $

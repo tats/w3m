@@ -1,3 +1,7 @@
+2002-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: rc: open_tab_dl_list
+
 2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03446] Open download list panel on new tab
@@ -4845,4 +4849,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.529 2002/11/18 17:26:01 ukai Exp $
+$Id: ChangeLog,v 1.530 2002/11/18 17:27:01 ukai Exp $

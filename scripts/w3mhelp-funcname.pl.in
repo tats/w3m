@@ -17,6 +17,7 @@
  'LINEEDIT:BOTTOM', 'lineedit_bottom',
  'LINEEDIT:PREV', 'lineedit_prev',
  'LINEEDIT:NEXT', 'lineedit_next',
+ 'LINEEDIT:EDITOR', 'lineedit_editor',
  'LINEEDIT:COMPLETE', 'lineedit_complete',
  'LINEEDIT:ACCEPT', 'lineedit_accept',
 );
@@ -41,6 +42,7 @@
  'C-e', 'LINEEDIT:BOTTOM',
  'C-p', 'LINEEDIT:PREV',
  'C-n', 'LINEEDIT:NEXT',
+ 'C-o', 'LINEEDIT:EDITOR',
  'TAB', 'LINEEDIT:COMPLETE',
  'SPC', 'LINEEDIT:COMPLETE',
  'RET', 'LINEEDIT:ACCEPT'

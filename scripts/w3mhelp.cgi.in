@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.13 2002/11/04 17:38:21 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.14 2002/11/10 11:59:15 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -123,16 +123,19 @@ for $otherlang (@docdirs) {
 		nextR nextRD nextL nextRD nextLU nextD nextU"));
 
 &show_keymap("Hyperlink operation",
-	     split(" ", "followA svA followI svI submitForm
+	     split(" ", "followA tabA svA followI svI submitForm
 		curURL peekURL peekIMG pginfo curlno chkURL chkWORD chkNMID
 		rFrame extbrz linkbrz"));
 
 &show_keymap("File/Stream operation",
-	     split(" ", "goURL ldfile readsh pipesh"));
+	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh"));
 
 &show_keymap("Buffer operation",
 	     split(" ", "backBf selMn selBuf vwSrc svSrc svBuf
 		editBf editScr reload rdrwSc dispI stopI"));
+
+&show_keymap("Tab operation",
+	     split(" ", "newT closeT nextT prevT tabMn tabR tabL"));
 
 &show_keymap("Bookmark operation",
 	     split(" ", "ldBmark adBmark"));
@@ -157,7 +160,7 @@ for $otherlang (@docdirs) {
 	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
 		lineedit_delete lineedit_kill_after lineedit_kill_before
 		lineedit_top lineedit_bottom lineedit_prev lineedit_next
-		lineedit_complete lineedit_accept"));
+		lineedit_editor lineedit_complete lineedit_accept"));
 
 print <<PAGE;
 <HR>

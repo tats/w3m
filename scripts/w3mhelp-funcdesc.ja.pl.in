@@ -19,6 +19,7 @@
  'LINEEDIT:BOTTOM', '行末へ移動',
  'LINEEDIT:PREV', 'ヒストリから一つ前の文字列を取り出す',
  'LINEEDIT:NEXT', 'ヒストリから次の文字列を取り出す',
+ 'LINEEDIT:EDITOR', '外部エディタで編集',
  'LINEEDIT:COMPLETE', 'ファイル名の補完',
  'LINEEDIT:ACCEPT', '入力終了',
 );
@@ -28,6 +29,7 @@
  "Hyperlink operation", 'ハイパーリンク操作',
  "File/Stream operation", 'ファイル/ストリーム操作',
  "Buffer operation", 'バッファ操作',
+ "Tab operation", 'タブ操作',
  "Buffer selection mode", 'バッファ選択モード',
  "Bookmark operation", 'ブックマーク操作',
  "Search", '検索',

@@ -19,6 +19,7 @@
  'LINEEDIT:BOTTOM', 'Move to the bottom of line',
  'LINEEDIT:PREV', 'Fetch the previous string from the history list',
  'LINEEDIT:NEXT', 'Fetch the next string from the history list',
+ 'LINEEDIT:EDITOR', 'Edit with external editor',
  'LINEEDIT:COMPLETE', 'Complete filename',
  'LINEEDIT:ACCEPT', 'Accept',
 );

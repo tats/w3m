@@ -1,3 +1,16 @@
+2002-11-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03401] w3mhelp.cgi
+	* proto.h (tabMn): nulcmd ifndef USE_MENU
+	* scripts/w3mhelp-funcdesc.en.pl.in: add LINEEDIT:EDITOR
+	* scripts/w3mhelp-funcdesc.ja.pl.in: add LINEEDIT:EDITOR
+					Tab operation
+	* scripts/w3mhelp-funcname.pl.in: add LINEEDIT:EDITOR C-o
+	* scripts/w3mhelp.cgi.in: add tabA in Hyperlink operation
+				add tabURL, tabrURL in File/Stream operation
+				add Tab operation
+				add lineedit_editor in Line edit mode
+	
 2002-11-10  NOMIYA Masaru <nomiya@ttmy.ne.jp>
 
 	* [w3m-dev 03399]
@@ -4478,4 +4491,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.492 2002/11/10 11:42:12 ukai Exp $
+$Id: ChangeLog,v 1.493 2002/11/10 11:59:15 ukai Exp $

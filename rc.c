@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.63 2002/11/14 16:56:24 ukai Exp $ */
+/* $Id: rc.c,v 1.64 2002/11/18 17:26:10 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -66,6 +66,7 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
 #define CMT_OPEN_TAB_BLANK "targetが_blankか_newの場合は新しいタブで開く"
+#define CMT_OPEN_TAB_DL_LIST "Download list panel を新しいタブで開く"
 #define CMT_DISPLINK     "リンク先の自動表示"
 #define CMT_DISPLINEINFO "現在の行番号の表示"
 #define CMT_DISP_IMAGE   "インライン画像を表示"
@@ -218,6 +219,7 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "Treat argument without scheme as URL"
 #define CMT_TSELF        "Use _self as default target"
 #define CMT_OPEN_TAB_BLANK "Open link on new tab if target is _blank or _new"
+#define CMT_OPEN_TAB_DL_LIST "Open download list panel on new tab"
 #define CMT_DISPLINK     "Display link URL automatically"
 #define CMT_DISPLINEINFO "Display current line number"
 #define CMT_DISP_IMAGE   "Display inline images"
@@ -499,6 +501,8 @@ struct param_ptr params1[] = {
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
     {"open_tab_blank", P_INT, PI_ONOFF, (void *)&open_tab_blank,
      CMT_OPEN_TAB_BLANK, NULL},
+    {"open_tab_dl_list", P_INT, PI_ONOFF, (void *)&open_tab_dl_list,
+     CMT_OPEN_TAB_DL_LIST, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,

@@ -1,5 +1,14 @@
 2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03446] Open download list panel on new tab
+	* fm.h (open_tab_dl_list): added
+	* main.c (download_action): buffer delete when download done
+		(ldDL): open buf in new tab if open_tab_dl_list
+	* rc.c (CMT_OPEN_TAB_DL_LIST): added
+		(open_tab_dl_list): added
+
+2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03445] download list for "w3m foo.tar.gz"
 	* main.c (main): display download list
 
@@ -4836,4 +4845,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.528 2002/11/18 16:46:48 ukai Exp $
+$Id: ChangeLog,v 1.529 2002/11/18 17:26:01 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.82 2002/11/15 16:14:25 ukai Exp $ */
+/* $Id: fm.h,v 1.83 2002/11/18 17:26:06 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -804,6 +804,7 @@ global TabBuffer *CurrentTab;
 global TabBuffer *FirstTab;
 global TabBuffer *LastTab;
 global int open_tab_blank init(FALSE);
+global int open_tab_dl_list init(FALSE);
 global int close_tab_back init(FALSE);
 global int nTab;
 global int TabCols init(10);

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.141 2002/11/18 16:46:52 ukai Exp $ */
+/* $Id: main.c,v 1.142 2002/11/18 17:26:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5934,8 +5934,15 @@ download_action(struct parsed_tagarg *arg)
     }
     if (FirstDL)
 	ldDL();
-    else
-	backBf();
+    else {
+	if (Currentbuf == Firstbuf && Currentbuf->nextBuffer == NULL) {
+	    if (nTab > 1)
+		deleteTab(CurrentTab);
+	}
+	else
+	    delBuffer(Currentbuf);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    }
 }
 
 void
@@ -5958,7 +5965,7 @@ void
 ldDL(void)
 {
     Buffer *prev = Currentbuf;
-    int delete = FALSE;
+    int delete = FALSE, new_tab = FALSE;
 #ifdef USE_ALARM
     int reload;
 #endif
@@ -5968,14 +5975,26 @@ ldDL(void)
     if (Currentbuf->bufferprop & BP_INTERNAL &&
 	!strcmp(Currentbuf->buffername, DOWNLOAD_LIST_TITLE))
 	delete = TRUE;
+    else if (open_tab_dl_list) {
+	_newT();
+	prev = Currentbuf;
+	delete = TRUE;
+	new_tab = TRUE;
+    }
 #ifdef USE_ALARM
     reload = checkDownloadList();
 #endif
     cmd_loadBuffer(DownloadListBuffer(), BP_NO_URL, LB_NOLINK);
-    if (delete && Currentbuf != prev)
+    if (Currentbuf == prev) {
+	if (new_tab)
+	    deleteTab(CurrentTab);
+	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	return;
+    }
+    if (delete)
 	deletePrevBuf();
 #ifdef USE_ALARM
-    if (reload && Currentbuf != prev) {
+    if (reload) {
 	Currentbuf->bufferprop |= BP_RELOAD;
 	setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
     }

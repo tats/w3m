@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.38 2002/01/21 18:34:00 ukai Exp $ */
+/* $Id: url.c,v 1.39 2002/01/29 19:08:50 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1236,28 +1236,29 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     return s->ptr;
 }
 
-static Str
-HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+Str
+HTTPrequestMethod(HRequest *hr)
 {
-    Str tmp;
-    TextListItem *i;
-#ifdef USE_COOKIE
-    Str cookie;
-#endif				/* USE_COOKIE */
     switch (hr->command) {
     case HR_COMMAND_CONNECT:
-	tmp = Strnew_charp("CONNECT ");
-	break;
+	return Strnew_charp("CONNECT");
     case HR_COMMAND_POST:
-	tmp = Strnew_charp("POST ");
+	return Strnew_charp("POST");
 	break;
     case HR_COMMAND_HEAD:
-	tmp = Strnew_charp("HEAD ");
+	return Strnew_charp("HEAD");
 	break;
     case HR_COMMAND_GET:
     default:
-	tmp = Strnew_charp("GET ");
+	return Strnew_charp("GET");
     }
+    return NULL;
+}
+
+Str
+HTTPrequestURI(ParsedURL *pu, HRequest *hr)
+{
+    Str tmp = Strnew();
     if (hr->command == HR_COMMAND_CONNECT) {
 	Strcat_charp(tmp, pu->host);
 	Strcat(tmp, Sprintf(":%d", pu->port));
@@ -1272,6 +1273,20 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
     else {
 	Strcat(tmp, _parsedURL2Str(pu, TRUE));
     }
+    return tmp;
+}
+
+static Str
+HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+{
+    Str tmp;
+    TextListItem *i;
+#ifdef USE_COOKIE
+    Str cookie;
+#endif				/* USE_COOKIE */
+    tmp = HTTPrequestMethod(hr);
+    Strcat_charp(tmp, " ");
+    Strcat_charp(tmp, HTTPrequestURI(pu, hr)->ptr);
     Strcat_charp(tmp, " HTTP/1.0\r\n");
     if (hr->referer == NO_REFERER)
 	Strcat_charp(tmp, otherinfo(pu, NULL, NULL));
@@ -1346,13 +1361,13 @@ openFTPStream(ParsedURL *pu)
 URLFile
 openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	URLOption *option, FormList *request, TextList *extra_header,
-	URLFile *ouf, unsigned char *status)
+	URLFile *ouf, HRequest *hr, unsigned char *status)
 {
     Str tmp;
     int i, sock, scheme;
     char *p, *q, *u;
     URLFile uf;
-    HRequest hr;
+    HRequest hr0;
 #ifdef USE_SSL
     SSL *sslh = NULL;
 #endif				/* USE_SSL */
@@ -1362,6 +1377,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     InputStream stream;
 #endif				/* USE_NNTP */
     int extlen = strlen(CGI_EXTENSION);
+
+    if (hr == NULL)
+	hr = &hr0;
 
     if (ouf) {
 	uf = *ouf;
@@ -1400,10 +1418,10 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     pu->is_nocache = (option->flag & RG_NOCACHE);
     uf.ext = filename_extension(pu->file, 1);
 
-    hr.command = HR_COMMAND_GET;
-    hr.flag = 0;
-    hr.referer = option->referer;
-    hr.request = request;
+    hr->command = HR_COMMAND_GET;
+    hr->flag = 0;
+    hr->referer = option->referer;
+    hr->request = request;
 
     switch (pu->scheme) {
     case SCM_LOCAL:
@@ -1501,7 +1519,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    if (sock < 0)
 		return uf;
 	    uf.scheme = SCM_HTTP;
-	    tmp = HTTPrequest(pu, current, &hr, extra_header);
+	    tmp = HTTPrequest(pu, current, hr, extra_header);
 	    write(sock, tmp->ptr, tmp->length);
 	}
 	else {
@@ -1517,9 +1535,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	if (pu->file == NULL)
 	    pu->file = allocStr("/", -1);
 	if (request && request->method == FORM_METHOD_POST && request->body)
-	    hr.command = HR_COMMAND_POST;
+	    hr->command = HR_COMMAND_POST;
 	if (request && request->method == FORM_METHOD_HEAD)
-	    hr.command = HR_COMMAND_HEAD;
+	    hr->command = HR_COMMAND_HEAD;
 	if (non_null(HTTP_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
@@ -1554,20 +1572,20 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS) {
 		if (*status == HTST_NORMAL) {
-		    hr.command = HR_COMMAND_CONNECT;
-		    tmp = HTTPrequest(pu, current, &hr, NULL);
+		    hr->command = HR_COMMAND_CONNECT;
+		    tmp = HTTPrequest(pu, current, hr, NULL);
 		    *status = HTST_CONNECT;
 		}
 		else {
-		    hr.flag |= HR_FLAG_LOCAL;
-		    tmp = HTTPrequest(pu, current, &hr, extra_header);
+		    hr->flag |= HR_FLAG_LOCAL;
+		    tmp = HTTPrequest(pu, current, hr, extra_header);
 		    *status = HTST_NORMAL;
 		}
 	    }
 	    else
 #endif				/* USE_SSL */
 	    {
-		tmp = HTTPrequest(pu, current, &hr, extra_header);
+		tmp = HTTPrequest(pu, current, hr, extra_header);
 		*status = HTST_NORMAL;
 		pu->label = save_label;
 	    }
@@ -1587,8 +1605,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		}
 	    }
 #endif				/* USE_SSL */
-	    hr.flag |= HR_FLAG_LOCAL;
-	    tmp = HTTPrequest(pu, current, &hr, extra_header);
+	    hr->flag |= HR_FLAG_LOCAL;
+	    tmp = HTTPrequest(pu, current, hr, extra_header);
 	    *status = HTST_NORMAL;
 	}
 #ifdef USE_SSL
@@ -1598,7 +1616,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		SSL_write(sslh, tmp->ptr, tmp->length);
 	    else
 		write(sock, tmp->ptr, tmp->length);
-	    if (hr.command == HR_COMMAND_POST &&
+	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART) {
 		if (sslh)
 		    SSL_write_from_file(sslh, request->body);
@@ -1618,7 +1636,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		fclose(ff);
 	    }
 #endif				/* HTTP_DEBUG */
-	    if (hr.command == HR_COMMAND_POST &&
+	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART)
 		write_from_file(sock, request->body);
 	}
@@ -1634,7 +1652,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    if (sock < 0)
 		return uf;
 	    uf.scheme = SCM_HTTP;
-	    tmp = HTTPrequest(pu, current, &hr, extra_header);
+	    tmp = HTTPrequest(pu, current, hr, extra_header);
 	}
 	else {
 	    sock = openSocket(pu->host,

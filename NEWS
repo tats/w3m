@@ -1,5 +1,6 @@
 w3m 0.3?
 
+* RFC2617: HTTP Digest authentication
 * rc: default_url=0(empty) 1(current URL) 2(link URL)
 * GOTO_RELATIVE (M-u)
 * highlight for incremental search

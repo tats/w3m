@@ -113,6 +113,7 @@ MODEL=Linux.i686-monster-ja
 #undef USE_SYSMOUSE
 #define USE_MENU
 #define USE_COOKIE
+#define USE_DIGEST_AUTH
 #define USE_SSL
 #undef USE_SSL_VERIFY
 #undef FTPPASS_HOSTNAMEGEN

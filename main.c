@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.233 2003/09/24 18:48:59 ukai Exp $ */
+/* $Id: main.c,v 1.234 2003/09/25 03:38:14 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4153,10 +4153,8 @@ adBmark(void)
 #ifdef USE_M17N
 #if LANG == JA
 		  /* FIXME: why WC_CES_EUC_JP hardcoded? 
-		   *   It should be SystemCharset, that is, we don't
-		   *   need if LANG==JA here.
-		   *   For example, Cygwin environment, it should be
-		   *   WC_CES_SHIFT_JIS, shouldn't it? - ukai
+		   *  backward compatibility.
+		   *  w3mbookmark takes arguments as EUC-JP only?
 		   */
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
 						 InnerCharset,

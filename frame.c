@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.24 2002/12/03 15:45:33 ukai Exp $ */
+/* $Id: frame.c,v 1.25 2002/12/05 16:04:00 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -781,6 +781,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				tag->value[j] =
 				    url_quote_conv(remove_space(tag->value[j]),
 						   code);
+				tag->need_reconstruct = TRUE;
 				parseURL2(tag->value[j], &url, &base);
 				if (url.scheme == SCM_UNKNOWN ||
 #ifndef USE_W3MMAILER
@@ -790,7 +791,6 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    break;
 				a_target |= 1;
 				tag->value[j] = parsedURL2Str(&url)->ptr;
-				tag->need_reconstruct = TRUE;
 				parsedtag_set_value(tag,
 						    ATTR_REFERER,
 						    parsedURL2Str(&base)->ptr);

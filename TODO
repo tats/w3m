@@ -16,9 +16,9 @@ new features
 	http://homepage3.nifty.com/slokar/stimg/stimg-0.0.0.tar.gz
 * Internationalized Domain Name support
 	[w3m-dev 03727] Re: IDN support (test)
-	idnkit (http://www.nic.ad.jp/ja/idn/) と iconv が必要です。
-
+	requires idnkit (http://www.nic.ad.jp/ja/idn/) and iconv.
 * SMB
+	Bonus/smb.cgi
 * merge m17n
 * JavaScript
 
@@ -36,12 +36,6 @@ bugs
 
 [bugs] http://bugs.debian.org/w3m
 
-* parsing bug: omitting </p> should not matter, but it does
- http://bugs.debian.org/115521
-
-* MOUSE_SCROLL_LINE should be a run-time option
- http://bugs.debian.org/87472
-
 * support for the <button> tag (HTML 4.01)
  http://bugs.debian.org/136810
 
@@ -49,19 +43,7 @@ bugs
  http://bugs.debian.org/138891
  => after m17n merge
 
-* w3m: Unable to use mozilla bugzilla
- http://bugs.debian.org/170506
- => [w3m-dev 03469]?
-    backport from w3m-js?
-
-fixed?
-* would like "forward to next buffer"
- http://bugs.debian.org/51771
- => tab browse?
-
-* alt attributes in area elements are ignored
- http://bugs.debian.org/81555
- => fixed in w3m 0.3? 
+fixed
 
 wontfix / impossible to fix
 * w3m -dump generates too long lines

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.14 2003/07/09 15:02:28 ukai Exp $ */
+/* $Id: fb.c,v 1.15 2003/07/09 15:07:11 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -351,7 +351,7 @@ fb_height(void)
 int
 fb_clear(int x, int y, int w, int h, int r, int g, int b)
 {
-    int i, j, offset_fb;
+    int i, offset_fb;
     static int rr = -1, gg = -1, bb = -1;
     static char *tmp = NULL;
 

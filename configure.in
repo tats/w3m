@@ -120,6 +120,7 @@ AC_CHECK_HEADER(termios.h, [AC_DEFINE(HAVE_TERMIOS_H)],
 	  [AC_CHECK_HEADER(sgtty.h, [AC_DEFINE(HAVE_SGTTY_H)])])])
 AC_CHECK_HEADER([float.h])
 AC_CHECK_HEADER([sys/select.h])
+AC_CHECK_HEADER([locale.h], [AC_DEFINE(HAVE_LOCALE_H)])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl AC_C_CONST
@@ -137,7 +138,7 @@ dnl AC_FUNC_MEMCMP
 dnl AC_FUNC_MMAP
 dnl AC_FUNC_SETVBUF_REVERSED
 dnl AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid)
+AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid setlocale)
 AC_FUNC_STRFTIME
 AC_FUNC_WAIT3
 AC_FUNC_SETPGRP
@@ -153,7 +154,7 @@ DOCDIRS="doc:en_English doc-jp:ja_Japanese"
 AC_DEFINE_UNQUOTED(DOCDIRS, "$DOCDIRS")
 
 AC_W3M_VERSION
-AC_OUTPUT([Makefile  intl/Makefile po/Makefile.in \
+AC_OUTPUT([Makefile po/Makefile.in \
 scripts/Makefile scripts/dirlist.cgi \
 scripts/w3mhelp.cgi \
 scripts/w3mmail.cgi scripts/xface2xpm \

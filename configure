@@ -849,7 +849,7 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-m17n		support m17n
    --disable-unicode		support unicode
-   --enable-japanese=CODE	support Japanese character sets
+   --enable-japanese=CODE	support Japanese message instead of NLS
 				CODE=(S|E|J|U)
   --disable-nls           do not use Native Language Support
   --disable-rpath         do not hardcode runtime library paths
@@ -2993,10 +2993,16 @@ else
 fi;
  echo "$as_me:$LINENO: result: $enable_unicode" >&5
 echo "${ECHO_T}$enable_unicode" >&6
- charset=US-ASCII
+ if test x"$enable_m17n" = xyes; then
+  charset=US-ASCII
+ else
+  charset=$enable_m17n
+ fi
  if test x"$enable_unicode" = xyes; then
     WCCFLAGS="-DUSE_UNICODE $WCCFLAGS"
-    charset=UTF-8
+    if test x"$charset" = xUS-ASCII; then
+     charset=UTF-8
+    fi
     cat >>confdefs.h <<\_ACEOF
 #define USE_UNICODE 1
 _ACEOF
@@ -4769,10 +4775,8 @@ _ACEOF
 
 
 
-INTLTARGET=""
 NLSTARGET=""
 if test x"$USE_NLS" = xyes; then
-  INTLTARGET="intl"
   NLSTARGET="po"
 fi
 
@@ -8060,6 +8064,143 @@ echo "${ECHO_T}$ac_cv_header_sys_select_h" >&6
 fi
 
 
+if test "${ac_cv_header_locale_h+set}" = set; then
+  echo "$as_me:$LINENO: checking for locale.h" >&5
+echo $ECHO_N "checking for locale.h... $ECHO_C" >&6
+if test "${ac_cv_header_locale_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_locale_h" >&5
+echo "${ECHO_T}$ac_cv_header_locale_h" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking locale.h usability" >&5
+echo $ECHO_N "checking locale.h usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <locale.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking locale.h presence" >&5
+echo $ECHO_N "checking locale.h presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <locale.h>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc in
+  yes:no )
+    { echo "$as_me:$LINENO: WARNING: locale.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: locale.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: locale.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: locale.h: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+  no:yes )
+    { echo "$as_me:$LINENO: WARNING: locale.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: locale.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: locale.h: check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: locale.h: check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: locale.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: locale.h: proceeding with the preprocessor's result" >&2;}
+    (
+      cat <<\_ASBOX
+## ------------------------------------ ##
+## Report this to bug-autoconf@gnu.org. ##
+## ------------------------------------ ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for locale.h" >&5
+echo $ECHO_N "checking for locale.h... $ECHO_C" >&6
+if test "${ac_cv_header_locale_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_header_locale_h=$ac_header_preproc
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_locale_h" >&5
+echo "${ECHO_T}$ac_cv_header_locale_h" >&6
+
+fi
+if test $ac_cv_header_locale_h = yes; then
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_LOCALE_H 1
+_ACEOF
+
+fi
+
+
 
 echo "$as_me:$LINENO: checking for long long" >&5
 echo $ECHO_N "checking for long long... $ECHO_C" >&6
@@ -8447,7 +8588,8 @@ _ACEOF
 
 
 
-for ac_func in strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid
+
+for ac_func in strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid setlocale
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
 echo "$as_me:$LINENO: checking for $ac_func" >&5
@@ -9007,7 +9149,7 @@ _ACEOF
  cvsver=`$AWK '\$1 ~ /Id:/ { print \$3}' $srcdir/ChangeLog`
  sed -e 's/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`
-                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile intl/Makefile po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
+                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -9549,7 +9691,6 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "intl/Makefile" ) CONFIG_FILES="$CONFIG_FILES intl/Makefile" ;;
   "po/Makefile.in" ) CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
   "scripts/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
   "scripts/dirlist.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/dirlist.cgi" ;;

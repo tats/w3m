@@ -167,15 +167,21 @@ else
   [   --disable-unicode		support unicode],,
   [enable_unicode="yes"])
  AC_MSG_RESULT($enable_unicode)
- charset=US-ASCII
+ if test x"$enable_m17n" = xyes; then
+  charset=US-ASCII
+ else
+  charset=$enable_m17n
+ fi
  if test x"$enable_unicode" = xyes; then
     WCCFLAGS="-DUSE_UNICODE $WCCFLAGS"
-    charset=UTF-8
+    if test x"$charset" = xUS-ASCII; then
+     charset=UTF-8
+    fi
     AC_DEFINE(USE_UNICODE)
  fi
  AC_MSG_CHECKING(if japanese support is enabled)
  AC_ARG_ENABLE(japanese,
-   [   --enable-japanese=CODE	support Japanese character sets
+   [   --enable-japanese=CODE	support Japanese message instead of NLS
 				CODE=(S|E|J|U)],,
    [enable_japanese="no"])
  AC_MSG_RESULT($enable_japanese)

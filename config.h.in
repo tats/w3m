@@ -105,6 +105,7 @@
 #undef HAVE_TERMIO_H
 #undef HAVE_SGTTY_H
 #undef HAVE_DIRENT_H
+#undef HAVE_LOCALE_H
 #define SIZEOF_LONG_LONG 8
 #if SIZEOF_LONG_LONG > 0
 typedef long long clen_t;

@@ -1,5 +1,18 @@
 2003-02-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03735] Re: make error of checkType arg
+	* etc.c (checkType): delete USE_ANSI_COLOR
+	* file.c (addnewline): macro for USE_ANSI_COLOR
+		(readHeader): rewrite of USE_ANSI_COLOR
+		(HTMLlineproc2body): ditto
+		(addnewline2): ditto
+		(addnewline): ditto
+		(loadBuffer): ditto
+		(getNextPage): ditto
+	* proto.h (checkType): macro for USE_ANSI_COLOR
+
+2003-02-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03733] Re: display decoded URL
 	* display.c (make_lastline_link): buf->document_code
 
@@ -7105,4 +7118,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.741 2003/02/06 17:16:53 ukai Exp $
+$Id: ChangeLog,v 1.742 2003/02/06 17:21:42 ukai Exp $

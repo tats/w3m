@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.217 2003/01/30 16:48:43 ukai Exp $ */
+/* $Id: file.c,v 1.218 2003/02/06 17:21:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -35,11 +35,11 @@ static FILE *lessopen_stream(char *path);
 static Buffer *loadcmdout(char *cmd,
 			  Buffer *(*loadproc) (URLFile *, Buffer *),
 			  Buffer *defaultbuf);
-static void addnewline(Buffer *buf, char *line, Lineprop *prop,
-#ifdef USE_ANSI_COLOR
-		       Linecolor *color,
+#ifndef USE_ANSI_COLOR
+#define addnewline(a,b,c,d,e,f,g) _addnewline(a,b,c,e,f,g)
 #endif
-		       int pos, int width, int nlines);
+static void addnewline(Buffer *buf, char *line, Lineprop *prop,
+		       Linecolor *color, int pos, int width, int nlines);
 static void addLink(Buffer *buf, struct parsed_tag *tag);
 
 static JMP_BUF AbortLoading;
@@ -654,17 +654,11 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    tmp = Strnew_size(lineBuf2->length);
 	    for (p = lineBuf2->ptr; *p; p = q) {
 		for (q = p; *q && *q != '\r' && *q != '\n'; q++) ;
-		lineBuf2 = checkType(Strnew_charp_n(p, q - p), &propBuffer
-#ifdef USE_ANSI_COLOR
-				     , NULL
-#endif
-		    );
+		lineBuf2 = checkType(Strnew_charp_n(p, q - p), &propBuffer,
+				     NULL);
 		Strcat(tmp, lineBuf2);
 		if (thru)
-		    addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef USE_ANSI_COLOR
-			       NULL,
-#endif
+		    addnewline(newBuf, lineBuf2->ptr, propBuffer, NULL,
 			       lineBuf2->length, FOLD_BUFFER_WIDTH, -1);
 		for (; *q && (*q == '\r' || *q == '\n'); q++) ;
 	    }
@@ -910,11 +904,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	lineBuf2 = NULL;
     }
     if (thru)
-	addnewline(newBuf, "", propBuffer,
-#ifdef USE_ANSI_COLOR
-		   NULL,
-#endif
-		   0, -1, -1);
+	addnewline(newBuf, "", propBuffer, NULL, 0, -1, -1);
     if (src)
 	fclose(src);
 }
@@ -5529,11 +5519,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	}
 	/* end of processing for one line */
 	if (!internal)
-	    addnewline(buf, outc, outp,
-#ifdef USE_ANSI_COLOR
-		       NULL,
-#endif
-		       pos, -1, nlines);
+	    addnewline(buf, outc, outp, NULL, pos, -1, nlines);
 	if (internal == HTML_N_INTERNAL)
 	    internal = 0;
 	if (str != endp) {
@@ -6041,12 +6027,12 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 extern char *NullLine;
 extern Lineprop NullProp[];
 
-static void
-addnewline2(Buffer *buf, char *line, Lineprop *prop,
-#ifdef USE_ANSI_COLOR
-	    Linecolor *color,
+#ifndef USE_ANSI_COLOR
+#define addnewline2(a,b,c,d,e,f) _addnewline2(a,b,c,e,f)
 #endif
-	    int pos, int nlines)
+static void
+addnewline2(Buffer *buf, char *line, Lineprop *prop, Linecolor *color, int pos,
+	    int nlines)
 {
     Line *l;
     l = New(Line);
@@ -6085,11 +6071,8 @@ addnewline2(Buffer *buf, char *line, Lineprop *prop,
 }
 
 static void
-addnewline(Buffer *buf, char *line, Lineprop *prop,
-#ifdef USE_ANSI_COLOR
-	   Linecolor *color,
-#endif
-	   int pos, int width, int nlines)
+addnewline(Buffer *buf, char *line, Lineprop *prop, Linecolor *color, int pos,
+	   int width, int nlines)
 {
     char *s;
     Lineprop *p;
@@ -6117,11 +6100,7 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 	c = NULL;
     }
 #endif
-    addnewline2(buf, s, p,
-#ifdef USE_ANSI_COLOR
-		c,
-#endif
-		pos, nlines);
+    addnewline2(buf, s, p, c, pos, nlines);
     if (pos <= 0 || width <= 0)
 	return;
     bpos = 0;
@@ -6151,11 +6130,7 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 	    c += i;
 #endif
 	pos -= i;
-	addnewline2(buf, s, p,
-#ifdef USE_ANSI_COLOR
-		    c,
-#endif
-		    pos, nlines);
+	addnewline2(buf, s, p, c, pos, nlines);
     }
 }
 
@@ -6841,15 +6816,8 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	}
 	++nlines;
 	Strchop(lineBuf2);
-	lineBuf2 = checkType(lineBuf2, &propBuffer
-#ifdef USE_ANSI_COLOR
-			     , &colorBuffer
-#endif
-	    );
-	addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef USE_ANSI_COLOR
-		   colorBuffer,
-#endif
+	lineBuf2 = checkType(lineBuf2, &propBuffer, NULL);
+	addnewline(newBuf, lineBuf2->ptr, propBuffer, colorBuffer,
 		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
     }
   _end:
@@ -7228,15 +7196,8 @@ getNextPage(Buffer *buf, int plen)
 	}
 	++nlines;
 	Strchop(lineBuf2);
-	lineBuf2 = checkType(lineBuf2, &propBuffer
-#ifdef USE_ANSI_COLOR
-			     , &colorBuffer
-#endif
-	    );
-	addnewline(buf, lineBuf2->ptr, propBuffer,
-#ifdef USE_ANSI_COLOR
-		   colorBuffer,
-#endif
+	lineBuf2 = checkType(lineBuf2, &propBuffer, &colorBuffer);
+	addnewline(buf, lineBuf2->ptr, propBuffer, colorBuffer,
 		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
 	if (!top) {
 	    top = buf->firstLine;

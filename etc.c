@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.63 2003/02/05 16:43:57 ukai Exp $ */
+/* $Id: etc.c,v 1.64 2003/02/06 17:21:43 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -236,11 +236,7 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
  */
 
 Str
-checkType(Str s, Lineprop **oprop
-#ifdef USE_ANSI_COLOR
-	  , Linecolor **ocolor
-#endif
-    )
+checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 {
     Lineprop mode;
     Lineprop effect = PE_NORMAL;

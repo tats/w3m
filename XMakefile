@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.35 2003/02/11 10:33:04 ukai Exp $
+# $Id: XMakefile,v 1.36 2003/02/12 17:22:33 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -132,8 +132,7 @@ install-core: $(TARGETS)
 	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/$(HELP_TARGET)
 	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(MAN1_DIR)/$(MAN1_TARGET)
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(MAN1_JA_DIR)/$(MAN1_TARGET)
-	test "x$(AUXBIN_TARGETS)" != "x" &&	\
-	for file in $(AUXBIN_TARGETS); \
+	targets="$(AUXBIN_TARGETS)"; for file in $$targets; \
 	do \
 		case $$file in \
 		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file $(DESTDIR)$(AUXBIN_DIR)/$$file;; \

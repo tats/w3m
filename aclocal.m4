@@ -763,7 +763,7 @@ if test x"$enable_ipv6" = xyes; then
  AC_MSG_CHECKING(if IPv6 API available)
  AC_SUBST(INET6)
  AC_CHECK_FUNC(getaddrinfo, 
-	[enable_ipv6="yes"; AC_DEFINE(INET6)],
+	[enable_ipv6="yes"],
 	[enable_ipv6="no"])
  if test x"$enable_ipv6" = xno; then
     AC_MSG_CHECKING(for libinet6)
@@ -774,12 +774,41 @@ if test x"$enable_ipv6" = xyes; then
 		W3M_LIBS="$W3M_LIBS -L$dir"
 	  fi
 	  AC_CHECK_LIB(inet6, getaddrinfo,
-		[enable_ipv6="yes"; AC_DEFINE(INET6)
+		[enable_ipv6="yes"
 	         use_libinet6="found"; W3M_LIBS="$W3M_LIBS -linet6"; break],
 		[use_libinet6="not found"])
 	fi
     done
     AC_MSG_RESULT($use_libinet6)
+ fi
+ if test x"$enable_ipv6" = xyes; then
+    AC_SUBST(HAVE_OLD_SS_FAMILY)
+    AC_MSG_CHECKING(if struct sockaddr_storage has an ss_family member)
+    AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+      ], [
+	struct sockaddr_storage ss;
+	int i = ss.ss_family;
+      ],
+      [AC_MSG_RESULT(yes)],
+      [AC_TRY_COMPILE([
+#include <sys/types.h>
+#include <sys/socket.h>
+	],
+	[
+	struct sockaddr_storage ss;
+	int i = ss.__ss_family;
+	],
+	[AC_MSG_RESULT(no, but __ss_family exists)
+	 AC_DEFINE(HAVE_OLD_SS_FAMILY)],
+	[AC_MSG_RESULT(no)
+	 AC_MSG_WARN(IPv6 support is disabled)
+	 enable_ipv6="no"])
+      ])
+ fi
+ if test x"$enable_ipv6" = xyes; then
+    AC_DEFINE(INET6)
  fi
 fi])
 #

@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.33 2003/10/05 18:52:51 ukai Exp $ */
+/* $Id: ftp.c,v 1.34 2003/10/22 18:44:31 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -196,7 +196,11 @@ ftp_pasv(FTP ftp)
     if (getpeername(fileno(ftp->wf),
 		    (struct sockaddr *)&sockaddr, &sockaddrlen) < 0)
 	return -1;
+#ifdef HAVE_OLD_SS_FAMILY
+    family = sockaddr.__ss_family;
+#else
     family = sockaddr.ss_family;
+#endif
 #else
     family = AF_INET;
 #endif

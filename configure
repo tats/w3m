@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 HAVE_OLD_SS_FAMILY USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -5475,10 +5475,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_func_getaddrinfo" >&5
 echo "${ECHO_T}$ac_cv_func_getaddrinfo" >&6
 if test $ac_cv_func_getaddrinfo = yes; then
-  enable_ipv6="yes"; cat >>confdefs.h <<\_ACEOF
-#define INET6 1
-_ACEOF
-
+  enable_ipv6="yes"
 else
   enable_ipv6="no"
 fi
@@ -5547,10 +5544,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_inet6_getaddrinfo" >&5
 echo "${ECHO_T}$ac_cv_lib_inet6_getaddrinfo" >&6
 if test $ac_cv_lib_inet6_getaddrinfo = yes; then
-  enable_ipv6="yes"; cat >>confdefs.h <<\_ACEOF
-#define INET6 1
-_ACEOF
-
+  enable_ipv6="yes"
 	         use_libinet6="found"; W3M_LIBS="$W3M_LIBS -linet6"; break
 else
   use_libinet6="not found"
@@ -5560,6 +5554,111 @@ fi
     done
     echo "$as_me:$LINENO: result: $use_libinet6" >&5
 echo "${ECHO_T}$use_libinet6" >&6
+ fi
+ if test x"$enable_ipv6" = xyes; then
+
+    echo "$as_me:$LINENO: checking if struct sockaddr_storage has an ss_family member" >&5
+echo $ECHO_N "checking if struct sockaddr_storage has an ss_family member... $ECHO_C" >&6
+    cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int
+main ()
+{
+
+	struct sockaddr_storage ss;
+	int i = ss.ss_family;
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <sys/types.h>
+#include <sys/socket.h>
+
+int
+main ()
+{
+
+	struct sockaddr_storage ss;
+	int i = ss.__ss_family;
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+	 cat >>confdefs.h <<\_ACEOF
+#define HAVE_OLD_SS_FAMILY 1
+_ACEOF
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+	 { echo "$as_me:$LINENO: WARNING: IPv6 support is disabled" >&5
+echo "$as_me: WARNING: IPv6 support is disabled" >&2;}
+	 enable_ipv6="no"
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+
+fi
+rm -f conftest.$ac_objext conftest.$ac_ext
+ fi
+ if test x"$enable_ipv6" = xyes; then
+    cat >>confdefs.h <<\_ACEOF
+#define INET6 1
+_ACEOF
+
  fi
 fi
 
@@ -10018,6 +10117,7 @@ s,@USE_DIGEST_AUTH@,$USE_DIGEST_AUTH,;t t
 s,@USE_NNTP@,$USE_NNTP,;t t
 s,@USE_GOPHER@,$USE_GOPHER,;t t
 s,@INET6@,$INET6,;t t
+s,@HAVE_OLD_SS_FAMILY@,$HAVE_OLD_SS_FAMILY,;t t
 s,@USE_DICT@,$USE_DICT,;t t
 s,@USE_HELP_CGI@,$USE_HELP_CGI,;t t
 s,@USE_EXTERNAL_URI_LOADER@,$USE_EXTERNAL_URI_LOADER,;t t

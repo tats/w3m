@@ -80,6 +80,7 @@
 #define ID_EXT
 #undef CLEAR_BUF
 #undef INET6
+#undef HAVE_OLD_SS_FAMILY
 #define USE_EGD
 #define ENABLE_REMOVE_TRAILINGSPACES
 #undef MENU_THIN_FRAME

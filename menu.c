@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.21 2002/11/27 16:28:37 ukai Exp $ */
+/* $Id: menu.c,v 1.22 2002/11/27 16:29:14 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1129,9 +1129,9 @@ mMouse_scroll_line(void)
 {
     int i = 0;
     if (relative_wheel_scroll)
-        i = (relative_wheel_scroll_ratio * CurrentMenu->height + 99) / 100;
+	i = (relative_wheel_scroll_ratio * CurrentMenu->height + 99) / 100;
     else
-        i = fixed_wheel_scroll_count;
+	i = fixed_wheel_scroll_count;
     return i ? i : 1;
 }
 
@@ -1190,7 +1190,7 @@ process_mMouse(int btn, int x, int y)
 	    break;
 	case MOUSE_BTN4_DOWN_RXVT:
 	    for (i = 0; i < mMouse_scroll_line(); i++)
-		 mLineD(c);
+		mLineD(c);
 	    break;
 	case MOUSE_BTN5_DOWN_RXVT:
 	    for (i = 0; i < mMouse_scroll_line(); i++)

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.182 2003/01/10 16:42:29 ukai Exp $ */
+/* $Id: file.c,v 1.183 2003/01/10 17:06:20 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -225,8 +225,6 @@ loadSomething(URLFile *f,
     buf->real_scheme = f->scheme;
     if (f->scheme == SCM_LOCAL && buf->sourcefile == NULL)
 	buf->sourcefile = path;
-    if (f->scheme != SCM_NNTP && f->scheme != SCM_NEWS)
-	UFclose(f);
     return buf;
 }
 
@@ -485,7 +483,9 @@ loadFile(char *path)
 #ifdef JP_CHARSET
     content_charset = '\0';
 #endif
-    return loadSomething(&uf, path, loadBuffer, buf);
+    buf = loadSomething(&uf, path, loadBuffer, buf);
+    UFclose(&uf);
+    return buf;
 }
 
 int
@@ -1942,7 +1942,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	doFileSave(f, file);
 	if (f.scheme == SCM_FTP)
 	    FTPhalfclose(f.stream);
-	else if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
+	else
 	    UFclose(&f);
 	return NO_BUFFER;
     }
@@ -2004,8 +2004,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 		    copyParsedURL(&b->currentURL, &pu);
 	    }
-	    if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
-		UFclose(&f);
+	    UFclose(&f);
 	    if (fmInitialized)
 		term_raw();
 	    signal(SIGINT, prevtrap);
@@ -2027,7 +2026,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		doFileSave(f, guess_save_name(t_buf, pu.file));
 		if (f.scheme == SCM_FTP)
 		    FTPhalfclose(f.stream);
-		else if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
+		else
 		    UFclose(&f);
 	    }
 	    return NO_BUFFER;
@@ -2045,9 +2044,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
     frame_source = flag & RG_FRAME_SRC;
     b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
+    UFclose(&f);
     frame_source = 0;
-    if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
-	UFclose(&f);
     if (b) {
 	b->real_scheme = f.scheme;
 	b->real_type = real_type;

@@ -1,5 +1,19 @@
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03632] cleanup (don't close connection of news server)
+	* file.c (loadSomething): remove UFclose nntp:,news:
+		(loadFile): UFclose
+		(loadGeneralFile): always UFclose
+	* html.h (UFclose): only reset when ISclose ==0
+	* istream.c (ISclose): return int
+		(ISfileno): flag IST_UNCLOSE
+	* istream.h (ISclose): return int
+		(IST_UNCLOSE): added
+	* news.c (news_close): reset IST_UNCLOSE
+		(news_open): set IST_UNCLOSE
+
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03631] display current form item
 	* form.c (form2str): rewrite
 	* istream.c (ssl_get_certificate): fix typo
@@ -6335,4 +6349,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.670 2003/01/10 16:58:30 ukai Exp $
+$Id: ChangeLog,v 1.671 2003/01/10 17:06:17 ukai Exp $

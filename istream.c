@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.17 2003/01/10 16:58:31 ukai Exp $ */
+/* $Id: istream.c,v 1.18 2003/01/10 17:06:23 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"
@@ -176,15 +176,17 @@ newEncodedStream(InputStream is, char encoding)
     return stream;
 }
 
-void
+int
 ISclose(InputStream stream)
 {
     MySignalHandler(*prevtrap) ();
-    if (stream == NULL || stream->base.close == NULL)
-	return;
+    if (stream == NULL || stream->base.close == NULL ||
+	stream->base.type & IST_UNCLOSE)
+	return -1;
     prevtrap = signal(SIGINT, SIG_IGN);
     stream->base.close(stream->base.handle);
     signal(SIGINT, prevtrap);
+    return 0;
 }
 
 int
@@ -336,7 +338,7 @@ ISfileno(InputStream stream)
 {
     if (stream == NULL)
 	return -1;
-    switch (IStype(stream)) {
+    switch (IStype(stream) & ~IST_UNCLOSE) {
     case IST_BASIC:
 	return *(int *)stream->base.handle;
     case IST_FILE:

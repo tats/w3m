@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.19 2003/01/08 17:24:12 ukai Exp $ */
+/* $Id: html.h,v 1.20 2003/01/10 17:06:23 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -14,7 +14,7 @@
 #define UFgetc(f) ISgetc((f)->stream)
 #define UFundogetc(f) ISundogetc((f)->stream)
 #define UFread(f,buf,len) ISread((f)->stream,buf,len)
-#define UFclose(f) (ISclose((f)->stream), (f)->stream = NULL)
+#define UFclose(f) (ISclose((f)->stream) == 0 && ((f)->stream = NULL))
 
 struct cmdtable {
     char *cmdname;

@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.10 2003/01/07 15:56:41 ukai Exp $ */
+/* $Id: news.c,v 1.11 2003/01/10 17:06:25 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -58,6 +58,7 @@ news_close(News * news)
     if (!news->host)
 	return;
     if (news->rf) {
+	IStype(news->rf) &= ~IST_UNCLOSE;
 	ISclose(news->rf);
 	news->rf = NULL;
     }
@@ -80,6 +81,7 @@ news_open(News * news)
     news->wf = fdopen(dup(sock), "wb");
     if (!news->rf || !news->wf)
 	goto open_err;
+    IStype(news->rf) |= IST_UNCLOSE;
     news_command(news, NULL, &status);
     if (status != 200 && status != 201)
 	goto open_err;

@@ -1,4 +1,4 @@
-/* $Id: istream.h,v 1.9 2002/09/28 16:30:07 ukai Exp $ */
+/* $Id: istream.h,v 1.10 2003/01/10 17:06:24 ukai Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
@@ -116,7 +116,7 @@ extern InputStream newStrStream(Str s);
 extern InputStream newSSLStream(SSL * ssl, int sock);
 #endif
 extern InputStream newEncodedStream(InputStream is, char encoding);
-extern void ISclose(InputStream stream);
+extern int ISclose(InputStream stream);
 extern int ISgetc(InputStream stream);
 extern int ISundogetc(InputStream stream);
 extern Str StrISgets(InputStream stream);
@@ -134,6 +134,7 @@ extern Str ssl_get_certificate(SSL *ssl, char *hostname);
 #define IST_STR		2
 #define IST_SSL		3
 #define IST_ENCODED	4
+#define IST_UNCLOSE	0x10
 
 #define IStype(stream) ((stream)->base.type)
 #define is_eos(stream) ISeos(stream)

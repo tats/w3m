@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.165 2002/12/20 20:20:53 ukai Exp $ */
+/* $Id: file.c,v 1.166 2002/12/21 16:16:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -59,6 +59,7 @@ static char cur_document_code;
 #endif
 #endif
 
+static Str cur_title;
 static Str cur_select;
 static Str select_str;
 static int select_is_multiple;
@@ -94,8 +95,6 @@ static char guess_charset(char *p);
 static char check_charset(char *s);
 static char check_accept_charset(char *s);
 #endif
-
-static struct readbuffer save_obuf;
 
 struct link_stack {
     int cmd;
@@ -2939,6 +2938,45 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	push_tag(obuf, "<u>", HTML_U);
 }
 
+static Str
+process_title(struct parsed_tag *tag)
+{
+    cur_title = Strnew();
+    return NULL;
+}
+
+static Str
+process_n_title(struct parsed_tag *tag)
+{
+    Str tmp;
+
+    if (!cur_title)
+	return NULL;
+    Strremovefirstspaces(cur_title);
+    Strremovetrailingspaces(cur_title);
+    tmp = Strnew_m_charp("<title_alt title=\"",
+			 html_quote(cur_title->ptr), "\">", NULL);
+    cur_title = NULL;
+    return tmp;
+}
+
+static void
+feed_title(char *str)
+{
+    if (!cur_title)
+	return;
+    while (*str) {
+	if (*str == '&')
+	    Strcat_charp(cur_title, getescapecmd(&str));
+	else if (*str == '\n' || *str == '\r') {
+	    Strcat_char(cur_title, ' ');
+	    str++;
+	}
+	else
+	    Strcat_char(cur_title, *(str++));
+    }
+}
+
 Str
 process_img(struct parsed_tag *tag, int width)
 {
@@ -4299,27 +4337,24 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	/* obuf->flag |= RB_IGNORE_P; */
 	return 1;
     case HTML_TITLE:
-	append_tags(obuf);
-	set_breakpoint(obuf, 0);
-	bcopy((void *)obuf, (void *)&save_obuf, sizeof(struct readbuffer));
-	obuf->line = Strnew();
-	discardline(obuf, 0);
-	obuf->flag |= (RB_NOBR | RB_TITLE);
+	close_anchor(h_env, obuf);
+	process_title(tag);
+	obuf->flag |= RB_TITLE;
+	obuf->end_tag = HTML_N_TITLE;
 	return 1;
     case HTML_N_TITLE:
 	if (!(obuf->flag & RB_TITLE))
 	    return 1;
-	obuf->flag &= ~(RB_NOBR | RB_TITLE);
-	tmp = Strnew_charp(obuf->line->ptr);
-	Strremovetrailingspaces(tmp);
-	h_env->title = html_unquote(tmp->ptr);
-	bcopy((void *)&save_obuf, (void *)obuf, sizeof(struct readbuffer));
-	append_tags(obuf);
-	back_to_breakpoint(obuf);
-	tmp = Strnew_m_charp("<title_alt title=\"",
-			     html_quote(h_env->title), "\">", NULL);
-	push_tag(obuf, tmp->ptr, HTML_TITLE_ALT);
+	obuf->flag &= ~RB_TITLE;
+	obuf->end_tag = 0;
+	tmp = process_n_title(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
+    case HTML_TITLE_ALT:
+	if (parsedtag_get_value(tag, ATTR_TITLE, &p))
+	    h_env->title = html_unquote(p);
+	return 0;
     case HTML_FRAMESET:
 	PUSH_ENV(cmd);
 	push_charp(obuf, 9, "--FRAME--", PC_ASCII);
@@ -4849,6 +4884,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		HTMLlineproc1(s->ptr, h_env);
 	    }
 	}
+    case HTML_N_HEAD:
+	if (obuf->flag & RB_TITLE)
+	     HTMLlineproc1("</title>", h_env);
+    case HTML_HEAD:
     case HTML_N_BODY:
 	return 1;
     default:
@@ -5652,7 +5691,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
 		    is_tag = TRUE;
 		else if (!(pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT |
-				       RB_SCRIPT | RB_STYLE))) {
+				       RB_SCRIPT | RB_STYLE | RB_TITLE))) {
 		    line = Strnew_m_charp(str + 1, line, NULL)->ptr;
 		    str = "&lt;";
 		}
@@ -5666,14 +5705,21 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	}
 
 	if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT | RB_SCRIPT |
-			RB_STYLE)) {
+			RB_STYLE | RB_TITLE)) {
 	    if (is_tag) {
 		p = str;
 		if ((tag = parse_tag(&p, internal))) {
 		    if (tag->tagid == end_tag ||
-			(pre_mode & RB_INSELECT && tag->tagid == HTML_N_FORM))
+			(pre_mode & RB_INSELECT && tag->tagid == HTML_N_FORM) ||
+			(pre_mode & RB_TITLE && (tag->tagid == HTML_N_HEAD ||
+						 tag->tagid == HTML_BODY)))
 			goto proc_normal;
 		}
+	    }
+	    /* title */
+	    if (pre_mode & RB_TITLE) {
+		feed_title(str);
+		continue;
 	    }
 	    /* select */
 	    if (pre_mode & RB_INSELECT) {
@@ -6210,6 +6256,8 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     /* for unbalanced select tag */
     if (obuf->flag & RB_INSELECT)
 	HTMLlineproc1("</select>", h_env);
+    if (obuf->flag & RB_TITLE)
+	HTMLlineproc1("</title>", h_env);
 
     /* for unbalanced table tag */
     while (obuf->table_level >= 0) {
@@ -6312,6 +6360,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
+    cur_title = NULL;
     n_textarea = 0;
     cur_textarea = NULL;
     max_textarea = MAX_TEXTAREA;

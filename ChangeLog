@@ -1,3 +1,17 @@
+2002-12-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03593] Re: segmentation fault when <title> exist after <img>
+	* file.c (cur_title): added
+		(save_obuf): deleted
+		(process_title): added
+		(process_n_title): added
+		(feed_title): added
+		(HTMLtagproc1): rewrite HTML_TITLE, HTML_N_TITLE, 
+				HTML_TITLE_ALT, HTML_N_HEAD, HTML_HEAD
+		(HTMLlineproc0): check RB_TITLE
+		(completeHTMLstream): add RB_TITLE
+		(loadHTMLstream): initialize cur_title
+
 2002-12-21  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03590] segmentation fault when <title> exist after <img>
@@ -5982,4 +5996,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.637 2002/12/20 20:20:52 ukai Exp $
+$Id: ChangeLog,v 1.638 2002/12/21 16:16:43 ukai Exp $

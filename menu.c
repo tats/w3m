@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.32 2003/07/26 17:16:24 ukai Exp $ */
+/* $Id: menu.c,v 1.33 2003/07/26 17:17:28 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1670,7 +1670,7 @@ optionMenu(int x, int y, char **label, int *variable, int initial,
 /* --- InitMenu --- */
 
 static void
-interpret_menu(FILE *mf)
+interpret_menu(FILE * mf)
 {
     Str line;
     char *p, *s;

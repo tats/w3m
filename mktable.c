@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.12 2003/03/12 18:27:07 ukai Exp $ */
+/* $Id: mktable.c,v 1.13 2003/03/13 15:33:40 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "myctype.h"
@@ -50,7 +50,7 @@ main(int argc, char *argv[], char **envp)
     }
     p = argv[2];
     if (strrchr(p, '/') != NULL)
-	p = strrchr(p, '/')+1;
+	p = strrchr(p, '/') + 1;
     fbase = Strnew_charp(p);
     if (strchr(fbase->ptr, '.'))
 	while (Strlastchar(fbase) != '.')

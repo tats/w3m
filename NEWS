@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* rc: preserve_timestamp
 * func: REDO, UNDO
 * func: LIST, LIST_MENU, MOVE_LIST_MENU
 * func: ACCESSKEY, LINK_MENU

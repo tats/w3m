@@ -1,3 +1,7 @@
+2002-12-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: rc: preserve_timestamp
+
 2002-12-15  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
 
 	* [w3m-dev 03574] Re: preserve timestamp
@@ -5878,4 +5882,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.624 2002/12/15 12:12:47 ukai Exp $
+$Id: ChangeLog,v 1.625 2002/12/15 12:37:33 ukai Exp $

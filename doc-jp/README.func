@@ -1,4 +1,5 @@
 ABORT		確認せずにw3mを終了します
+ACCESSKEY	Accesskey メニューを立ち上げます
 ALARM		アラームを設定します
 ADD_BOOKMARK	現在見ているページをブックマークに追加します
 BACK		一つ前のバッファを表示します
@@ -43,6 +44,7 @@ LINE_END	行末に移動します
 LINE_INFO	ページ中での現在位置を表示します
 LINK_BEGIN     最初のリンクに移動します
 LINK_END       最後のリンクに移動します
+LINK_MENU	Link メニューを立ち上げます
 LOAD		ローカルファイルを指定して開きます
 MAIN_MENU	メニューを立ち上げます
 MARK		マークを設定／解除します

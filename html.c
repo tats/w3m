@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.18 2002/12/03 15:35:10 ukai Exp $ */
+/* $Id: html.c,v 1.19 2002/12/05 16:29:07 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -7,9 +7,9 @@
 #define MAXA_CORE	1
 unsigned char ALST_A[] = {
     ATTR_NAME, ATTR_HREF, ATTR_TARGET, ATTR_HSEQ, ATTR_REFERER,
-    ATTR_FRAMENAME, ATTR_CORE
+    ATTR_FRAMENAME, ATTR_TITLE, ATTR_ACCESSKEY, ATTR_CORE
 };
-#define MAXA_A		MAXA_CORE + 6
+#define MAXA_A		MAXA_CORE + 8
 unsigned char ALST_P[] = { ATTR_ALIGN, ATTR_CORE };
 #define MAXA_P		MAXA_CORE + 1
 unsigned char ALST_UL[] = { ATTR_START, ATTR_TYPE, ATTR_CORE };
@@ -28,9 +28,9 @@ unsigned char ALST_PRE[] = { ATTR_FOR_TABLE, ATTR_CORE };
 #define MAXA_PRE	MAXA_CORE + 1
 unsigned char ALST_IMG[] =
     { ATTR_SRC, ATTR_ALT, ATTR_WIDTH, ATTR_HEIGHT, ATTR_ALIGN, ATTR_USEMAP,
-    ATTR_ISMAP, ATTR_CORE
+    ATTR_ISMAP, ATTR_TITLE, ATTR_CORE
 };
-#define MAXA_IMG	MAXA_CORE + 7
+#define MAXA_IMG	MAXA_CORE + 8
 unsigned char ALST_TABLE[] =
     { ATTR_BORDER, ATTR_WIDTH, ATTR_HBORDER, ATTR_CELLSPACING,
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
@@ -112,9 +112,10 @@ unsigned char ALST_INPUT_ALT[] =
 #define MAXA_INPUT_ALT  16
 unsigned char ALST_IMG_ALT[] =
     { ATTR_SRC, ATTR_WIDTH, ATTR_HEIGHT, ATTR_USEMAP, ATTR_ISMAP, ATTR_HSEQ,
-    ATTR_XOFFSET, ATTR_YOFFSET, ATTR_TOP_MARGIN, ATTR_BOTTOM_MARGIN
+    ATTR_XOFFSET, ATTR_YOFFSET, ATTR_TOP_MARGIN, ATTR_BOTTOM_MARGIN,
+    ATTR_TITLE
 };
-#define MAXA_IMG_ALT  10
+#define MAXA_IMG_ALT  11
 unsigned char ALST_NOP[] = { ATTR_CORE };
 #define MAXA_NOP	MAXA_CORE
 
@@ -304,20 +305,30 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"rel", VTYPE_STR, 0},	/* 47 ATTR_REL            */
     {"rev", VTYPE_STR, 0},	/* 48 ATTR_REV            */
     {"title", VTYPE_STR, 0},	/* 49 ATTR_TITLE          */
+    {"accesskey", VTYPE_STR, 0},	/* 50 ATTR_ACCESSKEY          */
+    {NULL, VTYPE_NONE, 0},	/* 51 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 52 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 53 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 54 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 55 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 56 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 57 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 58 Undefined           */
+    {NULL, VTYPE_NONE, 0},	/* 59 Undefined           */
 
     /* Internal attribute */
-    {"xoffset", VTYPE_NUMBER, AFLG_INT},	/* 50 ATTR_XOFFSET        */
-    {"yoffset", VTYPE_NUMBER, AFLG_INT},	/* 51 ATTR_YOFFSET        */
-    {"top_margin", VTYPE_NUMBER, AFLG_INT},	/* 52 ATTR_TOP_MARGIN,    */
-    {"bottom_margin", VTYPE_NUMBER, AFLG_INT},	/* 53 ATTR_BOTTOM_MARGIN, */
-    {"tid", VTYPE_NUMBER, AFLG_INT},	/* 54 ATTR_TID            */
-    {"fid", VTYPE_NUMBER, AFLG_INT},	/* 55 ATTR_FID            */
-    {"for_table", VTYPE_NONE, AFLG_INT},	/* 56 ATTR_FOR_TABLE      */
-    {"framename", VTYPE_STR, AFLG_INT},	/* 57 ATTR_FRAMENAME      */
-    {"hborder", VTYPE_NONE, 0},	/* 58 ATTR_HBORDER        */
-    {"hseq", VTYPE_NUMBER, AFLG_INT},	/* 59 ATTR_HSEQ           */
-    {"no_effect", VTYPE_NONE, AFLG_INT},	/* 60 ATTR_NO_EFFECT      */
-    {"referer", VTYPE_STR, AFLG_INT},	/* 61 ATTR_REFERER        */
-    {"selectnumber", VTYPE_NUMBER, AFLG_INT},	/* 62 ATTR_SELECTNUMBER   */
-    {"textareanumber", VTYPE_NUMBER, AFLG_INT},	/* 63 ATTR_TEXTAREANUMBER */
+    {"xoffset", VTYPE_NUMBER, AFLG_INT},	/* 60 ATTR_XOFFSET        */
+    {"yoffset", VTYPE_NUMBER, AFLG_INT},	/* 61 ATTR_YOFFSET        */
+    {"top_margin", VTYPE_NUMBER, AFLG_INT},	/* 62 ATTR_TOP_MARGIN,    */
+    {"bottom_margin", VTYPE_NUMBER, AFLG_INT},	/* 63 ATTR_BOTTOM_MARGIN, */
+    {"tid", VTYPE_NUMBER, AFLG_INT},	/* 64 ATTR_TID            */
+    {"fid", VTYPE_NUMBER, AFLG_INT},	/* 65 ATTR_FID            */
+    {"for_table", VTYPE_NONE, AFLG_INT},	/* 66 ATTR_FOR_TABLE      */
+    {"framename", VTYPE_STR, AFLG_INT},	/* 67 ATTR_FRAMENAME      */
+    {"hborder", VTYPE_NONE, 0},	/* 68 ATTR_HBORDER        */
+    {"hseq", VTYPE_NUMBER, AFLG_INT},	/* 69 ATTR_HSEQ           */
+    {"no_effect", VTYPE_NONE, AFLG_INT},	/* 70 ATTR_NO_EFFECT      */
+    {"referer", VTYPE_STR, AFLG_INT},	/* 71 ATTR_REFERER        */
+    {"selectnumber", VTYPE_NUMBER, AFLG_INT},	/* 72 ATTR_SELECTNUMBER   */
+    {"textareanumber", VTYPE_NUMBER, AFLG_INT},	/* 73 ATTR_TEXTAREANUMBER */
 };

@@ -1,5 +1,68 @@
 2002-12-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03529] Support of title, accesskey of anchor
+	* anchor.c (putAnchor): arg title, key 
+				initialize slave
+		(registerHref): arg title, key
+		(registerName): title = NULL, key = '\0'
+		(registerForm): title = NULL, key = '\0'
+		(_put_anchor_news): title = NULL, key = '\0'
+		(_put_anchor_all): title = NULL, key = '\0'
+		(addMultirowsImg): register title, accesskey
+		(addMultirowsForm): title = NULL, key = '\0'
+		(getAnchorText): added
+	* display.c (displayBuffer): show title if any
+	* file.c (set_breakpoint): use bcopy
+		(back_to_breakpoint): use bcopy
+		(flushline): s/anchor/anchor.url/
+			     s/anchor_hseq/anchor.hseq/
+			     s/anchor_target/anchor.target/
+			     add anchor.*
+		(close_effect0): s/anchor/anchor.url/
+				s/anchor_hseq/anchor.hseq/
+		(close_anchor): use bzero
+		(process_img): ATTR_TITLE, 
+		(HTMLtagproc1): s/anchor/anchor.url/
+				target, referer, title, accesskey, hseq
+		(HTMLlineproc2body): ATTR_TITLE, ATTR_ACCESSKEY
+		(init_henv): use bzero
+	* fm.h (Anchor): add title, accesskey, slave
+		(Breakpoint): use Anchor
+		(struct readbuffer): use Anchor
+	* funcname.tab (ACCESSKEY): added
+		(LINK_MENU): added
+	* html.c (ALST_A): add ATTR_TITLE, ATTR_ACCESSKEY
+		(ALST_IMG): add ATTR_TITLE
+		(ALST_IMG_ALT): add ATTR_TITLE
+		(AttrMAP): add accesskey, renum
+	* html.h (ATTR_ACCESSKEY): added
+		(ATTR_*): renum 50->60
+	* main.c (linkMn): added
+		(accessKey): added
+	* menu.c (LinkMenu): deleted
+		(LinkV): deleted
+		(initLinkMenu): deleted
+		(lmGoURL): deleted
+		(popupMenu): delete initLinkMenu()
+		(initMenu): delete Link
+		(link_menu): added
+		(accesskey_menu): added
+	* proto.h (linkMn): added
+		(link_menu): added
+		(accessKey): added
+		(accesskey_menu): added
+		(putAnchor): arg title, key
+		(registerHref): arg title, key
+		(registerImg): arg title
+		(getAnchorText): added
+	* doc/README.func (ACCESSKEY): added
+			(LINK_MENU): added
+	* doc-jp/README.func (ACCESSKEY): added
+			(LINK_MENU): added
+	* scripts/w3mhelp.cgi.in (Hyperlink operation): add linkMn accessKey
+
+2002-12-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03528] area without alt
 	* map.c (getCurrentMapLabel): when a->alt is empty 
 
@@ -5470,4 +5533,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.592 2002/12/05 16:08:34 ukai Exp $
+$Id: ChangeLog,v 1.593 2002/12/05 16:29:02 ukai Exp $

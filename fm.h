@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.92 2002/12/04 17:00:50 ukai Exp $ */
+/* $Id: fm.h,v 1.93 2002/12/05 16:29:06 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -358,9 +358,12 @@ typedef struct _anchor {
     char *url;
     char *target;
     char *referer;
+    char *title;
+    unsigned char accesskey;
     BufferPoint start;
     BufferPoint end;
     int hseq;
+    char slave;
     short y;
     short rows;
 #ifdef USE_IMAGE
@@ -513,9 +516,7 @@ typedef struct {
     int len;
     int tlen;
     long flag;
-    Str anchor;
-    Str anchor_target;
-    short anchor_hseq;
+    Anchor anchor;
     Str img_alt;
     char fontstat[FONTSTAT_SIZE];
     short nobr_level;
@@ -537,9 +538,7 @@ struct readbuffer {
     unsigned char end_tag;
     short table_level;
     short nobr_level;
-    Str anchor;
-    Str anchor_target;
-    short anchor_hseq;
+    Anchor anchor;
     Str img_alt;
     char fontstat[FONTSTAT_SIZE];
     char fontstat_stack[FONT_STACK_SIZE][FONTSTAT_SIZE];

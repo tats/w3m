@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.145 2002/12/04 17:00:48 ukai Exp $ */
+/* $Id: file.c,v 1.146 2002/12/05 16:29:05 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2243,9 +2243,8 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
     if (!obuf->bp.init_flag)
 	return;
 
-    obuf->bp.anchor = obuf->anchor;
-    obuf->bp.anchor_target = obuf->anchor_target;
-    obuf->bp.anchor_hseq = obuf->anchor_hseq;
+    bcopy((void *)&obuf->anchor, (void *)&obuf->bp.anchor,
+	  sizeof(obuf->anchor));
     obuf->bp.img_alt = obuf->img_alt;
     obuf->bp.in_bold = obuf->in_bold;
     obuf->bp.in_under = obuf->in_under;
@@ -2258,9 +2257,8 @@ static void
 back_to_breakpoint(struct readbuffer *obuf)
 {
     obuf->flag = obuf->bp.flag;
-    obuf->anchor = obuf->bp.anchor;
-    obuf->anchor_target = obuf->bp.anchor_target;
-    obuf->anchor_hseq = obuf->bp.anchor_hseq;
+    bcopy((void *)&obuf->bp.anchor, (void *)&obuf->anchor,
+	  sizeof(obuf->anchor));
     obuf->img_alt = obuf->bp.img_alt;
     obuf->in_bold = obuf->bp.in_bold;
     obuf->in_under = obuf->bp.in_under;
@@ -2529,7 +2527,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 
     append_tags(obuf);
 
-    if (obuf->anchor)
+    if (obuf->anchor.url)
 	hidden = hidden_anchor = has_hidden_link(obuf, HTML_A);
     if (obuf->img_alt) {
 	if ((hidden_img = has_hidden_link(obuf, HTML_IMG_ALT)) != NULL) {
@@ -2566,7 +2564,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	}
     }
 
-    if (obuf->anchor && !hidden_anchor)
+    if (obuf->anchor.url && !hidden_anchor)
 	Strcat_charp(line, "</a>");
     if (obuf->img_alt && !hidden_img)
 	Strcat_charp(line, "</img_alt>");
@@ -2739,15 +2737,31 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     fillline(obuf, indent);
     if (pass)
 	passthrough(obuf, pass->ptr, 0);
-    if (!hidden_anchor && obuf->anchor) {
+    if (!hidden_anchor && obuf->anchor.url) {
 	Str tmp;
-	if (obuf->anchor_hseq > 0)
-	    obuf->anchor_hseq = -obuf->anchor_hseq;
-	tmp = Sprintf("<A HSEQ=\"%d\" HREF=\"", obuf->anchor_hseq);
-	Strcat_charp(tmp, html_quote(obuf->anchor->ptr));
-	if (obuf->anchor_target) {
+	if (obuf->anchor.hseq > 0)
+	    obuf->anchor.hseq = -obuf->anchor.hseq;
+	tmp = Sprintf("<A HSEQ=\"%d\" HREF=\"", obuf->anchor.hseq);
+	Strcat_charp(tmp, html_quote(obuf->anchor.url));
+	if (obuf->anchor.target) {
 	    Strcat_charp(tmp, "\" TARGET=\"");
-	    Strcat_charp(tmp, html_quote(obuf->anchor_target->ptr));
+	    Strcat_charp(tmp, html_quote(obuf->anchor.target));
+	}
+	if (obuf->anchor.referer) {
+	    Strcat_charp(tmp, "\" REFERER=\"");
+	    Strcat_charp(tmp, html_quote(obuf->anchor.referer));
+	}
+	if (obuf->anchor.title) {
+	    Strcat_charp(tmp, "\" TITLE=\"");
+	    Strcat_charp(tmp, html_quote(obuf->anchor.title));
+	}
+	if (obuf->anchor.accesskey) {
+	    char *c = html_quote_char(obuf->anchor.accesskey);
+	    Strcat_charp(tmp, "\" ACCESSKEY=\"");
+	    if (c)
+	        Strcat_charp(tmp, c);
+	    else
+	        Strcat_char(tmp, obuf->anchor.accesskey);
 	}
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_A);
@@ -2832,7 +2846,7 @@ close_effect0(struct readbuffer *obuf, int cmd)
 static void
 close_anchor(struct html_feed_environ *h_env, struct readbuffer *obuf)
 {
-    if (obuf->anchor) {
+    if (obuf->anchor.url) {
 	int i;
 	char *p = NULL;
 	int is_erased = 0;
@@ -2841,14 +2855,14 @@ close_anchor(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	    if (obuf->tag_stack[i]->cmd == HTML_A)
 		break;
 	}
-	if (i < 0 && obuf->anchor_hseq > 0 && Strlastchar(obuf->line) == ' ') {
+	if (i < 0 && obuf->anchor.hseq > 0 && Strlastchar(obuf->line) == ' ') {
 	    Strshrink(obuf->line, 1);
 	    obuf->pos--;
 	    is_erased = 1;
 	}
 
 	if (i >= 0 || (p = has_hidden_link(obuf, HTML_A))) {
-	    if (obuf->anchor_hseq > 0) {
+	    if (obuf->anchor.hseq > 0) {
 		HTMLlineproc1(ANSP, h_env);
 		obuf->prevchar = ' ';
 	    }
@@ -2861,8 +2875,7 @@ close_anchor(struct html_feed_environ *h_env, struct readbuffer *obuf)
 		else {
 		    passthrough(obuf, p, 1);
 		}
-		obuf->anchor = NULL;
-		obuf->anchor_target = NULL;
+		bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
 		return;
 	    }
 	    is_erased = 0;
@@ -2873,9 +2886,8 @@ close_anchor(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	}
 
 	push_tag(obuf, "</a>", HTML_N_A);
-	obuf->anchor = NULL;
     }
-    obuf->anchor_target = NULL;
+    bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
 }
 
 void
@@ -2909,7 +2921,7 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 Str
 process_img(struct parsed_tag *tag, int width)
 {
-    char *p, *q, *r, *r2 = NULL, *s;
+    char *p, *q, *r, *r2 = NULL, *s, *t;
 #ifdef USE_IMAGE
     int w, i, nw, ni = 1, n, w0 = -1, i0 = -1;
     int align, xoffset, yoffset, top, bottom, ismap = 0;
@@ -2925,6 +2937,8 @@ process_img(struct parsed_tag *tag, int width)
     p = remove_space(p);
     q = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &q);
+    t = q;
+    parsedtag_get_value(tag, ATTR_TITLE, &t);
     w = -1;
     if (parsedtag_get_value(tag, ATTR_WIDTH, &w)) {
 	if (w < 0) {
@@ -3053,6 +3067,11 @@ process_img(struct parsed_tag *tag, int width)
     }
     Strcat_charp(tmp, html_quote(p));
     Strcat_charp(tmp, "\"");
+    if (t) {
+	Strcat_charp(tmp, " title=\"");
+	Strcat_charp(tmp, html_quote(t));
+	Strcat_charp(tmp, "\"");
+    }
 #ifdef USE_IMAGE
     if (use_image) {
 	if (w0 >= 0)
@@ -4441,20 +4460,26 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	obuf->end_tag = 0;
 	return 1;
     case HTML_A:
-	if (obuf->anchor)
+	if (obuf->anchor.url)
 	    close_anchor(h_env, obuf);
 
 	hseq = 0;
 
 	if (parsedtag_get_value(tag, ATTR_HREF, &p))
-	    obuf->anchor = Strnew_charp(p);
+	    obuf->anchor.url = Strnew_charp(p)->ptr;
 	if (parsedtag_get_value(tag, ATTR_TARGET, &p))
-	    obuf->anchor_target = Strnew_charp(p);
+	    obuf->anchor.target = Strnew_charp(p)->ptr;
+	if (parsedtag_get_value(tag, ATTR_REFERER, &p))
+	    obuf->anchor.referer = Strnew_charp(p)->ptr;
+	if (parsedtag_get_value(tag, ATTR_TITLE, &p))
+	    obuf->anchor.title = Strnew_charp(p)->ptr;
+	if (parsedtag_get_value(tag, ATTR_ACCESSKEY, &p))
+	    obuf->anchor.accesskey = (unsigned char)*p;
 	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq))
-	    obuf->anchor_hseq = hseq;
+	    obuf->anchor.hseq = hseq;
 
-	if (hseq == 0 && obuf->anchor) {
-	    obuf->anchor_hseq = cur_hseq;
+	if (hseq == 0 && obuf->anchor.url) {
+	    obuf->anchor.hseq = cur_hseq;
 	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
 	    push_tag(obuf, tmp->ptr, HTML_A);
 	    return 1;
@@ -4951,8 +4976,9 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				idFrame = NULL;
 			}
 		    }
-		    p = r = NULL;
+		    p = r = s = NULL;
 		    q = buf->baseTarget;
+		    t = "";
 		    hseq = 0;
 		    id = NULL;
 		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -4967,6 +4993,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			q = url_quote_conv(q, buf->document_code);
 		    if (parsedtag_get_value(tag, ATTR_REFERER, &r))
 			r = url_quote_conv(r, buf->document_code);
+		    parsedtag_get_value(tag, ATTR_TITLE, &s);
+		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
 		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
 		    if (hseq > 0)
 			buf->hmarklist =
@@ -4974,16 +5002,15 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				       pos, hseq - 1);
 		    if (id && idFrame)
 			idFrame->body->nameList =
-			    putAnchor(idFrame->body->nameList,
-				      id,
-				      NULL,
-				      (Anchor **)NULL,
-				      NULL, currentLn(buf), pos);
+			    putAnchor(idFrame->body->nameList, id, NULL,
+				      (Anchor **)NULL, NULL, NULL, '\0',
+				      currentLn(buf), pos);
 		    if (p) {
 			effect |= PE_ANCHOR;
-			a_href = registerHref(buf, remove_space(p), q,
-					      r, currentLn(buf), pos);
+			a_href = registerHref(buf, remove_space(p), q, r, s,
+					      *t, currentLn(buf), pos);
 			a_href->hseq = ((hseq > 0) ? hseq : -hseq) - 1;
+			a_href->slave = (hseq > 0) ? FALSE : TRUE;
 		    }
 		    break;
 		case HTML_N_A:
@@ -5024,9 +5051,11 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 							iseq - 1);
 			}
 #endif
+			s = NULL;
+			parsedtag_get_value(tag, ATTR_TITLE, &s);
 			p = remove_space(p);
 			p = url_quote_conv(p, buf->document_code);
-			a_img = registerImg(buf, p, currentLn(buf), pos);
+			a_img = registerImg(buf, p, s, currentLn(buf), pos);
 #ifdef USE_IMAGE
 			a_img->hseq = iseq;
 			a_img->image = NULL;
@@ -5330,10 +5359,9 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		}
 		if (id && idFrame)
 		    idFrame->body->nameList =
-			putAnchor(idFrame->body->nameList,
-				  id,
-				  NULL,
-				  (Anchor **)NULL, NULL, currentLn(buf), pos);
+			putAnchor(idFrame->body->nameList, id, NULL,
+				  (Anchor **)NULL, NULL, NULL, '\0',
+				  currentLn(buf), pos);
 #endif				/* ID_EXT */
 	    }
 	}
@@ -6069,9 +6097,7 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     obuf->status = R_ST_NORMAL;
     obuf->table_level = -1;
     obuf->nobr_level = 0;
-    obuf->anchor = 0;
-    obuf->anchor_target = 0;
-    obuf->anchor_hseq = 0;
+    bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
     obuf->in_bold = 0;
     obuf->in_under = 0;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.159 2002/12/04 16:45:41 ukai Exp $ */
+/* $Id: main.c,v 1.160 2002/12/05 16:29:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4152,6 +4152,47 @@ follow_map(struct parsed_tagarg *arg)
 		parsedURL2Str(&Currentbuf->currentURL)->ptr);
 #endif
 }
+
+#ifdef USE_MENU
+/* link menu */
+void
+linkMn(void)
+{
+    LinkList *l = link_menu(Currentbuf);
+    ParsedURL p_url;
+
+    if (!l || !l->url)
+	return;
+    if (*(l->url) == '#') {
+	gotoLabel(l->url + 1);
+	return;
+    }
+    parseURL2(l->url, &p_url, baseURL(Currentbuf));
+    pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
+    cmd_loadURL(l->url, baseURL(Currentbuf),
+		parsedURL2Str(&Currentbuf->currentURL)->ptr);
+}
+
+/* accesskey */
+void
+accessKey(void)
+{
+    Anchor *a;
+    BufferPoint *po;
+
+    if (!Currentbuf->href || !Currentbuf->hmarklist)
+	return;
+    a = accesskey_menu(Currentbuf);
+    if (!a || a->hseq < 0)
+	return;
+    po = &Currentbuf->hmarklist->marks[a->hseq];
+    gotoLine(Currentbuf, po->line);
+    Currentbuf->pos = po->pos;
+    arrangeCursor(Currentbuf);
+    onA();
+    followA();
+}
+#endif
 
 #ifdef USE_COOKIE
 /* cookie list */

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.43 2002/12/04 16:45:41 ukai Exp $ */
+/* $Id: display.c,v 1.44 2002/12/05 16:29:04 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -348,10 +348,19 @@ displayBuffer(Buffer *buf, int mode)
 #endif
 	{
 	    Anchor *a = retrieveCurrentAnchor(buf);
+	    if (a && a->title && *a->title)
+		s = Sprintf("[%s] ", a->title);
+	    else {
+		Anchor *a_img = retrieveCurrentImg(buf);
+		if (a_img && a_img->title && *a_img->title)
+		    s = Sprintf("[%s]%s", a_img->title, a ? " " : "");
+	    }
 	    if (a) {
 		ParsedURL pu;
 		parseURL2(a->url, &pu, baseURL(buf));
-		s = parsedURL2Str(&pu);
+		if (!s)
+		    s = Strnew();
+		Strcat(s, parsedURL2Str(&pu));
 	    }
 	}
     }

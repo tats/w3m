@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.24 2002/12/02 17:39:16 ukai Exp $ */
+/* $Id: menu.c,v 1.25 2002/12/05 16:29:10 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -287,11 +287,6 @@ static void smChTab(void);
 static int smDelTab(char c);
 
 /* --- SelTabMenu (END) --- */
-
-static Menu LinkMenu;
-static int LinkV = 0;
-static void initLinkMenu(void);
-static void lmGoURL(void);
 
 /* --- MainMenu --- */
 
@@ -1318,7 +1313,6 @@ popupMenu(int x, int y, Menu *menu)
 {
     initSelectMenu();
     initSelTabMenu();
-    initLinkMenu();
 
     menu->cursorX = Currentbuf->cursorX + Currentbuf->rootX;
     menu->cursorY = Currentbuf->cursorY + Currentbuf->rootY;
@@ -1648,68 +1642,6 @@ smDelTab(char c)
 
 /* --- SelectMenu (END) --- */
 
-/* --- LinkMenu --- */
-
-static void
-initLinkMenu(void)
-{
-    LinkList *l;
-    int i, nitem, len = 0;
-    char **label;
-    Str str;
-
-    if (!Currentbuf->linklist) {
-	LinkMenu.item = NULL;
-	LinkMenu.nitem = 0;
-	return;
-    }
-    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) ;
-    nitem = i;
-
-    label = New_N(char *, nitem + 1);
-    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) {
-	str = Strnew_charp(l->title ? l->title : "(empty)");
-	if (l->type == LINK_TYPE_REL)
-	    Strcat_charp(str, " [Rel] ");
-	else if (l->type == LINK_TYPE_REV)
-	    Strcat_charp(str, " [Rev] ");
-	else
-	    Strcat_charp(str, " ");
-	Strcat_charp(str, l->url ? l->url : "");
-	label[i] = str->ptr;
-	if (len < str->length)
-	    len = str->length;
-    }
-    label[nitem + 1] = NULL;
-    LinkV = 0;
-
-    new_option_menu(&LinkMenu, label, &LinkV, lmGoURL);
-    LinkMenu.initial = LinkV;
-    LinkMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
-    LinkMenu.cursorY = Currentbuf->cursorY + Currentbuf->rootY;
-}
-
-static void
-lmGoURL(void)
-{
-    LinkList *l;
-    int i;
-
-    for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) {
-	if (i == LinkV)
-	    break;
-    }
-    if (l == NULL || l->url == NULL)
-	return;
-    CurrentKey = -1;
-    CurrentKeyData = NULL;
-    CurrentCmdData = l->url;
-    gorURL();
-    CurrentCmdData = NULL;
-}
-
-/* --- LinkMenu (END) --- */
-
 /* --- OptionMenu --- */
 
 void
@@ -1742,7 +1674,7 @@ initMenu(void)
     MenuItem *item = NULL;
     MenuList *list;
 
-    w3mMenuList = New_N(MenuList, 4);
+    w3mMenuList = New_N(MenuList, 3);
     w3mMenuList[0].id = "Main";
     w3mMenuList[0].menu = &MainMenu;
     w3mMenuList[0].item = MainMenuItem;
@@ -1752,10 +1684,7 @@ initMenu(void)
     w3mMenuList[2].id = "SelectTab";
     w3mMenuList[2].menu = &SelTabMenu;
     w3mMenuList[2].item = NULL;
-    w3mMenuList[3].id = "Link";
-    w3mMenuList[3].menu = &LinkMenu;
-    w3mMenuList[3].item = NULL;
-    w3mMenuList[4].id = NULL;
+    w3mMenuList[3].id = NULL;
 
     if ((mf = fopen(rcFile(MENU_FILE), "rt")) == NULL)
 	goto create_menu;
@@ -1889,5 +1818,133 @@ getMenuN(MenuList *list, char *id)
 }
 
 /* --- InitMenu (END) --- */
+
+LinkList *
+link_menu(Buffer *buf)
+{
+    Menu menu;
+    LinkList *l;
+    int i, nitem, len = 0, linkV = -1;
+    char **label;
+    Str str;
+
+    if (!buf->linklist)
+	return NULL;
+
+    for (i = 0, l = buf->linklist; l; i++, l = l->next) ;
+    nitem = i;
+
+    label = New_N(char *, nitem + 1);
+    for (i = 0, l = buf->linklist; l; i++, l = l->next) {
+	str = Strnew_charp(l->title ? l->title : "(empty)");
+	if (l->type == LINK_TYPE_REL)
+	    Strcat_charp(str, " [Rel] ");
+	else if (l->type == LINK_TYPE_REV)
+	    Strcat_charp(str, " [Rev] ");
+	else
+	    Strcat_charp(str, " ");
+	Strcat_charp(str, l->url ? l->url : "");
+	label[i] = str->ptr;
+	if (len < str->length)
+	    len = str->length;
+    }
+    label[nitem] = NULL;
+
+    new_option_menu(&menu, label, &linkV, NULL);
+
+    menu.initial = 0;
+    menu.cursorX = buf->cursorX + buf->rootX;
+    menu.cursorY = buf->cursorY + buf->rootY;
+    menu.x = menu.cursorX + FRAME_WIDTH + 1;
+    menu.y = menu.cursorY + 2;
+
+    popup_menu(NULL, &menu);
+
+    if (linkV < 0)
+	return NULL;
+    for (i = 0, l = buf->linklist; l; i++, l = l->next) {
+	if (i == linkV)
+	    return l;
+    }
+    return NULL;
+}
+
+/* --- LinkMenu (END) --- */
+
+Anchor *
+accesskey_menu(Buffer *buf)
+{
+    Menu menu;
+    AnchorList *al = buf->href;
+    Anchor *a;
+    Anchor **ap;
+    int i, n, nitem = 0, key = -1;
+    char **label;
+    char *t;
+    unsigned char c;
+
+    if (!al)
+	return NULL;
+    for (i = 0; i < al->nanchor; i++) {
+	a = &al->anchors[i];
+	if (!a->slave && a->accesskey && IS_ASCII(a->accesskey))
+	    nitem++;
+    }
+    if (!nitem)
+	return NULL;
+
+    label = New_N(char *, nitem + 1);
+    ap = New_N(Anchor *, nitem);
+    for (i = 0, n = 0; i < al->nanchor; i++) {
+	a = &al->anchors[i];
+	if (!a->slave && a->accesskey && IS_ASCII(a->accesskey)) {
+	    t = getAnchorText(buf, a);
+	    label[n] = Sprintf("%c: %s", a->accesskey, t ? t : "")->ptr;
+	    ap[n] = a;
+	    n++;
+	}
+    }
+    label[nitem] = NULL;
+
+    new_option_menu(&menu, label, &key, NULL);
+
+    menu.initial = 0;
+    menu.cursorX = buf->cursorX + buf->rootX;
+    menu.cursorY = buf->cursorY + buf->rootY;
+    menu.x = menu.cursorX + FRAME_WIDTH + 1;
+    menu.y = menu.cursorY + 2;
+    for (i = 0; i < 128; i++)
+	menu.keyselect[i] = -1;
+    for (i = 0; i < nitem; i++) {
+	c = ap[i]->accesskey;
+	menu.keymap[(int)c] = mSelect;
+	menu.keyselect[(int)c] = i;
+    }
+    for (i = 0; i < nitem; i++) {
+	c = ap[i]->accesskey;
+	if (!IS_ALPHA(c) || menu.keyselect[n] >= 0)
+	    continue;
+	c = tolower(c);
+	menu.keymap[(int)c] = mSelect;
+	menu.keyselect[(int)c] = i;
+	c = toupper(c);
+	menu.keymap[(int)c] = mSelect;
+	menu.keyselect[(int)c] = i;
+    }
+
+    a = retrieveCurrentAnchor(buf);
+    if (a && a->accesskey && IS_ASCII(a->accesskey)) {
+        for (i = 0; i < nitem; i++) {
+	    if (a == ap[i]) {
+		menu.initial = i;
+		break;
+	    }
+	}
+    }
+
+    popup_menu(NULL, &menu);
+
+    return (key >= 0) ? ap[key] : NULL;
+}
 
 #endif				/* USE_MENU */

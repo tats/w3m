@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.11 2002/09/05 15:43:21 ukai Exp $ */
+/* $Id: anchor.c,v 1.12 2002/12/05 16:29:04 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -7,7 +7,7 @@
 
 AnchorList *
 putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
-	  char *referer, int line, int pos)
+	  char *referer, char *title, unsigned char key, int line, int pos)
 {
     int n, i, j;
     Anchor *a;
@@ -44,6 +44,9 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
     a->url = url;
     a->target = target;
     a->referer = referer;
+    a->title = title;
+    a->accesskey = key;
+    a->slave = FALSE;
     a->start = bp;
     a->end = bp;
     al->nanchor++;
@@ -54,11 +57,12 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
 
 
 Anchor *
-registerHref(Buffer *buf, char *url, char *target, char *referer, int line,
-	     int pos)
+registerHref(Buffer *buf, char *url, char *target, char *referer, char *title,
+	     unsigned char key, int line, int pos)
 {
     Anchor *a;
-    buf->href = putAnchor(buf->href, url, target, &a, referer, line, pos);
+    buf->href = putAnchor(buf->href, url, target, &a, referer, title, key,
+			  line, pos);
     return a;
 }
 
@@ -66,15 +70,17 @@ Anchor *
 registerName(Buffer *buf, char *url, int line, int pos)
 {
     Anchor *a;
-    buf->name = putAnchor(buf->name, url, NULL, &a, NULL, line, pos);
+    buf->name = putAnchor(buf->name, url, NULL, &a, NULL, NULL, '\0', line,
+			  pos);
     return a;
 }
 
 Anchor *
-registerImg(Buffer *buf, char *url, int line, int pos)
+registerImg(Buffer *buf, char *url, char *title, int line, int pos)
 {
     Anchor *a;
-    buf->img = putAnchor(buf->img, url, NULL, &a, NULL, line, pos);
+    buf->img = putAnchor(buf->img, url, NULL, &a, NULL, title, '\0', line,
+			 pos);
     return a;
 }
 
@@ -88,8 +94,8 @@ registerForm(Buffer *buf, FormList *flist, struct parsed_tag *tag, int line,
     fi = formList_addInput(flist, tag);
     if (fi == NULL)
 	return NULL;
-    buf->formitem = putAnchor(buf->formitem,
-			      (char *)fi, flist->target, &a, NULL, line, pos);
+    buf->formitem = putAnchor(buf->formitem, (char *)fi, flist->target, &a,
+			      NULL, NULL, '\0', line, pos);
     return a;
 }
 
@@ -193,15 +199,16 @@ _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
     tmp = Strnew_size(sizeof("news:") - 1 + (p2 - p1));
     Strcat_charp_n(tmp, "news:", sizeof("news:") - 1);
     Strcat_charp_n(tmp, p1, p2 - p1);
-    return registerHref(buf, tmp->ptr, NULL, NO_REFERER, line, pos);
+    return registerHref(buf, tmp->ptr, NULL, NO_REFERER, NULL, '\0', line,
+			pos);
 }
 #endif				/* USE_NNTP */
 
 static Anchor *
 _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
 {
-    return registerHref(buf, allocStr(p1, p2 - p1), NULL, NO_REFERER, line,
-			pos);
+    return registerHref(buf, allocStr(p1, p2 - p1), NULL, NO_REFERER, NULL,
+			'\0', line, pos);
 }
 
 static void
@@ -471,7 +478,7 @@ addMultirowsImg(Buffer *buf, AnchorList *al)
 	    if (a_img.start.line == l->linenumber)
 		continue;
 	    pos = columnPos(l, col);
-	    a = registerImg(buf, a_img.url, l->linenumber, pos);
+	    a = registerImg(buf, a_img.url, a_img.title, l->linenumber, pos);
 	    a->hseq = -a_img.hseq;
 	    a->image = img;
 	    a->end.pos = pos + ecol - col;
@@ -479,15 +486,17 @@ addMultirowsImg(Buffer *buf, AnchorList *al)
 		l->propBuf[k] |= PE_IMAGE;
 	    if (a_href.url) {
 		a = registerHref(buf, a_href.url, a_href.target,
-				 a_href.referer, l->linenumber, pos);
+				 a_href.referer, a_href.title,
+				 a_href.accesskey, l->linenumber, pos);
 		a->hseq = a_href.hseq;
+		a->slave = TRUE;
 		a->end.pos = pos + ecol - col;
 		for (k = pos; k < a->end.pos; k++)
 		    l->propBuf[k] |= PE_ANCHOR;
 	    }
 	    if (a_form.url) {
 		buf->formitem = putAnchor(buf->formitem, a_form.url,
-					  a_form.target, &a, NULL,
+					  a_form.target, &a, NULL, NULL, '\0',
 					  l->linenumber, pos);
 		a->hseq = a_form.hseq;
 		a->end.pos = pos + ecol - col;
@@ -542,8 +551,8 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
 	    if (a_form.start.line == l->linenumber)
 		continue;
 	    buf->formitem = putAnchor(buf->formitem, a_form.url,
-				      a_form.target, &a, NULL, l->linenumber,
-				      pos);
+				      a_form.target, &a, NULL, NULL, '\0',
+				      l->linenumber, pos);
 	    a->hseq = a_form.hseq;
 	    a->y = a_form.y;
 	    a->end.pos = pos + ecol - col;
@@ -553,4 +562,36 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
 		l->propBuf[k] |= PE_FORM;
 	}
     }
+}
+
+char *
+getAnchorText(Buffer *buf, Anchor *a)
+{
+    AnchorList *al = buf->href;
+    int hseq, i;
+    Line *l;
+    Str tmp = NULL;
+
+    if (!a || a->hseq < 0)
+	return NULL;
+    hseq = a->hseq;
+    l = buf->firstLine;
+    for (i = 0; i < al->nanchor; i++) {
+	a = &al->anchors[i];
+	if (a->hseq != hseq)
+	    continue;
+	for (; l; l = l->next) {
+	    if (l->linenumber == a->start.line)
+		break;
+	}
+	if (!l)
+	    break;
+	if (!tmp)
+	    tmp = Strnew_size(a->end.pos - a->start.pos);
+	else
+	    Strcat_char(tmp, ' ');
+	Strcat_charp_n(tmp, &l->lineBuf[a->start.pos],
+		       a->end.pos - a->start.pos);
+    }
+    return tmp ? tmp->ptr : NULL;
 }

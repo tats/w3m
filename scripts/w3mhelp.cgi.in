@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.19 2002/12/05 16:02:00 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.20 2002/12/05 16:29:17 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -140,7 +140,7 @@ for $otherlang (@docdirs) {
 &show_keymap("Hyperlink operation",
 	     split(" ", "followA tabA svA followI svI submitForm
 		curURL peekURL peekIMG pginfo curlno chkURL chkWORD chkNMID
-		rFrame extbrz linkbrz"));
+		rFrame extbrz linkbrz linkMn accessKey"));
 
 &show_keymap("File/Stream operation",
 	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh

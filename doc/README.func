@@ -1,4 +1,5 @@
 ABORT		Quit w3m without confirmation
+ACCESSSKEY	Popup acceskey menu
 ADD_BOOKMARK	Add current page to bookmark
 ALARM		Set alarm
 BACK		Back to previous buffer
@@ -43,6 +44,7 @@ LINE_END	Go to the end of line
 LINE_INFO	Show current line number
 LINK_BEGIN     Go to the first link
 LINK_END       Go to the last link
+LINK_MENU	Popup link element menu
 LOAD		Load local file
 MAIN_MENU	Popup menu
 MARK		Set/unset mark

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.12 2002/12/03 15:35:11 ukai Exp $ */
+/* $Id: html.h,v 1.13 2002/12/05 16:29:08 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -271,24 +271,25 @@ typedef struct {
 #define ATTR_REL		47
 #define ATTR_REV		48
 #define ATTR_TITLE		49
+#define ATTR_ACCESSKEY		50
 
 /* Internal attribute */
-#define ATTR_XOFFSET		50
-#define ATTR_YOFFSET		51
-#define ATTR_TOP_MARGIN		52
-#define ATTR_BOTTOM_MARGIN	53
-#define ATTR_TID		54
-#define ATTR_FID		55
-#define ATTR_FOR_TABLE		56
-#define ATTR_FRAMENAME		57
-#define ATTR_HBORDER		58
-#define ATTR_HSEQ		59
-#define ATTR_NO_EFFECT		60
-#define ATTR_REFERER		61
-#define ATTR_SELECTNUMBER	62
-#define ATTR_TEXTAREANUMBER	63
+#define ATTR_XOFFSET		60
+#define ATTR_YOFFSET		61
+#define ATTR_TOP_MARGIN		62
+#define ATTR_BOTTOM_MARGIN	63
+#define ATTR_TID		64
+#define ATTR_FID		65
+#define ATTR_FOR_TABLE		66
+#define ATTR_FRAMENAME		67
+#define ATTR_HBORDER		68
+#define ATTR_HSEQ		69
+#define ATTR_NO_EFFECT		70
+#define ATTR_REFERER		71
+#define ATTR_SELECTNUMBER	72
+#define ATTR_TEXTAREANUMBER	73
 
-#define MAX_TAGATTR		64
+#define MAX_TAGATTR		74
 
 /* HTML Tag Information Table */
 

@@ -467,7 +467,7 @@ AC_DEFUN([AC_W3M_CHECK_VER],
    AC_MSG_CHECKING($1 version)
    AC_MSG_RESULT($version)
    set -- `echo "$version" | sed 's/[[^0-9]]/ /g'`
-   if test "$[1]" -ne "$3" -o "$[2]" -lt "$4" -o "$[3]" -lt "$5"; then
+   if test "$[1]" -ne "$3" -o "$[2]" -lt "$4" || test "$[2]" -eq "$4" -a "$[3]" -lt "$5"; then
      AC_MSG_WARN([$1 is too old. Install $1 (version >= $3.$4.$5)])
      $7
    else

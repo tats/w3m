@@ -1,5 +1,10 @@
 2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03581] MARK_URL, MARK_WORD
+	* main.c (chkWORD): accept ()[]{}&|;*?$ as anchor
+
+2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03580] Re: clean up displayBuffer()
 	* main.c (main): force redraw
 
@@ -5939,4 +5944,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.631 2002/12/18 16:34:38 ukai Exp $
+$Id: ChangeLog,v 1.632 2002/12/18 16:38:49 ukai Exp $

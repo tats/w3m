@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.174 2002/12/18 16:34:38 ukai Exp $ */
+/* $Id: main.c,v 1.175 2002/12/18 16:38:49 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4609,7 +4609,7 @@ chkWORD(void)
 {
     char *p;
     int spos, epos;
-    p = getCurWord(Currentbuf, &spos, &epos, ":\"\'`<>");
+    p = getCurWord(Currentbuf, &spos, &epos, ":\"\'`<>()[]{}&|;*?$");
     if (p == NULL)
 	return;
     reAnchorWord(Currentbuf, Currentbuf->currentLine, spos, epos);

@@ -1,5 +1,13 @@
 2004-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* w3m 0.5
+	* version.c.in: update
+	* doc/README: version 0.5, release date, maintainer
+	* doc-jp/README: ditto
+	* NEWS: update
+
+2004-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* main.c (main): DisplayCharset and DocumentCharset also follow 
 	    locale configuration
 	* Makefile.in (distclean): distclean libwc
@@ -8328,4 +8336,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.906 2004/03/21 16:40:41 ukai Exp $
+$Id: ChangeLog,v 1.907 2004/03/21 16:50:35 ukai Exp $

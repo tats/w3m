@@ -7,6 +7,8 @@ new features
 * Keep alive
 * incremental display, background download
 	[w3m-dev 03389] background download
+* bookmark editor
+	[w3m-dev 03394] bookmark editor
 * SMB
 * merge m17n
 * JavaScript

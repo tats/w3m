@@ -48,6 +48,7 @@ LIBS = -L. -lindep @LIBINTL@ @LIBS@
 W3M_LIBS = @W3M_LIBS@
 WCTARGET = @WCTARGET@
 INTLTARGET = @INTLTARGET@
+NLSTARGET = @NLSTARGET@
 
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
@@ -118,7 +119,7 @@ SCRIPTSUBDIRS= scripts
 SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc intl po
 .PHONY: $(SUBDIRS)
 
-all: $(INTLTARGET) $(TARGETS) all-scripts po
+all: $(INTLTARGET) $(TARGETS) all-scripts $(NLSTARGET)
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
@@ -217,7 +218,7 @@ install-helpfile:
 	done
 
 install-po:
-	for subdir in po; \
+	for subdir in $(NLSTARGET); \
 	do \
 	 (cd $$subdir && $(MAKE) install); \
 	done

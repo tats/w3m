@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.157 2002/12/09 15:40:35 ukai Exp $ */
+/* $Id: file.c,v 1.158 2002/12/10 15:36:10 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1570,10 +1570,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	case SCM_UNKNOWN:
 #ifdef USE_EXTERNAL_URI_LOADER
 	    tmp = searchURIMethods(&pu);
-	    if (tmp != NULL)
+	    if (tmp != NULL) {
 		b = loadGeneralFile(tmp->ptr, current, referer, flag, request);
-	    if (b != NULL && b != NO_BUFFER) {
-		copyParsedURL(&b->currentURL, &pu);
+		if (b != NULL && b != NO_BUFFER)
+		    copyParsedURL(&b->currentURL, &pu);
 		return b;
 	    }
 #endif

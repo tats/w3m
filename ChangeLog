@@ -1,3 +1,12 @@
+2002-12-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03551] Re: External URI loader
+	* file.c (loadGeneralFile): fix SCM_UNKNONWN
+
+2002-12-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: func: LIST, LIST_MENU, MOVE_LIST_MENU
+
 2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03549] link list
@@ -5672,4 +5681,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.606 2002/12/09 15:51:08 ukai Exp $
+$Id: ChangeLog,v 1.607 2002/12/10 15:36:10 ukai Exp $

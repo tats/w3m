@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.96 2003/01/29 17:10:25 ukai Exp $
+# $Id: configure,v 1.97 2003/02/06 17:15:10 ukai Exp $
 #	Configuration.
 #
 
@@ -883,6 +883,7 @@ def_param use_bufinfo n
 def_param use_egd y
 def_param enable_remove_trailingspaces n
 def_param menu_thin_frame n
+def_param use_raw_scroll n
 def_param emacs_like_lineedit $include_opt
 def_param vi_prec_num $include_opt
 def_param label_topline $include_opt
@@ -2314,6 +2315,11 @@ $def_enable_remove_trailingspaces
  * thin chars for menu frame
  */
 $def_menu_thin_frame
+
+/*
+ * Use raw scroll
+ */
+$def_use_raw_scroll
 
 /*
  */

@@ -1,3 +1,16 @@
+2003-02-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03732] Re: scroll() is slow ?
+	* configure (use_raw_scroll): added
+		(config.h) use_raw_scroll
+	* config.h.dist (USE_RAW_SCROLL): added
+	* display.c (displayBuffer): ifdef USE_RAW_SCROLL
+	* proto.h (scroll): ifdef USE_RAW_SCROLL
+		(rscroll): ditto
+		(need_clrtoeol): if 0
+		(terms.c): if 0 need_clrtoeol
+		(scroll_raw): ifdef USE_RAW_SCROLL
+
 2003-02-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: rc: decode_url
@@ -7087,4 +7100,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.739 2003/02/05 16:45:57 ukai Exp $
+$Id: ChangeLog,v 1.740 2003/02/06 17:15:04 ukai Exp $

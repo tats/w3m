@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.62 2003/02/05 16:43:57 ukai Exp $ */
+/* $Id: display.c,v 1.63 2003/02/06 17:15:11 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -417,6 +417,7 @@ displayBuffer(Buffer *buf, int mode)
     }
     if (mode == B_FORCE_REDRAW || mode == B_SCROLL || mode == B_REDRAW_IMAGE ||
 	cline != buf->topLine || ccolumn != buf->currentColumn) {
+#ifdef USE_RAW_SCROLL
 	if (
 #ifdef USE_IMAGE
 	       !(activeImage && displayImage && draw_image_flag) &&
@@ -439,7 +440,9 @@ displayBuffer(Buffer *buf, int mode)
 	    }
 	    redrawNLine(buf, n);
 	}
-	else {
+	else
+#endif
+	{
 #ifdef USE_IMAGE
 	    if (activeImage &&
 		(mode == B_REDRAW_IMAGE ||

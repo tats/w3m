@@ -55,6 +55,11 @@
 #undef MENU_THIN_FRAME
 
 /*
+ * Use raw scroll
+ */
+#undef USE_RAW_SCROLL
+
+/*
  */
 #undef TABLE_EXPAND
 #undef TABLE_NO_COMPACT

@@ -1,3 +1,8 @@
+2002-01-16  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 02847]
+	* menu.c (initSelectMenu): use /* */ instead of //
+
 2002-01-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02846]
@@ -1993,4 +1998,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.226 2002/01/16 02:50:04 ukai Exp $
+$Id: ChangeLog,v 1.227 2002/01/16 02:51:37 ukai Exp $

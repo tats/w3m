@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.16 2002/12/02 17:27:38 ukai Exp $ */
+/* $Id: html.c,v 1.17 2002/12/02 17:55:49 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -19,7 +19,8 @@ unsigned char ALST_LI[] = { ATTR_TYPE, ATTR_VALUE, ATTR_CORE };
 unsigned char ALST_HR[] = { ATTR_WIDTH, ATTR_ALIGN, ATTR_CORE };
 #define MAXA_HR		MAXA_CORE + 2
 unsigned char ALST_LINK[] = { ATTR_HREF, ATTR_HSEQ, ATTR_REL, ATTR_REV,
-    ATTR_TITLE, ATTR_TYPE, ATTR_CORE };
+    ATTR_TITLE, ATTR_TYPE, ATTR_CORE
+};
 #define MAXA_LINK	MAXA_CORE + sizeof ALST_LINK/sizeof ALST_LINK[0] - 1
 unsigned char ALST_DL[] = { ATTR_COMPACT, ATTR_CORE };
 #define MAXA_DL		MAXA_CORE + 1
@@ -223,7 +224,7 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/sup", NULL, 0, 0},	/* 101 HTML_N_SUP       */
     {"sub", NULL, 0, 0},	/* 102 HTML_SUB       */
     {"/sub", NULL, 0, 0},	/* 103 HTML_N_SUB       */
-    {"link", ALST_LINK, MAXA_LINK, 0},  /*  104 HTML_LINK      */
+    {"link", ALST_LINK, MAXA_LINK, 0},	/*  104 HTML_LINK      */
     {NULL, NULL, 0, 0},		/* 105 Undefined       */
 
     /* pseudo tag */

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.17 2002/12/02 17:27:39 ukai Exp $ */
+/* $Id: map.c,v 1.18 2002/12/02 17:55:50 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -417,9 +417,9 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 
 /* append links */
 static void
-append_link_info(Buffer *buf, Str html, LinkList *link)
+append_link_info(Buffer *buf, Str html, LinkList * link)
 {
-    LinkList  *l;
+    LinkList *l;
     ParsedURL pu;
     char *url;
 

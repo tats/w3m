@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.138 2002/12/02 17:48:58 ukai Exp $ */
+/* $Id: file.c,v 1.139 2002/12/02 17:55:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5351,7 +5351,7 @@ addLink(Buffer *buf, struct parsed_tag *tag)
 	i->next = l;
     }
     else
-        buf->linklist = l;
+	buf->linklist = l;
 }
 
 void

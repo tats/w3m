@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.61 2002/07/22 16:27:31 ukai Exp $ */
+/* $Id: fm.h,v 1.62 2002/08/20 17:49:39 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -419,8 +419,8 @@ typedef struct _Buffer {
     struct frameset *frameset;
     struct frameset_queue *frameQ;
     int *clone;
-    int linelen;
-    int trbyte;
+    size_t linelen;
+    size_t trbyte;
     char check_url;
 #ifdef JP_CHARSET
     char document_code;

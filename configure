@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.72 2002/07/18 06:07:25 ukai Exp $
+# $Id: configure,v 1.73 2002/08/20 17:49:38 ukai Exp $
 #	Configuration.
 #
 
@@ -1283,6 +1283,88 @@ fi
 
 def_param use_help_cgi $have_perl
 
+####### long long
+cat > _zmachdep.c <<EOF
+main()
+{
+  int i = sizeof(unsigned long long);
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+    echo "You have long long"
+    def_have_long_long="typedef long long clen_t;"
+    cat > _zmachdep.c <<EOF
+#include <stdlib.h>
+main()
+{
+    const char *s = "1";
+    long long ll = strtoll(s, NULL, 10);
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+    then
+	echo "You have strtoll()"
+	def_have_strtoll="#define HAVE_STRTOLL"
+    else
+	echo "You don't have strtoll()"
+	def_have_strtoll="#undef HAVE_STRTOLL"
+    fi
+    cat > _zmachdep.c <<EOF
+#include <sys/types.h>
+#include <stdlib.h>
+#include <limits.h>
+main()
+{
+    const char *s = "1"
+    quad_t q = strtoq(s, NULL, 10);
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+    then
+	echo "You have strtoq()"
+	def_have_strtoq="#define HAVE_STRTOQ"
+    else
+	echo "You don't have strtoq()"
+	def_have_strtoq="#undef HAVE_STRTOQ"
+    fi
+    cat > _zmachdep.c <<EOF
+#include <stdlib.h>
+main()
+{
+    const char *s = "1";
+    long long ll = atoll(s);
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+    then
+	echo "You have atoll()"
+	def_have_atoll="#define HAVE_ATOLL"
+    else
+	echo "You don't have atoll()"
+	def_have_atoll="#undef HAVE_ATOLL"
+    fi
+    cat > _zmachdep.c <<EOF
+#include <stdlib.h>
+main()
+{
+    const char *s = "1";
+    long long ll = atoq(s);
+}
+EOF
+    if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+    then
+	echo "You have atoq()"
+	def_have_atoq="#define HAVE_ATOQ"
+    else
+	echo "You don't have atoq()"
+	def_have_atoq="#undef HAVE_ATOQ"
+    fi
+else
+    echo "You don't have long long"
+    def_have_long_long="typedef long clen_t;"
+fi
+
 ####### strcasecmp
 cat > _zmachdep.c << EOF
 #include <string.h>
@@ -2306,6 +2388,11 @@ $def_use_xface
 $def_use_binstream
 $def_term_if
 $def_dir_if
+$def_have_long_long
+$def_have_strtoll
+$def_have_strtoq
+$def_have_atoll
+$def_have_atoq
 $def_have_strcasecmp
 $def_have_strcasestr
 $def_have_strchr

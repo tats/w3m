@@ -1,3 +1,30 @@
+2002-08-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Debian Bug#157098: wrong file presentation on large files
+	  from "Eduard Bloch" <blade@debian.org>
+	* configure (clen_t): added
+			(HAVE_STRTOLL): added
+			(HAVE_STRTOQ): added
+			(HAVE_ATOLL): added
+			(HAVE_ATOQ): added
+	* config.h.dist: ditto
+	* file.c (current_content_length): s/int/clen_t/
+		(loadGeneralFile): s/atoi/strtoclen/
+		(convert_size): s/int/clen_t/
+		(convert_size2): s/int/clen_t/
+		(showProgress): s/int/clen_t/
+		(loadHTMLstream): s/int/clen_t/ linelen, trbyte
+		(loadBuffer): ditto
+		(getNextPage): s/int/clen_t/ linelen
+		(save2tmp): s/int/clen_t/ linelen, trbye
+		(_MoveFile): s/int/clen_t/ linelen, trbye
+	* fm.h (_Buffer): s/int/clen_t/ linelen, trbye
+	* ftp.c (size_int2str): s/long/clen_t/
+		(ex_ftpdir_name_size_date): s/long/clen_t/
+	* indep.c (strtoclen): added
+	* indep.h (strtoclen): added
+	* proto.h (showProgress): s/int/clen_t/
+
 2002-07-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Debian Bug#154766: w3m-img: support DirectColor framebuffer visuals?
@@ -3683,4 +3710,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.415 2002/07/30 16:03:00 ukai Exp $
+$Id: ChangeLog,v 1.416 2002/08/20 17:49:38 ukai Exp $

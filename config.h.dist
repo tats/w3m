@@ -179,6 +179,11 @@ MODEL=Linux.i686-monster-ja
 #undef USE_BINMODE_STREAM
 #define HAVE_TERMIOS_H
 #define HAVE_DIRENT_H
+typedef long clen_t;
+#undef HAVE_STRTOLL
+#undef HAVE_STRTOQ
+#undef HAVE_ATOLL
+#undef HAVE_ATOQ
 #define HAVE_STRCASECMP
 #define HAVE_STRCASESTR
 #define HAVE_STRCHR

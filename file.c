@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.94 2002/07/19 03:24:28 ukai Exp $ */
+/* $Id: file.c,v 1.95 2002/08/20 17:49:39 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -120,7 +120,7 @@ static int forms_size = 0;
 #define cur_form_id ((form_sp >= 0)? form_stack[form_sp] : -1)
 static int form_sp = 0;
 
-static int current_content_length;
+static clen_t current_content_length;
 
 static int cur_hseq;
 #ifdef USE_IMAGE
@@ -1950,7 +1950,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
-	current_content_length = atoi(p);
+	current_content_length = strtoclen(p);
 
     if (flag & RG_FRAME) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
@@ -5777,7 +5777,7 @@ static char *_size_unit[] = { "b", "kb", "Mb", "Gb", "Tb",
 };
 
 char *
-convert_size(int size, int usefloat)
+convert_size(clen_t size, int usefloat)
 {
     float csize;
     int sizepos = 0;
@@ -5793,7 +5793,7 @@ convert_size(int size, int usefloat)
 }
 
 char *
-convert_size2(int size1, int size2, int usefloat)
+convert_size2(clen_t size1, clen_t size2, int usefloat)
 {
     char **sizes = _size_unit;
     float csize, factor = 1;
@@ -5811,7 +5811,7 @@ convert_size2(int size1, int size2, int usefloat)
 }
 
 void
-showProgress(int *linelen, int *trbyte)
+showProgress(clen_t *linelen, clen_t *trbyte)
 {
     int i, j, rate, duration, eta, pos;
     static time_t last_time, start_time;
@@ -6052,8 +6052,8 @@ void
 loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 {
     struct environment envs[MAX_ENV_LEVEL];
-    int linelen = 0;
-    int trbyte = 0;
+    clen_t linelen = 0;
+    clen_t trbyte = 0;
     Str lineBuf2 = Strnew();
     char code;
     struct html_feed_environ htmlenv1;
@@ -6396,7 +6396,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     volatile char pre_lbuf = '\0';
     int nlines;
     Str tmpf;
-    int linelen = 0, trbyte = 0;
+    clen_t linelen = 0, trbyte = 0;
 #ifdef USE_ANSI_COLOR
     int check_color;
 #endif
@@ -6776,7 +6776,7 @@ getNextPage(Buffer *buf, int plen)
     Line *l, *fl, *pl = buf->lastLine;
     Line *rl = NULL;
     int len, i, nlines = 0;
-    int linelen = buf->linelen, trbyte = buf->trbyte;
+    clen_t linelen = buf->linelen, trbyte = buf->trbyte;
     Str lineBuf2;
     char pre_lbuf = '\0';
     URLFile uf;
@@ -6920,7 +6920,7 @@ save2tmp(URLFile uf, char *tmpf)
 {
     FILE *ff;
     int check;
-    int linelen = 0, trbyte = 0;
+    clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
 
@@ -7073,7 +7073,7 @@ _MoveFile(char *path1, char *path2)
     InputStream f1;
     FILE *f2;
     int is_pipe;
-    int linelen = 0, trbyte = 0;
+    clen_t linelen = 0, trbyte = 0;
     Str buf;
 
     f1 = openIS(path1);

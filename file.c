@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.77 2002/03/08 15:59:25 ukai Exp $ */
+/* $Id: file.c,v 1.78 2002/03/08 16:02:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6453,6 +6453,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     signal(SIGINT, prevtrap);
 
     cache->loaded = IMG_FLAG_LOADED;
+    cache->index = 0;
     getImageSize(cache);
 
   image_buffer:

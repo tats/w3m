@@ -8,11 +8,13 @@ distdir		= ./distfiles
 
 TARGETS		= w3mman
 LIB_TARGETS	= w3mman2html.cgi
-MAN_TARGETS	= w3mman.1
+MAN1_TARGETS	= w3mman.1
+MAN_TARGETS	= $(MAN1_TARGETS)
 
 MKDIR		= mkdir -p
 INSTALL		= install -c
 INSTALL_SCRIPT	= $(INSTALL) -m 755
+INSTALL_MAN	= $(INSTALL) -m 644
 
 PERL		= /usr/local/bin/perl
 W3M		= w3m
@@ -42,9 +44,9 @@ install: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
 	done
-	for file in $(MAN_TARGETS); \
+	for file in $(MAN1_TARGETS); \
 	do	\
-		$(INSTALL) -m 644 $$file $(DESTDIR)$(MAN_DIR); \
+		$(INSTALL_MAN) $$file $(DESTDIR)$(MAN_DIR)/man1; \
 	done
 
 uninstall:

@@ -7,7 +7,7 @@ $CGI = "file://$SCRIPT_NAME";
 $CGI2 = "file:";
 # $CGI2 = "file:///\$LIB/hlink.cgi?";
 $SQUEEZE = 1;
-undef $ENV{'PAGER'};
+$ENV{'PAGER'} = 'cat';
 
 if ($QUERY =~ /\=/) {
   for (split('&', $QUERY)) {

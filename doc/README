@@ -19,7 +19,6 @@ used as a text-mode WWW browser.
 Current problems are:
 
 * It can't show images inline. (See w3m-img info on the w3m homepage)
-* It doesn't decode MIME-body of the document.
 * Online manuals are poor.
 
 w3m is known to work on these platforms.

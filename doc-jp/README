@@ -23,8 +23,6 @@
   現在の問題点は以下のようなものです．
 
   ・インライン画像表示ができない(w3m homepageの w3m-img を参照！)．
-  ・MIME-body のデコードができない．7bit 以外の Content-Transfer-encoding
-    に対応していない．
   ・オンラインマニュアルが貧弱．簡単な使い方については，MANUAL.html をお読み
     ください．
 

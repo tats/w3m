@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.10 2001/11/21 16:29:46 ukai Exp $
+# $Id: configure,v 1.11 2001/11/21 18:51:48 ukai Exp $
 #	Configuration.
 #
 
@@ -34,6 +34,12 @@ echo "# Configuration at $host" > config.param
 # parameters:
 
 prefix=/usr/local
+ssl_includedir=
+ssl_libdir=
+gc_includedir=
+gc_libdir=
+mimetypes=
+
 all_yes=0
 while [ $# -gt 0 ]
 do
@@ -79,6 +85,22 @@ do
   -cflags=*|--cflags=*)
     dcflags=`echo $1 | sed -e 's/-*cflags=//'`
     ;;
+  --ssl-includedir=*)
+    ssl_includedir=`expr "$1" : "--ssl-includedir=\(.*\)"`
+    ;;
+  --ssl-libdir=*)
+    ssl_libdir=`expr "$1" : "--ssl-libdir=\(.*\)"`
+    ;;
+  --gc-includedir=*)
+    gc_includedir=`expr "$1" : "--gc-includedir=\(.*\)"`
+    ;;
+  --gc-libdir=*)
+    gc_libdir=`expr "$1" : "--gc-libdir=\(.*\)"`
+    ;;
+  --mimetypes=*)
+    mime_types=`expr "$1" : "--mimetypes=\(.*)\"`
+    ;;
+
   -help|--help)
     echo "-yes, -nonstop  Set all parameters to the default"
     echo "-prefix=DIR     Specify prefix (default: /usr/local)"
@@ -88,6 +110,11 @@ do
     echo "-code=(S|E|j|N|n|m)"
     echo "                Specify default kanji code"
     echo "-cflags=FLAGS   Specify C flags"
+    echo "--ssl-includedir=DIR	specify OpenSSL include dir"
+    echo "--ssl-libdir=DIR	specify OpenSSL lib dir"
+    echo "--gc-includedir=DIR	specify Boehm-GC include dir"
+    echo "--gc-libdir=DIR	specify Boehm-GC lib dir"
+    echo "--mimetypes=PATH	specify mime.types path"
     echo "-help           Display help"
     exit 0
     ;;
@@ -198,7 +225,7 @@ save_params() {
 
 find_ssl() {
   sslinclude=""
-  for i1 in /usr /usr/local $prefix
+  for i1 in $ssl_includedir /usr /usr/local $prefix
   do
     for i2 in /openssl /ssl / 
     do
@@ -225,6 +252,9 @@ find_ssl() {
       done
     done
   done
+  if [ -f "$ssl_libdir/libssl.$ext" -o -f "$ssl_libdir/libcrypto.$ext" ]; then
+      ssllib="-L$ssl_libdir $ssllib"
+  fi
   ssllib="$ssllib -lssl -lcrypto"
   if [ "$sslinclude" = "" ]; then
     echo "Where is ssl.h? (for example, /usr/crypto/include)"
@@ -411,6 +441,51 @@ else
   keymap_file="keybind"
 fi
 
+echo "Do you want to use Emacs-like key binding for filename completion?"
+yesno emacs_like_lineedit "$emacs_like_lineedit" n
+echo "emacs_like_lineedit=$emacs_like_lineedit" >> config.param
+if [ "$emacs_like_lineedit" = y ]; then
+  def_emacs_like_lineedit="#define EMACS_LIKE_LINEEDIT"
+else
+  def_emacs_like_lineedit="#undef EMACS_LIKE_LINEEDIT"
+fi
+
+echo "Do you want to use vi-like behavior for numeric prefix like '2 SPC'?"
+yesno vi_prec_num "$vi_prev_num" n
+echo "vi_prec_num=$vi_prec_num" >> config.param
+if [ "$vi_prec_num" = y ]; then
+  def_vi_prec_num="#define VI_PREC_NUM"
+else
+  def_vi_prec_num="#undef VI_PREC_NUM"
+fi
+
+echo "Do you want to use mark operations?"
+yesno use_mark "$use_mark" n
+echo "use_mark=$use_mark" >> config.param
+if [ "$use_mark" = y ]; then
+  def_use_mark='#define USE_MARK'
+else
+  def_use_mark='#undef USE_MARK'
+fi
+
+echo "Do you want to move cursor to top line when going to label?"
+yesno label_topline "$label_topline" n
+echo "label_topline $label_topline" >> config.param
+if [ "$label_topline" = y ]; then
+  def_label_topline='#define LABEL_TOPLINE'
+else
+  def_label_topline='#undef LABEL_TOPLINE'
+fi
+
+echo "Do you want to move cursor to top line when moving to next page?"
+yesno nextpage_topline "$nextpage_topline" n
+echo "nextpage_topline $nextpage_topline" >> config.param
+if [ "$nextpage_topline" = y ]; then
+  def_nextpage_topline='#define NEXTPAGE_TOPLINE'
+else
+  def_nextpage_topline='#undef NEXTPAGE_TOPLINE'
+fi
+
 if [ "$lang" = ja ]; then
   if [ "$lynx_key" = y ]; then
     helpfile="w3mhelp-lynx_ja.html"
@@ -438,6 +513,16 @@ else
   def_kanji_symbols="#undef KANJI_SYMBOLS"
 fi
 
+echo "Do you want ANSI color escape sequences support?"
+yesno ansi_color "$ansi_color" n
+echo "ansi_color=$ansi_color" >> config.param
+if [ "$ansi_color" = y ]; then
+  def_ansi_color="#define ANSI_COLOR"
+else
+  def_ansi_color="#undef ANSI_COLOR"
+fi
+
+
 echo "Do you want to automatically generate domain parts of passwords for anonymous FTP logins"
 yesno ftppass_hostnamegen "$ftppass_hostnamegen" n
 echo "ftppass_hostnamegen=$ftppass_hostnamegen" >> config.param
@@ -447,7 +532,7 @@ else
   def_ftppass_hostnamegen="#undef FTPPASS_HOSTNAMEGEN"
 fi
 
-echo "Do you want NNTP support"
+echo "Do you want NNTP support?"
 yesno use_nntp "$use_nntp" n
 echo "use_nntp=$use_nntp" >> config.param
 if [ "$use_nntp" = y ]; then
@@ -456,13 +541,22 @@ else
   def_use_nntp="#undef USE_NNTP"
 fi
 
-echo "Do you want ANSI color escape sequences support?"
-yesno ansi_color "$ansi_color" n
-echo "ansi_color=$ansi_color" >> config.param
-if [ "$ansi_color" = y ]; then
-  def_ansi_color="#define ANSI_COLOR"
+echo "Do you want Gopher support?"
+yesno use_gopher "$use_gopher" n
+echo "use_gopher=$use_gopher" >> config.param
+if [ "$use_gopher" = y ]; then
+  def_use_gopher="#define USE_GOPHER"
 else
-  def_ansi_color="#undef ANSI_COLOR"
+  def_use_gopher="#undef USE_GOPHER"
+fi
+
+echo "Do you want use alarm function?"
+yesno use_alarm "$use_alarm" n
+echo "use_alarm=$use_alarm" >> config.param
+if [ "$use_alarm" = y ]; then
+  def_use_alarm="#define USE_ALARM"
+else
+  def_use_alarm="#undef USE_ALARM"
 fi
 
 echo ""
@@ -864,7 +958,7 @@ fi
 gclib=''
 gcinclude=''
 gctarget=''
-for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
+for libdir in ${gc_libdir} /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib ${HOME}/lib
 do
   if [ -f $libdir/libgc.a -o -f $libdir/libgc.$so_ext ] ; then 
     echo "$libdir/libgc found"
@@ -872,7 +966,7 @@ do
     break
   fi
 done
-for inc in /usr/include /usr/include/gc /usr/local/include /usr/local/include/gc $prefix/include ${HOME}/include
+for inc in ${gc_includedir} /usr/include /usr/include/gc /usr/local/include /usr/local/include/gc $prefix/include ${HOME}/include
 do
   if [ -f $inc/gc.h ]; then
     echo "$inc/gc.h found"
@@ -883,12 +977,19 @@ done
 
 case $sysname in
   linux|Linux|LINUX|aix|Aix|AIX)
-    # these OS requires gcmain.c, which include gc/gc_priv.h
-    # therefore we use gc library comes with w3m
-    echo "Your OS is $sysname; using gc library comes with w3m."
-    gcinclude=""
-    gclib=""
-    ;;
+    case $cflags in
+    *DEBIAN*)
+      # on Debian, we can use libgc*.deb
+      :;;
+    *)
+      # these OS requires gcmain.c, which include gc/gc_priv.h
+      # therefore we use gc library comes with w3m
+      echo "Your OS is $sysname; using gc library comes with w3m."
+      gcinclude=""
+      gclib=""
+      ;;
+    esac
+  ;;
 esac
 
 if [ -n "$gclib" -a -n "$gcinclude" ]; then
@@ -970,12 +1071,17 @@ echo "Checking machine dependency."
 
 ###### mime.types
 MIME_TYPES=""
-for d in /etc /usr/lib /usr/local/lib /usr/local/etc $prefix/lib /usr/local/etc/apache /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
-do
+if [ -f $mimetypes ]; then
+   MIME_TYPES=$mimetypes
+else
+ for d in /etc /usr/lib /usr/local/lib /usr/local/etc $prefix/lib /usr/local/etc/apache /usr/local/lib/mosaic /usr/local/mosaic /usr/local/netscape /usr/local/lib/netscape
+ do
   if [ -f $d/mime.types ]; then
     MIME_TYPES="$d/mime.types"
+    break
   fi
-done
+ done
+fi
 if [ -z "$MIME_TYPES" ]; then
   echo "Global mime.types not found; Hope /usr/local/lib/mime.types works."
   MIME_TYPES=/usr/local/lib/mime.types
@@ -1344,6 +1450,24 @@ else
   getpassphrase_flg="#undef HAVE_GETPASSPHRASE"
 fi
 
+####### chdir
+cat > _zmachdep.c <<EOF
+#include <stdio.h>
+#include <unistd.h>
+main()
+{
+  int (*c)() = chdir;
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have chdir()."
+  chdir_flg="#define HAVE_CHDIR"
+else
+  echo "You don't have chdir()."
+  chdir_flg="#undef HAVE_CHDIR"
+fi
+
 ####### fclose
 cat > _zmachdep.c << EOF
 #include <stdio.h>
@@ -1477,9 +1601,25 @@ EOF
 if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
 then
   echo "You have float.h."
-  no_float_h='#define HAVE_FLOAT_H'
+  float_h='#define HAVE_FLOAT_H'
 else
-  no_float_h='#undef HAVE_FLOAT_H'
+  float_h='#undef HAVE_FLOAT_H'
+fi
+
+####### check for sys/select.h
+cat > _zmachdep.c <<EOF
+#include <sys/select.h>
+main()
+{ 
+  ;
+}
+EOF
+if $cc $cflags -c _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have sys/select.h."
+  sys_select_h='#define HAVE_SYS_SELECT_H'
+else
+  sys_select_h='#undef HAVE_SYS_SELECT_H'
 fi
 
 ####### setpgrp(pid, pgrp) or setpgrp() ?
@@ -1696,13 +1836,6 @@ cat > config.h << END_OF_CONFIG_H
 #undef DICT
 
 /*
-   If you define USE_MARK, you can use set-mark MARK (C-SPC),
-   goto-prev-mark PREV_MARK (ESC p), goto-next-mark NEXT_MARK (ESC n) and
-   mark-by-regexp (").
-*/
-#undef USE_MARK
-
-/*
    If you want to load and save URL history.
  */
 #define USE_HISTORY
@@ -1713,19 +1846,9 @@ cat > config.h << END_OF_CONFIG_H
 #define BG_COLOR
 
 /*
-   VI_PREC_NUM enables vi-like behavior for '2 SPC' or '2 b'
- */
-#undef VI_PREC_NUM
-
-/*
  * Do word fill
  */
 #undef FORMAT_NICE
-
-/*
- * Support Gopher protocol
- */
-#undef USE_GOPHER
 
 /*
  * Enable id attribute
@@ -1743,29 +1866,9 @@ cat > config.h << END_OF_CONFIG_H
 #undef USE_EGD
 
 /*
- * Use Emacs-like key binding for file name completion
- */
-#undef EMACS_LIKE_LINEEDIT
-
-/*
  * Remove line trailing spaces in html buffer.
  */
 #undef ENABLE_REMOVE_TRAILINGSPACES
-
-/*
- * Move cursor to top line when going to label.
- */
-#undef LABEL_TOPLINE
-
-/*
- * Move cursor to top line when moving to next page.
- */
-#undef NEXTPAGE_TOPLINE
-
-/*
- * Use alarm function.
- */
-#undef USE_ALARM
 
 /*
  * thin chars for menu frame
@@ -1810,6 +1913,12 @@ $special_sys
 $use_lang
 $def_kanji_symbols
 $def_color
+$def_ansi_color
+$def_emacs_like_lineedit
+$def_vi_prec_num
+$def_use_mark
+$def_label_topline
+$def_nextpage_topline
 $def_mouse
 $use_gpm
 $use_sysmouse
@@ -1819,7 +1928,8 @@ $def_ssl
 $def_use_ssl_verify
 $def_ftppass_hostnamegen
 $def_use_nntp
-$def_ansi_color
+$def_use_gopher
+$def_use_alarm
 
 #define DEF_EDITOR "$editor"
 #define DEF_MAILER "$mailer"
@@ -1865,6 +1975,7 @@ $putenv_flg
 $srand48_flg
 $srandom_flg
 $getpassphrase_flg
+$chdir_flg
 $fclose_dcl
 $pclose_dcl
 $setjmp_def
@@ -1887,7 +1998,8 @@ $ipv6_ss_family
 #undef TABLE_NO_COMPACT
 #define NOWRAP 1
 #define MATRIX 1
-$no_float_h
+$float_h
+$sys_select_h
 
 #ifndef HAVE_SRAND48
 #ifdef HAVE_SRANDOM
@@ -1938,6 +2050,5 @@ END_OF_CONFIG_H
 echo ''
 echo 'config.h is created. See config.h for further configuration.'
 echo ''
-echo 'Generating scripts/dirlist.cgi'
 
 echo 'Configuration done. Just type "make".'

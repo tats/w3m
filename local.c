@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.7 2001/11/21 16:29:46 ukai Exp $ */
+/* $Id: local.c,v 1.8 2001/11/21 18:51:48 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -431,7 +431,7 @@ localcgi_post(char *uri, char *qstr, FormList * request, char *referer)
     }
     fclose(f1);
     freopen( tmp1->ptr, "r", stdin);
-#ifndef __EMX__ /* ifndef HAVE_CHDIR? */
+#ifdef HAVE_CHDIR  /* ifndef __EMX__ ? */
     chdir(mydirname(file));
 #endif
     execl(file, mybasename(file), NULL);
@@ -467,7 +467,7 @@ localcgi_get(char *uri, char *request, char *referer)
     set_environ("REQUEST_METHOD", "GET");
     set_environ("QUERY_STRING", request);
     freopen(DEV_NULL_PATH, "r", stdin);
-#ifndef __EMX__ /* #ifdef HAVE_CHDIR? */
+#ifdef HAVE_CHDIR /* ifndef __EMX__? */
     chdir(mydirname(file));
 #endif
     execl(file, mybasename(file), NULL);

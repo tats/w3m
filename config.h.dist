@@ -15,13 +15,6 @@
 #undef DICT
 
 /*
-   If you define USE_MARK, you can use set-mark MARK (C-SPC),
-   goto-prev-mark PREV_MARK (ESC p), goto-next-mark NEXT_MARK (ESC n) and
-   mark-by-regexp (").
-*/
-#undef USE_MARK
-
-/*
    If you want to load and save URL history.
  */
 #define USE_HISTORY
@@ -32,19 +25,9 @@
 #define BG_COLOR
 
 /*
-   VI_PREC_NUM enables vi-like behavior for '2 SPC' or '2 b'
- */
-#undef VI_PREC_NUM
-
-/*
  * Do word fill
  */
 #undef FORMAT_NICE
-
-/*
- * Support Gopher protocol
- */
-#undef USE_GOPHER
 
 /*
  * Enable id attribute
@@ -62,29 +45,9 @@
 #undef USE_EGD
 
 /*
- * Use Emacs-like key binding for file name completion
- */
-#undef EMACS_LIKE_LINEEDIT
-
-/*
  * Remove line trailing spaces in html buffer.
  */
 #undef ENABLE_REMOVE_TRAILINGSPACES
-
-/*
- * Move cursor to top line when going to label.
- */
-#undef LABEL_TOPLINE
-
-/*
- * Move cursor to top line when moving to next page.
- */
-#undef NEXTPAGE_TOPLINE
-
-/*
- * Use alarm function.
- */
-#undef USE_ALARM
 
 /*
  * thin chars for menu frame
@@ -129,6 +92,12 @@ MODEL=Linux.i686-monster-ja
 #define LANG JA
 #define KANJI_SYMBOLS
 #define COLOR
+#undef ANSI_COLOR
+#undef EMACS_LIKE_LINEEDIT
+#undef VI_PREC_NUM
+#undef USE_MARK
+#undef LABEL_TOPLINE
+#undef NEXTPAGE_TOPLINE
 #define MOUSE
 #define USE_GPM
 #undef USE_SYSMOUSE
@@ -138,7 +107,8 @@ MODEL=Linux.i686-monster-ja
 #undef USE_SSL_VERIFY
 #undef FTPPASS_HOSTNAMEGEN
 #undef USE_NNTP
-#undef ANSI_COLOR
+#undef USE_GOPHER
+#undef USE_ALARM
 
 #define DEF_EDITOR "/bin/vi"
 #define DEF_MAILER "/bin/mail"
@@ -184,6 +154,7 @@ MODEL=Linux.i686-monster-ja
 #define HAVE_SRAND48
 #define HAVE_SRANDOM
 #undef HAVE_GETPASSPHRASE
+#define HAVE_CHDIR
 
 
 #define SETJMP(env) sigsetjmp(env,1)
@@ -207,6 +178,7 @@ typedef void MySignalHandler;
 #define NOWRAP 1
 #define MATRIX 1
 #define HAVE_FLOAT_H
+#define HAVE_SYS_SELECT_H
 
 #ifndef HAVE_SRAND48
 #ifdef HAVE_SRANDOM

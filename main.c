@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.13 2001/11/21 16:29:46 ukai Exp $ */
+/* $Id: main.c,v 1.14 2001/11/21 18:51:48 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <time.h>
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
@@ -14,9 +15,6 @@
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
-#ifdef __EMX__	/* HAVE_TIME_H? */
-#include <time.h>                /* for time() */
-#endif                /* __EMX__ */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
 extern int do_getch();
 #define getch()	do_getch()

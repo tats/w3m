@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.9 2001/11/21 09:42:23 ukai Exp $
+# $Id: XMakefile,v 1.10 2001/11/21 18:51:48 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -26,7 +26,7 @@ SUBDIRS = $(SCRIPTSUBDIRS)
 INCLUDES=-I.
 
 DEFS=$(INCLUDES) # -DDEBUG
-CFLAGS=$(MYCFLAGS) $(DEFS) 
+CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS) 
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install.sh

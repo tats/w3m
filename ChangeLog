@@ -1,5 +1,22 @@
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02480] new configure
+	* config.h.dist: updated
+	* configure: $def_emacs_like_lineedit, $def_vi_prec_num
+	   $def_label_topline, $def_nextpage_topline
+	   $def_use_mark, $def_use_gopher, $def_use_alarm
+	* configure: add --{ssl,gc}-{include,lib}dir, --mimetypes
+	* configure: BoehmGC Debian hack
+	* XMakefile: add $(OPTS)
+	* terms.c: use HAVE_SYS_SELECT_H
+	* configure: add sys/select.h detection
+	* configure: no_float_h -> float_h
+	* configure: add chdir() detection
+	* local.c (localcgi_post): use HAVE_CHDIR instead of __EMX__
+	* local.c (localcgi_get): ditto
+	* main.c: <time.h> no need for #ifdef __EMX__
+	   other files already do #include <time.h>
+
 	[w3m-dev 02479]
 	* rc.c (init_rc): remove #ifdef __EMX__ for tmpdir
 	* config.h.dit: updated

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.11 2001/11/21 16:29:47 ukai Exp $ */
+/* $Id: terms.c,v 1.12 2001/11/21 18:51:48 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -12,6 +12,9 @@
 #include <unistd.h>
 #include "config.h"
 #include <string.h>
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
 #ifdef MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -34,10 +37,6 @@ void mouse_init(), mouse_end();
 int mouseActive = 0;
 #endif				/* MOUSE */
 
-#ifdef AIX
-#include <sys/select.h>
-#endif				/* AIX */
-
 #include "terms.h"
 #include "fm.h"
 #include "myctype.h"
@@ -45,7 +44,6 @@ int mouseActive = 0;
 #ifdef __EMX__
 #define INCL_DOSNLS
 #include <os2.h>
-#include <sys/select.h>
 
 #ifndef JP_CHARSET
 extern int	CodePage;

@@ -1,3 +1,4 @@
+/* $Id: fb_img.c,v 1.2 2002/07/18 15:01:31 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>

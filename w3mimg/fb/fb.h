@@ -1,3 +1,4 @@
+/* $Id: fb.h,v 1.3 2002/07/18 15:01:31 ukai Exp $ */
 #ifndef fb_header
 #define fb_header
 #include <linux/fb.h>

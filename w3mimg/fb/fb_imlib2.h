@@ -1,3 +1,4 @@
+/* $Id: fb_imlib2.h,v 1.3 2002/07/18 15:01:31 ukai Exp $ */
 #ifndef fb_imlib2_header
 #define fb_imlib2_header
 

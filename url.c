@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.8 2001/11/22 13:30:02 ukai Exp $ */
+/* $Id: url.c,v 1.9 2001/11/23 20:06:40 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -384,6 +384,14 @@ openSocket(char *hostname,
     }
 
 #ifdef INET6
+    /* rfc2732 compliance */
+    if (hostname != NULL && hostname[0] == '[' &&
+	hostname[strlen(hostname)-1] == ']' ) {
+	hostname[strlen(hostname)-1] = '\0';
+	hostname++;
+	if (strspn(hostname, "0123456789abcdefABCDEF:.") != strlen(hostname))
+	    goto error;
+    }
     for (af = ai_family_order_table[DNS_order];; af++) {
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = *af;
@@ -444,7 +452,7 @@ openSocket(char *hostname,
 #endif
 	goto error;
     }
-    regexCompile("[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*", 0);
+    regexCompile("^[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*\\.[0-9][0-9]*$", 0);
     if (regexMatch(hostname, 0, 1)) {
 	sscanf(hostname, "%d.%d.%d.%d", &a1, &a2, &a3, &a4);
 	adr = htonl((a1 << 24) | (a2 << 16) | (a3 << 8) | a4);
@@ -717,14 +725,6 @@ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
 	break;
     }
   analyze_file:
-#ifdef INET6
-    /* rfc2732 compliance */
-    if (p_url->host != NULL && p_url->host[0] == '[' &&
-	p_url->host[strlen(p_url->host)-1] == ']' ) {
-	p_url->host[strlen(p_url->host)-1] = '\0';
-	++(p_url->host);
-    }
-#endif
 #ifndef SUPPORT_NETBIOS_SHARE
     if (p_url->scheme == SCM_LOCAL && p_url->user == NULL &&
 	p_url->host != NULL && strcmp(p_url->host, "localhost")) {

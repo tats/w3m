@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.17 2001/11/23 19:00:47 ukai Exp $ */
+/* $Id: main.c,v 1.18 2001/11/23 20:06:40 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4000,7 +4000,14 @@ chkURL(void)
 	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_NNTP */
        "mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
-	NULL,
+#ifdef INET6
+       "http://[a-zA-Z0-9:%\\-\\./_@]*\\[[a-fA-F0-9:][a-fA-F0-9:\\.]*\\][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*",
+#ifdef USE_SSL
+       "https://[a-zA-Z0-9:%\\-\\./_@]*\\[[a-fA-F0-9:][a-fA-F0-9:\\.]*\\][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*",
+#endif				/* USE_SSL */
+       "ftp://[a-zA-Z0-9:%\\-\\./_@]*\\[[a-fA-F0-9:][a-fA-F0-9:\\.]*\\][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*",
+#endif				/* INET6 */
+	NULL
     };
     int i;
     for (i = 0; url_like_pat[i]; i++) {

@@ -1,3 +1,12 @@
+2001-11-24  Akihiro Sagawa <sagawa@sohgoh.net>
+
+	* [w3m-dev 02528] RFC2732 URL Patch
+	* main.c (chkURL): check RFC2732 style URLs
+	* url.c (parseURL): remove RFC2732 address check here, 
+	                   move to openSocket()
+	* url.c (openSocket): check RFC2732 style hostname
+	* url.c (openSocket): check IPv4 address strictly
+
 2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02526]

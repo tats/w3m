@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.92 2002/06/09 16:11:33 ukai Exp $ */
+/* $Id: file.c,v 1.93 2002/06/24 13:32:11 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4637,7 +4637,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    }
 	}
     case HTML_N_BODY:
-	obuf->flag |= RB_IGNORE_P;
 	return 1;
     default:
 	/* obuf->prevchar = '\0'; */

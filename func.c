@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.8 2002/03/19 16:06:52 ukai Exp $ */
+/* $Id: func.c,v 1.9 2002/03/22 15:05:18 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -229,7 +229,7 @@ getWord(char **str)
 
     p = *str;
     SKIP_BLANKS(p);
-    for (s = p; *p && ! IS_SPACE(*p) && *p != ';'; p++) ;
+    for (s = p; *p && !IS_SPACE(*p) && *p != ';'; p++) ;
     *str = p;
     return Strnew_charp_n(s, p - s)->ptr;
 }

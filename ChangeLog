@@ -1,5 +1,11 @@
 2002-01-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02843] w3mmail.cgi.in update
+	* scripts/w3mmail.cgi.in: add $SENDMAIL_OPT
+		change html
+
+2002-01-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02841] migemo patch
 	* NEWS: migemo support
 	* config.h.dist (USE_MIGEMO): added
@@ -1977,4 +1983,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.223 2002/01/15 17:23:29 ukai Exp $
+$Id: ChangeLog,v 1.224 2002/01/15 17:46:01 ukai Exp $

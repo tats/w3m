@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.2 2002/01/15 16:13:39 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.3 2002/01/15 17:46:01 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -9,6 +9,7 @@ $local_cookie = $ENV{'LOCAL_COOKIE'};
 $url = $query;
 $SENDMAIL = '/usr/lib/sendmail';
 $SENDMAIL = '/usr/sbin/sendmail' if -x '/usr/sbin/sendmail';
+$SENDMAIL_OPT = '-oi -t';
 
 $qurl = &html_quote($url);
 
@@ -26,6 +27,7 @@ if ($query =~ s/^\w+://) {
     $opt{'to'} = join(',', @to);
     $body = $opt{'body'};
     delete $opt{'body'};
+    &lang_setup;
 
     print "Content-Type: text/html\r\n";
     print "w3m-control: END\r\n";
@@ -34,38 +36,33 @@ if ($query =~ s/^\w+://) {
     print "<html><head><title>W3M Mailer: $qurl</title></head>\n";
     print "<body><h1>W3M Mailer: $qurl</h1>\n";
     print "<form action='$0' method='POST'>\n";
-    print "<input type='hidden' name='action' value='preview'>\n";
     print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
-    print "<table border='1'>\n";
+    print "<table>\n";
     if ($opt{'from'}) {
-	print "<tr><th>From:</th><td>" . &html_quote($opt{'from'}) 
-	    . "</td></tr>\n";
+	$v = &lang_html_quote($opt{'from'});
+	print "<tr><td>From:<td>$v\n";
+	print "<input type='hidden' name='from' value=\"$v\">\n";
 	delete $opt{'from'};
     }
-    foreach $h ('to', 'cc', 'subject') {
-	print "<tr><th>\u$h:</th><td>";
-	if ($opt{$h}) {
-	    print &html_quote($opt{$h});
-	    print "<input type='hidden' name='$h' value='" 
-		. &html_quote($opt{$h}) . "'>";
-	} else {
-	    print "<input type='text' name='$h' value=''>";
-	}
-        print "</td></tr>\n";
+    foreach $h ('to', 'cc', 'bcc', 'subject') {
+	$v = &lang_html_quote($opt{$h});
+	print "<tr><td>\u$h:<td><input type='text' name=\"$h\" value=\"$v\">\n";
 	delete $opt{$h};
     }
     foreach $h (keys %opt) {
-	$h = &html_quote($h);
-	$v = &html_quote($opt{$h});
-	print "<tr><th>$h</th><td>$v<input type='hidden' name='$h' value='$v'></td></tr>\n";
+	$qh = &html_quote($h);
+	$v = &lang_html_quote($opt{$h});
+	print "<tr><td>\u$h:<td>$v\n";
+	print "<input type='hidden' name=\"$qh\" value=\"$v\">\n";
     }
-    print "<tr><td colspan='2'><textarea name='body'>";
+    print "<tr><td colspan=2>\n";
+    print "<textarea cols=40 rows=10 name='body'>\n";
     if ($body) {
-	print &html_quote($body);
+	print &lang_html_quote($body);
     }
-    print "</input></td></tr>\n";
-    print "<tr><td><input type='submit' value='submit'></td></tr>\n";
+    print "</textarea>\n";
     print "</table>\n";
+    print "<input type='submit' name='action' value='Preview'>\n";
     print "</form>\n";
     print "</body></html>\n";
     exit(0);
@@ -79,51 +76,68 @@ if ($query =~ s/^\w+://) {
 	exit 1;
     }
     delete $opt{'cookie'};
-    $body = &html_quote($opt{'body'});
+    $body = $opt{'body'};
     delete $opt{'body'};
     $act = $opt{'action'};
     delete $opt{'action'};
     &lang_setup;
 
-    if ($act eq "preview") {
+    if ($act eq "Preview") {
 	print "Content-Type: text/html\r\n";
+	print "w3m-control: DELETE_PREVBUF\r\n";
 	print "w3m-control: NEXT_LINK\r\n";
 	print "\r\n";
 	print "<html><head><title>W3M Mailer</title></head>\n";
 	print "<body>\n";
 	print "<h1>W3M Mailer: preview</h1>\n";
 	print "<form action='$0' method='POST'>\n";
-	print "<input type='hidden' name='action' value='send'>\n";
 	print "<input type='hidden' name='cookie' value='$local_cookie'>\n";
 	print "<hr>\n";
 	print "<pre>\n";
 	foreach $h (keys %opt) {
-	    $v = &html_quote(&lang_header($opt{$h}));
-	    if ($v) {
-		print "\u$h: $v\n";
+	    $qh = &html_quote($h);
+	    $v{$h} = &lang_header(&lang_html_quote($opt{$h}));
+	    if ($v{$h}) {
+		print "\u$qh: $v{$h}\n";
 	    }
 	}
-	($cs,$cte,$body) = &lang_body($body);
+	($cs,$cte,$body) = &lang_body(&lang_html_quote($body));
 	print "Mime-Version: 1.0\n";
 	print "Content-Type: text/plain; charset=$cs\n";
 	print "Content-Transfer-Encoding: $cte\n";
 	print "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
 	print "\n";
 	print $body;
+	print "\n";
 	print "</pre>\n";
+	print "<input type='submit' name='action' value='Send'>\n";
 	print "<hr>\n";
-	foreach $h (keys %opt) {
-	    $v = &html_quote($opt{$h});
-	    if ($v) {
-		print "<input type='hidden' name='$h' value='$v'>\n";
-	    }
+	print "<table>\n";
+	if ($opt{'from'}) {
+	    print "<tr><td>From:<td>$v{'from'}\n";
+	    print "<input type='hidden' name='from' value=\"$v\">\n";
+	    delete $opt{'from'};
 	}
-	print "<input type='hidden' name='body' value='$body'>\n";
-	print "<input type='submit' value='OK'>\n";
-	# print "<pre>\n"; foreach (keys %ENV) { print "$_=$ENV{$_}\n"; } print "</pre>\n";
+	foreach $h ('to', 'cc', 'bcc', 'subject') {
+	    print "<tr><td>\u$h:<td><input type='text' name=\"$h\" value=\"$v{$h}\">\n";
+	    delete $opt{$h};
+	}
+	foreach $h (keys %opt) {
+	    $qh = &html_quote($h);
+	    print "<tr><td>\u$qh:<td>$v{$h}\n";
+	    print "<input type='hidden' name=\"$qh\" value=\"$v\">\n";
+	}
+	print "<tr><td colspan=2>\n";
+	print "<textarea cols=40 rows=10 name='body'>\n";
+	if ($body) {
+	    print $body;
+	}
+	print "</textarea>\n";
+	print "</table>\n";
+	print "<input type='submit' name='action' value='Preview'><br>\n";
 	print "</body></html>\n";
     } else {
-	unless (open(MAIL, "|$SENDMAIL -t")) {
+	unless (open(MAIL, "|$SENDMAIL $SENDMAIL_OPT")) {
 	    print "Content-Type: text/html\r\n";
 	    print "\r\n";
 	    print "<html><head><title>W3M Mailer</title></head>\n";
@@ -146,8 +160,7 @@ if ($query =~ s/^\w+://) {
 	print MAIL "\n";
 	print MAIL $body;
 	if (close(MAIL)) {
-	    print "w3m-control: BACK\r\n";
-	    print "w3m-control: BACK\r\n";
+	    print "w3m-control: DELETE_PREVBUF\r\n";
 	    print "w3m-control: BACK\r\n";
 	    print "\r\n";
 	} else {
@@ -189,6 +202,16 @@ sub lang_body {
     }
 }
 
+sub lang_html_quote {
+    local($_) = @_;
+    if ($lang =~ /^ja/i) {
+	if (/[\x80-\xFF]/ || /\033[\$\(][BJ@]/) {
+	    $_ = &conv_nkf("-e", $_);
+	}
+    }
+    return &html_quote($_);
+}
+
 sub lang_header_default {
     local($h) = @_;
     if ($h =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
@@ -200,7 +223,6 @@ sub lang_header_default {
 
 sub lang_body_default { 
     local($body) = @_;
-    print "default:$body\n";
     if ($body =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
 	return ("iso-8859-1", "quoted-printable", $body);
     } else {
@@ -211,6 +233,7 @@ sub lang_body_default {
 sub lang_header_ja {
     local($h) = @_;
     if ($h =~ /[\x80-\xFF]/ || $h =~ /\033[\$\(][BJ@]/) {
+	$h = &conv_nkf("-j", $h);
 	&conv_nkf("-M", $h);
     } else {
 	return $h;
@@ -219,10 +242,8 @@ sub lang_header_ja {
 
 sub lang_body_ja {
     local($body) = @_;
-    if ($body =~ /[\x80-\xFF]/) {
+    if ($body =~ /[\x80-\xFF]/ || $body =~ /\033[\$\(][BJ@]/) {
 	$body = &conv_nkf("-j", $body);
-	return ("ISO-2022-JP", "7bit", $body);
-    } elsif ($body =~ /\033[\$\(][BJ@]/) {
 	return ("ISO-2022-JP", "7bit", $body);
     } else {
 	return ("US-ASCII", "7bit", $body);

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.37 2001/12/19 18:16:18 ukai Exp $
+# $Id: configure,v 1.38 2001/12/20 00:44:00 ukai Exp $
 #	Configuration.
 #
 
@@ -1039,7 +1039,7 @@ if [ "$gclib" = "gc/gc.a" -a ! -f patch_done ]; then
   case "$platform:$sysname" in
   R3000:*System_V*|R4000:UNIX_SYSV|R*000:UNIX_SV)
     # EWS-4800
-    patchfile=Patches/ews4800
+#    patchfile=Patches/ews4800
     gc_cflags=-Dmips
     ;;
   esac

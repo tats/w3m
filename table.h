@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.5 2001/11/30 10:10:24 ukai Exp $ */
+/* $Id: table.h,v 1.6 2002/11/05 15:45:53 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -37,11 +37,11 @@ typedef unsigned short table_attr;
 struct table_cell {
     short col[MAXCELL];
     short colspan[MAXCELL];
-    char index[MAXCELL];
+    short index[MAXCELL];
     short maxcell;
     short icell;
 #ifdef MATRIX
-    char eindex[MAXCELL];
+    short eindex[MAXCELL];
     short necell;
 #endif				/* MATRIX */
     short width[MAXCELL];

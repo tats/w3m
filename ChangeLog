@@ -1,3 +1,15 @@
+2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03371] segmentation fault by large complex table.
+	* table.c (bsearch_2short): indexarry char to short
+		(bsearch_double): ditto
+		(dv2sv): ditto
+		(table_rule_width): ditto
+		(set_integrated_width): ditto
+		(check_table_height): ditto
+		(feed_table_tag): ditto
+	* table.h (struct table_cell): index, eindex char to short
+
 2002-11-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3m 0.3.2
@@ -4105,4 +4117,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.468 2002/11/05 13:25:31 ukai Exp $
+$Id: ChangeLog,v 1.469 2002/11/05 15:45:52 ukai Exp $

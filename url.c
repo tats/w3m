@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.78 2003/04/14 03:29:38 ukai Exp $ */
+/* $Id: url.c,v 1.79 2003/05/10 18:20:29 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1009,6 +1009,16 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	pu->host = current->host;
 	pu->port = current->port;
 	if (pu->file && *pu->file) {
+#ifdef USE_EXTERNAL_URI_LOADER	    
+	    if (pu->scheme == SCM_UNKNOWN
+		&& strchr(pu->file, ':') == NULL
+		&& current && (p = strchr(current->file, ':')) != NULL) {
+		pu->file = Sprintf("%s:%s", 
+				   allocStr(current->file, 
+					    p - current->file),
+				   pu->file)->ptr;
+	    } else
+#endif
 	    if (
 #ifdef USE_GOPHER
 		   pu->scheme != SCM_GOPHER &&

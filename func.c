@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.22 2002/12/04 17:15:35 ukai Exp $ */
+/* $Id: func.c,v 1.23 2003/07/26 17:16:24 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -15,6 +15,7 @@
 #define KEYDATA_HASH_SIZE 16
 static Hash_iv *keyData = NULL;
 static char keymap_initialized = FALSE;
+static struct stat sys_current_keymap_file;
 static struct stat current_keymap_file;
 
 void
@@ -108,26 +109,25 @@ setKeymap(char *p, int lineno, int verbose)
 	putHash_iv(keyData, c, NULL);
 }
 
-void
-initKeymap(int force)
+static void
+interpret_keymap(FILE *kf, struct stat *current, int force)
 {
-    FILE *kf;
+    int fd;
+    struct stat kstat;
     Str line;
     char *p, *s, *emsg;
     int lineno;
     int verbose = 1;
-    int fd;
-    struct stat kstat;
     extern int str_to_bool(char *value, int old);
 
-    if ((kf = fopen(rcFile(keymap_file), "rt")) == NULL ||
-	((fd = fileno(kf)) < 0 || fstat(fd, &kstat) ||
-	 (!force && keymap_initialized &&
-	  kstat.st_mtime == current_keymap_file.st_mtime &&
-	  kstat.st_dev == current_keymap_file.st_dev &&
-	  kstat.st_ino == current_keymap_file.st_ino &&
-	  kstat.st_size == current_keymap_file.st_size)))
+    if ((fd = fileno(kf)) < 0 || fstat(fd, &kstat) ||
+	(!force &&
+	 kstat.st_mtime == current->st_mtime &&
+	 kstat.st_dev == current->st_dev &&
+	 kstat.st_ino == current->st_ino &&
+	 kstat.st_size == current->st_size))
 	return;
+    *current = kstat;
 
     lineno = 0;
     while (!feof(kf)) {
@@ -157,8 +157,23 @@ initKeymap(int force)
 	}
 	setKeymap(p, lineno, verbose);
     }
-    fclose(kf);
-    current_keymap_file = kstat;
+}
+
+void
+initKeymap(int force)
+{
+    FILE *kf;
+
+    if ((kf = fopen(confFile(KEYMAP_FILE), "rt")) != NULL) {
+	interpret_keymap(kf, &sys_current_keymap_file,
+			 force || !keymap_initialized);
+	fclose(kf);
+    }
+    if ((kf = fopen(rcFile(keymap_file), "rt")) != NULL) {
+	interpret_keymap(kf, &current_keymap_file,
+			 force || !keymap_initialized);
+	fclose(kf);
+    }
     keymap_initialized = TRUE;
 }
 
@@ -506,23 +521,12 @@ setMouseAction2(MouseActionMap * map, char *p)
     map->data = s;
 }
 
-void
-initMouseAction(void)
+static void
+interpret_mouse_action(FILE *mf)
 {
-    FILE *mf;
     Str line;
     char *p, *s;
     int b;
-
-    bcopy((void *)&default_mouse_action, (void *)&mouse_action,
-	  sizeof(default_mouse_action));
-    mouse_action.lastline_map[0] = New_N(MouseActionMap, 6);
-    bcopy((void *)&default_lastline_action,
-	  (void *)mouse_action.lastline_map[0],
-	  sizeof(default_lastline_action));
-
-    if ((mf = fopen(rcFile(MOUSE_FILE), "rt")) == NULL)
-	return;
 
     while (!feof(mf)) {
 	line = Strfgets(mf);
@@ -577,6 +581,27 @@ initMouseAction(void)
 	else if (!strcasecmp(s, "tab"))
 	    setMouseAction2(&mouse_action.tab_map[b], p);
     }
-    fclose(mf);
+}
+
+void
+initMouseAction(void)
+{
+    FILE *mf;
+
+    bcopy((void *)&default_mouse_action, (void *)&mouse_action,
+	  sizeof(default_mouse_action));
+    mouse_action.lastline_map[0] = New_N(MouseActionMap, 6);
+    bcopy((void *)&default_lastline_action,
+	  (void *)mouse_action.lastline_map[0],
+	  sizeof(default_lastline_action));
+
+    if ((mf = fopen(confFile(MOUSE_FILE), "rt")) != NULL) {
+	interpret_mouse_action(mf);
+	fclose(mf);
+    }
+    if ((mf = fopen(rcFile(MOUSE_FILE), "rt")) != NULL) {
+	interpret_mouse_action(mf);
+	fclose(mf);
+    }
 }
 #endif

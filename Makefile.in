@@ -28,12 +28,15 @@ CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
 AUXBIN_DIR = $(libexecdir)/$(package)
 HELP_DIR = $(datadir)/$(package)
 RC_DIR = ~/.$(package)
+ETC_DIR = $(sysconfdir)
+CONF_DIR = $(sysconfdir)/$(package)
 
 CFLAGS = $(OPTS) @CFLAGS@ $(DEFS)
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DLIB_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
-	-DETC_DIR=\"$(sysconfdir)\" -DRC_DIR=\"$(RC_DIR)\"
+	-DETC_DIR=\"$(ETC_DIR)\" -DCONF_DIR=\"$(CONF_DIR)\" \
+	-DRC_DIR=\"$(RC_DIR)\"
 LDFLAGS = @LDFLAGS@
 LIBS = -L. -lindep @LIBS@
 W3M_LIBS = @W3M_LIBS@
@@ -41,7 +44,8 @@ W3M_LIBS = @W3M_LIBS@
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
 	LIB_DIR='$(CGIBIN_DIR)' \
-	HELP_DIR='$(HELP_DIR)' MAN_DIR='$(mandir)' ETC_DIR='$(sysconfdir)' \
+	HELP_DIR='$(HELP_DIR)' MAN_DIR='$(mandir)' ETC_DIR='$(ETC_DIR)' \
+	CONF_DIR='$(CONF_DIR)' \
 	RC_DIR='$(RC_DIR)' DESTDIR='$(DESTDIR)' KEYBIND_SRC='$(KEYBIND_SRC)'
 
 IMGCFLAGS = @IMGX11CFLAGS@ @IMGFBCFLAGS@

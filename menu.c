@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.31 2003/02/05 16:44:00 ukai Exp $ */
+/* $Id: menu.c,v 1.32 2003/07/26 17:16:24 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1669,32 +1669,14 @@ optionMenu(int x, int y, char **label, int *variable, int initial,
 
 /* --- InitMenu --- */
 
-void
-initMenu(void)
+static void
+interpret_menu(FILE *mf)
 {
-    FILE *mf;
     Str line;
     char *p, *s;
-    int in_menu, nmenu = 0, nitem = 0, type;
+    int in_menu = 0, nmenu = 0, nitem = 0, type;
     MenuItem *item = NULL;
-    MenuList *list;
 
-    w3mMenuList = New_N(MenuList, 3);
-    w3mMenuList[0].id = "Main";
-    w3mMenuList[0].menu = &MainMenu;
-    w3mMenuList[0].item = MainMenuItem;
-    w3mMenuList[1].id = "Select";
-    w3mMenuList[1].menu = &SelectMenu;
-    w3mMenuList[1].item = NULL;
-    w3mMenuList[2].id = "SelectTab";
-    w3mMenuList[2].menu = &SelTabMenu;
-    w3mMenuList[2].item = NULL;
-    w3mMenuList[3].id = NULL;
-
-    if ((mf = fopen(rcFile(MENU_FILE), "rt")) == NULL)
-	goto create_menu;
-
-    in_menu = 0;
     while (!feof(mf)) {
 	line = Strfgets(mf);
 	Strchop(line);
@@ -1734,9 +1716,35 @@ initMenu(void)
 	    item[nitem].type = MENU_END;
 	}
     }
-    fclose(mf);
+}
 
-  create_menu:
+void
+initMenu(void)
+{
+    FILE *mf;
+    MenuList *list;
+
+    w3mMenuList = New_N(MenuList, 3);
+    w3mMenuList[0].id = "Main";
+    w3mMenuList[0].menu = &MainMenu;
+    w3mMenuList[0].item = MainMenuItem;
+    w3mMenuList[1].id = "Select";
+    w3mMenuList[1].menu = &SelectMenu;
+    w3mMenuList[1].item = NULL;
+    w3mMenuList[2].id = "SelectTab";
+    w3mMenuList[2].menu = &SelTabMenu;
+    w3mMenuList[2].item = NULL;
+    w3mMenuList[3].id = NULL;
+
+    if ((mf = fopen(confFile(MENU_FILE), "rt")) != NULL) {
+	interpret_menu(mf);
+	fclose(mf);
+    }
+    if ((mf = fopen(rcFile(MENU_FILE), "rt")) != NULL) {
+	interpret_menu(mf);
+	fclose(mf);
+    }
+
     for (list = w3mMenuList; list->id != NULL; list++) {
 	if (list->item == NULL)
 	    continue;

@@ -1,4 +1,4 @@
-/* $Id: indep.h,v 1.14 2003/04/07 16:27:10 ukai Exp $ */
+/* $Id: indep.h,v 1.15 2003/07/26 17:16:24 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
 #include <gc.h>
@@ -68,6 +68,7 @@ extern char *shell_quote(char *str);
 extern char *w3m_auxbin_dir();
 extern char *w3m_lib_dir();
 extern char *w3m_etc_dir();
+extern char *w3m_conf_dir();
 extern char *w3m_help_dir();
 
 #define New(type)	((type*)GC_MALLOC(sizeof(type)))

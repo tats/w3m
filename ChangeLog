@@ -1,3 +1,25 @@
+2003-07-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03945] Re: application/xhtml+xml support
+	* Makefile.in (ETC_DIR): added
+		(CONF_DIR): added
+		(DEFS): add CONF_DIR
+		(MAKE_ARGS): add CONF_DIR
+	* config.h.in (SYS_MAILCAP): use CONF_DIR
+		(SYS_URIMETHODMAP): use CONF_DIR
+	* func.c (sys_current_keymap_file): added
+		(interpret_keymap): added
+		(initKeymap): use interpret_keymap
+		(interpret_mouse_action): added
+		(initMouseAction): use interpret_mouse_action
+	* indep.c (w3m_conf_dir): added
+	* indep.h (w3m_conf_dir): added
+	* menu.c (interpret_menu): added
+		(initMenu): use interpret_menu
+	* proto.h (confFile): added
+	* rc.c (init_rc): read config file by interpret_rc
+		(confFile): added
+
 2003-07-23  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
 
 	* [w3m-dev 03942] Save history
@@ -7961,4 +7983,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.855 2003/07/22 17:29:47 ukai Exp $
+$Id: ChangeLog,v 1.856 2003/07/26 17:16:24 ukai Exp $

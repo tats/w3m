@@ -1,3 +1,8 @@
+2002-01-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* url.c (URI_PATTERN): better match for % hex hex
+	* url.c (chkExternalURIBuffer): don't use URI_PATTERN as format string
+
 2002-01-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02879] reset signals
@@ -2184,4 +2189,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.248 2002/01/21 17:57:27 ukai Exp $
+$Id: ChangeLog,v 1.249 2002/01/21 18:33:59 ukai Exp $

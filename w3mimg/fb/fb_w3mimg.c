@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.3 2002/07/29 15:25:37 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.4 2002/09/09 14:00:49 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -8,7 +8,7 @@
 #include "w3mimg/w3mimg.h"
 
 static int
-w3mfb_init(w3mimg_op *self)
+w3mfb_init(w3mimg_op * self)
 {
     if (self == NULL)
 	return 0;
@@ -16,7 +16,7 @@ w3mfb_init(w3mimg_op *self)
 }
 
 static int
-w3mfb_finish(w3mimg_op *self)
+w3mfb_finish(w3mimg_op * self)
 {
     if (self == NULL)
 	return 0;
@@ -24,7 +24,7 @@ w3mfb_finish(w3mimg_op *self)
 }
 
 static int
-w3mfb_active(w3mimg_op *self)
+w3mfb_active(w3mimg_op * self)
 {
     if (self == NULL)
 	return 0;
@@ -32,7 +32,7 @@ w3mfb_active(w3mimg_op *self)
 }
 
 static void
-w3mfb_set_background(w3mimg_op *self, char *background)
+w3mfb_set_background(w3mimg_op * self, char *background)
 {
     if (self == NULL)
 	return;
@@ -44,19 +44,19 @@ w3mfb_set_background(w3mimg_op *self, char *background)
 }
 
 static void
-w3mfb_sync(w3mimg_op *self)
+w3mfb_sync(w3mimg_op * self)
 {
     return;
 }
 
 static void
-w3mfb_close(w3mimg_op *self)
+w3mfb_close(w3mimg_op * self)
 {
     fb_close();
 }
 
 static int
-w3mfb_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
+w3mfb_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 {
     FB_IMAGE **im;
 
@@ -72,9 +72,8 @@ w3mfb_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
 }
 
 static int
-w3mfb_show_image(w3mimg_op *self, W3MImage *img, int sx, int sy, 
-		 int sw, int sh,
-		 int x, int y)
+w3mfb_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy,
+		 int sw, int sh, int x, int y)
 {
     int i;
     FB_IMAGE **frame;
@@ -83,32 +82,31 @@ w3mfb_show_image(w3mimg_op *self, W3MImage *img, int sx, int sy,
     if (self == NULL)
 	return 0;
 
-    frame = (FB_IMAGE **)img->pixmap;
+    frame = (FB_IMAGE **) img->pixmap;
     i = frame[0]->id;
     fb_image_draw(frame[i],
 		  x + self->offset_x, y + self->offset_y,
-		  sx, sy,
-		  (sw ? sw : img->width), (sh ? sh : img->height));
-    if(frame[0]->num > 1){
-      if(frame[1]->id > WAIT_CNT){
-	frame[1]->id = 0;
-	if(i < frame[0]->num - 1)
-	  frame[0]->id = i + 1;
-	else
-	  frame[0]->id = 0;
-      }
-      frame[1]->id += 1;
+		  sx, sy, (sw ? sw : img->width), (sh ? sh : img->height));
+    if (frame[0]->num > 1) {
+	if (frame[1]->id > WAIT_CNT) {
+	    frame[1]->id = 0;
+	    if (i < frame[0]->num - 1)
+		frame[0]->id = i + 1;
+	    else
+		frame[0]->id = 0;
+	}
+	frame[1]->id += 1;
     }
     return 1;
 }
 
 static void
-w3mfb_free_image(w3mimg_op *self, W3MImage *img)
+w3mfb_free_image(w3mimg_op * self, W3MImage * img)
 {
     if (self == NULL)
 	return;
     if (img && img->pixmap) {
-	fb_frame_free((FB_IMAGE **)img->pixmap);
+	fb_frame_free((FB_IMAGE **) img->pixmap);
 	img->pixmap = NULL;
 	img->width = 0;
 	img->height = 0;
@@ -116,7 +114,7 @@ w3mfb_free_image(w3mimg_op *self, W3MImage *img)
 }
 
 static int
-w3mfb_get_image_size(w3mimg_op *self, W3MImage *img, 
+w3mfb_get_image_size(w3mimg_op * self, W3MImage * img,
 		     char *fname, int *w, int *h)
 {
     int i;
@@ -133,7 +131,7 @@ w3mimg_op *
 w3mimg_fbopen()
 {
     w3mimg_op *wop = NULL;
-    wop = (w3mimg_op *)malloc(sizeof(w3mimg_op));
+    wop = (w3mimg_op *) malloc(sizeof(w3mimg_op));
     if (wop == NULL)
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
@@ -143,7 +141,7 @@ w3mimg_fbopen()
 
     wop->width = fb_width();
     wop->height = fb_height();
-    
+
     wop->init = w3mfb_init;
     wop->finish = w3mfb_finish;
     wop->active = w3mfb_active;
@@ -157,7 +155,7 @@ w3mimg_fbopen()
     wop->get_image_size = w3mfb_get_image_size;
 
     return wop;
-error:
+  error:
     free(wop);
     return NULL;
 }

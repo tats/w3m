@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.7 2002/07/29 15:25:37 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.8 2002/09/09 14:00:18 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -8,13 +8,13 @@
 #include "fb_img.h"
 
 static void draw(FB_IMAGE * img, int bg, int x, int y, int w, int h,
-		  GdkPixbuf * pixbuf);
+		 GdkPixbuf * pixbuf);
 static GdkPixbuf *resize_image(GdkPixbuf * pixbuf, int width, int height);
 
 int
-get_image_size(char *filename, int *w, int *h) 
+get_image_size(char *filename, int *w, int *h)
 {
-    GdkPixbufAnimation * animation;
+    GdkPixbufAnimation *animation;
     if (filename == NULL)
 	return 1;
     animation = gdk_pixbuf_animation_new_from_file(filename);
@@ -26,13 +26,14 @@ get_image_size(char *filename, int *w, int *h)
     return 0;
 }
 
-FB_IMAGE ** fb_image_load(char *filename, int w, int h)
+FB_IMAGE **
+fb_image_load(char *filename, int w, int h)
 {
-    GdkPixbufAnimation * animation;
-    GList * frames;
+    GdkPixbufAnimation *animation;
+    GList *frames;
     double ratio_w, ratio_h;
     int n, i, fw, fh;
-    FB_IMAGE ** fb_frame;
+    FB_IMAGE **fb_frame;
     GdkPixbufFrameAction action = GDK_PIXBUF_FRAME_REVERT;
     if (filename == NULL)
 	return NULL;
@@ -47,7 +48,8 @@ FB_IMAGE ** fb_image_load(char *filename, int w, int h)
 	w = fw;
 	h = fh;
 	ratio_w = ratio_h = 1;
-    } else {
+    }
+    else {
 	ratio_w = 1.0 * w / fw;
 	ratio_h = 1.0 * h / fh;
     }
@@ -55,8 +57,8 @@ FB_IMAGE ** fb_image_load(char *filename, int w, int h)
     if (fb_frame == NULL)
 	goto END;
     for (i = 0; i < n; i++) {
-	GdkPixbufFrame * frame;
-	GdkPixbuf * org_pixbuf, *pixbuf;
+	GdkPixbufFrame *frame;
+	GdkPixbuf *org_pixbuf, *pixbuf;
 	int width, height, ofstx, ofsty;
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
 	org_pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
@@ -66,7 +68,8 @@ FB_IMAGE ** fb_image_load(char *filename, int w, int h)
 	height = gdk_pixbuf_get_height(org_pixbuf);
 	if (ofstx == 0 && ofsty == 0 && width == fw && height == fh) {
 	    pixbuf = resize_image(org_pixbuf, w, h);
-	} else {
+	}
+	else {
 	    pixbuf =
 		resize_image(org_pixbuf, width * ratio_w, height * ratio_h);
 	    ofstx *= ratio_w;
@@ -81,9 +84,9 @@ FB_IMAGE ** fb_image_load(char *filename, int w, int h)
 		fb_image_copy(fb_frame[i], fb_frame[i - 1]);
 		break;
 	    case GDK_PIXBUF_FRAME_DISPOSE:
-	        if(bg_r != 0 || bg_g != 0 || bg_b != 0){
-	            fb_image_fill(fb_frame[i], bg_r, bg_g, bg_b);
-	        }
+		if (bg_r != 0 || bg_g != 0 || bg_b != 0) {
+		    fb_image_fill(fb_frame[i], bg_r, bg_g, bg_b);
+		}
 		break;
 	    case GDK_PIXBUF_FRAME_REVERT:
 		fb_image_copy(fb_frame[i], fb_frame[0]);
@@ -102,10 +105,10 @@ FB_IMAGE ** fb_image_load(char *filename, int w, int h)
     return fb_frame;
 }
 static void
-draw(FB_IMAGE * img, int bg, int x, int y, int w, int h, GdkPixbuf * pixbuf) 
+draw(FB_IMAGE * img, int bg, int x, int y, int w, int h, GdkPixbuf * pixbuf)
 {
     int i, j, r, g, b, offset, bpp, rowstride;
-    guchar * pixels;
+    guchar *pixels;
     gboolean alpha;
     if (img == NULL || pixbuf == NULL)
 	return;
@@ -122,7 +125,8 @@ draw(FB_IMAGE * img, int bg, int x, int y, int w, int h, GdkPixbuf * pixbuf)
 	    if (alpha && pixels[offset + 3] == 0) {
 		if (bg)
 		    fb_image_pset(img, i + x, j + y, bg_r, bg_g, bg_b);
-	    } else {
+	    }
+	    else {
 		fb_image_pset(img, i + x, j + y, r, g, b);
 	    }
 	}
@@ -130,9 +134,9 @@ draw(FB_IMAGE * img, int bg, int x, int y, int w, int h, GdkPixbuf * pixbuf)
     return;
 }
 static GdkPixbuf *
-resize_image(GdkPixbuf * pixbuf, int width, int height) 
+resize_image(GdkPixbuf * pixbuf, int width, int height)
 {
-    GdkPixbuf * resized_pixbuf;
+    GdkPixbuf *resized_pixbuf;
     int w, h;
     if (pixbuf == NULL)
 	return NULL;

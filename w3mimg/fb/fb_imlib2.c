@@ -1,4 +1,4 @@
-/* $Id: fb_imlib2.c,v 1.7 2002/07/29 15:25:37 ukai Exp $ */
+/* $Id: fb_imlib2.c,v 1.8 2002/09/09 14:00:42 ukai Exp $ */
 /**************************************************************************
                 fb_imlib2.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -89,7 +89,8 @@ draw(FB_IMAGE * img, Imlib_Image image)
 
 	    if (a == 0) {
 		fb_image_pset(img, i, j, bg_r, bg_g, bg_b);
-	    } else {
+	    }
+	    else {
 		fb_image_pset(img, i, j, r, g, b);
 	    }
 	}

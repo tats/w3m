@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.5 2002/07/22 16:17:32 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.6 2002/09/09 13:59:09 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -195,7 +195,8 @@ x11_free_image(w3mimg_op * self, W3MImage * img)
 }
 
 static int
-x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w, int *h)
+x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
+		   int *h)
 {
     struct x11_info *xi;
     ImlibImage *im;

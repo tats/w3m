@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.4 2001/12/21 21:37:12 ukai Exp $ */
+/* $Id: mktable.c,v 1.5 2001/12/23 14:31:38 ukai Exp $ */
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,7 +18,7 @@ defhash(HashItem_ss *, int, hss_i)
 #define keycomp(x,y) ((x)==(y))
      static uintptr_t hashfunc(HashItem_ss * x)
 {
-    return (uintptr_t)x;
+    return (uintptr_t) x;
 }
 
 defhashfunc(HashItem_ss *, int, hss_i)

@@ -23,6 +23,7 @@ FRAME		<FRAME>タグの指す文書を1つの文書に変換して表示します
 GOTO		URLを指定して開きます
 GOTO_LINE	画面下で行番号を入力し，そこで指定した行に移動します
 GOTO_LINK	リンクが指す先の文書を読みこみます
+GOTO_RELATIVE	相対URLを指定して開きます
 HELP		ヘルプファイルを表示します
 HISTORY                URL履歴を表示します
 INFO		現在の文書に関する情報を表示します

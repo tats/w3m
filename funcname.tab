@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.5 2001/12/25 13:43:51 ukai Exp $
+# $Id: funcname.tab,v 1.6 2002/01/22 16:59:11 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -29,6 +29,7 @@ FRAME		rFrame
 GOTO		goURL
 GOTO_LINE	goLine
 GOTO_LINK	followA
+GOTO_RELATIVE	gorURL
 HELP		ldhelp
 HISTORY		ldHist
 INFO		pginfo

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.68 2002/01/22 10:45:14 ukai Exp $ */
+/* $Id: main.c,v 1.69 2002/01/22 16:59:11 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3611,28 +3611,23 @@ cmd_loadURL(char *url, ParsedURL *current)
 
 
 /* go to specified URL */
-void
-goURL(void)
+static void
+goURL0(char *prompt, char *def_url)
 {
     char *url;
     ParsedURL p_url;
+    ParsedURL *b_url;
 
+    b_url = baseURL(Currentbuf);
     url = searchKeyData();
     if (url == NULL) {
-	Str cur_url = parsedURL2Str(&Currentbuf->currentURL);
-	ParsedURL pu;
 	if (!(Currentbuf->bufferprop & BP_INTERNAL))
-	    pushHashHist(URLHist, cur_url->ptr);
-	url = inputLineHist("Goto URL: ", cur_url->ptr, IN_URL, URLHist);
+	    pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
+	url = inputLineHist(prompt, def_url, IN_URL, URLHist);
 	if (url != NULL) {
 	    SKIP_BLANKS(url);
-	    parseURL(url, &pu, NULL);
-	    if (retryAsHttp) {
-		if ((pu.scheme == SCM_MISSING)
-		    || ((pu.scheme == SCM_LOCAL) 
-			&& (strncmp(url, "file:", 5) != 0)))
-		    url = Sprintf("http://%s", url)->ptr;
-	    }
+	    if (def_url != NULL)
+		b_url = NULL;	/* XXX: for retryAsHttp */
 	}
     }
 #ifdef JP_CHARSET
@@ -3653,7 +3648,19 @@ goURL(void)
     }
     parseURL2(url, &p_url, baseURL(Currentbuf));
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, baseURL(Currentbuf));
+    cmd_loadURL(url, b_url);
+}
+
+void
+goURL(void)
+{
+    goURL0("Goto URL: ", parsedURL2Str(&Currentbuf->currentURL)->ptr);
+}
+
+void
+gorURL(void)
+{
+    goURL0("Goto relative URL: ", NULL);
 }
 
 static void

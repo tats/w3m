@@ -23,6 +23,7 @@ FRAME		Render frame
 GOTO		Go to URL
 GOTO_LINE	Go to specified line
 GOTO_LINK	Go to current link
+GOTO_RELATIVE	Go to relative URL
 HELP		View help
 HISTORY		View history of URL
 INFO		View info of current document

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.7 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: main.c,v 1.8 2001/11/19 07:58:24 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4416,27 +4416,23 @@ GetWord(Buffer * buf)
 {
     Line *l = buf->currentLine;
     char *lb;
-    int i, b, e, pos = buf->pos;
+    int b, e;
 
     if (l == NULL)
 	return NULL;
     lb = l->lineBuf;
 
-    i = pos;
-    while (!IS_ALPHA(lb[i]) && i >= 0)
-	i--;
-    pos = i;
-    while (IS_ALPHA(lb[i]) && i >= 0)
-	i--;
-    i++;
-    if (!IS_ALPHA(lb[i]))
+    e = buf->pos;
+    while (e > 0 && !IS_ALPHA(lb[e]))
+	e--;
+    if (!IS_ALPHA(lb[e]))
 	return NULL;
-    b = i;
-    i = pos;
-    while (IS_ALPHA(lb[i]) && i <= l->len - 1)
-	i++;
-    e = i - 1;
-    return Strnew_charp_n(&lb[b], e - b + 1)->ptr;
+    b = e;
+    while (b > 0 && IS_ALPHA(lb[b-1]))
+	b--;
+    while (e < l->len && IS_ALPHA(lb[e]))
+	e++;
+    return Strnew_charp_n(&lb[b], e - b)->ptr;
 }
 
 #ifdef DICT

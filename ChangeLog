@@ -1,3 +1,8 @@
+2002-11-04  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00827] Re: w3m-cvs segfaults on news://<mid> URLs
+	* url.c (openURL): check pu->file for news:
+
 2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* fix compilation warnings
@@ -4088,4 +4093,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.465 2002/10/31 09:37:39 ukai Exp $
+$Id: ChangeLog,v 1.466 2002/11/04 08:47:37 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.244 2004/07/15 16:44:37 ukai Exp $ */
+/* $Id: main.c,v 1.245 2004/08/02 15:40:50 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -384,9 +384,11 @@ main(int argc, char **argv, char **envp)
 #endif
 #endif
     GC_init();
+#if ENABLE_NLS
     setlocale(LC_ALL, "");
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+#endif
 
 #ifndef HAVE_SYS_ERRLIST
     prepare_sys_errlist();

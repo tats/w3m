@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.42 2004/07/15 16:32:38 ukai Exp $ */
+/* $Id: menu.c,v 1.43 2004/08/02 15:40:50 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1717,7 +1717,7 @@ initMenu(void)
 #endif
 	for (item = MainMenuItem; item->type != MENU_END; item++)
 	    item->label =
-		wc_conv(gettext(item->label), MainMenuCharset,
+		wc_conv(_(item->label), MainMenuCharset,
 			InnerCharset)->ptr;
 	MainMenuEncode = TRUE;
     }

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.98 2004/07/17 15:29:00 ukai Exp $ */
+/* $Id: rc.c,v 1.99 2004/08/02 15:40:50 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -793,7 +793,7 @@ show_params(FILE * fp)
 #ifdef USE_M17N
 	if (!OptionEncode)
 	    cmt =
-		wc_conv(gettext(sections[j].name), OptionCharset,
+		wc_conv(_(sections[j].name), OptionCharset,
 			InnerCharset)->ptr;
 	else
 #endif
@@ -839,7 +839,7 @@ show_params(FILE * fp)
 	    }
 #ifdef USE_M17N
 	    if (!OptionEncode)
-		cmt = wc_conv(gettext(sections[j].params[i].comment),
+		cmt = wc_conv(_(sections[j].params[i].comment),
 			      OptionCharset, InnerCharset)->ptr;
 	    else
 #endif

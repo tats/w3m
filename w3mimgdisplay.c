@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.15 2003/07/07 15:49:03 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.16 2003/07/08 17:29:56 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -324,5 +324,5 @@ ClearImage(char *buf)
     for (; isdigit(*p); p++)
 	h = 10 * h + (*p - '0');
 
-    w_op->clear(w_op, x, y, w, h);
+    w_op->clear(w_op, x + offset_x, y + offset_y, w, h);
 }

@@ -1,3 +1,9 @@
+2003-07-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03931] Re: clear image
+	* w3mimgdisplay.c (ClearImage): offset
+	* w3mimg/fb/fb.c (fb_clear): memcpy by pixel_size
+
 2003-07-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03929] clear image
@@ -7892,4 +7898,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.845 2003/07/07 15:48:16 ukai Exp $
+$Id: ChangeLog,v 1.846 2003/07/08 17:29:56 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.11 2003/07/07 15:49:39 ukai Exp $ */
+/* $Id: fb.c,v 1.12 2003/07/08 17:29:56 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -368,8 +368,8 @@ fb_height(void)
 int
 fb_clear(int x, int y, int w, int h, int r, int g, int b)
 {
-    unsigned long bg;
-    int i, offset_fb;
+    unsigned long work;
+    int i, j, offset_fb;
 
     if (is_open != TRUE || x > fb_width() || y > fb_height())
 	return 1;
@@ -379,11 +379,12 @@ fb_clear(int x, int y, int w, int h, int r, int g, int b)
 	h = fb_height() - y;
 
     offset_fb = fscinfo.line_length * y + pixel_size * x;
-    bg = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    work = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	   ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
+	   ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
     for (i = 0; i < h; i++) {
-	memcpy(buf + offset_fb, bg, pixel_size * w);
+	for (j = 0; j < w; j++)
+	    memcpy(buf + offset_fb + pixel_size * j, &work, pixel_size);
 	offset_fb += fscinfo.line_length;
     }
     return 0;

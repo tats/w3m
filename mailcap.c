@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.7 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: mailcap.c,v 1.8 2001/11/30 09:54:22 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -12,22 +12,8 @@ static struct mailcap DefaultMailcap[] = {
     {NULL, NULL, 0, NULL, NULL, NULL}
 };
 
-void
-initMailcap()
-{
-    int i;
-    TextListItem *tl;
-
-    if (non_null(mailcap_files))
-	mailcap_list = make_domain_list(mailcap_files);
-    else
-	mailcap_list = NULL;
-    if (mailcap_list == NULL)
-	return;
-    UserMailcap = New_N(struct mailcap *, mailcap_list->nitem);
-    for (i = 0, tl = mailcap_list->first; tl; i++, tl = tl->next)
-	UserMailcap[i] = loadMailcap(tl->ptr);
-}
+static TextList *mailcap_list;
+static struct mailcap **UserMailcap;
 
 int
 mailcapMatch(struct mailcap *mcap, char *type)
@@ -124,7 +110,7 @@ matchMailcapAttr(char *p, char *attr, int len, Str *value)
     return 0;
 }
 
-int
+static int
 extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
 {
     int j, k;
@@ -193,7 +179,7 @@ extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
     return 1;
 }
 
-struct mailcap *
+static struct mailcap *
 loadMailcap(char *filename)
 {
     FILE *f;
@@ -231,6 +217,70 @@ loadMailcap(char *filename)
     bzero(&mcap[i], sizeof(struct mailcap));
     fclose(f);
     return mcap;
+}
+
+void
+initMailcap()
+{
+    TextListItem *tl;
+    int i;
+
+    if (non_null(mailcap_files))
+	mailcap_list = make_domain_list(mailcap_files);
+    else
+	mailcap_list = NULL;
+    if (mailcap_list == NULL)
+	return;
+    UserMailcap = New_N(struct mailcap *, mailcap_list->nitem);
+    for (i = 0, tl = mailcap_list->first; tl; i++, tl = tl->next)
+	UserMailcap[i] = loadMailcap(tl->ptr);
+
+}
+
+char *
+acceptableMimeTypes()
+{
+    static Str types = NULL;
+    TextList *l;
+    Hash_si *mhash;
+    char *p;
+    int i;
+
+    if (types != NULL)
+	return types->ptr;
+
+    /* generate acceptable media types */
+    l = newTextList();
+    mhash = newHash_si(16); /* XXX */
+    pushText(l, "text");
+    putHash_si(mhash, "text", 1);
+    pushText(l, "image");
+    putHash_si(mhash, "image", 1);
+    for (i = 0; i < mailcap_list->nitem; i++) {
+	struct mailcap *mp = UserMailcap[i];
+	char *mt;
+	if (mp == NULL)
+	    continue;
+	for (; mp->type; mp++) {
+	    p = strchr(mp->type, '/');
+	    if (p == NULL)
+		continue;
+	    mt = allocStr(mp->type, p - mp->type);
+	    if (getHash_si(mhash, mt, 0) == 0) {
+		pushText(l, mt);
+		putHash_si(mhash, mt, 1);
+	    }
+	}
+    }
+    while ((p = popText(l)) != NULL) {
+	if (types == NULL)
+	    types = Strnew();
+	else
+	    Strcat_charp(types, ", ");
+	Strcat_charp(types, p);
+	Strcat_charp(types, "/*");
+    }
+    return types->ptr;
 }
 
 struct mailcap *

@@ -1,3 +1,45 @@
+2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02592] Accept: and AcceptEncoding:
+	* url.c (otherinfo): use acceptableEncoding() acceptableMimeTypes()
+
+	* file.c: add compression_decoder
+	* file.c (check_compress): rewrite by using compression_decoder
+	* file.c (compress_application_type): ditto
+	* file.c (uncompressed_file_type): ditto
+	* file.c (check_command): added
+	* file.c (acceptableEncoding): added
+	* proto.h (acceptableEncoding): ditto
+	* file.c (uncompress_stream): renamed from gunzip_stream
+	* file.c (uncompress_stream): rewrite by using compression_decoder
+	* configure: add PATH_SEPARATOR
+
+	* mailcap.c (extractMailcapEntry): static
+	* mailcap.c (loadMailcap): static
+	* proto.h (loadMailcap): removed
+	* mailcap.c (acceptableMimeTypes): added
+	* proto.h (acceptableMimeTypes): added
+
+	* configure: #define USE_PATH_ENVVAR for __EMX__
+	* file.c: GUNZIP_*, BUNZIP2_*, INFLATE_* removed here -> config.h
+	* file.c (gunzip_stream): s/(GUNZIP|BUNZIP2|INFLATE)_CMD/\1_CMDNAME/
+	* configure (config.h): GUNZIP_*, BUNZIP2_*, INFLATE_* moved here
+	* fm.h (DirBufferCommand): use CGI_EXTENSION
+	* fm.h (mailcap_list): removed from global -> mailcap.c
+	* fm.h (UserMailcap): removed from global -> mailcap.c
+	* mailcap.c: static mailcap_list
+	* mailcap.c: static UserMailcap
+	* proto.h (initMimeTypes): moved
+	* proto.h (get_os2_dft): removed
+	* rc.c (loadMimeTypes): removed here -> url.c
+	* rc.c (initMimeTypes): removed here -> url.c
+	* fm.h (mimetypes_list): removed from global -> url.c
+	* fm.h (UserMimeTypes): removed from global -> url.c
+	* url.c: static mimetypes_list
+	* url.c: static UserMimeTypes
+	* url.c (loadMimeTypes): moved here
+	* url.c (initMimeTypes): moved here
+
 2001-11-30  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02590]

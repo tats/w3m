@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.19 2001/11/29 10:48:12 ukai Exp $ */
+/* $Id: file.c,v 1.20 2001/11/30 09:54:22 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -23,7 +23,7 @@
 #define min(a,b)        ((a) > (b) ? (b) : (a))
 #endif				/* not min */
 
-static void gunzip_stream(URLFile *uf);
+static void uncompress_stream(URLFile *uf);
 static FILE *lessopen_stream(char *path);
 static Buffer *loadcmdout(char *cmd,
 			  Buffer *(*loadproc) (URLFile *, Buffer *),
@@ -143,6 +143,26 @@ char *violations[COO_EMAX] = {
 };
 #endif
 
+static struct compression_decoder {
+    int type;
+    char *ext;
+    char *mime_type;
+    int libfile_p;
+    char *cmd;
+    char *name;
+    char *encoding;
+} compression_decoders[] = {
+    {CMP_COMPRESS, ".gz", "application/x-gzip",
+     0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip"},
+    {CMP_COMPRESS, ".Z", "application/x-compress",
+     0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress"},
+    {CMP_BZIP2, ".bz2", "application/x-bzip",
+     0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2"},
+    {CMP_DEFLATE, NULL, "application/x-deflate",
+     1, INFLATE_CMDNAME, INFLATE_NAME, "deflate"},
+    {CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL},
+};
+
 #define SAVE_BUF_SIZE 1536
 
 static MySignalHandler
@@ -223,41 +243,36 @@ static void
 check_compression(char *path, URLFile *uf)
 {
     int len;
+    struct compression_decoder *d;
 
     if (path == NULL)
 	return;
 
     len = strlen(path);
     uf->compression = CMP_NOCOMPRESS;
-    if (len > 2 && strcasecmp(&path[len - 2], ".Z") == 0) {
-	uf->compression = CMP_COMPRESS;
-	uf->guess_type = "application/x-compress";
-    }
-    else if (len > 3 && strcasecmp(&path[len - 3], ".gz") == 0) {
-	uf->compression = CMP_GZIP;
-	uf->guess_type = "application/x-gzip";
-    }
-    else if (len > 4 && strcasecmp(&path[len - 4], ".bz2") == 0) {
-	uf->compression = CMP_BZIP2;
-	uf->guess_type = "application/x-bzip";
+    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+	int elen;
+	if (d->ext == NULL)
+	    continue;
+	elen = strlen(d->ext);
+	if (len > elen && strcasecmp(&path[len - elen], d->ext) == 0) {
+	    uf->compression = d->type;
+	    uf->guess_type = d->mime_type;
+	    break;
+	}
     }
 }
 
 static char *
 compress_application_type(int compression)
 {
-    switch (compression) {
-    case CMP_COMPRESS:
-	return "application/x-compress";
-    case CMP_GZIP:
-	return "application/x-gzip";
-    case CMP_BZIP2:
-	return "application/x-bzip";
-    case CMP_DEFLATE:
-	return "application/x-deflate";
-    default:
-	return NULL;
+    struct compression_decoder *d;
+    
+    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+	if (d->type == compression)
+	    return d->mime_type;
     }
+    return NULL;
 }
 
 static char *
@@ -266,21 +281,20 @@ uncompressed_file_type(char *path, char **ext)
     int len, slen;
     Str fn;
     char *t0;
+    struct compression_decoder *d;
 
     if (path == NULL)
 	return NULL;
 
     len = strlen(path);
-    if (len > 2 && strcasecmp(&path[len - 2], ".Z") == 0) {
-	slen = 2;
+    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+	if (d->ext == NULL)
+	    continue;
+	slen = strlen(d->ext);
+	if (len > slen && strcasecmp(&path[len - slen], d->ext) == 0)
+	    break;
     }
-    else if (len > 3 && strcasecmp(&path[len - 3], ".gz") == 0) {
-	slen = 3;
-    }
-    else if (len > 4 && strcasecmp(&path[len - 4], ".bz2") == 0) {
-	slen = 4;
-    }
-    else
+    if (d->type == CMP_NOCOMPRESS)
 	return NULL;
 
     fn = Strnew_charp(path);
@@ -326,10 +340,69 @@ examineFile(char *path, URLFile *uf)
 	    char *t0 = uncompressed_file_type(path, &ext);
 	    uf->guess_type = t0;
 	    uf->ext = ext;
-	    gunzip_stream(uf);
+	    uncompress_stream(uf);
 	    return;
 	}
     }
+}
+
+#define S_IXANY	(S_IXUSR|S_IXGRP|S_IXOTH)
+
+int
+check_command(char *cmd, int libfile_p)
+{
+    static char *path = NULL;
+    Str dirs;
+    char *p, *np;
+    Str pathname;
+    struct stat st;
+
+    if (path == NULL)
+	path = getenv("PATH");
+    if (libfile_p)
+	dirs = Strnew_charp(w3m_lib_dir());
+    else
+	dirs = Strnew_charp(path);
+    for (p = dirs->ptr; p != NULL; p = np) {
+	np = strchr(p, PATH_SEPARATOR);
+	if (np)
+	    *np++ = '\0';
+	pathname = Strnew();
+	Strcat_charp(pathname, p);
+	Strcat_char(pathname, '/');
+	Strcat_charp(pathname, cmd);
+	if (stat(pathname->ptr, &st) == 0 
+	    && S_ISREG(st.st_mode) 
+	    && (st.st_mode & S_IXANY) != 0)
+	    return 1;
+    }
+    return 0;
+}
+
+char *
+acceptableEncoding()
+{
+    static Str encodings = NULL;
+    struct compression_decoder *d;
+    TextList *l;
+    char *p;
+
+    if (encodings != NULL)
+	return encodings->ptr;
+    l = newTextList();
+    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+	if (check_command(d->cmd, d->libfile_p)) {
+	    pushText(l, d->encoding);
+	}
+    }
+    while ((p = popText(l)) != NULL) {
+	if (encodings == NULL)
+	    encodings = Strnew();
+	else
+	    Strcat_charp(encodings, ", ");
+	Strcat_charp(encodings, p);
+    }
+    return encodings->ptr;
 }
 
 /* 
@@ -1263,7 +1336,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (!(w3m_dump & DUMP_SOURCE) &&
 	    (w3m_dump & ~DUMP_FRAME || is_text_type(t)
 	     || searchExtViewer(t))) {
-	    gunzip_stream(&f);
+	    uncompress_stream(&f);
 	    uncompressed_file_type(pu.file, &f.ext);
 	}
 	else {
@@ -5961,46 +6034,29 @@ checkOverWrite(char *path)
 	return -1;
 }
 
-#ifdef __EMX__
-#define GUNZIP_CMD  "gzip"
-#define BUNZIP2_CMD "bzip2"
-#define INFLATE_CMD  libFile("inflate.exe")
-#else				/* not __EMX__ */
-#define GUNZIP_CMD  "gunzip"
-#define BUNZIP2_CMD "bunzip2"
-#define INFLATE_CMD  libFile("inflate")
-#endif				/* not __EMX__ */
-#define GUNZIP_NAME  "gunzip"
-#define BUNZIP2_NAME "bunzip2"
-#define INFLATE_NAME "inflate"
-
 static void
-gunzip_stream(URLFile *uf)
+uncompress_stream(URLFile *uf)
 {
     int pid1;
     int fd1[2];
-    char *expand_cmd = GUNZIP_CMD;
+    char *expand_cmd = GUNZIP_CMDNAME;
     char *expand_name = GUNZIP_NAME;
     char *tmpf = NULL;
+    struct compression_decoder *d;
 
     if (IStype(uf->stream) != IST_ENCODED) {
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
 	uf->encoding = ENC_7BIT;
     }
-    switch (uf->compression) {
-    case CMP_COMPRESS:
-    case CMP_GZIP:
-	expand_cmd = GUNZIP_CMD;
-	expand_name = GUNZIP_NAME;
-	break;
-    case CMP_BZIP2:
-	expand_cmd = BUNZIP2_CMD;
-	expand_name = BUNZIP2_NAME;
-	break;
-    case CMP_DEFLATE:
-	expand_cmd = INFLATE_CMD;
-	expand_name = INFLATE_NAME;
-	break;
+    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+	if (uf->compression == d->type) {
+	    if (d->libfile_p)
+		expand_cmd = libFile(d->cmd);
+	    else
+		expand_cmd = d->cmd;
+	    expand_name = d->name;
+	    break;
+	}
     }
     uf->compression = CMP_NOCOMPRESS;
 

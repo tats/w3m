@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.23 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: fm.h,v 1.24 2001/11/30 09:54:22 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -744,11 +744,7 @@ global char *BookmarkFile init(NULL);
 global char *pauth init(NULL);
 global Str proxy_auth_cookie init(NULL);
 global int UseExternalDirBuffer init(TRUE);
-#ifdef __EMX__
-global char *DirBufferCommand init("file:///$LIB/dirlist.cmd");
-#else
-global char *DirBufferCommand init("file:///$LIB/dirlist.cgi");
-#endif				/* __EMX__ */
+global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 global int ignore_null_img_alt init(TRUE);
 
 global struct auth_cookie *Auth_cookie init(NULL);
@@ -757,10 +753,6 @@ global char *Local_cookie init(NULL);
 global struct cookie *First_cookie init(NULL);
 #endif				/* USE_COOKIE */
 
-global struct mailcap **UserMailcap;
-global struct table2 **UserMimeTypes;
-global TextList *mailcap_list;
-global TextList *mimetypes_list;
 global char *mailcap_files init(USER_MAILCAP ", " SYS_MAILCAP);
 global char *mimetypes_files init(USER_MIMETYPES ", " SYS_MIMETYPES);
 

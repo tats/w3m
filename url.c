@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.12 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: url.c,v 1.13 2001/11/30 09:54:22 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -133,6 +133,76 @@ sock_log(char *message, ...)
 }
 
 #endif
+
+static TextList *mimetypes_list;
+static struct table2 **UserMimeTypes;
+
+static struct table2 *
+loadMimeTypes(char *filename)
+{
+    FILE *f;
+    char *d, *type;
+    int i, n;
+    Str tmp;
+    struct table2 *mtypes;
+
+    f = fopen(expandName(filename), "r");
+    if (f == NULL)
+	return NULL;
+    n = 0;
+    while (tmp = Strfgets(f), tmp->length > 0) {
+	d = tmp->ptr;
+	if (d[0] != '#') {
+	    d = strtok(d, " \t\n\r");
+	    if (d != NULL) {
+		d = strtok(NULL, " \t\n\r");
+		for (i = 0; d != NULL; i++)
+		    d = strtok(NULL, " \t\n\r");
+		n += i;
+	    }
+	}
+    }
+    fseek(f, 0, 0);
+    mtypes = New_N(struct table2, n + 1);
+    i = 0;
+    while (tmp = Strfgets(f), tmp->length > 0) {
+	d = tmp->ptr;
+	if (d[0] == '#')
+	    continue;
+	type = strtok(d, " \t\n\r");
+	if (type == NULL)
+	    continue;
+	while (1) {
+	    d = strtok(NULL, " \t\n\r");
+	    if (d == NULL)
+		break;
+	    mtypes[i].item1 = Strnew_charp(d)->ptr;
+	    mtypes[i].item2 = Strnew_charp(type)->ptr;
+	    i++;
+	}
+    }
+    mtypes[i].item1 = NULL;
+    mtypes[i].item2 = NULL;
+    fclose(f);
+    return mtypes;
+}
+
+void
+initMimeTypes()
+{
+    int i;
+    TextListItem *tl;
+
+    if (non_null(mimetypes_files))
+	mimetypes_list = make_domain_list(mimetypes_files);
+    else
+	mimetypes_list = NULL;
+    if (mimetypes_list == NULL)
+	return;
+    UserMimeTypes = New_N(struct table2 *, mimetypes_list->nitem);
+    for (i = 0, tl = mimetypes_list->first; tl; i++, tl = tl->next)
+	UserMimeTypes[i] = loadMimeTypes(tl->ptr);
+}
 
 static char *
 DefaultFile(int scheme)
@@ -1127,10 +1197,15 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     else
 	Strcat_charp(s, UserAgent);
     Strcat_charp(s, "\r\n");
-    Strcat_charp(s,
-		 "Accept: text/*, image/*, audio/*, video/*, application/*\r\n");
-    Strcat_charp(s,
-		 "Accept-Encoding: gzip, compress, bzip, bzip2, deflate\r\n");
+
+    Strcat_charp(s, "Accept: ");
+    Strcat_charp(s, acceptableMimeTypes());
+    Strcat_charp(s, "\r\n");
+
+    Strcat_charp(s, "Accept-Encoding: ");
+    Strcat_charp(s, acceptableEncoding());
+    Strcat_charp(s, "\r\n");
+
     Strcat_charp(s, "Accept-Language: ");
     if (AcceptLang != NULL && *AcceptLang != '\0') {
 	Strcat_charp(s, AcceptLang);

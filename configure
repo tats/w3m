@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.27 2001/11/29 11:09:23 ukai Exp $
+# $Id: configure,v 1.28 2001/11/30 09:54:22 ukai Exp $
 #	Configuration.
 #
 
@@ -2067,18 +2067,30 @@ $def_ipv6_ss_family
 #endif
 
 #if defined(__EMX__) /* use \$extension? */
+#define GUNZIP_CMDNAME  "gzip"
+#define BUNZIP2_CMDNAME "bzip2"
+#define INFLATE_CMDNAME  "inflate.exe"
 #define W3MBOOKMARK_CMDNAME	"w3mbookmark.exe"
 #define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel.exe"
 #define DEV_NULL_PATH	"nul"
 #define DEV_TTY_PATH	"con"
 #define CGI_EXTENSION	".cmd"
+#define USE_PATH_ENVVAR
 #else
+#define GUNZIP_CMDNAME  "gunzip"
+#define BUNZIP2_CMDNAME "bunzip2"
+#define INFLATE_CMDNAME	"inflate"
 #define W3MBOOKMARK_CMDNAME	"w3mbookmark"
 #define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel"
 #define DEV_NULL_PATH	"/dev/null"
 #define DEV_TTY_PATH	"/dev/tty"
 #define CGI_EXTENSION	".cgi"
 #endif
+
+#define PATH_SEPARATOR	':'
+#define GUNZIP_NAME  "gunzip"
+#define BUNZIP2_NAME "bunzip2"
+#define INFLATE_NAME "inflate"
 
 #endif /* makefile_parameter */
 #endif /* _CONFIGURED_ */

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.40 2002/11/26 16:57:39 ukai Exp $ */
+/* $Id: display.c,v 1.41 2002/11/27 16:32:52 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -542,7 +542,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 
     if (l == NULL) {
 	if (buf->pagerSource) {
-	    l = getNextPage(buf, buf->LINES - i);
+	    l = getNextPage(buf, buf->LINES + buf->rootY - i);
 	    if (l == NULL)
 		return NULL;
 	}

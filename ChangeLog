@@ -1,5 +1,10 @@
 2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03494] Number of line is few when pager mode.
+	* display.c (redrawLine): buf->rootY
+
+2002-11-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03493] scroll menu
 	* menu.c (mLineU): added
 		(mLineD): added
@@ -5215,4 +5220,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.566 2002/11/27 16:28:36 ukai Exp $
+$Id: ChangeLog,v 1.567 2002/11/27 16:32:51 ukai Exp $

@@ -19,9 +19,9 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-color		disable color for vt100 terminal"
 ac_help="$ac_help
-  --disable-ansi-color		disable ansi color escape sequence"
+   --disable-ansi-color		disable ansi color escape sequence"
 ac_help="$ac_help
-  --disable-bgcolor		disable to set background color"
+   --disable-bgcolor		disable to set background color"
 ac_help="$ac_help
   --disable-image[=x11,fb,fb+s]	enable inline image handler"
 ac_help="$ac_help
@@ -57,7 +57,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --disable-external-uri-loader	disable external URI loader"
 ac_help="$ac_help
-  --disable-w3mmailer		disable w3mmailer"
+   --disable-w3mmailer		disable w3mmailer"
 ac_help="$ac_help
   --with-migemo=MIGEMO_COMMAND	migemo command"
 ac_help="$ac_help
@@ -1420,7 +1420,7 @@ if test "${enable_ansi_color+set}" = set; then
   enableval="$enable_ansi_color"
   :
 else
-  enable_ansi_color="yes"
+  enable_ansi_color="$enable_color"
 fi
 
  test x"$enable_ansi_color" = xyes && cat >> confdefs.h <<\EOF
@@ -1436,7 +1436,7 @@ if test "${enable_bgcolor+set}" = set; then
   enableval="$enable_bgcolor"
   :
 else
-  enable_bgcolor="yes"
+  enable_bgcolor="$enable_color"
 fi
 
  test x"$enable_bgcolor" = xyes && cat >> confdefs.h <<\EOF

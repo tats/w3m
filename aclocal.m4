@@ -40,8 +40,8 @@ AC_DEFUN([AC_W3M_ANSI_COLOR],
 [AC_SUBST(USE_ANSI_COLOR)
 AC_MSG_CHECKING(if ansi color escape sequence support is enabled)
 AC_ARG_ENABLE(ansi_color,
- [  --disable-ansi-color		disable ansi color escape sequence],,
- [enable_ansi_color="yes"])
+ [   --disable-ansi-color		disable ansi color escape sequence],,
+ [enable_ansi_color="$enable_color"])
  test x"$enable_ansi_color" = xyes && AC_DEFINE(USE_ANSI_COLOR)
  AC_MSG_RESULT($enable_ansi_color)])
 #
@@ -52,8 +52,8 @@ AC_DEFUN([AC_W3M_BG_COLOR],
 [AC_SUBST(USE_BG_COLOR)
 AC_MSG_CHECKING(if background color support is enabled)
 AC_ARG_ENABLE(bgcolor,
- [  --disable-bgcolor		disable to set background color],,
- [enable_bgcolor="yes"])
+ [   --disable-bgcolor		disable to set background color],,
+ [enable_bgcolor="$enable_color"])
  test x"$enable_bgcolor" = xyes && AC_DEFINE(USE_BG_COLOR)
 AC_MSG_RESULT($enable_bgcolor)])
 #
@@ -312,7 +312,7 @@ AC_DEFUN([AC_W3M_W3MMAILER],
 [AC_SUBST(USE_W3MMAILER)
  AC_MSG_CHECKING(if w3mmail is used)
  AC_ARG_ENABLE(w3mmailer,
- [  --disable-w3mmailer		disable w3mmailer],,
+ [   --disable-w3mmailer		disable w3mmailer],,
  [enable_w3mmailer="$enable_external_uri_loader"])
  test x"$enable_external_uri_loader" = xno && enable_w3mmailer=no
  test x"$enable_w3mmailer" = xyes && AC_DEFINE(USE_W3MMAILER)

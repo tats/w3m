@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.116 2003/04/08 16:01:38 ukai Exp $ */
+/* $Id: fm.h,v 1.117 2003/04/08 16:27:29 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -32,6 +32,7 @@
 
 #ifndef USE_COLOR
 #undef USE_ANSI_COLOR
+#undef USE_BG_COLOR
 #endif
 
 #include "ctrlcode.h"

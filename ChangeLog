@@ -1,5 +1,13 @@
 2003-04-09  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03865] Re: configure --help
+	* acinclude.m4 (AC_W3M_ANSI_COLOR): depends USE_COLOR
+		(AC_W3M_BG_COLOR): depends USE_COLOR
+		(AC_W3M_W3MMAILER): depends external_uri_loader
+	* fm.h: undef USE_BG_COLOR ifndef USE_COLOR
+
+2003-04-09  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03864] doc/README
 	* doc/README doc-jp/README: update
 
@@ -7709,4 +7717,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.818 2003/04/08 16:19:59 ukai Exp $
+$Id: ChangeLog,v 1.819 2003/04/08 16:27:16 ukai Exp $

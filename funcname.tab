@@ -3,6 +3,7 @@
 @@@		nulcmd
 ABORT		quitfm
 ADD_BOOKMARK	adBmark
+ALARM        setAlarm
 BACK		backBf
 BEGIN		goLineF
 BOOKMARK	ldBmark

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.2 2001/11/09 04:59:18 a-ito Exp $ */
+/* $Id: terms.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -411,6 +411,11 @@ getTCstr(void)
 	fprintf(stderr, "Can't find termcap entry %s\n", ent);
 	reset_exit(SIGNAL_ARGLIST);
     }
+#ifdef MOUSE
+   if (tgetstr("Km", &pt)) {
+	is_xterm = 1;	
+   } 
+#endif
 
     GETSTR(T_ce, "ce");		/* clear to the end of line */
     GETSTR(T_cd, "cd");		/* clear to the end of display */
@@ -449,7 +454,7 @@ getTCstr(void)
     GETSTR(T_ac, "ac");		/* graphics charset pairs */
     GETSTR(T_op, "op");		/* set default color pair to its original
 				 * * * * * * * value */
-#ifdef CYGWIN
+#if defined( CYGWIN ) && CYGWIN < 1
 /* for TERM=pcansi on MS-DOS prompt.
     T_eA = "";
     T_as = "\033[12m";
@@ -862,7 +867,7 @@ addch(char c)
 void
 wrap(void)
 {
-    if (CurLine == LINES - 1)
+    if (CurLine == LASTLINE)
 	return;
     CurLine++;
     CurColumn = 0;
@@ -1012,7 +1017,7 @@ refresh(void)
 #endif				/* BG_COLOR */
     short *dirty;
 
-    for (line = 0; line < LINES; line++) {
+    for (line = 0; line <= LASTLINE; line++) {
 	dirty = &ScreenImage[line]->isdirty;
 	if (*dirty & L_DIRTY) {
 	    *dirty &= ~L_DIRTY;
@@ -1078,7 +1083,10 @@ refresh(void)
 		 * avoid the scroll, I prohibit to draw character on
 		 * (COLS-1,LINES-1).
 		 */
-#ifndef BG_COLOR
+#if !defined( BG_COLOR ) || defined( CYGWIN )
+#ifdef CYGWIN
+		if (isWinConsole)
+#endif
 		if (line == LINES - 1 && col == COLS - 1)
 		    break;
 #endif				/* not BG_COLOR */

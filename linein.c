@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: linein.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"

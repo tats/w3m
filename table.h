@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.2 2001/11/09 04:59:18 a-ito Exp $ */
+/* $Id: table.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) 

@@ -1,4 +1,4 @@
-/* $Id: istream.h,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: istream.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 

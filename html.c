@@ -205,7 +205,7 @@ TagInfo TagMAP[MAX_HTMLTAG] =
     {"title_alt",   ALST_TITLE_ALT,MAXA_TITLE_ALT,TFLG_INT}, /* 118 HTML_TITLE_ALT   */
     {"form_int",    ALST_FORM,     MAXA_FORM,     TFLG_INT}, /* 119 HTML_FORM_INT    */
     {"/form_int",   NULL,          0,    TFLG_INT|TFLG_END}, /* 120 HTML_N_FORM_INT  */
-    {"dl_compat",   NULL,          0,             TFLG_INT}, /* 121 HTML_DL_COMPACT  */
+    {"dl_compact",  NULL,          0,             TFLG_INT}, /* 121 HTML_DL_COMPACT  */
     {"input_alt",   ALST_INPUT_ALT,MAXA_INPUT_ALT,TFLG_INT}, /* 122 HTML_INPUT_ALT   */
     {"/input_alt",  NULL,          0,    TFLG_INT|TFLG_END}, /* 123 HTML_N_INPUT_ALT */
     {"img_alt",     ALST_IMG_ALT,  MAXA_IMG_ALT,  TFLG_INT}, /* 124 HTML_IMG_ALT     */

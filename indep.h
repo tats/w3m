@@ -20,8 +20,7 @@ extern char *getescapecmd(char **s);
 extern char *allocStr(const char *s, int len);
 extern int strCmp(const void *s1, const void *s2);
 extern char *currentdir(void);
-extern char *cleanupName2(char *name, int flag);
-#define cleanupName(name) cleanupName2((name), TRUE)
+extern char *cleanupName(char *name);
 extern char *expandPath(char *name);
 extern char *strcasestr(char *s1, char *s2);
 extern int strcasemstr(char *str, char *srch[], char **ret_ptr);

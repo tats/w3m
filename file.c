@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: file.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -861,7 +861,11 @@ getAuthCookie(char *realm, char *auth_header, TextList * extra_header, ParsedURL
 	    fflush(stdout);
 	    uname = Strfgets(stdin);
 	    Strchop(uname);
+#ifdef HAVE_GETPASSPHRASE
+            pwd = Strnew_charp((char *) getpassphrase(proxy ? "Proxy Password: " : "Password: "));
+#else
             pwd = Strnew_charp((char *) getpass(proxy ? "Proxy Password: " : "Password: "));
+#endif
 	}
 	Strcat_char(uname, ':');
 	Strcat(uname, pwd);
@@ -954,7 +958,7 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 		    if (UseExternalDirBuffer) {
 			Str tmp = Strnew_charp(DirBufferCommand);
 			Strcat_m_charp(tmp, "?dir=",
-				       pu.file,
+                       pu.real_file,
 				       "#current",
 				       NULL);
 			b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0, NULL);
@@ -2066,9 +2070,9 @@ purgeline(struct html_feed_environ *h_env)
 	q = p;
 	if (sloppy_parse_line(&p)) {
 	    Strcat_charp_n(tmp, q, p - q);
-	    appendTextLine(h_env->buf ,tmp, 0);
 	}
     }
+    appendTextLine(h_env->buf ,tmp, 0);
     h_env->blank_lines--;
 }
 

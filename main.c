@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: main.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -39,6 +39,12 @@ typedef struct {
 static Event eventQueue[N_EVENT_QUEUE];
 static int n_event_queue;
 
+#ifdef USE_ALARM
+static int alarm_sec = 0;
+static Event alarm_event;
+static MySignalHandler SigAlarm(SIGNAL_ARG);
+#endif
+
 #ifdef USE_MARK
 static char *MarkString = NULL;
 #endif
@@ -66,6 +72,8 @@ static void dump_extra(Buffer *);
 int prec_num = 0;
 int prev_key = -1;
 int on_target = 1;
+
+void set_buffer_environ(Buffer*);
 
 static void _followForm(int);
 static void _goLine(char*);
@@ -356,7 +364,7 @@ MAIN(int argc, char **argv, char **envp)
 	    if (!strcmp("-t", argv[i])) {
 		if (++i >= argc)
 		    usage();
-		if (atoi(argv[i]) != 0)
+        if (atoi(argv[i]) > 0)
 		    Tabstop = atoi(argv[i]);
 	    }
 	    else if (!strcmp("-r", argv[i]))
@@ -364,7 +372,8 @@ MAIN(int argc, char **argv, char **envp)
 	    else if (!strcmp("-l", argv[i])) {
 		if (++i >= argc)
 		    usage();
-		PagerMax = atoi(argv[i]);
+        if (atoi(argv[i]) > 0)
+            PagerMax = atoi(argv[i]);
 	    }
 #ifdef JP_CHARSET
 #ifndef DEBIAN /* XXX: use -o kanjicode={S|J|E} */
@@ -839,7 +848,18 @@ MAIN(int argc, char **argv, char **envp)
 	if (use_mouse)
 	    mouse_active();
 #endif				/* MOUSE */
+#ifdef USE_ALARM
+       if (alarm_sec > 0) {
+           signal(SIGALRM, SigAlarm);
+           alarm(alarm_sec);
+       }
+#endif
 	c = getch();
+#ifdef USE_ALARM
+       if (alarm_sec > 0) {
+           alarm(0);
+       }
+#endif
 #ifdef MOUSE
 	if (use_mouse)
 	    mouse_inactive();
@@ -851,6 +871,7 @@ MAIN(int argc, char **argv, char **envp)
 		    prec_num = PREC_LIMIT;
 	    }
 	    else {
+		set_buffer_environ(Currentbuf);
 		keyPressEventProc((int) c);
 		prec_num = 0;
 	    }
@@ -899,8 +920,11 @@ dump_head(Buffer * buf)
 {
     TextListItem *ti;
 
-    if (buf->document_header == NULL)
+    if (buf->document_header == NULL) {
+	if (w3m_dump & DUMP_EXTRA)
+	    printf("\n");
 	return;
+    }
     for (ti = buf->document_header->first; ti; ti = ti->next) {
 	printf("%s", ti->ptr);
     }
@@ -1244,11 +1268,6 @@ srchbak(void)
     term_raw();
     displayBuffer(Currentbuf, B_NORMAL);
     onA();
-/** by inu for 1902
-    disp_message(Sprintf("%s%s",
-       routine[reverse] == forwardSearch ? "Forward: " : "Backward: ",
-       SearchString)->ptr, FALSE);
-**/
     if (wrapped) {
 	disp_message("Search wrapped", FALSE);
     }
@@ -1283,11 +1302,13 @@ srch_nxtprv(int reverse)
     term_raw();
     displayBuffer(Currentbuf, B_NORMAL);
     onA();
-    disp_message(Sprintf("%s%s",
-       routine[reverse] == forwardSearch ? "Forward: " : "Backward: ",
-       SearchString)->ptr, FALSE);
     if (wrapped) {
 	disp_message("Search wrapped", FALSE);
+    }
+    else {
+       disp_message(Sprintf("%s%s",
+          routine[reverse] == forwardSearch ? "Forward: " : "Backward: ",
+          SearchString)->ptr, FALSE);
     }
 }
 
@@ -2425,14 +2446,8 @@ followA(void)
 	return;
     }
     parseURL2(a->url, &u, baseURL(Currentbuf));
-    if (u.scheme == Currentbuf->currentURL.scheme &&
-	u.port == Currentbuf->currentURL.port &&
-	((u.host == NULL && Currentbuf->currentURL.host == NULL) ||
-	 (u.host != NULL && Currentbuf->currentURL.host != NULL &&
-	  strcasecmp(u.host, Currentbuf->currentURL.host) == 0)) &&
-	((u.file == NULL && Currentbuf->currentURL.file == NULL) ||
-	 (u.file != NULL && Currentbuf->currentURL.file != NULL &&
-	  strcmp(u.file, Currentbuf->currentURL.file) == 0))) {
+    if (Strcmp(parsedURL2Str(&u),
+              parsedURL2Str(&Currentbuf->currentURL)) == 0) {
 	/* index within this buffer */
 	if (u.label) {
 	    gotoLabel(u.label);
@@ -2768,15 +2783,6 @@ _followForm(int submit)
            goto do_submit;
        if (fi->readonly)
            disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
-/*
-	if (fi->rows == 1) {
-	    p = inputStrHist("TEXT:", fi->value ? fi->value->ptr : NULL, TextHist);
-	    if (p == NULL)
-		return;
-	    fi->value = Strnew_charp(p);
-	}
-       else
-*/
        input_textarea(fi);
 	formUpdateBuffer(a, Currentbuf, fi);
 	break;
@@ -2826,8 +2832,8 @@ _followForm(int submit)
 	if (!Strcmp_charp(tmp2, "!CURRENT_URL!")) {
 	    /* It means "current URL" */
 	    tmp2 = parsedURL2Str(&Currentbuf->currentURL);
-           if ((p = strchr(tmp2->ptr, '?')) != NULL)
-        Strshrink(tmp2, (tmp2->ptr + tmp2->length) - p);
+	    if ((p = strchr(tmp2->ptr, '?')) != NULL)
+	       Strshrink(tmp2, (tmp2->ptr + tmp2->length) - p);
 	}
 
 	if (fi->parent->method == FORM_METHOD_GET) {
@@ -3397,7 +3403,6 @@ cmd_loadURL(char *url, ParsedURL * current)
     }
 #endif				/* USE_NNTP */
 
-/* message(Sprintf("loading %s", url)->ptr, 0, 0); */
     refresh();
     buf = loadGeneralFile(url, current, NO_REFERER, 0, NULL);
     if (buf == NULL) {
@@ -3444,7 +3449,7 @@ goURL(void)
 	gotoLabel(url + 1);
 	return;
     }
-    parseURL2(url, &p_url, NULL);
+    parseURL2(url, &p_url, baseURL(Currentbuf));
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
     cmd_loadURL(url, baseURL(Currentbuf));
 }
@@ -3994,14 +3999,14 @@ chkURL(void)
 {
     static char *url_like_pat[] =
     {
-	"http://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*",
+       "http://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*[a-zA-Z0-9_/]",
 #ifdef USE_SSL
-	"https://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*",
+       "https://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$]*[a-zA-Z0-9_/]",
 #endif				/* USE_SSL */
 #ifdef USE_GOPHER
 	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_GOPHER */
-	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*",
+       "ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
 #ifdef USE_NNTP
 	"news:[^<> 	][^<> 	]*",
 	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
@@ -4411,13 +4416,16 @@ wrapToggle(void)
     }
 }
 
-#ifdef DICT
 static char *
 GetWord(Buffer * buf)
 {
     Line *l = buf->currentLine;
-    char *lb = l->lineBuf;
+    char *lb;
     int i, b, e, pos = buf->pos;
+
+    if (l == NULL)
+	return NULL;
+    lb = l->lineBuf;
 
     i = pos;
     while (!IS_ALPHA(lb[i]) && i >= 0)
@@ -4436,6 +4444,7 @@ GetWord(Buffer * buf)
     return Strnew_charp_n(&lb[b], e - b + 1)->ptr;
 }
 
+#ifdef DICT
 static void
 execdict(char *word)
 {
@@ -4491,6 +4500,58 @@ dictwordat(void)
 }
 #endif				/* DICT */
 
+void
+set_buffer_environ(Buffer *buf)
+{
+    Anchor *a;
+    Str s;
+    ParsedURL pu;
+    TextListItem *ti;
+    struct frameset *f_set = NULL;
+    int all;
+
+    if (buf == NULL)
+	return;
+    set_environ("W3M_SOURCEFILE", buf->sourcefile);
+    set_environ("W3M_FILENAME",buf->filename);
+    set_environ("W3M_CURRENT_WORD",GetWord(buf));
+    set_environ("W3M_TITLE", buf->buffername);
+    set_environ("W3M_URL",parsedURL2Str(&buf->currentURL)->ptr);
+    if (buf->real_type)
+	set_environ("W3M_TYPE", buf->real_type);
+    else
+	set_environ("W3M_TYPE", "unknown");
+#ifdef JP_CHARSET
+    set_environ("W3M_CHARSET", code_to_str(buf->document_code));
+#endif				/* JP_CHARSET */
+    a = retrieveCurrentAnchor(buf);
+    if (a == NULL) {
+	set_environ("W3M_CURRENT_LINK","");
+    }
+    else {
+	parseURL2(a->url, &pu, baseURL(buf));
+	s = parsedURL2Str(&pu);
+	set_environ("W3M_CURRENT_LINK", s->ptr);
+    }
+    a = retrieveCurrentImg(buf);
+    if (a == NULL) {
+	set_environ("W3M_CURRENT_IMG","");
+    }
+    else {
+	parseURL2(a->url, &pu, baseURL(buf));
+	s = parsedURL2Str(&pu);
+	set_environ("W3M_CURRENT_IMG",s->ptr);
+    }
+    a = retrieveCurrentForm(buf);
+    if (a == NULL) {
+	set_environ("W3M_CURRENT_FORM","");
+    }
+    else {
+	s = Strnew_charp(form2str((FormItemList *) a->url));
+	set_environ("W3M_CURRENT_FORM",s->ptr);
+    }
+}
+
 char *
 searchKeyData(void)
 {
@@ -4545,3 +4606,54 @@ w3m_exit( int i )
 #endif
     exit( i );
 }
+
+#ifdef USE_ALARM
+static MySignalHandler
+SigAlarm(SIGNAL_ARG)
+{
+    if (alarm_sec > 0) {
+       CurrentKey = -1;
+       CurrentKeyData = (char *)alarm_event.user_data;
+#ifdef MENU
+       CurrentMenuData = NULL;
+#endif
+       w3mFuncList[alarm_event.cmd].func();
+       signal(SIGALRM, SigAlarm);
+       alarm(alarm_sec);
+    }
+    SIGNAL_RETURN;
+}
+
+void
+setAlarm(void)
+{
+    char *data;
+    int sec = 0, cmd = -1;
+    extern int w3mNFuncList;
+
+    CurrentKeyData = NULL;      /* not allowed in w3m-control: */
+    data = searchKeyData();
+    if (data == NULL || *data == '\0') {
+       data = inputStrHist("(Alarm)sec command: ", "", TextHist);
+       if (data == NULL) {
+           displayBuffer(Currentbuf, B_NORMAL);
+           return;
+       }
+    }
+    if (*data != '\0') {
+       sec = atoi(getWord(&data));
+       if (sec > 0)
+           cmd = getFuncList(getWord(&data), w3mFuncList, w3mNFuncList);
+    }
+    if (cmd >= 0) {
+       alarm_sec = sec;
+       alarm_event.cmd = cmd;
+       alarm_event.user_data = getQWord(&data);
+       signal(SIGALRM, SigAlarm);
+       alarm(alarm_sec);
+    } else {
+       alarm_sec = 0;
+    }
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+#endif

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: html.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -56,6 +56,7 @@ typedef struct _ParsedURL {
     int port;
     char *file;
     char *real_file;
+    char *query;
     char *label;
     int is_nocache;
 } ParsedURL;

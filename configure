@@ -1316,6 +1316,23 @@ else
   srandom_flg="#undef HAVE_SRANDOM"
 fi
 
+####### getpassphrase
+cat > _zmachdep.c << EOF
+#include <unistd.h>
+main()
+{
+  getpassphrase("");
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have getpassphrase()."
+  getpassphrase_flg="#define HAVE_GETPASSPHRASE"
+else
+  echo "You don't have getpassphrase()."
+  getpassphrase_flg="#undef HAVE_GETPASSPHRASE"
+fi
+
 ####### fclose
 cat > _zmachdep.c << EOF
 #include <stdio.h>
@@ -1750,6 +1767,11 @@ $def_ansi_color
  */
 #undef NEXTPAGE_TOPLINE
 
+/*
+   Use alarm function.
+ */
+#undef USE_ALARM
+
 /**********************************************************/
 #ifdef makefile_parameter
 
@@ -1840,7 +1862,7 @@ $setenv_flg
 $putenv_flg
 $srand48_flg
 $srandom_flg
-$readlink_flg
+$getpassphrase_flg
 $fclose_dcl
 $pclose_dcl
 $setjmp_def
@@ -1880,6 +1902,10 @@ $no_float_h
 
 #if defined( __CYGWIN__ ) || defined( __EMX__ )
 #define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
+
+#if defined( __CYGWIN__ )
+#define SUPPORT_NETBIOS_SHARE 1
 #endif
 
 #endif /* makefile_parameter */

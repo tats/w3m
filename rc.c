@@ -50,6 +50,7 @@ static int rc_initialized = 0;
 #define P_CODE     7
 #endif
 #define P_PIXELS   8
+#define P_NZINT    9
 
 #if LANG == JA
 #define CMT_HELPER	 "外部ビューアの編集"
@@ -328,7 +329,7 @@ static struct sel_c badcookiestr[] = {
 
 struct param_ptr params1[] =
 {
-    {"tabstop", P_INT, PI_TEXT, (void *) &Tabstop, CMT_TABSTOP, NULL},
+    {"tabstop", P_NZINT, PI_TEXT, (void *) &Tabstop, CMT_TABSTOP, NULL},
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *) &pixel_per_char, CMT_PIXEL_PER_CHAR, NULL},
 #ifdef JP_CHARSET
     {"kanjicode", P_CODE, PI_SEL_C, (void *) &DisplayCode, CMT_KANJICODE, kcodestr},
@@ -372,7 +373,7 @@ struct param_ptr params2[] =
 
 struct param_ptr params3[] =
 {
-    {"pagerline", P_INT, PI_TEXT, (void *) &PagerMax, CMT_PAGERLINE, NULL},
+    {"pagerline", P_NZINT, PI_TEXT, (void *) &PagerMax, CMT_PAGERLINE, NULL},
 #ifdef USE_HISTORY
     {"history", P_INT, PI_TEXT, (void *) &URLHistSize, CMT_HISTSIZE, NULL},
     {"save_hist", P_INT, PI_ONOFF, (void *) &SaveURLHist, CMT_SAVEHIST, NULL},
@@ -626,6 +627,7 @@ show_params(FILE * fp)
 	    case P_INT:
 	    case P_SHORT:
 	    case P_CHARINT:
+           case P_NZINT:
 		t = (sections[j].params[i].inputtype == PI_ONOFF) ? "bool" : "number";
 		break;
 	    case P_CHAR:
@@ -812,8 +814,13 @@ set_param(char *name, char *value)
 	return 0;
     switch (p->type) {
     case P_INT:
-       *(int *) p->varptr = (p->inputtype == PI_ONOFF)
+       if (atoi(value) >= 0)
+           *(int *) p->varptr = (p->inputtype == PI_ONOFF)
         ? str_to_bool(value, *(int *) p->varptr) : atoi(value);
+       break;
+    case P_NZINT:
+       if (atoi(value) > 0)
+           *(int *) p->varptr = atoi(value);
 	break;
     case P_SHORT:
        *(short *) p->varptr = (p->inputtype == PI_ONOFF)
@@ -1134,6 +1141,7 @@ to_str(struct param_ptr *p)
 #ifdef COLOR
     case P_COLOR:
 #endif
+    case P_NZINT:
 	return Sprintf("%d", *(int *) p->varptr);
     case P_SHORT:
 	return Sprintf("%d", *(short *) p->varptr);

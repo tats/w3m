@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.2 2001/11/09 04:59:17 a-ito Exp $ */
+/* $Id: frame.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -426,7 +426,7 @@ static int
 createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int force_reload)
 {
     int r, c, t_stack;
-    InputStream f2;
+    URLFile f2;
 #ifdef JP_CHARSET
     char code, ic, charset[2];
 #endif				/* JP_CHARSET */
@@ -508,6 +508,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		if (!frame.body->name && f->name) {
 		    frame.body->name = Sprintf("%s_%d", f->name, i)->ptr;
 		}
+		fflush(f1);
 		f_frameset = frame_download_source(frame.body,
 						   currentURL,
 						   current->baseURL,
@@ -519,17 +520,20 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		}
 		/* fall through */
 	    case F_BODY:
-		f2 = NULL;
-		if (frame.body->source == NULL ||
-		    (f2 = openIS(frame.body->source)) == NULL) {
+		init_stream(&f2, SCM_LOCAL, NULL);
+		if (frame.body->source) {
+		    fflush(f1);
+		    examineFile(frame.body->source, &f2);
+		}
+		if (f2.stream == NULL) {
 		    frame.body->attr = F_UNLOADED;
 		    if (frame.body->flags & FB_NO_BUFFER)
 			fprintf(f1, "Open %s with other method", frame.body->url);
-            else if (frame.body->url)
+		    else if (frame.body->url)
 			fprintf(f1, "Can't open %s", frame.body->url);
-            else
-               fprintf(f1, "This frame (%s) contains no src attribute",
-                frame.body->name ? frame.body->name : "(no name)");
+		    else
+			fprintf(f1, "This frame (%s) contains no src attribute",
+			    frame.body->name ? frame.body->name : "(no name)");
 		    break;
 		}
 		parseURL2(frame.body->url, &base, currentURL);
@@ -545,7 +549,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
                ! strcasecmp(frame.body->type, "text/plain")) {
             Str tmp;
             fprintf(f1, "<pre>\n");
-            while ((tmp = StrmyISgets(f2))->length) {
+            while ((tmp = StrmyUFgets(&f2))->length) {
 #ifdef JP_CHARSET
                if ((ic = checkShiftCode(tmp, code)) != '\0')
                 tmp = conv_str(tmp, (code = ic), InnerCode);
@@ -555,14 +559,14 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
                fprintf(f1, "%s", html_quote(tmp->ptr));
             }
             fprintf(f1, "</pre>\n");
-            ISclose(f2);
+            UFclose(&f2);
             break;
         }
 		do {
 		    status = R_ST_NORMAL;
 		    do {
 			if (*p == '\0') {
- 			    Str tmp = StrmyISgets(f2);
+ 			    Str tmp = StrmyUFgets(&f2);
 			    if (tmp->length == 0 && status != R_ST_NORMAL)
 				tmp = correct_irrtag(status);
 			    if (tmp->length == 0)
@@ -735,10 +739,10 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer * current, int level, int 
 		    }
 		  token_end:
 		    Strclear(tok);
-		} while (*p != '\0' || !iseos(f2));
+		} while (*p != '\0' || !iseos(f2.stream));
 		while (t_stack--)
 		    fputs("</TABLE>\n", f1);
-		ISclose(f2);
+		UFclose(&f2);
 		break;
 	    case F_FRAMESET:
 	      render_frameset:

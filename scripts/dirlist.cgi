@@ -1,4 +1,4 @@
-#!/usr/local/bin/perl
+#!/usr/bin/perl
 #
 # Directory list CGI by Hironori Sakamoto (hsaka@mth.biglobe.ne.jp)
 #

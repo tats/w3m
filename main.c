@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.102 2002/06/01 17:10:37 ukai Exp $ */
+/* $Id: main.c,v 1.103 2002/06/01 17:26:11 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5103,7 +5103,7 @@ reinit()
 #ifdef USE_COOKIE
 	initCookie();
 #endif
-	initKeymap();
+	initKeymap(TRUE);
 #ifdef USE_MENU
 	initMenu();
 #endif
@@ -5123,7 +5123,7 @@ reinit()
 #endif
 
     if (!strcasecmp(resource, "KEYMAP")) {
-	initKeymap();
+	initKeymap(TRUE);
 	return;
     }
 

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.4 2001/11/20 16:46:32 ukai Exp $ */
+/* $Id: display.c,v 1.5 2001/11/21 09:09:10 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -233,11 +233,11 @@ displayBuffer(Buffer * buf, int mode)
 		scroll(n);
 	    }
 	    else if (n < 0 && n > -LASTLINE) {
-#if defined(CYGWIN) && LANG == JA
+#if defined(__CYGWIN__) && LANG == JA
 		move(LASTLINE + n + 1, 0);
 		clrtoeolx();
 		refresh();
-#endif				/* defined(CYGWIN) && LANG == JA */
+#endif				/* defined(__CYGWIN__) && LANG == JA */
 		rscroll(-n);
 	    }
 	    redrawNLine(buf, n);

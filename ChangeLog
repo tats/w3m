@@ -1,6 +1,15 @@
+2001-11-21  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02472] cleanup CYGWIN macro
+	* display.c (displayBuffer): use __CYGWIN__ macro
+	* fm.h: ditto
+	* terms.c (refresh): add condition for isWinConsole which
+          defined only japanese cygwin environment
+
 2001-11-21  Akinori Ito <aito@fw.ipsj.or.jp>
 
-	* Homepage URLs and author's mail addresses in the documents
+	* [w3m-dev 02466]
+	  Homepage URLs and author's mail addresses in the documents
 	  are changed.
 
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>

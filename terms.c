@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.9 2001/11/19 19:21:11 ukai Exp $ */
+/* $Id: terms.c,v 1.10 2001/11/21 09:09:10 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1089,13 +1089,13 @@ refresh(void)
 		 * avoid the scroll, I prohibit to draw character on
 		 * (COLS-1,LINES-1).
 		 */
-#if !defined( BG_COLOR ) || defined( CYGWIN )
-#ifdef CYGWIN
+#if !defined(BG_COLOR) || defined(__CYGWIN__)
+#if defined(__CYGWIN__) && LANG == JA
 		if (isWinConsole)
-#endif
+#endif				/* defined(__CYGWIN__) && LANG == JA */
 		if (line == LINES - 1 && col == COLS - 1)
 		    break;
-#endif				/* not BG_COLOR */
+#endif				/* !defined(BG_COLOR) || defined(__CYGWIN__) */
 		if ((!(pr[col] & S_STANDOUT) && (mode & S_STANDOUT)) ||
 		    (!(pr[col] & S_UNDERLINE) && (mode & S_UNDERLINE)) ||
 		    (!(pr[col] & S_BOLD) && (mode & S_BOLD)) ||

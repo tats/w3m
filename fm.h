@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.7 2001/11/20 16:46:33 ukai Exp $ */
+/* $Id: fm.h,v 1.8 2001/11/21 09:09:10 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -603,12 +603,12 @@ typedef struct http_request {
  */
 
 extern int LINES, COLS;
-#if defined(CYGWIN) && LANG == JA
+#if defined(__CYGWIN__) && LANG == JA
 extern int isWinConsole;
 #define LASTLINE (LINES-(isWinConsole ? 2 : 1))
-#else				/* not defined(CYGWIN) && LANG == JA */
+#else				/* not defined(__CYGWIN__) || LANG != JA */
 #define LASTLINE (LINES-1)
-#endif				/* not defined(CYGWIN) && LANG == JA */
+#endif				/* not defined(__CYGWIN__) || LANG != JA */
 
 global int Tabstop init(8);
 global int ShowEffect init(TRUE);

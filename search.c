@@ -1,8 +1,9 @@
-/* $Id: search.c,v 1.14 2002/01/17 10:29:14 ukai Exp $ */
+/* $Id: search.c,v 1.15 2002/01/17 15:05:43 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
 #include <errno.h>
+#include <unistd.h>
 
 static void
 set_mark(Line *l, int pos, int epos)
@@ -14,15 +15,21 @@ set_mark(Line *l, int pos, int epos)
 #ifdef USE_MIGEMO
 /* Migemo: romaji --> kana+kanji in regexp */
 static FILE *migemor, *migemow;
+static int migemo_active;
+static int migemo_pid;
 
 void
 init_migemo()
 {
+    migemo_active = use_migemo;
     if (migemor != NULL)
 	fclose(migemor);
     if (migemow != NULL)
 	fclose(migemow);
     migemor = migemow = NULL;
+    if (migemo_pid)
+	kill(migemo_pid, SIGTERM);
+    migemo_pid = 0;
 }
 
 static int
@@ -30,7 +37,7 @@ open_migemo(char *migemo_command)
 {
     int fdr[2];
     int fdw[2];
-    int pid;
+
     if (pipe(fdr) < 0)
 	goto err0;
     if (pipe(fdw) < 0)
@@ -38,12 +45,15 @@ open_migemo(char *migemo_command)
 
     flush_tty();
     /* migemow:fdw[1] -|-> fdw[0]=0 {migemo} fdr[1]=1 -|-> fdr[0]:migemor */
-    pid = fork();
-    if (pid < 0)
+    migemo_pid = fork();
+    if (migemo_pid < 0)
 	goto err2;
-    if (pid == 0) {
+    if (migemo_pid == 0) {
 	/* child */
 	signal(SIGINT, SIG_IGN);
+#ifdef HAVE_SETPGRP
+	setpgrp();
+#endif
 	close_tty();
 	close(fdr[0]);
 	close(fdw[1]);
@@ -65,7 +75,7 @@ open_migemo(char *migemo_command)
     close(fdr[0]);
     close(fdr[1]);
   err0:
-    use_migemo = 0;
+    migemo_active = 0;
     return 0;
 }
 
@@ -94,7 +104,7 @@ migemostr(char *str)
   err:
     /* XXX: backend migemo is not working? */
     init_migemo();
-    use_migemo = 0;
+    migemo_active = 0;
     return str;
 }
 #endif				/* USE_MIGEMO */
@@ -108,7 +118,7 @@ forwardSearch(Buffer *buf, char *str)
     int pos;
 
 #ifdef USE_MIGEMO
-    if (use_migemo) {
+    if (migemo_active) {
 	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
 	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
 	    message(p, 0, 0);
@@ -186,7 +196,7 @@ backwardSearch(Buffer *buf, char *str)
     int pos;
 
 #ifdef USE_MIGEMO
-    if (use_migemo) {
+    if (migemo_active) {
 	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
 	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
 	    message(p, 0, 0);

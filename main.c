@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.65 2002/01/17 11:06:45 ukai Exp $ */
+/* $Id: main.c,v 1.66 2002/01/17 15:05:43 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4779,6 +4779,9 @@ deleteFiles()
 void
 w3m_exit(int i)
 {
+#ifdef USE_MIGEMO
+    init_migemo();	/* close pipe to migemo */
+#endif
     deleteFiles();
 #ifdef USE_SSL
     free_ssl_ctx();

@@ -1,3 +1,19 @@
+2002-01-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02870] don't kill migemo by SIGINT 
+	* main.c (w3m_exit): init_migemo() to kill migemo 
+	* search.c: #include <unistd.h>
+	* search.c (migemo_active): added
+	* search.c (migemo_pid): added
+	* search.c (init_migemo): migemo_active = use_migemo
+	* search.c (init_migemo): kill migemo_pid
+	* search.c (open_migemo): s/pid/migemo_pid/
+	* search.c (open_migemo): setpgrp()
+	* search.c (open_migemo): s/use_migemo/migemo_active/
+	* search.c (migemostr): ditto
+	* search.c (forwardSearch): ditto
+	* search.c (backwardSearch): ditto
+
 2002-01-17  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02867] mark URL for external URIs
@@ -2105,4 +2121,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.239 2002/01/17 11:06:45 ukai Exp $
+$Id: ChangeLog,v 1.240 2002/01/17 15:05:43 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.51 2003/01/17 17:06:00 ukai Exp $ */
+/* $Id: etc.c,v 1.52 2003/01/17 17:06:57 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1444,11 +1444,11 @@ expandName(char *name)
 	    char *q;
 	    p += 2;
 	    q = strchr(p, '/');
-            if (q) {			/* /~user/dir... */
+	    if (q) {		/* /~user/dir... */
 		passent = getpwnam(allocStr(p, q - p));
 		p = q;
 	    }
-	    else {			/* /~user */
+	    else {		/* /~user */
 		passent = getpwnam(p);
 		p = "";
 	    }

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.77 2003/01/17 17:06:05 ukai Exp $ */
+/* $Id: rc.c,v 1.78 2003/01/17 17:07:02 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1580,7 +1580,7 @@ rcFile(char *base)
 	 (base[0] == '.'
 	  && (base[1] == '/' || (base[1] == '.' && base[2] == '/')))
 	 || (base[0] == '~' && base[1] == '/')))
-		/* /file, ./file, ../file, ~/file */
+	/* /file, ./file, ../file, ~/file */
 	return expandPath(base);
     return expandPath(Strnew_m_charp(rc_dir, "/", base, NULL)->ptr);
 }

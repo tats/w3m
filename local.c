@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.23 2003/01/17 17:06:03 ukai Exp $ */
+/* $Id: local.c,v 1.24 2003/01/17 17:07:00 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -300,7 +300,7 @@ checkPath(char *fn, char *path)
     Str tmp;
     struct stat st;
     while (*path) {
-    	p = strchr(path, ':');
+	p = strchr(path, ':');
 	tmp = Strnew_charp(expandPath(p ? allocStr(path, p - path) : path));
 	if (Strlastchar(tmp) != '/')
 	    Strcat_char(tmp, '/');

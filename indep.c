@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.29 2003/01/17 17:06:02 ukai Exp $ */
+/* $Id: indep.c,v 1.30 2003/01/17 17:07:00 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -188,12 +188,12 @@ expandPath(char *name)
 	p++;
 	if (IS_ALPHA(*p)) {
 	    char *q = strchr(p, '/');
-	    if (q) {				/* ~user/dir... */
-	        passent = getpwnam(allocStr(p, q - p));
+	    if (q) {		/* ~user/dir... */
+		passent = getpwnam(allocStr(p, q - p));
 		p = q;
 	    }
-	    else {				/* ~user */
-	        passent = getpwnam(p);
+	    else {		/* ~user */
+		passent = getpwnam(p);
 		p = "";
 	    }
 	    if (!passent)

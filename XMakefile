@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.32 2002/11/10 11:42:12 ukai Exp $
+# $Id: XMakefile,v 1.33 2002/11/13 15:53:45 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -19,9 +19,11 @@ BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
+MAN1_TARGET=w3m.1
 MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
 TARGETS=$(TARGET) $(LIB_TARGETS) $(AUXBIN_TARGETS)
+HELP_TARGET=w3mhelp.html
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
@@ -127,9 +129,9 @@ install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(MAN1_DIR)
 	-$(MKDIR) $(DESTDIR)$(MAN1_JA_DIR)
 	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(BIN_DIR)/$(TARGET)
-	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
-	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(MAN1_DIR)/$(TARGET).1
-	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(MAN1_JA_DIR)/$(TARGET).1
+	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/$(HELP_TARGET)
+	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(MAN1_DIR)/$(MAN1_TARGET)
+	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(MAN1_JA_DIR)/$(MAN1_TARGET)
 	for file in $(AUXBIN_TARGETS); \
 	do \
 		case $$file in \
@@ -177,8 +179,9 @@ uninstall:
 	do \
 		rm -f $(HELP_DIR)/$$file; \
 	done
-	-rm -f $(MAN1_DIR)/$(TARGET).1
-	-rm -f $(MAN1_JA_DIR)/$(TARGET).1
+	-rm -f $(HELP_DIR)/$(HELP_TARGET)
+	-rm -f $(MAN1_DIR)/$(MAN1_TARGET)
+	-rm -f $(MAN1_JA_DIR)/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir; $(MAKE) BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' MAN_DIR='$(MAN_DIR)' uninstall); \

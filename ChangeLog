@@ -1,5 +1,13 @@
 2002-11-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03428] install manual as w3m.exe.1 on Cygwin
+	* XMakefile (MAN1_TARGET): added
+		(HELP_TARGET): added
+		(install): use MAN1_TARGET, HELP_TARGET
+		(uninstall): use MAN1_TARGET, uninstall HELP_TARGET
+
+2002-11-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03427] Re: Select the nearest map area as default.
 	* map.c (newMapArea): accept sign chars
 			if points is not enough, return as SHAPE_UNKNOWN
@@ -4613,4 +4621,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.509 2002/11/13 15:51:39 ukai Exp $
+$Id: ChangeLog,v 1.510 2002/11/13 15:53:44 ukai Exp $

@@ -1,3 +1,9 @@
+2002-02-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02999] don't ask accept bad cert when background downloading
+	* file.c (getAuthCookie): if QuietMessage, return NULL
+	* file.c (inputAnswer): if QuietMessage, input "n"
+
 2002-02-05  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02991] form support in w3m -halfdump foo.html|w3m -halfload
@@ -2842,4 +2848,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.302 2002/02/05 12:31:27 ukai Exp $
+$Id: ChangeLog,v 1.303 2002/02/06 16:20:25 ukai Exp $

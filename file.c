@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.66 2002/02/05 12:31:27 ukai Exp $ */
+/* $Id: file.c,v 1.67 2002/02/06 16:20:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1320,6 +1320,8 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     else
 	ss = find_auth_cookie(pu->host, pu->port, realm);
     if (ss == NULL) {
+	if (QuietMessage)
+	    return ss;
 	/* input username and password */
 	sleep(2);
 	if (fmInitialized) {
@@ -7155,6 +7157,8 @@ inputAnswer(char *prompt)
 {
     char *ans;
 
+    if (QuietMessage)
+	return "n";
     if (fmInitialized) {
 	term_raw();
 	ans = inputChar(prompt);

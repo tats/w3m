@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.39 2002/11/19 17:18:54 ukai Exp $ */
+/* $Id: terms.c,v 1.40 2002/12/04 16:38:54 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -584,7 +584,8 @@ reset_tty(void)
     writestr(T_se);		/* reset terminal */
     fflush(ttyf);
     TerminalSet(tty, &d_ioval);
-    close(tty);
+    if (tty != 2)
+	close(tty);
 }
 
 MySignalHandler

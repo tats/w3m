@@ -11,6 +11,7 @@ Build
 
 After w3m-0.2, patches for Cygwin have been marged to w3m packages. If you use
 cygwin-1.1.4 or later, w3m shuould be build without any problems.
+ (*) on Cygwin B20.1, you should add -luser32 to LOCAL_LIBRARIES
 
 The newest version of termcap and ncurses package are recomended. Especially,
 older versions of termcap have bugs in the entry for Cygwin which make the

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.47 2003/02/21 14:25:33 ukai Exp $ */
+/* $Id: terms.c,v 1.48 2003/02/23 16:00:15 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1827,9 +1827,12 @@ term_title(char *s)
     if (title_str != NULL) {
 #ifdef __CYGWIN__
 	if (isLocalConsole && title_str == CYGWIN_TITLE) {
-	    char buff[1024];
-	    snprintf(buff, sizeof(buff), title_str, s);
-	    SetConsoleTitle(buff);
+	    Str buff;
+	    buff = Sprintf(title_str, s);
+	    if (buff->length > 1024) {
+		Strtruncate(buff, 1024);
+	    }
+	    SetConsoleTitle(buff->ptr);
 	}
 	else if (isLocalConsole || !isWinConsole)
 #endif

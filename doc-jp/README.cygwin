@@ -12,6 +12,8 @@ Cygwin に関する情報は http://cygwin.com/ を参照してください．
 w3m-0.2 以降から cygwin 向けの修正パッチが取り込まれたため，cygwin-1.1.4
 以降の環境であれば特に問題なくビルドできます．Net Release 前の B18, B19, 
 B20あたりでもビルドできるはずですが，確認はされていません．
+ (*) Cygwin B20.1 の環境では
+     LOCAL_LIBRARIES に -luser32 をつける必要があります。
 
 なお，termcap ないし ncurses パッケージは最新のものを使ってください．特
 に termcap を使う場合，古いパッケージは /etc/termcap の cygwin のエント

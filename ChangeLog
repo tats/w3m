@@ -1,3 +1,12 @@
+2002-03-06  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03084] A temporary file remains when pipe + 'v'
+	* proto.h (saveBufferDelNum): deleted
+	* file.c (saveBufferDelNum): deleted
+	* file.c (saveBuffer): saveBufferDelNum() renamed 
+	* main.c (vwSrc): tmpfname() recorded as fileToDelete
+			use saveBuffer() instead of saveBufferDelNum()
+
 2002-03-04  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc-jp/MANUAL.html: add note about file:/cgi-bin
@@ -3031,4 +3040,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.330 2002/03/03 19:07:37 ukai Exp $
+$Id: ChangeLog,v 1.331 2002/03/05 16:58:09 ukai Exp $

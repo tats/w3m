@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.85 2002/02/28 16:15:41 ukai Exp $ */
+/* $Id: main.c,v 1.86 2002/03/05 16:58:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4150,10 +4150,11 @@ vwSrc(void)
 	    !strcasecmp(Currentbuf->type, "text/plain")) {
 	    FILE *f;
 	    Str tmpf = tmpfname(TMPF_SRC, NULL);
+	    pushText(fileToDelete, tmpf->ptr);
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;
-	    saveBufferDelNum(Currentbuf, f, showLineNum);
+	    saveBuffer(Currentbuf, f);
 	    fclose(f);
 	    fn = tmpf->ptr;
 	}

@@ -396,7 +396,7 @@ AC_DEFUN([AC_W3M_MIGEMO],
  AC_MSG_CHECKING(if migemo is supported with)
  AC_ARG_WITH(migemo,
   [  --with-migemo=MIGEMO_COMMAND   migemo command],
-  [x$with_migemo = xyes || migemo_command=$with_migemo])
+  [test x$with_migemo = xyes || migemo_command="$with_migemo"])
  if test "${with_migemo+set}" = set; then
    AC_DEFINE(USE_MIGEMO)
  fi
@@ -556,7 +556,7 @@ AC_ARG_WITH(ssl,
  [  --with-ssl=PATH        support https protocol],,
  [with_ssl="no"])
 AC_MSG_RESULT($with_ssl)
-if test x"${with_ssl+set}" = xset; then
+if test "${with_ssl+set}" = set; then
   AC_DEFINE(USE_SSL)
   AC_MSG_CHECKING(for SSL library/header)
   test -d $with_ssl || $with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"

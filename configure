@@ -1428,7 +1428,7 @@ echo "configure:1428: checking if migemo is supported with" >&5
  # Check whether --with-migemo or --without-migemo was given.
 if test "${with_migemo+set}" = set; then
   withval="$with_migemo"
-  x$with_migemo = xyes || migemo_command=$with_migemo
+  test x$with_migemo = xyes || migemo_command="$with_migemo"
 fi
 
  if test "${with_migemo+set}" = set; then
@@ -2856,7 +2856,7 @@ else
 fi
 
 echo "$ac_t""$with_ssl" 1>&6
-if test x"${with_ssl+set}" = xset; then
+if test "${with_ssl+set}" = set; then
   cat >> confdefs.h <<\EOF
 #define USE_SSL 1
 EOF

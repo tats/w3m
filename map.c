@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.12 2002/11/06 15:08:06 ukai Exp $ */
+/* $Id: map.c,v 1.11 2002/11/06 15:07:40 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -64,7 +64,7 @@ nearestMapArea(MapList *ml, int x, int y)
     ListItem *al;
     MapArea *a;
     int i, l, n = 0, min = -1, limit = pixel_per_char * pixel_per_char
-	+ pixel_per_line * pixel_per_line;
+				     + pixel_per_line * pixel_per_line;
 
     if (!ml || !ml->area)
 	return n;
@@ -72,7 +72,7 @@ nearestMapArea(MapList *ml, int x, int y)
 	a = (MapArea *) al->ptr;
 	if (a) {
 	    l = (a->center_x - x) * (a->center_x - x)
-		+ (a->center_y - y) * (a->center_y - y);
+	      + (a->center_y - y) * (a->center_y - y);
 	    if ((min < 0 || l < min) && l < limit) {
 		n = i;
 		min = l;

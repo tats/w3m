@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.70 2002/11/05 17:54:39 ukai Exp $ */
+/* $Id: fm.h,v 1.71 2002/11/06 15:07:40 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -292,6 +292,8 @@ typedef struct _MapArea {
     char shape;
     short *coords;
     int ncoords;
+    short center_x;
+    short center_y;
 #endif
 #endif
 } MapArea;

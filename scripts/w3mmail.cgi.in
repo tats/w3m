@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.9 2002/01/29 17:16:35 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.10 2002/01/30 04:27:32 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -242,7 +242,7 @@ sub lang_html_quote {
 
 sub lang_header_default {
     local($h) = @_;
-    if ($h =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
+    if ($h =~ s/([=_?\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
 	return "=?iso-8859-1?Q?$h?=";
     } else {
 	return $h;
@@ -253,7 +253,7 @@ sub lang_body_default {
     local($body, $_7bit) = @_;
     if ($body =~ /[\x80-\xFF]/) {
 	if ($_7bit) {
-	    $body =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge;
+	    $body =~ s/([=\x80-\xFF])/sprintf("=%02x", ord($1))/ge;
 	    return ("iso-8859-1", "quoted-printable", $body);
 	} else {
 	    return ("iso-8859-1", "8bit", $body);

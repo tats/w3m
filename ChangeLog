@@ -1,5 +1,11 @@
 2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02930] Re: fixed w3mmail.cgi
+	* scripts/w3mmail.cgi.in (lang_header_default): [=_?] should be encoded
+	* scripts/w3mmail.cgi.in (lang_body_default): '=' should be encoded
+
+2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02929] Re: fixed w3mmail.cgi
 	* file.c (openPagerBuffer): use content_charset as document_code
 	* file.c (getNextPage): code is document_code or DocumentCode
@@ -2399,4 +2405,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.274 2002/01/30 04:25:02 ukai Exp $
+$Id: ChangeLog,v 1.275 2002/01/30 04:27:32 ukai Exp $

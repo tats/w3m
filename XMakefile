@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.31 2002/11/09 21:55:24 ukai Exp $
+# $Id: XMakefile,v 1.32 2002/11/10 11:42:12 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -139,7 +139,7 @@ install-core: $(TARGETS)
 	done
 	for file in $(LIB_TARGETS); \
 	do \
-		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file; \
 	done
 
 

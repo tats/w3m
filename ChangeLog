@@ -1,3 +1,8 @@
+2002-11-10  NOMIYA Masaru <nomiya@ttmy.ne.jp>
+
+	* [w3m-dev 03399]
+	* XMakefile: ;; -> ;
+
 2002-11-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03398] auxbindir
@@ -4473,4 +4478,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.491 2002/11/09 21:55:24 ukai Exp $
+$Id: ChangeLog,v 1.492 2002/11/10 11:42:12 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.73 2003/02/05 16:18:23 ukai Exp $ */
+/* $Id: url.c,v 1.74 2003/02/05 16:44:00 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1776,7 +1776,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    uf.encoding = ENC_BASE64;
 	}
 	else
-	    tmp = Str_url_unquote(tmp, FALSE);
+	    tmp = Str_url_unquote(tmp, FALSE, FALSE);
 	uf.stream = newStrStream(tmp);
 	uf.guess_type = (*p != '\0') ? p : "text/plain";
 	return uf;

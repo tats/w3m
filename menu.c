@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.30 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: menu.c,v 1.31 2003/02/05 16:44:00 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1379,6 +1379,7 @@ initSelectMenu(void)
     Buffer *buf;
     Str str;
     char **label;
+    char *p;
     static char *comment = " SPC for select / D for delete buffer ";
 
     SelectV = -1;
@@ -1394,7 +1395,6 @@ initSelectMenu(void)
 	if (buf->filename != NULL) {
 	    switch (buf->currentURL.scheme) {
 	    case SCM_LOCAL:
-	    case SCM_LOCAL_CGI:
 		if (strcmp(buf->currentURL.file, "-")) {
 		    Strcat_char(str, ' ');
 		    Strcat_charp(str,
@@ -1406,7 +1406,10 @@ initSelectMenu(void)
 		break;
 	    default:
 		Strcat_char(str, ' ');
-		Strcat(str, parsedURL2Str(&buf->currentURL));
+		p = parsedURL2Str(&buf->currentURL)->ptr;
+		if (DecodeURL)
+		    p = url_unquote_conv(p, 0);
+		Strcat_charp(str, p);
 		break;
 	    }
 	}
@@ -1525,6 +1528,7 @@ initSelTabMenu(void)
     Buffer *buf;
     Str str;
     char **label;
+    char *p;
     static char *comment = " SPC for select / D for delete tab ";
 
     SelTabV = -1;
@@ -1541,7 +1545,6 @@ initSelTabMenu(void)
 	if (buf->filename != NULL) {
 	    switch (buf->currentURL.scheme) {
 	    case SCM_LOCAL:
-	    case SCM_LOCAL_CGI:
 		if (strcmp(buf->currentURL.file, "-")) {
 		    Strcat_char(str, ' ');
 		    Strcat_charp(str,
@@ -1552,8 +1555,10 @@ initSelTabMenu(void)
 	    case SCM_MISSING:
 		break;
 	    default:
-		Strcat_char(str, ' ');
-		Strcat(str, parsedURL2Str(&buf->currentURL));
+		p = parsedURL2Str(&buf->currentURL)->ptr;
+		if (DecodeURL)
+		    p = url_unquote_conv(p, 0);
+		Strcat_charp(str, p);
 		break;
 	    }
 	}
@@ -1827,6 +1832,7 @@ link_menu(Buffer *buf)
     int i, nitem, len = 0, linkV = -1;
     char **label;
     Str str;
+    char *p;
 
     if (!buf->linklist)
 	return NULL;
@@ -1843,7 +1849,13 @@ link_menu(Buffer *buf)
 	    Strcat_charp(str, " [Rev] ");
 	else
 	    Strcat_charp(str, " ");
-	Strcat_charp(str, l->url ? l->url : "");
+	if (!l->url)
+	    p = "";
+	else if (DecodeURL)
+	    p = url_unquote_conv(l->url, buf->document_code);
+	else
+	    p = l->url;
+	Strcat_charp(str, p);
 	label[i] = str->ptr;
 	if (len < str->length)
 	    len = str->length;

@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.22 2003/02/05 16:23:28 ukai Exp $ */
+/* $Id: anchor.c,v 1.23 2003/02/05 16:43:56 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -685,7 +685,7 @@ link_list_panel(Buffer *buf)
     Anchor *a;
     FormItemList *fi;
     int i;
-    char *t, *u;
+    char *t, *u, *p;
     ParsedURL pu;
     Str tmp = Strnew_charp("<title>Link List</title>\
 <h1 align=center>Link List</h1>\n");
@@ -700,10 +700,15 @@ link_list_panel(Buffer *buf)
 	for (l = buf->linklist; l; l = l->next) {
 	    if (l->url) {
 		parseURL2(l->url, &pu, baseURL(buf));
-		u = html_quote(parsedURL2Str(&pu)->ptr);
+		p = parsedURL2Str(&pu)->ptr;
+		u = html_quote(p);
+		if (DecodeURL)
+		    p = html_quote(url_unquote_conv(p, buf->document_code));
+		else
+		    p = u;
 	    }
 	    else
-		u = "";
+		u = p = "";
 	    if (l->type == LINK_TYPE_REL)
 		t = " [Rel]";
 	    else if (l->type == LINK_TYPE_REV)
@@ -712,7 +717,7 @@ link_list_panel(Buffer *buf)
 		t = "";
 	    t = Sprintf("%s%s\n", l->title ? l->title : "", t)->ptr;
 	    t = html_quote(t);
-	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", u,
+	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
 			   "\n", NULL);
 	}
 	Strcat_charp(tmp, "</ol>\n");
@@ -726,10 +731,15 @@ link_list_panel(Buffer *buf)
 	    if (a->slave)
 		continue;
 	    parseURL2(a->url, &pu, baseURL(buf));
-	    u = html_quote(parsedURL2Str(&pu)->ptr);
+	    p = parsedURL2Str(&pu)->ptr;
+	    u = html_quote(p);
+	    if (DecodeURL)
+		 p = html_quote(url_unquote_conv(p, buf->document_code));
+	    else
+		 p = u;
 	    t = getAnchorText(buf, al, a);
 	    t = t ? html_quote(t) : "";
-	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", u,
+	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
 			   "\n", NULL);
 	}
 	Strcat_charp(tmp, "</ol>\n");
@@ -743,10 +753,19 @@ link_list_panel(Buffer *buf)
 	    if (a->slave)
 		continue;
 	    parseURL2(a->url, &pu, baseURL(buf));
-	    u = html_quote(parsedURL2Str(&pu)->ptr);
-	    t = (a->title && *a->title) ? html_quote(a->title) :
-		html_quote(a->url);
-	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", u,
+	    p = parsedURL2Str(&pu)->ptr;
+	    u = html_quote(p);
+	    if (DecodeURL)
+		 p = html_quote(url_unquote_conv(p, buf->document_code));
+	    else
+		 p = u;
+	    if (a->title && *a->title)
+		t = html_quote(a->title);
+	    else if (DecodeURL)
+		t = html_quote(url_unquote_conv(a->url, buf->document_code));
+	    else
+		t = html_quote(a->url);
+	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
 			   "\n", NULL);
 	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
 	    if (!a)
@@ -766,11 +785,22 @@ link_list_panel(Buffer *buf)
 		    if (!m)
 			continue;
 		    parseURL2(m->url, &pu, baseURL(buf));
-		    u = html_quote(parsedURL2Str(&pu)->ptr);
-		    t = (m->alt && *m->alt) ? html_quote(m->alt) :
-			html_quote(m->url);
+		    p = parsedURL2Str(&pu)->ptr;
+		    u = html_quote(p);
+		    if (DecodeURL)
+			 p = html_quote(url_unquote_conv(p,
+							 buf->document_code));
+		    else
+			 p = u;
+		    if (m->alt && *m->alt)
+			t = html_quote(m->alt);
+		    else if (DecodeURL)
+			t = html_quote(url_unquote_conv(m->url,
+							buf->document_code));
+		    else
+			t = html_quote(m->url);
 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,
-				   "</a><br>", u, "\n", NULL);
+				   "</a><br>", p, "\n", NULL);
 		}
 		Strcat_charp(tmp, "</ol>\n");
 	    }

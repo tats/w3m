@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.26 2003/01/20 15:54:11 ukai Exp $ */
+/* $Id: map.c,v 1.27 2003/02/05 16:43:59 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -263,7 +263,7 @@ follow_map_panel(Buffer *buf, char *name)
     ListItem *al;
     MapArea *a;
     ParsedURL pu;
-    char *url;
+    char *p, *q;
 
     ml = searchMapList(buf, name);
     if (ml == NULL)
@@ -275,10 +275,15 @@ follow_map_panel(Buffer *buf, char *name)
 	if (!a)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
-	url = html_quote(parsedURL2Str(&pu)->ptr);
-	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", url, "\">",
+	p = parsedURL2Str(&pu)->ptr;
+	q = html_quote(p);
+        if (DecodeURL)
+	    p = html_quote(url_unquote_conv(p, buf->document_code));
+        else
+	    p = q;
+	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
-		       "</a><td>", url, NULL);
+		       "</a><td>", p, NULL);
     }
     Strcat_charp(mappage, "</table></body></html>");
 
@@ -391,7 +396,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
     ListItem *al;
     MapArea *a;
     ParsedURL pu;
-    char *url;
+    char *p, *q;
 
     ml = searchMapList(buf, fi->value ? fi->value->ptr : NULL);
     if (ml == NULL)
@@ -405,11 +410,15 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	if (!a)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
-	url = html_quote(parsedURL2Str(&pu)->ptr);
+	q = html_quote(parsedURL2Str(&pu)->ptr);
+        if (DecodeURL)
+	    p = html_quote(url_unquote_conv(a->url, buf->document_code));
+        else
+	    p = html_quote(a->url);
 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
-		       url, "\">",
+		       q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
-		       "</a><td>", html_quote(a->url), "\n", NULL);
+		       "</a><td>", p, "\n", NULL);
     }
     Strcat_charp(tmp, "</table>");
 }
@@ -440,8 +449,13 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	    Strcat_charp(html, "[Rel]");
 	else if (l->type == LINK_TYPE_REV)
 	    Strcat_charp(html, "[Rev]");
-	Strcat_m_charp(html, "<td>", l->url ? html_quote(l->url) : "(empty)",
-		       NULL);
+	if (!l->url)
+	    url = "(empty)";
+        else if (DecodeURL)
+	    url = html_quote(url_unquote_conv(l->url, buf->document_code));
+	else
+	    url = html_quote(l->url);
+	Strcat_m_charp(html, "<td>", url, NULL);
 	if (l->ctype)
 	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")", NULL);
 	Strcat_charp(html, "\n");
@@ -473,14 +487,16 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		q = html_quote(frame.body->url);
 		Strcat_m_charp(html, "<a href=\"", q, "\">", NULL);
 		if (frame.body->name) {
-		    p = file_unquote(frame.body->name);
-#ifdef JP_CHARSET
-		    p = conv(p, buf->document_code, InnerCode)->ptr;
-#endif
-		    p = html_quote(p);
+		    p = html_quote(url_unquote_conv(frame.body->name,
+						    buf->document_code));
 		    Strcat_charp(html, p);
 		}
-		Strcat_m_charp(html, " ", q, "</a></pre_int><br>\n", NULL);
+		if (DecodeURL)
+		    p = html_quote(url_unquote_conv(frame.body->url,
+						    buf->document_code));
+		else
+		    p = q;
+		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", NULL);
 #ifdef USE_SSL
 		if (frame.body->ssl_certificate)
 		    Strcat_m_charp(html,
@@ -505,11 +521,11 @@ page_info_panel(Buffer *buf)
 {
     Str tmp = Strnew_size(1024);
     Anchor *a;
-    Str s;
     ParsedURL pu;
     TextListItem *ti;
     struct frameset *f_set = NULL;
     int all;
+    char *p, *q;
 
     Strcat_charp(tmp, "<html><head>\
 <title>Information about current page</title>\
@@ -520,11 +536,14 @@ page_info_panel(Buffer *buf)
     all = buf->allLine;
     if (all == 0 && buf->lastLine)
 	all = buf->lastLine->linenumber;
+    p = parsedURL2Str(&buf->currentURL)->ptr;
+    if (DecodeURL)
+	p = url_unquote_conv(p, 0);
     Strcat_m_charp(tmp, "<table cellpadding=0>",
 		   "<tr valign=top><td nowrap>Title<td>",
 		   html_quote(buf->buffername),
 		   "<tr valign=top><td nowrap>Current URL<td>",
-		   html_quote(parsedURL2Str(&buf->currentURL)->ptr),
+		   html_quote(p),
 		   "<tr valign=top><td nowrap>Document Type<td>",
 		   buf->real_type ? html_quote(buf->real_type) : "unknown",
 		   "<tr valign=top><td nowrap>Last Modified<td>",
@@ -540,29 +559,42 @@ page_info_panel(Buffer *buf)
 
     a = retrieveCurrentAnchor(buf);
     if (a != NULL) {
-	char *aurl;
 	parseURL2(a->url, &pu, baseURL(buf));
-	s = parsedURL2Str(&pu);
-	aurl = html_quote(s->ptr);
+	p = parsedURL2Str(&pu)->ptr;
+	q = html_quote(p);
+	if (DecodeURL)
+	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	else
+	    p = q;
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>URL of current anchor<td><a href=\"",
-		       aurl, "\">", aurl, "</a>", NULL);
+		       q, "\">", p, "</a>", NULL);
     }
     a = retrieveCurrentImg(buf);
     if (a != NULL) {
 	parseURL2(a->url, &pu, baseURL(buf));
-	s = parsedURL2Str(&pu);
+	p = parsedURL2Str(&pu)->ptr;
+	q = html_quote(p);
+	if (DecodeURL)
+	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	else
+	    p = q;
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>URL of current image<td><a href=\"",
-		       html_quote(s->ptr), "\">", html_quote(s->ptr), "</a>",
+		       q, "\">", p, "</a>",
 		       NULL);
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {
 	FormItemList *fi = (FormItemList *)a->url;
+	p = form2str(fi);
+	if (DecodeURL)
+	    p = html_quote(url_unquote_conv(p, buf->document_code));
+	else
+	    p = html_quote(p);
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
-		       html_quote(form2str(fi)), NULL);
+		       p, NULL);
 	if (fi->parent->method == FORM_METHOD_INTERNAL
 	    && !Strcmp_charp(fi->parent->action, "map"))
 	    append_map_info(buf, tmp, fi->parent->item);

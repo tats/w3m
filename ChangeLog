@@ -1,5 +1,61 @@
 2003-02-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03730] display decoded URL
+	* anchor.c (link_list_panel): support DecodeURL
+	* display.c (make_lastline_link): support DecodeURL
+	* etc.c (url_unquote_conv): added
+	* fm.h (DecodeURL): added
+	* history.c (historyBuffer): support DecodeURL
+	* indep.c (QUOTE_MAP): added
+		(HTML_QUOTE_MAP): added
+		(html_quote_char): deleted
+		(url_quote): use is_url_quote
+		(file_quote): use is_file_quote
+		(is_url_safe): deleted
+		(Str_form_quote): use is_url_unsafe
+		(Str_url_unquote): add safe args
+		(is_shell_safe): delete
+		(shell_quote): use is_shell_unsafe
+	* indep.h (QUOTE_MAP): added
+		(HTML_QUOTE_MAP): added
+		(HTML_QUOTE_MASK): added
+		(SHELL_UNSAFE_MASK): added
+		(URL_QUOTE_MASK): added
+		(FILE_QUOTE_MASK): added
+		(URL_UNSAFE_MASK): added
+		(GET_QUOTE_TYPE): added
+		(is_html_quote): added
+		(is_shell_unsafe): added
+		(is_url_quote): added
+		(is_file_quote): added
+		(is_url_unsafe): added
+		(html_quote_char): added
+		(html_quote_char): deleted
+		(Str_url_unquote): added safe
+		(form_unquote): Str_url_unquote changes
+	* linein.c (_prev): support DecodeURL
+		(_next): ditto
+	* main.c (goURL0): support DecodeURL
+		(_peekURL): ditto
+		(curURL): ditto
+	* map.c (follow_map_panel): support DecodeURL
+		(append_map_info): ditto
+		(append_link_info): ditto
+		(append_frame_info): ditto
+		(page_info_panel): ditto
+	* menu.c (initSelectMenu): delete SCM_LOCAL_CGI
+			support DecodeURL
+		(initSelTabMenu): delete SCM_LOCAL_CGI
+			support DecodeURL
+		(link_menu): support DecodeURL
+	* parsetagx.c (parse_tag): is_html_quote
+	* proto.h (url_unquote_conv): added
+	* rc.c (CMT_DECODE_URL): added
+		(params1): add decode_url
+	* url.c (openURL): Str_url_unquote non safe
+
+2003-02-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03729] buf fix of reAnchorNewsheader()
 	* anchor.c (reAnchorAny): check l->bpos
 		 (reAnchorNewsheader): check l->bpos
@@ -7027,4 +7083,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.737 2003/02/05 16:23:27 ukai Exp $
+$Id: ChangeLog,v 1.738 2003/02/05 16:43:56 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.30 2003/01/17 17:07:00 ukai Exp $ */
+/* $Id: indep.c,v 1.31 2003/02/05 16:43:57 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -10,6 +10,45 @@
 #include "gc.h"
 #include "myctype.h"
 #include "entity.h"
+
+unsigned char QUOTE_MAP[0x100] = {
+/* NUL SOH STX ETX EOT ENQ ACK BEL  BS  HT  LF  VT  FF  CR  SO  SI */
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+/* DLE DC1 DC2 DC3 DC4 NAK SYN ETB CAN  EM SUB ESC  FS  GS  RS  US */
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+/* SPC   !   "   #   $   %   &   '   (   )   *   +   ,   -   .   / */
+    24, 72, 76, 40,  8, 40, 41, 72, 72, 72, 72, 40, 72,  8,  0, 64,
+/*   0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ? */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 32, 72, 74, 72, 75, 40,
+/*   @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O */
+    72,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+/*   P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^   _ */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 72, 72, 72, 72,  0,
+/*   `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o */
+    72,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+/*   p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~ DEL */
+     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 72, 72, 72, 72, 24,
+
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+};
+
+char *HTML_QUOTE_MAP[] = {
+    NULL,
+    "&amp;",
+    "&lt;",
+    "&gt;",
+    "&quot;",
+    NULL,
+    NULL,
+    NULL,
+};
 
 clen_t
 strtoclen(const char *s)
@@ -445,22 +484,6 @@ getescapecmd(char **s)
 }
 
 char *
-html_quote_char(char c)
-{
-    switch (c) {
-    case '&':
-	return "&amp;";
-    case '<':
-	return "&lt;";
-    case '>':
-	return "&gt;";
-    case '"':
-	return "&quot;";
-    }
-    return NULL;
-}
-
-char *
 html_quote(char *str)
 {
     Str tmp = NULL;
@@ -522,7 +545,7 @@ url_quote(char *str)
     char *p;
 
     for (p = str; *p; p++) {
-	if (IS_CNTRL(*p) || *p == ' ' || !IS_ASCII(*p)) {
+	if (is_url_quote(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
 	    Strcat_char(tmp, '%');
@@ -547,8 +570,7 @@ file_quote(char *str)
     char buf[4];
 
     for (p = str; *p; p++) {
-	if (IS_CNTRL(*p) || *p == ' ' || !IS_ASCII(*p) || *p == '+' ||
-	    *p == ':' || *p == '#' || *p == '?' || *p == '&' || *p == '%') {
+	if (is_file_quote(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
 	    sprintf(buf, "%%%02X", (unsigned char)*p);
@@ -593,22 +615,6 @@ file_unquote(char *str)
     return str;
 }
 
-/* rfc1808 safe */
-static int
-is_url_safe(char c)
-{
-    switch (c) {
-	/* safe */
-    case '$':
-    case '-':
-    case '_':
-    case '.':
-	return 1;
-    default:
-	return IS_ALNUM(c);
-    }
-}
-
 Str
 Str_form_quote(Str x)
 {
@@ -622,7 +628,7 @@ Str_form_quote(Str x)
 		tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 	    Strcat_char(tmp, '+');
 	}
-	else if (!is_url_safe(*p)) {
+	else if (is_url_unsafe(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 	    sprintf(buf, "%%%02X", (unsigned char)*p);
@@ -640,7 +646,7 @@ Str_form_quote(Str x)
 
 
 Str
-Str_url_unquote(Str x, int is_form)
+Str_url_unquote(Str x, int is_form, int safe)
 {
     Str tmp = NULL;
     char *p = x->ptr, *ep = x->ptr + x->length, *q;
@@ -657,7 +663,7 @@ Str_url_unquote(Str x, int is_form)
 	else if (*p == '%') {
 	    q = p;
 	    c = url_unquote_char(&q);
-	    if (c >= 0) {
+	    if (c >= 0 && (!safe || !IS_ASCII(c) || !is_file_quote(c))) {
 		if (tmp == NULL)
 		    tmp = Strnew_charp_n(x->ptr, (int)(p - x->ptr));
 		Strcat_char(tmp, (char)c);
@@ -674,21 +680,6 @@ Str_url_unquote(Str x, int is_form)
     return x;
 }
 
-static int
-is_shell_safe(char c)
-{
-    switch (c) {
-	/* safe */
-    case '/':
-    case '.':
-    case '_':
-    case ':':
-	return 1;
-    default:
-	return IS_ALNUM(c) || (c & 0x80);
-    }
-}
-
 char *
 shell_quote(char *str)
 {
@@ -696,7 +687,7 @@ shell_quote(char *str)
     char *p;
 
     for (p = str; *p; p++) {
-	if (!is_shell_safe(*p)) {
+	if (is_shell_unsafe(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
 	    Strcat_char(tmp, '\\');

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.61 2003/02/03 15:49:21 ukai Exp $ */
+/* $Id: display.c,v 1.62 2003/02/05 16:43:57 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -235,9 +235,12 @@ static Str
 make_lastline_link(Buffer *buf, char *title, char *url)
 {
     Str s = NULL, u;
+#ifdef JP_CHARSET
+    Lineprop *pr;
+#endif
     ParsedURL pu;
     char *p;
-    int l = COLS - 1;
+    int l = COLS - 1, i;
 
     if (title && *title) {
 	s = Strnew_m_charp("[", title, "]", NULL);
@@ -255,6 +258,11 @@ make_lastline_link(Buffer *buf, char *title, char *url)
 	return s;
     parseURL2(url, &pu, baseURL(buf));
     u = parsedURL2Str(&pu);
+    if (DecodeURL)
+	u = Strnew_charp(url_unquote_conv(u->ptr, Currentbuf->document_code));
+#ifdef JP_CHARSET
+    u = checkType(u, &pr, NULL);
+#endif
     if (l <= 4 || l >= u->length) {
 	if (!s)
 	    return u;
@@ -263,14 +271,23 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     }
     if (!s)
 	s = Strnew_size(COLS);
-    Strcat_charp_n(s, u->ptr, (l - 2) / 2);
+    i = (l - 2) / 2;
+#ifdef JP_CHARSET
+    if (CharType(pr[i]) == PC_KANJI2)
+	i--;
+#endif
+    Strcat_charp_n(s, u->ptr, i);
 #if LANG == JA
     Strcat_charp(s, "¡Ä");
 #else				/* LANG != JA */
     Strcat_charp(s, "..");
 #endif				/* LANG != JA */
-    l = COLS - 1 - s->length;
-    Strcat_charp(s, &u->ptr[u->length - l]);
+    i = u->length - (COLS - 1 - s->length);
+#ifdef JP_CHARSET
+    if (CharType(pr[i]) == PC_KANJI2)
+	i++;
+#endif
+    Strcat_charp(s, &u->ptr[i]);
     return s;
 }
 

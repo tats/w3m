@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.208 2003/01/31 16:14:26 ukai Exp $ */
+/* $Id: main.c,v 1.209 2003/02/05 16:43:58 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3878,8 +3878,11 @@ goURL0(char *prompt, int relative)
 	current = baseURL(Currentbuf);
 	if (current) {
 	    char *c_url = parsedURL2Str(current)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_CURRENT)
+	    if (DefaultURLString == DEFAULT_URL_CURRENT) {
 		url = c_url;
+	        if (DecodeURL)
+		    url = url_unquote_conv(url, 0);
+	    }
 	    else
 		pushHist(hist, c_url);
 	}
@@ -3888,8 +3891,11 @@ goURL0(char *prompt, int relative)
 	    char *a_url;
 	    parseURL2(a->url, &p_url, current);
 	    a_url = parsedURL2Str(&p_url)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_LINK)
+	    if (DefaultURLString == DEFAULT_URL_LINK) {
 		url = a_url;
+	        if (DecodeURL)
+		    url = url_unquote_conv(url, Currentbuf->document_code);
+	    }
 	    else
 		pushHist(hist, a_url);
 	}
@@ -4295,6 +4301,10 @@ _peekURL(int only_img)
     Anchor *a;
     ParsedURL pu;
     static Str s = NULL;
+#ifdef JP_CHARSET
+    static Lineprop *p = NULL;
+    Lineprop *pp;
+#endif
     static int offset = 0, n;
 
     if (Currentbuf->firstLine == NULL)
@@ -4309,29 +4319,38 @@ _peekURL(int only_img)
     else {
 	offset = 0;
     }
+    s = NULL;
     a = (only_img ? NULL : retrieveCurrentAnchor(Currentbuf));
     if (a == NULL) {
 	a = (only_img ? NULL : retrieveCurrentForm(Currentbuf));
 	if (a == NULL) {
 	    a = retrieveCurrentImg(Currentbuf);
-	    if (a == NULL) {
-		s = NULL;
+	    if (a == NULL)
 		return;
-	    }
 	}
-	else {
+	else
 	    s = Strnew_charp(form2str((FormItemList *)a->url));
-	    goto disp;
-	}
     }
-    parseURL2(a->url, &pu, baseURL(Currentbuf));
-    s = parsedURL2Str(&pu);
+    if (s == NULL) {
+	parseURL2(a->url, &pu, baseURL(Currentbuf));
+	s = parsedURL2Str(&pu);
+    }
+    if (DecodeURL)
+	s = Strnew_charp(url_unquote_conv(s->ptr, Currentbuf->document_code));
+#ifdef JP_CHARSET
+    s = checkType(s, &pp, NULL);
+    p = NewAtom_N(Lineprop, s->length);
+    bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+#endif
   disp:
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
-	disp_message_nomouse(&s->ptr[(n - 1) * (COLS - 1)], TRUE);
-    else
-	disp_message_nomouse(&s->ptr[offset], TRUE);
+	offset = (n - 1) * (COLS - 1);
+#ifdef JP_CHARSET
+    if (CharType(p[offset]) == PC_KANJI2)
+	offset++;
+#endif
+    disp_message_nomouse(&s->ptr[offset], TRUE);
 }
 
 /* peek URL */
@@ -4361,6 +4380,10 @@ void
 curURL(void)
 {
     static Str s = NULL;
+#ifdef JP_CHARSET
+    static Lineprop *p = NULL;
+    Lineprop *pp;
+#endif
     static int offset = 0, n;
 
     if (Currentbuf->bufferprop & BP_INTERNAL)
@@ -4374,12 +4397,22 @@ curURL(void)
     else {
 	offset = 0;
 	s = currentURL();
+	if (DecodeURL)
+	    s = Strnew_charp(url_unquote_conv(s->ptr, 0));
+#ifdef JP_CHARSET
+	s = checkType(s, &pp, NULL);
+	p = NewAtom_N(Lineprop, s->length);
+	bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+#endif
     }
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
-	disp_message_nomouse(&s->ptr[(n - 1) * (COLS - 1)], TRUE);
-    else
-	disp_message_nomouse(&s->ptr[offset], TRUE);
+	offset = (n - 1) * (COLS - 1);
+#ifdef JP_CHARSET
+    if (CharType(p[offset]) == PC_KANJI2)
+	offset++;
+#endif
+    disp_message_nomouse(&s->ptr[offset], TRUE);
 }
 
 /* view HTML source */

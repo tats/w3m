@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.8 2002/12/05 16:34:33 ukai Exp $ */
+/* $Id: history.c,v 1.9 2003/02/05 16:43:57 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -7,7 +7,7 @@ historyBuffer(Hist *hist)
 {
     Str src = Strnew();
     HistItem *item;
-    char *q;
+    char *p, *q;
 
     Strcat_charp(src, "<html>\n<head><title>History Page</title></head>\n");
     Strcat_charp(src, "<body>\n<h1>History Page</h1>\n<hr>\n");
@@ -15,10 +15,14 @@ historyBuffer(Hist *hist)
     if (hist && hist->list) {
 	for (item = hist->list->last; item; item = item->prev) {
 	    q = html_quote((char *)item->ptr);
+	    if (DecodeURL)
+		p = html_quote(url_unquote_conv((char *)item->ptr, 0));
+	    else
+		p = q;
 	    Strcat_charp(src, "<li><a href=\"");
 	    Strcat_charp(src, q);
 	    Strcat_charp(src, "\">");
-	    Strcat_charp(src, q);
+	    Strcat_charp(src, p);
 	    Strcat_charp(src, "</a>\n");
 	}
     }

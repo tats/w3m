@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.80 2003/01/23 18:37:21 ukai Exp $ */
+/* $Id: rc.c,v 1.81 2003/02/05 16:44:00 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -66,6 +66,7 @@ static int RC_table_size;
 #define CMT_OPEN_TAB_BLANK "targetが_blankか_newの場合は新しいタブで開く"
 #define CMT_OPEN_TAB_DL_LIST "Download list panel を新しいタブで開く"
 #define CMT_DISPLINK     "リンク先の自動表示"
+#define CMT_DECODE_URL   "URLをデコードして表示"
 #define CMT_DISPLINEINFO "現在の行番号の表示"
 #define CMT_DISP_IMAGE   "インライン画像を表示"
 #ifdef USE_IMAGE
@@ -230,6 +231,7 @@ static int RC_table_size;
 #define CMT_OPEN_TAB_BLANK "Open link on new tab if target is _blank or _new"
 #define CMT_OPEN_TAB_DL_LIST "Open download list panel on new tab"
 #define CMT_DISPLINK     "Display link URL automatically"
+#define CMT_DECODE_URL   "Display decoded URL"
 #define CMT_DISPLINEINFO "Display current line number"
 #define CMT_DISP_IMAGE   "Display inline images"
 #ifdef USE_IMAGE
@@ -525,6 +527,7 @@ struct param_ptr params1[] = {
      CMT_OPEN_TAB_DL_LIST, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
+    {"decode_url", P_INT, PI_ONOFF, (void *)&DecodeURL, CMT_DECODE_URL, NULL},
     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
      CMT_DISPLINEINFO, NULL},
     {"ext_dirlist", P_INT, PI_ONOFF, (void *)&UseExternalDirBuffer,

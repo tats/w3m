@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.62 2003/01/30 16:39:34 ukai Exp $ */
+/* $Id: etc.c,v 1.63 2003/02/05 16:43:57 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1633,6 +1633,19 @@ file_to_url(char *file)
 	Strcat_charp(tmp, drive);
 #endif
     Strcat_charp(tmp, file_quote(cleanupName(file)));
+    return tmp->ptr;
+}
+
+char *
+url_unquote_conv(char *url, char code)
+{
+    Str tmp;
+    tmp = Str_url_unquote(Strnew_charp(url), FALSE, TRUE);
+#ifdef JP_CHARSET
+    if (code == CODE_INNER_EUC)
+	code = CODE_EUC;
+    tmp = convertLine(NULL, tmp, &code, RAW_MODE);
+#endif
     return tmp->ptr;
 }
 

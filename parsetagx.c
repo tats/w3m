@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.8 2002/01/31 17:54:53 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.9 2002/08/27 16:39:40 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -42,8 +42,17 @@ noConv(char *oval, char **str)
 static int
 toNumber(char *oval, int *num)
 {
-    *num = atoi(oval);
-    return 1;
+    char *ep;
+    int x;
+
+    x = strtol(oval, &ep, 0);
+
+    if (ep > oval) {
+	*num = x;
+	return 1;
+    }
+    else
+	return 0;
 }
 
 static int

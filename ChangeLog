@@ -1,5 +1,11 @@
 2002-08-28  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
+	* [w3m-dev 03291] parsetagx.c:toNumber()
+	* parsetagx.c (toNumber): don't parse non-number value as 0, 
+	                            just ignore
+
+2002-08-28  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
 	* [w3m-dev 03290] Re: Forward: Bug#157098: wrong file presentation on large files
 	* indep.c (strtoclen): need defined()
 
@@ -3715,4 +3721,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.417 2002/08/27 16:35:15 ukai Exp $
+$Id: ChangeLog,v 1.418 2002/08/27 16:39:40 ukai Exp $

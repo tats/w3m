@@ -1,3 +1,9 @@
+2004-07-18  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04094] Re: option panel: gettextize select list
+	* rc.c (load_option_panel): don't gettext&wc_conv colorstr 
+					several times
+
 2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 04093] bookmark charset
@@ -8527,4 +8533,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.931 2004/07/15 16:44:37 ukai Exp $
+$Id: ChangeLog,v 1.932 2004/07/17 15:28:58 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.97 2004/07/15 16:26:04 ukai Exp $ */
+/* $Id: rc.c,v 1.98 2004/07/17 15:29:00 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1319,7 +1319,11 @@ load_option_panel(void)
 		p->comment =
 		    wc_conv(_(p->comment), OptionCharset,
 			    InnerCharset)->ptr;
-		if (p->inputtype == PI_SEL_C) {
+		if (p->inputtype == PI_SEL_C
+#ifdef USE_COLOR
+			&& p->select != colorstr
+#endif
+			) {
 		    for (s = (struct sel_c *)p->select; s->text != NULL; s++) {
 			s->text =
 			    wc_conv(_(s->text), OptionCharset,

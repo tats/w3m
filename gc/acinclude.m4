@@ -1,1 +1,0 @@
-sinclude(libtool.m4)

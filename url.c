@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.41 2002/02/04 14:49:21 ukai Exp $ */
+/* $Id: url.c,v 1.42 2002/02/08 11:20:14 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -2077,13 +2077,13 @@ searchURIMethods(ParsedURL *pu)
 
     for (i = 0; (ump = urimethods[i]) != NULL; i++) {
 	for (; ump->item1 != NULL; ump++) {
-	    if (strcmp(ump->item1, scheme->ptr) == 0) {
+	    if (strcasecmp(ump->item1, scheme->ptr) == 0) {
 		return Sprintf(ump->item2, url_quote(url->ptr));
 	    }
 	}
     }
     for (ump = default_urimethods; ump->item1 != NULL; ump++) {
-	if (strcmp(ump->item1, scheme->ptr) == 0) {
+	if (strcasecmp(ump->item1, scheme->ptr) == 0) {
 	    return Sprintf(ump->item2, url_quote(url->ptr));
 	}
     }

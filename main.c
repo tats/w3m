@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.113 2002/09/24 17:06:04 ukai Exp $ */
+/* $Id: main.c,v 1.114 2002/09/28 16:32:49 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -444,9 +444,9 @@ MAIN(int argc, char **argv, char **envp)
 	set_no_proxy(p);
     }
 
-    if (Editor == NULL && (p = getenv("EDITOR")) != NULL)
+    if (!non_null(Editor) && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
-    if (Mailer == NULL && (p = getenv("MAILER")) != NULL)
+    if (!non_null(Mailer) && (p = getenv("MAILER")) != NULL)
 	Mailer = p;
 
     /* argument search 2 */

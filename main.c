@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.4 2001/11/16 03:30:15 ukai Exp $ */
+/* $Id: main.c,v 1.5 2001/11/16 03:58:49 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -32,16 +32,10 @@ Hist *ShellHist;
 Hist *TextHist;
 
 #define N_EVENT_QUEUE 10
-typedef struct {
-    int cmd;
-    void *user_data;
-} Event;
 static Event eventQueue[N_EVENT_QUEUE];
 static int n_event_queue;
 
 #ifdef USE_ALARM
-static int alarm_sec = 0;
-static Event alarm_event;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
 #endif
 
@@ -4618,6 +4612,9 @@ SigAlarm(SIGNAL_ARG)
        CurrentMenuData = NULL;
 #endif
        w3mFuncList[alarm_event.cmd].func();
+       onA();
+       if (alarm_once)
+	   alarm_sec = 0;
        signal(SIGALRM, SigAlarm);
        alarm(alarm_sec);
     }
@@ -4647,6 +4644,7 @@ setAlarm(void)
     }
     if (cmd >= 0) {
        alarm_sec = sec;
+       alarm_once = FALSE;
        alarm_event.cmd = cmd;
        alarm_event.user_data = getQWord(&data);
        signal(SIGALRM, SigAlarm);

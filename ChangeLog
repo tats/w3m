@@ -1,5 +1,17 @@
 2001-11-16  Tsutomu Okada <okada@furuno.co.jp>
 
+	* file.c (HTMLtagproc1): [w3m-dev 02408] meta refresh
+	   use MetaRefresh
+	   add case refresh > 0
+	* fm.h: 
+	   add MetaRefresh
+	   move alarm related definition from main.c
+	* main.c: 
+	   move alarm releated definition to fm.h
+	   (SigAlarm): alarm_once
+	* rc.c: 
+	   add CMT_META_REFRESH
+
 	* file.c (loadHTMLBuffer): [w3m-dev 02415] 
 	  clean up temporary files
 	

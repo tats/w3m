@@ -143,6 +143,7 @@ static int rc_initialized = 0;
 #endif
 
 #define CMT_FOLLOW_REDIRECTION "従うリダイレクトの回数"
+#define CMT_META_REFRESH "meta refresh に対応する"
 
 #else				/* LANG != JA */
 
@@ -236,6 +237,7 @@ static int rc_initialized = 0;
 #define CMT_COOKIE_ACCEPT_DOMAINS "Domains from which should accept cookies"
 #endif
 #define CMT_FOLLOW_REDIRECTION "Follow this number of redirections"
+#define CMT_META_REFRESH "Support meta refresh"
 #endif				/* LANG != JA */
 
 #define PI_TEXT    0
@@ -460,6 +462,7 @@ struct param_ptr params9[] =
     {"argv_is_url", P_CHARINT, PI_ONOFF, (void *) &ArgvIsURL, CMT_ARGV_IS_URL, NULL},
     {"retry_http", P_INT, PI_ONOFF, (void *) &retryAsHttp, CMT_RETRY_HTTP, NULL},
     {"follow_redirection", P_INT, PI_TEXT, &FollowRedirection, CMT_FOLLOW_REDIRECTION, NULL},
+    {"meta_refresh", P_CHARINT, PI_ONOFF, (void *) &MetaRefresh, CMT_META_REFRESH, NULL},
 #ifdef USE_SSL
     {"ssl_forbid_method", P_STRING, PI_TEXT, (void *) &ssl_forbid_method, CMT_SSL_FORBID_METHOD, NULL},
 #endif				/* USE_SSL */

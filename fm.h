@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: fm.h,v 1.4 2001/11/16 03:58:49 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -621,6 +621,7 @@ global char TargetSelf init(FALSE);
 global char PermitSaveToPipe init(FALSE);
 global char DecodeCTE init(FALSE);
 global char ArgvIsURL init(FALSE);
+global char MetaRefresh init(FALSE);
 
 global char fmInitialized init(FALSE);
 
@@ -846,6 +847,16 @@ global TextList *backend_batch_commands init(NULL);
 int backend( void );
 extern void deleteFiles(void);
 void w3m_exit( int i );
+
+typedef struct {
+    int cmd;
+    void *user_data;
+} Event;
+#ifdef USE_ALARM
+global int alarm_sec init(0);
+global short alarm_once init(0);
+global Event alarm_event;
+#endif
 
 /* 
  * Externals

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.5 2001/11/16 03:33:28 ukai Exp $ */
+/* $Id: file.c,v 1.6 2001/11/16 03:58:49 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3589,10 +3589,18 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 			      refresh, cur_hseq++, q, q);
 		push_str(obuf, s_tmp->length, tmp, PC_ASCII);
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-		if (!is_redisplay && refresh == 0) {
+		if (!is_redisplay && refresh == 0 && MetaRefresh) {
 		    pushEvent(FUNCNAME_goURL, s_tmp->ptr);
 		    /* pushEvent(deletePrevBuf,NULL); */
 		}
+#ifdef USE_ALARM
+		else if (!is_redisplay && refresh > 0 && MetaRefresh) {
+		    alarm_sec = refresh;
+		    alarm_once = TRUE;
+		    alarm_event.cmd = FUNCNAME_goURL;
+		    alarm_event.user_data = s_tmp->ptr;
+		}
+#endif
 	    }
 	}
 	return 1;

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.14 2002/11/19 17:40:34 ukai Exp $ */
+/* $Id: map.c,v 1.15 2002/11/19 17:48:00 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -105,23 +105,23 @@ searchMapArea(Buffer *buf, MapList *ml, Anchor *a_img)
 
     if (!(ml && ml->area && ml->area->nitem))
 	return -1;
-    if (! getMapXY(buf, a_img, &px, &py))
+    if (!getMapXY(buf, a_img, &px, &py))
 	return -1;
-    n = - ml->area->nitem;
+    n = -ml->area->nitem;
     for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
 	a = (MapArea *) al->ptr;
 	if (!a)
 	    continue;
 	if (n < 0 && inMapArea(a, px, py)) {
 	    if (a->shape == SHAPE_DEFAULT) {
-		if (n == - ml->area->nitem)
+		if (n == -ml->area->nitem)
 		    n = -i;
 	    }
 	    else
 		n = i;
 	}
     }
-    if (n == - ml->area->nitem)
+    if (n == -ml->area->nitem)
 	return nearestMapArea(ml, px, py);
     else if (n < 0)
 	return -n;
@@ -200,7 +200,7 @@ retrieveCurrentMap(Buffer *buf)
 	return NULL;
     fi = (FormItemList *)a->url;
     if (fi->parent->method == FORM_METHOD_INTERNAL &&
-        !Strcmp_charp(fi->parent->action, "map"))
+	!Strcmp_charp(fi->parent->action, "map"))
 	return a;
     return NULL;
 }

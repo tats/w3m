@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.28 2001/12/27 18:22:59 ukai Exp $ */
+/* $Id: url.c,v 1.29 2002/01/07 16:28:17 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -856,12 +856,6 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	p++;
     }
     switch (*p) {
-    case '\0':
-	/* scheme://host                */
-	p_url->host = copyPath(q, -1, COPYPATH_SPC_IGNORE);
-	p_url->port = DefaultPort[p_url->scheme];
-	p_url->file = DefaultFile(p_url->scheme);
-	return;
     case ':':
 	/* scheme://user:pass@host or
 	 * scheme://host:port
@@ -881,20 +875,15 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	/* scheme://host:port/ */
 	tmp = Strnew_charp_n(q, p - q);
 	p_url->port = atoi(tmp->ptr);
-	if (*p == '\0') {
-	    /* scheme://user@host:port      */
-	    /* scheme://user:pass@host:port */
-	    p_url->file = DefaultFile(p_url->scheme);
-	    p_url->label = NULL;
-	    return;
-	}
-	/* *p is one of ['/', '?', '#'] */
+	/* *p is one of ['\0', '/', '?', '#'] */
 	break;
     case '@':
 	/* scheme://user@...            */
 	p_url->user = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
 	q = ++p;
 	goto analyze_url;
+    case '\0':
+	/* scheme://host                */
     case '/':
     case '?':
     case '#':
@@ -1111,7 +1100,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    if (strncmp(pu->file, "/$LIB/", 6)) {
 		char abs[_MAX_PATH];
 
-		_abspath(abs, pu->file, _MAX_PATH);
+		_abspath(abs, file_unquote(pu->file), _MAX_PATH);
 		pu->file = file_quote(cleanupName(abs));
 	    }
 	}
@@ -1125,7 +1114,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    tmp = Strnew_charp(CurrentDir);
 	    if (Strlastchar(tmp) != '/')
 		Strcat_char(tmp, '/');
-	    Strcat_charp(tmp, pu->file);
+	    Strcat_charp(tmp, file_unquote(pu->file));
 	    pu->file = file_quote(cleanupName(tmp->ptr));
 	}
 #endif

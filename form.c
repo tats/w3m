@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.28 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: form.c,v 1.29 2003/01/20 15:22:59 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -447,7 +447,8 @@ form_fputs_decode(Str s, FILE * f)
 	    break;
 	}
     }
-    fputs(conv_str(z, InnerCode, DisplayCode)->ptr, f);
+    z = conv_str(z, InnerCode, DisplayCode);
+    Strfputs(z, f);
 }
 
 

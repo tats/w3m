@@ -1,3 +1,40 @@
+2002-02-05  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02991] form support in w3m -halfdump foo.html|w3m -halfload
+	* fm.h (DUMP_HALFEXTRA): deleted
+	* proto.h (process_select): return Str
+	* file.c (process_img): process_form() fix
+	* file.c (process_input): process_form() fix
+	* file.c (process_select): return Str
+				process_form() fix
+	* file.c (process_textarea): process_form() fix
+	* file.c (process_form): support -halfdump
+	* file.c (HTMLtagproc1): delete case HTML_FORM_INT, HTML_N_FORM_INT
+				process_{form,select,textarea}() fix
+	* file.c (HTMLlineproc2body): support -halfload
+				HTML_INTERNAL, HTML_N_INTERNAL,
+				HTML_FORM_INT, HTML_FORM_INT,
+				HTML_TEXTAREA_INT, HTML_N_TEXTAREA_INT,
+				HTML_SELECT_INT, HTML_N_SELECT_INT,
+				HTML_OPTION_INT, HTML_TITLE_ALT
+	* file.c (print_internal_information): fix -halfdump
+	* file.c (loadHTMLstream): no DUMP_HALFEXTRA
+	* html.h: add HTML_INTERNAL, HTML_N_INTERNAL, 
+			HTML_SELECT_INT, HTML_N_SELECT_INT,
+			HTML_OPTION_INT, HTML_TEXTAREA_INT, HTML_N_TEXTAREA_INT
+	* html.c (ALST_TEXTAREA_INT): added
+	* html.c (ALST_SELECT_INT): added
+	* html.c: add <internal>, </internal>, <select_int>, </select_int>
+		<option_int>, <textarea_int>, </textarea_int>
+	* main.c (MAIN): delete -halfdump_extra
+		dont output <pre> by -halfdump
+	* table.c (feed_table_tag): process_{form,select}() fix
+		add case HTML_INTERNAL, HTML_N_INTERNAL,
+		    HTML_SELECT_INT, HTML_N_SELECT_INT,
+		    HTML_OPTION_INT, HTML_TEXTAREA_INT, HTML_N_TEXTAREA_INT,
+	* tagtable.tab: add internal, /internal, select_int, /select_int
+		option_int, textarea_int, /textarea_int
+
 2002-02-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02990]
@@ -2805,4 +2842,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.301 2002/02/05 11:58:03 ukai Exp $
+$Id: ChangeLog,v 1.302 2002/02/05 12:31:27 ukai Exp $

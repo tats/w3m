@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.78 2002/02/03 06:12:41 ukai Exp $ */
+/* $Id: main.c,v 1.79 2002/02/05 12:31:27 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -562,8 +562,6 @@ MAIN(int argc, char **argv, char **envp)
 		w3m_dump = (DUMP_HEAD | DUMP_SOURCE | DUMP_EXTRA);
 	    else if (!strcmp("-halfdump", argv[i]))
 		w3m_dump = DUMP_HALFDUMP;
-	    else if (!strcmp("-halfdump_extra", argv[i]))
-		w3m_dump = DUMP_HALFDUMP | DUMP_HALFEXTRA;
 	    else if (!strcmp("-halfload", argv[i])) {
 		w3m_dump = 0;
 		w3m_halfload = TRUE;
@@ -745,8 +743,6 @@ MAIN(int argc, char **argv, char **envp)
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);
     err_msg = Strnew();
     if (load_argc == 0) {
-	if (w3m_halfdump)
-	    printf("<pre>\n");
 	/* no URL specified */
 	if (!isatty(0)) {
 	    redin = newFileStream(fdopen(dup(0), "rb"), (void (*)())pclose);
@@ -810,8 +806,6 @@ MAIN(int argc, char **argv, char **envp)
 	if (i >= 0) {
 	    SearchHeader = search_header;
 	    DefaultType = default_type;
-	    if (w3m_halfdump)
-		printf("<pre>\n");
 	    if (w3m_dump == DUMP_HEAD) {
 		request = New(FormList);
 		request->method = FORM_METHOD_HEAD;
@@ -892,9 +886,6 @@ MAIN(int argc, char **argv, char **envp)
 		    rFrame();
 		saveBuffer(Currentbuf, stdout);
 	    }
-	    if (w3m_halfdump)
-		printf("</pre><title>%s</title>\n",
-		       html_quote(newbuf->buffername));
 	}
 	else {
 	    if (Currentbuf->frameset != NULL && RenderFrame)

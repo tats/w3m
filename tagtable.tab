@@ -155,3 +155,10 @@ pre_int		HTML_PRE_INT
 bgsound		HTML_BGSOUND
 applet		HTML_APPLET
 embed		HTML_EMBED
+internal	HTML_INTERNAL
+/internal	HTML_N_INTERNAL
+select_int	HTML_SELECT_INT
+/select_int	HTML_N_SELECT_INT
+option_int	HTML_OPTION_INT
+textarea_int	HTML_TEXTAREA_INT
+/textarea_int	HTML_N_TEXTAREA_INT

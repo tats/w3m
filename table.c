@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.19 2002/01/31 17:54:56 ukai Exp $ */
+/* $Id: table.c,v 1.20 2002/02/05 12:31:27 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2806,7 +2806,9 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	break;
     case HTML_FORM:
 	feed_table_block_tag(tbl, "", mode, 0, cmd);
-	process_form(tag);
+	tmp = process_form(tag);
+	if (tmp)
+	    feed_table1(tbl, tmp, mode, width);
 	break;
     case HTML_N_FORM:
 	feed_table_block_tag(tbl, "", mode, 0, cmd);
@@ -2817,7 +2819,9 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	feed_table1(tbl, tmp, mode, width);
 	break;
     case HTML_SELECT:
-	process_select(tag);
+	tmp = process_select(tag);
+	if (tmp)
+	    feed_table1(tbl, tmp, mode, width);
 	mode->pre_mode |= TBLM_INSELECT;
 	break;
     case HTML_N_SELECT:
@@ -2839,7 +2843,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 		w = tbl->fixed_width[tbl->col];
 	}
 	tmp = process_textarea(tag, w);
-	feed_table1(tbl, tmp, mode, width);
+	if (tmp)
+	    feed_table1(tbl, tmp, mode, width);
 	mode->pre_mode |= TBLM_INTXTA;
 	break;
     case HTML_N_TEXTAREA:
@@ -2937,10 +2942,17 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_NOP:
 	suspend_or_pushdata(tbl, line);
 	break;
+    case HTML_INTERNAL:
+    case HTML_N_INTERNAL:
     case HTML_FORM_INT:
     case HTML_N_FORM_INT:
     case HTML_INPUT_ALT:
     case HTML_N_INPUT_ALT:
+    case HTML_SELECT_INT:
+    case HTML_N_SELECT_INT:
+    case HTML_OPTION_INT:
+    case HTML_TEXTAREA_INT:
+    case HTML_N_TEXTAREA_INT:
     case HTML_IMG_ALT:
     case HTML_EOL:
     case HTML_RULE:

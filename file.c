@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.65 2002/02/05 11:58:04 ukai Exp $ */
+/* $Id: file.c,v 1.66 2002/02/05 12:31:27 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2828,9 +2828,12 @@ process_img(struct parsed_tag *tag, int width)
     }
 #endif
     if (r) {
+	Str tmp2;
 	r2 = strchr(r, '#');
 	s = "<form_int method=internal action=map>";
-	process_form(parse_tag(&s, TRUE));
+	tmp2 = process_form(parse_tag(&s, TRUE));
+	if (tmp2)
+	    Strcat(tmp, tmp2);
 	Strcat(tmp, Sprintf("<input_alt fid=\"%d\" "
 			    "type=hidden name=link value=\"", cur_form_id));
 	Strcat_charp(tmp, html_quote((r2) ? r2 + 1 : r));
@@ -3068,13 +3071,13 @@ process_input(struct parsed_tag *tag)
 {
     int i, w, v, x, y, z, iw, ih;
     char *q, *p, *r, *p2, *s;
-    Str tmp;
+    Str tmp = Strnew();
     char *qq = "";
     int qlen = 0;
 
     if (cur_form_id < 0) {
 	char *s = "<form_int method=internal action=none>";
-	process_form(parse_tag(&s, TRUE));
+	tmp = process_form(parse_tag(&s, TRUE));
     }
 
     p = "text";
@@ -3124,7 +3127,7 @@ process_input(struct parsed_tag *tag)
 	qlen = strlen(q);
     }
 
-    tmp = Strnew_charp("<pre_int>");
+    Strcat_charp(tmp, "<pre_int>");
     switch (v) {
     case FORM_INPUT_PASSWORD:
     case FORM_INPUT_TEXT:
@@ -3241,14 +3244,15 @@ process_input(struct parsed_tag *tag)
     return tmp;
 }
 
-void
+Str
 process_select(struct parsed_tag *tag)
 {
+    Str tmp = NULL;
     char *p;
 
     if (cur_form_id < 0) {
 	char *s = "<form_int method=internal action=none>";
-	process_form(parse_tag(&s, TRUE));
+	tmp = process_form(parse_tag(&s, TRUE));
     }
 
     p = "";
@@ -3277,6 +3281,7 @@ process_select(struct parsed_tag *tag)
     cur_option = NULL;
     cur_status = R_ST_NORMAL;
     n_selectitem = 0;
+    return tmp;
 }
 
 Str
@@ -3413,11 +3418,12 @@ process_option(void)
 Str
 process_textarea(struct parsed_tag *tag, int width)
 {
+    Str tmp = NULL;
     char *p;
 
     if (cur_form_id < 0) {
 	char *s = "<form_int method=internal action=none>";
-	process_form(parse_tag(&s, TRUE));
+	tmp = process_form(parse_tag(&s, TRUE));
     }
 
     p = "";
@@ -3445,7 +3451,7 @@ process_textarea(struct parsed_tag *tag, int width)
     textarea_str[n_textarea] = Strnew();
     ignore_nl_textarea = TRUE;
 
-    return NULL;
+    return tmp;
 }
 
 Str
@@ -3608,6 +3614,7 @@ process_form(struct parsed_tag *tag)
     parsedtag_get_value(tag, ATTR_TARGET, &tg);
     n = NULL;
     parsedtag_get_value(tag, ATTR_NAME, &n);
+
     form_max++;
     form_sp++;
     if (forms_size == 0) {
@@ -3620,11 +3627,28 @@ process_form(struct parsed_tag *tag)
 	forms = New_Reuse(FormList *, forms, forms_size);
 	form_stack = New_Reuse(int, form_stack, forms_size);
     }
+    form_stack[form_sp] = form_max;
+
+    if (w3m_halfdump) {
+	Str tmp = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
+			  form_max, html_quote(q), p);
+	if (s)
+	    Strcat(tmp, Sprintf(" enctype=\"%s\"", html_quote(s)));
+	if (tg)
+	    Strcat(tmp, Sprintf(" target=\"%s\"", html_quote(tg)));
+	if (n)
+	    Strcat(tmp, Sprintf(" name=\"%s\"", html_quote(n)));
+#ifdef JP_CHARSET
+	if (r)
+	    Strcat(tmp, Sprintf(" accept-charset=\"%s\"", code_to_str(cs)));
+#endif
+	Strcat_charp(tmp, ">");
+	return tmp;
+    }
+
     forms[form_max] =
 	newFormList(q, p, &cs, s, tg, n,
 		    (form_max > 0) ? forms[form_max - 1] : NULL);
-    form_stack[form_sp] = form_max;
-
     return NULL;
 }
 
@@ -4308,14 +4332,14 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	RB_RESTORE_FLAG(obuf);
 	return 1;
     case HTML_FORM:
-    case HTML_FORM_INT:
 	CLOSE_P;
 	if (!(obuf->flag & RB_IGNORE_P))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	process_form(tag);
+	tmp = process_form(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_N_FORM:
-    case HTML_N_FORM_INT:
 	CLOSE_P;
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	obuf->flag |= RB_IGNORE_P;
@@ -4327,7 +4351,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_SELECT:
-	process_select(tag);
+	tmp = process_select(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	obuf->flag |= RB_INSELECT;
 	return 1;
     case HTML_N_SELECT:
@@ -4340,7 +4366,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	/* nothing */
 	return 1;
     case HTML_TEXTAREA:
-	process_textarea(tag, h_env->limit);
+	tmp = process_textarea(tag, h_env->limit);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	obuf->flag |= RB_INTXTA;
 	return 1;
     case HTML_N_TEXTAREA:
@@ -4554,17 +4582,40 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifndef KANJI_SYMBOLS
     char rule = 0;
 #endif
+    int internal = 0;
+    Anchor **a_textarea = NULL;
+#ifdef MENU_SELECT
+    Anchor **a_select = NULL;
+#endif
+
+    n_textarea = -1;
+    if (!max_textarea) {	/* halfload */
+	max_textarea = MAX_TEXTAREA;
+	textarea_str = New_N(Str, max_textarea);
+	a_textarea = New_N(Anchor *, max_textarea);
+    }
+#ifdef MENU_SELECT
+    n_select = -1;
+    if (!max_select) {		/* halfload */
+	max_select = MAX_SELECT;
+	select_option = New_N(FormSelectOption, max_select);
+	a_select = New_N(Anchor *, max_select);
+    }
+#endif
 
     if (w3m_debug)
 	debug = fopen("zzzerr", "a");
 
     effect = 0;
     nlines = 0;
-    buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
     while ((line = feed()) != NULL) {
 	if (w3m_debug) {
 	    Strfputs(line, debug);
 	    fputc('\n', debug);
+	}
+	if (n_textarea >= 0 && *(line->ptr) != '<') {	/* halfload */
+	    Strcat(textarea_str[n_textarea], line);
+	    continue;
 	}
       proc_again:
 	if (++nlines == llimit)
@@ -4772,6 +4823,10 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			FormList *form;
 			int top = 0, bottom = 0;
 			int form_id = -1;
+			int textareanumber = -1;
+#ifdef MENU_SELECT
+			int selectnumber = -1;
+#endif
 
 			hseq = 0;
 			parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
@@ -4791,8 +4846,39 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			}
 			if (!form->target)
 			    form->target = buf->baseTarget;
+			if (a_textarea &&
+			    parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
+						&textareanumber)) {
+			    if (textareanumber >= max_textarea) {
+				max_textarea = 2 * textareanumber;
+				textarea_str = New_Reuse(Str, textarea_str,
+							 max_textarea);
+				a_textarea = New_Reuse(Anchor *, a_textarea,
+						       max_textarea);
+			    }
+			}
+#ifdef MENU_SELECT
+			if (a_select &&
+			    parsedtag_get_value(tag, ATTR_SELECTNUMBER,
+						&selectnumber)) {
+			    if (selectnumber >= max_select) {
+				max_select = 2 * selectnumber;
+				select_option = New_Reuse(FormSelectOption,
+							  select_option,
+							  max_select);
+				a_select = New_Reuse(Anchor *, a_select,
+						     max_select);
+			    }
+			}
+#endif
 			a_form =
 			    registerForm(buf, form, tag, currentLn(buf), pos);
+			if (a_textarea && textareanumber >= 0)
+			    a_textarea[textareanumber] = a_form;
+#ifdef MENU_SELECT
+			if (a_select && selectnumber >= 0)
+			    a_select[selectnumber] = a_form;
+#endif
 			if (a_form) {
 			    a_form->hseq = hseq - 1;
 			    a_form->y = currentLn(buf) - top;
@@ -4888,6 +4974,67 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			buf->baseTarget =
 			    url_quote_conv(p, buf->document_code);
 		    break;
+		case HTML_INTERNAL:
+		    internal = HTML_INTERNAL;
+		    break;
+		case HTML_N_INTERNAL:
+		    internal = HTML_N_INTERNAL;
+		    break;
+		case HTML_FORM_INT:
+		    process_form(tag);
+		    break;
+		case HTML_TEXTAREA_INT:
+		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
+					    &n_textarea)
+			&& n_textarea < max_textarea) {
+			textarea_str[n_textarea] = Strnew();
+		    }
+		    else
+			n_textarea = -1;
+		    break;
+		case HTML_N_TEXTAREA_INT:
+		    if (n_textarea >= 0) {
+			FormItemList *item =
+			    (FormItemList *)a_textarea[n_textarea]->url;
+			item->init_value = item->value =
+			    textarea_str[n_textarea];
+		    }
+		    break;
+#ifdef MENU_SELECT
+		case HTML_SELECT_INT:
+		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
+			&& n_select < max_select) {
+			select_option[n_select].first = NULL;
+			select_option[n_select].last = NULL;
+		    }
+		    else
+			n_select = -1;
+		    break;
+		case HTML_N_SELECT_INT:
+		    if (n_select >= 0) {
+			FormItemList *item =
+			    (FormItemList *)a_select[n_select]->url;
+			item->select_option = select_option[n_select].first;
+			chooseSelectOption(item, item->select_option);
+			item->init_selected = item->selected;
+			item->init_value = item->value;
+			item->init_label = item->label;
+		    }
+		    break;
+		case HTML_OPTION_INT:
+		    if (n_select >= 0) {
+			int selected;
+			q = "";
+			parsedtag_get_value(tag, ATTR_LABEL, &q);
+			p = q;
+			parsedtag_get_value(tag, ATTR_VALUE, &p);
+			selected = parsedtag_exists(tag, ATTR_SELECTED);
+			addSelectOption(&select_option[n_select],
+					Strnew_charp(p), Strnew_charp(q),
+					selected);
+		    }
+		    break;
+#endif
 		case HTML_TITLE_ALT:
 		    if (parsedtag_get_value(tag, ATTR_TITLE, &p))
 			buf->buffername = html_unquote(p);
@@ -4928,11 +5075,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	    }
 	}
 	/* end of processing for one line */
-	addnewline(buf, outc, outp,
+	if (!internal)
+	    addnewline(buf, outc, outp,
 #ifdef USE_ANSI_COLOR
-		   NULL,
+		       NULL,
 #endif
-		   pos, nlines);
+		       pos, nlines);
+	if (internal == HTML_N_INTERNAL)
+	    internal = 0;
 	if (str != endp) {
 	    line = Strsubstr(line, str - line->ptr, endp - str);
 	    goto proc_again;
@@ -4945,6 +5095,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_IMAGE
     addMultirowsImg(buf, buf->img);
 #endif
+    buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
 }
 
 void
@@ -5723,52 +5874,67 @@ print_internal_information(struct html_feed_environ *henv)
     Str s;
     TextLineList *tl = newTextLineList();
 
+    s = Strnew_charp("<internal>");
+    pushTextLine(tl, newTextLine(s, 0));
+    if (henv->title) {
+	s = Strnew_m_charp("<title_alt title=\"",
+			   html_quote(henv->title), "\">", NULL);
+	pushTextLine(tl, newTextLine(s, 0));
+    }
+#if 0
     if (form_max >= 0) {
 	FormList *fp;
 	for (i = 0; i <= form_max; i++) {
 	    fp = forms[i];
 	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
-			i, fp->action->ptr,
+			i, html_quote(fp->action->ptr),
 			(fp->method == FORM_METHOD_POST) ? "post"
 			: ((fp->method ==
 			    FORM_METHOD_INTERNAL) ? "internal" : "get"));
 	    if (fp->target)
-		Strcat(s, Sprintf(" target=\"%s\"", fp->target));
+		Strcat(s, Sprintf(" target=\"%s\"", html_quote(fp->target)));
+	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
+		Strcat_charp(s, " enctype=\"multipart/form-data\"");
 #ifdef JP_CHARSET
 	    if (fp->charset)
-		Strcat(s,
-		       Sprintf(" accept-charset=\"%s\"",
-			       code_to_str(fp->charset)));
+		Strcat(s, Sprintf(" accept-charset=\"%s\"",
+				  code_to_str(fp->charset)));
 #endif
-	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
-		Strcat_charp(s, " enctype=multipart/form-data");
 	    Strcat_charp(s, ">");
 	    pushTextLine(tl, newTextLine(s, 0));
 	}
     }
+#endif
 #ifdef MENU_SELECT
     if (n_select > 0) {
 	FormSelectOptionItem *ip;
 	for (i = 0; i < n_select; i++) {
+	    s = Sprintf("<select_int selectnumber=%d>", i);
+	    pushTextLine(tl, newTextLine(s, 0));
 	    for (ip = select_option[i].first; ip; ip = ip->next) {
-		s = Sprintf("<option_int selectnumber=%d"
-			    " value=\"%s\"%s>%s</option_int>",
-			    i,
-			    html_quote(ip->value ? ip->value->ptr : ip->label->
-				       ptr), ip->checked ? " selected" : "",
-			    ip->label->ptr);
+		s = Sprintf("<option_int value=\"%s\" label=\"%s\"%s>",
+			    html_quote(ip->value ? ip->value->ptr :
+				       ip->label->ptr),
+			    html_quote(ip->label->ptr),
+			    ip->checked ? " selected" : "");
 		pushTextLine(tl, newTextLine(s, 0));
 	    }
+	    s = Strnew_charp("</select_int>");
+	    pushTextLine(tl, newTextLine(s, 0));
 	}
     }
 #endif				/* MENU_SELECT */
     if (n_textarea > 0) {
 	for (i = 0; i < n_textarea; i++) {
-	    s = Sprintf("<textarea_int textareanumber=%d>%s</textarea_int>",
-			i, textarea_str[i]->ptr);
+	    s = Sprintf("<textarea_int textareanumber=%d>", i);
+	    pushTextLine(tl, newTextLine(s, 0));
+	    s = Strnew_charp(html_quote(textarea_str[i]->ptr));
+	    Strcat_charp(s, "</textarea_int>");
 	    pushTextLine(tl, newTextLine(s, 0));
 	}
     }
+    s = Strnew_charp("</internal>");
+    pushTextLine(tl, newTextLine(s, 0));
 
     if (henv->buf)
 	appendTextLineList(henv->buf, tl);
@@ -5826,6 +5992,10 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #ifdef JP_CHARSET
 	newBuf->document_code = InnerCode;
 #endif				/* JP_CHARSET */
+	max_textarea = 0;
+#ifdef MENU_SELECT
+	max_select = 0;
+#endif
 	HTMLlineproc3(newBuf, f->stream);
 	w3m_halfload = FALSE;
 	if (fmInitialized)
@@ -5915,8 +6085,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
-	if (w3m_dump & DUMP_HALFEXTRA)
-	    print_internal_information(&htmlenv1);
+	print_internal_information(&htmlenv1);
 	return;
     }
     if (w3m_backend) {

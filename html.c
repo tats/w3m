@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.8 2002/01/31 17:54:51 ukai Exp $ */
+/* $Id: html.c,v 1.9 2002/02/05 12:31:27 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -84,6 +84,10 @@ unsigned char ALST_APPLET[] = { ATTR_ARCHIVE, ATTR_CORE };
 unsigned char ALST_EMBED[] = { ATTR_SRC, ATTR_CORE };
 #define MAX_EMBED	MAXA_CORE + 1
 
+unsigned char ALST_TEXTAREA_INT[] = { ATTR_TEXTAREANUMBER };
+#define MAXA_TEXTAREA_INT 1
+unsigned char ALST_SELECT_INT[] = { ATTR_SELECTNUMBER };
+#define MAXA_SELECT_INT	1
 unsigned char ALST_TABLE_ALT[] = { ATTR_TID };
 #define MAXA_TABLE_ALT	1
 unsigned char ALST_RULE[] = { ATTR_TYPE };
@@ -213,15 +217,15 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {NULL, NULL, 0, 0},		/* 103 Undefined       */
     {NULL, NULL, 0, 0},		/* 104 Undefined       */
     {NULL, NULL, 0, 0},		/* 105 Undefined       */
-    {NULL, NULL, 0, 0},		/* 106 Undefined       */
-    {NULL, NULL, 0, 0},		/* 107 Undefined       */
-    {NULL, NULL, 0, 0},		/* 108 Undefined       */
-    {NULL, NULL, 0, 0},		/* 109 Undefined       */
-    {NULL, NULL, 0, 0},		/* 110 Undefined       */
-    {NULL, NULL, 0, 0},		/* 111 Undefined       */
-    {NULL, NULL, 0, 0},		/* 112 Undefined       */
 
     /* pseudo tag */
+    {"internal", NULL, 0, TFLG_INT},	/* 106 HTML_INTERNAL   */
+    {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 107 HTML_N_INTERNAL   */
+    {"select_int", ALST_SELECT_INT, MAXA_SELECT_INT, TFLG_INT},	/* 108 HTML_SELECT_INT   */
+    {"/select_int", NULL, 0, TFLG_INT | TFLG_END},	/* 109 HTML_N_SELECT_INT */
+    {"option_int", ALST_OPTION, MAXA_OPTION, TFLG_INT},	/* 110 HTML_OPTION_INT   */
+    {"textarea_int", ALST_TEXTAREA_INT, MAXA_TEXTAREA_INT, TFLG_INT},	/* 111 HTML_TEXTAREA_INT   */
+    {"/textarea_int", NULL, 0, TFLG_INT | TFLG_END},	/* 112 HTML_N_TEXTAREA_INT */
     {"table_alt", ALST_TABLE_ALT, MAXA_TABLE_ALT, TFLG_INT},	/* 113 HTML_TABLE_ALT   */
     {"rule", ALST_RULE, MAXA_RULE, TFLG_INT},	/* 114 HTML_RULE        */
     {"/rule", NULL, 0, TFLG_INT | TFLG_END},	/* 115 HTML_N_RULE      */

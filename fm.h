@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.35 2001/12/27 17:37:49 ukai Exp $ */
+/* $Id: fm.h,v 1.36 2001/12/27 17:50:56 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -881,7 +881,7 @@ global int use_lessopen init(FALSE);
 global int FollowRedirection init(10);
 
 global int w3m_backend init(FALSE);
-global Str backend_halfdump_str;
+global TextLineList *backend_halfdump_buf;
 global TextList *backend_batch_commands init(NULL);
 int backend(void);
 extern void deleteFiles(void);

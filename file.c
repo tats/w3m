@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.36 2001/12/27 17:45:26 ukai Exp $ */
+/* $Id: file.c,v 1.37 2001/12/27 17:50:56 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2025,13 +2025,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 #endif
 	if (lbuf->pos > h_env->maxlimit)
 	    h_env->maxlimit = lbuf->pos;
-	if (buf) {
+	if (buf)
 	    pushTextLine(buf, lbuf);
-	    if (w3m_backend) {
-		Strcat(backend_halfdump_str, lbuf->line);
-		Strcat_char(backend_halfdump_str, '\n');
-	    }
-	}
 	else {
 	    Strfputs(lbuf->line, f);
 	    fputc('\n', f);
@@ -2046,11 +2041,9 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Str tmp = Strnew(), tmp2 = Strnew();
 
 #define APPEND(str) \
-	if (buf) { \
+	if (buf) \
 	    appendTextLine(buf,(str),0); \
-	    if (w3m_backend) \
-		Strcat(backend_halfdump_str, (str)); \
-	} else \
+	else \
 	    Strfputs((str),f)
 
 	while (*p) {
@@ -5074,6 +5067,8 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     newBuf->document_code = code;
     content_charset = '\0';
 #endif				/* JP_CHARSET */
+    if (w3m_backend)
+	backend_halfdump_buf = htmlenv1.buf;
     HTMLlineproc2(newBuf, htmlenv1.buf);
 }
 

@@ -1,3 +1,8 @@
+2003-01-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03655] Re: file.c:image_source when undef USE_IMAGE
+	* map.c (follow_map_menu): fix warnings
+
 2003-01-19  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 03654] file.c:image_source when undef USE_IMAGE
@@ -6604,4 +6609,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.691 2003/01/19 08:28:39 ukai Exp $
+$Id: ChangeLog,v 1.692 2003/01/19 09:04:32 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.90 2002/04/17 02:32:13 ukai Exp $ */
+/* $Id: file.c,v 1.91 2002/05/14 15:31:49 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -965,7 +965,7 @@ extract_auth_val(char **q)
 		qq++;
 		goto end_token;
 	    default:
-		if (*qq <= 037 || *qq == 177) {
+		if (*qq <= 037 || *qq == 0177) {
 		    qq++;
 		    goto end_token;
 		}

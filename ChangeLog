@@ -1,5 +1,9 @@
 2002-03-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* version.c.in: 0.3+cvs
+
+2002-03-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* w3m 0.3
 	* version.c.in: update
 	* doc/README: version 0.3, release date
@@ -3048,4 +3052,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.332 2002/03/05 17:17:43 ukai Exp $
+$Id: ChangeLog,v 1.333 2002/03/05 18:10:49 ukai Exp $

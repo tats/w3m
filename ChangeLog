@@ -1,5 +1,12 @@
 2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* istream.h: #include <x509v3.h> deleted
+	* istream.c: #include <x509v3.h>
+	* istream.c (ssl_check_cert_ident): of subjectAltName dNSName found,
+		don't try commonName
+
+2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02743] RFC2818 server identity check
 	* NEWS: RFC2818 server identity check
 	* istream.c (ssl_check_cert_ident): added
@@ -1613,4 +1620,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.179 2001/12/26 12:18:06 ukai Exp $
+$Id: ChangeLog,v 1.180 2001/12/26 12:58:49 ukai Exp $

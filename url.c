@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.23 2001/12/26 12:18:06 ukai Exp $ */
+/* $Id: url.c,v 1.24 2001/12/26 12:58:49 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -372,7 +372,8 @@ openSSLHandle(int sock, char *hostname)
 	if (tolower(*ans) == 'y') {
 	    amsg = Strnew_charp("Accept unsecure SSL session: "
 				"unverified certificate");
-	} else {
+	}
+	else {
 	    char *e = "This SSL session was rejected "
 		"to prevent security violation";
 	    disp_err_message(e, FALSE);
@@ -381,7 +382,7 @@ openSSLHandle(int sock, char *hostname)
 	}
     }
 #endif
-    
+
     emsg = ssl_check_cert_ident(handle, hostname);
     if (emsg != NULL) {
 	if (emsg->length > COLS - 16)
@@ -391,8 +392,9 @@ openSSLHandle(int sock, char *hostname)
 	ans = inputChar(emsg->ptr);
 	if (tolower(*ans) == 'y') {
 	    amsg = Strnew_charp("Accept unsecure SSL session:"
-		"certificate ident mismatch");
-	} else {
+				"certificate ident mismatch");
+	}
+	else {
 	    char *e = "This SSL session was rejected "
 		"to prevent security violation";
 	    disp_err_message(e, FALSE);

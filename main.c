@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: main.c,v 1.4 2001/11/16 03:30:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2241,11 +2241,11 @@ reMark(void)
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
-    MarkString = str;
-    if ((MarkString = regexCompile(MarkString, 1)) != NULL) {
-	disp_message(MarkString, TRUE);
+    if ((p = regexCompile(str, 1)) != NULL) {
+	disp_message(p, TRUE);
 	return;
     }
+    MarkString = str;
     for (l = Currentbuf->firstLine; l != NULL; l = l->next) {
 	p = l->lineBuf;
 	for (;;) {

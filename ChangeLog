@@ -1,3 +1,8 @@
+2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03053] Re: SSL indicator
+	* main.c (dump_extra): Output SSL certificate.
+
 2002-02-12  Katsumi Yamaoka  <yamaoka@jpl.org>
 
 	* [w3m-dev 03038] LDFLAGS
@@ -2921,4 +2926,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.315 2002/02/12 08:52:57 ukai Exp $
+$Id: ChangeLog,v 1.316 2002/02/13 17:24:24 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.81 2002/02/08 11:37:09 ukai Exp $ */
+/* $Id: main.c,v 1.82 2002/02/13 17:24:24 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1077,6 +1077,23 @@ dump_extra(Buffer *buf)
 	printf("W3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
 #ifdef JP_CHARSET
     printf("W3m-document-charset: %s\n", code_to_str(buf->document_code));
+#endif
+#ifdef USE_SSL
+    if (buf->ssl_certificate) {
+	Str tmp = Strnew();
+	char *p;
+	for (p = buf->ssl_certificate; *p; p++) {
+	    Strcat_char(tmp, *p);
+	    if (*p == '\n') {
+		for (; *(p + 1) == '\n'; p++) ;
+		if (*(p + 1))
+		    Strcat_char(tmp, '\t');
+	    }
+	}
+	if (Strlastchar(tmp) != '\n')
+	    Strcat_char(tmp, '\n');
+	printf("W3m-ssl-certificate: %s", tmp->ptr);
+    }
 #endif
 }
 

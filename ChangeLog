@@ -1,5 +1,10 @@
 2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* doc-jp/README.pre_form: added [w3m-dev 03373]
+	* doc/README.pre_form: brief translation
+
+2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* etc.c (PASS_IS_READABLE_MSG): deleted
 		(FILE_IS_READABLE_MSG): added
 		(openPasswdFile): deleted
@@ -4154,4 +4159,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.471 2002/11/05 16:03:12 ukai Exp $
+$Id: ChangeLog,v 1.472 2002/11/05 16:37:36 ukai Exp $

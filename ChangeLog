@@ -1,3 +1,7 @@
+2003-04-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* configure.in (AUXBIN_TARGETS): don't reset, move to head
+
 2003-04-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03870] Re: configure --help
@@ -7723,4 +7727,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.820 2003/04/09 17:46:15 ukai Exp $
+$Id: ChangeLog,v 1.821 2003/04/10 17:10:03 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.218 2003/03/06 14:30:27 ukai Exp $ */
+/* $Id: main.c,v 1.219 2003/03/23 15:21:02 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3490,7 +3490,7 @@ nextA(void)
 	    int hseq = an->hseq + 1;
 	    do {
 		if (hseq >= hl->nmark) {
-		    pan = an;
+		    an = pan;
 		    goto _end;
 		}
 		po = &hl->marks[hseq];

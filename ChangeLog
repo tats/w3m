@@ -1,3 +1,8 @@
+2003-03-24  Daiki Ueno <ueno@unixuser.org>
+
+	* [w3m-dev 03828] possible typo in nextA
+	* main.c (nextA): fix typo?
+
 2003-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03827] Re: checking for GC_version... no
@@ -7563,4 +7568,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.799 2003/03/22 14:58:33 ukai Exp $
+$Id: ChangeLog,v 1.800 2003/03/23 15:21:01 ukai Exp $

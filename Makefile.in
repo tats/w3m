@@ -36,6 +36,7 @@ DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DETC_DIR=\"$(sysconfdir)\" -DRC_DIR=\"$(RC_DIR)\"
 LDFLAGS = @LDFLAGS@
 LIBS = -L. -lindep @LIBS@
+W3M_LIBS = @W3M_LIBS@
 
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
@@ -107,7 +108,7 @@ SUBDIRS = $(SCRIPTSUBDIRS)
 all: $(TARGETS) all-scripts
 
 $(TARGET): $(ALLOBJS) $(ALIB)
-	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
 
 $(ALIB): $(ALIBOBJS)
 	$(AR) rv $(ALIB) $(ALIBOBJS)

@@ -21,6 +21,7 @@ AC_EXEEXT
 AC_SUBST(EXEEXT)
 
 AC_SUBST(W3M_TARGET)
+AC_SUBST(W3M_LIBS)
 W3M_TARGET=$target
 AC_DEFINE_UNQUOTED(W3M_TARGET, $W3M_TARGET)
 
@@ -63,7 +64,7 @@ AC_CHECK_FUNC(sqrt,,[AC_CHECK_LIB(m, sqrt)])
 if test x"$enable_mouse" = xyes; then
  AC_SUBST(USE_W3M)
  AC_CHECK_LIB(gpm, Gpm_Open, [AC_DEFINE(USE_GPM)
-   		LIBS="$LIBS -lgpm"])
+   		W3M_LIBS="$W3M_LIBS -lgpm"])
  AC_SUBST(USE_SYSMOUSE)
  AC_TRY_CPP([#include <machine/console.h>
    MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])

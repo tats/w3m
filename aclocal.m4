@@ -348,7 +348,7 @@ AC_ARG_WITH(termlib,
  AC_MSG_RESULT($with_termlib)
  test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
  for lib in $with_termlib; do
-   AC_CHECK_LIB($lib, tgetent, [LIBS="$LIBS -l$lib"; break])
+   AC_CHECK_LIB($lib, tgetent, [W3M_LIBS="$W3M_LIBS -l$lib"; break])
  done
 ])
 #
@@ -432,11 +432,11 @@ if test x"$with_ssl" != xno; then
         CFLAGS="$CFLAGS -I$dir/include"
      fi
      if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
-	LIBS="$LIBS -L$dir/lib"
+	W3M_LIBS="$W3M_LIBS -L$dir/lib"
      fi
   done
   AC_CHECK_LIB(ssl, SSL_new,
-	[w3m_ssl="found"; LIBS="$LIBS -lssl -lcrypto"],
+	[w3m_ssl="found"; W3M_LIBS="$W3M_LIBS -lssl -lcrypto"],
 	[w3m_ssl="not found"],
 	[-lcrypto])
 
@@ -646,11 +646,11 @@ if test x"$enable_ipv6" = xyes; then
     do
 	if test -f $dir/libinet6.a; then
 	  if test $dir != "/usr/lib"; then
-		LIBS="$LIBS -L$dir"
+		W3M_LIBS="$W3M_LIBS -L$dir"
 	  fi
 	  AC_CHECK_LIB(inet6, getaddrinfo,
 		[enable_ipv6="yes"; AC_DEFINE(INET6)
-	         use_libinet6="found"; LIBS="$LIBS -linet6"; break],
+	         use_libinet6="found"; W3M_LIBS="$W3M_LIBS -linet6"; break],
 		[use_libinet6="not found"])
 	fi
     done

@@ -1,3 +1,11 @@
+2003-04-05  ABE Yuji <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03838] W3M_LIBS splitted from LIBS
+	* Makefile.in (W3M_LIBS): added
+	* acinclude.m4 (AC_W3M_TERMLIB): use W3M_LIB
+		(AC_W3M_SSL): ditto
+	* configure.in (W3M_LIBS): added
+
 2003-04-04  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03837] Re: gif animation with no delay_time
@@ -7637,4 +7645,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.809 2003/04/03 16:35:42 ukai Exp $
+$Id: ChangeLog,v 1.810 2003/04/04 16:00:09 ukai Exp $

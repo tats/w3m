@@ -1,5 +1,20 @@
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02834] mailto: use external program
+	* configure: add use_w3mmailer
+	* frame.c (createFrameFile): ifndef USE_W3MMAILER
+	* main.c (followA): ifndef USE_W3MMAILER
+	* main.c (cmd_loadURL): ifndef USE_W3MMAILER
+	* url.c (schemetable): ifndef USE_W3MMAILER, mailto: become SCM_UNKNOWN
+	* url.c (parseURL2): ifndef USE_W3MMAILER
+	* url.c (_parsedURL2Str): ifndef USE_W3MMAILER
+	* url.c (default_urimethods): added
+	* url.c (searchURIMethods): check default_urimethods
+	* scripts/Makefile: add w3mmail.cgi
+	* scritps/w3mmail.cgi.in: added
+
+2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* file.c (loadGeneralFile): return NULL, not NO_BUFFER
 
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
@@ -1926,4 +1941,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.216 2002/01/15 03:45:02 ukai Exp $
+$Id: ChangeLog,v 1.217 2002/01/15 05:40:08 ukai Exp $

@@ -1,7 +1,7 @@
-/* $Id: keybind.c,v 1.7 2002/09/05 15:43:21 ukai Exp $ */
+/* $Id: keybind.c,v 1.8 2002/11/11 15:22:40 ukai Exp $ */
 #include "funcname2.h"
 
-char GlobalKeymap[128] = {
+unsigned char GlobalKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
 #ifdef __EMX__
     pcmap, linbeg, movL, nulcmd, nulcmd, linend, movR, curlno,
@@ -40,7 +40,7 @@ char GlobalKeymap[128] = {
     nulcmd, nulcmd, ctrCsrV, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscKeymap[128] = {
+unsigned char EscKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
@@ -75,7 +75,7 @@ char EscKeymap[128] = {
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscBKeymap[128] = {
+unsigned char EscBKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
@@ -110,7 +110,7 @@ char EscBKeymap[128] = {
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscDKeymap[128] = {
+unsigned char EscDKeymap[128] = {
     /*  0       1       INS     3       4       PgUp,   PgDn    7        */
     nulcmd, goLineF, mainMn, nulcmd, goLineL, pgBack, pgFore, nulcmd,
     /*  8       9       10      F1      F2      F3      F4      F5       */
@@ -137,7 +137,7 @@ char EscDKeymap[128] = {
 };
 
 #ifdef __EMX__
-char PcKeymap[256] = {
+unsigned char PcKeymap[256] = {
     //                        Null
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,	//   0
     //                                                        S-Tab

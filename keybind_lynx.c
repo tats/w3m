@@ -1,4 +1,4 @@
-/* $Id: keybind_lynx.c,v 1.5 2002/01/23 17:19:47 ukai Exp $ */
+/* $Id: keybind_lynx.c,v 1.6 2002/11/11 15:22:40 ukai Exp $ */
 /* 
  * Lynx-like key binding.
  *
@@ -13,7 +13,7 @@
 
 #include "funcname2.h"
 
-char GlobalKeymap[128] = {
+unsigned char GlobalKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
     _mark, goLineF, backBf, nulcmd, nulcmd, goLineL, followA, curlno,
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
@@ -48,7 +48,7 @@ char GlobalKeymap[128] = {
     nulcmd, nulcmd, ctrCsrV, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscKeymap[128] = {
+unsigned char EscKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
@@ -83,7 +83,7 @@ char EscKeymap[128] = {
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscBKeymap[128] = {
+unsigned char EscBKeymap[128] = {
     /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
@@ -118,7 +118,7 @@ char EscBKeymap[128] = {
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };
 
-char EscDKeymap[128] = {
+unsigned char EscDKeymap[128] = {
     /*  0       1       INS     3       4       PgUp,   PgDn    7        */
     nulcmd, goLineF, mainMn, nulcmd, goLineL, pgBack, pgFore, nulcmd,
     /*  8       9       10      F1      F2      F3      F4      F5       */

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.73 2002/11/08 16:01:20 ukai Exp $ */
+/* $Id: fm.h,v 1.74 2002/11/11 15:22:39 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -735,12 +735,12 @@ global char MetaRefresh init(FALSE);
 global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);
 
-extern char GlobalKeymap[];
-extern char EscKeymap[];
-extern char EscBKeymap[];
-extern char EscDKeymap[];
+extern unsigned char GlobalKeymap[];
+extern unsigned char EscKeymap[];
+extern unsigned char EscBKeymap[];
+extern unsigned char EscDKeymap[];
 #ifdef __EMX__
-extern char PcKeymap[];
+extern unsigned char PcKeymap[];
 #endif
 extern FuncList w3mFuncList[];
 

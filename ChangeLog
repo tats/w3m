@@ -1,5 +1,16 @@
 2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03407] char GlobalKeymap -> unsigned char GlobalKeymap
+	* fm.h (GlobalKeymap): char->unsigned char
+		(EscKeymap): ditto
+		(EscBKeymap): ditto
+		(EscDKeymap): ditto
+		(PcKeymap): ditto
+	* keybind.c: ditto
+	* keybind_lynx.c: ditto
+
+2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03406]
 	* scripts/Makefile: add AUXBIN_DIR
 			update LIB_DIR, HELP_DIR
@@ -4505,4 +4516,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.495 2002/11/11 15:19:49 ukai Exp $
+$Id: ChangeLog,v 1.496 2002/11/11 15:22:37 ukai Exp $

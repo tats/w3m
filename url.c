@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.33 2002/01/14 15:59:17 ukai Exp $ */
+/* $Id: url.c,v 1.34 2002/01/15 03:45:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -69,7 +69,9 @@ struct cmdtable schemetable[] = {
     /*  {"exec", SCM_EXEC}, */
     {"nntp", SCM_NNTP},
     {"news", SCM_NEWS},
+#ifndef USE_W3MMAILER
     {"mailto", SCM_MAILTO},
+#endif
 #ifdef USE_SSL
     {"https", SCM_HTTPS},
 #endif				/* USE_SSL */
@@ -945,9 +947,10 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     int relative_uri = FALSE;
 
     parseURL(url, pu, current);
+#ifndef USE_W3MMAILER
     if (pu->scheme == SCM_MAILTO)
 	return;
-
+#endif
     if (pu->scheme == SCM_LOCAL)
 	pu->file = expandName(pu->file);
 
@@ -1107,10 +1110,12 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     }
     tmp = Strnew_charp(scheme_str[pu->scheme]);
     Strcat_char(tmp, ':');
+#ifndef USE_W3MMAILER
     if (pu->scheme == SCM_MAILTO) {
 	Strcat_charp(tmp, pu->file);
 	return tmp;
     }
+#endif
 #ifdef USE_NNTP
     if (pu->scheme != SCM_NEWS)
 #endif				/* USE_NNTP */
@@ -1955,6 +1960,10 @@ filename_extension(char *path, int is_url)
 
 #ifdef USE_EXTERNAL_URI_LOADER
 static struct table2 **urimethods;
+static struct table2 default_urimethods[] = {
+    {"mailto", "file:///$LIB/w3mmail.cgi?%s"},
+    {NULL, NULL}
+};
 
 static struct table2 *
 loadURIMethods(char *filename)
@@ -2046,11 +2055,15 @@ searchURIMethods(ParsedURL *pu)
 	return NULL;
 
     for (i = 0; (ump = urimethods[i]) != NULL; i++) {
-	while (ump->item1 != NULL) {
+	for (; ump->item1 != NULL; ump++) {
 	    if (strcmp(ump->item1, scheme->ptr) == 0) {
 		return Sprintf(ump->item2, url_quote(url->ptr));
 	    }
-	    ump++;
+	}
+    }
+    for (ump = default_urimethods; ump->item1 != NULL; ump++) {
+	if (strcmp(ump->item1, scheme->ptr) == 0) {
+	    return Sprintf(ump->item2, url_quote(url->ptr));
 	}
     }
     return NULL;

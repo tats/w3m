@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.48 2002/01/14 15:59:17 ukai Exp $
+# $Id: configure,v 1.49 2002/01/15 03:45:02 ukai Exp $
 #	Configuration.
 #
 
@@ -699,6 +699,9 @@ fi
 
 # protocols?
 ask_param "External URI loader support" use_external_uri_loader y
+if [ "$use_external_uri_loader" = y ]; then
+  ask_param "Use w3mmail.cgi" use_w3mmailer y
+fi
 ask_param "NNTP support" use_nntp $include_opt
 ask_param "Gopher support" use_gopher $include_opt
 
@@ -2046,6 +2049,7 @@ $def_use_ssl
 $def_use_ssl_verify
 $def_ftppass_hostnamegen
 $def_use_external_uri_loader
+$def_use_w3mmailer
 $def_use_nntp
 $def_use_gopher
 $def_use_alarm

@@ -2,6 +2,8 @@
 # Makefile
 # @configure_input@
 #
+@SET_MAKE@
+SHELL=@SHELL@
 package=w3m
 prefix = @prefix@
 exec_prefix = @exec_prefix@

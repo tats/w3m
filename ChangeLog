@@ -1,3 +1,9 @@
+2003-03-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00910] Re: autoconf: env MAKE not respected
+	* Makefile.in (SET_MAKE): added
+		(SHELL): added
+
 2003-03-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00908] Re: autoconf: --without-migemo is a nop
@@ -7547,4 +7553,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.796 2003/03/18 15:25:47 ukai Exp $
+$Id: ChangeLog,v 1.797 2003/03/19 16:18:32 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.69 2002/05/14 15:30:01 ukai Exp $
+# $Id: configure,v 1.70 2002/07/17 20:58:48 ukai Exp $
 #	Configuration.
 #
 
@@ -439,7 +439,7 @@ find_imlib() {
   version=`$IMLIB_CONFIG --version`
   if [ "x$version" = x ]; then
     echo "You don't have Imlib. Install Imlib (version >= $imlib_version)."
-    exit 1
+    return 1
   fi
   major=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1/'`
   minor=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\2/'`
@@ -447,8 +447,59 @@ find_imlib() {
   echo "The version of Imlib is $version."
   if [ "$major" -ne $imlib_major -o "$minor" -ne $imlib_minor -o "$micro" -lt $imlib_micro ]; then
     echo "Imlib is too old. Install Imlib (version >= $imlib_version)."
-    exit 1
+    return 1
   fi
+  return 0
+}
+
+find_imlib2() {
+  imlib_major=1
+  imlib_minor=0
+  imlib_micro=5
+  imlib_version=$imlib_major.$imlib_minor.$imlib_micro
+  echo "Checking Imlib 2."
+  if [ "x$IMLIB2_CONFIG" = x ]; then
+    IMLIB2_CONFIG=imlib2-config
+  fi
+  version=`$IMLIB2_CONFIG --version`
+  if [ "x$version" = x ]; then
+    echo "You don't have Imlib 2. Install Imlib 2 (version >= $imlib_version)."
+    return 1
+  fi
+  major=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1/'`
+  minor=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\2/'`
+  micro=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\3/'`
+  echo "The version of Imlib 2 is $version."
+  if [ "$major" -ne $imlib_major -o "$minor" -lt $imlib_minor -o "$micro" -lt $imlib_micro ]; then
+    echo "Imlib 2 is too old. Install Imlib 2 (version >= $imlib_version)."
+    return 1
+  fi
+  return 0
+}
+
+find_gdkpixbuf() {
+  gdkpixbuf_major=0
+  gdkpixbuf_minor=16
+  gdkpixbuf_micro=0
+  gdkpixbuf_version=$gdkpixbuf_major.$gdkpixbuf_minor.$gdkpixbuf_micro
+  echo "Checking GdkPixbuf ."
+  if [ "x$GDKPIXBUF_CONFIG" = x ]; then
+    GDKPIXBUF_CONFIG=gdk-pixbuf-config
+  fi
+  version=`$GDKPIXBUF_CONFIG --version`
+  if [ "x$version" = x ]; then
+    echo "You don't have GdkPixbuf. Install GdkPixbuf (version >= $gdkpixbuf_version)."
+    return 1
+  fi
+  major=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1/'`
+  minor=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\2/'`
+  micro=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\3/'`
+  echo "The version of GdkPixbuf is $version."
+  if [ "$major" -ne $gdkpixbuf_major -o "$minor" -lt $gdkpixbuf_minor -o "$micro" -lt $gdkpixbuf_micro ]; then
+    echo "GdkPixbuf is too old. Install GdkPixbuf (version >= $gdkpixbuf_version)."
+    return 1
+  fi
+  return 0
 }
 
 #--------------------------------------------------------------
@@ -736,13 +787,21 @@ else
   def_param "use_digest_auth" n
 fi
 
-ask_param "Inline image support (you need Imlib library)" use_image n
+ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
   imgtarget='$(IMGDISPLAY) $(IMGSIZE)'
+  ask_param "X11 inline image support (you need Imlib1 library)" use_w3mimg_x11 y
+  d_w3mimg_fb=n
+  if test -e /dev/fb0; then
+      d_w3mimg_fb=y
+  fi
+  ask_param "Linux Framebuffer inline image support (you need Imlib2 or GdkPixbuf)" use_w3mimg_fb $d_w3mimg_fb
 else
   def_use_image="#undef USE_IMAGE"
   imgtarget=''
+  use_w3mimg_x11=n
+  use_w3mimg_fb=n
 fi
 
 if [ "$use_color" = y ]; then
@@ -1974,8 +2033,48 @@ else
   echo "You have IPv6 support."
 fi
 
+def_use_w3mimg_x11="#undef USE_W3MIMG_X11"
+def_use_w3mimg_fb="#undef USE_W3MIMG_FB"
+def_use_imlib='#undef USE_IMLIB'
+def_use_gdkpixbuf='#undef USE_GDKPIXBUF'
+def_use_imlib2='#undef USE_IMLIB2'
+imgx11cflags=''
+imgfbcflags=''
+imgx11ldflags=''
+imgfbldflags=''
+imbobjs=''
+
 if [ "$use_image" = y ]; then
-  find_imlib
+  if [ "$use_w3mimg_x11" = y ]; then
+      if find_imlib; then
+	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
+	  def_use_imlib='#define USE_IMLIB'
+	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
+	  imgx11cflags='`imlib-config --cflags`'
+	  imgx11ldflags='`imlib-config --libs`'
+      else
+	  use_w3mimg_x11=n
+	  echo "Disable X11 inline image"
+      fi
+  fi
+  if [ "$use_w3mimg_fb" = y ]; then
+      if find_gdkpixbuf; then
+	  def_use_w3mimg_fb="#define USE_W3MIMG_FB"
+	  imgobjs="$imgobjs w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+	  def_use_gdkpixbuf='#define USE_GDKPIXBUF'
+	  imgfbcflags='`gdk-pixbuf-config --cflags`'
+	  imgfbldflags='`gdk-pixbuf-config --libs`'
+      elif find_imlib2; then
+	  def_use_imlib2='#define USE_IMLIB2'
+	  imgobjs="$imgobjs w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
+	  def_use_imlib2='#define USE_IMLIB2'
+	  imgfbcflags='`imlib2-config --cflags`'
+	  imgfbldflags='`imlib2-config --libs`'
+      else
+	  use_w3mimg_fb=n
+	  echo "Disable Linux framebuffer inline image"
+      fi
+  fi
 fi
 
 rm -f _zmachdep$extension _zmachdep.c _zmachdep.o
@@ -2108,6 +2207,11 @@ MATHLIB=$mathlib
 Z_CFLAGS=$z_cflags
 ZLIB=$zlib
 EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate $imgtarget
+IMGCFLAGS=$imgx11cflags $imgfbcflags
+IMGLDFLAGS=$imgx11ldflags $imgfbldflags
+IMGX11CFLAGS=$imgx11cflags
+IMGFBCFLAGS=$imgfbcflags
+IMGOBJS=$imgobjs
 GC_CFLAGS=$gc_cflags
 GCLIB=$gclib $pthreadlib
 GCTARGET=$gctarget
@@ -2149,6 +2253,11 @@ $def_use_nntp
 $def_use_gopher
 $def_use_alarm
 $def_use_image
+$def_use_w3mimg_x11
+$def_use_w3mimg_fb
+$def_use_imlib
+$def_use_gdkpixbuf
+$def_use_imlib2
 $def_use_help_cgi
 $def_use_xface
 

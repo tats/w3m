@@ -1,31 +1,28 @@
-/* $Id: w3mimgsize.c,v 1.1 2002/01/31 17:54:57 ukai Exp $ */
+/* $Id: w3mimgsize.c,v 1.2 2002/07/17 20:58:48 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
-#include <Imlib.h>
+#include <string.h>
+#include "config.h"
+#include "w3mimg/w3mimg.h"
 
 int
 main(int argc, char **argv)
 {
-    Display *display;
-    ImlibData *id;
-    ImlibImage *im;
+    w3mimg_op *w_op = NULL;
+    W3MImage img;
 
     fclose(stderr);
     if (argc < 2)
 	exit(1);
-    display = XOpenDisplay(NULL);
-    if (!display)
+    w_op = w3mimg_open();
+    if (w_op == NULL)
 	exit(1);
-    id = Imlib_init(display);
-    if (!id)
+
+    if (!w_op->init(w_op))
 	exit(1);
-    im = Imlib_load_image(id, argv[1]);
-    if (!im)
+
+    if (!w_op->load_image(w_op, &img, argv[1], -1, -1))
 	exit(1);
-    printf("%d %d\n", im->rgb_width, im->rgb_height);
-    /*
-     * Imlib_kill_image(id, im);
-     * XCloseDisplay(display);
-     */
+    printf("%d %d\n", img.width, img.height);
     exit(0);
 }

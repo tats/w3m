@@ -114,7 +114,7 @@ $(ALIB): $(ALIBOBJS)
 $(OBJS): fm.h funcname1.h
 
 tagtable.c: tagtable.tab mktable$(EXT) html.h 
-	./mktable$(EXT) 100 $< > $@
+	./mktable$(EXT) 100 $(srcdir)/tagtable.tab > $@
 
 func.o: funcname.c functable.c funcname1.h
 keybind.o: funcname2.h
@@ -122,16 +122,16 @@ keybind_lynx.o: funcname2.h
 parsetagx.o: html.c
 
 funcname.c: funcname.tab
-	sort $< | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
+	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
 
 funcname1.h: funcname.tab
-	sort $< | $(AWK) -f $(top_srcdir)/funcname1.awk > $@
+	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname1.awk > $@
 
 funcname2.h: funcname.tab
-	sort $< | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
+	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
 
 functable.c: funcname.tab mktable$(EXT)
-	sort $< | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
+	sort $(srcdir)/funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
@@ -148,13 +148,13 @@ $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 
 inflate.o: inflate.c
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
 $(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
 	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
 w3mimgdisplay.o: w3mimgdisplay.c
-	$(CC) $(CFLAGS) $(IMGCFLAGS) -c $<
+	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
 w3mimg/w3mimg.o: w3mimg/w3mimg.c
 	-@$(MKDIR) w3mimg

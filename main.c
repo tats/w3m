@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.97 2002/04/17 02:42:27 ukai Exp $ */
+/* $Id: main.c,v 1.98 2002/04/24 18:29:35 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4829,11 +4829,10 @@ GetWord(Buffer *buf)
 static void
 execdict(char *word)
 {
-    char *w;
+    char *w, *dictcmd;
     Buffer *buf;
-    MySignalHandler(*prevtrap) ();
 
-    if (word == NULL || *word == '\0') {
+    if (!UseDictCommand || word == NULL || *word == '\0') {
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
@@ -4842,22 +4841,17 @@ execdict(char *word)
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
-    prevtrap = signal(SIGINT, intTrap);
-    crmode();
-    buf = getshell(myExtCommand(DICTCMD, shell_quote(w), FALSE)->ptr);
-    signal(SIGINT, prevtrap);
-    term_raw();
+    dictcmd = Sprintf("%s?%s", DictCommand, w)->ptr;
+    buf = loadGeneralFile(url_quote_conv(dictcmd, Currentbuf->document_code),
+			  baseURL(Currentbuf),
+			  parsedURL2Str(&Currentbuf->currentURL)->ptr,
+			  0, NULL);
     if (buf == NULL) {
 	disp_message("Execution failed", FALSE);
-    }
-    else if (buf->firstLine == NULL) {
-	/* if the dictionary doesn't describe the word. */
-	disp_message(Sprintf("Word \"%s\" Not Found", word)->ptr, FALSE);
     }
     else {
 	buf->filename = w;
 	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
-	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
 	if (buf->type == NULL)
 	    buf->type = "text/plain";
 	pushBuffer(buf);

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.41 2002/03/29 16:39:37 ukai Exp $ */
+/* $Id: rc.c,v 1.42 2002/04/24 18:29:35 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -148,6 +148,10 @@ static char *config_file = NULL;
 #endif
 #define CMT_EXT_DIRLIST  "ディレクトリリストに外部コマンドを使う"
 #define CMT_DIRLIST_CMD  "ディレクトリリスト用コマンド"
+#ifdef USE_DICT
+#define CMT_USE_DICTCOMMAND  "辞書引きをCGI経由でおこなう"
+#define CMT_DICTCOMMAND  "辞書引きコマンドのURL"
+#endif				/* USE_DICT */
 #define CMT_IGNORE_NULL_IMG_ALT "空のIMG ALT属性の時にリンク名を表示する"
 #define CMT_IFILE        "各ディレクトリのインデックスファイル"
 #define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
@@ -283,6 +287,10 @@ static char *config_file = NULL;
 #endif
 #define CMT_EXT_DIRLIST  "Use external program for directory listing"
 #define CMT_DIRLIST_CMD  "Directory listing command"
+#ifdef USE_DICT
+#define CMT_USE_DICTCOMMAND  "Enable dictionary lookup through CGI"
+#define CMT_DICTCOMMAND  "URL of dictionary lookup command"
+#endif				/* USE_DICT */
 #define CMT_IGNORE_NULL_IMG_ALT	"Ignore IMG ALT=\"\" (display link name)"
 #define CMT_IFILE        "Index file for the directory"
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
@@ -456,6 +464,12 @@ struct param_ptr params1[] = {
      CMT_EXT_DIRLIST, NULL},
     {"dirlist_cmd", P_STRING, PI_TEXT, (void *)&DirBufferCommand,
      CMT_DIRLIST_CMD, NULL},
+#ifdef USE_DICT
+    {"use_dictcommand", P_INT, PI_ONOFF, (void *)&UseDictCommand,
+     CMT_USE_DICTCOMMAND, NULL},
+    {"dictcommand", P_STRING, PI_TEXT, (void *)&DictCommand,
+     CMT_DICTCOMMAND, NULL},
+#endif				/* USE_DICT */
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},

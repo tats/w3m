@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.58 2002/03/29 16:39:37 ukai Exp $ */
+/* $Id: fm.h,v 1.59 2002/04/24 18:29:35 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -99,7 +99,6 @@ void bzero(void *, int);
 #define PIPEBUFFERNAME	"*stream*"
 #define CPIPEBUFFERNAME	"*stream(closed)*"
 #ifdef USE_DICT
-#define DICTCMD "w3mdict"
 #define DICTBUFFERNAME "*dictionary*"
 #endif				/* USE_DICT */
 
@@ -860,6 +859,10 @@ global char *pauth init(NULL);
 global Str proxy_auth_cookie init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
+#ifdef USE_DICT
+global int UseDictCommand init(FALSE);
+global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
+#endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);
 global int FoldTextarea init(FALSE);
 #define DEFAULT_URL_EMPTY	0

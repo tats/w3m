@@ -12,7 +12,7 @@
    If you define DICT, you can use dictionary look-up function
    in w3m. See README.dict for detail.
 */
-#undef DICT
+#define DICT
 
 /*
    If you want to load and save URL history.

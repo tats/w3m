@@ -1,5 +1,6 @@
 w3m 0.4?
 
+* rc: use_dictcommand, dictcommand
 * rc: mark_all_pages
 * configure: -mandir
 * func: COMMAND

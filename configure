@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.67 2002/04/09 14:45:58 ukai Exp $
+# $Id: configure,v 1.68 2002/04/24 18:29:35 ukai Exp $
 #	Configuration.
 #
 
@@ -775,7 +775,7 @@ else
 fi
 
 ### only use config.param
-def_param use_dict n
+def_param use_dict y
 def_param use_history y
 def_param use_bg_color y
 def_param format_nice n

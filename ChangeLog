@@ -1,3 +1,25 @@
+2002-04-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00730] Re: Patch for a more flexible dictionary lookup
+	* NEWS: rc: use_dictcommand, dictcommand
+	* main.c (execdict): use url_quote_conv() instead of cURLcode()
+	* proto.h (cURLcode): deleted
+	* doc-jp/README.dict: updated
+
+2002-04-25  Tushar Samant <scribble@pobox.com>
+
+	* [w3m-dev-en 00729] Re: Patch for a more flexible dictionary lookup
+	* config.h.dist (DICT): define
+	* configure (use_dict): default y
+	* fm.h (DICTCMD): deleted
+		(UseDictCommand): added
+		(DictCommand): added
+	* main.c (execdict): rewrite to use DictCommand, loadGeneralFile()
+	* rc.c (CMT_USE_DICTCOMMAND): added
+		(CMT_DICTCOMMAND): added
+		(params1): use_dictcommand, dictcommand added
+	* doc/README.dict: updated
+
 2002-04-21  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03181] KEYBIND_SRC was not passed to scripts/Makefile
@@ -3364,4 +3386,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.373 2002/04/20 17:50:20 ukai Exp $
+$Id: ChangeLog,v 1.374 2002/04/24 18:29:35 ukai Exp $

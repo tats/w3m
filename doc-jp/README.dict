@@ -4,7 +4,8 @@ w3m用英和辞典検索機能について
 
 'webster' コマンドなどのように辞書を引くためのコマンドをお持ちの
 場合には，w3m の中からそれを使うことができます．この機能は，
-るびきちさん(rubikitch@ruby-lang.org)によるものです．
+るびきちさん(rubikitch@ruby-lang.org)によるものをもとに
+Tushar Samant (scribble at pobox.com)が修正をくわえました。
 
 2. インストール
 
@@ -19,17 +20,41 @@ w3m用英和辞典検索機能について
 #define USE_DICT
 
 に変更し，w3m をコンパイルしなおしてください．
-(dict.c と keybind.c をコンパイルしなおせば良いはずです)
+w3m/0.3+cvs-1.358以降は、defaultでUSE_DICTがdefineされます。
 
-それから，w3mdict というコマンドを用意します．これは，既存の
-辞書引きコマンドへのリンクです．例えば，webster というコマンド
-を辞書引きに使いたい場合には，次のようにしてください．
+それから，文字列をうけとってその結果をかえすCGIプログラムを
+インストールします。
 
-% cd /usr/local/bin
-% ln -s `which webster` w3mdict
+つぎのような方法があります
 
-一般に，単語を引数として取って，標準出力に何かを出力するコマンド
-であれば，どんなものでも w3mdict として使うことができます．
+ * もし 'webster'というコマンドがあればいかのような内容の'w3mdict'という
+   スクリプトをつくります。
+
+      #!/bin/sh
+
+      echo Content-type: text/plain
+      echo
+      webster $QUERY_STRING
+
+    これを lcoal CGIとしてインストールします (w3mマニュアルの local CGI
+    のセクションをみてください) そして w3mのオプションページで
+    辞書設定を設定してください。
+
+ * もし文字列をGoogleで検索する機能がつかいたい場合、
+   以下のような local CGIスクリプトがつかえます。
+
+      #!/bin/sh
+
+      google_q='http://google.com/search?btnG=Google&q'
+
+      cat <<_END_
+      Content-type: text/plain
+      W3m-control: GOTO $google_q=$QUERY_STRING
+      W3m-control: DELETE_PREVBUF
+
+      _END_
+
+    これのパスを辞書引きコマンドのURLとして設定してください。
 
 3. 使いかた
 
@@ -39,3 +64,5 @@ ESC w    単語を入力し，それを辞書で引いて表示します．
 
 ESC W    バッファ内の現在カーソルがある単語を辞書で引き，表示します．
 
+これらのキーを変更するには、~/.w3m/keymapのDICT_WORDおよびDICT_WORD_AT
+の行を変更してください。

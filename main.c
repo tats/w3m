@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.147 2002/11/21 16:31:36 ukai Exp $ */
+/* $Id: main.c,v 1.148 2002/11/21 17:05:01 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -101,6 +101,7 @@ void set_buffer_environ(Buffer *);
 static void _followForm(int);
 static void _goLine(char *);
 static void _newT(void);
+static void calcTabPos(void);
 static void followTab(TabBuffer * tab);
 static void moveTab(TabBuffer * t, TabBuffer * t2, int right);
 static int check_target = TRUE;
@@ -895,6 +896,7 @@ main(int argc, char **argv, char **envp)
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
+	    calcTabPos();
 	    Firstbuf = Currentbuf = newbuf;
 	}
 	else {
@@ -935,6 +937,7 @@ main(int argc, char **argv, char **envp)
 	if (!FirstTab) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
+	    calcTabPos();
 	}
 	if (!Firstbuf || Firstbuf == NO_BUFFER) {
 	    Firstbuf = Currentbuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -4785,21 +4788,13 @@ mouse_scroll_line(void)
 static TabBuffer *
 posTab(int x, int y)
 {
-    TabBuffer *t;
-    int i, n, col = COLS - 2;
-
-    if (col <= 0)
-	return NULL;
-    n = nTabLine();
-    n = x * n / col + y * n;
-    i = 0;
-    if (mouse_menu) {
-	if (n == 0)
-	    return NO_TABBUFFER;
-	i++;
+    TabBuffer *tab;
+  
+    for (tab = FirstTab; tab; tab = tab->nextTab) {
+	if (tab->x1 <= x && x <= tab->x2 && tab->y == y)
+	    return tab;
     }
-    for (t = FirstTab; t && i < n; t = t->nextTab, i++) ;
-    return t;
+    return NULL;
 }
 
 static void
@@ -4836,11 +4831,11 @@ process_mouse(int btn, int x, int y)
     int ny = 0;
 
     if (nTab2 > 1)
-	ny = (nTab2 - 1) / nTabLine() + 1;
+	ny = LastTab->y + 1;
     if (btn == MOUSE_BTN_UP) {
 	switch (press_btn) {
 	case MOUSE_BTN1_DOWN:
-	    if (nTab2 > 1 && y < ny) {
+	    if (ny && y < ny) {
 		if (press_y == y && press_x == x) {
 		    if (y == 0 && x >= COLS - 2) {
 			deleteTab(CurrentTab);
@@ -4958,7 +4953,7 @@ process_mouse(int btn, int x, int y)
 	    }
 	    break;
 	case MOUSE_BTN2_DOWN:
-	    if (nTab2 > 1 && y < ny) {
+	    if (ny && y < ny) {
 		if (press_y == y && press_x == x) {
 		    t = posTab(x, y);
 		    if (t == NO_TABBUFFER) {
@@ -5616,6 +5611,7 @@ _newT(void)
     CurrentTab->nextTab = tag;
     CurrentTab = tag;
     nTab++;
+    calcTabPos();
 }
 
 void
@@ -5654,6 +5650,55 @@ numTab(int n)
     return tab;
 }
 
+static void
+calcTabPos(void)
+{
+    TabBuffer *tab;
+    int lcol = 0, rcol = 2, col;
+    int n1, n2, na, nx, ny, ix, iy;
+
+    if (nTab <= 0)
+	return;
+    n1 = (COLS - rcol - lcol) / TabCols;
+    if (n1 >= nTab) {
+	n2 = 1;
+	ny = 1;
+    }
+    else {
+	if (n1 < 0)
+	    n1 = 0;
+	n2 = COLS / TabCols;
+	if (n2 == 0)
+	    n2 = 1;
+	ny = (nTab - n1 - 1) / n2 + 2;
+    }
+    na = n1 + n2 * (ny - 1);
+    n1 -= (na - nTab) / ny;
+    if (n1 < 0)
+	n1 = 0;
+    na = n1 + n2 * (ny - 1);
+    tab = FirstTab;
+    for (iy = 0; iy < ny && tab; iy++) {
+	if (iy == 0) {
+	    nx = n1;
+	    col = COLS - rcol - lcol;
+	}
+	else {
+	    nx = n2 - (na - nTab + (iy - 1)) / (ny - 1);
+	    col = COLS;
+	}
+	for (ix = 0; ix < nx && tab; ix++, tab = tab->nextTab) {
+	    tab->x1 = col * ix / nx;
+	    tab->x2 = col * (ix + 1) / nx - 1;
+	    tab->y = iy;
+	    if (iy == 0) {
+		tab->x1 += lcol;
+		tab->x2 += lcol;
+	    }
+	}
+    }
+}
+
 TabBuffer *
 deleteTab(TabBuffer * tab)
 {
@@ -5677,6 +5722,7 @@ deleteTab(TabBuffer * tab)
 	    CurrentTab = tab->nextTab;
     }
     nTab--;
+    calcTabPos();
     buf = tab->firstBuffer;
     while (buf && buf != NO_BUFFER) {
 	next = buf->nextBuffer;
@@ -5875,6 +5921,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
 	    FirstTab = t;
 	t2->prevTab = t;
     }
+    calcTabPos();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.36 2002/11/21 16:32:29 ukai Exp $ */
+/* $Id: display.c,v 1.37 2002/11/21 17:05:01 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -255,7 +255,7 @@ displayBuffer(Buffer *buf, int mode)
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
     if (nTab2 > 1) {
-	ny = (nTab2 - 1) / nTabLine() + 2;
+	ny = LastTab->y + 2;
 	if (ny > LASTLINE)
 	    ny = LASTLINE;
     }
@@ -447,7 +447,7 @@ redrawNLine(Buffer *buf, int n)
 #endif				/* USE_COLOR */
     if (nTab2 > 1) {
 	TabBuffer *t;
-	int nx = nTabLine(), col = COLS - 2, x, l;
+	int l;
 
 	i = 0;
 	move(0, 0);
@@ -456,31 +456,30 @@ redrawNLine(Buffer *buf, int n)
 	    clrtoeolx();
 	    i++;
 	}
-	for (t = FirstTab; t; t = t->nextTab, i++) {
-	    x = col * (i % nx) / nx;
-	    move(i / nx, x);
+	clrtoeolx();
+	for (t = FirstTab; t; t = t->nextTab) {
+	    move(t->y, t->x1);
 	    if (t == CurrentTab)
 		bold();
 	    addch('[');
 	    l = strlen(t->currentBuffer->buffername);
-	    if (col / nx - 2 > l)
-		addnstr_sup(" ", (col / nx - 2 - l) / 2);
+	    if (t->x2 - t->x1 - 2 > l)
+		addnstr_sup(" ", (t->x2 - t->x1 - 1 - l) / 2);
 	    if (t == CurrentTab)
 		EFFECT_ACTIVE_START;
 	    addstr(t->currentBuffer->buffername);
 	    if (t == CurrentTab)
 		EFFECT_ACTIVE_END;
 	    clrtoeolx();
-	    x = col * (i % nx + 1) / nx - 1;
-	    move(i / nx, x);
+	    move(t->y, t->x2);
 	    addch(']');
 	    if (t == CurrentTab)
 		boldend();
 	    clrtoeolx();
 	}
-	move(0, col);
+	move(0, COLS - 2);
 	addstr(" x");
-	move((nTab2 - 1) / nx + 1, 0);
+	move(LastTab->y + 1, 0);
 	for (i = 0; i < COLS; i++)
 	    addch('~');
     }

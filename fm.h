@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.85 2002/11/21 16:31:36 ukai Exp $ */
+/* $Id: fm.h,v 1.86 2002/11/21 17:05:01 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -452,6 +452,9 @@ typedef struct _TabBuffer {
     struct _TabBuffer *prevTab;
     Buffer *currentBuffer;
     Buffer *firstBuffer;
+    short x1;
+    short x2;
+    short y;
 } TabBuffer;
 
 typedef struct _DownloadList {

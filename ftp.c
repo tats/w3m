@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.26 2003/01/15 16:24:25 ukai Exp $ */
+/* $Id: ftp.c,v 1.27 2003/02/20 15:39:21 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -105,7 +105,6 @@ ftp_close(FTP ftp)
 static int
 ftp_login(FTP ftp)
 {
-    Str tmp;
     int sock, status;
 
     sock = openSocket(ftp->host, "ftp", 21);
@@ -121,7 +120,7 @@ ftp_login(FTP ftp)
 
 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
 		struct hostent *sockent;
-		tmp = Strnew_charp(ftp->pass);
+		Str tmp = Strnew_charp(ftp->pass);
 
 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
 					     sizeof(sockname.sin_addr),

@@ -1,3 +1,9 @@
+2003-02-21  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03761] eliminate compiler warnings
+	* ftp.c (ftp_login): Str tmp
+	* table.c (feed_table_tag): p is used ifdef ID_EXT 
+
 2003-02-21  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 03760] Re: README.cygwin
@@ -7207,4 +7213,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.756 2003/02/20 15:38:21 ukai Exp $
+$Id: ChangeLog,v 1.757 2003/02/20 15:39:18 ukai Exp $

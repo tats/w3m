@@ -1,3 +1,8 @@
+2002-12-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03534] cleanup file.c
+	* file.c (HTMLlineproc2body): cleanup
+
 2002-12-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* version.c.in: w3m/0.3.2.2+cvs
@@ -5552,4 +5557,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.596 2002/12/06 03:40:45 ukai Exp $
+$Id: ChangeLog,v 1.597 2002/12/06 16:33:22 ukai Exp $

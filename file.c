@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.148 2002/12/06 03:40:45 ukai Exp $ */
+/* $Id: file.c,v 1.149 2002/12/06 16:33:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4985,10 +4985,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			id = url_quote_conv(id, buf->document_code);
 			registerName(buf, id, currentLn(buf), pos);
 		    }
-		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
-			p = remove_space(p);
-			p = url_quote_conv(p, buf->document_code);
-		    }
+		    if (parsedtag_get_value(tag, ATTR_HREF, &p))
+			p = url_quote_conv(remove_space(p), buf->document_code);
 		    if (parsedtag_get_value(tag, ATTR_TARGET, &q))
 			q = url_quote_conv(q, buf->document_code);
 		    if (parsedtag_get_value(tag, ATTR_REFERER, &r))
@@ -5007,7 +5005,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				      currentLn(buf), pos);
 		    if (p) {
 			effect |= PE_ANCHOR;
-			a_href = registerHref(buf, remove_space(p), q, r, s,
+			a_href = registerHref(buf, p, q, r, s,
 					      *t, currentLn(buf), pos);
 			a_href->hseq = ((hseq > 0) ? hseq : -hseq) - 1;
 			a_href->slave = (hseq > 0) ? FALSE : TRUE;
@@ -5053,8 +5051,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #endif
 			s = NULL;
 			parsedtag_get_value(tag, ATTR_TITLE, &s);
-			p = remove_space(p);
-			p = url_quote_conv(p, buf->document_code);
+			p = url_quote_conv(remove_space(p), buf->document_code);
 			a_img = registerImg(buf, p, s, currentLn(buf), pos);
 #ifdef USE_IMAGE
 			a_img->hseq = iseq;
@@ -5205,8 +5202,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			break;
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
 			MapArea *a;
-			p = remove_space(p);
-			p = url_quote_conv(p, buf->document_code);
+			p = url_quote_conv(remove_space(p), buf->document_code);
 			t = NULL;
 			parsedtag_get_value(tag, ATTR_TARGET, &t);
 			q = "";
@@ -5255,8 +5251,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 		case HTML_BASE:
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
-			p = remove_space(p);
-			p = url_quote_conv(p, buf->document_code);
+			p = url_quote_conv(remove_space(p), buf->document_code);
 			if (!buf->baseURL)
 			    buf->baseURL = New(ParsedURL);
 			parseURL(p, buf->baseURL, NULL);

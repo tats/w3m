@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.170 2002/12/16 15:41:35 ukai Exp $ */
+/* $Id: main.c,v 1.171 2002/12/18 16:20:53 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -42,19 +42,10 @@ static Event eventQueue[N_EVENT_QUEUE];
 static int n_event_queue;
 
 #ifdef USE_ALARM
-typedef struct {
-    int sec;
-    int cmd;
-    void *data;
-    short status;
-    Buffer *buffer;
-} AlarmEvent;
-static AlarmEvent CurrentAlarm = {
-    0, FUNCNAME_nulcmd, NULL, AL_UNSET, NULL
+static AlarmEvent DefaultAlarm = {
+    0, FUNCNAME_nulcmd, NULL, AL_UNSET,
 };
-static AlarmEvent PrevAlarm = {
-    0, FUNCNAME_nulcmd, NULL, AL_UNSET, NULL
-};
+static AlarmEvent *CurrentAlarm = &DefaultAlarm;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
 #endif
 
@@ -1000,34 +991,42 @@ main(int argc, char **argv, char **envp)
 	if (n_event_queue > 0) {
 	    for (i = 0; i < n_event_queue; i++) {
 		CurrentKey = -1;
-		CurrentKeyData = eventQueue[i].user_data;
-		CurrentCmdData = NULL;
+		CurrentKeyData = NULL;
+		CurrentCmdData = (char *)eventQueue[i].user_data;
 		w3mFuncList[eventQueue[i].cmd].func();
 	    }
+	    CurrentCmdData = NULL;
 	    n_event_queue = 0;
 	}
-	CurrentKeyData = NULL;
 	/* get keypress event */
+#ifdef USE_ALARM
+	if (Currentbuf->event) {
+	    if (Currentbuf->event->status != AL_UNSET) {
+		CurrentAlarm = Currentbuf->event;
+		if (CurrentAlarm->sec == 0) {	/* refresh (0sec) */
+		    Currentbuf->event = NULL;
+		    CurrentKey = -1;
+		    CurrentKeyData = NULL;
+		    CurrentCmdData = (char *)CurrentAlarm->data;
+		    w3mFuncList[CurrentAlarm->cmd].func();
+		    CurrentCmdData = NULL;
+		}
+	    }
+	    else
+		Currentbuf->event = NULL;
+	}
+	if (!Currentbuf->event)
+	    CurrentAlarm = &DefaultAlarm;
+#endif
 #ifdef USE_MOUSE
 	mouse_action.in_action = FALSE;
 	if (use_mouse)
 	    mouse_active();
 #endif				/* USE_MOUSE */
 #ifdef USE_ALARM
-	if (Currentbuf->bufferprop & BP_RELOAD)
-	    setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
-	if (CurrentAlarm.status & AL_IMPLICIT) {
-	    CurrentAlarm.buffer = Currentbuf;
-	    CurrentAlarm.status = AL_IMPLICIT_DONE
-		| (CurrentAlarm.status & AL_ONCE);
-	}
-	else if (CurrentAlarm.status & AL_IMPLICIT_DONE &&
-		 CurrentAlarm.buffer != Currentbuf) {
-	    setAlarmEvent(0, AL_RESTORE, FUNCNAME_nulcmd, NULL);
-	}
-	if (CurrentAlarm.sec > 0) {
+	if (CurrentAlarm->sec > 0) {
 	    signal(SIGALRM, SigAlarm);
-	    alarm(CurrentAlarm.sec);
+	    alarm(CurrentAlarm->sec);
 	}
 #endif
 #ifdef SIGWINCH
@@ -1050,7 +1049,7 @@ main(int argc, char **argv, char **envp)
 	signal(SIGWINCH, resize_hook);
 #endif
 #ifdef USE_ALARM
-	if (CurrentAlarm.sec > 0) {
+	if (CurrentAlarm->sec > 0) {
 	    alarm(0);
 	}
 #endif
@@ -1077,6 +1076,7 @@ main(int argc, char **argv, char **envp)
 	}
 	prev_key = CurrentKey;
 	CurrentKey = -1;
+	CurrentKeyData = NULL;
     }
 }
 
@@ -5496,49 +5496,30 @@ SigAlarm(SIGNAL_ARG)
 {
     char *data;
 
-    if (CurrentAlarm.sec > 0) {
+    if (CurrentAlarm->sec > 0) {
 	CurrentKey = -1;
 	CurrentKeyData = NULL;
-	CurrentCmdData = data = (char *)CurrentAlarm.data;
+	CurrentCmdData = data = (char *)CurrentAlarm->data;
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
 #endif
-	w3mFuncList[CurrentAlarm.cmd].func();
-	displayBuffer(Currentbuf, B_NORMAL);
+	w3mFuncList[CurrentAlarm->cmd].func();
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
 #endif
 	CurrentCmdData = NULL;
-	if (CurrentAlarm.status & AL_IMPLICIT) {
-	    CurrentAlarm.buffer = Currentbuf;
-	    CurrentAlarm.status = AL_IMPLICIT_DONE
-		| (CurrentAlarm.status & AL_ONCE);
+	if (CurrentAlarm->status == AL_IMPLICIT_ONCE) {
+	    CurrentAlarm->sec  = 0;
+	    CurrentAlarm->status = AL_UNSET;
 	}
-	else if (CurrentAlarm.status & AL_IMPLICIT_DONE
-		 && (CurrentAlarm.buffer != Currentbuf ||
-		     CurrentAlarm.status & AL_ONCE)) {
-	    setAlarmEvent(0, AL_RESTORE, FUNCNAME_nulcmd, NULL);
-	}
-	if (CurrentAlarm.sec > 0) {
+	if (CurrentAlarm->sec > 0) {
 	    signal(SIGALRM, SigAlarm);
-	    alarm(CurrentAlarm.sec);
+	    alarm(CurrentAlarm->sec);
 	}
     }
     SIGNAL_RETURN;
-}
-
-static void
-copyAlarmEvent(AlarmEvent * src, AlarmEvent * dst)
-{
-    if (!src || !dst)
-	return;
-    dst->sec = src->sec;
-    dst->cmd = src->cmd;
-    dst->data = src->data;
-    dst->status = src->status;
-    dst->buffer = src->buffer;
 }
 
 void
@@ -5563,33 +5544,26 @@ setAlarm(void)
     }
     if (cmd >= 0) {
 	data = getQWord(&data);
-	setAlarmEvent(sec, AL_EXPLICIT, cmd, data);
+	setAlarmEvent(&DefaultAlarm, sec, AL_EXPLICIT, cmd, data);
 	disp_message_nsec(Sprintf("%dsec %s %s", sec, w3mFuncList[cmd].id,
 				  data)->ptr, FALSE, 1, FALSE, TRUE);
     }
     else {
-	setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
+	setAlarmEvent(&DefaultAlarm, 0, AL_UNSET, FUNCNAME_nulcmd, NULL);
     }
     displayBuffer(Currentbuf, B_NORMAL);
 }
 
-void
-setAlarmEvent(int sec, short status, int cmd, void *data)
+AlarmEvent *
+setAlarmEvent(AlarmEvent *event, int sec, short status, int cmd, void *data)
 {
-    if (status == AL_RESTORE) {
-	copyAlarmEvent(&PrevAlarm, &CurrentAlarm);
-	PrevAlarm.sec = 0;
-	PrevAlarm.status = AL_UNSET;
-	return;
-    }
-    if (CurrentAlarm.status == AL_EXPLICIT &&
-	(status == AL_IMPLICIT || status == AL_IMPLICIT_ONCE))
-	copyAlarmEvent(&CurrentAlarm, &PrevAlarm);
-    CurrentAlarm.sec = sec;
-    CurrentAlarm.cmd = cmd;
-    CurrentAlarm.data = data;
-    CurrentAlarm.status = status;
-    CurrentAlarm.buffer = NULL;
+    if (event == NULL)
+	event = New(AlarmEvent);
+    event->sec = sec;
+    event->status = status;
+    event->cmd = cmd;
+    event->data = data;
+    return event;
 }
 #endif
 
@@ -6257,7 +6231,6 @@ ldDL(void)
 	delete = TRUE;
     if (!FirstDL) {
 	if (delete) {
-	    Currentbuf->bufferprop &= ~BP_RELOAD;
 	    if (Currentbuf == Firstbuf && Currentbuf->nextBuffer == NULL) {
 		if (nTab > 1)
 		    deleteTab(CurrentTab);
@@ -6287,10 +6260,9 @@ ldDL(void)
     if (delete)
 	deletePrevBuf();
 #ifdef USE_ALARM
-    if (reload) {
-	Currentbuf->bufferprop |= BP_RELOAD;
-	setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
-    }
+    if (reload)
+	Currentbuf->event = setAlarmEvent(Currentbuf->event, 1, AL_IMPLICIT,
+					  FUNCNAME_reload, NULL);
 #endif
 }
 

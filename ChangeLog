@@ -1,3 +1,28 @@
+2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03578] meta refresh
+	* file.c (getMetaRefreshParam): do nothing if refresh_interval < 0
+		(HTMLtagproc1): rewrite refresh
+		(HTMLlineproc2body): add HTML_META
+	* fm.h (BP_RELOAD): deleted
+		(Buffer): add event
+		(AL_IMPLICIT_DONE): deleted
+		(AL_ONCE): deleted
+		(AL_RESTORE): deleted
+		(AlarmEvent): added
+	* main.c (AlarmEvent): deleted
+		(PrevAlarm): deleted
+		(DefaultAlarm): added
+		(CurrentAlarm): point to DefaultAlarm
+		(main): CurrentKeyData, CurrentCmdData
+			handle Currentbuf->event
+		(SigAlarm): CurrentAlarm is pointer
+		(copyAlarmEvent): deleted
+		(setAlarm): setAlarmEvent pass &DefaultAlarm
+		(setAlarmEvent): arg event
+		(ldDL): no BP_RELOAD
+	* proto.h (setAlarmEvent): arg event
+
 2002-12-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03577] incorrect table width
@@ -5897,4 +5922,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.627 2002/12/17 16:17:28 ukai Exp $
+$Id: ChangeLog,v 1.628 2002/12/18 16:20:49 ukai Exp $

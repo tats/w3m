@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.162 2002/12/14 15:26:44 ukai Exp $ */
+/* $Id: file.c,v 1.163 2002/12/18 16:20:51 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3999,6 +3999,8 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
 	return 0;
 
     refresh_interval = atoi(q);
+    if (refresh_interval < 0)
+	return 0;
 
     while (*q) {
 	if (!strncasecmp(q, "url=", 4)) {
@@ -4726,41 +4728,26 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 #endif
 	if (p && q && !strcasecmp(p, "refresh")) {
-	    Str s_tmp = NULL;
-	    int refresh_interval = getMetaRefreshParam(q, &s_tmp);
-	    if (s_tmp) {
-		q = html_quote(s_tmp->ptr);
-		tmp =
-		    Sprintf
-		    ("Refresh (%d sec) <a hseq=\"%d\" href=\"%s\">%s</a>",
-		     refresh_interval, cur_hseq++, q, q);
-		push_str(obuf, s_tmp->length, tmp, PC_ASCII);
-		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
-			  h_env->limit);
-		if (!is_redisplay && refresh_interval == 0 && MetaRefresh &&
-		    !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
-		    pushEvent(FUNCNAME_gorURL, s_tmp->ptr);
-		    /* pushEvent(deletePrevBuf,NULL); */
-		}
-#ifdef USE_ALARM
-		else if (!is_redisplay && refresh_interval > 0 && MetaRefresh
-			 && !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
-		    setAlarmEvent(refresh_interval, AL_IMPLICIT_ONCE,
-				  FUNCNAME_gorURL, s_tmp->ptr);
-		}
-#endif
+	    int refresh_interval;
+	    tmp = NULL;
+	    refresh_interval = getMetaRefreshParam(q, &tmp);
+	    if (tmp) {
+		q = html_quote(tmp->ptr);
+		tmp = Sprintf("Refresh (%d sec) <a href=\"%s\">%s</a>",
+			      refresh_interval, q, q);
 	    }
-#ifdef USE_ALARM
-	    else if (!is_redisplay && refresh_interval > 0 && MetaRefresh &&
-		     !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
+	    else if (refresh_interval > 0)
 		tmp = Sprintf("Refresh (%d sec)", refresh_interval);
-		push_str(obuf, 0, tmp, PC_ASCII);
-		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
-			  h_env->limit);
-		setAlarmEvent(refresh_interval, AL_IMPLICIT, FUNCNAME_reload,
-			      NULL);
+	    if (tmp) {
+		HTMLlineproc1(tmp->ptr, h_env);
+	        do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+			     h_env->limit);
+		if (!is_redisplay &&
+		    !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
+		    tag->need_reconstruct = TRUE;
+		    return 0;
+		}
 	    }
-#endif
 	}
 	return 1;
     case HTML_BASE:
@@ -5314,6 +5301,38 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
 			buf->baseTarget =
 			    url_quote_conv(p, buf->document_code);
+		    break;
+		case HTML_META:
+		    p = q = NULL;
+		    parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &p);
+		    parsedtag_get_value(tag, ATTR_CONTENT, &q);
+		    if (p && q && !strcasecmp(p, "refresh") && MetaRefresh) {
+			Str tmp = NULL;
+			int refresh_interval = getMetaRefreshParam(q, &tmp);
+#ifdef USE_ALARM
+			if (tmp) {
+			    p = url_quote_conv(remove_space(tmp->ptr),
+					       buf->document_code);
+			    buf->event = setAlarmEvent(buf->event,
+						       refresh_interval,
+						       AL_IMPLICIT_ONCE,
+						       FUNCNAME_gorURL,
+						       p);
+			}
+			else if (refresh_interval > 0)
+			    buf->event = setAlarmEvent(buf->event,
+						       refresh_interval,
+						       AL_IMPLICIT,
+						       FUNCNAME_reload,
+						       NULL);
+#else
+			if (tmp && refresh_interval == 0) {
+			    p = url_quote_conv(remove_space(tmp->ptr),
+					       buf->document_code);
+			    pushEvent(FUNCNAME_gorURL, p);
+			}
+#endif
+		    }
 		    break;
 		case HTML_INTERNAL:
 		    internal = HTML_INTERNAL;

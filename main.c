@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.37 2001/12/17 15:54:14 ukai Exp $ */
+/* $Id: main.c,v 1.38 2001/12/17 16:13:40 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -207,6 +207,7 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 	fprintf(stderr, msg, (unsigned long)arg);
 }
 
+#ifdef SIGCHLD
 static void
 sig_chld(int signo)
 {
@@ -229,6 +230,7 @@ sig_chld(int signo)
     signal(SIGCHLD, sig_chld);
     return;
 }
+#endif
 
 Str
 make_optional_header_string(char *s)
@@ -4660,6 +4662,7 @@ SigAlarm(SIGNAL_ARG)
 #endif
 	w3mFuncList[alarm_event.cmd].func();
 	onA();
+#ifdef USE_ALARM
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE;
@@ -4672,6 +4675,7 @@ SigAlarm(SIGNAL_ARG)
 	    signal(SIGALRM, SigAlarm);
 	    alarm(alarm_sec);
 	}
+#endif
     }
     SIGNAL_RETURN;
 }

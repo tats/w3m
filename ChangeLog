@@ -1,3 +1,9 @@
+2001-12-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [#493906] missing #ifdef by Kazuhiro NISHIYAMA (znz)
+	* main.c (sig_chld): #ifdef SIGCHLD
+	* main.c (SigAlarm): #ifdef USE_ALARM
+
 2001-12-18  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02670]
@@ -1285,4 +1291,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.135 2001/12/17 16:05:03 ukai Exp $
+$Id: ChangeLog,v 1.136 2001/12/17 16:13:40 ukai Exp $

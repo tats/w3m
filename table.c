@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.33 2002/12/03 15:45:34 ukai Exp $ */
+/* $Id: table.c,v 1.34 2002/12/03 15:49:56 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2521,6 +2521,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	case HTML_N_FORM:
 	case HTML_N_SELECT:	/* mode->end_tag */
 	    table_close_select(tbl, mode, width);
+	    if (cmd == HTML_N_SELECT)
+		return TAG_ACTION_NONE;
 	    break;
 	default:
 	    return TAG_ACTION_FEED;
@@ -2531,6 +2533,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	  CASE_TABLE_TAG:
 	case HTML_N_CAPTION:
 	    mode->caption = 0;
+	    if (cmd == HTML_N_CAPTION)
+		return TAG_ACTION_NONE;
 	    break;
 	default:
 	    return TAG_ACTION_FEED;
@@ -2920,6 +2924,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	mode->pre_mode |= TBLM_INSELECT;
 	mode->end_tag = HTML_N_SELECT;
 	break;
+    case HTML_N_SELECT:
     case HTML_OPTION:
 	/* nothing */
 	break;
@@ -3014,6 +3019,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
     case HTML_CAPTION:
 	mode->caption = 1;
 	break;
+    case HTML_N_CAPTION:
     case HTML_THEAD:
     case HTML_N_THEAD:
     case HTML_TBODY:

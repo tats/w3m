@@ -1,5 +1,10 @@
 2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03512] Re: HTML parser
+	* table.c (feed_table_tag): HTML_N_SELECT, HTML_N_CAPTION
+
+2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03510] waiting time when cookie was rejected.
 	* file.c (readHeader): display cookie warnings for only 1 sec 
 
@@ -5356,4 +5361,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.577 2002/12/03 15:47:38 ukai Exp $
+$Id: ChangeLog,v 1.578 2002/12/03 15:49:52 ukai Exp $

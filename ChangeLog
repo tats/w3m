@@ -1,3 +1,26 @@
+2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02832] external URI loader support
+	* config.h.dist (USE_EXTERNAL_URI_LOADER): added
+	* config.h.dist (USER_URIMETHODMAP): added
+	* config.h.dist (SYS_URIMETHODMAP): added
+	* configure: ask use_external_uri_loader
+	* file.c (loadGeneralFile): return NO_BUFFER, not NULL
+	* file.c (loadGeneralFile): add SCM_UNKNOWN for USE_EXTERNAL_URI_LOADER
+	* fm.h (urimethodmap_files): added
+	* menu.c (initSelectMenu): SCM_UNKNOWN comment out
+	* proto.h (initURIMethods): added
+	* proto.h (searchURIMethods): added
+	* rc.c (CMT_URIMETHODMAP): added
+	* rc.c (params6): add urimethodmap
+	* rc.c (sync_with_option): add initURIMethods()
+	* url.c (parseURL): if SCM_UNKNOWN, url is saved in pu->file
+	* url.c (_parsedURL2Str): if SCM_UNKNOWN, url is in pu->file
+	* url.c (urimethods): added
+	* url.c (loadURIMethods): added
+	* url.c (initURIMethods): added
+	* url.c (searchURIMethods): added
+
 2002-01-13  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02828]
@@ -1891,4 +1914,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.212 2002/01/12 15:34:34 ukai Exp $
+$Id: ChangeLog,v 1.213 2002/01/14 15:59:16 ukai Exp $

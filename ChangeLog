@@ -1,3 +1,9 @@
+2003-05-15  Akinori Ito <aito@fw.ipsj.or.jp>
+
+	* [w3m-dev 03902] Re: table rendering
+	* table.c (check_relative_width): check n_leftcell
+				check w <= r
+
 2003-05-14  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03901] body with status-code 401
@@ -7838,4 +7844,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.839 2003/05/13 17:38:47 ukai Exp $
+$Id: ChangeLog,v 1.840 2003/05/14 16:01:32 ukai Exp $

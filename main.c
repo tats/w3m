@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.123 2002/11/08 16:07:07 ukai Exp $ */
+/* $Id: main.c,v 1.124 2002/11/08 16:11:49 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -971,8 +971,7 @@ MAIN(int argc, char **argv, char **envp)
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE | (AL_IMPLICIT & AL_ONCE);
 	}
-	else if (alarm_status & AL_IMPLICIT_DONE
-		 && alarm_buffer != Currentbuf) {
+	else if (alarm_status & AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
 	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
 	if (alarm_sec > 0) {

@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.17 2003/01/10 16:08:20 ukai Exp $ */
+/* $Id: buffer.c,v 1.18 2003/01/10 16:11:01 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -540,7 +540,7 @@ reshapeBuffer(Buffer *buf)
 		readHeader(&h, buf, TRUE, NULL);
 		UFclose(&h);
 	    }
-	} 
+	}
 	else if (buf->search_header)	/* -m option */
 	    readHeader(&f, buf, TRUE, NULL);
     }

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.14 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: file.c,v 1.15 2001/11/25 17:41:57 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -208,7 +208,8 @@ static int
 is_text_type(char *type)
 {
     return (type == NULL || type[0] == '\0' ||
-	    strncasecmp(type, "text/", 5) == 0);
+	    strncasecmp(type, "text/", 5) == 0 ||
+	    strncasecmp(type, "message/", sizeof("message/") - 1) == 0);
 }
 
 static int

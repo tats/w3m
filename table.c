@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.42 2003/05/13 17:09:58 ukai Exp $ */
+/* $Id: table.c,v 1.43 2003/05/13 17:20:33 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -3519,7 +3519,7 @@ check_relative_width(struct table *t, int maxwidth)
 	    int n_leftcell = 0;
 	    k = cell->col[i];
 	    r = 0.0;
-	    for (j = 1; j < cell->colspan[i]; j++) {
+	    for (j = 0; j < cell->colspan[i]; j++) {
 		if (rcolwidth[j + k] > 0)
 		    r += rcolwidth[j + k];
 		else
@@ -3529,7 +3529,7 @@ check_relative_width(struct table *t, int maxwidth)
 		cell->fixed_width[i] = -100 * r;
 	    }
 	    else {
-		for (j = 1; j < cell->colspan[i]; j++) {
+		for (j = 0; j < cell->colspan[i]; j++) {
 		    if (rcolwidth[j + k] == 0)
 			rcolwidth[j + k] = (w - r) / n_leftcell;
 		}
@@ -3557,7 +3557,7 @@ check_relative_width(struct table *t, int maxwidth)
 		int j, k;
 		k = cell->col[i];
 		r = 0.0;
-		for (j = 1; j < cell->colspan[i]; j++)
+		for (j = 0; j < cell->colspan[i]; j++)
 		    r += rcolwidth[j + k];
 		cell->fixed_width[i] = -r * 100;
 	    }

@@ -1,3 +1,8 @@
+2003-05-14  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03900] Re: table rendering
+	* table.c (check_relative_width): j loop starts from 0
+
 2003-05-14  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 
 	* [w3m-dev 03899] minor fixes
@@ -7828,4 +7833,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.837 2003/05/13 17:17:50 ukai Exp $
+$Id: ChangeLog,v 1.838 2003/05/13 17:20:32 ukai Exp $

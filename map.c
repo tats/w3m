@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.6 2002/01/31 18:28:24 ukai Exp $ */
+/* $Id: map.c,v 1.7 2002/02/08 11:45:07 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -310,6 +310,12 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		Strcat_charp(html, " ");
 		Strcat_charp(html, q);
 		Strcat_charp(html, "</a>\n");
+#ifdef USE_SSL
+		if (frame.body->ssl_certificate)
+		    Strcat_m_charp(html, "<blockquote><pre>\n",
+				   frame.body->ssl_certificate,
+				   "</pre></blockquote>\n", NULL);
+#endif
 		break;
 	    case F_FRAMESET:
 		append_frame_info(buf, html, frame.set, level + 1);

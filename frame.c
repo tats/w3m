@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.10 2002/01/31 17:54:51 ukai Exp $ */
+/* $Id: frame.c,v 1.11 2002/02/08 11:45:07 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -386,6 +386,10 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
 	buf = loadGeneralFile(b->url,
 			      baseURL ? baseURL : currentURL,
 			      b->referer, flag | RG_FRAME_SRC, b->request);
+#ifdef USE_SSL
+	/* XXX certificate? */
+	b->ssl_certificate = buf->ssl_certificate;
+#endif
 	w3m_dump &= ~DUMP_FRAME;
 	is_redisplay = FALSE;
 	break;

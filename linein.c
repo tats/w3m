@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.11 2001/12/06 15:48:35 ukai Exp $ */
+/* $Id: linein.c,v 1.12 2001/12/06 16:36:54 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -678,7 +678,8 @@ next_compl(int next)
     if (!cm_next) {
 	if (cm_mode & CPL_ALWAYS) {
 	    b = 0;
-	} else {
+	}
+	else {
 	    for (b = CPos - 1; b >= 0; b--) {
 		if (strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I)
 		    break;

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.114 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: fm.h,v 1.115 2003/04/07 16:27:10 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -36,7 +36,7 @@
 
 #include "ctrlcode.h"
 #include "html.h"
-#include "gc.h"
+#include <gc.h>
 #include "Str.h"
 #include "form.h"
 #include "frame.h"

@@ -1,9 +1,9 @@
-/* $Id: entity.c,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: entity.c,v 1.4 2003/04/07 16:27:10 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include "indep.h"
 #include "Str.h"
-#include "gc.h"
+#include <gc.h>
 
 typedef struct {
     short ucs;

@@ -1,3 +1,9 @@
+2003-04-08  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03856] <gc.h> 
+	* backend.c entity.c fm.h hash.c indep.c indep.h matrix.c
+	  textlist.c: s/"gc.h"/<gc.h>/
+
 2003-04-08  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03849] fix no INET6
@@ -7679,4 +7685,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.814 2003/04/07 15:26:10 ukai Exp $
+$Id: ChangeLog,v 1.815 2003/04/07 16:27:09 ukai Exp $

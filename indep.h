@@ -1,7 +1,7 @@
-/* $Id: indep.h,v 1.13 2003/02/05 16:43:57 ukai Exp $ */
+/* $Id: indep.h,v 1.14 2003/04/07 16:27:10 ukai Exp $ */
 #ifndef INDEP_H
 #define INDEP_H
-#include "gc.h"
+#include <gc.h>
 #include "Str.h"
 #include "config.h"
 

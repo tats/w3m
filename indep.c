@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.32 2003/02/05 16:45:08 ukai Exp $ */
+/* $Id: indep.c,v 1.33 2003/04/07 16:27:10 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "indep.h"
 #include "Str.h"
-#include "gc.h"
+#include <gc.h>
 #include "myctype.h"
 #include "entity.h"
 

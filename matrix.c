@@ -1,4 +1,4 @@
-/*  $Id: matrix.c,v 1.7 2002/07/18 14:59:02 ukai Exp $ */
+/*  $Id: matrix.c,v 1.8 2003/04/07 16:27:10 ukai Exp $ */
 /* 
  * matrix.h, matrix.c: Liner equation solver using LU decomposition.
  *
@@ -34,7 +34,7 @@
 
 #include "config.h"
 #include "matrix.h"
-#include "gc.h"
+#include <gc.h>
 
 /* 
  * Macros from "fm.h".

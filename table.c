@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.37 2002/12/17 16:17:30 ukai Exp $ */
+/* $Id: table.c,v 1.38 2003/01/20 15:30:21 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -449,7 +449,7 @@ pushdata(struct table *t, int row, int col, char *data)
     if (t->tabdata[row][col] == NULL)
 	t->tabdata[row][col] = newGeneralList();
 
-    pushText(t->tabdata[row][col], data);
+    pushText(t->tabdata[row][col], data ? data : "");
 }
 
 void
@@ -460,7 +460,7 @@ suspend_or_pushdata(struct table *tbl, char *line)
     else {
 	if (!tbl->suspended_data)
 	    tbl->suspended_data = newTextList();
-	pushText(tbl->suspended_data, line);
+	pushText(tbl->suspended_data, line ? line : "");
     }
 }
 

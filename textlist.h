@@ -1,4 +1,4 @@
-/* $Id: textlist.h,v 1.5 2002/09/24 16:35:02 ukai Exp $ */
+/* $Id: textlist.h,v 1.6 2003/01/20 15:30:22 ukai Exp $ */
 #ifndef TEXTLIST_H
 #define TEXTLIST_H
 #include "Str.h"
@@ -40,7 +40,7 @@ typedef struct _textlist {
 } TextList;
 
 #define newTextList() ((TextList *)newGeneralList())
-#define pushText(tl, s) pushValue((GeneralList *)(tl), (void *)allocStr((s)?(s):"",-1))
+#define pushText(tl, s) pushValue((GeneralList *)(tl), (void *)allocStr((s),-1))
 #define popText(tl) ((char *)popValue((GeneralList *)(tl)))
 #define rpopText(tl) ((char *)rpopValue((GeneralList *)(tl)))
 #define delText(tl, i) delValue((GeneralList *)(tl), (void *)(i))

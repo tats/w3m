@@ -1,4 +1,4 @@
-/* $Id: Str.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: Str.h,v 1.5 2003/01/20 15:30:19 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -70,14 +70,14 @@ void Strgrow(Str s);
 #define Strcmp(x,y)                  strcmp((x)->ptr,(y)->ptr)
 #define Strcmp_charp(x,y)            strcmp((x)->ptr,(y))
 #define Strncmp(x,y,n)               strncmp((x)->ptr,(y)->ptr,(n))
-#define Strncmp_charp(x,y,n)         strncmp((x)->ptr,y,(n))
+#define Strncmp_charp(x,y,n)         strncmp((x)->ptr,(y),(n))
 #define Strcasecmp(x,y)              strcasecmp((x)->ptr,(y)->ptr)
 #define Strcasecmp_charp(x,y)        strcasecmp((x)->ptr,(y))
 #define Strncasecmp(x,y,n)           strncasecmp((x)->ptr,(y)->ptr,(n))
-#define Strncasecmp_charp(x,y,n)     strncasecmp((x)->ptr,y,(n))
+#define Strncasecmp_charp(x,y,n)     strncasecmp((x)->ptr,(y),(n))
 
 #define Strlastchar(s)               ((s)->length>0?(s)->ptr[(s)->length-1]:'\0')
-#define Strinsert(s,n,p)             Strinsert_charp(s,n,(p)->ptr)
-#define Strshrinkfirst(s,n)          Strdelete(s,0,n)
+#define Strinsert(s,n,p)             Strinsert_charp((s),(n),(p)->ptr)
+#define Strshrinkfirst(s,n)          Strdelete((s),0,(n))
 #define Strfputs(s,f)                fwrite((s)->ptr,1,(s)->length,(f))
 #endif				/* not GC_STR_H */

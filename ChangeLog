@@ -1,3 +1,10 @@
+2003-12-09  YONETANI Tomokazu <qhwt@myrealbox.com>
+
+	* [w3m-dev 04022] $^
+	* Makefile.in (DEFUNS): added
+		funcname.tab: don't use $^
+	* w3mimg/Makefile.in (w3mimg.a): don't use $^
+
 2003-12-09  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 04021] Deeply nested table
@@ -8266,4 +8273,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.892 2003/12/08 16:08:01 ukai Exp $
+$Id: ChangeLog,v 1.893 2003/12/08 16:15:17 ukai Exp $

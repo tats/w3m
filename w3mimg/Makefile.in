@@ -17,7 +17,7 @@ IMGOBJS=@IMGOBJS@
 all: @IMGTARGETS@ w3mimg.a
 
 w3mimg.a: $(IMGOBJS)
-	$(AR) rv $@ $^
+	$(AR) rv $@ $(IMGOBJS)
 	$(RANLIB) $@
 
 w3mimg.o: w3mimg.c

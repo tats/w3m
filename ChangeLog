@@ -1,3 +1,8 @@
+2002-03-04  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* doc-jp/MANUAL.html: add note about file:/cgi-bin
+	* doc/MANUAL.html: ditto
+
 2002-03-01  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03073] frame + image
@@ -3026,4 +3031,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.329 2002/02/28 16:21:54 ukai Exp $
+$Id: ChangeLog,v 1.330 2002/03/03 19:07:37 ukai Exp $

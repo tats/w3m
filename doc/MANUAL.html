@@ -484,8 +484,12 @@ as $LIB.
 <li>/cgi-bin/ directory. You can map /cgi-bin/ to any directory you like
 with option setting panel (``Directory corresponds to /cgi-bin'' field).
 You can specify multiple paths separated by `:', like
-/usr/local/cgi-bin:/home/aito/cgi-bin. It is not recommended to include
-current directory to this path.
+/usr/local/cgi-bin:/home/aito/cgi-bin. To use /cgi-bin/ directory,
+you must use file:/cgi-bin URL as follows:
+<pre>
+ w3m -o cgi_bin=/path/to/cgi-bin file:/cgi-bin/script.cgi
+</pre>
+It is not recommended to include current directory to this path.
 </ul>
 <p>
 The CGI script can use special header `w3m-control:' to control w3m.

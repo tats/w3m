@@ -502,6 +502,11 @@ $LIB で参照することができます．
 割りあてることができます(オプション設定パネルの「/cgi-binで表される
 ディレクトリ」の項目)．ここには，: で区切って複数のディレクトリを
 指定することができます(例えば /usr/local/cgi-bin:/home/aito/cgi-bin など)．
+/cgi-bin/ を使う場合は、
+<pre>
+  w3m -o cgi_bin=/path/to/cgi-bin file:/cgi-bin/script.cgi
+</pre>
+のように file:/cgi-binというURLを使う必要があります。
 この中にカレントディレクトリを入れることは，セキュリティ上の理由により
 薦められません．
 </ul>

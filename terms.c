@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.32 2002/03/27 15:41:38 ukai Exp $ */
+/* $Id: terms.c,v 1.33 2002/09/09 13:49:17 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -496,6 +496,7 @@ static struct w3m_term_info {
     {W3M_TERM_INFO("kterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {W3M_TERM_INFO("rxvt", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {W3M_TERM_INFO("Eterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
+    {W3M_TERM_INFO("mlterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {W3M_TERM_INFO("screen", SCREEN_TITLE, 0)},
 #ifdef __CYGWIN__
     {W3M_TERM_INFO("cygwin", NULL, NEED_XTERM_ON)},

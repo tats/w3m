@@ -1,5 +1,10 @@
 2002-09-09  Hironori SAKAMOTO <h-saka@lsi.nec.co.jp>
 
+	* [w3m-dev 03297] TERM=mlterm
+	* terms.c (w3m_term_info_list): add mlterm
+
+2002-09-09  Hironori SAKAMOTO <h-saka@lsi.nec.co.jp>
+
 	* [w3m-dev 03296] fix configure (strtoq)
 	* configure (strtoq): fix missing semicolon
 
@@ -3747,4 +3752,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.420 2002/09/09 13:48:11 ukai Exp $
+$Id: ChangeLog,v 1.421 2002/09/09 13:49:17 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.90 2002/12/12 23:55:30 ukai Exp $
+# $Id: configure,v 1.91 2002/12/13 02:27:23 ukai Exp $
 #	Configuration.
 #
 
@@ -53,25 +53,25 @@ do
     shift
     ;;
   -prefix=*|--prefix=*)
-    prefix=`expr "$1" : "-*prefix=\(.*\)"`
+    prefix=`expr "X$1" : "X-*prefix=\(.*\)"`
     ;;
   -bindir=*|--bindir=*)
-    bindir=`expr "$1" : "-*bindir=\(.*\)"`
+    bindir=`expr "X$1" : "X-*bindir=\(.*\)"`
     ;;
   -auxbindir=*|--auxbindir=*)
-    auxbindir=`expr "$1" : "-*auxbindir=\(.*\)"`
+    auxbindir=`expr "X$1" : "X-*auxbindir=\(.*\)"`
     ;;
   -libdir=*|--libdir=*)
-    libdir=`expr "$1" : "-*libdir=\(.*\)"`
+    libdir=`expr "X$1" : "X-*libdir=\(.*\)"`
     ;;
   -helpdir=*|--helpdir=*)
-    helpdir=`expr "$1" : "-*helpdir=\(.*\)"`
+    helpdir=`expr "X$1" : "X-*helpdir=\(.*\)"`
     ;;
   -mandir=*|--mandir=*)
-    mandir=`expr "$1" : "-*mandir=\(.*\)"`
+    mandir=`expr "X$1" : "X-*mandir=\(.*\)"`
     ;;
   -sysconfdir=*|--sysconfdir=*)
-    sysconfdir=`expr "$1" : "-*sysconfdir=\(.*\)"`
+    sysconfdir=`expr "X$1" : "X-*sysconfdir=\(.*\)"`
     ;;
   -lang=en|--lang=en|-lang=EN|--lang=EN)
     lang=EN
@@ -98,7 +98,7 @@ do
     dmodel=6
     ;;
   -code=*|--code=*)
-    display_code=`expr "$1" : "-*code=\(.*\)"`
+    display_code=`expr "X$1" : "X-*code=\(.*\)"`
     ;;
   -cflags=*|--cflags=*)
     dcflags=`echo $1 | sed -e 's/-*cflags=//'`
@@ -107,19 +107,19 @@ do
     dldflags=`echo $1 | sed -e 's/-*ldflags=//'`
     ;;
   --ssl-includedir=*)
-    ssl_includedir=`expr "$1" : "--ssl-includedir=\(.*\)"`
+    ssl_includedir=`expr "X$1" : "X--ssl-includedir=\(.*\)"`
     ;;
   --ssl-libdir=*)
-    ssl_libdir=`expr "$1" : "--ssl-libdir=\(.*\)"`
+    ssl_libdir=`expr "X$1" : "X--ssl-libdir=\(.*\)"`
     ;;
   --gc-includedir=*)
-    gc_includedir=`expr "$1" : "--gc-includedir=\(.*\)"`
+    gc_includedir=`expr "X$1" : "X--gc-includedir=\(.*\)"`
     ;;
   --gc-libdir=*)
-    gc_libdir=`expr "$1" : "--gc-libdir=\(.*\)"`
+    gc_libdir=`expr "X$1" : "X--gc-libdir=\(.*\)"`
     ;;
   --mimetypes=*)
-    mimetypes=`expr "$1" : "--mimetypes=\(.*\)"`
+    mimetypes=`expr "X$1" : "X--mimetypes=\(.*\)"`
     ;;
 
   -help|--help)

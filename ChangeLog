@@ -1,5 +1,10 @@
 2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03566] configure prefix
+	* configure: add X prefix for expr args
+
+2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03564] clean up displayBuffer()
 	* display.c (delayed_msg): static
 		(drawAnchorCursor): static
@@ -5810,4 +5815,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.616 2002/12/13 02:19:01 ukai Exp $
+$Id: ChangeLog,v 1.617 2002/12/13 02:27:23 ukai Exp $

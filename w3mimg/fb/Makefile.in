@@ -26,6 +26,9 @@ fb_img.o: fb_img.c fb_gdkpixbuf.c fb_imlib2.c
 clean:
 	@-$(RM) -f *.o
 
+distclean: clean
+	-$(RM) -f Makefile
+
 #
 
 

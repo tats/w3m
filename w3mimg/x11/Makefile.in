@@ -20,6 +20,9 @@ x11_w3mimg.o: x11_w3mimg.c
 clean:
 	@-$(RM) -f *.o
 
+distclean: clean
+	-$(RM) -f Makefile
+
 #
 
 

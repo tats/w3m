@@ -26,6 +26,12 @@ clean:
 	 done
 
 distclean: clean
+	for subdir in fb x11; \
+	do \
+		(cd $$subdir && $(MAKE) distclean); \
+	done
+	-$(RM) -f Makefile
+
 	-$(RM) -f Makefile
 
 #

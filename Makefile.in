@@ -280,7 +280,7 @@ clean: sweep
 	done
 
 distclean: clean
-	for subdir in po scripts; \
+	for subdir in po scripts w3mimg; \
 	do \
 		(cd $$subdir && $(MAKE) distclean); \
 	done

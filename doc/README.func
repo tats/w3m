@@ -60,6 +60,7 @@ MOVE_UP                Move cursor up (a half screen scroll at the top of screen
 MOVE_UP1       Move cursor up (1 line scrol at the top of screen)
 MSGS        Display error messages
 NEW_TAB		Open new tab
+NEXT		Move to next buffer
 NEXT_DOWN      Move to next downward link 
 NEXT_LEFT      Move to next left link 
 NEXT_LEFT_UP   Move to next left (or upward) link 
@@ -79,6 +80,7 @@ PEEK_IMG	Peek image URL
 PEEK_LINK      Peek link URL
 PIPE_BUF       Send rendered document to pipe
 PIPE_SHELL	Execute shell command and browse
+PREV		Move to previous buffer
 PREV_LINK	Move to previous link
 PREV_MARK	Move to previous mark
 PREV_PAGE	Move to previous page

@@ -1,3 +1,18 @@
+2002-11-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03454] next / previous buffer
+	* funcname.tab (NEXT): added
+			(PREV): added
+	* main.c (nextBf): added
+		(prevBf): added
+	* proto.h (nextBf): added
+		(prevBf): added
+	* doc/README.func (NEXT): added
+			(PREV): added
+	* doc-jp/README.func (NEXT): added
+			(PREV): added
+	* scripts/w3mhelp.cgi.in (Buffer operation): nextBf prevBf
+
 2002-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: rc: image_map_list
@@ -4929,4 +4944,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.538 2002/11/19 17:47:44 ukai Exp $
+$Id: ChangeLog,v 1.539 2002/11/21 16:15:57 ukai Exp $

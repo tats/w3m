@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.15 2002/11/18 17:43:40 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.16 2002/11/21 16:15:59 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -131,7 +131,7 @@ for $otherlang (@docdirs) {
 	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh"));
 
 &show_keymap("Buffer operation",
-	     split(" ", "backBf selMn selBuf vwSrc svSrc svBuf
+	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
 		editBf editScr reload rdrwSc dispI stopI"));
 
 &show_keymap("Tab operation",

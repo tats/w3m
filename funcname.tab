@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.13 2002/11/15 15:19:45 ukai Exp $
+# $Id: funcname.tab,v 1.14 2002/11/21 16:15:57 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -66,6 +66,7 @@ MOVE_UP		movU
 MOVE_UP1       movU1
 MSGS		msgs
 NEW_TAB		newT
+NEXT		nextBf
 NEXT_DOWN      nextD
 NEXT_LEFT      nextL
 NEXT_LEFT_UP   nextLU
@@ -86,6 +87,7 @@ PEEK_IMG	peekIMG
 PEEK_LINK	peekURL
 PIPE_BUF       pipeBuf
 PIPE_SHELL	pipesh
+PREV		prevBf
 PREV_LINK	prevA
 PREV_MARK	prevMk
 PREV_PAGE	pgBack

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.11 2002/12/25 16:14:45 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.12 2003/01/17 16:57:21 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -37,7 +37,7 @@ main(int argc, char **argv)
 #endif
     GetOption(argc, argv);
     if (!defined_debug)
-	freopen("/dev/null", "w", stderr);
+	freopen(DEV_NULL_PATH, "w", stderr);
 
 #ifdef W3MIMGDISPLAY_SETUID
     /* 

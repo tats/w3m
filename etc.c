@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.49 2003/01/15 17:13:21 ukai Exp $ */
+/* $Id: etc.c,v 1.50 2003/01/17 16:57:18 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -7,6 +7,7 @@
 #include "hash.h"
 #include "terms.h"
 
+#include <fcntl.h>
 #include <sys/types.h>
 #include <time.h>
 #if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
@@ -1279,7 +1280,7 @@ romanAlphabet(int n)
 #define SIGIOT SIGABRT
 #endif				/* not SIGIOT */
 
-void
+static void
 reset_signals(void)
 {
     signal(SIGHUP, SIG_DFL);	/* terminate process */
@@ -1298,23 +1299,22 @@ reset_signals(void)
 #ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
 #endif
-    signal(SIGUSR1, SIG_IGN);
 }
 
 #ifndef FOPEN_MAX
 #define FOPEN_MAX 1024		/* XXX */
 #endif
 
-void
+static void
 close_all_fds_except(int i, int f)
 {
     switch (i) {		/* fall through */
     case 0:
-	dup2(open("/dev/null", O_RDONLY), 0);
+	dup2(open(DEV_NULL_PATH, O_RDONLY), 0);
     case 1:
-	dup2(open("/dev/null", O_WRONLY), 1);
+	dup2(open(DEV_NULL_PATH, O_WRONLY), 1);
     case 2:
-	dup2(open("/dev/null", O_WRONLY), 2);
+	dup2(open(DEV_NULL_PATH, O_WRONLY), 2);
     }
     /* close all other file descriptors (socket, ...) */
     for (i = 3; i < FOPEN_MAX; i++) {
@@ -1323,27 +1323,37 @@ close_all_fds_except(int i, int f)
     }
 }
 
-#ifdef HAVE_SETPGRP
+void
+setup_child(int child, int i, int f)
+{
+    reset_signals();
+    signal(SIGINT, SIG_IGN);
+    if (!child)
+	SETPGRP();
+    close_tty();
+    close_all_fds_except(i, f);
+    QuietMessage = TRUE;
+    fmInitialized = FALSE;
+}
+
 void
 myExec(char *command)
 {
-    reset_signals();
-    SETPGRP();
-    close_tty();
-    close_all_fds(0);
+    signal(SIGINT, SIG_DFL);
     execl("/bin/sh", "sh", "-c", command, NULL);
     exit(127);
 }
-#endif
 
 void
 mySystem(char *command, int background)
 {
     if (background) {
-#ifdef HAVE_SETPGRP
+#ifndef __EMX__
 	flush_tty();
-	if (!fork())
+	if (!fork()) {
+	    setup_child(FALSE, 0, -1);
 	    myExec(command);
+	}
 #else
 	Str cmd = Strnew_charp("start /f ");
 	Strcat_charp(cmd, command);

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.187 2003/01/15 17:13:21 ukai Exp $ */
+/* $Id: file.c,v 1.188 2003/01/17 16:57:19 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -594,7 +594,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     else
 	http_response_code = 0;
 
-    if (thru && !newBuf->header_source) {
+    if (thru && !newBuf->header_source && !image_source) {
 	Str tmpf = tmpfname(TMPF_DFL, NULL);
 	src = fopen(tmpf->ptr, "w");
 	if (src)
@@ -1885,6 +1885,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
   page_loaded:
     if (page) {
 	FILE *src;
+	if (image_source)
+	    return NULL;
 	tmp = tmpfname(TMPF_SRC, ".html");
 	src = fopen(tmp->ptr, "w");
 	if (src) {
@@ -7315,11 +7317,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	!(mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
 	flush_tty();
 	if (!fork()) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    close_tty();
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
+	    setup_child(FALSE, 0, UFfileno(&uf));
 	    if (save2tmp(uf, tmpf->ptr) < 0)
 		exit(1);
 	    UFclose(&uf);
@@ -7484,13 +7482,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    SETPGRP();
-	    close_tty();
-	    close_all_fds(2);
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
+	    setup_child(FALSE, 0, -1);
 	    if (!_MoveFile(tmpf, p) && PreserveTimestamp && !is_pipe &&
 		!stat(tmpf, &st))
 		setModtime(p, st.st_mtime);
@@ -7591,13 +7583,7 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    SETPGRP();
-	    close_tty();
-	    close_all_fds_except(2, UFfileno(&uf));
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
+	    setup_child(FALSE, 0, UFfileno(&uf));
 	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
 		setModtime(p, uf.modtime);
 	    UFclose(&uf);
@@ -7733,7 +7719,7 @@ uncompress_stream(URLFile *uf, char **src)
 	return;
     }
 
-    if (uf->scheme != SCM_LOCAL) {
+    if (uf->scheme != SCM_LOCAL && !image_source) {
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
 	if (save2tmp(*uf, tmpf) < 0) {
 	    UFclose(uf);
@@ -7752,15 +7738,10 @@ uncompress_stream(URLFile *uf, char **src)
     flush_tty();
     /* fd1[0]: read, fd1[1]: write */
     if ((pid1 = fork()) == 0) {
-	reset_signals();
-	signal(SIGINT, SIG_IGN);
-	close_tty();
-	QuietMessage = TRUE;
-	fmInitialized = FALSE;
 	close(fd1[0]);
 	dup2(fd1[1], 1);
 	dup2(fd1[1], 2);
-	close_all_fds_except(-1, UFfileno(uf));
+	setup_child(TRUE, -1, UFfileno(uf));
 	if (tmpf) {
 #ifdef USE_BINMODE_STREAM
 	    int tmpfd = open(tmpf, O_RDONLY | O_BINARY);

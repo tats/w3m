@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.23 2002/12/18 16:33:19 ukai Exp $ */
+/* $Id: search.c,v 1.24 2003/01/17 16:57:20 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -50,17 +50,13 @@ open_migemo(char *migemo_command)
 	goto err2;
     if (migemo_pid == 0) {
 	/* child */
-	reset_signals();
-	SETPGRP();
-	close_tty();
 	close(fdr[0]);
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
-	close_all_fds(2);
-	execl("/bin/sh", "sh", "-c", migemo_command, NULL);
-	/* XXX: ifndef HAVE_SETPGRP, use "start /f"? */
-	exit(1);
+	setup_child(FALSE, 2, -1);
+	myExec(migemo_command);
+	/* XXX: ifdef __EMX__, use start /f ? */
     }
     close(fdr[1]);
     close(fdw[0]);

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.21 2003/01/15 17:13:22 ukai Exp $ */
+/* $Id: local.c,v 1.22 2003/01/17 16:57:20 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -31,6 +31,8 @@ writeLocalCookie()
     FILE *f;
 
     if (no_rc_dir)
+	return;
+    if (Local_cookie_file)
 	return;
     Local_cookie_file = tmpfname(TMPF_COOKIE, NULL)->ptr;
     set_environ("LOCAL_COOKIE_FILE", Local_cookie_file);
@@ -351,61 +353,59 @@ cgi_filename(char *fn, int *status)
 }
 
 static pid_t
-localcgi_popen_r(FILE ** p_fp)
+localcgi_popen_rw(int *p_fdr, int *p_fdw)
 {
-    int fd[2];
-    FILE *fp;
+    int fdr[2], fdw[2];
     pid_t pid;
     Str emsg;
 
-    if (pipe(fd) < 0) {
-	emsg = Sprintf("localcgi_popen_r: pipe: %s", strerror(errno));
-	disp_err_message(emsg->ptr, FALSE);
-	return (pid_t) - 1;
+    if (pipe(fdr) < 0) {
+	emsg = Sprintf("localcgi_popen_rw: pipe: %s", strerror(errno));
+	goto pipe_err0;
+    }
+    if (p_fdw && pipe(fdw) < 0) {
+	emsg = Sprintf("localcgi_popen_rw: pipe: %s", strerror(errno));
+	goto pipe_err1;
     }
 
     flush_tty();
     if ((pid = fork()) < 0) {
-	emsg = Sprintf("localcgi_popen_r: fork: %s", strerror(errno));
-	disp_err_message(emsg->ptr, FALSE);
-	close(fd[0]);
-	close(fd[1]);
-	return (pid_t) - 1;
+	emsg = Sprintf("localcgi_popen_rw: fork: %s", strerror(errno));
+	goto pipe_err2;
     }
     else if (!pid) {
-	close_tty();
-	dup2(fd[1], 1);
-
-	if (fd[1] > 1)
-	    close(fd[1]);
-
-	close(fd[0]);
-	close_all_fds(2);
+	close(fdr[0]);
+	dup2(fdr[1], 1);
+	if (p_fdw) {
+	    close(fdw[1]);
+	    dup2(fdw[0], 0);
+	}
+	setup_child(TRUE, 2, -1);
     }
     else {
-	close(fd[1]);
-
-	if (!(fp = fdopen(fd[0], "r"))) {
-	    emsg =
-		Sprintf("localcgi_popen_r: fdopen(%d, \"r\"): %s", fd[0],
-			strerror(errno));
-	    disp_err_message(emsg->ptr, FALSE);
-	    kill(pid, SIGTERM);
-	    close(fd[0]);
-	    return (pid_t) - 1;
+	close(fdr[1]);
+	*p_fdr = fdr[0];
+	if (p_fdw) {
+	    close(fdw[0]);
+	    *p_fdw = fdw[1];
 	}
-
-	*p_fp = fp;
     }
-
     return pid;
+  pipe_err2:
+    close(fdw[0]);
+    close(fdw[1]);
+  pipe_err1:
+    close(fdr[0]);
+    close(fdr[1]);
+  pipe_err0:
+    disp_err_message(emsg->ptr, FALSE);
+    return (pid_t) - 1;
 }
 
 FILE *
 localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 {
-    FILE *f, *f1;
-    Str tmp1;
+    int fdr, fdw = -1;
     int status;
     pid_t pid;
     char *file;
@@ -414,88 +414,47 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     if (check_local_cgi(file, status) < 0)
 	return NULL;
     writeLocalCookie();
-    tmp1 = tmpfname(TMPF_DFL, NULL);
-    if ((pid = localcgi_popen_r(&f)) < 0)
+    if (request && request->enctype != FORM_ENCTYPE_MULTIPART)
+	pid = localcgi_popen_rw(&fdr, &fdw);
+    else
+	pid = localcgi_popen_rw(&fdr, NULL);
+    if (pid < 0)
 	return NULL;
-    else if (pid)
-	return f;
-    f1 = fopen(tmp1->ptr, "w");
-    if (f1 == NULL)
-	exit(1);
-    if (qstr == NULL) {
-	set_cgi_environ(uri, file, uri);
-    }
-    else {
-	set_cgi_environ(uri, file, Strnew_m_charp(uri, "?", qstr, NULL)->ptr);
-    }
-    set_environ("REQUEST_METHOD", "POST");
-    if (qstr)
-	set_environ("QUERY_STRING", qstr);
-    set_environ("CONTENT_LENGTH", Sprintf("%d", request->length)->ptr);
-    if (referer && referer != NO_REFERER)
-	set_environ("HTTP_REFERER", referer);
-    if (request->enctype == FORM_ENCTYPE_MULTIPART) {
-	set_environ("CONTENT_TYPE",
-		    Sprintf("multipart/form-data; boundary=%s",
-			    request->boundary)->ptr);
-    }
-    else {
-	set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
-    }
-    if (request->enctype == FORM_ENCTYPE_MULTIPART) {
-	FILE *fd;
-	int c;
-	fd = fopen(request->body, "r");
-	if (fd != NULL) {
-	    while ((c = fgetc(fd)) != EOF)
-		fputc(c, f1);
-	    fclose(fd);
+    else if (pid) {
+	if (fdw > 0) {
+	    write(fdw, request->body, request->length);
+	    close(fdw);
 	}
+	return fdopen(fdr, "r");
     }
-    else {
-	fputs(request->body, f1);
-    }
-    fclose(f1);
-    freopen(tmp1->ptr, "r", stdin);
-#ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
-    chdir(mydirname(file));
-#endif
-    execl(file, mybasename(file), NULL);
-    fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
-	    file, mybasename(file), strerror(errno));
-    exit(1);
-    return NULL;
-}
 
-FILE *
-localcgi_get(char *uri, char *request, char *referer)
-{
-    FILE *f;
-    int status;
-    pid_t pid;
-    char *file;
-
-    file = cgi_filename(uri, &status);
-    if (check_local_cgi(file, status) < 0)
-	return NULL;
-    writeLocalCookie();
-    if ((pid = localcgi_popen_r(&f)) < 0)
-	return NULL;
-    else if (pid)
-	return f;
-    if (request == NULL) {
-	set_cgi_environ(Strnew_charp(uri)->ptr, file, Strnew_charp(uri)->ptr);
-    }
-    else {
-	set_cgi_environ(Strnew_charp(uri)->ptr, file,
-			Strnew_m_charp(uri, "?", request, NULL)->ptr);
-    }
+    if (qstr == NULL)
+	set_cgi_environ(uri, file, uri);
+    else
+	set_cgi_environ(uri, file, Strnew_m_charp(uri, "?", qstr, NULL)->ptr);
     if (referer && referer != NO_REFERER)
 	set_environ("HTTP_REFERER", referer);
-    set_environ("REQUEST_METHOD", "GET");
-    set_environ("QUERY_STRING", request ? request : "");
-    freopen(DEV_NULL_PATH, "r", stdin);
-#ifdef HAVE_CHDIR		/* ifndef __EMX__? */
+    if (request) {
+	set_environ("REQUEST_METHOD", "POST");
+	if (qstr)
+	    set_environ("QUERY_STRING", qstr);
+	set_environ("CONTENT_LENGTH", Sprintf("%d", request->length)->ptr);
+	if (request->enctype == FORM_ENCTYPE_MULTIPART) {
+	    set_environ("CONTENT_TYPE",
+			Sprintf("multipart/form-data; boundary=%s",
+				request->boundary)->ptr);
+	    freopen(request->body, "r", stdin);
+	}
+	else
+	    set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
+    }
+    else {
+	set_environ("REQUEST_METHOD", "GET");
+	set_environ("QUERY_STRING", qstr ? qstr : "");
+	freopen(DEV_NULL_PATH, "r", stdin);
+    }
+
+#ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
     chdir(mydirname(file));
 #endif
     execl(file, mybasename(file), NULL);

@@ -1,3 +1,37 @@
+2003-01-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03646] setup child process, local CGI
+	* etc.c (reset_signals): static
+				don't ignore SIGUSR1
+		(close_all_fds_except): static
+				DEV_NULL_PATH
+		(setup_child): added
+		(myExec): rewrite
+		(mySystem): rewrite
+	* file.c (readHeader): check image_source
+		(loadGeneralFile): check image_source
+		(doExternal): use setup_child
+		(_doFileCopy): use setup_child
+		(doFileSave): use setup_child
+		(uncompress_stream): check image_source
+				use setup_child
+	* image.c (getCharSize): no need stderr redirect
+		(openImgdisplay): use setup_child
+		(loadImage): use setup_child
+		(getImageSize): no need stderr redirect
+	* local.c (writeLocalCookie): check Local_cookie_file
+		(localcgi_popen_rw): added
+		(localcgi_popen_r): deleted
+		(localcgi_post): rewrite
+		(localcgi_get): deleted
+	* proto.h (localcgi_get): defined by localcgi_post
+		(reset_signals): deleted
+		(close_all_fds_except): deleted
+		(close_all_fds): deleted
+		(setup_child): added
+	* search.c (open_migemo): use setup_child, myExec
+	* w3mimgdisplay.c (main): use DEV_NULL_PATH
+
 2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03644] Re: Other user can see local cookie.
@@ -6519,4 +6553,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.685 2003/01/15 17:13:21 ukai Exp $
+$Id: ChangeLog,v 1.686 2003/01/17 16:57:17 ukai Exp $

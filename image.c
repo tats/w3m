@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.25 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: image.c,v 1.26 2003/01/17 16:57:19 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -54,7 +54,7 @@ getCharSize()
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
 	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
-    Strcat_m_charp(tmp, Imgdisplay, " -test 2> /dev/null", NULL);
+    Strcat_m_charp(tmp, Imgdisplay, " -test", NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;
@@ -103,23 +103,18 @@ openImgdisplay()
 	goto err2;
     if (Imgdisplay_pid == 0) {
 	/* child */
-	reset_signals();
-	signal(SIGINT, SIG_IGN);
-	set_environ("W3M_TTY", ttyname_tty());
-	SETPGRP();
-	close_tty();
 	close(fdr[0]);
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
-	close_all_fds(2);
+	setup_child(FALSE, 2, -1);
+	set_environ("W3M_TTY", ttyname_tty());
 	if (!strchr(Imgdisplay, '/'))
 	    cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
 	else
 	    cmd = Imgdisplay;
-	execl("/bin/sh", "sh", "-c", cmd, NULL);
-	/* XXX: ifndef HAVE_SETPGRP, use start /f ? */
-	exit(1);
+	myExec(cmd);
+	/* XXX: ifdef __EMX__, use start /f ? */
     }
     close(fdr[1]);
     close(fdw[0]);
@@ -453,12 +448,7 @@ loadImage(int flag)
 	flush_tty();
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    close_tty();
-	    close_all_fds(2);
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
+	    setup_child(TRUE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
@@ -554,8 +544,7 @@ getImageSize(ImageCache * cache)
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
 	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
-    Strcat_m_charp(tmp, Imgdisplay, " -size ", shell_quote(cache->file),
-		   " 2> /dev/null", NULL);
+    Strcat_m_charp(tmp, Imgdisplay, " -size ", shell_quote(cache->file), NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;

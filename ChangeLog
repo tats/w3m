@@ -1,5 +1,6 @@
 2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02529]
 	* configure (ask_choice): fix bugs
 	* configure (include_opt): disable as much as if baby model
 	* configure: ask/def parameter after model selected

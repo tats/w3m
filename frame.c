@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.8 2002/01/15 03:45:02 ukai Exp $ */
+/* $Id: frame.c,v 1.9 2002/01/25 14:59:14 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -792,6 +792,9 @@ renderFrame(Buffer *Cbuf, int force_reload)
     if (buf == NULL || buf == NO_BUFFER)
 	return NULL;
     buf->sourcefile = tmp->ptr;
+#ifdef JP_CHARSET
+    buf->document_code = Cbuf->document_code;
+#endif
     copyParsedURL(&buf->currentURL, &Cbuf->currentURL);
     return buf;
 }

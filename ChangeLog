@@ -1,3 +1,8 @@
+2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02908] document code of frame
+	* frame.c (renderFrame): save document_code if JP_CHARSET
+
 2002-01-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02904]
@@ -2286,4 +2291,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.260 2002/01/25 14:55:20 ukai Exp $
+$Id: ChangeLog,v 1.261 2002/01/25 14:59:14 ukai Exp $

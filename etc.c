@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.55 2003/01/23 15:59:25 ukai Exp $ */
+/* $Id: etc.c,v 1.56 2003/01/23 16:02:15 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1372,7 +1372,7 @@ open_pipe_rw(FILE ** fr, FILE ** fw)
 	    if (*fr == stdin)
 		dup2(fdr[0], 0);
 	    else
-	        *fr = fdopen(fdr[0], "r");
+		*fr = fdopen(fdr[0], "r");
 	}
 	if (fw) {
 	    close(fdw[0]);

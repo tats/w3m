@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.34 2001/12/26 18:17:57 ukai Exp $ */
+/* $Id: fm.h,v 1.35 2001/12/27 17:37:49 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -774,6 +774,7 @@ global Str proxy_auth_cookie init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 global int ignore_null_img_alt init(TRUE);
+global int FoldTextarea init(FALSE);
 
 global struct auth_cookie *Auth_cookie init(NULL);
 global char *Local_cookie init(NULL);

@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.8 2001/12/26 18:29:33 ukai Exp $ */
+/* $Id: form.c,v 1.9 2001/12/27 17:37:49 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -358,8 +358,10 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 		}
 	    }
 	    if (rows > 1) {
-		while (p[j] && p[j] != '\r' && p[j] != '\n')
-		    j++;
+		if (! FoldTextarea) {
+		    while (p[j] && p[j] != '\r' && p[j] != '\n')
+			j++;
+		}
 		if (p[j] == '\r')
 		    j++;
 		if (p[j] == '\n')

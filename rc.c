@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.23 2001/12/14 17:35:08 ukai Exp $ */
+/* $Id: rc.c,v 1.24 2001/12/27 17:37:49 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -67,6 +67,7 @@ static char *config_file = NULL;
 #define CMT_DISPLINK     "リンク先の自動表示"
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
+#define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
 #define CMT_A_COLOR      "アンカーの色"
@@ -179,10 +180,11 @@ static char *config_file = NULL;
 /* #define CMT_KANJICODE    "Display Kanji Code" */
 #define CMT_FRAME        "Automatic rendering of frame"
 #define CMT_ARGV_IS_URL  "Force argument without scheme to URL"
-#define CMT_TSELF        "use _self as default target"
+#define CMT_TSELF        "Use _self as default target"
 #define CMT_DISPLINK     "Automatic display of link URL"
 #define CMT_MULTICOL     "Multi-column output of file names"
 #define CMT_ALT_ENTITY   "Use alternate expression with ASCII for entity"
+#define CMT_FOLD_TEXTAREA "Fold lines of TEXTAREA"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
 #define CMT_A_COLOR      "Color of anchor"
@@ -390,6 +392,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
+    {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
+     CMT_FOLD_TEXTAREA, NULL},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *)&ignore_null_img_alt,
      CMT_IGNORE_NULL_IMG_ALT, NULL},
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,

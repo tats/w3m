@@ -1,5 +1,13 @@
 2001-12-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02759] fold textarea
+	* fm.h (FoldTextarea): added
+	* form.c (formUpdateBuffer): check FoldTextarea
+	* rc.c (CMT_FOLD_TEXTAREA): added
+	* rc.c (params1): add "fold_textarea"
+
+2001-12-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02757]
 	* main.c (execdict): w = conv_from_system(word)
 	* main.c (dictword): call execdict() only
@@ -1703,4 +1711,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.188 2001/12/27 17:23:06 ukai Exp $
+$Id: ChangeLog,v 1.189 2001/12/27 17:37:49 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.20 2001/12/06 16:35:37 ukai Exp $ */
+/* $Id: url.c,v 1.21 2001/12/06 22:45:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -419,7 +419,7 @@ baseURL(Buffer *buf)
 }
 
 int
-openSocket(char *volatile hostname,
+openSocket(char *const hostname,
 	   char *remoteport_name, unsigned short remoteport_num)
 {
     volatile int sock = -1;
@@ -427,6 +427,7 @@ openSocket(char *volatile hostname,
     int *af;
     struct addrinfo hints, *res0, *res;
     int error;
+    char *hname;
 #else				/* not INET6 */
     struct sockaddr_in hostaddr;
     struct hostent *entry;
@@ -462,11 +463,12 @@ openSocket(char *volatile hostname,
 
 #ifdef INET6
     /* rfc2732 compliance */
-    if (hostname != NULL && hostname[0] == '[' &&
-	hostname[strlen(hostname) - 1] == ']') {
-	hostname[strlen(hostname) - 1] = '\0';
-	hostname++;
-	if (strspn(hostname, "0123456789abcdefABCDEF:.") != strlen(hostname))
+    hname = hostname;
+    if (hname != NULL && hname[0] == '[' &&
+	hname[strlen(hname) - 1] == ']') {
+	hname = allocStr(hostname + 1, -1);
+	hname[strlen(hname) - 1] = '\0';
+	if (strspn(hname, "0123456789abcdefABCDEF:.") != strlen(hname))
 	    goto error;
     }
     for (af = ai_family_order_table[DNS_order];; af++) {
@@ -475,14 +477,14 @@ openSocket(char *volatile hostname,
 	hints.ai_socktype = SOCK_STREAM;
 	if (remoteport_num != 0) {
 	    Str portbuf = Sprintf("%d", remoteport_num);
-	    error = getaddrinfo(hostname, portbuf->ptr, &hints, &res0);
+	    error = getaddrinfo(hname, portbuf->ptr, &hints, &res0);
 	}
 	else {
 	    error = -1;
 	}
 	if (error && remoteport_name && remoteport_name[0] != '\0') {
 	    /* try default port */
-	    error = getaddrinfo(hostname, remoteport_name, &hints, &res0);
+	    error = getaddrinfo(hname, remoteport_name, &hints, &res0);
 	}
 	if (error) {
 	    if (*af == PF_UNSPEC) {
@@ -1204,12 +1206,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 
     if (target->host) {
 	Strcat_charp(s, "Host: ");
-#ifdef INET6
-	if (strchr(target->host, ':') != NULL)
-	    Strcat(s, Sprintf("[%s]", target->host));
-	else
-#endif
-	    Strcat_charp(s, target->host);
+	Strcat_charp(s, target->host);
 	if (target->port != DefaultPort[target->scheme])
 	    Strcat(s, Sprintf(":%d", target->port));
 	Strcat_charp(s, "\r\n");

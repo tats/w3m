@@ -1,3 +1,11 @@
+2001-12-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02637]
+	* url.c (openSocket): hostname volatile -> const
+	* url.c (openSocket): add hname
+	* url.c (openSocket): copy hostname to hname to be modified safely
+	* url.c (otherinfo): revert previous change
+
 2001-12-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02635] dirlist

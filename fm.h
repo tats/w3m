@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.13 2001/11/23 20:23:41 ukai Exp $ */
+/* $Id: fm.h,v 1.14 2001/11/23 20:50:59 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -703,6 +703,9 @@ global int useVisitedColor init(FALSE);
 global int visited_color init(5);	/* magenta  */
 #endif				/* USE_COLOR */
 global int confirm_on_quit init(TRUE);
+#ifdef EMACS_LIKE_LINEEDIT
+global int emacs_like_lineedit init(FALSE);
+#endif
 global int displayLink init(FALSE);
 global int retryAsHttp init(TRUE);
 global int showLineNum init(FALSE);

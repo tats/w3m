@@ -1,5 +1,12 @@
 2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp
 
+	* fm.h (emacs_like_lineedit): runtime option emacs_like_lineedit
+	* linein.c (inputLineHist): ditto
+	* linein.c (_esc): ditto
+	* linein.c (next_dcompl): ditto
+	* rc.c (CMT_EMACS_LIKE_LINEEDIT): ditto
+	* rc.c (params3): ditto
+
 	* fm.h (ftppass_hostnamegen): runtime option ftppass_hostnamegen
 	* ftp.c (FtpLogin): ditto
 	* rc.c (CMT_FTPPASS_HOSTNAMEGEN): ditto

@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.6 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: linein.c,v 1.7 2001/11/23 20:50:59 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -37,10 +37,7 @@ static void insertself(char c),
   _mvB(void), _mvE(void), _enter(void), _quo(void), _bs(void), _bsw(void),
   killn(void), killb(void), _inbrk(void), _esc(void),
   _prev(void), _next(void), _compl(void), _tcompl(void),
-  _dcompl(void), _rdcompl(void);
-#ifndef EMACS_LIKE_LINEEDIT
-static void _rcompl(void);
-#endif
+  _dcompl(void), _rdcompl(void),  _rcompl(void);
 #ifdef __EMX__
 static int getcntrl(void);
 #endif
@@ -191,22 +188,27 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
 	     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
 #ifdef EMACS_LIKE_LINEEDIT
-	    if (cm_next) {
-		_dcompl();
-		need_redraw = TRUE;
-	    }
-	    else {
-		_compl();
-		cm_disp_next = -1;
-	    }
-#else
-	    _compl();
-	    cm_disp_next = -1;
+		if (emacs_like_lineedit && cm_next) {
+		    _dcompl();
+		    need_redraw = TRUE;
+		}
+	        else {
+#endif
+		    _compl();
+		    cm_disp_next = -1;
+#ifdef EMACS_LIKE_LINEEDIT
+		}	
+#endif
 	}
 	else if (!i_quote && CLen == CPos &&
 		 (cm_mode & CPL_ALWAYS || cm_mode & CPL_ON) && c == CTRL_D) {
-	    _dcompl();
-	    need_redraw = TRUE;
+#ifdef EMACS_LIKE_LINEEDIT
+		if (! emacs_like_lineedit) {
+#endif
+		    _dcompl();
+		    need_redraw = TRUE;
+#ifdef EMACS_LIKE_LINEEDIT
+		}
 #endif
 	}
 	else if (!i_quote && c == DEL_CODE) {
@@ -421,25 +423,35 @@ _esc(void)
     case CTRL_I:
     case ' ':
 #ifdef EMACS_LIKE_LINEEDIT
-	_rdcompl();
-	cm_clear = FALSE;
+	if (emacs_like_lineedit) {
+	    _rdcompl();
+	    cm_clear = FALSE;
+	    need_redraw = TRUE;
+	} else
 #else
-	_rcompl();
+	    _rcompl();
+#endif
 	break;
     case CTRL_D:
-	_rdcompl();
+#ifdef EMACS_LIKE_LINEEDIT
+	if (!emacs_like_lineedit)
+#else
+	    _rdcompl();
 #endif
 	need_redraw = TRUE;
 	break;
 #ifdef EMACS_LIKE_LINEEDIT
     case 'f':
-	_mvRw();
+	if (emacs_like_lineedit)
+	    _mvRw();
 	break;
     case 'b':
-	_mvLw();
+	if (emacs_like_lineedit)
+	    _mvLw();
 	break;
     case CTRL_H:
-	_bsw();
+	if (emacs_like_lineedit)
+	    _bsw();
 	break;
 #endif
 #ifdef JP_CHARSET
@@ -628,13 +640,11 @@ _compl(void)
     next_compl(1);
 }
 
-#ifndef EMACS_LIKE_LINEEDIT
 static void
 _rcompl(void)
 {
     next_compl(-1);
 }
-#endif
 
 static void
 _tcompl(void)
@@ -815,9 +825,11 @@ disp_next:
 	clrtoeolx();
 	bold();
 #ifdef EMACS_LIKE_LINEEDIT
-	addstr("----- Press TAB to continue -----");
+	if (emacs_like_lineedit)
+	    addstr("----- Press TAB to continue -----");
+	else
 #else
-	addstr("----- Press CTRL-D to continue -----");
+	    addstr("----- Press CTRL-D to continue -----");
 #endif
 	boldend();
     }

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.29 2002/11/08 15:54:47 ukai Exp $ */
+/* $Id: display.c,v 1.30 2002/11/12 12:46:53 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -456,13 +456,13 @@ redrawNLine(Buffer *buf, int n)
 	    addstr(t->currentBuffer->buffername);
 	    if (t == CurrentTab)
 		EFFECT_ACTIVE_END;
-	    clrtoeol();
+	    clrtoeolx();
 	    x = col * (i % nx + 1) / nx - 1;
 	    move(i / nx, x);
 	    addch(']');
 	    if (t == CurrentTab)
 		boldend();
-	    clrtoeol();
+	    clrtoeolx();
 	}
 	move(0, col);
 	addstr(" x");
@@ -480,8 +480,10 @@ redrawNLine(Buffer *buf, int n)
 	    break;
 	l = l0;
     }
-    if (n > 0)
+    if (n > 0) {
+	move(i + buf->rootY, 0);
 	clrtobotx();
+    }
 
 #ifdef USE_IMAGE
     if (!(activeImage && displayImage && buf->img))

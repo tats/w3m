@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.7 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: form.c,v 1.8 2001/12/26 18:29:33 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -453,14 +453,14 @@ form_fputs_decode(Str s, FILE * f)
 void
 input_textarea(FormItemList *fi)
 {
-    Str tmpname = tmpfname(TMPF_DFL, NULL);
+    char *tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
     Str tmp;
     FILE *f;
 #ifdef JP_CHARSET
     char code = DisplayCode, ic;
 #endif
 
-    f = fopen(tmpname->ptr, "w");
+    f = fopen(tmpf, "w");
     if (f == NULL) {
 	disp_err_message("Can't open temporary file", FALSE);
 	return;
@@ -468,25 +468,14 @@ input_textarea(FormItemList *fi)
     if (fi->value)
 	form_fputs_decode(fi->value, f);
     fclose(f);
-    if (strcasestr(Editor, "%s"))
-	if (strcasestr(Editor, "%d"))
-	    tmp = Sprintf(Editor, 1, tmpname->ptr);
-	else
-	    tmp = Sprintf(Editor, tmpname->ptr);
-    else {
-	if (strcasestr(Editor, "%d"))
-	    tmp = Sprintf(Editor, 1);
-	else
-	    tmp = Strnew_charp(Editor);
-	Strcat_m_charp(tmp, " ", tmpname->ptr, NULL);
-    }
+
     fmTerm();
-    system(tmp->ptr);
+    system(myEditor(Editor, tmpf, 1)->ptr);
     fmInit();
 
     if (fi->readonly)
 	return;
-    f = fopen(tmpname->ptr, "r");
+    f = fopen(tmpf, "r");
     if (f == NULL) {
 	disp_err_message("Can't open temporary file", FALSE);
 	return;
@@ -509,7 +498,7 @@ input_textarea(FormItemList *fi)
 	Strcat(fi->value, tmp);
     }
     fclose(f);
-    unlink(tmpname->ptr);
+    unlink(tmpf);
 }
 
 void

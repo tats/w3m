@@ -1,5 +1,21 @@
 2001-12-27  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02749] cleanup code for editor,mailer,extbrowser
+	* etc.c (myExtCommand): added
+	* etc.c (myEditor): added
+	* form.c (input_textarea): use myEditor()
+	* main.c (pipeBuf): use myExtCommand()
+	* main.c (editBf): use myEditor()
+	* main.c (editScr): use myEditor()
+	* main.c (followA): use myExtCommand()
+	* main.c (cmd_loadURL): use myExtCommand()
+	* main.c (invoke_browser): use myExtCommand()
+	* main.c (execdict): use myExtCommand()
+	* proto.h (myExtCommand): added
+	* proto.h (myEditor): added
+
+2001-12-27  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02748] cleanup code for restoring cursor position
 	* buffer.c (reshapeBuffer): delete top, linenum, cursorY, pos, 
 		currentColumn, formitem
@@ -1655,4 +1671,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.183 2001/12/26 18:17:57 ukai Exp $
+$Id: ChangeLog,v 1.184 2001/12/26 18:29:33 ukai Exp $

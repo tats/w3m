@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.49 2001/12/26 18:17:57 ukai Exp $ */
+/* $Id: main.c,v 1.50 2001/12/26 18:29:33 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1656,11 +1656,7 @@ pipeBuf(void)
     saveBuffer(Currentbuf, f);
     fclose(f);
     pushText(fileToDelete, tmpf);
-    if (strcasestr(cmd, "%s"))
-	cmd = Sprintf(cmd, tmpf)->ptr;
-    else
-	cmd = Sprintf("%s < %s", cmd, tmpf)->ptr;
-    buf = getpipe(cmd);
+    buf = getpipe(myExtCommand(cmd, tmpf, TRUE)->ptr);
     if (buf == NULL) {
 	disp_message("Execution failed", FALSE);
     }
@@ -2238,31 +2234,11 @@ editBf(void)
     if (Currentbuf->frameset != NULL)
 	fbuf = Currentbuf->linkBuffer[LB_FRAME];
     copyBuffer(&sbuf, Currentbuf);
-    if (Currentbuf->edit) {
-	cmd = unquote_mailcap(Currentbuf->edit,
-			      Currentbuf->real_type,
-			      fn,
+    if (Currentbuf->edit)
+	cmd = unquote_mailcap(Currentbuf->edit, Currentbuf->real_type, fn,
 			      checkHeader(Currentbuf, "Content-Type:"), NULL);
-    }
-    else {
-	char *file = shell_quote(fn);
-	int linenum = CUR_LINENUMBER(Currentbuf);
-	if (strcasestr(Editor, "%s")) {
-	    if (strcasestr(Editor, "%d"))
-		cmd = Sprintf(Editor, linenum, file);
-	    else
-		cmd = Sprintf(Editor, file);
-	}
-	else {
-	    if (strcasestr(Editor, "%d"))
-		cmd = Sprintf(Editor, linenum);
-	    else if (strcasestr(Editor, "vi"))
-		cmd = Sprintf("%s +%d", Editor, linenum);
-	    else
-		cmd = Strnew_charp(Editor);
-	    Strcat_m_charp(cmd, " ", file, NULL);
-	}
-    }
+    else
+	cmd = myEditor(Editor, shell_quote(fn), CUR_LINENUMBER(Currentbuf));
     fmTerm();
     system(cmd->ptr);
     fmInit();
@@ -2309,45 +2285,21 @@ editBf(void)
 void
 editScr(void)
 {
-    int lnum;
-    Str cmd;
-    Str tmpf;
+    char *tmpf;
     FILE *f;
 
-    tmpf = tmpfname(TMPF_DFL, NULL);
-    f = fopen(tmpf->ptr, "w");
+    tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+    f = fopen(tmpf, "w");
     if (f == NULL) {
-	cmd = Sprintf("Can't open %s", tmpf->ptr);
-	disp_err_message(cmd->ptr, TRUE);
+	disp_err_message(Sprintf("Can't open %s", tmpf)->ptr, TRUE);
 	return;
     }
     saveBuffer(Currentbuf, f);
     fclose(f);
-    if (Currentbuf->currentLine)
-	lnum = Currentbuf->currentLine->linenumber;
-    else
-	lnum = 1;
-    if (strcasestr(Editor, "%s")) {
-	if (strcasestr(Editor, "%d"))
-	    cmd = Sprintf(Editor, lnum, tmpf->ptr);
-	else
-	    cmd = Sprintf(Editor, tmpf->ptr);
-    }
-    else {
-	if (strcasestr(Editor, "%d"))
-	    cmd = Sprintf(Editor, lnum);
-	else if (strcasestr(Editor, "vi"))
-	    cmd = Sprintf("%s +%d", Editor, lnum);
-	else
-	    cmd = Strnew_charp(Editor);
-	Strcat_m_charp(cmd, " ", tmpf->ptr, NULL);
-    }
     fmTerm();
-    system(cmd->ptr);
+    system(myEditor(Editor, tmpf, CUR_LINENUMBER(Currentbuf))->ptr);
     fmInit();
-    unlink(tmpf->ptr);
-    gotoLine(Currentbuf, lnum);
-    arrangeCursor(Currentbuf);
+    unlink(tmpf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -2652,14 +2604,9 @@ followA(void)
     }
     if (!strncasecmp(a->url, "mailto:", 7)) {
 	/* invoke external mailer */
-	Str tmp;
-	char *to = shell_quote(url_unquote(a->url + 7));
-	if (strcasestr(Mailer, "%s"))
-	    tmp = Sprintf(Mailer, to);
-	else
-	    tmp = Strnew_m_charp(Mailer, " ", to, NULL);
 	fmTerm();
-	system(tmp->ptr);
+	system(myExtCommand(Mailer, shell_quote(url_unquote(a->url + 7)),
+			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
@@ -3595,14 +3542,9 @@ cmd_loadURL(char *url, ParsedURL *current)
 
     if (!strncasecmp(url, "mailto:", 7)) {
 	/* invoke external mailer */
-	Str tmp;
-	char *to = shell_quote(url + 7);
-	if (strcasestr(Mailer, "%s"))
-	    tmp = Sprintf(Mailer, to);
-	else
-	    tmp = Strnew_m_charp(Mailer, " ", to, NULL);
 	fmTerm();
-	system(tmp->ptr);
+	system(myExtCommand(Mailer, shell_quote(url_unquote(url + 7)),
+			    FALSE)->ptr);
 	fmInit();
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
@@ -4302,7 +4244,7 @@ rFrame(void)
 static void
 invoke_browser(char *url)
 {
-    Str tmp;
+    Str cmd;
     char *browser = NULL;
     int bg = 0;
 
@@ -4332,22 +4274,15 @@ invoke_browser(char *url)
     }
     if (browser == NULL || *browser == '\0')
 	return;
-    url = shell_quote(url);
-    if (strcasestr(browser, "%s")) {
-	tmp = Sprintf(browser, url);
-	Strremovetrailingspaces(tmp);
-	if (Strlastchar(tmp) == '&') {
-	    Strshrink(tmp, 1);
-	    bg = 1;
-	}
-    }
-    else {
-	tmp = Strnew_charp(browser);
-	Strcat_char(tmp, ' ');
-	Strcat_charp(tmp, url);
+
+    cmd = myExtCommand(browser, shell_quote(url), FALSE);
+    Strremovetrailingspaces(cmd);
+    if (Strlastchar(cmd) == '&') {
+	Strshrink(cmd, 1);
+	bg = 1;
     }
     fmTerm();
-    mySystem(tmp->ptr, bg);
+    mySystem(cmd->ptr, bg);
     fmInit();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
@@ -4666,19 +4601,15 @@ static void
 execdict(char *word)
 {
     Buffer *buf;
-    Str cmd;
     MySignalHandler(*prevtrap) ();
 
     if (word == NULL || *word == '\0') {
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
-    cmd = Strnew_charp(DICTCMD);
-    Strcat_char(cmd, ' ');
-    Strcat_charp(cmd, word);
     prevtrap = signal(SIGINT, intTrap);
     crmode();
-    buf = getshell(cmd->ptr);
+    buf = getshell(myExtCommand(DICTCMD, shell_quote(word), FALSE)->ptr);
     buf->filename = word;
     word = conv_from_system(word);
     buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;

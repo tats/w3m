@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.155 2002/12/09 15:32:18 ukai Exp $ */
+/* $Id: file.c,v 1.156 2002/12/09 15:33:34 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5616,7 +5616,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	else {
 	    read_token(tokbuf, &line, &obuf->status, pre_mode & RB_PREMODE, 0);
 	    if (obuf->status != R_ST_NORMAL)	/* R_ST_AMP ? */
-		continue;
+		obuf->status = R_ST_NORMAL;
 	    str = tokbuf->ptr;
 	}
 

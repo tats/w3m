@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.15 2003/03/26 15:14:23 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.16 2003/03/26 15:34:20 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -38,6 +38,7 @@ struct x11_image {
     int total;
     int no;
     int wait;
+    int delay;
     Pixmap *pixmap;
 };
 
@@ -215,6 +216,7 @@ x11_img_new(struct x11_info *xi, int w, int h, int n)
     img->no = 0;
     img->total = n;
     img->wait = 0;
+    img->delay = -1;
 
     return img;
   ERROR:
@@ -342,12 +344,13 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     for (i = 0; i < n; i++) {
 	GdkPixbufFrame *frame;
 	GdkPixbuf *org_pixbuf, *pixbuf;
-	int width, height, ofstx, ofsty;
+	int width, height, ofstx, ofsty, delay;
 
 	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
 	org_pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
 	ofstx = gdk_pixbuf_frame_get_x_offset(frame);
 	ofsty = gdk_pixbuf_frame_get_y_offset(frame);
+	delay = gdk_pixbuf_frame_get_delay_time(frame);
 	width = gdk_pixbuf_get_width(org_pixbuf);
 	height = gdk_pixbuf_get_height(org_pixbuf);
 
@@ -362,6 +365,8 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	}
 	width = gdk_pixbuf_get_width(pixbuf);
 	height = gdk_pixbuf_get_height(pixbuf);
+
+	if (delay >= 0) ximg->delay = delay;
 
 	if (i > 0) {
 	    switch (action) {
@@ -428,7 +433,10 @@ x11_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy, int sw,
 	      (sh ? sh : img->height), x + self->offset_x, y + self->offset_y);
 #elif defined(USE_GDKPIXBUF)
 #define WAIT_CNT 4
-    i = ximg->no;
+    if (ximg->delay <= 0)
+	i = ximg->total - 1;
+    else
+	i = ximg->no;
     XCopyArea(xi->display, ximg->pixmap[i], xi->window, xi->imageGC,
 	      sx, sy,
 	      (sw ? sw : img->width),

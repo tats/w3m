@@ -1,3 +1,12 @@
+2003-03-27  ABE Yuji <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 03833] gif animation with no delay_time
+	* w3mimg/fb/fb_w3mimg.c (w3mfb_show_image): skip delay<=0
+	* w3mimg/x11/x11_w3mimg.c (x11_image): add delay
+		(x11_img_new): initialize delay
+		(x11_load_image): initialize delay
+		(x11_show_image): jump to last image if delay<=0
+
 2003-03-27  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 03831] fix typo
@@ -7596,4 +7605,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.803 2003/03/26 15:19:35 ukai Exp $
+$Id: ChangeLog,v 1.804 2003/03/26 15:34:12 ukai Exp $

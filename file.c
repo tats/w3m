@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.112 2002/11/06 03:19:30 ukai Exp $ */
+/* $Id: file.c,v 1.113 2002/11/08 15:46:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1410,6 +1410,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 			       IN_PASSWORD)) == NULL)
 		    return NULL;
 		pwd = Str_conv_to_system(Strnew_charp(pp));
+		term_cbreak();
 	    }
 	    else {
 		/*
@@ -1620,6 +1621,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	 ) && !Do_not_use_proxy && !check_no_proxy(pu.host))) {
 
 	if (fmInitialized) {
+	    term_cbreak();
 	    message(Sprintf("%s contacted. Waiting for reply...", pu.host)->
 		    ptr, 0, 0);
 	    refresh();
@@ -1698,6 +1700,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
+		    if (fmInitialized)
+			term_raw();
 		    signal(SIGINT, prevtrap);
 		    return NULL;
 		}
@@ -1720,6 +1724,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
+		    if (fmInitialized)
+			term_raw();
 		    signal(SIGINT, prevtrap);
 		    return NULL;
 		}
@@ -1799,10 +1805,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (save2tmp(f, tmpf) < 0)
 		UFclose(&f);
 	    else {
-		if (fmInitialized) {
+		if (fmInitialized)
 		    term_raw();
-		    signal(SIGINT, prevtrap);
-		}
+		signal(SIGINT, prevtrap);
 		doFileMove(tmpf, guess_save_name(t_buf, pu.file));
 	    }
 	    return NO_BUFFER;
@@ -2019,10 +2024,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
     if (header_string)
 	header_string = NULL;
+    preFormUpdateBuffer(b);
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, prevtrap);
-    preFormUpdateBuffer(b);
     return b;
 }
 
@@ -6167,9 +6172,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
 	HTMLlineproc3(newBuf, f->stream);
 	w3m_halfload = FALSE;
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
 	return;
     }
 
@@ -6258,6 +6260,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	return;
     }
     if (w3m_backend) {
+	if (fmInitialized)
+	    term_raw();
+	signal(SIGINT, prevtrap);
 	print_internal_information(&htmlenv1);
 	backend_halfdump_buf = htmlenv1.buf;
 	return;

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.58 2002/11/05 17:54:39 ukai Exp $ */
+/* $Id: rc.c,v 1.59 2002/11/06 03:27:04 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -78,7 +78,6 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
-#define CMT_PRE_FORM_FILE	"pre_formファイル"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
@@ -132,6 +131,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ3      "外部ブラウザその3"
 #define CMT_DISABLE_SECRET_SECURITY_CHECK	"パスワードファイルのパーミッションをチェックしない"
 #define CMT_PASSWDFILE	 "パスワードファイル"
+#define CMT_PRE_FORM_FILE	"文書読込時のフォーム設定用ファイル"
 #define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
 #ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
@@ -224,7 +224,6 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
-#define CMT_PRE_FORM_FILE	"pre_form file"
 #define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
@@ -278,6 +277,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ3      "Third External Browser"
 #define CMT_DISABLE_SECRET_SECURITY_CHECK	"Disable secret file security check"
 #define CMT_PASSWDFILE	 "Password file"
+#define CMT_PRE_FORM_FILE	"File for setting form on loading"
 #define CMT_FTPPASS      "Password for anonymous FTP (your mail address)"
 #ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN "Generate domain part of password for FTP"
@@ -490,8 +490,6 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
-     CMT_PRE_FORM_FILE, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *)&ignore_null_img_alt,
@@ -694,6 +692,8 @@ struct param_ptr params9[] = {
     {"ftppass_hostnamegen", P_INT, PI_ONOFF, (void *)&ftppass_hostnamegen,
      CMT_FTPPASS_HOSTNAMEGEN, NULL},
 #endif
+    {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
+     CMT_PRE_FORM_FILE, NULL},
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
@@ -1270,7 +1270,12 @@ sync_with_option(void)
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();
-    initKeymap(FALSE);
+    if (fmInitialized) {
+	initKeymap(FALSE);
+#ifdef USE_MENU
+	initMenu();
+#endif				/* MENU */
+    }
 }
 
 void
@@ -1324,7 +1329,6 @@ init_rc(char *config_filename)
 	interpret_rc(f);
 	fclose(f);
     }
-    sync_with_option();
 }
 
 

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.33 2002/11/05 17:54:39 ukai Exp $ */
+/* $Id: etc.c,v 1.34 2002/11/06 03:27:04 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1076,6 +1076,8 @@ void
 loadPasswd(void)
 {
     FILE *fp;
+
+    passwords = NULL;
     fp = openSecretFile(passwd_file);
     if (fp != NULL) {
 	parsePasswd(fp, 0);

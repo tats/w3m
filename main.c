@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.119 2002/11/05 17:12:02 ukai Exp $ */
+/* $Id: main.c,v 1.120 2002/11/06 03:27:04 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -248,9 +248,6 @@ fusage(FILE * f, int err)
     exit(err);
 }
 
-static int option_assigned = 0;
-extern void parse_proxy(void);
-
 static GC_warn_proc orig_GC_warn_proc = NULL;
 #define GC_WARN_KEEP_MAX (20)
 
@@ -407,10 +404,6 @@ MAIN(int argc, char **argv, char **envp)
 
     /* initializations */
     init_rc(config_filename);
-#ifdef USE_COOKIE
-    initCookie();
-#endif				/* USE_COOKIE */
-    setLocalCookie();		/* setup cookie for local CGI */
 
     LoadHist = newHist();
     SaveHist = newHist();
@@ -423,30 +416,22 @@ MAIN(int argc, char **argv, char **envp)
 
     if (!non_null(HTTP_proxy) &&
 	((p = getenv("HTTP_PROXY")) ||
-	 (p = getenv("http_proxy")) || (p = getenv("HTTP_proxy")))) {
+	 (p = getenv("http_proxy")) || (p = getenv("HTTP_proxy"))))
 	HTTP_proxy = p;
-	parseURL(p, &HTTP_proxy_parsed, NULL);
-    }
 #ifdef USE_GOPHER
     if (!non_null(GOPHER_proxy) &&
 	((p = getenv("GOPHER_PROXY")) ||
-	 (p = getenv("gopher_proxy")) || (p = getenv("GOPHER_proxy")))) {
+	 (p = getenv("gopher_proxy")) || (p = getenv("GOPHER_proxy"))))
 	GOPHER_proxy = p;
-	parseURL(p, &GOPHER_proxy_parsed, NULL);
-    }
 #endif				/* USE_GOPHER */
     if (!non_null(FTP_proxy) &&
 	((p = getenv("FTP_PROXY")) ||
-	 (p = getenv("ftp_proxy")) || (p = getenv("FTP_proxy")))) {
+	 (p = getenv("ftp_proxy")) || (p = getenv("FTP_proxy"))))
 	FTP_proxy = p;
-	parseURL(p, &FTP_proxy_parsed, NULL);
-    }
     if (!non_null(NO_proxy) &&
 	((p = getenv("NO_PROXY")) ||
-	 (p = getenv("no_proxy")) || (p = getenv("NO_proxy")))) {
+	 (p = getenv("no_proxy")) || (p = getenv("NO_proxy"))))
 	NO_proxy = p;
-	set_no_proxy(p);
-    }
 
     if (!non_null(Editor) && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
@@ -545,12 +530,10 @@ MAIN(int argc, char **argv, char **envp)
 	    else if (!strcmp("-F", argv[i]))
 		RenderFrame = TRUE;
 	    else if (!strcmp("-W", argv[i])) {
-		if (WrapSearch) {
-		    WrapSearch = FALSE;
-		}
-		else {
-		    WrapSearch = TRUE;
-		}
+		if (WrapDefault)
+		    WrapDefault = FALSE;
+		else
+		    WrapDefault = TRUE;
 	    }
 	    else if (!strcmp("-dump", argv[i]))
 		w3m_dump = DUMP_BUFFER;
@@ -682,7 +665,6 @@ MAIN(int argc, char **argv, char **envp)
 		    show_params_p = 1;
 		    usage();
 		}
-		option_assigned = 1;
 	    }
 	    else if (!strcmp("-dummy", argv[i])) {
 		/* do nothing */
@@ -702,8 +684,11 @@ MAIN(int argc, char **argv, char **envp)
 	i++;
     }
 
-    if (option_assigned)
-	sync_with_option();
+    sync_with_option();
+#ifdef USE_COOKIE
+    initCookie();
+#endif				/* USE_COOKIE */
+    setLocalCookie();		/* setup cookie for local CGI */
 
 #ifdef	__WATT32__
     if (w3m_debug)
@@ -734,10 +719,6 @@ MAIN(int argc, char **argv, char **envp)
     if (w3m_backend)
 	backend();
     if (!w3m_dump) {
-	initKeymap(TRUE);
-#ifdef USE_MENU
-	initMenu();
-#endif				/* MENU */
 	fmInit();
 #ifdef SIGWINCH
 	signal(SIGWINCH, resize_hook);
@@ -745,6 +726,10 @@ MAIN(int argc, char **argv, char **envp)
 	setlinescols();
 	setupscreen();
 #endif				/* not SIGWINCH */
+	initKeymap(TRUE);
+#ifdef USE_MENU
+	initMenu();
+#endif				/* MENU */
     }
 #ifdef USE_IMAGE
     else if (w3m_halfdump && displayImage)
@@ -5310,6 +5295,7 @@ reinit()
 
     if (resource == NULL) {
 	init_rc(config_filename);
+	sync_with_option();
 #ifdef USE_COOKIE
 	initCookie();
 #endif
@@ -5322,6 +5308,7 @@ reinit()
 
     if (!strcasecmp(resource, "CONFIG") || !strcasecmp(resource, "RC")) {
 	init_rc(config_filename);
+	sync_with_option();
 	return;
     }
 

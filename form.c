@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.17 2002/11/05 16:43:09 ukai Exp $ */
+/* $Id: form.c,v 1.18 2002/11/06 03:27:04 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -735,11 +735,10 @@ loadPreForm(void)
     struct pre_form *pf = NULL;
     struct pre_form_item *pi = NULL;
 
+    PreForm = NULL;
     fp = openSecretFile(pre_form_file);
-    if (fp == NULL) {
-	PreForm = NULL;
+    if (fp == NULL)
 	return;
-    }
     while (1) {
 	int type = 0;
 	char *p, *s, *arg;

@@ -1,3 +1,8 @@
+2002-10-29  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.3.2 release candidate 3
+	* version.c.in: update
+
 2002-10-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03352] w3mimgsize is not necessary.
@@ -4020,4 +4025,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.455 2002/10/28 17:09:15 ukai Exp $
+$Id: ChangeLog,v 1.456 2002/10/28 17:12:34 ukai Exp $

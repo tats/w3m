@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.40 2002/01/11 20:05:58 ukai Exp $ */
+/* $Id: file.c,v 1.41 2002/01/11 20:11:48 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1024,29 +1024,29 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	switch (f.scheme) {
 	case SCM_FTPDIR:
-	{
-	    Str ftpdir = readFTPDir(&pu);
-	    if (ftpdir && ftpdir->length > 0) {
-		FILE *src;
-		tmp = tmpfname(TMPF_SRC, ".html");
-		pushText(fileToDelete, tmp->ptr);
-		src = fopen(tmp->ptr, "w");
-		if (src) {
-		    Strfputs(ftpdir, src);
-		    fclose(src);
+	    {
+		Str ftpdir = readFTPDir(&pu);
+		if (ftpdir && ftpdir->length > 0) {
+		    FILE *src;
+		    tmp = tmpfname(TMPF_SRC, ".html");
+		    pushText(fileToDelete, tmp->ptr);
+		    src = fopen(tmp->ptr, "w");
+		    if (src) {
+			Strfputs(ftpdir, src);
+			fclose(src);
+		    }
+		    b = loadHTMLString(ftpdir);
+		    if (b) {
+			if (b->currentURL.host == NULL
+			    && b->currentURL.file == NULL)
+			    copyParsedURL(&b->currentURL, &pu);
+			b->real_scheme = pu.scheme;
+			if (src)
+			    b->sourcefile = tmp->ptr;
+		    }
+		    return b;
 		}
-		b = loadHTMLString(ftpdir);
-		if (b) {
-		    if (b->currentURL.host == NULL
-			&& b->currentURL.file == NULL)
-			copyParsedURL(&b->currentURL, &pu);
-		    b->real_scheme = pu.scheme;
-		    if (src)
-			b->sourcefile = tmp->ptr;
-		}
-		return b;
 	    }
-	}
 	    break;
 	case SCM_LOCAL:
 	    {

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.12 2003/07/08 17:29:56 ukai Exp $ */
+/* $Id: fb.c,v 1.13 2003/07/08 17:30:37 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -380,8 +380,8 @@ fb_clear(int x, int y, int w, int h, int r, int g, int b)
 
     offset_fb = fscinfo.line_length * y + pixel_size * x;
     work = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	   ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	   ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
+	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
     for (i = 0; i < h; i++) {
 	for (j = 0; j < w; j++)
 	    memcpy(buf + offset_fb + pixel_size * j, &work, pixel_size);

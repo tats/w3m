@@ -25,7 +25,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 	$CGI = "file:///\$LIB/multipart.cgi?file=" . &html_quote($file);
 }
 
-open(F, $file);
+open(F, "< $file");
 $end = 0;
 $mbody = '';
 if (defined($boundary)) {
@@ -258,7 +258,7 @@ sub load_mime_type {
 	local($file) = @_;
 	local(%m, $a, @b, $_);
 
-	open(M, $file) || return ();
+	open(M, "< $file") || return ();
 	while(<M>) {
 		/^#/ && next;
 		chop;

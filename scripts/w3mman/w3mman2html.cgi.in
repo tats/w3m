@@ -31,7 +31,7 @@ Content-Type: text/html
 <h2>man -k <b>$k</b></h2>
 <ul>
 EOF
-    $keyword =~ s:([^\w./]):\\$1:g;
+    $keyword =~ s:([^-\w\200-\377.,])::g;
     open(F, "$MAN -k $keyword 2> /dev/null |");
     @line = ();
     while(<F>) {
@@ -82,8 +82,8 @@ if ($man =~ s/\((\w+)\)$//) {
   $man_section = "$man";
 }
 
-$section =~ s:([^\w./]):\\$1:g;
-$man =~ s:([^\w./]):\\$1:g;
+$section =~ s:([^-\w\200-\377.,])::g;
+$man =~ s:([^-\w\200-\377.,])::g;
 open(F, "$MAN $section $man 2> /dev/null |");
 $ok = 0;
 undef $header;

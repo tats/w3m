@@ -1,3 +1,11 @@
+2001-12-22  Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+
+	* Security hole in multipart.cgi.in, w3mman2html.cgi.in
+	* scripts/w3mhelp.cgi.in: open(F, "< $var") instead of open(F, $var)
+	* scripts/w3mhelp.cgi.in: fix eval qq{require ...};
+	* scripts/multipart/multipart.cgi.in: ditto
+	* scripts/w3mman/w3mman2html.cgi.in: validate $keyword, $section, $man
+
 2001-12-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00656]
@@ -1369,4 +1377,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.152 2001/12/21 02:11:49 ukai Exp $
+$Id: ChangeLog,v 1.153 2001/12/21 18:33:41 ukai Exp $

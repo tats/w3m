@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.117 2002/11/15 15:21:07 ukai Exp $ */
+/* $Id: file.c,v 1.118 2002/11/15 15:51:23 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6569,6 +6569,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     FILE *src = NULL;
     URLFile f;
     MySignalHandler(*prevtrap) ();
+    struct stat st;
 
     loadImage(IMG_FLAG_STOP);
     image = New(Image);
@@ -6577,7 +6578,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     image->width = -1;
     image->height = -1;
     cache = getImage(image, cur_baseURL, IMG_FLAG_AUTO);
-    if (!cur_baseURL->is_nocache && cache->loaded == IMG_FLAG_LOADED)
+    if (!cur_baseURL->is_nocache && cache->loaded & IMG_FLAG_LOADED &&
+	!stat(cache->file, &st))
 	goto image_buffer;
 
     prevtrap = signal(SIGINT, KeyAbort);
@@ -6597,24 +6599,20 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 
     cache->loaded = IMG_FLAG_LOADED;
     cache->index = 0;
-    /*
-     * getImageSize(cache);
-     */
 
   image_buffer:
+    cache->loaded |= IMG_FLAG_DONT_REMOVE;
+    if (uf->scheme != SCM_LOCAL)
+	newBuf->sourcefile = cache->file;
+
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
-    /*
-     * if (frame_source) {
-     */
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
-    newBuf->sourcefile = tmpf->ptr;
+    newBuf->mailcap_source = tmpf->ptr;
     pushText(fileToDelete, tmpf->ptr);
-    /*
-     * }
-     */
+
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
     if (src)

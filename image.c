@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.16 2002/11/09 21:55:24 ukai Exp $ */
+/* $Id: image.c,v 1.17 2002/11/15 15:51:24 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -203,7 +203,7 @@ drawImage()
 	return;
     for (j = 0; j < n_terminal_image; j++) {
 	i = &terminal_image[j];
-	if (!(i->cache->loaded == IMG_FLAG_LOADED &&
+	if (!(i->cache->loaded & IMG_FLAG_LOADED &&
 	      i->width > 0 && i->height > 0))
 	    continue;
 	if (!(Imgdisplay_rf && Imgdisplay_wf)) {
@@ -319,6 +319,7 @@ deleteImage(Buffer *buf)
     for (i = 0, a = al->anchors; i < al->nanchor; i++, a++) {
 	if (a->image && a->image->cache &&
 	    a->image->cache->loaded != IMG_FLAG_UNLOADED &&
+	    !(a->image->cache->loaded & IMG_FLAG_DONT_REMOVE) &&
 	    a->image->cache->index < 0)
 	    unlink(a->image->cache->file);
     }
@@ -360,7 +361,7 @@ showImageProgress(Buffer *buf)
     for (i = 0, l = 0, n = 0, a = al->anchors; i < al->nanchor; i++, a++) {
 	if (a->image && a->hseq >= 0) {
 	    n++;
-	    if (a->image->cache && a->image->cache->loaded == IMG_FLAG_LOADED)
+	    if (a->image->cache && a->image->cache->loaded & IMG_FLAG_LOADED)
 		l++;
 	}
     }
@@ -587,7 +588,7 @@ getImage(Image * image, ParsedURL *current, int flag)
 	if (!cache->index)
 	    cache->index = ++image_index;
     }
-    if (cache->loaded == IMG_FLAG_LOADED)
+    if (cache->loaded & IMG_FLAG_LOADED)
 	getImageSize(cache);
     return cache;
 }
@@ -600,7 +601,7 @@ getImageSize(ImageCache * cache)
 
     if (!activeImage)
 	return FALSE;
-    if (!cache || cache->loaded != IMG_FLAG_LOADED ||
+    if (!cache || !(cache->loaded & IMG_FLAG_LOADED) ||
 	(cache->width > 0 && cache->height > 0))
 	return FALSE;
     tmp = Strnew();

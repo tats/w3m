@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.77 2002/11/15 15:19:44 ukai Exp $ */
+/* $Id: fm.h,v 1.78 2002/11/15 15:51:24 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -238,6 +238,7 @@ extern int REV_LB[];
 #define IMG_FLAG_UNLOADED	0
 #define IMG_FLAG_LOADED		1
 #define IMG_FLAG_ERROR		2
+#define IMG_FLAG_DONT_REMOVE	4
 
 /* 
  * Macros.

@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.14 2002/11/08 15:54:46 ukai Exp $ */
+/* $Id: buffer.c,v 1.15 2002/11/15 15:51:23 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -97,7 +97,8 @@ discardBuffer(Buffer *buf)
 	return;
     if (buf->pagerSource)
 	ISclose(buf->pagerSource);
-    if (buf->sourcefile) {
+    if (buf->sourcefile &&
+	(!buf->real_type || strncasecmp(buf->real_type, "image/", 6))) {
 	if (buf->real_scheme != SCM_LOCAL || buf->bufferprop & BP_FRAME)
 	    unlink(buf->sourcefile);
     }

@@ -34,7 +34,7 @@ $query = $ENV{'QUERY_STRING'};
 $cmd = '';
 $cgi = 0;
 if ($query eq '') {
-  $_ = `pwd`;
+  $_ = `pwd`;	# insecure?
   chop;
   s/\r$//;
   $dir = $_;
@@ -54,7 +54,7 @@ if ($query eq '') {
   $dir = $query;
   if (($dir !~ m@^/@) &&
       ($WIN32 && $dir !~ /^[a-z]:/i)) {
-    $_ = `pwd`;
+    $_ = `pwd`;	# insecure?
     chop;
     s/\r$//;
     $dir = "$_/$dir";

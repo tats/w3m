@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.167 2002/12/11 15:07:53 ukai Exp $ */
+/* $Id: main.c,v 1.168 2002/12/12 23:55:30 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1265,6 +1265,7 @@ tmpClearBuffer(Buffer *buf)
 
 static Str currentURL(void);
 
+#ifdef USE_BUFINFO
 void
 saveBufferInfo()
 {
@@ -1278,6 +1279,7 @@ saveBufferInfo()
     fprintf(fp, "%s\n", currentURL()->ptr);
     fclose(fp);
 }
+#endif
 
 static void
 pushBuffer(Buffer *buf)

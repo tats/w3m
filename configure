@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.89 2002/11/24 16:02:22 ukai Exp $
+# $Id: configure,v 1.90 2002/12/12 23:55:30 ukai Exp $
 #	Configuration.
 #
 
@@ -875,7 +875,7 @@ def_param use_history y
 def_param use_bg_color y
 def_param format_nice n
 def_param id_ext y
-def_param use_bufinfo y
+def_param use_bufinfo n
 def_param use_egd y
 def_param enable_remove_trailingspaces n
 def_param menu_thin_frame n

@@ -37,7 +37,7 @@
 /*
  * Save Current-buffer Information
  */
-#define BUFINFO
+#undef BUFINFO
 
 /*
  * Support EGD (Entropy Gathering Daemon)

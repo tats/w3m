@@ -1,3 +1,8 @@
+2002-12-03  AIDA Shinra <aida-s@jcom.home.ne.jp>
+
+	* [w3m-dev 03504] coredump when ssl error
+	* file.c (loadGeneralFile): term_raw, SIGINT
+
 2002-12-03  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* remove ununsed variables
@@ -5293,4 +5298,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.573 2002/12/02 17:38:55 ukai Exp $
+$Id: ChangeLog,v 1.574 2002/12/02 17:48:56 ukai Exp $

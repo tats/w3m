@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.137 2002/12/02 17:39:09 ukai Exp $ */
+/* $Id: file.c,v 1.138 2002/12/02 17:48:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1585,6 +1585,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 
     if (status == HTST_MISSING) {
+	if (fmInitialized)
+	    term_raw();
+	if (prevtrap)
+	    signal(SIGINT, prevtrap);
 	UFclose(&f);
 	return NULL;
     }

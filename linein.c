@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.23 2002/06/01 16:31:55 ukai Exp $ */
+/* $Id: linein.c,v 1.24 2002/11/08 16:10:01 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -35,7 +35,7 @@ static int NCFileOffset;
 static void insertself(char c),
 _mvR(void), _mvL(void), _mvRw(void), _mvLw(void), delC(void), insC(void),
 _mvB(void), _mvE(void), _enter(void), _quo(void), _bs(void), _bsw(void),
-killn(void), killb(void), _inbrk(void), _esc(void),
+killn(void), killb(void), _inbrk(void), _esc(void), _editor(void),
 _prev(void), _next(void), _compl(void), _tcompl(void),
 _dcompl(void), _rdcompl(void), _rcompl(void);
 #ifdef __EMX__
@@ -54,7 +54,7 @@ void (*InputKeymap[32]) () = {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g     */
     _compl, _mvB,   _mvL,   _inbrk, delC,   _mvE,   _mvR,   _inbrk,
 /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o     */
-    _bs,    iself,  _enter, killn,  iself,  _enter, _next,  iself,
+    _bs,    iself,  _enter, killn,  iself,  _enter, _next,  _editor,
 /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w     */
     _prev,  _quo,   _bsw,   iself,  _mvLw,  killb,  _quo,   _bsw,
 /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_     */
@@ -1124,4 +1124,29 @@ terminated(unsigned char c)
     }
 
     return 0;
+}
+
+static void
+_editor(void)
+{
+    FormItemList fi;
+    char *p;
+
+    if (is_passwd)
+	return;
+
+    fi.readonly = FALSE;
+    fi.value = Strdup(strBuf);
+    Strcat_char(fi.value, '\n');
+
+    input_textarea(&fi);
+
+    strBuf = Strnew();
+    for (p = fi.value->ptr; *p; p++) {
+	if (*p == '\r' || *p == '\n')
+	    continue;
+	Strcat_char(strBuf, *p);
+    }
+    CLen = CPos = setStrType(strBuf, strProp);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }

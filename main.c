@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.31 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: main.c,v 1.32 2001/12/04 16:24:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1996,8 +1996,8 @@ goLine(void)
 {
     if (prec_num)
 	_goLine("^");
-    _goLine(inputStr("Goto line: ", ""));
-    prec_num = 0;
+    else
+	_goLine(inputStr("Goto line: ", ""));
 }
 
 void

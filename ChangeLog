@@ -1,3 +1,8 @@
+2001-12-05  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02615]
+	* main.c (goLine): _goLine() called twice when prec_num was set
+
 2001-12-05  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02614]

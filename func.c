@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.11 2002/11/21 16:31:36 ukai Exp $ */
+/* $Id: func.c,v 1.12 2002/11/21 16:32:29 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -356,7 +356,7 @@ initMouseMenu(void)
 		mouse_menu = Strnew_charp(s)->ptr;
 	    continue;
 	}
-	if (strcmp(s, "button")) 
+	if (strcmp(s, "button"))
 	    continue;		/* error */
 	s = getWord(&p);
 	b = atoi(s);

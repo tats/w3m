@@ -20,7 +20,7 @@ to
 #define USE_DICT
 
 and recompile w3me (i.e. type "make install").
-Note that w3m/0.3+cvs-1.358 or later, USE_DICT is defined by default.
+Note that w3m/0.3+cvs-1.373 or later, USE_DICT is defined by default.
 
 Then find or install a CGI program which takes a word as a query
 string and prints a response.

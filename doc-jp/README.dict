@@ -20,7 +20,7 @@ Tushar Samant (scribble at pobox.com)が修正をくわえました。
 #define USE_DICT
 
 に変更し，w3m をコンパイルしなおしてください．
-w3m/0.3+cvs-1.358以降は、defaultでUSE_DICTがdefineされます。
+w3m/0.3+cvs-1.373以降は、defaultでUSE_DICTがdefineされます。
 
 それから，文字列をうけとってその結果をかえすCGIプログラムを
 インストールします。

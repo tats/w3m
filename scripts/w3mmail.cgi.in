@@ -1,0 +1,287 @@
+#!@PERL@
+
+$rcsid = q$Id: w3mmail.cgi.in,v 1.1 2002/01/15 05:36:24 ukai Exp $;
+($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
+($prog=$0) =~ s/.*\///;
+
+$query = $ENV{'QUERY_STRING'};
+$url = $query;
+$SENDMAIL = '/usr/lib/sendmail';
+$SENDMAIL = '/usr/sbin/sendmail' if -x '/usr/sbin/sendmail';
+
+$qurl = &html_quote($url);
+
+if ($query =~ s/^\w+://) {
+    $to = $query;
+    $opt = '';
+    if ($to =~ /^([^?]*)\?(.*)$/) {
+	$to = $1;
+	$opt = $2;
+    }
+    %opt = &parse_opt($opt);
+
+    @to = ($to);
+    push(@to, $opt{'to'}) if ($opt{'to'});
+    $opt{'to'} = join(',', @to);
+    $body = $opt{'body'};
+    delete $opt{'body'};
+
+    print "200 HTTP/1.0 OK\r\n";
+    print "Content-Type: text/html\r\n";
+    print "w3m-control: END\r\n";
+    print "w3m-control: PREV_LINK\r\n";
+    print "\r\n";
+    print "<html><head><title>W3M Mailer: $qurl</title></head>\n";
+    print "<body><h1>W3M Mailer: $qurl</h1>\n";
+    print "<form action='$0' method='POST'>\n";
+    print "<input type='hidden' name='action' value='preview'>\n";
+    print "<table border='1'>\n";
+    if ($opt{'from'}) {
+	print "<tr><th>From:</th><td>" . &html_quote($opt{'from'}) 
+	    . "</td></tr>\n";
+	delete $opt{'from'};
+    }
+    foreach $h ('to', 'cc', 'subject') {
+	print "<tr><th>\u$h:</th><td>";
+	if ($opt{$h}) {
+	    print &html_quote($opt{$h});
+	    print "<input type='hidden' name='$h' value='" 
+		. &html_quote($opt{$h}) . "'>";
+	} else {
+	    print "<input type='text' name='$h' value=''>";
+	}
+        print "</td></tr>\n";
+	delete $opt{$h};
+    }
+    foreach $h (keys %opt) {
+	$h = &html_quote($h);
+	$v = &html_quote($opt{$h});
+	print "<tr><th>$h</th><td>$v<input type='hidden' name='$h' value='$v'></td></tr>\n";
+    }
+    print "<tr><td colspan='2'><textarea name='body'>";
+    if ($body) {
+	print &html_quote($body);
+    }
+    print "</input></td></tr>\n";
+    print "<tr><td><input type='submit' value='submit'></td></tr>\n";
+    print "</table>\n";
+    print "</form>\n";
+    print "</body></html>\n";
+    exit(0);
+} else {
+    print "200 HTTP/1.0 OK\r\n";
+    sysread(STDIN, $req, $ENV{'CONTENT_LENGTH'});
+    %opt = &parse_opt($req);
+    $body = &html_quote($opt{'body'});
+    delete $opt{'body'};
+    $act = $opt{'action'};
+    delete $opt{'action'};
+    &lang_setup;
+
+    if ($act eq "preview") {
+	print "Content-Type: text/html\r\n";
+	print "w3m-control: NEXT_LINK\r\n";
+	print "\r\n";
+	print "<html><head><title>W3M Mailer</title></head>\n";
+	print "<body>\n";
+	print "<h1>W3M Mailer: preview</h1>\n";
+	print "<form action='$0' method='POST'>\n";
+	print "<input type='hidden' name='action' value='send'>\n";
+	print "<hr>\n";
+	print "<pre>\n";
+	foreach $h (keys %opt) {
+	    $v = &html_quote(&lang_header($opt{$h}));
+	    if ($v) {
+		print "\u$h: $v\n";
+	    }
+	}
+	($cs,$cte,$body) = &lang_body($body);
+	print "Mime-Version: 1.0\n";
+	print "Content-Type: text/plain; charset=$cs\n";
+	print "Content-Transfer-Encoding: $cte\n";
+	print "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
+	print "\n";
+	print $body;
+	print "</pre>\n";
+	print "<hr>\n";
+	foreach $h (keys %opt) {
+	    $v = &html_quote($opt{$h});
+	    if ($v) {
+		print "<input type='hidden' name='$h' value='$v'>\n";
+	    }
+	}
+	print "<input type='hidden' name='body' value='$body'>\n";
+	print "<input type='submit' value='OK'>\n";
+	# print "<pre>\n"; foreach (keys %ENV) { print "$_=$ENV{$_}\n"; } print "</pre>\n";
+	print "</body></html>\n";
+    } else {
+	unless (open(MAIL, "|$SENDMAIL -t")) {
+	    print "200 HTTP/1.0 OK\r\n";
+	    print "Content-Type: text/html\r\n";
+	    print "\r\n";
+	    print "<html><head><title>W3M Mailer</title></head>\n";
+	    print "<body><h1>W3M Mailer: open sendmail failed</h1>\n";
+	    print "<p>$@</p>\n";
+	    print "</body></html>\n";
+	    exit(0);
+	}
+	foreach $h (keys %opt) {
+	    $v = &lang_header($opt{$h});
+	    if ($v) {
+		print MAIL "\u$h: $v\n";
+	    }
+	}
+	($cs,$cte,$body) = &lang_body($body);
+	print MAIL "Mime-Version: 1.0\n";
+	print MAIL "Content-Type: text/plain; charset=$cs\n";
+	print MAIL "Content-Transfer-Encoding: $cte\n";
+	print MAIL "User-Agent: $ENV{'SERVER_SOFTWARE'} $prog/$id\n";
+	print MAIL "\n";
+	print MAIL $body;
+	if (close(MAIL)) {
+	    print "w3m-control: BACK\r\n";
+	    print "w3m-control: BACK\r\n";
+	    print "w3m-control: BACK\r\n";
+	    print "\r\n";
+	} else {
+	    print "200 HTTP/1.0 OK\r\n";
+	    print "Content-Type: text/html\r\n";
+	    print "\r\n";
+	    print "<html><head><title>W3M Mailer</title></head>\n";
+	    print "<body><h1>W3M Mailer: close sendmail failed</h1>\n";
+	    print "<p>$@</p>\n";
+	    print "</body></html>\n";
+	}
+    }
+}
+
+sub lang_setup {
+    $lang = $ENV{'LANG'};
+    if ($lang =~ /^ja/i) {
+	eval { use NKF; };
+	if (! $@) {
+	    $use_NKF = 1;
+	} else {
+	    $nkf_NKF = 0;
+	}
+    }
+}
+
+sub lang_header {
+    if ($lang =~ /^ja/i) {
+	return &lang_header_ja(@_);
+    } else {
+	return &lang_header_default(@_);
+    }
+}
+
+sub lang_body {
+    if ($lang =~ /^ja/i) {
+	return &lang_body_ja(@_);
+    } else {
+	return &lang_body_default(@_);
+    }
+}
+
+sub lang_header_default {
+    local($h) = @_;
+    if ($h =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
+	return "=iso-8859-1?Q?$h?=";
+    } else {
+	return $h;
+    }
+}
+
+sub lang_body_default { 
+    local($body) = @_;
+    print "default:$body\n";
+    if ($body =~ s/([\x80-\xFF])/sprintf("=%02x", ord($1))/ge) {
+	return ("iso-8859-1", "quoted-printable", $body);
+    } else {
+	return ("US-ASCII", "7bit", $body);
+    }
+}
+
+sub lang_header_ja {
+    local($h) = @_;
+    if ($h =~ /[\x80-\xFF]/ || $h =~ /\033[\$\(][BJ@]/) {
+	&conv_nkf("-M", $h);
+    } else {
+	return $h;
+    }
+}
+
+sub lang_body_ja {
+    local($body) = @_;
+    if ($body =~ /[\x80-\xFF]/) {
+	$body = &conv_nkf("-j", $body);
+	return ("ISO-2022-JP", "7bit", $body);
+    } elsif ($body =~ /\033[\$\(][BJ@]/) {
+	return ("ISO-2022-JP", "7bit", $body);
+    } else {
+	return ("US-ASCII", "7bit", $body);
+    }
+}
+
+sub conv_nkf {
+    local(@opt) = @_;
+    if ($use_NKF) {
+	return nkf(@opt);
+    }
+    local($body) = pop(@opt);
+    $| = 1;
+    pipe(R, W2);
+    pipe(R2, W);
+    if (! fork()) {
+	close(F);
+	close(R);
+	close(W);
+	open(STDIN, "<&R2");
+	open(STDOUT, ">&W2");
+	exec "nkf", @cmd;
+	die;
+    }
+    close(R2);
+    close(W2);
+    print W $body;
+    close(W);
+    $body = '';
+    while(<R>) {
+	$body .= $_;
+    }
+    close(R);
+    return $body;
+};
+
+
+
+sub parse_opt {
+  local($opt) = @_;
+  local(%opt) = ();
+  if ($opt) {	
+      foreach $o (split('&', $opt)) {
+	  if ($o =~ /(\w+)=(.*)/) {
+	      $opt{"\L$1"} = &url_unquote($2);
+	  }
+      }
+  }
+  return %opt;
+}
+
+sub html_quote {
+  local($_) = @_;
+  local(%QUOTE) = (
+    '<', '&lt;',
+    '>', '&gt;',
+    '&', '&amp;',
+    '"', '&quot;',
+  );
+  s/[<>&"]/$QUOTE{$&}/g;
+  return $_;
+}
+
+sub url_unquote {
+    local($_) = @_;
+    s/%([0-9A-Fa-f][0-9A-Fa-f])/chr(hex($1))/ge;
+    return $_;
+}

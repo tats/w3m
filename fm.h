@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.47 2002/02/03 06:12:41 ukai Exp $ */
+/* $Id: fm.h,v 1.48 2002/02/03 06:38:49 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -325,6 +325,8 @@ typedef struct _imageCache {
     char *url;
     ParsedURL *current;
     char *file;
+    char *touch;
+    pid_t pid;
     char loaded;
     int index;
     short width;

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.2 2002/01/31 18:28:24 ukai Exp $ */
+/* $Id: image.c,v 1.3 2002/02/03 06:38:49 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -57,8 +57,12 @@ getCharSize()
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;
-    fscanf(f, "%d %d", &w, &h);
+    while (fscanf(f, "%d %d", &w, &h) < 0) {
+	if (feof(f))
+	    break;
+    }
     pclose(f);
+
     if (!(w > 0 && h > 0))
 	return FALSE;
     if (!set_pixel_per_char)
@@ -212,14 +216,9 @@ drawImage()
 	fputs(i->cache->file, Imgdisplay_wf);
 	fputs("\n", Imgdisplay_wf);
 	fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
-      again:
-	if (fflush(Imgdisplay_wf) != 0) {
-	    switch (errno) {
-	    case EINTR:
-		goto again;
-	    default:
+	while (fflush(Imgdisplay_wf) != 0) {
+	    if (ferror(Imgdisplay_wf))
 		goto err;
-	    }
 	}
 	if (!fgetc(Imgdisplay_rf))
 	    goto err;
@@ -228,14 +227,9 @@ drawImage()
 	return;
     fputs("3;\n", Imgdisplay_wf);	/* XSync() */
     fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
-  again2:
-    if (fflush(Imgdisplay_wf) != 0) {
-	switch (errno) {
-	case EINTR:
-	    goto again2;
-	default:
+    while (fflush(Imgdisplay_wf) != 0) {
+	if (ferror(Imgdisplay_wf))
 	    goto err;
-	}
     }
     if (!fgetc(Imgdisplay_rf))
 	goto err;
@@ -269,17 +263,22 @@ clearImage()
 
 /* load image */
 
+#ifndef MAX_LOAD_IMAGE
+#define MAX_LOAD_IMAGE 4
+#endif
+static int max_load_image = MAX_LOAD_IMAGE;
 static Hash_sv *image_hash = NULL;
 static Hash_sv *image_file = NULL;
 static GeneralList *image_list = NULL;
-static ImageCache *image_cache = NULL;
-static pid_t image_pid = 0;
+static ImageCache **image_cache = NULL;
+static char *image_lock = NULL;
 static int need_load_image = FALSE;
 
 static MySignalHandler
 load_image_handler(SIGNAL_ARG)
 {
     need_load_image = TRUE;
+    signal(SIGUSR1, load_image_handler);
     SIGNAL_RETURN;
 }
 
@@ -287,6 +286,7 @@ static MySignalHandler
 load_image_next(SIGNAL_ARG)
 {
     need_load_image = TRUE;
+    signal(SIGUSR1, load_image_handler);
     loadImage(IMG_FLAG_NEXT);
     SIGNAL_RETURN;
 }
@@ -335,89 +335,150 @@ getAllImage(Buffer *buf)
 void
 loadImage(int flag)
 {
-    int wait_st;
+    ImageCache *cache;
+    struct stat st;
+    int wait_st, i;
 
+    if (!image_cache) {
+	image_cache = New_N(ImageCache *, max_load_image);
+	bzero(image_cache, sizeof(ImageCache *) * max_load_image);
+    }
     if (flag == IMG_FLAG_STOP) {
-	if (image_pid) {
-	    kill(image_pid, SIGKILL);
+	for (i = 0; i < max_load_image; i++) {
+	    cache = image_cache[i];
+	    if (!cache)
+		continue;
+	    if (cache->pid) {
+		kill(cache->pid, SIGKILL);
 #ifdef HAVE_WAITPID
-	    waitpid(image_pid, &wait_st, 0);
+		waitpid(cache->pid, &wait_st, 0);
 #else
-	    wait(&wait_st);
+		wait(&wait_st);
 #endif
-	    image_pid = 0;
+		cache->pid = 0;
+	    }
+	    unlink(cache->touch);
+	    image_cache[i] = NULL;
 	}
-	image_cache = NULL;
 	image_list = NULL;
 	image_file = NULL;
+	if (image_lock)
+	    unlink(image_lock);
 	need_load_image = FALSE;
 	return;
     }
 
-    if (flag == IMG_FLAG_NEXT && need_load_image) {
-	struct stat st;
-	if (image_pid) {
-#ifdef HAVE_WAITPID
-	    waitpid(image_pid, &wait_st, 0);
+    if (need_load_image) {
+	int draw = FALSE;
+	for (i = 0; i < max_load_image; i++) {
+	    cache = image_cache[i];
+	    if (!cache)
+		continue;
+#ifdef HAVE_READLINK
+	    if (lstat(cache->touch, &st))
 #else
-	    wait(&wait_st);
+	    if (stat(cache->touch, &st))
 #endif
-	    image_pid = 0;
-	}
-	if (!stat(image_cache->file, &st)) {
-	    image_cache->loaded = IMG_FLAG_LOADED;
-	    if (getImageSize(image_cache)) {
-		if (Currentbuf)
-		    Currentbuf->need_reshape = TRUE;
+		continue;
+	    if (cache->pid) {
+		kill(cache->pid, SIGKILL);
+#ifdef HAVE_WAITPID
+		waitpid(cache->pid, &wait_st, 0);
+#else
+		wait(&wait_st);
+#endif
+		cache->pid = 0;
 	    }
+	    if (!stat(cache->file, &st)) {
+		cache->loaded = IMG_FLAG_LOADED;
+		if (getImageSize(cache)) {
+		    if (flag == IMG_FLAG_NEXT && Currentbuf)
+			Currentbuf->need_reshape = TRUE;
+		}
+		draw = TRUE;
+	    }
+	    else
+		cache->loaded = IMG_FLAG_ERROR;
+	    unlink(cache->touch);
+	    image_cache[i] = NULL;
 	}
-	else {
-	    image_cache->loaded = IMG_FLAG_ERROR;
-	}
-	image_cache = NULL;
-	drawImage();
+	if (flag == IMG_FLAG_NEXT && draw)
+	    drawImage();
     }
 
+    if (image_lock)
+	unlink(image_lock);
     need_load_image = FALSE;
-    if (flag == IMG_FLAG_START)
-	signal(SIGUSR1, load_image_handler);
-    else
-	signal(SIGUSR1, load_image_next);
+    signal(SIGUSR1, load_image_handler);
 
-    if (image_cache)
-	return;
-
-    image_pid = 0;
     if (!image_list)
 	return;
-    while (1) {
-	image_cache = (ImageCache *) popValue(image_list);
-	if (!image_cache) {
-	    if (Currentbuf && Currentbuf->need_reshape)
-		displayBuffer(Currentbuf, B_NORMAL);
+    for (i = 0; i < max_load_image; i++) {
+	if (image_cache[i])
+	    continue;
+	while (1) {
+	    cache = (ImageCache *) popValue(image_list);
+	    if (!cache) {
+		for (i = 0; i < max_load_image; i++) {
+		    if (image_cache[i])
+			goto load_image_end;
+		}
+		image_list = NULL;
+		image_file = NULL;
+		if (Currentbuf && Currentbuf->need_reshape)
+		    displayBuffer(Currentbuf, B_NORMAL);
+		return;
+	    }
+	    if (cache->loaded == IMG_FLAG_UNLOADED)
+		break;
+	}
+	image_cache[i] = cache;
+
+	if (!image_lock) {
+	    image_lock = tmpfname(TMPF_DFL, ".lock")->ptr;
+	    pushText(fileToDelete, image_lock);
+	}
+
+	flush_tty();
+	if ((cache->pid = fork()) == 0) {
+	    Buffer *b;
+#ifndef HAVE_READLINK
+	    FILE *f;
+#endif
+	    reset_signals();
+	    signal(SIGINT, SIG_IGN);
+	    close_tty();
+	    QuietMessage = TRUE;
+	    fmInitialized = FALSE;
+	    image_source = cache->file;
+	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
+	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
+		unlink(cache->file);
+#ifdef HAVE_READLINK
+	    symlink(cache->file, cache->touch);
+	    if (lstat(image_lock, &st)) {
+		symlink(cache->file, image_lock);
+#else
+	    f = fopen(cache->touch, "w");
+	    if (f)
+		fclose(f);
+	    if (stat(image_lock, &st)) {
+		f = fopen(image_lock, "w");
+		if (f)
+		    fclose(f);
+#endif
+		kill(getppid(), SIGUSR1);
+	    }
+	    exit(0);
+	}
+	else if (cache->pid < 0) {
+	    cache->pid = 0;
 	    return;
 	}
-	if (image_cache->loaded == IMG_FLAG_UNLOADED)
-	    break;
     }
-
-    flush_tty();
-    if ((image_pid = fork()) == 0) {
-	Buffer *b;
-
-	reset_signals();
-	signal(SIGINT, SIG_IGN);
-	close_tty();
-	QuietMessage = TRUE;
-	fmInitialized = FALSE;
-	image_source = image_cache->file;
-	b = loadGeneralFile(image_cache->url, image_cache->current, NULL, 0,
-			    NULL);
-	if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
-	    unlink(image_cache->file);
-	kill(getppid(), SIGUSR1);
-	exit(0);
-    }
+  load_image_end:
+    if (flag == IMG_FLAG_NEXT)
+	signal(SIGUSR1, load_image_next);
 }
 
 ImageCache *
@@ -451,12 +512,15 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->url = image->url;
 	cache->current = current;
 	cache->file = tmpfname(TMPF_DFL, image->ext)->ptr;
+	cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
+	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
 	cache->width = image->width;
 	cache->height = image->height;
 	putHash_sv(image_hash, key->ptr, (void *)cache);
 	pushText(fileToDelete, cache->file);
+	pushText(fileToDelete, cache->touch);
     }
     if (flag != IMG_FLAG_SKIP) {
 	if (cache->loaded == IMG_FLAG_UNLOADED) {
@@ -485,10 +549,10 @@ getImageSize(ImageCache * cache)
     int w = 0, h = 0;
 
     if (!activeImage)
-	return 0;
+	return FALSE;
     if (!cache || cache->loaded != IMG_FLAG_LOADED ||
 	(cache->width > 0 && cache->height > 0))
-	return 0;
+	return FALSE;
     tmp = Strnew();
     if (!strchr(Imgsize, '/'))
 	Strcat_m_charp(tmp, LIB_DIR, "/", NULL);
@@ -496,12 +560,15 @@ getImageSize(ImageCache * cache)
 		   " 2> /dev/null", NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
-	return 0;
-    fscanf(f, "%d %d", &w, &h);
+	return FALSE;
+    while (fscanf(f, "%d %d", &w, &h) < 0) {
+	if (feof(f))
+	    break;
+    }
     pclose(f);
 
     if (!(w > 0 && h > 0))
-	return 0;
+	return FALSE;
     w = (int)(w * image_scale / 100 + 0.5);
     if (w == 0)
 	w = 1;
@@ -524,6 +591,6 @@ getImageSize(ImageCache * cache)
 	cache->height = 1;
     tmp = Sprintf("%d;%d;%s", cache->width, cache->height, cache->url);
     putHash_sv(image_hash, tmp->ptr, (void *)cache);
-    return 1;
+    return TRUE;
 }
 #endif

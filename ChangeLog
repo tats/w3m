@@ -1,5 +1,21 @@
 2002-02-03  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02967] parallel image downloading
+	* fm.h (ImageCache): add touch, pid
+	* image.c (getCharSize): retry fscanf
+	* image.c (drawImage): retry fflush
+	* image.c (MAX_LOAD_IMAGE): added, default 4
+	* image.c (image_cache): change to ImageCache**
+	* image.c (image_lock): added
+	* image.c (load_image_handler): signal SIGUSR1
+	* image.c (load_image_next): signal SIGUSR1
+	* image.c (loadImage): parallel image downloading
+	* image.c (getImage): initialize touch, pid
+	* image.c (getImageSize): return value is TRUE or FALSE
+			retry fscanf
+
+2002-02-03  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02970] multiple -lnsl -lsocket
 	* configure: merge bsdlib and extlib detection, use extlib only
 		add ldflags to extlib
@@ -2729,4 +2745,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.293 2002/02/03 06:23:37 ukai Exp $
+$Id: ChangeLog,v 1.294 2002/02/03 06:38:49 ukai Exp $

@@ -1,5 +1,6 @@
 w3m 0.4?
 
+* func: MARK_WORD
 * rc: imgsize: obsoleted
 * w3m-img for framebuffer merged
 

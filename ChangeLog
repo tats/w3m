@@ -1,3 +1,24 @@
+2002-09-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03292] Re: load file at cursor
+	* anchor.c (reAnchorPos): added
+		(reAnchorWord): added
+		(reAnchorAny): rewrite to use reAnchorPos()
+	* funcname.tab (MARK_WORD): added
+	* keybind.c (;) MARK_WORD
+	* main.c (getCurWord): added
+		(chkWORD): added
+		(is_wordchar): added
+		(getCurWord): added
+		(GetWord): rewrite to use getCurWord()
+	* proto.h (chkWORD): added
+		(reAnchorWord): added
+	* doc/README.func: add MARK_WORD
+	* doc/keymap.default: add MARK_WORD
+	* doc-jp/README.func: add MARK_WORD
+	* doc-jp/keymap.default: add MARK_WORD
+	* NEWS: add MARK_WORD
+
 2002-08-28  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03291] parsetagx.c:toNumber()
@@ -3721,4 +3742,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.418 2002/08/27 16:39:40 ukai Exp $
+$Id: ChangeLog,v 1.419 2002/09/05 15:43:21 ukai Exp $

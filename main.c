@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.110 2002/07/17 16:07:37 ukai Exp $ */
+/* $Id: main.c,v 1.111 2002/09/05 15:43:21 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -74,6 +74,8 @@ static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 int show_params_p = 0;
 void show_params(FILE * fp);
+
+static char *getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars);
 
 static int display_ok = FALSE;
 static void dump_source(Buffer *);
@@ -4381,6 +4383,18 @@ chkURL(void)
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
+void
+chkWORD(void)
+{
+    char *p;
+    int spos, epos;
+    p = getCurWord(Currentbuf, &spos, &epos, ":\"\'`<>");
+    if (p == NULL)
+	return;
+    reAnchorWord(Currentbuf, Currentbuf->currentLine, spos, epos);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
 #ifdef USE_NNTP
 /* mark Message-ID-like patterns as NEWS anchors */
 void
@@ -4802,28 +4816,52 @@ wrapToggle(void)
     }
 }
 
+static int
+is_wordchar(int c, const char *badchars)
+{
+    if (badchars)
+	return !(IS_SPACE(c) || strchr(badchars, c));
+    else
+	return IS_ALPHA(c);
+}
+
+static char *
+getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
+{
+    char *p;
+    Line *l = buf->currentLine;
+    int b, e;
+
+    *spos = 0;
+    *epos = 0;
+    if (l == NULL)
+	return NULL;
+    p = l->lineBuf;
+    e = buf->pos;
+    while (e > 0 && !is_wordchar(p[e], badchars))
+	e--;
+    if (!is_wordchar(p[e], badchars))
+	return NULL;
+    b = e;
+    while (b > 0 && is_wordchar(p[b-1], badchars))
+	b--;
+    while (e < l->len && is_wordchar(p[e], badchars))
+	e++;
+    *spos = b;
+    *epos = e;
+    return &p[b];
+}
+
 static char *
 GetWord(Buffer *buf)
 {
-    Line *l = buf->currentLine;
-    char *lb;
     int b, e;
+    char *p;
 
-    if (l == NULL)
-	return NULL;
-    lb = l->lineBuf;
-
-    e = buf->pos;
-    while (e > 0 && !IS_ALPHA(lb[e]))
-	e--;
-    if (!IS_ALPHA(lb[e]))
-	return NULL;
-    b = e;
-    while (b > 0 && IS_ALPHA(lb[b - 1]))
-	b--;
-    while (e < l->len && IS_ALPHA(lb[e]))
-	e++;
-    return Strnew_charp_n(&lb[b], e - b)->ptr;
+    if ((p = getCurWord(buf, &b, &e, 0)) != NULL) {
+	return Strnew_charp_n(p, e - b)->ptr;
+    }
+    return NULL;
 }
 
 #ifdef USE_DICT

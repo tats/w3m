@@ -40,6 +40,7 @@ keymap	,	LEFT
 keymap	.	RIGHT
 keymap	/	SEARCH
 keymap	:	MARK_URL
+keymap  ;	MARK_WORD
 keymap	<	SHIFT_LEFT
 keymap	=	INFO
 keymap	>	SHIFT_RIGHT

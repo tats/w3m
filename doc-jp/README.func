@@ -45,6 +45,7 @@ MAIN_MENU	メニューを立ち上げます
 MARK		マークを設定／解除します
 MARK_MID	Message-ID風の文字列を，news:のリンクにします
 MARK_URL	URL風の文字列をリンクにします
+MARK_WORD	カーソルのある語をリンクにします
 MENU		メニューを立ち上げます
 MOUSE_TOGGLE    マウスの有効/無効をトグルする
 MOVE_DOWN      カーソルを下に移動します(改ページ時には半ページスクロール)

@@ -1,4 +1,4 @@
-/* $Id: keybind.c,v 1.6 2002/01/23 17:19:47 ukai Exp $ */
+/* $Id: keybind.c,v 1.7 2002/09/05 15:43:21 ukai Exp $ */
 #include "funcname2.h"
 
 char GlobalKeymap[128] = {
@@ -21,7 +21,7 @@ char GlobalKeymap[128] = {
     /*  0       1       2       3       4       5       6       7        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  8       9       :       ;       <       =       >       ?        */
-    nulcmd, nulcmd, chkURL, nulcmd, shiftl, pginfo, shiftr, srchbak,
+    nulcmd, nulcmd, chkURL, chkWORD, shiftl, pginfo, shiftr, srchbak,
     /*  @       A       B       C       D       E       F       G        */
     readsh, nulcmd, backBf, nulcmd, nulcmd, editBf, rFrame, goLineL,
     /*  H       I       J       K       L       M       N       O        */

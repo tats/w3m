@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.10 2002/03/29 16:39:37 ukai Exp $ */
+/* $Id: anchor.c,v 1.11 2002/09/05 15:43:21 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -277,6 +277,36 @@ reseq_anchor(Buffer *buf)
     reseq_anchor0(buf->formitem, seqmap);
 }
 
+static char *
+reAnchorPos(Buffer *buf, Line *l, char *p1, char *p2,
+	    Anchor *(*anchorproc) (Buffer *, char *, char *, int, int))
+{
+    Anchor *a;
+    int spos, epos;
+    int i;
+
+    spos = p1 - l->lineBuf;
+    epos = p2 - l->lineBuf;
+    for (i = spos; i < epos; i++) {
+	if (l->propBuf[i] & (PE_ANCHOR | PE_FORM))
+	    return p2;
+    }
+    a = anchorproc(buf, p1, p2, l->linenumber, p1 - l->lineBuf);
+    a->end.line = l->linenumber;
+    a->end.pos = epos;
+    a->hseq = -2;
+    for (i = a->start.pos; i < a->end.pos; i++)
+	l->propBuf[i] |= PE_ANCHOR;
+    return p2;
+}
+
+void
+reAnchorWord(Buffer *buf, Line *l, int spos, int epos)
+{
+    reAnchorPos(buf, l, &l->lineBuf[spos], &l->lineBuf[epos], _put_anchor_all);
+    reseq_anchor(buf);
+}
+
 /* search regexp and register them as anchors */
 /* returns error message if any               */
 static char *
@@ -285,9 +315,6 @@ reAnchorAny(Buffer *buf, char *re,
 {
     Line *l;
     char *p, *p1, *p2;
-    Anchor *a;
-    int i;
-    int spos, epos;
 
     if (re == NULL || *re == '\0') {
 	return NULL;
@@ -302,20 +329,7 @@ reAnchorAny(Buffer *buf, char *re,
 	for (;;) {
 	    if (regexMatch(p, &l->lineBuf[l->len] - p, p == l->lineBuf) == 1) {
 		matchedPosition(&p1, &p2);
-		spos = p1 - l->lineBuf;
-		epos = p2 - l->lineBuf;
-		for (i = spos; i < epos; i++) {
-		    if (l->propBuf[i] & (PE_ANCHOR | PE_FORM))
-			goto _next;
-		}
-		a = anchorproc(buf, p1, p2, l->linenumber, p1 - l->lineBuf);
-		a->end.line = l->linenumber;
-		a->end.pos = epos;
-		a->hseq = -2;
-		for (i = a->start.pos; i < a->end.pos; i++)
-		    l->propBuf[i] |= PE_ANCHOR;
-	      _next:
-		p = p2;
+		p = reAnchorPos(buf, l, p1, p2, anchorproc);
 	    }
 	    else
 		break;

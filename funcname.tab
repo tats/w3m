@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.10 2002/06/01 17:09:05 ukai Exp $
+# $Id: funcname.tab,v 1.11 2002/09/05 15:43:21 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -50,6 +50,7 @@ MAIN_MENU	mainMn
 MARK		_mark
 MARK_MID	chkNMID
 MARK_URL	chkURL
+MARK_WORD	chkWORD
 MENU		mainMn
 MOUSE		mouse
 MOUSE_TOGGLE	msToggle

@@ -45,6 +45,7 @@ MAIN_MENU	Popup menu
 MARK		Set/unset mark
 MARK_MID	Mark Message-ID-like strings as anchors
 MARK_URL	Mark URL-like strings as anchors
+MARK_WORD	Mark current word as anchor
 MENU		Popup menu
 MOUSE_TOGGLE   Toggle activity of mouse
 MOVE_DOWN      Move cursor down (a half screen scroll at the end of screen)

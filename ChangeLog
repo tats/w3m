@@ -1,5 +1,11 @@
 2001-12-07  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02633]
+	* url.c (parseURL2): filename should be quoted here, because
+	                   it will be unquote() soon
+
+2001-12-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* rename install.sh to install-sh
 	* XMakefile: s/install.sh/install-sh/
 

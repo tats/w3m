@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.18 2001/12/03 18:15:12 ukai Exp $ */
+/* $Id: url.c,v 1.19 2001/12/06 15:44:41 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1015,7 +1015,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 		char abs[_MAX_PATH];
 
 		_abspath(abs, pu->file, _MAX_PATH);
-		pu->file = cleanupName(abs);
+		pu->file = file_quote(cleanupName(abs));
 	    }
 	}
 #else
@@ -1029,7 +1029,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    if (Strlastchar(tmp) != '/')
 		Strcat_char(tmp, '/');
 	    Strcat_charp(tmp, pu->file);
-	    pu->file = cleanupName(tmp->ptr);
+	    pu->file = file_quote(cleanupName(tmp->ptr));
 	}
 #endif
 	else if (pu->scheme == SCM_HTTP

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.52 2004/07/15 16:32:38 ukai Exp $ */
+/* $Id: terms.c,v 1.53 2005/01/18 16:38:01 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -596,11 +596,11 @@ reset_tty(void)
 MySignalHandler
 reset_exit(SIGNAL_ARG)
 {
-    reset_tty();
 #ifdef USE_MOUSE
     if (mouseActive)
 	mouse_end();
 #endif				/* USE_MOUSE */
+    reset_tty();
     w3m_exit(0);
     SIGNAL_RETURN;
 }

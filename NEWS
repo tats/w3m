@@ -1,3 +1,8 @@
+w3m 0.3?
+
+* w3m-img merged: w3m now can display images! see doc/README.img
+
+----------------------------------------------------------------
 w3m 0.2.5 - 2002-01-31
 
 * RFC2617: HTTP Digest authentication

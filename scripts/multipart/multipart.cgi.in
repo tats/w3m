@@ -155,11 +155,14 @@ while(! $end) {
 	}
 	$type = $header{"content-type"};
 	$dispos = $header{"content-disposition"};
-       if ((! $type || $type =~ /^text\/plain/i) &&
-        (! $dispos || $dispos =~ /^inline/i)) {
-		$plain = 1;
-	} else {
-		$plain = 0;
+	$plain = 0;
+	$image = 0;
+	if (! $dispos || $dispos =~ /^inline/i) {
+		if (! $type || $type =~ /^text\/plain/i) {
+			$plain = 1;
+		} elsif ($type =~ /^image\//i) {
+			$image = 1;
+		}
 	}
 	$body = '';
 	while(<F>) {
@@ -193,8 +196,13 @@ while(! $end) {
 		print "<input type=hidden name=file value=\"$qfile\">\n";
 		print "<input type=hidden name=boundary value=\"$qboundary\">\n";
 		print "<input type=hidden name=count value=\"$count\">\n";
-		print "<input type=submit name=submit value=\"",
-			&html_quote($name), "\">\n";
+		if ($image) {
+			print "<input type=image name=submit src=\"$CGI?file=$qfile&amp;boundary=$qboundary&amp;count=$count\" alt=\"",
+				&html_quote($name), "\">\n";
+		} else {
+			print "<input type=submit name=submit value=\"",
+				&html_quote($name), "\">\n";
+		}
 		print "</form>\n"
 	}
 	if ($plain) {

@@ -1,0 +1,253 @@
+
+w3m でインライン画像を表示
+                                                              2002/01/31
+                                                              坂本 浩則
+
+はじめに
+
+  w3m でインライン画像を表示する拡張です。以下に置いてあります。
+
+    http://www2u.biglobe.ne.jp/~hsaka/w3m/index-ja.html#img
+                                          patch/w3m-0.2.4-img-2.2.patch.gz
+                                          patch/README.img-ja
+
+機能
+
+  ・X11 上の端末(xterm,kterm,rxvt,...)上に画像(GIF,PNG,JPEG 等)を表示します。
+  ・img タグで指定されたインライン画像を表示できます。
+    width,height 属性に応じて必要な領域を確保してレンダリングします。
+    align 属性に対応しています。
+  ・Content-type: image/* な画像ファイルを直接表示できます。
+  ・map タグに対応しています。
+    area タグの shape, coords 属性を認識し、メニュー表示から選択できます。
+  ・img タグの ismap 属性に対応しています。
+    座標値を ?<x>,<y> として URL に追加して送ります。
+  ・input タグの type=image 属性で指定されたインライン画像を表示できます。
+    座標値を <name>.x=<x>&<name>.y=<y> として送ります。
+  ・非同期に画像を読み込みます。
+  ・画像をキャッシュできます。
+
+キー操作
+
+  DISPLAY_IMAGE
+      画像の読込/表示を再開します。
+  STOP_IMAGE
+      そのバッファの画像の読込/表示を停止します。
+  SET_OPTION  display_image=toggle
+      画像の読込/表示を切替えます。
+
+  デフォルトのキーマップはありませんので、~/.w3m/keymap に
+      keymap  X    DISPLAY_IMAGE
+      keymap  C-c  STOP_IMAGE
+      keymap  t    SET_OPTION  display_image=toggle
+  の様に記述して使用してください。
+
+コマンドラインオプション
+
+  -ppc <pixel>
+      一文字あたりの幅(pixel 値)を指定します。デフォルトは自動設定。
+      正しく設定されない場合は端末の font の大きさに必ず合わせてください。
+  -ppl <pixel>
+      一行あたりの幅(pixel 値)を指定します。デフォルトは自動設定。
+      正しく設定されない場合は端末の font の大きさに必ず合わせてください。
+
+オプションパネル
+
+  pixel_per_char
+      一文字あたりの幅(pixel 値)を指定します。デフォルトは自動設定。
+      正しく設定されない場合は端末の font の大きさに必ず合わせてください。
+  pixel_per_line
+      一行あたりの幅(pixel 値)を指定します。デフォルトは自動設定。
+      正しく設定されない場合は端末の font の大きさに必ず合わせてください。
+  display_image
+      インライン画像を表示します。デフォルトは ON。
+  auto_image
+      インライン画像を自動で読み込みます。デフォルトは ON。
+      OFF の場合は、コマンド DISPLAY_IMAGE で読み込みを開始します。
+  ext_image_viewer
+      コマンド VIEW_IMAGE('I')の場合や Content-type: image/* である
+      画像ファイルを外部ビューワで表示します。デフォルトは ON。
+      OFF の場合は、インライン画像として直接表示します。
+  image_scale
+      画像のスケールを指定します。デフォルトは 100(%)。
+      小さい font と共に使う場合には値を小さくすると有用。
+  imgdisplay
+      インライン画像を表示するためのコマンド。デフォルトは w3mimgdisplay。
+      下記の "w3mimgdisplay の設定" を参考にしてオプション設定してください。
+  imgsize
+      インライン画像の大きさを得るためのコマンド。デフォルトは w3mimgsize。
+
+必要なもの
+
+  * w3m-0.2.4.tar.gz
+    http://w3m.sourceforge.net/
+    http://sourceforge.net/projects/w3m/
+    http://prdownloads.sourceforge.net/w3m/
+  * Imlib-1.9.8 (1.9.10 以上推奨)
+    libungif-4.1.0b1 推奨
+
+インストール
+
+  gunzip -c DIST/w3m-0.2.4.tar.gz | tar -xvf -
+  cd w3m-0.2.4
+  gunzip -c DIST/w3m-0.2.4-img-2.2.patch.gz | patch -p1
+  configure
+    # Inline image support (you need Imlib library)
+    # と聞かれますので y と答えてください。
+    # menu は有効にしてください。
+  make
+    # w3mimgdisplay, w3mimgsize を make する時に Imlib が必要です。
+  make install
+    # w3mimgdisplay, w3mimgsize は必ず $LIB(PREFIX/lib/w3m) へ
+    # install してください。
+
+w3mimgdisplay の設定
+
+  w3mimgdisplay は以下のオプションを受け付けますので端末に合わせて
+  オプション設定パネルで(または -o オプションで)設定してください。
+
+  -x <offset_x>
+      端末上に画像を表示する X 方向の原点。デフォルトは 2 ですが、
+      xterm や kterm ではスクロールバーの幅を計算して加えようとします。
+      (正しく出来ないかもしれません。)
+      Eterm では 5 にすべきかもしれません。
+  -y <offset_y>
+      端末上に画像を表示する Y 方向の原点。デフォルトは 2。
+      Eterm では 5 にすべきかもしれません。
+  -bg <background>
+      端末の背景色。デフォルトは自動設定。
+      #RRGGBB で指定する場合は # をエスケープして設定してください。
+
+  例)
+    w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
+  
+更新記録
+
+2002/01/31	w3m-0.2.4-img-2.2
+ * w3m-0.2.4+cvs-1.278 ベース。
+
+2002/01/29	w3m-0.2.4-img-2.1
+ * w3m-0.2.4+cvs-1.268 ベース。
+
+2002/01/28	w3m-0.2.4-img-2.0
+ * w3m-0.2.4+cvs-1.265 ベース。
+ * pixel_per_char, pixel_per_line を自動設定するようにした。
+ * 端末の背景色を自動設定するようにした。
+ * 画像処理関係のソースを image.c に分離。
+
+2002/01/08	w3m-0.2.4-img-1.18
+ * w3m-0.2.4 ベース。
+
+2001/12/29	w3m-0.2.3.2-img-1.17
+ * w3m-0.2.3.2+cvs-1.196 ベース。
+
+2001/12/25	w3m-0.2.3.2-img-1.16.1
+ * [w3m-dev 02698] Thanks > かずひこ＠kondara.org さん
+
+2001/12/22	w3m-0.2.3.2-img-1.16
+ * w3m-0.2.3.2 ベース。
+
+2001/12/20	w3m-0.2.3.1-img-1.15
+ * w3m-0.2.3.1 ベース。
+ * Content-Transfer-Encoding で送られて来た画像を表示可能にした。
+
+2001/11/29
+ * ChangLog 1.71 時点の CVS ソースに対してマージ開始
+
+2001/11/17	w3m-0.2.2-img-1.14
+ * w3m-0.2.2 ベース。
+
+2001/11/14	w3m-0.2.1-inu-1.6-img-1.13
+ * w3m-0.2.1-inu-1.6 ベース。
+
+2001/11/05	w3m-0.2.1-inu-1.5-img-1.12
+ * w3m-0.2.1-inu-1.5 ベース。
+ * <area><map> が使えなくなっていたバグの修正。
+ * kterm 上で xwnmo を使った場合に対応。
+
+2001/10/03	w3m-0.2.1-inu-1.4-img-1.11
+ * w3m-0.2.1-inu-1.4 ベース。
+ * 標準入力から読み込む時に落ちるバグの修正。
+ * configure の修正。Thanks > 深川さん。
+
+2001/08/01	w3m-0.2.1-img-1.10
+ * 画像の位置の微調整。
+ * スケールのバグ修正。
+
+2001/07/31	w3m-0.2.1-img-1.9
+ * initImgdisplay() の修正。Thanks > David.
+
+2001/07/29	w3m-0.2.1-img-1.8
+ * configure の修正。Thanks > 坂根さん。
+
+2001/07/28	w3m-0.2.1-img-1.7
+ * configure, XMakefile が patch に入って無かった。
+ * 画像を表示しない場合の処理をオリジナルに近づけた。
+ * [w3m-dev 02121] に対応。
+
+2001/07/27	w3m-0.2.1-img-1.6
+ * README.img を doc-jp へ移動。doc/README.img を作成。
+ * インライン画像対応部分を USE_IMAGE マクロで分離。
+ * configure でインライン画像対応を選択できる様にした。
+ * configure で Imlib をチェックする様にした。
+
+2001/07/26	w3m-0.2.1-img-1.5
+ * w3mimgdisplay は必要になるまで立ち上げない様にした。
+ * w3mimgdisplay が落ちた時に、w3mimgdisplay を再立ち上げできる様にした。
+ * <img align=middle の場合の計算間違いの修正。
+ * [w3m-dev 02118] に対応。
+ * funcname.tab が間違っていたので修正。
+
+2001/07/25	w3m-0.2.1-img-1.4
+ * w3mimgdisplay を環境変数 WINDOWID を見る様に改良。
+   また、text window の推量部分も改良。
+ * image タグを img タグと同じものとして追加。
+ * [w3m-dev 02090], [w3m-dev 02097] に対応。
+
+2001/07/14	w3m-0.2.1-img-1.3
+ * ext_image_viewer が OFF の場合は画像を直接フレーム表示可能にした。
+ * Option Panel が SEGV するバグの修正。
+
+2001/07/13	w3m-0.2.1-img-1.2
+ * 画像のスケールを指定出来る様にした。
+ * SIGUSR1 のブロックに関する修正。
+
+2001/07/12	w3m-0.2.1-img-1.1
+ * キー入力中以外は SIGUSR1, SIGWINCH をブロックする様にした。
+ * バグ修正。
+
+2001/07/11	w3m-0.2.1-img-1.0
+ * MGL 版の画像読み込みを採用。
+
+2001/07/10	w3m-0.2.1-img-0.5
+ * 描画の高速化。w3mimgdisplay で不要な XSync() を止めた。
+   不要な drawImage() を止めた。
+
+2001/07/08	w3m-0.2.1-img-0.4
+ * w3mimgdisplay での Window の取得や offset_x のデフォルト値の改良。
+ * <img align=middle の場合の計算間違いの修正。
+ * <img align=left|center|right では <div>〜</div> を使う様にしてみた。
+ * w3mimgdisplay では SIGINT を無視する様にした。
+ * w3mimgsize もオプション設定できる様にした。
+
+2001/07/07	w3m-0.2.1-img-0.3
+ * kterm に限らず、X11 上の端末では画像を描画できる様にした。
+
+2001/07/06	w3m-0.2.1-img-0.2
+ * README.img を作成。
+ * kterm-6.2.0-img-0.2.patch を w3m-0.2.1-img-0.2.patch に含める様にした。
+ * コードの整理、安全側への修正
+
+2001/07/04	w3m-0.2.1-img-0.1
+ * バージョン管理開始。
+ * Imlib 対応版。
+
+2001/06/30
+ * XPM 版でほぼ実装完了。
+
+2001/06/19
+ * MGL 版に刺激を受けて img への対応のテストを開始。
+
+-----------------------------------
+坂本 浩則 <hsaka@mth.biglobe.ne.jp>
+ http://www2u.biglobe.ne.jp/~hsaka/

@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.7 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.8 2002/01/31 17:54:53 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -73,6 +73,12 @@ toAlign(char *oval, int *align)
 	*align = ALIGN_RIGHT;
     else if (strcasecmp(oval, "center") == 0)
 	*align = ALIGN_CENTER;
+    else if (strcasecmp(oval, "top") == 0)
+	*align = ALIGN_TOP;
+    else if (strcasecmp(oval, "bottom") == 0)
+	*align = ALIGN_BOTTOM;
+    else if (strcasecmp(oval, "middle") == 0)
+	*align = ALIGN_MIDDLE;
     else
 	return 0;
     return 1;

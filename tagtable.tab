@@ -45,6 +45,7 @@ pre		HTML_PRE
 blockquote	HTML_BLQ
 /blockquote	HTML_N_BLQ
 img		HTML_IMG
+image		HTML_IMG
 code		HTML_NOP
 /code		HTML_NOP
 dfn		HTML_NOP

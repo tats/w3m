@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.37 2002/01/25 15:13:55 ukai Exp $ */
+/* $Id: rc.c,v 1.38 2002/01/31 17:54:56 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -52,11 +52,13 @@ static char *config_file = NULL;
 #endif
 #define P_PIXELS   8
 #define P_NZINT    9
+#define P_SCALE    10
 
 #if LANG == JA
 #define CMT_HELPER	 "外部ビューアの編集"
 #define CMT_TABSTOP      "タブ幅"
 #define CMT_PIXEL_PER_CHAR      "文字幅 (4.0...32.0)"
+#define CMT_PIXEL_PER_LINE      "一行の高さ (4.0...64.0)"
 #define CMT_PAGERLINE    "ページャとして利用した時に保存される行数"
 #define CMT_HISTSIZE     "保持するURL履歴の数"
 #define CMT_SAVEHIST     "URL履歴の保存"
@@ -65,6 +67,14 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
 #define CMT_DISPLINK     "リンク先の自動表示"
+#ifdef USE_IMAGE
+#define CMT_DISP_IMAGE   "インライン画像を表示"
+#define CMT_AUTO_IMAGE   "インライン画像を自動で読み込む"
+#define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
+#define CMT_IMAGE_SCALE  "画像のスケール(%)"
+#define CMT_IMGDISPLAY   "画像を表示するためのコマンド"
+#define CMT_IMGSIZE      "画像の大きさを得るためのコマンド"
+#endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
@@ -181,6 +191,7 @@ static char *config_file = NULL;
 #define CMT_HELPER	 "External Viewer Setup"
 #define CMT_TABSTOP      "Tab width"
 #define CMT_PIXEL_PER_CHAR      "# of pixels per character (4.0...32.0)"
+#define CMT_PIXEL_PER_LINE      "# of pixels per line (4.0...64.0)"
 #define CMT_PAGERLINE    "# of reserved line when w3m is used as a pager"
 #define CMT_HISTSIZE     "# of reserved URL"
 #define CMT_SAVEHIST     "Save URL history"
@@ -189,6 +200,14 @@ static char *config_file = NULL;
 #define CMT_ARGV_IS_URL  "Force argument without scheme to URL"
 #define CMT_TSELF        "Use _self as default target"
 #define CMT_DISPLINK     "Automatic display of link URL"
+#ifdef USE_IMAGE
+#define CMT_DISP_IMAGE   "Display of inline image"
+#define CMT_AUTO_IMAGE   "Automatic loading of inline image"
+#define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"
+#define CMT_IMAGE_SCALE  "Scale of image (%)"
+#define CMT_IMGDISPLAY   "External command to display image"
+#define CMT_IMGSIZE      "External command to get size of image"
+#endif
 #define CMT_MULTICOL     "Multi-column output of file names"
 #define CMT_ALT_ENTITY   "Use alternate expression with ASCII for entity"
 #define CMT_FOLD_TEXTAREA "Fold lines of TEXTAREA"
@@ -413,6 +432,10 @@ struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *)&pixel_per_char,
      CMT_PIXEL_PER_CHAR, NULL},
+#ifdef USE_IMAGE
+    {"pixel_per_line", P_PIXELS, PI_TEXT, (void *)&pixel_per_line,
+     CMT_PIXEL_PER_LINE, NULL},
+#endif
 #ifdef JP_CHARSET
     {"kanjicode", P_CODE, PI_SEL_C, (void *)&DisplayCode, CMT_KANJICODE,
      kcodestr},
@@ -438,6 +461,18 @@ struct param_ptr params1[] = {
      CMT_IGNORE_NULL_IMG_ALT, NULL},
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,
      CMT_VIEW_UNSEENOBJECTS, NULL},
+#ifdef USE_IMAGE
+    {"display_image", P_INT, PI_ONOFF, (void *)&displayImage, CMT_DISP_IMAGE,
+     NULL},
+    {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
+    {"ext_image_viewer", P_INT, PI_ONOFF, (void *)&useExtImageViewer,
+     CMT_EXT_IMAGE_VIEWER, NULL},
+    {"image_scale", P_SCALE, PI_TEXT, (void *)&image_scale, CMT_IMAGE_SCALE,
+     NULL},
+    {"imgdisplay", P_STRING, PI_TEXT, (void *)&Imgdisplay, CMT_IMGDISPLAY,
+     NULL},
+    {"imgsize", P_STRING, PI_TEXT, (void *)&Imgsize, CMT_IMGSIZE, NULL},
+#endif
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
      CMT_SHOW_SRCH_STR, NULL},
@@ -818,6 +853,9 @@ show_params(FILE * fp)
 	    case P_PIXELS:
 		t = "number";
 		break;
+	    case P_SCALE:
+		t = "percent";
+		break;
 	    }
 #ifdef JP_CHARSET
 	    if (InnerCode != DisplayCode)
@@ -1019,7 +1057,12 @@ set_param(char *name, char *value)
 #endif
     case P_PIXELS:
 	ppc = atof(value);
-	if (ppc >= MINIMUM_PIXEL_PER_CHAR && ppc <= MAXIMUM_PIXEL_PER_CHAR)
+	if (ppc >= MINIMUM_PIXEL_PER_CHAR && ppc <= MAXIMUM_PIXEL_PER_CHAR * 2)
+	    *(double *)p->varptr = ppc;
+	break;
+    case P_SCALE:
+	ppc = atof(value);
+	if (ppc >= 10 && ppc <= 1000)
 	    *(double *)p->varptr = ppc;
 	break;
     }
@@ -1159,6 +1202,10 @@ sync_with_option(void)
 #ifdef USE_MIGEMO
     init_migemo();
 #endif
+#ifdef USE_IMAGE
+    if (fmInitialized && displayImage)
+	initImage();
+#endif
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 #if LANG == JA
@@ -1261,6 +1308,7 @@ to_str(struct param_ptr *p)
 #endif
 	return Strnew_charp(*(char **)p->varptr);
     case P_PIXELS:
+    case P_SCALE:
 	return Sprintf("%g", *(double *)p->varptr);
     }
     /* not reached */

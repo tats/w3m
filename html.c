@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.7 2001/12/06 15:31:58 ukai Exp $ */
+/* $Id: html.c,v 1.8 2002/01/31 17:54:51 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -23,8 +23,10 @@ unsigned char ALST_DL[] = { ATTR_COMPACT, ATTR_CORE };
 unsigned char ALST_PRE[] = { ATTR_FOR_TABLE, ATTR_CORE };
 #define MAXA_PRE	MAXA_CORE + 1
 unsigned char ALST_IMG[] =
-    { ATTR_SRC, ATTR_ALT, ATTR_WIDTH, ATTR_HEIGHT, ATTR_USEMAP, ATTR_CORE };
-#define MAXA_IMG	MAXA_CORE + 5
+    { ATTR_SRC, ATTR_ALT, ATTR_WIDTH, ATTR_HEIGHT, ATTR_ALIGN, ATTR_USEMAP,
+    ATTR_ISMAP, ATTR_CORE
+};
+#define MAXA_IMG	MAXA_CORE + 7
 unsigned char ALST_TABLE[] =
     { ATTR_BORDER, ATTR_WIDTH, ATTR_HBORDER, ATTR_CELLSPACING,
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
@@ -61,8 +63,9 @@ unsigned char ALST_ISINDEX[] = { ATTR_ACTION, ATTR_PROMPT, ATTR_CORE };
 #define MAXA_ISINDEX	MAXA_CORE + 2
 unsigned char ALST_MAP[] = { ATTR_NAME, ATTR_CORE };
 #define MAXA_MAP	MAXA_CORE + 1
-unsigned char ALST_AREA[] = { ATTR_HREF, ATTR_ALT, ATTR_CORE };
-#define MAXA_AREA	MAXA_CORE + 2
+unsigned char ALST_AREA[] =
+    { ATTR_HREF, ATTR_ALT, ATTR_SHAPE, ATTR_COORDS, ATTR_CORE };
+#define MAXA_AREA	MAXA_CORE + 4
 unsigned char ALST_BASE[] = { ATTR_HREF, ATTR_TARGET, ATTR_CORE };
 #define MAXA_BASE	MAXA_CORE + 2
 unsigned char ALST_BODY[] = { ATTR_BACKGROUND, ATTR_CORE };
@@ -94,8 +97,11 @@ unsigned char ALST_INPUT_ALT[] =
     ATTR_SELECTNUMBER, ATTR_ROWS, ATTR_TOP_MARGIN, ATTR_BOTTOM_MARGIN
 };
 #define MAXA_INPUT_ALT  16
-unsigned char ALST_IMG_ALT[] = { ATTR_SRC };
-#define MAXA_IMG_ALT	1
+unsigned char ALST_IMG_ALT[] =
+    { ATTR_SRC, ATTR_WIDTH, ATTR_HEIGHT, ATTR_USEMAP, ATTR_ISMAP, ATTR_HSEQ,
+    ATTR_XOFFSET, ATTR_YOFFSET, ATTR_TOP_MARGIN, ATTR_BOTTOM_MARGIN
+};
+#define MAXA_IMG_ALT  10
 unsigned char ALST_NOP[] = { ATTR_CORE };
 #define MAXA_NOP	MAXA_CORE
 
@@ -278,16 +284,16 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"selected", VTYPE_NONE, 0},	/* 41 ATTR_SELECTED       */
     {"label", VTYPE_STR, 0},	/* 42 ATTR_LABEL          */
     {"readonly", VTYPE_NONE, 0},	/* 43 ATTR_READONLY       */
+    {"shape", VTYPE_STR, 0},	/* 44 ATTR_SHAPE          */
+    {"coords", VTYPE_STR, 0},	/* 45 ATTR_COORDS         */
+    {"ismap", VTYPE_NONE, 0},	/* 46 ATTR_ISMAP          */
 
-    {NULL, VTYPE_NONE, 0},	/* 44 Undefined           */
-    {NULL, VTYPE_NONE, 0},	/* 45 Undefined           */
-    {NULL, VTYPE_NONE, 0},	/* 46 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 47 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 48 Undefined           */
-    {NULL, VTYPE_NONE, 0},	/* 49 Undefined           */
-    {NULL, VTYPE_NONE, 0},	/* 50 Undefined           */
 
     /* Internal attribute */
+    {"xoffset", VTYPE_NUMBER, AFLG_INT},	/* 49 ATTR_XOFFSET        */
+    {"yoffset", VTYPE_NUMBER, AFLG_INT},	/* 50 ATTR_YOFFSET        */
     {"top_margin", VTYPE_NUMBER, AFLG_INT},	/* 51 ATTR_TOP_MARGIN,    */
     {"bottom_margin", VTYPE_NUMBER, AFLG_INT},	/* 52 ATTR_BOTTOM_MARGIN, */
     {"tid", VTYPE_NUMBER, AFLG_INT},	/* 53 ATTR_TID            */

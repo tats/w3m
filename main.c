@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.76 2002/01/31 04:49:42 ukai Exp $ */
+/* $Id: main.c,v 1.77 2002/01/31 17:54:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -109,6 +109,9 @@ fversion(FILE * f)
 #else
 	    "lang=en"
 #endif
+#ifdef USE_IMAGE
+	    ",image"
+#endif
 #ifdef USE_COLOR
 	    ",color"
 #ifdef USE_ANSI_COLOR
@@ -193,6 +196,10 @@ fusage(FILE * f, int err)
 	    "    -cols width      specify column width (used with -dump)\n");
     fprintf(f,
 	    "    -ppc count       specify the number of pixels per character (4.0...32.0)\n");
+#ifdef USE_IMAGE
+    fprintf(f,
+	    "    -ppl count       specify the number of pixels per line (4.0...64.0)\n");
+#endif
     fprintf(f, "    -dump            dump formatted page into stdout\n");
     fprintf(f,
 	    "    -dump_head       dump response of HEAD request into stdout\n");
@@ -582,9 +589,24 @@ MAIN(int argc, char **argv, char **envp)
 		    usage();
 		ppc = atof(argv[i]);
 		if (ppc >= MINIMUM_PIXEL_PER_CHAR &&
-		    ppc <= MAXIMUM_PIXEL_PER_CHAR)
+		    ppc <= MAXIMUM_PIXEL_PER_CHAR) {
 		    pixel_per_char = ppc;
+		    set_pixel_per_char = TRUE;
+		}
 	    }
+#ifdef USE_IMAGE
+	    else if (!strcmp("-ppl", argv[i])) {
+		double ppc;
+		if (++i >= argc)
+		    usage();
+		ppc = atof(argv[i]);
+		if (ppc >= MINIMUM_PIXEL_PER_CHAR &&
+		    ppc <= MAXIMUM_PIXEL_PER_CHAR * 2) {
+		    pixel_per_line = ppc;
+		    set_pixel_per_line = TRUE;
+		}
+	    }
+#endif
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;
 	    else if (!strcmp("-no-proxy", argv[i]))
@@ -962,7 +984,15 @@ MAIN(int argc, char **argv, char **envp)
 	}
 	signal(SIGWINCH, resize_handler);
 #endif
+#ifdef USE_IMAGE
+	if (activeImage && displayImage)
+	    loadImage(IMG_FLAG_NEXT);
+#endif
 	c = getch();
+#ifdef USE_IMAGE
+	if (activeImage && displayImage)
+	    loadImage(IMG_FLAG_START);
+#endif
 #ifdef SIGWINCH
 	signal(SIGWINCH, resize_hook);
 #endif
@@ -1145,6 +1175,9 @@ pushBuffer(Buffer *buf)
 {
     Buffer *b;
 
+#ifdef USE_IMAGE
+    deleteImage(Currentbuf);
+#endif
     if (clear_buffer)
 	tmpClearBuffer(Currentbuf);
     if (Firstbuf == Currentbuf) {
@@ -2121,6 +2154,10 @@ qquitfm(void)
 void
 quitfm(void)
 {
+#ifdef USE_IMAGE
+    if (activeImage)
+	termImage();
+#endif
     fmTerm();
 #ifdef USE_COOKIE
     save_cookies();
@@ -2169,8 +2206,13 @@ selBuf(void)
 	}
     } while (!ok);
 
-    if (clear_buffer) {
-	for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer)
+    for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer) {
+	if (buf == Currentbuf)
+	    continue;
+#ifdef USE_IMAGE
+	deleteImage(buf);
+#endif
+	if (clear_buffer)
 	    tmpClearBuffer(buf);
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -2632,11 +2674,26 @@ followA(void)
     Line *l;
     Anchor *a;
     ParsedURL u;
+#ifdef USE_IMAGE
+    int x = 0, y = 0, map = 0;
+#endif
+    char *url;
 
     if (Currentbuf->firstLine == NULL)
 	return;
     l = Currentbuf->currentLine;
 
+#ifdef USE_IMAGE
+    a = retrieveCurrentImg(Currentbuf);
+    if (a && a->image && a->image->map) {
+	_followForm(FALSE);
+	return;
+    }
+    if (a && a->image && a->image->ismap) {
+	getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
+	map = 1;
+    }
+#endif
     a = retrieveCurrentAnchor(Currentbuf);
     if (a == NULL) {
 	_followForm(FALSE);
@@ -2672,7 +2729,12 @@ followA(void)
 	return;
     }
 #endif				/* USE_NNTP */
-    loadLink(a->url, a->target, a->referer, NULL);
+    url = a->url;
+#ifdef USE_IMAGE
+    if (map)
+	url = Sprintf("%s?%d,%d", a->url, x, y)->ptr;
+#endif
+    loadLink(url, a->target, a->referer, NULL);
     displayBuffer(Currentbuf, B_NORMAL);
 }
 
@@ -2842,14 +2904,18 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	}
 	if (multipart) {
 	    if (f2->type == FORM_INPUT_IMAGE) {
+		int x = 0, y = 0;
+#ifdef USE_IMAGE
+		getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
+#endif
 		*query = Strdup(conv_form_encoding(f2->name, fi, Currentbuf));
 		Strcat_charp(*query, ".x");
 		form_write_data(body, fi->parent->boundary, (*query)->ptr,
-				"1");
+				Sprintf("%d", x)->ptr);
 		*query = Strdup(conv_form_encoding(f2->name, fi, Currentbuf));
 		Strcat_charp(*query, ".y");
 		form_write_data(body, fi->parent->boundary, (*query)->ptr,
-				"1");
+				Sprintf("%d", y)->ptr);
 	    }
 	    else if (f2->name && f2->name->length > 0 && f2->value != NULL) {
 		/* not IMAGE */
@@ -2870,14 +2936,18 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	else {
 	    /* not multipart */
 	    if (f2->type == FORM_INPUT_IMAGE) {
+		int x = 0, y = 0;
+#ifdef USE_IMAGE
+		getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
+#endif
 		Strcat(*query,
 		       Str_form_quote(conv_form_encoding
 				      (f2->name, fi, Currentbuf)));
-		Strcat_charp(*query, ".x=1&");
+		Strcat(*query, Sprintf(".x=%d&", x));
 		Strcat(*query,
 		       Str_form_quote(conv_form_encoding
 				      (f2->name, fi, Currentbuf)));
-		Strcat_charp(*query, ".y=1");
+		Strcat(*query, Sprintf(".y=%d", y));
 	    }
 	    else {
 		/* not IMAGE */
@@ -3776,6 +3846,10 @@ setOpt(void)
     }
     if (set_param_option(opt))
 	sync_with_option();
+#ifdef USE_IMAGE
+    if (activeImage)
+	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+#endif
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -3817,12 +3891,8 @@ follow_map(struct parsed_tagarg *arg)
     ParsedURL p_url;
 
     a = retrieveCurrentImg(Currentbuf);
-    if (a != NULL)
-	x = Currentbuf->cursorX - Currentbuf->pos + a->start.pos +
-	    Currentbuf->rootX;
-    else
-	x = Currentbuf->cursorX + Currentbuf->rootX;
-    url = follow_map_menu(Currentbuf, arg, x, Currentbuf->cursorY + 2);
+    x = Currentbuf->cursorX + Currentbuf->rootX;
+    url = follow_map_menu(Currentbuf, arg, a, x, Currentbuf->cursorY);
     if (url == NULL || *url == '\0')
 	return;
     if (*url == '#') {
@@ -4447,6 +4517,34 @@ curlno()
 
     disp_message(tmp->ptr, FALSE);
 }
+
+#ifdef USE_IMAGE
+void
+dispI(void)
+{
+    if (!displayImage)
+	initImage();
+    if (!activeImage)
+	return;
+    if (!displayImage || Currentbuf->image_flag == IMG_FLAG_SKIP) {
+	displayImage = TRUE;
+	if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
+	    return;
+	Currentbuf->image_flag = IMG_FLAG_AUTO;
+	Currentbuf->need_reshape = TRUE;
+	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+    }
+}
+
+void
+stopI(void)
+{
+    if (!activeImage)
+	return;
+    Currentbuf->image_flag = IMG_FLAG_SKIP;
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+#endif
 
 #ifdef USE_MOUSE
 

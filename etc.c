@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.17 2002/01/21 17:57:27 ukai Exp $ */
+/* $Id: etc.c,v 1.18 2002/01/31 17:54:50 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1054,6 +1054,7 @@ reset_signals(void)
 #ifdef SIGPIPE
     signal(SIGPIPE, SIG_IGN);
 #endif
+    signal(SIGUSR1, SIG_IGN);
 }
 
 void

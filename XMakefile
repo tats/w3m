@@ -1,9 +1,9 @@
-# $Id: XMakefile,v 1.19 2001/12/21 20:30:54 ukai Exp $
+# $Id: XMakefile,v 1.20 2002/01/31 17:54:48 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
-	form.c map.c frame.c rc.c menu.c mailcap.c\
+	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
 OBJS=main.o file.o buffer.o display.o etc.o search.o linein.o table.o local.o\
-	form.o map.o frame.o rc.o menu.o mailcap.o\
+	form.o map.o frame.o rc.o menu.o mailcap.o image.o\
 	func.o cookie.o history.o backend.o $(KEYBIND_OBJ)
 LSRCS=terms.c conv.c url.c ftp.c anchor.c mimehead.c parsetagx.c\
 	tagtable.c istream.c
@@ -18,6 +18,8 @@ TARGET=w3m$(EXT)
 BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
+IMGDISPLAY=w3mimgdisplay$(EXT)
+IMGSIZE=w3mimgsize$(EXT)
 TARGETS=$(TARGET) $(EXT_TARGETS)
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
@@ -87,6 +89,20 @@ $(INFLATE): inflate.o
 
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) $(Z_CFLAGS) -c inflate.c
+
+$(IMGDISPLAY): w3mimgdisplay.o
+	$(CC) $(CFLAGS) `imlib-config --cflags` -o $(IMGDISPLAY) \
+		w3mimgdisplay.o `imlib-config --libs`
+
+$(IMGSIZE): w3mimgsize.o
+	$(CC) $(CFLAGS) `imlib-config --cflags` -o $(IMGSIZE) \
+		w3mimgsize.o `imlib-config --libs`
+
+w3mimgdisplay.o: w3mimgdisplay.c
+	$(CC) $(CFLAGS) `imlib-config --cflags` -c w3mimgdisplay.c
+
+w3mimgsize.o: w3mimgsize.c
+	$(CC) $(CFLAGS) `imlib-config --cflags` -c w3mimgsize.c
 
 gc/gc.a:
 	cd gc; $(MAKE) CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'

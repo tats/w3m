@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.6 2002/01/22 16:59:11 ukai Exp $
+# $Id: funcname.tab,v 1.7 2002/01/31 17:54:51 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -14,6 +14,7 @@ COOKIE		cooLst
 DELETE_PREVBUF	deletePrevBuf
 DICT_WORD	dictword
 DICT_WORD_AT	dictwordat
+DISPLAY_IMAGE	dispI
 DOWN		ldown1
 DOWNLOAD	svSrc
 EDIT		editBf
@@ -107,6 +108,7 @@ SHELL		execsh
 SHIFT_LEFT	shiftl
 SHIFT_RIGHT	shiftr
 SOURCE		vwSrc
+STOP_IMAGE	stopI
 SUBMIT        submitForm
 SUSPEND		susp
 UP		lup1

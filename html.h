@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.5 2001/12/06 15:31:58 ukai Exp $ */
+/* $Id: html.h,v 1.6 2002/01/31 17:54:51 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -248,11 +248,16 @@ typedef struct {
 #define ATTR_START		40
 #define ATTR_SELECTED		41
 #define ATTR_LABEL		42
-#define ATTR_READONLY        43
+#define ATTR_READONLY		43
+#define ATTR_SHAPE		44
+#define ATTR_COORDS		45
+#define ATTR_ISMAP		46
 
 /* Internal attribute */
-#define ATTR_TOP_MARGIN        51
-#define ATTR_BOTTOM_MARGIN      52
+#define ATTR_XOFFSET		49
+#define ATTR_YOFFSET		50
+#define ATTR_TOP_MARGIN		51
+#define ATTR_BOTTOM_MARGIN	52
 #define ATTR_TID		53
 #define ATTR_FID		54
 #define ATTR_FOR_TABLE		55
@@ -300,6 +305,12 @@ typedef struct tag_attribute_info {
 #define VTYPE_METHOD    8
 #define VTYPE_MLENGTH   9
 #define VTYPE_TYPE      10
+
+#define SHAPE_UNKNOWN	0
+#define SHAPE_DEFAULT	1
+#define SHAPE_RECT	2
+#define SHAPE_CIRCLE	3
+#define SHAPE_POLY	4
 
 extern TagInfo TagMAP[];
 extern TagAttrInfo AttrMAP[];

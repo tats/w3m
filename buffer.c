@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.9 2001/12/26 18:17:57 ukai Exp $ */
+/* $Id: buffer.c,v 1.10 2002/01/31 17:54:49 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -80,6 +80,9 @@ discardBuffer(Buffer *buf)
     int i;
     Buffer *b;
 
+#ifdef USE_IMAGE
+    deleteImage(buf);
+#endif
     clearBuffer(buf);
     for (i = 0; i < MAX_LB; i++) {
 	b = buf->linkBuffer[i];
@@ -489,6 +492,9 @@ reshapeBuffer(Buffer *buf)
     URLFile f;
     Buffer sbuf;
 
+    if (!buf->need_reshape)
+	return;
+    buf->need_reshape = FALSE;
     if (buf->sourcefile == NULL)
 	return;
     init_stream(&f, SCM_LOCAL, NULL);

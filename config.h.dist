@@ -121,6 +121,7 @@ MODEL=Linux.i686-monster-ja
 #undef USE_GOPHER
 #define USE_EXTERNAL_URI_LOADER
 #undef USE_ALARM
+#undef USE_IMAGE
 #define USE_HELP_CGI
 
 #define DEF_EDITOR "/bin/vi"
@@ -140,6 +141,8 @@ MODEL=Linux.i686-monster-ja
 #define HELP_FILE    "w3mhelp.html"
 #define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
+#define IMGSIZE      "w3mimgsize"
+#define IMGDISPLAY   "w3mimgdisplay"
 
 #define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.14 2002/01/16 15:37:06 ukai Exp $ */
+/* $Id: display.c,v 1.15 2002/01/31 17:54:50 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -162,6 +162,10 @@ fmTerm(void)
 	move(LASTLINE, 0);
 	clrtoeolx();
 	refresh();
+#ifdef USE_IMAGE
+	if (activeImage)
+	    loadImage(IMG_FLAG_STOP);
+#endif
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_end();
@@ -182,6 +186,10 @@ fmInit(void)
 	initscr();
 	term_raw();
 	term_noecho();
+#ifdef USE_IMAGE
+	if (displayImage)
+	    initImage();
+#endif
     }
     fmInitialized = TRUE;
 }
@@ -208,6 +216,12 @@ static Buffer *save_current_buf = NULL;
 
 char *delayed_msg = NULL;
 
+#ifdef USE_IMAGE
+static int image_touch = 0;
+static int draw_image_flag = FALSE;
+static Line *redrawLineImage(Buffer *buf, Line *l, int i);
+#endif
+
 void
 displayBuffer(Buffer *buf, int mode)
 {
@@ -222,9 +236,11 @@ displayBuffer(Buffer *buf, int mode)
 	buf->width = COLS;
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
-    if (buf->width != INIT_BUFFER_WIDTH && buf->type
-	&& !strcmp(buf->type, "text/html"))
+    if ((buf->width != INIT_BUFFER_WIDTH && buf->type &&
+	 !strcmp(buf->type, "text/html")) || buf->need_reshape) {
+	buf->need_reshape = TRUE;
 	reshapeBuffer(buf);
+    }
     if (showLineNum) {
 	if (buf->lastLine && buf->lastLine->real_linenumber > 0)
 	    buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
@@ -237,10 +253,16 @@ displayBuffer(Buffer *buf, int mode)
     else
 	buf->rootX = 0;
     buf->COLS = COLS - buf->rootX;
-    if (mode == B_FORCE_REDRAW ||
-	mode == B_SCROLL ||
+    if (mode == B_FORCE_REDRAW || mode == B_SCROLL ||
+#ifdef USE_IMAGE
+	mode == B_REDRAW_IMAGE ||
+#endif
 	cline != buf->topLine || ccolumn != buf->currentColumn) {
-	if (mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
+	if (
+#ifdef USE_IMAGE
+	       !(activeImage && displayImage && draw_image_flag) &&
+#endif
+	       mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
 	    int n = buf->topLine->linenumber - cline->linenumber;
 	    if (n > 0 && n < LASTLINE) {
 		move(LASTLINE, 0);
@@ -258,13 +280,33 @@ displayBuffer(Buffer *buf, int mode)
 	    }
 	    redrawNLine(buf, n);
 	}
-	else
+	else {
+#ifdef USE_IMAGE
+	    if (activeImage &&
+		(mode == B_REDRAW_IMAGE ||
+		 cline != buf->topLine || ccolumn != buf->currentColumn)) {
+		if (draw_image_flag)
+		    clear();
+		clearImage();
+		loadImage(IMG_FLAG_STOP);
+		image_touch++;
+		draw_image_flag = FALSE;
+	    }
+#endif
 	    redrawBuffer(buf);
+	}
 	cline = buf->topLine;
 	ccolumn = buf->currentColumn;
     }
     if (buf->topLine == NULL)
 	buf->topLine = buf->firstLine;
+
+#ifdef USE_IMAGE
+    if (buf->need_reshape) {
+	displayBuffer(buf, B_FORCE_REDRAW);
+	return;
+    }
+#endif
 
 #ifdef USE_MOUSE
     if (use_mouse)
@@ -337,6 +379,14 @@ displayBuffer(Buffer *buf, int mode)
     message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY);
     standend();
     refresh();
+#ifdef USE_IMAGE
+    if (activeImage && displayImage && buf->img) {
+	/*
+	 * loadImage(IMG_FLAG_START);
+	 */
+	drawImage();
+    }
+#endif
 #ifdef USE_BUFINFO
     if (buf != save_current_buf) {
 	saveBufferInfo();
@@ -377,6 +427,23 @@ redrawNLine(Buffer *buf, int n)
     }
     if (n > 0)
 	clrtobotx();
+
+#ifdef USE_IMAGE
+    if (!(activeImage && displayImage && buf->img))
+	return;
+    move(buf->cursorY, buf->cursorX);
+    for (i = 0, l = buf->topLine; i < LASTLINE; i++) {
+	if (i >= LASTLINE - n || i < -n)
+	    l0 = redrawLineImage(buf, l, i);
+	else {
+	    l0 = (l) ? l->next : NULL;
+	}
+	if (l0 == NULL && l == NULL)
+	    break;
+	l = l0;
+    }
+    getAllImage(buf);
+#endif
 }
 
 #define addKanji(pc,pr) (addChar((pc)[0],(pr)[0]),addChar((pc)[1],(pr)[1]))
@@ -548,6 +615,77 @@ redrawLine(Buffer *buf, Line *l, int i)
 	clrtoeolx();
     return l->next;
 }
+
+#ifdef USE_IMAGE
+Line *
+redrawLineImage(Buffer *buf, Line *l, int i)
+{
+    int j, pos, rcol, ncol;
+    int column = buf->currentColumn;
+    Anchor *a;
+    int x, y, sx, sy, w, h;
+
+    if (l == NULL)
+	return NULL;
+    if (l->width < 0)
+	l->width = COLPOS(l, l->len);
+    if (l->len == 0 || l->width - 1 < column)
+	return l->next;
+    pos = columnPos(l, column);
+    rcol = COLPOS(l, pos);
+    for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j++) {
+	if (rcol - column < 0) {
+	    rcol = COLPOS(l, pos + j + 1);
+	    continue;
+	}
+	a = retrieveAnchor(buf->img, l->linenumber, pos + j);
+	if (a && a->image && a->image->touch < image_touch) {
+	    Image *image = a->image;
+	    ImageCache *cache;
+
+	    cache = image->cache = getImage(image, baseURL(buf),
+					    buf->image_flag);
+	    if (cache) {
+		if ((image->width < 0 && cache->width > 0) ||
+		    (image->height < 0 && cache->height > 0)) {
+		    image->width = cache->width;
+		    image->height = cache->height;
+		    buf->need_reshape = TRUE;
+		}
+		x = (int)((rcol - column + buf->rootX) * pixel_per_char);
+		y = (int)(i * pixel_per_line);
+		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
+		sy = (int)((l->linenumber - image->y) * pixel_per_line);
+		if (sx == 0 && x + image->xoffset >= 0)
+		    x += image->xoffset;
+		else
+		    sx -= image->xoffset;
+		if (sy == 0 && y + image->yoffset >= 0)
+		    y += image->yoffset;
+		else
+		    sy -= image->yoffset;
+		if (image->width > 0)
+		    w = image->width - sx;
+		else
+		    w = (int)(8 * pixel_per_char - sx);
+		if (image->height > 0)
+		    h = image->height - sy;
+		else
+		    h = (int)(pixel_per_line - sy);
+		if (w > (int)((buf->COLS - rcol + column) * pixel_per_char))
+		    w = (int)((buf->COLS - rcol + column) * pixel_per_char);
+		if (h > (int)(LASTLINE * pixel_per_line - y))
+		    h = (int)(LASTLINE * pixel_per_line - y);
+		addImage(cache, x, y, sx, sy, w, h);
+		image->touch = image_touch;
+		draw_image_flag = TRUE;
+	    }
+	}
+	rcol = COLPOS(l, pos + j + 1);
+    }
+    return l->next;
+}
+#endif
 
 int
 redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
@@ -850,6 +988,8 @@ message(char *s, int return_x, int return_y)
 void
 disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
 {
+    if (QuietMessage)
+	return;
     if (!fmInitialized) {
 	fprintf(stderr, "%s\n", conv_to_system(s));
 	return;

@@ -10,6 +10,7 @@ COOKIE		クッキー一覧を表示します
 DELETE_PREVBUF 前のバッファを消去します(主に local-CGI 用)
 DICT_WORD	入力した単語を辞書コマンドで調べます
 DICT_WORD_AT	カーソル位置の単語を辞書コマンドで調べます
+DISPLAY_IMAGE	画像の読込/表示を再開します
 DOWN		画面を1行下にスクロールします
 DOWNLOAD	文書のソースをファイルに保存します
 EDIT		ソースファイルをエディタで編集します
@@ -99,6 +100,7 @@ SHELL		シェルコマンドを実行します
 SHIFT_LEFT	画面全体を左にずらします
 SHIFT_RIGHT	画面全体を右にずらします
 SOURCE		HTMLのソースを表示します
+STOP_IMAGE	画像の読込/表示を停止します
 SUBMIT		フォームにサブミットします
 SUSPEND		サスペンド
 UP		画面を1行上にスクロールします

@@ -1,18 +1,75 @@
-/* $Id: map.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: map.c,v 1.5 2002/01/31 17:54:52 ukai Exp $ */
 /*
  * client-side image maps
  */
 #include "fm.h"
+#include <math.h>
 
 #ifdef MENU_MAP
+#ifdef USE_IMAGE
+static int
+inMapArea(MapArea * a, int x, int y)
+{
+    int i;
+    double r1, r2, s, c, t;
+
+    if (!a)
+	return FALSE;
+    switch (a->shape) {
+    case SHAPE_RECT:
+	if (x >= a->coords[0] && y >= a->coords[1] &&
+	    x <= a->coords[2] && y <= a->coords[3])
+	    return TRUE;
+	break;
+    case SHAPE_CIRCLE:
+	if ((x - a->coords[0]) * (x - a->coords[0])
+	    + (y - a->coords[1]) * (y - a->coords[1])
+	    <= a->coords[2] * a->coords[2])
+	    return TRUE;
+	break;
+    case SHAPE_POLY:
+	for (t = 0, i = 0; i < a->ncoords; i += 2) {
+	    r1 = sqrt((double)(x - a->coords[i]) * (x - a->coords[i])
+		      + (double)(y - a->coords[i + 1]) * (y -
+							  a->coords[i + 1]));
+	    r2 = sqrt((double)(x - a->coords[i + 2]) * (x - a->coords[i + 2])
+		      + (double)(y - a->coords[i + 3]) * (y -
+							  a->coords[i + 3]));
+	    if (r1 == 0 || r2 == 0)
+		return TRUE;
+	    s = ((double)(x - a->coords[i]) * (y - a->coords[i + 3])
+		 - (double)(x - a->coords[i + 2]) * (y -
+						     a->coords[i +
+							       1])) / r1 / r2;
+	    c = ((double)(x - a->coords[i]) * (x - a->coords[i + 2])
+		 + (double)(y - a->coords[i + 1]) * (y -
+						     a->coords[i +
+							       3])) / r1 / r2;
+	    t += atan2(s, c);
+	}
+	if (fabs(t) > 2 * 3.14)
+	    return TRUE;
+	break;
+    case SHAPE_DEFAULT:
+	return TRUE;
+    default:
+	break;
+    }
+    return FALSE;
+}
+#endif
+
 char *
-follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, int x, int y)
+follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, Anchor *a_img, int x,
+		int y)
 {
     MapList *ml;
+    ListItem *al;
+    MapArea *a;
     char *name;
-    TextListItem *t, *s;
-    int i, n, selected = -1;
+    int i, n, selected = -1, initial;
     char **label;
+    int px, py, map = 0;
 
     name = tag_get_value(arg, "link");
     if (name == NULL)
@@ -22,24 +79,49 @@ follow_map_menu(Buffer *buf, struct parsed_tagarg *arg, int x, int y)
 	if (!Strcmp_charp(ml->name, name))
 	    break;
     }
-    if (ml == NULL)
+    if (ml == NULL || ml->area == NULL)
 	return NULL;
 
-    for (n = 0, t = ml->urls->first; t != NULL; n++, t = t->next) ;
+    n = ml->area->nitem;
     if (n == 0)
 	return NULL;
     label = New_N(char *, n + 1);
-    for (i = 0, t = ml->urls->first, s = ml->alts->first; t != NULL;
-	 i++, t = t->next, s = s->next)
-	label[i] = *s->ptr ? s->ptr : t->ptr;
+#ifdef USE_IMAGE
+    if (getMapXY(buf, a_img, &px, &py))
+	map = 1;
+#endif
+    initial = -n;
+    for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (a) {
+	    label[i] = *a->alt ? a->alt : a->url;
+#ifdef USE_IMAGE
+	    if (initial < 0 && map && inMapArea(a, px, py)) {
+		if (a->shape == SHAPE_DEFAULT) {
+		    if (initial == -n)
+			initial = -i;
+		}
+		else
+		    initial = i;
+	    }
+#endif
+	}
+	else
+	    label[i] = "";
+    }
     label[n] = NULL;
+    if (initial == -n)
+	initial = 0;
+    else if (initial < 0)
+	initial *= -1;
 
-    optionMenu(x, y, label, &selected, 0, NULL);
+    optionMenu(x, y, label, &selected, initial, NULL);
 
     if (selected >= 0) {
-	for (i = 0, t = ml->urls->first; t != NULL; i++, t = t->next)
-	    if (i == selected)
-		return t->ptr;
+	for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	    if (al->ptr && i == selected)
+		return ((MapArea *) al->ptr)->url;
+	}
     }
     return NULL;
 }
@@ -53,8 +135,9 @@ follow_map_panel(Buffer *buf, struct parsed_tagarg *arg)
 {
     Str mappage;
     MapList *ml;
+    ListItem *al;
+    MapArea *a;
     char *name;
-    TextListItem *t, *s;
     ParsedURL pu;
 
     name = tag_get_value(arg, "link");
@@ -69,15 +152,17 @@ follow_map_panel(Buffer *buf, struct parsed_tagarg *arg)
 	return NULL;
 
     mappage = Strnew_charp(map1);
-    for (t = ml->urls->first, s = ml->alts->first; t != NULL;
-	 t = t->next, s = s->next) {
-	parseURL2(t->ptr, &pu, baseURL(buf));
+    for (al = ml->area->first; al != NULL; al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (!a)
+	    continue;
+	parseURL2(a->url, &pu, baseURL(buf));
 	Strcat_charp(mappage, "<a href=\"");
 	Strcat_charp(mappage, html_quote(parsedURL2Str(&pu)->ptr));
 	Strcat_charp(mappage, "\">");
-	Strcat_charp(mappage, html_quote(s->ptr));
+	Strcat_charp(mappage, html_quote(a->alt));
 	Strcat_charp(mappage, " ");
-	Strcat_charp(mappage, html_quote(t->ptr));
+	Strcat_charp(mappage, html_quote(a->url));
 	Strcat_charp(mappage, "</a><br>\n");
     }
     Strcat_charp(mappage, "</body></html>");
@@ -85,6 +170,106 @@ follow_map_panel(Buffer *buf, struct parsed_tagarg *arg)
     return loadHTMLString(mappage);
 }
 #endif
+
+#ifdef USE_IMAGE
+int
+getMapXY(Buffer *buf, Anchor *a, int *x, int *y)
+{
+    if (!buf || !a || !a->image || !x || !y)
+	return 0;
+    *x = (int)((buf->currentColumn + buf->cursorX
+		- COLPOS(buf->currentLine, a->start.pos) + 0.5)
+	       * pixel_per_char) - a->image->xoffset;
+    *y = (int)((buf->currentLine->linenumber - a->image->y + 0.5)
+	       * pixel_per_line) - a->image->yoffset;
+    if (*x <= 0)
+	*x = 1;
+    if (*y <= 0)
+	*y = 1;
+    return 1;
+}
+#endif
+
+MapArea *
+newMapArea(char *url, char *alt, char *shape, char *coords)
+{
+    MapArea *a = New(MapArea);
+#ifdef MENU_MAP
+    char *p;
+    int i, max;
+#endif
+
+    a->url = url;
+    a->alt = alt ? alt : "";
+#ifdef MENU_MAP
+#ifdef USE_IMAGE
+    a->shape = SHAPE_RECT;
+    if (shape) {
+	if (!strcasecmp(shape, "default"))
+	    a->shape = SHAPE_DEFAULT;
+	else if (!strncasecmp(shape, "rect", 4))
+	    a->shape = SHAPE_RECT;
+	else if (!strncasecmp(shape, "circ", 4))
+	    a->shape = SHAPE_CIRCLE;
+	else if (!strncasecmp(shape, "poly", 4))
+	    a->shape = SHAPE_POLY;
+	else
+	    a->shape = SHAPE_UNKNOWN;
+    }
+    a->coords = NULL;
+    a->ncoords = 0;
+    if (a->shape == SHAPE_UNKNOWN || a->shape == SHAPE_DEFAULT)
+	return a;
+    if (!coords) {
+	a->shape = SHAPE_UNKNOWN;
+	return a;
+    }
+    if (a->shape == SHAPE_RECT) {
+	a->coords = New_N(short, 4);
+	a->ncoords = 4;
+    }
+    else if (a->shape == SHAPE_CIRCLE) {
+	a->coords = New_N(short, 3);
+	a->ncoords = 3;
+    }
+    max = a->ncoords;
+    for (i = 0, p = coords; (a->shape == SHAPE_POLY || i < a->ncoords) && *p;) {
+	while (IS_SPACE(*p))
+	    p++;
+	if (!IS_DIGIT(*p))
+	    break;
+	if (a->shape == SHAPE_POLY) {
+	    if (max <= i) {
+		max = i ? i * 2 : 6;
+		a->coords = New_Reuse(short, a->coords, max + 2);
+	    }
+	    a->ncoords++;
+	}
+	a->coords[i] = (short)atoi(p);
+	i++;
+	while (IS_DIGIT(*p))
+	    p++;
+	if (*p != ',' && !IS_SPACE(*p))
+	    break;
+	while (IS_SPACE(*p))
+	    p++;
+	if (*p == ',')
+	    p++;
+    }
+    if (i != a->ncoords || (a->shape == SHAPE_POLY && a->ncoords < 6)) {
+	a->shape = SHAPE_UNKNOWN;
+	a->coords = NULL;
+	a->ncoords = 0;
+    }
+    if (a->shape == SHAPE_POLY) {
+	a->ncoords = a->ncoords / 2 * 2;
+	a->coords[a->ncoords] = a->coords[0];
+	a->coords[a->ncoords + 1] = a->coords[1];
+    }
+#endif
+#endif
+    return a;
+}
 
 /* append frame URL */
 static void

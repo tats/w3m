@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.13 2002/01/16 02:51:37 ukai Exp $ */
+/* $Id: menu.c,v 1.14 2002/01/31 17:54:52 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1327,8 +1327,13 @@ smChBuf(void)
 	return;
     for (i = 0, buf = Firstbuf; i < SelectV; i++, buf = buf->nextBuffer) ;
     Currentbuf = buf;
-    if (clear_buffer) {
-	for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer)
+    for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer) {
+	if (buf == Currentbuf)
+	    continue;
+#ifdef USE_IMAGE
+	deleteImage(buf);
+#endif
+	if (clear_buffer)
 	    tmpClearBuffer(buf);
     }
 }

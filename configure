@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.58 2002/01/29 19:08:49 ukai Exp $
+# $Id: configure,v 1.59 2002/01/31 17:54:49 ukai Exp $
 #	Configuration.
 #
 
@@ -418,6 +418,30 @@ find_ssl() {
   fi
 }
 
+find_imlib() {
+  imlib_major=1
+  imlib_minor=9
+  imlib_micro=8
+  imlib_version=$imlib_major.$imlib_minor.$imlib_micro
+  echo "Checking Imlib."
+  if [ "x$IMLIB_CONFIG" = x ]; then
+    IMLIB_CONFIG=imlib-config
+  fi
+  version=`$IMLIB_CONFIG --version`
+  if [ "x$version" = x ]; then
+    echo "You don't have Imlib. Install Imlib (version >= $imlib_version)."
+    exit 1
+  fi
+  major=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\1/'`
+  minor=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\2/'`
+  micro=`echo "$version" | sed 's/\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\).*/\3/'`
+  echo "The version of Imlib is $version."
+  if [ "$major" -ne $imlib_major -o "$minor" -ne $imlib_minor -o "$micro" -lt $imlib_micro ]; then
+    echo "Imlib is too old. Install Imlib (version >= $imlib_version)."
+    exit 1
+  fi
+}
+
 #--------------------------------------------------------------
 if [ -n "$USER" ]; then
 	user=$USER
@@ -691,6 +715,15 @@ else
   def_param "use_ssl_verify" n
   use_digest_auth=n
   def_param "use_digest_auth" n
+fi
+
+ask_param "Inline image support (you need Imlib library)" use_image n
+if [ "$use_image" = y ]; then
+  def_use_image="#define USE_IMAGE"
+  imgtarget='$(IMGDISPLAY) $(IMGSIZE)'
+else
+  def_use_image="#undef USE_IMAGE"
+  imgtarget=''
 fi
 
 if [ "$use_color" = y ]; then
@@ -1891,6 +1924,10 @@ else
   echo "You have IPv6 support."
 fi
 
+if [ "$use_image" = y ]; then
+  find_imlib
+fi
+
 rm -f _zmachdep$extension _zmachdep.c _zmachdep.o
 echo "------------ Configuration done ------------"
 
@@ -1905,7 +1942,7 @@ case $dmodel in
 esac
 
 cvsver=`awk '\$1 ~ /[$]Id:/ { print \$3}' ChangeLog`
-sed -e 's/^#define CURRENT_VERSION "\(.*\)+cvs.*"/#define CURRENT_VERSION "\1+cvs-'$cvsver'"/' version.c.in > version.c
+sed -e 's/^#define CURRENT_VERSION "\(.*\)+cvs/#define CURRENT_VERSION "\1+cvs-'$cvsver'/' version.c.in > version.c
 
 cur_ver=`sed -n 's/^#define CURRENT_VERSION *"w3m\/\([^"]*\)".*$/\1/p' version.c`
 for h_in in w3mhelp-*_*.html.in
@@ -2016,7 +2053,7 @@ EXT=$extension
 MATHLIB=$mathlib
 Z_CFLAGS=$z_cflags
 ZLIB=$zlib
-EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate
+EXT_TARGETS=\$(BOOKMARKER) \$(HELPER) $inflate $imgtarget
 GC_CFLAGS=$gc_cflags
 GCLIB=$gclib $pthreadlib
 GCTARGET=$gctarget
@@ -2057,6 +2094,7 @@ $def_use_w3mmailer
 $def_use_nntp
 $def_use_gopher
 $def_use_alarm
+$def_use_image
 $def_use_help_cgi
 
 #define DEF_EDITOR "$editor"
@@ -2076,6 +2114,8 @@ $def_use_help_cgi
 #define HELP_FILE    "w3mhelp.html"
 #define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
+#define IMGSIZE      "w3mimgsize"
+#define IMGDISPLAY   "w3mimgdisplay"
 
 #define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"

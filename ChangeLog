@@ -1,3 +1,187 @@
+2002-02-01  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* w3m-img merge (w3m-0.2.4+cvs-1.278-img-2.2.patch.gz)
+	* NEWS: w3m-img merge
+	* .cvsignore: add w3mimgdisplay, w3mimgsize
+	* XMakefile: add image.c to SRCS 
+		     add image.o to OBJS
+	             add IMGDISPLAY, IMGSIZE
+	* config.h.dist: USE_IMAGE, IMGSIZE, IMGDISPLAY
+	* configure: add find_imlib
+			ask use_image
+		(config.h) add $imgtarget to EXT_TARGETS
+			   $def_use_image
+			   IMGSIZE, IMGDISPLAY
+	* fm.h (MAX_IMAGE): added
+	* fm.h (DEFAULT_PIXEL_PER_CHAR): fix for USE_IMAGE
+	* fm.h (DEFAULT_PIXEL_PER_LINE): added
+	* fm.h (B_REDRAW_IMAGE): added
+	* fm.h (IMG_FLAG_SKIP): added
+	* fm.h (IMG_FLAG_AUTO): added
+	* fm.h (IMG_FLAG_START): added
+	* fm.h (IMG_FLAG_STOP): added
+	* fm.h (IMG_FLAG_NEXT): added
+	* fm.h (IMG_FLAG_UNLOADED): added
+	* fm.h (IMG_FLAG_LOADED): added
+	* fm.h (IMG_FLAG_ERROR): added
+	* fm.h (MapArea): added
+	* fm.h (MapList): s/urls/alts/, add area
+	* fm.h (ImageCache): added
+	* fm.h (Image): added
+	* fm.h (Anchor): add image
+	* fm.h (Buffer): add imarklist, image_flag, need_reshape
+	* fm.h (RG_FRAME_SRC): added
+	* fm.h (ALIGN_MIDDLE): added
+	* fm.h (ALIGN_TOP): added
+	* fm.h (ALIGN_BOTTOM): added
+	* fm.h (QuietMessage): added
+	* fm.h (Imgdisplay): added
+	* fm.h (Imgsize): added
+	* fm.h (activeImage): added
+	* fm.h (displayImage): added
+	* fm.h (autoImage): added
+	* fm.h (useExtImageViewer): added
+	* fm.h (image_source): added
+	* fm.h (view_unseenobject): change default if USE_IMAGE
+	* fm.h (set_pixel_per_char): added
+	* fm.h (pixel_per_line): added
+	* fm.h (set_pixel_per_line): added
+	* fm.h (image_scale): added
+	* proto.h (dispI): added
+	* proto.h (stopI): added
+	* proto.h (deleteImage): added
+	* proto.h (getAllImage): added
+	* proto.h (loadImage): added
+	* proto.h (getImage): added
+	* proto.h (getImageSize): added
+	* proto.h (process_img): add width arg
+	* proto.h (loadImageBuffer): added
+	* proto.h (follow_map_menu): add a_img arg
+	* proto.h (getMapXY): added
+	* proto.h (newMapArea): added
+	* proto.h (touch_cursor): added
+	* proto.h (cURLcode): added
+	* proto.h (initImage): added
+	* proto.h (termImage): added
+	* proto.h (addImage): added
+	* proto.h (drawImage): added
+	* proto.h (clearImage): added
+	* anchor.c (addMultirowsImg): added
+	* buffer.c (discardBuffer): deleteImage if USE_IMAGE
+	* buffer.c (reshapeBuffer): buf->need_reshape check
+	* display.c (fmTerm): if activeImage, stop load image
+	* display.c (fmInit): if displayImage, initImage
+	* display.c (image_touch): added
+	* display.c (draw_image_flag): added
+	* display.c (redrawLineImage): added
+	* display.c (displayBuffer): buf->need_reshape = TRUE
+				mode == B_REDRAW_IMAGE
+				image flag checks
+				force redraw image in mode == B_REDRAW_IMAGE
+				displayBuffer if need reshape
+				drawImage
+	* display.c (redrawNLine): redrawLineImage
+	* display.c (redrawLineImage): added
+	* display.c (disp_message_nsec): return immediately if QuietMessage
+	* etc.c (reset_signals): ignore SIGUSR1
+	* file.c (frame_source): added
+	* file.c (_MoveFile): added
+	* file.c (cur_baseURL): added
+	* file.c (cur_document_code): added
+	* file.c (cur_iseq): added
+	* file.c (loadGeneralFile): fix fmInitialized and prevtrap checks
+				save cur_baseURL
+				image_source load
+				loadImageBuffer for "image/*"
+				frame_source flag
+				fix b->type when proc is loadImageBuffer
+	* file.c (process_img): add width arg
+			parse height and width attr, align
+			fix for inline-image
+	* file.c (process_input): fix for form <input type="image">
+	* file.c (HTMLtagproc1): pass h_env->limit to process_img()
+			fix <img_alt> for inline-image
+			save cur_baseURL
+	* file.c (HTMLlineproc2body): fix <img_alt> for inline-image
+	* file.c (loadHTMLstream): fix for inline-image
+			fix fmInitialized and prevtrap checks
+			save cur_document_code
+			save image_flag
+	* file.c (loadGopherDir): save cur_document_code
+			fix fmInitialized and prevtrap checks
+	* file.c (loadImageBuffer): added for inline-image
+	* file.c (save2tmp): fix fmInitialized and prevtrap checks
+	* frame.c (frame_download_source): set RG_FRAME_SRC flag
+			image check
+	* funcname.tab (DISPLAY_IMAGE): added
+	* funcname.tab (STOP_IMAGE): added
+	* html.c (ALST_IMG): add align, ismap
+	* html.c (ALST_AREA): add shape, coords
+	* html.c (ALST_IMG_ALT): add width, height, usemap, ismap, hseq,
+				xoffset, yoffset, top_margin, bottom_margin
+	* html.c (AttrMap): add shape, coords, ismap, xoffset, yoffset
+	* html.h (ATTR_SHAPE): added
+	* html.h (ATTR_COORDS): added
+	* html.h (ATTR_ISMAP): added
+	* html.h (ATTR_XOFFSET): added
+	* html.h (ATTR_YOFFSET): added
+	* html.h (ATTR_TOP_MARGIN): added
+	* html.h (ATTR_BOTTOM_MARGIN): added
+	* html.h (SHAPE_UNKNOWN): added
+	* html.h (SHAPE_DEFAULT): added
+	* html.h (SHAPE_RECT): added
+	* html.h (SHAPE_CIRCLE): added
+	* html.h (SHAPE_POLY): added
+	* image.c: added
+	* main.c (fversion): add USE_IMAGE
+	* main.c (fusage): -ppl option
+	* main.c (MAIN): set_pixel_per_char if ppc specified
+			-ppl option
+			loadImage
+	* main.c (pushBuffer): deleteImage
+	* main.c (quitfm): termImage
+	* main.c (selBuf): deleteImage
+	* main.c (followA): fix for inline-image and map area
+	* main.c (query_from_followform): getMapXY()
+	* main.c (setOpt): displayBuffer B_REDRAW_IMAGE
+	* main.c (follow_map): fix calculate x, y
+	* main.c (dispI): added
+	* main.c (stopI): added
+	* map.c: include <math.h>
+	* map.c (inMapArea): added
+	* map.c (follow_map_menu): add a_img arg to handle inline-image
+	* map.c (follow_map_panel): use MapArea
+	* map.c (getMapXY): added
+	* map.c (newMapArea): added
+	* menu.c (smChBuf): deleteImage
+	* parsetagx.c (toAlign): align top, bottom, middle
+	* rc.c (P_SCALE): added
+	* rc.c (CMT_PIXEL_PER_LINE): added
+	* rc.c (CMT_DISP_IMAGE): added
+	* rc.c (CMT_AUTO_IMAGE): added
+	* rc.c (CMT_EXT_IMAGE_VIEWER): added
+	* rc.c (CMT_IMAGE_SCALE): added
+	* rc.c (CMT_IMGDISPLAY): added
+	* rc.c (CMT_IMGSIZE): added
+	* rc.c (show_param): P_PIXELS
+	* rc.c (set_param): P_PIXELS
+	* rc.c (sync_with_option): initImage
+	* rc.c (to_str): P_PIXELS
+	* table.c (feed_table_tag): fix <img> for inline-image
+	* tagtable.tab (image): added
+	* terms.c (wgetch): retry read when EINTR or EAGAIN
+	* terms.c (touch_cursor): added
+	* w3mimgdisplay.c: added
+	* w3mimgsize.c: added
+	* doc/README.func (DISPLAY_IMAGE): added
+	* doc/README.func (STOP_IMAGE): added
+	* doc/README.img: added
+	* doc-jp/README.func (DISPLAY_IMAGE): added
+	* doc-jp/README.func (STOP_IMAGE): added
+	* doc-jp/README.img: added
+	* scripts/w3mhelp.cgi.in: show dispI, stopI
+	* scripts/multipart/multipart.cgi.in: inline image support
+	
 2002-02-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* version.c.in: 0.2.5+cvs
@@ -2489,4 +2673,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.286 2002/01/31 15:54:19 ukai Exp $
+$Id: ChangeLog,v 1.287 2002/01/31 17:54:47 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.9 2002/01/25 14:59:14 ukai Exp $ */
+/* $Id: frame.c,v 1.10 2002/01/31 17:54:51 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -385,7 +385,7 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
 	w3m_dump |= DUMP_FRAME;
 	buf = loadGeneralFile(b->url,
 			      baseURL ? baseURL : currentURL,
-			      b->referer, flag, b->request);
+			      b->referer, flag | RG_FRAME_SRC, b->request);
 	w3m_dump &= ~DUMP_FRAME;
 	is_redisplay = FALSE;
 	break;
@@ -399,7 +399,12 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
     b->url = parsedURL2Str(&buf->currentURL)->ptr;
     b->source = buf->sourcefile;
     b->type = buf->type;
-    if (buf->real_scheme != SCM_LOCAL) {
+    if ((buf->real_scheme != SCM_LOCAL)
+#ifdef USE_IMAGE
+	|| (activeImage && !useExtImageViewer &&
+	    buf->real_type && !strncasecmp(buf->real_type, "image/", 6))
+#endif
+	) {
 	tmp = tmpfname(TMPF_FRAME, NULL);
 	rename(buf->sourcefile, tmp->ptr);
 	b->source = tmp->ptr;

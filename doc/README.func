@@ -10,6 +10,7 @@ COOKIE		View cookie list
 DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)
 DICT_WORD_AT   Execute dictionary command for word at cursor
+DISPLAY_IMAGE	Restart loading and drawing of images
 DOWN		Scroll down one line
 DOWNLOAD	Save document source to file
 EDIT		Edit current document
@@ -99,6 +100,7 @@ SHELL		Execute shell command
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
 SOURCE		View HTML source
+STOP_IMAGE	Stop loading and drawing of images
 SUBMIT		Submit form
 SUSPEND		Stop loading document
 UP		Scroll up one line

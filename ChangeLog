@@ -1,3 +1,8 @@
+2003-03-03  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03788] UFhalfclose
+	* file.c (UFhalfclose): closeNews() for SCM_NEWS,NNTP
+
 2003-02-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03783] pipe to "command1 | command2"
@@ -7292,4 +7297,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.769 2003/02/27 15:14:40 ukai Exp $
+$Id: ChangeLog,v 1.770 2003/03/02 15:09:24 ukai Exp $

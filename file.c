@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.218 2003/02/06 17:21:43 ukai Exp $ */
+/* $Id: file.c,v 1.219 2003/03/02 15:09:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -199,7 +199,7 @@ UFhalfclose(URLFile *f)
 #ifdef USE_NNTP
     case SCM_NEWS:
     case SCM_NNTP:
-	closeFTP();
+	closeNews();
 	break;
 #endif
     default:

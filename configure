@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.78 2002/10/01 15:29:05 ukai Exp $
+# $Id: configure,v 1.79 2002/10/27 16:59:33 ukai Exp $
 #	Configuration.
 #
 
@@ -145,6 +145,17 @@ do
   esac
   shift
 done
+
+if [ "x$IMLIB_CONFIG" = x ]; then
+  IMLIB_CONFIG=imlib-config
+fi
+if [ "x$IMLIB2_CONFIG" = x ]; then
+  IMLIB2_CONFIG=imlib2-config
+fi
+if [ "x$GDKPIXBUF_CONFIG" = x ]; then
+  GDKPIXBUF_CONFIG=gdk-pixbuf-config
+fi
+
 
 if [ -z "`echo -n aho | grep n`" ] ; then
 Echo()
@@ -433,9 +444,6 @@ find_imlib() {
   imlib_micro=8
   imlib_version=$imlib_major.$imlib_minor.$imlib_micro
   echo "Checking Imlib."
-  if [ "x$IMLIB_CONFIG" = x ]; then
-    IMLIB_CONFIG=imlib-config
-  fi
   version=`$IMLIB_CONFIG --version`
   if [ "x$version" = x ]; then
     echo "You don't have Imlib. Install Imlib (version >= $imlib_version)."
@@ -458,9 +466,6 @@ find_imlib2() {
   imlib_micro=5
   imlib_version=$imlib_major.$imlib_minor.$imlib_micro
   echo "Checking Imlib 2."
-  if [ "x$IMLIB2_CONFIG" = x ]; then
-    IMLIB2_CONFIG=imlib2-config
-  fi
   version=`$IMLIB2_CONFIG --version`
   if [ "x$version" = x ]; then
     echo "You don't have Imlib 2. Install Imlib 2 (version >= $imlib_version)."
@@ -483,9 +488,6 @@ find_gdkpixbuf() {
   gdkpixbuf_micro=0
   gdkpixbuf_version=$gdkpixbuf_major.$gdkpixbuf_minor.$gdkpixbuf_micro
   echo "Checking GdkPixbuf ."
-  if [ "x$GDKPIXBUF_CONFIG" = x ]; then
-    GDKPIXBUF_CONFIG=gdk-pixbuf-config
-  fi
   if ./which $GDKPIXBUF_CONFIG > /dev/null
   then
     version=`$GDKPIXBUF_CONFIG --version`
@@ -2141,14 +2143,14 @@ if [ "$use_image" = y ]; then
 	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
 	  def_use_gdkpixbuf='#define USE_GDKPIXBUF'
 	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
-	  imgx11cflags='`gdk-pixbuf-config --cflags`'
-	  imgx11ldflags='`gdk-pixbuf-config --libs` -lgdk_pixbuf_xlib'
+	  imgx11cflags='`$GDKPIXBUF_CONFIG --cflags`'
+	  imgx11ldflags='`$GDKPIXBUF_CONFIG --libs` -lgdk_pixbuf_xlib'
       elif find_imlib; then
 	  def_use_w3mimg_x11="#define USE_W3MIMG_X11"
 	  def_use_imlib='#define USE_IMLIB'
 	  imgobjs="$imgobjs w3mimg/x11/x11_w3mimg.o"
-	  imgx11cflags='`imlib-config --cflags`'
-	  imgx11ldflags='`imlib-config --libs`'
+	  imgx11cflags='`$IMLIB_CONFIG --cflags`'
+	  imgx11ldflags='`$IMLIB_CONFIG --libs`'
       else
 	  use_w3mimg_x11=n
 	  echo "Disable X11 inline image"
@@ -2159,14 +2161,14 @@ if [ "$use_image" = y ]; then
 	  def_use_w3mimg_fb="#define USE_W3MIMG_FB"
 	  imgobjs="$imgobjs w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
 	  def_use_gdkpixbuf='#define USE_GDKPIXBUF'
-	  imgfbcflags='`gdk-pixbuf-config --cflags`'
-	  imgfbldflags='`gdk-pixbuf-config --libs`'
+	  imgfbcflags='`$GDKPIXBUF_CONFIG --cflags`'
+	  imgfbldflags='`$GDKPIXBUF_CONFIG --libs`'
       elif find_imlib2; then
 	  def_use_imlib2='#define USE_IMLIB2'
 	  imgobjs="$imgobjs w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
 	  def_use_imlib2='#define USE_IMLIB2'
-	  imgfbcflags='`imlib2-config --cflags`'
-	  imgfbldflags='`imlib2-config --libs`'
+	  imgfbcflags='`$IMLIB2_CONFIG --cflags`'
+	  imgfbldflags='`$IMLIB2_CONFIG --libs`'
       else
 	  use_w3mimg_fb=n
 	  echo "Disable Linux framebuffer inline image"

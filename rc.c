@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.52 2002/10/26 11:19:47 ukai Exp $ */
+/* $Id: rc.c,v 1.53 2002/10/27 16:59:33 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -67,8 +67,8 @@ static char *config_file = NULL;
 #define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
 #define CMT_DISPLINK     "リンク先の自動表示"
 #define CMT_DISPLINEINFO "現在の行番号の表示"
-#ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "インライン画像を表示"
+#ifdef USE_IMAGE
 #define CMT_AUTO_IMAGE   "インライン画像を自動で読み込む"
 #define CMT_MAX_LOAD_IMAGE "画像読み込み時の最大プロセス数"
 #define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
@@ -210,8 +210,8 @@ static char *config_file = NULL;
 #define CMT_TSELF        "Use _self as default target"
 #define CMT_DISPLINK     "Display link URL automatically"
 #define CMT_DISPLINEINFO "Display current line number"
-#ifdef USE_IMAGE
 #define CMT_DISP_IMAGE   "Display inline images"
+#ifdef USE_IMAGE
 #define CMT_AUTO_IMAGE   "Load inline images automatically"
 #define CMT_MAX_LOAD_IMAGE "Maximum processes for parallel image loading"
 #define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"

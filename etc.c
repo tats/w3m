@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.41 2002/11/27 16:39:17 ukai Exp $ */
+/* $Id: etc.c,v 1.42 2002/11/27 16:40:19 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -781,9 +781,9 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 	    }
 	    if (*status == R_ST_TAG0 && !REALLY_THE_BEGINNING_OF_A_TAG(p)) {
 		/* it seems that this '<' is not a beginning of a tag */
-/*
-		Strcat_charp(buf, "&lt;");
-*/
+		/*
+		 * Strcat_charp(buf, "&lt;");
+		 */
 		Strcat_char(buf, '<');
 		*status = R_ST_NORMAL;
 	    }

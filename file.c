@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.133 2002/11/27 16:39:18 ukai Exp $ */
+/* $Id: file.c,v 1.134 2002/11/27 16:40:22 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5447,8 +5447,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
     while (*str != '\0') {
 	int is_tag = FALSE;
 	int pre_mode = (obuf->table_level >= 0) ?
-		       tbl_mode->pre_mode & TBLM_PLAIN :
-		       obuf->flag & RB_PLAINMODE;
+	    tbl_mode->pre_mode & TBLM_PLAIN : obuf->flag & RB_PLAINMODE;
 
 	if (obuf->flag & RB_PLAIN)
 	    goto read_as_plain;	/* don't process tag */
@@ -5519,7 +5518,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    q = h_env->tagbuf->ptr;
 	}
 
-    read_as_pre_mode:
+      read_as_pre_mode:
 	if (obuf->flag & (RB_INTXTA | RB_INSELECT | RB_IGNORE)) {
 	    cmd = HTML_UNKNOWN;
 	    if (!is_tag) {

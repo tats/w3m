@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.39 2001/12/27 18:01:52 ukai Exp $ */
+/* $Id: file.c,v 1.40 2002/01/11 20:05:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1018,23 +1018,35 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	/* openURL failure: it means either (1) the requested URL is a directory name
 	 * on an FTP server, or (2) is a local directory name. 
 	 */
-	extern Str FTPDIRtmp;
 	if (fmInitialized && prevtrap) {
 	    term_raw();
 	    signal(SIGINT, prevtrap);
 	}
 	switch (f.scheme) {
 	case SCM_FTPDIR:
-	    if (FTPDIRtmp->length > 0) {
-		b = loadHTMLString(FTPDIRtmp);
+	{
+	    Str ftpdir = readFTPDir(&pu);
+	    if (ftpdir && ftpdir->length > 0) {
+		FILE *src;
+		tmp = tmpfname(TMPF_SRC, ".html");
+		pushText(fileToDelete, tmp->ptr);
+		src = fopen(tmp->ptr, "w");
+		if (src) {
+		    Strfputs(ftpdir, src);
+		    fclose(src);
+		}
+		b = loadHTMLString(ftpdir);
 		if (b) {
 		    if (b->currentURL.host == NULL
 			&& b->currentURL.file == NULL)
 			copyParsedURL(&b->currentURL, &pu);
 		    b->real_scheme = pu.scheme;
+		    if (src)
+			b->sourcefile = tmp->ptr;
 		}
 		return b;
 	    }
+	}
 	    break;
 	case SCM_LOCAL:
 	    {

@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.9 2001/12/25 18:15:00 ukai Exp $ */
+/* $Id: ftp.c,v 1.10 2002/01/11 20:05:58 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -374,8 +374,6 @@ FtpBye(FTP ftp)
 }
 
 
-Str FTPDIRtmp;
-
 static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
 static int ftp_system(FTP);
 
@@ -392,15 +390,9 @@ openFTP(ParsedURL *pu)
 {
     Str tmp2 = Strnew();
     Str tmp3 = Strnew();
-    Str host;
     STATUS s;
-    Str curdir;
     char *user;
     char *pass;
-    char *fn;
-    char *qdir;
-    char **flist;
-    int i, nfile, nfile_max = 100;
     Str pwd = NULL;
     int add_auth_cookie_flag;
     char *realpathname = NULL;
@@ -408,7 +400,6 @@ openFTP(ParsedURL *pu)
     char code = '\0', ic;
     Str pathStr;
 #endif
-    int sv_type;
 
     add_auth_cookie_flag = 0;
     if (pu->user)
@@ -487,7 +478,26 @@ openFTP(ParsedURL *pu)
     }
   ftp_dir1:
     pu->scheme = SCM_FTPDIR;
-    FTPDIRtmp = Strnew();
+    return NULL;
+}
+
+Str
+readFTPDir(ParsedURL *pu)
+{
+    Str FTPDIRtmp = Strnew();
+    Str host;
+    Str curdir;
+    char *fn;
+    char *qdir;
+    char **flist;
+    int i, nfile, nfile_max = 100;
+    int sv_type;
+    STATUS s;
+    char *realpathname = NULL;
+    Str tmp2 = Strnew();
+
+    if (current_ftp->data == NULL)
+	return FTPDIRtmp;
     sv_type = ftp_system(current_ftp);
     if (pu->file == NULL || *pu->file == '\0') {
 	if (sv_type == UNIXLIKE_SERVER) {
@@ -499,6 +509,7 @@ openFTP(ParsedURL *pu)
 	curdir = Strnew_charp("/");
     }
     else {
+	realpathname = file_unquote(pu->file);
 	if (sv_type == UNIXLIKE_SERVER) {
 	    s = FtpCwd(current_ftp, realpathname);
 	    if (!FtpError(s)) {
@@ -656,7 +667,7 @@ openFTP(ParsedURL *pu)
 
     FtpClose(current_ftp);
     FtpBye(current_ftp);
-    return NULL;
+    return FTPDIRtmp;
 }
 
 static int

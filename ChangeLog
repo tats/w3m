@@ -1,3 +1,13 @@
+2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02822] Print FTP directory list for -dump_extra option
+	* file.c (loadGeneralFile): remove FTPDIRtmp, use readFTPDir() instead
+		save to buf->sourcefile for -dump_extra
+	* ftp.c (FTPDIRtmp): deleted
+	* ftp.c (openFTP): delete readFTPDir() part
+	* ftp.c (readFTPDir): added
+	* proto.h (readFTPDir): added
+
 2002-01-11  Akinori Ito <aito@fw.ipsj.or.jp>
 
 	* [w3m-dev 02819]
@@ -1849,4 +1859,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.207 2002/01/11 02:24:13 a-ito Exp $
+$Id: ChangeLog,v 1.208 2002/01/11 20:05:58 ukai Exp $

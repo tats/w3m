@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.14 2002/01/21 15:56:13 ukai Exp $ */
+/* $Id: regex.c,v 1.15 2002/01/21 16:38:43 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -150,6 +150,8 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 	    }
 	    else
 		m = RE_WHICH;
+	    if (*p == '-' || *p == ']')
+		*(st_ptr++) = (unsigned char)*(p++);
 	    while (*p != ']') {
 		if (*p == '\\') {
 		    p++;
@@ -162,7 +164,7 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 #endif
 			*(st_ptr++) = (unsigned char)*(p++);
 		}
-		else if (*p == '-') {
+		else if (*p == '-' && *(p+1) != ']') {
 		    *(st_ptr++) = RE_WHICH_RANGE;
 		    p++;
 		}

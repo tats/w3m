@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.22 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: html.h,v 1.23 2003/04/18 16:47:18 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -195,35 +195,37 @@ typedef struct {
 #define HTML_LINK       104
 #define HTML_S          105
 #define HTML_N_S        106
+#define HTML_Q		107
+#define HTML_N_Q	108
 
    /* pseudo tag */
-#define HTML_SELECT_INT     108
-#define HTML_N_SELECT_INT   109
-#define HTML_OPTION_INT     110
-#define HTML_TEXTAREA_INT   111
-#define HTML_N_TEXTAREA_INT 112
-#define HTML_TABLE_ALT      113
-#define HTML_RULE           114
-#define HTML_N_RULE         115
-#define HTML_PRE_INT        116
-#define HTML_N_PRE_INT      117
-#define HTML_TITLE_ALT      118
-#define HTML_FORM_INT       119
-#define HTML_N_FORM_INT     120
-#define HTML_DL_COMPACT     121
-#define HTML_INPUT_ALT      122
-#define HTML_N_INPUT_ALT    123
-#define HTML_IMG_ALT        124
-#define HTML_N_IMG_ALT      125
-#define HTML_NOP	    126
-#define HTML_PRE_PLAIN	    127
-#define HTML_N_PRE_PLAIN    128
-#define HTML_INTERNAL       129
-#define HTML_N_INTERNAL     130
-#define HTML_DIV_INT        131
-#define HTML_N_DIV_INT      132
+#define HTML_SELECT_INT     110
+#define HTML_N_SELECT_INT   111
+#define HTML_OPTION_INT     112
+#define HTML_TEXTAREA_INT   113
+#define HTML_N_TEXTAREA_INT 114
+#define HTML_TABLE_ALT      115
+#define HTML_RULE           116
+#define HTML_N_RULE         117
+#define HTML_PRE_INT        118
+#define HTML_N_PRE_INT      119
+#define HTML_TITLE_ALT      120
+#define HTML_FORM_INT       121
+#define HTML_N_FORM_INT     122
+#define HTML_DL_COMPACT     123
+#define HTML_INPUT_ALT      124
+#define HTML_N_INPUT_ALT    125
+#define HTML_IMG_ALT        126
+#define HTML_N_IMG_ALT      127
+#define HTML_NOP	    128
+#define HTML_PRE_PLAIN	    129
+#define HTML_N_PRE_PLAIN    130
+#define HTML_INTERNAL       131
+#define HTML_N_INTERNAL     132
+#define HTML_DIV_INT        133
+#define HTML_N_DIV_INT      134
 
-#define MAX_HTMLTAG	    133
+#define MAX_HTMLTAG	    135
 
 /* Tag attribute */
 

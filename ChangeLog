@@ -1,3 +1,12 @@
+2003-04-19  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03882] Re: Bug#189460: w3m: <q> tag is not recognized
+	* file.c (HTMLtagproc1): add HTML_Q, HTML_N_Q
+	* html.c (TagMAP): add "q", "/q"
+	* html.h (HTML_Q): added
+		(HTML_N_Q): added
+	* tagtable.tab: add q, /q
+
 2003-04-15  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03880] Re: convert \ -> / in URL
@@ -7756,4 +7765,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.826 2003/04/15 14:46:17 ukai Exp $
+$Id: ChangeLog,v 1.827 2003/04/18 16:47:16 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.22 2002/12/09 15:40:36 ukai Exp $ */
+/* $Id: html.c,v 1.23 2003/04/18 16:47:18 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -228,34 +228,36 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"link", ALST_LINK, MAXA_LINK, 0},	/*  104 HTML_LINK      */
     {"s", NULL, 0, 0},		/*  105 HTML_S        */
     {"/s", NULL, 0, TFLG_END},	/*  106 HTML_N_S      */
-    {NULL, NULL, 0, 0},		/* 107 Undefined       */
+    {"q", NULL, 0, 0},		/*  107 HTML_Q */
+    {"/q", NULL, 0, TFLG_END},	/*  108 HTML_N_Q */
+    {NULL, NULL, 0, 0},		/* 109 Undefined       */
 
     /* pseudo tag */
-    {"select_int", ALST_SELECT_INT, MAXA_SELECT_INT, TFLG_INT},	/* 108 HTML_SELECT_INT   */
-    {"/select_int", NULL, 0, TFLG_INT | TFLG_END},	/* 109 HTML_N_SELECT_INT */
-    {"option_int", ALST_OPTION, MAXA_OPTION, TFLG_INT},	/* 110 HTML_OPTION_INT   */
-    {"textarea_int", ALST_TEXTAREA_INT, MAXA_TEXTAREA_INT, TFLG_INT},	/* 111 HTML_TEXTAREA_INT   */
-    {"/textarea_int", NULL, 0, TFLG_INT | TFLG_END},	/* 112 HTML_N_TEXTAREA_INT */
-    {"table_alt", ALST_TABLE_ALT, MAXA_TABLE_ALT, TFLG_INT},	/* 113 HTML_TABLE_ALT   */
-    {"rule", ALST_RULE, MAXA_RULE, TFLG_INT},	/* 114 HTML_RULE        */
-    {"/rule", NULL, 0, TFLG_INT | TFLG_END},	/* 115 HTML_N_RULE      */
-    {"pre_int", NULL, 0, TFLG_INT},	/* 116 HTML_PRE_INT     */
-    {"/pre_int", NULL, 0, TFLG_INT | TFLG_END},	/* 117 HTML_N_PRE_INT   */
-    {"title_alt", ALST_TITLE_ALT, MAXA_TITLE_ALT, TFLG_INT},	/* 118 HTML_TITLE_ALT   */
-    {"form_int", ALST_FORM_INT, MAXA_FORM_INT, TFLG_INT},	/* 119 HTML_FORM_INT    */
-    {"/form_int", NULL, 0, TFLG_INT | TFLG_END},	/* 120 HTML_N_FORM_INT  */
-    {"dl_compact", NULL, 0, TFLG_INT},	/* 121 HTML_DL_COMPACT  */
-    {"input_alt", ALST_INPUT_ALT, MAXA_INPUT_ALT, TFLG_INT},	/* 122 HTML_INPUT_ALT   */
-    {"/input_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 123 HTML_N_INPUT_ALT */
-    {"img_alt", ALST_IMG_ALT, MAXA_IMG_ALT, TFLG_INT},	/* 124 HTML_IMG_ALT     */
-    {"/img_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 125 HTML_N_IMG_ALT   */
-    {" ", ALST_NOP, MAXA_NOP, TFLG_INT},	/* 126 HTML_NOP         */
-    {"pre_plain", NULL, 0, TFLG_INT},	/* 127 HTML_PRE_PLAIN         */
-    {"/pre_plain", NULL, 0, TFLG_INT | TFLG_END},	/* 128 HTML_N_PRE_PLAIN         */
-    {"internal", NULL, 0, TFLG_INT},	/* 129 HTML_INTERNAL   */
-    {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 130 HTML_N_INTERNAL   */
-    {"div_int", ALST_P, MAXA_P, TFLG_INT},	/*  131 HTML_DIV_INT    */
-    {"/div_int", NULL, 0, TFLG_INT | TFLG_END},	/*  132 HTML_N_DIV_INT  */
+    {"select_int", ALST_SELECT_INT, MAXA_SELECT_INT, TFLG_INT},	/* 110 HTML_SELECT_INT   */
+    {"/select_int", NULL, 0, TFLG_INT | TFLG_END},	/* 111 HTML_N_SELECT_INT */
+    {"option_int", ALST_OPTION, MAXA_OPTION, TFLG_INT},	/* 112 HTML_OPTION_INT   */
+    {"textarea_int", ALST_TEXTAREA_INT, MAXA_TEXTAREA_INT, TFLG_INT},	/* 113 HTML_TEXTAREA_INT   */
+    {"/textarea_int", NULL, 0, TFLG_INT | TFLG_END},	/* 114 HTML_N_TEXTAREA_INT */
+    {"table_alt", ALST_TABLE_ALT, MAXA_TABLE_ALT, TFLG_INT},	/* 115 HTML_TABLE_ALT   */
+    {"rule", ALST_RULE, MAXA_RULE, TFLG_INT},	/* 116 HTML_RULE        */
+    {"/rule", NULL, 0, TFLG_INT | TFLG_END},	/* 117 HTML_N_RULE      */
+    {"pre_int", NULL, 0, TFLG_INT},	/* 118 HTML_PRE_INT     */
+    {"/pre_int", NULL, 0, TFLG_INT | TFLG_END},	/* 119 HTML_N_PRE_INT   */
+    {"title_alt", ALST_TITLE_ALT, MAXA_TITLE_ALT, TFLG_INT},	/* 120 HTML_TITLE_ALT   */
+    {"form_int", ALST_FORM_INT, MAXA_FORM_INT, TFLG_INT},	/* 121 HTML_FORM_INT    */
+    {"/form_int", NULL, 0, TFLG_INT | TFLG_END},	/* 122 HTML_N_FORM_INT  */
+    {"dl_compact", NULL, 0, TFLG_INT},	/* 123 HTML_DL_COMPACT  */
+    {"input_alt", ALST_INPUT_ALT, MAXA_INPUT_ALT, TFLG_INT},	/* 124 HTML_INPUT_ALT   */
+    {"/input_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 125 HTML_N_INPUT_ALT */
+    {"img_alt", ALST_IMG_ALT, MAXA_IMG_ALT, TFLG_INT},	/* 126 HTML_IMG_ALT     */
+    {"/img_alt", NULL, 0, TFLG_INT | TFLG_END},	/* 127 HTML_N_IMG_ALT   */
+    {" ", ALST_NOP, MAXA_NOP, TFLG_INT},	/* 128 HTML_NOP         */
+    {"pre_plain", NULL, 0, TFLG_INT},	/* 129 HTML_PRE_PLAIN         */
+    {"/pre_plain", NULL, 0, TFLG_INT | TFLG_END},	/* 130 HTML_N_PRE_PLAIN         */
+    {"internal", NULL, 0, TFLG_INT},	/* 131 HTML_INTERNAL   */
+    {"/internal", NULL, 0, TFLG_INT | TFLG_END},	/* 132 HTML_N_INTERNAL   */
+    {"div_int", ALST_P, MAXA_P, TFLG_INT},	/*  133 HTML_DIV_INT    */
+    {"/div_int", NULL, 0, TFLG_INT | TFLG_END},	/*  134 HTML_N_DIV_INT  */
 };
 
 TagAttrInfo AttrMAP[MAX_TAGATTR] = {

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.59 2003/01/23 18:38:06 ukai Exp $ */
+/* $Id: etc.c,v 1.60 2003/01/25 17:42:17 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -481,7 +481,7 @@ checkType(Str s, Lineprop **oprop
 int
 calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
 {
-    static short *realColumn = NULL;
+    static int *realColumn = NULL;
     static int size = 0;
     static char *prevl = NULL;
     int i, j;
@@ -494,7 +494,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     }
     if (size < len + 1) {
 	size = (len + 1 > LINELEN) ? (len + 1) : LINELEN;
-	realColumn = New_Reuse(short, realColumn, size);
+	realColumn = New_Reuse(int, realColumn, size);
     }
     prevl = l;
     j = bpos;

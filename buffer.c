@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.22 2003/01/24 17:30:50 ukai Exp $ */
+/* $Id: buffer.c,v 1.23 2003/01/25 17:42:17 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -637,16 +637,25 @@ writeBufferCache(Buffer *buf)
 	    fwrite1(l->usrflags, cache) ||
 	    fwrite1(l->width, cache) ||
 	    fwrite1(l->len, cache) ||
-	    fwrite(l->lineBuf, 1, l->len, cache) < l->len ||
-	    fwrite(l->propBuf, sizeof(Lineprop), l->len, cache) < l->len)
+	    fwrite1(l->size, cache) ||
+	    fwrite1(l->bpos, cache) ||
+	    fwrite1(l->bwidth, cache))
 	    goto _error;
+	if (l->bpos == 0) {
+	    if (fwrite(l->lineBuf, 1, l->size, cache) < l->size ||
+		fwrite(l->propBuf, sizeof(Lineprop), l->size, cache) < l->size)
+		goto _error;
+	}
 #ifdef USE_ANSI_COLOR
 	colorflag = l->colorBuf ? 1 : 0;
 	if (fwrite1(colorflag, cache))
 	    goto _error;
 	if (colorflag) {
-	    if (fwrite(l->colorBuf, sizeof(Linecolor), l->len, cache) < l->len)
-		goto _error;
+	    if (l->bpos == 0) {
+		if (fwrite(l->colorBuf, sizeof(Linecolor), l->size, cache) <
+		    l->size)
+		    goto _error;
+	    }
 	}
 #endif
     }
@@ -665,7 +674,7 @@ int
 readBufferCache(Buffer *buf)
 {
     FILE *cache;
-    Line *l = NULL, *prevl = NULL;
+    Line *l = NULL, *prevl = NULL, *basel = NULL;
     long lnum = 0, clnum, tlnum;
 #ifdef USE_ANSI_COLOR
     int colorflag;
@@ -696,19 +705,36 @@ readBufferCache(Buffer *buf)
 	    buf->topLine = l;
 	if (fread1(l->real_linenumber, cache) ||
 	    fread1(l->usrflags, cache) ||
-	    fread1(l->width, cache) || fread1(l->len, cache))
+	    fread1(l->width, cache) ||
+	    fread1(l->len, cache) ||
+	    fread1(l->size, cache) ||
+	    fread1(l->bpos, cache) ||
+	    fread1(l->bwidth, cache))
 	    break;
-	l->lineBuf = NewAtom_N(char, l->len + 1);
-	fread(l->lineBuf, 1, l->len, cache);
-	l->lineBuf[l->len] = '\0';
-	l->propBuf = NewAtom_N(Lineprop, l->len);
-	fread(l->propBuf, sizeof(Lineprop), l->len, cache);
+	if (l->bpos == 0) {
+	    basel = l;
+	    l->lineBuf = NewAtom_N(char, l->size + 1);
+	    fread(l->lineBuf, 1, l->size, cache);
+	    l->lineBuf[l->size] = '\0';
+	    l->propBuf = NewAtom_N(Lineprop, l->size);
+	    fread(l->propBuf, sizeof(Lineprop), l->size, cache);
+	}
+	else if (basel) {
+	    l->lineBuf = basel->lineBuf + l->bpos;
+	    l->propBuf = basel->propBuf + l->bpos;
+	}
+	else
+	    break;
 #ifdef USE_ANSI_COLOR
 	if (fread1(colorflag, cache))
 	    break;
 	if (colorflag) {
-	    l->colorBuf = NewAtom_N(Linecolor, l->len);
-	    fread(l->colorBuf, sizeof(Linecolor), l->len, cache);
+	    if (l->bpos == 0) {
+		l->colorBuf = NewAtom_N(Linecolor, l->size);
+		fread(l->colorBuf, sizeof(Linecolor), l->size, cache);
+	    }
+	    else
+		l->colorBuf = basel->colorBuf + l->bpos;
 	}
 	else {
 	    l->colorBuf = NULL;

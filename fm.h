@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.107 2003/01/23 18:37:20 ukai Exp $ */
+/* $Id: fm.h,v 1.108 2003/01/25 17:42:17 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -310,19 +310,19 @@ typedef struct _Line {
 #endif
     struct _Line *next;
     struct _Line *prev;
-    short len;
-    short width;
+    int len;
+    int width;
     long linenumber;		/* on buffer */
     long real_linenumber;	/* on file */
     unsigned short usrflags;
-    short size;
-    short bpos;
-    short bwidth;
+    int size;
+    int bpos;
+    int bwidth;
 } Line;
 
 typedef struct {
     int line;
-    short pos;
+    int pos;
 } BufferPoint;
 
 #ifdef USE_IMAGE
@@ -413,11 +413,11 @@ typedef struct _Buffer {
     char *real_type;
     int allLine;
     short bufferprop;
-    short currentColumn;
+    int currentColumn;
     short cursorX;
     short cursorY;
-    short pos;
-    short visualpos;
+    int pos;
+    int visualpos;
     short rootX;
     short rootY;
     short COLS;
@@ -469,8 +469,8 @@ typedef struct _Buffer {
 typedef struct _BufferPos {
     long top_linenumber;
     long cur_linenumber;
-    short currentColumn;
-    short pos;
+    int currentColumn;
+    int pos;
     struct _BufferPos *next;
     struct _BufferPos *prev;
 } BufferPos;

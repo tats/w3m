@@ -1,4 +1,4 @@
-/* $Id: frame.h,v 1.5 2003/01/09 15:30:46 ukai Exp $ */
+/* $Id: frame.h,v 1.6 2003/01/25 17:42:17 ukai Exp $ */
 /*
  * frame support
  */
@@ -54,8 +54,8 @@ struct frameset_queue {
     struct frameset *frameset;
     long linenumber;
     long top_linenumber;
-    short pos;
-    short currentColumn;
+    int pos;
+    int currentColumn;
     struct _anchorList *formitem;
 };
 

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.199 2003/01/23 18:38:08 ukai Exp $ */
+/* $Id: main.c,v 1.200 2003/01/25 17:42:17 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1545,7 +1545,7 @@ rdrwSc(void)
 static void
 clear_mark(Line *l)
 {
-    short pos;
+    int pos;
     if (!l)
 	return;
     for (pos = 0; pos < l->size; pos++)
@@ -1592,7 +1592,7 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
 {
     static Buffer sbuf;
     static Line *currentLine;
-    static short pos;
+    static int pos;
     char *str;
     int do_next_search = FALSE;
 
@@ -3770,8 +3770,8 @@ backBf(void)
 	    struct frameset *fs;
 	    long linenumber = buf->frameQ->linenumber;
 	    long top = buf->frameQ->top_linenumber;
-	    short pos = buf->frameQ->pos;
-	    short currentColumn = buf->frameQ->currentColumn;
+	    int pos = buf->frameQ->pos;
+	    int currentColumn = buf->frameQ->currentColumn;
 	    AnchorList *formitem = buf->frameQ->formitem;
 
 	    fs = popFrameTree(&(buf->frameQ));
@@ -5344,7 +5344,7 @@ set_buffer_environ(Buffer *buf)
 {
     static Buffer *prev_buf = NULL;
     static Line *prev_line = NULL;
-    static short prev_pos = -1;
+    static int prev_pos = -1;
     Line *l;
 
     if (buf == NULL)

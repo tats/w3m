@@ -1,3 +1,19 @@
+2003-01-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03686] Re: fold patch
+	* buffer.c (writeBufferCache): rewrite
+		(readBufferCache): rewrite
+	* etc.c (calcPosition): short -> int realColumn
+	* fm.h (Line): short -> int len,width,size,bpos,bwidth
+		(BufferPoint): short->int pos
+		(Buffer): short->int currentColumn,pos,visualpos
+		(BufferPos): short->int currentColumn,pos
+	* frame.h (frameset_queue): short->int pos,currentColumn
+	* main.c (clear_mark): short->int pos
+		(dispincsrch): short->int pos
+		(backBf): short->int pos
+		(set_buffer_environ): short->int prev_pos
+
 2003-01-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03684] Re: fold patch
@@ -6853,4 +6869,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.716 2003/01/24 17:57:07 ukai Exp $
+$Id: ChangeLog,v 1.717 2003/01/25 17:42:17 ukai Exp $

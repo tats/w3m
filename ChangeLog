@@ -1,3 +1,8 @@
+2003-01-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* doc/README.pre_form: update
+	* doc-jp/README.pre_form: ditto
+
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03630] improved pre_form
@@ -6318,4 +6323,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.668 2003/01/10 16:48:45 ukai Exp $
+$Id: ChangeLog,v 1.669 2003/01/10 16:51:08 ukai Exp $

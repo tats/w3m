@@ -8,7 +8,8 @@ Default configuration file for pre_form is ~/.w3m/pre_form.
 
 Syntax as follows:
 
-url       <url>  [<action>]
+url       <url>|/<re-url>/
+form      [<name>] <action>
 text      <name>  <value>
 file      <name>  <value>
 password  <name>  <value>

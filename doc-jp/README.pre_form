@@ -6,7 +6,8 @@ pre_form: 特定のサイトを開いた時に、form を予め設定する機能です。
 デフォルトの設定ファイルは ~/.w3m/pre_form です。
 設定フォーマットは、
 
-url       <url>  [<action>]
+url       <url>|/<re-url>/
+form      [<name>] <action>
 text      <name>  <value>
 file      <name>  <value>
 password  <name>  <value>

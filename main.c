@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.165 2002/12/10 15:51:15 ukai Exp $ */
+/* $Id: main.c,v 1.166 2002/12/10 15:53:03 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -6378,9 +6378,8 @@ save_buffer_position(Buffer *buf)
     if (!buf->firstLine)
 	return;
     if (b && b->top_linenumber == TOP_LINENUMBER(buf) &&
-	     b->cur_linenumber == CUR_LINENUMBER(buf) &&
-	     b->currentColumn == buf->currentColumn &&
-	     b->pos == buf->pos)
+	b->cur_linenumber == CUR_LINENUMBER(buf) &&
+	b->currentColumn == buf->currentColumn && b->pos == buf->pos)
 	return;
     b = New(BufferPos);
     b->top_linenumber = TOP_LINENUMBER(buf);
@@ -6395,7 +6394,7 @@ save_buffer_position(Buffer *buf)
 }
 
 static void
-resetPos(BufferPos *b)
+resetPos(BufferPos * b)
 {
     Buffer buf;
     Line top, cur;

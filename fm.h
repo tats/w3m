@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.96 2002/12/11 15:07:53 ukai Exp $ */
+/* $Id: fm.h,v 1.97 2002/12/14 15:24:04 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -768,6 +768,7 @@ global char RenderFrame init(FALSE);
 global char TargetSelf init(FALSE);
 global char PermitSaveToPipe init(FALSE);
 global char DecodeCTE init(FALSE);
+global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(FALSE);
 global char MetaRefresh init(FALSE);
 

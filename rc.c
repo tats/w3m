@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.70 2002/12/06 16:50:34 ukai Exp $ */
+/* $Id: rc.c,v 1.71 2002/12/14 15:24:04 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -167,6 +167,7 @@ static char *config_file = NULL;
 #define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
 #define CMT_DEFAULT_URL	 "URLを開く時のデフォルト文字列"
 #define CMT_DECODE_CTE   "保存時に Content-Transfer-Encoding をデコードする"
+#define CMT_PRESERVE_TIMESTAMP "保存時にタイムスタンプを保持する"
 #ifdef USE_MOUSE
 #define CMT_MOUSE         "マウスを使う"
 #define CMT_REVERSE_MOUSE "マウスのドラッグ動作を逆にする"
@@ -322,6 +323,7 @@ static char *config_file = NULL;
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
 #define CMT_DEFAULT_URL  "Default value for open-URL command"
 #define CMT_DECODE_CTE   "Decode Content-Transfer-Encoding when saving"
+#define CMT_PRESERVE_TIMESTAMP "Preserve timestamp when saving"
 #ifdef USE_MOUSE
 #define CMT_MOUSE         "Enable mouse"
 #define CMT_REVERSE_MOUSE "Scroll in reverse direction of mouse drag"
@@ -640,6 +642,8 @@ struct param_ptr params3[] = {
      NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *)&DecodeCTE, CMT_DECODE_CTE,
      NULL},
+    {"preserve_timestamp", P_CHARINT, PI_ONOFF, (void *)&PreserveTimestamp,
+     CMT_PRESERVE_TIMESTAMP, NULL},
     {"keymap_file", P_STRING, PI_TEXT, (void *)&keymap_file, CMT_KEYMAP_FILE,
      NULL},
     {NULL, 0, 0, NULL, NULL, NULL},

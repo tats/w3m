@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.160 2002/12/14 15:18:38 ukai Exp $ */
+/* $Id: file.c,v 1.161 2002/12/14 15:24:03 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -332,7 +332,8 @@ uncompressed_file_type(char *path, char **ext)
     return t0;
 }
 
-static int setModtime(char *path, time_t modtime)
+static int
+setModtime(char *path, time_t modtime)
 {
     struct utimbuf t;
     struct stat st;
@@ -1894,7 +1895,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    f.stream = newEncodedStream(f.stream, f.encoding);
 	if (pu.scheme == SCM_LOCAL) {
 	    struct stat st;
-	    if (stat(pu.real_file, &st) == 0)
+	    if (PreserveTimestamp && !stat(pu.real_file, &st))
 		f.modtime = st.st_mtime;
 	    file = conv_from_system(guess_save_name(NULL, pu.real_file));
 	} else
@@ -7378,6 +7379,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 #endif
     struct stat st;
     clen_t size = 0;
+    int is_pipe = FALSE;
 
     if (fmInitialized) {
 	p = searchKeyData();
@@ -7388,7 +7390,9 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		return;
 	    p = conv_to_system(q);
 	}
-	if (*p != '|' || !PermitSaveToPipe) {
+	if (*p == '|' && PermitSaveToPipe)
+	    is_pipe = TRUE;
+	else {
 	    if (q) {
 		p = unescape_spaces(Strnew_charp(q))->ptr;
 		p = conv_to_system(q);
@@ -7428,8 +7432,8 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    close_tty();
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
-	    _MoveFile(tmpf, p);
-	    if (stat(tmpf, &st) == 0)
+	    if (!_MoveFile(tmpf, p) && PreserveTimestamp && !is_pipe &&
+		!stat(tmpf, &st))
 		setModtime(p, st.st_mtime);
 	    unlink(lock);
 	    exit(0);
@@ -7453,7 +7457,9 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (*q == '\0')
 	    return;
 	p = q;
-	if (*p != '|' || !PermitSaveToPipe) {
+	if (*p == '|' && PermitSaveToPipe)
+	    is_pipe = TRUE;
+	else {
 	    p = expandName(p);
 	    if (checkOverWrite(p) < 0)
 		return;
@@ -7462,9 +7468,9 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    printf("Can't copy. %s and %s are identical.", tmpf, p);
 	    return;
 	}
-	if (_MoveFile(tmpf, p) < 0) {
+	if (_MoveFile(tmpf, p) < 0)
 	    printf("Can't save to %s\n", p);
-	} else if (stat(tmpf, &st) == 0)
+	else if (PreserveTimestamp && !is_pipe && !stat(tmpf, &st))
 	    setModtime(p, st.st_mtime);
     }
 }
@@ -7529,8 +7535,7 @@ doFileSave(URLFile uf, char *defstr)
 	    close_tty();
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
-	    save2tmp(uf, p);
-	    if (uf.modtime != -1)
+	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
 		setModtime(p, uf.modtime);
 	    UFclose(&uf);
 	    unlink(lock);
@@ -7559,9 +7564,9 @@ doFileSave(URLFile uf, char *defstr)
 	    printf("Can't save. Load file and %s are identical.", p);
 	    return;
 	}
-	if (save2tmp(uf, p) < 0) {
+	if (save2tmp(uf, p) < 0)
 	    printf("Can't save to %s\n", p);
-	} else if (uf.modtime != -1)
+	else if (PreserveTimestamp && uf.modtime != -1)
 	    setModtime(p, uf.modtime);
     }
 }

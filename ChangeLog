@@ -1,3 +1,13 @@
+2002-12-15  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03569] Re: preserve timestamp
+	* file.c (loadGeneralFile): PresetveTimestamp
+		(_doFileCopy): is_pipe, PreserveTimestamp
+		(doFileSave): PreserveTImestamp
+	* fm.h (PreserveTimestamp): added
+	* rc.c (CMT_PRESERVE_TIMESTAMP): added
+		(params3): add preserve_timestamp
+
 2002-12-15  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
 
 	* [w3m-dev 03568] Re: preserve timestamp
@@ -5848,4 +5858,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.619 2002/12/14 15:18:37 ukai Exp $
+$Id: ChangeLog,v 1.620 2002/12/14 15:24:03 ukai Exp $

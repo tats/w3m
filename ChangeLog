@@ -1,3 +1,10 @@
+2001-12-25  Kazuhiko <kazuhiko@archi.kyoto-u.ac.jp>
+	
+	* [w3m-dev 02727]
+	* doc-jp/keymap.default (C-r): ISEARCH_BACK
+	* doc-jp/keymap.default (C-s): ISEARCH
+	* doc-jp/README.func: fix typo
+
 2001-12-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02726] incremental search
@@ -1531,4 +1538,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.170 2001/12/25 13:43:51 ukai Exp $
+$Id: ChangeLog,v 1.171 2001/12/25 14:06:34 ukai Exp $

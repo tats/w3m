@@ -1,3 +1,8 @@
+2003-02-17  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* 0.4 release candidate 2
+	* version.c.in: update
+
 2003-02-13  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03742] Re: Bug##180814: w3m: Missing w3mimgdisplay message at startup
@@ -7156,4 +7161,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.750 2003/02/13 12:54:36 ukai Exp $
+$Id: ChangeLog,v 1.751 2003/02/16 15:42:06 ukai Exp $

@@ -1,5 +1,7 @@
 w3m 0.3.3 or 0.4?
 
+* env: https_proxy
+* rc: https_proxy
 * options: -show-option
 * rc: relative_wheel_scroll
 * rc: relative_wheel_scroll_ratio

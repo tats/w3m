@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.204 2003/01/23 18:38:06 ukai Exp $ */
+/* $Id: file.c,v 1.205 2003/01/24 17:36:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7192,24 +7192,25 @@ openGeneralPagerBuffer(InputStream stream)
 Line *
 getNextPage(Buffer *buf, int plen)
 {
-    Line *top = buf->topLine, *last = buf->lastLine, *cur = buf->currentLine;
-    int i, nlines = 0;
+    Line *volatile top = buf->topLine, *volatile last = buf->lastLine,
+	 *volatile cur = buf->currentLine;
+    int i;
+    int volatile nlines = 0;
     clen_t linelen = 0, trbyte = buf->trbyte;
     Str lineBuf2;
-    char pre_lbuf = '\0';
+    char volatile pre_lbuf = '\0';
     URLFile uf;
-    char code;
-    int squeeze_flag = FALSE;
+    char volatile code;
+    int volatile squeeze_flag = FALSE;
     Lineprop *propBuffer = NULL;
 #ifdef USE_ANSI_COLOR
     Linecolor *colorBuffer = NULL;
 #endif
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
     if (buf->pagerSource == NULL)
 	return NULL;
 
-    if (fmInitialized)
-	crmode();
     if (last != NULL) {
 	nlines = last->real_linenumber;
 	pre_lbuf = *(last->lineBuf);
@@ -7224,6 +7225,14 @@ getNextPage(Buffer *buf, int plen)
     else
 	code = DocumentCode;
 #endif
+
+    if (SETJMP(AbortLoading) != 0) {
+	goto pager_end;
+    }
+    prevtrap = signal(SIGINT, KeyAbort);
+    if (fmInitialized)
+        term_cbreak();
+
     init_stream(&uf, SCM_UNKNOWN, NULL);
     for (i = 0; i < plen; i++) {
 	lineBuf2 = StrmyISgets(buf->pagerSource);
@@ -7284,8 +7293,11 @@ getNextPage(Buffer *buf, int plen)
 	    buf->firstLine->prev = NULL;
 	}
     }
+  pager_end:
     if (fmInitialized)
 	term_raw();
+    signal(SIGINT, prevtrap);
+
     buf->trbyte = trbyte + linelen;
 #ifdef JP_CHARSET
     buf->document_code = code;

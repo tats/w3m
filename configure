@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.87 2002/11/15 15:36:48 ukai Exp $
+# $Id: configure,v 1.88 2002/11/21 16:31:35 ukai Exp $
 #	Configuration.
 #
 
@@ -2420,6 +2420,7 @@ $def_use_xface
 #define CONFIG_FILE  "config"
 #define KEYMAP_FILE  "keymap"
 #define MENU_FILE    "menu"
+#define MOUSE_FILE   "mouse"
 #define COOKIE_FILE  "cookie"
 #define HISTORY_FILE "history"
 

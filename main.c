@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.146 2002/11/21 16:15:58 ukai Exp $ */
+/* $Id: main.c,v 1.147 2002/11/21 16:31:36 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -746,6 +746,9 @@ main(int argc, char **argv, char **envp)
 	setupscreen();
 #endif				/* not SIGWINCH */
 	initKeymap(TRUE);
+#ifdef USE_MOUSE
+	initMouseMenu();
+#endif				/* MOUSE */
 #ifdef USE_MENU
 	initMenu();
 #endif				/* MENU */
@@ -4787,9 +4790,41 @@ posTab(int x, int y)
 
     if (col <= 0)
 	return NULL;
-    n = x * N_TAB / col + y * N_TAB;
-    for (t = FirstTab, i = 0; t && i < n; t = t->nextTab, i++) ;
+    n = nTabLine();
+    n = x * n / col + y * n;
+    i = 0;
+    if (mouse_menu) {
+	if (n == 0)
+	    return NO_TABBUFFER;
+	i++;
+    }
+    for (t = FirstTab; t && i < n; t = t->nextTab, i++) ;
     return t;
+}
+
+static void
+mouse_menu_action(int btn, int x)
+{
+    switch (btn) {
+    case MOUSE_BTN1_DOWN:
+	btn = 0;
+	break;
+    case MOUSE_BTN2_DOWN:
+	btn = 1;
+	break;
+    case MOUSE_BTN3_DOWN:
+	btn = 2;
+	break;
+    default:
+	return;
+    }
+    if (x >= 0 && x <= 9 && mouse_menu_map[btn][x].func) {
+	CurrentKey = -1;
+	CurrentKeyData = NULL;
+	CurrentCmdData = mouse_menu_map[btn][x].data;
+	(*mouse_menu_map[btn][x].func) ();
+	CurrentCmdData = NULL;
+    }
 }
 
 static void
@@ -4800,20 +4835,26 @@ process_mouse(int btn, int x, int y)
     TabBuffer *t;
     int ny = 0;
 
-    if (nTab > 1)
-	ny = (nTab - 1) / N_TAB + 1;
+    if (nTab2 > 1)
+	ny = (nTab2 - 1) / nTabLine() + 1;
     if (btn == MOUSE_BTN_UP) {
 	switch (press_btn) {
 	case MOUSE_BTN1_DOWN:
-	    if (nTab > 1 && y < ny) {
+	    if (nTab2 > 1 && y < ny) {
 		if (press_y == y && press_x == x) {
 		    if (y == 0 && x >= COLS - 2) {
 			deleteTab(CurrentTab);
-			displayBuffer(Currentbuf, B_NORMAL);
+			displayBuffer(Currentbuf, B_FORCE_REDRAW);
+			return;
 		    }
 		    t = posTab(x, y);
-		    if (t)
-			CurrentTab = t;
+		    if (t == NULL)
+			return;
+		    if (t == NO_TABBUFFER) {
+			mouse_menu_action(press_btn, x);
+			return;
+		    }
+		    CurrentTab = t;
 		    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 		    return;
 		}
@@ -4829,6 +4870,8 @@ process_mouse(int btn, int x, int y)
 		    t = posTab(x, y);
 		    if (t == NULL)
 			return;
+		    if (t == NO_TABBUFFER)
+			t = NULL;	/* open new tab */
 		    cursorXY(Currentbuf, press_x - Currentbuf->rootX,
 			     press_y - Currentbuf->rootY);
 		    if (Currentbuf->cursorY == press_y - Currentbuf->rootY &&
@@ -4915,9 +4958,13 @@ process_mouse(int btn, int x, int y)
 	    }
 	    break;
 	case MOUSE_BTN2_DOWN:
-	    if (nTab > 1 && y < ny) {
+	    if (nTab2 > 1 && y < ny) {
 		if (press_y == y && press_x == x) {
 		    t = posTab(x, y);
+		    if (t == NO_TABBUFFER) {
+			mouse_menu_action(press_btn, x);
+			return;
+		    }
 		    if (t) {
 			deleteTab(t);
 			displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -4928,6 +4975,15 @@ process_mouse(int btn, int x, int y)
 	    backBf();
 	    break;
 	case MOUSE_BTN3_DOWN:
+	    if (nTab2 > 1 && y < ny) {
+		if (press_y == y && press_x == x) {
+		    t = posTab(x, y);
+		    if (t == NO_TABBUFFER) {
+			mouse_menu_action(press_btn, x);
+			return;
+		    }
+		}
+	    }
 #ifdef USE_MENU
 	    if (x >= Currentbuf->rootX && y > ny)
 		cursorXY(Currentbuf, x - Currentbuf->rootX,
@@ -5438,6 +5494,9 @@ reinit()
 	initCookie();
 #endif
 	initKeymap(TRUE);
+#ifdef USE_MOUSE
+	initMouseMenu();
+#endif
 #ifdef USE_MENU
 	initMenu();
 #endif
@@ -5466,6 +5525,13 @@ reinit()
 	initMailcap();
 	return;
     }
+
+#ifdef USE_MOUSE
+    if (!strcasecmp(resource, "MOUSE_MENU")) {
+	initMouseMenu();
+	return;
+    }
+#endif
 
 #ifdef USE_MENU
     if (!strcasecmp(resource, "MENU")) {
@@ -5557,6 +5623,19 @@ newT(void)
 {
     _newT();
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+}
+
+int
+nTabLine(void)
+{
+    int n = nTab2;
+
+    if (COLS - 2 > TabCols * n)
+	return n;
+    n = (n - 1) / ((n * TabCols - 1) / (COLS - 2) + 1) + 1;
+    if (n > (COLS - 2) / TabCols)
+	n = (COLS - 2) / TabCols;
+    return n ? n : 1;
 }
 
 TabBuffer *
@@ -5763,7 +5842,9 @@ tabrURL(void)
 void
 moveTab(TabBuffer * t, TabBuffer * t2, int right)
 {
-    if (!t || !t2 || t == t2)
+    if (t2 == NO_TABBUFFER)
+	t2 = FirstTab;
+    if (!t || !t2 || t == t2 || t == NO_TABBUFFER)
 	return;
     if (t->prevTab) {
 	if (t->nextTab)

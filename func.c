@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.10 2002/06/01 16:50:16 ukai Exp $ */
+/* $Id: func.c,v 1.11 2002/11/21 16:31:36 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -320,3 +320,68 @@ getQWord(char **str)
     *str = p;
     return tmp->ptr;
 }
+
+#ifdef USE_MOUSE
+void
+initMouseMenu(void)
+{
+    FILE *mf;
+    Str line;
+    char *p, *s;
+    int f, b, x, x2;
+
+    mouse_menu = NULL;
+    for (b = 1; b <= 3; b++) {
+	for (x = 0; x < 10; x++) {
+	    mouse_menu_map[b - 1][x].func = NULL;
+	    mouse_menu_map[b - 1][x].data = NULL;
+	}
+    }
+    if ((mf = fopen(rcFile(MOUSE_FILE), "rt")) == NULL)
+	return;
+
+    while (!feof(mf)) {
+	line = Strfgets(mf);
+	Strchop(line);
+	Strremovefirstspaces(line);
+	if (line->length == 0)
+	    continue;
+	p = line->ptr;
+	s = getWord(&p);
+	if (*s == '#')		/* comment */
+	    continue;
+	if (!strcmp(s, "menu")) {
+	    s = getQWord(&p);
+	    if (*s)
+		mouse_menu = Strnew_charp(s)->ptr;
+	    continue;
+	}
+	if (strcmp(s, "button")) 
+	    continue;		/* error */
+	s = getWord(&p);
+	b = atoi(s);
+	if (!(b >= 1 && b <= 3))
+	    continue;		/* error */
+	s = getWord(&p);
+	x = atoi(s);
+	if (!(IS_DIGIT(*s) && x >= 0 && x <= 9))
+	    continue;		/* error */
+	s = getWord(&p);
+	x2 = atoi(s);
+	if (!(IS_DIGIT(*s) && x2 >= 0 && x2 <= 9))
+	    continue;		/* error */
+	s = getWord(&p);
+	f = getFuncList(s);
+	if (f < 0)
+	    continue;		/* error */
+	s = getQWord(&p);
+	if (!*s)
+	    s = NULL;
+	for (; x <= x2; x++) {
+	    mouse_menu_map[b - 1][x].func = w3mFuncList[f].func;
+	    mouse_menu_map[b - 1][x].data = s;
+	}
+    }
+    fclose(mf);
+}
+#endif

@@ -1,3 +1,28 @@
+2002-11-22  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03455] mouse menu
+	* configure (config.h): MOUSE_FILE
+	* display.c (displayBuffer): nTab -> nTab2, N_TAB -> nTabLine()
+		(redrawNLine): nTab -> nTab2, N_TAB -> nTabLine()
+				mouse_menu support
+	* fm.h (nTab2): added
+		(N_TAB): deleted
+		(NO_TABBUFFER): added
+		(struct _MouseMenu): added
+		(mouse_menu_map): added
+		(mouse_menu): added
+	* func.c (initMouseMenu): added
+	* main.c (main): initMouseMenu()
+		(posTab): mouse_menu support
+		(mouse_menu_action): added
+		(process_mouse): mouse_menu support
+		(reinit): initMouseMenu()
+		(nTabLine): added
+		(moveTab): check NO_TABBUFFER
+	* proto.h (nTabLine): added
+		(initMouseMenu): added
+	* rc.c (sync_with_option): initMouseMenu()
+
 2002-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: func: NEXT, PREV
@@ -4948,4 +4973,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.540 2002/11/21 16:17:15 ukai Exp $
+$Id: ChangeLog,v 1.541 2002/11/21 16:31:35 ukai Exp $

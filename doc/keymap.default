@@ -100,6 +100,7 @@ keymap	M-g	GOTO_LINE
 keymap	M-n	NEXT_MARK
 keymap	M-p	PREV_MARK
 keymap	M-s	SAVE
+keymap	M-u	GOTO_RELATIVE
 keymap	M-v	PREV_PAGE
 keymap	M-w	DICT_WORD
 

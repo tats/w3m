@@ -94,6 +94,7 @@ keymap	M-a	ADD_BOOKMARK
 keymap	M-b	BOOKMARK
 keymap	M-e	EDIT_SCREEN
 keymap	M-s	SAVE
+keymap	M-u	GOTO_RELATIVE
 keymap	M-v	PREV_PAGE
 
 keymap	UP	PREV_LINK

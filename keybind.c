@@ -1,4 +1,4 @@
-/* $Id: keybind.c,v 1.5 2001/12/25 13:43:51 ukai Exp $ */
+/* $Id: keybind.c,v 1.6 2002/01/23 17:19:47 ukai Exp $ */
 #include "funcname2.h"
 
 char GlobalKeymap[128] = {
@@ -70,7 +70,7 @@ char EscKeymap[128] = {
     /*  h       i       j       k       l       m       n       o        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nextMk, nulcmd,
     /*  p       q       r       s       t       u       v       w        */
-    prevMk, nulcmd, nulcmd, svSrc, nulcmd, nulcmd, pgBack, dictword,
+    prevMk, nulcmd, nulcmd, svSrc, nulcmd, gorURL, pgBack, dictword,
     /*  x       y       z       {       |       }       ~       DEL      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };

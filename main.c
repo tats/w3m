@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.69 2002/01/22 16:59:11 ukai Exp $ */
+/* $Id: main.c,v 1.70 2002/01/23 17:19:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -762,6 +762,8 @@ MAIN(int argc, char **argv, char **envp)
 	    newbuf = loadGeneralFile(p, NULL, NO_REFERER, 0, NULL);
 	    if (newbuf == NULL)
 		Strcat(err_msg, Sprintf("w3m: Can't load %s.\n", p));
+	    else if (newbuf != NO_BUFFER)
+		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
 	}
 	else {
 	    if (fmInitialized)
@@ -840,7 +842,6 @@ MAIN(int argc, char **argv, char **envp)
 	    case SCM_LOCAL:
 	    case SCM_LOCAL_CGI:
 		unshiftHist(LoadHist, conv_from_system(load_argv[i]));
-		break;
 	    default:
 		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
 		break;
@@ -3612,23 +3613,19 @@ cmd_loadURL(char *url, ParsedURL *current)
 
 /* go to specified URL */
 static void
-goURL0(char *prompt, char *def_url)
+goURL0(char *prompt, ParsedURL *current)
 {
     char *url;
     ParsedURL p_url;
-    ParsedURL *b_url;
+    Buffer *cur_buf = Currentbuf;
 
-    b_url = baseURL(Currentbuf);
     url = searchKeyData();
     if (url == NULL) {
-	if (!(Currentbuf->bufferprop & BP_INTERNAL))
-	    pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
-	url = inputLineHist(prompt, def_url, IN_URL, URLHist);
-	if (url != NULL) {
+	if (current)
+	    url = parsedURL2Str(current)->ptr;
+	url = inputLineHist(prompt, url, IN_URL, URLHist);
+	if (url != NULL)
 	    SKIP_BLANKS(url);
-	    if (def_url != NULL)
-		b_url = NULL;	/* XXX: for retryAsHttp */
-	}
     }
 #ifdef JP_CHARSET
     if (url != NULL) {
@@ -3646,21 +3643,23 @@ goURL0(char *prompt, char *def_url)
 	gotoLabel(url + 1);
 	return;
     }
-    parseURL2(url, &p_url, baseURL(Currentbuf));
+    parseURL2(url, &p_url, current);
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
-    cmd_loadURL(url, b_url);
+    cmd_loadURL(url, current);
+    if (Currentbuf != cur_buf)	/* success */
+	pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
 }
 
 void
 goURL(void)
 {
-    goURL0("Goto URL: ", parsedURL2Str(&Currentbuf->currentURL)->ptr);
+    goURL0("Goto URL: ", NULL);
 }
 
 void
 gorURL(void)
 {
-    goURL0("Goto relative URL: ", NULL);
+    goURL0("Goto relative URL: ", baseURL(Currentbuf));
 }
 
 static void

@@ -1,4 +1,4 @@
-/* $Id: keybind_lynx.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: keybind_lynx.c,v 1.5 2002/01/23 17:19:47 ukai Exp $ */
 /* 
  * Lynx-like key binding.
  *
@@ -78,7 +78,7 @@ char EscKeymap[128] = {
     /*  h       i       j       k       l       m       n       o        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  p       q       r       s       t       u       v       w        */
-    nulcmd, nulcmd, nulcmd, svSrc, nulcmd, nulcmd, pgBack, nulcmd,
+    nulcmd, nulcmd, nulcmd, svSrc, nulcmd, gorURL, pgBack, nulcmd,
     /*  x       y       z       {       |       }       ~       DEL      */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
 };

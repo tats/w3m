@@ -1,3 +1,23 @@
+2002-01-24  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02894] Re: goURL
+	* file.c (HTMLtagproc1): s/goURL/gorURL/
+	* keybind.c (EscKeymap): M-u = GOTO_RELATIVE
+	* keybind_lynx.c (EscKeymap): ditto
+	* doc/keymap.default: ditto
+	* doc/keymap.lynx: ditto
+	* doc-jp/keymap.default: ditto
+	* doc-jp/keymap.lynx: ditto
+	* main.c (MAIN): add $HTTP_HOME or $WWW_HOME to history 
+	* main.c (MAIN): add history even if it is local file or local cgi
+	* main.c (goURL0): change args, def_url -> current
+	* main.c (goURL0): delete ParsedURL *b_url
+	* main.c (goURL0): add Buffer *cur_buf
+	* main.c (goURL0): if current is supplied, use its URL as default
+	* main.c (goURL0): add URL to history if loadURL succeeded
+	* main.c (goURL): change args for goURL0()
+	* main.c (gorURL): ditto
+
 2002-01-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02889] fix scripts/multipart/multipart.cgi.in
@@ -2217,4 +2237,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.253 2002/01/22 17:34:13 ukai Exp $
+$Id: ChangeLog,v 1.254 2002/01/23 17:19:47 ukai Exp $

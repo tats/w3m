@@ -1,5 +1,14 @@
 2002-01-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 00670] GOTO behavior change
+	* main.c (goURL): default URL is current URL
+		if retry_http specified, and inputed URL is not absolute URL
+		add http:// to top of url
+	
+	* linein.c (InputKeymap): C-w as backword-kill-word
+
+2002-01-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02880] URI_PATTERN
 	* url.c (URI_PATTERN): better match for % hex hex
 	* url.c (chkExternalURIBuffer): don't use URI_PATTERN as format string
@@ -2190,4 +2199,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.250 2002/01/22 06:53:10 ukai Exp $
+$Id: ChangeLog,v 1.251 2002/01/22 10:45:14 ukai Exp $

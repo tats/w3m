@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.67 2002/01/21 15:56:13 ukai Exp $ */
+/* $Id: main.c,v 1.68 2002/01/22 10:45:14 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3619,11 +3619,21 @@ goURL(void)
 
     url = searchKeyData();
     if (url == NULL) {
+	Str cur_url = parsedURL2Str(&Currentbuf->currentURL);
+	ParsedURL pu;
 	if (!(Currentbuf->bufferprop & BP_INTERNAL))
-	    pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
-	url = inputLineHist("Goto URL: ", NULL, IN_URL, URLHist);
-	if (url != NULL)
+	    pushHashHist(URLHist, cur_url->ptr);
+	url = inputLineHist("Goto URL: ", cur_url->ptr, IN_URL, URLHist);
+	if (url != NULL) {
 	    SKIP_BLANKS(url);
+	    parseURL(url, &pu, NULL);
+	    if (retryAsHttp) {
+		if ((pu.scheme == SCM_MISSING)
+		    || ((pu.scheme == SCM_LOCAL) 
+			&& (strncmp(url, "file:", 5) != 0)))
+		    url = Sprintf("http://%s", url)->ptr;
+	    }
+	}
     }
 #ifdef JP_CHARSET
     if (url != NULL) {

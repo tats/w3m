@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.21 2001/11/30 10:00:06 ukai Exp $ */
+/* $Id: file.c,v 1.22 2001/11/30 10:27:32 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -152,16 +152,21 @@ static struct compression_decoder {
     char *cmd;
     char *name;
     char *encoding;
+    char *encodings[4];
 } compression_decoders[] = {
     { CMP_COMPRESS, ".gz", "application/x-gzip",
-      0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip"}, 
+      0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip", 
+      {"gzip", "x-gzip", NULL} }, 
     { CMP_COMPRESS, ".Z", "application/x-compress",
-      0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress"}, 
+      0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress",
+      {"compress", "x-compress", NULL} }, 
     { CMP_BZIP2, ".bz2", "application/x-bzip",
-      0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2"}, 
+      0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2",
+      {"x-bzip", "bzip", "bzip2", NULL} }, 
     { CMP_DEFLATE, NULL, "application/x-deflate",
-      1, INFLATE_CMDNAME, INFLATE_NAME, "deflate"}, 
-    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL},
+      1, INFLATE_CMDNAME, INFLATE_NAME, "deflate",
+      {"deflate", "x-deflate", NULL} }, 
+    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}},
 };
 /* *INDENT-ON* */
 
@@ -605,22 +610,21 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		uf->encoding = ENC_7BIT;
 	}
 	else if (!strncasecmp(lineBuf2->ptr, "content-encoding:", 17)) {
+	    struct compression_decoder *d;
 	    p = lineBuf2->ptr + 17;
 	    while (IS_SPACE(*p))
 		p++;
-	    if ((!strncasecmp(p, "x-gzip", 6) || !strncasecmp(p, "gzip", 4)) ||
-		(!strncasecmp(p, "x-compress", 10)
-		 || !strncasecmp(p, "compress", 8))) {
-		uf->compression = CMP_GZIP;
-	    }
-	    else if (!strncasecmp(p, "x-bzip", 6) ||
-		     !strncasecmp(p, "bzip", 4) ||
-		     !strncasecmp(p, "bzip2", 5)) {
-		uf->compression = CMP_BZIP2;
-	    }
-	    else if (!strncasecmp(p, "x-deflate", 9) ||
-		     !strncasecmp(p, "deflate", 7)) {
-		uf->compression = CMP_DEFLATE;
+	    uf->compression = CMP_NOCOMPRESS;
+	    for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
+		char **e;
+		for (e = d->encodings; *e != NULL; e++) {
+		    if (strncasecmp(p, *e, strlen(*e)) == 0) {
+			uf->compression = d->type;
+			break;
+		    }
+		}
+		if (uf->compression != CMP_NOCOMPRESS)
+		    break;
 	    }
 	}
 #ifdef USE_COOKIE

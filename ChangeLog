@@ -1,3 +1,11 @@
+2002-01-18  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 02872] EWS4800 sh doesn't work ${param-word}
+	* configure (use_migemo): change migemo URL
+	* configure (def_migemo_command): fix for EWS4800
+	* configure (def_image_viewer): ditto
+	* configure (def_audio_player): ditto
+
 2002-01-18  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02871] ignore SIGCHLD (for at least EWS4800)
@@ -2126,4 +2134,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.241 2002/01/17 15:49:04 ukai Exp $
+$Id: ChangeLog,v 1.242 2002/01/18 13:06:14 ukai Exp $

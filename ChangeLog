@@ -1,3 +1,8 @@
+2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* url.c (otherinfo): use AcceptLang
+	* rc.c (sync_with_option): initialize AcceptLang
+
 2001-11-30  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02599]

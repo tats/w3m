@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.20 2001/11/30 11:11:44 ukai Exp $ */
+/* $Id: rc.c,v 1.21 2001/11/30 14:06:27 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1091,6 +1091,14 @@ sync_with_option(void)
 #endif
     initMailcap();
     initMimeTypes();
+
+    if (AcceptLang == NULL || *AcceptLang == '\0') {
+#if LANG == JA
+	AcceptLang = "ja; q=1.0, en; q=0.5";
+#else	/* LANG != JA (must be EN) */
+	AcceptLang = "en; q=1.0";
+#endif
+    }
     if (AcceptEncoding == NULL || *AcceptEncoding == '\0')
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')

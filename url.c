@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.15 2001/11/30 11:06:25 ukai Exp $ */
+/* $Id: url.c,v 1.16 2001/11/30 14:06:27 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1200,19 +1200,8 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 
     Strcat_m_charp(s, "Accept: ", AcceptMedia, "\r\n", NULL);
     Strcat_m_charp(s, "Accept-Encoding: ", AcceptEncoding, "\r\n", NULL);
+    Strcat_m_charp(s, "Accept-Language: ", AcceptLang, "\r\n", NULL);
 
-    Strcat_charp(s, "Accept-Language: ");
-    if (AcceptLang != NULL && *AcceptLang != '\0') {
-	Strcat_charp(s, AcceptLang);
-	Strcat_charp(s, "\r\n");
-    }
-    else {
-#if LANG == JA
-	Strcat_charp(s, "ja; q=1.0, en; q=0.5\r\n");
-#else				/* LANG != JA (must be EN) */
-	Strcat_charp(s, "en; q=1.0\r\n");
-#endif				/* LANG != JA */
-    }
     if (target->host) {
 	Strcat_charp(s, "Host: ");
 	Strcat_charp(s, target->host);

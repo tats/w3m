@@ -1,0 +1,221 @@
+#ifndef CONFIG_H_SEEN
+#define CONFIG_H_SEEN
+/*
+ * Configuration for w3m
+ */
+#define JA 0
+#define EN 1
+
+#define HELP_FILE    "w3mhelp.html"
+#define HELP_CGI     "w3mhelp"
+#define W3MCONFIG    "w3mconfig"
+#define IMGDISPLAY   "w3mimgdisplay"
+#define XFACE2XPM    "xface2xpm"
+
+#define RC_DIR       "~/.w3m/"
+#define BOOKMARK     "bookmark.html"
+#define CONFIG_FILE  "config"
+#define KEYMAP_FILE  "keymap"
+#define MENU_FILE    "menu"
+#define MOUSE_FILE   "mouse"
+#define COOKIE_FILE  "cookie"
+#define HISTORY_FILE "history"
+
+#define PASSWD_FILE	RC_DIR "/passwd"
+#define PRE_FORM_FILE	RC_DIR "/pre_form"
+#define USER_MAILCAP	RC_DIR "/mailcap"
+#define SYS_MAILCAP	"/etc/mailcap"
+#define USER_MIMETYPES	RC_DIR "~/.mime.types"
+#define SYS_MIMETYPES	"/etc/mime.types"
+#define USER_URIMETHODMAP	RC_DIR "/urimethodmap"
+#define SYS_URIMETHODMAP	ETC_DIR "/urimethodmap"
+
+#define DEF_SAVE_FILE "index.html"
+
+/* User Configuration */
+#define DISPLAY_CODE '@DISPLAY_CODE@'
+#define SYSTEM_CODE '@SYSTEM_CODE@'
+#define W3M_LANG @W3M_LANG@
+#define LANG W3M_LANG
+#undef USE_KANJI_SYMBOLS
+#undef USE_COLOR
+#undef USE_ANSI_COLOR
+#undef USE_BG_COLOR
+#undef USE_MIGEMO
+#undef EMACS_LIKE_LINEEDIT
+#undef VI_PREC_NUM
+#undef USE_MARK
+#undef LABEL_TOPLINE
+#undef NEXTPAGE_TOPLINE
+#undef USE_MOUSE
+#undef USE_GPM
+#undef USE_SYSMOUSE
+#undef USE_MENU
+#undef USE_COOKIE
+#undef USE_DIGEST_AUTH
+#undef USE_SSL
+#undef USE_SSL_VERIFY
+#undef FTPPASS_HOSTNAMEGEN
+#undef USE_HELP_CGI
+#undef USE_EXTERNAL_URI_LOADER
+#undef USE_W3MMAILER
+#undef USE_NNTP
+#undef USE_GOPHER
+#undef USE_ALARM
+#undef USE_IMAGE
+#undef USE_W3MIMG_X11
+#undef USE_W3MIMG_FB
+#undef W3MIMGDISPLAY_SETUID
+#undef USE_IMLIB
+#undef USE_GDKPIXBUF
+#undef USE_IMLIB2
+#undef USE_XFACE
+#undef SHOW_PARAMS
+#undef USE_DICT
+#undef USE_HISTORY
+#undef VIEW_UNSEENOBJECTS
+#undef FORMAT_NICE
+#undef ID_EXT
+#undef CLEAR_BUF
+#undef INET6
+#define USE_EGD
+#define ENABLE_REMOVE_TRAILINGSPACES
+#undef MENU_THIN_FRAME
+#undef USE_RAW_SCROLL
+#undef TABLE_EXPAND
+#undef TABLE_NO_COMPACT
+#define NOWRAP
+#define MATRIX
+
+#define DEF_EDITOR "@DEF_EDITOR@"
+#define DEF_MAILER "@DEF_MAILER@
+#define DEF_EXT_BROWSER "@DEF_EXT_BROWSER@"
+
+/* fallback viewer. mailcap override these configuration */
+#define DEF_IMAGE_VIEWER	"display"
+#define DEF_AUDIO_PLAYER	"showaudio"
+
+/* for USE_MIGEMO */
+#define DEF_MIGEMO_COMMAND	"@DEF_MIGEMO_COMMAND@"
+
+#undef USE_BINMODE_STREAM
+#undef HAVE_TERMIOS_H
+#undef HAVE_TERMIO_H
+#undef HAVE_SGTTY_H
+#undef HAVE_DIRENT_H
+typedef long long clen_t;
+#undef HAVE_STRTOLL
+#undef HAVE_STROQ
+#undef HAVE_ATOLL
+#undef HAVE_ATOQ
+#undef HAVE_STRCASECMP
+#undef HAVE_STRCASESTR
+#undef HAVE_STRCHR
+#undef HAVE_STRERROR
+#undef HAVE_SYS_ERRLIST
+#undef HAVE_BCOPY
+#undef HAVE_WAITPID
+#undef HAVE_WAIT3
+#undef HAVE_STRFTIME
+#undef HAVE_GETCWD
+#undef HAVE_GETWD
+#undef HAVE_SYMLINK
+#undef HAVE_READLINK
+#undef HAVE_LSTAT
+#undef HAVE_SETENV
+#undef HAVE_PUTENV
+#undef HAVE_SRAND48
+#undef HAVE_SRANDOM
+#undef HAVE_GETPASSPHRASE
+#undef HAVE_CHDIR
+#undef HAVE_SETPGRP
+
+#undef SETPGRP_VOID
+#ifdef SETPGRP_VOID
+#define SETPGRP() setpgrp()
+#else
+#define SETPGRP() setpgrp(0,0)
+#endif
+
+#undef HAVE_FLOAT_H
+#undef HAVE_SYS_SELECT_H
+
+#undef HAVE_SIGSETJMP
+
+#define RETSIGTYPE @RETSIGTYPE@
+typedef RETSIGTYPE MySignalHandler;
+#define SIGNAL_ARG int _dummy	// XXX
+#define SIGNAL_ARGLIST 0	// XXX
+#define SIGNAL_RETURN @SIGNAL_RETURN@
+
+#ifdef HAVE_SIGSETJMP
+# define SETJMP(env) sigsetjmp(env,1)
+# define LONGJMP(env,val) siglongjmp(env,val)
+# define JMP_BUF sigjmp_buf
+#else
+# define SETJMP(env) setjmp(env)
+# define LONGJMP(env,val) longjmp(env)
+# define JMP_BUF jmp_buf
+#endif
+
+#ifndef HAVE_SRAND48
+#ifdef HAVE_SRANDOM
+#define srand48 srandom
+#define lrand48 random
+#else /* HAVE_SRANDOM */
+#define USE_INCLUDED_SRAND48
+#endif /* HAVE_SRANDOM */
+#endif
+
+#ifndef HAVE_LSTAT
+#define lstat stat
+#endif
+
+#if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )
+#define __CYGWIN__
+#endif
+
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+#define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
+
+#if defined( __CYGWIN__ )
+#define SUPPORT_NETBIOS_SHARE 1
+#if LANG == JA
+#define SUPPORT_WIN9X_CONSOLE_MBCS 1
+#endif
+#endif
+
+#if defined(__DJGPP__)
+#define DEFAULT_TERM	"dosansi"
+#else
+#define DEFAULT_TERM	0	/* XXX */
+#endif
+
+#if defined(__EMX__) /* use $extension? */
+#define GUNZIP_CMDNAME  "gzip"
+#define BUNZIP2_CMDNAME "bzip2"
+#define INFLATE_CMDNAME  "inflate.exe"
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark.exe"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel.exe"
+#define DEV_NULL_PATH	"nul"
+#define DEV_TTY_PATH	"con"
+#define CGI_EXTENSION	".cmd"
+#define USE_PATH_ENVVAR
+#else
+#define GUNZIP_CMDNAME  "gunzip"
+#define BUNZIP2_CMDNAME "bunzip2"
+#define INFLATE_CMDNAME	"inflate"
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel"
+#define DEV_NULL_PATH	"/dev/null"
+#define DEV_TTY_PATH	"/dev/tty"
+#define CGI_EXTENSION	".cgi"
+#endif
+
+#define PATH_SEPARATOR	':'
+#define GUNZIP_NAME  "gunzip"
+#define BUNZIP2_NAME "bunzip2"
+#define INFLATE_NAME "inflate"
+
+#endif /* CONFIG_H_SEEN */

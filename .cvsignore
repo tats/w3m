@@ -1,4 +1,8 @@
 XXMakefile
+Makefile
+config.cache
+config.log
+config.status
 config.h
 config.param
 funcname.c

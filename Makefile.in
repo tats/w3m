@@ -1,56 +1,55 @@
-# Generated automatically from Makefile.in by configure.
 #
 # Makefile
-# Generated automatically from Makefile.in by configure.
+# @configure_input@
 #
 package=w3m
-prefix = /usr/local
-exec_prefix = ${prefix}
-bindir = ${exec_prefix}/bin
-datadir = ${prefix}/share
-libdir = /usr/ccs/lib
-includedir = ${prefix}/include
-infodir = ${prefix}/info
-libexecdir = ${exec_prefix}/libexec
-localstatedir = ${prefix}/var
-mandir = ${prefix}/man
-oldincludedir = /usr/include
-sbindir = ${exec_prefix}/sbin
-sharedstatedir = ${prefix}/com
-srcdir = .
-sysconfdir = ${prefix}/etc
-top_srcdir = .
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+datadir = @datadir@
+libdir = @libdir@
+includedir = @includedir@
+infodir = @infodir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+top_srcdir = @top_srcdir@
 DESTDIR = 
 
-CFLAGS = $(OPTS) -g -O2 $(DEFS)
-CPPFLAGS =  -I/usr/include/gc -I/usr/include/gc
-DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
-LDFLAGS = 
-LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgpm -lgc
+CFLAGS = $(OPTS) @CFLAGS@ $(DEFS)
+CPPFLAGS = @CPPFLAGS@
+DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
+LDFLAGS = @LDFLAGS@
+LIBS = -L. -lindep @LIBS@
 
-IMGCFLAGS = -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include
-IMGLDFLAGS = -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lgdk_pixbuf_xlib -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
+IMGCFLAGS = @IMGX11CFLAGS@ @IMGFBCFLAGS@
+IMGLDFLAGS = @IMGX11LDFLAGS@ @IMGFBLDFLAGS@
 
-CC = gcc
-RANLIB=ranlib
-AWK = mawk
-PERL = /usr/bin/perl
+CC = @CC@
+RANLIB=@RANLIB@
+AWK = @AWK@
+PERL = @PERL@
 MKDIR=mkdir -p
 RM=rm
 AR=ar
-INSTALL=/usr/bin/install -c
-INSTALL_PROGRAM=${INSTALL}
-INSTALL_SCRIPT=${INSTALL_PROGRAM}
-INSTALL_DATA=${INSTALL} -m 644
-INSTALL_W3MIMGDISPLAY=${INSTALL} -o root -m 4755 -s
+INSTALL=@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_SCRIPT=@INSTALL_SCRIPT@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_W3MIMGDISPLAY=@INSTALL_W3MIMGDISPLAY@
 
-HELP_FILE = w3mhelp-ja.html
-KEYBIND_SRC = keybind.c
-KEYBIND_OBJ = keybind.o
+HELP_FILE = @HELP_FILE@
+KEYBIND_SRC = @KEYMAP_FILE@.c
+KEYBIND_OBJ = @KEYMAP_FILE@.o
 GCLIB=@gclib@
 
-VERSION=0.4.1
-MODEL=i686-pc-linux-gnu-monster-JA
+VERSION=@CURRENT_VERSION@
+MODEL=@W3M_TARGET@-@W3M_MODEL@-@W3M_LANG@
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \
@@ -66,9 +65,9 @@ LLOBJS=version.o
 ALIBOBJS=Str.o indep.o regex.o textlist.o parsetag.o myctype.o entity.o hash.o
 ALIB=libindep.a
 ALLOBJS=$(OBJS) $(LOBJS) $(LLOBJS)
-IMGOBJS=w3mimg/w3mimg.o w3mimg/x11/x11_w3mimg.o w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o
+IMGOBJS=@IMGOBJS@
 
-EXT=
+EXT=@EXEEXT@
 
 TARGET=w3m$(EXT)
 BOOKMARKER=w3mbookmark$(EXT)
@@ -80,7 +79,7 @@ MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
 
 LIB_TARGETS=$(BOOKMARKER) $(HELPER)
-AUXBIN_TARGETS= w3mimgdisplay$(EXT) inflate$(EXT)
+AUXBIN_TARGETS=@AUXBIN_TARGETS@
 TARGETS=$(TARGET) $(LIB_TARGETS) $(AUXBIN_TARGETS)
 HELP_TARGET=w3mhelp.html
 HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \

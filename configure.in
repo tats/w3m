@@ -1,0 +1,137 @@
+dnl w3m autoconf
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(fm.h)
+dnl AM_INIT_AUTOMAKE(w3m, 0.4)
+AC_CONFIG_HEADER(config.h)
+dnl Checks for programs.
+dnl AC_PROG_CXX
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+AC_PATH_PROGS(PERL, perl, /usr/local/bin/perl)
+AC_CANONICAL_SYSTEM
+
+AC_CYGWIN
+AC_EXEEXT
+AC_SUBST(EXEEXT)
+
+AC_W3M_VERSION
+AC_W3M_MODEL
+
+AC_W3M_LANG
+AC_W3M_KANJI_SYMBOLS
+
+AC_W3M_COLOR
+AC_W3M_ANSI_COLOR
+AC_W3M_BG_COLOR
+
+AC_W3M_MIGEMO
+AC_W3M_EMACS_LIKE_LINEEDIT
+AC_W3M_VI_PREC_NUM
+AC_W3M_MARK
+
+AC_W3M_LABEL_TOPLINE
+AC_W3M_NEXTPAGE_TOPLINE
+
+AC_W3M_MOUSE
+
+AC_W3M_MENU
+AC_W3M_COOKIE
+AC_W3M_SHOW_PARAMS
+AC_W3M_DICT
+AC_W3M_HISTORY
+AC_W3M_VIEW_UNSEENOBJECTS
+AC_W3M_FORMAT_NICE
+AC_W3M_ID_EXT
+AC_W3M_FTPPASS_HOSTNAMEGEN
+AC_W3M_NNTP
+AC_W3M_GOPHER
+
+AC_W3M_KEYMAP
+
+AC_W3M_EDITOR
+AC_W3M_MAILER
+AC_W3M_EXT_BROWSER
+AC_W3M_HELP_CGI
+AC_W3M_EXTERNAL_URI_LOADER
+AC_W3M_W3MMAILER
+
+dnl Checks for ext libs
+for lib in bsd BSD 44bsd socket nsl dld
+do
+ AC_W3M_EXTLIBS($lib)
+done
+
+dnl Checks for libraries.
+AC_CHECK_FUNC(sqrt,,[AC_CHECK_LIB(m, sqrt)])
+AC_CHECK_LIB(termcap, tgetent)
+AC_CHECK_LIB(termlib, tgetent)
+AC_CHECK_LIB(terminfo, tgetent)
+AC_CHECK_LIB(mytinfo, tgetent)
+AC_CHECK_LIB(curses, tgetent)
+AC_CHECK_LIB(ncurses, tgetent)
+if test x$enable_mouse = xyes; then
+ AC_SUBST(USE_W3M)
+ AC_CHECK_LIB(gpm, Gpm_Open, [AC_DEFINE(USE_GPM)
+   		LIBS="$LIBS -lgpm"])
+ AC_SUBST(USE_SYSMOUSE)
+ AC_TRY_CPP([#include <machine/console.h>
+   MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])
+fi
+AC_W3M_GC
+AC_W3M_ALARM
+AC_SUBST(AUXBIN_TARGETS)
+AUXBIN_TARGETS=
+AC_W3M_IMAGE
+if test x$enable_image != xno; then
+ AUXBIN_TARGETS="$AUXBIN_TARGETS w3mimgdisplay\$(EXT)"
+ AC_W3M_XFACE
+fi
+AC_W3M_SSL
+AC_W3M_IPv6
+AC_CHECK_LIB(z, zError, [AUXBIN_TARGETS="$AUXBIN_TARGETS inflate\$(EXT)"])
+
+AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
+
+AC_SUBST(USE_BINMODE_STREAM)
+if test x$CYGIN = xyes; then
+ AC_DEFINE(USE_BINMODE_STREAM)
+fi
+
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+dnl AC_CHECK_HEADERS(fcntl.h malloc.h sgtty.h strings.h sys/ioctl.h sys/time.h termio.h unistd.h setjmp.h)
+AC_CHECK_HEADER(termios.h, [AC_DEFINE(HAVE_TERMIOS_H)],
+	 [AC_CHECK_HEADER(termio.h, [AC_DEFINE(HAVE_TERMIO_H)],
+	  [AC_CHECK_HEADER(sgtty.h, [AC_DEFINE(HAVE_SGTTY_H)])])])
+AC_CHECK_HEADER([float.h])
+AC_CHECK_HEADER([sys/select.h])
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+dnl AC_C_CONST
+dnl AC_C_INLINE
+dnl AC_TYPE_PID_T
+dnl AC_TYPE_SIZE_T
+dnl AC_HEADER_TIME
+dnl AC_STRUCT_TM
+
+dnl Checks for library functions.
+dnl AC_FUNC_ALLOCA
+dnl AC_PROG_GCC_TRADITIONAL
+dnl AC_FUNC_MEMCMP
+dnl AC_FUNC_MMAP
+dnl AC_FUNC_SETVBUF_REVERSED
+dnl AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid)
+AC_FUNC_STRFTIME
+AC_FUNC_WAIT3
+AC_FUNC_SETPGRP
+AC_W3M_SYS_ERRLIST
+AC_W3M_SIGSETJMP
+AC_W3M_SIGNAL
+
+AC_OUTPUT(Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html)

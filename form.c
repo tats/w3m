@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.15 2002/11/05 15:56:13 ukai Exp $ */
+/* $Id: form.c,v 1.16 2002/11/05 16:03:14 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -671,7 +671,6 @@ struct pre_form {
     struct pre_form *next;
 };
 
-static Str next_token(Str arg);
 static struct pre_form *PreForm = NULL;
 
 static struct pre_form *
@@ -727,8 +726,6 @@ radio <name> <value>
 submit [<name>]
 */
 
-#define FILE_IS_READABLE_MSG "SECURITY NOTE: file %s must not be accessible by others"
-
 void
 loadPreForm(void)
 {
@@ -737,8 +734,7 @@ loadPreForm(void)
     struct pre_form *pf = NULL;
     struct pre_form_item *pi = NULL;
 
-    fp = openSecretFile(pre_form_file, Sprintf(FILE_IS_READABLE_MSG,
-					       pre_form_file)->ptr);
+    fp = openSecretFile(pre_form_file);
     if (fp == NULL) {
 	PreForm = NULL;
 	return;

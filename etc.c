@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.29 2002/11/05 15:56:12 ukai Exp $ */
+/* $Id: etc.c,v 1.30 2002/11/05 16:03:13 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1033,11 +1033,10 @@ parsePasswd(FILE * fp, int netrc)
     add_auth_pass_entry(&ent, netrc);
 }
 
-#define PASS_IS_READABLE_MSG "SECURITY NOTE: passwd file must not be accessible by others"
-#define openPasswdFile(fname) openSecretFile(fname, PASS_IS_READABLE_MSG)
+#define FILE_IS_READABLE_MSG "SECURITY NOTE: file %s must not be accessible by others"
 
 FILE *
-openSecretFile(char *fname, char *error_msg)
+openSecretFile(char *fname)
 {
     struct stat st;
     if (fname == NULL)
@@ -1050,11 +1049,11 @@ openSecretFile(char *fname, char *error_msg)
      */
     if ((st.st_mode & (S_IRWXG | S_IRWXO)) != 0) {
 	if (fmInitialized) {
-	    message(error_msg, 0, 0);
+	    message(Sprintf(FILE_IS_READABLE_MSG, fname)->ptr, 0, 0);
 	    refresh();
 	}
 	else {
-	    fputs(error_msg, stderr);
+	    fputs(Sprintf(FILE_IS_READABLE_MSG, fname)->ptr, stderr);
 	    fputc('\n', stderr);
 	}
 	sleep(2);
@@ -1068,14 +1067,14 @@ void
 loadPasswd(void)
 {
     FILE *fp;
-    fp = openPasswdFile(passwd_file);
+    fp = openSecretFile(passwd_file);
     if (fp != NULL) {
 	parsePasswd(fp, 0);
 	fclose(fp);
     }
 
     /* for FTP */
-    fp = openPasswdFile("~/.netrc");
+    fp = openSecretFile("~/.netrc");
     if (fp != NULL) {
 	parsePasswd(fp, 1);
 	fclose(fp);

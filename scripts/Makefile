@@ -4,6 +4,7 @@ DESTDIR		=
 BIN_DIR		= $(prefix)/bin
 LIB_DIR		= $(prefix)/lib/w3m
 HELP_DIR	= $(prefix)/lib/w3m
+RC_DIR		= ~/.w3m
 
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi
 HELP_LIBS	= w3mhelp-funcname.pl w3mhelp-funcdesc.pl
@@ -24,7 +25,8 @@ all: $(LIB_TARGETS) $(HELP_LIBS)
 .in:
 	@echo "generating $@..."
 	@sed -e 's%@PERL@%$(PERL)%' -e 's%@HELP_DIR@%$(HELP_DIR)%' \
-	  -e 's%@DOCDIRS@%$(DOCDIRS)%' $< > $@
+	  -e 's%@DOCDIRS@%$(DOCDIRS)%' \
+	  -e 's%@RC_DIR@%$(RC_DIR)%' $< > $@
 	@chmod +x $@
 	@echo done
 

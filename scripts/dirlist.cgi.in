@@ -15,8 +15,7 @@ else {
   $WIN32 = 0;
   $CYGPATH = 0;
 }
-$RC_DIR = '~/.w3m/';
-
+$RC_DIR = '@RC_DIR@';
 $RC_DIR =~ s@^~/@$ENV{'HOME'}/@;
 if ($CYGPATH) {
   $RC_DIR = &cygwin_pathconv("$RC_DIR");

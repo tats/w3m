@@ -1,5 +1,9 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.6 2001/12/21 19:25:01 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.7 2001/12/21 20:30:54 ukai Exp $
+
+if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
+  $CYGPATH = 1;
+}
 
 $helpdir = "@HELP_DIR@";
 unshift(@INC, $helpdir);
@@ -15,7 +19,12 @@ $lang = 'en';
     '&', '&amp;'
 );
 
-$keymap = "$ENV{'HOME'}/.w3m/keymap";
+$RC_DIR = '@RC_DIR@';
+$RC_DIR =~ s/^~/$ENV{'HOME'}/;
+if ($CYGPATH) {
+  $RC_DIR = &cygwin_pathconv("$RC_DIR");
+}
+$keymap = "$RC_DIR/keymap";
 $version = '*unknown*';
 if (defined($ENV{'QUERY_STRING'})) {
     print "QUERY_STRING=$ENV{'QUERY_STRING'}\n";
@@ -190,4 +199,18 @@ PAGE
 	$attr = "";
     }
     print "</table>\n";
+}
+
+
+sub cygwin_pathconv {
+  local($_) = @_;
+  local(*CYGPATH);
+
+  open(CYGPATH, '-|') || exec('cygpath', '-w', $_);
+  $_ = <CYGPATH>;
+  close(CYGPATH);
+  s/\r?\n$//;
+  s!\\!/!g;
+  s!/$!!;
+  return $_;
 }

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.42 2001/12/21 02:11:50 ukai Exp $
+# $Id: configure,v 1.43 2001/12/21 20:30:54 ukai Exp $
 #	Configuration.
 #
 
@@ -1950,6 +1950,7 @@ BIN_DIR = $bindir
 HELP_DIR = $helpdir
 LIB_DIR = $libdir
 ETC_DIR = $sysconfdir
+RC_DIR = ~/.w3m
 HELP_FILE = $helpfile
 SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
 LOCAL_LIBRARIES = $bsdlib $ldflags

@@ -68,6 +68,7 @@ BIN_DIR = /usr/local/bin
 HELP_DIR = /usr/local/lib/w3m
 LIB_DIR = /usr/local/lib/w3m
 ETC_DIR = /usr/local/etc/w3m
+RC_DIR = ~/.w3m
 HELP_FILE = w3mhelp-w3m_ja.html
 SYS_LIBRARIES = -lgpm  -lbsd -lnsl -lncurses  -L/usr/lib -L/usr/lib -L/usr/local/ssl/lib -L/usr/local/ssl/lib -lssl -lcrypto 
 LOCAL_LIBRARIES = 

@@ -1,6 +1,17 @@
+2001-12-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02690] RC_DIR in scripts
+	* configure (config.h): add RC_DIR
+	* config.h.dist: ditto
+	* XMakefile: pass RC_DIR
+	* scripts/Makefile: subst RC_DIR
+	* scripts/dirlist.cgi.in: $RC_DIR initial value
+	* scripts/w3mhelp.cgi.in: ditto
+	* scripts/w3mhelp.cgi.in (cygwin_pathconv): added
+
 2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
-	* version.c.in: 0.2.3.2-cvs
+	* version.c.in: 0.2.3.2+cvs
 
 2001-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
@@ -1394,4 +1405,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.156 2001/12/21 20:15:58 ukai Exp $
+$Id: ChangeLog,v 1.157 2001/12/21 20:30:54 ukai Exp $

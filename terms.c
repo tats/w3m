@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.35 2002/11/15 15:36:48 ukai Exp $ */
+/* $Id: terms.c,v 1.36 2002/11/15 15:37:33 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -98,8 +98,8 @@ enable_win9x_console_input(void)
 {
     if (isWin95 && isWinConsole && isLocalConsole &&
 	hConIn == INVALID_HANDLE_VALUE) {
-	hConIn = CreateFile("CONIN$", GENERIC_READ|GENERIC_WRITE,
-			    FILE_SHARE_READ|FILE_SHARE_WRITE,
+	hConIn = CreateFile("CONIN$", GENERIC_READ | GENERIC_WRITE,
+			    FILE_SHARE_READ | FILE_SHARE_WRITE,
 			    NULL, OPEN_EXISTING, 0, NULL);
 	if (hConIn != INVALID_HANDLE_VALUE) {
 	    getch();
@@ -185,26 +185,26 @@ read_win32_console(char *s, int n)
     return n;
 }
 
-#endif /* SUPPORT_WIN9X_CONSOLE_MBCS */
+#endif				/* SUPPORT_WIN9X_CONSOLE_MBCS */
 
-HWND GetConsoleHwnd(void)
+HWND
+GetConsoleHwnd(void)
 {
-    #define MY_BUFSIZE 1024
+#define MY_BUFSIZE 1024
     HWND hwndFound;
     char pszNewWindowTitle[MY_BUFSIZE];
     char pszOldWindowTitle[MY_BUFSIZE];
 
     GetConsoleTitle(pszOldWindowTitle, MY_BUFSIZE);
-    wsprintf(pszNewWindowTitle,"%d/%d",
-		GetTickCount(),
-		GetCurrentProcessId());
+    wsprintf(pszNewWindowTitle, "%d/%d",
+	     GetTickCount(), GetCurrentProcessId());
     SetConsoleTitle(pszNewWindowTitle);
     Sleep(40);
     hwndFound = FindWindow(NULL, pszNewWindowTitle);
     SetConsoleTitle(pszOldWindowTitle);
-    return(hwndFound);
+    return (hwndFound);
 }
- 
+
 unsigned long
 cygwin_version(void)
 {
@@ -212,7 +212,7 @@ cygwin_version(void)
 
     p = (struct per_process *)cygwin_internal(CW_USER_DATA);
     if (p != NULL) {
-	return (p->dll_major * 1000) +  p->dll_minor;
+	return (p->dll_major * 1000) + p->dll_minor;
     }
     return 0;
 }
@@ -242,7 +242,7 @@ check_cygwin_console(void)
 	cygwin_mouse_btn_swapped = 1;
     }
 }
-#endif /* __CYGWIN__ */
+#endif				/* __CYGWIN__ */
 
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);

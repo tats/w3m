@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.52 2002/01/16 17:22:49 ukai Exp $
+# $Id: configure,v 1.53 2002/01/17 09:24:34 ukai Exp $
 #	Configuration.
 #
 
@@ -698,6 +698,8 @@ else
 fi
 
 ask_param "Use Migemo (Roma-ji search; Please see http://www.nmn.jp/~hidai/software/w3m/)" use_migemo n
+def_migemo_command=${def_migemo_command-migemo -t egrep /usr/local/share/migemo/migemo-dict}
+echo "def_migemo_command='$def_migemo_command'" >> config.param
 
 # protocols?
 ask_param "External URI loader support" use_external_uri_loader y
@@ -2075,7 +2077,7 @@ $def_use_help_cgi
 #define DEF_AUDIO_PLAYER	"$def_audio_player"
 
 /* for USE_MIGEMO */
-#define DEF_MIGEMO_COMMAND	"migemo -t egrep /usr/share/migemo/migemo-dict"
+#define DEF_MIGEMO_COMMAND	"$def_migemo_command"
 
 #define LIB_DIR      "$libdir"
 #define HELP_DIR     "$helpdir"

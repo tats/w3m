@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.71 2002/12/14 15:24:04 ukai Exp $ */
+/* $Id: rc.c,v 1.72 2002/12/18 16:42:31 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -80,6 +80,7 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
+#define CMT_GRAPHIC_CHAR "テーブルやメニューの枠に graphic 文字を使う"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
 #define CMT_DISP_INS_DEL "DEL, S, STRIKE 要素の内容を表示する。"
 #define CMT_COLOR        "カラー表示"
@@ -93,6 +94,7 @@ static char *config_file = NULL;
 #define CMT_C_COLOR	 "現在選択されているリンクの色"
 #define CMT_VISITED_ANCHOR	"訪れたことがあるリンクは色を変える"
 #define CMT_V_COLOR	 "訪れたことがあるリンクの色"
+#define CMT_USE_PROXY    "プロキシを使用する"
 #define CMT_HTTP_PROXY   "HTTPプロキシ(URLで入力)"
 #ifdef USE_SSL
 #define CMT_HTTPS_PROXY  "HTTPSプロキシ(URLで入力)"
@@ -236,6 +238,7 @@ static char *config_file = NULL;
 #endif
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
+#define CMT_GRAPHIC_CHAR "Use graphic char for border of table and menu"
 #define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
 #define CMT_DISP_INS_DEL "Display DEL, S and STRIKE element"
 #define CMT_COLOR        "Display with color"
@@ -249,6 +252,7 @@ static char *config_file = NULL;
 #define CMT_V_COLOR	 "Color of visited link"
 #define CMT_BG_COLOR     "Color of background"
 #define CMT_MARK_COLOR   "Color of mark"
+#define CMT_USE_PROXY    "Use proxy"
 #define CMT_HTTP_PROXY   "URL of HTTP proxy host"
 #ifdef USE_SSL
 #define CMT_HTTPS_PROXY  "URL of HTTPS proxy host"
@@ -526,6 +530,10 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
+#ifndef KANJI_SYMBOLS
+    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
+     CMT_GRAPHIC_CHAR, NULL},
+#endif
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_ONOFF, (void *)&displayInsDel,
@@ -650,6 +658,8 @@ struct param_ptr params3[] = {
 };
 
 struct param_ptr params4[] = {
+    {"use_proxy", P_CHARINT, PI_ONOFF, (void *)&use_proxy, CMT_USE_PROXY,
+     NULL},
     {"http_proxy", P_STRING, PI_TEXT, (void *)&HTTP_proxy, CMT_HTTP_PROXY,
      NULL},
 #ifdef USE_SSL

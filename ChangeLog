@@ -1,5 +1,20 @@
 2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03582] add config options graphic_char and use_proxy
+	* NEWS: rc: graphic_char, use_proxy
+	* fm.h (Do_no_use_proxy): macro using use_proxy
+		(use_proxy): added
+		(no_graphic_char): deleted
+		(UseGraphicChar): added
+	* main.c (main): UseGraphicChar, use_proxy
+	* rc.c (CMT_GRAPHIC_CHAR): added
+		(CMT_USE_PROXY): added
+		(params1): graphic_char
+		(params4): use_proxy
+	* terms.c (graph_ok): UseGraphicChar
+
+2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03581] MARK_URL, MARK_WORD
 	* main.c (chkWORD): accept ()[]{}&|;*?$ as anchor
 
@@ -5944,4 +5959,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.632 2002/12/18 16:38:49 ukai Exp $
+$Id: ChangeLog,v 1.633 2002/12/18 16:42:30 ukai Exp $

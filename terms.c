@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.41 2002/12/11 15:07:53 ukai Exp $ */
+/* $Id: terms.c,v 1.42 2002/12/18 16:42:32 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1204,7 +1204,7 @@ int
 graph_ok(void)
 {
 #ifndef KANJI_SYMBOLS
-    if (no_graphic_char)
+    if (!UseGraphicChar)
 	return 0;
 #endif				/* not KANJI_SYMBOLS */
     return T_as[0] != 0 && T_ae[0] != 0 && T_ac[0] != 0;

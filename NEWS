@@ -1,5 +1,7 @@
 w3m 0.3.3 or 0.4?
 
+* rc: graphic_char
+* rc: use_proxy
 * rc: preserve_timestamp
 * func: REDO, UNDO
 * func: LIST, LIST_MENU, MOVE_LIST_MENU

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.98 2002/12/18 16:20:52 ukai Exp $ */
+/* $Id: fm.h,v 1.99 2002/12/18 16:42:31 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -813,7 +813,8 @@ extern int ai_family_order_table[3][3];	/* XXX */
 #endif				/* INET6 */
 global TextList *NO_proxy_domains;
 global char NoCache init(FALSE);
-global int Do_not_use_proxy init(FALSE);
+global char use_proxy init(TRUE);
+#define Do_not_use_proxy (!use_proxy)
 global int Do_not_use_ti_te init(FALSE);
 
 global char *document_root init(NULL);
@@ -1005,7 +1006,7 @@ global char UseAutoDetect init(TRUE);
 #define url_quote_conv(x,c) url_quote(x)
 #endif				/* JP_CHARSET */
 #ifndef KANJI_SYMBOLS
-global int no_graphic_char init(FALSE);
+global char UseGraphicChar init(TRUE);
 extern char alt_rule[];
 #endif				/* not KANJI_SYMBOLS */
 extern char UseAltEntity;

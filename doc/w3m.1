@@ -53,15 +53,6 @@ ignore backspace effect
 .B -l line
 # of preserved line (default 10000)
 .TP
-.B -s
-Shift_JIS
-.TP
-.B -j
-JIS
-.TP
-.B -e
-EUC-JP
-.TP
 .B -B
 load bookmark
 .TP
@@ -123,6 +114,12 @@ don't use proxy
 .B -no-mouse
 don't use mouse
 .TP
+.B -cookie
+use cookie.
+.TP
+.B -no-cookie
+don't use cookie
+.TP
 .B -pauth user:pass
 proxy authentication
 .TP
@@ -135,11 +132,24 @@ toggle wrap search mode
 .B -X
 don't use termcap init/deinit
 .TP
+.B -title [=TERM]
+set buffer name to termianl title string. 
+If TERM is specified, use the TERM style title configuration.
+.TP
 .B -o opt=value
 assign value to config option
 .TP
+.B -show-option
+show all available config option
+.TP
 .B -config file
 specify config file
+.TP
+.B -help
+show usage
+.TP
+.B -version
+show w3m version
 .TP
 .B -debug
 DO NOT USE

@@ -1,3 +1,9 @@
+2002-11-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* doc/w3m.1: update
+	* doc-jp/w3m.1: update
+	* NEWS: update: -show-option
+
 2002-11-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03414] Re: show parameter
@@ -4561,4 +4567,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.501 2002/11/12 12:24:44 ukai Exp $
+$Id: ChangeLog,v 1.502 2002/11/12 12:36:30 ukai Exp $

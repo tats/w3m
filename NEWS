@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* options: -show-option
 * rc: relative_wheel_scroll
 * rc: relative_wheel_scroll_ratio
 * rc: fixed_wheel_scroll_count

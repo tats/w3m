@@ -48,6 +48,9 @@ EUCコードで表示する．
 .B \-j
 JIS (ISO-2022-JP)コードで表示する．
 .TP
+.BI \-O\  e|s|j|N|m
+表示に使う文字コードを指定する.
+.TP
 .BI \-I\  e|s
 入力文書の文字コードを指定する．
 .TP
@@ -94,11 +97,17 @@ Bookmark のファイルを指定する．
 .B w3m
 終了時に，以前の画面に戻らない．
 .TP
+.BI \-title =TERM
+端末のタイトル文字列を設定する.
+.TP
 .B \-W
 折り返しサーチを使うかどうかを切りかえる．
 .TP
 .BI \-o\  option=value
 オプションを指定する．
+.TP
+.B \-show-option
+利用できるオプションを表示する.
 .TP
 .B \-no\-proxy
 プロキシを利用しない．
@@ -151,6 +160,12 @@ HTTP要求ヘッダを追加する．
 .TP
 .BI \-config\  file
 configのファイルを指定する．
+.TP
+.B -help
+ヘルプを表示する.
+.TP
+.B -version
+w3m versionを表示する.
 .SS 文書の表示内容
 HTML文書を表示しているときには，次のような表示になります．
 .in +8n

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.31 2002/01/12 13:33:47 ukai Exp $ */
+/* $Id: url.c,v 1.32 2002/01/12 15:34:34 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1138,6 +1138,8 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 	    )))
 	Strcat_char(tmp, '/');
     Strcat_charp(tmp, pu->file);
+    if (pu->scheme == SCM_FTPDIR && Strlastchar(tmp) != '/')
+	Strcat_char(tmp, '/');
     if (pu->query) {
 	Strcat_char(tmp, '?');
 	Strcat_charp(tmp, pu->query);

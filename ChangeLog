@@ -1,3 +1,8 @@
+2002-01-13  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02828]
+	* url.c (_parsedURL2Str): add '/' at the end when scheme is SCM_FTPDIR
+
 2002-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02829]
@@ -1886,4 +1891,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.211 2002/01/12 13:33:47 ukai Exp $
+$Id: ChangeLog,v 1.212 2002/01/12 15:34:34 ukai Exp $

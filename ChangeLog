@@ -1,3 +1,8 @@
+2001-12-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [#489463] Host: header is wrong IPv6 literal addr
+	* url.c (otherinfo): IPv6 address should be quoted with bracket
+
 2001-12-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02629]

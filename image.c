@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.8 2002/03/06 03:32:11 ukai Exp $ */
+/* $Id: image.c,v 1.9 2002/04/17 02:36:45 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -11,6 +11,10 @@
 #endif
 
 #ifdef USE_IMAGE
+
+#ifndef W3M_SIGIMG
+#define W3M_SIGIMG (SIGUSR1)
+#endif
 
 static int image_index = 0;
 
@@ -279,7 +283,7 @@ static MySignalHandler
 load_image_handler(SIGNAL_ARG)
 {
     need_load_image = TRUE;
-    signal(SIGUSR1, load_image_handler);
+    signal(W3M_SIGIMG, load_image_handler);
     SIGNAL_RETURN;
 }
 
@@ -287,7 +291,7 @@ static MySignalHandler
 load_image_next(SIGNAL_ARG)
 {
     need_load_image = TRUE;
-    signal(SIGUSR1, load_image_handler);
+    signal(W3M_SIGIMG, load_image_handler);
     loadImage(IMG_FLAG_NEXT);
     SIGNAL_RETURN;
 }
@@ -446,7 +450,7 @@ loadImage(int flag)
     if (image_lock)
 	unlink(image_lock);
     need_load_image = FALSE;
-    signal(SIGUSR1, load_image_handler);
+    signal(W3M_SIGIMG, load_image_handler);
 
     if (!image_list)
 	return;
@@ -506,7 +510,7 @@ loadImage(int flag)
 		    exit(0);
 		fclose(f);
 #endif
-		kill(getppid(), SIGUSR1);
+		kill(getppid(), W3M_SIGIMG);
 	    }
 	    exit(0);
 	}
@@ -517,7 +521,7 @@ loadImage(int flag)
     }
   load_image_end:
     if (flag == IMG_FLAG_NEXT)
-	signal(SIGUSR1, load_image_next);
+	signal(W3M_SIGIMG, load_image_next);
 }
 
 ImageCache *

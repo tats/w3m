@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.70 2003/01/29 17:10:53 ukai Exp $ */
+/* $Id: url.c,v 1.71 2003/01/29 17:33:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -86,23 +86,14 @@ struct cmdtable schemetable[] = {
 
 static struct table2 DefaultGuess[] = {
     {"html", "text/html"},
-    {"HTML", "text/html"},
     {"htm", "text/html"},
-    {"HTM", "text/html"},
     {"shtml", "text/html"},
-    {"SHTML", "text/html"},
     {"gif", "image/gif"},
-    {"GIF", "image/gif"},
     {"jpeg", "image/jpeg"},
     {"jpg", "image/jpeg"},
-    {"JPEG", "image/jpeg"},
-    {"JPG", "image/jpeg"},
     {"png", "image/png"},
-    {"PNG", "image/png"},
     {"xbm", "image/xbm"},
-    {"XBM", "image/xbm"},
     {"au", "audio/basic"},
-    {"AU", "audio/basic"},
     {"gz", "application/x-gzip"},
     {"Z", "application/x-compress"},
     {"bz2", "application/x-bzip"},
@@ -110,7 +101,6 @@ static struct table2 DefaultGuess[] = {
     {"zip", "application/x-zip"},
     {"lha", "application/x-lha"},
     {"lzh", "application/x-lha"},
-    {"LZH", "application/x-lha"},
     {"ps", "application/postscript"},
     {"pdf", "application/pdf"},
     {NULL, NULL}
@@ -1860,6 +1850,7 @@ add_index_file(ParsedURL *pu, URLFile *uf)
 static char *
 guessContentTypeFromTable(struct table2 *table, char *filename)
 {
+    struct table2 *t;
     char *p;
     if (table == NULL)
 	return NULL;
@@ -1869,10 +1860,13 @@ guessContentTypeFromTable(struct table2 *table, char *filename)
     if (p == filename)
 	return NULL;
     p++;
-    while (table->item1) {
-	if (!strcmp(p, table->item1))
-	    return table->item2;
-	table++;
+    for (t = table; t->item1; t++) {
+	if (!strcmp(p, t->item1))
+	    return t->item2;
+    }
+    for (t = table; t->item1; t++) {
+	if (!strcasecmp(p, t->item1))
+	    return t->item2;
     }
     return NULL;
 }

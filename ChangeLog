@@ -1,3 +1,8 @@
+2002-12-20  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03588] include time.h in ftp.c
+	* ftp.c: include <time.h>
+
 2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03583] w3mman
@@ -5969,4 +5974,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.635 2002/12/18 16:48:58 ukai Exp $
+$Id: ChangeLog,v 1.636 2002/12/19 15:29:05 ukai Exp $

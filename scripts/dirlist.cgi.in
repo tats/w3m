@@ -277,9 +277,9 @@ sub right_dir {
   }
   closedir(DIR);
   if ($SORT eq $SORT_SIZE) { 
-    @list = sort { $sizes{$b} <=> $sizes{$a} || $a <=> $b } @list;
+    @list = sort { $sizes{$b} <=> $sizes{$a} || $a cmp $b } @list;
   } elsif ($SORT eq $SORT_TIME) { 
-    @list = sort { $ctimes{$b} <=> $ctimes{$a} || $a <=> $b } @list;
+    @list = sort { $ctimes{$b} <=> $ctimes{$a} || $a cmp $b } @list;
   } else {
     @list = sort @list;
   }

@@ -1,3 +1,8 @@
+2003-02-08  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03736] dirlist sort
+	* scripts/dirlist.cgi.in (right_dir): use cmp for filename comparison
+
 2003-02-07  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03735] Re: make error of checkType arg
@@ -7118,4 +7123,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.742 2003/02/06 17:21:42 ukai Exp $
+$Id: ChangeLog,v 1.743 2003/02/07 15:06:15 ukai Exp $

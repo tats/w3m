@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.25 2001/11/30 10:49:06 ukai Exp $ */
+/* $Id: fm.h,v 1.26 2001/12/06 15:31:58 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -453,6 +453,7 @@ struct readbuffer {
 #define RB_IGNORE_P	0x4000
 #define RB_TITLE	0x8000
 #define RB_NFLUSHED	0x10000
+#define RB_NOFRAMES	0x20000
 
 #ifdef FORMAT_NICE
 #define RB_FILL		0x200000

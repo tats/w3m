@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: html.h,v 1.5 2001/12/06 15:31:58 ukai Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -180,6 +180,8 @@ typedef struct {
 #define HTML_HEAD       95
 #define HTML_N_HEAD     96
 #define HTML_DOCTYPE    97
+#define HTML_NOFRAMES   98
+#define HTML_N_NOFRAMES 99
 
 
    /* pseudo tag */

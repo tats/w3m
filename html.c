@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.6 2001/11/27 18:23:33 ukai Exp $ */
+/* $Id: html.c,v 1.7 2001/12/06 15:31:58 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -36,6 +36,8 @@ unsigned char ALST_FRAME[] = { ATTR_SRC, ATTR_NAME, ATTR_CORE };
 #define MAXA_FRAME	MAXA_CORE + 2
 unsigned char ALST_FRAMESET[] = { ATTR_COLS, ATTR_ROWS, ATTR_CORE };
 #define MAXA_FRAMESET	MAXA_CORE + 2
+unsigned char ALST_NOFRAMES[] = { ATTR_CORE };
+#define MAXA_NOFRAMES	MAXA_CORE
 unsigned char ALST_FORM[] =
     { ATTR_METHOD, ATTR_ACTION, ATTR_CHARSET, ATTR_ACCEPT_CHARSET,
     ATTR_ENCTYPE, ATTR_TARGET, ATTR_NAME, ATTR_CORE
@@ -196,9 +198,9 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"head", NULL, 0, 0},	/*  95 HTML_HEAD       */
     {"/head", NULL, 0, TFLG_END},	/*  96 HTML_N_HEAD     */
     {"doctype", NULL, 0, 0},	/*  97 HTML_DOCTYPE    */
+    {"noframes", ALST_NOFRAMES, MAXA_NOFRAMES, 0},	/*  98 HTML_NOFRAMES   */
+    {"/noframes", NULL, 0, TFLG_END},	/*  99 HTML_N_NOFRAMES */
 
-    {NULL, NULL, 0, 0},		/*  98 Undefined       */
-    {NULL, NULL, 0, 0},		/*  99 Undefined       */
     {NULL, NULL, 0, 0},		/* 100 Undefined       */
     {NULL, NULL, 0, 0},		/* 101 Undefined       */
     {NULL, NULL, 0, 0},		/* 102 Undefined       */

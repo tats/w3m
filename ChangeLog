@@ -1,3 +1,22 @@
+2001-12-07  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02622]
+	* tagtable.tab (noframes): added
+	* tagtable.tab (/noframes): added
+	* fm.h (RB_NOFRAMES): added
+	* html.h (HTML_NOFRAMES): added
+	* html.h (HTML_N_NOFRAMES): added 
+	* html.c (ALST_NOFRAMES): added
+	* html.c (98 HTML_NOFRAMES): added
+	* html.c (99 HTML_N_NOFRAMES): added
+	* file.c (HTMLtagproc1): add HTML_NOFRAMES, HTML_N_NOFRAMES
+	* file.c (HTMLtagproc1): don't meta refresh if it is in noframes and
+	                        auto frame rendering
+	* main.c (MAIN): use setAlarmEvent()
+	* main.c (SigAlarm): ditto
+	* main.c (setAlarm): ditto
+	* main.c (setAlarmEvent): check if status == AL_UNSET
+
 2001-12-06  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02619]

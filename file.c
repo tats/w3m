@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.26 2001/12/05 17:29:26 ukai Exp $ */
+/* $Id: file.c,v 1.27 2001/12/06 15:31:58 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3380,6 +3380,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	}
 	return 0;
+    case HTML_NOFRAMES:
+	CLOSE_P;
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	obuf->flag |= (RB_NOFRAMES | RB_IGNORE_P);
+	/* istr = str; */
+	return 1;
+    case HTML_N_NOFRAMES:
+	CLOSE_P;
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	obuf->flag &= ~RB_NOFRAMES;
+	return 1;
     case HTML_FRAME:
 	q = r = NULL;
 	parsedtag_get_value(tag, ATTR_SRC, &q);
@@ -3711,19 +3722,22 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		push_str(obuf, s_tmp->length, tmp, PC_ASCII);
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);
-		if (!is_redisplay && refresh_interval == 0 && MetaRefresh) {
+		if (!is_redisplay && refresh_interval == 0 && MetaRefresh &&
+		    !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
 		    pushEvent(FUNCNAME_goURL, s_tmp->ptr);
 		    /* pushEvent(deletePrevBuf,NULL); */
 		}
 #ifdef USE_ALARM
-		else if (!is_redisplay && refresh_interval > 0 && MetaRefresh) {
+		else if (!is_redisplay && refresh_interval > 0 && MetaRefresh &&
+			 !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
 		    setAlarmEvent(refresh_interval, AL_IMPLICIT,
 				  FUNCNAME_goURL, s_tmp->ptr);
 		}
 #endif
 	    }
 #ifdef USE_ALARM
-	    else if (!is_redisplay && refresh_interval > 0 && MetaRefresh) {
+	    else if (!is_redisplay && refresh_interval > 0 && MetaRefresh &&
+		     !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
 		tmp = Sprintf("Refresh (%d sec)", refresh_interval);
 		push_str(obuf, 0, tmp, PC_ASCII);
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,

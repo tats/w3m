@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.32 2001/12/04 16:24:09 ukai Exp $ */
+/* $Id: main.c,v 1.33 2001/12/06 15:31:58 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -858,8 +858,7 @@ MAIN(int argc, char **argv, char **envp)
 	}
 	else if (alarm_status == AL_IMPLICIT_DONE
 		 && alarm_buffer != Currentbuf) {
-	    alarm_sec = 0;
-	    alarm_status = AL_UNSET;
+	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
 	if (alarm_sec > 0) {
 	    signal(SIGALRM, SigAlarm);
@@ -4686,8 +4685,7 @@ SigAlarm(SIGNAL_ARG)
 	}
 	else if (alarm_status == AL_IMPLICIT_DONE
 		 && alarm_buffer != Currentbuf) {
-	    alarm_sec = 0;
-	    alarm_status = AL_UNSET;
+	    setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
 	}
 	if (alarm_sec > 0) {
 	    signal(SIGALRM, SigAlarm);
@@ -4722,7 +4720,7 @@ setAlarm(void)
 	setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));
     }
     else {
-	alarm_sec = 0;
+	setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);
     }
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -4730,14 +4728,12 @@ setAlarm(void)
 void
 setAlarmEvent(int sec, short status, int cmd, void *data)
 {
-    if (status == AL_EXPLICIT
+    if (status == AL_UNSET || status == AL_EXPLICIT
 	|| (status == AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
 	alarm_sec = sec;
 	alarm_status = status;
 	alarm_event.cmd = cmd;
 	alarm_event.user_data = data;
-	signal(SIGALRM, SigAlarm);
-	alarm(alarm_sec);
     }
 }
 #endif

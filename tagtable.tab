@@ -75,6 +75,8 @@ meta		HTML_META
 frame		HTML_FRAME
 frameset	HTML_FRAMESET
 /frameset	HTML_N_FRAMESET
+noframes	HTML_NOFRAMES
+/noframes	HTML_N_NOFRAMES
 center		HTML_CENTER
 /center		HTML_N_CENTER
 font		HTML_FONT

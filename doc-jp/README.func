@@ -79,6 +79,7 @@ NEXT_RIGHT     カーソルの右側にあるリンクに移動します
 NEXT_RIGHT_DOWN        カーソルの右側(無ければ次行以降)にあるリンクに移動します
 NEXT_TAB	次のタブに移動します
 NEXT_UP                カーソルの上側にあるリンクに移動します
+NEXT_VISITED    次の訪れたことのあるリンクに移動します
 NEXT_WORD	次の単語に移動します
 NOTHING		何もしません
 NULL		何もしません
@@ -93,6 +94,7 @@ PREV_LINK	前のリンクに移動します
 PREV_MARK	一つ前のマークに移動します
 PREV_PAGE	前のページを表示します
 PREV_TAB	前のタブに移動します
+PREV_VISITED    前の訪れたことのあるリンクに移動します
 PREV_WORD	前の単語に移動します
 PRINT		バッファの表示内容をファイルに保存します
 QUIT		w3mを終了します

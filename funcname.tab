@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.20 2003/01/23 18:37:21 ukai Exp $
+# $Id: funcname.tab,v 1.21 2003/07/22 17:24:49 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -147,3 +147,5 @@ VIEW_BOOKMARK	ldBmark
 VIEW_IMAGE	followI
 WHEREIS		srchfor
 WRAP_TOGGLE	wrapToggle
+NEXT_VISITED    nextVA
+PREV_VISITED    prevVA

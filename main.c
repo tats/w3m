@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.226 2003/05/12 16:34:12 ukai Exp $ */
+/* $Id: main.c,v 1.227 2003/07/22 17:24:49 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -94,6 +94,8 @@ static void _goLine(char *);
 static void _newT(void);
 static void followTab(TabBuffer * tab);
 static void moveTab(TabBuffer * t, TabBuffer * t2, int right);
+static void _nextA(int);
+static void _prevA(int);
 static int check_target = TRUE;
 #define PREC_NUM (prec_num ? prec_num : 1)
 #define PREC_LIMIT 10000
@@ -3451,10 +3453,39 @@ lastA(void)
 void
 nextA(void)
 {
+    _nextA(FALSE);
+}
+
+/* go to the previous anchor */
+void
+prevA(void)
+{
+    _prevA(FALSE);
+}
+
+/* go to the next visited anchor */
+void
+nextVA(void)
+{
+    _nextA(TRUE);
+}
+
+/* go to the previous visited anchor */
+void
+prevVA(void)
+{
+    _prevA(TRUE);
+}
+
+/* go to the next [visited] anchor */
+static void
+_nextA(int visited)
+{
     HmarkerList *hl = Currentbuf->hmarklist;
     BufferPoint *po;
     Anchor *an, *pan;
     int i, x, y, n = searchKeyNum();
+    ParsedURL url;
 
     if (Currentbuf->firstLine == NULL)
 	return;
@@ -3462,11 +3493,15 @@ nextA(void)
 	return;
 
     an = retrieveCurrentAnchor(Currentbuf);
-    if (an == NULL)
+    if (visited != TRUE && an == NULL)
 	an = retrieveCurrentForm(Currentbuf);
 
     y = Currentbuf->currentLine->linenumber;
     x = Currentbuf->pos;
+
+    if (visited == TRUE) {
+        n = hl->nmark;
+    }
 
     for (i = 0; i < n; i++) {
 	pan = an;
@@ -3474,28 +3509,47 @@ nextA(void)
 	    int hseq = an->hseq + 1;
 	    do {
 		if (hseq >= hl->nmark) {
+                    if (visited == TRUE)
+                        return;
 		    an = pan;
 		    goto _end;
 		}
 		po = &hl->marks[hseq];
 		an = retrieveAnchor(Currentbuf->href, po->line, po->pos);
-		if (an == NULL)
+		if (visited != TRUE && an == NULL)
 		    an = retrieveAnchor(Currentbuf->formitem, po->line,
 					po->pos);
 		hseq++;
+                if (visited == TRUE && an) {
+                    parseURL2(an->url, &url, baseURL(Currentbuf));
+                    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+                        goto _end;
+                    }
+                }
 	    } while (an == NULL || an == pan);
 	}
 	else {
 	    an = closest_next_anchor(Currentbuf->href, NULL, x, y);
+            if (visited != TRUE) 
 	    an = closest_next_anchor(Currentbuf->formitem, an, x, y);
 	    if (an == NULL) {
+                if (visited == TRUE)
+                    return;
 		an = pan;
 		break;
 	    }
 	    x = an->start.pos;
 	    y = an->start.line;
+            if (visited == TRUE) {
+                parseURL2(an->url, &url, baseURL(Currentbuf));
+                if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+                    goto _end;
+                }
+            }
 	}
     }
+    if (visited == TRUE)
+        return;
 
   _end:
     if (an == NULL || an->hseq < 0)
@@ -3508,13 +3562,14 @@ nextA(void)
 }
 
 /* go to the previous anchor */
-void
-prevA(void)
+static void
+_prevA(int visited)
 {
     HmarkerList *hl = Currentbuf->hmarklist;
     BufferPoint *po;
     Anchor *an, *pan;
     int i, x, y, n = searchKeyNum();
+    ParsedURL url;
 
     if (Currentbuf->firstLine == NULL)
 	return;
@@ -3522,11 +3577,15 @@ prevA(void)
 	return;
 
     an = retrieveCurrentAnchor(Currentbuf);
-    if (an == NULL)
+    if (visited != TRUE && an == NULL)
 	an = retrieveCurrentForm(Currentbuf);
 
     y = Currentbuf->currentLine->linenumber;
     x = Currentbuf->pos;
+
+    if (visited == TRUE) {
+        n = hl->nmark;
+    }
 
     for (i = 0; i < n; i++) {
 	pan = an;
@@ -3534,28 +3593,47 @@ prevA(void)
 	    int hseq = an->hseq - 1;
 	    do {
 		if (hseq < 0) {
+                    if (visited == TRUE)
+                        return;
 		    an = pan;
 		    goto _end;
 		}
 		po = hl->marks + hseq;
 		an = retrieveAnchor(Currentbuf->href, po->line, po->pos);
-		if (an == NULL)
+		if (visited != TRUE && an == NULL)
 		    an = retrieveAnchor(Currentbuf->formitem, po->line,
 					po->pos);
 		hseq--;
+                if (visited == TRUE && an) {
+                    parseURL2(an->url, &url, baseURL(Currentbuf));
+                    if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+                        goto _end;
+                    }
+                }
 	    } while (an == NULL || an == pan);
 	}
 	else {
 	    an = closest_prev_anchor(Currentbuf->href, NULL, x, y);
+            if (visited != TRUE)
 	    an = closest_prev_anchor(Currentbuf->formitem, an, x, y);
 	    if (an == NULL) {
+                if (visited == TRUE)
+                    return;
 		an = pan;
 		break;
 	    }
 	    x = an->start.pos;
 	    y = an->start.line;
+            if (visited == TRUE && an) {
+                parseURL2(an->url, &url, baseURL(Currentbuf));
+                if (getHashHist(URLHist, parsedURL2Str(&url)->ptr)) {
+                    goto _end;
+                }
 	}
     }
+    }
+    if (visited == TRUE)
+        return;
 
   _end:
     if (an == NULL || an->hseq < 0)

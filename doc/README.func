@@ -79,6 +79,7 @@ NEXT_RIGHT     Move to next right link
 NEXT_RIGHT_DOWN        Move to next right (or downward) link 
 NEXT_TAB	Move to next tab
 NEXT_UP                Move to next upward link 
+NEXT_VISITED    Move to next visited link
 NEXT_WORD	Move to next word
 NOTHING		Do nothing
 NULL		Do nothing
@@ -93,6 +94,7 @@ PREV_LINK	Move to previous link
 PREV_MARK	Move to previous mark
 PREV_PAGE	Move to previous page
 PREV_TAB	Move to previous tab
+PREV_VISITED    Move to previous visited link
 PREV_WORD	Move to previous word
 PRINT		Save buffer to file
 QUIT		Quit w3m

@@ -1,3 +1,21 @@
+2003-07-23  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03939] next/prev visited link
+	* funcname.tab (NEXT_VISITED): added
+		(PREV_VISITED): added
+	* main.c (_nextA): added
+		(_prevA): added
+		(nextVA): added
+		(prevVA): added
+	* proto.h (nextVA): added
+		(prevVA): added
+	* doc/README.func (NEXT_VISITED): added
+		(PREV_VISITED): added
+	* doc-jp/README.func (NEXT_VISITED): added
+		(PREV_VISITED): added
+	* NEWS: func: NEXT_VISITED, PREV_VISITED
+	
+
 2003-07-14  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03938] clear region margin
@@ -7933,4 +7951,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.852 2003/07/13 16:19:09 ukai Exp $
+$Id: ChangeLog,v 1.853 2003/07/22 17:24:49 ukai Exp $

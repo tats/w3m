@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.50 2003/10/05 18:52:51 ukai Exp $ */
+/* $Id: terms.c,v 1.51 2003/12/08 16:06:34 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -220,7 +220,9 @@ check_cygwin_console(void)
     char *term = getenv("TERM");
     HANDLE hWnd;
 
-    if (strncmp(term, "cygwin", 6) == 0) {
+    if (term == NULL)
+	term = DEFAULT_TERM;
+    if (term && strncmp(term, "cygwin", 6) == 0) {
 	isWinConsole = 1;
     }
     if (isWinConsole) {
@@ -485,12 +487,14 @@ set_tty(void)
 #ifdef USE_MOUSE
     {
 	char *term = getenv("TERM");
-	struct w3m_term_info *p;
-	for (p = w3m_term_info_list; p->term != NULL; p++) {
-	    if (!strncmp(term, p->term, strlen(p->term))) {
-		is_xterm = p->mouse_flag;
-		break;
-	    }
+	if (term != NULL) {
+	    struct w3m_term_info *p;
+	    for (p = w3m_term_info_list; p->term != NULL; p++) {
+		if (!strncmp(term, p->term, strlen(p->term))) {
+			is_xterm = p->mouse_flag;
+			break;
+		    }
+		}
 	}
     }
 #endif

@@ -1,3 +1,9 @@
+2003-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Bug#217509: segfaults if TERM is not set
+	* terms.c (check_cygwin_console): check TERM==NULL
+		(set_tty): check TERM==NULL
+
 2003-10-23  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 04011] accessing to an `https' URI with a fragment via a proxy
@@ -8255,4 +8261,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.890 2003/10/22 18:48:09 ukai Exp $
+$Id: ChangeLog,v 1.891 2003/12/08 16:06:33 ukai Exp $

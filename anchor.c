@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: anchor.c,v 1.7 2001/12/14 17:10:54 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -185,14 +185,14 @@ searchURLLabel(Buffer *buf, char *url)
 static Anchor *
 _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
 {
-    Str tmp = Strnew_charp("news:");
+    Str tmp;
 
     p1++;
     if (*(p2 - 1) == '>')
 	p2--;
-    while (p1 < p2) {
-	Strcat_char(tmp, *(p1++));
-    }
+    tmp = Strnew_size(sizeof("news:") - 1 + (p2 - p1));
+    Strcat_charp_n(tmp, "news:", sizeof("news:") - 1);
+    Strcat_charp_n(tmp, p1, p2 - p1);
     return registerHref(buf, tmp->ptr, NULL, NO_REFERER, line, pos);
 }
 #endif				/* USE_NNTP */

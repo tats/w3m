@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.16 2001/12/10 17:02:44 ukai Exp $
+# $Id: XMakefile,v 1.17 2001/12/14 17:10:54 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -142,7 +142,7 @@ uninstall:
 
 clean: sweep
 	-rm -f *.o *.a $(TARGETS) mktable$(EXT)
-	-rm -f funcname.c funcname1.h funcname2.h tagtable.c
+	-rm -f funcname.c funcname1.h funcname2.h tagtable.c functable.c
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir; $(MAKE) clean); \

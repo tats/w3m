@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.17 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: indep.c,v 1.18 2001/12/14 17:10:54 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -286,13 +286,11 @@ getescapechar(char **str)
 		*str = p;
 		return -1;
 	    }
-	    q = p;
-	    for (p++; IS_XDIGIT(*p); p++) ;
-	    q = allocStr(q, p - q);
+	    for (dummy = GET_MYCDIGIT(*p), p++; IS_XDIGIT(*p); p++)
+		dummy = dummy * 0x10 + GET_MYCDIGIT(*p);
 	    if (*p == ';')
 		p++;
 	    *str = p;
-	    sscanf(q, "%x", &dummy);
 	    return dummy;
 	}
 	else {
@@ -300,13 +298,11 @@ getescapechar(char **str)
 		*str = p;
 		return -1;
 	    }
-	    q = p;
-	    for (p++; IS_DIGIT(*p); p++) ;
-	    q = allocStr(q, p - q);
+	    for (dummy = GET_MYCDIGIT(*p), p++; IS_DIGIT(*p); p++)
+		dummy = dummy * 10 + GET_MYCDIGIT(*p);
 	    if (*p == ';')
 		p++;
 	    *str = p;
-	    sscanf(q, "%d", &dummy);
 	    return dummy;
 	}
     }

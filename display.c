@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.45 2002/12/11 15:03:15 ukai Exp $ */
+/* $Id: display.c,v 1.46 2002/12/13 02:19:01 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -214,19 +214,145 @@ static Linecolor color_mode = 0;
 static Buffer *save_current_buf = NULL;
 #endif
 
-char *delayed_msg = NULL;
+static char *delayed_msg = NULL;
 
+static void drawAnchorCursor(Buffer *buf);
+#define redrawBuffer(buf) redrawNLine(buf, LASTLINE)
+static void redrawNLine(Buffer *buf, int n);
+static Line *redrawLine(Buffer *buf, Line *l, int i);
 #ifdef USE_IMAGE
 static int image_touch = 0;
 static int draw_image_flag = FALSE;
 static Line *redrawLineImage(Buffer *buf, Line *l, int i);
 #endif
+static int redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos);
+static void do_effects(Lineprop m);
+#ifdef USE_ANSI_COLOR
+static void do_color(Linecolor c);
+#endif
+
+static Str
+make_lastline_link(Buffer *buf, char *title, char *url)
+{
+    Str s = NULL, u;
+    ParsedURL pu;
+    char *p;
+    int l = COLS - 1;
+
+    if (title && *title) {
+	s = Strnew_m_charp("[", title, "]", NULL);
+	for (p = s->ptr; *p; p++) {
+	    if (IS_CNTRL(*p) || IS_SPACE(*p))
+		*p = ' ';
+	}
+	if (url)
+	    Strcat_charp(s, " ");
+	l -= s->length;
+        if (l <= 0)
+	    return s;
+    }
+    if (!url)
+	return s;
+    parseURL2(url, &pu, baseURL(buf));
+    u = parsedURL2Str(&pu);
+    if (l <= 4 || l >= u->length) {
+	if (!s)
+	    return u;
+	Strcat(s, u);
+	return s;
+    }
+    if (!s)
+	s = Strnew_size(COLS);
+    Strcat_charp_n(s, u->ptr, (l - 2) / 2);
+#if LANG == JA
+    Strcat_charp(s, "¡Ä");
+#else				/* LANG != JA */
+    Strcat_charp(s, "..");
+#endif				/* LANG != JA */
+    l = COLS - 1 - s->length;
+    Strcat_charp(s, &u->ptr[u->length - l]);
+    return s;
+}
+
+static Str
+make_lastline_message(Buffer *buf)
+{
+    Str msg, s = NULL;
+
+    if (displayLink) {
+#ifdef USE_IMAGE
+	MapArea *a = retrieveCurrentMapArea(buf);
+	if (a)
+	   s = make_lastline_link(buf, a->alt, a->url);
+	else
+#endif
+	{
+	    Anchor *a = retrieveCurrentAnchor(buf);
+	    char *p = NULL;
+	    if (a && a->title && *a->title)
+		p = a->title;
+	    else {
+		Anchor *a_img = retrieveCurrentImg(buf);
+		if (a_img && a_img->title && *a_img->title)
+		    p = a_img->title;
+	    }
+	    if (p || a)
+	        s = make_lastline_link(buf, p, a ? a->url : NULL);
+	}
+	if (s && s->length >= COLS - 3)
+	    return s;
+    }
+
+#ifdef USE_MOUSE
+    if (use_mouse && mouse_action.lastline_str)
+	msg = Strnew_charp(mouse_action.lastline_str);
+    else
+#endif				/* not USE_MOUSE */
+	msg = Strnew();
+    if (displayLineInfo && buf->currentLine != NULL && buf->lastLine != NULL) {
+	int cl = buf->currentLine->real_linenumber;
+	int ll = buf->lastLine->real_linenumber;
+	int r = (int)((double)cl * 100.0 / (double)(ll ? ll : 1) + 0.5);
+	Strcat(msg, Sprintf("%d/%d (%d%%)", cl, ll, r));
+    }
+    else
+	Strcat_charp(msg, "Viewing");
+#ifdef USE_SSL
+    if (buf->ssl_certificate)
+	Strcat_charp(msg, "[SSL]");
+#endif
+    Strcat_charp(msg, " <");
+    Strcat_charp(msg, buf->buffername);
+
+    if (s) {
+	int l = COLS - 3 - s->length;
+#ifdef JP_CHARSET
+	if (msg->length > l) {
+	    char *p;
+	    int i;
+	    for (p = msg->ptr; *p; p += i) {
+	        i = get_mclen(get_mctype(p));
+		l -= i;
+		if (l < 0)
+		    break;
+	    }
+	    l = p - msg->ptr;
+#endif
+	    Strtruncate(msg, l);
+	}
+	Strcat_charp(msg, "> ");
+	Strcat(msg, s);
+    }
+    else {
+	Strcat_charp(msg, ">");
+    }
+    return msg;
+}
 
 void
 displayBuffer(Buffer *buf, int mode)
 {
     Str msg;
-    Str s = NULL;
     int ny = 0;
 
     if (buf->topLine == NULL && readBufferCache(buf) == 0) {	/* clear_buffer */
@@ -321,89 +447,9 @@ displayBuffer(Buffer *buf, int mode)
     }
 #endif
 
-#ifdef USE_MOUSE
-    if (use_mouse && mouse_action.lastline_str)
-	msg = Strnew_charp(mouse_action.lastline_str);
-    else
-#endif				/* not USE_MOUSE */
-	msg = Strnew();
-    if (displayLineInfo && buf->currentLine != NULL && buf->lastLine != NULL) {
-	int cl = buf->currentLine->real_linenumber;
-	int ll = buf->lastLine->real_linenumber;
-	int r = (int)((double)cl * 100.0 / (double)(ll ? ll : 1) + 0.5);
-	Strcat(msg, Sprintf("%d/%d (%d%%)", cl, ll, r));
-    }
-    else
-	Strcat_charp(msg, "Viewing");
-#ifdef USE_SSL
-    if (buf->ssl_certificate)
-	Strcat_charp(msg, "[SSL]");
-#endif
-    Strcat_charp(msg, " <");
-    Strcat_charp(msg, buf->buffername);
-    if (displayLink) {
-#ifdef USE_IMAGE
-	s = getCurrentMapLabel(buf);
-	if (!s)
-#endif
-	{
-	    Anchor *a = retrieveCurrentAnchor(buf);
-	    if (a && a->title && *a->title)
-		s = Sprintf("[%s] ", a->title);
-	    else {
-		Anchor *a_img = retrieveCurrentImg(buf);
-		if (a_img && a_img->title && *a_img->title)
-		    s = Sprintf("[%s]%s", a_img->title, a ? " " : "");
-	    }
-	    if (a) {
-		ParsedURL pu;
-		parseURL2(a->url, &pu, baseURL(buf));
-		if (!s)
-		    s = Strnew();
-		Strcat(s, parsedURL2Str(&pu));
-	    }
-	}
-    }
-    if (s) {
-	int l;
-	l = buf->width - 2;
-	if (s->length > l) {
-	    if (l >= 4) {
-		msg = Strsubstr(s, 0, (l - 2) / 2);
-#if LANG == JA
-		Strcat_charp(msg, "¡Ä");
-#else				/* LANG != JA */
-		Strcat_charp(msg, "..");
-#endif				/* LANG != JA */
-		l = buf->width - msg->length;
-		Strcat(msg, Strsubstr(s, s->length - l, l));
-	    }
-	    else {
-		msg = s;
-	    }
-	}
-	else {
-	    l -= s->length;
-	    if (msg->length > l) {
-#ifdef JP_CHARSET
-		char *bn = msg->ptr;
-		int i, j;
-		for (i = 0; bn[i]; i += j) {
-		    j = get_mclen(get_mctype(&bn[i]));
-		    if (i + j > l)
-			break;
-		}
-		l = i;
-#endif
-		Strtruncate(msg, l);
-	    }
-	    Strcat_charp(msg, "> ");
-	    Strcat(msg, s);
-	}
-    }
-    else {
-	Strcat_charp(msg, ">");
-    }
+    drawAnchorCursor(buf);
+
+    msg = make_lastline_message(buf);
     if (buf->firstLine == NULL) {
 	Strcat_charp(msg, "\tNo Line");
 	clear();
@@ -434,13 +480,83 @@ displayBuffer(Buffer *buf, int mode)
 #endif
 }
 
-void
-redrawBuffer(Buffer *buf)
+static void
+drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
+		  int tline, int eline, int active)
 {
-    redrawNLine(buf, LASTLINE);
+    int i, j;
+    Line *l;
+    Anchor *an;
+
+    l = buf->topLine;
+    for (j = 0; j < al->nanchor; j++) {
+	an = &al->anchors[j];
+	if (an->start.line < tline)
+	    continue;
+	if (an->start.line >= eline)
+	    return;
+	for (;; l = l->next) {
+	    if (l == NULL)
+		return;
+	    if (l->linenumber == an->start.line)
+		break;
+	}
+	if (hseq >= 0 && an->hseq == hseq) {
+	    for (i = an->start.pos; i < an->end.pos; i++) {
+		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
+		    if (active)
+			l->propBuf[i] |= PE_ACTIVE;
+		    else
+			l->propBuf[i] &= ~PE_ACTIVE;
+		}
+	    }
+	    if (active)
+		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
+				 an->start.pos, an->end.pos);
+	}
+	else if (prevhseq >= 0 && an->hseq == prevhseq) {
+	    if (active)
+		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
+				 an->start.pos, an->end.pos);
+	}
+    }
 }
 
-void
+static void
+drawAnchorCursor(Buffer *buf)
+{
+    Anchor *an;
+    int hseq, prevhseq;
+    int tline, eline;
+
+    if (!buf->firstLine || !buf->hmarklist)
+	return;
+    if (!buf->href && !buf->formitem)
+	return;
+
+    an = retrieveCurrentAnchor(buf);
+    if (!an)
+	an = retrieveCurrentMap(buf);
+    if (an)
+	hseq = an->hseq;
+    else
+	hseq = -1;
+    tline = buf->topLine->linenumber;
+    eline = tline + buf->LINES;
+    prevhseq = buf->hmarklist->prevhseq;
+
+    if (buf->href) {
+	drawAnchorCursor0(buf, buf->href, hseq, prevhseq, tline, eline, 1);
+	drawAnchorCursor0(buf, buf->href, hseq, -1, tline, eline, 0);
+    }
+    if (buf->formitem) {
+	drawAnchorCursor0(buf, buf->formitem, hseq, prevhseq, tline, eline, 1);
+	drawAnchorCursor0(buf, buf->formitem, hseq, -1, tline, eline, 0);
+    }
+    buf->hmarklist->prevhseq = hseq;
+}
+
+static void
 redrawNLine(Buffer *buf, int n)
 {
     Line *l, *l0;
@@ -536,7 +652,7 @@ redrawNLine(Buffer *buf, int n)
 
 #define addKanji(pc,pr) (addChar((pc)[0],(pr)[0]),addChar((pc)[1],(pr)[1]))
 
-Line *
+static Line *
 redrawLine(Buffer *buf, Line *l, int i)
 {
     int j, pos, rcol, ncol, delta;
@@ -705,7 +821,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 }
 
 #ifdef USE_IMAGE
-Line *
+static Line *
 redrawLineImage(Buffer *buf, Line *l, int i)
 {
     int j, pos, rcol;
@@ -775,7 +891,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 }
 #endif
 
-int
+static int
 redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 {
     int j, pos, rcol, ncol, delta;
@@ -928,7 +1044,7 @@ if (modeflag) { \
     modeflag = FALSE; \
 }
 
-void
+static void
 do_effects(Lineprop m)
 {
     /* effect end */
@@ -973,7 +1089,7 @@ do_effects(Lineprop m)
 }
 
 #ifdef USE_ANSI_COLOR
-void
+static void
 do_color(Linecolor c)
 {
     if (c & 0x8)
@@ -1026,7 +1142,7 @@ addChar(char c, Lineprop mode)
 	addch(' ');
 }
 
-GeneralList *message_list = NULL;
+static GeneralList *message_list = NULL;
 
 void
 record_err_message(char *s)

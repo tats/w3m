@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.168 2002/12/12 23:55:30 ukai Exp $ */
+/* $Id: main.c,v 1.169 2002/12/13 02:19:01 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -988,7 +988,6 @@ main(int argc, char **argv, char **envp)
     if (line_str) {
 	_goLine(line_str);
     }
-    onA();
     for (;;) {
 	if (Currentbuf->submit) {
 	    Anchor *a = Currentbuf->submit;
@@ -1086,7 +1085,6 @@ keyPressEventProc(int c)
 {
     CurrentKey = c;
     w3mFuncList[(int)GlobalKeymap[c]].func();
-    onA();
 }
 
 void
@@ -1531,17 +1529,17 @@ srchcore(char *str, int (*func) (Buffer *, char *))
     return result;
 }
 
-void
+static void
 disp_srchresult(int result, char *prompt, char *str)
 {
     if (str == NULL)
 	str = "";
     if (result & SR_NOTFOUND)
-	disp_message(Sprintf("Not found: %s", str)->ptr, FALSE);
+	disp_message(Sprintf("Not found: %s", str)->ptr, TRUE);
     else if (result & SR_WRAPPED)
-	disp_message(Sprintf("Search wrapped: %s", str)->ptr, FALSE);
+	disp_message(Sprintf("Search wrapped: %s", str)->ptr, TRUE);
     else if (show_srch_str)
-	disp_message(Sprintf("%s%s", prompt, str)->ptr, FALSE);
+	disp_message(Sprintf("%s%s", prompt, str)->ptr, TRUE);
 }
 
 static int
@@ -1636,7 +1634,6 @@ isrch(int (*func) (Buffer *, char *), char *prompt)
 	RESTORE_BUFPOSITION(&sbuf);
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
-    onA();
 }
 
 void
@@ -1648,13 +1645,14 @@ srch(int (*func) (Buffer *, char *), char *prompt)
     str = inputStrHist(prompt, NULL, TextHist);
     if (str != NULL && *str == '\0')
 	str = SearchString;
-    if (str == NULL)
+    if (str == NULL) {
+	displayBuffer(Currentbuf, B_NORMAL);
 	return;
+    }
     result = srchcore(str, func);
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);
     displayBuffer(Currentbuf, B_NORMAL);
-    onA();
     disp_srchresult(result, prompt, str);
     searchRoutine = func;
 }
@@ -1709,7 +1707,6 @@ srch_nxtprv(int reverse)
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);
     displayBuffer(Currentbuf, B_NORMAL);
-    onA();
     disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
 		    SearchString);
 }
@@ -1858,7 +1855,8 @@ pipeBuf(void)
     pushText(fileToDelete, tmpf);
     buf = getpipe(myExtCommand(cmd, tmpf, TRUE)->ptr);
     if (buf == NULL) {
-	disp_message("Execution failed", FALSE);
+	disp_message("Execution failed", TRUE);
+	return;
     }
     else {
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
@@ -1889,7 +1887,8 @@ pipesh(void)
     }
     buf = getpipe(cmd);
     if (buf == NULL) {
-	disp_message("Execution failed", FALSE);
+	disp_message("Execution failed", TRUE);
+	return;
     }
     else {
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
@@ -1925,7 +1924,8 @@ readsh(void)
     signal(SIGINT, prevtrap);
     term_raw();
     if (buf == NULL) {
-	disp_message("Execution failed", FALSE);
+	disp_message("Execution failed", TRUE);
+	return;
     }
     else {
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
@@ -2543,8 +2543,7 @@ _mark(void)
 	return;
     l = Currentbuf->currentLine;
     l->propBuf[Currentbuf->pos] ^= PE_MARK;
-    redrawLine(Currentbuf, l, l->linenumber - Currentbuf->topLine->linenumber
-	       + Currentbuf->rootY);
+    displayBuffer(Currentbuf, B_NORMAL);
 }
 
 /* Go to next mark */
@@ -3178,7 +3177,7 @@ _followForm(int submit)
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
 	p = inputStrHist("TEXT:", fi->value ? fi->value->ptr : NULL, TextHist);
 	if (p == NULL || fi->readonly)
-	    return;
+	    break;
 	fi->value = Strnew_charp(p);
 	formUpdateBuffer(a, Currentbuf, fi);
 	if (fi->accept || fi->parent->nitems == 1)
@@ -3192,7 +3191,7 @@ _followForm(int submit)
 	p = inputFilenameHist("Filename:", fi->value ? fi->value->ptr : NULL,
 			      NULL);
 	if (p == NULL || fi->readonly)
-	    return;
+	    break;
 	fi->value = Strnew_charp(p);
 	formUpdateBuffer(a, Currentbuf, fi);
 	if (fi->accept || fi->parent->nitems == 1)
@@ -3203,12 +3202,12 @@ _followForm(int submit)
 	    goto do_submit;
 	if (fi->readonly) {
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
-	    return;
+	    break;
 	}
 	p = inputLine("Password:", fi->value ? fi->value->ptr : NULL,
 		      IN_PASSWORD);
 	if (p == NULL)
-	    return;
+	    break;
 	fi->value = Strnew_charp(p);
 	formUpdateBuffer(a, Currentbuf, fi);
 	if (fi->accept)
@@ -3227,7 +3226,7 @@ _followForm(int submit)
 	    goto do_submit;
 	if (fi->readonly) {
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
-	    return;
+	    break;
 	}
 	formRecheckRadio(a, Currentbuf, fi);
 	break;
@@ -3236,7 +3235,7 @@ _followForm(int submit)
 	    goto do_submit;
 	if (fi->readonly) {
 	    disp_message_nsec("Read only field!", FALSE, 1, TRUE, FALSE);
-	    return;
+	    break;
 	}
 	fi->checked = !fi->checked;
 	formUpdateBuffer(a, Currentbuf, fi);
@@ -3333,91 +3332,6 @@ _followForm(int submit)
 	break;
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
-}
-
-static void
-drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
-		  int tline, int eline, int active)
-{
-    int i, j;
-    Line *l;
-    Anchor *an;
-
-    l = buf->topLine;
-    for (j = 0; j < al->nanchor; j++) {
-	an = &al->anchors[j];
-	if (an->start.line < tline)
-	    continue;
-	if (an->start.line >= eline)
-	    return;
-	for (;; l = l->next) {
-	    if (l == NULL)
-		return;
-	    if (l->linenumber == an->start.line)
-		break;
-	}
-	if (hseq >= 0 && an->hseq == hseq) {
-	    for (i = an->start.pos; i < an->end.pos; i++) {
-		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
-		    if (active)
-			l->propBuf[i] |= PE_ACTIVE;
-		    else
-			l->propBuf[i] &= ~PE_ACTIVE;
-		}
-	    }
-	    if (active)
-		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
-				 an->start.pos, an->end.pos);
-	}
-	else if (prevhseq >= 0 && an->hseq == prevhseq) {
-	    if (active)
-		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
-				 an->start.pos, an->end.pos);
-	}
-    }
-}
-
-
-void
-drawAnchorCursor(Buffer *buf)
-{
-    Anchor *an;
-    int hseq, prevhseq;
-    int tline, eline;
-
-    if (!buf->firstLine || !buf->hmarklist)
-	return;
-    if (!buf->href && !buf->formitem)
-	return;
-
-    an = retrieveCurrentAnchor(buf);
-    if (!an)
-	an = retrieveCurrentMap(buf);
-    if (an)
-	hseq = an->hseq;
-    else
-	hseq = -1;
-    tline = buf->topLine->linenumber;
-    eline = tline + buf->LINES;
-    prevhseq = buf->hmarklist->prevhseq;
-
-    if (buf->href) {
-	drawAnchorCursor0(buf, buf->href, hseq, prevhseq, tline, eline, 1);
-	drawAnchorCursor0(buf, buf->href, hseq, -1, tline, eline, 0);
-    }
-    if (buf->formitem) {
-	drawAnchorCursor0(buf, buf->formitem, hseq, prevhseq, tline, eline, 1);
-	drawAnchorCursor0(buf, buf->formitem, hseq, -1, tline, eline, 0);
-    }
-    buf->hmarklist->prevhseq = hseq;
-}
-
-/* underline an anchor if cursor is on the anchor. */
-void
-onA(void)
-{
-    drawAnchorCursor(Currentbuf);
-    displayBuffer(Currentbuf, B_NORMAL);
 }
 
 /* go to the top anchor */
@@ -4197,10 +4111,8 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
     Currentbuf->pos = po->pos;
     arrangeCursor(Currentbuf);
     displayBuffer(Currentbuf, B_NORMAL);
-    if (go) {
-	onA();
+    if (go)
 	followA();
-    }
 }
 
 /* accesskey */
@@ -4294,7 +4206,7 @@ svBuf(void)
     if (file == NULL || *file == '\0') {
 	qfile = inputLineHist("Save buffer to: ", NULL, IN_COMMAND, SaveHist);
 	if (qfile == NULL || *qfile == '\0') {
-	    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+	    displayBuffer(Currentbuf, B_NORMAL);
 	    return;
 	}
     }
@@ -4309,8 +4221,10 @@ svBuf(void)
 	    file = conv_to_system(file);
 	}
 	file = expandName(file);
-	if (checkOverWrite(file) < 0)
+	if (checkOverWrite(file) < 0) {
+	    displayBuffer(Currentbuf, B_NORMAL);
 	    return;
+	}
 	f = fopen(file, "w");
 	is_pipe = FALSE;
     }
@@ -4548,7 +4462,7 @@ reload(void)
 	    ldDL();
 	    return;
 	}
-	disp_err_message("Can't reload...", FALSE);
+	disp_err_message("Can't reload...", TRUE);
 	return;
     }
     if (Currentbuf->currentURL.scheme == SCM_LOCAL &&
@@ -4564,8 +4478,10 @@ reload(void)
 	    message("Rendering frame", 0, 0);
 	    refresh();
 	}
-	if (!(buf = renderFrame(fbuf, 1)))
+	if (!(buf = renderFrame(fbuf, 1))) {
+	    displayBuffer(Currentbuf, B_NORMAL);
 	    return;
+	}
 	if (fbuf->linkBuffer[LB_FRAME]) {
 	    if (buf->sourcefile &&
 		fbuf->linkBuffer[LB_FRAME]->sourcefile &&
@@ -4621,10 +4537,11 @@ reload(void)
     if (multipart)
 	unlink(request->body);
     if (buf == NULL) {
-	disp_err_message("Can't reload...", FALSE);
+	disp_err_message("Can't reload...", TRUE);
 	return;
     }
     else if (buf == NO_BUFFER) {
+	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
     if (fbuf != NULL)
@@ -4746,8 +4663,10 @@ rFrame(void)
 	refresh();
     }
     buf = renderFrame(Currentbuf, 0);
-    if (buf == NULL)
+    if (buf == NULL) {
+	displayBuffer(Currentbuf, B_NORMAL);
 	return;
+    }
     buf->linkBuffer[LB_N_FRAME] = Currentbuf;
     Currentbuf->linkBuffer[LB_FRAME] = buf;
     pushBuffer(buf);
@@ -4787,8 +4706,10 @@ invoke_browser(char *url)
     else {
 	browser = conv_to_system(browser);
     }
-    if (browser == NULL || *browser == '\0')
+    if (browser == NULL || *browser == '\0') {
+	displayBuffer(Currentbuf, B_NORMAL);
 	return;
+    }
 
     if ((len = strlen(browser)) >= 2 && browser[len - 1] == '&' &&
 	browser[len - 2] != '\\') {
@@ -4807,7 +4728,7 @@ void
 extbrz()
 {
     if (Currentbuf->bufferprop & BP_INTERNAL) {
-	disp_err_message("Can't browse...", FALSE);
+	disp_err_message("Can't browse...", TRUE);
 	return;
     }
     if (Currentbuf->currentURL.scheme == SCM_LOCAL &&
@@ -5055,7 +4976,7 @@ process_mouse(int btn, int x, int y)
 			     - Currentbuf->rootX - 1)
 #endif
 			)) {
-			onA();
+			displayBuffer(Currentbuf, B_NORMAL);
 			followTab(t);
 		    }
 		    if (buf == Currentbuf)
@@ -5230,7 +5151,6 @@ movMs(void)
 	     mouse_action.cursorY < LASTLINE) {
 	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,
 		 mouse_action.cursorY - Currentbuf->rootY);
-	onA();
     }
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -5253,7 +5173,7 @@ menuMs(void)
 	     mouse_action.cursorY < LASTLINE) {
 	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,
 		 mouse_action.cursorY - Currentbuf->rootY);
-	onA();
+	displayBuffer(Currentbuf, B_NORMAL);
     }
     mainMn();
 }
@@ -5291,7 +5211,7 @@ closeTMs(void)
 void
 dispVer()
 {
-    disp_message(Sprintf("w3m version %s", w3m_version)->ptr, FALSE);
+    disp_message(Sprintf("w3m version %s", w3m_version)->ptr, TRUE);
 }
 
 void
@@ -5299,11 +5219,11 @@ wrapToggle(void)
 {
     if (WrapSearch) {
 	WrapSearch = FALSE;
-	disp_message("Wrap search off", FALSE);
+	disp_message("Wrap search off", TRUE);
     }
     else {
 	WrapSearch = TRUE;
-	disp_message("Wrap search on", FALSE);
+	disp_message("Wrap search on", TRUE);
     }
 }
 
@@ -5375,7 +5295,8 @@ execdict(char *word)
 		      Str_form_quote(Strnew_charp(w))->ptr)->ptr;
     buf = loadGeneralFile(dictcmd, NULL, NO_REFERER, 0, NULL);
     if (buf == NULL) {
-	disp_message("Execution failed", FALSE);
+	disp_message("Execution failed", TRUE);
+	return;
     }
     else {
 	buf->filename = w;
@@ -5584,12 +5505,12 @@ SigAlarm(SIGNAL_ARG)
 	    mouse_inactive();
 #endif
 	w3mFuncList[CurrentAlarm.cmd].func();
+	displayBuffer(Currentbuf, B_NORMAL);
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
 #endif
 	CurrentCmdData = NULL;
-	onA();
 	if (CurrentAlarm.status & AL_IMPLICIT) {
 	    CurrentAlarm.buffer = Currentbuf;
 	    CurrentAlarm.status = AL_IMPLICIT_DONE
@@ -5714,6 +5635,7 @@ reinit()
 #ifdef USE_MOUSE
     if (!strcasecmp(resource, "MOUSE")) {
 	initMouseAction();
+	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
 #endif

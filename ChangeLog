@@ -1,5 +1,64 @@
 2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03564] clean up displayBuffer()
+	* display.c (delayed_msg): static
+		(drawAnchorCursor): static
+		(redrawBuffer): define
+		(redrawNLine): static
+		(redrawLine): static
+		(redrawLineRegion): static
+		(do_effects): static
+		(do_color): static
+		(make_lastline_link): added
+		(make_lastline_message): added
+		(displayBuffer): rewrite with make_lastline_message()
+		(drawAnchorCursor0): added
+		(drawAnchorCursor): added
+	* main.c (main): remove onA()
+		(keyPressEventProc): remove onA()
+		(disp_srchresult): static
+			disp_message TRUE
+		(isrch): remove onA()
+		(srch): displayBuffer
+			remove onA()
+		(srch_nxtprv): remove onA()
+		(pipeBuf): disp_message TRUE
+		(pipesh): disp_message TRUE
+		(readsh): disp_message TRUE
+		(_mark): dispBuffer
+		(_followForm): break, always dispBuffer
+		(drawAnchorCursor0): deleted
+		(drawAnchorCursor): deleted
+		(onA): deleted
+		(anchorMn): delete onA()
+		(svBuf): displayBuffer B_NORMAL
+		(reload): disp_err_message TRUE
+			displayBuffer
+		(rFrame): displayBuffer
+		(invoke_browser): displayBuffer
+		(extbrz): disp_err_message TRUE
+		(process_mouse): onA -> displayBuffer
+		(movMs): delete onA()
+		(menuMs): onA -> displayBuffer
+		(closeTMs): disp_message TRUE
+		(wrapToggle): disp_message TRUE
+		(execdict): disp_message TRUE
+		(SigAlarm): displayBuffer, delete onA
+		(reinit): displayBuffer
+	* map.c (getCurrentMapLabel): deleted
+		(retrieveCurrentMapArea): added
+	* proto.h (redrawBuffer): deleted
+		(redrawNLine): deleted
+		(redrawLine): deleted
+		(redrawLineRegion): deleted
+		(do_effects): deleted
+		(do_color): deleted
+		(message_list): deleted
+		(getCurrentMapLabel): deleted
+		(retrieveCurrentMapArea): added
+
+2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03563] Directory Traversal Vulnerabilities in FTP Clients
 	* file.c (guess_save_name): pass guess_filename
 
@@ -5751,4 +5810,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.615 2002/12/13 00:09:50 ukai Exp $
+$Id: ChangeLog,v 1.616 2002/12/13 02:19:01 ukai Exp $

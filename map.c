@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.21 2002/12/09 15:51:09 ukai Exp $ */
+/* $Id: map.c,v 1.22 2002/12/13 02:19:01 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -128,8 +128,8 @@ searchMapArea(Buffer *buf, MapList *ml, Anchor *a_img)
     return n;
 }
 
-Str
-getCurrentMapLabel(Buffer *buf)
+MapArea *
+retrieveCurrentMapArea(Buffer *buf)
 {
     Anchor *a_img, *a_form;
     FormItemList *fi;
@@ -137,7 +137,6 @@ getCurrentMapLabel(Buffer *buf)
     ListItem *al;
     MapArea *a;
     int i, n;
-    Str s = NULL;
 
     a_img = retrieveCurrentImg(buf);
     if (!(a_img && a_img->image && a_img->image->map))
@@ -157,20 +156,8 @@ getCurrentMapLabel(Buffer *buf)
 	return NULL;
     for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
 	a = (MapArea *) al->ptr;
-	if (!(a && i == n))
-	    continue;
-	if (*a->alt)
-	    s = Sprintf("[%s]", a->alt);
-	if (*a->url) {
-	    ParsedURL pu;
-	    parseURL2(a->url, &pu, baseURL(buf));
-	    if (s)
-		Strcat_char(s, ' ');
-	    else
-		s = Strnew();
-	    Strcat(s, parsedURL2Str(&pu));
-	}
-	return s;
+	if (a && i == n)
+	    return a;
     }
     return NULL;
 }

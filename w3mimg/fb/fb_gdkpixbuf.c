@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.15 2003/06/13 15:03:05 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.16 2003/06/13 15:03:35 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -159,7 +159,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     }
   END:
     if (tmp_image)
-      fb_image_free(tmp_image);
+	fb_image_free(tmp_image);
     gdk_pixbuf_animation_unref(animation);
     return fb_frame;
 }

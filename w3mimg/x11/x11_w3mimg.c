@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.21 2003/06/13 15:03:05 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.22 2003/06/13 15:04:00 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -408,17 +408,17 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	switch (gdk_pixbuf_frame_get_action(frame)) {
 	case GDK_PIXBUF_FRAME_RETAIN:
 	    XCopyArea(xi->display, ximg->pixmap[i], tmp_pixmap,
-		    xi->imageGC, 0, 0, w, h, 0, 0);
+		      xi->imageGC, 0, 0, w, h, 0, 0);
 	    break;
 	case GDK_PIXBUF_FRAME_DISPOSE:
 	    break;
 	case GDK_PIXBUF_FRAME_REVERT:
 	    XCopyArea(xi->display, ximg->pixmap[0], tmp_pixmap,
-		    xi->imageGC, 0, 0, w, h, 0, 0);
+		      xi->imageGC, 0, 0, w, h, 0, 0);
 	    break;
 	default:
 	    XCopyArea(xi->display, ximg->pixmap[0], tmp_pixmap,
-		    xi->imageGC, 0, 0, w, h, 0, 0);
+		      xi->imageGC, 0, 0, w, h, 0, 0);
 	    break;
 	}
 

@@ -1,3 +1,11 @@
+2004-10-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Bug#276246: w3m's locale parsing should at least see '@euro' modifier
+	* config.h (HAVE_LANGINFO_CODESET): added
+	* configure.in (AM_LANGINFO_CODESET): added
+	* libwc/charset.c: #include <langinfo.h>
+	       (wc_charset_to_ces): use nl_langinfo(CODESET)
+
 2004-09-30  Hiroyuki Ito <ZXB01226@nifty.com>
 
 	* [w3m-dev 04108] PIPE_BUF
@@ -8580,4 +8588,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.938 2004/09/29 15:44:03 ukai Exp $
+$Id: ChangeLog,v 1.939 2004/10/13 16:52:49 ukai Exp $

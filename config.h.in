@@ -142,6 +142,7 @@ typedef long clen_t;
 #undef HAVE_CHDIR
 #undef HAVE_SETPGRP
 #undef HAVE_SETLOCALE
+#undef HAVE_LANGINFO_CODESET
 
 #undef SETPGRP_VOID
 #ifdef SETPGRP_VOID

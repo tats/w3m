@@ -1,3 +1,12 @@
+2002-03-13  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03116] Re: aligned block in <td align="center">
+	* file.c (flushline): align if align="align"
+	* fm.h (RB_LEFT): change value
+	       (RB_ALIGN): include RB_LEFT
+	       (RB_INTABLE): added
+	* table.c (do_refill): obuf.flag |= RB_INTABLE
+
 2002-03-11  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
 
 	* [w3m-dev 03110] Re: gopher broken
@@ -3118,4 +3127,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.343 2002/03/11 16:02:41 ukai Exp $
+$Id: ChangeLog,v 1.344 2002/03/12 16:59:50 ukai Exp $

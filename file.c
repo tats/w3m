@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.81 2002/03/11 16:02:42 ukai Exp $ */
+/* $Id: file.c,v 1.82 2002/03/12 16:59:50 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2469,6 +2469,9 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	}
 	else if (RB_GET_ALIGN(obuf) == RB_RIGHT) {
 	    align(lbuf, width, ALIGN_RIGHT);
+	}
+	else if (RB_GET_ALIGN(obuf) == RB_LEFT && obuf->flag & RB_INTABLE) {
+	    align(lbuf, width, ALIGN_LEFT);
 	}
 #ifdef FORMAT_NICE
 	else if (obuf->flag & RB_FILL) {

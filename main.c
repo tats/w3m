@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.83 2002/02/14 15:10:30 ukai Exp $ */
+/* $Id: main.c,v 1.84 2002/02/19 15:25:19 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -446,10 +446,8 @@ MAIN(int argc, char **argv, char **envp)
 
     if (Editor == NULL && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
-#ifndef USE_W3MMAILER
     if (Mailer == NULL && (p = getenv("MAILER")) != NULL)
 	Mailer = p;
-#endif
 
     /* argument search 2 */
     i = 1;
@@ -2725,8 +2723,11 @@ followA(void)
 	    return;
 	}
     }
-#ifndef USE_W3MMAILER
-    if (!strncasecmp(a->url, "mailto:", 7)) {
+    if (!strncasecmp(a->url, "mailto:", 7)
+#ifdef USE_W3MMAILER
+	&& non_null(Mailer) && strchr(a->url, '?') == NULL
+#endif
+	) {
 	/* invoke external mailer */
 	fmTerm();
 	system(myExtCommand(Mailer, shell_quote(url_unquote(a->url + 7)),
@@ -2735,7 +2736,6 @@ followA(void)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
-#endif
 #ifdef USE_NNTP
     else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
 	/* news:newsgroup is not supported */
@@ -3677,8 +3677,11 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 {
     Buffer *buf;
 
-#ifndef USE_W3MMAILER
-    if (!strncasecmp(url, "mailto:", 7)) {
+    if (!strncasecmp(url, "mailto:", 7)
+#ifdef USE_W3MMAILER
+	&& non_null(Mailer) && strchr(url, '?') == NULL
+#endif
+	) {
 	/* invoke external mailer */
 	fmTerm();
 	system(myExtCommand(Mailer, shell_quote(url_unquote(url + 7)),
@@ -3687,7 +3690,6 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
-#endif
 #ifdef USE_NNTP
     if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
 	/* news:newsgroup is not supported */

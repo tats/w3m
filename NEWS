@@ -1,5 +1,8 @@
 w3m 0.3?
 
+* rc: mailer
+	if mailer is set, it will be used for simple mailto: URLs
+	otherwise, w3mmail.cgi will be used (when USE_W3MMAILER defined)
 * rc: max_load_image
 * rc: display_image, auto_image, image_scale, imgdisplay, imgsize
 * func: DISPLAY_IMAGE, STOP_IMAGE

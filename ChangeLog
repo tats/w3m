@@ -1,3 +1,14 @@
+2002-02-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03058] mailer
+	* NEWS: rc: mailer
+	* fm.h (Mailer): change default
+	* main.c (MAIN): $MAILER will be used as "mailer"
+	* main.c (followA): if "mailer" defined & simple mailto: URL, 
+		use mailer instead of w3mmail.cgi
+	* main.c (cmd_loadURL): ditto
+	* rc.c (params6): remove ifndef USE_W3MMAILER
+
 2002-02-15  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03056] DISPLAY_IMAGE, STOP_IMAGE don't work.
@@ -2944,4 +2955,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.319 2002/02/14 15:10:29 ukai Exp $
+$Id: ChangeLog,v 1.320 2002/02/19 15:25:19 ukai Exp $

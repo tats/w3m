@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.153 2002/12/09 15:24:02 ukai Exp $ */
+/* $Id: file.c,v 1.154 2002/12/09 15:27:44 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1567,19 +1567,20 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		}
 	    }
 	    break;
-#ifdef USE_EXTERNAL_URI_LOADER
 	case SCM_UNKNOWN:
+#ifdef USE_EXTERNAL_URI_LOADER
 	    tmp = searchURIMethods(&pu);
-	    if (tmp != NULL) {
-		b = loadGeneralFile(tmp->ptr, NULL, NO_REFERER, 0, request);
-		if (b != NO_BUFFER)
-		    return b;
+	    if (tmp != NULL)
+		b = loadGeneralFile(tmp->ptr, current, referer, flag, request);
+		if (b != NULL && b != NO_BUFFER)
+		    copyParsedURL(&b->currentURL, &pu);
+		return b;
 	    }
-	    break;
 #endif
+	    disp_err_message(Sprintf("Unknown URI: %s",
+				     parsedURL2Str(&pu)->ptr)->ptr, FALSE);
+	    break;
 	}
-	disp_err_message(Sprintf("Unknown URI: %s",
-				 parsedURL2Str(&pu)->ptr)->ptr, FALSE);
 	return NULL;
     }
 

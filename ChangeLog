@@ -1,5 +1,10 @@
 2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03543] External URI loader (Debian closes: Bug#169962)
+	* file.c (loadGeneralFile): rewrite SCM_UNKNOWN
+
+2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03542] news support
 	* file.c (loadGeneralFile): NNTP as well as NEWS
 	* indep.c (url_unquote_char): check % hex hex
@@ -5596,4 +5601,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.601 2002/12/09 15:24:00 ukai Exp $
+$Id: ChangeLog,v 1.602 2002/12/09 15:27:43 ukai Exp $

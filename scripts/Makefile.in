@@ -28,6 +28,7 @@ HELP_DIR = $(datadir)/$(package)
 RC_DIR = ~/.$(package)
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(package)
+DOCDIRS = @DOCDIRS@
 
 AUXBIN_TARGETS	= xface2xpm
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi

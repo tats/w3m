@@ -564,6 +564,7 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_SUBST(USE_GDKPIXBUF)
  AC_SUBST(USE_IMLIB)
  AC_SUBST(USE_IMLIB2)
+ AC_SUBST(IMGTARGETS)
  AC_SUBST(IMGOBJS)
  AC_SUBST(IMGX11CFLAGS)
  AC_SUBST(IMGX11LDFLAGS)
@@ -611,6 +612,7 @@ AC_DEFUN([AC_W3M_IMAGE],
   if test x"$GDKPIXBUF_CONFIG" = x; then
     GDKPIXBUF_CONFIG=gdk-pixbuf-config
   fi
+  IMGTARGETS=""
   AC_W3M_CHECK_VER([GdkPixbuf],
 	[`$GDKPIXBUF_CONFIG --version 2>/dev/null`],
 	0, 16, 0,
@@ -633,18 +635,21 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${GDKPIXBUF_CONFIG} --libs` -lgdk_pixbuf_xlib"
+     IMGTARGETS="x11"    
    elif test x"$have_imlib" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      AC_DEFINE(USE_IMLIB)
      IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
+     IMGTARGETS="x11"    
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS w3mimg/x11/x11_w3mimg.o"
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGTARGETS="x11"    
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
@@ -656,16 +661,19 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
+     IMGTARGETS="${IMGTARGETS} fb"
    elif test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb.o w3mimg/fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGTARGETS="${IMGTARGETS} fb"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi
   fi
+  AC_DEFINE(IMGTARGETS, "$IMGTARGETS")
   AC_DEFINE(IMGOBJS, "$IMGOBJS")
   AC_DEFINE(IMGX11CFLAGS, "$IMGX11CFLAGS")
   AC_DEFINE(IMGX11LDFLAGS, "$IMGX11LDFLAGS")

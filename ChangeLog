@@ -1,5 +1,10 @@
 2002-01-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02913] wrong table width calculation
+	* table.c (set_table_matrix0): refine width calculation
+
+2002-01-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02875] rendering a table with inconsistent colspan,rowspan
 	* table.c (feed_table_tag): don't clear HTT_X|HTT_Y 
 		instead, if set these flags, break the loop
@@ -2303,4 +2308,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.263 2002/01/25 15:20:34 ukai Exp $
+$Id: ChangeLog,v 1.264 2002/01/25 17:25:44 ukai Exp $

@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* rc: image_map_list
 * rc: open_tab_dl_list
 * func: DOWNLOAD_LIST
 * env: https_proxy

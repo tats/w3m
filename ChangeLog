@@ -1,3 +1,7 @@
+2002-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* NEWS: rc: image_map_list
+
 2002-11-20  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03452] image map
@@ -4925,4 +4929,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.537 2002/11/19 17:40:30 ukai Exp $
+$Id: ChangeLog,v 1.538 2002/11/19 17:47:44 ukai Exp $

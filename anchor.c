@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.16 2002/12/24 17:24:05 ukai Exp $ */
+/* $Id: anchor.c,v 1.17 2002/12/24 17:24:33 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -623,9 +623,8 @@ link_list_panel(Buffer *buf)
 <h1 align=center>Link List</h1>\n");
 
     if (buf->bufferprop & BP_INTERNAL ||
-        (buf->linklist == NULL && buf->href == NULL &&
-         buf->img == NULL)) {
-		return NULL;
+	(buf->linklist == NULL && buf->href == NULL && buf->img == NULL)) {
+	return NULL;
     }
 
     if (buf->linklist) {

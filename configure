@@ -5097,7 +5097,7 @@ echo "$as_me: WARNING: GdkPixbuf is not installed.  Install GdkPixbuf (version >
  fi
   fi
   if test x"$with_gdkpixbuf" = xyes; then
-   if test x"$have_gdkpixbuf" = xno; then
+   if test x"$have_gdkpixbuf" != xyes; then
     version="`$GDKPIXBUF_CONFIG --version 2>/dev/null`"
  if test x"$version" != x; then
    echo "$as_me:$LINENO: checking GdkPixbuf version" >&5

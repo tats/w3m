@@ -1,3 +1,15 @@
+2004-11-09  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04128] Re: w3mimgdisplay
+	* acinclude.m4 (AC_W3M_IMAGE): check not yes
+	* aclocal.m4, configure: regen
+	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load): 
+	   fb_image_fill in case GDK_PIXBUF_FRAME_DISPOSE
+	* w3mimg/x11/x11_w3mimg.c (get_animation_size):
+	   return n
+	  (x11_load_image): 
+	   fill in case GDK_PIXBUF_FRAME_DISPOSE
+
 2004-11-05  Hiroyuki Ito <ZXB01226@nifty.com>
 
 	* [w3m-dev 04117] Re: start attribute and value attribute on ordered lists
@@ -8593,4 +8605,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.940 2004/11/04 17:25:44 ukai Exp $
+$Id: ChangeLog,v 1.941 2004/11/08 17:08:09 ukai Exp $

@@ -678,7 +678,7 @@ AC_DEFUN([AC_W3M_IMAGE],
 	[have_gdkpixbuf="no"; have_gtk2="no"])
   fi
   if test x"$with_gdkpixbuf" = xyes; then
-   if test x"$have_gdkpixbuf" = xno; then
+   if test x"$have_gdkpixbuf" != xyes; then
     AC_W3M_CHECK_VER([GdkPixbuf],
 	[`$GDKPIXBUF_CONFIG --version 2>/dev/null`],
 	0, 16, 0,

@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.19 2004/08/16 16:56:40 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.20 2004/11/08 17:08:10 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -233,6 +233,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
 	    fb_image_copy(tmp_image, fb_frame[i]);
 	    break;
 	case GDK_PIXBUF_FRAME_DISPOSE:
+	    fb_image_fill(tmp_image, bg_r, bg_g, bg_b);
 	    break;
 	case GDK_PIXBUF_FRAME_REVERT:
 	    fb_image_copy(tmp_image, fb_frame[0]);

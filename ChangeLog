@@ -1,3 +1,7 @@
+2002-11-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* version.c.in: w3m/0.3.2.1+cvs
+
 2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03491] Re: case insensitive regexp search
@@ -5200,4 +5204,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.564 2002/11/26 18:51:15 ukai Exp $
+$Id: ChangeLog,v 1.565 2002/11/27 03:06:04 ukai Exp $

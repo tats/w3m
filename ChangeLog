@@ -1,3 +1,8 @@
+2003-01-29  NAKAJIMA Mikio <minakaji@osaka.email.ne.jp>
+
+	* [w3m-dev 03705] goodict.cgi (was: Re: google.cgi (was: Re: keymap key SEARCH string))
+	* Bonus/goodict.cgi: added
+
 2003-01-29  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03700] Re: google.cgi (was: Re: keymap key SEARCH string)
@@ -6881,4 +6886,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.719 2003/01/28 16:34:24 ukai Exp $
+$Id: ChangeLog,v 1.720 2003/01/28 16:36:49 ukai Exp $

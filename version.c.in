@@ -1,5 +1,5 @@
-/* $Id: version.c.in,v 1.7 2001/12/21 20:15:59 ukai Exp $ */
-#define CURRENT_VERSION "w3m/0.2.3.2-cvs"
+/* $Id: version.c.in,v 1.8 2001/12/21 20:28:26 ukai Exp $ */
+#define CURRENT_VERSION "w3m/0.2.3.2+cvs"
 
 #ifndef FM_H
 char *w3m_version = CURRENT_VERSION;

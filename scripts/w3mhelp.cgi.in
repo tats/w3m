@@ -1,11 +1,14 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.7 2001/12/21 20:30:54 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.8 2001/12/25 09:16:23 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
 }
 
 $helpdir = "@HELP_DIR@";
+if ($CYGPATH) {
+  $helpdir = &cygwin_pathconv($helpdir);
+}
 unshift(@INC, $helpdir);
 @docdirs = split(" ", "@DOCDIRS@");
 

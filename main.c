@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.157 2002/12/03 16:01:37 ukai Exp $ */
+/* $Id: main.c,v 1.158 2002/12/03 16:09:43 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1217,7 +1217,7 @@ escmap(void)
     char c;
     c = getch();
     if (IS_ASCII(c))
-        escKeyProc((int)c, K_ESC, EscKeymap);
+	escKeyProc((int)c, K_ESC, EscKeymap);
 }
 
 void
@@ -1230,7 +1230,7 @@ escbmap(void)
 	return;
     }
     if (IS_ASCII(c))
-        escKeyProc((int)c, K_ESCB, EscBKeymap);
+	escKeyProc((int)c, K_ESCB, EscBKeymap);
 }
 
 void
@@ -1244,7 +1244,7 @@ escdmap(char c)
 	c = getch();
     }
     if (c == '~')
-        escKeyProc((int)d, K_ESCD, EscDKeymap);
+	escKeyProc((int)d, K_ESCD, EscDKeymap);
 }
 
 void

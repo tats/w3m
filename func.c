@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.19 2002/12/03 16:07:40 ukai Exp $ */
+/* $Id: func.c,v 1.20 2002/12/03 16:09:41 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -53,7 +53,7 @@ setKeymap(char *p, int lineno, int verbose)
 	int i, j, m = MULTI_KEY(c);
 
 	if (m & K_ESCD)
- 	    map = EscDKeymap;
+	    map = EscDKeymap;
 	else if (m & K_ESCB)
 	    map = EscBKeymap;
 	else if (m & K_ESC)
@@ -89,7 +89,7 @@ setKeymap(char *p, int lineno, int verbose)
     }
     else {
 	if (c & K_ESCD)
- 	    map = EscDKeymap;
+	    map = EscDKeymap;
 	else if (c & K_ESCB)
 	    map = EscBKeymap;
 	else if (c & K_ESC)

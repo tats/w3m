@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.23 2002/12/02 17:27:41 ukai Exp $ */
+/* $Id: menu.c,v 1.24 2002/12/02 17:39:16 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1694,7 +1694,6 @@ lmGoURL(void)
 {
     LinkList *l;
     int i;
-    ParsedURL pu;
 
     for (i = 0, l = Currentbuf->linklist; l; i++, l = l->next) {
 	if (i == LinkV)

@@ -1,3 +1,9 @@
+2002-12-03  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* remove ununsed variables
+	* file.c (addLink): unused variable `t'
+	* menu.c (lmGoURL): unused variable `pu'
+
 2002-12-03  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03501] link tag support
@@ -5287,4 +5293,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.572 2002/12/02 17:27:34 ukai Exp $
+$Id: ChangeLog,v 1.573 2002/12/02 17:38:55 ukai Exp $

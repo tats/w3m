@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.136 2002/12/02 17:27:36 ukai Exp $ */
+/* $Id: file.c,v 1.137 2002/12/02 17:39:09 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5311,7 +5311,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 static void
 addLink(Buffer *buf, struct parsed_tag *tag)
 {
-    struct parsed_tag *t;
     char *href = NULL, *title = NULL, *ctype = NULL, *rel = NULL, *rev = NULL;
     char type = LINK_TYPE_NONE;
     LinkList *l;

@@ -98,6 +98,7 @@ MKDIR=mkdir -p
 PERL=/usr/local/bin/perl
 VERSION=0.2.2
 MODEL=Linux.i686-monster-ja
+INSTALL_W3MIMGDISPLAY=$(INSTALL_PROGRAM)
 #else
 
 

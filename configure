@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.83 2002/11/06 03:50:49 ukai Exp $
+# $Id: configure,v 1.84 2002/11/06 14:58:03 ukai Exp $
 #	Configuration.
 #
 
@@ -798,6 +798,7 @@ ask_param "Inline image support" use_image n
 if [ "$use_image" = y ]; then
   def_use_image="#define USE_IMAGE"
   imgtarget='$(IMGDISPLAY)'
+  install_w3mimgdisplay='$(INSTALL_PROGRAM)'
   ask_param "X11 inline image support (you need Imlib1 or GdkPixbuf library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
   case $sysname in
@@ -809,9 +810,7 @@ if [ "$use_image" = y ]; then
     if [ "$use_w3mimg_fb" = y ]; then
 	ask_param "setuid w3mimgdisplay to open /dev/fb0?" w3mimgdisplay_setuid  y
 	if [ "$w3mimgdisplay_setuid" = y ]; then
-	    INSTALL_W3MIMGDISPLAY='$(INSTALL) -o root -m 4755 -s'
-	else
-	    INSTALL_W3MIMGDISPLAY='$(INSTALL_PROGRAM)'
+	    install_w3mimgdisplay='$(INSTALL) -o root -m 4755 -s'
 	fi
     fi
     ;;
@@ -2327,7 +2326,7 @@ MKDIR=$MKDIR
 PERL=$perl
 VERSION=$w3mversion
 MODEL=$sysname.$platform-$modelname-$lang
-INSTALL_W3MIMGDISPLAY=$INSTALL_W3MIMGDISPLAY
+INSTALL_W3MIMGDISPLAY=$install_w3mimgdisplay
 #else
 $special_sys
 

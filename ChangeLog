@@ -1,3 +1,7 @@
+2002-01-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* main.c (fversion): add "external-uri-loader,w3mmailer"
+
 2002-01-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02840]
@@ -1958,4 +1962,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.221 2002/01/15 16:13:39 ukai Exp $
+$Id: ChangeLog,v 1.222 2002/01/15 16:30:08 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.57 2002/01/15 03:45:02 ukai Exp $ */
+/* $Id: main.c,v 1.58 2002/01/15 16:30:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -131,6 +131,12 @@ fversion(FILE * f)
 #ifdef USE_SSL_VERIFY
 	    ",ssl-verify"
 #endif
+#endif
+#ifdef USE_EXTERNAL_URI_LOADER
+	    ",external-uri-loader"
+#endif
+#ifdef USE_W3MMAILER
+	    ",w3mmailer"
 #endif
 #ifdef USE_NNTP
 	    ",nntp"

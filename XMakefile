@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.10 2001/11/21 18:51:48 ukai Exp $
+# $Id: XMakefile,v 1.11 2001/11/30 16:48:15 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -30,7 +30,6 @@ CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS)
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install.sh
-INSTALL2=sh ../install.sh
 AR=ar
 
 all: $(TARGETS) all-scripts
@@ -83,29 +82,32 @@ gc/gc.a:
 	cd gc; $(MAKE) CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
 
 
-install: $(TARGETS) all-scripts
+install: install-core install-scripts
+
+install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
 	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(BIN_DIR)/$(TARGET)
+	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
+	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
+
+install-helpfile:
 	$(INSTALL) -m 644 w3mhelp-w3m_en.html $(DESTDIR)$(HELP_DIR)/w3mhelp-w3m_en.html
 	$(INSTALL) -m 644 w3mhelp-w3m_ja.html $(DESTDIR)$(HELP_DIR)/w3mhelp-w3m_ja.html
 	$(INSTALL) -m 644 w3mhelp-lynx_en.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_en.html
 	$(INSTALL) -m 644 w3mhelp-lynx_ja.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_ja.html
-	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
-	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
-	(cd scripts; for i in *.cgi; do $(INSTALL2) -m 755 $$i $(DESTDIR)$(LIB_DIR)/$$i; done)
 
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)');	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)');	\
 	done
 
 install-scripts: all-scripts
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' DESTDIR='$(DESTDIR)' INSTALL='sh $(PWD)/install.sh' install);	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL='sh $(PWD)/install.sh' install);	\
 	done
 
 uninstall:

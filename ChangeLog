@@ -1,5 +1,24 @@
 2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* scripts/.cvsignore: add w3mhelp.cgi w3mhelp-*.pl
+	* scripts/Makefile (HELP_DIR): added
+	* scripts/Makefile (LIB_TARGETS): add w3mhelp.cgi
+	* scripts/Makefile (DOCDIRS): added
+	* scripts/Makefile (all): add helplibs
+	* scripts/Makefile (.in): subst HELP_DIR, DOCDIRS
+	* scripts/Makefile (helplibs): added
+	* scripts/Makefile (install): s/DISTDIR/DESTDIR/
+	* scripts/Makefile (install): install w3mhelp-*.pl
+	
+	* scripts/w3mhelp.cgi.in: added
+
+	* XMakefile (INSTALL2): deleted
+	* XMakefile (install): split
+	* XMakefile (install-core): added
+	* XMakefile (install-helpfile): added
+	* XMakefile (all-scripts): HELP_DIR
+	* XMakefile (install-scripts): HELP_DIR
+
 	* doc/REAMDE.func: add ALARM, SUSPEND
 	* doc-jp/README.func: ditto
 	

@@ -1,3 +1,18 @@
+2002-10-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03365] ~/.netrc support
+	* etc.c (add_auth_pass_entry): add netrc arg
+			add new entry to tail
+		(find_auth_pass_entry): ent->host == NULL is "default"
+		(loadPasswd): rewrite with next_token, parsePasswd, 
+				openPasswdFile
+				load ~/.netrc
+		(next_token): added
+		(parsePasswd): added
+		(openPasswdFile): added
+	* ftp.c (openFTP): use find_auth_user_passwd
+	* NEWS: ~/.netrc
+
 2002-10-31  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03363] refresh download
@@ -21,6 +36,8 @@
 		use user and passwd if these are defined in ParsedURL
 	* file.c (getAuthCookie): change find_auth_user_passwd()
 	* proto.h (find_auth_user_passwd): change prototype
+	* NOTE: http://user:pass@www.url.com is NOT RECOMMENDED
+		for security reasons.
 
 2002-10-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
@@ -4059,4 +4076,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.461 2002/10/30 15:46:27 ukai Exp $
+$Id: ChangeLog,v 1.462 2002/10/30 17:21:35 ukai Exp $

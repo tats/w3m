@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.27 2002/10/30 15:41:51 ukai Exp $ */
+/* $Id: etc.c,v 1.28 2002/10/30 17:21:40 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -862,14 +862,22 @@ dir_under(const char *x, const char *y)
 }
 
 static void
-add_auth_pass_entry(const struct auth_pass *ent)
+add_auth_pass_entry(const struct auth_pass *ent, int netrc)
 {
-    if (ent->host && (ent->is_proxy || ent->file || ent->realm)
+    if ((ent->host || netrc)	/* netrc accept default (host == NULL) */
+	&&(ent->is_proxy || ent->file || ent->realm || netrc)
 	&& ent->uname && ent->pwd) {
 	struct auth_pass *newent = New(struct auth_pass);
 	memcpy(newent, ent, sizeof(struct auth_pass));
-	newent->next = passwords;
-	passwords = newent;
+	if (passwords == NULL)
+	    passwords = newent;
+	else if (passwords->next == NULL)
+	    passwords->next = newent;
+	else {
+	    struct auth_pass *ep = passwords;
+	    for (; ep->next; ep = ep->next) ;
+	    ep->next = newent;
+	}
     }
     /* ignore invalid entries */
 }
@@ -880,7 +888,8 @@ find_auth_pass_entry(char *host, int port, char *file, char *realm,
 {
     struct auth_pass *ent;
     for (ent = passwords; ent != NULL; ent = ent->next) {
-	if (ent->is_proxy == is_proxy && !Strcmp_charp(ent->host, host)
+	if (ent->is_proxy == is_proxy
+	    && (!ent->host || !Strcmp_charp(ent->host, host))
 	    && (!ent->port || ent->port == port)
 	    && (!ent->file || !file || dir_under(ent->file->ptr, file))
 	    && (!ent->realm || !realm || !Strcmp_charp(ent->realm, realm))
@@ -923,18 +932,117 @@ find_auth_user_passwd(ParsedURL *pu, char *realm,
  * password <passwd>
  */
 
-#define PASS_IS_READABLE_MSG "SECURITY NOTE: password file must not be accessible by others"
-void
-loadPasswd(void)
+static Str
+next_token(Str arg)
+{
+    Str narg = NULL;
+    char *p, *q;
+    if (arg == NULL || arg->length == 0)
+	return NULL;
+    p = arg->ptr;
+    q = p;
+    SKIP_NON_BLANKS(q);
+    if (*q != '\0') {
+	*q++ = '\0';
+	SKIP_BLANKS(q);
+	if (*q != '\0')
+	    narg = Strnew_charp(q);
+    }
+    return narg;
+}
+
+static void
+parsePasswd(FILE * fp, int netrc)
+{
+    struct auth_pass ent;
+    Str line = NULL;
+
+    bzero(&ent, sizeof(struct auth_pass));
+    while (1) {
+	Str arg = NULL;
+	char *p;
+
+	if (line == NULL || line->length == 0)
+	    line = Strfgets(fp);
+	if (line->length == 0)
+	    break;
+	Strchop(line);
+	Strremovefirstspaces(line);
+	p = line->ptr;
+	if (*p == '#' || *p == '\0') {
+	    line = NULL;
+	    continue;		/* comment or empty line */
+	}
+	arg = next_token(line);
+
+	if (!strcmp(p, "machine") || !strcmp(p, "host")
+	    || (netrc && !strcmp(p, "default"))) {
+	    add_auth_pass_entry(&ent, netrc);
+	    bzero(&ent, sizeof(struct auth_pass));
+	    if (netrc)
+		ent.port = 21;	/* XXX: getservbyname("ftp"); ? */
+	    if (strcmp(p, "default") != 0) {
+		line = next_token(arg);
+		ent.host = arg;
+	    }
+	    else {
+		line = arg;
+	    }
+	}
+	else if (!netrc && !strcmp(p, "port") && arg) {
+	    line = next_token(arg);
+	    ent.port = atoi(arg->ptr);
+	}
+	else if (!netrc && !strcmp(p, "proxy")) {
+	    ent.is_proxy = 1;
+	    line = arg;
+	}
+	else if (!netrc && !strcmp(p, "path")) {
+	    line = next_token(arg);
+	    ent.file = arg;
+	}
+	else if (!netrc && !strcmp(p, "realm")) {
+	    /* XXX: rest of line becomes arg for realm */
+	    line = NULL;
+	    ent.realm = arg;
+	}
+	else if (!strcmp(p, "login")) {
+	    line = next_token(arg);
+	    ent.uname = arg;
+	}
+	else if (!strcmp(p, "password") || !strcmp(p, "passwd")) {
+	    line = next_token(arg);
+	    ent.pwd = arg;
+	}
+	else if (netrc && !strcmp(p, "machdef")) {
+	    while ((line = Strfgets(fp))->length != 0) {
+		if (*line->ptr == '\n')
+		    break;
+	    }
+	    line = NULL;
+	}
+	else if (netrc && !strcmp(p, "account")) {
+	    /* ignore */
+	    line = next_token(arg);
+	}
+	else {
+	    /* ignore rest of line */
+	    line = NULL;
+	}
+    }
+    add_auth_pass_entry(&ent, netrc);
+}
+
+#define PASS_IS_READABLE_MSG "SECURITY NOTE: passwd file must not be accessible by others"
+
+static FILE *
+openPasswdFile(char *fname)
 {
     struct stat st;
-    FILE *fp;
-    struct auth_pass ent;
-
-    if (passwd_file == NULL)
-	return;
-    if (stat(expandName(passwd_file), &st) < 0)
-	return;
+    if (fname == NULL)
+	return NULL;
+    if (stat(expandName(fname), &st) < 0)
+	return NULL;
 
     /* check permissions, if group or others readable or writable,
      * refuse it, because it's insecure.
@@ -949,58 +1057,28 @@ loadPasswd(void)
 	    fputc('\n', stderr);
 	}
 	sleep(2);
-	return;
+	return NULL;
     }
 
-    fp = fopen(expandName(passwd_file), "r");
-    if (fp == NULL)
-	return;			/* never? */
+    return fopen(expandName(fname), "r");
+}
 
-    bzero(&ent, sizeof(struct auth_pass));
-    while (1) {
-	Str line;
-	Str arg = NULL;
-	char *p, *q;
-
-	line = Strfgets(fp);
-	if (line->length == 0)
-	    break;
-	p = line->ptr;
-	p[line->length - 1] = '\0';	/* remove CR */
-	SKIP_BLANKS(p);
-
-	if (*p == '#' || *p == '\0')
-	    continue;		/* comment or empty line */
-	q = p;
-	SKIP_NON_BLANKS(q);
-	if (*q != '\0') {
-	    *q++ = '\0';
-	    SKIP_BLANKS(q);
-	    if (*q != '\0')
-		arg = Strnew_charp(q);
-	}
-
-	if (!strcmp(p, "machine") || !strcmp(p, "host")) {
-	    add_auth_pass_entry(&ent);
-	    bzero(&ent, sizeof(struct auth_pass));
-	    ent.host = arg;
-	}
-	else if (!strcmp(p, "port") && arg)
-	    ent.port = atoi(arg->ptr);
-	else if (!strcmp(p, "proxy") && !arg)
-	    ent.is_proxy = 1;
-	else if (!strcmp(p, "path"))
-	    ent.file = arg;
-	else if (!strcmp(p, "realm"))
-	    ent.realm = arg;
-	else if (!strcmp(p, "login"))
-	    ent.uname = arg;
-	else if (!strcmp(p, "password") || !strcmp(p, "passwd"))
-	    ent.pwd = arg;
-	/* ignore */
+void
+loadPasswd(void)
+{
+    FILE *fp;
+    fp = openPasswdFile(passwd_file);
+    if (fp != NULL) {
+	parsePasswd(fp, 0);
+	fclose(fp);
     }
-    add_auth_pass_entry(&ent);
-    fclose(fp);
+
+    /* for FTP */
+    fp = openPasswdFile("~/.netrc");
+    if (fp != NULL) {
+	parsePasswd(fp, 1);
+	fclose(fp);
+    }
     return;
 }
 

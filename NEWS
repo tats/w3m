@@ -1,5 +1,6 @@
 w3m 0.3.2 (release candidate)
 
+* ~/.netrc: password for ftp
 * rc: display_lineinfo: display current line number
 * rc: passwd_file: passwd file for HTTP auth
 * func: MARK_WORD

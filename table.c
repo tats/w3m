@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.17 2002/01/25 17:25:44 ukai Exp $ */
+/* $Id: table.c,v 1.18 2002/01/28 14:42:30 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -3216,7 +3216,7 @@ set_table_matrix0(struct table *t, int maxwidth)
     int size = t->maxcol + 1;
     int i, j, k, bcol, ecol;
     int width;
-    double w0, w1, w, e, s, b;
+    double w0, w1, w, s, b;
 #ifdef __GNUC__
     double we[size];
     char expand[size];
@@ -3249,22 +3249,14 @@ set_table_matrix0(struct table *t, int maxwidth)
 	j = cell->eindex[k];
 	bcol = cell->col[j];
 	ecol = bcol + cell->colspan[j];
+	width = cell->width[j] - (cell->colspan[j] - 1) * t->cellspacing;
+	w1 = 0.;
 	for (i = bcol; i < ecol; i++) {
+	    w1 += t->tabwidth[i] + 0.1;
 	    expand[i]++;
 	}
-    }
-
-    for (k = 0; k < cell->necell; k++) {
-	j = cell->eindex[k];
-	bcol = cell->col[j];
-	ecol = bcol + cell->colspan[j];
-	width = cell->width[j] - (cell->colspan[j] - 1) * t->cellspacing;
-	e = 0.;
 	for (i = bcol; i < ecol; i++) {
-	    e += expand[i];
-	}
-	for (i = bcol; i < ecol; i++) {
-	    w = weight(width * expand[i] / e);
+	    w = weight(width * (t->tabwidth[i] + 0.1) / w1);
 	    if (w > we[i])
 		we[i] = w;
 	}
@@ -3286,11 +3278,7 @@ set_table_matrix0(struct table *t, int maxwidth)
 	width = cell->width[j] - (cell->colspan[j] - 1) * t->cellspacing;
 	w = weight(width);
 	s = w / (w1 + w);
-#if 0
-	b = sigma_td_nw((int)(s * maxwidth * cell->colspan[j]));
-#else
 	b = sigma_td_nw((int)(s * maxwidth));
-#endif
 	correct_table_matrix4(t, bcol, cell->colspan[j], expand, s, b);
     }
 

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.81 2003/02/05 16:44:00 ukai Exp $ */
+/* $Id: rc.c,v 1.82 2003/02/05 16:48:09 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -182,7 +182,7 @@ static int RC_table_size;
 #define CMT_RELATIVE_WHEEL_SCROLL_RATIO "(Aのみ)画面の何%スクロールするか"
 #define CMT_FIXED_WHEEL_SCROLL_COUNT "(Bのみ)スクロールする行数"
 #endif				/* USE_MOUSE */
-#define CMT_CLEAR_BUF     "表示されていないバッファのメモリを開放する"
+#define CMT_CLEAR_BUF     "表示されていないバッファのメモリを解放する"
 #define CMT_NOSENDREFERER "Referer: を送らないようにする"
 #define CMT_IGNORE_CASE "サーチ時に大文字小文字の区別をしない"
 #define CMT_USE_LESSOPEN "LESSOPENを使用"

@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.36 2002/12/06 16:50:41 ukai Exp $ */
+/* $Id: table.c,v 1.37 2002/12/17 16:17:30 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -252,8 +252,8 @@ dv2sv(double *dv, short *iv, int size)
 	i = bsearch_double(x, edv, indexarray, k);
 	if (k > i) {
 	    int ii;
-	    for (ii = i; ii < k; ii++)
-		indexarray[ii + 1] = indexarray[ii];
+	    for (ii = k; ii > i; ii--)
+		indexarray[ii] = indexarray[ii - 1];
 	}
 	indexarray[i] = k;
     }
@@ -1007,8 +1007,8 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 	i = bsearch_double(x, mod, indexarray, k);
 	if (k > i) {
 	    int ii;
-	    for (ii = i; ii < k; ii++)
-		indexarray[ii + 1] = indexarray[ii];
+	    for (ii = k; ii > i; ii--)
+		indexarray[ii] = indexarray[ii - 1];
 	}
 	indexarray[i] = k;
     }
@@ -1594,8 +1594,8 @@ check_table_height(struct table *t)
 		    cell.height[cell.maxcell] = 0;
 		    if (cell.maxcell > k) {
 			int ii;
-			for (ii = k; ii < cell.maxcell; ii++)
-			    cell.indexarray[ii + 1] = cell.indexarray[ii];
+			for (ii = cell.maxcell; ii > k; ii--)
+			    cell.indexarray[ii] = cell.indexarray[ii - 1];
 		    }
 		    cell.indexarray[k] = cell.maxcell;
 		}
@@ -2727,8 +2727,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 		cell->fixed_width[cell->maxcell] = 0;
 		if (cell->maxcell > k) {
 		    int ii;
-		    for (ii = k; ii < cell->maxcell; ii++)
-			cell->index[ii + 1] = cell->index[ii];
+		    for (ii = cell->maxcell; ii > k; ii--)
+			cell->index[ii] = cell->index[ii - 1];
 		}
 		cell->index[k] = cell->maxcell;
 	    }

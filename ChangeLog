@@ -1,3 +1,11 @@
+2002-12-18  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03577] incorrect table width
+	* table.c (dv2sv): fix move direction
+		(set_integered_width): ditto
+		(check_table_height): ditto
+		(feed_table_tag): ditto
+
 2002-12-17  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03576] Re: news support
@@ -5889,4 +5897,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.626 2002/12/16 15:41:03 ukai Exp $
+$Id: ChangeLog,v 1.627 2002/12/17 16:17:28 ukai Exp $

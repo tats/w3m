@@ -1,3 +1,8 @@
+2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.2.3.1
+	* version.c.in: update
+
 2001-12-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02683]
@@ -1352,4 +1357,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.148 2001/12/20 12:32:19 ukai Exp $
+$Id: ChangeLog,v 1.149 2001/12/20 12:34:07 ukai Exp $

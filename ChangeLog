@@ -1,5 +1,10 @@
 2002-01-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02919] no need of width
+	* scripts/w3mmail.cgi.in: no need width=80 for header field name
+
+2002-01-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02919] wrong table width calculation
 	* table.c (set_table_matrix0): refine width calculation
 
@@ -2327,4 +2332,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.267 2002/01/28 14:42:30 ukai Exp $
+$Id: ChangeLog,v 1.268 2002/01/28 14:44:56 ukai Exp $

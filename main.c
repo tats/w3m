@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.169 2002/12/13 02:19:01 ukai Exp $ */
+/* $Id: main.c,v 1.170 2002/12/16 15:41:35 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4622,7 +4622,7 @@ void
 chkNMIDBuffer(Buffer *buf)
 {
     static char *url_like_pat[] = {
-	"<[^<> 	][^<> 	]*@[A-z0-9\\.\\-_]+>",
+	"<[!-;=?-~]+@[A-z0-9\\.\\-_]+>",
 	NULL,
     };
     int i;

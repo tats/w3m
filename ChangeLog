@@ -1,3 +1,8 @@
+2003-10-20  ABE Yuji <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 04002] Re: function and w3m-control
+	* url.c (getURLScheme): accept numeric in scheme
+
 2003-10-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03996] HELP_DIR and funcname.tab
@@ -8210,4 +8215,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.884 2003/10/17 16:46:23 ukai Exp $
+$Id: ChangeLog,v 1.885 2003/10/19 16:17:12 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.83 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: url.c,v 1.84 2003/10/19 16:17:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1238,7 +1238,7 @@ getURLScheme(char **url)
     int i;
     int scheme = SCM_MISSING;
 
-    while (*p && (IS_ALPHA(*p) || *p == '.' || *p == '+' || *p == '-'))
+    while (*p && (IS_ALNUM(*p) || *p == '.' || *p == '+' || *p == '-'))
 	p++;
     if (*p == ':') {		/* scheme found */
 	scheme = SCM_UNKNOWN;

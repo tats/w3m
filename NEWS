@@ -1,5 +1,6 @@
 w3m 0.3?
 
+* use w3mmail.cgi for mailto: URL
 * support external URI loader
 * support -dump_extra ftp://
 * new regex implementation

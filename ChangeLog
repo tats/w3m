@@ -1,6 +1,7 @@
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02834] mailto: use external program
+	* NEWS: use w3mmail.cgi for mailto: URL
 	* configure: add use_w3mmailer
 	* frame.c (createFrameFile): ifndef USE_W3MMAILER
 	* main.c (followA): ifndef USE_W3MMAILER
@@ -1942,4 +1943,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.218 2002/01/15 05:41:14 ukai Exp $
+$Id: ChangeLog,v 1.219 2002/01/15 05:50:51 ukai Exp $

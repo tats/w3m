@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.42 2002/01/24 16:59:16 ukai Exp $ */
+/* $Id: fm.h,v 1.43 2002/01/24 17:07:40 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -670,7 +670,10 @@ global ParsedURL FTP_proxy_parsed;
 global char *NO_proxy init(NULL);
 global int NOproxy_netaddr init(TRUE);
 #ifdef INET6
-global int DNS_order init(0);
+#define DNS_ORDER_UNSPEC     0
+#define DNS_ORDER_INET_INET6 1
+#define DNS_ORDER_INET6_INET 2
+global int DNS_order init(DNS_ORDER_UNSPEC);
 extern int ai_family_order_table[3][3];	/* XXX */
 #endif				/* INET6 */
 global TextList *NO_proxy_domains;

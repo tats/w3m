@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.33 2002/01/24 16:59:16 ukai Exp $ */
+/* $Id: rc.c,v 1.34 2002/01/24 17:07:40 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -371,9 +371,9 @@ static char n_s[][2] = {
 
 #ifdef INET6
 static struct sel_c dnsorders[] = {
-    {0, "0", "unspec"},
-    {1, "1", "inet inet6"},
-    {2, "2", "inet6 inet"},
+    {N_S(DNS_ORDER_UNSPEC), "unspec"},
+    {N_S(DNS_ORDER_INET_INET6), "inet inet6"},
+    {N_S(DNS_ORDER_INET6_INET), "inet6 inet"},
     {0, NULL, NULL}
 };
 #endif				/* INET6 */

@@ -1,4 +1,4 @@
-w3m 0.4?
+w3m 0.3.1 - 2002-07-16
 
 * func: REINIT
 	INIT_MAILCAP deleted, use REINIT MAILCAP instead

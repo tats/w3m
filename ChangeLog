@@ -1,3 +1,11 @@
+2002-07-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.3.1
+	* version.c.in: update
+	* doc/README: version 0.3, release date
+	* doc-jp/README: ditto
+	* NEWS: update
+
 2002-07-12  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
 
 	* [w3m-dev 03255] update cygwin info
@@ -3544,4 +3552,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.398 2002/07/11 15:36:46 ukai Exp $
+$Id: ChangeLog,v 1.399 2002/07/15 17:33:43 ukai Exp $

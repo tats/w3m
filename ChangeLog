@@ -1,3 +1,8 @@
+2001-12-20  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
+
+	* w3mhelp-*.html, doc/README, doc-jp/README: 
+	* fix version number to 0.2.3.
+
 2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* version.c.in: 0.2.3-cvs
@@ -1340,4 +1345,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.146 2001/12/20 04:52:24 ukai Exp $
+$Id: ChangeLog,v 1.147 2001/12/20 11:11:49 inu Exp $

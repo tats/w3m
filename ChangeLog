@@ -1,3 +1,8 @@
+2001-12-18  Rin Okuyama <okuyama@cna.ne.jp>
+
+	* [w3m-dev 02668] install-sh: -e option of sh(1)
+	* install-sh: add set -e
+
 2001-12-18   Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02667]
@@ -1266,4 +1271,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.132 2001/12/17 15:39:32 ukai Exp $
+$Id: ChangeLog,v 1.133 2001/12/17 15:42:44 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.60 2003/01/29 17:38:14 ukai Exp $ */
+/* $Id: display.c,v 1.61 2003/02/03 15:49:21 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -363,10 +363,9 @@ displayBuffer(Buffer *buf, int mode)
 	buf->width = INIT_BUFFER_WIDTH;
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
-    if (buf->sourcefile &&
-	((buf->width != INIT_BUFFER_WIDTH &&
-	  ((buf->type && !strcmp(buf->type, "text/html")) || FoldLine))
-	 || buf->need_reshape)) {
+    if ((buf->width != INIT_BUFFER_WIDTH &&
+	 ((buf->type && !strcmp(buf->type, "text/html")) || FoldLine))
+	|| buf->need_reshape) {
 	buf->need_reshape = TRUE;
 	reshapeBuffer(buf);
     }

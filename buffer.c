@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.26 2003/01/28 16:42:02 ukai Exp $ */
+/* $Id: buffer.c,v 1.27 2003/02/03 15:49:19 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -500,6 +500,7 @@ reshapeBuffer(Buffer *buf)
     if (!buf->need_reshape)
 	return;
     buf->need_reshape = FALSE;
+    buf->width = INIT_BUFFER_WIDTH;
     if (buf->sourcefile == NULL)
 	return;
     init_stream(&f, SCM_LOCAL, NULL);
@@ -525,7 +526,6 @@ reshapeBuffer(Buffer *buf)
 	buf->hmarklist->nmark = 0;
     if (buf->imarklist)
 	buf->imarklist->nmark = 0;
-    buf->width = INIT_BUFFER_WIDTH;
 
     if (buf->header_source) {
 	if (buf->currentURL.scheme != SCM_LOCAL ||

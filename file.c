@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.56 2002/01/31 18:28:24 ukai Exp $ */
+/* $Id: file.c,v 1.57 2002/01/31 18:40:16 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2504,7 +2504,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	    h_env->maxlimit = lbuf->pos;
 	if (buf)
 	    pushTextLine(buf, lbuf);
-	else {
+	else if (f) {
 	    Strfputs(lbuf->line, f);
 	    fputc('\n', f);
 	}
@@ -2520,15 +2520,16 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 #define APPEND(str) \
 	if (buf) \
 	    appendTextLine(buf,(str),0); \
-	else \
+	else if (f) \
 	    Strfputs((str),f)
 
 	while (*p) {
 	    q = p;
 	    if (sloppy_parse_line(&p)) {
 		Strcat_charp_n(tmp, q, p - q);
-		if (force == 2)
+		if (force == 2) {
 		    APPEND(tmp);
+		}
 		else
 		    Strcat(tmp2, tmp);
 		Strclear(tmp);
@@ -2624,9 +2625,7 @@ void
 do_blankline(struct html_feed_environ *h_env, struct readbuffer *obuf,
 	     int indent, int indent_incr, int width)
 {
-    if (h_env->buf && h_env->blank_lines == 0)
-	flushline(h_env, obuf, indent, 1, width);
-    else if (h_env->f)
+    if (h_env->blank_lines == 0)
 	flushline(h_env, obuf, indent, 1, width);
 }
 

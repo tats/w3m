@@ -1,5 +1,11 @@
 2003-09-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* fix [w3m-dev 03975] Re: gettextize
+	* Makefile.in: add INTLTARGET, cleanup
+	* configure.in: INTLTARGET=intl if USE_NLS
+
+2003-09-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* gettextize
 	* Makefile.in: updated
 	* menu.c: gettextize
@@ -8072,4 +8078,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.868 2003/09/24 18:35:06 ukai Exp $
+$Id: ChangeLog,v 1.869 2003/09/25 03:35:47 ukai Exp $

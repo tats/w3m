@@ -47,6 +47,7 @@ LDFLAGS = @LDFLAGS@
 LIBS = -L. -lindep @LIBINTL@ @LIBS@
 W3M_LIBS = @W3M_LIBS@
 WCTARGET = @WCTARGET@
+INTLTARGET = @INTLTARGET@
 
 MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
@@ -115,10 +116,9 @@ HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 
 SCRIPTSUBDIRS= scripts
 SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc intl po
-
 .PHONY: $(SUBDIRS)
 
-all: $(TARGETS) all-scripts intl po
+all: $(INTLTARGET) $(TARGETS) all-scripts po
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
@@ -151,15 +151,14 @@ functable.c: funcname.tab mktable$(EXT)
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
-mktable$(EXT): mktable.o dummy.o $(ALIB) $(GCTARGET)
+mktable$(EXT): mktable.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o $(LDFLAGS) $(LIBS)
 
-$(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB) $(GCTARGET)
+$(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS)
 
-$(HELPER): w3mhelperpanel.o dummy.o $(ALIB) $(GCTARGET)
+$(HELPER): w3mhelperpanel.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)
-
 $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 
@@ -218,7 +217,7 @@ install-helpfile:
 	done
 
 install-po:
-	for subdir in intl po; \
+	for subdir in po; \
 	do \
 	 (cd $$subdir && $(MAKE) install); \
 	done

@@ -1,3 +1,8 @@
+2002-09-09  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03300] framebuffer: 8bit color support
+	* w3mimg/fb/fb.c: support FB_VISUAL_PSEUDOCOLOR 256 colors
+
 2002-09-09  Hironori SAKAMOTO <h-saka@lsi.nec.co.jp>
 
 	* [w3m-dev 03299] remove file before copying (install-sh)
@@ -3762,4 +3767,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.423 2002/09/09 13:51:46 ukai Exp $
+$Id: ChangeLog,v 1.424 2002/09/09 14:03:44 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.6 2002/07/30 16:03:01 ukai Exp $ */
+/* $Id: fb.c,v 1.7 2002/09/09 14:03:45 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -18,6 +18,20 @@
 #define FB_ENV		"FRAMEBUFFER"
 #define	FB_DEFDEV	"/dev/fb0"
 
+#define MONO_OFFSET_8BIT  0x40
+#define COLORS_MONO_8BIT  0x40
+#define MONO_MASK_8BIT    0xFC
+#define MONO_SHIFT_8BIT   2
+
+#define COLOR_OFFSET_8BIT 0x80
+#define COLORS_8BIT       0x80
+#define RED_MASK_8BIT     0xC0
+#define GREEN_MASK_8BIT   0xE0
+#define BLUE_MASK_8BIT    0xC0
+#define RED_SHIFT_8BIT    1
+#define GREEN_SHIFT_8BIT  3
+#define BLUE_SHIFT_8BIT   6
+
 #define FALSE 0
 #define TRUE  1
 
@@ -30,10 +44,14 @@ static int fb_fscrn_get(int fbfp, struct fb_fix_screeninfo *scinfo);
 static void *fb_mmap(int fbfp, struct fb_fix_screeninfo *scinfo);
 static int fb_munmap(void *buf, struct fb_fix_screeninfo *scinfo);
 static int fb_vscrn_get(int fbfp, struct fb_var_screeninfo *scinfo);
+static int fb_cmap_set(int fbfp, struct fb_cmap *cmap);
+static int fb_cmap_get(int fbfp, struct fb_cmap *cmap);
+static int fb_cmap_init(void);
+static int fb_get_cmap_index(int r, int g, int b);
 
 static struct fb_fix_screeninfo fscinfo;
 static struct fb_var_screeninfo vscinfo;
-static struct fb_cmap *cmap = NULL;
+static struct fb_cmap *cmap = NULL, *cmap_org = NULL;
 static int is_open = FALSE;
 static int fbfp = -1;
 static size_t pixel_size = 0;
@@ -78,16 +96,30 @@ fb_open(void)
 	goto ERR_END;
     }
 
-    if (!((fscinfo.visual == FB_VISUAL_TRUECOLOR ||
-	   fscinfo.visual == FB_VISUAL_DIRECTCOLOR) &&
-	  (vscinfo.bits_per_pixel == 15 ||
-	   vscinfo.bits_per_pixel == 16 ||
-	   vscinfo.bits_per_pixel == 24 || vscinfo.bits_per_pixel == 32))) {
+    if (fscinfo.visual == FB_VISUAL_PSEUDOCOLOR && vscinfo.bits_per_pixel == 8) {
+	if (fb_cmap_get(fbfp, cmap)) {
+	    fprintf(stderr, "Can't get color map.\n");
+	    fb_cmap_destroy(cmap);
+	    cmap = NULL;
+	    goto ERR_END;
+	}
+
+	if (fb_cmap_init())
+	    goto ERR_END;
+
+	pixel_size = 1;
+    }
+    else if ((fscinfo.visual == FB_VISUAL_TRUECOLOR ||
+	      fscinfo.visual == FB_VISUAL_DIRECTCOLOR) &&
+	     (vscinfo.bits_per_pixel == 15 ||
+	      vscinfo.bits_per_pixel == 16 ||
+	      vscinfo.bits_per_pixel == 24 || vscinfo.bits_per_pixel == 32)) {
+	pixel_size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
+    }
+    else {
 	fprintf(stderr, "This type of framebuffer is not supported.\n");
 	goto ERR_END;
     }
-
-    pixel_size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
 
     is_open = TRUE;
     return 0;
@@ -105,6 +137,11 @@ fb_close(void)
 
     if (cmap != NULL) {
 	fb_cmap_destroy(cmap);
+	cmap = NULL;
+    }
+    if (cmap_org != NULL) {
+	fb_cmap_set(fbfp, cmap_org);
+	fb_cmap_destroy(cmap_org);
 	cmap = NULL;
     }
     if (buf != NULL) {
@@ -171,20 +208,23 @@ void
 fb_image_pset(FB_IMAGE * image, int x, int y, int r, int g, int b)
 {
     unsigned long work;
-    int offset;
 
     if (image == NULL || is_open != TRUE || x >= image->width
 	|| y >= image->height)
 	return;
 
-    offset = image->rowstride * y + pixel_size * x;
-
-    work =
-	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
-
-    memcpy(image->data + offset, &work, pixel_size);
+    if (pixel_size == 1) {
+	work = fb_get_cmap_index(r, g, b);
+    }
+    else {
+	work =
+	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
+	     offset) +
+	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    }
+    memcpy(image->data + image->rowstride * y + pixel_size * x, &work,
+	   pixel_size);
 }
 
 void
@@ -196,10 +236,16 @@ fb_image_fill(FB_IMAGE * image, int r, int g, int b)
     if (image == NULL || is_open != TRUE)
 	return;
 
-    work =
-	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    if (pixel_size == 1) {
+	work = fb_get_cmap_index(r, g, b);
+    }
+    else {
+	work =
+	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
+	     offset) +
+	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    }
 
     for (offset = 0; offset < image->len; offset += pixel_size) {
 	memcpy(image->data + offset, &work, pixel_size);
@@ -266,7 +312,8 @@ fb_image_rotate(FB_IMAGE * image, int direction)
 		ofst -= image->rowstride;
 	    }
 	}
-    } else {
+    }
+    else {
 	for (x = image->rowstride - pixel_size; x >= 0; x -= pixel_size) {
 	    ofst = x;
 	    for (y = 0; y < image->height; y++) {
@@ -369,10 +416,16 @@ fb_pset(int x, int y, int r, int g, int b)
     if (offset >= fscinfo.smem_len)
 	return;
 
-    work =
-	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
-	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    if (pixel_size == 1) {
+	work = fb_get_cmap_index(r, g, b);
+    }
+    else {
+	work =
+	    ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	    ((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
+	     offset) +
+	    ((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+    }
     memcpy(buf + offset, &work, pixel_size);
 }
 
@@ -392,15 +445,27 @@ fb_get_color(int x, int y, int *r, int *g, int *b)
 
     memcpy(&work, buf + offset, pixel_size);
 
-    *r = ((work >> vscinfo.red.
-	   offset) & (0x000000ff >> (CHAR_BIT - vscinfo.red.length)))
-	<< (CHAR_BIT - vscinfo.red.length);
-    *g = ((work >> vscinfo.green.
-	   offset) & (0x000000ff >> (CHAR_BIT - vscinfo.green.length)))
-	<< (CHAR_BIT - vscinfo.green.length);
-    *b = ((work >> vscinfo.blue.
-	   offset) & (0x000000ff >> (CHAR_BIT - vscinfo.blue.length)))
-	<< (CHAR_BIT - vscinfo.blue.length);
+    if (pixel_size == 1) {
+	if (cmap == NULL)
+	    return 1;
+	if (cmap->red)
+	    *r = *(cmap->red + work) >> CHAR_BIT;
+	if (cmap->green)
+	    *g = *(cmap->green + work) >> CHAR_BIT;
+	if (cmap->blue)
+	    *b = *(cmap->blue + work) >> CHAR_BIT;
+    }
+    else {
+	*r = ((work >> vscinfo.red.
+	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.red.length)))
+	    << (CHAR_BIT - vscinfo.red.length);
+	*g = ((work >> vscinfo.green.
+	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.green.length)))
+	    << (CHAR_BIT - vscinfo.green.length);
+	*b = ((work >> vscinfo.blue.
+	       offset) & (0x000000ff >> (CHAR_BIT - vscinfo.blue.length)))
+	    << (CHAR_BIT - vscinfo.blue.length);
+    }
     return 0;
 }
 
@@ -697,6 +762,93 @@ fb_vscrn_disp(void)
 }
 
 /********* static functions **************/
+static
+    int
+fb_get_cmap_index(int r, int g, int b)
+{
+    int work;
+    if ((r & GREEN_MASK_8BIT) == (g & GREEN_MASK_8BIT)
+	&& (g & GREEN_MASK_8BIT) == (b & GREEN_MASK_8BIT)) {
+	work = (r >> MONO_SHIFT_8BIT) + MONO_OFFSET_8BIT;
+    }
+    else {
+	work = ((r & RED_MASK_8BIT) >> RED_SHIFT_8BIT)
+	    + ((g & GREEN_MASK_8BIT) >> GREEN_SHIFT_8BIT)
+	    + ((b & BLUE_MASK_8BIT) >> BLUE_SHIFT_8BIT)
+	    + COLOR_OFFSET_8BIT;
+    }
+    return work;
+}
+
+static int
+fb_cmap_init(void)
+{
+    int lp;
+
+    if (cmap == NULL)
+	return 1;
+
+    if (cmap->len < COLOR_OFFSET_8BIT + COLORS_8BIT) {
+	fprintf(stderr, "Can't allocate enough color.\n");
+	return 1;
+    }
+
+    if (cmap_org == NULL) {
+	if ((cmap_org =
+	     fb_cmap_create(&fscinfo, &vscinfo)) == (struct fb_cmap *)-1) {
+	    return 1;
+	}
+
+	if (fb_cmap_get(fbfp, cmap_org)) {
+	    fprintf(stderr, "Can't get color map.\n");
+	    fb_cmap_destroy(cmap_org);
+	    cmap_org = NULL;
+	    return 1;
+	}
+    }
+
+    cmap->start = MONO_OFFSET_8BIT;
+    cmap->len = COLORS_8BIT + COLORS_MONO_8BIT;
+
+    for (lp = 0; lp < COLORS_MONO_8BIT; lp++) {
+	int c;
+	c = (lp << (MONO_SHIFT_8BIT + 8)) +
+	    (lp ? (0xFFFF - (MONO_MASK_8BIT << 8)) : 0);
+	if (cmap->red)
+	    *(cmap->red + lp) = c;
+	if (cmap->green)
+	    *(cmap->green + lp) = c;
+	if (cmap->blue)
+	    *(cmap->blue + lp) = c;
+    }
+
+    for (lp = 0; lp < COLORS_8BIT; lp++) {
+	int r, g, b;
+	r = lp & (RED_MASK_8BIT >> RED_SHIFT_8BIT);
+	g = lp & (GREEN_MASK_8BIT >> GREEN_SHIFT_8BIT);
+	b = lp & (BLUE_MASK_8BIT >> BLUE_SHIFT_8BIT);
+	if (cmap->red)
+	    *(cmap->red + lp + COLORS_MONO_8BIT)
+		= (r << (RED_SHIFT_8BIT + 8)) +
+		(r ? (0xFFFF - (RED_MASK_8BIT << 8)) : 0);
+	if (cmap->green)
+	    *(cmap->green + lp + COLORS_MONO_8BIT)
+		= (g << (GREEN_SHIFT_8BIT + 8)) +
+		(g ? (0xFFFF - (GREEN_MASK_8BIT << 8)) : 0);
+	if (cmap->blue)
+	    *(cmap->blue + lp + COLORS_MONO_8BIT)
+		= (b << (BLUE_SHIFT_8BIT + 8)) +
+		(b ? (0xFFFF - (BLUE_MASK_8BIT << 8)) : 0);
+    }
+
+    if (fb_cmap_set(fbfp, cmap)) {
+	fb_cmap_destroy(cmap);
+	cmap = NULL;
+	fprintf(stderr, "Can't set color map.\n");
+	return 1;
+    }
+    return 0;
+}
 
 /*
  * (struct fb_cmap)デバイスに依存しないカラーマップ情報
@@ -789,7 +941,6 @@ fb_cmap_destroy(struct fb_cmap *cmap)
     free(cmap);
 }
 
-#if 0
 static int
 fb_cmap_get(int fbfp, struct fb_cmap *cmap)
 {
@@ -809,7 +960,7 @@ fb_cmap_set(int fbfp, struct fb_cmap *cmap)
     }
     return 0;
 }
-#endif
+
 /*
  * フレームバッファに対するアクセス
  * 

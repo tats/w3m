@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.6 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: display.c,v 1.7 2001/11/23 19:00:47 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -182,7 +182,7 @@ static int graph_mode = 0;
 static Linecolor color_mode = 0;
 #endif
 
-#ifdef BUFINFO
+#ifdef USE_BUFINFO
 static Buffer *save_current_buf = NULL;
 #endif
 
@@ -313,7 +313,7 @@ displayBuffer(Buffer * buf, int mode)
     message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY);
     standend();
     refresh();
-#ifdef BUFINFO
+#ifdef USE_BUFINFO
     if (Currentbuf != save_current_buf) {
 	saveBufferInfo();
 	save_current_buf = Currentbuf;

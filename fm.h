@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.11 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: fm.h,v 1.12 2001/11/23 19:00:47 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -90,10 +90,10 @@ void bzero(void *, int);
 #define SHELLBUFFERNAME	"*Shellout*"
 #define PIPEBUFFERNAME	"*stream*"
 #define CPIPEBUFFERNAME	"*stream(closed)*"
-#ifdef DICT
+#ifdef USE_DICT
 #define DICTCMD "w3mdict"
 #define DICTBUFFERNAME "*dictionary*"
-#endif				/* DICT */
+#endif				/* USE_DICT */
 
 /* 
  * Line Property

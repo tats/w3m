@@ -12,11 +12,11 @@ To make use of dictionary look-up, you have to change compile
 option by hand. After running configure, edit config.h and
 change
 
-#undef DICT
+#undef USE_DICT
 
 into
 
-#define DICT
+#define USE_DICT
 
 and recompile w3m. (You have to recompile dict.c and keybind.c.)
 

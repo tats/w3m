@@ -1,3 +1,24 @@
+2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02526]
+	* .cvsignore: add inflate mktable w3m w3mbookmark w3mhelperpanel
+	   _zdmachdep.c
+	* configure: 
+	  pref_lang -> lang={JA|EN}
+	  dcode -> display_code
+	  scode -> system_code
+	  remove save_params()
+	  add def_param(), ask_choice() ask_param()
+	  all confiration parameters can be read from config.param
+	  s/DICT/USE_DICT/
+	  s/BUFINFO/USE_BUFINFO/
+	* fm.h: s/DICT/USE_DICT/
+	* proto.h: ditto
+	* doc/README.dict: ditto
+	* doc-jp/README.dict: ditto
+	* display.c: s/BUFINFO/USE_BUFINFO/
+	* main.c: s/DICT/USE_DICT/ s/BUFINFO/USE_BUFINFO/
+
 2001-11-24  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02523]

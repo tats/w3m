@@ -12,11 +12,11 @@ w3m用英和辞典検索機能について
 コンパイルしなおす必要があります．configure を実行して config.h
 が生成された後，config.h を編集して
 
-#undef DICT
+#undef USE_DICT
 
 を
 
-#define DICT
+#define USE_DICT
 
 に変更し，w3m をコンパイルしなおしてください．
 (dict.c と keybind.c をコンパイルしなおせば良いはずです)

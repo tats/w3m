@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.120 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: fm.h,v 1.121 2003/09/23 18:42:25 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -46,6 +46,28 @@
 #include "wc.h"
 #include "wtf.h"
 #endif
+
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
+#endif
+#if !HAVE_SETLOCALE
+#define setlocale(category, locale) /* empty */
+#endif
+
+#if ENABLE_NLS
+#include <libintl.h>
+#define _(String) gettext (String)
+#define N_(String) (String)
+#else
+# undef bindtextdomain
+# define bindtextdomain(Domain, Directory) /* empty */
+# undef textdomain
+# define textdomain(Domain) /* empty */
+# define _(Text) Text
+# define N_(Text) Text
+# define gettext(Text) Text
+#endif
+
 #include "form.h"
 #include "frame.h"
 #include "parsetag.h"

@@ -4,11 +4,13 @@
 #
 @SET_MAKE@
 SHELL=@SHELL@
-package=w3m
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 datadir = @datadir@
+localedir = $(datadir)/locale
 libdir = @libdir@
 includedir = @includedir@
 infodir = @infodir@
@@ -21,15 +23,16 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 top_srcdir = @top_srcdir@
+top_builddir = .
 VPATH = $(top_srcdir):.
 DESTDIR = 
 
-CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
-AUXBIN_DIR = $(libexecdir)/$(package)
-HELP_DIR = $(datadir)/$(package)
+CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
+HELP_DIR = $(datadir)/$(PACKAGE)
 RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
-CONF_DIR = $(sysconfdir)/$(package)
+CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
 CFLAGS = $(OPTS) @CFLAGS@ $(DEFS)
 WCCFLAGS = @WCCFLAGS@
@@ -37,9 +40,10 @@ CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DLIB_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
 	-DETC_DIR=\"$(ETC_DIR)\" -DCONF_DIR=\"$(CONF_DIR)\" \
-	-DRC_DIR=\"$(RC_DIR)\"
+	-DRC_DIR=\"$(RC_DIR)\" \
+        -DLOCALEDIR=\"$(localedir)\"
 LDFLAGS = @LDFLAGS@
-LIBS = -L. -lindep @LIBS@
+LIBS = -L. -lindep @LIBINTL@ @LIBS@
 W3M_LIBS = @W3M_LIBS@
 WCTARGET = @WCTARGET@
 
@@ -92,12 +96,12 @@ IMGOBJS=@IMGOBJS@
 
 EXT=@EXEEXT@
 
-TARGET=$(package)$(EXT)
+TARGET=$(PACKAGE)$(EXT)
 BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
-MAN1_TARGET=$(package).1
+MAN1_TARGET=$(PACKAGE).1
 MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
 
@@ -109,11 +113,11 @@ HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
 SCRIPTSUBDIRS= scripts
-SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc
+SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc intl po
 
 .PHONY: $(SUBDIRS)
 
-all: $(TARGETS) all-scripts
+all: $(TARGETS) all-scripts intl po
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
@@ -175,6 +179,9 @@ w3mimgdisplay.o: w3mimgdisplay.c w3mimg
 
 w3mimg:
 	(cd w3mimg && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)")
+
+intl po:
+	(cd $@ && $(MAKE) top_builddir=.. subdir=$@)
 
 install: install-core install-scripts
 

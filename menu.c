@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.35 2003/09/22 21:27:42 ukai Exp $ */
+/* $Id: menu.c,v 1.36 2003/09/23 18:42:25 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -257,6 +257,7 @@ static int smDelTab(char c);
 
 static Menu MainMenu;
 #if LANG == JA
+/* FIXME: gettextize here */
 static wc_ces MainMenuCharset = WC_CES_EUC_JP;
 static int MainMenuEncode = FALSE;
 static MenuItem MainMenuItem[] = {

@@ -1,3 +1,16 @@
+2003-09-24  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* gettextize initial modifications
+	* configure.in Makefile.in aclocal.m4 config.h.in: 
+		update to support NLS
+	* ABOUT-NLS: added
+	* config.rpath: added
+	* mkinstalldirs: added
+	* intl/: added
+	* po/: added
+	* fm.h: NLS support
+	* main.c (main): add gettext trigger
+
 2003-09-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* more autoconfisicate
@@ -8038,4 +8051,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.865 2003/09/22 22:53:52 ukai Exp $
+$Id: ChangeLog,v 1.866 2003/09/23 18:42:24 ukai Exp $

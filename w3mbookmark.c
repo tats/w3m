@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.9 2003/09/22 21:02:22 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.10 2003/09/23 18:42:25 ukai Exp $ */
 #include <stdlib.h>
 #include <stdio.h>
 #include "config.h"
@@ -8,6 +8,7 @@
 #include "parsetag.h"
 
 #if LANG == JA
+/* FIXME: gettextize here */
 #define BKMARK_TITLE "¥Ö¥Ã¥¯¥Þ¡¼¥¯¤ÎÅÐÏ¿"
 #define BKMARK_ADD "ÅÐÏ¿"
 #define DEFAULT_SECTION "Ì¤Ê¬Îà"
@@ -58,6 +59,7 @@ print_bookmark_panel(char *bmark, char *url, char *title)
     char *p;
 
 #if LANG == JA
+    /* FIXME: gettextize here */
     printf("Content-Type: text/html; charset=EUC-JP\n\n");
 #else
     printf("Content-Type: text/html\n\n");

@@ -6,6 +6,9 @@
 #define JA 0
 #define EN 1
 
+/* Name of package */
+#undef PACKAGE
+
 #define HELP_FILE    "w3mhelp.html"
 #define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
@@ -39,6 +42,11 @@
 #define USE_UNICODE
 #define W3M_LANG @W3M_LANG@
 #define LANG W3M_LANG
+
+/* Define to 1 if translation of program messages to the user's
+   native language is requested. */
+#undef ENABLE_NLS
+
 #undef USE_COLOR
 #undef USE_ANSI_COLOR
 #undef USE_BG_COLOR
@@ -128,6 +136,7 @@ typedef long clen_t;
 #undef HAVE_GETPASSPHRASE
 #undef HAVE_CHDIR
 #undef HAVE_SETPGRP
+#undef HAVE_SETLOCALE
 
 #undef SETPGRP_VOID
 #ifdef SETPGRP_VOID

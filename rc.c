@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.88 2003/09/22 21:27:42 ukai Exp $ */
+/* $Id: rc.c,v 1.89 2003/09/23 18:42:25 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -54,7 +54,8 @@ static int RC_table_size;
 #if LANG == JA
 static wc_ces OptionCharset = WC_CES_EUC_JP;
 static int OptionEncode = FALSE;
- 
+
+/* FIXME: gettextize here */
 #define CMT_HELPER	 "外部ビューアの編集"
 #define CMT_TABSTOP      "タブ幅"
 #define CMT_INDENT_INCR  "HTML整形時のインデント幅"
@@ -425,6 +426,7 @@ struct sel_c {
 #ifdef USE_COLOR
 static struct sel_c colorstr[] = {
 #if LANG == JA
+    /* FIXME: gettextize here */
     {0, "black", "黒"},
     {1, "red", "赤"},
     {2, "green", "緑"},
@@ -465,6 +467,7 @@ static char n_s[][2] = {
 
 static struct sel_c defaulturls[] = {
 #if LANG == JA
+    /* FIXME: gettextize here */
     {N_S(DEFAULT_URL_EMPTY), "無し"},
     {N_S(DEFAULT_URL_CURRENT), "現在のURL"},
     {N_S(DEFAULT_URL_LINK), "リンク先のURL"},
@@ -479,6 +482,7 @@ static struct sel_c defaulturls[] = {
 #ifdef USE_MOUSE
 static struct sel_c wheelmode[] = {
 #if LANG == JA
+    /* FIXME: gettextize here */
     {TRUE, "1", "A:画面サイズに比例"},
     {FALSE, "0", "B:一定の行数"},
     {0, NULL, NULL}
@@ -867,6 +871,7 @@ struct param_ptr params10[] = {
 
 struct param_section sections[] = {
 #if LANG == JA
+    /* FIXME: gettextize here */
     {"表示関係", params1},
 #ifdef USE_COLOR
     {"表示色", params2},
@@ -1361,6 +1366,7 @@ sync_with_option(void)
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 #if LANG == JA
+	/* FIXME: gettextize here? */
 	AcceptLang = "ja;q=1.0, en;q=0.5";
 #else				/* LANG != JA (must be EN) */
 	AcceptLang = "en;q=1.0";
@@ -1606,7 +1612,7 @@ load_option_panel(void)
     buf = loadHTMLString(src);
 #ifdef USE_M17N
     if (buf)
-#if LANG == JA
+#if LANG == JA 	/* XXX: why? */
 	buf->document_charset = OptionCharset;
 #else
 	buf->document_charset = SystemCharset;

@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.10 2001/11/26 09:01:08 ukai Exp $ */
+/* $Id: indep.c,v 1.11 2001/11/26 09:04:01 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -176,6 +176,8 @@ strcasestr(const char *s1, const char *s2)
 {
     int len1, len2;
     if (s2 == NULL)
+	return (char *)s1;
+    if (*s2 == '\0')
 	return (char *)s1;
     len1 = strlen(s1);
     len2 = strlen(s2);

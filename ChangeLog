@@ -1,5 +1,8 @@
 2001-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02556]
+	* indep.c (strcasestr): strcasestr("", "") should not return NULL
+
 	* [w3m-dev 02555]
 	* configure: check strcasestr
 	* fm.h (_GNU_SOURCE): requires for strcasestr()

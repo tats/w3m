@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.2 2002/07/18 06:23:51 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.3 2002/07/18 14:32:12 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -253,7 +253,7 @@ w3mimg_x11open()
     XWindowAttributes attr;
     Window root, *children;
 
-    wop = (w3mimg_op *)malloc(sizeof(w3mimg_op));
+    wop = (w3mimg_op *) malloc(sizeof(w3mimg_op));
     if (wop == NULL)
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
@@ -268,10 +268,10 @@ w3mimg_x11open()
 	goto error;
     }
     if ((id = getenv("WINDOWID")) != NULL)
-	xi->window = (Window)atoi(id);
+	xi->window = (Window) atoi(id);
     else
 	XGetInputFocus(xi->display, &xi->window, &revert);
-    if (! xi->window)
+    if (!xi->window)
 	exit(1);
 
     XGetWindowAttributes(xi->display, xi->window, &attr);
@@ -281,12 +281,12 @@ w3mimg_x11open()
     while (1) {
 	Window p_window;
 
-	XQueryTree(xi->display, xi->window, &root, &xi->parent, 
+	XQueryTree(xi->display, xi->window, &root, &xi->parent,
 		   &children, &nchildren);
 	p_window = xi->window;
 	for (i = 0; i < nchildren; i++) {
 	    XGetWindowAttributes(xi->display, children[i], &attr);
-	    if (attr.width > wop->width * 0.7 && 
+	    if (attr.width > wop->width * 0.7 &&
 		attr.height > wop->height * 0.7) {
 		/* maybe text window */
 		wop->width = attr.width;
@@ -300,15 +300,14 @@ w3mimg_x11open()
     wop->offset_x = OFFSET_X;
     for (i = 0; i < nchildren; i++) {
 	XGetWindowAttributes(xi->display, children[i], &attr);
-	if (attr.x <= 0 && attr.width < 30 &&
-	    attr.height > wop->height * 0.7) {
+	if (attr.x <= 0 && attr.width < 30 && attr.height > wop->height * 0.7) {
 	    /* scrollbar of xterm/kterm ? */
 	    wop->offset_x += attr.x + attr.width + attr.border_width * 2;
 	    break;
 	}
     }
     wop->offset_y = OFFSET_Y;
-    
+
     wop->priv = xi;
 
     wop->init = x11_init;
@@ -323,7 +322,7 @@ w3mimg_x11open()
     wop->free_image = x11_free_image;
 
     return wop;
-error:
+  error:
     if (xi)
 	free(xi);
     free(wop);

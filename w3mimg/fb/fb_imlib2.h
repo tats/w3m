@@ -5,10 +5,10 @@
 #include <Imlib2.h>
 
 typedef struct {
-  int width;
-  int height;
-  Imlib_Image image;
-  DATA32 *data;
+    int width;
+    int height;
+    Imlib_Image image;
+    DATA32 *data;
 } IMAGE;
 
 #endif

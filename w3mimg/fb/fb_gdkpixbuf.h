@@ -4,12 +4,12 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 typedef struct {
-  int width;
-  int height;
-  int rowstride;
-  int alpha;
-  GdkPixbuf *pixbuf;
-  guchar    *pixels;
+    int width;
+    int height;
+    int rowstride;
+    int alpha;
+    GdkPixbuf *pixbuf;
+    guchar *pixels;
 } IMAGE;
 
 #endif

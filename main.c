@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.38 2001/12/17 16:13:40 ukai Exp $ */
+/* $Id: main.c,v 1.39 2001/12/19 16:24:21 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -162,26 +162,21 @@ static void
 wrap_GC_warn_proc(char *msg, GC_word arg)
 {
     if (fmInitialized) {
-      /* *INDENT-OFF* */
-      static struct {
-	  char *msg;
-	  GC_word arg;
-      } msg_ring[GC_WARN_KEEP_MAX] = {
-	  {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0},
-	  {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0},
-	  {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0},
-	  {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0}, {NULL, 0},
-      };
-      /* *INDENT-ON* */
+	/* *INDENT-OFF* */
+	static struct {
+	    char *msg;
+	    GC_word arg;
+	} msg_ring[GC_WARN_KEEP_MAX];
+	/* *INDENT-ON* */
 	static int i = 0;
 	static int n = 0;
 	static int lock = 0;
 	int j;
-
+	
 	j = (i + n) % (sizeof(msg_ring) / sizeof(msg_ring[0]));
 	msg_ring[j].msg = msg;
 	msg_ring[j].arg = arg;
-
+	
 	if (n < sizeof(msg_ring) / sizeof(msg_ring[0]))
 	    ++n;
 	else
@@ -4662,7 +4657,6 @@ SigAlarm(SIGNAL_ARG)
 #endif
 	w3mFuncList[alarm_event.cmd].func();
 	onA();
-#ifdef USE_ALARM
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE;
@@ -4675,7 +4669,6 @@ SigAlarm(SIGNAL_ARG)
 	    signal(SIGALRM, SigAlarm);
 	    alarm(alarm_sec);
 	}
-#endif
     }
     SIGNAL_RETURN;
 }

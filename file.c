@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.158 2002/12/10 15:36:10 ukai Exp $ */
+/* $Id: file.c,v 1.159 2002/12/13 00:09:50 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7832,16 +7832,14 @@ guess_save_name(Buffer *buf, char *path)
 	char *p, *q;
 	if ((p = checkHeader(buf, "Content-Disposition:")) != NULL &&
 	    (q = strcasestr(p, "filename")) != NULL &&
-	    (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';')) {
-	    if (matchattr(q, "filename", 8, &name))
-		return name->ptr;
-	}
-	if ((p = checkHeader(buf, "Content-Type:")) != NULL &&
+	    (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
+	    matchattr(q, "filename", 8, &name))
+	    path = name->ptr;
+	else if ((p = checkHeader(buf, "Content-Type:")) != NULL &&
 	    (q = strcasestr(p, "name")) != NULL &&
-	    (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';')) {
-	    if (matchattr(q, "name", 4, &name))
-		return name->ptr;
-	}
+	    (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
+	    matchattr(q, "name", 4, &name))
+	    path = name->ptr;
     }
     return guess_filename(path);
 }

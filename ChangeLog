@@ -1,5 +1,10 @@
 2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03563] Directory Traversal Vulnerabilities in FTP Clients
+	* file.c (guess_save_name): pass guess_filename
+
+2002-12-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03562] #undef BUFINFO
 	* config.h.dist (BUFINFO): undef
 	* configure (use_bufinfo): n
@@ -5746,4 +5751,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.614 2002/12/12 23:55:30 ukai Exp $
+$Id: ChangeLog,v 1.615 2002/12/13 00:09:50 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.13 2002/03/15 16:35:46 ukai Exp $ */
+/* $Id: frame.c,v 1.14 2002/03/15 19:02:40 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -416,8 +416,8 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
     }
     else if ((buf->real_scheme != SCM_LOCAL)
 #ifdef USE_IMAGE
-	|| (activeImage && !useExtImageViewer &&
-	    buf->real_type && !strncasecmp(buf->real_type, "image/", 6))
+	     || (activeImage && !useExtImageViewer &&
+		 buf->real_type && !strncasecmp(buf->real_type, "image/", 6))
 #endif
 	) {
 	tmp = tmpfname(TMPF_FRAME, NULL);

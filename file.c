@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.86 2002/03/15 16:35:46 ukai Exp $ */
+/* $Id: file.c,v 1.87 2002/03/15 19:02:40 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -633,8 +633,10 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 
 		tmpf = xface2xbm(&tmp->ptr[7]);
 		if (tmpf) {
-		    src = Sprintf("<img src=\"%s\" alt=\"X-Face\" width=48 height=48>",
-				  html_quote(tmpf));
+		    src =
+			Sprintf
+			("<img src=\"%s\" alt=\"X-Face\" width=48 height=48>",
+			 html_quote(tmpf));
 		    init_stream(&f, SCM_LOCAL, newStrStream(src));
 		    loadHTMLstream(&f, newBuf, NULL, TRUE);
 		    for (l = newBuf->lastLine; l && l->real_linenumber;
@@ -6518,9 +6520,9 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 
     cache->loaded = IMG_FLAG_LOADED;
     cache->index = 0;
-/*
-    getImageSize(cache);
-*/
+    /*
+     * getImageSize(cache);
+     */
 
   image_buffer:
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));

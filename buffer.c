@@ -1,4 +1,4 @@
-/* $Id: buffer.c,v 1.12 2002/03/14 16:12:05 ukai Exp $ */
+/* $Id: buffer.c,v 1.13 2002/03/15 19:02:40 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_MOUSE
@@ -521,7 +521,7 @@ reshapeBuffer(Buffer *buf)
 #endif
     if (buf->search_header && buf->currentURL.scheme == SCM_LOCAL) {
 	if (buf->header_source && (buf->mailcap_source ||
-	    !strcmp(buf->currentURL.file, "-"))) {
+				   !strcmp(buf->currentURL.file, "-"))) {
 	    URLFile h;
 	    init_stream(&h, SCM_LOCAL, NULL);
 	    examineFile(buf->header_source, &h);

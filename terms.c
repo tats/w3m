@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.29 2002/03/15 18:33:32 ukai Exp $ */
+/* $Id: terms.c,v 1.30 2002/03/15 19:02:40 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -484,6 +484,7 @@ writestr(char *s)
 #define XTERM_TITLE	"\033]0;w3m: %s\007"
 #define SCREEN_TITLE	"\033k%s\033\134"
 
+/* *INDENT-OFF* */
 static struct term_info {
     char *term;
     char *title_str;
@@ -491,7 +492,6 @@ static struct term_info {
     int mouse_flag;
 #endif
 } term_info_list[] = {
-    /* *INDENT-OFF* */
     {TERM_INFO("xterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {TERM_INFO("kterm", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
     {TERM_INFO("rxvt", XTERM_TITLE, (NEED_XTERM_ON|NEED_XTERM_OFF))},
@@ -501,9 +501,9 @@ static struct term_info {
     {TERM_INFO("cygwin", NULL, NEED_XTERM_ON)},
 #endif
     {TERM_INFO(NULL, NULL, 0)}
-    /* *INDENT-ON * */
 };
 #undef TERM_INFO
+/* *INDENT-ON * */
 
 int
 set_tty(void)

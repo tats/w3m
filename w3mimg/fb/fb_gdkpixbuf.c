@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.10 2003/03/24 15:47:49 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.11 2003/03/26 15:14:23 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -11,6 +11,33 @@ static void draw(FB_IMAGE * img, int bg, int x, int y, int w, int h,
 		 GdkPixbuf * pixbuf);
 static GdkPixbuf *resize_image(GdkPixbuf * pixbuf, int width, int height);
 
+static void
+get_animation_size(GdkPixbufAnimation *animation, int *w, int *h)
+{
+    GList *frames;
+    int iw, ih, n, i;
+
+    frames = gdk_pixbuf_animation_get_frames(animation);
+    n = gdk_pixbuf_animation_get_num_frames(animation);
+    *w = gdk_pixbuf_animation_get_width(animation);
+    *h = gdk_pixbuf_animation_get_height(animation);
+    for (i = 0; i < n; i++) {
+	GdkPixbufFrame *frame;
+	GdkPixbuf *pixbuf;
+
+	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
+	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
+	iw = gdk_pixbuf_frame_get_x_offset(frame)
+	  +gdk_pixbuf_get_width(pixbuf);
+	ih = gdk_pixbuf_frame_get_y_offset(frame)
+	  + gdk_pixbuf_get_height(pixbuf);
+	if (iw > *w)
+	    *w = iw;
+	if (ih > *h)
+	    *h = ih;
+    }
+}
+
 int
 get_image_size(char *filename, int *w, int *h)
 {
@@ -20,8 +47,7 @@ get_image_size(char *filename, int *w, int *h)
     animation = gdk_pixbuf_animation_new_from_file(filename);
     if (animation == NULL)
 	return 1;
-    *w = gdk_pixbuf_animation_get_width(animation);
-    *h = gdk_pixbuf_animation_get_height(animation);
+    get_animation_size(animation, w, h);
     gdk_pixbuf_animation_unref(animation);
     return 0;
 }
@@ -41,8 +67,7 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     if (animation == NULL)
 	return NULL;
     frames = gdk_pixbuf_animation_get_frames(animation);
-    fw = gdk_pixbuf_animation_get_width(animation);
-    fh = gdk_pixbuf_animation_get_height(animation);
+    get_animation_size(animation, &fw, &fh);
     n = gdk_pixbuf_animation_get_num_frames(animation);
     if (max_anim > 0) {
 	n = (max_anim > n) ? n : max_anim;

@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.14 2003/03/24 15:48:09 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.15 2003/03/26 15:14:23 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -40,6 +40,34 @@ struct x11_image {
     int wait;
     Pixmap *pixmap;
 };
+
+static void
+get_animation_size(GdkPixbufAnimation *animation, int *w, int *h)
+{
+    GList *frames;
+    int iw, ih, n, i;
+
+    frames = gdk_pixbuf_animation_get_frames(animation);
+    n = gdk_pixbuf_animation_get_num_frames(animation);
+    *w = gdk_pixbuf_animation_get_width(animation);
+    *h = gdk_pixbuf_animation_get_height(animation);
+    for (i = 0; i < n; i++) {
+	GdkPixbufFrame *frame;
+	GdkPixbuf *pixbuf;
+
+	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
+	pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
+	iw = gdk_pixbuf_frame_get_x_offset(frame)
+	  +gdk_pixbuf_get_width(pixbuf);
+	ih = gdk_pixbuf_frame_get_y_offset(frame)
+	  + gdk_pixbuf_get_height(pixbuf);
+	if (iw > *w)
+	    *w = iw;
+	if (ih > *h)
+	    *h = ih;
+    }
+}
+
 #endif
 
 static int
@@ -291,8 +319,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	return 0;
     frames = gdk_pixbuf_animation_get_frames(animation);
     n = gdk_pixbuf_animation_get_num_frames(animation);
-    iw = gdk_pixbuf_animation_get_width(animation);
-    ih = gdk_pixbuf_animation_get_height(animation);
+    get_animation_size(animation, &iw, &ih);
 
     if (self->max_anim > 0) {
 	n = (self->max_anim > n) ? n : self->max_anim;
@@ -466,7 +493,7 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 #elif defined(USE_IMLIB2)
     Imlib_Image im;
 #elif defined(USE_GDKPIXBUF)
-    GdkPixbuf *pixbuf;
+    GdkPixbufAnimation *animation;
 #endif
 
     if (self == NULL)
@@ -493,14 +520,12 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
     *h = imlib_image_get_height();
     imlib_free_image();
 #elif defined(USE_GDKPIXBUF)
-    pixbuf = gdk_pixbuf_new_from_file(fname);
-    if (!pixbuf)
+    animation = gdk_pixbuf_animation_new_from_file(fname);
+    if (!animation)
 	return 0;
 
-    *w = gdk_pixbuf_get_width(pixbuf);
-    *h = gdk_pixbuf_get_height(pixbuf);
-
-    gdk_pixbuf_unref(pixbuf);
+    get_animation_size(animation, w, h);
+    gdk_pixbuf_animation_unref(animation);
 #endif
     return 1;
 }

@@ -1,3 +1,14 @@
+2001-11-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02555]
+	* configure: check strcasestr
+	* fm.h (_GNU_SOURCE): requires for strcasestr()
+	* indep.c (strcasestr): #ifdef HAVE_STRCASESTR
+	* indep.c (strcasestr): check whether s2 is NULL
+	* indep.h: add #include "config.h"
+	* indep.h: #ifdef HAVE_STRCASESTR
+	* indep.h: strcasestr() takes const char *
+
 2001-11-26  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 02553]

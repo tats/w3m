@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.20 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: fm.h,v 1.21 2001/11/26 09:01:08 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -9,6 +9,8 @@
 
 #ifndef FM_H
 #define FM_H
+
+#define _GNU_SOURCE	/* strcasestr() */
 
 #include <stdio.h>
 #include <stdlib.h>

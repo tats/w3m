@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.9 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: indep.c,v 1.10 2001/11/26 09:01:08 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -169,21 +169,25 @@ expandPath(char *name)
     return extpath->ptr;
 }
 
+#ifndef HAVE_STRCASESTR
 /* string search using the simplest algorithm */
 char *
-strcasestr(char *s1, char *s2)
+strcasestr(const char *s1, const char *s2)
 {
     int len1, len2;
+    if (s2 == NULL)
+	return (char *)s1;
     len1 = strlen(s1);
     len2 = strlen(s2);
     while (*s1 && len1 >= len2) {
 	if (strncasecmp(s1, s2, len2) == 0)
-	    return s1;
+	    return (char *)s1;
 	s1++;
 	len1--;
     }
     return 0;
 }
+#endif
 
 static int
 strcasematch(char *s1, char *s2)

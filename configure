@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.19 2001/11/26 08:23:26 ukai Exp $
+# $Id: configure,v 1.20 2001/11/26 09:01:08 ukai Exp $
 #	Configuration.
 #
 
@@ -1098,6 +1098,24 @@ else
   def_have_strcasecmp="#undef HAVE_STRCASECMP"
 fi
 
+####### strcasestr
+cat > _zmachdep.c << EOF
+#include <string.h>
+main()
+{
+  int i;
+  i = strcasestr("abc","def");
+}
+EOF
+if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+then
+  echo "You have strcasestr()."
+  def_have_strcasestr="#define HAVE_STRCASESTR"
+else
+  echo "You don't have strcasestr()."
+  def_have_strcasestr="#undef HAVE_STRCASESTR"
+fi
+
 ####### strchr
 cat > _zmachdep.c << EOF
 #include <string.h>
@@ -1945,6 +1963,7 @@ $def_use_binstream
 $def_term_if
 $def_dir_if
 $def_have_strcasecmp
+$def_have_strcasestr
 $def_have_strchr
 $def_have_strerror
 $def_have_syserrlist

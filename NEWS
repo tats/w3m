@@ -1,5 +1,6 @@
 w3m 0.3.3 or 0.4?
 
+* rc: display_ins_del
 * 2 stroke keybinding
 * func: MULTIMAP
 * func: CLOSE_TAB_MOUSE, MENU_MOUSE, MOVE_MOUSE, TAB_MOUSE

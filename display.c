@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.27 2002/11/05 17:12:02 ukai Exp $ */
+/* $Id: display.c,v 1.28 2002/11/06 03:19:30 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -1047,7 +1047,7 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
 	fprintf(stderr, "%s\n", conv_to_system(s));
 	return;
     }
-    if (Currentbuf != NULL)
+    if (CurrentTab != NULL && Currentbuf != NULL)
 	message(s, Currentbuf->cursorX + Currentbuf->rootX,
 		Currentbuf->cursorY + Currentbuf->rootY);
     else
@@ -1062,7 +1062,7 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
     if (mouse && use_mouse)
 	mouse_inactive();
 #endif
-    if (Currentbuf != NULL && redraw_current)
+    if (CurrentTab != NULL && Currentbuf != NULL && redraw_current)
 	displayBuffer(Currentbuf, B_NORMAL);
 }
 

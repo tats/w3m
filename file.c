@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.111 2002/11/05 17:10:05 ukai Exp $ */
+/* $Id: file.c,v 1.112 2002/11/06 03:19:30 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7113,7 +7113,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	    fmTerm();
 	    mySystem(command->ptr, 0);
 	    fmInit();
-	    if (Currentbuf)
+	    if (CurrentTab && Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}
 	else {

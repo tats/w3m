@@ -1,3 +1,10 @@
+2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03375] NULL check of CurrentTab
+	* display.c (disp_message_nsec): check CurrentTab
+	* file.c (doExternal): check CurrentTab
+	* image.c (loadImage): check CurrentTab
+
 2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03374] disable_secret_security_check
@@ -4305,4 +4312,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.477 2002/11/05 17:54:38 ukai Exp $
+$Id: ChangeLog,v 1.478 2002/11/06 03:19:30 ukai Exp $

@@ -1,5 +1,14 @@
 2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02926] fixed w3mmail.cgi
+	* scripts/w3mmail.cgi.in: dont MIME encode for preview
+	* scripts/w3mmail.cgi.in (lang_body): add 7bit/8bit flag arg
+	* scripts/w3mmail.cgi.in: fix hidden from value
+	* scripts/w3mmail.cgi.in (lang_setup): check $LC_ALL, $LC_CTYPE
+	* scripts/w3mmail.cgi.in (lang_header_default): fix MIME encode word
+
+2002-01-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02920] don't use inttypes.h and/or stdint.h
 	* mktable.c: remove inttypes.h, uintptr_t, use unsigned long instead
 	* configure: remove inttypes.h detection
@@ -2346,4 +2355,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.270 2002/01/29 16:23:37 ukai Exp $
+$Id: ChangeLog,v 1.271 2002/01/29 16:31:09 ukai Exp $

@@ -1,3 +1,7 @@
+2003-09-29  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Makefile.in (functable.c): fix cannot open file `b' for reading
+
 2003-09-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* funcname.tab: generated from DEFUN
@@ -8103,4 +8107,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.874 2003/09/26 20:45:53 ukai Exp $
+$Id: ChangeLog,v 1.875 2003/09/28 16:17:40 ukai Exp $

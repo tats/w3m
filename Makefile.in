@@ -156,7 +156,7 @@ funcname2.h: funcname.tab
 	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
 
 functable.c: funcname.tab mktable$(EXT)
-	sort funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.ta	b
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 

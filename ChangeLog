@@ -1,5 +1,13 @@
 2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03675] x-face
+	* file.c (xface2xpm): use getImage()
+		(readHeader): check same file
+		(loadImageBuffer): rewrite
+		(lessopen_stream): shell_quote()
+
+2003-01-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03674] -dump problem
 	* file.c (loadGeneralFile): return NULL when dump
 	* main.c (dump_source): deleted
@@ -6678,4 +6686,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.701 2003/01/22 15:56:49 ukai Exp $
+$Id: ChangeLog,v 1.702 2003/01/22 16:01:16 ukai Exp $

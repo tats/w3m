@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.196 2003/01/22 15:56:50 ukai Exp $ */
+/* $Id: file.c,v 1.197 2003/01/22 16:01:17 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -551,21 +551,33 @@ matchattr(char *p, char *attr, int len, Str *value)
 static char *
 xface2xpm(char *xface)
 {
-    char *xpm;
+    Image image;
+    ImageCache *cache;
     FILE *f;
     struct stat st;
 
-    xpm = tmpfname(TMPF_DFL, ".xpm")->ptr;
-    f = popen(Sprintf("%s > %s", auxbinFile(XFACE2XPM), xpm)->ptr, "w");
+    SKIP_BLANKS(xface);
+    image.url = xface;
+    image.ext = ".xpm";
+    image.width = 48;
+    image.height = 48;
+    image.cache = NULL;
+    cache = getImage(&image, NULL, IMG_FLAG_AUTO);
+    if (cache->loaded & IMG_FLAG_LOADED && !stat(cache->file, &st))
+	return cache->file;
+    cache->loaded = IMG_FLAG_ERROR;
+
+    f = popen(Sprintf("%s > %s", shell_quote(auxbinFile(XFACE2XPM)),
+		      shell_quote(cache->file))->ptr, "w");
     if (!f)
 	return NULL;
-    fprintf(f, "%s", xface);
+    fputs(xface, f);
     pclose(f);
-    if (stat(xpm, &st))
+    if (stat(cache->file, &st) || !st.st_size)
 	return NULL;
-    if (!st.st_size)
-	return NULL;
-    return xpm;
+    cache->loaded = IMG_FLAG_LOADED | IMG_FLAG_DONT_REMOVE;
+    cache->index = 0;
+    return cache->file;
 }
 #endif
 #endif
@@ -582,6 +594,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     Str tmp;
     TextList *headerlist;
     char code;
+    char *tmpf;
     FILE *src = NULL;
 
     headerlist = newBuf->document_header = newTextList();
@@ -599,10 +612,10 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	&& !image_source
 #endif
 	) {
-	Str tmpf = tmpfname(TMPF_DFL, NULL);
-	src = fopen(tmpf->ptr, "w");
+	tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+	src = fopen(tmpf, "w");
 	if (src)
-	    newBuf->header_source = tmpf->ptr;
+	    newBuf->header_source = tmpf;
     }
 #ifdef JP_CHARSET
     code = DocumentCode;
@@ -664,24 +677,20 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 #ifdef USE_IMAGE
 #ifdef USE_XFACE
 	    if (thru && activeImage && displayImage &&
-		!strncasecmp(tmp->ptr, "X-Face:", 7)) {
-		char *tmpf;
+		!strncasecmp(tmp->ptr, "X-Face:", 7) &&
+		(tmpf = xface2xpm(&tmp->ptr[7])) != NULL) {
 		Str src;
 		URLFile f;
 		Line *l;
 
-		tmpf = xface2xpm(&tmp->ptr[7]);
-		if (tmpf) {
-		    src =
-			Sprintf
-			("<img src=\"file:%s\" alt=\"X-Face\" width=48 height=48>",
-			 html_quote(tmpf));
-		    init_stream(&f, SCM_LOCAL, newStrStream(src));
-		    loadHTMLstream(&f, newBuf, NULL, TRUE);
-		    for (l = newBuf->lastLine; l && l->real_linenumber;
-			 l = l->prev)
-			l->real_linenumber = 0;
-		}
+		src = Strnew_m_charp("<img src=\"file:", html_quote(tmpf),
+				     "\" alt=\"X-Face\" width=48 height=48>",
+				     NULL);
+		init_stream(&f, SCM_LOCAL, newStrStream(src));
+		loadHTMLstream(&f, newBuf, NULL, TRUE);
+		for (l = newBuf->lastLine; l && l->real_linenumber;
+		     l = l->prev)
+		    l->real_linenumber = 0;
 	    }
 #endif
 #endif
@@ -6829,7 +6838,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 Buffer *
 loadImageBuffer(URLFile *uf, Buffer *newBuf)
 {
-    Image *image;
+    Image image;
     ImageCache *cache;
     Str tmp, tmpf;
     FILE *src = NULL;
@@ -6838,12 +6847,12 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     struct stat st;
 
     loadImage(IMG_FLAG_STOP);
-    image = New(Image);
-    image->url = uf->url;
-    image->ext = uf->ext;
-    image->width = -1;
-    image->height = -1;
-    cache = getImage(image, cur_baseURL, IMG_FLAG_AUTO);
+    image.url = uf->url;
+    image.ext = uf->ext;
+    image.width = -1;
+    image.height = -1;
+    image.cache = NULL;
+    cache = getImage(&image, cur_baseURL, IMG_FLAG_AUTO);
     if (!cur_baseURL->is_nocache && cache->loaded & IMG_FLAG_LOADED &&
 	!stat(cache->file, &st))
 	goto image_buffer;
@@ -6875,7 +6884,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     if (newBuf->sourcefile == NULL && uf->scheme != SCM_LOCAL)
 	newBuf->sourcefile = cache->file;
 
-    tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
+    tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image.url));
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
     newBuf->mailcap_source = tmpf->ptr;
@@ -7837,7 +7846,7 @@ lessopen_stream(char *path)
 	int c;
 
 	++lessopen;
-	tmpf = Sprintf(lessopen, path);
+	tmpf = Sprintf(lessopen, shell_quote(path));
 	fp = popen(tmpf->ptr, "r");
 	if (fp == NULL) {
 	    return NULL;

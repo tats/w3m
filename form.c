@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.25 2002/12/03 15:35:10 ukai Exp $ */
+/* $Id: form.c,v 1.26 2003/01/10 16:48:49 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -7,6 +7,7 @@
 #include "parsetagx.h"
 #include "myctype.h"
 #include "local.h"
+#include "regex.h"
 
 #ifndef HAVE_LSTAT
 /* lstat is identical to stat, only the link itself is statted, not the file
@@ -657,7 +658,9 @@ struct pre_form_item {
 };
 
 struct pre_form {
-    ParsedURL url;
+    char *url;
+    Regex *re_url;
+    char *name;
     char *action;
     struct pre_form_item *item;
     struct pre_form *next;
@@ -666,19 +669,32 @@ struct pre_form {
 static struct pre_form *PreForm = NULL;
 
 static struct pre_form *
-add_pre_form(struct pre_form *prev, char *url, char *action)
+add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
 {
+    ParsedURL pu;
     struct pre_form *new;
 
     if (prev)
 	new = prev->next = New(struct pre_form);
     else
 	new = PreForm = New(struct pre_form);
-    parseURL2(url, &new->url, NULL);
-    if (action && *action)
-	new->action = action;
-    else
-	new->action = NULL;
+    if (url && *url == '/') {
+	int l = strlen(url);
+	if (l > 1 && url[l - 1] == '/')
+	    new->url = allocStr(url + 1, l - 2);
+	else
+	    new->url = url + 1;
+	new->re_url = newRegex(new->url, FALSE, NULL, NULL);
+	if (!new->re_url)
+	    new->url = NULL;
+    }
+    else if (url) {
+	parseURL2(url, &pu, NULL);
+	new->url = parsedURL2Str(&pu)->ptr;
+	new->re_url = NULL;
+    }
+    new->name = (name && *name) ? name : NULL;
+    new->action = (action && *action) ? action : NULL;
     new->item = NULL;
     new->next = NULL;
     return new;
@@ -710,7 +726,8 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
 }
 
 /*
- * url <url> [<action>]
+ * url <url>|/<re-url>/
+ * form [<name>] <action>
  * text <name> <value>
  * file <name> <value>
  * passwd <name> <value>
@@ -760,12 +777,35 @@ loadPreForm(void)
 	    if (!arg || !*arg)
 		continue;
 	    p = getQWord(&p);
-	    pf = add_pre_form(pf, arg, p);
+	    pf = add_pre_form(pf, arg, NULL, p);
 	    pi = pf->item;
 	    continue;
 	}
 	if (!pf)
 	    continue;
+	if (!strcmp(s, "form")) {
+	    if (!arg || !*arg)
+		continue;
+	    s = getQWord(&p);
+	    p = getQWord(&p);
+	    if (!p || !*p) {
+		p = s;
+		s = NULL;
+	    }
+	    if (pf->item) {
+		struct pre_form *prev = pf;
+		pf = add_pre_form(prev, "", s, p);
+		/* copy previous URL */
+		pf->url = prev->url;
+		pf->re_url = prev->re_url;
+	    }
+	    else {
+		pf->name = s;
+		pf->action = (p && *p) ? p : NULL;
+	    }
+	    pi = pf->item;
+	    continue;
+	}
 	if (!strcmp(s, "text"))
 	    type = FORM_INPUT_TEXT;
 	else if (!strcmp(s, "file"))
@@ -818,12 +858,23 @@ preFormUpdateBuffer(Buffer *buf)
 	return;
 
     for (pf = PreForm; pf; pf = pf->next) {
-	if (Strcmp(parsedURL2Str(&buf->currentURL), parsedURL2Str(&pf->url)))
+	if (pf->re_url) {
+	    Str url = parsedURL2Str(&buf->currentURL);
+	    if (!RegexMatch(pf->re_url, url->ptr, url->length, 1))
+		continue;
+	}
+	else if (pf->url) {
+	    if (Strcmp_charp(parsedURL2Str(&buf->currentURL), pf->url))
+		continue;
+	}
+	else
 	    continue;
 	for (i = 0; i < buf->formitem->nanchor; i++) {
 	    a = &buf->formitem->anchors[i];
 	    fi = (FormItemList *)a->url;
 	    fl = fi->parent;
+	    if (pf->name && (!fl->name || strcmp(fl->name, pf->name)))
+		continue;
 	    if (pf->action
 		&& (!fl->action || Strcmp_charp(fl->action, pf->action)))
 		continue;

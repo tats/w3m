@@ -1,5 +1,14 @@
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03630] improved pre_form
+	* form.c (pre_form): add re_url, name
+		(add_pre_form): add name
+				rewrite
+		(loadPreForm): add "form"
+		(preFormUpdateBuffer): handle re_url
+
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03629] delete tmp file
 	* etc.c (tempfname): always file to delete
 	* file.c (xface2xpm): no need fileToDelete
@@ -6309,4 +6318,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.667 2003/01/10 16:42:14 ukai Exp $
+$Id: ChangeLog,v 1.668 2003/01/10 16:48:45 ukai Exp $

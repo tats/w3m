@@ -1,3 +1,9 @@
+2002-02-08  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03025] fix image loading on EWS4800
+	* image.c (loadImage): exit if symlink failed
+			exit if fopen failed
+
 2002-02-08  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03022] SSL certificates of frame body
@@ -2893,4 +2899,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.310 2002/02/08 11:45:07 ukai Exp $
+$Id: ChangeLog,v 1.311 2002/02/08 14:29:52 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.4 2002/02/04 15:18:42 ukai Exp $ */
+/* $Id: image.c,v 1.5 2002/02/08 14:29:52 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -494,15 +494,17 @@ loadImage(int flag)
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 	    if (lstat(image_lock, &st)) {
-		symlink(cache->file, image_lock);
+		if (symlink(cache->file, image_lock))
+			exit(0);
 #else
 	    f = fopen(cache->touch, "w");
 	    if (f)
 		fclose(f);
 	    if (stat(image_lock, &st)) {
 		f = fopen(image_lock, "w");
-		if (f)
-		    fclose(f);
+		if (!f)
+			exit(0);
+		fclose(f);
 #endif
 		kill(getppid(), SIGUSR1);
 	    }

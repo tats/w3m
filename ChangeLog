@@ -1,5 +1,15 @@
 2001-12-05  Tsutomu Okada <okada@furuno.co.jp>
 
+	* [w3m-dev 02616]
+	* buffer.c (gotoLine): use set_delayed_message instead of disp_message
+	* buffer.c (gotoRealLine): ditto
+	* display.c (delayed_msg): added
+	* display.c (displayBuffer): display deleyed_msg if it is set
+	* display.c (set_delayed_message): added
+	* proto.h (set_delayed_message): added
+
+2001-12-05  Tsutomu Okada <okada@furuno.co.jp>
+
 	* [w3m-dev 02615]
 	* main.c (goLine): _goLine() called twice when prec_num was set
 

@@ -1,3 +1,11 @@
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04091] option panel: gettextize select list
+	* rc.c: gettextize option select list.
+	* rc.c: add gettextize message.
+	* po/w3m.pot: ditto.
+	* po/ja.po: ditto.
+
 2004-07-14  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Debian Bug#259053
@@ -8504,4 +8512,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.928 2004/07/13 17:17:39 ukai Exp $
+$Id: ChangeLog,v 1.929 2004/07/15 16:26:03 ukai Exp $

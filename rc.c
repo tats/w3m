@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.96 2004/04/22 16:34:08 ukai Exp $ */
+/* $Id: rc.c,v 1.97 2004/07/15 16:26:04 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -289,22 +289,22 @@ static struct sel_c wheelmode[] = {
 
 #ifdef INET6
 static struct sel_c dnsorders[] = {
-    {N_S(DNS_ORDER_UNSPEC), "unspecified"},
-    {N_S(DNS_ORDER_INET_INET6), "inet inet6"},
-    {N_S(DNS_ORDER_INET6_INET), "inet6 inet"},
-    {N_S(DNS_ORDER_INET_ONLY), "inet only"},
-    {N_S(DNS_ORDER_INET6_ONLY), "inet6 only"},
+    {N_S(DNS_ORDER_UNSPEC), N_("unspecified")},
+    {N_S(DNS_ORDER_INET_INET6), N_("inet inet6")},
+    {N_S(DNS_ORDER_INET6_INET), N_("inet6 inet")},
+    {N_S(DNS_ORDER_INET_ONLY), N_("inet only")},
+    {N_S(DNS_ORDER_INET6_ONLY), N_("inet6 only")},
     {0, NULL, NULL}
 };
 #endif				/* INET6 */
 
 #ifdef USE_COOKIE
 static struct sel_c badcookiestr[] = {
-    {N_S(ACCEPT_BAD_COOKIE_DISCARD), "discard"},
+    {N_S(ACCEPT_BAD_COOKIE_DISCARD), N_("discard")},
 #if 0
-    {N_S(ACCEPT_BAD_COOKIE_ACCEPT), "accept"},
+    {N_S(ACCEPT_BAD_COOKIE_ACCEPT), N_("accept")},
 #endif
-    {N_S(ACCEPT_BAD_COOKIE_ASK), "ask"},
+    {N_S(ACCEPT_BAD_COOKIE_ASK), N_("ask")},
     {0, NULL, NULL}
 };
 #endif				/* USE_COOKIE */
@@ -314,9 +314,9 @@ static wc_ces_list *display_charset_str = NULL;
 static wc_ces_list *document_charset_str = NULL;
 static wc_ces_list *system_charset_str = NULL;
 static struct sel_c auto_detect_str[] = {
-    {N_S(WC_OPT_DETECT_OFF), "OFF"},
-    {N_S(WC_OPT_DETECT_ISO_2022), "Only ISO 2022"},
-    {N_S(WC_OPT_DETECT_ON), "ON"},
+    {N_S(WC_OPT_DETECT_OFF), N_("OFF")},
+    {N_S(WC_OPT_DETECT_ISO_2022), N_("Only ISO 2022")},
+    {N_S(WC_OPT_DETECT_ON), N_("ON")},
     {0, NULL, NULL}
 };
 #endif
@@ -1303,7 +1303,7 @@ load_option_panel(void)
 
     if (optionpanel_str == NULL)
 	optionpanel_str = Sprintf(optionpanel_src1, w3m_version,
-				  html_quote(localCookie()->ptr), CMT_HELPER);
+			      html_quote(localCookie()->ptr), _(CMT_HELPER));
 #if ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
 #endif
@@ -1313,16 +1313,24 @@ load_option_panel(void)
 	    wc_Str_conv(optionpanel_str, OptionCharset, InnerCharset);
 	for (i = 0; sections[i].name != NULL; i++) {
 	    sections[i].name =
-		wc_conv(gettext(sections[i].name), OptionCharset,
+		wc_conv(_(sections[i].name), OptionCharset,
 			InnerCharset)->ptr;
-	    for (p = sections[i].params; p->name; p++)
+	    for (p = sections[i].params; p->name; p++) {
 		p->comment =
-		    wc_conv(gettext(p->comment), OptionCharset,
+		    wc_conv(_(p->comment), OptionCharset,
 			    InnerCharset)->ptr;
+		if (p->inputtype == PI_SEL_C) {
+		    for (s = (struct sel_c *)p->select; s->text != NULL; s++) {
+			s->text =
+			    wc_conv(_(s->text), OptionCharset,
+				    InnerCharset)->ptr;
+		    }
+		}
+	    }
 	}
 #ifdef USE_COLOR
 	for (s = colorstr; s->text; s++)
-	    s->text = wc_conv(gettext(s->text), OptionCharset,
+	    s->text = wc_conv(_(s->text), OptionCharset,
 			      InnerCharset)->ptr;
 #endif
 	OptionEncode = TRUE;

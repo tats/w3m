@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.1\n"
 "Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
-"POT-Creation-Date: 2004-04-29 03:17+0900\n"
+"POT-Creation-Date: 2004-07-14 15:51+0900\n"
 "PO-Revision-Date: 2003-09-26 03:35+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
@@ -716,6 +716,50 @@ msgstr "A:画面サイズに比例"
 #: rc.c:285
 msgid "B:fixed speed"
 msgstr "B:一定の行数"
+
+#: rc.c:292
+msgid "unspecified"
+msgstr "指定しない"
+
+#: rc.c:293
+msgid "inet inet6"
+msgstr "IPv4優先"
+
+#: rc.c:294
+msgid "inet6 inet"
+msgstr "IPv6優先"
+
+#: rc.c:295
+msgid "inet only"
+msgstr "IPv4のみ"
+
+#: rc.c:296
+msgid "inet6 only"
+msgstr "IPv6のみ"
+
+#: rc.c:303
+msgid "discard"
+msgstr "破棄する"
+
+#: rc.c:305
+msgid "accept"
+msgstr "受け入れる"
+
+#: rc.c:307
+msgid "ask"
+msgstr "確認する"
+
+#: rc.c:317
+msgid "OFF"
+msgstr "無効"
+
+#: rc.c:318
+msgid "Only ISO 2022"
+msgstr "ISO 2022 のみ"
+
+#: rc.c:319
+msgid "ON"
+msgstr "有効"
 
 #: rc.c:666
 msgid "Display Settings"

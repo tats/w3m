@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.32 2002/11/15 15:23:45 ukai Exp $ */
+/* $Id: display.c,v 1.33 2002/11/18 16:42:25 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -481,6 +481,8 @@ redrawNLine(Buffer *buf, int n)
 	l = l0;
     }
     if (n > 0) {
+	if (i == 0 && buf->topLine != NULL)
+	    i++;
 	move(i + buf->rootY, 0);
 	clrtobotx();
     }

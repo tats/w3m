@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.91 2002/03/19 16:06:52 ukai Exp $ */
+/* $Id: main.c,v 1.92 2002/03/22 15:35:44 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4439,7 +4439,7 @@ invoke_browser(char *url)
 {
     Str cmd;
     char *browser = NULL;
-    int bg = 0;
+    int bg = 0, len;
 
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     browser = searchKeyData();
@@ -4468,12 +4468,13 @@ invoke_browser(char *url)
     if (browser == NULL || *browser == '\0')
 	return;
 
-    cmd = myExtCommand(browser, shell_quote(url), FALSE);
-    Strremovetrailingspaces(cmd);
-    if (Strlastchar(cmd) == '&') {
-	Strshrink(cmd, 1);
+    if ((len = strlen(browser)) >= 2 && browser[len - 1] == '&' &&
+	browser[len - 2] != '\\') {
+	browser = allocStr(browser, len - 2);
 	bg = 1;
     }
+    cmd = myExtCommand(browser, shell_quote(url), FALSE);
+    Strremovetrailingspaces(cmd);
     fmTerm();
     mySystem(cmd->ptr, bg);
     fmInit();
@@ -4988,10 +4989,10 @@ execCmd(void)
     data = searchKeyData();
     if (data == NULL || *data == '\0') {
 	data = inputStrHist("command [; ...]: ", "", TextHist);
-        if (data == NULL) {
-            displayBuffer(Currentbuf, B_NORMAL);
-            return;
-        }
+	if (data == NULL) {
+	    displayBuffer(Currentbuf, B_NORMAL);
+	    return;
+	}
     }
     /* data: FUNC [DATA] [; FUNC [DATA] ...] */
     while (*data) {
@@ -5042,7 +5043,7 @@ SigAlarm(SIGNAL_ARG)
 	CurrentCmdData = NULL;
 	onA();
 	disp_message_nsec(Sprintf("%s %s", w3mFuncList[alarm_event.cmd].id,
-			          CurrentCmdData ? CurrentCmdData : "")->ptr,
+				  CurrentCmdData ? CurrentCmdData : "")->ptr,
 			  FALSE, alarm_sec - 1, FALSE, TRUE);
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;

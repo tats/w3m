@@ -1,5 +1,10 @@
 2002-01-31  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02934] add auth cookie with unquoted realm
+	* file.c (loadGeneralFile): need unquote realm
+
+2002-01-31  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02933] segmentation fault when w3m -dump https:
 	* file.c (readHeader): use inputAnswer()
 	* file.c (getAuthCookie): remove term_cbreak()
@@ -2421,4 +2426,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.277 2002/01/30 15:08:48 ukai Exp $
+$Id: ChangeLog,v 1.278 2002/01/30 15:16:52 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.51 2002/01/30 15:08:48 ukai Exp $ */
+/* $Id: file.c,v 1.52 2002/01/30 15:16:52 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1533,7 +1533,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (add_auth_cookie_flag)
 	    /* If authorization is required and passed */
-	    add_auth_cookie(pu.host, pu.port, realm->ptr, ss);
+	    add_auth_cookie(pu.host, pu.port, qstr_unquote(realm)->ptr, ss);
 	if (status == HTST_CONNECT) {
 	    of = &f;
 	    goto load_doc;

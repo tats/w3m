@@ -1,3 +1,8 @@
+2001-11-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02589]
+	* rc.c (params1): remove #ifdef VIEW_UNSEENOBJECTS
+
 2001-11-29  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02588]

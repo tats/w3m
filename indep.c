@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.23 2002/08/20 17:49:39 ukai Exp $ */
+/* $Id: indep.c,v 1.24 2002/08/27 16:35:15 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -16,11 +16,11 @@ strtoclen(const char *s)
 {
 #ifdef HAVE_STRTOLL
     return strtoll(s, NULL, 10);
-#elif HAVE_STRTOQ
+#elif defined(HAVE_STRTOQ)
     return strtoq(s, NULL, 10);
-#elif HAVE_ATOLL
+#elif defined(HAVE_ATOLL)
     return atoll(s);
-#elif HAVE_ATOQ
+#elif defined(HAVE_ATOQ)
     return atoq(s);
 #else
     return atoi(s);

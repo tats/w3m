@@ -1,3 +1,8 @@
+2002-08-28  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 03290] Re: Forward: Bug#157098: wrong file presentation on large files
+	* indep.c (strtoclen): need defined()
+
 2002-08-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Debian Bug#157098: wrong file presentation on large files
@@ -3710,4 +3715,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.416 2002/08/20 17:49:38 ukai Exp $
+$Id: ChangeLog,v 1.417 2002/08/27 16:35:15 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.93 2003/01/21 15:38:57 ukai Exp $
+# $Id: configure,v 1.94 2003/01/22 15:53:12 ukai Exp $
 #	Configuration.
 #
 
@@ -148,7 +148,9 @@ do
   shift
 done
 
-mv -f config.param config.param.bak
+if [ -f config.param ]; then
+    mv -f config.param config.param.bak
+fi
 echo "# Configuration at $host" > config.param
 
 if [ "x$IMLIB_CONFIG" = x ]; then

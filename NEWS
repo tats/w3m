@@ -1,3 +1,16 @@
+w3m 0.4.1 - 2003-03-07
+
+* fix bugs
+  - completion segfault in lineinput
+  - incremental search
+  - URL pattern fix
+  - UFhalfclose bug
+  - allow pipe in shell command
+  - enhance ftp directory support
+  - linenumber in edit
+  - fix Bug#181897
+  - W3M_TTY problem fixed
+
 w3m 0.4 - 2003-02-24
 
 * rc: decode_url

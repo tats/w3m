@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.161 2002/12/09 15:21:13 ukai Exp $ */
+/* $Id: main.c,v 1.162 2002/12/09 15:32:18 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5364,7 +5364,7 @@ set_buffer_environ(Buffer *buf)
 {
     static Buffer *prev_buf = NULL;
     static Line *prev_line = NULL;
-    static short prev_col = -1, prev_pos = -1;
+    static short prev_pos = -1;
     Line *l;
 
     if (buf == NULL)
@@ -5405,9 +5405,10 @@ set_buffer_environ(Buffer *buf)
 	else
 	    set_environ("W3M_CURRENT_FORM", "");
 	set_environ("W3M_CURRENT_LINE", Sprintf("%d",
-		    l->real_linenumber)->ptr);
+						l->real_linenumber)->ptr);
 	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
-		    buf->currentColumn + buf->cursorX + 1)->ptr);
+						  buf->currentColumn +
+						  buf->cursorX + 1)->ptr);
     }
     else if (!l) {
 	set_environ("W3M_CURRENT_WORD", "");

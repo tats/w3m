@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.154 2002/12/09 15:27:44 ukai Exp $ */
+/* $Id: file.c,v 1.155 2002/12/09 15:32:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1572,8 +1572,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    tmp = searchURIMethods(&pu);
 	    if (tmp != NULL)
 		b = loadGeneralFile(tmp->ptr, current, referer, flag, request);
-		if (b != NULL && b != NO_BUFFER)
-		    copyParsedURL(&b->currentURL, &pu);
+	    if (b != NULL && b != NO_BUFFER) {
+		copyParsedURL(&b->currentURL, &pu);
 		return b;
 	    }
 #endif

@@ -1,3 +1,8 @@
+2002-12-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* file.c (loadGeneralFile): missing `{', fix indent for SCM_UNKNOWN
+	* main.c (set_buffer_environ): unused variables `prev_col'
+
 2002-12-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03543] External URI loader (Debian closes: Bug#169962)
@@ -5601,4 +5606,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.602 2002/12/09 15:27:43 ukai Exp $
+$Id: ChangeLog,v 1.603 2002/12/09 15:32:16 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.92 2002/03/22 15:35:44 ukai Exp $ */
+/* $Id: main.c,v 1.93 2002/03/27 15:26:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -626,6 +626,10 @@ MAIN(int argc, char **argv, char **envp)
 		    else
 			Strcat(header_string, hs);
 		}
+		while (argv[i][0]) {
+                    argv[i][0] = '\0';
+                    argv[i]++;
+                }
 	    }
 #ifdef USE_MOUSE
 	    else if (!strcmp("-no-mouse", argv[i])) {

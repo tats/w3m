@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.59 2002/02/03 06:12:41 ukai Exp $ */
+/* $Id: file.c,v 1.60 2002/02/03 15:22:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5731,8 +5731,10 @@ print_internal_information(struct html_feed_environ *henv)
 			: ((fp->method == FORM_METHOD_INTERNAL) ? "internal" : "get"));
 	    if (fp->target)
 		Strcat(s, Sprintf(" target=\"%s\"", fp->target));
+#ifdef JP_CHARSET
 	    if (fp->charset)
 		Strcat(s, Sprintf(" accept-charset=\"%s\"", code_to_str(fp->charset)));
+#endif
 	    if (fp->enctype == FORM_ENCTYPE_MULTIPART)
 		Strcat_charp(s, " enctype=multipart/form-data");
 	    if (fp->boundary)

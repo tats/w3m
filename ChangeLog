@@ -1,3 +1,8 @@
+2002-02-04  Kazuhiko <kazuhiko@archi.kyoto-u.ac.jp>
+
+	* [w3m-dev 02979] code_to_str not found ifndef JP_CHARSET
+	* file.c (print_internal_information): ifdef JP_CHARSET
+
 2002-02-03  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02967] parallel image downloading
@@ -2745,4 +2750,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.294 2002/02/03 06:38:49 ukai Exp $
+$Id: ChangeLog,v 1.295 2002/02/03 15:22:24 ukai Exp $

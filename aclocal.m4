@@ -335,6 +335,23 @@ AC_DEFUN([AC_W3M_EXTLIBS],
  AC_MSG_RESULT($extlib)])
 #
 # ----------------------------------------------------------------
+# AC_W3M_TERMLIB
+# ----------------------------------------------------------------
+AC_DEFUN([AC_W3M_TERMLIB],
+[AC_MSG_CHECKING(terminal library)
+AC_ARG_WITH(termlib,
+ [  --with-termlib[=LIBS]	terminal library
+				LIBS is space separated list of:
+				  terminfo mytinfo termcap ncurses curses],,
+ [with_termlib="yes"])
+ AC_MSG_RESULT($with_termlib)
+ test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
+ for lib in $with_termlib; do
+   AC_CHECK_LIB($lib, tgetent, [LIBS="$LIBS -l$lib"; break])
+ done
+])
+#
+# ----------------------------------------------------------------
 # AC_W3M_GC
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_GC],
@@ -344,21 +361,25 @@ AC_ARG_WITH(gc,
  [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
  [with_gc="yes"])
  AC_MSG_RESULT($with_gc)
+ test x"$with_gc" = xyes && with_gc="/usr /usr/local ${HOME}"
  unset ac_cv_header_gc_h
  AC_CHECK_HEADER(gc.h)
  if test x"$ac_cv_header_gc_h" = xno; then
    AC_MSG_CHECKING(GC header location)
-   AC_MSG_RESULT()
-   gc_includedir="$with_gc/include"
-   test x"$with_gc" = xyes && gc_includedir="/usr/include /usr/include/gc /usr/local/include /usr/local/include/gc ${HOME}/include"
+   AC_MSG_RESULT($with_gc)
    gcincludedir=no
-   for dir in $gc_includedir; do
-     cppflags="$CPPFLAGS"
-     CPPFLAGS="$CPPFLAGS -I$dir"
-     AC_MSG_CHECKING($dir)
-     unset ac_cv_header_gc_h
-     AC_CHECK_HEADER(gc.h, [gcincludedir=$dir; CPPFLAGS="$CPPFLAGS -I$dir"; CFLAGS="$CFLAGS -I$dir"; break])
-     CPPFLAGS="$cppflags"
+   for dir in $with_gc; do
+     for inc in include include/gc; do
+       cppflags="$CPPFLAGS"
+       CPPFLAGS="$CPPFLAGS -I$dir/$inc"
+       AC_MSG_CHECKING($dir/$inc)
+       unset ac_cv_header_gc_h
+       AC_CHECK_HEADER(gc.h, [gcincludedir="$dir/$inc"; CFLAGS="$CFLAGS -I$dir/$inc"; break])
+       CPPFLAGS="$cppflags"
+     done
+     if test x"$gcincludedir" != xno; then
+       break;
+     fi
    done
    if test x"$gcincludedir" = xno; then
      AC_MSG_ERROR([gc.h not found])
@@ -368,16 +389,14 @@ AC_ARG_WITH(gc,
  AC_CHECK_LIB(gc, GC_version, [LIBS="$LIBS -lgc"])
  if test x"$ac_cv_lib_gc_GC_version" = xno; then
     AC_MSG_CHECKING(GC library location)
-    AC_MSG_RESULT()
-    gc_libdir="$with_gc/lib"
-    test x"$gc_libdir" = xyes && gc_libdir="/lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib ${HOME}/lib"
+    AC_MSG_RESULT($with_gc)
     gclibdir=no
-    for dir in $gc_libdir; do
+    for dir in $with_gc; do
       ldflags="$LDFLAGS"
-      LDFLAGS="$LDFLAGS -L$dir"
+      LDFLAGS="$LDFLAGS -L$dir/lib"
       AC_MSG_CHECKING($dir)
-      unset ac_cv_gc_GC_version
-      AC_CHECK_LIB(gc, GC_version, [gclibdir=$dir; LIBS="$LIBS -L$dir -lgc"; break])
+      unset ac_cv_lib_gc_GC_version
+      AC_CHECK_LIB(gc, GC_version, [gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break])
       LDFLAGS="$ldflags"
     done
     if test x"$gclibdir" = xno; then
@@ -399,15 +418,16 @@ AC_MSG_RESULT($with_ssl)
 if test x"$with_ssl" != xno; then
   AC_DEFINE(USE_SSL)
   AC_MSG_CHECKING(for SSL library/header)
-  test x"$with_ssl" = xyes || with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
+  test x"$with_ssl" = xyes && with_ssl="/usr/openssl /usr/ssl /usr /usr/local/openssl /usr/local/ssl /usr/local"
+  AC_MSG_RESULT($with_ssl)
   for dir in $with_ssl
   do
      if test -f "$dir/include/openssl/ssl.h"; then
         CFLAGS="$CFLAGS -I$dir/include/openssl"
-     elif test -f "$dir/include/ssl.h"; then
+     elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
         CFLAGS="$CFLAGS -I$dir/include"
      fi
-     if test -f "$dir/lib/libssl.a"; then
+     if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
 	LIBS="$LIBS -L$dir/lib"
      fi
   done

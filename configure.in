@@ -61,13 +61,7 @@ done
 
 dnl Checks for libraries.
 AC_CHECK_FUNC(sqrt,,[AC_CHECK_LIB(m, sqrt)])
-AC_CHECK_LIB(termcap, tgetent)
-AC_CHECK_LIB(termlib, tgetent)
-AC_CHECK_LIB(terminfo, tgetent)
-AC_CHECK_LIB(mytinfo, tgetent)
-AC_CHECK_LIB(curses, tgetent)
-AC_CHECK_LIB(ncurses, tgetent)
-if test x$enable_mouse = xyes; then
+if test x"$enable_mouse" = xyes; then
  AC_SUBST(USE_W3M)
  AC_CHECK_LIB(gpm, Gpm_Open, [AC_DEFINE(USE_GPM)
    		LIBS="$LIBS -lgpm"])
@@ -75,15 +69,16 @@ if test x$enable_mouse = xyes; then
  AC_TRY_CPP([#include <machine/console.h>
    MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])
 fi
-AC_W3M_GC
 AC_W3M_ALARM
 AC_SUBST(AUXBIN_TARGETS)
 AUXBIN_TARGETS=
 AC_W3M_IMAGE
-if test x$enable_image != xno; then
+if test x"$enable_image" != xno; then
  AUXBIN_TARGETS="$AUXBIN_TARGETS w3mimgdisplay\$(EXT)"
  AC_W3M_XFACE
 fi
+AC_W3M_TERMLIB
+AC_W3M_GC
 AC_W3M_SSL
 AC_W3M_IPv6
 AC_CHECK_LIB(z, zError, [AUXBIN_TARGETS="$AUXBIN_TARGETS inflate\$(EXT)"])

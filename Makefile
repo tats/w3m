@@ -22,11 +22,24 @@ sysconfdir = ${prefix}/etc
 top_srcdir = .
 DESTDIR = 
 
-CFLAGS = $(OPTS) -g -O2 -I/usr/include/gc $(DEFS)
-CPPFLAGS =  -I/usr/include/gc -I/usr/include/gc
-DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(libexecdir)\" -DLIB_DIR=\"$(libdir)\" -DHELP_DIR=\"$(datadir)\" -DETC_DIR=\"$(sysconfdir)\"
+CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(package)
+HELP_DIR = $(datadir)/$(package)
+RC_DIR = ~/.$(package)
+
+CFLAGS = $(OPTS) -g -O2 -I/usr/include/gc -I/usr/include/openssl $(DEFS)
+CPPFLAGS =  -I/usr/include/gc
+DEFS = -DHAVE_CONFIG_H -I. -I$(top_srcdir) -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
+	-DLIB_DIR=\"$(CGIBIN_DIR)\" -DHELP_DIR=\"$(HELP_DIR)\" \
+	-DETC_DIR=\"$(sysconfdir)\" -DRC_DIR=\"$(RC_DIR)\"
 LDFLAGS = 
-LIBS = -L. -lindep -lncurses -lcurses -ltermcap -lm  -lnsl -lgpm -lgc -lssl -lcrypto
+LIBS = -L. -lindep -lm  -lnsl -lgpm -ltermcap -lgc -lssl -lcrypto
+
+MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
+	BIN_DIR='$(bindir)' AUXBIN_DIR='$(AUXBIN_DIR)' \
+	LIB_DIR='$(CGIBIN_DIR)' \
+	HELP_DIR='$(HELP_DIR)' MAN_DIR='$(mandir)' ETC_DIR='$(sysconfdir)' \
+	RC_DIR='$(RC_DIR)' DESTDIR='$(DESTDIR)' KEYBIND_SRC='$(KEYBIND_SRC)'
 
 IMGCFLAGS = -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include -I/usr/include/gdk-pixbuf-1.0 -I/usr/include/gtk-1.2 -I/usr/include/glib-1.2 -I/usr/lib/glib/include -I/usr/X11R6/include
 IMGLDFLAGS = -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm -lgdk_pixbuf_xlib -L/usr/lib -lgdk_pixbuf -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lglib -ldl -lXi -lXext -lX11 -lm
@@ -48,7 +61,7 @@ HELP_FILE = w3mhelp-w3m_en.html
 KEYBIND_SRC = keybind.c
 KEYBIND_OBJ = keybind.o
 
-VERSION=0.4.1+cvs-1.787
+VERSION=0.4.1+cvs-1.788
 MODEL=i686-pc-linux-gnu-EN
 
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
@@ -69,12 +82,12 @@ IMGOBJS=w3mimg/w3mimg.o w3mimg/x11/x11_w3mimg.o w3mimg/fb/fb_w3mimg.o w3mimg/fb/
 
 EXT=
 
-TARGET=w3m$(EXT)
+TARGET=$(package)$(EXT)
 BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 IMGDISPLAY=w3mimgdisplay$(EXT)
-MAN1_TARGET=w3m.1
+MAN1_TARGET=$(package).1
 MAN1=doc/w3m.1
 MAN1_JA=doc-jp/w3m.1
 
@@ -161,67 +174,68 @@ install: install-core install-scripts
 
 install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(bindir)
-	-$(MKDIR) $(DESTDIR)$(libdir)
-	-$(MKDIR) $(DESTDIR)$(libexecdir)
-	-$(MKDIR) $(DESTDIR)$(datadir)
+	-$(MKDIR) $(DESTDIR)$(AUXBIN_DIR)
+	-$(MKDIR) $(DESTDIR)$(CGIBIN_DIR)
+	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(mandir)/man1
 	-$(MKDIR) $(DESTDIR)$(mandir)/ja/man1
 	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
-	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(datadir)/$(HELP_TARGET)
+	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/$(HELP_TARGET)
 	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(mandir)/man1/$(MAN1_TARGET)
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(mandir)/ja/man1/$(MAN1_TARGET)
 	targets="$(AUXBIN_TARGETS)"; for file in $$targets; \
 	do \
 		case $$file in \
-		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file $(DESTDIR)$(libexecdir)/$$file;; \
-		*) $(INSTALL_PROGRAM) $$file $(DESTDIR)$(libexecdir)/$$file;; \
+		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file \
+			$(DESTDIR)$(AUXBIN_DIR)/$$file;; \
+		*) $(INSTALL_PROGRAM) $$file $(DESTDIR)$(AUXBIN_DIR)/$$file;; \
 		esac; \
 	done
 	for file in $(LIB_TARGETS); \
 	do \
-		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(libdir)/$$file; \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(CGIBIN_DIR)/$$file; \
 	done
 
 install-helpfile:
-	-$(MKDIR) $(DESTDIR)$(datadir)
+	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	for file in $(HELP_ALLFILES); \
 	do \
-		$(INSTALL_DATA) $$file $(DESTDIR)$(datadir)/$$file; \
+		$(INSTALL_DATA) $$file $(DESTDIR)$(HELP_DIR)/$$file; \
 	done
 
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(bindir)' AUXBIN_DIR='$(libexecdir)' LIB_DIR='$(libdir)' HELP_DIR='$(datadir)' RC_DIR='$(sysconfdir)' KEYBIND_SRC='$(KEYBIND_SRC)');	\
+		(cd $$dir; $(MAKE) $(MAKE_ARGS)); \
 	done
 
 install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(bindir)' AUXBIN_DIR='$(libexecdir)' LIB_DIR='$(libdir)' HELP_DIR='$(datadir)' MAN_DIR='$(mandir)' DESTDIR='$(DESTDIR)' INSTALL="$(INSTALL)" install); \
+		(cd $$dir; $(MAKE) $(MAKE_ARGS) install); \
 	done
 
 uninstall:
 	-$(RM) $(bindir)/$(TARGET)
 	-for file in $(AUXBIN_TARGETS); \
 	do \
-		$(RM) -f $(libexecdir)/$$file; \
+		$(RM) -f $(AUXBIN_DIR)/$$file; \
 	done
 	-for file in $(LIB_TARGETS); \
 	do \
-		$(RM) -f $(libdir)/$$file; \
+		$(RM) -f $(CGIBIN_DIR)/$$file; \
 	done
 	-for file in $(HELP_ALLFILES); \
 	do \
-		$(RM) -f $(datadir)/$$file; \
+		$(RM) -f $(HELP_DIR)/$$file; \
 	done
-	-$(RM) -f $(datadir)/$(HELP_TARGET)
+	-$(RM) -f $(HELP_DIR)/$(HELP_TARGET)
 	-$(RM) -f $(mandir)/man1/$(MAN1_TARGET)
 	-$(RM) -f $(mandir)/ja/man1/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) BIN_DIR='$(bindir)' LIB_DIR='$(libdir)' HELP_DIR='$(datadir)' MAN_DIR='$(mandir)' uninstall); \
+		(cd $$dir; $(MAKE) $(MAKE_ARGS) uninstall); \
 	done
 
 clean: sweep

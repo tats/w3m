@@ -12,7 +12,7 @@
 #define IMGDISPLAY   "w3mimgdisplay"
 #define XFACE2XPM    "xface2xpm"
 
-#define RC_DIR       "~/.w3m/"
+#define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"
 #define CONFIG_FILE  "config"
 #define KEYMAP_FILE  "keymap"
@@ -24,9 +24,9 @@
 #define PASSWD_FILE	RC_DIR "/passwd"
 #define PRE_FORM_FILE	RC_DIR "/pre_form"
 #define USER_MAILCAP	RC_DIR "/mailcap"
-#define SYS_MAILCAP	"/etc/mailcap"
-#define USER_MIMETYPES	RC_DIR "~/.mime.types"
-#define SYS_MIMETYPES	"/etc/mime.types"
+#define SYS_MAILCAP	ETC_DIR "mailcap"
+#define USER_MIMETYPES	"~/.mime.types"
+#define SYS_MIMETYPES	ETC_DIR "mime.types"
 #define USER_URIMETHODMAP	RC_DIR "/urimethodmap"
 #define SYS_URIMETHODMAP	ETC_DIR "/urimethodmap"
 

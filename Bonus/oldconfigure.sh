@@ -4,6 +4,12 @@
 #
 
 # functions
+opt_push () {
+#  OPT="${OPT} $1"
+  OPT="${OPT}	\\
+	$1"
+}
+
 opt_enable_set () {
   val=""
   if test x"$1" = xy; then
@@ -12,7 +18,7 @@ opt_enable_set () {
     val="--disable-$2"
   fi
   if test x"$val" != x; then
-    OPT="${OPT} $val"
+    opt_push "$val"
   fi
 }
 
@@ -24,7 +30,7 @@ opt_with_set () {
     val="--without-$2"
   fi
   if test x"$val" != x; then
-    OPT="${OPT} $val"
+    opt_push "$val"
   fi
 }
 
@@ -56,7 +62,17 @@ else
 fi
 . "$conffile" # read config.param
 
-OPT="--bindir='$bindir' --libexecdir='$auxbindir' --datadir='$helpdir' --sysconfdir='$sysconfdir' --libdir='$libdir' --mandir='$mandir'"
+OPT=""
+libdir=`echo $libdir | sed 's@/w3m[^/]*/cgi-bin@@'`
+libexecdir=`echo $auxbindir | sed 's@/w3m[^/]*@@'`
+datadir=`echo $helpdir | sed 's@/w3m[^/]*@@'`
+sysconfdir=`echo $sysconfdir | sed 's@/w3m[^/]*@@'`
+opt_push "--bindir='$bindir'"
+opt_push "--libexecdir='$libexecdir'"
+opt_push "--datadir='$datadir'"
+opt_push "--sysconfdir='$sysconfdir'"
+opt_push "--libdir='$libdir'"
+opt_push "--mandir='$mandir'"
 
 #case "$dmodel" in
 #  1) val=baby;;
@@ -67,14 +83,14 @@ OPT="--bindir='$bindir' --libexecdir='$auxbindir' --datadir='$helpdir' --sysconf
 #  *) echo "ERROR: Illegal model type (model=$dmodel)."
 #     exit 1;;
 #esac
-#OPT="${OPT} --enable-model=$val"
+#opt_push "--enable-model=$val"
 
 case "$lang" in
   JA)
     if test x$display_code != x; then
-      OPT="${OPT} --enable-japanese='$display_code'"
+      opt_push "--enable-japanese='$display_code'"
     else
-      OPT="${OPT} --enable-japanese"
+      opt_push "--enable-japanese"
     fi
     opt_enable_set "$kanji_symbols" kanjisymbols
     ;;
@@ -87,10 +103,10 @@ opt_enable_set "$use_ansi_color" ansi-color
 opt_enable_set "$use_bg_color" bgcolor
 if test x"$use_migemo" = xy; then
   if test x"$def_migemo_command" != x; then
-    OPT="${OPT} --with-migemo='$def_migemo_command'"
+    opt_push "--with-migemo='$def_migemo_command'"
   fi
 elif test x"$use_migemo" = xn; then
-  OPT="${OPT} --without-migemo"
+  opt_push "--without-migemo"
 fi
 opt_enable_set "$use_mouse" mouse
 opt_enable_set "$use_menu" menu
@@ -100,7 +116,11 @@ opt_enable_set "$use_history" history
 opt_enable_set "$use_digest_auth" digest-auth
 opt_enable_set "$use_nntp" nntp
 opt_enable_set "$use_gopher" gopher
-opt_enable_set "$use_lynx_key" keymap=lynx
+if test x"$use_lynx_key" = xy; then
+  opt_push "--enable-keymap=lynx"
+else
+  opt_push "--enable-keymap=w3m"
+fi
 opt_with_set "$ded" editor
 opt_with_set "$dmail" mailer
 opt_with_set "$dbrowser" browser
@@ -132,21 +152,24 @@ if test x"$use_image" = xy; then
   fi
 
   if test x"$val" = x; then
-    OPT="${OPT} --enable-image"
+    opt_push "--enable-image"
   else
-    OPT="${OPT} --enable-image='$val'"
+    opt_push "--enable-image='$val'"
   fi
 
   opt_enable_set "$use_xface" xface
 elif test x"$use_image" = xn; then
-  OPT="${OPT} --disable-image"
+  opt_push "--disable-image"
+fi
+if test x"$dtermlib" != x; then
+  dtermlib=`echo "$dtermlib"|sed 's/^-l//'`
+  opt_with_set "$dtermlib" termlib
 fi
 if test x"$use_ssl" = xy; then
-  OPT="${OPT} --with-ssl"
-
+  opt_push "--with-ssl"
   opt_enable_set "$use_ssl_verify" sslverify
 elif test x"$use_ssl" = xn; then
-  OPT="${OPT} --without-ssl"
+  opt_push "--without-ssl"
 fi
 opt_enable_set "$use_ipv6" ipv6
 
@@ -154,7 +177,7 @@ env_set CC "$dcc"
 env_set CFLAGS "$dcflags"
 env_set LDFLAGS "$dldflags"
 
-echo "( cd '$topdir'; sh configure ${OPT} )"
+echo "( cd '$topdir' && sh configure ${OPT} )"
 if test "${echo_only+set}" != set; then
-  echo "( cd '$topdir'; sh configure ${OPT} )" | sh
+  echo "( cd '$topdir' && sh configure ${OPT} )" | sh
 fi

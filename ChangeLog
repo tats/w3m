@@ -1,3 +1,26 @@
+2003-03-13  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03818] fix autoconf
+	* Makefile.in (CGIBIN_DIR): added
+		(AUXBIN_DIR): added
+		(HELP_DIR): added
+		(RC_DIR): added
+		(MAKE_ARGS): added
+		(TARGET): use $(package)
+		(MAN1_TARGET): ditto
+		(install): use $(*_DIR)
+	* acinclude.m4 (AC_W3M_TERMLIB): added
+		(AC_W3M_GC): default search prefix /usr /usr/local $HOME
+			fix searches
+		(AC_W3M_SSL): fix bugs
+	* config.h (RC_DIR): remove tailing /
+		(SYS_MAILCAP): use ETC_DIR
+		(SYS_MIMETYPES): ditto
+		(USER_MIMETYPES): homedir
+	* configure.in: quote
+		(AC_W3M_TERMLIB): use
+	* Bonus/oldconfigure.sh: rewrite
+
 2003-03-12  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03816] --enable-lynx => --enable-keymap=lynx 
@@ -7484,4 +7507,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.788 2003/03/11 17:11:12 ukai Exp $
+$Id: ChangeLog,v 1.789 2003/03/12 17:20:39 ukai Exp $

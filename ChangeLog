@@ -1,3 +1,13 @@
+2002-10-06  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03333] x11 image animation
+	* w3mimg/x11/x11_w3mimg.c (struct x11_image): added
+		(x11_img_new): added
+		(resize_image): added
+		(x11_load_image): rewrite GdkPixbuf
+		(x11_show_image): rewrite GdkPixbuf
+		(x11_free_image): rewrite GdkPixbuf
+
 2002-10-02  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03332] Re: hang up when seeing web page that contains xbm file
@@ -3876,4 +3886,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.437 2002/10/01 15:34:20 ukai Exp $
+$Id: ChangeLog,v 1.438 2002/10/05 16:43:10 ukai Exp $

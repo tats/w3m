@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.9 2002/10/01 15:34:20 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.10 2002/10/05 16:43:10 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -28,6 +28,15 @@ struct x11_info {
     int init_flag;
 #endif
 };
+
+#if defined(USE_GDKPIXBUF)
+struct x11_image {
+    int total;
+    int no;
+    int wait;
+    Pixmap *pixmap;
+};
+#endif
 
 static int
 x11_init(w3mimg_op * self)
@@ -145,6 +154,73 @@ x11_close(w3mimg_op * self)
     /* XCloseDisplay(xi->display); */
 }
 
+#if defined(USE_GDKPIXBUF)
+static struct x11_image *
+x11_img_new(struct x11_info *xi, int w, int h, int n)
+{
+    struct x11_image *img = NULL;
+    int i;
+
+    img = malloc(sizeof(*img));
+    if (!img)
+	goto ERROR;
+
+    img->pixmap = calloc(n, sizeof(*(img->pixmap)));
+    if (!img->pixmap)
+	goto ERROR;
+
+    for (i = 0; i < n; i++) {
+	img->pixmap[i] = XCreatePixmap(xi->display, xi->parent, w, h,
+				       DefaultDepth(xi->display, 0));
+	if (!img->pixmap[i])
+	    goto ERROR;
+
+	XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
+	XFillRectangle(xi->display, (Pixmap) img->pixmap[i], xi->imageGC, 0, 0,
+		       w, h);
+    }
+
+    img->no = 0;
+    img->total = n;
+    img->wait = 0;
+
+    return img;
+  ERROR:
+    if (img) {
+	if (img->pixmap) {
+	    for (i = 0; i < n; i++) {
+		if (img->pixmap[i])
+		    XFreePixmap(xi->display, (Pixmap) img->pixmap[i]);
+	    }
+	    free(img->pixmap);
+	}
+	free(img);
+    }
+    return NULL;
+}
+
+static GdkPixbuf *
+resize_image(GdkPixbuf * pixbuf, int width, int height)
+{
+    GdkPixbuf *resized_pixbuf;
+    int w, h;
+
+    if (pixbuf == NULL)
+	return NULL;
+    w = gdk_pixbuf_get_width(pixbuf);
+    h = gdk_pixbuf_get_height(pixbuf);
+    if (width < 1 || height < 1)
+	return pixbuf;
+    if (w == width && h == height)
+	return pixbuf;
+    resized_pixbuf =
+	gdk_pixbuf_scale_simple(pixbuf, width, height, GDK_INTERP_BILINEAR);
+    if (resized_pixbuf == NULL)
+	return NULL;
+    return resized_pixbuf;
+}
+#endif
+
 static int
 x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 {
@@ -152,8 +228,12 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 #if defined(USE_IMLIB)
     ImlibImage *im;
 #elif defined(USE_GDKPIXBUF)
-    GdkPixbuf *pixbuf;
-    int iw, ih;
+    GdkPixbufAnimation *animation;
+    GList *frames;
+    int i, iw, ih, n;
+    double ratio_w, ratio_h;
+    struct x11_image *ximg;
+    GdkPixbufFrameAction action = GDK_PIXBUF_FRAME_REVERT;
 #endif
 
     if (self == NULL)
@@ -170,45 +250,95 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	w = im->rgb_width;
     if (h <= 0)
 	h = im->rgb_height;
-#elif defined(USE_GDKPIXBUF)
-    pixbuf = gdk_pixbuf_new_from_file(fname);
-    if (!pixbuf)
-	return 0;
-    iw = gdk_pixbuf_get_width(pixbuf);
-    ih = gdk_pixbuf_get_height(pixbuf);
-    if (w <= 0)
-	w = iw;
-    if (h <= 0)
-	h = ih;
-#endif
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					DefaultDepth(xi->display, 0));
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
-#if defined(USE_IMLIB)
     Imlib_paste_image(xi->id, im, (Pixmap) img->pixmap, 0, 0, w, h);
     Imlib_kill_image(xi->id, im);
 #elif defined(USE_GDKPIXBUF)
-    if (w != iw || h != ih) {
-	GdkPixbuf *newpixbuf;
-	newpixbuf = gdk_pixbuf_scale_simple(pixbuf, w, h, GDK_INTERP_BILINEAR);
-	gdk_pixbuf_xlib_render_to_drawable_alpha(newpixbuf,
-					   (Drawable) img->pixmap,
-					   0, 0, 0, 0, w, h,
-					   GDK_PIXBUF_ALPHA_BILEVEL, 1,
-					   XLIB_RGB_DITHER_NORMAL, 0, 0);
-	gdk_pixbuf_finalize(newpixbuf);
-    } else {
-	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
-					   (Drawable) img->pixmap,
-					   0, 0, 0, 0, w, h,
-					   GDK_PIXBUF_ALPHA_BILEVEL, 1,
-					   XLIB_RGB_DITHER_NORMAL, 0, 0);
+    animation = gdk_pixbuf_animation_new_from_file(fname);
+    if (!animation)
+	return 0;
+    frames = gdk_pixbuf_animation_get_frames(animation);
+    n = gdk_pixbuf_animation_get_num_frames(animation);
+    iw = gdk_pixbuf_animation_get_width(animation);
+    ih = gdk_pixbuf_animation_get_height(animation);
+
+    if (w < 1 || h < 1) {
+	w = iw;
+	h = ih;
+	ratio_w = ratio_h = 1;
     }
-    gdk_pixbuf_unref(pixbuf);
+    else {
+	ratio_w = 1.0 * w / iw;
+	ratio_h = 1.0 * h / ih;
+    }
+    ximg = x11_img_new(xi, w, h, n);
+    if (!ximg) {
+	gdk_pixbuf_animation_unref(animation);
+	return 0;
+    }
+    for (i = 0; i < n; i++) {
+	GdkPixbufFrame *frame;
+	GdkPixbuf *org_pixbuf, *pixbuf;
+	int width, height, ofstx, ofsty;
+
+	frame = (GdkPixbufFrame *) g_list_nth_data(frames, i);
+	org_pixbuf = gdk_pixbuf_frame_get_pixbuf(frame);
+	ofstx = gdk_pixbuf_frame_get_x_offset(frame);
+	ofsty = gdk_pixbuf_frame_get_y_offset(frame);
+	width = gdk_pixbuf_get_width(org_pixbuf);
+	height = gdk_pixbuf_get_height(org_pixbuf);
+
+	if (ofstx == 0 && ofsty == 0 && width == w && height == h) {
+	    pixbuf = resize_image(org_pixbuf, w, h);
+	}
+	else {
+	    pixbuf =
+		resize_image(org_pixbuf, width * ratio_w, height * ratio_h);
+	    ofstx *= ratio_w;
+	    ofsty *= ratio_h;
+	}
+	width = gdk_pixbuf_get_width(pixbuf);
+	height = gdk_pixbuf_get_height(pixbuf);
+
+	if (i > 0) {
+	    switch (action) {
+	    case GDK_PIXBUF_FRAME_RETAIN:
+		XCopyArea(xi->display, ximg->pixmap[i - 1], ximg->pixmap[i],
+			  xi->imageGC, 0, 0, w, h, 0, 0);
+		break;
+	    case GDK_PIXBUF_FRAME_DISPOSE:
+		break;
+	    case GDK_PIXBUF_FRAME_REVERT:
+		XCopyArea(xi->display, ximg->pixmap[0], ximg->pixmap[i],
+			  xi->imageGC, 0, 0, w, h, 0, 0);
+		break;
+	    default:
+		XCopyArea(xi->display, ximg->pixmap[0], ximg->pixmap[i],
+			  xi->imageGC, 0, 0, w, h, 0, 0);
+		break;
+	    }
+	}
+
+	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
+						 (Drawable) ximg->pixmap[i], 0,
+						 0, ofstx, ofsty, width,
+						 height,
+						 GDK_PIXBUF_ALPHA_BILEVEL, 1,
+						 XLIB_RGB_DITHER_NORMAL, 0, 0);
+	action = gdk_pixbuf_frame_get_action(frame);
+	if (org_pixbuf != pixbuf)
+	    gdk_pixbuf_finalize(pixbuf);
+
+    }
+    gdk_pixbuf_animation_unref(animation);
+    img->pixmap = ximg;
 #endif
+
     img->width = w;
     img->height = h;
     return 1;
@@ -219,16 +349,39 @@ x11_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy, int sw,
 	       int sh, int x, int y)
 {
     struct x11_info *xi;
+#if defined(USE_GDKPIXBUF)
+    struct x11_image *ximg = img->pixmap;
+    int i;
+#endif
     if (self == NULL)
 	return 0;
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
 
+#if defined(USE_IMLIB)
     XCopyArea(xi->display, (Pixmap) img->pixmap, xi->window, xi->imageGC,
 	      sx, sy,
 	      (sw ? sw : img->width),
 	      (sh ? sh : img->height), x + self->offset_x, y + self->offset_y);
+#elif defined(USE_GDKPIXBUF)
+#define WAIT_CNT 4
+    i = ximg->no;
+    XCopyArea(xi->display, ximg->pixmap[i], xi->window, xi->imageGC,
+	      sx, sy,
+	      (sw ? sw : img->width),
+	      (sh ? sh : img->height), x + self->offset_x, y + self->offset_y);
+    if (ximg->total > 1) {
+	if (ximg->wait > WAIT_CNT) {
+	    ximg->wait = 0;
+	    if (i < ximg->total - 1)
+		ximg->no = i + 1;
+	    else
+		ximg->no = 0;
+	}
+	ximg->wait += 1;
+    }
+#endif
     return 1;
 }
 
@@ -241,12 +394,31 @@ x11_free_image(w3mimg_op * self, W3MImage * img)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return;
+#if defined(USE_IMLIB)
     if (img && img->pixmap) {
 	XFreePixmap(xi->display, (Pixmap) img->pixmap);
 	img->pixmap = NULL;
 	img->width = 0;
 	img->height = 0;
     }
+#elif defined(USE_GDKPIXBUF)
+    if (img && img->pixmap) {
+	struct x11_image *ximg = img->pixmap;
+	int i, n;
+	if (ximg->pixmap) {
+	    n = ximg->total;
+	    for (i = 0; i < n; i++) {
+		if (ximg->pixmap[i])
+		    XFreePixmap(xi->display, (Pixmap) ximg->pixmap[i]);
+	    }
+	    free(ximg->pixmap);
+	}
+	free(ximg);
+	img->pixmap = NULL;
+	img->width = 0;
+	img->height = 0;
+    }
+#endif
 }
 
 static int

@@ -1,3 +1,8 @@
+2001-12-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02715] bugfix in scripts/multipart/multipart.cgi.in
+	* scripts/multipart/multipart.cgi: fix "use NKF" check
+
 2001-12-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02719] (based on [w3m-dev 02708] comments)
@@ -1470,4 +1475,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.165 2001/12/25 09:08:58 ukai Exp $
+$Id: ChangeLog,v 1.166 2001/12/25 09:12:28 ukai Exp $

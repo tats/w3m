@@ -146,7 +146,7 @@ AC_SUBST(POLANG)
 WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
 AC_MSG_CHECKING(if m17n support is enabled)
 AC_ARG_ENABLE(m17n,
- [  --disable-m17n		support m17n],,
+ [  --disable-m17n		do not use m17n],,
  [enable_m17n="yes"])
 AC_MSG_RESULT($enable_m17n)
 if test x"$enable_m17n" = xno; then
@@ -166,7 +166,7 @@ else
  wclib="-L./libwc -lwc"
  AC_MSG_CHECKING(if unicode support is enabled)
  AC_ARG_ENABLE(unicode,
-  [   --disable-unicode		support unicode],,
+  [   --disable-unicode		do not use unicode],,
   [enable_unicode="yes"])
  AC_MSG_RESULT($enable_unicode)
  if test x"$enable_m17n" = xyes; then

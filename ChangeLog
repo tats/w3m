@@ -1,3 +1,9 @@
+2004-03-13  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 04041] spell-miss in configure
+	* acinclude.m4 (AC_W3M_M17N): fix help-string
+		suggested by sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+
 2004-02-06  MANTANI Nobutaka <nobutaka@nobutaka.com>
 
 	* [w3m-dev 04038] --disable-m17n problem in form.c
@@ -8293,4 +8299,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.897 2004/02/05 17:23:06 ukai Exp $
+$Id: ChangeLog,v 1.898 2004/03/12 17:52:58 ukai Exp $

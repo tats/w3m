@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.105 2002/10/25 19:59:54 ukai Exp $ */
+/* $Id: file.c,v 1.106 2002/10/30 03:58:59 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5623,7 +5623,8 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    else if (ch == '\t') {
 		do {
 		    PUSH(' ');
-		} while (obuf->pos % Tabstop != 0);
+		} while ((h_env->envs[h_env->envc].indent + obuf->pos)
+			 % Tabstop != 0);
 		str++;
 	    }
 	    else if (obuf->flag & RB_PLAINMODE) {

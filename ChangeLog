@@ -1,5 +1,10 @@
 2002-10-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03357] tab in <pre> in <ul>,<ol>,...
+	* file.c (HTMLlineproc2): check indent for tabstop
+
+2002-10-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03354] display current line number
 	* display.c (displayBuffer): %3d -> %d
 
@@ -4030,4 +4035,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.457 2002/10/29 16:19:41 ukai Exp $
+$Id: ChangeLog,v 1.458 2002/10/30 03:58:59 ukai Exp $

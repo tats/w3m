@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.28 2002/11/05 15:45:53 ukai Exp $ */
+/* $Id: table.c,v 1.29 2002/11/05 16:43:10 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -1542,7 +1542,7 @@ check_table_height(struct table *t)
 		    cell.rowspan[cell.maxcell] = rowspan;
 		    cell.height[cell.maxcell] = 0;
 		    if (cell.maxcell > k) {
-	    		int ii;
+			int ii;
 			for (ii = k; ii < cell.maxcell; ii++)
 			    cell.indexarray[ii + 1] = cell.indexarray[ii];
 		    }
@@ -2659,7 +2659,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 		cell->minimum_width[cell->maxcell] = 0;
 		cell->fixed_width[cell->maxcell] = 0;
 		if (cell->maxcell > k) {
-	    	    int ii;
+		    int ii;
 		    for (ii = k; ii < cell->maxcell; ii++)
 			cell->index[ii + 1] = cell->index[ii];
 		}

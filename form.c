@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.16 2002/11/05 16:03:14 ukai Exp $ */
+/* $Id: form.c,v 1.17 2002/11/05 16:43:09 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -708,23 +708,24 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
     new->name = name;
     new->value = value;
     if (checked && *checked && (!strcmp(checked, "0") ||
-	strcasecmp(checked, "off") || !strcasecmp(checked, "no")))
-        new->checked = 0;
+				strcasecmp(checked, "off")
+				|| !strcasecmp(checked, "no")))
+	new->checked = 0;
     else
-        new->checked = 1;
+	new->checked = 1;
     new->next = NULL;
     return new;
 }
 
 /*
-url <url> [<action>]
-text <name> <value>
-file <name> <value>
-passwd <name> <value>
-checkbox <name> <value> [<checked>]
-radio <name> <value>
-submit [<name>]
-*/
+ * url <url> [<action>]
+ * text <name> <value>
+ * file <name> <value>
+ * passwd <name> <value>
+ * checkbox <name> <value> [<checked>]
+ * radio <name> <value>
+ * submit [<name>]
+ */
 
 void
 loadPreForm(void)
@@ -796,7 +797,7 @@ preFormUpdateBuffer(Buffer *buf)
 
     if (!buf || !buf->formitem || !PreForm)
 	return;
-    
+
     for (pf = PreForm; pf; pf = pf->next) {
 	if (Strcmp(parsedURL2Str(&buf->currentURL), parsedURL2Str(&pf->url)))
 	    continue;
@@ -804,15 +805,16 @@ preFormUpdateBuffer(Buffer *buf)
 	    a = &buf->formitem->anchors[i];
 	    fi = (FormItemList *)a->url;
 	    fl = fi->parent;
-	    if (pf->action && (!fl->action || Strcmp_charp(fl->action, pf->action)))
-	        continue;
+	    if (pf->action
+		&& (!fl->action || Strcmp_charp(fl->action, pf->action)))
+		continue;
 	    for (pi = pf->item; pi; pi = pi->next) {
 		if (pi->type != fi->type)
 		    continue;
 		if (pi->type == FORM_INPUT_SUBMIT) {
 		    if (!pi->name || !*pi->name ||
 			(fi->name && !Strcmp_charp(fi->name, pi->name)))
-		    	buf->submit = a;
+			buf->submit = a;
 		    continue;
 		}
 		if (!pi->name || !fi->name || Strcmp_charp(fi->name, pi->name))
@@ -833,7 +835,7 @@ preFormUpdateBuffer(Buffer *buf)
 		    break;
 		case FORM_INPUT_RADIO:
 		    if (pi->value && fi->value &&
-		    	!Strcmp_charp(fi->value, pi->value))
+			!Strcmp_charp(fi->value, pi->value))
 			formRecheckRadio(a, buf, fi);
 		    break;
 		}

@@ -250,7 +250,7 @@ sub form_decode {
 sub guess_type {
 	local($_) = @_;
 
-	/\.(\w+)$/ || next;
+	/\.(\w+)$/ || return "";
 	$_ = $1;
 	tr/A-Z/a-z/;
 	%mime_type = &load_mime_type($MIME_TYPE);

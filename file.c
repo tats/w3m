@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.205 2003/01/24 17:36:45 ukai Exp $ */
+/* $Id: file.c,v 1.206 2003/01/24 17:37:16 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7193,7 +7193,7 @@ Line *
 getNextPage(Buffer *buf, int plen)
 {
     Line *volatile top = buf->topLine, *volatile last = buf->lastLine,
-	 *volatile cur = buf->currentLine;
+	*volatile cur = buf->currentLine;
     int i;
     int volatile nlines = 0;
     clen_t linelen = 0, trbyte = buf->trbyte;
@@ -7231,7 +7231,7 @@ getNextPage(Buffer *buf, int plen)
     }
     prevtrap = signal(SIGINT, KeyAbort);
     if (fmInitialized)
-        term_cbreak();
+	term_cbreak();
 
     init_stream(&uf, SCM_UNKNOWN, NULL);
     for (i = 0; i < plen; i++) {

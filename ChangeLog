@@ -1,5 +1,10 @@
 2003-04-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03846] fix use_history
+	* main.c (main): move loadHistory
+
+2003-04-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03844] w3mhelp.cgi update
 	* scripts/w3mhelp-funcdesc.en.pl.in: add %menu_funcdesc
 	* scripts/w3mhelp-funcdesc.ja.pl.in: add %menu_funcdesc
@@ -7669,4 +7674,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.812 2003/04/07 15:19:42 ukai Exp $
+$Id: ChangeLog,v 1.813 2003/04/07 15:23:57 ukai Exp $

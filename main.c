@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.220 2003/04/06 16:27:54 ukai Exp $ */
+/* $Id: main.c,v 1.221 2003/04/07 15:24:01 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -409,10 +409,6 @@ main(int argc, char **argv, char **envp)
     ShellHist = newHist();
     TextHist = newHist();
     URLHist = newHist();
-#ifdef USE_HISTORY
-    if (UseHistory)
-	loadHistory(URLHist);
-#endif				/* not USE_HISTORY */
 
     if (!non_null(HTTP_proxy) &&
 	((p = getenv("HTTP_PROXY")) ||
@@ -747,6 +743,10 @@ main(int argc, char **argv, char **envp)
     initCookie();
 #endif				/* USE_COOKIE */
     setLocalCookie();		/* setup cookie for local CGI */
+#ifdef USE_HISTORY
+    if (UseHistory)
+	loadHistory(URLHist);
+#endif				/* not USE_HISTORY */
 
     if (w3m_backend)
 	backend();

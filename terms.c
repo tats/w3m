@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.44 2003/02/06 17:15:16 ukai Exp $ */
+/* $Id: terms.c,v 1.45 2003/02/06 17:23:18 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -401,7 +401,7 @@ void switch_ascii(FILE *);
 #if 0
 void need_clrtoeol(void);
 #endif
-void clrtoeol(void);	/* conflicts with curs_clear(3)? */
+void clrtoeol(void);		/* conflicts with curs_clear(3)? */
 
 int write1(char);
 

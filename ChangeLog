@@ -1,3 +1,24 @@
+2001-11-20  Tsutomu Okada <okada@furuno.co.jp>
+
+	* file.c (HTMLtagproc1): reimplement meta refresh with
+          setAlarmEvent()
+
+	* fm.h: put back alarm related variables to main.c
+          add alarm related status flags
+
+	* main.c: put back alarm related variables from fm.h
+          alarm_once was renamed alarm_status
+          add alarm_buffer and setAlarmEvent()
+
+	* main.c (MAIN): cancel the alarm event if the buffer was
+          changed
+
+	* main.c (SigAlarm): ditto
+
+	* main.c (setAlarm): use setAlarmEvent()
+
+	* proto.h: add setAlarmEvent()
+
 2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3mhelperpanel.c (extractMailcapEntry): remove unused variables

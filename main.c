@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.9 2001/11/20 04:11:16 ukai Exp $ */
+/* $Id: main.c,v 1.10 2001/11/20 08:20:56 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -32,11 +32,19 @@ Hist *URLHist;
 Hist *ShellHist;
 Hist *TextHist;
 
+typedef struct {
+    int cmd;
+    void *user_data;
+} Event;
 #define N_EVENT_QUEUE 10
 static Event eventQueue[N_EVENT_QUEUE];
 static int n_event_queue;
 
 #ifdef USE_ALARM
+static int alarm_sec = 0;
+static short alarm_status = AL_UNSET;
+static Buffer *alarm_buffer;
+static Event alarm_event;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
 #endif
 
@@ -845,6 +853,13 @@ MAIN(int argc, char **argv, char **envp)
 	    mouse_active();
 #endif				/* MOUSE */
 #ifdef USE_ALARM
+	if (alarm_status == AL_IMPLICIT) {
+	    alarm_buffer = Currentbuf;
+	    alarm_status = AL_IMPLICIT_DONE;
+	} else if (alarm_status == AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
+	    alarm_sec = 0;
+	    alarm_status = AL_UNSET;
+	}
        if (alarm_sec > 0) {
            signal(SIGALRM, SigAlarm);
            alarm(alarm_sec);
@@ -4609,10 +4624,17 @@ SigAlarm(SIGNAL_ARG)
 #endif
        w3mFuncList[alarm_event.cmd].func();
        onA();
-       if (alarm_once)
+       if (alarm_status == AL_IMPLICIT) {
+	   alarm_buffer = Currentbuf;
+	   alarm_status = AL_IMPLICIT_DONE;
+       } else if (alarm_status == AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
 	   alarm_sec = 0;
-       signal(SIGALRM, SigAlarm);
-       alarm(alarm_sec);
+	   alarm_status = AL_UNSET;
+       }
+       if (alarm_sec > 0) {
+           signal(SIGALRM, SigAlarm);
+           alarm(alarm_sec);
+       }
     }
     SIGNAL_RETURN;
 }
@@ -4639,15 +4661,23 @@ setAlarm(void)
            cmd = getFuncList(getWord(&data), w3mFuncList, w3mNFuncList);
     }
     if (cmd >= 0) {
-       alarm_sec = sec;
-       alarm_once = FALSE;
-       alarm_event.cmd = cmd;
-       alarm_event.user_data = getQWord(&data);
-       signal(SIGALRM, SigAlarm);
-       alarm(alarm_sec);
+	setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));
     } else {
        alarm_sec = 0;
     }
     displayBuffer(Currentbuf, B_NORMAL);
+}
+
+void
+setAlarmEvent(int sec, short status, int cmd, void *data)
+{
+    if (status == AL_EXPLICIT || (status == AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
+	alarm_sec = sec;
+	alarm_status = status;
+	alarm_event.cmd = cmd;
+	alarm_event.user_data = data;
+	signal(SIGALRM, SigAlarm);
+	alarm(alarm_sec);
+    }
 }
 #endif

@@ -806,16 +806,27 @@ esac
 extlib=''
 
 case $sysname in
-  *bsd)
-    searchlibs="socket nsl"
-    ;;
-  *BSD)
-    searchlibs="socket nsl"
+  *bsd|*BSD)
+    searchlibs=""
     ;;
   *)
     searchlibs="bsd BSD 44bsd socket nsl"
     ;;
 esac
+
+for lib in $searchlibs
+do
+  for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
+  do
+    if [ -f $libdir/lib$lib.a -o -f $libdir/lib$lib.$so_ext ] ; then 
+      bsdlib="$bsdlib -l$lib"
+      break
+    fi
+  done
+done
+extlib=''
+
+searchlibs="socket nsl"
 for lib in $searchlibs
 do
   for libdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
@@ -1780,7 +1791,7 @@ HELP_DIR = $helpdir
 LIB_DIR = $suplibdir
 HELP_FILE = $helpfile
 SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
-LOCAL_LIBRARIES = $ldflags
+LOCAL_LIBRARIES = $bsdlib $ldflags
 CC = $cc
 MYCFLAGS = $cflags $bsdinclude $sslinclude
 GCCFLAGS = $cflags -I./\$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS

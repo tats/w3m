@@ -24,6 +24,7 @@ INCLUDES=-I.
 DEFS=$(INCLUDES) # -DDEBUG
 CFLAGS=$(MYCFLAGS) $(DEFS) 
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
+LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install.sh
 INSTALL2=sh ../install.sh
 AR=ar
@@ -60,13 +61,13 @@ funcname2.h: funcname.tab
 	sort funcname.tab | awk -f funcname2.awk > funcname2.h
 
 mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS)
+	$(CC) $(CFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS2)
 
 $(BOOKMARKER): w3mbookmark.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o  $(LIBS)
+	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o  $(LIBS2)
 
 $(HELPER): w3mhelperpanel.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS)
+	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS2)
 
 $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) $(Z_CFLAGS) -o $(INFLATE) inflate.o $(ZLIB)

@@ -1,5 +1,10 @@
 2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03514] Effect of tab title
+	* display.c (redrawNLine): rewrite, do without clrtoeolx()
+
+2002-12-04  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03512] Re: HTML parser
 	* table.c (feed_table_tag): HTML_N_SELECT, HTML_N_CAPTION
 
@@ -5361,4 +5366,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.578 2002/12/03 15:49:52 ukai Exp $
+$Id: ChangeLog,v 1.579 2002/12/03 15:52:37 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.41 2002/11/27 16:32:52 ukai Exp $ */
+/* $Id: display.c,v 1.42 2002/12/03 15:52:38 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -464,20 +464,20 @@ redrawNLine(Buffer *buf, int n)
 	    if (t == CurrentTab)
 		bold();
 	    addch('[');
-	    l = strlen(t->currentBuffer->buffername);
-	    if (t->x2 - t->x1 - 2 > l)
-		addnstr_sup(" ", (t->x2 - t->x1 - 1 - l) / 2);
+	    l = t->x2 - t->x1 - 1 - strlen(t->currentBuffer->buffername);
+	    if (l / 2 > 0)
+		addnstr_sup(" ", l / 2);
 	    if (t == CurrentTab)
 		EFFECT_ACTIVE_START;
 	    addstr(t->currentBuffer->buffername);
 	    if (t == CurrentTab)
 		EFFECT_ACTIVE_END;
-	    clrtoeolx();
+	    if ((l + 1) / 2 > 0)
+		addnstr_sup(" ", (l + 1) / 2);
 	    move(t->y, t->x2);
 	    addch(']');
 	    if (t == CurrentTab)
 		boldend();
-	    clrtoeolx();
 	}
 #if 0
 	move(0, COLS - 2);

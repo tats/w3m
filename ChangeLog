@@ -1,3 +1,8 @@
+2002-10-17  Daiki Ueno <ueno@unixuser.org>
+
+	* [w3m-dev 03341] white space is needed to close an empty-element tag
+	* parsetagx.c (parse_tag): extract tagname until '/'
+
 2002-10-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03339] Re: Debian Bug#164098 w3m: <sup> is not properly supported
@@ -3930,4 +3935,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.442 2002/10/10 16:59:32 ukai Exp $
+$Id: ChangeLog,v 1.443 2002/10/16 18:11:15 ukai Exp $

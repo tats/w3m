@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.85 2003/10/20 16:41:56 ukai Exp $ */
+/* $Id: url.c,v 1.86 2003/10/22 18:48:09 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1340,7 +1340,10 @@ HTTPrequestURI(ParsedURL *pu, HRequest *hr)
 	}
     }
     else {
+	char *save_label = pu->label;
+	pu->label = NULL;
 	Strcat(tmp, _parsedURL2Str(pu, TRUE));
+	pu->label = save_label;
     }
     return tmp;
 }
@@ -1627,7 +1630,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #endif				/* USE_SSL */
 		non_null(HTTP_proxy)) && !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
-	    char *save_label;
 	    hr->flag |= HR_FLAG_PROXY;
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS && *status == HTST_CONNECT) {
@@ -1659,8 +1661,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #endif
 		return uf;
 	    }
-	    save_label = pu->label;
-	    pu->label = NULL;
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS) {
 		if (*status == HTST_NORMAL) {
@@ -1679,7 +1679,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    {
 		tmp = HTTPrequest(pu, current, hr, extra_header);
 		*status = HTST_NORMAL;
-		pu->label = save_label;
 	    }
 	}
 	else {

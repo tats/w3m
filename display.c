@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.49 2002/12/27 16:46:13 ukai Exp $ */
+/* $Id: display.c,v 1.50 2003/01/10 16:08:20 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -561,7 +561,7 @@ drawAnchorCursor(Buffer *buf)
 static void
 redrawNLine(Buffer *buf, int n)
 {
-    Line *l, *l0;
+    Line *l;
     int i;
 
 #ifdef USE_COLOR
@@ -616,19 +616,13 @@ redrawNLine(Buffer *buf, int n)
 	for (i = 0; i < COLS; i++)
 	    addch('~');
     }
-    for (i = 0, l = buf->topLine; i < buf->LINES; i++) {
+    for (i = 0, l = buf->topLine; i < buf->LINES; i++, l = l->next) {
 	if (i >= buf->LINES - n || i < -n)
-	    l0 = redrawLine(buf, l, i + buf->rootY);
-	else {
-	    l0 = (l) ? l->next : NULL;
-	}
-	if (l0 == NULL && l == NULL)
+	    l = redrawLine(buf, l, i + buf->rootY);
+	if (l == NULL)
 	    break;
-	l = l0;
     }
     if (n > 0) {
-	if (i == 0 && buf->topLine != NULL)
-	    i++;
 	move(i + buf->rootY, 0);
 	clrtobotx();
     }
@@ -637,15 +631,9 @@ redrawNLine(Buffer *buf, int n)
     if (!(activeImage && displayImage && buf->img))
 	return;
     move(buf->cursorY + buf->rootY, buf->cursorX + buf->rootX);
-    for (i = 0, l = buf->topLine; i < buf->LINES; i++) {
+    for (i = 0, l = buf->topLine; i < buf->LINES && l; i++, l = l->next) {
 	if (i >= buf->LINES - n || i < -n)
-	    l0 = redrawLineImage(buf, l, i + buf->rootY);
-	else {
-	    l0 = (l) ? l->next : NULL;
-	}
-	if (l0 == NULL && l == NULL)
-	    break;
-	l = l0;
+	    redrawLineImage(buf, l, i + buf->rootY);
     }
     getAllImage(buf);
 #endif
@@ -702,7 +690,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 	l->width = COLPOS(l, l->len);
     if (l->len == 0 || l->width - 1 < column) {
 	clrtoeolx();
-	return l->next;
+	return l;
     }
     /* need_clrtoeol(); */
     pos = columnPos(l, column);
@@ -818,7 +806,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 #endif
     if (rcol - column < buf->COLS)
 	clrtoeolx();
-    return l->next;
+    return l;
 }
 
 #ifdef USE_IMAGE
@@ -835,7 +823,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
     if (l->width < 0)
 	l->width = COLPOS(l, l->len);
     if (l->len == 0 || l->width - 1 < column)
-	return l->next;
+	return l;
     pos = columnPos(l, column);
     rcol = COLPOS(l, pos);
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j++) {
@@ -888,7 +876,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 	}
 	rcol = COLPOS(l, pos + j + 1);
     }
-    return l->next;
+    return l;
 }
 #endif
 

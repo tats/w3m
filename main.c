@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.186 2003/01/09 15:30:48 ukai Exp $ */
+/* $Id: main.c,v 1.187 2003/01/10 16:08:23 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -886,7 +886,8 @@ main(int argc, char **argv, char **envp)
 	}
 	else if (newbuf == NO_BUFFER)
 	    continue;
-	newbuf->search_header = search_header;
+	if (newbuf->pagerSource || strcmp(newbuf->currentURL.file, "-"))
+	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
 	    nTab = 1;
@@ -4409,12 +4410,15 @@ vwSrc(void)
 	char old_code = DocumentCode;
 	DocumentCode = Currentbuf->document_code;
 #endif
+	SkipHeader = Currentbuf->search_header;
 	buf = loadFile(fn);
 #ifdef JP_CHARSET
 	DocumentCode = old_code;
 #endif
+	SkipHeader = FALSE;
 	if (buf == NULL)
 	    return;
+	buf->search_header = Currentbuf->search_header;
 	buf->type = "text/plain";
 	if (Currentbuf->real_type &&
 	    !strcasecmp(Currentbuf->real_type, "text/html"))
@@ -4427,11 +4431,14 @@ vwSrc(void)
 	Currentbuf->linkBuffer[LB_SOURCE] = buf;
     }
     else if (!strcasecmp(Currentbuf->type, "text/plain")) {
+	SkipHeader = Currentbuf->search_header;
 	DefaultType = "text/html";
 	buf = loadGeneralFile(file_to_url(fn), NULL, NO_REFERER, 0, NULL);
+	SkipHeader = FALSE;
 	DefaultType = NULL;
 	if (buf == NULL || buf == NO_BUFFER)
 	    return;
+	buf->search_header = Currentbuf->search_header;
 	if (Currentbuf->real_type &&
 	    !strcasecmp(Currentbuf->real_type, "text/plain"))
 	    buf->real_type = "text/html";

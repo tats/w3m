@@ -1,3 +1,17 @@
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03620] -m option and header
+	* buffer.c (reshapeBuffer): fix reading from stdin
+				fix -m option
+	* display.c (redrawNLine): rewrite
+		(redrawLine): return l instead of l->next
+		(redrawLineImage): ditto
+	* file.c (loadFile): read header even if skip header
+		(loadGeneralFile): read header even if skip header
+	* fm.h (SkipHeader): added
+	* main.c (main): check whether reading from stdin
+			SkipHeader
+
 2003-01-10  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03619] Re: Error occured while reset
@@ -6244,4 +6258,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.661 2003/01/09 15:30:20 ukai Exp $
+$Id: ChangeLog,v 1.662 2003/01/10 16:08:19 ukai Exp $

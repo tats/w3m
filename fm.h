@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.100 2002/12/27 16:07:44 ukai Exp $ */
+/* $Id: fm.h,v 1.101 2003/01/10 16:08:22 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -765,6 +765,7 @@ global char InnerCode init(CODE_INNER_EUC);	/* use EUC-JP internally; do not cha
 #endif				/* JP_CHARSET */
 
 global char SearchHeader init(FALSE);
+global char SkipHeader init(FALSE);
 global char *DefaultType init(NULL);
 global char RenderFrame init(FALSE);
 global char TargetSelf init(FALSE);

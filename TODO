@@ -1,12 +1,22 @@
 TODO lists
 
+Documentation
+
+new features
 * news:<newsgroups> support
+* Keep alive
+* incremental display
+* SMB
+* merge m17n
+* JavaScript
 
+cleanups
 * autoconfisicate
-
 * code review, cleanup
 
-* merge m17n
+bugs
+* fix [w3m-dev 02658] problem when form is reset
+  http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/200112.month/2658.html
 
 [sf.net] http://sf.net/projects/w3m
 
@@ -18,18 +28,6 @@ TODO lists
 * parsing bug: omitting </p> should not matter, but it does
  http://bugs.debian.org/115521
 
-* w3mman -l doesn't work
- http://bugs.debian.org/138805
-
-* w3m -dump generates too long lines
- http://bugs.debian.org/149288 
-
-* would like "forward to next buffer"
- http://bugs.debian.org/51771
-
-* alt attributes in area elements are ignored
- http://bugs.debian.org/81555
- 
 * MOUSE_SCROLL_LINE should be a run-time option
  http://bugs.debian.org/87472
 
@@ -38,3 +36,22 @@ TODO lists
 
 * not working 'Ignore case when search' on non latin pages
  http://bugs.debian.org/138891
+ => after m17n merge
+
+fixed?
+* would like "forward to next buffer"
+ http://bugs.debian.org/51771
+ => tab browse?
+
+* alt attributes in area elements are ignored
+ http://bugs.debian.org/81555
+ => fixed in w3m 0.3? 
+
+wontfix / impossible to fix
+* w3m -dump generates too long lines
+ http://bugs.debian.org/149288 
+
+wishlist?
+* w3mman -l doesn't work
+ http://bugs.debian.org/138805
+

@@ -1,5 +1,12 @@
 2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02833] ssl_forbid_method in SSL Setting
+	* rc.c (params7): ssl_forbid_method moved here
+	* rc.c (params8): ssl_forbid_method removed here
+	* rc.c (sections): params7 ifdef USE_SSL
+
+2002-01-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02832] external URI loader support
 	* NEWS: support external URI loader
 	* config.h.dist (USE_EXTERNAL_URI_LOADER): added
@@ -1915,4 +1922,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.214 2002/01/14 16:00:59 ukai Exp $
+$Id: ChangeLog,v 1.215 2002/01/14 16:31:26 ukai Exp $

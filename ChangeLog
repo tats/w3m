@@ -1,3 +1,7 @@
+2002-11-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* frame.c (createFrameFile): html_quote()
+
 2002-11-27  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03488] meta refresh in frame
@@ -5174,4 +5178,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.561 2002/11/26 17:05:22 ukai Exp $
+$Id: ChangeLog,v 1.562 2002/11/26 17:08:00 ukai Exp $

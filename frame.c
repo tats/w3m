@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.17 2002/11/05 15:56:13 ukai Exp $ */
+/* $Id: frame.c,v 1.16.4.1 2002/11/26 07:11:22 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -519,14 +519,15 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		    frame.body->attr = F_UNLOADED;
 		    if (frame.body->flags & FB_NO_BUFFER)
 			fprintf(f1, "Open %s with other method",
-				frame.body->url);
+				html_quote(frame.body->url));
 		    else if (frame.body->url)
-			fprintf(f1, "Can't open %s", frame.body->url);
+			fprintf(f1, "Can't open %s",
+				html_quote(frame.body->url));
 		    else
 			fprintf(f1,
 				"This frame (%s) contains no src attribute",
-				frame.body->name ? frame.body->
-				name : "(no name)");
+				frame.body->name ? html_quote(frame.body->name)
+				: "(no name)");
 		    break;
 		}
 		parseURL2(frame.body->url, &base, currentURL);
@@ -620,7 +621,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    /* prohibit_tags */
 			    Strshrinkfirst(tok, 1);
 			    Strshrink(tok, 1);
-			    fprintf(f1, "<!-- %s -->", tok->ptr);
+			    fprintf(f1, "<!-- %s -->", html_quote(tok->ptr));
 			    goto token_end;
 			case HTML_TABLE:
 			    t_stack++;
@@ -633,7 +634,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				Strshrink(tok, 1);
 				fprintf(f1,
 					"<!-- table stack underflow: %s -->",
-					tok->ptr);
+					html_quote(tok->ptr));
 				goto token_end;
 			    }
 			    break;
@@ -653,7 +654,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    if (!t_stack) {
 				Strshrinkfirst(tok, 1);
 				Strshrink(tok, 1);
-				fprintf(f1, "<!-- %s -->", tok->ptr);
+				fprintf(f1, "<!-- %s -->",
+					html_quote(tok->ptr));
 				goto token_end;
 
 			    }
@@ -790,7 +792,6 @@ renderFrame(Buffer *Cbuf, int force_reload)
     buf->document_code = Cbuf->document_code;
 #endif
     copyParsedURL(&buf->currentURL, &Cbuf->currentURL);
-    preFormUpdateBuffer(buf);
     return buf;
 }
 

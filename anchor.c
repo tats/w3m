@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.25 2003/02/11 10:35:48 ukai Exp $ */
+/* $Id: anchor.c,v 1.26 2003/02/11 10:36:17 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -361,7 +361,7 @@ reAnchorAny(Buffer *buf, char *re,
 	    else
 		break;
 	}
-  next_line:
+      next_line:
 	if (MarkAllPages && l->next == NULL && buf->pagerSource &&
 	    !(buf->bufferprop & BP_CLOSE))
 	    getNextPage(buf, PagerMax);

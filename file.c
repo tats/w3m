@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.52 2002/01/30 15:16:52 ukai Exp $ */
+/* $Id: file.c,v 1.53 2002/01/30 17:48:49 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -849,7 +849,7 @@ struct http_auth {
     char *scheme;
     struct auth_param *param;
     Str (*cred) (struct http_auth * ha, Str uname, Str pw, ParsedURL *pu,
-		 HRequest *hr);
+		 HRequest *hr, FormList *request);
 };
 
 #define TOKEN_PAT	"[^][()<>@,;:\\\"/?={} \t\001-\037\177]*"
@@ -914,7 +914,11 @@ extract_auth_val(char **q)
 static Str
 qstr_unquote(Str s)
 {
-    char *p = s->ptr;
+    char *p;
+
+    if (s == NULL)
+	return NULL;
+    p = s->ptr;
     if (*p == '"') {
 	Str tmp = Strnew();
 	for (p++; *p != '\0'; p++) {
@@ -984,7 +988,7 @@ get_auth_param(struct auth_param *auth, char *name)
 
 static Str
 AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
-	      HRequest *hr)
+	      HRequest *hr, FormList *request)
 {
     Str s = Strdup(uname);
     Strcat_char(s, ':');
@@ -1035,40 +1039,106 @@ digest_hex(char *p)
 
 static Str
 AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
-	       HRequest *hr)
+	       HRequest *hr, FormList *request)
 {
     Str tmp, a1buf, a2buf, rd, s;
     char md5[MD5_DIGEST_LENGTH + 1];
     Str uri = HTTPrequestURI(pu, hr);
-    /*
-     * A1BUF = H(user ":" realm ":" password)
-     * A2BUF = H(method ":" path)
-     * RESPONSE_DIGEST = H(A1BUF ":" nonce ":" A2BUF)
-     */
+    char nc[] = "00000001";
 
+    Str algorithm = qstr_unquote(get_auth_param(ha->param, "algorithm"));
+    Str nonce = qstr_unquote(get_auth_param(ha->param, "nonce"));
+    Str cnonce = qstr_unquote(get_auth_param(ha->param, "cnonce"));
+    Str qop = qstr_unquote(get_auth_param(ha->param, "qop"));
+
+    if (cnonce == NULL)
+	cnonce = Strnew_charp("cnonce");	/* XXX */
+
+    /* A1 = unq(username-value) ":" unq(realm-value) ":" passwd */
     tmp = Strnew_m_charp(uname->ptr, ":",
 			 qstr_unquote(get_auth_param(ha->param, "realm"))->ptr,
 			 ":", pw->ptr, NULL);
     MD5(tmp->ptr, strlen(tmp->ptr), md5);
     a1buf = digest_hex(md5);
 
+    if (algorithm) {
+	if (strcasecmp(algorithm->ptr, "MD5-sess") == 0) {
+	    /* A1 = H(unq(username-value) ":" unq(realm-value) ":" passwd)
+	     *      ":" unq(nonce-value) ":" unq(cnonce-value)
+	     */
+	    if (nonce == NULL)
+		return NULL;
+	    tmp = Strnew_m_charp(a1buf->ptr, ":",
+				 qstr_unquote(nonce)->ptr,
+				 ":", qstr_unquote(cnonce)->ptr, NULL);
+	    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	    a1buf = digest_hex(md5);
+	}
+	else if (strcasecmp(algorithm->ptr, "MD5") == 0)
+	    /* ok default */
+	    ;
+	else
+	    /* unknown algorithm */
+	    return NULL;
+    }
+
+    /* A2 = Method ":" digest-uri-value */
     tmp = Strnew_m_charp(HTTPrequestMethod(hr)->ptr, ":", uri->ptr, NULL);
+    if (qop && (strcasecmp(qop->ptr, "auth-int") == 0)) {
+	/*  A2 = Method ":" digest-uri-value ":" H(entity-body) */
+	Str ebody = Strnew();
+	if (request && request->body) {
+	    FILE *fp = fopen(request->body, "r");
+	    if (fp != NULL) {
+		int c;
+		while ((c = fgetc(fp)) != EOF)
+		    Strcat_char(ebody, c);
+		fclose(fp);
+	    }
+	}
+	MD5(ebody->ptr, strlen(ebody->ptr), md5);
+	ebody = digest_hex(md5);
+	Strcat_m_charp(tmp, ":", ebody->ptr, NULL);
+    }
     MD5(tmp->ptr, strlen(tmp->ptr), md5);
     a2buf = digest_hex(md5);
 
-    tmp = Strnew_m_charp(a1buf->ptr, ":",
-			 qstr_unquote(get_auth_param(ha->param, "nonce"))->ptr,
-			 ":", a2buf->ptr, NULL);
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
-    rd = digest_hex(md5);
+    if (qop &&
+	(strcasecmp(qop->ptr, "auth") == 0
+	 || strcasecmp(qop->ptr, "auth-int") == 0)) {
+	/* request-digest  = <"> < KD ( H(A1),     unq(nonce-value)
+	 *                      ":" nc-value
+	 *                      ":" unq(cnonce-value)
+	 *                      ":" unq(qop-value)
+	 *                      ":" H(A2)
+	 *                      ) <">
+	 */
+	if (nonce == NULL)
+	    return NULL;
+	tmp = Strnew_m_charp(a1buf->ptr, ":", qstr_unquote(nonce)->ptr,
+			     ":", nc,
+			     ":", qstr_unquote(cnonce)->ptr,
+			     ":", qstr_unquote(qop)->ptr,
+			     ":", a2buf->ptr, NULL);
+	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	rd = digest_hex(md5);
+    }
+    else {
+	/* compatibility with RFC 2069
+	 * request_digest = KD(H(A1),  unq(nonce), H(A2))
+	 */
+	tmp = Strnew_m_charp(a1buf->ptr, ":",
+			     qstr_unquote(get_auth_param(ha->param, "nonce"))->
+			     ptr, ":", a2buf->ptr, NULL);
+	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	rd = digest_hex(md5);
+    }
 
     /*
-     * username=<uname>,
-     * realm=<realm>,
-     * nonce=<nonce>,
-     * uri=<uri>,
-     * response=<RESPONSE_DIGEST>,
-     * [opaque=<opaque>]
+     * digest-response  = 1#( username | realm | nonce | digest-uri
+     *                          | response | [ algorithm ] | [cnonce] |
+     *                          [opaque] | [message-qop] |
+     *                          [nonce-count]  | [auth-param] )
      */
 
     tmp = Strnew_m_charp("username=\"", uname->ptr, "\"", NULL);
@@ -1079,14 +1149,32 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     Strcat_m_charp(tmp, ", uri=\"", uri->ptr, "\"", NULL);
     Strcat_m_charp(tmp, ", response=\"", rd->ptr, "\"", NULL);
 
+    if (algorithm)
+	Strcat_m_charp(tmp, ", algorithm=",
+		       get_auth_param(ha->param, "algorithm")->ptr, NULL);
+
+    if (cnonce)
+	Strcat_m_charp(tmp, ", cnonce=\"", cnonce->ptr, "\"", NULL);
+
     if ((s = get_auth_param(ha->param, "opaque")) != NULL)
 	Strcat_m_charp(tmp, ", opaque=", s->ptr, NULL);
+
+    if (qop) {
+	Strcat_m_charp(tmp, ", qop=",
+		       get_auth_param(ha->param, "qop")->ptr, NULL);
+	/* XXX how to count? */
+	Strcat_m_charp(tmp, ", nc=", nc, NULL);
+    }
 
     return tmp;
 }
 #endif
 
 /* *INDENT-OFF* */
+struct auth_param none_auth_param[] = {
+    {NULL, NULL}
+};
+
 struct auth_param basic_auth_param[] = {
     {"realm", NULL},
     {NULL, NULL}
@@ -1138,7 +1226,7 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
     struct http_auth *ha;
     int len = strlen(auth_field);
     TextListItem *i;
-    char *p;
+    char *p0, *p;
     Regex re_token;
 
     newRegex(TOKEN_PAT, FALSE, &re_token, NULL);
@@ -1148,6 +1236,7 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
 	if (strncasecmp(i->ptr, auth_field, len) == 0) {
 	    for (p = i->ptr + len; p != NULL && *p != '\0';) {
 		SKIP_BLANKS(p);
+		p0 = p;
 		for (ha = &www_auth[0]; ha->scheme != NULL; ha++) {
 		    if (strncmp(p, ha->scheme, strlen(ha->scheme)) == 0) {
 			if (hauth->pri < ha->pri) {
@@ -1157,9 +1246,21 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
 			    p = extract_auth_param(p, hauth->param);
 			    break;
 			}
-			else
+			else {
+			    /* weak auth */
 			    p += strlen(ha->scheme);
+			    SKIP_BLANKS(p);
+			    p = extract_auth_param(p, none_auth_param);
+			}
 		    }
+		}
+		if (p0 == p) {
+		    /* all unknown auth failed */
+		    if (RegexMatch(&re_token, p0, -1, TRUE) == 0)
+			return NULL;
+		    MatchedPosition(&re_token, &p0, &p);
+		    SKIP_BLANKS(p);
+		    p = extract_auth_param(p, none_auth_param);
 		}
 	    }
 	}
@@ -1169,7 +1270,8 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
 
 static Str
 getAuthCookie(struct http_auth *hauth, char *auth_header,
-	      TextList *extra_header, ParsedURL *pu, HRequest *hr)
+	      TextList *extra_header, ParsedURL *pu, HRequest *hr,
+	      FormList *request)
 {
     Str ss;
     Str uname, pwd;
@@ -1251,13 +1353,15 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 				       "Password: "));
 #endif
 	}
-	ss = hauth->cred(hauth, uname, pwd, pu, hr);
+	ss = hauth->cred(hauth, uname, pwd, pu, hr, request);
     }
-    tmp = Strnew_charp(auth_header);
-    Strcat_m_charp(tmp, " ", hauth->scheme, NULL);
-    Strcat(tmp, ss);
-    Strcat_charp(tmp, "\r\n");
-    pushText(extra_header, tmp->ptr);
+    if (ss) {
+	tmp = Strnew_charp(auth_header);
+	Strcat_m_charp(tmp, " ", hauth->scheme, NULL);
+	Strcat(tmp, ss);
+	Strcat_charp(tmp, "\r\n");
+	pushText(extra_header, tmp->ptr);
+    }
     return ss;
 }
 
@@ -1496,8 +1600,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    struct http_auth hauth;
 	    if (findAuthentication(&hauth, t_buf, "WWW-Authenticate:") != NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
-		ss = getAuthCookie(&hauth, "Authorization:", extra_header,
-				   &pu, &hr);
+		ss = getAuthCookie(&hauth, "Authorization:", extra_header, &pu,
+				   &hr, request);
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
@@ -1518,7 +1622,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		!= NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
 		ss = getAuthCookie(&hauth, "Proxy-Authorization:",
-				   extra_header, &HTTP_proxy_parsed, &hr);
+				   extra_header, &HTTP_proxy_parsed, &hr,
+				   request);
 		proxy_auth_cookie = ss;
 		if (ss == NULL) {
 		    /* abort */
@@ -1531,6 +1636,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		goto load_doc;
 	    }
 	}
+	/* XXX: RFC2617 3.2.3 Authentication-Info: ? */
 	if (add_auth_cookie_flag)
 	    /* If authorization is required and passed */
 	    add_auth_cookie(pu.host, pu.port, qstr_unquote(realm)->ptr, ss);

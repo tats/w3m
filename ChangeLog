@@ -1,3 +1,17 @@
+2002-01-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02942] Digest qop=auth support
+	* file.c (http_auth): add request to cred() arg
+	* file.c (AuthBasicCred): ditto
+	* file.c (AuthDigestCred): ditto
+	* file.c (AuthDigestCred): support algorithm=MD5, MD5-sess
+			qop=auth, auth-int
+	* file.c (qstr_unquote): return NULL if input is NULL
+	* file.c (none_auth_param): added
+	* file.c (findAuthentication): skip weak or unknown auth
+	* file.c (getAuthCookie): add request to arg
+	* file.c (loadGeneralFile): add request to getAuthCookie()
+
 2002-01-31  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02934] add auth cookie with unquoted realm
@@ -2426,4 +2440,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.278 2002/01/30 15:16:52 ukai Exp $
+$Id: ChangeLog,v 1.279 2002/01/30 17:48:49 ukai Exp $

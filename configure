@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -849,8 +849,8 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-m17n		support m17n
    --disable-unicode		support unicode
-   --enable-japanese=CODE	support Japanese message instead of NLS
-				CODE=(S|E|J|U)
+   --enable-messagel10n=LL	message l10n instead of NLS
+   --enable-japanese=CODE	support Japanese CODE=(S|E|J|U)
   --disable-nls           do not use Native Language Support
   --disable-rpath         do not hardcode runtime library paths
   --disable-color		disable color for vt100 terminal
@@ -1340,6 +1340,7 @@ W3M=w3m
 cat >>confdefs.h <<\_ACEOF
 #define W3M w3m
 _ACEOF
+
 
 
 W3M_LANG=${LC_ALL:-$LANG}
@@ -2952,6 +2953,8 @@ _ACEOF
 
 
 
+
+
 WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
 echo "$as_me:$LINENO: checking if m17n support is enabled" >&5
 echo $ECHO_N "checking if m17n support is enabled... $ECHO_C" >&6
@@ -3007,6 +3010,26 @@ echo "${ECHO_T}$enable_unicode" >&6
 #define USE_UNICODE 1
 _ACEOF
 
+ fi
+ echo "$as_me:$LINENO: checking if message l10n" >&5
+echo $ECHO_N "checking if message l10n... $ECHO_C" >&6
+ # Check whether --enable-messagel10n or --disable-messagel10n was given.
+if test "${enable_messagel10n+set}" = set; then
+  enableval="$enable_messagel10n"
+
+else
+  enable_messagel10n="no"
+fi;
+ if test x$enable_messagel10n = xyes; then
+  enable_messagel10n="ja";
+ fi
+ echo "$as_me:$LINENO: result: $enable_messagel10n" >&5
+echo "${ECHO_T}$enable_messagel10n" >&6
+ if test x$enable_messagel10n = xno; then
+    :
+ else
+    POSUBST="\$(top_srcdir)/posubst"
+    POLANG="$enable_messagel10n"
  fi
  echo "$as_me:$LINENO: checking if japanese support is enabled" >&5
 echo $ECHO_N "checking if japanese support is enabled... $ECHO_C" >&6
@@ -3099,6 +3122,7 @@ cat >>confdefs.h <<_ACEOF
 #define DOCUMENT_CHARSET $document_charset
 _ACEOF
 
+if test x$enable_messagel10n = xno; then
 
         MKINSTALLDIRS=
   if test -n "$ac_aux_dir"; then
@@ -4774,6 +4798,7 @@ _ACEOF
 
 
 
+fi
 
 NLSTARGET=""
 if test x"$USE_NLS" = xyes; then
@@ -9149,7 +9174,7 @@ _ACEOF
  cvsver=`$AWK '\$1 ~ /Id:/ { print \$3}' $srcdir/ChangeLog`
  sed -e 's/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`
-                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
+                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile posubst po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -9691,6 +9716,7 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "posubst" ) CONFIG_FILES="$CONFIG_FILES posubst" ;;
   "po/Makefile.in" ) CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
   "scripts/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
   "scripts/dirlist.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/dirlist.cgi" ;;
@@ -9801,6 +9827,7 @@ s,@LIBS@,$LIBS,;t t
 s,@PACKAGE@,$PACKAGE,;t t
 s,@VERSION@,$VERSION,;t t
 s,@W3M@,$W3M,;t t
+s,@W3M_LANG@,$W3M_LANG,;t t
 s,@AWK@,$AWK,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
@@ -9841,6 +9868,8 @@ s,@WCCFLAGS@,$WCCFLAGS,;t t
 s,@DISPLAY_CHARSET@,$DISPLAY_CHARSET,;t t
 s,@SYSTEM_CHARSET@,$SYSTEM_CHARSET,;t t
 s,@DOCUMENT_CHARSET@,$DOCUMENT_CHARSET,;t t
+s,@POSUBST@,$POSUBST,;t t
+s,@POLANG@,$POLANG,;t t
 s,@MKINSTALLDIRS@,$MKINSTALLDIRS,;t t
 s,@USE_NLS@,$USE_NLS,;t t
 s,@MSGFMT@,$MSGFMT,;t t
@@ -10529,3 +10558,4 @@ if test "$no_create" != yes; then
 fi
 
 
+chmod +x posubst

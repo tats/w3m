@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.91 2003/09/24 18:49:00 ukai Exp $ */
+/* $Id: rc.c,v 1.92 2003/09/25 18:09:01 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -51,189 +51,9 @@ static int RC_table_size;
 #define P_NZINT    9
 #define P_SCALE    10
 
-#if LANG == JA
-static wc_ces OptionCharset = WC_CES_EUC_JP;	/* charset of source code */
-static int OptionEncode = FALSE;
-
-#define CMT_HELPER	 "外部ビューアの編集"
-#define CMT_TABSTOP      "タブ幅"
-#define CMT_INDENT_INCR  "HTML整形時のインデント幅"
-#define CMT_PIXEL_PER_CHAR      "文字幅 (4.0...32.0)"
-#define CMT_PIXEL_PER_LINE      "一行の高さ (4.0...64.0)"
-#define CMT_PAGERLINE    "ページャとして利用した時に保存される行数"
-#define CMT_HISTORY	 "履歴を使う"
-#define CMT_HISTSIZE     "保持するURL履歴の数"
-#define CMT_SAVEHIST     "URL履歴の保存"
-#define CMT_FRAME        "フレームの自動表示"
-#define CMT_ARGV_IS_URL  "scheme のない引数も URL とみなす"
-#define CMT_TSELF        "targetが未指定の場合に_selfを使用する"
-#define CMT_OPEN_TAB_BLANK "targetが_blankか_newの場合は新しいタブで開く"
-#define CMT_OPEN_TAB_DL_LIST "Download list panel を新しいタブで開く"
-#define CMT_DISPLINK     "リンク先の自動表示"
-#define CMT_DECODE_URL   "URLをデコードして表示"
-#define CMT_DISPLINEINFO "現在の行番号の表示"
-#define CMT_DISP_IMAGE   "インライン画像を表示"
-#ifdef USE_IMAGE
-#define CMT_AUTO_IMAGE   "インライン画像を自動で読み込む"
-#define CMT_MAX_LOAD_IMAGE "画像読み込み時の最大プロセス数"
-#define CMT_EXT_IMAGE_VIEWER   "画像を外部ビューワで表示"
-#define CMT_IMAGE_SCALE  "画像のスケール(%)"
-#define CMT_IMGDISPLAY   "画像を表示するためのコマンド"
-#define CMT_IMAGE_MAP_LIST "イメージマップのリンク先一覧を表示"
-#endif
-#define CMT_MULTICOL     "ファイル名のマルチカラム表示"
-#define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
-#define CMT_GRAPHIC_CHAR "テーブルやメニューの枠に graphic 文字を使う"
-#define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
-#define CMT_DISP_INS_DEL "DEL, S, STRIKE 要素の内容を表示する。"
-#define CMT_COLOR        "カラー表示"
-#define CMT_B_COLOR      "文字の色"
-#define CMT_A_COLOR      "アンカーの色"
-#define CMT_I_COLOR      "画像リンクの色"
-#define CMT_F_COLOR      "フォームの色"
-#define CMT_BG_COLOR     "背景の色"
-#define CMT_MARK_COLOR   "マークの色"
-#define CMT_ACTIVE_STYLE "現在選択されているリンクの色を指定する"
-#define CMT_C_COLOR	 "現在選択されているリンクの色"
-#define CMT_VISITED_ANCHOR	"訪れたことがあるリンクは色を変える"
-#define CMT_V_COLOR	 "訪れたことがあるリンクの色"
-#define CMT_USE_PROXY    "プロキシを使用する"
-#define CMT_HTTP_PROXY   "HTTPプロキシ(URLで入力)"
-#ifdef USE_SSL
-#define CMT_HTTPS_PROXY  "HTTPSプロキシ(URLで入力)"
-#endif				/* USE_SSL */
-#ifdef USE_GOPHER
-#define CMT_GOPHER_PROXY "GOPHERプロキシ(URLで入力)"
-#endif				/* USE_GOPHER */
-#define CMT_FTP_PROXY    "FTPプロキシ(URLで入力)"
-#define CMT_NO_PROXY     "プロキシから除外するドメイン"
-#define CMT_NOPROXY_NETADDR	"ネットワークアドレスでプロキシ除外のチェック"
-#define CMT_NO_CACHE     "Cache を使わない"
-#ifdef USE_NNTP
-#define CMT_NNTP_SERVER  "News サーバ"
-#define CMT_NNTP_MODE    "News サーバのモード"
-#define CMT_MAX_NEWS     "News を一覧表示する時の数"
-#endif
-#define CMT_DNS_ORDER	"名前解決の順序"
-#define CMT_DROOT        "/ で表されるディレクトリ(document root)"
-#define CMT_PDROOT       "/~user で表されるディレクトリ"
-#define CMT_CGIBIN       "/cgi-bin で表されるディレクトリ"
-#define CMT_CONFIRM_QQ   "q での終了時に確認する"
-#define CMT_CLOSE_TAB_BACK "戻る時にバッファが最後ならタブを閉じる"
-#ifdef USE_MARK
-#define CMT_USE_MARK	"マーク機能を有効にする"
-#endif
-#define CMT_EMACS_LIKE_LINEEDIT	"Emacs風の行編集にする"
-#define CMT_VI_PREC_NUM "vi風の数値プレフィクス"
-#define CMT_LABEL_TOPLINE	"ラベルに移動する時にカーソルがトップになるようにする"
-#define CMT_NEXTPAGE_TOPLINE	"次のページに移動する時にカーソルがトップになるようにする"
-#define CMT_FOLD_LINE    "plain text ファイルの行を折り返す"
-#define CMT_SHOW_NUM     "行番号を表示する"
-#define CMT_SHOW_SRCH_STR "検索文字列を表示する"
-#define CMT_MIMETYPES    "利用するmime.types"
-#define CMT_MAILCAP      "利用するmailcap"
-#define CMT_URIMETHODMAP "利用するurimethodmap"
-#define CMT_EDITOR       "利用するエディタ"
-#define CMT_MAILER       "利用するメーラ"
-#define CMT_EXTBRZ       "外部ブラウザ"
-#define CMT_EXTBRZ2      "外部ブラウザその2"
-#define CMT_EXTBRZ3      "外部ブラウザその3"
-#define CMT_DISABLE_SECRET_SECURITY_CHECK	"パスワードファイルのパーミッションをチェックしない"
-#define CMT_PASSWDFILE	 "パスワードファイル"
-#define CMT_PRE_FORM_FILE	"文書読込時のフォーム設定用ファイル"
-#define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
-#define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
-#define CMT_USERAGENT    "User-Agent"
-#define CMT_ACCEPTENCODING	"圧縮方法(Accept-Encoding:)"
-#define CMT_ACCEPTMEDIA	 "受けつけるメディアタイプ(Accept:)"
-#define CMT_ACCEPTLANG   "受けつける言語(Accept-Language:)"
-#define CMT_MARK_ALL_PAGES "全てのページのURL風の文字列をリンクにする"
-#define CMT_WRAP         "折り返し検索"
-#define CMT_VIEW_UNSEENOBJECTS "背景画像等へのリンクを作る"
-#ifdef __EMX__
-#define CMT_BGEXTVIEW	 "外部ビューアを別セッションで動かす"
-#else
-#define CMT_BGEXTVIEW    "外部ビューアをバックグラウンドで動かす"
-#endif
-#define CMT_EXT_DIRLIST  "ディレクトリリストに外部コマンドを使う"
-#define CMT_DIRLIST_CMD  "ディレクトリリスト用コマンド"
-#ifdef USE_DICT
-#define CMT_USE_DICTCOMMAND  "辞書引きをCGI経由でおこなう"
-#define CMT_DICTCOMMAND  "辞書引きコマンドのURL"
-#endif				/* USE_DICT */
-#define CMT_IGNORE_NULL_IMG_ALT "空のIMG ALT属性の時にリンク名を表示する"
-#define CMT_IFILE        "各ディレクトリのインデックスファイル"
-#define CMT_RETRY_HTTP   "URLに自動的に http:// を補う"
-#define CMT_DEFAULT_URL	 "URLを開く時のデフォルト文字列"
-#define CMT_DECODE_CTE   "保存時に Content-Transfer-Encoding をデコードする"
-#define CMT_PRESERVE_TIMESTAMP "保存時にタイムスタンプを保持する"
-#ifdef USE_MOUSE
-#define CMT_MOUSE         "マウスを使う"
-#define CMT_REVERSE_MOUSE "マウスのドラッグ動作を逆にする"
-#define CMT_RELATIVE_WHEEL_SCROLL "ホイールでのスクロール速度の扱い"
-#define CMT_RELATIVE_WHEEL_SCROLL_RATIO "(Aのみ)画面の何%スクロールするか"
-#define CMT_FIXED_WHEEL_SCROLL_COUNT "(Bのみ)スクロールする行数"
-#endif				/* USE_MOUSE */
-#define CMT_CLEAR_BUF     "表示されていないバッファのメモリを解放する"
-#define CMT_NOSENDREFERER "Referer: を送らないようにする"
-#define CMT_IGNORE_CASE "サーチ時に大文字小文字の区別をしない"
-#define CMT_USE_LESSOPEN "LESSOPENを使用"
-#ifdef USE_SSL
-#ifdef USE_SSL_VERIFY
-#define CMT_SSL_VERIFY_SERVER "SSLのサーバ認証を行う"
-#define CMT_SSL_CERT_FILE "SSLのクライアント用PEM形式証明書ファイル"
-#define CMT_SSL_KEY_FILE "SSLのクライアント用PEM形式秘密鍵ファイル"
-#define CMT_SSL_CA_PATH "SSLの認証局のPEM形式証明書群のあるディレクトリへのパス"
-#define CMT_SSL_CA_FILE "SSLの認証局のPEM形式証明書群のファイル"
-#endif				/* USE_SSL_VERIFY */
-#define CMT_SSL_FORBID_METHOD "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t:TLSv1)"
-#endif				/* USE_SSL */
-#ifdef USE_COOKIE
-#define CMT_USECOOKIE "クッキーを使用する"
-#define CMT_ACCEPTCOOKIE "クッキーを受け付ける"
-#define CMT_ACCEPTBADCOOKIE "問題のあるクッキーでも受け付ける"
-#define CMT_COOKIE_REJECT_DOMAINS "クッキーを受け付けないドメイン"
-#define CMT_COOKIE_ACCEPT_DOMAINS "クッキーを受け付けるドメイン"
-#endif
-
-#define CMT_FOLLOW_REDIRECTION "従うリダイレクトの回数"
-#define CMT_META_REFRESH "meta refresh に対応する"
-
-#ifdef USE_MIGEMO
-#define CMT_USE_MIGEMO "Migemo(ローマ字検索)を使用する"
-#define CMT_MIGEMO_COMMAND "Migemoコマンド"
-#endif				/* USE_MIGEMO */
-
-#ifdef USE_M17N
-#define CMT_DISPLAY_CHARSET  "表示用文字コード"
-#define CMT_DOCUMENT_CHARSET "文書の標準の文字コード"
-#define CMT_AUTO_DETECT      "文書の読み込み時に文字コードの自動判定を行う"
-#define CMT_SYSTEM_CHARSET   "システムの文字コード"
-#define CMT_FOLLOW_LOCALE    "Locale(LC_CTYPE) に従ってシステムの文字コードを設定"
-#define CMT_EXT_HALFDUMP     "表示用文字コードで halfdump の出力を行う"
-#define CMT_USE_WIDE         "複数カラムの文字を使う"
-#define CMT_USE_COMBINING    "結合文字を使う"
-#define CMT_USE_LANGUAGE_TAG "Unicode の言語タグを使う"
-#define CMT_UCS_CONV         "Unicodeを介したコード変換"
-#define CMT_PRE_CONV         "文書の読み込み時に文字コードを変換する"
-#define CMT_SEARCH_CONV      "検索文字列を文書の文字コードに変換する"
-#define CMT_FIX_WIDTH_CONV   "文字幅の変わる変換をしない"
-#define CMT_USE_GB12345_MAP  "GB 12345 の Unicode マップを GB 2312 用に使う"
-#define CMT_USE_JISX0201     "ISO-2022-JP で JIS X 0201-Roman を使う"
-#define CMT_USE_JISC6226     "ISO-2022-JP で JIS C 6226:1978(旧JIS) を使う"
-#define CMT_USE_JISX0201K    "JIS X 0201-Katakana を使う"
-#define CMT_USE_JISX0212     "JIS X 0212:1990(補助漢字) を使う"
-#define CMT_USE_JISX0213     "JIS X 0213:2000(2000JIS) を使う"
-#define CMT_STRICT_ISO2022   "厳格な ISO-2022-JP/KR/CN を使う"
-#define CMT_GB18030_AS_UCS   "GB18030 の 4バイト文字を Unicode として扱う"
-#endif
-
-#define CMT_KEYMAP_FILE "keymapファイル"
-
-#else				/* LANG != JA */
 /* FIXME: gettextize here */
-#if ENABLE_NLS
-static wc_ces OptionCharset = WC_CES_US_ASCII;
+#ifdef USE_M17N
+static wc_ces OptionCharset = WC_CES_US_ASCII; /* FIXME: charset of source code */
 static int OptionEncode = FALSE;
 #endif
 
@@ -410,8 +230,6 @@ static int OptionEncode = FALSE;
 #endif
 
 #define CMT_KEYMAP_FILE N_("keymap file")
-
-#endif				/* LANG != JA */
 
 #define PI_TEXT    0
 #define PI_ONOFF   1
@@ -1024,7 +842,7 @@ show_params(FILE * fp)
 
     fputs("\nconfiguration parameters\n", fp);
     for (j = 0; sections[j].name != NULL; j++) {
-#if LANG == JA || ENABLE_NLS
+#ifdef USE_M17N
 	if (!OptionEncode)
 	    cmt =
 		wc_conv(gettext(sections[j].name), OptionCharset,
@@ -1071,7 +889,7 @@ show_params(FILE * fp)
 		t = "percent";
 		break;
 	    }
-#if LANG == JA || ENABLE_NLS
+#ifdef USE_M17N
 	    if (!OptionEncode)
 		cmt = wc_conv(gettext(sections[j].params[i].comment),
 			      OptionCharset, InnerCharset)->ptr;
@@ -1546,7 +1364,7 @@ load_option_panel(void)
 #if ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
 #endif
-#if LANG == JA || ENABLE_NLS
+#ifdef USE_M17N
     if (!OptionEncode) {
 	optionpanel_str =
 	    wc_Str_conv(optionpanel_str, OptionCharset, InnerCharset);
@@ -1634,11 +1452,7 @@ load_option_panel(void)
     buf = loadHTMLString(src);
 #ifdef USE_M17N
     if (buf)
-#if LANG == JA
 	buf->document_charset = OptionCharset;
-#else				/* XXX: ENABLE_NLS is ok for SystemCharset */
-	buf->document_charset = SystemCharset;
-#endif
 #endif
     return buf;
 }

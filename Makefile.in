@@ -59,7 +59,8 @@ MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' INSTALL='$(INSTALL)' \
 IMGCFLAGS = @IMGX11CFLAGS@ @IMGFBCFLAGS@
 IMGLDFLAGS = @IMGX11LDFLAGS@ @IMGFBLDFLAGS@
 
-CC = @CC@
+CC0 = @CC@
+CC = @POSUBST@ $(CC0)
 RANLIB=@RANLIB@
 AWK = @AWK@
 PERL = @PERL@
@@ -166,7 +167,7 @@ inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
 libwc:
-	(cd libwc && $(MAKE) CC='$(CC)' TOP_CFLAGS='$(CFLAGS)')
+	(cd libwc && $(MAKE) CC='$(CC0)' TOP_CFLAGS='$(CFLAGS)')
  
 dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
@@ -178,7 +179,7 @@ w3mimgdisplay.o: w3mimgdisplay.c w3mimg
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
 w3mimg:
-	(cd w3mimg && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)")
+	(cd w3mimg && $(MAKE) CC="$(CC0)" CFLAGS="$(CFLAGS)")
 
 po:
 	(cd $@ && $(MAKE))

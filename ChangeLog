@@ -1,5 +1,17 @@
 2003-09-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* add posubst,  compile-time message l10n
+	* Makefile.in: @POSUBST@
+	* acinclude.m4(AC_W3M_M17N): add POSUBST, POLANG
+		--enable-messagel10n
+	* configure.in (W3M_LANG): subst
+		(AM_GET_GNUTEXT): if messagel10n enabled, don't use NLS
+		(AC_OUTOUT): add posubst, chmod +x
+	* menu.c: remove if LANG == JA messages
+	* rc.c: ditto
+
+2003-09-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* remove ./intl
 	* configure.in: external fo AM_GNU_GETTEXT
 	* Makefile.in: remove intl, INTLTARGET
@@ -8085,4 +8097,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.871 2003/09/25 16:39:15 ukai Exp $
+$Id: ChangeLog,v 1.872 2003/09/25 18:08:59 ukai Exp $

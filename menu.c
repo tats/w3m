@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.38 2003/09/24 18:49:00 ukai Exp $ */
+/* $Id: menu.c,v 1.39 2003/09/25 18:09:01 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -256,44 +256,12 @@ static int smDelTab(char c);
 /* --- MainMenu --- */
 
 static Menu MainMenu;
-#if LANG == JA
-static wc_ces MainMenuCharset = WC_CES_EUC_JP;	/* charset of source code */
-static int MainMenuEncode = FALSE;
-static MenuItem MainMenuItem[] = {
-    /* type        label         variabel value func     popup keys data  */
-    {MENU_FUNC, "戻る         (b)", NULL, 0, backBf, NULL, "b", NULL},
-    {MENU_POPUP, "バッファ選択 (s)", NULL, 0, NULL, &SelectMenu, "s", NULL},
-    {MENU_POPUP, "タブ選択     (t)", NULL, 0, NULL, &SelTabMenu, "tT", NULL},
-    {MENU_FUNC, "ソースを表示 (v)", NULL, 0, vwSrc, NULL, "vV", NULL},
-    {MENU_FUNC, "ソースを編集 (e)", NULL, 0, editBf, NULL, "eE", NULL},
-    {MENU_FUNC, "ソースを保存 (S)", NULL, 0, svSrc, NULL, "S", NULL},
-    {MENU_FUNC, "再読み込み   (r)", NULL, 0, reload, NULL, "rR", NULL},
-    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, "リンクを表示 (a)", NULL, 0, followA, NULL, "a", NULL},
-    {MENU_FUNC, "新タブで表示 (n)", NULL, 0, tabA, NULL, "nN", NULL},
-    {MENU_FUNC, "リンクを保存 (A)", NULL, 0, svA, NULL, "A", NULL},
-    {MENU_FUNC, "画像を表示   (i)", NULL, 0, followI, NULL, "i", NULL},
-    {MENU_FUNC, "画像を保存   (I)", NULL, 0, svI, NULL, "I", NULL},
-    {MENU_FUNC, "フレーム表示 (f)", NULL, 0, rFrame, NULL, "fF", NULL},
-    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, "ブックマーク (B)", NULL, 0, ldBmark, NULL, "B", NULL},
-    {MENU_FUNC, "ヘルプ       (h)", NULL, 0, ldhelp, NULL, "hH", NULL},
-    {MENU_FUNC, "オプション   (o)", NULL, 0, ldOpt, NULL, "oO", NULL},
-    {MENU_NOP, "----------------", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, "終了         (q)", NULL, 0, qquitfm, NULL, "qQ", NULL},
-    {MENU_END, "", NULL, 0, nulcmd, NULL, "", NULL},
-};
-#else				/* LANG != JA */
-
 #ifdef USE_M17N
 /* FIXME: gettextize here */
-static wc_ces MainMenuCharset = WC_CES_US_ASCII;
-#if ENABLE_NLS
+static wc_ces MainMenuCharset = WC_CES_US_ASCII; /* FIXME: charset of source code */
 static int MainMenuEncode = FALSE;
-#else
-static int MainMenuEncode = TRUE;
 #endif
-#endif
+
 static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
     {MENU_FUNC, N_(" Back         (b) "), NULL, 0, backBf, NULL, "b", NULL},
@@ -320,7 +288,6 @@ static MenuItem MainMenuItem[] = {
     {MENU_FUNC, N_(" Quit         (q) "), NULL, 0, qquitfm, NULL, "qQ", NULL},
     {MENU_END, "", NULL, 0, nulcmd, NULL, "", NULL},
 };
-#endif				/* LANG != JA  */
 
 /* --- MainMenu (END) --- */
 

@@ -153,6 +153,8 @@ AC_SUBST(WCCFLAGS)
 AC_SUBST(DISPLAY_CHARSET)
 AC_SUBST(SYSTEM_CHARSET)
 AC_SUBST(DOCUMENT_CHARSET)
+AC_SUBST(POSUBST)
+AC_SUBST(POLANG)
 WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
 AC_MSG_CHECKING(if m17n support is enabled)
 AC_ARG_ENABLE(m17n,
@@ -191,10 +193,23 @@ else
     fi
     AC_DEFINE(USE_UNICODE)
  fi
+ AC_MSG_CHECKING(if message l10n)
+ AC_ARG_ENABLE(messagel10n,
+   [   --enable-messagel10n=LL	message l10n instead of NLS],,
+   [enable_messagel10n="no"])
+ if test x$enable_messagel10n = xyes; then
+  enable_messagel10n="ja";
+ fi
+ AC_MSG_RESULT($enable_messagel10n)
+ if test x$enable_messagel10n = xno; then
+    :
+ else
+    POSUBST="\$(top_srcdir)/posubst"
+    POLANG="$enable_messagel10n"
+ fi
  AC_MSG_CHECKING(if japanese support is enabled)
  AC_ARG_ENABLE(japanese,
-   [   --enable-japanese=CODE	support Japanese message instead of NLS
-				CODE=(S|E|J|U)],,
+   [   --enable-japanese=CODE	support Japanese CODE=(S|E|J|U)],,
    [enable_japanese="no"])
  AC_MSG_RESULT($enable_japanese)
  if test x"$enable_japanese" = xno; then

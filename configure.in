@@ -12,6 +12,7 @@ AC_SUBST(W3M)
 W3M=w3m
 AC_DEFINE(W3M, w3m)
 
+AC_SUBST(W3M_LANG)
 W3M_LANG=${LC_ALL:-$LANG}
 dnl AM_INIT_AUTOMAKE(w3m, 0.4)
 AC_CONFIG_HEADER(config.h)
@@ -41,7 +42,9 @@ W3M_TARGET=$target
 AC_DEFINE_UNQUOTED(W3M_TARGET, $W3M_TARGET)
 
 AC_W3M_M17N
-AM_GNU_GETTEXT([external])
+if test x$enable_messagel10n = xno; then
+ AM_GNU_GETTEXT([external])
+fi
 
 NLSTARGET=""
 if test x"$USE_NLS" = xyes; then
@@ -154,7 +157,7 @@ DOCDIRS="doc:en_English doc-jp:ja_Japanese"
 AC_DEFINE_UNQUOTED(DOCDIRS, "$DOCDIRS")
 
 AC_W3M_VERSION
-AC_OUTPUT([Makefile po/Makefile.in \
+AC_OUTPUT([Makefile posubst po/Makefile.in \
 scripts/Makefile scripts/dirlist.cgi \
 scripts/w3mhelp.cgi \
 scripts/w3mmail.cgi scripts/xface2xpm \
@@ -166,3 +169,4 @@ w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile \
 w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 w3mhelp-lynx_en.html w3mhelp-lynx_ja.html])
 
+chmod +x posubst

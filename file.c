@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.121 2002/11/15 16:46:09 ukai Exp $ */
+/* $Id: file.c,v 1.122 2002/11/15 16:47:03 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7351,8 +7351,7 @@ doFileSave(URLFile uf, char *defstr)
 	    unlink(lock);
 	    exit(0);
 	}
-	addDownloadList(pid, uf.url, p, lock,
-			current_content_length);
+	addDownloadList(pid, uf.url, p, lock, current_content_length);
     }
     else {
 	q = searchKeyData();

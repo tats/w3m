@@ -1,3 +1,14 @@
+2ch.cgi
+
+  [w3m-dev 03635] 2ch.cgi
+  localcgi to read 2ch dat directly
+
+  w3m file:/cgi-bin/2ch.cgi?http://pc.2ch.net/test/read.cgi/unix/1035755937/
+
+  it uses wget -c
+  dat is recorded under ~/w3m2ch/
+  You can post
+
 smb.cgi
 
   [w3m-dev 03634] smb.cgi

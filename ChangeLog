@@ -1,3 +1,7 @@
+2003-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Bonus/README.eng: sync with Bonus/README
+
 2003-01-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03635] 2ch.cgi
@@ -6394,4 +6398,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.677 2003/01/11 16:12:44 ukai Exp $
+$Id: ChangeLog,v 1.678 2003/01/11 16:14:59 ukai Exp $

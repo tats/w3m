@@ -1,3 +1,8 @@
+2002-04-26  Tushar Samant <scribble@pobox.com>
+	
+	* [w3m-dev-en 00733] Submission: "English" patch
+	* rc.c: update english
+
 2002-04-25  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev-en 00730] Re: Patch for a more flexible dictionary lookup
@@ -3386,4 +3391,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.374 2002/04/24 18:29:35 ukai Exp $
+$Id: ChangeLog,v 1.375 2002/04/25 16:26:58 ukai Exp $

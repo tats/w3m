@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.42 2002/04/24 18:29:35 ukai Exp $ */
+/* $Id: rc.c,v 1.43 2002/04/25 16:26:59 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -195,35 +195,35 @@ static char *config_file = NULL;
 
 
 #define CMT_HELPER	 "External Viewer Setup"
-#define CMT_TABSTOP      "Tab width"
-#define CMT_PIXEL_PER_CHAR      "# of pixels per character (4.0...32.0)"
-#define CMT_PIXEL_PER_LINE      "# of pixels per line (4.0...64.0)"
-#define CMT_PAGERLINE    "# of reserved line when w3m is used as a pager"
-#define CMT_HISTSIZE     "# of reserved URL"
+#define CMT_TABSTOP      "Tab width in characters"
+#define CMT_PIXEL_PER_CHAR      "Number of pixels per character (4.0...32.0)"
+#define CMT_PIXEL_PER_LINE      "Number of pixels per line (4.0...64.0)"
+#define CMT_PAGERLINE    "Number of remembered lines when used as a pager"
+#define CMT_HISTSIZE     "Number of remembered URL"
 #define CMT_SAVEHIST     "Save URL history"
 /* #define CMT_KANJICODE    "Display Kanji Code" */
-#define CMT_FRAME        "Automatic rendering of frame"
-#define CMT_ARGV_IS_URL  "Force argument without scheme to URL"
+#define CMT_FRAME        "Render frames automatically"
+#define CMT_ARGV_IS_URL  "Treat argument without scheme as URL"
 #define CMT_TSELF        "Use _self as default target"
-#define CMT_DISPLINK     "Automatic display of link URL"
+#define CMT_DISPLINK     "Display link URL automatically"
 #ifdef USE_IMAGE
-#define CMT_DISP_IMAGE   "Display of inline image"
-#define CMT_AUTO_IMAGE   "Automatic loading of inline image"
-#define CMT_MAX_LOAD_IMAGE "Maximum process for parallel image loading"
+#define CMT_DISP_IMAGE   "Display inline images"
+#define CMT_AUTO_IMAGE   "Load inline images automatically"
+#define CMT_MAX_LOAD_IMAGE "Maximum processes for parallel image loading"
 #define CMT_EXT_IMAGE_VIEWER   "Use external image viewer"
 #define CMT_IMAGE_SCALE  "Scale of image (%)"
 #define CMT_IMGDISPLAY   "External command to display image"
 #define CMT_IMGSIZE      "External command to get size of image"
 #endif
-#define CMT_MULTICOL     "Multi-column output of file names"
-#define CMT_ALT_ENTITY   "Use alternate expression with ASCII for entity"
-#define CMT_FOLD_TEXTAREA "Fold lines of TEXTAREA"
+#define CMT_MULTICOL     "Display file names in multi-column format"
+#define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
+#define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
 #define CMT_A_COLOR      "Color of anchor"
 #define CMT_I_COLOR      "Color of image link"
 #define CMT_F_COLOR      "Color of form"
-#define CMT_ACTIVE_STYLE "Use active link color"
+#define CMT_ACTIVE_STYLE "Enable coloring of active link"
 #define CMT_C_COLOR	 "Color of currently active link"
 #define CMT_VISITED_ANCHOR "Use visited link color"
 #define CMT_V_COLOR	 "Color of visited link"
@@ -234,98 +234,98 @@ static char *config_file = NULL;
 #define CMT_GOPHER_PROXY "URL of GOPHER proxy host"
 #endif				/* USE_GOPHER */
 #define CMT_FTP_PROXY    "URL of FTP proxy host"
-#define CMT_NO_PROXY     "Domains for direct access (no proxy)"
+#define CMT_NO_PROXY     "Domains to be accessed directly (no proxy)"
 #define CMT_NOPROXY_NETADDR	"Check noproxy by network address"
-#define CMT_NO_CACHE     "Don't use cache"
+#define CMT_NO_CACHE     "Disable cache"
 #define CMT_DNS_ORDER	"Order of name resolution"
-#define CMT_DROOT        "Directory corresponds to / (document root)"
-#define CMT_PDROOT       "Directory corresponds to /~user"
-#define CMT_CGIBIN       "Directory corresponds to /cgi-bin"
+#define CMT_DROOT        "Directory corresponding to / (document root)"
+#define CMT_PDROOT       "Directory corresponding to /~user"
+#define CMT_CGIBIN       "Directory corresponding to /cgi-bin"
 #define CMT_CONFIRM_QQ   "Confirm when quitting with q"
 #ifdef USE_MARK
 #define CMT_USE_MARK	"Enable mark operations"
 #endif
 #ifdef EMACS_LIKE_LINEEDIT
-#define CMT_EMACS_LIKE_LINEEDIT	"Emacs-style line editing"
+#define CMT_EMACS_LIKE_LINEEDIT	"Enable Emacs-style line editing"
 #endif
 #ifdef VI_PREC_NUM
-#define CMT_VI_PREC_NUM	 "vi-like numeric prefix"
+#define CMT_VI_PREC_NUM	 "Enable vi-like numeric prefix"
 #endif
 #ifdef LABEL_TOPLINE
-#define CMT_LABEL_TOPLINE	"move cursor to top line when going to label"
+#define CMT_LABEL_TOPLINE	"Move cursor to top line when going to label"
 #endif
 #ifdef NEXTPAGE_TOPLINE
-#define CMT_NEXTPAGE_TOPLINE	"move cursor to top line when moving to next page"
+#define CMT_NEXTPAGE_TOPLINE	"Move cursor to top line when moving to next page"
 #endif
-#define CMT_SHOW_NUM     "Show line number"
-#define CMT_SHOW_SRCH_STR "Show search strings"
-#define CMT_MIMETYPES    "mime.types files"
-#define CMT_MAILCAP      "mailcap files"
-#define CMT_URIMETHODMAP "urimethodmap files"
+#define CMT_SHOW_NUM     "Show line numbers"
+#define CMT_SHOW_SRCH_STR "Show search string"
+#define CMT_MIMETYPES    "List of mime.types files"
+#define CMT_MAILCAP      "List of mailcap files"
+#define CMT_URIMETHODMAP "List of urimethodmap files"
 #define CMT_EDITOR       "Editor"
 #define CMT_MAILER       "Mailer"
 #define CMT_EXTBRZ       "External Browser"
 #define CMT_EXTBRZ2      "Second External Browser"
 #define CMT_EXTBRZ3      "Third External Browser"
-#define CMT_FTPPASS      "Password for FTP(use your mail address)"
+#define CMT_FTPPASS      "Password for anonymous FTP (your mail address)"
 #ifdef FTPPASS_HOSTNAMEGEN
-#define CMT_FTPPASS_HOSTNAMEGEN "generate domain part of password for FTP"
+#define CMT_FTPPASS_HOSTNAMEGEN "Generate domain part of password for FTP"
 #endif
-#define CMT_USERAGENT    "User-Agent"
-#define CMT_ACCEPTENCODING	"Accept-Encoding"
-#define CMT_ACCEPTMEDIA	 "Accept"
-#define CMT_ACCEPTLANG   "Accept-Language"
+#define CMT_USERAGENT    "User-Agent identification string"
+#define CMT_ACCEPTENCODING	"Accept-Encoding header"
+#define CMT_ACCEPTMEDIA	 "Accept header"
+#define CMT_ACCEPTLANG   "Accept-Language header"
 /* #define CMT_DOCUMENTCODE "Document Charset" */
 /* #define CMT_SYSTEMCODE   "System Kanji Code" */
-#define CMT_MARK_ALL_PAGES "Mark URL-like strings as anchors in all pages"
+#define CMT_MARK_ALL_PAGES "Treat URL-like strings as links in all pages"
 #define CMT_WRAP         "Wrap search"
-#define CMT_VIEW_UNSEENOBJECTS "Display unseenobjects (e.g. bgimage) tag"
+#define CMT_VIEW_UNSEENOBJECTS "Display unseen objects (e.g. bgimage tag)"
 #ifdef __EMX__
-#define CMT_BGEXTVIEW	 "Another session for an external viewer"
+#define CMT_BGEXTVIEW	 "Run external viewer in a separate session"
 #else
-#define CMT_BGEXTVIEW    "Background an external viewer"
+#define CMT_BGEXTVIEW    "Run external viewer in the background"
 #endif
 #define CMT_EXT_DIRLIST  "Use external program for directory listing"
-#define CMT_DIRLIST_CMD  "Directory listing command"
+#define CMT_DIRLIST_CMD  "URL of directory listing command"
 #ifdef USE_DICT
 #define CMT_USE_DICTCOMMAND  "Enable dictionary lookup through CGI"
 #define CMT_DICTCOMMAND  "URL of dictionary lookup command"
 #endif				/* USE_DICT */
-#define CMT_IGNORE_NULL_IMG_ALT	"Ignore IMG ALT=\"\" (display link name)"
-#define CMT_IFILE        "Index file for the directory"
+#define CMT_IGNORE_NULL_IMG_ALT	"Display link name for images lacking ALT"
+#define CMT_IFILE        "Index file for directories"
 #define CMT_RETRY_HTTP   "Prepend http:// to URL automatically"
-#define CMT_DEFAULT_URL  "Default string when opening URL"
+#define CMT_DEFAULT_URL  "Default value for open-URL command"
 #define CMT_DECODE_CTE   "Decode Content-Transfer-Encoding when saving"
 #ifdef USE_MOUSE
-#define CMT_MOUSE         "Use mouse"
-#define CMT_REVERSE_MOUSE "Reverse mouse dragging action"
+#define CMT_MOUSE         "Enable mouse"
+#define CMT_REVERSE_MOUSE "Scroll in reverse direction of mouse drag"
 #endif				/* USE_MOUSE */
-#define CMT_CLEAR_BUF     "Free memory of the undisplayed buffers"
-#define CMT_NOSENDREFERER "Don't send header `Referer:'"
-#define CMT_IGNORE_CASE "Ignore case when search"
+#define CMT_CLEAR_BUF     "Free memory of undisplayed buffers"
+#define CMT_NOSENDREFERER "Suppress `Referer:' header"
+#define CMT_IGNORE_CASE "Search case-insensitively"
 #define CMT_USE_LESSOPEN "Use LESSOPEN"
 #ifdef USE_SSL
 #ifdef USE_SSL_VERIFY
 #define CMT_SSL_VERIFY_SERVER "Perform SSL server verification"
 #define CMT_SSL_CERT_FILE "PEM encoded certificate file of client"
 #define CMT_SSL_KEY_FILE "PEM encoded private key file of client"
-#define CMT_SSL_CA_PATH "Path to a directory for PEM encoded certificates of CAs"
+#define CMT_SSL_CA_PATH "Path to directory for PEM encoded certificates of CAs"
 #define CMT_SSL_CA_FILE "File consisting of PEM encoded certificates of CAs"
 #endif				/* USE_SSL_VERIFY */
-#define CMT_SSL_FORBID_METHOD "List of forbidden SSL method (2: SSLv2, 3: SSLv3, t:TLSv1)"
+#define CMT_SSL_FORBID_METHOD "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
-#define CMT_USECOOKIE   "Use Cookie"
-#define CMT_ACCEPTCOOKIE "Accept Cookie"
-#define CMT_ACCEPTBADCOOKIE "Invalid Cookie"
-#define CMT_COOKIE_REJECT_DOMAINS "Domains from which should reject cookies"
-#define CMT_COOKIE_ACCEPT_DOMAINS "Domains from which should accept cookies"
+#define CMT_USECOOKIE   "Enable cookie processing"
+#define CMT_ACCEPTCOOKIE "Accept cookies"
+#define CMT_ACCEPTBADCOOKIE "Action to be taken on invalid cookie"
+#define CMT_COOKIE_REJECT_DOMAINS "Domains to reject cookies from"
+#define CMT_COOKIE_ACCEPT_DOMAINS "Domains to accept cookies from"
 #endif
-#define CMT_FOLLOW_REDIRECTION "Follow this number of redirections"
-#define CMT_META_REFRESH "Support meta refresh"
+#define CMT_FOLLOW_REDIRECTION "Number of redirections to follow"
+#define CMT_META_REFRESH "Enable processing of meta-refresh tag"
 
 #ifdef USE_MIGEMO
-#define CMT_USE_MIGEMO "Use Migemo (Roma-ji search)"
+#define CMT_USE_MIGEMO "Enable Migemo (Roma-ji search)"
 #define CMT_MIGEMO_COMMAND "Migemo command"
 #endif				/* USE_MIGEMO */
 
@@ -414,7 +414,7 @@ static struct sel_c defaulturls[] = {
     {N_S(DEFAULT_URL_CURRENT), "現在のURL"},
     {N_S(DEFAULT_URL_LINK), "リンク先のURL"},
 #else
-    {N_S(DEFAULT_URL_EMPTY), "empty"},
+    {N_S(DEFAULT_URL_EMPTY), "none"},
     {N_S(DEFAULT_URL_CURRENT), "current URL"},
     {N_S(DEFAULT_URL_LINK), "link URL"},
 #endif
@@ -422,7 +422,7 @@ static struct sel_c defaulturls[] = {
 };
 #ifdef INET6
 static struct sel_c dnsorders[] = {
-    {N_S(DNS_ORDER_UNSPEC), "unspec"},
+    {N_S(DNS_ORDER_UNSPEC), "unspecified"},
     {N_S(DNS_ORDER_INET_INET6), "inet inet6"},
     {N_S(DNS_ORDER_INET6_INET), "inet6 inet"},
     {0, NULL, NULL}
@@ -712,20 +712,20 @@ struct param_section sections[] = {
     {"クッキーの設定", params8},
 #endif
 #else				/* LANG != JA */
-    {"Display", params1},
+    {"Display Settings", params1},
 #ifdef USE_COLOR
-    {"Color Setting", params2},
+    {"Color Settings", params2},
 #endif				/* USE_COLOR */
-    {"Miscellaneous Setting", params3},
-    {"Directory Setting", params5},
-    {"External Programs", params6},
-    {"Network Setting", params9},
-    {"Proxy Setting", params4},
+    {"Miscellaneous Settings", params3},
+    {"Directory Settings", params5},
+    {"External Program Settings", params6},
+    {"Network Settings", params9},
+    {"Proxy Settings", params4},
 #ifdef USE_SSL
-    {"SSL Setting", params7},
+    {"SSL Settings", params7},
 #endif
 #ifdef USE_COOKIE
-    {"Cookie Setting", params8},
+    {"Cookie Settings", params8},
 #endif
 #endif				/* LANG != JA */
     {NULL, NULL}
@@ -1366,10 +1366,10 @@ load_option_panel(void)
 			       p->name,
 			       " value=1",
 			       (x ? " checked" : ""),
-			       ">ON&nbsp;&nbsp;<input type=radio name=",
+			       ">YES&nbsp;&nbsp;<input type=radio name=",
 			       p->name,
 			       " value=0",
-			       (x ? "" : " checked"), ">OFF", NULL);
+			       (x ? "" : " checked"), ">NO", NULL);
 		break;
 	    case PI_SEL_C:
 		tmp = to_str(p);

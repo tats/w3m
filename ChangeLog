@@ -1,3 +1,8 @@
+2001-12-28  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02761]
+	* file.c (loadcmdout): remove unnecessary buf check
+
 2001-12-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02760]
@@ -1718,4 +1723,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.190 2001/12/27 17:43:22 ukai Exp $
+$Id: ChangeLog,v 1.191 2001/12/27 17:45:25 ukai Exp $

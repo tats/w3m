@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.35 2001/12/27 17:43:23 ukai Exp $ */
+/* $Id: file.c,v 1.36 2001/12/27 17:45:26 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5423,8 +5423,6 @@ loadcmdout(char *cmd,
     init_stream(&uf, SCM_UNKNOWN, newFileStream(f, (void (*)())pclose));
     buf = loadproc(&uf, defaultbuf);
     UFclose(&uf);
-    if (buf == NULL)
-	return NULL;
     return buf;
 }
 

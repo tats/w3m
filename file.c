@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: file.c,v 1.4 2001/11/16 03:32:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4823,15 +4823,6 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
     struct readbuffer obuf;
     MySignalHandler(*prevtrap) ();
 
-    if (SETJMP(AbortLoading) != 0) {
-	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-	goto phase2;
-    }
-    if (fmInitialized) {
-	prevtrap = signal(SIGINT, KeyAbort);
-	term_cbreak();
-    }
-
     n_textarea = 0;
     cur_textarea = NULL;
     max_textarea = MAX_TEXTAREA;
@@ -4868,6 +4859,15 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 	htmlenv1.f = stdout;
     else
 	htmlenv1.buf = newTextLineList();
+
+    if (SETJMP(AbortLoading) != 0) {
+	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
+	goto phase2;
+    }
+    if (fmInitialized) {
+	prevtrap = signal(SIGINT, KeyAbort);
+	term_cbreak();
+    }
 
 #ifdef JP_CHARSET
     if (newBuf != NULL && newBuf->document_code != '\0')

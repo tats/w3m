@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.23 2001/11/30 10:30:07 ukai Exp $ */
+/* $Id: file.c,v 1.24 2001/12/02 14:27:11 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3839,7 +3839,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     Str line;
     char *endp;
 #ifndef KANJI_SYMBOLS
-    char rule;
+    char rule = 0;
 #endif
 
     if (w3m_debug)

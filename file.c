@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.129 2002/11/25 16:59:07 ukai Exp $ */
+/* $Id: file.c,v 1.109.2.1 2002/12/05 16:44:56 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -27,7 +27,6 @@
 
 static int frame_source = 0;
 
-static void FTPhalfclose(InputStream stream);
 static int _MoveFile(char *path1, char *path2);
 static void uncompress_stream(URLFile *uf);
 static FILE *lessopen_stream(char *path);
@@ -164,7 +163,7 @@ static struct compression_decoder {
     int type;
     char *ext;
     char *mime_type;
-    int auxbin_p;
+    int libfile_p;
     char *cmd;
     char *name;
     char *encoding;
@@ -373,7 +372,7 @@ examineFile(char *path, URLFile *uf)
 #define S_IXANY	(S_IXUSR|S_IXGRP|S_IXOTH)
 
 int
-check_command(char *cmd, int auxbin_p)
+check_command(char *cmd, int libfile_p)
 {
     static char *path = NULL;
     Str dirs;
@@ -383,8 +382,8 @@ check_command(char *cmd, int auxbin_p)
 
     if (path == NULL)
 	path = getenv("PATH");
-    if (auxbin_p)
-	dirs = Strnew_charp(w3m_auxbin_dir());
+    if (libfile_p)
+	dirs = Strnew_charp(w3m_lib_dir());
     else
 	dirs = Strnew_charp(path);
     for (p = dirs->ptr; p != NULL; p = np) {
@@ -414,7 +413,7 @@ acceptableEncoding()
 	return encodings->ptr;
     l = newTextList();
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
-	if (check_command(d->cmd, d->auxbin_p)) {
+	if (check_command(d->cmd, d->libfile_p)) {
 	    pushText(l, d->encoding);
 	}
     }
@@ -515,7 +514,7 @@ xface2xpm(char *xface)
     struct stat st;
 
     xpm = tmpfname(TMPF_DFL, ".xpm")->ptr;
-    f = popen(Sprintf("%s > %s", auxbinFile(XFACE2XPM), xpm)->ptr, "w");
+    f = popen(Sprintf("%s > %s", libFile(XFACE2XPM), xpm)->ptr, "w");
     if (!f)
 	return NULL;
     fprintf(f, "%s", xface);
@@ -1411,7 +1410,6 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 			       IN_PASSWORD)) == NULL)
 		    return NULL;
 		pwd = Str_conv_to_system(Strnew_charp(pp));
-		term_cbreak();
 	    }
 	    else {
 		/*
@@ -1622,7 +1620,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	 ) && !Do_not_use_proxy && !check_no_proxy(pu.host))) {
 
 	if (fmInitialized) {
-	    term_cbreak();
 	    message(Sprintf("%s contacted. Waiting for reply...", pu.host)->
 		    ptr, 0, 0);
 	    refresh();
@@ -1701,8 +1698,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
-		    if (fmInitialized)
-			term_raw();
 		    signal(SIGINT, prevtrap);
 		    return NULL;
 		}
@@ -1725,8 +1720,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
-		    if (fmInitialized)
-			term_raw();
 		    signal(SIGINT, prevtrap);
 		    return NULL;
 		}
@@ -1806,10 +1799,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (save2tmp(f, tmpf) < 0)
 		UFclose(&f);
 	    else {
-		UFclose(&f);
-		if (fmInitialized)
+		if (fmInitialized) {
 		    term_raw();
-		signal(SIGINT, prevtrap);
+		    signal(SIGINT, prevtrap);
+		}
 		doFileMove(tmpf, guess_save_name(t_buf, pu.file));
 	    }
 	    return NO_BUFFER;
@@ -1858,10 +1851,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     copyParsedURL(cur_baseURL, &pu);
 #endif
 
-    current_content_length = 0;
-    if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
-	current_content_length = strtoclen(p);
-
     if (do_download) {
 	/* download only */
 	char *file;
@@ -1875,10 +1864,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	else
 	    file = guess_save_name(t_buf, pu.file);
 	doFileSave(f, file);
-	if (f.scheme == SCM_FTP)
-	    FTPhalfclose(f.stream);
-	else
-	    UFclose(&f);
+	UFclose(&f);
 	return NO_BUFFER;
     }
 
@@ -1904,10 +1890,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    b->sourcefile = image_source;
 	    b->real_type = t;
 	}
-	UFclose(&f);
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
+	UFclose(&f);
 	return b;
     }
 #endif
@@ -1949,22 +1935,23 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    signal(SIGINT, prevtrap);
 	    if (pu.scheme == SCM_LOCAL) {
 		UFclose(&f);
-		_doFileCopy(pu.real_file,
-			    conv_from_system(guess_save_name
-					     (NULL, pu.real_file)), TRUE);
+		doFileCopy(pu.real_file,
+			   conv_from_system(guess_save_name
+					    (NULL, pu.real_file)));
 	    }
 	    else {
 		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 		    f.stream = newEncodedStream(f.stream, f.encoding);
 		doFileSave(f, guess_save_name(t_buf, pu.file));
-		if (f.scheme == SCM_FTP)
-		    FTPhalfclose(f.stream);
-		else
-		    UFclose(&f);
+		UFclose(&f);
 	    }
 	    return NO_BUFFER;
 	}
     }
+
+    current_content_length = 0;
+    if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
+	current_content_length = strtoclen(p);
 
     if (flag & RG_FRAME) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
@@ -2032,7 +2019,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
     if (header_string)
 	header_string = NULL;
-    preFormUpdateBuffer(b);
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, prevtrap);
@@ -2934,8 +2920,6 @@ process_img(struct parsed_tag *tag, int width)
 		w = (int)(w * image_scale / 100 + 0.5);
 		if (w == 0)
 		    w = 1;
-		else if (w > MAX_IMAGE_SIZE)
-		    w = MAX_IMAGE_SIZE;
 	    }
 	}
 #endif
@@ -2948,8 +2932,6 @@ process_img(struct parsed_tag *tag, int width)
 		i = (int)(i * image_scale / 100 + 0.5);
 		if (i == 0)
 		    i = 1;
-		else if (i > MAX_IMAGE_SIZE)
-		    i = MAX_IMAGE_SIZE;
 	    }
 	    else {
 		i = -1;
@@ -3115,11 +3097,11 @@ process_img(struct parsed_tag *tag, int width)
 		Strcat_charp(tmp, html_quote(Strnew_charp_n(q, nw)->ptr));
 	    }
 	    else
-		Strcat_charp(tmp, q);
+		Strcat_charp(tmp, html_quote(q));
 	}
 	else
 #endif
-	    Strcat_charp(tmp, q);
+	    Strcat_charp(tmp, html_quote(q));
 	goto img_end;
     }
     if (w > 0 && i > 0) {
@@ -4467,7 +4449,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	table_mode[obuf->table_level].indent_level = 0;
 	table_mode[obuf->table_level].nobr_level = 0;
 	table_mode[obuf->table_level].caption = 0;
-	table_mode[obuf->table_level].ignore_tag = NULL;
 #ifndef TABLE_EXPAND
 	tables[obuf->table_level]->total_width = width;
 #else
@@ -4748,7 +4729,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 {
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
     char outc[LINELEN];
-    char *p, *q, *r, *s, *t, *str;
+    char *p, *q, *r, *s, *str;
     Lineprop outp[LINELEN], mode, effect;
     int pos;
     int nlines;
@@ -4962,10 +4943,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    image->url = parsedURL2Str(&u)->ptr;
 			    image->ext = filename_extension(u.file, TRUE);
 			    image->cache = NULL;
-			    image->width =
-				(w > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : w;
-			    image->height =
-				(h > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : h;
+			    image->width = w;
+			    image->height = h;
 			    image->xoffset = xoffset;
 			    image->yoffset = yoffset;
 			    image->y = currentLn(buf) - top;
@@ -5101,8 +5080,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			MapArea *a;
 			p = remove_space(p);
 			p = url_quote_conv(p, buf->document_code);
-			t = NULL;
-			parsedtag_get_value(tag, ATTR_TARGET, &t);
 			q = "";
 			parsedtag_get_value(tag, ATTR_ALT, &q);
 			r = NULL;
@@ -5111,7 +5088,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			parsedtag_get_value(tag, ATTR_SHAPE, &r);
 			parsedtag_get_value(tag, ATTR_COORDS, &s);
 #endif
-			a = newMapArea(p, t, q, r, s);
+			a = newMapArea(p, q, r, s);
 			pushValue(buf->maplist->area, (void *)a);
 		    }
 		    break;
@@ -5453,8 +5430,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		read_token(h_env->tagbuf, &str, &obuf->status, pre_mode, 0);
 	    }
 	    if (ST_IS_COMMENT(obuf->status)) {
-		if ((obuf->table_level >= 0) ? tbl_mode->pre_mode & TBLM_IGNORE
-		    : obuf->flag & RB_IGNORE)
+		if (obuf->flag & RB_IGNORE)
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process comment.  */
 		    obuf->status = R_ST_NORMAL;
@@ -5469,13 +5445,9 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 		    if (ST_IS_REAL_TAG(obuf->status))
 			Strcat_char(h_env->tagbuf, ' ');
 		}
-		if ((obuf->table_level >= 0)
-		    ? ((tbl_mode->pre_mode & TBLM_IGNORE) &&
-		       !TAG_IS(h_env->tagbuf->ptr, tbl_mode->ignore_tag->ptr,
-			       tbl_mode->ignore_tag->length - 1))
-		    : ((obuf->flag & RB_IGNORE) &&
-		       !TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
-			       obuf->ignore_tag->length - 1)))
+		if ((obuf->flag & RB_IGNORE) &&
+		    !TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
+			    obuf->ignore_tag->length - 1))
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process tag.  */
 		    obuf->status = R_ST_NORMAL;
@@ -6192,6 +6164,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
 	HTMLlineproc3(newBuf, f->stream);
 	w3m_halfload = FALSE;
+	if (fmInitialized)
+	    term_raw();
+	signal(SIGINT, prevtrap);
 	return;
     }
 
@@ -6280,9 +6255,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	return;
     }
     if (w3m_backend) {
-	if (fmInitialized)
-	    term_raw();
-	signal(SIGINT, prevtrap);
 	print_internal_information(&htmlenv1);
 	backend_halfdump_buf = htmlenv1.buf;
 	return;
@@ -6589,7 +6561,6 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     FILE *src = NULL;
     URLFile f;
     MySignalHandler(*prevtrap) ();
-    struct stat st;
 
     loadImage(IMG_FLAG_STOP);
     image = New(Image);
@@ -6598,8 +6569,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     image->width = -1;
     image->height = -1;
     cache = getImage(image, cur_baseURL, IMG_FLAG_AUTO);
-    if (!cur_baseURL->is_nocache && cache->loaded & IMG_FLAG_LOADED &&
-	!stat(cache->file, &st))
+    if (!cur_baseURL->is_nocache && cache->loaded == IMG_FLAG_LOADED)
 	goto image_buffer;
 
     prevtrap = signal(SIGINT, KeyAbort);
@@ -6608,33 +6578,35 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
     if (save2tmp(*uf, cache->file) < 0) {
-	UFclose(uf);
 	if (fmInitialized)
 	    term_raw();
 	signal(SIGINT, prevtrap);
 	return NULL;
     }
-    UFclose(uf);
     if (fmInitialized)
 	term_raw();
     signal(SIGINT, prevtrap);
 
     cache->loaded = IMG_FLAG_LOADED;
     cache->index = 0;
+    /*
+     * getImageSize(cache);
+     */
 
   image_buffer:
-    cache->loaded |= IMG_FLAG_DONT_REMOVE;
-    if (uf->scheme != SCM_LOCAL)
-	newBuf->sourcefile = cache->file;
-
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+    /*
+     * if (frame_source) {
+     */
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
-    newBuf->mailcap_source = tmpf->ptr;
+    newBuf->sourcefile = tmpf->ptr;
     pushText(fileToDelete, tmpf->ptr);
-
+    /*
+     * }
+     */
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
     if (src)
@@ -6845,7 +6817,6 @@ openGeneralPagerBuffer(InputStream stream)
 #endif
     else {
 	if (doExternal(uf, "-", t, &buf, t_buf)) {
-	    UFclose(&uf);
 	    if (buf == NULL || buf == NO_BUFFER)
 		return buf;
 	}
@@ -7029,6 +7000,7 @@ save2tmp(URLFile uf, char *tmpf)
     if (fmInitialized)
 	term_cbreak();
     check = 0;
+    current_content_length = 0;
 #ifdef USE_NNTP
     if (uf.scheme == SCM_NEWS) {
 	char c;
@@ -7066,7 +7038,8 @@ save2tmp(URLFile uf, char *tmpf)
 	term_raw();
     signal(SIGINT, prevtrap);
     fclose(ff);
-    current_content_length = 0;
+    if (uf.scheme == SCM_FTP)
+	FTPhalfclose(uf.stream);
     return 0;
 }
 
@@ -7096,10 +7069,11 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     if (uf.ext && *uf.ext) {
 	Strcat_charp(tmpf, uf.ext);
     }
-
   _save:
     if (IStype(uf.stream) != IST_ENCODED)
 	uf.stream = newEncodedStream(uf.stream, uf.encoding);
+    if (save2tmp(uf, tmpf->ptr) < 0)
+	return 0;
     header = checkHeader(defaultbuf, "Content-Type:");
     if (header)
 	header = conv_to_system(header);
@@ -7110,33 +7084,6 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	command = tmp;
     }
 #endif
-
-    pushText(fileToDelete, tmpf->ptr);
-#ifdef HAVE_SETPGRP
-    if (!(mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&
-	!(mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
-	flush_tty();
-	if (!fork()) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    close_tty();
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
-	    if (save2tmp(uf, tmpf->ptr) < 0)
-		exit(1);
-	    UFclose(&uf);
-	    myExec(command->ptr);
-	}
-	*bufp = NO_BUFFER;
-	return 1;
-    }
-    else
-#endif
-    {
-	if (save2tmp(uf, tmpf->ptr) < 0)
-	    return 0;		/* ??? */
-	UFclose(&uf);
-    }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
 	    defaultbuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -7163,7 +7110,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	    fmTerm();
 	    mySystem(command->ptr, 0);
 	    fmInit();
-	    if (CurrentTab && Currentbuf)
+	    if (Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}
 	else {
@@ -7179,6 +7126,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	buf->mailcap = mcap;
     }
     *bufp = buf;
+    pushText(fileToDelete, tmpf->ptr);
     return 1;
 }
 
@@ -7222,18 +7170,11 @@ _MoveFile(char *path1, char *path2)
 }
 
 void
-_doFileCopy(char *tmpf, char *defstr, int download)
+doFileCopy(char *tmpf, char *defstr)
 {
     Str msg;
     Str filen;
     char *p, *q = NULL;
-    pid_t pid;
-    char *lock;
-#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
-    FILE *f;
-#endif
-    struct stat st;
-    clen_t size = 0;
 
     if (fmInitialized) {
 	p = searchKeyData();
@@ -7254,43 +7195,14 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 		return;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
-	    msg = Sprintf("Can't copy. %s and %s are identical.",
-			  conv_from_system(tmpf), conv_from_system(p));
+	    msg = Sprintf("Can't copy. %s and %s are identical.", tmpf, p);
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
-	if (!download) {
-	    if (_MoveFile(tmpf, p) < 0) {
-		msg = Sprintf("Can't save to %s", conv_from_system(p));
-		disp_err_message(msg->ptr, FALSE);
-	    }
-	    return;
+	if (_MoveFile(tmpf, p) < 0) {
+	    msg = Sprintf("Can't save to %s", p);
+	    disp_err_message(msg->ptr, FALSE);
 	}
-	lock = tmpfname(TMPF_DFL, ".lock")->ptr;
-#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
-	symlink(p, lock);
-#else
-	f = fopen(lock, "w");
-	if (f)
-	    fclose(f);
-#endif
-	pushText(fileToDelete, lock);
-	flush_tty();
-	pid = fork();
-	if (!pid) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    SETPGRP();
-	    close_tty();
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
-	    _MoveFile(tmpf, p);
-	    unlink(lock);
-	    exit(0);
-	}
-	if (!stat(tmpf, &st))
-	    size = st.st_size;
-	addDownloadList(pid, conv_from_system(tmpf), p, lock, size);
     }
     else {
 	q = searchKeyData();
@@ -7335,11 +7247,6 @@ doFileSave(URLFile uf, char *defstr)
     Str msg;
     Str filen;
     char *p, *q;
-    pid_t pid;
-    char *lock;
-#if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
-    FILE *f;
-#endif
 
     if (fmInitialized) {
 	p = searchKeyData();
@@ -7353,41 +7260,14 @@ doFileSave(URLFile uf, char *defstr)
 	if (checkOverWrite(p) < 0)
 	    return;
 	if (checkSaveFile(uf.stream, p) < 0) {
-	    msg = Sprintf("Can't save. Load file and %s are identical.",
-			  conv_from_system(p));
+	    msg = Sprintf("Can't save. Load file and %s are identical.", p);
 	    disp_err_message(msg->ptr, FALSE);
 	    return;
 	}
-	/*
-	 * if (save2tmp(uf, p) < 0) {
-	 * msg = Sprintf("Can't save to %s", conv_from_system(p));
-	 * disp_err_message(msg->ptr, FALSE);
-	 * }
-	 */
-	lock = tmpfname(TMPF_DFL, ".lock")->ptr;
-#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
-	symlink(p, lock);
-#else
-	f = fopen(lock, "w");
-	if (f)
-	    fclose(f);
-#endif
-	pushText(fileToDelete, lock);
-	flush_tty();
-	pid = fork();
-	if (!pid) {
-	    reset_signals();
-	    signal(SIGINT, SIG_IGN);
-	    SETPGRP();
-	    close_tty();
-	    QuietMessage = TRUE;
-	    fmInitialized = FALSE;
-	    save2tmp(uf, p);
-	    UFclose(&uf);
-	    unlink(lock);
-	    exit(0);
+	if (save2tmp(uf, p) < 0) {
+	    msg = Sprintf("Can't save to %s", p);
+	    disp_err_message(msg->ptr, FALSE);
 	}
-	addDownloadList(pid, uf.url, p, lock, current_content_length);
     }
     else {
 	q = searchKeyData();
@@ -7495,8 +7375,8 @@ uncompress_stream(URLFile *uf)
     }
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
 	if (uf->compression == d->type) {
-	    if (d->auxbin_p)
-		expand_cmd = auxbinFile(d->cmd);
+	    if (d->libfile_p)
+		expand_cmd = libFile(d->cmd);
 	    else
 		expand_cmd = d->cmd;
 	    expand_name = d->name;

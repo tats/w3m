@@ -1,3 +1,8 @@
+2002-12-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* w3m 0.3.2 branch: security fix
+	* file.c (process_img): html_quote()
+
 2002-11-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3m 0.3.2.1
@@ -4134,4 +4139,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.467.4.4 2002/11/26 16:28:57 ukai Exp $
+$Id: ChangeLog,v 1.467.4.5 2002/12/05 16:44:55 ukai Exp $

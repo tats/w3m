@@ -24,6 +24,15 @@ w3m 0.3.3 or 0.4?
 * rc: pre_form_file: pre_form configuration file
 
 ----------------------------------------------------------------
+
+w3m 0.3.2.1 - 2002-11-27
+
+* security fix: html_quote for frame contents
+* backport from w3m 0.3.2+cvs
+ - fix segmentation fault by large complex table.
+	[w3m-dev 03371][w3m-dev 03438]
+
+----------------------------------------------------------------
 w3m 0.3.2 - 2002-11-05
 
 * ~/.netrc: password for ftp

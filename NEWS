@@ -1,3 +1,14 @@
+w3m 0.3.3 or 0.4?
+
+* tab browsing
+* rc: open_tab_blank, close_tab_back
+* func: CLOSE_TAB, NEW_TAB, NEXT_TAB, PREV_TAB, 
+* func:	TAB_GOTO, TAB_GOTO_RELATIVE
+* func: TAB_LEFT, TAB_LINK, TAB_MENU, TAB_RIGHT
+* pre_form: ~/.w3m/pre_form
+* rc: pre_form_file: pre_form configuration file
+
+----------------------------------------------------------------
 w3m 0.3.2 - 2002-11-05
 
 * ~/.netrc: password for ftp

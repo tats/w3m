@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.11 2002/01/16 19:05:37 ukai Exp $ */
+/* $Id: search.c,v 1.12 2002/01/16 19:18:21 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <errno.h>
@@ -45,6 +45,7 @@ open_migemo(char *migemo_command)
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
+	close(2);
 	system(migemo_command);
 	exit(1);
     }

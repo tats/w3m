@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -835,7 +835,6 @@ _ACEOF
 System types:
   --build=BUILD     configure for building on BUILD [guessed]
   --host=HOST       cross-compile to build programs to run on HOST [BUILD]
-  --target=TARGET   configure for building compilers for TARGET [HOST]
 _ACEOF
 fi
 
@@ -2993,40 +2992,6 @@ host_vendor=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\2/'`
 host_os=`echo $ac_cv_host | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
 
 
-echo "$as_me:$LINENO: checking target system type" >&5
-echo $ECHO_N "checking target system type... $ECHO_C" >&6
-if test "${ac_cv_target+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_cv_target_alias=$target_alias
-test "x$ac_cv_target_alias" = "x" &&
-  ac_cv_target_alias=$ac_cv_host_alias
-ac_cv_target=`$ac_config_sub $ac_cv_target_alias` ||
-  { { echo "$as_me:$LINENO: error: $ac_config_sub $ac_cv_target_alias failed" >&5
-echo "$as_me: error: $ac_config_sub $ac_cv_target_alias failed" >&2;}
-   { (exit 1); exit 1; }; }
-
-fi
-echo "$as_me:$LINENO: result: $ac_cv_target" >&5
-echo "${ECHO_T}$ac_cv_target" >&6
-target=$ac_cv_target
-target_cpu=`echo $ac_cv_target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\1/'`
-target_vendor=`echo $ac_cv_target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\2/'`
-target_os=`echo $ac_cv_target | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\3/'`
-
-
-# The aliases save the names the user supplied, while $host etc.
-# will get canonicalized.
-test -n "$target_alias" &&
-  test "$program_prefix$program_suffix$program_transform_name" = \
-    NONENONEs,x,x, &&
-  program_prefix=${target_alias}-
-
-
-case $host_os in
-  *cygwin* ) CYGWIN=yes;;
-	 * ) CYGWIN=no;;
-esac
 
 
 
@@ -7396,12 +7361,14 @@ _ACEOF
 
 
 
-if test x$CYGWIN = xyes; then
- cat >>confdefs.h <<\_ACEOF
+case "$host_os" in
+  *cygwin*)
+    cat >>confdefs.h <<\_ACEOF
 #define USE_BINMODE_STREAM 1
 _ACEOF
 
-fi
+    ;;
+esac
 
 
 
@@ -8533,6 +8500,12 @@ echo "$as_me:$LINENO: result: $ac_cv_header_float_h" >&5
 echo "${ECHO_T}$ac_cv_header_float_h" >&6
 
 fi
+if test $ac_cv_header_float_h = yes; then
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_FLOAT_H 1
+_ACEOF
+
+fi
 
 
 if test "${ac_cv_header_sys_select_h+set}" = set; then
@@ -8669,6 +8642,12 @@ else
 fi
 echo "$as_me:$LINENO: result: $ac_cv_header_sys_select_h" >&5
 echo "${ECHO_T}$ac_cv_header_sys_select_h" >&6
+
+fi
+if test $ac_cv_header_sys_select_h = yes; then
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_SYS_SELECT_H 1
+_ACEOF
 
 fi
 
@@ -8812,6 +8791,294 @@ fi
 if test $ac_cv_header_locale_h = yes; then
   cat >>confdefs.h <<\_ACEOF
 #define HAVE_LOCALE_H 1
+_ACEOF
+
+fi
+
+
+if test "${ac_cv_header_stdint_h+set}" = set; then
+  echo "$as_me:$LINENO: checking for stdint.h" >&5
+echo $ECHO_N "checking for stdint.h... $ECHO_C" >&6
+if test "${ac_cv_header_stdint_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_stdint_h" >&5
+echo "${ECHO_T}$ac_cv_header_stdint_h" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking stdint.h usability" >&5
+echo $ECHO_N "checking stdint.h usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <stdint.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking stdint.h presence" >&5
+echo $ECHO_N "checking stdint.h presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <stdint.h>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_c_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: stdint.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: stdint.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: stdint.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: stdint.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: stdint.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: stdint.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: stdint.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: stdint.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: stdint.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: stdint.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: stdint.h: in the future, the compiler will take precedence" >&2;}
+    (
+      cat <<\_ASBOX
+## -------------------------------- ##
+## Report this to ukai@debian.or.jp ##
+## -------------------------------- ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for stdint.h" >&5
+echo $ECHO_N "checking for stdint.h... $ECHO_C" >&6
+if test "${ac_cv_header_stdint_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_header_stdint_h=$ac_header_preproc
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_stdint_h" >&5
+echo "${ECHO_T}$ac_cv_header_stdint_h" >&6
+
+fi
+if test $ac_cv_header_stdint_h = yes; then
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_STDINT_H 1
+_ACEOF
+
+fi
+
+
+if test "${ac_cv_header_inttypes_h+set}" = set; then
+  echo "$as_me:$LINENO: checking for inttypes.h" >&5
+echo $ECHO_N "checking for inttypes.h... $ECHO_C" >&6
+if test "${ac_cv_header_inttypes_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_inttypes_h" >&5
+echo "${ECHO_T}$ac_cv_header_inttypes_h" >&6
+else
+  # Is the header compilable?
+echo "$as_me:$LINENO: checking inttypes.h usability" >&5
+echo $ECHO_N "checking inttypes.h usability... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <inttypes.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_header_compiler=no
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6
+
+# Is the header present?
+echo "$as_me:$LINENO: checking inttypes.h presence" >&5
+echo $ECHO_N "checking inttypes.h presence... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <inttypes.h>
+_ACEOF
+if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
+  (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null; then
+  if test -s conftest.err; then
+    ac_cpp_err=$ac_c_preproc_warn_flag
+    ac_cpp_err=$ac_cpp_err$ac_c_werror_flag
+  else
+    ac_cpp_err=
+  fi
+else
+  ac_cpp_err=yes
+fi
+if test -z "$ac_cpp_err"; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+rm -f conftest.err conftest.$ac_ext
+echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: inttypes.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: inttypes.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: inttypes.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: inttypes.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: inttypes.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: inttypes.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: inttypes.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: inttypes.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: inttypes.h: in the future, the compiler will take precedence" >&2;}
+    (
+      cat <<\_ASBOX
+## -------------------------------- ##
+## Report this to ukai@debian.or.jp ##
+## -------------------------------- ##
+_ASBOX
+    ) |
+      sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+echo "$as_me:$LINENO: checking for inttypes.h" >&5
+echo $ECHO_N "checking for inttypes.h... $ECHO_C" >&6
+if test "${ac_cv_header_inttypes_h+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_cv_header_inttypes_h=$ac_header_preproc
+fi
+echo "$as_me:$LINENO: result: $ac_cv_header_inttypes_h" >&5
+echo "${ECHO_T}$ac_cv_header_inttypes_h" >&6
+
+fi
+if test $ac_cv_header_inttypes_h = yes; then
+  cat >>confdefs.h <<\_ACEOF
+#define HAVE_INTTYPES_H 1
 _ACEOF
 
 fi
@@ -10563,10 +10830,6 @@ s,@host@,$host,;t t
 s,@host_cpu@,$host_cpu,;t t
 s,@host_vendor@,$host_vendor,;t t
 s,@host_os@,$host_os,;t t
-s,@target@,$target,;t t
-s,@target_cpu@,$target_cpu,;t t
-s,@target_vendor@,$target_vendor,;t t
-s,@target_os@,$target_os,;t t
 s,@W3M_TARGET@,$W3M_TARGET,;t t
 s,@W3M_LIBS@,$W3M_LIBS,;t t
 s,@USE_M17N@,$USE_M17N,;t t

@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.13 2001/12/27 17:56:03 ukai Exp $ */
+/* $Id: table.c,v 1.14 2002/01/23 17:57:10 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2786,11 +2786,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	feed_table1(tbl, tok, mode, width);
 	break;
     case HTML_FORM:
-	feed_table_block_tag(tbl, line, mode, 0, cmd);
+	feed_table_block_tag(tbl, "", mode, 0, cmd);
 	process_form(tag);
 	break;
     case HTML_N_FORM:
-	feed_table_block_tag(tbl, line, mode, 0, cmd);
+	feed_table_block_tag(tbl, "", mode, 0, cmd);
 	process_n_form();
 	break;
     case HTML_INPUT:

@@ -1,3 +1,8 @@
+2003-05-07  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03889] Progress bar in Download List Panel
+	* main.c (DownloadListBuffer): calculation in double
+
 2003-05-07  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
 
 	* [w3m-dev 03888] autodetect ssl
@@ -7786,4 +7791,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.831 2003/05/06 16:24:48 ukai Exp $
+$Id: ChangeLog,v 1.832 2003/05/06 16:35:36 ukai Exp $

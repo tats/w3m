@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.224 2003/05/02 15:49:59 ukai Exp $ */
+/* $Id: main.c,v 1.225 2003/05/06 16:35:36 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -6202,7 +6202,7 @@ DownloadListBuffer(void)
 	if (d->size) {
 	    int i, l = COLS - 6;
 	    if (size < d->size)
-		i = l * size / d->size;
+		i = 1.0 * l * size / d->size;
 	    else
 		i = l;
 	    l -= i;

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.163 2002/12/18 16:20:51 ukai Exp $ */
+/* $Id: file.c,v 1.164 2002/12/18 16:25:11 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4740,7 +4740,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		tmp = Sprintf("Refresh (%d sec)", refresh_interval);
 	    if (tmp) {
 		HTMLlineproc1(tmp->ptr, h_env);
-	        do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			     h_env->limit);
 		if (!is_redisplay &&
 		    !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
@@ -5316,15 +5316,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    buf->event = setAlarmEvent(buf->event,
 						       refresh_interval,
 						       AL_IMPLICIT_ONCE,
-						       FUNCNAME_gorURL,
-						       p);
+						       FUNCNAME_gorURL, p);
 			}
 			else if (refresh_interval > 0)
 			    buf->event = setAlarmEvent(buf->event,
 						       refresh_interval,
 						       AL_IMPLICIT,
-						       FUNCNAME_reload,
-						       NULL);
+						       FUNCNAME_reload, NULL);
 #else
 			if (tmp && refresh_interval == 0) {
 			    p = url_quote_conv(remove_space(tmp->ptr),

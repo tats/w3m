@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.34 2003/09/22 21:02:20 ukai Exp $ */
+/* $Id: menu.c,v 1.35 2003/09/22 21:27:42 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1678,6 +1678,9 @@ interpret_menu(FILE * mf)
     char *p, *s;
     int in_menu = 0, nmenu = 0, nitem = 0, type;
     MenuItem *item = NULL;
+#ifdef USE_M17N
+    wc_ces charset = SystemCharset;
+#endif
 
     while (!feof(mf)) {
 	line = Strfgets(mf);
@@ -1718,6 +1721,14 @@ interpret_menu(FILE * mf)
 	    nitem = 0;
 	    item[nitem].type = MENU_END;
 	}
+#ifdef USE_M17N
+	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
+	    s = getQWord(&p);
+	    if (*s == '\0')     /* error */
+		continue;
+	    charset = wc_guess_charset(s, charset);
+	}
+#endif
     }
 }
 
@@ -1726,9 +1737,6 @@ initMenu(void)
 {
     FILE *mf;
     MenuList *list;
-#ifdef USE_M17N
-    wc_ces charset = SystemCharset;
-#endif
 
     w3mMenuList = New_N(MenuList, 3);
     w3mMenuList[0].id = "Main";
@@ -1744,6 +1752,7 @@ initMenu(void)
 
 #ifdef USE_M17N
     if (!MainMenuEncode) {
+	MenuItem *item;
 	for (item = MainMenuItem; item->type != MENU_END; item++)
 	    item->label =
 		wc_conv(item->label, MainMenuCharset, InnerCharset)->ptr;
@@ -1938,14 +1947,6 @@ accesskey_menu(Buffer *buf)
 	    ap[n] = a;
 	    n++;
 	}
-#ifdef USE_M17N
-	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
-	    s = getQWord(&p);
-	    if (*s == '\0')	/* error */
-		continue;
-	    charset = wc_guess_charset(s, charset);
-	}
-#endif
     }
     label[nitem] = NULL;
 

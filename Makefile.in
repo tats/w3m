@@ -166,7 +166,7 @@ wctarget:
 		RANLIB='$(RANLIB)'
  
 dummy.o: entity.c
-	$(CC) $(CFLAGS) -DDUMMY -o $@ $?
+	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
 $(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
 	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)

@@ -1,4 +1,4 @@
-/* $Id: entity.c,v 1.5 2003/09/22 21:02:18 ukai Exp $ */
+/* $Id: entity.c,v 1.6 2003/09/22 21:27:42 ukai Exp $ */
 #ifdef DUMMY
 #include "Str.h"
 #define NBSP " "
@@ -62,5 +62,5 @@ conv_entity(unsigned int c)
     }
 #endif
 #endif
-    return p ? p : "?";
+    return "?";
 }

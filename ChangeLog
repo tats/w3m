@@ -1,3 +1,9 @@
+2002-03-30  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03162] Re: "ttp:" is marked instead of "http:" by MARL_URL
+	* main.c (chkURLBuffer): "mailto" removed when USE_W3MMAILER
+		in this case, chkExternalURIBuffer() will mark mailto: URL.
+
 2002-03-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03160] Re: "ttp:" is marked instead of "http:" by MARL_URL
@@ -3317,4 +3323,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.365 2002/03/29 16:39:37 ukai Exp $
+$Id: ChangeLog,v 1.366 2002/03/29 16:58:06 ukai Exp $

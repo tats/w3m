@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.96 2002/03/29 16:58:06 ukai Exp $ */
+/* $Id: main.c,v 1.97 2002/04/17 02:42:27 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4354,7 +4354,7 @@ chkURLBuffer(Buffer *buf)
 	"news:[^<> 	][^<> 	]*",
 	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_NNTP */
-#ifndef USE_W3MMAILER /* see also chkExternalURIBuffer() */
+#ifndef USE_W3MMAILER		/* see also chkExternalURIBuffer() */
 	"mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
 #endif
 #ifdef INET6

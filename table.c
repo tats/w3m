@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.23 2002/04/09 14:53:54 ukai Exp $ */
+/* $Id: table.c,v 1.24 2002/04/17 02:42:27 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -1518,7 +1518,8 @@ check_table_height(struct table *t)
 			cell.rowspan = NewAtom_N(short, cell.size);
 			cell.indexarray = NewAtom_N(char, cell.size);
 			cell.height = NewAtom_N(short, cell.size);
-		    } else {
+		    }
+		    else {
 			cell.size = max(cell.size + MAXCELL, c + 1);
 			cell.row = New_Reuse(short, cell.row, cell.size);
 			cell.rowspan = New_Reuse(short, cell.rowspan,

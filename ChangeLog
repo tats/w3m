@@ -1,5 +1,10 @@
 2004-05-03  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 01007]
+	* libwc/Makefile.in (CFLAGS): need @CPPFLAGS@
+
+2004-05-03  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* version.c.in: cvs version
 
 2004-04-29  Fumitoshi UKAI  <ukai@debian.or.jp>
@@ -8487,4 +8492,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.925 2004/05/02 16:40:46 ukai Exp $
+$Id: ChangeLog,v 1.926 2004/05/02 16:44:08 ukai Exp $

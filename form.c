@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.23 2002/11/15 15:19:44 ukai Exp $ */
+/* $Id: form.c,v 1.24 2002/11/15 16:48:14 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -815,11 +815,14 @@ preFormUpdateBuffer(Buffer *buf)
 {
     struct pre_form *pf;
     struct pre_form_item *pi;
-    int i, j;
+    int i;
     Anchor *a;
     FormList *fl;
     FormItemList *fi;
+#ifdef MENU_SELECT
     FormSelectOptionItem *opt;
+    int j;
+#endif
 
     if (!buf || !buf->formitem || !PreForm)
 	return;

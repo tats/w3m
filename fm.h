@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.79 2002/11/15 15:56:36 ukai Exp $ */
+/* $Id: fm.h,v 1.80 2002/11/15 15:58:27 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -77,7 +77,7 @@ void bzero(void *, int);
 
 #ifdef USE_IMAGE
 #define MAX_IMAGE 1000
-#define MAX_IMAGE_SIZE 10000
+#define MAX_IMAGE_SIZE 2048
 
 #define DEFAULT_PIXEL_PER_CHAR  7.0	/* arbitrary */
 #define DEFAULT_PIXEL_PER_LINE  14.0	/* arbitrary */

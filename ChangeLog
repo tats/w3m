@@ -1,3 +1,8 @@
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03437] Re: Check image size
+	* fm.h (MAX_IMAGE_SIZE): changed to 2048
+
 2002-11-16  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03436] Check image size
@@ -4774,4 +4779,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.520 2002/11/15 15:56:36 ukai Exp $
+$Id: ChangeLog,v 1.521 2002/11/15 15:58:27 ukai Exp $

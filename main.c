@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.164 2002/12/10 15:36:11 ukai Exp $ */
+/* $Id: main.c,v 1.165 2002/12/10 15:51:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -98,6 +98,7 @@ int on_target = 1;
 static int add_download_list = FALSE;
 
 void set_buffer_environ(Buffer *);
+static void save_buffer_position(Buffer *buf);
 
 static void _followForm(int);
 static void _goLine(char *);
@@ -1066,6 +1067,7 @@ main(int argc, char **argv, char **envp)
 	    }
 	    else {
 		set_buffer_environ(Currentbuf);
+		save_buffer_position(Currentbuf);
 		keyPressEventProc((int)c);
 		prec_num = 0;
 		if (add_download_list) {
@@ -6366,4 +6368,73 @@ ldDL(void)
 	setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
     }
 #endif
+}
+
+static void
+save_buffer_position(Buffer *buf)
+{
+    BufferPos *b = buf->undo;
+
+    if (!buf->firstLine)
+	return;
+    if (b && b->top_linenumber == TOP_LINENUMBER(buf) &&
+	     b->cur_linenumber == CUR_LINENUMBER(buf) &&
+	     b->currentColumn == buf->currentColumn &&
+	     b->pos == buf->pos)
+	return;
+    b = New(BufferPos);
+    b->top_linenumber = TOP_LINENUMBER(buf);
+    b->cur_linenumber = CUR_LINENUMBER(buf);
+    b->currentColumn = buf->currentColumn;
+    b->pos = buf->pos;
+    b->next = NULL;
+    b->prev = buf->undo;
+    if (buf->undo)
+	buf->undo->next = b;
+    buf->undo = b;
+}
+
+static void
+resetPos(BufferPos *b)
+{
+    Buffer buf;
+    Line top, cur;
+
+    top.linenumber = b->top_linenumber;
+    cur.linenumber = b->cur_linenumber;
+    buf.topLine = &top;
+    buf.currentLine = &cur;
+    buf.pos = b->pos;
+    buf.currentColumn = b->currentColumn;
+    restorePosition(Currentbuf, &buf);
+    Currentbuf->undo = b;
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+void
+undoPos(void)
+{
+    BufferPos *b = Currentbuf->undo;
+    int i;
+
+    if (!Currentbuf->firstLine)
+	return;
+    if (!b || !b->prev)
+	return;
+    for (i = 0; i < PREC_NUM && b->prev; i++, b = b->prev) ;
+    resetPos(b);
+}
+
+void
+redoPos(void)
+{
+    BufferPos *b = Currentbuf->undo;
+    int i;
+
+    if (!Currentbuf->firstLine)
+	return;
+    if (!b || !b->next)
+	return;
+    for (i = 0; i < PREC_NUM && b->next; i++, b = b->next) ;
+    resetPos(b);
 }

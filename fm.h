@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.94 2002/12/06 16:50:13 ukai Exp $ */
+/* $Id: fm.h,v 1.95 2002/12/10 15:51:14 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -460,7 +460,17 @@ typedef struct _Buffer {
     char image_flag;
     char need_reshape;
     Anchor *submit;
+    struct _BufferPos *undo;
 } Buffer;
+
+typedef struct _BufferPos {
+    long top_linenumber;
+    long cur_linenumber;
+    short currentColumn;
+    short pos;
+    struct _BufferPos *next;
+    struct _BufferPos *prev;
+} BufferPos;
 
 typedef struct _TabBuffer {
     struct _TabBuffer *nextTab;

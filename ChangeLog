@@ -20,6 +20,8 @@
 	* w3mimg/fb/fb_img.c (fb_image_draw_simple): delete
 	* w3mimg/fb/fb_img.h (fb_image_draw_simple): delete
 
+	* w3mimg/fb/license.txt: removed, follow w3m license
+
 2002-10-09  AIDA Shinra <aida-s@jcom.home.ne.jp>
 
 	* [w3m-dev 03336] proxy check for https authorization:
@@ -3913,4 +3915,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.440 2002/10/10 16:15:55 ukai Exp $
+$Id: ChangeLog,v 1.441 2002/10/10 16:32:06 ukai Exp $

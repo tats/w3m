@@ -1,5 +1,11 @@
 2002-10-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 00796]
+	* configure: expand here. ($var in Makefile is $v + ar)
+	* XMakefile: clean w3mimg/**/*.o
+
+2002-10-28  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev-en 00795]
 	* configure: IMLIB_CONFIG, IMLIB2_CONFIG, GDKPIXBUF_CONFIG
 	* rc.c (CMT_DISP_IMAGE): need if not defined USE_IMAGE
@@ -3998,4 +4004,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.452 2002/10/27 16:59:32 ukai Exp $
+$Id: ChangeLog,v 1.453 2002/10/27 17:16:36 ukai Exp $

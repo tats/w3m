@@ -1,3 +1,22 @@
+2003-01-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03633] Re: cleanup (don't close connection of news server)
+	* file.c (FTPhalfclose): deleted
+		(loadGeneralFile): closeFTP when doFileSave is done
+		(_doFileCopy): return int
+		(doFileMove): return int
+		(doFileSave): return int
+	* ftp.c: rewrite
+	* main.c (w3m_exit): disconnectFTP
+	* proto.h (_doFileCopy): return int
+		(doFileMove): return int
+		(doFileSave): return int
+		(openFTP): deleted
+		(openFTPStream): return InputStream
+		(closeFTP): no arg
+		(Ftpfclose): disconnectFTP
+	* url.c (openFTPstream): deleted
+
 2003-01-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* fix compiler warnings
@@ -6354,4 +6373,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.672 2003/01/10 17:15:08 ukai Exp $
+$Id: ChangeLog,v 1.673 2003/01/11 15:54:08 ukai Exp $

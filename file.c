@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.183 2003/01/10 17:06:20 ukai Exp $ */
+/* $Id: file.c,v 1.184 2003/01/11 15:54:08 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -28,7 +28,6 @@
 
 static int frame_source = 0;
 
-static void FTPhalfclose(InputStream stream);
 static int _MoveFile(char *path1, char *path2);
 static void uncompress_stream(URLFile *uf, char **src);
 static FILE *lessopen_stream(char *path);
@@ -1939,9 +1938,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	else
 	    file = guess_save_name(t_buf, pu.file);
-	doFileSave(f, file);
-	if (f.scheme == SCM_FTP)
-	    FTPhalfclose(f.stream);
+	if (doFileSave(f, file) == 0 && f.scheme == SCM_FTP)
+	    closeFTP();
 	else
 	    UFclose(&f);
 	return NO_BUFFER;
@@ -2023,9 +2021,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    else {
 		if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
 		    f.stream = newEncodedStream(f.stream, f.encoding);
-		doFileSave(f, guess_save_name(t_buf, pu.file));
-		if (f.scheme == SCM_FTP)
-		    FTPhalfclose(f.stream);
+		if (doFileSave(f, guess_save_name(t_buf, pu.file)) == 0 &&
+		    f.scheme == SCM_FTP)
+		    closeFTP();
 		else
 		    UFclose(&f);
 	    }
@@ -7248,15 +7246,6 @@ getNextPage(Buffer *buf, int plen)
     return rl;
 }
 
-static void
-FTPhalfclose(InputStream stream)
-{
-    if (IStype(stream) == IST_FILE && file_of(stream)) {
-	Ftpfclose(file_of(stream));
-	file_of(stream) = NULL;
-    }
-}
-
 int
 save2tmp(URLFile uf, char *tmpf)
 {
@@ -7468,7 +7457,7 @@ _MoveFile(char *path1, char *path2)
     return 0;
 }
 
-void
+int
 _doFileCopy(char *tmpf, char *defstr, int download)
 {
     Str msg;
@@ -7489,7 +7478,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    q = inputLineHist("(Download)Save file to: ",
 			      defstr, IN_COMMAND, SaveHist);
 	    if (q == NULL || *q == '\0')
-		return;
+		return FALSE;
 	    p = conv_to_system(q);
 	}
 	if (*p == '|' && PermitSaveToPipe)
@@ -7501,20 +7490,20 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    }
 	    p = expandName(p);
 	    if (checkOverWrite(p) < 0)
-		return;
+		return -1;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
 	    msg = Sprintf("Can't copy. %s and %s are identical.",
 			  conv_from_system(tmpf), conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
-	    return;
+	    return -1;
 	}
 	if (!download) {
 	    if (_MoveFile(tmpf, p) < 0) {
 		msg = Sprintf("Can't save to %s", conv_from_system(p));
 		disp_err_message(msg->ptr, FALSE);
 	    }
-	    return;
+	    return -1;
 	}
 	lock = tmpfname(TMPF_DFL, ".lock")->ptr;
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
@@ -7550,40 +7539,44 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    fflush(stdout);
 	    filen = Strfgets(stdin);
 	    if (filen->length == 0)
-		return;
+		return -1;
 	    q = filen->ptr;
 	}
 	for (p = q + strlen(q) - 1; IS_SPACE(*p); p--) ;
 	*(p + 1) = '\0';
 	if (*q == '\0')
-	    return;
+	    return -1;
 	p = q;
 	if (*p == '|' && PermitSaveToPipe)
 	    is_pipe = TRUE;
 	else {
 	    p = expandName(p);
 	    if (checkOverWrite(p) < 0)
-		return;
+		return -1;
 	}
 	if (checkCopyFile(tmpf, p) < 0) {
 	    printf("Can't copy. %s and %s are identical.", tmpf, p);
-	    return;
+	    return -1;
 	}
-	if (_MoveFile(tmpf, p) < 0)
+	if (_MoveFile(tmpf, p) < 0) {
 	    printf("Can't save to %s\n", p);
-	else if (PreserveTimestamp && !is_pipe && !stat(tmpf, &st))
+	    return -1;
+	}
+	if (PreserveTimestamp && !is_pipe && !stat(tmpf, &st))
 	    setModtime(p, st.st_mtime);
     }
+    return 0;
 }
 
-void
+int
 doFileMove(char *tmpf, char *defstr)
 {
-    doFileCopy(tmpf, defstr);
+    int ret = doFileCopy(tmpf, defstr);
     unlink(tmpf);
+    return ret;
 }
 
-void
+int
 doFileSave(URLFile uf, char *defstr)
 {
     Str msg;
@@ -7601,16 +7594,16 @@ doFileSave(URLFile uf, char *defstr)
 	    p = inputLineHist("(Download)Save file to: ",
 			      defstr, IN_FILENAME, SaveHist);
 	    if (p == NULL || *p == '\0')
-		return;
+		return -1;
 	    p = conv_to_system(p);
 	}
 	if (checkOverWrite(p) < 0)
-	    return;
+	    return -1;
 	if (checkSaveFile(uf.stream, p) < 0) {
 	    msg = Sprintf("Can't save. Load file and %s are identical.",
 			  conv_from_system(p));
 	    disp_err_message(msg->ptr, FALSE);
-	    return;
+	    return -1;
 	}
 	/*
 	 * if (save2tmp(uf, p) < 0) {
@@ -7650,25 +7643,28 @@ doFileSave(URLFile uf, char *defstr)
 	    fflush(stdout);
 	    filen = Strfgets(stdin);
 	    if (filen->length == 0)
-		return;
+		return -1;
 	    q = filen->ptr;
 	}
 	for (p = q + strlen(q) - 1; IS_SPACE(*p); p--) ;
 	*(p + 1) = '\0';
 	if (*q == '\0')
-	    return;
+	    return -1;
 	p = expandName(q);
 	if (checkOverWrite(p) < 0)
-	    return;
+	    return -1;
 	if (checkSaveFile(uf.stream, p) < 0) {
 	    printf("Can't save. Load file and %s are identical.", p);
-	    return;
+	    return -1;
 	}
-	if (save2tmp(uf, p) < 0)
+	if (save2tmp(uf, p) < 0) {
 	    printf("Can't save to %s\n", p);
-	else if (PreserveTimestamp && uf.modtime != -1)
+	    return -1;
+	}
+	if (PreserveTimestamp && uf.modtime != -1)
 	    setModtime(p, uf.modtime);
     }
+    return 0;
 }
 
 int

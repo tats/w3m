@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.189 2003/01/10 16:42:52 ukai Exp $ */
+/* $Id: main.c,v 1.190 2003/01/11 15:54:09 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -5473,6 +5473,7 @@ w3m_exit(int i)
 #ifdef USE_SSL
     free_ssl_ctx();
 #endif
+    disconnectFTP();
 #ifdef USE_NNTP
     disconnectNews();
 #endif

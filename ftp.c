@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.20 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: ftp.c,v 1.21 2003/01/11 15:54:09 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -22,58 +22,44 @@
 #endif
 
 typedef struct _FTP {
-    FILE *rcontrol;
-    FILE *wcontrol;
+    char *host;
+    int port;
+    char *user;
+    char *pass;
+    InputStream rf;
+    FILE *wf;
     FILE *data;
 } *FTP;
 
-#define FtpError(status) ((status)<0)
-#define FTPDATA(ftp) ((ftp)->data)
-
-typedef int STATUS;
-
-static FTP current_ftp;
+static struct _FTP current_ftp = {
+    NULL, 0, NULL, NULL, NULL, NULL, NULL
+};
 
 static Str
-read_response1(FTP ftp)
-{
-    char c;
-    Str buf = Strnew();
-    while (1) {
-	c = getc(ftp->rcontrol);
-	if (c == '\r') {
-	    c = getc(ftp->rcontrol);
-	    if (c == '\n') {
-		Strcat_charp(buf, "\r\n");
-		break;
-	    }
-	    else {
-		Strcat_char(buf, '\r');
-		Strcat_char(buf, c);
-	    }
-	}
-	else if (c == '\n') {
-	    Strcat_charp(buf, "\r\n");
-	    break;
-	}
-	else if (feof(ftp->rcontrol))
-	    break;
-	else
-	    Strcat_char(buf, c);
-    }
-    return buf;
-}
-
-Str
-read_response(FTP ftp)
+ftp_command(FTP ftp, char *cmd, char *arg, int *status)
 {
     Str tmp;
 
-    tmp = read_response1(ftp);
-    if (feof(ftp->rcontrol)) {
-	return tmp;
+    if (!ftp->host)
+	return NULL;
+    if (cmd) {
+	if (arg)
+	    tmp = Sprintf("%s %s\r\n", cmd, arg);
+	else
+	    tmp = Sprintf("%s\r\n", cmd);
+	fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wf);
+	fflush(ftp->wf);
     }
-    if (tmp->ptr[3] == '-') {
+    if (!status)
+	return NULL;
+    *status = -1;	/* error */
+    tmp = StrISgets(ftp->rf);
+    if (IS_DIGIT(tmp->ptr[0]) && IS_DIGIT(tmp->ptr[1]) &&
+	IS_DIGIT(tmp->ptr[2]) && tmp->ptr[3] == ' ')
+	sscanf(tmp->ptr, "%d", status);
+
+    if (tmp->ptr[3] != '-')
+	return tmp;
 	/* RFC959 4.2 FTP REPLIES */
 	/* multi-line response start */
 	/* 
@@ -83,110 +69,115 @@ read_response(FTP ftp)
 	 * as Minus), followed by text.  The last line will begin
 	 * with the same code, followed immediately by Space <SP>, 
 	 * optionally some text, and the Telnet end-of-line code. */
-	while (1) {
-	    tmp = read_response1(ftp);
-	    if (feof(ftp->rcontrol)) {
-		break;
-	    }
-	    if (IS_DIGIT(tmp->ptr[0])
-		&& IS_DIGIT(tmp->ptr[1])
-		&& IS_DIGIT(tmp->ptr[2])
-		&& tmp->ptr[3] == ' ') {
-		break;
-	    }
+    while (1) {
+	tmp = StrISgets(ftp->rf);
+	if (IS_DIGIT(tmp->ptr[0]) && IS_DIGIT(tmp->ptr[1]) &&
+	    IS_DIGIT(tmp->ptr[2]) && tmp->ptr[3] == ' ') {
+	    sscanf(tmp->ptr, "%d", status);
+	    break;
 	}
     }
     return tmp;
 }
 
-int
-FtpLogin(FTP * ftp_return, char *host, char *user, char *pass)
+static void
+ftp_close(FTP ftp)
+{
+    if (!ftp->host)
+	return;
+    if (ftp->rf) {
+	IStype(ftp->rf) &= ~IST_UNCLOSE;
+        ISclose(ftp->rf);
+        ftp->rf = NULL;
+    }
+    if (ftp->wf) {
+	fclose(ftp->wf);
+	ftp->wf = NULL;
+    }
+    if (ftp->data) {
+	fclose(ftp->data);
+	ftp->data = NULL;
+    }
+    ftp->host = NULL;
+    return;
+}
+
+static int
+ftp_login(FTP ftp)
 {
     Str tmp;
-    FTP ftp = New(struct _FTP);
-    int fd;
-    *ftp_return = current_ftp = ftp;
-    fd = openSocket(host, "ftp", 21);
-    if (fd < 0)
-	return -1;
-#ifdef FTPPASS_HOSTNAMEGEN
-    if (ftppass_hostnamegen && !strcmp(user, "anonymous")) {
-	size_t n = strlen(pass);
+    int sock, status;
 
-	if (n > 0 && pass[n - 1] == '@') {
+    sock = openSocket(ftp->host, "ftp", 21);
+    if (sock < 0)
+	goto open_err;
+#ifdef FTPPASS_HOSTNAMEGEN
+    if (ftppass_hostnamegen && !strcmp(ftp->user, "anonymous")) {
+	size_t n = strlen(ftp->pass);
+
+	if (n > 0 && ftp->pass[n - 1] == '@') {
 	    struct sockaddr_in sockname;
 	    int socknamelen = sizeof(sockname);
 
-	    if (!getsockname(fd, (struct sockaddr *)&sockname, &socknamelen)) {
+	    if (!getsockname(sock, (struct sockaddr *)&sockname,
+			     &socknamelen)) {
 		struct hostent *sockent;
-		Str tmp2 = Strnew_charp(pass);
+		tmp = Strnew_charp(ftp->pass);
 
 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
 					     sizeof(sockname.sin_addr),
 					     sockname.sin_family)))
-		    Strcat_charp(tmp2, sockent->h_name);
+		    Strcat_charp(tmp, sockent->h_name);
 		else
-		    Strcat_m_charp(tmp2, "[", inet_ntoa(sockname.sin_addr),
+		    Strcat_m_charp(tmp, "[", inet_ntoa(sockname.sin_addr),
 				   "]", NULL);
 
-		pass = tmp2->ptr;
+		ftp->pass = tmp->ptr;
 	    }
 	}
     }
 #endif
-    ftp->rcontrol = fdopen(fd, "rb");
-    ftp->wcontrol = fdopen(dup(fd), "wb");
-    ftp->data = NULL;
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 220)
-	return -1;
+    ftp->rf = newInputStream(sock);
+    ftp->wf = fdopen(dup(sock), "wb");
+    if (!ftp->rf || !ftp->wf)
+	goto open_err;
+    IStype(ftp->rf) |= IST_UNCLOSE;
+    ftp_command(ftp, NULL, NULL, &status);
+    if (status != 220)
+	goto open_err;
     if (fmInitialized) {
-	message(Sprintf("Sending FTP username (%s) to remote server.", user)->
-		ptr, 0, 0);
+	message(Sprintf("Sending FTP username (%s) to remote server.",
+			ftp->user)->ptr, 0, 0);
 	refresh();
     }
-    tmp = Sprintf("USER %s\r\n", user);
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
+    ftp_command(ftp, "USER", ftp->user, &status);
     /*
      * Some ftp daemons(e.g. publicfile) return code 230 for user command.
      */
-    if (atoi(tmp->ptr) == 230)
+    if (status == 230)
 	goto succeed;
-    if (atoi(tmp->ptr) != 331)
-	return -1;
+    if (status != 331)
+	goto open_err;
     if (fmInitialized) {
-	message(Sprintf("Sending FTP password to remote server.")->ptr, 0, 0);
+	message("Sending FTP password to remote server.", 0, 0);
 	refresh();
     }
-    tmp = Sprintf("PASS %s\r\n", pass);
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 230)
-	return -1;
+    ftp_command(ftp, "PASS", ftp->pass, &status);
+    if (status != 230)
+	goto open_err;
   succeed:
-    return 0;
+    return TRUE;
+  open_err:
+    ftp_close(ftp);
+    return FALSE;
 }
 
-int
-FtpBinary(FTP ftp)
-{
-    Str tmp;
-    fwrite("TYPE I\r\n", 8, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 200)
-	return -1;
-    return 0;
-}
-
-int
+static int
 ftp_pasv(FTP ftp)
 {
+    int status;
     int n1, n2, n3, n4, p1, p2;
-    int data_s;
+    int data;
     char *p;
     Str tmp;
     int family;
@@ -199,7 +190,7 @@ ftp_pasv(FTP ftp)
 
 #ifdef INET6
     sockaddrlen = sizeof(sockaddr);
-    if (getpeername(fileno(ftp->wcontrol),
+    if (getpeername(fileno(ftp->wf),
 		    (struct sockaddr *)&sockaddr, &sockaddrlen) < 0)
 	return -1;
     family = sockaddr.ss_family;
@@ -209,10 +200,8 @@ ftp_pasv(FTP ftp)
     switch (family) {
 #ifdef INET6
     case AF_INET6:
-	fwrite("EPSV\r\n", 6, sizeof(char), ftp->wcontrol);
-	fflush(ftp->wcontrol);
-	tmp = read_response(ftp);
-	if (atoi(tmp->ptr) != 229)
+	ftp_command(ftp, "EPSV", NULL, &status);
+	if (status != 229)
 	    return -1;
 	for (p = tmp->ptr + 4; *p && *p != '('; p++) ;
 	if (*p == '\0')
@@ -223,150 +212,43 @@ ftp_pasv(FTP ftp)
 	if (getnameinfo((struct sockaddr *)&sockaddr, sockaddrlen,
 			abuf, sizeof(abuf), NULL, 0, NI_NUMERICHOST) != 0)
 	    return -1;
-	tmp = Sprintf("%s", abuf);
-	data_s = openSocket(tmp->ptr, "", port);
+	data = openSocket(abuf, "", port);
 	break;
 #endif
     case AF_INET:
-	fwrite("PASV\r\n", 6, sizeof(char), ftp->wcontrol);
-	fflush(ftp->wcontrol);
-	tmp = read_response(ftp);
-	if (atoi(tmp->ptr) != 227)
+	tmp = ftp_command(ftp, "PASV", NULL, &status);
+	if (status != 227)
 	    return -1;
 	for (p = tmp->ptr + 4; *p && !IS_DIGIT(*p); p++) ;
 	if (*p == '\0')
 	    return -1;
 	sscanf(p, "%d,%d,%d,%d,%d,%d", &n1, &n2, &n3, &n4, &p1, &p2);
 	tmp = Sprintf("%d.%d.%d.%d", n1, n2, n3, n4);
-	data_s = openSocket(tmp->ptr, "", p1 * 256 + p2);
+	data = openSocket(tmp->ptr, "", p1 * 256 + p2);
 	break;
     default:
 	return -1;
     }
-    if (data_s < 0)
+    if (data < 0)
 	return -1;
-    ftp->data = fdopen(data_s, "rb");
+    ftp->data = fdopen(data, "rb");
     return 0;
 }
 
-static void
-ftp_fclose(FTP ftp)
+static time_t
+ftp_modtime(FTP ftp, char *path)
 {
-    int control_closed = 0;
-
-    if (ftp->rcontrol != NULL) {
-	fclose(ftp->rcontrol);
-	ftp->rcontrol = NULL;
-	control_closed = 1;
-    }
-    if (ftp->wcontrol != NULL) {
-	fclose(ftp->wcontrol);
-	ftp->wcontrol = NULL;
-	control_closed = 1;
-    }
-    if (control_closed && ftp->data != NULL) {
-	fclose(ftp->data);
-	ftp->data = NULL;
-    }
-    return;
-}
-
-int
-FtpCwd(FTP ftp, char *path)
-{
-    Str tmp;
-
-    tmp = Sprintf("CWD %s\r\n", path);
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (tmp->ptr[0] == '5') {
-	return -1;
-    }
-    return 0;
-}
-
-int
-FtpOpenReadBody(FTP ftp, char *path)
-{
-    Str tmp;
-
-    tmp = Sprintf("RETR %s\r\n", path);
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (tmp->ptr[0] == '5') {
-	return -1;
-    }
-    return 0;
-}
-
-int
-FtpOpenRead(FTP ftp, char *path)
-{
-    if (ftp_pasv(ftp) < 0)
-	return -1;
-    if (FtpOpenReadBody(ftp, path) < 0) {
-	fclose(ftp->data);
-	ftp->data = NULL;
-	return -1;
-    }
-    return 0;
-}
-
-int
-Ftpfclose(FILE * f)
-{
-    fclose(f);
-    if (f == current_ftp->data)
-	current_ftp->data = NULL;
-    ftp_fclose(current_ftp);
-    return 0;
-}
-
-int
-FtpDataBody(FTP ftp, char *cmd, char *arg, char *mode)
-{
-    Str tmp;
-
-    tmp = Sprintf(cmd, arg);
-    Strcat_charp(tmp, "\r\n");
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (tmp->ptr[0] == '5') {
-	fclose(ftp->data);
-	ftp->data = NULL;
-	return -1;
-    }
-    return 0;
-}
-
-int
-FtpData(FTP ftp, char *cmd, char *arg, char *mode)
-{
-    if (ftp_pasv(ftp) < 0)
-	return -1;
-
-    return FtpDataBody(ftp, cmd, arg, mode);
-}
-
-time_t
-getFtpModtime(FTP ftp, char *path)
-{
+    int status;
     Str tmp;
     char *p;
     struct tm tm;
     time_t t, lt, gt;
 
-    memset(&tm, 0, sizeof(struct tm));
-    tmp = Sprintf("MDTM %s\r\n", path);
-    fwrite(tmp->ptr, tmp->length, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 213)
+    tmp = ftp_command(ftp, "MDTM", path, &status);
+    if (status != 213)
 	return -1;
     for (p = tmp->ptr + 4; *p && *p == ' '; p++) ;
+    memset(&tm, 0, sizeof(struct tm));
     if (sscanf(p, "%04d%02d%02d%02d%02d%02d",
 	       &tm.tm_year, &tm.tm_mon, &tm.tm_mday,
 	       &tm.tm_hour, &tm.tm_min, &tm.tm_sec) < 6)
@@ -379,39 +261,22 @@ getFtpModtime(FTP ftp, char *path)
     return t + (lt - gt);
 }
 
-int
-FtpClose(FTP ftp)
+static int
+ftp_quit(FTP ftp)
 {
-    Str tmp;
-
-    fclose(ftp->data);
-    ftp->data = NULL;
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 226)
+/*
+    int status;
+    ftp_command(ftp, "QUIT", NULL, &status);
+    ftp_close(ftp);
+    if (status != 221)
 	return -1;
+*/
+    ftp_command(ftp, "QUIT", NULL, NULL);
+    ftp_close(ftp);
     return 0;
 }
 
-int
-FtpBye(FTP ftp)
-{
-    Str tmp;
-    int ret_val;
-
-    fwrite("QUIT\r\n", 6, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (atoi(tmp->ptr) != 221)
-	ret_val = -1;
-    else
-	ret_val = 0;
-    ftp_fclose(ftp);
-    return ret_val;
-}
-
-
 static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
-static int ftp_system(FTP);
 
 #define	SERVER_NONE	0
 #define	UNIXLIKE_SERVER	1
@@ -421,23 +286,39 @@ static int ftp_system(FTP);
 #define	FTPDIR_LINK	2
 #define	FTPDIR_FILE	3
 
-FILE *
-openFTP(ParsedURL *pu, URLFile *uf)
+static void
+closeFTPdata(FILE *f)
 {
-    Str tmp2 = Strnew();
-    Str tmp3 = Strnew();
-    STATUS s;
+    int status;
+    if (f) {
+	fclose(f);
+	if (f == current_ftp.data)
+	    current_ftp.data = NULL;
+    }
+    ftp_command(&current_ftp, NULL, NULL, &status);
+    /* status == 226 */
+}
+
+void
+closeFTP(void)
+{
+    ftp_close(&current_ftp);
+}
+
+InputStream
+openFTPStream(ParsedURL *pu, URLFile *uf)
+{
+    Str tmp;
+    int status;
     char *user = NULL;
     char *pass = NULL;
     Str pwd = NULL;
-    int add_auth_cookie_flag;
+    int add_auth_cookie_flag = FALSE;
     char *realpathname = NULL;
-#ifdef JP_CHARSET
-    char code = '\0', ic;
-    Str pathStr;
-#endif
 
-    add_auth_cookie_flag = 0;
+    if (!pu->host)
+	return NULL;
+
     if (pu->user == NULL && pu->pass == NULL) {
 	Str uname, pwd;
 	if (find_auth_user_passwd(pu, NULL, &uname, &pwd, 0)) {
@@ -451,10 +332,23 @@ openFTP(ParsedURL *pu, URLFile *uf)
 	/* do nothing */ ;
     else if (pu->user)
 	user = pu->user;
-    else {
-	Strcat_charp(tmp3, "anonymous");
-	user = tmp3->ptr;
+    else
+	user = "anonymous";
+
+    if (current_ftp.host) {
+	if (!strcmp(current_ftp.host, pu->host) &&
+	    current_ftp.port == pu->port &&
+	    !strcmp(current_ftp.user, user)) {
+	    ftp_command(&current_ftp, "NOOP", NULL, &status);
+	    if (status != 200)
+		ftp_close(&current_ftp);
+	    else
+		goto ftp_read;
+	}
+	else
+	    ftp_quit(&current_ftp);
     }
+
     if (pass)
 	/* do nothing */ ;
     else if (pu->pass)
@@ -471,7 +365,7 @@ openFTP(ParsedURL *pu, URLFile *uf)
 	    else {
 		pwd = Strnew_charp((char *)getpass("Password: "));
 	    }
-	    add_auth_cookie_flag = 1;
+	    add_auth_cookie_flag = TRUE;
 	}
 	pass = pwd->ptr;
     }
@@ -479,54 +373,41 @@ openFTP(ParsedURL *pu, URLFile *uf)
 	pass = ftppasswd;
     else {
 	struct passwd *mypw = getpwuid(getuid());
-	if (mypw == NULL)
-	    Strcat_charp(tmp2, "anonymous");
-	else
-	    Strcat_charp(tmp2, mypw->pw_name);
-	Strcat_char(tmp2, '@');
-	pass = tmp2->ptr;
+	tmp = Strnew_charp(mypw ? mypw->pw_name : "anonymous");
+	Strcat_char(tmp, '@');
+	pass = tmp->ptr;
     }
-    s = FtpLogin(&current_ftp, pu->host, user, pass);
-    if (FtpError(s))
-	return NULL;
+
+    if (!current_ftp.host) {
+        current_ftp.host = allocStr(pu->host, -1);
+        current_ftp.port = pu->port;
+        current_ftp.user = allocStr(user, -1);
+        current_ftp.pass = allocStr(pass, -1);
+        if (!ftp_login(&current_ftp))
+	    return NULL;
+    }
     if (add_auth_cookie_flag)
 	add_auth_cookie(pu->host, pu->port, pu->file, pu->user, pwd);
+
+  ftp_read:
+    ftp_command(&current_ftp, "TYPE", "I", &status);
+    if (ftp_pasv(&current_ftp) < 0) {
+	ftp_quit(&current_ftp);
+	return NULL;
+    }
     if (pu->file == NULL || *pu->file == '\0')
 	goto ftp_dir;
     else
 	realpathname = file_unquote(pu->file);
-
     if (pu->file[strlen(pu->file) - 1] == '/')
 	goto ftp_dir;
-
     /* Get file */
-    uf->modtime = getFtpModtime(current_ftp, realpathname);
-    FtpBinary(current_ftp);
-    if (ftp_pasv(current_ftp) < 0) {
-	FtpBye(current_ftp);
-	return NULL;
-    }
-    s = FtpOpenReadBody(current_ftp, realpathname);
-    if (!FtpError(s)) {
-#ifdef JP_CHARSET
-	pathStr = Strnew_charp(realpathname);
-	if ((ic = checkShiftCode(pathStr, code)) != '\0') {
-	    pathStr = conv_str(pathStr, (code = ic), InnerCode);
-	    realpathname = pathStr->ptr;
-	}
-#endif				/* JP_CHARSET */
-	pu->file = realpathname;
-	return FTPDATA(current_ftp);
-    }
-    goto ftp_dir1;
+    uf->modtime = ftp_modtime(&current_ftp, realpathname);
+    ftp_command(&current_ftp, "RETR", realpathname, &status);
+    if (status == 125 || status == 150)
+	return newFileStream(current_ftp.data, (void (*)())closeFTPdata);
 
-    /* Get directory */
   ftp_dir:
-    if (ftp_pasv(current_ftp) < 0) {
-	FtpBye(current_ftp);
-	return NULL;
-    }
-  ftp_dir1:
     pu->scheme = SCM_FTPDIR;
     return NULL;
 }
@@ -534,80 +415,55 @@ openFTP(ParsedURL *pu, URLFile *uf)
 Str
 readFTPDir(ParsedURL *pu)
 {
-    Str FTPDIRtmp = Strnew();
-    Str host;
-    Str curdir;
-    char *fn;
-    char *qdir;
+    Str FTPDIRtmp;
+    Str tmp;
+    int status, sv_type;
+    char *realpathname, *fn;
     char **flist;
     int i, nfile, nfile_max = 100;
-    int sv_type;
-    STATUS s;
-    char *realpathname = NULL;
-    Str tmp2 = Strnew();
 
-    if (current_ftp->data == NULL)
-	return FTPDIRtmp;
-    sv_type = ftp_system(current_ftp);
+    if (current_ftp.data == NULL)
+	return NULL;
+    tmp = ftp_command(&current_ftp, "SYST", NULL, &status);
+    if (strstr(tmp->ptr, "UNIX") != NULL ||
+	!strncmp(tmp->ptr + 4, "Windows_NT", 10))	/* :-) */
+	sv_type = UNIXLIKE_SERVER;
+    else
+	sv_type = SERVER_NONE;
     if (pu->file == NULL || *pu->file == '\0') {
-	if (sv_type == UNIXLIKE_SERVER) {
-	    s = FtpDataBody(current_ftp, "LIST", NULL, "r");
-	}
-	else {
-	    s = FtpDataBody(current_ftp, "NLST", NULL, "r");
-	}
-	curdir = Strnew_charp("/");
+	if (sv_type == UNIXLIKE_SERVER)
+	    ftp_command(&current_ftp, "LIST", NULL, &status);
+	else
+	    ftp_command(&current_ftp, "NLST", NULL, &status);
+	pu->file = "/";
     }
     else {
-	realpathname = file_unquote(pu->file);
+	char *realpathname = file_unquote(pu->file);
 	if (sv_type == UNIXLIKE_SERVER) {
-	    s = FtpCwd(current_ftp, realpathname);
-	    if (!FtpError(s)) {
-		s = FtpDataBody(current_ftp, "LIST", NULL, "r");
-	    }
+	    ftp_command(&current_ftp, "CWD", realpathname, &status);
+	    if (status == 250)
+		ftp_command(&current_ftp, "LIST", NULL, &status);
 	}
-	else {
-	    s = FtpDataBody(current_ftp, "NLST %s", realpathname, "r");
-	}
-	if (realpathname[0] == '/')
-	    curdir = Strnew_charp(realpathname);
 	else
-	    curdir = Sprintf("/%s", realpathname);
-	if (Strlastchar(curdir) != '/')
-	    Strcat_char(curdir, '/');
+	    ftp_command(&current_ftp, "NLST", realpathname, &status);
     }
-    if (FtpError(s)) {
-	FtpBye(current_ftp);
+    if (status != 125 && status != 150) {
+	fclose(current_ftp.data);
+	current_ftp.data = NULL;
 	return NULL;
     }
-    host = Strnew_charp("ftp://");
-    if (pu->user) {
-	Strcat_m_charp(host, pu->user, "@", NULL);
-    }
-    Strcat_charp(host, pu->host);
-    if (Strlastchar(host) == '/')
-	Strshrink(host, 1);
-    qdir = html_quote(curdir->ptr);
-    FTPDIRtmp =
-	Sprintf
-	("<html><head><title>%s%s</title></head><body><h1>Index of %s%s</h1>\n",
-	 host->ptr, qdir, host->ptr, qdir);
-    curdir = Strnew_charp(file_quote(curdir->ptr));
-    qdir = curdir->ptr;
-    tmp2 = Strdup(curdir);
-    if (Strcmp_charp(curdir, "/") != 0) {
-	Strshrink(tmp2, 1);
-	while (Strlastchar(tmp2) != '/' && tmp2->length > 0)
-	    Strshrink(tmp2, 1);
-    }
-    if (sv_type == UNIXLIKE_SERVER) {
-	Strcat_charp(FTPDIRtmp, "<pre><a href=\"");
-    }
-    else {
-	Strcat_charp(FTPDIRtmp, "<ul><li><a href=\"");
-    }
-    Strcat_m_charp(FTPDIRtmp, host->ptr,
-		   html_quote(tmp2->ptr), "\">[Upper Directory]</a>\n", NULL);
+    tmp = parsedURL2Str(pu);
+    if (Strlastchar(tmp) != '/')
+	Strcat_char(tmp, '/');
+    fn = html_quote(tmp->ptr);
+    FTPDIRtmp = Strnew_m_charp("<html><head><title>", fn,
+			       "</title></head><body><h1>Index of ", fn,
+			       "</h1>\n", NULL);
+    if (sv_type == UNIXLIKE_SERVER)
+	Strcat_charp(FTPDIRtmp, "<pre>");
+    else
+	Strcat_charp(FTPDIRtmp, "<ul><li>");
+    Strcat_charp(FTPDIRtmp, "<a href=\"..\">[Upper Directory]</a>\n");
 
     flist = New_N(char *, nfile_max);
     nfile = 0;
@@ -617,16 +473,13 @@ readFTPDir(ParsedURL *pu)
 	Str line_tmp;
 
 	max_len = 0;
-	while (tmp2 = Strfgets(FTPDATA(current_ftp)), tmp2->length > 0) {
-	    Strchop(tmp2);
-	    if ((ftype =
-		 ex_ftpdir_name_size_date(tmp2->ptr, &name, &date, &size))
-		== FTPDIR_NONE) {
+	while (tmp = Strfgets(current_ftp.data), tmp->length > 0) {
+	    Strchop(tmp);
+	    if ((ftype = ex_ftpdir_name_size_date(tmp->ptr, &name, &date,
+						  &size)) == FTPDIR_NONE)
 		continue;
-	    }
-	    if (!strcmp(".", name) || !strcmp("..", name)) {
+	    if (!strcmp(".", name) || !strcmp("..", name))
 		continue;
-	    }
 	    len = strlen(name);
 	    if (!len)
 		continue;
@@ -657,7 +510,7 @@ readFTPDir(ParsedURL *pu)
 	    date = fn + strlen(fn) - 20;
 	    if (*(date - 1) == '/') {
 		ftype = FTPDIR_DIR;
-		*(date - 1) = '\0';
+		*date = '\0';
 	    }
 	    else if (*(date - 1) == '@') {
 		ftype = FTPDIR_LINK;
@@ -669,16 +522,9 @@ readFTPDir(ParsedURL *pu)
 	    }
 	    date++;
 	    len = strlen(fn);
-	    Strcat_m_charp(FTPDIRtmp, "<a href=\"",
-			   host->ptr,
-			   qdir,
-			   html_quote(file_quote(fn)),
+	    Strcat_m_charp(FTPDIRtmp, "<a href=\"", html_quote(file_quote(fn)),
 			   "\">", html_quote(fn), NULL);
-	    if (ftype == FTPDIR_DIR) {
-		Strcat_charp(FTPDIRtmp, "/");
-		len++;
-	    }
-	    else if (ftype == FTPDIR_LINK) {
+	    if (ftype == FTPDIR_LINK) {
 		Strcat_charp(FTPDIRtmp, "@");
 		len++;
 	    }
@@ -696,9 +542,9 @@ readFTPDir(ParsedURL *pu)
 	Strcat_charp(FTPDIRtmp, "</pre></body></html>\n");
     }
     else {
-	while (tmp2 = Strfgets(FTPDATA(current_ftp)), tmp2->length > 0) {
-	    Strchop(tmp2);
-	    flist[nfile++] = mybasename(tmp2->ptr);
+	while (tmp = Strfgets(current_ftp.data), tmp->length > 0) {
+	    Strchop(tmp);
+	    flist[nfile++] = mybasename(tmp->ptr);
 	    if (nfile == nfile_max) {
 		nfile_max *= 2;
 		flist = New_Reuse(char *, flist, nfile_max);
@@ -708,32 +554,19 @@ readFTPDir(ParsedURL *pu)
 	for (i = 0; i < nfile; i++) {
 	    fn = flist[i];
 	    Strcat_m_charp(FTPDIRtmp, "<li><a href=\"",
-			   host->ptr, qdir,
-			   html_quote(file_quote(fn)),
-			   "\">", html_quote(fn), "</a>\n", NULL);
+			   html_quote(file_quote(fn)), "\">", html_quote(fn),
+			   "</a>\n", NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</ul></body></html>\n");
     }
-
-    FtpClose(current_ftp);
-    FtpBye(current_ftp);
+    closeFTPdata(current_ftp.data);
     return FTPDIRtmp;
 }
 
-static int
-ftp_system(FTP ftp)
+void
+disconnectFTP(void)
 {
-    int sv_type = SERVER_NONE;
-    Str tmp;
-
-    fwrite("SYST\r\n", 6, sizeof(char), ftp->wcontrol);
-    fflush(ftp->wcontrol);
-    tmp = read_response(ftp);
-    if (strstr(tmp->ptr, "UNIX") != NULL || !strncmp(tmp->ptr + 4, "Windows_NT", 10)) {	/* :-) */
-	sv_type = UNIXLIKE_SERVER;
-    }
-
-    return (sv_type);
+    ftp_quit(&current_ftp);
 }
 
 #define XD_CTOD(c) {\
@@ -895,15 +728,4 @@ size_int2str(clen_t size)
     size_str = Sprintf(size_format, dtmp, unit_str);
 
     return (size_str);
-}
-
-void
-closeFTP(FILE * f)
-{
-    if (f) {
-	fclose(f);
-	if (f == current_ftp->data)
-	    current_ftp->data = NULL;
-    }
-    FtpBye(current_ftp);
 }

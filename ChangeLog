@@ -1,5 +1,10 @@
 2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03626] Re: relative URL
+	* url.c (parseURL2): copy if scheme is local or local-cgi
+
+2003-01-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03625] keymap key SEARCH string
 	* main.c (srch): accept command argument
 		(reMark): accept command argument
@@ -6275,4 +6280,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.664 2003/01/10 16:23:52 ukai Exp $
+$Id: ChangeLog,v 1.665 2003/01/10 16:29:23 ukai Exp $

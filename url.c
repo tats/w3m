@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.66 2003/01/08 17:24:13 ukai Exp $ */
+/* $Id: url.c,v 1.67 2003/01/10 16:29:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1026,7 +1026,9 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	pu->file = expandName(pu->file);
 
     if (current && (pu->scheme == current->scheme ||
-		    (pu->scheme == SCM_FTP && current->scheme == SCM_FTPDIR))
+		    (pu->scheme == SCM_FTP && current->scheme == SCM_FTPDIR) ||
+		    (pu->scheme == SCM_LOCAL &&
+		     current->scheme == SCM_LOCAL_CGI))
 	&& pu->host == NULL) {
 	/* Copy omitted element from the current URL */
 	pu->user = current->user;

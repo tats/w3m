@@ -1,5 +1,10 @@
 2003-02-13  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03742] Re: Bug##180814: w3m: Missing w3mimgdisplay message at startup
+	* image.c (getCharSize): stderr redirect to omit /bin/sh error message
+
+2003-02-13  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* XMakefile (install-core): fix for broken non-POSIX /bin/sh
 
 2003-02-11  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
@@ -7151,4 +7156,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.749 2003/02/12 17:22:33 ukai Exp $
+$Id: ChangeLog,v 1.750 2003/02/13 12:54:36 ukai Exp $

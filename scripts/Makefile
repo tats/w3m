@@ -7,8 +7,10 @@ HELP_DIR	= $(prefix)/lib/w3m
 
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi
 
+MKDIR		= mkdir -p
 INSTALL		= install -c
 INSTALL_SCRIPT	= $(INSTALL) -m 755
+INSTALL_DATA	= $(INSTALL) -m 644
 
 PERL		= /usr/local/bin/perl
 
@@ -58,14 +60,26 @@ helplibs:
 	@echo done
 
 install: $(LIB_TARGETS)
+	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
+	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	for file in $(LIB_TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);  \
 	done
 	for file in w3mhelp-*.pl; \
 	do \
-		$(INSTALL) $$file $(DESTDIR)$(HELP_DIR); \
+		$(INSTALL_DATA) $$file $(DESTDIR)$(HELP_DIR); \
+	done
+
+uninstall:
+	-for file in $(LIB_TARGETS); \
+	do      \
+		rm -f $(LIB_DIR)/$$file; \
+	done
+	-for file in w3mhelp-*.pl; \
+	do \
+		rm -f $(HELP_DIR)/$$file; \
 	done
 
 clean:
-	rm -f $(LIB_TARGETS) w3mhelp-*.pl
+	-rm -f $(LIB_TARGETS) w3mhelp-*.pl

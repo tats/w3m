@@ -1,3 +1,31 @@
+2001-12-05  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02614]
+	* XMakefile (HELP_ALLFILES): added
+	* XMakefile (INSTALL_PROGRAM): ditto
+	* XMakefile (INSTALL_SCRIPT): ditto
+	* XMakefile (INSTALL_DATA): ditto
+	* XMakefile (install) use INSTALL_{PROGRAM,DATA}
+	* XMakefile (install-helpfile): cleanup
+	* XMakefile (install-scripts): pass MKDIR
+	* XMakefile (uninstall): cleanup
+	* XMakefile (clean): cleanup
+	* scripts/Makefile (MKDIR): added
+	* scripts/Makefile (INSTALL_DATA): added
+	* scripts/Makefile (install): mkdir, use INSTALL_DATA
+	* scripts/Makefile (uninstall): added
+	* scripts/Makefile (clean): ignore errors
+	* scripts/multipart/Makefile (MKDIR): added
+	* scripts/multipart/Makefile (install): mkdir
+	* scripts/multipart/Makefile (uninstall): added
+	* scripts/multipart/Makefile (clean): ignore errors
+	* scripts/multipart/Makefile (dist): cleanup
+	* scripts/w3mman/Makefile (MKDIR): added
+	* scripts/w3mman/Makefile (install): mkdir
+	* scripts/w3mman/Makefile (uninstall): added
+	* scripts/w3mman/Makefile (clean): ignore errors
+	* scripts/w3mman/Makefile (dist): cleanup
+
 2001-12-04  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02611] a improvement of find_cookie()

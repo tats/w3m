@@ -7,6 +7,7 @@ distdir		= ./distfiles
 
 LIB_TARGETS	= multipart.cgi
 
+MKDIR		= mkdir -p
 INSTALL		= install -c
 INSTALL_SCRIPT	= $(INSTALL) -m 755
 
@@ -24,21 +25,26 @@ all: $(LIB_TARGETS)
 	chmod +x $@
 
 install: $(LIB_TARGETS)
+	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
 	for file in $(LIB_TARGETS);	\
 	do	\
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
 	done
 
+uninstall:
+	-for file in $(LIB_TARGETS);	\
+	do	\
+		rm -f $(LIB_DIR)/$$file;	\
+	done
+
 clean:
-	rm -f $(LIB_TARGETS)
+	-rm -f $(LIB_TARGETS)
 
 dist: all
 	@-rm -fr $(distdir)/multipart
-	mkdir -p $(distdir)/multipart
-	cp Makefile README multipart.cgi multipart.cgi.in \
-		$(distdir)/multipart
-	( cd $(distdir); \
-		 tar -cf - multipart | GZIP='' gzip ) \
+	$(MKDIR) $(distdir)/multipart
+	cp Makefile README multipart.cgi.in $(distdir)/multipart
+	( cd $(distdir); tar -cf - multipart | GZIP='' gzip ) \
 		> $(distdir)/multipart.tar.gz
 	-rm -fr $(distdir)/multipart
 

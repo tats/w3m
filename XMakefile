@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.13 2001/12/02 16:28:52 ukai Exp $
+# $Id: XMakefile,v 1.14 2001/12/04 16:17:07 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -19,6 +19,8 @@ BOOKMARKER=w3mbookmark$(EXT)
 HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 TARGETS=$(TARGET) $(EXT_TARGETS)
+HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
+	w3mhelp-lynx_en.html w3mhelp-lynx_ja.html
 
 SCRIPTSUBDIRS = scripts scripts/multipart scripts/w3mman
 SUBDIRS = $(SCRIPTSUBDIRS)
@@ -30,6 +32,9 @@ CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS)
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install.sh
+INSTALL_PROGRAM=$(INSTALL) -m 755
+INSTALL_SCRIPT=$(INSTALL) -m 755
+INSTALL_DATA=$(INSTALL) -m 644
 AR=ar
 
 all: $(TARGETS) all-scripts
@@ -88,15 +93,19 @@ install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
-	$(INSTALL) -m 755 $(TARGET) $(DESTDIR)$(BIN_DIR)/$(TARGET)
-	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
-	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
+	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(BIN_DIR)/$(TARGET)
+	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
+	for file in $(EXT_TARGETS); \
+	do \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file; \
+	done
 
 install-helpfile:
-	$(INSTALL) -m 644 w3mhelp-w3m_en.html $(DESTDIR)$(HELP_DIR)/w3mhelp-w3m_en.html
-	$(INSTALL) -m 644 w3mhelp-w3m_ja.html $(DESTDIR)$(HELP_DIR)/w3mhelp-w3m_ja.html
-	$(INSTALL) -m 644 w3mhelp-lynx_en.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_en.html
-	$(INSTALL) -m 644 w3mhelp-lynx_ja.html $(DESTDIR)$(HELP_DIR)/w3mhelp-lynx_ja.html
+	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
+	for file in $(HELP_ALLFILES); \
+	do \
+		$(INSTALL_DATA) $$file $(DESTDIR)$(HELP_DIR)/$$file; \
+	done
 
 all-scripts:
 	for dir in $(SCRIPTSUBDIRS);	\
@@ -108,24 +117,28 @@ install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install.sh" install);	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install.sh" install);	\
 	done
 
 uninstall:
-	-$(RM) $(BIN_DIR)/$(TARGET)
-	-$(RM) $(HELP_DIR)/w3mhelp-lynx_en.html
-	-$(RM) $(HELP_DIR)/w3mhelp-lynx_ja.html
-	-$(RM) $(HELP_DIR)/w3mhelp-w3m_en.html 
-	-$(RM) $(HELP_DIR)/w3mhelp-w3m_ja.html 
-	-$(RM) $(HELP_DIR)/w3mhelp.html
-	-$(RM) $(LIB_DIR)/$(BOOKMARKER)
-	-$(RM) $(LIB_DIR)/$(HELPER)
-	-$(RM) $(LIB_DIR)/$(INFLATE)
+	-rm -f $(BIN_DIR)/$(TARGET)
+	-for file in $(EXT_TARGETS); \
+	do \
+		rm -f $(LIB_DIR)/$$file; \
+	done
+	-for file in $(HELP_ALLFILES); \
+	do \
+		rm -f $(HELP_DIR)/$$file; \
+	done
+	-for dir in $(SCRIPTSUBDIRS);	\
+	do	\
+		(cd $$dir; $(MAKE) BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' uninstall); \
+	done
 
 clean: sweep
-	rm -f *.o *.a $(TARGETS) mktable$(EXT)
-	rm -f funcname.c funcname1.h funcname2.h tagtable.c
-	for dir in $(SCRIPTSUBDIRS);	\
+	-rm -f *.o *.a $(TARGETS) mktable$(EXT)
+	-rm -f funcname.c funcname1.h funcname2.h tagtable.c
+	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir; $(MAKE) clean); \
 	done

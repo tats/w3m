@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.36 2001/12/14 17:35:08 ukai Exp $ */
+/* $Id: main.c,v 1.37 2001/12/17 15:54:14 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2307,26 +2307,6 @@ reMark(void)
 }
 #endif				/* USE_MARK */
 
-#ifdef JP_CHARSET
-static char *
-cURLcode(char *url, Buffer *buf)
-{
-    char *p;
-    Str s;
-
-    for (p = url; *p; p++) {
-	if (!IS_ASCII(*p)) {
-	    /* URL contains Kanji... uugh */
-	    s = conv(url, InnerCode, buf->document_code);
-	    return s->ptr;
-	}
-    }
-    return url;
-}
-#else				/* not JP_CHARSET */
-#define cURLcode(url,buf) (url)
-#endif				/* not JP_CHARSET */
-
 static Buffer *
 loadNormalBuf(Buffer *buf, int renderframe)
 {
@@ -2353,8 +2333,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
 	referer = NO_REFERER;
     if (referer == NULL)
 	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
-    buf = loadGeneralFile(cURLcode(url, Currentbuf),
-			  baseURL(Currentbuf), referer, flag, request);
+    buf = loadGeneralFile(url, baseURL(Currentbuf), referer, flag, request);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", url)->ptr;
 	disp_err_message(emsg, FALSE);
@@ -2545,9 +2524,7 @@ followI(void)
 	return;
     message(Sprintf("loading %s", a->url)->ptr, 0, 0);
     refresh();
-    buf =
-	loadGeneralFile(cURLcode(a->url, Currentbuf), baseURL(Currentbuf),
-			NULL, 0, NULL);
+    buf = loadGeneralFile(a->url, baseURL(Currentbuf), NULL, 0, NULL);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", a->url)->ptr;
 	disp_err_message(emsg, FALSE);
@@ -2691,7 +2668,7 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 		Strcat_charp(*query, ".x");
 		form_write_data(body, fi->parent->boundary, (*query)->ptr,
 				"1");
-		*query = Strdup(f2->name);
+		*query = Strdup(conv_form_encoding(f2->name, fi, Currentbuf));
 		Strcat_charp(*query, ".y");
 		form_write_data(body, fi->parent->boundary, (*query)->ptr,
 				"1");
@@ -2715,9 +2692,13 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	else {
 	    /* not multipart */
 	    if (f2->type == FORM_INPUT_IMAGE) {
-		Strcat(*query, conv_form_encoding(f2->name, fi, Currentbuf));
+		Strcat(*query,
+		       Str_form_quote(conv_form_encoding
+				      (f2->name, fi, Currentbuf)));
 		Strcat_charp(*query, ".x=1&");
-		Strcat(*query, conv_form_encoding(f2->name, fi, Currentbuf));
+		Strcat(*query,
+		       Str_form_quote(conv_form_encoding
+				      (f2->name, fi, Currentbuf)));
 		Strcat_charp(*query, ".y=1");
 	    }
 	    else {

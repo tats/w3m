@@ -1,5 +1,10 @@
 2001-12-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02618]
+	* configure: fix typo in --mimetypes
+
+2001-12-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02617]
 	* scripts/Makefile (HELP_LIBS): added
 	* scripts/Makefile (all): depends $(HELP_LIBS)

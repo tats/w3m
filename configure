@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.31 2001/12/02 14:27:11 ukai Exp $
+# $Id: configure,v 1.32 2001/12/04 18:57:51 ukai Exp $
 #	Configuration.
 #
 
@@ -110,7 +110,7 @@ do
     gc_libdir=`expr "$1" : "--gc-libdir=\(.*\)"`
     ;;
   --mimetypes=*)
-    mime_types=`expr "$1" : "--mimetypes=\(.*\)"`
+    mimetypes=`expr "$1" : "--mimetypes=\(.*\)"`
     ;;
 
   -help|--help)

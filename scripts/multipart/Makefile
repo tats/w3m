@@ -1,8 +1,8 @@
 
 prefix		= /usr/local
-DESTDIR		=
 BIN_DIR		= $(prefix)/bin
 LIB_DIR		= $(prefix)/lib/w3m
+DESTDIR		=
 distdir		= ./distfiles
 
 LIB_TARGETS	= multipart.cgi
@@ -26,7 +26,7 @@ all: $(LIB_TARGETS)
 install: $(LIB_TARGETS)
 	for file in $(LIB_TARGETS);	\
 	do	\
-		$(INSTALL_SCRIPT) $$file $(DISTDIR)$(LIB_DIR);	\
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(LIB_DIR);	\
 	done
 
 clean:

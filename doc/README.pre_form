@@ -16,7 +16,8 @@ password  <name>  <value>
 checkbox  <name>  <value>  [<checked>]
 radio     <name>  <value>
 section   <name>  <value>
-submit   [<name>]
+submit   [<name> [<value>]]
+image    [<name> [<value>]]
 textarea  <name>
 <value>
    :
@@ -33,9 +34,10 @@ The line beginning with checkbox, radio means that it will check
 input element which name and value attribute matches with <name> and <value>
 respectively.  If <checked> is 0, no, or off, disable check of the checkbox.
 
-The line beginning with submit means that it will submit input element which
-name attribute matches with <name>, or submit last <input type=submit> 
-element if no <name> specified.
+The line beginning with submit or image means that it will submit input
+element which name attribute matches with <name> (and value attribute
+matches with <value>), or submit last <input type=submit> element if no
+<name> specified.
 
 You quote \, ' (single-quote) or " (double quote) as you do in shell.
 

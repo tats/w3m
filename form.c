@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.30 2003/01/29 17:10:38 ukai Exp $ */
+/* $Id: form.c,v 1.31 2003/05/12 16:24:53 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -727,6 +727,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
  * radio <name> <value>
  * select <name> <value>
  * submit [<name> [<value>]]
+ * image [<name> [<value>]]
  * textarea <name>
  * <value>
  * /textarea
@@ -810,6 +811,8 @@ loadPreForm(void)
 	    type = FORM_INPUT_RADIO;
 	else if (!strcmp(s, "submit"))
 	    type = FORM_INPUT_SUBMIT;
+	else if (!strcmp(s, "image"))
+	    type = FORM_INPUT_IMAGE;
 	else if (!strcmp(s, "select"))
 	    type = FORM_SELECT;
 	else if (!strcmp(s, "textarea")) {
@@ -873,7 +876,8 @@ preFormUpdateBuffer(Buffer *buf)
 	    for (pi = pf->item; pi; pi = pi->next) {
 		if (pi->type != fi->type)
 		    continue;
-		if (pi->type == FORM_INPUT_SUBMIT) {
+		if (pi->type == FORM_INPUT_SUBMIT ||
+		    pi->type == FORM_INPUT_IMAGE) {
 		    if ((!pi->name || !*pi->name ||
 			 (fi->name && !Strcmp_charp(fi->name, pi->name))) &&
 			(!pi->value || !*pi->value ||

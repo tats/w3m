@@ -1,3 +1,11 @@
+2003-05-13  Hironori SAKAMOTO <h-saka@lsi.nec.co.jp>
+
+	* [w3m-dev 03895] type=image support of pre_form
+	* form.c (loadPreFOrm): add image
+		(preFormUpdateBuffer): add FORM_INPUT_IMAGE
+	* doc/README.pre_form: update
+	* doc-jp/README.pre_form: ditto
+
 2003-05-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03891] Re: urimethodmap and relative URL
@@ -7796,4 +7804,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.833 2003/05/10 18:20:29 ukai Exp $
+$Id: ChangeLog,v 1.834 2003/05/12 16:24:50 ukai Exp $

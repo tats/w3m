@@ -1,3 +1,8 @@
+2001-12-18   Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02667]
+	* terms.c (mouse_init): #ifdef SIGWINCH guard
+
 2001-12-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02666] resizing on xterm with gpm support
@@ -1261,4 +1266,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.131 2001/12/15 18:33:41 ukai Exp $
+$Id: ChangeLog,v 1.132 2001/12/17 15:39:32 ukai Exp $

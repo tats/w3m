@@ -1,4 +1,4 @@
-/* $Id: Str.c,v 1.7 2001/12/21 21:37:12 ukai Exp $ */
+/* $Id: Str.c,v 1.8 2002/12/24 17:20:46 ukai Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -262,7 +262,7 @@ Strlower(Str s)
     int i;
     STR_LENGTH_CHECK(s);
     for (i = 0; i < s->length; i++)
-	s->ptr[i] = tolower(s->ptr[i]);
+	s->ptr[i] = TOLOWER(s->ptr[i]);
 }
 
 void
@@ -271,7 +271,7 @@ Strupper(Str s)
     int i;
     STR_LENGTH_CHECK(s);
     for (i = 0; i < s->length; i++)
-	s->ptr[i] = toupper(s->ptr[i]);
+	s->ptr[i] = TOUPPER(s->ptr[i]);
 }
 
 void

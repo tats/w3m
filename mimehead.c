@@ -1,9 +1,10 @@
-/* $Id: mimehead.c,v 1.6 2002/12/22 14:26:34 ukai Exp $ */
+/* $Id: mimehead.c,v 1.7 2002/12/24 17:20:47 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
 
 #include <sys/types.h>
+#include "myctype.h"
 #include "Str.h"
 
 #define LINELEN 4096
@@ -217,13 +218,11 @@ decodeWord(char **ow)
 	goto convert_fail;
     w++;
     p = w;
-    switch (method) {
+    switch (TOUPPER(method)) {
     case 'B':
-    case 'b':
 	a = decodeB(&w);
 	break;
     case 'Q':
-    case 'q':
 	a = decodeQ(&w);
 	break;
     default:

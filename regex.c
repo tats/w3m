@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.19 2002/11/26 18:51:15 ukai Exp $ */
+/* $Id: regex.c,v 1.20 2002/12/24 17:20:48 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -13,10 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <gc.h>
 #include "regex.h"
 #include "config.h"
+#include "myctype.h"
 
 #ifndef NULL
 #define NULL	0
@@ -51,9 +51,11 @@ char *lc2c(longchar *, int);
 int verbose;
 #endif				/* REGEX_DEBUG */
 
-#ifndef IS_ALPHA
-#define IS_ALPHA(x) (!((x)&0x80) && isalpha(x))
+#ifndef IS_KANJI1
+#include <ctype.h>
 #define IS_KANJI1(x) ((x)&0x80)
+#define TOLOWER(x) tolower(x)
+#define TOUPPER(x) toupper(x)
 #endif
 
 #ifdef JP_CHARSET
@@ -627,9 +629,8 @@ regmatch1(regexchar * re, longchar c)
 		   *re->p.pattern == c);
 #endif				/* REGEX_DEBUG */
 	if (re->mode & RE_IGNCASE) {
-	    if (*re->p.pattern < 127 && c < 127 &&
-		IS_ALPHA(*re->p.pattern) && IS_ALPHA(c))
-		return tolower(*re->p.pattern) == tolower(c);
+	    if (*re->p.pattern < 127 && c < 127)
+		return TOLOWER(*re->p.pattern) == TOLOWER(c);
 	    else
 		return *re->p.pattern == c;
 	}
@@ -659,9 +660,9 @@ matchWhich(longchar * pattern, longchar c, int igncase)
 		ans = 1;
 		break;
 	    }
-	    else if (igncase && c < 127 && IS_ALPHA(c) &&
-		     ((*p <= tolower(c) && tolower(c) <= *(p + 2)) ||
-		      (*p <= toupper(c) && toupper(c) <= *(p + 2)))) {
+	    else if (igncase && c < 127 &&
+		     ((*p <= TOLOWER(c) && TOLOWER(c) <= *(p + 2)) ||
+		      (*p <= TOUPPER(c) && TOUPPER(c) <= *(p + 2)))) {
 		ans = 1;
 		break;
 	    }
@@ -672,8 +673,8 @@ matchWhich(longchar * pattern, longchar c, int igncase)
 		ans = 1;
 		break;
 	    }
-	    else if (igncase && c < 127 && IS_ALPHA(c) &&
-		     (*p == tolower(c) || *p == toupper(c))) {
+	    else if (igncase && c < 127 &&
+		     (*p == TOLOWER(c) || *p == TOUPPER(c))) {
 		ans = 1;
 		break;
 	    }

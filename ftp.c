@@ -1,8 +1,7 @@
-/* $Id: ftp.c,v 1.19 2002/12/19 15:29:05 ukai Exp $ */
+/* $Id: ftp.c,v 1.20 2002/12/24 17:20:47 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
-#include <ctype.h>
 #include <signal.h>
 #include <setjmp.h>
 #include <time.h>

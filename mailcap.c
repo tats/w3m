@@ -1,4 +1,4 @@
-/* $Id: mailcap.c,v 1.10 2002/01/05 16:13:27 ukai Exp $ */
+/* $Id: mailcap.c,v 1.11 2002/12/24 17:20:47 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -21,7 +21,7 @@ mailcapMatch(struct mailcap *mcap, char *type)
     char *cap = mcap->type, *p;
     int level;
     for (p = cap; *p != '/'; p++) {
-	if (tolower(*p) != tolower(*type))
+	if (TOLOWER(*p) != TOLOWER(*type))
 	    return 0;
 	type++;
     }
@@ -36,7 +36,7 @@ mailcapMatch(struct mailcap *mcap, char *type)
     if (*p == '*')
 	return 10 + level;
     while (*p) {
-	if (tolower(*p) != tolower(*type))
+	if (TOLOWER(*p) != TOLOWER(*type))
 	    return 0;
 	p++;
 	type++;

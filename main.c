@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.176 2002/12/18 16:42:31 ukai Exp $ */
+/* $Id: main.c,v 1.177 2002/12/24 17:20:47 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2259,7 +2259,7 @@ _quitfm(int confirm)
 			"Do you want to exit w3m? (y/n)");
     else if (confirm)
 	ans = inputChar("Do you want to exit w3m? (y/n)");
-    if (!(ans && tolower(*ans) == 'y')) {
+    if (!(ans && TOLOWER(*ans) == 'y')) {
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }

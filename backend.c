@@ -1,8 +1,7 @@
-/* $Id: backend.c,v 1.9 2002/02/03 15:25:45 ukai Exp $ */
+/* $Id: backend.c,v 1.10 2002/12/24 17:20:46 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <ctype.h>
 #include "fm.h"
 #include "gc.h"
 #include "terms.h"

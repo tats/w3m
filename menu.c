@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.29 2002/12/10 15:41:32 ukai Exp $ */
+/* $Id: menu.c,v 1.30 2002/12/24 17:20:47 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1924,10 +1924,10 @@ accesskey_menu(Buffer *buf)
 	c = ap[i]->accesskey;
 	if (!IS_ALPHA(c) || menu.keyselect[n] >= 0)
 	    continue;
-	c = tolower(c);
+	c = TOLOWER(c);
 	menu.keymap[(int)c] = mSelect;
 	menu.keyselect[(int)c] = i;
-	c = toupper(c);
+	c = TOUPPER(c);
 	menu.keymap[(int)c] = mSelect;
 	menu.keyselect[(int)c] = i;
     }

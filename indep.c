@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.26 2002/12/09 15:24:04 ukai Exp $ */
+/* $Id: indep.c,v 1.27 2002/12/24 17:20:47 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -228,13 +228,13 @@ strcasecmp(const char *s1, const char *s2)
 {
     int x;
     while (*s1) {
-	x = tolower(*s1) - tolower(*s2);
+	x = TOLOWER(*s1) - TOLOWER(*s2);
 	if (x != 0)
 	    return x;
 	s1++;
 	s2++;
     }
-    return -tolower(*s2);
+    return -TOLOWER(*s2);
 }
 
 int
@@ -242,14 +242,14 @@ strncasecmp(const char *s1, const char *s2, size_t n)
 {
     int x;
     while (*s1 && n) {
-	x = tolower(*s1) - tolower(*s2);
+	x = TOLOWER(*s1) - TOLOWER(*s2);
 	if (x != 0)
 	    return x;
 	s1++;
 	s2++;
 	n--;
     }
-    return n ? -tolower(*s2) : 0;
+    return n ? -TOLOWER(*s2) : 0;
 }
 #endif				/* not HAVE_STRCASECMP */
 
@@ -282,7 +282,7 @@ strcasematch(char *s1, char *s2)
     while (*s1) {
 	if (*s2 == '\0')
 	    return 1;
-	x = tolower(*s1) - tolower(*s2);
+	x = TOLOWER(*s1) - TOLOWER(*s2);
 	if (x != 0)
 	    break;
 	s1++;

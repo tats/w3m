@@ -1,4 +1,4 @@
-/* $Id: myctype.h,v 1.4 2001/12/10 15:23:08 ukai Exp $ */
+/* $Id: myctype.h,v 1.5 2002/12/24 17:20:47 ukai Exp $ */
 #ifndef _MYCTYPE_H
 #define _MYCTYPE_H
 
@@ -44,8 +44,9 @@ extern unsigned char MYCTYPE_DIGITMAP[];
 #define IS_KANJI(x)     (GET_INTCTYPE(x) & INTCTYPE_KANJI)
 #define IS_LATIN1(x)    (GET_INTCTYPE(x) & INTCTYPE_LATIN1)
 
-extern unsigned char INTCTYPE_MAP[];
+#define	TOLOWER(x)	(IS_ALPHA(x) ? ((x)|0x20) : (x))
+#define	TOUPPER(x)	(IS_ALPHA(x) ? ((x)&~0x20) : (x))
 
-#include <ctype.h>
+extern unsigned char INTCTYPE_MAP[];
 
 #endif

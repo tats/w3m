@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.43 2002/12/14 15:18:38 ukai Exp $ */
+/* $Id: etc.c,v 1.44 2002/12/24 17:20:46 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -134,14 +134,17 @@ gethtmlcmd(char **s)
 
     (*s)++;
     /* first character */
-    if (IS_ALNUM(**s) || **s == '_' || **s == '/')
-	*(p++) = tolower(*((*s)++));
+    if (IS_ALNUM(**s) || **s == '_' || **s == '/') {
+	*(p++) = TOLOWER(**s);
+	(*s)++;
+    }
     else
 	return HTML_UNKNOWN;
     if (p[-1] == '/')
 	SKIP_BLANKS(*s);
     while ((IS_ALNUM(**s) || **s == '_') && p - cmdstr < MAX_CMD_LEN) {
-	*(p++) = tolower(*((*s)++));
+	*(p++) = TOLOWER(**s);
+	(*s)++;
     }
     if (p - cmdstr == MAX_CMD_LEN) {
 	/* buffer overflow: perhaps caused by bad HTML source */

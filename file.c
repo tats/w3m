@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.168 2002/12/21 16:19:33 ukai Exp $ */
+/* $Id: file.c,v 1.169 2002/12/24 17:20:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -826,7 +826,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			Strcat_charp(msg, " (y/n)");
 			ans = inputAnswer(msg->ptr);
 		    }
-		    if (ans == NULL || tolower(*ans) != 'y' ||
+		    if (ans == NULL || TOLOWER(*ans) != 'y' ||
 			(err =
 			 add_cookie(pu, name, value, expires, domain, path,
 				    flag | COO_OVERRIDE, comment, version,
@@ -7661,7 +7661,7 @@ checkOverWrite(char *path)
     if (stat(path, &st) < 0)
 	return 0;
     ans = inputAnswer("File exists. Overwrite? (y/n)");
-    if (ans && tolower(*ans) == 'y')
+    if (ans && TOLOWER(*ans) == 'y')
 	return 0;
     else
 	return -1;
@@ -7871,7 +7871,7 @@ guess_charset(char *p)
 	p += 2;
     while (*p != '\0') {
 	if (*p != '-' && *p != '_')
-	    Strcat_char(c, tolower(*p));
+	    Strcat_char(c, TOLOWER(*p));
 	p++;
     }
     if (strncmp(c->ptr, "euc", 3) == 0)

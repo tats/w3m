@@ -1,3 +1,38 @@
+2002-12-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03595] tolower, toupper
+	* Str.c (Strlower): TOLOWER
+		(Strupper): TOUPPER
+	* backend.c: delete ctype.h
+	* etc.c (gethtmlcmd): TOLOWER
+	* file.c (readHeader): TOLOWER
+		(checkOverWrite): TOLOWER
+		(guess_charset): TOLOWER
+	* ftp.c: delete ctype.h
+	* indep.c (strcasecmp): TOLOWER
+		(strncasecmp): TOLOWER
+		(strcasematch): TOLOWER
+	* istream.c: include myctype.h
+		(ssl_get_certificate): TOLOWER
+	* mailcap.c (mailcapMatch): TOLOWER
+	* main.c (_quitfm): TOLOWER
+	* menu.c (accesskey_menu): TOLOWER
+	* mimehead.c: include myctype.h
+		(decodeWord): TOUPPER
+	* mktable.c: delete ctype.h, include myctype.h
+		(main): IS_SPACE
+	* myctype.h: delete ctype.h
+		(TOLOWER): added
+		(TOUPPER): added
+	* parsetagx.c (parse_tag): TOLOWER
+	* rc.c (str_to_bool): TOLOWER
+		(str_to_color): TOLOWER
+	* regex.c: delete ctype.h, include myctype.h
+		(TOLOWER): added
+		(TOUPPER): added
+		(regmatch1): TOLOWER
+		(matchWhich): TOLOWER, TOUPPER
+
 2002-12-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* mimehead.c (decodeWord): don't use toupper() (requires ctype.h)
@@ -6009,4 +6044,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.641 2002/12/22 14:26:34 ukai Exp $
+$Id: ChangeLog,v 1.642 2002/12/24 17:20:45 ukai Exp $

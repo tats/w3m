@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.11 2002/12/14 15:37:56 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.12 2002/12/24 17:20:48 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -128,7 +128,8 @@ parse_tag(char **s, int internal)
     }
     while (*q && !IS_SPACE(*q) && !(tagname[0] != '/' && *q == '/') &&
 	   *q != '>' && p - tagname < MAX_TAG_LEN - 1) {
-	*(p++) = tolower(*(q++));
+	*(p++) = TOLOWER(*q);
+	q++;
     }
     *p = '\0';
 
@@ -161,7 +162,8 @@ parse_tag(char **s, int internal)
 	p = attrname;
 	while (*q && *q != '=' && !IS_SPACE(*q) &&
 	       *q != '>' && p - attrname < MAX_TAG_LEN - 1) {
-	    *(p++) = tolower(*(q++));
+	    *(p++) = TOLOWER(*q);
+	    q++;
 	}
 	if (q == p) {
 	    q++;

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.72 2002/12/18 16:42:31 ukai Exp $ */
+/* $Id: rc.c,v 1.73 2002/12/24 17:20:48 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -991,18 +991,18 @@ str_to_bool(char *value, int old)
 {
     if (value == NULL)
 	return 1;
-    switch (tolower(*value)) {
+    switch (TOLOWER(*value)) {
     case '0':
     case 'f':			/* false */
     case 'n':			/* no */
     case 'u':			/* undef */
 	return 0;
     case 'o':
-	if (tolower(value[1]) == 'f')	/* off */
+	if (TOLOWER(value[1]) == 'f')	/* off */
 	    return 0;
 	return 1;		/* on */
     case 't':
-	if (tolower(value[1]) == 'o')	/* toggle */
+	if (TOLOWER(value[1]) == 'o')	/* toggle */
 	    return !old;
 	return 1;		/* true */
     case '!':
@@ -1019,7 +1019,7 @@ str_to_color(char *value)
 {
     if (value == NULL)
 	return 8;		/* terminal */
-    switch (tolower(*value)) {
+    switch (TOLOWER(*value)) {
     case '0':
 	return 0;		/* black */
     case '1':

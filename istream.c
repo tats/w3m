@@ -1,5 +1,6 @@
-/* $Id: istream.c,v 1.15 2002/09/28 16:30:07 ukai Exp $ */
+/* $Id: istream.c,v 1.16 2002/12/24 17:20:47 ukai Exp $ */
 #include "fm.h"
+#include "myctype.h"
 #include "istream.h"
 #include <signal.h>
 #ifdef USE_SSL
@@ -494,7 +495,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	    emsg = Strnew_charp("No SSL peer certificate: accept? (y/n)");
 	    ans = inputAnswer(emsg->ptr);
 	}
-	if (ans && tolower(*ans) == 'y')
+	if (ans && TOLOWER(*ans) == 'y')
 	    amsg = Strnew_charp
 		("Accept SSL session without any peer certificate");
 	else {
@@ -527,7 +528,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 		emsg = Sprintf("%s: accept? (y/n)", em);
 		ans = inputAnswer(emsg->ptr);
 	    }
-	    if (ans && tolower(*ans) == 'y') {
+	    if (ans && TOLOWER(*ans) == 'y') {
 		amsg = Sprintf("Accept unsecure SSL session: "
 			       "unverified: %s", em);
 	    }
@@ -553,7 +554,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	    Strcat_charp(ep, ": accept? (y/n)");
 	    ans = inputAnswer(ep->ptr);
 	}
-	if (ans && tolower(*ans) == 'y') {
+	if (ans && TOLOWER(*ans) == 'y') {
 	    amsg = Strnew_charp("Accept unsecure SSL session:");
 	    Strcat(amsg, emsg);
 	}

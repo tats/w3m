@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.18 2003/01/06 15:36:57 ukai Exp $ */
+/* $Id: anchor.c,v 1.19 2003/01/06 15:37:49 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -395,7 +395,7 @@ reAnchorNewsheader(Buffer *buf)
 	    header = header_group;
 	}
 	for (l = buf->firstLine; l != NULL && l->real_linenumber == 0;
-	    l = l->next) {
+	     l = l->next) {
 	    p = l->lineBuf;
 	    if (!IS_SPACE(*p)) {
 		search = FALSE;

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.71 2002/01/24 17:29:45 ukai Exp $ */
+/* $Id: main.c,v 1.72 2002/01/24 17:46:50 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4836,8 +4836,16 @@ SigAlarm(SIGNAL_ARG)
 #ifdef USE_MENU
 	CurrentMenuData = NULL;
 #endif
+#ifdef USE_MOUSE
+	if (use_mouse)
+	    mouse_inactive();
+#endif
 	w3mFuncList[alarm_event.cmd].func();
 	onA();
+#ifdef USE_MOUSE
+	if (use_mouse)
+	    mouse_active();
+#endif
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE;

@@ -1,5 +1,10 @@
 2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 02902] mouse inactive after calling some command with ALARM.
+	* main.c (SigAlarm): mouse_inactive() and mouse_active()
+
+2002-01-25  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 02901] Default URL for GOTO*
 	* fm.h (DEFAULT_URL_*): added
 	* fm.h (DefaultURLString): added
@@ -2276,4 +2281,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.258 2002/01/24 17:29:45 ukai Exp $
+$Id: ChangeLog,v 1.259 2002/01/24 17:46:50 ukai Exp $

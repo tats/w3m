@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.22 2001/12/07 07:58:07 ukai Exp $ */
+/* $Id: url.c,v 1.23 2001/12/26 12:18:06 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -239,6 +239,7 @@ free_ssl_ctx()
 {
     if (ssl_ctx != NULL)
 	SSL_CTX_free(ssl_ctx);
+    ssl_ctx = NULL;
 }
 
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
@@ -272,10 +273,12 @@ init_PRNG()
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
 static SSL *
-openSSLHandle(int sock)
+openSSLHandle(int sock, char *hostname)
 {
     SSL *handle;
-    char *emsg;
+    Str emsg;
+    Str amsg = NULL;
+    char *ans;
     static char *old_ssl_forbid_method = NULL;
 #ifdef USE_SSL_VERIFY
     static int old_ssl_verify_server = -1;
@@ -288,7 +291,6 @@ openSSLHandle(int sock)
 	ssl_path_modified = 1;
 #else
 	free_ssl_ctx();
-	ssl_ctx = NULL;
 #endif
     }
 #ifdef USE_SSL_VERIFY
@@ -298,7 +300,6 @@ openSSLHandle(int sock)
     }
     if (ssl_path_modified) {
 	free_ssl_ctx();
-	ssl_ctx = NULL;
 	ssl_path_modified = 0;
     }
 #endif				/* defined(USE_SSL_VERIFY) */
@@ -350,9 +351,6 @@ openSSLHandle(int sock)
 #endif				/* defined(USE_SSL_VERIFY) */
 	    SSL_CTX_set_default_verify_paths(ssl_ctx);
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
-/*** by inu
-        atexit(free_ssl_ctx);
-*/
     }
     handle = SSL_new(ssl_ctx);
     SSL_set_fd(handle, sock);
@@ -361,11 +359,53 @@ openSSLHandle(int sock)
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
     if (SSL_connect(handle) <= 0)
 	goto eend;
+#ifdef USE_SSL_VERIFY
+    /* check the cert chain.
+     * The chain length is automatically checked by OpenSSL when we
+     * set the verify depth in the ctx.
+     */
+    if (ssl_verify_server && (SSL_get_verify_result(handle) != X509_V_OK)) {
+	emsg = Strnew_charp("Accept SSL session "
+			    "which certificate doesn't verify (y/n)?");
+	term_raw();
+	ans = inputChar(emsg->ptr);
+	if (tolower(*ans) == 'y') {
+	    amsg = Strnew_charp("Accept unsecure SSL session: "
+				"unverified certificate");
+	} else {
+	    char *e = "This SSL session was rejected "
+		"to prevent security violation";
+	    disp_err_message(e, FALSE);
+	    free_ssl_ctx();
+	    return NULL;
+	}
+    }
+#endif
+    
+    emsg = ssl_check_cert_ident(handle, hostname);
+    if (emsg != NULL) {
+	if (emsg->length > COLS - 16)
+	    Strshrink(emsg, emsg->length - (COLS - 16));
+	term_raw();
+	Strcat_charp(emsg, ": accept(y/n)?");
+	ans = inputChar(emsg->ptr);
+	if (tolower(*ans) == 'y') {
+	    amsg = Strnew_charp("Accept unsecure SSL session:"
+		"certificate ident mismatch");
+	} else {
+	    char *e = "This SSL session was rejected "
+		"to prevent security violation";
+	    disp_err_message(e, FALSE);
+	    free_ssl_ctx();
+	    return NULL;
+	}
+    }
+    if (amsg)
+	disp_err_message(amsg->ptr, FALSE);
     return handle;
   eend:
-    emsg =
-	Sprintf("SSL error: %s", ERR_error_string(ERR_get_error(), NULL))->ptr;
-    disp_err_message(emsg, FALSE);
+    emsg = Sprintf("SSL error: %s", ERR_error_string(ERR_get_error(), NULL));
+    disp_err_message(emsg->ptr, FALSE);
     return NULL;
 }
 
@@ -1522,7 +1562,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS && *status == HTST_CONNECT) {
 		sock = ssl_socket_of(ouf->stream);
-		if (!(sslh = openSSLHandle(sock))) {
+		if (!(sslh = openSSLHandle(sock, pu->host))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}
@@ -1576,7 +1616,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    }
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS) {
-		if (!(sslh = openSSLHandle(sock))) {
+		if (!(sslh = openSSLHandle(sock, pu->host))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}

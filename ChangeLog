@@ -1,3 +1,17 @@
+2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02743] RFC2818 server identity check
+	* NEWS: RFC2818 server identity check
+	* istream.c (ssl_check_cert_ident): added
+	* istream.h (ssl_check_cert_ident): ditto
+	* istream.h: #include <x509v3.h>
+	* url.c (free_ssl_ctx): ssl_ctx = NULL
+	* url.c (openSSLHandle): arg hostname to check cert id
+	* url.c (openSSLHandle): check SSL_get_verify_result 
+			if ssl_verify_server
+	* url.c (openSSLHandle): check server identity by ssl_check_cert_ident
+	* url.c (openURL): openSSLHandle with pu->host
+
 2001-12-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02715] bugfix in scripts/multipart/multipart.cgi.in
@@ -1599,4 +1613,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.178 2001/12/26 01:57:19 ukai Exp $
+$Id: ChangeLog,v 1.179 2001/12/26 12:18:06 ukai Exp $

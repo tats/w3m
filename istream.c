@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.6 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: istream.c,v 1.7 2001/12/26 12:18:06 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -377,6 +377,89 @@ ssl_get_certificate(InputStream stream)
     s = Strnew_charp_n(p, len);
     BIO_free_all(bp);
     return s;
+}
+
+Str
+ssl_check_cert_ident(SSL *handle, char *hostname)
+{
+    X509 *x;
+    int i;
+    Str ret = Strnew_charp("SSL error: failed to check certificate chain");
+    /*
+     * All we need to do here is check that the CN matches.
+     *
+     * From RFC2818 3.1 Server Identity:
+     * If a subjectAltName extension of type dNSName is present, that MUST
+     * be used as the identity. Otherwise, the (most specific) Common Name
+     * field in the Subject field of the certificate MUST be used. Although
+     * the use of the Common Name is existing practice, it is deprecated and
+     * Certification Authorities are encouraged to use the dNSName instead.
+     */
+    x = SSL_get_peer_certificate(handle);
+    if (!x) {   
+	ret = Strnew_charp("Unable to get peer certificate");
+	return ret;
+    }
+
+    i = X509_get_ext_by_NID(x, NID_subject_alt_name, -1);
+    if (i >= 0) {   
+        X509_EXTENSION *ex;
+        STACK_OF(GENERAL_NAME) *alt;
+
+        ex = X509_get_ext(x, i);
+        alt = X509V3_EXT_d2i(ex);
+        if (alt) {   
+            int n, len1, len2 = 0;
+            char *domain;
+            GENERAL_NAME *gn;
+            X509V3_EXT_METHOD *method;
+
+            len1 = strlen(hostname);
+            n = sk_GENERAL_NAME_num(alt);
+            domain = strchr(hostname, '.');
+            if (domain)
+                len2 = len1 - (domain - hostname);
+            for (i = 0; i < n; i++) {
+                gn = sk_GENERAL_NAME_value(alt, i);
+                if (gn->type == GEN_DNS) {
+                    char *sn = ASN1_STRING_data(gn->d.ia5);
+                    int sl = ASN1_STRING_length(gn->d.ia5);
+
+                    /* Is this an exact match? */
+                    if ((len1 == sl) && !strncasecmp(hostname, sn, len1))
+                        break;
+
+                    /* Is this a wildcard match? */
+                    if ((*sn == '*') && domain && (len2 == sl-1) &&
+                        !strncasecmp(domain, sn+1, len2))
+                        break;
+                }
+            }
+            method = X509V3_EXT_get(ex);
+            method->ext_free(alt);
+            if (i < n)  /* Found a match */
+                ret = NULL;
+        }
+    }
+
+    if (ret != NULL) {
+        X509_NAME *xn;
+        char buf[2048];
+
+        xn = X509_get_subject_name(x);
+
+        if (X509_NAME_get_text_by_NID(xn, NID_commonName, 
+				      buf, sizeof(buf)) == -1) {
+	    ret = Strnew_charp("Unable to get common name from peer cert");
+	    return ret;
+        }
+	else if (strcasecmp(hostname, buf))
+	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
+	else
+	    ret = NULL;
+    }
+    X509_free(x);
+    return ret;
 }
 #endif
 

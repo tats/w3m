@@ -1,5 +1,6 @@
 w3m 0.2.4? 0.3?
 
+* RFC2818 server identity check
 * incremental search (C-s, C-r)
 * linux/ia64 support (?)
 

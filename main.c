@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.197 2003/01/22 16:16:20 ukai Exp $ */
+/* $Id: main.c,v 1.198 2003/01/23 18:37:21 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1175,7 +1175,7 @@ do_dump(Buffer *buf)
     if (w3m_dump & DUMP_SOURCE)
 	dump_source(buf);
     if (w3m_dump == DUMP_BUFFER)
-	saveBuffer(buf, stdout);
+	saveBuffer(buf, stdout, FALSE);
     signal(SIGINT, prevtrap);
 }
 
@@ -1402,37 +1402,60 @@ SigPipe(SIGNAL_ARG)
 static void
 nscroll(int n, int mode)
 {
-    Line *curtop = Currentbuf->topLine;
+    Buffer *buf = Currentbuf;
+    Line *top = buf->topLine, *cur = buf->currentLine;
     int lnum, tlnum, llnum, diff_n;
 
-    if (Currentbuf->firstLine == NULL)
+    if (buf->firstLine == NULL)
 	return;
-    lnum = Currentbuf->currentLine->linenumber;
-    Currentbuf->topLine = lineSkip(Currentbuf, curtop, n, FALSE);
-    if (Currentbuf->topLine == curtop) {
+    lnum = cur->linenumber;
+    buf->topLine = lineSkip(buf, top, n, FALSE);
+    if (buf->topLine == top) {
 	lnum += n;
-	if (lnum < Currentbuf->topLine->linenumber)
-	    lnum = Currentbuf->topLine->linenumber;
-	else if (lnum > Currentbuf->lastLine->linenumber)
-	    lnum = Currentbuf->lastLine->linenumber;
+	if (lnum < buf->topLine->linenumber)
+	    lnum = buf->topLine->linenumber;
+	else if (lnum > buf->lastLine->linenumber)
+	    lnum = buf->lastLine->linenumber;
     }
     else {
-	tlnum = Currentbuf->topLine->linenumber;
-	llnum = Currentbuf->topLine->linenumber + Currentbuf->LINES - 1;
+	tlnum = buf->topLine->linenumber;
+	llnum = buf->topLine->linenumber + buf->LINES - 1;
 #ifdef NEXTPAGE_TOPLINE
 	if (nextpage_topline)
 	    diff_n = 0;
 	else
 #endif
-	    diff_n = n - (tlnum - curtop->linenumber);
+	    diff_n = n - (tlnum - top->linenumber);
 	if (lnum < tlnum)
 	    lnum = tlnum + diff_n;
 	if (lnum > llnum)
 	    lnum = llnum + diff_n;
     }
-    gotoLine(Currentbuf, lnum);
-    arrangeLine(Currentbuf);
-    displayBuffer(Currentbuf, mode);
+    gotoLine(buf, lnum);
+    arrangeLine(buf);
+    if (n > 0) {
+	if (buf->currentLine->bpos &&
+	    buf->currentLine->bwidth >= buf->currentColumn + buf->visualpos)
+	    cursorDown(buf, 1);
+	else {
+	    while (buf->currentLine->next && buf->currentLine->next->bpos &&
+		   buf->currentLine->bwidth + buf->currentLine->width <
+		   buf->currentColumn + buf->visualpos)
+		cursorDown0(buf, 1);
+	}
+    }
+    else {
+	if (buf->currentLine->bwidth + buf->currentLine->width <
+	    buf->currentColumn + buf->visualpos)
+	    cursorUp(buf, 1);
+	else {
+	    while (buf->currentLine->prev && buf->currentLine->bpos &&
+		   buf->currentLine->bwidth >=
+		   buf->currentColumn + buf->visualpos)
+		cursorUp0(buf, 1);
+	}
+    }
+    displayBuffer(buf, mode);
 }
 
 /* Move page forward */
@@ -1525,7 +1548,7 @@ clear_mark(Line *l)
     short pos;
     if (!l)
 	return;
-    for (pos = 0; pos < l->len; pos++)
+    for (pos = 0; pos < l->size; pos++)
 	l->propBuf[pos] &= ~PE_MARK;
 }
 
@@ -1756,14 +1779,15 @@ srchprv(void)
 static void
 shiftvisualpos(Buffer *buf, int shift)
 {
+    Line *l = buf->currentLine;
     buf->visualpos -= shift;
-    if (buf->visualpos >= buf->COLS)
-	buf->visualpos = buf->COLS - 1;
-    else if (buf->visualpos < 0)
-	buf->visualpos = 0;
+    if (buf->visualpos - l->bwidth >= buf->COLS)
+	buf->visualpos = l->bwidth + buf->COLS - 1;
+    else if (buf->visualpos - l->bwidth < 0)
+	buf->visualpos = l->bwidth;
     arrangeLine(buf);
-    if (buf->visualpos == -shift && buf->cursorX == 0)
-	buf->visualpos = 0;
+    if (buf->visualpos - l->bwidth == -shift && buf->cursorX == 0)
+	buf->visualpos = l->bwidth;
 }
 
 /* Shift screen left */
@@ -1878,7 +1902,7 @@ pipeBuf(void)
 	disp_message(Sprintf("Can't save buffer to %s", cmd)->ptr, TRUE);
 	return;
     }
-    saveBuffer(Currentbuf, f);
+    saveBuffer(Currentbuf, f, TRUE);
     fclose(f);
     buf = getpipe(myExtCommand(cmd, tmpf, TRUE)->ptr);
     if (buf == NULL) {
@@ -2450,6 +2474,8 @@ linbeg(void)
 {
     if (Currentbuf->firstLine == NULL)
 	return;
+    while (Currentbuf->currentLine->prev && Currentbuf->currentLine->bpos)
+	cursorUp0(Currentbuf, 1);
     Currentbuf->pos = 0;
     arrangeCursor(Currentbuf);
     displayBuffer(Currentbuf, B_NORMAL);
@@ -2461,6 +2487,8 @@ linend(void)
 {
     if (Currentbuf->firstLine == NULL)
 	return;
+    while (Currentbuf->currentLine->next && Currentbuf->currentLine->next->bpos)
+	cursorDown0(Currentbuf, 1);
     Currentbuf->pos = Currentbuf->currentLine->len - 1;
     arrangeCursor(Currentbuf);
     displayBuffer(Currentbuf, B_NORMAL);
@@ -2506,7 +2534,7 @@ editScr(void)
 	disp_err_message(Sprintf("Can't open %s", tmpf)->ptr, TRUE);
 	return;
     }
-    saveBuffer(Currentbuf, f);
+    saveBuffer(Currentbuf, f, TRUE);
     fclose(f);
     fmTerm();
     system(myEditor(Editor, tmpf, CUR_LINENUMBER(Currentbuf))->ptr);
@@ -4225,7 +4253,7 @@ svBuf(void)
 	disp_err_message(emsg, TRUE);
 	return;
     }
-    saveBuffer(Currentbuf, f);
+    saveBuffer(Currentbuf, f, TRUE);
     if (is_pipe)
 	pclose(f);
     else
@@ -4370,7 +4398,7 @@ vwSrc(void)
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;
-	    saveBuffer(Currentbuf, f);
+	    saveBuffer(Currentbuf, f, TRUE);
 	    fclose(f);
 	    Currentbuf->sourcefile = tmpf->ptr;
 	}
@@ -4540,6 +4568,15 @@ reload(void)
     Currentbuf->form_submit = sbuf.form_submit;
     if (Currentbuf->firstLine)
 	restorePosition(Currentbuf, &sbuf);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+}
+
+/* reshape */
+void
+reshape(void)
+{
+    Currentbuf->need_reshape = TRUE;
+    reshapeBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -4739,22 +4776,22 @@ linkbrz()
 void
 curlno()
 {
+    Line *l = Currentbuf->currentLine;
     Str tmp;
     int cur = 0, all, col, len = 0;
 
-    if (Currentbuf->currentLine != NULL) {
-	Line *l = Currentbuf->currentLine;
+    if (l != NULL) {
 	cur = l->real_linenumber;
 	if (l->width < 0)
 	    l->width = COLPOS(l, l->len);
-	len = l->width;
+	len = l->bwidth + l->width;
     }
-    col = Currentbuf->currentColumn + Currentbuf->cursorX + 1;
+    col = l->bwidth + Currentbuf->currentColumn + Currentbuf->cursorX + 1;
     all =
 	(Currentbuf->lastLine ? Currentbuf->lastLine->
 	 real_linenumber : Currentbuf->allLine);
     if (all == 0 && Currentbuf->lastLine != NULL)
-	all = Currentbuf->currentLine->real_linenumber;
+	all = l->real_linenumber;
     if (all == 0)
 	all = 1;
     if (Currentbuf->pagerSource && !(Currentbuf->bufferprop & BP_CLOSE))

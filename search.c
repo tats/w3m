@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.25 2003/01/22 16:10:29 ukai Exp $ */
+/* $Id: search.c,v 1.26 2003/01/23 18:37:21 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -8,7 +8,7 @@
 static void
 set_mark(Line *l, int pos, int epos)
 {
-    for (; pos < epos && pos < l->len; pos++)
+    for (; pos < epos && pos < l->size; pos++)
 	l->propBuf[pos] |= PE_MARK;
 }
 
@@ -103,20 +103,33 @@ forwardSearch(Buffer *buf, char *str)
 	message(p, 0, 0);
 	return SR_NOTFOUND;
     }
-    l = begin = buf->currentLine;
+    l = buf->currentLine;
     if (l == NULL) {
 	return SR_NOTFOUND;
     }
     pos = buf->pos + 1;
+    if (l->bpos) {
+	pos += l->bpos;
+	while (l->bpos && l->prev)
+	    l = l->prev;
+    }
+    begin = l;
 #ifdef JP_CHARSET
     if (l->propBuf[pos] & PC_KANJI2)
 	pos++;
 #endif
-    if (pos < l->len && regexMatch(&l->lineBuf[pos], l->len - pos, 0) == 1) {
+    if (pos < l->size && regexMatch(&l->lineBuf[pos], l->size - pos, 0) == 1) {
 	matchedPosition(&first, &last);
-	buf->pos = first - l->lineBuf;
+	pos = first - l->lineBuf;
+	while (pos >= l->len) {
+	    pos -= l->len;
+	    l = l->next;
+	}
+	buf->pos = pos;
+	if (l != buf->currentLine)
+	    gotoLine(buf, l->linenumber);
 	arrangeCursor(buf);
-	set_mark(l, buf->pos, last - l->lineBuf);
+	set_mark(l, pos, pos + last - first);
 	return SR_FOUND;
     }
     for (l = l->next;; l = l->next) {
@@ -141,16 +154,23 @@ forwardSearch(Buffer *buf, char *str)
 		break;
 	    }
 	}
-	if (regexMatch(l->lineBuf, l->len, 1) == 1) {
+	if (l->bpos)
+	    continue;
+	if (regexMatch(l->lineBuf, l->size, 1) == 1) {
 	    matchedPosition(&first, &last);
 	    if (wrapped && l == begin && buf->pos == first - l->lineBuf)
 		/* exactly same match */
 		break;
-	    buf->pos = first - l->lineBuf;
+	    pos = first - l->lineBuf;
+	    while (pos >= l->len) {
+		pos -= l->len;
+		l = l->next;
+	    }
+	    buf->pos = pos;
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    set_mark(l, buf->pos, last - l->lineBuf);
+	    set_mark(l, pos, pos + last - first);
 	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */
@@ -181,12 +201,19 @@ backwardSearch(Buffer *buf, char *str)
 	message(p, 0, 0);
 	return SR_NOTFOUND;
     }
-    l = begin = buf->currentLine;
+    l = buf->currentLine;
     if (l == NULL) {
 	return SR_NOTFOUND;
     }
-    if (buf->pos > 0) {
-	pos = buf->pos - 1;
+    pos = buf->pos;
+    if (l->bpos) {
+	pos += l->bpos;
+	while (l->bpos && l->prev)
+	    l = l->prev;
+    }
+    begin = l;
+    if (pos > 0) {
+	pos--;
 #ifdef JP_CHARSET
 	if (l->propBuf[pos] & PC_KANJI2)
 	    pos--;
@@ -195,7 +222,7 @@ backwardSearch(Buffer *buf, char *str)
 	found = NULL;
 	found_last = NULL;
 	q = l->lineBuf;
-	while (regexMatch(q, &l->lineBuf[l->len] - q, q == l->lineBuf) == 1) {
+	while (regexMatch(q, &l->lineBuf[l->size] - q, q == l->lineBuf) == 1) {
 	    matchedPosition(&first, &last);
 	    if (first <= p) {
 		found = first;
@@ -211,9 +238,16 @@ backwardSearch(Buffer *buf, char *str)
 		break;
 	}
 	if (found) {
-	    buf->pos = found - l->lineBuf;
+	    pos = found - l->lineBuf;
+	    while (pos >= l->len) {
+		pos -= l->len;
+		l = l->next;
+	    }
+	    buf->pos = pos;
+	    if (l != buf->currentLine)
+		gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    set_mark(l, buf->pos, found_last - l->lineBuf);
+	    set_mark(l, pos, pos + found_last - found);
 	    return SR_FOUND;
 	}
     }
@@ -230,7 +264,7 @@ backwardSearch(Buffer *buf, char *str)
 	found = NULL;
 	found_last = NULL;
 	q = l->lineBuf;
-	while (regexMatch(q, &l->lineBuf[l->len] - q, q == l->lineBuf) == 1) {
+	while (regexMatch(q, &l->lineBuf[l->size] - q, q == l->lineBuf) == 1) {
 	    matchedPosition(&first, &last);
 	    if (wrapped && l == begin && buf->pos == first - l->lineBuf)
 		/* exactly same match */
@@ -247,11 +281,15 @@ backwardSearch(Buffer *buf, char *str)
 		q++;
 	}
 	if (found) {
-	    buf->pos = found - l->lineBuf;
-	    buf->currentLine = l;
+	    pos = found - l->lineBuf;
+	    while (pos >= l->len) {
+		pos -= l->len;
+		l = l->next;
+	    }
+	    buf->pos = pos;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    set_mark(l, buf->pos, found_last - l->lineBuf);
+	    set_mark(l, pos, pos + found_last - found);
 	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */

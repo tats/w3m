@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.57 2003/01/23 18:01:05 ukai Exp $ */
+/* $Id: etc.c,v 1.58 2003/01/23 18:37:20 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -236,50 +236,62 @@ parse_ansi_color(char **str, Lineprop *effect, Linecolor *color)
  */
 
 Str
-checkType(Str s, Lineprop *oprop,
+checkType(Str s, Lineprop **oprop
 #ifdef USE_ANSI_COLOR
-	  Linecolor *ocolor, int *check_color,
+	  , Linecolor **ocolor
 #endif
-	  int len)
+	  )
 {
     Lineprop mode;
     Lineprop effect = PE_NORMAL;
-    Lineprop *prop = oprop;
+    Lineprop *prop;
+    static Lineprop *prop_buffer = NULL;
+    static int prop_size = 0;
     char *str = s->ptr, *endp = &s->ptr[s->length], *bs = NULL;
 #ifdef USE_ANSI_COLOR
     Lineprop ceffect = PE_NORMAL;
     Linecolor cmode = 0;
+    int check_color = FALSE;
     Linecolor *color = NULL;
+    static Linecolor *color_buffer = NULL;
+    static int color_size = 0;
     char *es = NULL;
 #endif
     int do_copy = FALSE;
-    int size = (len < s->length) ? len : s->length;
 
-#ifdef USE_ANSI_COLOR
-    if (check_color)
-	*check_color = FALSE;
-#endif
+    if (prop_size < s->length) {
+	prop_size = (s->length > LINELEN) ? s->length : LINELEN;
+	prop_buffer = New_Reuse(Lineprop, prop_buffer, prop_size);
+    }
+    prop = prop_buffer;
+
     if (ShowEffect) {
 	bs = memchr(str, '\b', s->length);
 #ifdef USE_ANSI_COLOR
 	if (ocolor) {
 	    es = memchr(str, ESC_CODE, s->length);
-	    if (es)
-		color = ocolor;
+	    if (es) {
+		if (color_size < s->length) {
+		    color_size = (s->length > LINELEN) ? s->length : LINELEN;
+		    color_buffer = New_Reuse(Linecolor, color_buffer,
+					     color_size);
+		}
+		color = color_buffer;
+	    }
 	}
 #endif
-	if (s->length > size || (bs != NULL)
+	if ((bs != NULL)
 #ifdef USE_ANSI_COLOR
 	    || (es != NULL)
 #endif
 	    ) {
-	    s = Strnew_size(size);
+	    s = Strnew_size(s->length);
 	    do_copy = TRUE;
 	}
     }
 
     while (str < endp) {
-	if (prop - oprop >= len)
+	if (prop - prop_buffer >= prop_size)
 	    break;
 	if (bs != NULL) {
 	    if (str == bs - 2 && !strncmp(str, "__\b\b", 4)) {
@@ -410,7 +422,7 @@ checkType(Str s, Lineprop *oprop,
 		    es = memchr(str, ESC_CODE, endp - str);
 		if (ok) {
 		    if (cmode)
-			*check_color = TRUE;
+			check_color = TRUE;
 		    continue;
 		}
 	    }
@@ -458,13 +470,19 @@ checkType(Str s, Lineprop *oprop,
 	}
 	effect = PE_NORMAL;
     }
+    *oprop = prop_buffer;
+#ifdef USE_ANSI_COLOR
+    if (ocolor)
+	*ocolor = check_color ? color_buffer : NULL;
+#endif
     return s;
 }
 
 int
 calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
 {
-    static short realColumn[LINELEN + 1];
+    static short *realColumn = NULL;
+    static int size = 0;
     static char *prevl = NULL;
     int i, j;
 
@@ -473,6 +491,10 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     if (l == prevl && mode == CP_AUTO) {
 	if (pos <= len)
 	    return realColumn[pos];
+    }
+    if (size < len + 1) {
+	size = (len + 1 > LINELEN) ? (len + 1) : LINELEN;
+	realColumn = New_Reuse(short, realColumn, size);
     }
     prevl = l;
     j = bpos;

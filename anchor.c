@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.20 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: anchor.c,v 1.21 2003/01/23 18:37:20 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -294,7 +294,7 @@ reAnchorPos(Buffer *buf, Line *l, char *p1, char *p2,
 {
     Anchor *a;
     int spos, epos;
-    int i;
+    int i, hseq = -2;
 
     spos = p1 - l->lineBuf;
     epos = p2 - l->lineBuf;
@@ -302,12 +302,27 @@ reAnchorPos(Buffer *buf, Line *l, char *p1, char *p2,
 	if (l->propBuf[i] & (PE_ANCHOR | PE_FORM))
 	    return p2;
     }
-    a = anchorproc(buf, p1, p2, l->linenumber, p1 - l->lineBuf);
-    a->end.line = l->linenumber;
-    a->end.pos = epos;
-    a->hseq = -2;
-    for (i = a->start.pos; i < a->end.pos; i++)
+    for (i = spos; i < epos; i++)
 	l->propBuf[i] |= PE_ANCHOR;
+    while (1) {
+	a = anchorproc(buf, p1, p2, l->linenumber, spos);
+	a->hseq = hseq;
+	if (hseq == -2) {
+	    reseq_anchor(buf);
+	    hseq = a->hseq;
+	}
+	a->end.line = l->linenumber;
+	if (epos > l->len) {
+	    a->end.pos = l->len;
+	    spos = 0;
+	    epos -= l->len;
+	    l = l->next;
+	}
+	else {
+	    a->end.pos = epos;
+	    break;
+	}
+    }
     return p2;
 }
 
@@ -315,7 +330,6 @@ void
 reAnchorWord(Buffer *buf, Line *l, int spos, int epos)
 {
     reAnchorPos(buf, l, &l->lineBuf[spos], &l->lineBuf[epos], _put_anchor_all);
-    reseq_anchor(buf);
 }
 
 /* search regexp and register them as anchors */
@@ -338,7 +352,7 @@ reAnchorAny(Buffer *buf, char *re,
 	 l = l->next) {
 	p = l->lineBuf;
 	for (;;) {
-	    if (regexMatch(p, &l->lineBuf[l->len] - p, p == l->lineBuf) == 1) {
+	    if (regexMatch(p, &l->lineBuf[l->size] - p, p == l->lineBuf) == 1) {
 		matchedPosition(&p1, &p2);
 		p = reAnchorPos(buf, l, p1, p2, anchorproc);
 	    }
@@ -346,7 +360,6 @@ reAnchorAny(Buffer *buf, char *re,
 		break;
 	}
     }
-    reseq_anchor(buf);
     return NULL;
 }
 

@@ -1,4 +1,4 @@
-/* $Id: mimehead.c,v 1.7 2002/12/24 17:20:47 ukai Exp $ */
+/* $Id: mimehead.c,v 1.8 2003/01/23 18:37:21 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
@@ -6,8 +6,6 @@
 #include <sys/types.h>
 #include "myctype.h"
 #include "Str.h"
-
-#define LINELEN 4096
 
 #define MIME_ENCODED_LINE_LIMIT	80
 #define MIME_ENCODED_WORD_LENGTH_OFFSET 18

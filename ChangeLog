@@ -1,5 +1,77 @@
 2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03667] fold patch
+	* anchor.c (reAnchorPos): rewrite
+		(reAnchorWord): delete reseq_anchor()
+		(reAnchorAny): use l->size
+				delete reseq_anchor()
+	* backend.c (internal_get): pass TRUE to saveBuffer
+	* buffer.c (newBuffer): delete n->linelen
+		(reshapeBuffer): rewrite
+	* display.c (displayBuffer): FoldLine
+		(redrawLine): l->bpos
+		(cursorUp0): added
+		(cursorUp): rewrite
+		(cursorDown0): added
+		(cursowDown): rewrite
+		(cursorRight): check l->next
+				l->bwidth
+		(cursorLeft): l->prev && l->bpos
+				l->bwidth
+		(arrangeCursor): buf->currentLine->bwidth
+			buf->cursorX
+	* etc.c (checkType): **oporp
+				rewrite
+		(calcPosition): realColumn allocated by New_reuse
+	* file.c (addnewline): add nlines arg
+		(propBuffer): deleted
+		(colorBuffer): deleted
+		(readHeader): propBuffer
+			FOLD_BUFFER_WIDTH
+		(HTMLlineproc2body): rewrite
+		(addnewline2): added
+		(addnewline): rewrite
+		(loadBuffer): propBuffer, colorBuffer
+		(saveBuffer): cont arg
+		(getNextPage): rewrite
+	* fm.h (LINELEN): 256
+		(FNLEN): deleted
+		(Line): add size, bpos, bwidth
+		(Buffer): delete linelen
+		(INIT_BUFFER_WIDTH): check showLineNum 
+		(FOLD_BUFFER_WIDTH): added
+		(FoldLine): added
+	* funcname.tab (RESHAPE): added
+	* main.c (do_dump): pass FALSE to saveBuffer
+		(nscroll): rewrite
+		(clear_mark): l->size
+		(shiftvisualpos): rewrite
+		(pipeBuf): pass TRUE to saveBuffer
+		(linebeg): check line->prev && line->bpos
+		(linend): check line->next, line->next->bpos
+		(editScr): pass TRUE to saveBuffer
+		(svBuf): pass TRUE to saveBuffer
+		(vmSrc): pass TRUE to saveBuffer
+		(reshape): added
+		(curlno): rewrite
+	* mimehead.c (LINELEN): deleted
+	* proto.h (reshape): added
+		(saveBuffer): add cont arg
+		(cursorUp0): added
+		(cursorDown0): added
+		(checkType): change type oprop, ocolor, delete check_color, len
+	* rc.c (CMT_FOLD_LINE): added
+		(params1): add fold_line
+		(sync_with_option): check PagerMax
+	* search.c (set_mark): l->size
+		(forwardSearch): rewrite
+		(backwardSearch): rewrite
+	* doc/README.func (RESHAPE): added
+	* doc-jp/README.func (RESHAPE): added
+	* scripts/w3mhelp.cgi.in (Buffer operation): add reshape
+
+2003-01-24  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* etc.c (next_status): after = is R_ST_VALUE
 			R_ST_VALUE > => R_ST_NORMAL
 			R_ST_VALUE SP => R_ST_TAG
@@ -6743,4 +6815,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.708 2003/01/23 18:01:01 ukai Exp $
+$Id: ChangeLog,v 1.709 2003/01/23 18:37:18 ukai Exp $

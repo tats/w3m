@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.202 2003/01/23 16:05:56 ukai Exp $ */
+/* $Id: file.c,v 1.203 2003/01/23 18:37:20 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -39,13 +39,8 @@ static void addnewline(Buffer *buf, char *line, Lineprop *prop,
 #ifdef USE_ANSI_COLOR
 		       Linecolor *color,
 #endif
-		       int pos, int nlines);
+		       int pos, int width, int nlines);
 static void addLink(Buffer *buf, struct parsed_tag *tag);
-
-static Lineprop propBuffer[LINELEN];
-#ifdef USE_ANSI_COLOR
-static Linecolor colorBuffer[LINELEN];
-#endif
 
 static JMP_BUF AbortLoading;
 
@@ -594,6 +589,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     char code;
     char *tmpf;
     FILE *src = NULL;
+    Lineprop *propBuffer;
 
     headerlist = newBuf->document_header = newTextList();
     if (uf->scheme == SCM_HTTP
@@ -658,18 +654,18 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    tmp = Strnew_size(lineBuf2->length);
 	    for (p = lineBuf2->ptr; *p; p = q) {
 		for (q = p; *q && *q != '\r' && *q != '\n'; q++) ;
-		lineBuf2 = checkType(Strnew_charp_n(p, q - p), propBuffer,
+		lineBuf2 = checkType(Strnew_charp_n(p, q - p), &propBuffer
 #ifdef USE_ANSI_COLOR
-				     NULL, NULL,
+				     , NULL
 #endif
-				     min(LINELEN, q - p));
+				     );
 		Strcat(tmp, lineBuf2);
 		if (thru)
 		    addnewline(newBuf, lineBuf2->ptr, propBuffer,
 #ifdef USE_ANSI_COLOR
 			       NULL,
 #endif
-			       lineBuf2->length, -1);
+			       lineBuf2->length, FOLD_BUFFER_WIDTH, -1);
 		for (; *q && (*q == '\r' || *q == '\n'); q++) ;
 	    }
 #ifdef USE_IMAGE
@@ -908,7 +904,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 #ifdef USE_ANSI_COLOR
 		   NULL,
 #endif
-		   0, -1);
+		   0, -1, -1);
     if (src)
 	fclose(src);
 }
@@ -4981,10 +4977,12 @@ textlist_feed()
 static void
 HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 {
+    static char *outc = NULL;
+    static Lineprop *outp = NULL;
+    static int out_size = 0;
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
-    char outc[LINELEN];
     char *p, *q, *r, *s, *t, *str;
-    Lineprop outp[LINELEN], mode, effect;
+    Lineprop mode, effect;
     int pos;
     int nlines;
     FILE *debug = NULL;
@@ -5003,6 +5001,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef MENU_SELECT
     Anchor **a_select = NULL;
 #endif
+
+    if (out_size == 0) {
+	out_size = LINELEN;
+	outc = New_N(char, out_size);
+	outp = New_N(Lineprop, out_size);
+    }
 
     n_textarea = -1;
     if (!max_textarea) {	/* halfload */
@@ -5042,7 +5046,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #endif
 	str = line->ptr;
 	endp = str + line->length;
-	while (str < endp && pos < LINELEN) {
+	while (str < endp) {
+	    if (out_size <= pos) {
+		out_size = pos * 3 / 2;
+		outc = New_N(char, out_size);
+		outp = New_N(Lineprop, out_size);
+	    }
 	    mode = get_mctype(str);
 #ifndef KANJI_SYMBOLS
 	    if (effect & PC_RULE && *str != '<') {
@@ -5539,7 +5548,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_ANSI_COLOR
 		       NULL,
 #endif
-		       pos, nlines);
+		       pos, -1, nlines);
 	if (internal == HTML_N_INTERNAL)
 	    internal = 0;
 	if (str != endp) {
@@ -6048,7 +6057,7 @@ extern char *NullLine;
 extern Lineprop NullProp[];
 
 static void
-addnewline(Buffer *buf, char *line, Lineprop *prop,
+addnewline2(Buffer *buf, char *line, Lineprop *prop,
 #ifdef USE_ANSI_COLOR
 	   Linecolor *color,
 #endif
@@ -6057,26 +6066,16 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
     Line *l;
     l = New(Line);
     l->next = NULL;
-    if (pos > 0) {
-	l->lineBuf = allocStr(line, pos);
-	l->propBuf = NewAtom_N(Lineprop, pos);
-	bcopy((void *)prop, (void *)l->propBuf, pos * sizeof(Lineprop));
-    }
-    else {
-	l->lineBuf = NullLine;
-	l->propBuf = NullProp;
-    }
+    l->lineBuf = line;
+    l->propBuf = prop;
 #ifdef USE_ANSI_COLOR
-    if (pos > 0 && color) {
-	l->colorBuf = NewAtom_N(Linecolor, pos);
-	bcopy((void *)color, (void *)l->colorBuf, pos * sizeof(Linecolor));
-    }
-    else {
-	l->colorBuf = NULL;
-    }
+    l->colorBuf = color;
 #endif
     l->len = pos;
     l->width = -1;
+    l->size = pos;
+    l->bpos = 0;
+    l->bwidth = 0;
     l->prev = buf->currentLine;
     if (buf->currentLine) {
 	l->next = buf->currentLine->next;
@@ -6098,6 +6097,86 @@ addnewline(Buffer *buf, char *line, Lineprop *prop,
 	l->real_linenumber = nlines;
     }
     l = NULL;
+}
+
+static void
+addnewline(Buffer *buf, char *line, Lineprop *prop,
+#ifdef USE_ANSI_COLOR
+	   Linecolor *color,
+#endif
+	   int pos, int width, int nlines)
+{
+    char *s;
+    Lineprop *p;
+#ifdef USE_ANSI_COLOR
+    Linecolor *c;
+#endif
+    Line *l;
+    int i, bpos, bwidth;
+
+    if (pos > 0) {
+	s = allocStr(line, pos);
+	p = NewAtom_N(Lineprop, pos);
+	bcopy((void *)prop, (void *)p, pos * sizeof(Lineprop));
+    }
+    else {
+	s = NullLine;
+	p = NullProp;
+    }
+#ifdef USE_ANSI_COLOR
+    if (pos > 0 && color) {
+	c = NewAtom_N(Linecolor, pos);
+	bcopy((void *)color, (void *)c, pos * sizeof(Linecolor));
+    }
+    else {
+	c = NULL;
+    }
+#endif
+    addnewline2(buf, s, p,
+#ifdef USE_ANSI_COLOR
+		c,
+#endif
+		pos, nlines);
+    if (pos <= 0 || width <= 0)
+	return;
+    bpos = 0;
+    bwidth = 0;
+    while (1) {
+	l = buf->currentLine;
+	l->width = COLPOS(l, l->len);
+	l->bpos = bpos;
+	l->bwidth = bwidth;
+	if (l->width <= width)
+	    return;
+	i = columnPos(l, width);
+#ifdef JP_CHARSET
+	if (CharType(p[i]) == PC_KANJI2)
+	    i--;
+#endif
+	if (i > 0 && COLPOS(l, i) > width) {
+	    i--;
+#ifdef JP_CHARSET
+	    if (CharType(p[i]) == PC_KANJI2)
+		i--;
+#endif
+	}
+	l->len = i;
+	l->width = COLPOS(l, l->len);
+	bpos += l->len;
+	bwidth += l->width;
+	s += i;
+	p += i;
+#ifdef USE_ANSI_COLOR
+	if (c)
+	    c += i;
+#endif
+	pos -= i;
+	addnewline2(buf, s, p,
+#ifdef USE_ANSI_COLOR
+		    c,
+#endif
+		    pos, nlines);
+    }
 }
 
 /* 
@@ -6734,8 +6813,9 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     int nlines;
     Str tmpf;
     clen_t linelen = 0, trbyte = 0;
+    Lineprop *propBuffer = NULL;
 #ifdef USE_ANSI_COLOR
-    int check_color;
+    Linecolor *colorBuffer = NULL;
 #endif
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
@@ -6801,16 +6881,16 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	}
 	++nlines;
 	Strchop(lineBuf2);
-	lineBuf2 = checkType(lineBuf2, propBuffer,
+	lineBuf2 = checkType(lineBuf2, &propBuffer
 #ifdef USE_ANSI_COLOR
-			     colorBuffer, &check_color,
+			     , &colorBuffer
 #endif
-			     LINELEN);
+			     );
 	addnewline(newBuf, lineBuf2->ptr, propBuffer,
 #ifdef USE_ANSI_COLOR
-		   check_color ? colorBuffer : NULL,
+		   colorBuffer,
 #endif
-		   lineBuf2->length, nlines);
+		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
     }
   _end:
     if (fmInitialized)
@@ -6927,7 +7007,7 @@ conv_rule(Line *l)
  * saveBuffer: write buffer to file
  */
 void
-saveBuffer(Buffer *buf, FILE * f)
+saveBuffer(Buffer *buf, FILE * f, int cont)
 {
     Line *l = buf->firstLine;
     Str tmp;
@@ -6949,7 +7029,7 @@ saveBuffer(Buffer *buf, FILE * f)
 	    tmp = Strnew_charp_n(l->lineBuf, l->len);
 	tmp = conv_str(tmp, InnerCode, DisplayCode);
 	Strfputs(tmp, f);
-	if (Strlastchar(tmp) != '\n')
+	if (Strlastchar(tmp) != '\n' && !(cont && l->next && l->next->bpos))
 	    putc('\n', f);
     }
     if (buf->pagerSource && !(buf->bufferprop & BP_CLOSE)) {
@@ -7112,17 +7192,17 @@ openGeneralPagerBuffer(InputStream stream)
 Line *
 getNextPage(Buffer *buf, int plen)
 {
-    Line *l, *fl, *pl = buf->lastLine;
-    Line *rl = NULL;
-    int len, i, nlines = 0;
-    clen_t linelen = buf->linelen, trbyte = buf->trbyte;
+    Line *top = buf->topLine, *last = buf->lastLine, *cur = buf->currentLine;
+    int i, nlines = 0;
+    clen_t linelen = 0, trbyte = buf->trbyte;
     Str lineBuf2;
     char pre_lbuf = '\0';
     URLFile uf;
     char code;
-    int squeeze_flag = 0;
+    int squeeze_flag = FALSE;
+    Lineprop *propBuffer = NULL;
 #ifdef USE_ANSI_COLOR
-    int check_color;
+    Linecolor *colorBuffer = NULL;
 #endif
 
     if (buf->pagerSource == NULL)
@@ -7130,11 +7210,12 @@ getNextPage(Buffer *buf, int plen)
 
     if (fmInitialized)
 	crmode();
-    if (pl != NULL) {
-	nlines = pl->real_linenumber;
-	pre_lbuf = *(pl->lineBuf);
+    if (last != NULL) {
+	nlines = last->real_linenumber;
+	pre_lbuf = *(last->lineBuf);
 	if (pre_lbuf == '\0')
 	    pre_lbuf = '\n';
+	buf->currentLine = last;
     }
 
 #ifdef JP_CHARSET
@@ -7156,93 +7237,66 @@ getNextPage(Buffer *buf, int plen)
 	    else if (getenv("MAN_PN") == NULL)
 		buf->buffername = CPIPEBUFFERNAME;
 	    buf->bufferprop |= BP_CLOSE;
-	    trbyte += linelen;
-	    linelen = 0;
 	    break;
 	}
 	linelen += lineBuf2->length;
 	showProgress(&linelen, &trbyte);
 	lineBuf2 = convertLine(&uf, lineBuf2, &code, PAGER_MODE);
 	if (squeezeBlankLine) {
-	    squeeze_flag = 0;
+	    squeeze_flag = FALSE;
 	    if (lineBuf2->ptr[0] == '\n' && pre_lbuf == '\n') {
 		++nlines;
 		--i;
-		squeeze_flag = 1;
+		squeeze_flag = TRUE;
 		continue;
 	    }
 	    pre_lbuf = lineBuf2->ptr[0];
 	}
 	++nlines;
 	Strchop(lineBuf2);
-	lineBuf2 = checkType(lineBuf2, propBuffer,
+	lineBuf2 = checkType(lineBuf2, &propBuffer
 #ifdef USE_ANSI_COLOR
-			     colorBuffer, &check_color,
+			     , &colorBuffer
 #endif
-			     LINELEN);
-	len = lineBuf2->length;
-	l = New(Line);
-	l->lineBuf = lineBuf2->ptr;
-	l->propBuf = NewAtom_N(Lineprop, len);
-	bcopy((void *)propBuffer, (void *)l->propBuf, len * sizeof(Lineprop));
+			     );
+        addnewline(buf, lineBuf2->ptr, propBuffer,
 #ifdef USE_ANSI_COLOR
-	if (check_color) {
-	    l->colorBuf = NewAtom_N(Linecolor, len);
-	    bcopy((void *)colorBuffer, (void *)l->colorBuf,
-		  len * sizeof(Linecolor));
-	}
-	else {
-	    l->colorBuf = NULL;
-	}
+		   colorBuffer,
 #endif
-	l->len = len;
-	l->width = -1;
-	l->prev = pl;
-#if 0
-	if (squeezeBlankLine) {
-#endif
-	    l->real_linenumber = nlines;
-	    l->linenumber = (pl == NULL ? nlines : pl->linenumber + 1);
-#if 0
+		   lineBuf2->length, FOLD_BUFFER_WIDTH, nlines);
+	if (!top) {
+	    top = buf->firstLine;
+	    cur = buf->currentLine;
 	}
-	else {
-	    l->real_linenumber = l->linenumber = nlines;
+	if (buf->lastLine->real_linenumber - buf->firstLine->real_linenumber
+	    >= PagerMax) {
+	    Line *l = buf->firstLine;
+	    do {
+		if (top == l)
+		    top = l->next;
+		if (cur == l)
+		    cur = l->next;
+		if (last == l)
+		    last = NULL;
+		l = l->next;
+	    } while (l && l->bpos);
+	    buf->firstLine = l;
+	    buf->firstLine->prev = NULL;
 	}
-#endif
-	if (pl == NULL) {
-	    pl = l;
-	    buf->firstLine = buf->topLine = buf->currentLine = l;
-	}
-	else {
-	    pl->next = l;
-	    pl = l;
-	}
-	if (rl == NULL)
-	    rl = l;
-	if (nlines > PagerMax) {
-	    fl = buf->firstLine;
-	    buf->firstLine = fl->next;
-	    fl->next->prev = NULL;
-	    if (buf->topLine == fl)
-		buf->topLine = fl->next;
-	    if (buf->currentLine == fl)
-		buf->currentLine = fl->next;
-	}
-    }
-    if (pl != NULL)
-	pl->next = NULL;
-    buf->lastLine = pl;
-    if (rl == NULL && squeeze_flag) {
-	rl = pl;
     }
     if (fmInitialized)
 	term_raw();
-    buf->linelen = linelen;
-    buf->trbyte = trbyte;
+    buf->trbyte = trbyte + linelen;
 #ifdef JP_CHARSET
     buf->document_code = code;
 #endif
-    return rl;
+    buf->topLine = top;
+    buf->currentLine = cur;
+    if (!last)
+	last = buf->firstLine;
+    else if (last && (last->next || !squeeze_flag))
+	last = last->next;
+    return last;
 }
 
 int

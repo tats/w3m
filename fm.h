@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.106 2003/01/23 18:01:06 ukai Exp $ */
+/* $Id: fm.h,v 1.107 2003/01/23 18:37:20 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -71,9 +71,8 @@ void bzero(void *, int);
 /* 
  * Constants.
  */
-#define LINELEN	4096		/* Maximum line length */
+#define LINELEN	256		/* Initial line length */
 #define PAGER_MAX_LINE	10000	/* Maximum line kept as pager */
-#define FNLEN 80
 
 #ifdef USE_IMAGE
 #define MAX_IMAGE 1000
@@ -316,6 +315,9 @@ typedef struct _Line {
     long linenumber;		/* on buffer */
     long real_linenumber;	/* on file */
     unsigned short usrflags;
+    short size;
+    short bpos;
+    short bwidth;
 } Line;
 
 typedef struct {
@@ -438,7 +440,6 @@ typedef struct _Buffer {
     struct frameset *frameset;
     struct frameset_queue *frameQ;
     int *clone;
-    size_t linelen;
     size_t trbyte;
     char check_url;
 #ifdef JP_CHARSET
@@ -521,7 +522,8 @@ typedef struct _DownloadList {
 
 #define FONTSTAT_SIZE 4
 
-#define INIT_BUFFER_WIDTH (COLS - 1)
+#define INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
+#define FOLD_BUFFER_WIDTH (FoldLine ? (INIT_BUFFER_WIDTH + 1) : -1)
 
 typedef struct {
     int pos;
@@ -955,6 +957,7 @@ global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
 global int ignore_null_img_alt init(TRUE);
 global int displayInsDel init(TRUE);
 global int FoldTextarea init(FALSE);
+global int FoldLine init(FALSE);
 #define DEFAULT_URL_EMPTY	0
 #define DEFAULT_URL_CURRENT	1
 #define DEFAULT_URL_LINK	2

@@ -102,6 +102,7 @@ REDRAW		Redraw screen
 REG_MARK	Set mark using regexp
 REINIT		Reload configuration files
 RELOAD		Reload buffer
+RESHAPE		Re-render buffer
 RIGHT		Shift screen one column right
 SAVE		Save document source to file
 SAVE_IMAGE	Save image to file

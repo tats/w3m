@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.10 2002/12/24 17:20:46 ukai Exp $ */
+/* $Id: backend.c,v 1.11 2003/01/23 18:37:20 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -148,7 +148,7 @@ internal_get(char *url, int flag, FormList *request)
 		}
 		print_headers(buf, len);
 		printf("\n");
-		saveBuffer(buf, stdout);
+		saveBuffer(buf, stdout, TRUE);
 	    }
 	    else {
 		print_headers(buf, 0);

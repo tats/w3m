@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.23 2003/01/15 17:13:22 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.24 2003/01/23 18:37:22 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -135,7 +135,7 @@ for $otherlang (@docdirs) {
 
 &show_keymap("Buffer operation",
 	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
-		editBf editScr reload rdrwSc dispI stopI"));
+		editBf editScr reload reshape rdrwSc dispI stopI"));
 
 &show_keymap("Tab operation",
 	     split(" ", "newT closeT nextT prevT tabMn tabR tabL"));

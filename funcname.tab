@@ -1,4 +1,4 @@
-# $Id: funcname.tab,v 1.19 2002/12/10 15:51:14 ukai Exp $
+# $Id: funcname.tab,v 1.20 2003/01/23 18:37:21 ukai Exp $
 # macro name	function name
 #----------------------------
 @@@		nulcmd
@@ -110,6 +110,7 @@ REDRAW		rdrwSc
 REG_MARK	reMark
 REINIT		reinit
 RELOAD		reload
+RESHAPE		reshape
 RIGHT		col1R
 SAVE		svSrc
 SAVE_IMAGE	svI

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.52 2003/01/20 15:32:02 ukai Exp $ */
+/* $Id: display.c,v 1.53 2003/01/23 18:37:20 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -363,8 +363,8 @@ displayBuffer(Buffer *buf, int mode)
 	buf->width = COLS;
     if (buf->height == 0)
 	buf->height = LASTLINE + 1;
-    if ((buf->width != INIT_BUFFER_WIDTH && buf->type &&
-	 !strcmp(buf->type, "text/html")) || buf->need_reshape) {
+    if ((buf->width != INIT_BUFFER_WIDTH && (buf->type &&
+	 !strcmp(buf->type, "text/html") || FoldLine)) || buf->need_reshape) {
 	buf->need_reshape = TRUE;
 	reshapeBuffer(buf);
     }
@@ -679,7 +679,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 		buf->rootX = COLS;
 	    buf->COLS = COLS - buf->rootX;
 	}
-	if (l->real_linenumber)
+	if (l->real_linenumber && !l->bpos)
 	    sprintf(tmp, "%*ld:", buf->rootX - 1, l->real_linenumber);
 	else
 	    sprintf(tmp, "%*s ", buf->rootX - 1, "");
@@ -1233,10 +1233,8 @@ set_delayed_message(char *s)
 }
 
 void
-cursorUp(Buffer *buf, int n)
+cursorUp0(Buffer *buf, int n)
 {
-    if (buf->firstLine == NULL)
-	return;
     if (buf->cursorY > 0)
 	cursorUpDown(buf, -1);
     else {
@@ -1248,10 +1246,28 @@ cursorUp(Buffer *buf, int n)
 }
 
 void
-cursorDown(Buffer *buf, int n)
+cursorUp(Buffer *buf, int n)
 {
+    Line *l = buf->currentLine;
     if (buf->firstLine == NULL)
 	return;
+    while (buf->currentLine->prev && buf->currentLine->bpos)
+	cursorUp0(buf, n);
+    if (buf->currentLine == buf->firstLine) {
+	gotoLine(buf, l->linenumber);
+	arrangeLine(buf);
+	return;
+    }
+    cursorUp0(buf, n);
+    while (buf->currentLine->prev && buf->currentLine->bpos &&
+	buf->currentLine->bwidth >=
+	buf->currentColumn + buf->visualpos)
+	cursorUp0(buf, n);
+}
+
+void
+cursorDown0(Buffer *buf, int n)
+{
     if (buf->cursorY < buf->LINES - 1)
 	cursorUpDown(buf, 1);
     else {
@@ -1260,6 +1276,26 @@ cursorDown(Buffer *buf, int n)
 	    buf->currentLine = buf->currentLine->next;
 	arrangeLine(buf);
     }
+}
+
+void
+cursorDown(Buffer *buf, int n)
+{
+    Line *l = buf->currentLine;
+    if (buf->firstLine == NULL)
+	return;
+    while (buf->currentLine->next && buf->currentLine->next->bpos)
+	cursorDown0(buf, n);
+    if (buf->currentLine == buf->lastLine) {
+	gotoLine(buf, l->linenumber);
+	arrangeLine(buf);
+	return;
+    }
+    cursorDown0(buf, n);
+    while (buf->currentLine->next && buf->currentLine->next->bpos &&
+	buf->currentLine->bwidth + buf->currentLine->width <
+	buf->currentColumn + buf->visualpos)
+	cursorDown0(buf, n);
 }
 
 void
@@ -1283,7 +1319,7 @@ cursorRight(Buffer *buf, int n)
 
     if (buf->firstLine == NULL)
 	return;
-    if (buf->pos == l->len)
+    if (buf->pos == l->len && !(l->next && l->next->bpos))
 	return;
     i = buf->pos;
     p = l->propBuf;
@@ -1297,6 +1333,12 @@ cursorRight(Buffer *buf, int n)
     else if (l->len == 0) {
 	buf->pos = 0;
     }
+    else if (l->next && l->next->bpos) {
+	cursorDown0(buf, 1);
+	buf->pos = 0;
+	arrangeCursor(buf);
+	return;
+    }
     else {
 	buf->pos = l->len - 1;
 #ifdef JP_CHARSET
@@ -1305,7 +1347,7 @@ cursorRight(Buffer *buf, int n)
 #endif				/* JP_CHARSET */
     }
     cpos = COLPOS(l, buf->pos);
-    buf->visualpos = cpos - buf->currentColumn;
+    buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     delta = 1;
 #ifdef JP_CHARSET
     if (CharType(p[buf->pos]) == PC_KANJI1)
@@ -1314,9 +1356,9 @@ cursorRight(Buffer *buf, int n)
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
     if (vpos2 >= buf->COLS && n) {
 	columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
-	buf->visualpos = cpos - buf->currentColumn;
+	buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     }
-    buf->cursorX = buf->visualpos;
+    buf->cursorX = buf->visualpos - l->bwidth;
 }
 
 void
@@ -1334,17 +1376,23 @@ cursorLeft(Buffer *buf, int n)
     if (i >= 2 && CharType(p[i - 1]) == PC_KANJI2)
 	delta = 2;
 #endif				/* JP_CHARSET */
-    if (i > delta)
+    if (i >= delta)
 	buf->pos = i - delta;
+    else if (l->prev && l->bpos) {
+	cursorUp0(buf, -1);
+	buf->pos = buf->currentLine->len - 1;
+	arrangeCursor(buf);
+	return;
+    }
     else
 	buf->pos = 0;
     cpos = COLPOS(l, buf->pos);
-    buf->visualpos = cpos - buf->currentColumn;
-    if (buf->visualpos < 0 && n) {
-	columnSkip(buf, -n + buf->visualpos - buf->visualpos % n);
-	buf->visualpos = cpos - buf->currentColumn;
+    buf->visualpos = l->bwidth + cpos - buf->currentColumn;
+    if (buf->visualpos - l->bwidth < 0 && n) {
+	columnSkip(buf, -n + buf->visualpos - l->bwidth - (buf->visualpos - l->bwidth) % n);
+	buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     }
-    buf->cursorX = buf->visualpos;
+    buf->cursorX = buf->visualpos - l->bwidth;
 }
 
 void
@@ -1396,8 +1444,9 @@ arrangeCursor(Buffer *buf)
     }
     /* Arrange cursor */
     buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
-    buf->visualpos = buf->cursorX =
+    buf->visualpos = buf->currentLine->bwidth +
 	COLPOS(buf->currentLine, buf->pos) - buf->currentColumn;
+    buf->cursorX = buf->visualpos - buf->currentLine->bwidth;
 #ifdef DISPLAY_DEBUG
     fprintf(stderr,
 	    "arrangeCursor: column=%d, cursorX=%d, visualpos=%d, pos=%d, len=%d\n",
@@ -1414,7 +1463,8 @@ arrangeLine(Buffer *buf)
     if (buf->firstLine == NULL)
 	return;
     buf->cursorY = buf->currentLine->linenumber - buf->topLine->linenumber;
-    i = columnPos(buf->currentLine, buf->currentColumn + buf->visualpos);
+    i = columnPos(buf->currentLine, buf->currentColumn + buf->visualpos
+	- buf->currentLine->bwidth);
     cpos = COLPOS(buf->currentLine, i) - buf->currentColumn;
     if (cpos >= 0) {
 	buf->cursorX = cpos;

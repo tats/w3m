@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.79 2003/01/20 15:24:20 ukai Exp $ */
+/* $Id: rc.c,v 1.80 2003/01/23 18:37:21 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -130,6 +130,7 @@ static int RC_table_size;
 #ifdef NEXTPAGE_TOPLINE
 #define CMT_NEXTPAGE_TOPLINE	"次のページに移動する時にカーソルがトップになるようにする"
 #endif
+#define CMT_FOLD_LINE    "plain text ファイルの行を折り返す"
 #define CMT_SHOW_NUM     "行番号を表示する"
 #define CMT_SHOW_SRCH_STR "検索文字列を表示する"
 #define CMT_MIMETYPES    "利用するmime.types"
@@ -293,6 +294,7 @@ static int RC_table_size;
 #ifdef NEXTPAGE_TOPLINE
 #define CMT_NEXTPAGE_TOPLINE	"Move cursor to top line when moving to next page"
 #endif
+#define CMT_FOLD_LINE    "Fold lines of plain text file"
 #define CMT_SHOW_NUM     "Show line numbers"
 #define CMT_SHOW_SRCH_STR "Show search string"
 #define CMT_MIMETYPES    "List of mime.types files"
@@ -566,6 +568,7 @@ struct param_ptr params1[] = {
     {"image_map_list", P_INT, PI_ONOFF, (void *)&image_map_list,
      CMT_IMAGE_MAP_LIST, NULL},
 #endif
+    {"fold_line", P_INT, PI_ONOFF, (void *)&FoldLine, CMT_FOLD_LINE, NULL},
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
      CMT_SHOW_SRCH_STR, NULL},
@@ -1319,6 +1322,8 @@ do_mkdir(const char *dir, long mode)
 void
 sync_with_option(void)
 {
+    if (PagerMax < LINES)
+	PagerMax = LINES;
     WrapSearch = WrapDefault;
     parse_proxy();
 #ifdef USE_COOKIE

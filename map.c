@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.18 2002/12/02 17:55:50 ukai Exp $ */
+/* $Id: map.c,v 1.19 2002/12/05 16:08:34 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -137,7 +137,7 @@ getCurrentMapLabel(Buffer *buf)
     ListItem *al;
     MapArea *a;
     int i, n;
-    Str s;
+    Str s = NULL;
 
     a_img = retrieveCurrentImg(buf);
     if (!(a_img && a_img->image && a_img->image->map))
@@ -159,11 +159,15 @@ getCurrentMapLabel(Buffer *buf)
 	a = (MapArea *) al->ptr;
 	if (!(a && i == n))
 	    continue;
-	s = Sprintf("[%s]", a->alt);
-	if (*a->alt) {
+	if (*a->alt)
+	    s = Sprintf("[%s]", a->alt);
+	if (*a->url) {
 	    ParsedURL pu;
 	    parseURL2(a->url, &pu, baseURL(buf));
-	    Strcat_char(s, ' ');
+	    if (s)
+		Strcat_char(s, ' ');
+	    else
+		s = Strnew();
 	    Strcat(s, parsedURL2Str(&pu));
 	}
 	return s;
@@ -280,8 +284,9 @@ follow_map_panel(Buffer *buf, char *name)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
 	url = html_quote(parsedURL2Str(&pu)->ptr);
-	Strcat_m_charp(mappage, "<tr><td>", html_quote(a->alt),
-		       "<td><a href=\"", url, "\">", url, "</a>\n", NULL);
+	Strcat_m_charp(mappage, "<tr><td><a href=\"", url, "\">",
+		       html_quote(*a->alt ? a->alt : mybasename(a->url)), 
+		       "</a><td>", url, NULL);
     }
     Strcat_charp(mappage, "</table></body></html>");
 
@@ -409,8 +414,8 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	parseURL2(a->url, &pu, baseURL(buf));
 	url = html_quote(parsedURL2Str(&pu)->ptr);
 	Strcat_m_charp(tmp, "<tr><td>&nbsp;&nbsp;<td><a href=\"", url, "\">",
-		       html_quote(a->alt), "</a><td>", html_quote(a->url),
-		       "\n", NULL);
+		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
+		       "</a><td>", html_quote(a->url), "\n", NULL);
     }
     Strcat_charp(tmp, "</table>");
 }

@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.23 2002/04/20 17:50:21 ukai Exp $
+# $Id: XMakefile,v 1.24 2002/06/18 04:59:09 inu Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -107,7 +107,7 @@ w3mimgsize.o: w3mimgsize.c
 	$(CC) $(CFLAGS) `imlib-config --cflags` -c w3mimgsize.c
 
 gc/gc.a:
-	cd gc; $(MAKE) CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
+	cd gc; $(MAKE) base_lib gc.a CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
 
 
 install: install-core install-scripts

@@ -1,5 +1,10 @@
 2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* w3m 0.3.2.1 security fix
+	* frame.c (createFrameFile): html_quote()
+
+2002-11-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03486] fix of displayLineInfo
 	* display.c (displayBuffer): don't divide by 0
 
@@ -5161,4 +5166,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.559 2002/11/26 16:57:39 ukai Exp $
+$Id: ChangeLog,v 1.560 2002/11/26 16:58:48 ukai Exp $

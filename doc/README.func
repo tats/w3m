@@ -1,5 +1,6 @@
 ABORT		Quit w3m without confirmation
 ADD_BOOKMARK	Add current page to bookmark
+ALARM		set alarm
 BACK		Back to previous buffer
 BEGIN		Go to the first line
 BOOKMARK	Read bookmark
@@ -95,6 +96,7 @@ SHELL		Execute shell command
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
 SOURCE		View HTML source
+SUBMIT		submit
 SUSPEND		Stop loading document
 UP		Scroll up one line
 VERSION                Display version of w3m

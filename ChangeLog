@@ -1,5 +1,8 @@
 2001-12-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* doc/REAMDE.func: add ALARM, SUSPEND
+	* doc-jp/README.func: ditto
+	
 	* config.h.dist: updated
 
 2001-11-30  Fumitoshi UKAI  <ukai@debian.or.jp>

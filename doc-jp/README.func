@@ -1,4 +1,5 @@
 ABORT		確認せずにw3mを終了します
+ALARM		アラームを設定します
 ADD_BOOKMARK	現在見ているページをブックマークに追加します
 BACK		一つ前のバッファを表示します
 BEGIN		文書のいちばん上の行に移動します
@@ -95,6 +96,7 @@ SHELL		シェルコマンドを実行します
 SHIFT_LEFT	画面全体を左にずらします
 SHIFT_RIGHT	画面全体を右にずらします
 SOURCE		HTMLのソースを表示します
+SUBMIT		フォームにサブミットします
 SUSPEND		サスペンド
 UP		画面を1行上にスクロールします
 VERSION                w3m のバージョンを表示します

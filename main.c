@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.179 2002/12/24 17:33:31 ukai Exp $ */
+/* $Id: main.c,v 1.180 2002/12/25 16:05:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -979,6 +979,10 @@ main(int argc, char **argv, char **envp)
 	_goLine(line_str);
     }
     for (;;) {
+	if (add_download_list) {
+	    add_download_list = FALSE;
+	    ldDL();
+	}
 	if (Currentbuf->submit) {
 	    Anchor *a = Currentbuf->submit;
 	    Currentbuf->submit = NULL;
@@ -1068,10 +1072,6 @@ main(int argc, char **argv, char **envp)
 		save_buffer_position(Currentbuf);
 		keyPressEventProc((int)c);
 		prec_num = 0;
-		if (add_download_list) {
-		    add_download_list = FALSE;
-		    ldDL();
-		}
 	    }
 	}
 	prev_key = CurrentKey;

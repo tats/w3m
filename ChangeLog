@@ -1,3 +1,8 @@
+2002-12-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03600] Re: meta refresh
+	* main.c (main): move add_download_list
+
 2002-12-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03598] restore cursor when download list panel is updated.
@@ -6068,4 +6073,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.645 2002/12/24 17:33:31 ukai Exp $
+$Id: ChangeLog,v 1.646 2002/12/25 16:05:08 ukai Exp $

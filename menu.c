@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.36 2003/09/23 18:42:25 ukai Exp $ */
+/* $Id: menu.c,v 1.37 2003/09/24 18:35:06 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -257,8 +257,7 @@ static int smDelTab(char c);
 
 static Menu MainMenu;
 #if LANG == JA
-/* FIXME: gettextize here */
-static wc_ces MainMenuCharset = WC_CES_EUC_JP;
+static wc_ces MainMenuCharset = WC_CES_EUC_JP; /* charset of source code */
 static int MainMenuEncode = FALSE;
 static MenuItem MainMenuItem[] = {
     /* type        label         variabel value func     popup keys data  */
@@ -287,31 +286,36 @@ static MenuItem MainMenuItem[] = {
 #else				/* LANG != JA */
 
 #ifdef USE_M17N
+/* FIXME: gettextize here */
 static wc_ces MainMenuCharset = WC_CES_US_ASCII;
+#if ENABLE_NLS
+static int MainMenuEncode = FALSE;
+#else
 static int MainMenuEncode = TRUE;
+#endif
 #endif
 static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
-    {MENU_FUNC, " Back         (b) ", NULL, 0, backBf, NULL, "b", NULL},
-    {MENU_POPUP, " Select Buffer(s) ", NULL, 0, NULL, &SelectMenu, "s", NULL},
-    {MENU_POPUP, " Select Tab   (t) ", NULL, 0, NULL, &SelTabMenu, "tT", NULL},
-    {MENU_FUNC, " View Source  (v) ", NULL, 0, vwSrc, NULL, "vV", NULL},
-    {MENU_FUNC, " Edit Source  (e) ", NULL, 0, editBf, NULL, "eE", NULL},
-    {MENU_FUNC, " Save Source  (S) ", NULL, 0, svSrc, NULL, "S", NULL},
-    {MENU_FUNC, " Reload       (r) ", NULL, 0, reload, NULL, "rR", NULL},
-    {MENU_NOP, " ---------------- ", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, " Go Link      (a) ", NULL, 0, followA, NULL, "a", NULL},
-    {MENU_FUNC, "   on New Tab (n) ", NULL, 0, tabA, NULL, "nN", NULL},
-    {MENU_FUNC, " Save Link    (A) ", NULL, 0, svA, NULL, "A", NULL},
-    {MENU_FUNC, " View Image   (i) ", NULL, 0, followI, NULL, "i", NULL},
-    {MENU_FUNC, " Save Image   (I) ", NULL, 0, svI, NULL, "I", NULL},
-    {MENU_FUNC, " View Frame   (f) ", NULL, 0, rFrame, NULL, "fF", NULL},
-    {MENU_NOP, " ---------------- ", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, " Bookmark     (B) ", NULL, 0, ldBmark, NULL, "B", NULL},
-    {MENU_FUNC, " Help         (h) ", NULL, 0, ldhelp, NULL, "hH", NULL},
-    {MENU_FUNC, " Option       (o) ", NULL, 0, ldOpt, NULL, "oO", NULL},
-    {MENU_NOP, " ---------------- ", NULL, 0, nulcmd, NULL, "", NULL},
-    {MENU_FUNC, " Quit         (q) ", NULL, 0, qquitfm, NULL, "qQ", NULL},
+    {MENU_FUNC,  N_(" Back         (b) "), NULL, 0, backBf, NULL, "b", NULL},
+    {MENU_POPUP, N_(" Select Buffer(s) "), NULL, 0, NULL, &SelectMenu, "s", NULL},
+    {MENU_POPUP, N_(" Select Tab   (t) "), NULL, 0, NULL, &SelTabMenu, "tT", NULL},
+    {MENU_FUNC, N_(" View Source  (v) "), NULL, 0, vwSrc, NULL, "vV", NULL},
+    {MENU_FUNC, N_(" Edit Source  (e) "), NULL, 0, editBf, NULL, "eE", NULL},
+    {MENU_FUNC, N_(" Save Source  (S) "), NULL, 0, svSrc, NULL, "S", NULL},
+    {MENU_FUNC, N_(" Reload       (r) "), NULL, 0, reload, NULL, "rR", NULL},
+    {MENU_NOP, N_(" ---------------- "), NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_FUNC, N_(" Go Link      (a) "), NULL, 0, followA, NULL, "a", NULL},
+    {MENU_FUNC, N_("   on New Tab (n) "), NULL, 0, tabA, NULL, "nN", NULL},
+    {MENU_FUNC, N_(" Save Link    (A) "), NULL, 0, svA, NULL, "A", NULL},
+    {MENU_FUNC, N_(" View Image   (i) "), NULL, 0, followI, NULL, "i", NULL},
+    {MENU_FUNC, N_(" Save Image   (I) "), NULL, 0, svI, NULL, "I", NULL},
+    {MENU_FUNC, N_(" View Frame   (f) "), NULL, 0, rFrame, NULL, "fF", NULL},
+    {MENU_NOP, N_(" ---------------- "), NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_FUNC, N_(" Bookmark     (B) "), NULL, 0, ldBmark, NULL, "B", NULL},
+    {MENU_FUNC, N_(" Help         (h) "), NULL, 0, ldhelp, NULL, "hH", NULL},
+    {MENU_FUNC, N_(" Option       (o) "), NULL, 0, ldOpt, NULL, "oO", NULL},
+    {MENU_NOP, N_(" ---------------- "), NULL, 0, nulcmd, NULL, "", NULL},
+    {MENU_FUNC, N_(" Quit         (q) "), NULL, 0, qquitfm, NULL, "qQ", NULL},
     {MENU_END, "", NULL, 0, nulcmd, NULL, "", NULL},
 };
 #endif				/* LANG != JA  */
@@ -1754,9 +1758,14 @@ initMenu(void)
 #ifdef USE_M17N
     if (!MainMenuEncode) {
 	MenuItem *item;
+#if ENABLE_NLS
+	/* FIXME: charset that gettext(3) returns */
+	MainMenuCharset = SystemCharset; 
+#endif
 	for (item = MainMenuItem; item->type != MENU_END; item++)
 	    item->label =
-		wc_conv(item->label, MainMenuCharset, InnerCharset)->ptr;
+		wc_conv(gettext(item->label), MainMenuCharset, 
+			InnerCharset)->ptr;
 	MainMenuEncode = TRUE;
     }
 #endif

@@ -6,6 +6,7 @@
 SHELL=@SHELL@
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
+DOMAIN = $(PACKAGE)
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
@@ -181,9 +182,9 @@ w3mimg:
 	(cd w3mimg && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)")
 
 intl po:
-	(cd $@ && $(MAKE) top_builddir=.. subdir=$@)
+	(cd $@ && $(MAKE))
 
-install: install-core install-scripts
+install: install-core install-scripts install-po
 
 install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(bindir)
@@ -214,6 +215,12 @@ install-helpfile:
 	for file in $(HELP_ALLFILES); \
 	do \
 		$(INSTALL_DATA) $$file $(DESTDIR)$(HELP_DIR)/$$file; \
+	done
+
+install-po:
+	for subdir in intl po; \
+	do \
+	 (cd $$subdir && $(MAKE) install); \
 	done
 
 all-scripts:

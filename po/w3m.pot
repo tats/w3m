@@ -1,0 +1,762 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
+"POT-Creation-Date: 2003-09-25 02:19+0900\n"
+"PO-Revision-Date: 2003-09-25 02:23+0900\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: menu.c:299
+msgid " Back         (b) "
+msgstr ""
+
+#: menu.c:300
+msgid " Select Buffer(s) "
+msgstr ""
+
+#: menu.c:301
+msgid " Select Tab   (t) "
+msgstr ""
+
+#: menu.c:302
+msgid " View Source  (v) "
+msgstr ""
+
+#: menu.c:303
+msgid " Edit Source  (e) "
+msgstr ""
+
+#: menu.c:304
+msgid " Save Source  (S) "
+msgstr ""
+
+#: menu.c:305
+msgid " Reload       (r) "
+msgstr ""
+
+#: menu.c:306 menu.c:313 menu.c:317
+msgid " ---------------- "
+msgstr ""
+
+#: menu.c:307
+msgid " Go Link      (a) "
+msgstr ""
+
+#: menu.c:308
+msgid "   on New Tab (n) "
+msgstr ""
+
+#: menu.c:309
+msgid " Save Link    (A) "
+msgstr ""
+
+#: menu.c:310
+msgid " View Image   (i) "
+msgstr ""
+
+#: menu.c:311
+msgid " Save Image   (I) "
+msgstr ""
+
+#: menu.c:312
+msgid " View Frame   (f) "
+msgstr ""
+
+#: menu.c:314
+msgid " Bookmark     (B) "
+msgstr ""
+
+#: menu.c:315
+msgid " Help         (h) "
+msgstr ""
+
+#: menu.c:316
+msgid " Option       (o) "
+msgstr ""
+
+#: menu.c:318
+msgid " Quit         (q) "
+msgstr ""
+
+#: rc.c:240
+msgid "External Viewer Setup"
+msgstr ""
+
+#: rc.c:241
+msgid "Tab width in characters"
+msgstr ""
+
+#: rc.c:242
+msgid "Indent for HTML rendering"
+msgstr ""
+
+#: rc.c:243
+msgid "Number of pixels per character (4.0...32.0)"
+msgstr ""
+
+#: rc.c:244
+msgid "Number of pixels per line (4.0...64.0)"
+msgstr ""
+
+#: rc.c:245
+msgid "Number of remembered lines when used as a pager"
+msgstr ""
+
+#: rc.c:246
+msgid "Use URL history"
+msgstr ""
+
+#: rc.c:247
+msgid "Number of remembered URL"
+msgstr ""
+
+#: rc.c:248
+msgid "Save URL history"
+msgstr ""
+
+#: rc.c:249
+msgid "Render frames automatically"
+msgstr ""
+
+#: rc.c:250
+msgid "Treat argument without scheme as URL"
+msgstr ""
+
+#: rc.c:251
+msgid "Use _self as default target"
+msgstr ""
+
+#: rc.c:252
+msgid "Open link on new tab if target is _blank or _new"
+msgstr ""
+
+#: rc.c:253
+msgid "Open download list panel on new tab"
+msgstr ""
+
+#: rc.c:254
+msgid "Display link URL automatically"
+msgstr ""
+
+#: rc.c:255
+msgid "Display decoded URL"
+msgstr ""
+
+#: rc.c:256
+msgid "Display current line number"
+msgstr ""
+
+#: rc.c:257
+msgid "Display inline images"
+msgstr ""
+
+#: rc.c:259
+msgid "Load inline images automatically"
+msgstr ""
+
+#: rc.c:260
+msgid "Maximum processes for parallel image loading"
+msgstr ""
+
+#: rc.c:261
+msgid "Use external image viewer"
+msgstr ""
+
+#: rc.c:262
+msgid "Scale of image (%)"
+msgstr ""
+
+#: rc.c:263
+msgid "External command to display image"
+msgstr ""
+
+#: rc.c:264
+msgid "Use link list of image map"
+msgstr ""
+
+#: rc.c:266
+msgid "Display file names in multi-column format"
+msgstr ""
+
+#: rc.c:267
+msgid "Use ASCII equivalents to display entities"
+msgstr ""
+
+#: rc.c:268
+msgid "Use graphic char for border of table and menu"
+msgstr ""
+
+#: rc.c:269
+msgid "Fold lines in TEXTAREA"
+msgstr ""
+
+#: rc.c:270
+msgid "Display DEL, S and STRIKE element"
+msgstr ""
+
+#: rc.c:271
+msgid "Display with color"
+msgstr ""
+
+#: rc.c:272
+msgid "Color of normal character"
+msgstr ""
+
+#: rc.c:273
+msgid "Color of anchor"
+msgstr ""
+
+#: rc.c:274
+msgid "Color of image link"
+msgstr ""
+
+#: rc.c:275
+msgid "Color of form"
+msgstr ""
+
+#: rc.c:276
+msgid "Enable coloring of active link"
+msgstr ""
+
+#: rc.c:277
+msgid "Color of currently active link"
+msgstr ""
+
+#: rc.c:278
+msgid "Use visited link color"
+msgstr ""
+
+#: rc.c:279
+msgid "Color of visited link"
+msgstr ""
+
+#: rc.c:280
+msgid "Color of background"
+msgstr ""
+
+#: rc.c:281
+msgid "Color of mark"
+msgstr ""
+
+#: rc.c:282
+msgid "Use proxy"
+msgstr ""
+
+#: rc.c:283
+msgid "URL of HTTP proxy host"
+msgstr ""
+
+#: rc.c:285
+msgid "URL of HTTPS proxy host"
+msgstr ""
+
+#: rc.c:288
+msgid "URL of GOPHER proxy host"
+msgstr ""
+
+#: rc.c:290
+msgid "URL of FTP proxy host"
+msgstr ""
+
+#: rc.c:291
+msgid "Domains to be accessed directly (no proxy)"
+msgstr ""
+
+#: rc.c:292
+msgid "Check noproxy by network address"
+msgstr ""
+
+#: rc.c:293
+msgid "Disable cache"
+msgstr ""
+
+#: rc.c:295
+msgid "News server"
+msgstr ""
+
+#: rc.c:296
+msgid "Mode of news server"
+msgstr ""
+
+#: rc.c:297
+msgid "Number of news messages"
+msgstr ""
+
+#: rc.c:299
+msgid "Order of name resolution"
+msgstr ""
+
+#: rc.c:300
+msgid "Directory corresponding to / (document root)"
+msgstr ""
+
+#: rc.c:301
+msgid "Directory corresponding to /~user"
+msgstr ""
+
+#: rc.c:302
+msgid "Directory corresponding to /cgi-bin"
+msgstr ""
+
+#: rc.c:303
+msgid "Confirm when quitting with q"
+msgstr ""
+
+#: rc.c:304
+msgid "Close tab if buffer is last when back"
+msgstr ""
+
+#: rc.c:306
+msgid "Enable mark operations"
+msgstr ""
+
+#: rc.c:308
+msgid "Enable Emacs-style line editing"
+msgstr ""
+
+#: rc.c:309
+msgid "Enable vi-like numeric prefix"
+msgstr ""
+
+#: rc.c:310
+msgid "Move cursor to top line when going to label"
+msgstr ""
+
+#: rc.c:311
+msgid "Move cursor to top line when moving to next page"
+msgstr ""
+
+#: rc.c:312
+msgid "Fold lines of plain text file"
+msgstr ""
+
+#: rc.c:313
+msgid "Show line numbers"
+msgstr ""
+
+#: rc.c:314
+msgid "Show search string"
+msgstr ""
+
+#: rc.c:315
+msgid "List of mime.types files"
+msgstr ""
+
+#: rc.c:316
+msgid "List of mailcap files"
+msgstr ""
+
+#: rc.c:317
+msgid "List of urimethodmap files"
+msgstr ""
+
+#: rc.c:318
+msgid "Editor"
+msgstr ""
+
+#: rc.c:319
+msgid "Mailer"
+msgstr ""
+
+#: rc.c:320
+msgid "External Browser"
+msgstr ""
+
+#: rc.c:321
+msgid "Second External Browser"
+msgstr ""
+
+#: rc.c:322
+msgid "Third External Browser"
+msgstr ""
+
+#: rc.c:323
+msgid "Disable secret file security check"
+msgstr ""
+
+#: rc.c:324
+msgid "Password file"
+msgstr ""
+
+#: rc.c:325
+msgid "File for setting form on loading"
+msgstr ""
+
+#: rc.c:326
+msgid "Password for anonymous FTP (your mail address)"
+msgstr ""
+
+#: rc.c:327
+msgid "Generate domain part of password for FTP"
+msgstr ""
+
+#: rc.c:328
+msgid "User-Agent identification string"
+msgstr ""
+
+#: rc.c:329
+msgid "Accept-Encoding header"
+msgstr ""
+
+#: rc.c:330
+msgid "Accept header"
+msgstr ""
+
+#: rc.c:331
+msgid "Accept-Language header"
+msgstr ""
+
+#: rc.c:332
+msgid "Treat URL-like strings as links in all pages"
+msgstr ""
+
+#: rc.c:333
+msgid "Wrap search"
+msgstr ""
+
+#: rc.c:334
+msgid "Display unseen objects (e.g. bgimage tag)"
+msgstr ""
+
+#: rc.c:336
+msgid "Run external viewer in a separate session"
+msgstr ""
+
+#: rc.c:338
+msgid "Run external viewer in the background"
+msgstr ""
+
+#: rc.c:340
+msgid "Use external program for directory listing"
+msgstr ""
+
+#: rc.c:341
+msgid "URL of directory listing command"
+msgstr ""
+
+#: rc.c:343
+msgid "Enable dictionary lookup through CGI"
+msgstr ""
+
+#: rc.c:344
+msgid "URL of dictionary lookup command"
+msgstr ""
+
+#: rc.c:346
+msgid "Display link name for images lacking ALT"
+msgstr ""
+
+#: rc.c:347
+msgid "Index file for directories"
+msgstr ""
+
+#: rc.c:348
+msgid "Prepend http:// to URL automatically"
+msgstr ""
+
+#: rc.c:349
+msgid "Default value for open-URL command"
+msgstr ""
+
+#: rc.c:350
+msgid "Decode Content-Transfer-Encoding when saving"
+msgstr ""
+
+#: rc.c:351
+msgid "Preserve timestamp when saving"
+msgstr ""
+
+#: rc.c:353
+msgid "Enable mouse"
+msgstr ""
+
+#: rc.c:354
+msgid "Scroll in reverse direction of mouse drag"
+msgstr ""
+
+#: rc.c:355
+msgid "Behavior of wheel scroll speed"
+msgstr ""
+
+#: rc.c:356
+#, no-c-format
+msgid "(A only)Scroll by # % of screen"
+msgstr ""
+
+#: rc.c:357
+msgid "(B only)Scroll by # lines"
+msgstr ""
+
+#: rc.c:359
+msgid "Free memory of undisplayed buffers"
+msgstr ""
+
+#: rc.c:360
+msgid "Suppress `Referer:' header"
+msgstr ""
+
+#: rc.c:361
+msgid "Search case-insensitively"
+msgstr ""
+
+#: rc.c:362
+msgid "Use LESSOPEN"
+msgstr ""
+
+#: rc.c:365
+msgid "Perform SSL server verification"
+msgstr ""
+
+#: rc.c:366
+msgid "PEM encoded certificate file of client"
+msgstr ""
+
+#: rc.c:367
+msgid "PEM encoded private key file of client"
+msgstr ""
+
+#: rc.c:368
+msgid "Path to directory for PEM encoded certificates of CAs"
+msgstr ""
+
+#: rc.c:369
+msgid "File consisting of PEM encoded certificates of CAs"
+msgstr ""
+
+#: rc.c:371
+msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
+msgstr ""
+
+#: rc.c:374
+msgid "Enable cookie processing"
+msgstr ""
+
+#: rc.c:375
+msgid "Accept cookies"
+msgstr ""
+
+#: rc.c:376
+msgid "Action to be taken on invalid cookie"
+msgstr ""
+
+#: rc.c:377
+msgid "Domains to reject cookies from"
+msgstr ""
+
+#: rc.c:378
+msgid "Domains to accept cookies from"
+msgstr ""
+
+#: rc.c:380
+msgid "Number of redirections to follow"
+msgstr ""
+
+#: rc.c:381
+msgid "Enable processing of meta-refresh tag"
+msgstr ""
+
+#: rc.c:384
+msgid "Enable Migemo (Roma-ji search)"
+msgstr ""
+
+#: rc.c:385
+msgid "Migemo command"
+msgstr ""
+
+#: rc.c:389
+msgid "Display charset"
+msgstr ""
+
+#: rc.c:390
+msgid "Default document charset"
+msgstr ""
+
+#: rc.c:391
+msgid "Automatic charset detect when loading"
+msgstr ""
+
+#: rc.c:392
+msgid "System charset"
+msgstr ""
+
+#: rc.c:393
+msgid "System charset follows locale(LC_CTYPE)"
+msgstr ""
+
+#: rc.c:394
+msgid "Output halfdump with display charset"
+msgstr ""
+
+#: rc.c:395
+msgid "Use multi column characters"
+msgstr ""
+
+#: rc.c:396
+msgid "Use combining characters"
+msgstr ""
+
+#: rc.c:397
+msgid "Use Unicode language tags"
+msgstr ""
+
+#: rc.c:398
+msgid "Charset conversion using Unicode map"
+msgstr ""
+
+#: rc.c:399
+msgid "Charset conversion when loading"
+msgstr ""
+
+#: rc.c:400
+msgid "Adjust search string for document charset"
+msgstr ""
+
+#: rc.c:401
+msgid "Fix character width when conversion"
+msgstr ""
+
+#: rc.c:402
+msgid "Use GB 12345 Unicode map instead of GB 2312's"
+msgstr ""
+
+#: rc.c:403
+msgid "Use JIS X 0201 Roman for ISO-2022-JP"
+msgstr ""
+
+#: rc.c:404
+msgid "Use JIS C 6226:1978 for ISO-2022-JP"
+msgstr ""
+
+#: rc.c:405
+msgid "Use JIS X 0201 Katakana"
+msgstr ""
+
+#: rc.c:406
+msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
+msgstr ""
+
+#: rc.c:407
+msgid "Use JIS X 0213:2000 (2000JIS)"
+msgstr ""
+
+#: rc.c:408
+msgid "Strict ISO-2022-JP/KR/CN"
+msgstr ""
+
+#: rc.c:409
+msgid "Treat 4 bytes char. of GB18030 as Unicode"
+msgstr ""
+
+#: rc.c:412
+msgid "keymap file"
+msgstr ""
+
+#: rc.c:444
+msgid "black"
+msgstr ""
+
+#: rc.c:445
+msgid "red"
+msgstr ""
+
+#: rc.c:446
+msgid "green"
+msgstr ""
+
+#: rc.c:447
+msgid "yellow"
+msgstr ""
+
+#: rc.c:448
+msgid "blue"
+msgstr ""
+
+#: rc.c:449
+msgid "magenta"
+msgstr ""
+
+#: rc.c:450
+msgid "cyan"
+msgstr ""
+
+#: rc.c:451
+msgid "white"
+msgstr ""
+
+#: rc.c:452
+msgid "terminal"
+msgstr ""
+
+#: rc.c:478
+msgid "none"
+msgstr ""
+
+#: rc.c:479
+msgid "current URL"
+msgstr ""
+
+#: rc.c:480
+msgid "link URL"
+msgstr ""
+
+#: rc.c:493
+msgid "A:relative to screen height"
+msgstr ""
+
+#: rc.c:494
+msgid "B:fixed speed"
+msgstr ""
+
+#: rc.c:899
+msgid "Display Settings"
+msgstr ""
+
+#: rc.c:901
+msgid "Color Settings"
+msgstr ""
+
+#: rc.c:903
+msgid "Miscellaneous Settings"
+msgstr ""
+
+#: rc.c:904
+msgid "Directory Settings"
+msgstr ""
+
+#: rc.c:905
+msgid "External Program Settings"
+msgstr ""
+
+#: rc.c:906
+msgid "Network Settings"
+msgstr ""
+
+#: rc.c:907
+msgid "Proxy Settings"
+msgstr ""
+
+#: rc.c:909
+msgid "SSL Settings"
+msgstr ""
+
+#: rc.c:912
+msgid "Cookie Settings"
+msgstr ""
+
+#: rc.c:915
+msgid "Charset Settings"
+msgstr ""
+
+#: rc.c:1386
+msgid "en;q=1.0"
+msgstr ""

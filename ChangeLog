@@ -1,3 +1,17 @@
+2003-09-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* gettextize
+	* Makefile.in: updated
+	* menu.c: gettextize
+	* rc.c: gettextize
+	* intl/.cvsignore: added
+	* po/.cvsignore: added
+	* po/Makevars: added
+	* po/Makevars.template: removed
+	* po/POTFILES.in: updated
+	* po/w3m.pot: created
+	* po/ja.po: created
+
 2003-09-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* based on [w3m-dev 03970]
@@ -8058,4 +8072,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.867 2003/09/24 14:05:06 ukai Exp $
+$Id: ChangeLog,v 1.868 2003/09/24 18:35:06 ukai Exp $

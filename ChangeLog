@@ -1,3 +1,9 @@
+2003-05-07  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 03888] autodetect ssl
+	* acinclude.m4 (AC_W3M_SSL): use SSL_*
+	* configure.in: move AC_W3M_SSL after AC_W3M_EXTLIBS
+
 2003-05-03  Hiroyuki Ito <hito@crl.go.jp>
 
 	* [w3m-dev 03887] Re: I-search problem
@@ -7780,4 +7786,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.830 2003/05/02 15:49:59 ukai Exp $
+$Id: ChangeLog,v 1.831 2003/05/06 16:24:48 ukai Exp $

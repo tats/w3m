@@ -424,21 +424,21 @@ if test x"$with_ssl" != xno; then
   for dir in $with_ssl
   do
      if test -f "$dir/include/openssl/ssl.h"; then
-        CFLAGS="$CFLAGS -I$dir/include/openssl"
+        SSL_CFLAGS="$SSL_CFLAGS -I$dir/include/openssl"
         if test "$dir" != "/usr"; then
-           CFLAGS="$CFLAGS -I$dir/include"
+           SSL_CFLAGS="$SSL_CFLAGS -I$dir/include"
         fi
      elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
-        CFLAGS="$CFLAGS -I$dir/include"
+        SSL_CFLAGS="$SSLCFLAGS -I$dir/include"
      fi
      if test "$dir" != "/usr" -a -f "$dir/lib/libssl.a"; then
-	W3M_LIBS="$W3M_LIBS -L$dir/lib"
+	SSL_LIBS="$SSL_LIBS -L$dir/lib"
      fi
   done
   AC_CHECK_LIB(ssl, SSL_new,
-	[w3m_ssl="found"; W3M_LIBS="$W3M_LIBS -lssl -lcrypto"],
+	[w3m_ssl="found"; CFLAGS="$CFLAGS $SSL_CFLAGS" W3M_LIBS="$W3M_LIBS $SSL_LIBS -lssl -lcrypto"],
 	[w3m_ssl="not found"],
-	[-lcrypto])
+	[$SSL_LIBS -lcrypto])
 
   if test x"$w3m_ssl" = xfound; then
     AC_MSG_CHECKING(if SSL certificate verify is enabled)

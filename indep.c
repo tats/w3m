@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.25 2002/11/09 21:55:24 ukai Exp $ */
+/* $Id: indep.c,v 1.26 2002/12/09 15:24:04 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -506,10 +506,8 @@ html_unquote(char *str)
 static char xdigit[0x10] = "0123456789ABCDEF";
 
 #define url_unquote_char(pstr) \
-  (IS_XDIGIT((*(pstr))[1]) ? \
-    (IS_XDIGIT((*(pstr))[2]) ? \
+  ((IS_XDIGIT((*(pstr))[1]) && IS_XDIGIT((*(pstr))[2])) ? \
     (*(pstr) += 3, (GET_MYCDIGIT((*(pstr))[-2]) << 4) | GET_MYCDIGIT((*(pstr))[-1])) : \
-    (*(pstr) += 2, GET_MYCDIGIT((*(pstr))[-1]))) : \
    -1)
 
 char *
@@ -547,11 +545,10 @@ url_unquote(char *str)
 	if (*p == '%') {
 	    q = p;
 	    c = url_unquote_char(&q);
-	    if (c >= 0 && (IS_CNTRL(c) || c == ' ' || !IS_ASCII(c))) {
+	    if (c >= 0 && c != '\0' && c != '\n' && c != '\r') {
 		if (tmp == NULL)
 		    tmp = Strnew_charp_n(str, (int)(p - str));
-		if (c != '\0' && c != '\n' && c != '\r')
-		    Strcat_char(tmp, (char)c);
+		Strcat_char(tmp, (char)c);
 		p = q;
 		continue;
 	    }

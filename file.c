@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.152 2002/12/08 14:23:44 ukai Exp $ */
+/* $Id: file.c,v 1.153 2002/12/09 15:24:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1749,7 +1749,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
     }
 #ifdef USE_NNTP
-    else if (pu.scheme == SCM_NEWS) {
+    else if (pu.scheme == SCM_NEWS || pu.scheme == SCM_NNTP) {
 	t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&f, t_buf, TRUE, &pu);
 	t = checkContentType(t_buf);

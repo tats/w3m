@@ -1,3 +1,13 @@
+2001-11-22  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02501]
+	* .cvsignore: add funcname.c funcname1.h funcname2.h tagtable.c
+	* scripts/.cvsignore: added, dirlist.cgi
+	* scripts/multipart/.cvsignore: added, multipart.cgi
+	* scripts/w3mman/.cvsignore: added, w3mman w3mman2html.cgi
+	* doc-jp/README.kokb: deleted
+	* gc/makefile.depend: deleted
+
 2001-11-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* table.c (feed_table): fix the following table

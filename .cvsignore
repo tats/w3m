@@ -1,3 +1,7 @@
 XXMakefile
 config.h
 config.param
+funcname.c
+funcname1.h
+funcname2.h
+tagtable.c

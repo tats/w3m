@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.1 2002/07/17 20:58:48 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.2 2002/07/18 06:23:51 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -248,7 +248,8 @@ w3mimg_x11open()
     w3mimg_op *wop = NULL;
     struct x11_info *xi = NULL;
     char *id;
-    int revert, i, nchildren;
+    int revert, i;
+    unsigned int nchildren;
     XWindowAttributes attr;
     Window root, *children;
 

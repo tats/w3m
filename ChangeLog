@@ -1,3 +1,8 @@
+2002-07-18  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03270] Re: w3m-img for framebuffer merged
+	* w3mimg/x11/x11_w3mimg.c (w3mimg_x11open): unsigned int nchildren
+
 2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* XMakefile (w3mimg/w3mimg): added
@@ -3601,4 +3606,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.406 2002/07/18 06:07:25 ukai Exp $
+$Id: ChangeLog,v 1.407 2002/07/18 06:23:51 ukai Exp $

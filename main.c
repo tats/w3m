@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.105 2002/06/05 15:29:37 ukai Exp $ */
+/* $Id: main.c,v 1.106 2002/06/05 15:42:10 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4831,7 +4831,8 @@ execdict(char *word)
 	displayBuffer(Currentbuf, B_NORMAL);
 	return;
     }
-    dictcmd = Sprintf("%s?%s", DictCommand, w)->ptr;
+    dictcmd = Sprintf("%s?%s", DictCommand,
+		      Str_form_quote(Strnew_charp(w))->ptr)->ptr;
     buf = loadGeneralFile(dictcmd, NULL, NO_REFERER, 0, NULL);
     if (buf == NULL) {
 	disp_message("Execution failed", FALSE);

@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.10 2002/11/05 17:12:02 ukai Exp $ */
+/* $Id: map.c,v 1.12 2002/11/06 15:08:06 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -57,6 +57,30 @@ inMapArea(MapArea * a, int x, int y)
     }
     return FALSE;
 }
+
+static int
+nearestMapArea(MapList *ml, int x, int y)
+{
+    ListItem *al;
+    MapArea *a;
+    int i, l, n = 0, min = -1, limit = pixel_per_char * pixel_per_char
+	+ pixel_per_line * pixel_per_line;
+
+    if (!ml || !ml->area)
+	return n;
+    for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
+	a = (MapArea *) al->ptr;
+	if (a) {
+	    l = (a->center_x - x) * (a->center_x - x)
+		+ (a->center_y - y) * (a->center_y - y);
+	    if ((min < 0 || l < min) && l < limit) {
+		n = i;
+		min = l;
+	    }
+	}
+    }
+    return n;
+}
 #endif
 
 MapArea *
@@ -113,7 +137,11 @@ follow_map_menu(Buffer *buf, struct parsed_tagarg * arg, Anchor *a_img, int x,
     }
     label[n] = NULL;
     if (initial == -n)
+#ifdef USE_IMAGE
+	initial = map ? nearestMapArea(ml, px, py) : 0;
+#else
 	initial = 0;
+#endif
     else if (initial < 0)
 	initial *= -1;
 
@@ -223,6 +251,8 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
     }
     a->coords = NULL;
     a->ncoords = 0;
+    a->center_x = 0;
+    a->center_y = 0;
     if (a->shape == SHAPE_UNKNOWN || a->shape == SHAPE_DEFAULT)
 	return a;
     if (!coords) {
@@ -270,6 +300,18 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 	a->ncoords = a->ncoords / 2 * 2;
 	a->coords[a->ncoords] = a->coords[0];
 	a->coords[a->ncoords + 1] = a->coords[1];
+    }
+    if (a->shape == SHAPE_CIRCLE) {
+	a->center_x = a->coords[0];
+	a->center_y = a->coords[1];
+    }
+    else {
+	for (i = 0; i < a->ncoords / 2; i++) {
+	    a->center_x += a->coords[2 * i];
+	    a->center_y += a->coords[2 * i + 1];
+	}
+	a->center_x /= a->ncoords / 2;
+	a->center_y /= a->ncoords / 2;
     }
 #endif
 #endif

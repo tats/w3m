@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.20 2002/11/06 03:50:49 ukai Exp $ */
+/* $Id: search.c,v 1.21 2002/11/06 15:05:35 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -62,7 +62,7 @@ open_migemo(char *migemo_command)
 	dup2(fdr[1], 1);
 	dup2(open("/dev/null", O_WRONLY), 2);
 #ifndef FOPEN_MAX
-#define FOPEN_MAX 1024 /* XXX */
+#define FOPEN_MAX 1024		/* XXX */
 #endif
 	/* close all other file descriptors (socket, ...) */
 	for (i = 3; i < FOPEN_MAX; i++)

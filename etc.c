@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.35 2002/11/06 03:50:49 ukai Exp $ */
+/* $Id: etc.c,v 1.36 2002/11/06 15:05:34 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1050,9 +1050,9 @@ openSecretFile(char *fname)
      *
      * XXX: disable_secret_security_check will introduce some
      *    security issues, but on some platform such as Windows
-     *	  it's not possible (or feasible) to disable group|other
+     *    it's not possible (or feasible) to disable group|other
      *    readable and writable.
-     *	 [w3m-dev 03368][w3m-dev 03369][w3m-dev 03370]
+     *   [w3m-dev 03368][w3m-dev 03369][w3m-dev 03370]
      */
     if (disable_secret_security_check)
 	/* do nothing */ ;
@@ -1315,7 +1315,7 @@ mySystem(char *command, int background)
 	    dup2(open("/dev/null", O_WRONLY), 1);
 	    dup2(open("/dev/null", O_WRONLY), 2);
 #ifndef FOPEN_MAX
-#define FOPEN_MAX 1024	/* XXX */
+#define FOPEN_MAX 1024		/* XXX */
 #endif
 	    /* close all other file descriptors (socket, ...) */
 	    for (i = 3; i < FOPEN_MAX; i++)

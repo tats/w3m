@@ -1,3 +1,18 @@
+2002-01-16  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02841] migemo patch
+	* NEWS: migemo support
+	* config.h.dist (USE_MIGEMO): added
+	* configure: add use_migemo
+	* fm.h (use_migemo): added
+	* fm.h (migemo_command: added
+	* main.c (fversion): add "migemo"
+	* main.c (migemostr): added
+	* main.c (srchcore): if use_migemo, use migemostr
+	* rc.c (CMT_USE_MIGEMO): added
+	* rc.c (CMT_MIGEMO_COMMAND): added
+	* rc.c (params3): add use_migemo, migemo_command
+
 2002-01-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* main.c (fversion): add "external-uri-loader,w3mmailer"
@@ -1962,4 +1977,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.222 2002/01/15 16:30:08 ukai Exp $
+$Id: ChangeLog,v 1.223 2002/01/15 17:23:29 ukai Exp $

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.49 2002/01/15 03:45:02 ukai Exp $
+# $Id: configure,v 1.50 2002/01/15 17:23:29 ukai Exp $
 #	Configuration.
 #
 
@@ -696,6 +696,8 @@ else
   use_ansi_color=n
   def_param "use_ansi_color" n
 fi
+
+ask_param "Use Migemo (Roma-ji search; Please see http://www.nmn.jp/~hidai/software/w3m/)" use_migemo n
 
 # protocols?
 ask_param "External URI loader support" use_external_uri_loader y
@@ -2035,6 +2037,7 @@ $def_lang
 $def_kanji_symbols
 $def_use_color
 $def_use_ansi_color
+$def_use_migemo
 $def_emacs_like_lineedit
 $def_vi_prec_num
 $def_use_mark

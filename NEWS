@@ -1,5 +1,6 @@
 w3m 0.3?
 
+* support migemo (romaji search) [experimental]
 * use w3mmail.cgi for mailto: URL
 * support external URI loader
 * support -dump_extra ftp://

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.37 2002/01/14 15:59:17 ukai Exp $ */
+/* $Id: fm.h,v 1.38 2002/01/15 17:23:29 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -775,6 +775,11 @@ global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 global int ignore_null_img_alt init(TRUE);
 global int FoldTextarea init(FALSE);
+
+#ifdef USE_MIGEMO
+global int use_migemo init(FALSE);
+global char *migemo_command init("migemoc");
+#endif				/* USE_MIGEMO */
 
 global struct auth_cookie *Auth_cookie init(NULL);
 global char *Local_cookie init(NULL);

@@ -102,6 +102,7 @@ MODEL=Linux.i686-monster-ja
 #define KANJI_SYMBOLS
 #define USE_COLOR
 #undef USE_ANSI_COLOR
+#undef USE_MIGEMO
 #undef EMACS_LIKE_LINEEDIT
 #undef VI_PREC_NUM
 #undef USE_MARK

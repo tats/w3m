@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.58 2002/01/15 16:30:08 ukai Exp $ */
+/* $Id: main.c,v 1.59 2002/01/15 17:23:29 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -152,6 +152,9 @@ fversion(FILE * f)
 #endif
 #ifdef USE_MARK
 	    ",mark"
+#endif
+#ifdef USE_MIGEMO
+	    ",migemo"
 #endif
 	);
 }
@@ -1330,6 +1333,24 @@ rdrwSc(void)
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
+#ifdef USE_MIGEMO
+/* Migemo: romaji --> kana+kanji in regexp */
+static char *
+migemostr(char *str)
+{
+    FILE *f;
+    Str tmp;
+
+    tmp = Strnew_m_charp(migemo_command, " ", shell_quote(str), NULL);
+    if (!(f = popen(tmp->ptr, "r")))
+	return str;
+    tmp = Strfgets(f);
+    Strchop(tmp);
+    pclose(f);
+    return tmp->ptr;
+}
+#endif				/* USE_MIGEMO */
+
 /* search by regular expression */
 static int
 srchcore(char *str, int (*func) (Buffer *, char *))
@@ -1338,7 +1359,11 @@ srchcore(char *str, int (*func) (Buffer *, char *))
     volatile int i, result = SR_NOTFOUND;
 
     if (str != NULL && str != SearchString)
-	SearchString = str;
+	SearchString =
+#ifdef USE_MIGEMO
+	    use_migemo ? migemostr(str) :
+#endif				/* USE_MIGEMO */
+	    str;
     if (SearchString == NULL || *SearchString == '\0')
 	return SR_NOTFOUND;
 

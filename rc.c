@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.28 2002/01/15 16:07:58 ukai Exp $ */
+/* $Id: rc.c,v 1.29 2002/01/15 17:23:29 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -168,6 +168,11 @@ static char *config_file = NULL;
 #define CMT_FOLLOW_REDIRECTION "従うリダイレクトの回数"
 #define CMT_META_REFRESH "meta refresh に対応する"
 
+#ifdef USE_MIGEMO
+#define CMT_USE_MIGEMO "Migemo(ローマ字検索)を使用する"
+#define CMT_MIGEMO_COMMAND "Migemoコマンド"
+#endif				/* USE_MIGEMO */
+
 #else				/* LANG != JA */
 
 
@@ -283,6 +288,12 @@ static char *config_file = NULL;
 #endif
 #define CMT_FOLLOW_REDIRECTION "Follow this number of redirections"
 #define CMT_META_REFRESH "Support meta refresh"
+
+#ifdef USE_MIGEMO
+#define CMT_USE_MIGEMO "Use Migemo (Roma-ji search)"
+#define CMT_MIGEMO_COMMAND "Migemo command"
+#endif				/* USE_MIGEMO */
+
 #endif				/* LANG != JA */
 
 #define PI_TEXT    0
@@ -461,6 +472,12 @@ struct param_ptr params3[] = {
     {"wrap_search", P_INT, PI_ONOFF, (void *)&WrapDefault, CMT_WRAP, NULL},
     {"ignorecase_search", P_INT, PI_ONOFF, (void *)&IgnoreCase,
      CMT_IGNORE_CASE, NULL},
+#ifdef USE_MIGEMO
+    {"use_migemo", P_INT, PI_ONOFF, (void *)&use_migemo, CMT_USE_MIGEMO,
+     NULL},
+    {"migemo_command", P_STRING, PI_TEXT, (void *)&migemo_command,
+     CMT_MIGEMO_COMMAND, NULL},
+#endif				/* USE_MIGEMO */
 #ifdef USE_MOUSE
     {"use_mouse", P_INT, PI_ONOFF, (void *)&use_mouse, CMT_MOUSE, NULL},
     {"reverse_mouse", P_INT, PI_ONOFF, (void *)&reverse_mouse,

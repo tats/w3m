@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.41 2001/12/20 12:32:19 ukai Exp $
+# $Id: configure,v 1.42 2001/12/21 02:11:50 ukai Exp $
 #	Configuration.
 #
 
@@ -505,7 +505,7 @@ echo "libdir='$libdir'" >> config.param
 
 d_helpdir=$helpdir
 if [ -z "$d_helpdir" ]; then
-  d_helpdir="$topdir/lib/w3m"
+  d_helpdir="$topdir/share/w3m"
 fi
 echo "Which directory do you want to put the helpfile?"
 Echo "(default: $d_helpdir) "

@@ -1,3 +1,8 @@
+2001-12-21  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00656]
+	* helpdir default is PREFIX/share/w3m
+
 2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* version.c.in: 0.2.3.1-cvs
@@ -1364,4 +1369,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.151 2001/12/20 13:17:48 ukai Exp $
+$Id: ChangeLog,v 1.152 2001/12/21 02:11:49 ukai Exp $

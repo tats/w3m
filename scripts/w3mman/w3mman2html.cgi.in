@@ -1,6 +1,6 @@
 #!@PERL@
 
-$MAN = $ENV{'MAN'} || '@MAN@';
+$MAN = $ENV{'W3MMAN_MAN'} || '@MAN@';
 $QUERY = $ENV{'QUERY_STRING'} || $ARGV[0];
 $SCRIPT_NAME = $ENV{'SCRIPT_NAME'} || $0;
 $CGI = "file://$SCRIPT_NAME";
@@ -89,6 +89,8 @@ open(F, "$MAN $section $man 2> /dev/null |");
 $ok = 0;
 undef $header;
 $blank = -1;
+$cmd = "";
+$prev = "";
 while(<F>) {
   if (! defined($header)) {
     /^\s*$/ && next;
@@ -147,10 +149,29 @@ EOF
 
   s@(http|ftp)://[\w.\-/~]+[\w/]@<a href="$&">$&</a>@g;
   s@(\W)(mailto:)?(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@$1<a href="mailto:$3">$2$3</a>@g;
-  s@(\W)(\~?/[\w.][/\w.\-]*)@$1 . &file_ref($2)@ge;
-  s@(include(<\/?[bu]\>|\s)*\&lt;)([/\w.\-]+)@$1 . &include_ref($3)@ge;
+  s@(\W)(\~?/[\w.][\w.\-/~]*)@$1 . &file_ref($2)@ge;
+  s@(include(<\/?[bu]\>|\s)*\&lt;)([\w.\-/]+)@$1 . &include_ref($3)@ge;
+  if ($prev && m@^\s*(\<[bu]\>)*(\w[\w.\-]*)(\</[bu]\>)*(\([\dm]\w*\))@) {
+    $cmd .= "$2$4";
+    $prev =~ s@(\w[\w.\-]*-)((\</[bu]\>)*\s*)$@<a href="$CGI?$cmd">$1</a>$2@;
+    print $prev;
+    $prev = '';
+    s@^(\s*(\<[bu]\>)*)(\w[\w.\-]*)@@;
+    print "$1<a href=\"$CGI?$cmd\">$3</a>";
+  } elsif ($prev) {
+    print $prev;
+    $prev = '';
+  }
   s@(\w[\w.\-]*)((\</[bu]\>)*)(\([\dm]\w*\))@<a href="$CGI?$1$4">$1</a>$2$4@g;
+  if (m@(\w[\w.\-]*)-(\</[bu]\>)*\s*$@) {
+    $cmd = $1;
+    $prev = $_;
+    next;
+  }
   print;
+}
+if ($prev) {
+  print $prev;
 }
 close(F);
 if (! $ok) {

@@ -11,6 +11,13 @@ w3mman
     w3mman [<section>] <command>
     w3mman -k <keyword>
 
+環境変数
+
+    W3MMAN_W3M
+        使用する w3m コマンドを指定します(デフォルトは w3m)
+    W3MMAN_MAN
+        使用する man コマンドを指定します(デフォルトは man)
+
 インストール
 
     make install

@@ -34,6 +34,13 @@ as MANPATH.
 .B \-k " keyword"
 Specify 
 .I keyword.
+.SH ENVIRONMENT
+.TP
+.B W3MMAN_W3M
+If W3MMAN_W3M is set, its value is used instead of @W3M@.
+.TP
+.B W3MMAN_MAN
+If W3MMAN_MAN is set, its value is used instead of @MAN@.
 .SH FILES
 .TP
 .I @LIB_DIR@/w3mman2html.cgi

@@ -1,7 +1,7 @@
 #!@PERL@
 
-@W3M = split(' ', '@W3M@');
-$ENV{'MAN'} = '@MAN@';
+@W3M = split(' ', $ENV{'W3MMAN_W3M'} || '@W3M@');
+$ENV{'W3MMAN_MAN'} ||= '@MAN@';
 $SCRIPT = 'file:///$LIB/w3mman2html.cgi';
 
 sub usage {

@@ -1,5 +1,14 @@
 2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03583] w3mman
+	* scripts/w3mman/README: W3MMAN_W3M, W3MMAN_MAN
+	* scripts/w3mman/w3mman.1.in: add ENVIRONMENT
+	* scripts/w3mman/w3mman.in: $ENV{'W3MMAN_W3M'}, $ENV{'W3MMAN_MAN'}
+	* scripts/w3mman/w3mman2html.cgi.in: $ENV{'W3MMAN_MAN'}
+					hyphenation
+
+2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03582] add config options graphic_char and use_proxy
 	* NEWS: rc: graphic_char, use_proxy
 	* fm.h (Do_no_use_proxy): macro using use_proxy
@@ -5959,4 +5968,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.633 2002/12/18 16:42:30 ukai Exp $
+$Id: ChangeLog,v 1.634 2002/12/18 16:48:02 ukai Exp $

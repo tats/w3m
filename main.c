@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.172 2002/12/18 16:25:47 ukai Exp $ */
+/* $Id: main.c,v 1.173 2002/12/18 16:33:19 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2543,7 +2543,7 @@ _mark(void)
 	return;
     l = Currentbuf->currentLine;
     l->propBuf[Currentbuf->pos] ^= PE_MARK;
-    displayBuffer(Currentbuf, B_NORMAL);
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
 /* Go to next mark */
@@ -5609,7 +5609,7 @@ reinit()
 #ifdef USE_MOUSE
     if (!strcasecmp(resource, "MOUSE")) {
 	initMouseAction();
-	displayBuffer(Currentbuf, B_NORMAL);
+	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 	return;
     }
 #endif

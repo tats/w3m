@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.22 2002/11/24 16:02:22 ukai Exp $ */
+/* $Id: search.c,v 1.23 2002/12/18 16:33:19 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -189,7 +189,7 @@ forwardSearch(Buffer *buf, char *str)
 int
 backwardSearch(Buffer *buf, char *str)
 {
-    char *p, *q, *found, *first, *last;
+    char *p, *q, *found, *found_last, *first, *last;
     Line *l, *begin;
     int wrapped = FALSE;
     int pos;
@@ -220,11 +220,14 @@ backwardSearch(Buffer *buf, char *str)
 #endif
 	p = &l->lineBuf[pos];
 	found = NULL;
+	found_last = NULL;
 	q = l->lineBuf;
 	while (regexMatch(q, &l->lineBuf[l->len] - q, q == l->lineBuf) == 1) {
 	    matchedPosition(&first, &last);
-	    if (first <= p)
+	    if (first <= p) {
 		found = first;
+		found_last = last;
+	    }
 #ifdef JP_CHARSET
 	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
 		q += 2;
@@ -237,7 +240,7 @@ backwardSearch(Buffer *buf, char *str)
 	if (found) {
 	    buf->pos = found - l->lineBuf;
 	    arrangeCursor(buf);
-	    set_mark(l, buf->pos, last - l->lineBuf);
+	    set_mark(l, buf->pos, found_last - l->lineBuf);
 	    return SR_FOUND;
 	}
     }
@@ -252,14 +255,17 @@ backwardSearch(Buffer *buf, char *str)
 	    }
 	}
 	found = NULL;
+	found_last = NULL;
 	q = l->lineBuf;
 	while (regexMatch(q, &l->lineBuf[l->len] - q, q == l->lineBuf) == 1) {
 	    matchedPosition(&first, &last);
 	    if (wrapped && l == begin && buf->pos == first - l->lineBuf)
 		/* exactly same match */
 		;
-	    else
+	    else {
 		found = first;
+		found_last = last;
+	    }
 #ifdef JP_CHARSET
 	    if (l->propBuf[q - l->lineBuf] & PC_KANJI1)
 		q += 2;
@@ -272,7 +278,7 @@ backwardSearch(Buffer *buf, char *str)
 	    buf->currentLine = l;
 	    gotoLine(buf, l->linenumber);
 	    arrangeCursor(buf);
-	    set_mark(l, buf->pos, last - l->lineBuf);
+	    set_mark(l, buf->pos, found_last - l->lineBuf);
 	    return SR_FOUND | (wrapped ? SR_WRAPPED : 0);
 	}
 	if (wrapped && l == begin)	/* no match */

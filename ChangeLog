@@ -1,3 +1,11 @@
+2002-12-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03579] Re: clean up displayBuffer()
+	* display.c (displayBuffer): re calcTabPos() when force or image redraw
+	* main.c (_mark): force redraw
+		(reinit): redraw image
+	* search.c (backwardSearch): found_last
+
 2002-12-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* main.c (DefaultAlarm): fix initialize value
@@ -5926,4 +5934,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.629 2002/12/18 16:25:47 ukai Exp $
+$Id: ChangeLog,v 1.630 2002/12/18 16:33:19 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.72 2002/02/28 16:15:41 ukai Exp $ */
+/* $Id: file.c,v 1.73 2002/02/28 16:21:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1840,7 +1840,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	proc = loadBuffer;
 #ifdef USE_IMAGE
     else if (activeImage && displayImage && !useExtImageViewer &&
-	     !w3m_dump && !strncasecmp(t, "image/", 6))
+	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6))
 	proc = loadImageBuffer;
 #endif
 #ifdef USE_GOPHER
@@ -6448,12 +6448,16 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image->url));
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+/*
     if (frame_source) {
+*/
 	tmpf = tmpfname(TMPF_SRC, ".html");
 	src = fopen(tmpf->ptr, "w");
 	newBuf->sourcefile = tmpf->ptr;
 	pushText(fileToDelete, tmpf->ptr);
+/*
     }
+*/
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
     if (src)

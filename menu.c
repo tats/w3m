@@ -1219,7 +1219,7 @@ popupMenu(int x, int y, Menu *menu)
 {
     initSelectMenu();
 
-    menu->cursorX = Currentbuf->cursorX;
+    menu->cursorX = Currentbuf->cursorX + Currentbuf->rootX;
     menu->cursorY = Currentbuf->cursorY;
     menu->x = x + FRAME_WIDTH + 1;
     menu->y = y + 2;
@@ -1247,7 +1247,7 @@ mainMn(void)
 	    return;
 	menu = w3mMenuList[n].menu;
     }
-    popupMenu(Currentbuf->cursorX, Currentbuf->cursorY, menu);
+    popupMenu(Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY, menu);
 }
 
 /* --- MainMenu (END) --- */
@@ -1318,7 +1318,7 @@ initSelectMenu(void)
 
     new_option_menu(&SelectMenu, label, &SelectV, smChBuf);
     SelectMenu.initial = SelectV;
-    SelectMenu.cursorX = Currentbuf->cursorX;
+    SelectMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
     SelectMenu.cursorY = Currentbuf->cursorY;
     SelectMenu.keymap['D'] = smDelBuf;
     SelectMenu.item[nitem].type = MENU_NOP;

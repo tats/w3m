@@ -1,3 +1,19 @@
+2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* buffer.c (newBuffer): set COLS
+	* display.c (displayBuffer redrawLine redrawLineRegion
+	    cursorRight arrangeCursor cursorXY): 
+	  new showLineNumber implementation
+	* main.c (ctrCsrH shiftvisualpos shiftl shiftr _movL _movR
+	   _followForm follow_map process_mouse):
+	  use buf->COLS, buf->rootX
+	* menu.c (popupMenu mainMn initSelectMenu):
+	  use buf->rootX
+	* etc.c (columnSkip): use buf->COLS
+	* file.c (HTMLlineproc2body loadBuffer saveBufferDelNum getNextPage)
+	  remove old showLineNumber codes
+	* fm.h (Buffer): add rootX, COLS
+
 2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* XMakefile (clean): rm tagtable.c

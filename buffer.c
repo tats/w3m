@@ -31,6 +31,7 @@ newBuffer(int width)
 	return NULL;
     bzero((void *) n, sizeof(Buffer));
     n->width = width;
+    n->COLS = COLS;
     n->currentURL.scheme = SCM_UNKNOWN;
     n->baseURL = NULL;
     n->baseTarget = NULL;

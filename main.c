@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.10 2001/11/20 08:20:56 ukai Exp $ */
+/* $Id: main.c,v 1.11 2001/11/20 16:46:33 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1204,7 +1204,7 @@ ctrCsrH(void)
     int offsetx;
     if (Currentbuf->firstLine == NULL)
 	return;
-    offsetx = Currentbuf->cursorX - COLS / 2;
+    offsetx = Currentbuf->cursorX - Currentbuf->COLS / 2;
     if (offsetx != 0) {
 	columnSkip(Currentbuf, offsetx);
 	arrangeCursor(Currentbuf);
@@ -1341,8 +1341,8 @@ static void
 shiftvisualpos(Buffer * buf, int shift)
 {
     buf->visualpos -= shift;
-    if (buf->visualpos >= COLS)
-	buf->visualpos = COLS - 1;
+    if (buf->visualpos >= buf->COLS)
+	buf->visualpos = buf->COLS - 1;
     else if (buf->visualpos < 0)
 	buf->visualpos = 0;
     arrangeLine(buf);
@@ -1359,7 +1359,7 @@ shiftl(void)
     if (Currentbuf->firstLine == NULL)
 	return;
     column = Currentbuf->currentColumn;
-    columnSkip(Currentbuf, searchKeyNum() * (-COLS + 1) + 1);
+    columnSkip(Currentbuf, searchKeyNum() * (- Currentbuf->COLS + 1) + 1);
     shiftvisualpos(Currentbuf, Currentbuf->currentColumn - column);
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -1373,7 +1373,7 @@ shiftr(void)
     if (Currentbuf->firstLine == NULL)
 	return;
     column = Currentbuf->currentColumn;
-    columnSkip(Currentbuf, searchKeyNum() * (COLS - 1) - 1);
+    columnSkip(Currentbuf, searchKeyNum() * (Currentbuf->COLS - 1) - 1);
     shiftvisualpos(Currentbuf, Currentbuf->currentColumn - column);
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -1632,7 +1632,7 @@ _movL(int n)
 void
 movL(void)
 {
-    _movL(COLS / 2);
+    _movL(Currentbuf->COLS  / 2);
 }
 
 void
@@ -1704,7 +1704,7 @@ _movR(int n)
 void
 movR(void)
 {
-    _movR(COLS / 2);
+    _movR(Currentbuf->COLS / 2);
 }
 
 void
@@ -2821,7 +2821,7 @@ _followForm(int submit)
        if (submit)
            goto do_submit;
        if (! formChooseOptionByMenu(fi,
-        Currentbuf->cursorX - Currentbuf->pos + a->start.pos,
+        Currentbuf->cursorX - Currentbuf->pos + a->start.pos + Currentbuf->rootX,
         Currentbuf->cursorY))
            break;
 	formUpdateBuffer(a, Currentbuf, fi);
@@ -3581,9 +3581,9 @@ follow_map(struct parsed_tagarg *arg)
 
     a = retrieveCurrentImg(Currentbuf);
     if (a != NULL)
-	x = Currentbuf->cursorX - Currentbuf->pos + a->start.pos;
+	x = Currentbuf->cursorX - Currentbuf->pos + a->start.pos + Currentbuf->rootX;
     else
-	x = Currentbuf->cursorX;
+	x = Currentbuf->cursorX + Currentbuf->rootX;
     url = follow_map_menu(Currentbuf, arg, x, Currentbuf->cursorY + 2);
     if (url == NULL || *url == '\0')
 	return;
@@ -4273,18 +4273,18 @@ process_mouse(int btn, int x, int y)
 		    return;
 		}
 		if (y == Currentbuf->cursorY &&
-		    (x == Currentbuf->cursorX
+		    (x == Currentbuf->cursorX + Currentbuf->rootX 
 #ifdef JP_CHARSET
 		     || (Currentbuf->currentLine != NULL &&
 			 (Currentbuf->currentLine->propBuf[Currentbuf->pos] & PC_KANJI1)
-			 && x == Currentbuf->cursorX + 1)
+			 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
 #endif				/* JP_CHARSET */
 		    )) {
 		    followA();
 		    return;
 		}
-
-		cursorXY(Currentbuf, x, y);
+		if (x >= Currentbuf->rootX)
+		cursorXY(Currentbuf, x - Currentbuf->rootX, y);
 		displayBuffer(Currentbuf, B_NORMAL);
 
 	    }
@@ -4294,7 +4294,8 @@ process_mouse(int btn, int x, int y)
 	    break;
 	case MOUSE_BTN3_DOWN:
 #ifdef MENU
-	    cursorXY(Currentbuf, x, y);
+	    if (x >= Currentbuf->rootX)
+	    cursorXY(Currentbuf, x - Currentbuf->rootX, y);
 	    onA();
 	    mainMenu(x, y);
 #endif				/* MENU */

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.3 2001/11/15 00:32:13 a-ito Exp $ */
+/* $Id: display.c,v 1.4 2001/11/20 16:46:32 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -209,6 +209,17 @@ displayBuffer(Buffer * buf, int mode)
 	reshapeBuffer(buf);
 	in_check_url = FALSE;
     }
+    if (showLineNum) {
+	if (buf->lastLine && buf->lastLine->real_linenumber > 0)
+	    buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
+		/ log(10)) + 2;
+	if (buf->rootX < 5)
+	    buf->rootX = 5;
+	if (buf->rootX > COLS)
+	    buf->rootX = COLS;
+    } else
+	buf->rootX = 0;
+    buf->COLS = COLS - buf->rootX;
     if (mode == B_FORCE_REDRAW ||
 	mode == B_SCROLL ||
 	cline != buf->topLine ||
@@ -299,7 +310,7 @@ displayBuffer(Buffer * buf, int mode)
 	clear();
     }
     standout();
-    message(msg->ptr, buf->cursorX, buf->cursorY);
+    message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY);
     standend();
     refresh();
 #ifdef BUFINFO
@@ -372,6 +383,25 @@ redrawLine(Buffer * buf, Line * l, int i)
 	    return NULL;
     }
     move(i, 0);
+    if (showLineNum) {
+	char tmp[16];
+	if (! buf->rootX) {
+	    if (buf->lastLine->real_linenumber > 0)
+		buf->rootX = (int)(log(buf->lastLine->real_linenumber + 0.1)
+			/ log(10)) + 2;
+	    if (buf->rootX < 5)
+		buf->rootX = 5;
+	    if (buf->rootX > COLS)
+		buf->rootX = COLS;
+	    buf->COLS = COLS - buf->rootX;
+	}
+	if (l->real_linenumber)
+	    sprintf(tmp, "%*d:", buf->rootX - 1, l->real_linenumber);
+	else
+	    sprintf(tmp, "%*s ", buf->rootX - 1, "");
+	addstr(tmp);
+    }
+    move(i, buf->rootX);
     if (l->width < 0)
 	l->width = COLPOS(l, l->len);
     if (l->len == 0 || l->width - 1 < column) {
@@ -393,7 +423,7 @@ redrawLine(Buffer * buf, Line * l, int i)
 #ifndef JP_CHARSET
     delta = 1;
 #endif
-    for (j = 0; rcol - column < COLS && pos + j < l->len; j += delta) {
+    for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
 #ifdef COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
@@ -414,7 +444,7 @@ redrawLine(Buffer * buf, Line * l, int i)
 	    delta = 1;
 #endif
 	ncol = COLPOS(l, pos + j + delta);
-	if (ncol - column > COLS)
+	if (ncol - column > buf->COLS)
 	    break;
 #ifdef ANSI_COLOR
 	if (pc)
@@ -486,7 +516,7 @@ redrawLine(Buffer * buf, Line * l, int i)
     if (color_mode)
 	do_color(0);
 #endif
-    if (rcol - column < COLS)
+    if (rcol - column < buf->COLS)
 	clrtoeolx();
     return l->next;
 }
@@ -526,7 +556,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
 #ifndef JP_CHARSET
     delta = 1;
 #endif
-    for (j = 0; rcol - column < COLS && pos + j < l->len; j += delta) {
+    for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
 #ifdef COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
@@ -547,7 +577,7 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
 	    delta = 1;
 #endif
 	ncol = COLPOS(l, pos + j + delta);
-	if (ncol - column > COLS)
+	if (ncol - column > buf->COLS)
 	    break;
 #ifdef ANSI_COLOR
 	if (pc)
@@ -555,12 +585,12 @@ redrawLineRegion(Buffer * buf, Line * l, int i, int bpos, int epos)
 #endif
 	if (j >= bcol && j < ecol) {
 	    if (rcol < column) {
-		move(i, 0);
+		move(i, buf->rootX);
 		for (rcol = column; rcol < ncol; rcol++)
 		    addChar(' ', 0);
 		continue;
 	    }
-	    move(i, rcol - column);
+	    move(i, rcol - column + buf->rootX);
 	    if (p[j] == '\t') {
 		for (; rcol < ncol; rcol++)
 		    addChar(' ', 0);
@@ -787,7 +817,7 @@ disp_message_nsec(char *s, int redraw_current, int sec, int purge, int mouse)
 	return;
     }
     if (Currentbuf != NULL)
-	message(s, Currentbuf->cursorX, Currentbuf->cursorY);
+	message(s, Currentbuf->cursorX + Currentbuf->rootX, Currentbuf->cursorY);
     else
 	message(s, LASTLINE, 0);
     refresh();
@@ -897,8 +927,8 @@ cursorRight(Buffer * buf, int n)
         delta = 2;
 #endif                          /* JP_CHARSET */
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
-    if (vpos2 >= COLS && n) {
-       columnSkip(buf, n + (vpos2 - COLS) - (vpos2 - COLS) % n);
+    if (vpos2 >= buf->COLS && n) {
+       columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
        buf->visualpos = cpos - buf->currentColumn;
     }
     buf->cursorX = buf->visualpos;
@@ -971,9 +1001,9 @@ arrangeCursor(Buffer * buf)
         delta = 2;
 #endif                         /* JP_CHARSET */
     col2 = COLPOS(buf->currentLine, buf->pos + delta);
-    if (col < buf->currentColumn || col2 > COLS + buf->currentColumn) {
+    if (col < buf->currentColumn || col2 > buf->COLS + buf->currentColumn) {
 	buf->currentColumn = 0;
-        if (col2 > COLS)
+        if (col2 > buf->COLS)
 	    columnSkip(buf, col);
     }
     /* Arrange cursor */
@@ -1032,19 +1062,19 @@ cursorXY(Buffer * buf, int x, int y)
 
     if (buf->cursorX > x) {
 	while (buf->cursorX > x)
-           cursorLeft(buf, COLS / 2);
+           cursorLeft(buf, buf->COLS / 2);
     }
     else if (buf->cursorX < x) {
 	while (buf->cursorX < x) {
 	    oldX = buf->cursorX;
 
-           cursorRight(buf, COLS / 2);
+           cursorRight(buf, buf->COLS / 2);
 
 	    if (oldX == buf->cursorX)
 		break;
 	}
 	if (buf->cursorX > x)
-           cursorLeft(buf, COLS / 2);
+           cursorLeft(buf, buf->COLS / 2);
     }
 }
 

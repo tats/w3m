@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.4 2001/11/16 22:02:00 ukai Exp $ */
+/* $Id: etc.c,v 1.5 2001/11/20 16:46:32 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -102,7 +102,7 @@ columnSkip(Buffer * buf, int offset)
 	if (l->width - 1 > maxColumn)
 	    maxColumn = l->width - 1;
     }
-    maxColumn -= COLS - 1;
+    maxColumn -= buf->COLS - 1;
     if (column < maxColumn)
 	maxColumn = column;
     if (maxColumn < 0)

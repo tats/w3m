@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.10 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: url.c,v 1.11 2001/11/27 17:00:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1366,7 +1366,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 						   option->referer),
 				      (void (*)())pclose);
 	    if (uf.stream == NULL) {
-		pu->file = p;
 		goto ordinary_local_file;
 	    }
 	    uf.is_cgi = TRUE;

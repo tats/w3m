@@ -1,3 +1,8 @@
+w3m 0.3?
+
+* new regex implementation
+
+----------------------------------------------------------------
 w3m 0.2.4 - 2002-01-07
 
 * RFC2818 server identity check

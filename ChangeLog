@@ -1,3 +1,26 @@
+2002-01-10  aito@fw.ipsj.or.jp
+
+	* [w3m-dev 02811] new regexp implementation
+	* regex.h: remove defines
+	* regex.h: struct regexchar, struct regex
+	* regex.c: include stdio.h, stdlib.h, string.h, config.h
+	* regex.c: remove include fm.h
+	* regex.c (NULL JP_CHARSET IS_ALPHA IS_KANJI1): define unless defined
+	* regex.c (RE_*) define
+	* regex.c (st_ptr): deleted
+	* regex.c (regmatch): remove 4th arg `int'
+	* regex.c (newRegex0): rewrite, based on old newRegex
+	* regex.c (newRegex): use newRegex0()
+	* regex.c (RegexMatch): rewrite
+	* regex.c (struct MatchingContext1): added
+	* regex.c (struct MatchingContext2): added
+	* regex.c (YIELD): added
+	* regex.c (regmatch_sub_anytime): added
+	* regex.c (regmatch_iter): added
+	* regex.c (regmatch): use regmatch_iter()
+	* regex.c (regmatch1): rewrite
+	* regex.c (lc2c): add 2nd arg `len', rewrite
+
 2002-01-10  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 02810]
@@ -1795,4 +1818,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.202 2002/01/10 03:45:13 ukai Exp $
+$Id: ChangeLog,v 1.203 2002/01/10 04:55:06 ukai Exp $

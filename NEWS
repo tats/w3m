@@ -1,5 +1,8 @@
 w3m 0.3?
 
+* rc: max_load_image
+* rc: display_image, auto_image, image_scale, imgdisplay, imgsize
+* func: DISPLAY_IMAGE, STOP_IMAGE
 * w3m-img merged: w3m now can display images! see doc/README.img
 
 ----------------------------------------------------------------

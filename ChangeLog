@@ -1,3 +1,9 @@
+2001-12-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02647]
+	* proto.h (getAnchor): deleted
+	* etc.c (getAnchor): deleted
+
 2001-12-09  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02646] Some code cleanups
@@ -1118,4 +1124,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.118 2001/12/09 13:59:04 ukai Exp $
+$Id: ChangeLog,v 1.119 2001/12/10 15:04:09 ukai Exp $

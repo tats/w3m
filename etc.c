@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.10 2001/12/09 13:59:04 ukai Exp $ */
+/* $Id: etc.c,v 1.11 2001/12/10 15:04:09 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -224,43 +224,6 @@ searchAnchorArg(char **arg)
 	    p++;
     }
     return p;
-}
-
-char *
-getAnchor(char *arg, char **arg_return)
-{
-    char *p;
-    char buf[LINELEN];
-
-    if (arg_is(arg, "name")) {
-	arg += 4;
-	while (*arg && (*arg == ' ' || *arg == '\t'))
-	    arg++;
-	if (*arg != '=')
-	    return NULL;
-	arg++;
-	while (*arg && (*arg == ' ' || *arg == '\t'))
-	    arg++;
-	p = searchAnchorArg(&arg);
-	buf[0] = '#';
-	strncpy(&buf[1], arg, p - arg);
-	if (arg_return)
-	    *arg_return = p;
-	return allocStr(buf, p - arg + 1);
-    }
-    while (*arg && *arg != '=')
-	arg++;
-    if (*arg == '\0')
-	return NULL;
-    arg++;
-    while (*arg && (*arg == ' ' || *arg == '\t'))
-	arg++;
-    p = searchAnchorArg(&arg);
-    if (arg_return)
-	*arg_return = p;
-    if (p == arg)
-	return allocStr(" ", 1);
-    return allocStr(arg, p - arg);
 }
 
 #ifdef USE_ANSI_COLOR

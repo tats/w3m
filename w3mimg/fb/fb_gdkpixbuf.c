@@ -1,4 +1,4 @@
-/* $Id: fb_gdkpixbuf.c,v 1.20 2004/11/08 17:08:10 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.21 2004/11/08 17:14:06 ukai Exp $ */
 /**************************************************************************
                 fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -118,10 +118,11 @@ fb_image_load(char *filename, int w, int h, int max_anim)
     GdkPixbufAnimationIter *iter;
     GTimeVal time;
 #else
+    int i;
     GList *frames;
 #endif
     double ratio_w, ratio_h;
-    int n, i, j, fw, fh, frame_num, delay;
+    int n, j, fw, fh, frame_num, delay;
     FB_IMAGE **fb_frame = NULL, *tmp_image = NULL;
 
     if (filename == NULL)

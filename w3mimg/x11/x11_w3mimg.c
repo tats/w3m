@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.28 2004/11/08 17:08:10 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.29 2004/11/08 17:14:06 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -330,7 +330,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     Imlib_Image im;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbufAnimation *animation;
-    int i, j, iw, ih, n, frame_num, delay = -1, max_anim;
+    int j, iw, ih, n, frame_num, delay = -1, max_anim;
     double ratio_w, ratio_h;
     struct x11_image *ximg;
     Pixmap tmp_pixmap;
@@ -338,6 +338,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     GdkPixbufAnimationIter *iter;
     GTimeVal time;
 #else
+    int i;
     GList *frames;
 #endif
 #endif

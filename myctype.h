@@ -1,4 +1,4 @@
-/* $Id: myctype.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: myctype.h,v 1.4 2001/12/10 15:23:08 ukai Exp $ */
 #ifndef _MYCTYPE_H
 #define _MYCTYPE_H
 
@@ -12,6 +12,7 @@
 #define MYCTYPE_XDIGIT (MYCTYPE_HEX|MYCTYPE_DIGIT)
 
 #define GET_MYCTYPE(x) (MYCTYPE_MAP[(int)(unsigned char)(x)])
+#define GET_MYCDIGIT(x) (MYCTYPE_DIGITMAP[(int)(unsigned char)(x)])
 
 #define IS_CNTRL(x) (GET_MYCTYPE(x) & MYCTYPE_CNTRL)
 #define IS_SPACE(x) (GET_MYCTYPE(x) & MYCTYPE_SPACE)
@@ -22,6 +23,7 @@
 #define IS_XDIGIT(x) (GET_MYCTYPE(x) & MYCTYPE_XDIGIT)
 
 extern unsigned char MYCTYPE_MAP[];
+extern unsigned char MYCTYPE_DIGITMAP[];
 
 
 #define INTCTYPE_ASCII   1

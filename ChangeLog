@@ -1,3 +1,12 @@
+2001-12-11  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02441] A patch against functions *_(un)?quote()
+	* indep.c (url_unquote_char): use GET_MYCDIGIT, instead of sscanf
+	* indep.c (url_quote): use xdigit[] instead of sprintf()
+	* myctype.c (MYCTYPE_DIGITMAP): added
+	* myctype.h (MYCTYPE_DIGITMAP): ditto
+	* myctype.h (GET_MYCDIGIT): added
+
 2001-12-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02647]
@@ -1124,4 +1133,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.119 2001/12/10 15:04:09 ukai Exp $
+$Id: ChangeLog,v 1.120 2001/12/10 15:23:08 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.14 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: indep.c,v 1.15 2001/12/10 15:23:08 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -427,45 +427,28 @@ html_unquote(char *str)
     return str;
 }
 
-static int
-url_unquote_char(char **str)
-{
-    char *p = *str;
-    char buf[3];
-    int n;
+static char xdigit[0x10] = "0123456789ABCDEF";
 
-    if (*p != '%')
-	return -1;
-    p++;
-    if (IS_XDIGIT(*p)) {
-	buf[0] = *(p++);
-	if (IS_XDIGIT(*p)) {
-	    buf[1] = *(p++);
-	    buf[2] = '\0';
-	}
-	else
-	    buf[1] = '\0';
-	if (sscanf(buf, "%x", &n)) {
-	    *str = p;
-	    return n;
-	}
-    }
-    return -1;
-}
+#define url_unquote_char(pstr) \
+  (IS_XDIGIT((*(pstr))[1]) ? \
+    (IS_XDIGIT((*(pstr))[2]) ? \
+    (*(pstr) += 3, (GET_MYCDIGIT((*(pstr))[-2]) << 4) | GET_MYCDIGIT((*(pstr))[-1])) : \
+    (*(pstr) += 2, GET_MYCDIGIT((*(pstr))[-1]))) : \
+   -1)
 
 char *
 url_quote(char *str)
 {
     Str tmp = NULL;
     char *p;
-    char buf[4];
 
     for (p = str; *p; p++) {
 	if (IS_CNTRL(*p) || *p == ' ' || !IS_ASCII(*p)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(str, (int)(p - str));
-	    sprintf(buf, "%%%02X", (unsigned char)*p);
-	    Strcat_charp(tmp, buf);
+	    Strcat_char(tmp, '%');
+	    Strcat_char(tmp, xdigit[((unsigned char)*p >> 4) & 0xF]);
+	    Strcat_char(tmp, xdigit[(unsigned char)*p & 0xF]);
 	}
 	else {
 	    if (tmp)

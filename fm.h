@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.52 2002/02/19 15:50:18 ukai Exp $ */
+/* $Id: fm.h,v 1.53 2002/02/28 16:15:41 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -675,6 +675,7 @@ typedef struct http_request {
 #define HR_COMMAND_HEAD		3
 
 #define HR_FLAG_LOCAL		1
+#define HR_FLAG_PROXY		2
 
 #define HTST_UNKNOWN		255
 #define HTST_MISSING		254

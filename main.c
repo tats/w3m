@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.84 2002/02/19 15:25:19 ukai Exp $ */
+/* $Id: main.c,v 1.85 2002/02/28 16:15:41 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -643,7 +643,9 @@ MAIN(int argc, char **argv, char **envp)
 	    else if (!strcmp("-pauth", argv[i])) {
 		if (++i >= argc)
 		    usage();
-		proxy_auth_cookie = encodeB(argv[i]);
+		proxy_auth_cookie = Strnew_m_charp("Basic ",
+						   encodeB(argv[i])->ptr,
+						   NULL);
 		while (argv[i][0]) {
 		    argv[i][0] = '\0';
 		    argv[i]++;

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.71 2002/02/26 04:08:48 ukai Exp $ */
+/* $Id: file.c,v 1.72 2002/02/28 16:15:41 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1433,10 +1433,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     prevtrap = NULL;
     add_auth_cookie_flag = 0;
 
-    if (proxy_auth_cookie != NULL) {
-	pushText(extra_header, Sprintf("Proxy-Authorization: Basic %s\r\n",
-				       proxy_auth_cookie->ptr)->ptr);
-    }
   load_doc:
     url_option.referer = referer;
     url_option.flag = flag;
@@ -1566,7 +1562,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (t_buf == NULL)
 	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
-#if 0 /* USE_SSL */
+#if 0				/* USE_SSL */
 	if (IStype(f.stream) == IST_SSL) {
 	    Str s = ssl_get_certificate(f.stream, pu.host);
 	    if (s == NULL)

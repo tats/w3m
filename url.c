@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.45 2002/02/27 16:53:27 ukai Exp $ */
+/* $Id: url.c,v 1.46 2002/02/28 16:15:42 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -1284,6 +1284,7 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 {
     Str tmp;
     TextListItem *i;
+    int seen_proxy_auth = 0;
 #ifdef USE_COOKIE
     Str cookie;
 #endif				/* USE_COOKIE */
@@ -1296,8 +1297,18 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
     else
 	Strcat_charp(tmp, otherinfo(pu, current, hr->referer));
     if (extra != NULL)
-	for (i = extra->first; i != NULL; i = i->next)
+	for (i = extra->first; i != NULL; i = i->next) {
+	    if (strncasecmp(i->ptr, "Proxy-Authorization:",
+			    sizeof("Proxy-Authorization:") - 1) == 0)
+		seen_proxy_auth = 1;
 	    Strcat_charp(tmp, i->ptr);
+	}
+
+    if (!seen_proxy_auth && (hr->flag & HR_FLAG_PROXY)
+	&& proxy_auth_cookie != NULL)
+	Strcat_m_charp(tmp, "Proxy-Authorization: ", proxy_auth_cookie->ptr,
+		       "\r\n", NULL);
+
 #ifdef USE_COOKIE
     if (hr->command != HR_COMMAND_CONNECT &&
 	use_cookie && (cookie = find_cookie(pu))) {
@@ -1516,6 +1527,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	if (non_null(FTP_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
+	    hr->flag |= HR_FLAG_PROXY;
 	    sock = openSocket(FTP_proxy_parsed.host,
 			      schemetable[FTP_proxy_parsed.scheme].cmdname,
 			      FTP_proxy_parsed.port);
@@ -1546,6 +1558,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
 	    char *save_label;
+	    hr->flag |= HR_FLAG_PROXY;
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS && *status == HTST_CONNECT) {
 		sock = ssl_socket_of(ouf->stream);
@@ -1650,6 +1663,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	if (non_null(GOPHER_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
+	    hr->flag |= HR_FLAG_PROXY;
 	    sock = openSocket(GOPHER_proxy_parsed.host,
 			      schemetable[GOPHER_proxy_parsed.scheme].cmdname,
 			      GOPHER_proxy_parsed.port);

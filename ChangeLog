@@ -1,3 +1,17 @@
+2002-03-01  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03072] Proxy-Authorization (Re:  Re: https through proxy)
+	* file.c (loadGeneralFile) delete Proxy-Authorization set here
+	* fm.h (HR_FLAG_PROXY): added
+	* main.c (MAIN): need "Basic " for proxy_auth_cookie
+	* url.c (HTTPrequest): add seen_proxy_auth
+		if proxy and no Proxy-Authorization: header seen and
+		has proxy_auth_cookie, use it
+	* url.c (openURL): hr->flag |= HR_FLAG_PROXY
+	
+	* file.c (loadGeneralFile) comment indent fix
+	* html.c (TagMAP): ditto
+
 2002-02-28  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03070] Re: https through proxy
@@ -3006,4 +3020,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.327 2002/02/27 16:53:27 ukai Exp $
+$Id: ChangeLog,v 1.328 2002/02/28 16:15:41 ukai Exp $

@@ -1,5 +1,18 @@
 2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03523] Re: del/ins
+	* file.c (HTMLtagproc1): check displayInsDel, RB_DEL
+	* fm.h (RB_DEL): added
+		(displayInsDel): added
+	* rc.c (CMT_DISP_INS_DEL): added
+		(display_ins_del): added
+	* table.c (feed_table_tag): check displayInsDel, TBLM_DEL
+	* table.h (TBLM_DEL): added
+		(TBLM_ANCHOR): renum
+		(struct table_mode): unsigned int pre_mode
+
+2002-12-05  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03522] newline around <pre>..</pre>
 	* file.c (HTMLtagproc1): break before <pre>/after </pre> if necessary
 
@@ -5420,4 +5433,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.585 2002/12/04 16:55:04 ukai Exp $
+$Id: ChangeLog,v 1.586 2002/12/04 17:00:44 ukai Exp $

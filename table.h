@@ -1,4 +1,4 @@
-/* $Id: table.h,v 1.9 2002/12/03 15:35:11 ukai Exp $ */
+/* $Id: table.h,v 1.10 2002/12/04 17:00:54 ukai Exp $ */
 #if (defined(MESCHACH) && !defined(MATRIX))
 #define MATRIX
 #endif				/* (defined(MESCHACH) && !defined(MATRIX)) */
@@ -124,12 +124,13 @@ struct table {
 #define TBLM_INSELECT	RB_INSELECT
 #define TBLM_PREMODE	(TBLM_PRE | TBLM_PRE_INT | TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN | TBLM_INTXTA)
 #define TBLM_SPECIAL	(TBLM_PRE | TBLM_PRE_INT | TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN | TBLM_NOBR)
-#define TBLM_ANCHOR	0x100000
+#define TBLM_DEL	RB_DEL
+#define TBLM_ANCHOR	0x200000
 
 #define  uchar           unsigned char
 #define  ushort           unsigned short
 struct table_mode {
-    ushort pre_mode;
+    unsigned int pre_mode;
     char indent_level;
     char caption;
     short nobr_offset;

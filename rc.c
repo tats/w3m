@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.68 2002/11/26 18:03:28 ukai Exp $ */
+/* $Id: rc.c,v 1.69 2002/12/04 17:00:51 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -81,6 +81,7 @@ static char *config_file = NULL;
 #define CMT_MULTICOL     "ファイル名のマルチカラム表示"
 #define CMT_ALT_ENTITY   "エンティティを ASCII の代替表現で表す"
 #define CMT_FOLD_TEXTAREA "TEXTAREA の行を折り返して表示"
+#define CMT_DISP_INS_DEL "DEL タグの内容を表示する。"
 #define CMT_COLOR        "カラー表示"
 #define CMT_B_COLOR      "文字の色"
 #define CMT_A_COLOR      "アンカーの色"
@@ -235,6 +236,7 @@ static char *config_file = NULL;
 #define CMT_MULTICOL     "Display file names in multi-column format"
 #define CMT_ALT_ENTITY   "Use ASCII equivalents to display entities"
 #define CMT_FOLD_TEXTAREA "Fold lines in TEXTAREA"
+#define CMT_DISP_INS_DEL "Display INS and DEL tag"
 #define CMT_COLOR        "Display with color"
 #define CMT_B_COLOR      "Color of normal character"
 #define CMT_A_COLOR      "Color of anchor"
@@ -524,6 +526,8 @@ struct param_ptr params1[] = {
      NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
+    {"display_ins_del", P_INT, PI_ONOFF, (void *)&displayInsDel,
+     CMT_DISP_INS_DEL, NULL},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *)&ignore_null_img_alt,
      CMT_IGNORE_NULL_IMG_ALT, NULL},
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,

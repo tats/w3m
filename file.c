@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.144 2002/12/04 16:55:06 ukai Exp $ */
+/* $Id: file.c,v 1.145 2002/12/04 17:00:48 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4713,27 +4713,38 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_AREA:
 	return 0;
     case HTML_DEL:
-	HTMLlineproc1("<U>[DEL:</U>", h_env);
+	if (displayInsDel)
+	    HTMLlineproc1("<U>[DEL:</U>", h_env);
+	else
+	    obuf->flag |= RB_DEL;
 	return 1;
     case HTML_N_DEL:
-	HTMLlineproc1("<U>:DEL]</U>", h_env);
+	if (displayInsDel)
+	    HTMLlineproc1("<U>:DEL]</U>", h_env);
+	else
+	    obuf->flag &= ~RB_DEL;
 	return 1;
     case HTML_INS:
-	HTMLlineproc1("<U>[INS:</U>", h_env);
+	if (displayInsDel)
+	    HTMLlineproc1("<U>[INS:</U>", h_env);
 	return 1;
     case HTML_N_INS:
-	HTMLlineproc1("<U>:INS]</U>", h_env);
+	if (displayInsDel)
+	    HTMLlineproc1("<U>:INS]</U>", h_env);
 	return 1;
     case HTML_SUP:
-	HTMLlineproc1("^", h_env);
+	if (!(obuf->flag & RB_DEL))
+	    HTMLlineproc1("^", h_env);
 	return 1;
     case HTML_N_SUP:
 	return 1;
     case HTML_SUB:
-	HTMLlineproc1("[", h_env);
+	if (!(obuf->flag & RB_DEL))
+	    HTMLlineproc1("[", h_env);
 	return 1;
     case HTML_N_SUB:
-	HTMLlineproc1("]", h_env);
+	if (!(obuf->flag & RB_DEL))
+	    HTMLlineproc1("]", h_env);
 	return 1;
     case HTML_FONT:
     case HTML_N_FONT:
@@ -5677,6 +5688,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		continue;
 	}
 
+	if (obuf->flag & RB_DEL)
+	    continue;
 	while (*str) {
 	    mode = get_mctype(str);
 	    delta = get_mclen(mode);

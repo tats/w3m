@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.34 2002/12/03 15:49:56 ukai Exp $ */
+/* $Id: table.c,v 1.35 2002/12/04 17:00:53 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -2969,14 +2969,29 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    suspend_or_pushdata(tbl, line);
 	break;
     case HTML_DEL:
+	if (displayInsDel)
+	    feed_table_inline_tag(tbl, line, mode, 5);	/* [DEL: */
+	else
+	    mode->pre_mode |= TBLM_DEL;
+	break;
     case HTML_N_DEL:
+	if (displayInsDel)
+	    feed_table_inline_tag(tbl, line, mode, 5);	/* :DEL] */
+	else
+	    mode->pre_mode &= ~TBLM_DEL;
+	break;
     case HTML_INS:
     case HTML_N_INS:
+	if (displayInsDel)
+	    feed_table_inline_tag(tbl, line, mode, 5);	/* [INS:, :INS] */
+	break;
     case HTML_SUP:
-    case HTML_N_SUP:
     case HTML_SUB:
     case HTML_N_SUB:
-	feed_table_inline_tag(tbl, line, mode, 5);
+	if (!(mode->pre_mode & TBLM_DEL))
+	    feed_table_inline_tag(tbl, line, mode, 1);	/* ^, [, ] */
+	break;
+    case HTML_N_SUP:
 	break;
     case HTML_TABLE_ALT:
 	id = -1;
@@ -3101,6 +3116,10 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 				    TBLM_SCRIPT | TBLM_STYLE)))
 		return -1;
 	}
+    }
+    else {
+	if (mode->pre_mode & TBLM_DEL)
+	    return -1;
     }
     if (mode->caption) {
 	Strcat_charp(tbl->caption, line);

@@ -6,6 +6,7 @@ BEGIN		文書のいちばん上の行に移動します
 BOOKMARK	ブックマークを読み込みます
 CENTER_H	カーソルのある位置を行の中央に移動します
 CENTER_V	カーソルのある行を画面の中央に移動します
+COMMAND		w3mのコマンドを実行します
 COOKIE		クッキー一覧を表示します
 DELETE_PREVBUF 前のバッファを消去します(主に local-CGI 用)
 DICT_WORD	入力した単語を辞書コマンドで調べます

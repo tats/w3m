@@ -1,11 +1,12 @@
 ABORT		Quit w3m without confirmation
 ADD_BOOKMARK	Add current page to bookmark
-ALARM		set alarm
+ALARM		Set alarm
 BACK		Back to previous buffer
 BEGIN		Go to the first line
 BOOKMARK	Read bookmark
 CENTER_H	Move to the center line
 CENTER_V	Move to the center column
+COMMAND		Execute w3m command(s)
 COOKIE		View cookie list
 DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
 DICT_WORD	Execute dictionary command (see README.dict)

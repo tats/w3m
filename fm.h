@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.56 2002/03/15 18:33:32 ukai Exp $ */
+/* $Id: fm.h,v 1.57 2002/03/19 16:06:52 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -765,9 +765,7 @@ global Buffer *Currentbuf;
 global Buffer *Firstbuf;
 global int CurrentKey;
 global char *CurrentKeyData;
-#ifdef USE_MENU
-global char *CurrentMenuData;
-#endif
+global char *CurrentCmdData;
 extern char *ullevel[];
 
 extern char *w3m_version;

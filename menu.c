@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.14 2002/01/31 17:54:52 ukai Exp $ */
+/* $Id: menu.c,v 1.15 2002/03/19 16:06:52 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -641,9 +641,9 @@ action_menu(Menu *menu)
 	if (item.type & MENU_FUNC) {
 	    CurrentKey = -1;
 	    CurrentKeyData = NULL;
-	    CurrentMenuData = item.data;
+	    CurrentCmdData = item.data;
 	    (*item.func) ();
-	    CurrentMenuData = NULL;
+	    CurrentCmdData = NULL;
 	}
     }
     else if (mselect == MENU_CLOSE) {

@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.7 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: func.c,v 1.8 2002/03/19 16:06:52 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -139,7 +139,7 @@ getKey(char *s)
 	s += 2;
 	ctrl = 1;
     }
-    else if (*s == '^') {	/* ^, ^[^ */
+    else if (*s == '^' && *(s + 1)) {	/* ^, ^[^ */
 	s++;
 	ctrl = 1;
     }
@@ -157,7 +157,7 @@ getKey(char *s)
 	    s += 2;
 	    ctrl = 1;
 	}
-	else if (*s == '^') {	/* ^[^, ^[[^ */
+	else if (*s == '^' && *(s + 1)) {	/* ^[^, ^[[^ */
 	    s++;
 	    ctrl = 1;
 	}
@@ -229,46 +229,36 @@ getWord(char **str)
 
     p = *str;
     SKIP_BLANKS(p);
-    s = p;
-    while (*p != '\0') {
-	if (IS_SPACE(*p)) {
-	    *p = '\0';
-	    p++;
-	    break;
-	}
-	p++;
-    }
+    for (s = p; *p && ! IS_SPACE(*p) && *p != ';'; p++) ;
     *str = p;
-    return s;
+    return Strnew_charp_n(s, p - s)->ptr;
 }
 
 char *
 getQWord(char **str)
 {
-    char *p, *s, *e;
+    Str tmp = Strnew();
+    char *p;
     int in_q = 0, in_dq = 0, esc = 0;
 
     p = *str;
-    while (*p && IS_SPACE(*p))
-	p++;
-    s = p;
-    e = p;
-    while (*p != '\0') {
+    SKIP_BLANKS(p);
+    for (; *p; p++) {
 	if (esc) {
 	    if (in_q) {
 		if (*p != '\\' && *p != '\'')	/* '..\\..', '..\'..' */
-		    *e++ = '\\';
+		    Strcat_char(tmp, '\\');
 	    }
 	    else if (in_dq) {
 		if (*p != '\\' && *p != '"')	/* "..\\..", "..\".." */
-		    *e++ = '\\';
+		    Strcat_char(tmp, '\\');
 	    }
 	    else {
 		if (*p != '\\' && *p != '\'' &&	/* ..\\.., ..\'.. */
 		    *p != '"' && !IS_SPACE(*p))	/* ..\".., ..\.. */
-		    *e++ = '\\';
+		    Strcat_char(tmp, '\\');
 	    }
-	    *e++ = *p;
+	    Strcat_char(tmp, *p);
 	    esc = 0;
 	}
 	else if (*p == '\\') {
@@ -278,13 +268,13 @@ getQWord(char **str)
 	    if (*p == '\'')
 		in_q = 0;
 	    else
-		*e++ = *p;
+		Strcat_char(tmp, *p);
 	}
 	else if (in_dq) {
 	    if (*p == '"')
 		in_dq = 0;
 	    else
-		*e++ = *p;
+		Strcat_char(tmp, *p);
 	}
 	else if (*p == '\'') {
 	    in_q = 1;
@@ -292,16 +282,13 @@ getQWord(char **str)
 	else if (*p == '"') {
 	    in_dq = 1;
 	}
-	else if (IS_SPACE(*p)) {
-	    p++;
+	else if (IS_SPACE(*p) || *p == ';') {
 	    break;
 	}
 	else {
-	    *e++ = *p;
+	    Strcat_char(tmp, *p);
 	}
-	p++;
     }
-    *e = '\0';
     *str = p;
-    return s;
+    return tmp->ptr;
 }

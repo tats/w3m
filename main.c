@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.90 2002/03/15 19:02:40 ukai Exp $ */
+/* $Id: main.c,v 1.91 2002/03/19 16:06:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -729,7 +729,6 @@ MAIN(int argc, char **argv, char **envp)
 	initKeymap();
 #ifdef USE_MENU
 	initMenu();
-	CurrentMenuData = NULL;
 #endif				/* MENU */
 	fmInit();
 #ifdef SIGWINCH
@@ -953,9 +952,7 @@ MAIN(int argc, char **argv, char **envp)
 	    for (i = 0; i < n_event_queue; i++) {
 		CurrentKey = -1;
 		CurrentKeyData = eventQueue[i].user_data;
-#ifdef USE_MENU
-		CurrentMenuData = NULL;
-#endif
+		CurrentCmdData = NULL;
 		w3mFuncList[eventQueue[i].cmd].func();
 	    }
 	    n_event_queue = 0;
@@ -4929,17 +4926,14 @@ set_buffer_environ(Buffer *buf)
 char *
 searchKeyData(void)
 {
-    char *data;
+    char *data = NULL;
 
     if (CurrentKeyData != NULL && *CurrentKeyData != '\0')
-	return allocStr(CurrentKeyData, -1);
-#ifdef USE_MENU
-    if (CurrentMenuData != NULL && *CurrentMenuData != '\0')
-	return allocStr(CurrentMenuData, -1);
-#endif
-    if (CurrentKey < 0)
-	return NULL;
-    data = getKeyData(CurrentKey);
+	data = CurrentKeyData;
+    else if (CurrentCmdData != NULL && *CurrentCmdData != '\0')
+	data = CurrentCmdData;
+    else if (CurrentKey >= 0)
+	data = getKeyData(CurrentKey);
     if (data == NULL || *data == '\0')
 	return NULL;
     return allocStr(data, -1);
@@ -4984,26 +4978,72 @@ w3m_exit(int i)
     exit(i);
 }
 
+void
+execCmd(void)
+{
+    char *data, *p;
+    int cmd;
+
+    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
+    data = searchKeyData();
+    if (data == NULL || *data == '\0') {
+	data = inputStrHist("command [; ...]: ", "", TextHist);
+        if (data == NULL) {
+            displayBuffer(Currentbuf, B_NORMAL);
+            return;
+        }
+    }
+    /* data: FUNC [DATA] [; FUNC [DATA] ...] */
+    while (*data) {
+	SKIP_BLANKS(data);
+	if (*data == ';') {
+	    data++;
+	    continue;
+	}
+	p = getWord(&data);
+	cmd = getFuncList(p);
+	if (cmd < 0)
+	    break;
+	p = getQWord(&data);
+	CurrentKey = -1;
+	CurrentKeyData = NULL;
+	CurrentCmdData = *p ? p : NULL;
+#ifdef USE_MOUSE
+	if (use_mouse)
+	    mouse_inactive();
+#endif
+	w3mFuncList[cmd].func();
+#ifdef USE_MOUSE
+	if (use_mouse)
+	    mouse_active();
+#endif
+	CurrentCmdData = NULL;
+    }
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+
 #ifdef USE_ALARM
 static MySignalHandler
 SigAlarm(SIGNAL_ARG)
 {
     if (alarm_sec > 0) {
 	CurrentKey = -1;
-	CurrentKeyData = (char *)alarm_event.user_data;
-#ifdef USE_MENU
-	CurrentMenuData = NULL;
-#endif
+	CurrentKeyData = NULL;
+	CurrentCmdData = (char *)alarm_event.user_data;
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_inactive();
 #endif
 	w3mFuncList[alarm_event.cmd].func();
-	onA();
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_active();
 #endif
+	CurrentCmdData = NULL;
+	onA();
+	disp_message_nsec(Sprintf("%s %s", w3mFuncList[alarm_event.cmd].id,
+			          CurrentCmdData ? CurrentCmdData : "")->ptr,
+			  FALSE, alarm_sec - 1, FALSE, TRUE);
 	if (alarm_status == AL_IMPLICIT) {
 	    alarm_buffer = Currentbuf;
 	    alarm_status = AL_IMPLICIT_DONE;
@@ -5041,7 +5081,10 @@ setAlarm(void)
 	    cmd = getFuncList(getWord(&data));
     }
     if (cmd >= 0) {
-	setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));
+	data = getQWord(&data);
+	setAlarmEvent(sec, AL_EXPLICIT, cmd, data);
+	disp_message_nsec(Sprintf("%s %s", w3mFuncList[cmd].id, data)->ptr,
+			  FALSE, sec - 1, FALSE, TRUE);
     }
     else {
 	setAlarmEvent(0, AL_UNSET, FUNCNAME_nulcmd, NULL);

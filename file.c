@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.82 2002/03/12 16:59:50 ukai Exp $ */
+/* $Id: file.c,v 1.83 2002/03/13 15:48:20 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6675,6 +6675,15 @@ openGeneralPagerBuffer(InputStream stream)
 	buf = openPagerBuffer(stream, t_buf);
 	buf->type = "text/plain";
     }
+#ifdef USE_IMAGE
+    else if (activeImage && displayImage && !useExtImageViewer &&
+	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
+	cur_baseURL = New(ParsedURL);
+	parseURL("-", cur_baseURL, NULL);
+	buf = loadImageBuffer(&uf, t_buf);
+	buf->type = t;
+    }
+#endif
     else {
 	if (doExternal(uf, "-", t, &buf, t_buf)) {
 	    if (buf == NULL || buf == NO_BUFFER)

@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.7 2001/11/22 13:30:02 ukai Exp $ */
+/* $Id: indep.c,v 1.8 2001/11/22 14:15:19 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -275,6 +275,7 @@ getescapechar(char **str)
 {
     int dummy = -1;
     char *p = *str, *q;
+    int strict_entity = TRUE;
 
     if (*p == '&')
 	p++;
@@ -319,8 +320,24 @@ getescapechar(char **str)
     for (p++; IS_ALNUM(*p); p++)
 	;
     q = allocStr(q, p - q);
+    if (strcasestr("lt gt amp quot nbsp",q) &&
+	*p != '=') {
+	/* a character entity MUST be terminated with ";". However,
+	   there's MANY web pages which uses &lt , &gt or something
+	   like them as &lt;, &gt;, etc. Therefore, we treat the most
+	   popular character entities (including &#xxxx;) without
+	   the last ";" as character entities. If the trailing character
+	   is "=", it must be a part of query in an URL. So &lt=, &gt=, etc.
+	   are not regarded as character entities.
+	*/
+	strict_entity = FALSE;
+    }
     if (*p == ';')
 	p++;
+    else if (strict_entity) {
+	*str = p;
+	return -1;
+    }
     *str = p;
     return getHash_si(&entity, q, -1);
 }

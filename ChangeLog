@@ -1,3 +1,8 @@
+2002-03-11  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
+
+	* [w3m-dev 03110] Re: gopher broken
+	* file.c (loadGeneralFile): #ifdef USE_GOPHER
+
 2002-03-11  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03106] Re: displayBuffer
@@ -3113,4 +3118,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.342 2002/03/10 15:55:15 ukai Exp $
+$Id: ChangeLog,v 1.343 2002/03/11 16:02:41 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.80 2002/03/10 15:55:15 ukai Exp $ */
+/* $Id: file.c,v 1.81 2002/03/11 16:02:42 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1922,8 +1922,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	else if (proc == loadImageBuffer)
 	    b->type = b->real_type;
 #endif
+#ifdef USE_GOPHER
 	else if (proc == loadGopherDir)
 	    b->type = b->real_type;
+#endif
 	else
 	    b->type = "text/plain";
 	if (pu.label) {

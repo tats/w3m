@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.30 2002/11/12 12:46:53 ukai Exp $ */
+/* $Id: display.c,v 1.31 2002/11/13 15:49:01 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -399,7 +399,7 @@ displayBuffer(Buffer *buf, int mode)
     standout();
     message(msg->ptr, buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
     standend();
-    term_title(buf->buffername);
+    term_title(conv_to_system(buf->buffername));
     refresh();
 #ifdef USE_IMAGE
     if (activeImage && displayImage && buf->img) {

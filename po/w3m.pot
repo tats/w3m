@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
-"POT-Creation-Date: 2003-09-26 03:34+0900\n"
+"POT-Creation-Date: 2004-04-29 03:17+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -660,99 +660,99 @@ msgstr ""
 msgid "keymap file"
 msgstr ""
 
-#: rc.c:262
+#: rc.c:249
 msgid "black"
 msgstr ""
 
-#: rc.c:263
+#: rc.c:250
 msgid "red"
 msgstr ""
 
-#: rc.c:264
+#: rc.c:251
 msgid "green"
 msgstr ""
 
-#: rc.c:265
+#: rc.c:252
 msgid "yellow"
 msgstr ""
 
-#: rc.c:266
+#: rc.c:253
 msgid "blue"
 msgstr ""
 
-#: rc.c:267
+#: rc.c:254
 msgid "magenta"
 msgstr ""
 
-#: rc.c:268
+#: rc.c:255
 msgid "cyan"
 msgstr ""
 
-#: rc.c:269
+#: rc.c:256
 msgid "white"
 msgstr ""
 
-#: rc.c:270
+#: rc.c:257
 msgid "terminal"
 msgstr ""
 
-#: rc.c:296
+#: rc.c:276
 msgid "none"
 msgstr ""
 
-#: rc.c:297
+#: rc.c:277
 msgid "current URL"
 msgstr ""
 
-#: rc.c:298
+#: rc.c:278
 msgid "link URL"
 msgstr ""
 
-#: rc.c:311
+#: rc.c:284
 msgid "A:relative to screen height"
 msgstr ""
 
-#: rc.c:312
+#: rc.c:285
 msgid "B:fixed speed"
 msgstr ""
 
-#: rc.c:717
+#: rc.c:666
 msgid "Display Settings"
 msgstr ""
 
-#: rc.c:719
+#: rc.c:668
 msgid "Color Settings"
 msgstr ""
 
-#: rc.c:721
+#: rc.c:670
 msgid "Miscellaneous Settings"
 msgstr ""
 
-#: rc.c:722
+#: rc.c:671
 msgid "Directory Settings"
 msgstr ""
 
-#: rc.c:723
+#: rc.c:672
 msgid "External Program Settings"
 msgstr ""
 
-#: rc.c:724
+#: rc.c:673
 msgid "Network Settings"
 msgstr ""
 
-#: rc.c:725
+#: rc.c:674
 msgid "Proxy Settings"
 msgstr ""
 
-#: rc.c:727
+#: rc.c:676
 msgid "SSL Settings"
 msgstr ""
 
-#: rc.c:730
+#: rc.c:679
 msgid "Cookie Settings"
 msgstr ""
 
-#: rc.c:733
+#: rc.c:682
 msgid "Charset Settings"
 msgstr ""
 
@@ -761,6 +761,6 @@ msgstr ""
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1206
+#: rc.c:1150
 msgid "en;q=1.0"
 msgstr ""

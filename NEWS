@@ -1,3 +1,15 @@
+w3m 0.5.1 - 2004-04-29
+
+* fix minor bugs
+ - build problem on some platform/some configuration
+ - authentication bug
+ - ipv6 FQDN resolv
+ - SSL verify
+ - search problem on different charset page/display
+ - cleanup LANG==JA
+ - DisplayCharset default
+ - w3mhelp.cgi charset
+
 w3m 0.5	- 2004-03-22
 
 * gettextize

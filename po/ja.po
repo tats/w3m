@@ -6,9 +6,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: w3m 0.4.2\n"
+"Project-Id-Version: w3m 0.5.1\n"
 "Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
-"POT-Creation-Date: 2003-09-26 03:34+0900\n"
+"POT-Creation-Date: 2004-04-29 03:17+0900\n"
 "PO-Revision-Date: 2003-09-26 03:35+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
@@ -661,99 +661,99 @@ msgstr "GB18030 の 4バイト文字を Unicode として扱う"
 msgid "keymap file"
 msgstr "keymapファイル"
 
-#: rc.c:262
+#: rc.c:249
 msgid "black"
 msgstr "黒"
 
-#: rc.c:263
+#: rc.c:250
 msgid "red"
 msgstr "赤"
 
-#: rc.c:264
+#: rc.c:251
 msgid "green"
 msgstr "緑"
 
-#: rc.c:265
+#: rc.c:252
 msgid "yellow"
 msgstr "黄"
 
-#: rc.c:266
+#: rc.c:253
 msgid "blue"
 msgstr "青"
 
-#: rc.c:267
+#: rc.c:254
 msgid "magenta"
 msgstr "紫"
 
-#: rc.c:268
+#: rc.c:255
 msgid "cyan"
 msgstr "空色"
 
-#: rc.c:269
+#: rc.c:256
 msgid "white"
 msgstr "白"
 
-#: rc.c:270
+#: rc.c:257
 msgid "terminal"
 msgstr "端末"
 
-#: rc.c:296
+#: rc.c:276
 msgid "none"
 msgstr "無し"
 
-#: rc.c:297
+#: rc.c:277
 msgid "current URL"
 msgstr "現在のURL"
 
-#: rc.c:298
+#: rc.c:278
 msgid "link URL"
 msgstr "リンク先のURL"
 
-#: rc.c:311
+#: rc.c:284
 msgid "A:relative to screen height"
 msgstr "A:画面サイズに比例"
 
-#: rc.c:312
+#: rc.c:285
 msgid "B:fixed speed"
 msgstr "B:一定の行数"
 
-#: rc.c:717
+#: rc.c:666
 msgid "Display Settings"
 msgstr "表示関係"
 
-#: rc.c:719
+#: rc.c:668
 msgid "Color Settings"
 msgstr "表示色"
 
-#: rc.c:721
+#: rc.c:670
 msgid "Miscellaneous Settings"
 msgstr "雑多な設定"
 
-#: rc.c:722
+#: rc.c:671
 msgid "Directory Settings"
 msgstr "ディレクトリ設定"
 
-#: rc.c:723
+#: rc.c:672
 msgid "External Program Settings"
 msgstr "外部プログラム"
 
-#: rc.c:724
+#: rc.c:673
 msgid "Network Settings"
 msgstr "ネットワークの設定"
 
-#: rc.c:725
+#: rc.c:674
 msgid "Proxy Settings"
 msgstr "プロキシの設定"
 
-#: rc.c:727
+#: rc.c:676
 msgid "SSL Settings"
 msgstr "SSLの設定"
 
-#: rc.c:730
+#: rc.c:679
 msgid "Cookie Settings"
 msgstr "クッキーの設定"
 
-#: rc.c:733
+#: rc.c:682
 msgid "Charset Settings"
 msgstr "文字コードの設定"
 
@@ -762,6 +762,6 @@ msgstr "文字コードの設定"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1206
+#: rc.c:1150
 msgid "en;q=1.0"
 msgstr "ja;q=1.0, en;q=0.5"

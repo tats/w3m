@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.189 2003/01/17 17:06:01 ukai Exp $ */
+/* $Id: file.c,v 1.190 2003/01/17 17:13:08 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1493,6 +1493,45 @@ same_url_p(ParsedURL *pu1, ParsedURL *pu2)
 	    && (pu1->file ? pu2->
 		file ? !strcmp(pu1->file, pu2->file) : 0 : 1));
 }
+		
+static int
+checkRedirection(ParsedURL *pu)
+{
+    static ParsedURL *puv = NULL;
+    static int nredir = 0;
+    static int nredir_size = 0;
+    Str tmp;
+
+    if (pu == NULL) {
+	nredir = 0;
+	nredir_size = 0;
+	puv = NULL;
+	return TRUE;
+    }
+    if (nredir >= FollowRedirection) {
+	tmp = Sprintf("Number of redirections exceeded %d at %s",
+		      FollowRedirection, parsedURL2Str(pu)->ptr);
+	disp_err_message(tmp->ptr, FALSE);
+	return FALSE;
+    }
+    else if (nredir_size > 0 &&
+	     (same_url_p(pu, &puv[(nredir - 1) % nredir_size]) ||
+	      (!(nredir % 2)
+	       && same_url_p(pu, &puv[(nredir / 2) % nredir_size])))) {
+	tmp = Sprintf("Redirection loop detected (%s)",
+		      parsedURL2Str(pu)->ptr);
+	disp_err_message(tmp->ptr, FALSE);
+	return FALSE;
+    }
+    if (!puv) {
+	nredir_size = FollowRedirection / 2 + 1;
+	puv = New_N(ParsedURL, nredir_size);
+	memset(puv, 0, sizeof(ParsedURL) * nredir_size);
+    }
+    copyParsedURL(&puv[nredir % nredir_size], pu);
+    nredir++;
+    return TRUE;
+}
 
 /* 
  * loadGeneralFile: load file to buffer
@@ -1502,9 +1541,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		int flag, FormList *volatile request)
 {
     URLFile f, *volatile of = NULL;
-    ParsedURL pu, *volatile puv = NULL;
-    int volatile nredir = 0;
-    int volatile nredir_size = 0;
+    ParsedURL pu;
     Buffer *b = NULL, *(*volatile proc)() = loadBuffer;
     char *volatile tpath;
     char *volatile t = "text/plain", *p, *volatile real_type = NULL;
@@ -1528,6 +1565,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     prevtrap = NULL;
     add_auth_cookie_flag = 0;
 
+    checkRedirection(NULL);
   load_doc:
     if (fmInitialized)
 	term_raw();
@@ -1660,6 +1698,20 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 #endif
 	readHeader(&f, t_buf, FALSE, &pu);
+	if (http_response_code >= 301 && http_response_code <= 303
+	    && (p = checkHeader(t_buf, "Location:")) != NULL
+	    && checkRedirection(&pu)) {
+	    /* document moved */
+	    tpath = url_quote_conv(remove_space(p), DocumentCode);
+	    request = NULL;
+	    UFclose(&f);
+	    current = New(ParsedURL);
+	    copyParsedURL(current, &pu);
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	    t_buf->bufferprop |= BP_REDIRECTED;
+	    status = HTST_NORMAL;
+	    goto load_doc;
+	}
 	t = checkContentType(t_buf);
 	if (t == NULL && pu.file != NULL) {
 	    if (!((http_response_code >= 400 && http_response_code <= 407) ||
@@ -1668,45 +1720,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (t == NULL)
 	    t = "text/plain";
-	if (http_response_code >= 301 && http_response_code <= 303
-	    && (p = checkHeader(t_buf, "Location:")) != NULL) {
-	    /* document moved */
-	    if (nredir >= FollowRedirection) {
-		tmp =
-		    Sprintf("Number of redirections exceeded %d at %s",
-			    FollowRedirection, parsedURL2Str(&pu)->ptr);
-		disp_err_message(tmp->ptr, FALSE);
-	    }
-	    else if (nredir_size > 0 &&
-		     (same_url_p(&pu, &puv[(nredir - 1) % nredir_size]) ||
-		      (!(nredir % 2)
-		       && same_url_p(&pu, &puv[(nredir / 2) % nredir_size])))) {
-		tmp =
-		    Sprintf("Redirection loop detected (%s)",
-			    parsedURL2Str(&pu)->ptr);
-		disp_err_message(tmp->ptr, FALSE);
-	    }
-	    else {
-		if (!puv) {
-		    nredir_size = FollowRedirection / 2 + 1;
-		    puv = New_N(ParsedURL, nredir_size);
-		    memset(puv, 0, sizeof(ParsedURL) * nredir_size);
-		}
-
-		copyParsedURL(&puv[nredir % nredir_size], &pu);
-		++nredir;
-		tmp = Strnew_charp(p);
-		Strchop(tmp);
-		tpath = tmp->ptr;
-		request = NULL;
-		UFclose(&f);
-		current = New(ParsedURL);
-		copyParsedURL(current, &pu);
-		t_buf->bufferprop |= BP_REDIRECTED;
-		status = HTST_NORMAL;
-		goto load_doc;
-	    }
-	}
 	if (add_auth_cookie_flag && realm && ss) {
 	    /* If authorization is required and passed */
 	    add_auth_cookie(auth_pu->host, auth_pu->port, auth_pu->file,
@@ -1771,7 +1784,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 #ifdef USE_NNTP
     else if (pu.scheme == SCM_NEWS || pu.scheme == SCM_NNTP) {
-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	if (t_buf == NULL)
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&f, t_buf, TRUE, &pu);
 	t = checkContentType(t_buf);
 	if (t == NULL)
@@ -1848,25 +1862,26 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	t = f.guess_type;
     }
     else if (searchHeader) {
-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	if (t_buf == NULL)
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&f, t_buf, searchHeader_through, &pu);
-	t = checkContentType(t_buf);
-	if (t == NULL)
-	    t = "text/plain";
-	if (f.is_cgi && (p = checkHeader(t_buf, "Location:")) != NULL) {
+	if (f.is_cgi && (p = checkHeader(t_buf, "Location:")) != NULL &&
+	    checkRedirection(&pu)) {
 	    /* document moved */
-	    tmp = Strnew_charp(p);
-	    Strchop(tmp);
-	    tpath = tmp->ptr;
+	    tpath = url_quote_conv(remove_space(p), DocumentCode);
 	    request = NULL;
 	    UFclose(&f);
 	    add_auth_cookie_flag = 0;
 	    current = New(ParsedURL);
 	    copyParsedURL(current, &pu);
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	    t_buf->bufferprop |= BP_REDIRECTED;
 	    status = HTST_NORMAL;
 	    goto load_doc;
 	}
+	t = checkContentType(t_buf);
+	if (t == NULL)
+	    t = "text/plain";
 	searchHeader = SearchHeader = FALSE;
     }
     else if (DefaultType) {
@@ -1926,7 +1941,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (real_type == NULL)
 	real_type = t;
     if (SkipHeader) {
-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	if (t_buf == NULL)
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&f, t_buf, TRUE, NULL);
     }
     proc = loadBuffer;

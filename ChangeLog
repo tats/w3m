@@ -1,3 +1,8 @@
+2004-07-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Debian Bug#259053
+	* doc/FAQ.html, doc-jp/FAQ.html: ~/.mailcap -> ~/.w3m/mailcap
+
 2004-05-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* based on [w3m-dev 04079]
@@ -8499,4 +8504,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.927 2004/05/10 17:45:04 ukai Exp $
+$Id: ChangeLog,v 1.928 2004/07/13 17:17:39 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.8 2002/01/31 17:54:48 ukai Exp $ */
+/* $Id: anchor.c,v 1.9 2002/01/31 18:28:24 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -470,7 +470,6 @@ addMultirowsImg(Buffer *buf, AnchorList *al)
 		    l->propBuf[k] |= PE_ANCHOR;
 	    }
 	    if (a_form.url) {
-		FormItemList *fi = (FormItemList *)a_form.url;
 		buf->formitem = putAnchor(buf->formitem, a_form.url,
 					  a_form.target, &a, NULL,
 					  l->linenumber, pos);

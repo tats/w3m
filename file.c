@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.55 2002/01/31 17:54:50 ukai Exp $ */
+/* $Id: file.c,v 1.56 2002/01/31 18:28:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2754,9 +2754,10 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 Str
 process_img(struct parsed_tag *tag, int width)
 {
-    char *p, *q, *r, *r2, *s;
+    char *p, *q, *r, *r2 = NULL, *s;
 #ifdef USE_IMAGE
-    int w, i, nw, ni, n, w0, i0, align, xoffset, yoffset, top, bottom, ismap;
+    int w, i, nw, ni = 1, n, w0 = -1, i0 = -1;
+    int align, xoffset, yoffset, top, bottom, ismap = 0;
     int use_image = activeImage && displayImage;
 #else
     int w, i, nw, n;
@@ -2842,7 +2843,6 @@ process_img(struct parsed_tag *tag, int width)
 	w0 = w;
 	i0 = i;
 	if (w < 0 || i < 0) {
-	    char *url, *ext;
 	    Image image;
 	    ParsedURL u;
 
@@ -5726,7 +5726,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     struct html_feed_environ htmlenv1;
     struct readbuffer obuf;
 #ifdef USE_IMAGE
-    int image_flag;
+    int volatile image_flag;
 #endif
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 

@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.15 2002/01/31 17:54:50 ukai Exp $ */
+/* $Id: display.c,v 1.16 2002/01/31 18:28:24 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -620,7 +620,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 Line *
 redrawLineImage(Buffer *buf, Line *l, int i)
 {
-    int j, pos, rcol, ncol;
+    int j, pos, rcol;
     int column = buf->currentColumn;
     Anchor *a;
     int x, y, sx, sy, w, h;

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.1 2002/01/31 17:54:57 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.2 2002/01/31 18:28:24 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <Imlib.h>
@@ -104,14 +104,15 @@ main(int argc, char **argv)
 	XQueryTree(display, window, &root, &parent, &children, &nchildren);
 	if (defined_debug)
 	    fprintf(stderr,
-		    "window=%x root=%x parent=%x nchildren=%d width=%d height=%d\n",
-		    window, root, parent, nchildren, width, height);
+		    "window=%lx root=%lx parent=%lx nchildren=%d width=%d height=%d\n",
+		    (unsigned long)window, (unsigned long)root,
+		    (unsigned long)parent, nchildren, width, height);
 	p_window = window;
 	for (i = 0; i < nchildren; i++) {
 	    XGetWindowAttributes(display, children[i], &attr);
 	    if (defined_debug)
 		fprintf(stderr,
-			"children[%d]=%x x=%d y=%d width=%d height=%d\n", i,
+			"children[%d]=%lx x=%d y=%d width=%d height=%d\n", i,
 			children[i], attr.x, attr.y, attr.width, attr.height);
 	    if (attr.width > width * 0.7 && attr.height > height * 0.7) {
 		/* maybe text window */
@@ -129,7 +130,7 @@ main(int argc, char **argv)
 	    if (attr.x <= 0 && attr.width < 30 && attr.height > height * 0.7) {
 		if (defined_debug)
 		    fprintf(stderr,
-			    "children[%d]=%x x=%d y=%d width=%d height=%d\n",
+			    "children[%d]=%lx x=%d y=%d width=%d height=%d\n",
 			    i, children[i], attr.x, attr.y, attr.width,
 			    attr.height);
 		/* scrollbar of xterm/kterm ? */
@@ -165,9 +166,9 @@ main(int argc, char **argv)
 	XDestroyImage(i);
 	XFreeGC(display, gc);
 	XFreePixmap(display, p);
-/*
-	background_pixel = WhitePixel(display, 0);
-*/
+	/*
+	 * background_pixel = WhitePixel(display, 0);
+	 */
     }
 
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
@@ -319,11 +320,11 @@ DrawImage(char *buf, int redraw)
 	imageBuf = (Image *) realloc((void *)imageBuf,
 				     sizeof(Image) * maxImage);
 	for (; i < maxImage; i++)
-	    imageBuf[i].pixmap = NULL;
+	    imageBuf[i].pixmap = (Pixmap) NULL;
     }
     if (imageBuf[n].pixmap) {
 	XFreePixmap(display, imageBuf[n].pixmap);
-	imageBuf[n].pixmap = NULL;
+	imageBuf[n].pixmap = (Pixmap) NULL;
     }
 
     im = Imlib_load_image(id, p);

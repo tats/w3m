@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.1 2002/01/31 17:54:51 ukai Exp $ */
+/* $Id: image.c,v 1.2 2002/01/31 18:28:24 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -11,7 +11,7 @@
 
 #ifdef USE_IMAGE
 
-static image_index = 0;
+static int image_index = 0;
 
 /* display image */
 
@@ -32,6 +32,7 @@ static FILE *Imgdisplay_rf = NULL, *Imgdisplay_wf = NULL;
 static pid_t Imgdisplay_pid = 0;
 static int openImgdisplay();
 static void closeImgdisplay();
+int getCharSize();
 
 void
 initImage()
@@ -60,9 +61,9 @@ getCharSize()
     pclose(f);
     if (!(w > 0 && h > 0))
 	return FALSE;
-    if (! set_pixel_per_char)
+    if (!set_pixel_per_char)
 	pixel_per_char = (int)(1.0 * w / COLS + 0.5);
-    if (! set_pixel_per_line)
+    if (!set_pixel_per_line)
 	pixel_per_line = (int)(1.0 * h / LINES + 0.5);
     return TRUE;
 }
@@ -211,7 +212,7 @@ drawImage()
 	fputs(i->cache->file, Imgdisplay_wf);
 	fputs("\n", Imgdisplay_wf);
 	fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
-  again:
+      again:
 	if (fflush(Imgdisplay_wf) != 0) {
 	    switch (errno) {
 	    case EINTR:
@@ -225,7 +226,7 @@ drawImage()
     }
     if (!draw)
 	return;
-    fputs("3;\n", Imgdisplay_wf);       /* XSync() */
+    fputs("3;\n", Imgdisplay_wf);	/* XSync() */
     fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
   again2:
     if (fflush(Imgdisplay_wf) != 0) {
@@ -238,18 +239,18 @@ drawImage()
     }
     if (!fgetc(Imgdisplay_rf))
 	goto err;
-/*
-    touch_line();
-    touch_column(CurColumn);
-#ifdef JP_CHARSET
-    if (CurColumn > 0 &&
-	CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR2)
-	touch_column(CurColumn - 1);
-    else if (CurColumn < COLS - 1 &&
-	     CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR1)
-	touch_column(CurColumn + 1);
-#endif
-*/
+    /*
+     * touch_line();
+     * touch_column(CurColumn);
+     * #ifdef JP_CHARSET
+     * if (CurColumn > 0 &&
+     * CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR2)
+     * touch_column(CurColumn - 1);
+     * else if (CurColumn < COLS - 1 &&
+     * CHMODE(ScreenImage[CurLine]->lineprop[CurColumn]) == C_WCHAR1)
+     * touch_column(CurColumn + 1);
+     * #endif
+     */
     touch_cursor();
     refresh();
     return;
@@ -422,11 +423,11 @@ loadImage(int flag)
 ImageCache *
 getImage(Image * image, ParsedURL *current, int flag)
 {
-    Str key;
+    Str key = NULL;
     ImageCache *cache;
 
     if (!activeImage)
-	return;
+	return NULL;
     if (!image_hash)
 	image_hash = newHash_sv(100);
     if (image->cache)
@@ -491,8 +492,8 @@ getImageSize(ImageCache * cache)
     tmp = Strnew();
     if (!strchr(Imgsize, '/'))
 	Strcat_m_charp(tmp, LIB_DIR, "/", NULL);
-    Strcat_m_charp(tmp, Imgsize, " ", shell_quote(cache->file), " 2> /dev/null",
-		   NULL);
+    Strcat_m_charp(tmp, Imgsize, " ", shell_quote(cache->file),
+		   " 2> /dev/null", NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
 	return 0;

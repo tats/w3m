@@ -1,4 +1,4 @@
-/* $Id: inflate.c,v 1.6 2002/01/31 15:26:19 ukai Exp $ */
+/* $Id: inflate.c,v 1.7 2002/01/31 18:28:24 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <zlib.h>
@@ -52,7 +52,7 @@ main(int argc, char **argv)
 		fwrite(outbuf, 1, sizeof(outbuf) - s.avail_out, stdout);
 	    break;
 	}
-	if (status == Z_DATA_ERROR && ! retry++) {
+	if (status == Z_DATA_ERROR && !retry++) {
 	    status = inflateReset(&s);
 	    if (status != Z_OK) {
 		fprintf(stderr, "%s: inflateReset() %s\n", argv[0],

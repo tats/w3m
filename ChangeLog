@@ -1,5 +1,17 @@
 2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03440] Re: restore alarm event
+	* fm.h (BP_RELOAD): added
+		(DOWNLOAD_LIST_TITLE): added
+	* main.c (main): if BP_RELOAD, do reload
+		(reload): if buffer is DOWNLOAD_LIST, ldDL()
+		(DownloadListBuffer): rewrite with DOWNLOAD_LIST_TITLE
+		(download_action): delete "update"
+				don't delete prev buffer
+		(ldDL): rewrite to do reload
+
+2002-11-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03439] restore alarm event
 	* fm.h (AL_RESTORE): added
 	* main.c (alarm_sec): deleted
@@ -4802,4 +4814,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.523 2002/11/15 16:05:13 ukai Exp $
+$Id: ChangeLog,v 1.524 2002/11/15 16:14:25 ukai Exp $

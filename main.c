@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.137 2002/11/15 16:05:56 ukai Exp $ */
+/* $Id: main.c,v 1.138 2002/11/15 16:14:25 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -986,6 +986,8 @@ main(int argc, char **argv, char **envp)
 	    mouse_active();
 #endif				/* USE_MOUSE */
 #ifdef USE_ALARM
+	if (Currentbuf->bufferprop & BP_RELOAD)
+	    setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
 	if (CurrentAlarm.status & AL_IMPLICIT) {
 	    CurrentAlarm.buffer = Currentbuf;
 	    CurrentAlarm.status = AL_IMPLICIT_DONE
@@ -4334,6 +4336,10 @@ reload(void)
     int multipart;
 
     if (Currentbuf->bufferprop & BP_INTERNAL) {
+	if (!strcmp(Currentbuf->buffername, DOWNLOAD_LIST_TITLE)) {
+	    ldDL();
+	    return;
+	}
 	disp_err_message("Can't reload...", FALSE);
 	return;
     }
@@ -5809,10 +5815,9 @@ DownloadListBuffer(void)
     if (!FirstDL)
 	return NULL;
     cur_time = time(0);
-    src = Strnew_charp("<html><head><title>Download Panel</title></head>\
-<body><h1 align=center>Download Panel</h1>\
-<form method=internal action=download>\
-<input type=submit name=update value=Update><hr>\n");
+    src = Strnew_charp("<html><head><title>" DOWNLOAD_LIST_TITLE \
+"</title></head>\n<body><h1 align=center>" DOWNLOAD_LIST_TITLE "</h1>\n" \
+"<form method=internal action=download><hr>\n");
     for (d = LastDL; d != NULL; d = d->prev) {
 #ifdef HAVE_LSTAT
 	if (lstat(d->lock, &st))
@@ -5888,9 +5893,7 @@ download_action(struct parsed_tagarg *arg)
     pid_t pid;
 
     for (; arg; arg = arg->next) {
-	if (!strcmp(arg->arg, "update"))
-	    break;
-	else if (!strncmp(arg->arg, "stop", 4)) {
+	if (!strncmp(arg->arg, "stop", 4)) {
 	    pid = (pid_t) atoi(&arg->arg[4]);
 	    kill(pid, SIGKILL);
 	}
@@ -5913,10 +5916,8 @@ download_action(struct parsed_tagarg *arg)
 	    }
 	}
     }
-    if (FirstDL) {
+    if (FirstDL)
 	ldDL();
-	deletePrevBuf();
-    }
     else
 	backBf();
 }
@@ -5940,8 +5941,27 @@ stopDownload(void)
 void
 ldDL(void)
 {
+    Buffer *prev = Currentbuf;
+    int delete = FALSE;
+#ifdef USE_ALARM
+    int reload;
+#endif
+
     if (!FirstDL)
 	return;
+    if (Currentbuf->bufferprop & BP_INTERNAL &&
+	!strcmp(Currentbuf->buffername, DOWNLOAD_LIST_TITLE))
+	delete = TRUE;
+#ifdef USE_ALARM
+    reload = checkDownloadList();
+#endif
     cmd_loadBuffer(DownloadListBuffer(), BP_NO_URL, LB_NOLINK);
-    nextA();
+    if (delete && Currentbuf != prev)
+	deletePrevBuf();
+#ifdef USE_ALARM
+    if (reload && Currentbuf != prev) {
+	Currentbuf->bufferprop |= BP_RELOAD;
+	setAlarmEvent(1, AL_IMPLICIT, FUNCNAME_reload, NULL);
+    }
+#endif
 }

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.61 2002/02/04 15:18:41 ukai Exp $
+# $Id: configure,v 1.62 2002/02/12 08:52:58 ukai Exp $
 #	Configuration.
 #
 
@@ -97,6 +97,9 @@ do
   -cflags=*|--cflags=*)
     dcflags=`echo $1 | sed -e 's/-*cflags=//'`
     ;;
+  -ldflags=*|--ldflags=*)
+    dldflags=`echo $1 | sed -e 's/-*ldflags=//'`
+    ;;
   --ssl-includedir=*)
     ssl_includedir=`expr "$1" : "--ssl-includedir=\(.*\)"`
     ;;
@@ -126,6 +129,7 @@ do
     echo "-code=(S|E|j|N|n|m)"
     echo "                Specify default kanji code"
     echo "-cflags=FLAGS   Specify C flags"
+    echo "-ldflags=FLAGS  Specify LD flags"
     echo "--ssl-includedir=DIR	specify OpenSSL include dir"
     echo "--ssl-libdir=DIR	specify OpenSSL lib dir"
     echo "--gc-includedir=DIR	specify Boehm-GC include dir"
@@ -2071,6 +2075,7 @@ SYS_LIBRARIES = $gpmlib $termlib $ssllib $v6lib
 LOCAL_LIBRARIES = $extlib
 CC = $cc
 MYCFLAGS = $cflags $bsdinclude $sslinclude
+LDFLAGS = $ldflags
 GCCFLAGS = $cflags -I./\$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS
 KEYBIND_SRC = $keymap_file.c
 KEYBIND_OBJ = $keymap_file.o

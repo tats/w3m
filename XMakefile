@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.20 2002/01/31 17:54:48 ukai Exp $
+# $Id: XMakefile,v 1.21 2002/02/12 08:52:57 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -42,7 +42,7 @@ AR=ar
 all: $(TARGETS) all-scripts
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(ALLOBJS) $(LIBS)
 
 $(ALIB): $(ALIBOBJS)
 	$(AR) rv $(ALIB) $(ALIBOBJS)
@@ -76,26 +76,26 @@ functable.c: funcname.tab mktable$(EXT)
 	-rm -f functable.tab
 
 mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS2)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS2)
 
 $(BOOKMARKER): w3mbookmark.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o  $(LIBS2)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BOOKMARKER) w3mbookmark.o  $(LIBS2)
 
 $(HELPER): w3mhelperpanel.o $(ALIB) $(GCTARGET)
-	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS2)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(HELPER) w3mhelperpanel.o  $(LIBS2)
 
 $(INFLATE): inflate.o
-	$(CC) $(CFLAGS) $(Z_CFLAGS) -o $(INFLATE) inflate.o $(ZLIB)
+	$(CC) $(CFLAGS) $(Z_CFLAGS) $(LDFLAGS) -o $(INFLATE) inflate.o $(ZLIB)
 
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) $(Z_CFLAGS) -c inflate.c
 
 $(IMGDISPLAY): w3mimgdisplay.o
-	$(CC) $(CFLAGS) `imlib-config --cflags` -o $(IMGDISPLAY) \
+	$(CC) $(CFLAGS) `imlib-config --cflags` $(LDFLAGS) -o $(IMGDISPLAY) \
 		w3mimgdisplay.o `imlib-config --libs`
 
 $(IMGSIZE): w3mimgsize.o
-	$(CC) $(CFLAGS) `imlib-config --cflags` -o $(IMGSIZE) \
+	$(CC) $(CFLAGS) `imlib-config --cflags` $(LDFLAGS) -o $(IMGSIZE) \
 		w3mimgsize.o `imlib-config --libs`
 
 w3mimgdisplay.o: w3mimgdisplay.c

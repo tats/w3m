@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.79 2002/03/08 16:58:12 ukai Exp $ */
+/* $Id: file.c,v 1.80 2002/03/10 15:55:15 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2784,6 +2784,7 @@ process_img(struct parsed_tag *tag, int width)
 
     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
 	return tmp;
+    p = remove_space(p);
     q = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &q);
     w = -1;

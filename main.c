@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.26 2001/11/29 09:34:15 ukai Exp $ */
+/* $Id: main.c,v 1.27 2001/11/30 04:56:00 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3763,13 +3763,15 @@ _peekURL(int only_img)
     }
     a = (only_img ? NULL : retrieveCurrentAnchor(Currentbuf));
     if (a == NULL) {
-	a = retrieveCurrentImg(Currentbuf);
+	a = (only_img ? NULL :retrieveCurrentForm(Currentbuf));
 	if (a == NULL) {
-	    a = retrieveCurrentForm(Currentbuf);
+	    a = retrieveCurrentImg(Currentbuf);
 	    if (a == NULL) {
 		s = NULL;
 		return;
 	    }
+	}
+	else {
 	    s = Strnew_charp(form2str((FormItemList *)a->url));
 	    goto disp;
 	}

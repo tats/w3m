@@ -1,3 +1,8 @@
+2001-11-30  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02590]
+	* main.c (_peekURL): peek URL on <input type="image">
+
 2001-11-30  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02589]

@@ -5,19 +5,22 @@
 
   w3m file:/cgi-bin/2ch.cgi?http://pc.2ch.net/test/read.cgi/unix/1035755937/
 
-  it uses wget -c
-  dat is recorded under ~/w3m2ch/
-  You can post
+  It uses wget -c.
+  `dat' files are recorded under ~/w3m2ch/.
+  You can not post.
 
 smb.cgi
 
   [w3m-dev 03634] smb.cgi
   localcgi to access SMB.
   Since it uses nmblookup, smbclient, you should install samba.
-  Password can be configured in ~/.w3m/smb:
-     when -A option available smbclient -A ~/.w3m/smb 
-     otherwise, environment variable PASSWD 
-		  that is set by contents of ~/.w3m/smb
+  Password can be passed to smbclient:
+  1) When the password is set by contents of ~/.w3m/smb and
+     -A option available, `smbclient -A ~/.w3m/smb' is used.
+  2) When the environment variable PASSWD_FILE, it is used.
+  3) When the password is set by contents of ~/.w3m/smb,
+     the password is passed via standrad I/O using
+     the environment variable PASSWD_FD.
 
 google.cgi
 

@@ -15,9 +15,14 @@ smb.cgi
   SMB にアクセスする local CGI です。
   nmblookup,smbclient を使うので sabma がインストールされている
   必要があります。
-  パスワードは、smbclient の -A オプションを使えるなら、
-  smbclient -A ~/.w3m/smb として、使えない場合は ~/.w3m/smb を
-  読んで環境変数 PASSWD で渡します。
+  パスワードは、
+  1) ~/.w3m/smb にパスワードが設定されており、
+     smbclient の -A オプションを使えるなら
+     smbclient -A ~/.w3m/smb として渡します。
+  2) 環境変数 PASSWD_FILE (パスワードのみのファイル)が設定
+     されている場合は、環境変数 PASSWD_FILE を使います。
+  3) ~/.w3m/smb にパスワードが設定されていれば、
+     環境変数 PASSWD_FD を使って標準入力経由で渡します。
   どちらにせよ、あまり良い事ではないので SMB(CIFS)プロトコルを
   喋る版を希望。
 

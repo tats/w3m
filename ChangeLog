@@ -1,3 +1,10 @@
+2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03639] Re: smb.cgi
+	* Bonus/2ch.cgi: change password handling
+	* Bonus/README: update
+	* Bonus/README.eng: ditto
+
 2003-01-12  qhwt@myrealbox.com
 
 	* [w3m-dev 03636] segfault in main.c
@@ -6403,4 +6410,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.679 2003/01/11 16:17:43 ukai Exp $
+$Id: ChangeLog,v 1.680 2003/01/15 15:51:29 ukai Exp $

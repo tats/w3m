@@ -9,9 +9,17 @@
 #
 # ----- ~/.w3m/smb -----
 # workgroup = <workgroup>
-# username = <username>
-# password = <password>
+# [ username = <username> ]
+# [ password = <password> ]
+# [ password_file = <password_file> ]
 # ----------------------
+# --- <password_file> ---
+# <password>
+# -----------------------
+# default:
+#  <username> = $USER
+#  <password> = $PASSWD  (Don't use!)
+#  <password_file> = $PASSWD_FILE
 
 $DEBUG = 1;
 
@@ -22,18 +30,35 @@ $AUTH_FILE =~ s@^~/@$ENV{"HOME"}/@;
 $WORKGROUP = "-";
 $USER = $ENV{"USER"};
 $PASSWD = $ENV{"PASSWD"};
+$PASSWD_FILE = $ENV{"PASSWD_FILE"};
 &load_auth_file($AUTH_FILE);
 
 $NMBLOOKUP = "nmblookup";
 $SMBCLIENT = "smbclient";
 @NMBLOOKUP_OPT = ("-T");
 @SMBCLIENT_OPT = ("-N");
-$USE_OPT_A = &check_opt_a();
+$USE_OPT_A = defined($PASSWD) && (-f $AUTH_FILE) && &check_opt_a();
 if ($USE_OPT_A) {
-	undef $USER;
-	undef $PASSWD;
 	push(@SMBCLIENT_OPT, "-A", $AUTH_FILE);
+} elsif (-f $PASSWD_FILE) {
+	$USE_PASSWD_FILE = 1;
+} elsif (defined($PASSWD)) {
+	$USE_PASSWD_FD = 1;
+	$PASSWD_FD = 0;
 }
+if (defined($PASSWD)) {
+	$passwd = "*" x 8;
+}
+$DEBUG && print <<EOF;
+DEBUG: NMBLOOKUP=$NMBLOOKUP @NMBLOOKUP_OPT
+DEBUG: SMBCLIENT=$SMBCLIENT @SMBCLIENT_OPT
+DEBUG: WORKGROUP=$WORKGROUP
+DEBUG: USER=$USER
+DEBUG: PASSWD=$passwd
+DEBUG: PASSWD_FILE=$PASSWD_FILE
+DEBUG: PASSWD_FD=$PASSWD_FD
+EOF
+
 $PAGER = "cat";
 $FILE = "F000";
 
@@ -44,6 +69,10 @@ $_ = &file_decode($QUERY);
 $DEBUG && print "DEBUG: QUERY_STRING=\"$_\"\n";
 if (s@^//([^/]+)@@) {
 	$server = $1;
+#	if (!$USE_OPT_A && !defined($PASSWD)) {
+#		&print_form("//$server$_");
+#		exit;
+#	}
 	if (s@^/([^/]+)@@) {
 		&file_list("//$server/$1", &cleanup($_));
 	} else {
@@ -250,9 +279,11 @@ sub get_list {
 	@cmd = ($SMBCLIENT, @SMBCLIENT_OPT, "-L", $server);
 	$F = &open_pipe($passwd, @cmd);
 	while (<$F>) {
-		/^\s*$header/ && last;
-	}
+		if (/^\s*$header/) {
 $DEBUG && print "DEBUG: $_";
+			last;
+		}
+	}
 	while (<$F>) {
 		/^\s*$/ && last;
 $DEBUG && print "DEBUG: $_";
@@ -277,9 +308,18 @@ sub exec_cmd {
 	local($passwd, @cmd) = @_;
 
 	$ENV{"LC_ALL"} = "C";
-	if (!$USE_OPT_A && $passwd) {
-		$ENV{"USER"} = $USER if $USER;
-		$ENV{"PASSWD"} = $PASSWD if $PASSWD;
+	$ENV{"USER"} = $USER;
+	if ($passwd && !$USE_OPT_A) {
+		if ($USE_PASSWD_FILE) {
+			$ENV{"PASSWD_FILE"} = $PASSWD_FILE;
+		} elsif ($USE_PASSWD_FD) {
+			$ENV{"PASSWD_FD"} = $PASSWD_FD;
+			if (open(W, "|-")) {
+				print W $PASSWD;
+				close(W);
+				exit;
+			}
+		}
 	}
 	open(STDERR, ">/dev/null");
 	exec @cmd;
@@ -287,8 +327,15 @@ sub exec_cmd {
 }
 
 sub print_form {
+	local($_) = @_;
+	local($q) = &html_quote($_);
+	$_ = &file_encode($_);
+
 	print <<EOF;
-<form action="$CGI" method=POST>
+Content-Type: text/html
+
+<h1>$q</h1>
+<form action="$CGI?$_" method=POST>
 <table>
 <tr><td>Workgroup	<td>User	<td>Password
 <tr><td><input type=text size=8 name=group value="$WORKGROUP">
@@ -315,6 +362,8 @@ sub load_auth_file {
 			$USER = $_;
 		} elsif (s/^passw(or)?d\s*=\s*//i) {
 			$PASSWD = $_;
+		} elsif (s/^passw(or)?d_file\s*=\s*//i) {
+			$PASSWD_FILE = $_;
 		}
 	}
 	close(F);

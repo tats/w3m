@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.7 2002/01/26 17:24:01 ukai Exp $ */
+/* $Id: history.c,v 1.8 2002/12/05 16:34:33 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -54,10 +54,12 @@ saveHistory(Hist *hist, size_t size)
 {
     FILE *f;
     HistItem *item;
+    char *tmpf;
 
     if (hist == NULL || hist->list == NULL)
 	return;
-    if ((f = fopen(rcFile(HISTORY_FILE), "w")) == NULL) {
+    tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+    if ((f = fopen(tmpf, "w")) == NULL) {
 	disp_err_message("Can't open history", FALSE);
 	return;
     }
@@ -67,6 +69,7 @@ saveHistory(Hist *hist, size_t size)
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
     fclose(f);
+    rename(tmpf, rcFile(HISTORY_FILE));
 }
 #endif				/* USE_HISTORY */
 

@@ -1,3 +1,8 @@
+2002-12-06  Takahashi Youichirou <nikuq@hk.airnet.ne.jp>
+
+	* [w3m-dev 03530] save history
+	* history.c (saveHistory): save tmpfile and rename
+
 2002-12-06  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* NEWS: func: ACCESSKEY, LINK_MENU
@@ -5537,4 +5542,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.594 2002/12/05 16:32:45 ukai Exp $
+$Id: ChangeLog,v 1.595 2002/12/05 16:34:33 ukai Exp $

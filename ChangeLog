@@ -1,5 +1,11 @@
 2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev-en 00780] "Carlo E. Prelz" <fluido@fluido.as>
+	  always print on screen the relative position
+	* display.c (displayBuffer): relative position
+
+2002-10-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* 0.3.2 release candidate 1
 	* version.c.in: update
 
@@ -3957,4 +3963,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.446 2002/10/25 16:11:20 ukai Exp $
+$Id: ChangeLog,v 1.447 2002/10/25 19:59:48 ukai Exp $

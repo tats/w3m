@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.22 2002/03/15 18:33:32 ukai Exp $ */
+/* $Id: display.c,v 1.23 2002/10/25 19:59:51 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -319,6 +319,12 @@ displayBuffer(Buffer *buf, int mode)
 #endif				/* not USE_MOUSE */
 	msg = Strnew();
     Strcat_charp(msg, "Viewing");
+    if (buf->currentLine != NULL && buf->lastLine != NULL)
+	Strcat(msg, Sprintf(" %3d%%",
+			    (int)((double)buf->currentLine->real_linenumber
+				  * 100.0 /
+				  (double)buf->lastLine->real_linenumber
+				  + 0.5)));
 #ifdef USE_SSL
     if (buf->ssl_certificate)
 	Strcat_charp(msg, "[SSL]");

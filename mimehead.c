@@ -1,4 +1,4 @@
-/* $Id: mimehead.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: mimehead.c,v 1.5 2002/12/21 16:20:40 ukai Exp $ */
 /* 
  * MIME header support by Akinori ITO
  */
@@ -217,7 +217,7 @@ decodeWord(char **ow)
 	goto convert_fail;
     w++;
     p = w;
-    switch (method) {
+    switch (toupper(method)) {
     case 'B':
 	a = decodeB(&w);
 	break;

@@ -1,3 +1,8 @@
+2002-01-16  Tsutomu Okada <okada@furuno.co.jp>
+
+	* [w3m-dev 02851]
+	* regex.c (newRegex0): fix return NULL;
+
 2002-01-16  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 02847]
@@ -1998,4 +2003,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.227 2002/01/16 02:51:37 ukai Exp $
+$Id: ChangeLog,v 1.228 2002/01/16 04:38:06 ukai Exp $

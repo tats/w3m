@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.12 2002/01/16 02:50:04 ukai Exp $ */
+/* $Id: regex.c,v 1.13 2002/01/16 04:38:06 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -175,8 +175,8 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 		if (st_ptr >= &regex->storage[STORAGE_MAX]) {
 		    if (msg)
 			*msg = "Regular expression too long";
+		    return NULL;
 		}
-		return NULL;
 	    }
 	    *(st_ptr++) = '\0';
 	    re->p.pattern = r;

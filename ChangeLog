@@ -1,3 +1,10 @@
+2003-10-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03996] HELP_DIR and funcname.tab
+	  reported by SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+	* configure.in: don't use posix shell syntax $(..)
+	* funcname.tab: deleted
+
 2003-10-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* scripts/Makefile.in (w3mhelp-funcname.pl): depends ../funcname.tab
@@ -8203,4 +8210,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.883 2003/10/10 16:33:13 ukai Exp $
+$Id: ChangeLog,v 1.884 2003/10/17 16:46:23 ukai Exp $

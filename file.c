@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.128 2002/11/25 16:39:52 ukai Exp $ */
+/* $Id: file.c,v 1.129 2002/11/25 16:59:07 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5454,7 +5454,7 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 	    }
 	    if (ST_IS_COMMENT(obuf->status)) {
 		if ((obuf->table_level >= 0) ? tbl_mode->pre_mode & TBLM_IGNORE
-		     : obuf->flag & RB_IGNORE)
+		    : obuf->flag & RB_IGNORE)
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process comment.  */
 		    obuf->status = R_ST_NORMAL;
@@ -5470,12 +5470,12 @@ HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 			Strcat_char(h_env->tagbuf, ' ');
 		}
 		if ((obuf->table_level >= 0)
-		     ? ((tbl_mode->pre_mode & TBLM_IGNORE) &&
-			!TAG_IS(h_env->tagbuf->ptr, tbl_mode->ignore_tag->ptr,
-				tbl_mode->ignore_tag->length - 1))
-		     : ((obuf->flag & RB_IGNORE) &&
-			!TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
-				obuf->ignore_tag->length - 1)))
+		    ? ((tbl_mode->pre_mode & TBLM_IGNORE) &&
+		       !TAG_IS(h_env->tagbuf->ptr, tbl_mode->ignore_tag->ptr,
+			       tbl_mode->ignore_tag->length - 1))
+		    : ((obuf->flag & RB_IGNORE) &&
+		       !TAG_IS(h_env->tagbuf->ptr, obuf->ignore_tag->ptr,
+			       obuf->ignore_tag->length - 1)))
 		    /* within ignored tag, such as *
 		     * <script>..</script>, don't process tag.  */
 		    obuf->status = R_ST_NORMAL;

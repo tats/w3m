@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.15 2002/11/25 16:57:17 ukai Exp $ */
+/* $Id: func.c,v 1.16 2002/11/25 16:59:07 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -323,31 +323,31 @@ getQWord(char **str)
 
 #ifdef USE_MOUSE
 static MouseAction default_mouse_action = {
-  NULL,
+    NULL,
 #if LANG == JA
-  "¢ã¢¬¢­",
+    "¢ã¢¬¢­",
 #else
-  "<=UpDn",
+    "<=UpDn",
 #endif
-  0, 6, FALSE, 0, 0,
-  { { movMs, NULL }, { backBf, NULL }, { menuMs, NULL } },	/* default */
-  { { NULL, NULL }, { NULL, NULL }, { NULL, NULL } },		/* anchor */
-  { { followA, NULL }, { NULL, NULL }, { NULL, NULL } },	/* active */
-  { { tabMs, NULL }, { closeTMs, NULL }, { NULL, NULL } },	/* tab */
-  { NULL, NULL, NULL },						/* menu */
-  { NULL, NULL, NULL }						/* lastline */
+    0, 6, FALSE, 0, 0,
+    {{movMs, NULL}, {backBf, NULL}, {menuMs, NULL}},	/* default */
+    {{NULL, NULL}, {NULL, NULL}, {NULL, NULL}},	/* anchor */
+    {{followA, NULL}, {NULL, NULL}, {NULL, NULL}},	/* active */
+    {{tabMs, NULL}, {closeTMs, NULL}, {NULL, NULL}},	/* tab */
+    {NULL, NULL, NULL},		/* menu */
+    {NULL, NULL, NULL}		/* lastline */
 };
 static MouseActionMap default_lastline_action[6] = {
-  { backBf, NULL },
-  { backBf, NULL },
-  { pgBack, NULL },
-  { pgBack, NULL },
-  { pgFore, NULL },
-  { pgFore, NULL }
+    {backBf, NULL},
+    {backBf, NULL},
+    {pgBack, NULL},
+    {pgBack, NULL},
+    {pgFore, NULL},
+    {pgFore, NULL}
 };
 
 static void
-setMouseAction0(char **str, int *width, MouseActionMap **map, char *p)
+setMouseAction0(char **str, int *width, MouseActionMap ** map, char *p)
 {
     char *s;
     int b, w, x;
@@ -379,7 +379,7 @@ setMouseAction0(char **str, int *width, MouseActionMap **map, char *p)
 }
 
 static void
-setMouseAction1(MouseActionMap **map, int width, char *p)
+setMouseAction1(MouseActionMap ** map, int width, char *p)
 {
     char *s;
     int x, x2, f;
@@ -394,11 +394,11 @@ setMouseAction1(MouseActionMap **map, int width, char *p)
     s = getWord(&p);
     x = atoi(s);
     if (!(IS_DIGIT(*s) && x >= 0 && x < width))
-	return;		/* error */
+	return;			/* error */
     s = getWord(&p);
     x2 = atoi(s);
     if (!(IS_DIGIT(*s) && x2 >= 0 && x2 < width))
-	return;		/* error */
+	return;			/* error */
     s = getWord(&p);
     f = getFuncList(s);
     s = getQWord(&p);
@@ -411,7 +411,7 @@ setMouseAction1(MouseActionMap **map, int width, char *p)
 }
 
 static void
-setMouseAction2(MouseActionMap *map, char *p)
+setMouseAction2(MouseActionMap * map, char *p)
 {
     char *s;
     int f;

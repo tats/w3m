@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.153 2002/11/25 16:57:17 ukai Exp $ */
+/* $Id: main.c,v 1.154 2002/11/25 16:59:07 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4843,8 +4843,8 @@ do_mouse_action(int btn, int x, int y)
 	    if (mouse_action.menu_map[btn])
 		map = &mouse_action.menu_map[btn][x];
 	}
-	else 
-	     map = &mouse_action.tab_map[btn];
+	else
+	    map = &mouse_action.tab_map[btn];
     }
     else if (y == LASTLINE) {
 	if (mouse_action.lastline_str && x >= 0 &&
@@ -4857,9 +4857,10 @@ do_mouse_action(int btn, int x, int y)
 	if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 	    (x == Currentbuf->cursorX + Currentbuf->rootX
 #ifdef JP_CHARSET
-             || (Currentbuf->currentLine != NULL &&
-                 (Currentbuf->currentLine->propBuf[Currentbuf->pos] & PC_KANJI1)
-                 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
+	     || (Currentbuf->currentLine != NULL &&
+		 (Currentbuf->currentLine->
+		  propBuf[Currentbuf->pos] & PC_KANJI1)
+		 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
 #endif				/* JP_CHARSET */
 	    )) {
 	    if (retrieveCurrentAnchor(Currentbuf) ||
@@ -4868,8 +4869,7 @@ do_mouse_action(int btn, int x, int y)
 	}
 	else {
 	    int cx = Currentbuf->cursorX, cy = Currentbuf->cursorY;
-	    cursorXY(Currentbuf, x - Currentbuf->rootX,
-		     y - Currentbuf->rootY);
+	    cursorXY(Currentbuf, x - Currentbuf->rootX, y - Currentbuf->rootY);
 	    if (retrieveCurrentAnchor(Currentbuf) ||
 		retrieveCurrentForm(Currentbuf))
 		map = &mouse_action.anchor_map[btn];
@@ -5124,7 +5124,7 @@ menuMs(void)
 	     mouse_action.cursorY < LASTLINE) {
 	cursorXY(Currentbuf, mouse_action.cursorX - Currentbuf->rootX,
 		 mouse_action.cursorY - Currentbuf->rootY);
-        onA();
+	onA();
     }
     mainMn();
 }

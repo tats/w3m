@@ -1,5 +1,21 @@
 2003-02-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03784] ftp directory support
+	* ftp.c (AbortLoading): added
+		(KeyAbort): added
+		(openFTPStream): remove '~' in realpathname?
+		(loadFTPDir): remove '~' in realpathname?
+			keyabort
+			new ex_ftpdir_name_size_date()
+			add symlink information to flist
+		(XD_CTOD): deleted
+		(EX_COUNT_DIGIT): added
+		(ex_ftpdir_name_size_date): add **link
+			accept device file
+			loose date check for localized server
+
+2003-02-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03783] pipe to "command1 | command2"
 	* etc.c (myExtCommand): redirect to subshell
 	* main.c (pipeBuf): conv_to_system(cmd)
@@ -7271,4 +7287,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.767 2003/02/26 17:22:01 ukai Exp $
+$Id: ChangeLog,v 1.768 2003/02/26 17:37:58 ukai Exp $

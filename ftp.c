@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.27 2003/02/20 15:39:21 ukai Exp $ */
+/* $Id: ftp.c,v 1.28 2003/02/26 17:38:00 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -34,6 +34,15 @@ typedef struct _FTP {
 static struct _FTP current_ftp = {
     NULL, 0, NULL, NULL, NULL, NULL, NULL
 };
+
+static JMP_BUF AbortLoading;
+
+static MySignalHandler
+KeyAbort(SIGNAL_ARG)
+{
+    LONGJMP(AbortLoading, 1);
+    SIGNAL_RETURN;
+}
 
 static Str
 ftp_command(FTP ftp, char *cmd, char *arg, int *status)
@@ -274,7 +283,7 @@ ftp_quit(FTP ftp)
     return 0;
 }
 
-static int ex_ftpdir_name_size_date(char *, char **, char **, char **);
+static int ex_ftpdir_name_size_date(char *, char **, char **, char **, char **);
 
 #define	SERVER_NONE	0
 #define	UNIXLIKE_SERVER	1
@@ -392,12 +401,13 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
 	ftp_quit(&current_ftp);
 	return NULL;
     }
-    if (pu->file == NULL || *pu->file == '\0')
+    if (pu->file == NULL || *pu->file == '\0' ||
+	pu->file[strlen(pu->file) - 1] == '/')
 	goto ftp_dir;
-    else
-	realpathname = file_unquote(pu->file);
-    if (pu->file[strlen(pu->file) - 1] == '/')
-	goto ftp_dir;
+
+    realpathname = file_unquote(pu->file);
+    if (*realpathname == '/' && *(realpathname + 1) == '~')
+	realpathname++;
     /* Get file */
     uf->modtime = ftp_modtime(&current_ftp, realpathname);
     ftp_command(&current_ftp, "RETR", realpathname, &status);
@@ -414,10 +424,12 @@ loadFTPDir(ParsedURL *pu, char *code)
 {
     Str FTPDIRtmp;
     Str tmp;
-    int status, sv_type;
+    int status;
+    volatile int sv_type;
     char *realpathname, *fn, *q;
     char **flist;
-    int i, nfile, nfile_max = 100;
+    int i, nfile, nfile_max;
+    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 
 #ifdef JP_CHARSET
     *code = DocumentCode;
@@ -438,6 +450,8 @@ loadFTPDir(ParsedURL *pu, char *code)
     }
     else {
 	realpathname = file_unquote(pu->file);
+	if (*realpathname == '/' && *(realpathname + 1) == '~')
+	    realpathname++;
 	if (sv_type == UNIXLIKE_SERVER) {
 	    ftp_command(&current_ftp, "CWD", realpathname, &status);
 	    if (status == 250)
@@ -463,23 +477,34 @@ loadFTPDir(ParsedURL *pu, char *code)
 			       "\">\n<title>", q,
 			       "</title>\n</head>\n<body>\n<h1>Index of ", q,
 			       "</h1>\n", NULL);
+
+    if (SETJMP(AbortLoading) != 0) {
+	if (sv_type == UNIXLIKE_SERVER)
+	    Strcat_charp(FTPDIRtmp, "</a></pre>\n");
+	else
+	    Strcat_charp(FTPDIRtmp, "</a></ul>\n");
+        Strcat_charp(FTPDIRtmp, "<p>Transfer Interrupted!\n");
+        goto ftp_end;
+    }
+    TRAP_ON;
+
     if (sv_type == UNIXLIKE_SERVER)
 	Strcat_charp(FTPDIRtmp, "<pre>\n");
     else
 	Strcat_charp(FTPDIRtmp, "<ul>\n<li>");
     Strcat_charp(FTPDIRtmp, "<a href=\"..\">[Upper Directory]</a>\n");
 
+    nfile_max = 100;
     flist = New_N(char *, nfile_max);
     nfile = 0;
     if (sv_type == UNIXLIKE_SERVER) {
-	char *name, *date, *size, *type_str;
+	char *name, *link, *date, *size, *type_str;
 	int ftype, max_len, len, j;
-	Str line_tmp;
 
-	max_len = 0;
+	max_len = 20;
 	while (tmp = Strfgets(current_ftp.data), tmp->length > 0) {
 	    Strchop(tmp);
-	    if ((ftype = ex_ftpdir_name_size_date(tmp->ptr, &name, &date,
+	    if ((ftype = ex_ftpdir_name_size_date(tmp->ptr, &name, &link, &date,
 						  &size)) == FTPDIR_NONE)
 		continue;
 	    if (!strcmp(".", name) || !strcmp("..", name))
@@ -496,13 +521,12 @@ loadFTPDir(ParsedURL *pu, char *code)
 		type_str = "@";
 	    }
 	    else {
-		type_str = "";
+		type_str = " ";
 	    }
 	    if (max_len < len)
 		max_len = len;
-	    line_tmp =
-		Sprintf("%s%s %-12.12s %6.6s", name, type_str, date, size);
-	    flist[nfile++] = line_tmp->ptr;
+	    flist[nfile++] = Sprintf("%s%s\n%s  %5s%s", name, type_str, date,
+				     size, link)->ptr;
 	    if (nfile == nfile_max) {
 		nfile_max *= 2;
 		flist = New_Reuse(char *, flist, nfile_max);
@@ -511,7 +535,7 @@ loadFTPDir(ParsedURL *pu, char *code)
 	qsort(flist, nfile, sizeof(char *), strCmp);
 	for (j = 0; j < nfile; j++) {
 	    fn = flist[j];
-	    date = fn + strlen(fn) - 20;
+	    date = strchr(fn, '\n');
 	    if (*(date - 1) == '/') {
 		ftype = FTPDIR_DIR;
 		*date = '\0';
@@ -522,27 +546,22 @@ loadFTPDir(ParsedURL *pu, char *code)
 	    }
 	    else {
 		ftype = FTPDIR_FILE;
-		*date = '\0';
+		*(date - 1) = '\0';
 	    }
 	    date++;
-	    len = strlen(fn);
 	    tmp = convertLine(NULL, Strnew_charp(fn), code, RAW_MODE);
+	    if (ftype == FTPDIR_LINK)
+		Strcat_char(tmp, '@');
 	    Strcat_m_charp(FTPDIRtmp, "<a href=\"", html_quote(file_quote(fn)),
-			   "\">", html_quote(tmp->ptr), NULL);
-	    if (ftype == FTPDIR_LINK) {
-		Strcat_charp(FTPDIRtmp, "@");
-		len++;
+			   "\">", html_quote(tmp->ptr), "</a>", NULL);
+	    for (i = tmp->length; i <= max_len; i++) {
+		if ((max_len % 2 + i) % 2)
+		    Strcat_char(FTPDIRtmp, '.');
+		else
+		    Strcat_char(FTPDIRtmp, ' ');
 	    }
-	    Strcat_charp(FTPDIRtmp, "</a>");
-	    for (i = len; i <= max_len; i++) {
-		if ((max_len % 2 + i) % 2) {
-		    Strcat_charp(FTPDIRtmp, ".");
-		}
-		else {
-		    Strcat_charp(FTPDIRtmp, " ");
-		}
-	    }
-	    Strcat_m_charp(FTPDIRtmp, date, "\n", NULL);
+	    tmp = convertLine(NULL, Strnew_charp(date), code, RAW_MODE);
+	    Strcat_m_charp(FTPDIRtmp, html_quote(tmp->ptr), "\n", NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</pre>\n");
     }
@@ -565,8 +584,10 @@ loadFTPDir(ParsedURL *pu, char *code)
 	}
 	Strcat_charp(FTPDIRtmp, "</ul>\n");
     }
-    Strcat_charp(FTPDIRtmp, "</body>\n</html>\n");
 
+  ftp_end:
+    Strcat_charp(FTPDIRtmp, "</body>\n</html>\n");
+    TRAP_OFF;
     closeFTPdata(current_ftp.data);
     return FTPDIRtmp;
 }
@@ -577,119 +598,107 @@ disconnectFTP(void)
     ftp_quit(&current_ftp);
 }
 
-#define XD_CTOD(c) {\
-  if (c >= '0' && c <= '9') {\
-    c -= (unsigned char)'0';\
-  } else if (c >= 'a' && c <= 'f') {\
-    c = c - (unsigned char)'a' + (unsigned char)10;\
-  } else if (c >= 'A' && c <= 'F') {\
-    c = c - (unsigned char)'A' + (unsigned char)10;\
-  } else {\
-    goto skip;\
-  }\
-}
-
 #define EX_SKIP_SPACE(cp) {\
-  while (IS_SPACE(*cp) && *cp != '\0') cp++;\
-  if (*cp == '\0') {\
-    goto done;\
-  }\
+    while (IS_SPACE(*cp) && *cp != '\0') cp++;\
+    if (*cp == '\0')\
+	goto done;\
 }
 #define EX_SKIP_NONE_SPACE(cp) {\
-  while (!IS_SPACE(*cp) && *cp != '\0') cp++;\
-  if (*cp == '\0') {\
-    goto done;\
-  }\
+    while (!IS_SPACE(*cp) && *cp != '\0') cp++;\
+    if (*cp == '\0')\
+	goto done;\
+}
+#define EX_COUNT_DIGIT(cp) {\
+    size = 0;\
+    while (*cp && IS_DIGIT(*cp))\
+	size = size * 10 + *(cp++) - '0';\
+    if (*cp == '\0')\
+	goto done;\
 }
 
 static Str size_int2str(clen_t);
 
 static int
-ex_ftpdir_name_size_date(char *line, char **name, char **date, char **sizep)
+ex_ftpdir_name_size_date(char *line, char **name, char **link, char **date,
+			 char **sizep)
 {
     int ftype = FTPDIR_NONE;
-    char *cp, *endp;
-    Str date_str, name_str, size_str;
+    char *cp = line, *p;
     clen_t size;
 
-    if (strlen(line) < 11) {
+    if (strlen(cp) < 11)
 	goto done;
-    }
     /* skip permission */
-    if (!IS_SPACE(line[10])) {
+    cp += 10;
+    if (!IS_SPACE(*cp))
 	goto done;
-    }
-    cp = line + 11;
+    cp++;
 
     /* skip link count */
-    EX_SKIP_SPACE(cp)
-	while (IS_DIGIT(*cp) && *cp != '\0')
-	cp++;
-    if (!IS_SPACE(*cp) || *cp == '\0') {
-	goto done;
-    }
+    EX_SKIP_SPACE(cp);
+    EX_COUNT_DIGIT(cp);
     cp++;
 
     /* skip owner string */
-    EX_SKIP_SPACE(cp)
-	EX_SKIP_NONE_SPACE(cp)
-	cp++;
+    EX_SKIP_SPACE(cp);
+    EX_SKIP_NONE_SPACE(cp);
+    cp++;
 
     /* skip group string */
-    EX_SKIP_SPACE(cp)
-	EX_SKIP_NONE_SPACE(cp)
-	cp++;
+    EX_SKIP_SPACE(cp);
+    EX_SKIP_NONE_SPACE(cp);
+    cp++;
 
     /* extract size */
-    EX_SKIP_SPACE(cp)
-	size = 0;
-    while (*cp && IS_DIGIT(*cp)) {
-	size = size * 10 + *(cp++) - '0';
+    EX_SKIP_SPACE(cp);
+    p = cp;
+    EX_COUNT_DIGIT(cp);
+    if (*cp == ',') {	/* device file ? */
+	cp++;
+	EX_SKIP_SPACE(cp);
+	EX_SKIP_NONE_SPACE(cp);
+	*sizep = allocStr(p, cp - p);
     }
-    if (*cp == '\0') {
-	goto done;
+    else {
+	*sizep = size_int2str(size)->ptr;
     }
+    cp++;
 
     /* extract date */
-    EX_SKIP_SPACE(cp)
-	if (IS_ALPHA(cp[0]) && IS_ALPHA(cp[1]) && IS_ALPHA(cp[2])
-	    && IS_SPACE(cp[3])
-	    && (IS_SPACE(cp[4]) || IS_DIGIT(cp[4])) && IS_DIGIT(cp[5])
-	    && IS_SPACE(cp[6])
-	    && (IS_SPACE(cp[7]) || IS_DIGIT(cp[7])) && IS_DIGIT(cp[8])
-	    && (cp[9] == ':' || IS_DIGIT(cp[9]))
-	    && IS_DIGIT(cp[10]) && (IS_DIGIT(cp[11]) || IS_SPACE(cp[11]))
-	    && IS_SPACE(cp[12])) {
-	cp[12] = '\0';
-	date_str = Strnew_charp(cp);
-	cp += 13;
-    }
-    else {
-	goto done;
-    }
+    /* loose check for i18n server */
+    p = cp;
+    EX_SKIP_SPACE(cp);
+    EX_SKIP_NONE_SPACE(cp);	/* month ? */
+    EX_SKIP_SPACE(cp);
+    EX_SKIP_NONE_SPACE(cp);	/* day ? */
+    EX_SKIP_SPACE(cp);
+    EX_SKIP_NONE_SPACE(cp);	/* year or time ? */
+    *date = allocStr(p, cp - p);
+    cp++;
 
     /* extract file name */
-    EX_SKIP_SPACE(cp)
-	if (line[0] == 'l') {
-	if ((endp = strstr(cp, " -> ")) == NULL) {
-	    goto done;
-	}
-	*endp = '\0';
-	size_str = Strnew_charp("-");
+    EX_SKIP_SPACE(cp);
+    switch (line[0]) {
+    case 'l':
 	ftype = FTPDIR_LINK;
-    }
-    else if (line[0] == 'd') {
-	size_str = Strnew_charp("-");
+	if ((p = strstr(cp, " -> ")) == NULL)
+	    goto done;
+	*name = allocStr(cp, p - cp);
+	*link = allocStr(p, - 1);
+	*sizep = "";
+	break;
+    case 'd':
 	ftype = FTPDIR_DIR;
-    }
-    else {
-	size_str = size_int2str(size);
+	*name = allocStr(cp, -1);
+	*link = "";
+	*sizep = "";
+	break;
+    default:
 	ftype = FTPDIR_FILE;
+	*name = allocStr(cp, -1);
+	*link = "";
+	break;
     }
-    name_str = Strnew_charp(cp);
-    *date = date_str->ptr;
-    *name = name_str->ptr;
-    *sizep = size_str->ptr;
 
   done:
     return (ftype);

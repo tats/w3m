@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.26 2002/01/14 16:31:26 ukai Exp $ */
+/* $Id: rc.c,v 1.27 2002/01/15 15:58:02 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -154,9 +154,9 @@ static char *config_file = NULL;
 #define CMT_SSL_KEY_FILE "SSLのクライアント用PEM形式秘密鍵ファイル"
 #define CMT_SSL_CA_PATH "SSLの認証局のPEM形式証明書群のあるディレクトリへのパス"
 #define CMT_SSL_CA_FILE "SSLの認証局のPEM形式証明書群のファイル"
-#endif /* USE_SSL_VERIFY */
+#endif				/* USE_SSL_VERIFY */
 #define CMT_SSL_FORBID_METHOD "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t:TLSv1)"
-#endif /* USE_SSL */
+#endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE "クッキーを使用する"
 #define CMT_ACCEPTCOOKIE "クッキーを受け付ける"
@@ -271,9 +271,9 @@ static char *config_file = NULL;
 #define CMT_SSL_KEY_FILE "PEM encoded private key file of client"
 #define CMT_SSL_CA_PATH "Path to a directory for PEM encoded certificates of CAs"
 #define CMT_SSL_CA_FILE "File consisting of PEM encoded certificates of CAs"
-#endif /* USE_SSL_VERIFY */
+#endif				/* USE_SSL_VERIFY */
 #define CMT_SSL_FORBID_METHOD "List of forbidden SSL method (2: SSLv2, 3: SSLv3, t:TLSv1)"
-#endif /* USE_SSL */
+#endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   "Use Cookie"
 #define CMT_ACCEPTCOOKIE "Accept Cookie"
@@ -536,10 +536,10 @@ struct param_ptr params7[] = {
      NULL},
     {"ssl_ca_file", P_SSLPATH, PI_TEXT, (void *)&ssl_ca_file, CMT_SSL_CA_FILE,
      NULL},
-#endif /* USE_SSL_VERIFY */
+#endif				/* USE_SSL_VERIFY */
     {NULL, 0, 0, NULL, NULL, NULL},
 };
-#endif /* USE_SSL */
+#endif				/* USE_SSL */
 
 #ifdef USE_COOKIE
 struct param_ptr params8[] = {

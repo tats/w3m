@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.22 2002/01/31 03:55:35 ukai Exp $ */
+/* $Id: linein.c,v 1.23 2002/06/01 16:31:55 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -97,7 +97,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
     in_kanji = FALSE;
 #endif
     is_passwd = FALSE;
-    move_word = FALSE;
+    move_word = TRUE;
 
     CurrentHist = hist;
     if (hist != NULL) {
@@ -109,15 +109,14 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
     }
     if (flag & IN_URL) {
 	cm_mode = CPL_ALWAYS | CPL_URL;
-	move_word = TRUE;
     }
     else if (flag & IN_FILENAME) {
 	cm_mode = CPL_ALWAYS;
-	move_word = TRUE;
     }
     else if (flag & IN_PASSWORD) {
 	cm_mode = CPL_NEVER;
 	is_passwd = TRUE;
+	move_word = FALSE;
     }
     else if (flag & IN_COMMAND)
 	cm_mode = CPL_ON;
@@ -1115,7 +1114,7 @@ setStrType(Str str, Lineprop *prop)
 static int
 terminated(unsigned char c)
 {
-    int termchar[] = { '/', '&', '?', -1 };
+    int termchar[] = { '/', '&', '?', ' ', -1 };
     int *tp;
 
     for (tp = termchar; *tp > 0; tp++) {

@@ -1,3 +1,9 @@
+2002-06-02  Hiroaki Shimotsu <shim@d5.bs1.fc.nec.co.jp>
+
+	* [w3m-dev 03196] C-w
+	* linein.c (inputLineHistSearch) move_word changed
+	* linein.c (setStrType): add space to termchar
+
 2002-05-15  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 03191] typo in file.c:extract_auth_val()?
@@ -3412,4 +3418,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.379 2002/05/14 15:31:49 ukai Exp $
+$Id: ChangeLog,v 1.380 2002/06/01 16:31:54 ukai Exp $

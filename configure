@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.82 2002/11/05 15:56:12 ukai Exp $
+# $Id: configure,v 1.83 2002/11/06 03:50:49 ukai Exp $
 #	Configuration.
 #
 
@@ -806,6 +806,14 @@ if [ "$use_image" = y ]; then
       d_w3mimg_fb=y
     fi
     ask_param "Linux Framebuffer inline image support (you need Imlib2 or GdkPixbuf)" use_w3mimg_fb $d_w3mimg_fb
+    if [ "$use_w3mimg_fb" = y ]; then
+	ask_param "setuid w3mimgdisplay to open /dev/fb0?" w3mimgdisplay_setuid  y
+	if [ "$w3mimgdisplay_setuid" = y ]; then
+	    INSTALL_W3MIMGDISPLAY='$(INSTALL) -o root -m 4755 -s'
+	else
+	    INSTALL_W3MIMGDISPLAY='$(INSTALL_PROGRAM)'
+	fi
+    fi
     ;;
   esac
 else
@@ -2319,6 +2327,7 @@ MKDIR=$MKDIR
 PERL=$perl
 VERSION=$w3mversion
 MODEL=$sysname.$platform-$modelname-$lang
+INSTALL_W3MIMGDISPLAY=$INSTALL_W3MIMGDISPLAY
 #else
 $special_sys
 
@@ -2354,6 +2363,7 @@ $def_use_alarm
 $def_use_image
 $def_use_w3mimg_x11
 $def_use_w3mimg_fb
+$def_w3mimgdisplay_setuid
 $def_use_imlib
 $def_use_gdkpixbuf
 $def_use_imlib2

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.13 2002/11/06 03:19:31 ukai Exp $ */
+/* $Id: image.c,v 1.14 2002/11/06 03:50:49 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -107,8 +107,10 @@ openImgdisplay()
 	goto err2;
     if (Imgdisplay_pid == 0) {
 	/* child */
+	int i;
 	reset_signals();
 	signal(SIGINT, SIG_IGN);
+	set_environ("W3M_TTY", ttyname_tty());
 #ifdef HAVE_SETPGRP
 	SETPGRP();
 #endif
@@ -117,7 +119,13 @@ openImgdisplay()
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
-	close(2);
+	dup2(open("/dev/null", O_WRONLY), 2);
+#ifndef FOPEN_MAX
+#define FOPEN_MAX 1024	/* XXX */
+#endif
+	/* close all other file descriptors (socket, ...) */
+	for (i = 3; i < FOPEN_MAX; i++)
+	    close(i);
 	if (!strchr(Imgdisplay, '/'))
 	    cmd = Strnew_m_charp(w3m_lib_dir(), "/", Imgdisplay, NULL)->ptr;
 	else

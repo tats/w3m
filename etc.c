@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.34 2002/11/06 03:27:04 ukai Exp $ */
+/* $Id: etc.c,v 1.35 2002/11/06 03:50:49 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1307,15 +1307,18 @@ mySystem(char *command, int background)
 	int pid;
 	flush_tty();
 	if ((pid = fork()) == 0) {
-	    int fd, i;
+	    int i;
 	    reset_signals();
 	    SETPGRP();
 	    close_tty();
 	    dup2(open("/dev/null", O_RDONLY), 0);
 	    dup2(open("/dev/null", O_WRONLY), 1);
-	    dup2(fd = open("/dev/null", O_WRONLY), 2);
+	    dup2(open("/dev/null", O_WRONLY), 2);
+#ifndef FOPEN_MAX
+#define FOPEN_MAX 1024	/* XXX */
+#endif
 	    /* close all other file descriptors (socket, ...) */
-	    for (i = 3; i <= fd; i++)
+	    for (i = 3; i < FOPEN_MAX; i++)
 		close(i);
 	    execl("/bin/sh", "sh", "-c", command, NULL);
 	    exit(127);

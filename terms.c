@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.33 2002/09/09 13:49:17 ukai Exp $ */
+/* $Id: terms.c,v 1.34 2002/11/06 03:50:49 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -608,6 +608,12 @@ void
 close_tty(void)
 {
     close(tty);
+}
+
+char *
+ttyname_tty(void)
+{
+    return ttyname(tty);
 }
 
 void

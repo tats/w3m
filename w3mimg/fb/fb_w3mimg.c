@@ -1,8 +1,12 @@
-/* $Id: fb_w3mimg.c,v 1.5 2002/10/31 09:36:22 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.6 2002/11/06 03:50:49 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "w3mimg/fb/fb.h"
 #include "w3mimg/fb/fb_img.h"
@@ -128,6 +132,24 @@ w3mfb_get_image_size(w3mimg_op * self, W3MImage * img,
     return 1;
 }
 
+#ifdef W3MIMGDISPLAY_SETUID
+static int
+check_tty_console(char *tty)
+{
+    if (tty == NULL || *tty == '\0')
+	return 0;
+    if (strncmp(tty, "/dev/", 5) == 0)
+	tty += 5;
+    if (strncmp(tty, "tty", 3) == 0 && isdigit(*(tty+3)))
+	return 1;
+    if (strncmp(tty, "vc/", 3) == 0 && isdigit(*(tty+3)))
+	return 1;
+    return 0;
+}
+#else
+#define check_tty_console(tty)	1
+#endif
+
 w3mimg_op *
 w3mimg_fbopen()
 {
@@ -136,6 +158,11 @@ w3mimg_fbopen()
     if (wop == NULL)
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
+
+    if (! check_tty_console(getenv("W3M_TTY"))) {
+	fprintf(stderr, "w3mimgdisplay/fb: tty is not console\n");
+	goto error;
+    }
 
     if (fb_open())
 	goto error;

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.19 2002/03/06 03:32:11 ukai Exp $ */
+/* $Id: search.c,v 1.20 2002/11/06 03:50:49 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -50,6 +50,7 @@ open_migemo(char *migemo_command)
 	goto err2;
     if (migemo_pid == 0) {
 	/* child */
+	int i;
 	reset_signals();
 #ifdef HAVE_SETPGRP
 	SETPGRP();
@@ -59,7 +60,13 @@ open_migemo(char *migemo_command)
 	close(fdw[1]);
 	dup2(fdw[0], 0);
 	dup2(fdr[1], 1);
-	close(2);
+	dup2(open("/dev/null", O_WRONLY), 2);
+#ifndef FOPEN_MAX
+#define FOPEN_MAX 1024 /* XXX */
+#endif
+	/* close all other file descriptors (socket, ...) */
+	for (i = 3; i < FOPEN_MAX; i++)
+	    close(i);
 	execl("/bin/sh", "sh", "-c", migemo_command, NULL);
 	exit(1);
     }

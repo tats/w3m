@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.29 2002/10/28 17:09:18 ukai Exp $
+# $Id: XMakefile,v 1.30 2002/11/06 03:50:49 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -131,7 +131,10 @@ install-core: $(TARGETS)
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(MAN1_JA_DIR)/$(TARGET).1
 	for file in $(EXT_TARGETS); \
 	do \
-		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file; \
+		case $$file in \
+		$(IMGDISPLAY)) $(INSTALL_W3MIMGDISPLAY) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
+		*) $(INSTALL_PROGRAM) $$file $(DESTDIR)$(LIB_DIR)/$$file;; \
+		esac; \
 	done
 
 install-helpfile:

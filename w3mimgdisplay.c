@@ -1,8 +1,10 @@
-/* $Id: w3mimgdisplay.c,v 1.8 2002/10/31 09:36:22 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.9 2002/11/06 03:50:49 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "config.h"
 #include "w3mimg/w3mimg.h"
 
@@ -25,12 +27,29 @@ main(int argc, char **argv)
 {
     int len;
     char buf[1024 + 128];
+#ifdef W3MIMGDISPLAY_SETUID
+    uid_t runner_uid = getuid();
+    uid_t owner_uid = geteuid();
 
+    /* swap real and effective */
+    setreuid(owner_uid, runner_uid);
+#endif
     GetOption(argc, argv);
     if (!defined_debug)
-	fclose(stderr);
+	freopen("/dev/null", "w", stderr);
 
+#ifdef W3MIMGDISPLAY_SETUID
+    /* 
+     * back real and effective
+     * run w3mimg_open() in setuid privileges
+     */
+    setreuid(runner_uid, owner_uid);
+#endif
     w_op = w3mimg_open();
+#ifdef W3MIMGDISPLAY_SETUID
+    /* make sure drop privileges now */
+    setreuid(runner_uid, runner_uid);
+#endif
     if (w_op == NULL)
 	exit(1);
     if (defined_x)

@@ -1,3 +1,26 @@
+2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03379] setuid w3mimgdisplay and check console tty
+	* XMakefile: w3mimgdisplay install by INSTALL_W3MIMGDISPLAY
+	* configure: ask setuid w3mimgdisplay
+		(w3mimgdisplay_setuid): added
+		(INSTALL_W3MIMGDISPLAY): added
+	* etc.c (mySystem): close until FOPEN_MAX
+	* image.c (openImgdisplay): setenv W3M_TTY
+			stderr to /dev/null
+			close until FOPEN_MAX
+	* install-sh: -o, -g for owner, group
+	* proto.h (ttyname_tty): added
+	* search.c (open_migemo): stderr to /dev/null
+			close until FOPEN_MAX
+	* terms.c (ttyname_tty): added
+	* w3mimgdisplay.c: include <sys/types.h>, <unistd.h>
+			W3MIMGDISPLAY_SETUID
+			stderr to /dev/null
+	* w3mimg/w3mimg.c: include <sys/types.h>, <unistd.h>
+			W3MIMGDISPLAY_SETUID
+	* w3mimg/fb/fb_w3mimg.c (check_tty_console): added
+	
 2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03377] sync_with_option
@@ -4330,4 +4353,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.479 2002/11/06 03:26:56 ukai Exp $
+$Id: ChangeLog,v 1.480 2002/11/06 03:50:48 ukai Exp $

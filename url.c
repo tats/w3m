@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.27 2001/12/27 02:32:08 ukai Exp $ */
+/* $Id: url.c,v 1.28 2001/12/27 18:22:59 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -275,7 +275,7 @@ init_PRNG()
 static SSL *
 openSSLHandle(int sock, char *hostname)
 {
-    SSL *handle;
+    SSL *handle = NULL;
     Str emsg;
     Str amsg = NULL;
     char *ans;
@@ -456,6 +456,9 @@ openSSLHandle(int sock, char *hostname)
     accept_this_site = Strnew_charp(hostname);
     return handle;
   eend:
+    close(sock);
+    if (handle)
+	SSL_free(handle);
     accept_this_site = NULL;
     emsg = Sprintf("SSL error: %s", ERR_error_string(ERR_get_error(), NULL));
     disp_err_message(emsg->ptr, FALSE);

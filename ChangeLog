@@ -1,3 +1,9 @@
+2001-12-28  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* istream.c (ssl_get_certificate): show certificate subject and issuer
+	* istream.c (ssl_check_cert_ident): add missing NULL for Strcat_m_charp
+	* url.c (openSSLHandle): close(sock) and SSL_free(handle) on failure
+
 2001-12-28  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02770] form element outside <form>..</form>
@@ -1748,4 +1754,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.194 2001/12/27 18:01:52 ukai Exp $
+$Id: ChangeLog,v 1.195 2001/12/27 18:22:59 ukai Exp $

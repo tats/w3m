@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.9 2001/12/26 18:46:33 ukai Exp $ */
+/* $Id: istream.c,v 1.10 2001/12/27 18:22:59 ukai Exp $ */
 #include "fm.h"
 #include "istream.h"
 #include <signal.h>
@@ -370,9 +370,12 @@ ssl_get_certificate(InputStream stream)
 {
     BIO *bp;
     X509 *x;
+    X509_NAME *xn;
     char *p;
     int len;
     Str s;
+    char buf[2048];
+
     if (stream == NULL)
 	return NULL;
     if (IStype(stream) != IST_SSL)
@@ -381,13 +384,24 @@ ssl_get_certificate(InputStream stream)
 	return NULL;
     x = SSL_get_peer_certificate(stream->ssl.handle->ssl);
     if (x == NULL)
-	return NULL;
+	return Strnew_charp("no peer certificate");
     bp = BIO_new(BIO_s_mem());
     X509_print(bp, x);
     len = (int)BIO_ctrl(bp, BIO_CTRL_INFO, 0, (char *)&p);
     s = ssl_certificate_validity ? Strdup(ssl_certificate_validity)
 	: Strnew_charp("valid certificate");
     Strcat_charp(s, "\n");
+    xn = X509_get_subject_name(x);
+    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
+	Strcat_charp(s, " subject=<unknown>");
+    else
+	Strcat_m_charp(s, " subject=", buf, NULL);
+    xn = X509_get_issuer_name(x);
+    if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
+	Strcat_charp(s, ": issuer=<unnown>");
+    else
+	Strcat_m_charp(s, ": issuer=", buf, NULL);
+    Strcat_charp(s, "\n\n");
     Strcat_charp_n(s, p, len);
     BIO_free_all(bp);
     X509_free(x);
@@ -444,7 +458,7 @@ ssl_check_cert_ident(SSL * handle, char *hostname)
 
 		    if (!seen_dnsname)
 			seen_dnsname = Strnew();
-		    Strcat_m_charp(seen_dnsname, sn, " ");
+		    Strcat_m_charp(seen_dnsname, sn, " ", NULL);
 		    /* Is this an exact match? */
 		    if ((len1 == sl) && !strncasecmp(hostname, sn, len1))
 			break;

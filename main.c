@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.53 2001/12/27 18:01:52 ukai Exp $ */
+/* $Id: main.c,v 1.54 2001/12/27 18:22:59 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3020,10 +3020,7 @@ _followForm(int submit)
 		buf->form_submit = save_submit_formlist(fi);
 	    }
 	}
-	else if ((fi->parent->method == FORM_METHOD_INTERNAL &&
-		 (!Strcmp_charp(fi->parent->action, "map") ||
-		  !Strcmp_charp(fi->parent->action, "none"))) ||
-		 Currentbuf->bufferprop & BP_INTERNAL) {	/* internal */
+	else if ((fi->parent->method == FORM_METHOD_INTERNAL && (!Strcmp_charp(fi->parent->action, "map") || !Strcmp_charp(fi->parent->action, "none"))) || Currentbuf->bufferprop & BP_INTERNAL) {	/* internal */
 	    do_internal(tmp2->ptr, tmp->ptr);
 	}
 	else {

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.34 2001/12/08 11:24:41 ukai Exp $
+# $Id: configure,v 1.35 2001/12/09 13:59:04 ukai Exp $
 #	Configuration.
 #
 
@@ -967,18 +967,20 @@ done
 
 case $sysname in
   linux|Linux|LINUX|aix|Aix|AIX)
-    case $cflags in
-    *DEBIAN*)
-      # on Debian, we can use libgc*.deb
-      :;;
-    *)
-      # these OS requires gcmain.c, which include gc/gc_priv.h
-      # therefore we use gc library comes with w3m
-      echo "Your OS is $sysname; using gc library comes with w3m."
-      gcinclude=""
-      gclib=""
-      ;;
-    esac
+    if [ ! -f "$gcinclude/private/gc_priv.h" ]; then
+      case $cflags in
+      *DEBIAN*)
+        # on Debian, we can use libgc*.deb
+        :;;
+      *)
+        # these OS requires gcmain.c, which include gc/gc_priv.h
+        # therefore we use gc library comes with w3m
+        echo "Your OS is $sysname; using gc library comes with w3m."
+        gcinclude=""
+        gclib=""
+        ;;
+      esac
+   fi
   ;;
 esac
 

@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.9 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: etc.c,v 1.10 2001/12/09 13:59:04 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -171,24 +171,21 @@ currentLineSkip(Buffer *buf, Line *line, int offset, int last)
 
 #define MAX_CMD_LEN 128
 
-static int
-get_cmd(Hash_si * hash,
-	char **s,
-	char *args,
-	char termchar, int defaultcmd, int allow_space, int *status)
+int
+gethtmlcmd(char **s)
 {
+    extern Hash_si tagtable;
     char cmdstr[MAX_CMD_LEN];
     char *p = cmdstr;
     char *save = *s;
     int cmd;
-    if (status)
-	*status = 0;
+
     (*s)++;
     /* first character */
     if (IS_ALNUM(**s) || **s == '_' || **s == '/')
 	*(p++) = tolower(*((*s)++));
     else
-	return defaultcmd;
+	return HTML_UNKNOWN;
     if (p[-1] == '/')
 	SKIP_BLANKS(*s);
     while ((IS_ALNUM(**s) || **s == '_') && p - cmdstr < MAX_CMD_LEN) {
@@ -197,39 +194,17 @@ get_cmd(Hash_si * hash,
     if (p - cmdstr == MAX_CMD_LEN) {
 	/* buffer overflow: perhaps caused by bad HTML source */
 	*s = save + 1;
-	if (status)
-	    *status = -1;
-	return defaultcmd;
+	return HTML_UNKNOWN;
     }
     *p = '\0';
 
     /* hash search */
-    cmd = getHash_si(hash, cmdstr, defaultcmd);
-    if (args != NULL) {
-	p = args;
-	while (**s == ' ' || **s == '\t')
-	    (*s)++;
-	while (**s && **s != '\n' && **s != '\r' && **s != termchar) {
-	    *(p++) = *((*s)++);
-	}
-	*p = '\0';
-    }
-    else if (allow_space) {
-	while (**s && **s != termchar)
-	    (*s)++;
-    }
-    if (**s == termchar)
+    cmd = getHash_si(&tagtable, cmdstr, HTML_UNKNOWN);
+    while (**s && **s != '>')
 	(*s)++;
-    else if (status)
-	*status = -1;
+    if (**s == '>')
+	(*s)++;
     return cmd;
-}
-
-int
-gethtmlcmd(char **s, int *status)
-{
-    extern Hash_si tagtable;
-    return get_cmd(&tagtable, s, NULL, '>', HTML_UNKNOWN, TRUE, status);
 }
 
 static char *

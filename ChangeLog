@@ -1,3 +1,17 @@
+2001-12-09  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02646] Some code cleanups
+	* configure: use host libgc instead of gc/gc.a on Linux and/or AIX
+	            if possible
+	* etc.c (get_cmd): deleted, merged into gethtmlcmd()
+	* etc.c (gethtmlcmd): merge get_cmd() code
+	* file.c (uncompressed_file_type): initialize slen
+	* file.c (passthrough): status deleted
+	* file.c (HTMLlineproc0): istr deleted, gethtmlcmd() argument fix
+	* fm.h (_GNU_SOURCE): ifndef _GNU_SOURCE
+	* proto.h (gethtmlcmd): fix prototypes
+	* terms.c: include <sys/ioctl.h> always
+
 2001-12-09  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02645]
@@ -1104,4 +1118,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.117 2001/12/08 15:55:30 ukai Exp $
+$Id: ChangeLog,v 1.118 2001/12/09 13:59:04 ukai Exp $

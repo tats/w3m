@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.29 2001/12/06 22:25:30 ukai Exp $ */
+/* $Id: file.c,v 1.30 2001/12/09 13:59:04 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -293,6 +293,7 @@ uncompressed_file_type(char *path, char **ext)
     if (path == NULL)
 	return NULL;
 
+    slen = 0;
     len = strlen(path);
     for (d = compression_decoders; d->type != CMP_NOCOMPRESS; d++) {
 	if (d->ext == NULL)
@@ -1804,7 +1805,7 @@ sloppy_parse_line(char **str)
 static void
 passthrough(struct readbuffer *obuf, char *str, int back)
 {
-    int status, cmd;
+    int cmd;
     Str tok = Strnew();
     char *str_bak;
 
@@ -1817,7 +1818,7 @@ passthrough(struct readbuffer *obuf, char *str, int back)
 	str_bak = str;
 	if (sloppy_parse_line(&str)) {
 	    char *q = str_bak;
-	    cmd = gethtmlcmd(&q, &status);
+	    cmd = gethtmlcmd(&q);
 	    if (back) {
 		struct link_stack *p;
 		for (p = link_stack; p; p = p->next) {
@@ -4276,10 +4277,10 @@ table_width(struct html_feed_environ *h_env, int table_level)
 
 /* HTML processing first pass */
 void
-HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
+HTMLlineproc0(char *str, struct html_feed_environ *h_env, int internal)
 {
     Lineprop mode;
-    char *str = istr, *q;
+    char *q;
     int cmd;
     struct readbuffer *obuf = h_env->obuf;
     int indent, delta;
@@ -4296,7 +4297,7 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 		(obuf->table_level >= 0) ? 'T' : ' ',
 		(obuf->flag & RB_INTXTA) ? 'X' : ' ',
 		(obuf->flag & RB_IGNORE) ? 'I' : ' ');
-	fprintf(f, "HTMLlineproc1(\"%s\",%d,%lx)\n", istr, h_env->limit,
+	fprintf(f, "HTMLlineproc1(\"%s\",%d,%lx)\n", str, h_env->limit,
 		(unsigned long)h_env);
 	fclose(f);
     }
@@ -4387,7 +4388,7 @@ HTMLlineproc0(char *istr, struct html_feed_environ *h_env, int internal)
 	    }
 	    else {
 		char *p = q;
-		cmd = gethtmlcmd(&p, NULL);
+		cmd = gethtmlcmd(&p);
 	    }
 
 	    /* textarea */

@@ -1,3 +1,7 @@
+2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* version.c.in: cvs version
+
 2002-07-16  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3m 0.3.1
@@ -3552,4 +3556,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.399 2002/07/15 17:33:43 ukai Exp $
+$Id: ChangeLog,v 1.400 2002/07/17 16:05:41 ukai Exp $

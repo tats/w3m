@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.42 2002/02/08 11:20:14 ukai Exp $ */
+/* $Id: url.c,v 1.43 2002/02/08 11:25:24 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -2075,6 +2075,12 @@ searchURIMethods(ParsedURL *pu)
     if (scheme == NULL)
 	return NULL;
 
+    /*
+     * RFC2396 3.1. Scheme Component
+     * For resiliency, programs interpreting URI should treat upper case
+     * letters as equivalent to lower case in scheme names (e.g., allow
+     * "HTTP" as well as "http").
+     */
     for (i = 0; (ump = urimethods[i]) != NULL; i++) {
 	for (; ump->item1 != NULL; ump++) {
 	    if (strcasecmp(ump->item1, scheme->ptr) == 0) {

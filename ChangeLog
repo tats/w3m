@@ -1,5 +1,15 @@
 2003-01-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03709] Re: view source, edit source
+	* display.c (displayBuffer): INIT_BUFFER_WIDTH
+	* file.c (_saveBuffer): added
+		(saveBuffer): use _saveBuffer
+		(saveBufferBody): added
+	* main.c (vmSrc): saveBufferBody
+	* proto.h (saveBufferBody): added
+
+2003-01-30  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev-en 00852] Re: Enhancement: content type detection of files
 	* url.c (DefaultGuess): remove upppercases
 		(guessContentTypeFromTable): rewrite, strcasecmp
@@ -6937,4 +6947,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.724 2003/01/29 17:33:28 ukai Exp $
+$Id: ChangeLog,v 1.725 2003/01/29 17:38:12 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.212 2003/01/29 17:26:51 ukai Exp $ */
+/* $Id: file.c,v 1.213 2003/01/29 17:38:14 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6963,10 +6963,9 @@ conv_rule(Line *l)
 /* 
  * saveBuffer: write buffer to file
  */
-void
-saveBuffer(Buffer *buf, FILE * f, int cont)
+static void
+_saveBuffer(Buffer *buf, Line *l, FILE * f, int cont)
 {
-    Line *l = buf->firstLine;
     Str tmp;
 
 #ifndef KANJI_SYMBOLS
@@ -6993,6 +6992,22 @@ saveBuffer(Buffer *buf, FILE * f, int cont)
 	l = getNextPage(buf, PagerMax);
 	goto pager_next;
     }
+}
+
+void
+saveBuffer(Buffer *buf, FILE * f, int cont)
+{
+    _saveBuffer(buf, buf->firstLine, f, cont);
+}
+
+void
+saveBufferBody(Buffer *buf, FILE * f, int cont)
+{
+    Line *l = buf->firstLine;
+
+    while (l != NULL && l->real_linenumber == 0)
+	l = l->next;
+    _saveBuffer(buf, l, f, cont);
 }
 
 static Buffer *

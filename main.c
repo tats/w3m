@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.203 2003/01/29 17:10:41 ukai Exp $ */
+/* $Id: main.c,v 1.204 2003/01/29 17:38:15 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4399,7 +4399,7 @@ vwSrc(void)
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;
-	    saveBuffer(Currentbuf, f, TRUE);
+	    saveBufferBody(Currentbuf, f, TRUE);
 	    fclose(f);
 	    Currentbuf->sourcefile = tmpf->ptr;
 	}

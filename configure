@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.59 2002/01/31 17:54:49 ukai Exp $
+# $Id: configure,v 1.60 2002/02/03 06:23:37 ukai Exp $
 #	Configuration.
 #
 
@@ -946,19 +946,6 @@ do
   for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
   do
     if [ -f $tlibdir/lib$lib.a -o -f $tlibdir/lib$lib.$so_ext ] ; then 
-      bsdlib="$bsdlib -l$lib"
-      break
-    fi
-  done
-done
-extlib=''
-
-searchlibs="socket nsl"
-for lib in $searchlibs
-do
-  for tlibdir in /lib /usr/lib /usr/local/lib /usr/ucblib /usr/ccslib /usr/ccs/lib $prefix/lib
-  do
-    if [ -f $tlibdir/lib$lib.a -o -f $tlibdir/lib$lib.$so_ext ] ; then 
       extlib="$extlib -l$lib"
       break
     fi
@@ -970,6 +957,7 @@ fi
 if [ -n "$extlib" ]; then
   echo "additional library found: $extlib"
 fi
+extlib="$extlib $ldflags"
 
 ## Search zlib
 zlib=
@@ -2042,8 +2030,8 @@ LIB_DIR = $libdir
 ETC_DIR = $sysconfdir
 RC_DIR = ~/.w3m
 HELP_FILE = $helpfile
-SYS_LIBRARIES = $gpmlib $extlib $termlib $ssllib $v6lib
-LOCAL_LIBRARIES = $bsdlib $ldflags
+SYS_LIBRARIES = $gpmlib $termlib $ssllib $v6lib
+LOCAL_LIBRARIES = $extlib
 CC = $cc
 MYCFLAGS = $cflags $bsdinclude $sslinclude
 GCCFLAGS = $cflags -I./\$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS

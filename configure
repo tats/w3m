@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.74 2002/09/09 13:48:11 ukai Exp $
+# $Id: configure,v 1.75 2002/09/09 13:50:44 ukai Exp $
 #	Configuration.
 #
 
@@ -2056,7 +2056,7 @@ EOF
     else
       for tlibdir in /usr/local/v6/lib /usr/local/lib /usr/lib $prefix/lib
       do
-	if [ -e $tlibdir/libinet6.a ]; then
+	if [ -f $tlibdir/libinet6.a ]; then
 	  if [ "$tlibdir" != "/usr/lib" ]; then
 	    v6lib="-L$tlibdir"
 	  fi

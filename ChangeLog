@@ -1,3 +1,8 @@
+2004-01-10  ABE Yuji <cbo46560@pop12.odn.ne.jp>
+
+	* [w3m-dev 04030] PUSH_TAG macro
+	* table.c (PUSH_TAG): fixed problem in --disable-m17n
+
 2003-12-09  WATANABE Katsuyuki <knabe@sannet.ne.jp>
 
 	* [w3m-dev 04025] mismatch message in ja.po
@@ -8283,4 +8288,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.895 2003/12/08 16:18:43 ukai Exp $
+$Id: ChangeLog,v 1.896 2004/01/09 15:46:49 ukai Exp $

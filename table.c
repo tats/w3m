@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.48 2003/09/24 18:49:00 ukai Exp $ */
+/* $Id: table.c,v 1.49 2004/01/09 15:46:49 ukai Exp $ */
 /* 
  * HTML table
  */
@@ -412,7 +412,7 @@ suspend_or_pushdata(struct table *tbl, char *line)
     }
 }
 
-#ifndef USE_M17N
+#ifdef USE_M17N
 #define PUSH_TAG(str,n) Strcat_charp_n(tagbuf, str, n)
 #else
 #define PUSH_TAG(str,n) Strcat_char(tagbuf, *str)

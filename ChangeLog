@@ -1,3 +1,14 @@
+2003-04-08  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03844] w3mhelp.cgi update
+	* scripts/w3mhelp-funcdesc.en.pl.in: add %menu_funcdesc
+	* scripts/w3mhelp-funcdesc.ja.pl.in: add %menu_funcdesc
+				update %title
+	* scripts/w3mhelp-funcname.pl.in: add %menu_funcname
+				add %menu_keyfunc
+	* scripts/w3mhelp.cgi.in: modified for menu
+				link to keymap
+
 2003-04-07  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03843] cleanup macros
@@ -7658,4 +7669,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.811 2003/04/06 16:27:53 ukai Exp $
+$Id: ChangeLog,v 1.812 2003/04/07 15:19:42 ukai Exp $

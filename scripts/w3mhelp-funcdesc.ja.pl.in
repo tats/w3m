@@ -24,7 +24,27 @@
  'LINEEDIT:ACCEPT', '入力終了',
 );
 
+%menu_funcdesc = (
+ 'MENU:SELECT', '項目を選択',
+ 'MENU:CLOSE', 'メニューを閉じる',
+ 'MENU:CANCEL', '戻る',
+ 'MENU:DOWN', '一つ下の項目へ',
+ 'MENU:UP', '一つ上の項目へ',
+ 'MENU:LINE_UP', '項目を下にスクロール',
+ 'MENU:LINE_DOWN', '項目を上にスクロール',
+ 'MENU:TOP', '先頭の項目へ',
+ 'MENU:LAST', '最後の項目へ',
+ 'MENU:NEXT', '次ページの項目へ',
+ 'MENU:PREV', '前ページの項目へ',
+ 'MENU:SEARCH_FORE', '項目を下に向かって検索',
+ 'MENU:SEARCH_BACK', '項目を上に向かって検索',
+ 'MENU:SEARCH_NEXT', '次の項目を検索',
+ 'MENU:SEARCH_PREV', '前の項目を検索',
+ 'MENU:SUSPEND', 'サスペンド',
+);
+
 %title = (
+ "Show keymap file", 'keymap ファイルを見る',
  "Page/Cursor motion", 'ページ/カーソル移動',
  "Hyperlink operation", 'ハイパーリンク操作',
  "File/Stream operation", 'ファイル/ストリーム操作',
@@ -36,7 +56,9 @@
  "Dictionary look-up", '辞書検索',
  "Mark operation", 'マーク操作',
  "Miscellany", 'その他',
+ "User defined keymaps", 'ユーザ定義',
  "Line-edit mode", '行編集モード',
+ "Popup menu", 'メニュー',
 );
 
 1;

@@ -1,5 +1,5 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.24 2003/01/23 18:37:22 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.25 2003/04/07 15:19:46 ukai Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
@@ -66,20 +66,24 @@ if (-f $keymap) {
 
 local (%funckeydesc, $key, $fname, $desc);
 
-%funcname = (%funcname, %buf_funcname, %lineedit_funcname);
+%funcname = (%funcname, %buf_funcname, %lineedit_funcname, %menu_funcname);
 
-%funcdesc = (%funcdesc, %buf_funcdesc, %lineedit_funcdesc);
+%funcdesc = (%funcdesc, %buf_funcdesc, %lineedit_funcdesc, %menu_funcdesc);
 while (($fname, $desc) = each %funcdesc) {
-    $funckeydesc{$funcname{$fname}} = "$desc\n";
+    $funckeydesc{$funcname{$fname}} = "$fname\n$desc\n";
 }
 
 while (($key, $fname) = each %keyfunc) {
+    $keydata{$key} && next;
     $funckeydesc{$funcname{$fname}} .= "$key,";
 }
 while (($key, $fname) = each %buf_keyfunc) {
     $funckeydesc{$funcname{$fname}} .= "$key,";
 }
 while (($key, $fname) = each %lineedit_keyfunc) {
+    $funckeydesc{$funcname{$fname}} .= "$key,";
+}
+while (($key, $fname) = each %menu_keyfunc) {
     $funckeydesc{$funcname{$fname}} .= "$key,";
 }
 
@@ -111,9 +115,17 @@ for $otherlang (@docdirs) {
     
     if ($d[1] ne $lang) {
 	$d[1] =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
-	print $script, $d[1], "\">$d[2] version</A><BR>\n";
+	print $script, $d[1], "\">$d[2] version</A>\n";
     }
 }
+
+$keymap =~ s/[<>&]/$htmlesc{$&}/ge;
+$head = "Show keymap file";
+if (defined($title{$head})) {
+	$head = $title{$head};
+	$head =~ s/[<>&]/$htmlesc{$&}/ge;
+}
+print "<P><A HREF=\"$keymap\">$head</A>\n";
 
 &show_keymap("Page/Cursor motion", 
 	     split(" ", "pgFore pgBack movR movL movD movU
@@ -157,14 +169,28 @@ for $otherlang (@docdirs) {
 		msgs msToggle wrapToggle execCmd setAlarm setOpt setEnv defKey
 		reinit execsh susp qquitfm quitfm"));
 
+&show_keymap_data("User defined keymaps");
+
+print "<BR>\n<HR WIDTH=80%>\n";
+
 &show_keymap("Buffer selection mode",
 	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
+
+print "<BR>\n<HR WIDTH=80%>\n";
 
 &show_keymap("Line-edit mode",
 	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
 		lineedit_delete lineedit_kill_after lineedit_kill_before
 		lineedit_top lineedit_bottom lineedit_prev lineedit_next
 		lineedit_editor lineedit_complete lineedit_accept"));
+
+print "<BR>\n<HR WIDTH=80%>\n";
+
+&show_keymap("Popup menu",
+	     split(" ", "menu_select menu_close menu_cancel menu_down menu_up
+		menu_line_up menu_line_down menu_top menu_last menu_next
+		menu_prev menu_search_fore menu_search_back menu_search_next
+		menu_search_prev menu_suspend"));
 
 print <<PAGE;
 <HR>
@@ -183,12 +209,17 @@ sub load_keymap {
 	s/^\s*keymap\s+// || next;
 	s/^(\"(\\\"|[^\"])+\"|\'(\\\'|[^\'])+\'|\S+)\s+(\S+)\s*// || next;
 	($key, $fname) = ($1, $4);
-	($data = $_) && next;
+	$data = $_;
 	$fname =~ tr/a-z/A-Z/;
 	defined($funcdesc{$fname}) || next;
 	$key =~ s/^["'](.*)["']$/$1/;
 	$key = &norm_key($key);
 	$keyfunc{$key} = $fname;
+	if ($data) {
+		$keydata{$key} = $data;
+	} else {
+		delete $keydata{$key};
+	}
     }
 }
 
@@ -227,13 +258,47 @@ sub show_keymap {
 <table cellpadding=0>
 PAGE
     foreach $fid (@list) {
-	local ($desc, $keys) = split("\n", $funckeydesc{$fid}, 2);
+	local ($name, $desc, $keys) = split("\n", $funckeydesc{$fid}, 3);
 	$keys =~ s/,$//;
 	$keys = '<NOT ASSIGNED>' if ($keys eq '');
 	$keys =~ s/[<>&]/$htmlesc{$&}/ge;
+	if ($name =~ /:/) {
+		$name = "";
+	} else {
+		$name =~ s/[<>&]/$htmlesc{$&}/ge;
+		$name = " (<b>$name</b>)";
+	}
 	$desc =~ s/[<>&]/$htmlesc{$&}/ge;
 	print <<PAGE;
-<TR><TD$attr>$keys<TD>$desc
+<TR><TD$attr>$keys<TD><NOBR>$desc$name</NOBR>
+PAGE
+	$attr = "";
+    }
+    print "</table>\n";
+}
+
+sub show_keymap_data {
+    local($head, @list) = @_;
+    local($fid);
+    local($attr) = " WIDTH=140";
+
+    if (defined($title{$head})) {
+	$head = $title{$head};
+	$head =~ s/[<>&]/$htmlesc{$&}/ge;
+    }
+
+    print <<PAGE;
+<H2>$head</H2>
+<table cellpadding=0>
+PAGE
+    foreach $keys (sort keys %keydata) {
+	$keys =~ s/[<>&]/$htmlesc{$&}/ge;
+	$name = $keyfunc{$keys};
+	$data = $keydata{$keys};
+	$name =~ s/[<>&]/$htmlesc{$&}/ge;
+	$data =~ s/[<>&]/$htmlesc{$&}/ge;
+	print <<PAGE;
+<TR><TD$attr>$keys<TD>$name<TD><NOBR>$data</NOBR>
 PAGE
 	$attr = "";
     }

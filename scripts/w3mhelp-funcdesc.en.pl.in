@@ -24,4 +24,23 @@
  'LINEEDIT:ACCEPT', 'Accept',
 );
 
+%menu_funcdesc = (
+ 'MENU:SELECT', 'Select item',
+ 'MENU:CLOSE', 'Close menu',
+ 'MENU:CANCEL', 'Back',
+ 'MENU:DOWN', 'Move to next item',
+ 'MENU:UP', 'Move to previous item',
+ 'MENU:LINE_UP', 'Scroll up one item',
+ 'MENU:LINE_DOWN', 'Scroll down one item',
+ 'MENU:TOP', 'Go to top item',
+ 'MENU:LAST', 'Go to last item',
+ 'MENU:NEXT', 'Go to next page',
+ 'MENU:PREV', 'Go to previous page',
+ 'MENU:SEARCH_FORE', 'Search foreward',
+ 'MENU:SEARCH_BACK', 'Search backward',
+ 'MENU:SEARCH_NEXT', 'Search next regexp',
+ 'MENU:SEARCH_PREV', 'Search previous regexp',
+ 'MENU:SUSPEND', 'Suspend',
+);
+
 1;

@@ -1,5 +1,6 @@
 2001-12-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* w3m 0.2.3 release candidate 1
 	* gc/: sync with w3m-0.2.2-inu-1.1/gc
 	* Patches/ews4800: deleted
 	* configure: comment out Patches/ews4800
@@ -1318,4 +1319,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.141 2001/12/20 00:44:44 ukai Exp $
+$Id: ChangeLog,v 1.142 2001/12/20 00:47:11 ukai Exp $

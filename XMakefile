@@ -1,4 +1,4 @@
-# $Id: XMakefile,v 1.14 2001/12/04 16:17:07 ukai Exp $
+# $Id: XMakefile,v 1.15 2001/12/06 15:36:55 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -31,7 +31,7 @@ DEFS=$(INCLUDES) # -DDEBUG
 CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS) 
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
-INSTALL=sh install.sh
+INSTALL=sh install-sh
 INSTALL_PROGRAM=$(INSTALL) -m 755
 INSTALL_SCRIPT=$(INSTALL) -m 755
 INSTALL_DATA=$(INSTALL) -m 644
@@ -117,7 +117,7 @@ install-scripts: all-scripts
 	topdir=`pwd`; \
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install.sh" install);	\
+		(cd $$dir; $(MAKE) PERL='$(PERL)' MKDIR='$(MKDIR)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' HELP_DIR='$(HELP_DIR)' DESTDIR='$(DESTDIR)' INSTALL="sh $$topdir/install-sh" install);	\
 	done
 
 uninstall:

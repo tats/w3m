@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.13 2001/11/22 03:22:12 ukai Exp $
+# $Id: configure,v 1.14 2001/11/22 13:53:19 ukai Exp $
 #	Configuration.
 #
 
@@ -1587,6 +1587,27 @@ else
       sig_arglist='#define SIGNAL_ARGLIST'
       sig_return='#define SIGNAL_RETURN return'
     fi
+  fi
+fi
+
+# check alarm()
+if [ "$use_alarm" = y ]; then
+  cat > _zdmachdep.c <<EOF
+#include <unistd.h>
+#include <signal.h>
+main()
+{
+    int sa = SIGALRM;
+    void (*)() = alarm;
+}
+EOF
+  if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1
+  then
+    echo "You have alarm()."
+  else
+    echo "You don't have alarm(), disable USE_ALARM"
+    use_alarm=n
+    def_use_alarm="#undef USE_ALARM"
   fi
 fi
 

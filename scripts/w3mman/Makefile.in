@@ -1,11 +1,33 @@
+@SET_MAKE@
+SHELL=@SHELL@
+srcidr=@srcdir@
+top_srcdir=@top_srcdir@
+VPATH= $(srcdir):.
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+datadir = @datadir@
+libdir = @libdir@
+includedir = @includedir@
+infodir = @infodir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+top_srcdir = @top_srcdir@
+VPATH = $(top_srcdir):.
+DESTDIR = 
 
-prefix		= /usr/local
-BIN_DIR		= $(prefix)/bin
-LIB_DIR		= $(prefix)/lib/w3m/cgi-bin
-MAN_DIR		= $(prefix)/man
-MAN1_DIR	= $(MAN_DIR)/man1
-DESTDIR		=
-distdir		= ./distfiles
+CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(package)
+HELP_DIR = $(datadir)/$(package)
+RC_DIR = ~/.$(package)
+ETC_DIR = $(sysconfdir)
+CONF_DIR = $(sysconfdir)/$(package)
 
 TARGETS		= w3mman
 LIB_TARGETS	= w3mman2html.cgi
@@ -13,26 +35,11 @@ MAN1_TARGETS	= w3mman.1
 MAN_TARGETS	= $(MAN1_TARGETS)
 
 MKDIR		= mkdir -p
-INSTALL		= install -c
-INSTALL_SCRIPT	= $(INSTALL) -m 755
-INSTALL_MAN	= $(INSTALL) -m 644
-
-PERL		= /usr/local/bin/perl
-W3M		= w3m
-# W3M		= w3m -X -o confirm_qq=0
-MAN		= man
-
-.SUFFIXES: .in
+INSTALL		= @INSTALL@
+INSTALL_SCRIPT	= @INSTALL_SCRIPT@
+INSTALL_MAN	= @INSTALL_MAN@
 
 all: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
-
-.in:
-	sed -e 's%@PERL@%$(PERL)%g'	\
-	    -e 's%@W3M@%$(W3M)%g'	\
-	    -e 's%@MAN@%$(MAN)%g'	\
-	    -e 's%@LIB_DIR@%$(LIB_DIR)%g' \
-	$< > $@
-	chmod +x $@
 
 install: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
@@ -66,6 +73,8 @@ uninstall:
 	done
 
 clean:
+
+distclean:
 	-rm -f $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 
 dist: all

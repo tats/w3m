@@ -1,10 +1,15 @@
 
+@SET_MAKE@
+SHELL=@SHELL@
+srcdir=@srcdir@
+top_srcdir=@top_srcdir@
+VPATH=$(srcdir):.
 LIBRARY = libwc.a
-CC = cc
-CPPFLAGS = -I. -I.. -I../gc/include
-CFLAGS = -g -O -Wall -DUSE_UNICODE $(CPPFLAGS)
-AR = ar
-RANLIB = ranlib
+CC=@CC@
+CFLAGS = $(TOP_CFLAGS) @WCCFLAGS@
+AR=ar
+RANLIB=@RANLIB@
+RM=rm
 
 SRCS = big5.c \
 		ces.c \
@@ -157,3 +162,7 @@ viet.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h viet.h wtf.h search.h \
 	ucs.h map/tcvn57123_tcvn5712.map
 wtf.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h sjis.h big5.h \
 	hkscs.h johab.h jis.h viet.h gbk.h gb18030.h uhc.h ucs.h utf8.h
+
+clean:
+	@-$(RM) -f *.o
+

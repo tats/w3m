@@ -1,6 +1,13 @@
 dnl w3m autoconf
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(fm.h)
+AC_SUBST(package)
+package=w3m
+AC_DEFINE(package,w3m)
+AC_SUBST(W3M)
+W3M=w3m
+AC_DEFINE(W3M, w3m)
+
 W3M_LANG=${LC_ALL:-$LANG}
 dnl AM_INIT_AUTOMAKE(w3m, 0.4)
 AC_CONFIG_HEADER(config.h)
@@ -14,6 +21,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PATH_PROGS(PERL, perl, /usr/local/bin/perl)
+AC_PATH_PROGS(NKF, nkf, /usr/local/bin/nkf)
+AC_PATH_PROGS(MAN, man, /usr/bin/man)
 AC_CANONICAL_SYSTEM
 
 AC_CYGWIN
@@ -124,6 +133,23 @@ AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL
 
+AC_SUBST(RC_DIR)
+RC_DIR="~/.$package"
+AC_DEFINE_UNQUOTED(RC_DIR, "$RC_DIR")
+AC_SUBST(DOCDIRS)
+DOCDIRS="doc:en_English doc-jp:ja_Japanese"
+AC_DEFINE_UNQUOTED(DOCDIRS, "$DOCDIRS")
+
 AC_W3M_VERSION
-AC_OUTPUT(Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html)
+AC_OUTPUT(Makefile \
+scripts/Makefile scripts/dirlist.cgi \
+scripts/w3mhelp.cgi \
+scripts/w3mmail.cgi scripts/xface2xpm \
+scripts/multipart/Makefile scripts/multipart/multipart.cgi \
+scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 \
+scripts/w3mman/w3mman2html.cgi \
+libwc/Makefile \
+w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile \
+w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
+w3mhelp-lynx_en.html w3mhelp-lynx_ja.html)
 

@@ -158,7 +158,7 @@ if test x"$enable_m17n" = xno; then
   document_charset='WC_CES_US_ASCII'
 else
  AC_DEFINE(USE_M17N)
- WCTARGET="wctarget"
+ WCTARGET="libwc"
  WCCFLAGS="-I. -I.."
  wcinclude="-I./libwc"
  wclib="-L./libwc -lwc"

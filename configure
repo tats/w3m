@@ -308,7 +308,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS package W3M AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_IMLIB USE_IMLIB2 IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER INET6 USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER USE_SSL USE_SSL_VERIFY USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1299,6 +1299,19 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
+
+
+package=w3m
+cat >>confdefs.h <<\_ACEOF
+#define package w3m
+_ACEOF
+
+
+W3M=w3m
+cat >>confdefs.h <<\_ACEOF
+#define W3M w3m
+_ACEOF
 
 
 W3M_LANG=${LC_ALL:-$LANG}
@@ -2712,6 +2725,96 @@ fi
 done
 test -n "$PERL" || PERL="/usr/local/bin/perl"
 
+for ac_prog in nkf
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_NKF+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $NKF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_NKF="$NKF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_NKF="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+NKF=$ac_cv_path_NKF
+
+if test -n "$NKF"; then
+  echo "$as_me:$LINENO: result: $NKF" >&5
+echo "${ECHO_T}$NKF" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$NKF" && break
+done
+test -n "$NKF" || NKF="/usr/local/bin/nkf"
+
+for ac_prog in man
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_MAN+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $MAN in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MAN="$MAN" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_MAN="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+MAN=$ac_cv_path_MAN
+
+if test -n "$MAN"; then
+  echo "$as_me:$LINENO: result: $MAN" >&5
+echo "${ECHO_T}$MAN" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$MAN" && break
+done
+test -n "$MAN" || MAN="/usr/bin/man"
+
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||
   { { echo "$as_me:$LINENO: error: cannot run $ac_config_sub" >&5
@@ -2847,7 +2950,7 @@ else
 #define USE_M17N 1
 _ACEOF
 
- WCTARGET="wctarget"
+ WCTARGET="libwc"
  WCCFLAGS="-I. -I.."
  wcinclude="-I./libwc"
  wclib="-L./libwc -lwc"
@@ -7166,10 +7269,23 @@ _ACEOF
  fi
 
 
+RC_DIR="~/.$package"
+cat >>confdefs.h <<_ACEOF
+#define RC_DIR "$RC_DIR"
+_ACEOF
+
+
+DOCDIRS="doc:en_English doc-jp:ja_Japanese"
+cat >>confdefs.h <<_ACEOF
+#define DOCDIRS "$DOCDIRS"
+_ACEOF
+
+
+
  cvsver=`$AWK '\$1 ~ /Id:/ { print \$3}' $srcdir/ChangeLog`
  sed -e 's/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`
-                                                  ac_config_files="$ac_config_files Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
+                                                                                                                                                                                                        ac_config_files="$ac_config_files Makefile scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -7695,6 +7811,21 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+  "scripts/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
+  "scripts/dirlist.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/dirlist.cgi" ;;
+  "scripts/w3mhelp.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mhelp.cgi" ;;
+  "scripts/w3mmail.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mmail.cgi" ;;
+  "scripts/xface2xpm" ) CONFIG_FILES="$CONFIG_FILES scripts/xface2xpm" ;;
+  "scripts/multipart/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/multipart/Makefile" ;;
+  "scripts/multipart/multipart.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/multipart/multipart.cgi" ;;
+  "scripts/w3mman/Makefile" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mman/Makefile" ;;
+  "scripts/w3mman/w3mman" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman" ;;
+  "scripts/w3mman/w3mman.1" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman.1" ;;
+  "scripts/w3mman/w3mman2html.cgi" ) CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman2html.cgi" ;;
+  "libwc/Makefile" ) CONFIG_FILES="$CONFIG_FILES libwc/Makefile" ;;
+  "w3mimg/Makefile" ) CONFIG_FILES="$CONFIG_FILES w3mimg/Makefile" ;;
+  "w3mimg/fb/Makefile" ) CONFIG_FILES="$CONFIG_FILES w3mimg/fb/Makefile" ;;
+  "w3mimg/x11/Makefile" ) CONFIG_FILES="$CONFIG_FILES w3mimg/x11/Makefile" ;;
   "w3mhelp-w3m_en.html" ) CONFIG_FILES="$CONFIG_FILES w3mhelp-w3m_en.html" ;;
   "w3mhelp-w3m_ja.html" ) CONFIG_FILES="$CONFIG_FILES w3mhelp-w3m_ja.html" ;;
   "w3mhelp-lynx_en.html" ) CONFIG_FILES="$CONFIG_FILES w3mhelp-lynx_en.html" ;;
@@ -7784,6 +7915,8 @@ s,@ECHO_C@,$ECHO_C,;t t
 s,@ECHO_N@,$ECHO_N,;t t
 s,@ECHO_T@,$ECHO_T,;t t
 s,@LIBS@,$LIBS,;t t
+s,@package@,$package,;t t
+s,@W3M@,$W3M,;t t
 s,@AWK@,$AWK,;t t
 s,@CC@,$CC,;t t
 s,@CFLAGS@,$CFLAGS,;t t
@@ -7801,6 +7934,8 @@ s,@SET_MAKE@,$SET_MAKE,;t t
 s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@PERL@,$PERL,;t t
+s,@NKF@,$NKF,;t t
+s,@MAN@,$MAN,;t t
 s,@build@,$build,;t t
 s,@build_cpu@,$build_cpu,;t t
 s,@build_vendor@,$build_vendor,;t t
@@ -7872,6 +8007,8 @@ s,@HAVE_SYS_ERRLIST@,$HAVE_SYS_ERRLIST,;t t
 s,@HAVE_SIGSETJMP@,$HAVE_SIGSETJMP,;t t
 s,@RETSIGTYPE@,$RETSIGTYPE,;t t
 s,@SIGNAL_RETURN@,$SIGNAL_RETURN,;t t
+s,@RC_DIR@,$RC_DIR,;t t
+s,@DOCDIRS@,$DOCDIRS,;t t
 s,@CURRENT_VERSION@,$CURRENT_VERSION,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t

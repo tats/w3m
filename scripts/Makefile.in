@@ -1,36 +1,46 @@
+@SET_MAKE@
+SHELL=@SHELL@
+srcidr=@srcdir@
+top_srcdir=@top_srcdir@
+VPATH= $(srcdir):.
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+datadir = @datadir@
+libdir = @libdir@
+includedir = @includedir@
+infodir = @infodir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+top_srcdir = @top_srcdir@
+VPATH = $(top_srcdir):.
+DESTDIR = 
 
-prefix		= /usr/local
-DESTDIR		=
-BIN_DIR		= $(prefix)/bin
-AUXBIN_DIR	= $(prefix)/lib/w3m
-LIB_DIR		= $(prefix)/lib/w3m/cgi-bin
-HELP_DIR	= $(prefix)/share/w3m
-RC_DIR		= ~/.w3m
+CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(package)
+HELP_DIR = $(datadir)/$(package)
+RC_DIR = ~/.$(package)
+ETC_DIR = $(sysconfdir)
+CONF_DIR = $(sysconfdir)/$(package)
 
 AUXBIN_TARGETS	= xface2xpm
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
 HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
 
 MKDIR		= mkdir -p
-INSTALL		= install -c
-INSTALL_SCRIPT	= $(INSTALL) -m 755
-INSTALL_DATA	= $(INSTALL) -m 644
+INSTALL		= @INSTALL@
+INSTALL_SCRIPT	= @INSTALL_SCRIPT@
+INSTALL_DATA	= @INSTALL_DATA@
 
-PERL		= /usr/local/bin/perl
-
-DOCDIRS = doc:en_English doc-jp:ja_Japanese
-
-.SUFFIXES: .in
+PERL		= @PERL@
 
 all: $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS)
-
-.in:
-	@echo "generating $@..."
-	@sed -e 's%@PERL@%$(PERL)%' -e 's%@HELP_DIR@%$(HELP_DIR)%' \
-	  -e 's%@DOCDIRS@%$(DOCDIRS)%' \
-	  -e 's%@RC_DIR@%$(RC_DIR)%' $< > $@
-	@chmod +x $@
-	@echo done
 
 w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab ../doc/keymap.default ../doc/keymap.lynx
 	@echo "generating w3mhelp-funcname.pl..."
@@ -89,4 +99,15 @@ uninstall:
 	done
 
 clean:
-	-rm -f $(LIB_TARGETS) $(AUXBIN_TARGETS) $(HELP_TARGETS) w3mhelp-*.pl
+	-rm -f $(HELP_TARGETS) w3mhelp-*.pl
+	-for dir in multipart w3mman; \
+	do \
+	  cd $$dir && $(MAKE) clean; \
+	done
+
+distclean:
+	-rm -f $(LIB_TARGETS) $(AUXBIN_TARGETS) 
+	-for dir in multipart w3mman; \
+	do \
+	  cd $$dir && $(MAKE) distclean; \
+	done

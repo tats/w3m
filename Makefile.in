@@ -27,7 +27,7 @@ DESTDIR =
 CGIBIN_DIR = $(libexecdir)/$(package)/cgi-bin
 AUXBIN_DIR = $(libexecdir)/$(package)
 HELP_DIR = $(datadir)/$(package)
-RC_DIR = ~/.$(package)
+RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(package)
 
@@ -111,6 +111,8 @@ HELP_ALLFILES=w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 SCRIPTSUBDIRS= scripts scripts/multipart scripts/w3mman
 SUBDIRS = $(SCRIPTSUBDIRS)
 
+.PHONY: w3mimg libwc
+
 all: $(TARGETS) all-scripts
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
@@ -159,55 +161,20 @@ $(INFLATE): inflate.o
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
-wctarget:
-	cd libwc; $(MAKE) \
-		CC='$(CC)' CFLAGS='$(WCCFLAGS) $(CFLAGS)' \
-		AR='$(AR)' \
-		RANLIB='$(RANLIB)'
+libwc:
+	(cd libwc && $(MAKE) CC='$(CC)' TOP_CFLAGS='$(CFLAGS)')
  
 dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
-$(IMGDISPLAY): w3mimgdisplay.o $(IMGOBJS)
+$(IMGDISPLAY): w3mimgdisplay.o w3mimg
 	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o $(IMGOBJS) $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
-w3mimgdisplay.o: w3mimgdisplay.c
+w3mimgdisplay.o: w3mimgdisplay.c w3mimg
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
-w3mimg/w3mimg.o: w3mimg/w3mimg.c
-	-@$(MKDIR) w3mimg
-	-@$(RM) -f $@
-	cd $(top_srcdir)/w3mimg && \
-		$(CC) $(CFLAGS) $(IMGCFLAGS) -I.. -c w3mimg.c
-	-@$(MV) $(top_srcdir)/w3mimg/w3mimg.o w3mimg/w3mimg.o
-
-w3mimg/x11/x11_w3mimg.o: w3mimg/x11/x11_w3mimg.c
-	-@$(MKDIR) w3mimg/x11
-	-@$(RM) -f $@
-	cd $(top_srcdir)/w3mimg/x11 && \
-		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c x11_w3mimg.c
-	-@$(MV) $(top_srcdir)/w3mimg/x11/x11_w3mimg.o w3mimg/x11/x11_w3mimg.o
-
-w3mimg/fb/fb_w3mimg.o: w3mimg/fb/fb_w3mimg.c
-	-@$(MKDIR) w3mimg/fb
-	-@$(RM) -f $@
-	cd $(top_srcdir)/w3mimg/fb && \
-		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_w3mimg.c
-	-@$(MV) $(top_srcdir)/w3mimg/fb/fb_w3mimg.o w3mimg/fb/fb_w3mimg.o
-
-w3mimg/fb/fb.o: w3mimg/fb/fb.c
-	-@$(MKDIR) w3mimg/fb
-	-@$(RM) -f $@
-	cd $(top_srcdir)/w3mimg/fb && \
-		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb.c
-	-@$(MV) $(top_srcdir)/w3mimg/fb/fb.o w3mimg/fb/fb.o
-
-w3mimg/fb/fb_img.o: w3mimg/fb/fb_img.c w3mimg/fb/fb_gdkpixbuf.c w3mimg/fb/fb_imlib2.c
-	-@$(MKDIR) w3mimg/fb
-	-@$(RM) -f $@
-	cd $(top_srcdir)/w3mimg/fb && \
-		$(CC) $(CFLAGS) $(IMGCFLAGS) -I../.. -c fb_img.c
-	-@$(MV) $(top_srcdir)/w3mimg/fb/fb_img.o w3mimg/fb/fb_img.o
+w3mimg:
+	(cd w3mimg && $(MAKE) CC="$(CC)" CFLAGS="$(CFLAGS)")
 
 install: install-core install-scripts
 
@@ -280,10 +247,13 @@ uninstall:
 clean: sweep
 	-$(RM) -f *.o *.a $(TARGETS) mktable$(EXT)
 	-$(RM) -f funcname.c funcname1.h funcname2.h tagtable.c functable.c
-	-$(RM) -f w3mimg/*.o w3mimg/*/*.o 
+	-for dir in w3mimg libwc; \
+	do \
+		(cd $$dir && $(MAKE) clean RM="$(RM)"); \
+	done
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
-		(cd $(top_srcdir)/$$dir && $(MAKE) clean); \
+		(cd $$dir && $(MAKE) clean); \
 	done
 
 distclean: clean

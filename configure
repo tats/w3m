@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.88 2002/11/21 16:31:35 ukai Exp $
+# $Id: configure,v 1.89 2002/11/24 16:02:22 ukai Exp $
 #	Configuration.
 #
 
@@ -2008,6 +2008,7 @@ EOF
     def_setpgrp='#define SETPGRP() setpgrp( 0, 0 )'
   else
     def_have_setpgrp=''
+    def_setpgrp='#define SETPGRP() /* no setpgrp() */'
   fi
 fi
 

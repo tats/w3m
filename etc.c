@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.39 2002/11/22 15:57:29 ukai Exp $ */
+/* $Id: etc.c,v 1.40 2002/11/24 16:02:22 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1294,39 +1294,51 @@ reset_signals(void)
     signal(SIGUSR1, SIG_IGN);
 }
 
-void
-myExec(char *command)
-{
-    int i;
-
-    reset_signals();
-    SETPGRP();
-    close_tty();
-    dup2(open("/dev/null", O_RDONLY), 0);
-    dup2(open("/dev/null", O_WRONLY), 1);
-    dup2(open("/dev/null", O_WRONLY), 2);
 #ifndef FOPEN_MAX
 #define FOPEN_MAX 1024		/* XXX */
 #endif
+
+void
+close_all_fds(int i)
+{
+    switch (i) {		/* fall through */
+    case 0:
+	dup2(open("/dev/null", O_RDONLY), 0);
+    case 1:
+	dup2(open("/dev/null", O_WRONLY), 1);
+    case 2:
+	dup2(open("/dev/null", O_WRONLY), 2);
+    }
     /* close all other file descriptors (socket, ...) */
     for (i = 3; i < FOPEN_MAX; i++)
 	close(i);
+}
+
+#ifdef HAVE_SETPGRP
+void
+myExec(char *command)
+{
+    reset_signals();
+    SETPGRP();
+    close_tty();
+    close_all_fds(0);
     execl("/bin/sh", "sh", "-c", command, NULL);
     exit(127);
 }
+#endif
 
 void
 mySystem(char *command, int background)
 {
     if (background) {
-#ifndef HAVE_SETPGRP
-	Str cmd = Strnew_charp("start /f ");
-	Strcat_charp(cmd, command);
-	system(cmd->ptr);
-#else
+#ifdef HAVE_SETPGRP
 	flush_tty();
 	if (!fork())
 	    myExec(command);
+#else
+	Str cmd = Strnew_charp("start /f ");
+	Strcat_charp(cmd, command);
+	system(cmd->ptr);
 #endif
     }
     else

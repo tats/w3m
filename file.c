@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.126 2002/11/22 19:24:54 ukai Exp $ */
+/* $Id: file.c,v 1.127 2002/11/24 16:02:22 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7274,9 +7274,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (!pid) {
 	    reset_signals();
 	    signal(SIGINT, SIG_IGN);
-#ifdef HAVE_SETPGRP
 	    SETPGRP();
-#endif
 	    close_tty();
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
@@ -7374,9 +7372,7 @@ doFileSave(URLFile uf, char *defstr)
 	if (!pid) {
 	    reset_signals();
 	    signal(SIGINT, SIG_IGN);
-#ifdef HAVE_SETPGRP
 	    SETPGRP();
-#endif
 	    close_tty();
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.38 2002/11/15 15:45:18 ukai Exp $ */
+/* $Id: terms.c,v 1.39 2002/11/19 17:18:54 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -2121,9 +2121,11 @@ mouse_init()
     if (is_xterm & NEED_XTERM_ON) {
 	XTERM_ON;
     }
+#ifdef __CYGWIN__
     else if (is_xterm & NEED_CYGWIN_ON) {
 	CYGWIN_ON;
     }
+#endif
     mouseActive = 1;
 }
 
@@ -2135,9 +2137,11 @@ mouse_end()
     if (is_xterm & NEED_XTERM_OFF) {
 	XTERM_OFF;
     }
+#ifdef __CYGWIN__
     else if (is_xterm & NEED_CYGWIN_OFF) {
 	CYGWIN_OFF;
     }
+#endif
     mouseActive = 0;
 }
 

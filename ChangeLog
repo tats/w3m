@@ -1,3 +1,9 @@
+2002-11-20  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
+
+	* [w3m-dev 03450] Re: cygwin console on Win9X
+	* terms.c (mouse_init): ifdef __CYGWIN__
+		(mouse_end): ditto
+
 2002-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* ftp.c (ftp_fclose): void return 
@@ -4887,4 +4893,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.535 2002/11/18 18:26:13 ukai Exp $
+$Id: ChangeLog,v 1.536 2002/11/19 17:18:54 ukai Exp $

@@ -13,6 +13,7 @@ w3m 0.2.5.1 - 2002-02-05
  - fix SunOS 4.1.4 build problem [w3m-dev 02972]
  - fix problem with Netscape-Enterprise WWW-authenticate [w3m-dev 02968]
 
+----------------------------------------------------------------
 w3m 0.2.5 - 2002-01-31
 
 * RFC2617: HTTP Digest authentication

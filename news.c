@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.7 2003/01/06 15:37:50 ukai Exp $ */
+/* $Id: news.c,v 1.8 2003/01/06 15:49:29 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -311,7 +311,8 @@ readNewsgroup(ParsedURL *pu)
     Str tmp;
     URLFile f;
     Buffer *buf;
-    char *scheme, *group, *qgroup, *list, *p, *q, *s, *t, *n;
+    char *qgroup, *p, *q, *s, *t, *n;
+    char * volatile scheme, * volatile group, * volatile list;
     int status, i, first, last;
     volatile int flag = 0, start = 0, end = 0;
     char code = '\0';

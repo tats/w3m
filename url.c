@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.63 2003/01/06 15:37:00 ukai Exp $ */
+/* $Id: url.c,v 1.64 2003/01/06 15:49:29 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -989,7 +989,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 			current->scheme == SCM_NNTP_GROUP)) {
 	    if (pu->host == NULL)
 		pu->host = current->host;
-	    if (pu->port == NULL)
+	    if (pu->port == 0)
 		pu->port = current->port;
 	}
 	return;

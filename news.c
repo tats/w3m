@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.2 2002/12/27 16:09:18 ukai Exp $ */
+/* $Id: news.c,v 1.3 2002/12/27 16:30:54 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -36,7 +36,6 @@ static Str
 news_command(News * news, char *command, int *status)
 {
     Str tmp;
-    char c;
 
     if (!news->host)
 	return NULL;
@@ -72,7 +71,6 @@ news_close(News * news)
 static int
 news_open(News * news)
 {
-    Str tmp;
     int sock, status;
 
     sock = openSocket(news->host, "nntp", news->port);
@@ -268,11 +266,14 @@ openNewsStream(ParsedURL *pu)
 Str
 readNewsgroup(ParsedURL *pu)
 {
-    Str page, tmp;
+    volatile Str page;
+    Str tmp;
     URLFile f;
     Buffer *buf;
-    char *group, *qgroup, *p, *q, *s, *t, *n;
-    int status, flag = 0, i, first, last, start = 0, end = 0;
+    char *group, *p, *q, *s, *t, *n;
+    char * volatile qgroup;
+    int status, i, first, last;
+    volatile int flag = 0, start = 0, end = 0;
 #ifdef JP_CHARSET
     char code = '\0';
 #endif
@@ -282,6 +283,7 @@ readNewsgroup(ParsedURL *pu)
 	return NULL;
     group = file_unquote(pu->file);
     qgroup = html_quote(group);
+    page = Strnew();
 
     if (fmInitialized) {
 	message(Sprintf("Reading newsgroup %s...", group)->ptr, 0, 0);

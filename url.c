@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.61 2002/12/27 16:07:45 ukai Exp $ */
+/* $Id: url.c,v 1.62 2002/12/27 16:30:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1449,11 +1449,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
     SSL *sslh = NULL;
 #endif				/* USE_SSL */
-#ifdef USE_NNTP
-    FILE *fw;
-    char *r;
-    InputStream stream;
-#endif				/* USE_NNTP */
     int extlen = strlen(CGI_EXTENSION);
 
     if (hr == NULL)

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.173 2002/12/27 16:09:18 ukai Exp $ */
+/* $Id: file.c,v 1.174 2002/12/27 16:30:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6372,7 +6372,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     clen_t linelen = 0;
     clen_t trbyte = 0;
     Str lineBuf2 = Strnew();
-    char *p;
     char code;
     struct html_feed_environ htmlenv1;
     struct readbuffer obuf;

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.223 2003/04/18 16:47:17 ukai Exp $ */
+/* $Id: file.c,v 1.224 2003/05/13 17:38:47 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1733,9 +1733,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 				   auth_pu, &hr, request);
 		if (ss == NULL) {
 		    /* abort */
-		    UFclose(&f);
 		    TRAP_OFF;
-		    return NULL;
+		    goto page_loaded;
 		}
 		UFclose(&f);
 		add_auth_cookie_flag = 1;
@@ -1755,9 +1754,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 				   extra_header, auth_pu, &hr, request);
 		if (ss == NULL) {
 		    /* abort */
-		    UFclose(&f);
 		    TRAP_OFF;
-		    return NULL;
+		    goto page_loaded;
 		}
 		UFclose(&f);
 		add_auth_cookie_flag = 1;

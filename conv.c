@@ -1,4 +1,4 @@
-/* $Id: conv.c,v 1.6 2001/11/29 09:34:14 ukai Exp $ */
+/* $Id: conv.c,v 1.7 2002/09/24 16:35:02 ukai Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include "fm.h"
@@ -237,7 +237,7 @@ cConvSE(Str is)
 		state = SJIS_SHIFT_L;
 	    }
 	    else if (0xe0 <= *p && *p <= 0xef) {	/* JIS X 0208 */
-/* } else if (0xe0 <= *p && *p <= 0xfc) { *//* JIS X 0213 */
+		/* } else if (0xe0 <= *p && *p <= 0xfc) { *//* JIS X 0213 */
 		ub = (*p & 0x7f) - 0x40;
 		state = SJIS_SHIFT_H;
 	    }

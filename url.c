@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.48 2002/03/08 15:59:25 ukai Exp $ */
+/* $Id: url.c,v 1.49 2002/09/24 16:35:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1282,6 +1282,7 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 {
     Str tmp;
     TextListItem *i;
+    int seen_www_auth = 0;
     int seen_proxy_auth = 0;
 #ifdef USE_COOKIE
     Str cookie;
@@ -1296,16 +1297,32 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	Strcat_charp(tmp, otherinfo(pu, current, hr->referer));
     if (extra != NULL)
 	for (i = extra->first; i != NULL; i = i->next) {
+	    if (strncasecmp(i->ptr, "Authorization:",
+			    sizeof("Authorization:") - 1) == 0)
+		seen_www_auth = 1;
 	    if (strncasecmp(i->ptr, "Proxy-Authorization:",
 			    sizeof("Proxy-Authorization:") - 1) == 0)
 		seen_proxy_auth = 1;
 	    Strcat_charp(tmp, i->ptr);
 	}
 
-    if (!seen_proxy_auth && (hr->flag & HR_FLAG_PROXY)
-	&& proxy_auth_cookie != NULL)
-	Strcat_m_charp(tmp, "Proxy-Authorization: ", proxy_auth_cookie->ptr,
-		       "\r\n", NULL);
+    if (!seen_www_auth) {
+	Str auth_cookie = find_auth_cookie(pu->host, pu->port, pu->file, NULL);
+	if (!auth_cookie && proxy_auth_cookie)
+	    auth_cookie = proxy_auth_cookie;
+	if (auth_cookie)
+	    Strcat_m_charp(tmp, "Authorization: ", auth_cookie->ptr,
+			   "\r\n", NULL);
+    }
+
+    if (!seen_proxy_auth && (hr->flag & HR_FLAG_PROXY)) {
+	ParsedURL *proxy_pu = schemeToProxy(pu->scheme);
+	Str auth_cookie = find_auth_cookie(
+		proxy_pu->host, proxy_pu->port, proxy_pu->file, NULL);
+	if (auth_cookie)
+	    Strcat_m_charp(tmp, "Proxy-Authorization: ", auth_cookie->ptr,
+			   "\r\n", NULL);
+    }
 
 #ifdef USE_COOKIE
     if (hr->command != HR_COMMAND_CONNECT &&
@@ -1545,7 +1562,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
     case SCM_HTTPS:
 #endif				/* USE_SSL */
-	get_auth_cookie("Authorization:", extra_header, pu, hr, request);
 	if (pu->file == NULL)
 	    pu->file = allocStr("/", -1);
 	if (request && request->method == FORM_METHOD_POST && request->body)
@@ -2138,3 +2154,30 @@ chkExternalURIBuffer(Buffer *buf)
     }
 }
 #endif
+
+ParsedURL *
+schemeToProxy(int scheme)
+{
+    ParsedURL *pu = NULL;	/* for gcc */
+    switch (scheme) {
+	case SCM_HTTP:
+#ifdef USE_SSL
+	case SCM_HTTPS:
+#endif
+	    pu = &HTTP_proxy_parsed;
+	    break;
+	case SCM_FTP:
+	    pu = &FTP_proxy_parsed;
+	    break;
+#ifdef USE_GOPHER
+	case SCM_GOPHER:
+	    pu = &GOPHER_proxy_parsed;
+	    break;
+#endif
+#ifdef DEBUG
+	default:
+	    abort();
+#endif
+    }
+    return pu;
+}

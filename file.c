@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.100 2002/09/11 15:08:54 ukai Exp $ */
+/* $Id: file.c,v 1.101 2002/09/24 16:35:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1342,92 +1342,6 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
     return hauth->scheme ? hauth : NULL;
 }
 
-/* passwd */
-/*
- * machine <name>
- * port <port>
- * path <file>
- * realm <realm>
- * login <login>
- * passwd <passwd>
- */
-static int
-find_auth_user_passwd(char *host, int port, char *file, char *realm,
-		      Str *uname, Str *pwd)
-{
-    struct stat st;
-    FILE *fp;
-    Str line;
-    char *d, *tok;
-    int matched = 0;
-
-    *uname = NULL;
-    *pwd = NULL;
-    if (passwd_file == NULL)
-	return 0;
-    if (stat(expandName(passwd_file), &st) < 0)
-	return 0;
-
-    /* check permissions, if group or others readable or writable,
-     * refuse it, because it's insecure.
-     */
-    if ((st.st_mode & (S_IRWXG | S_IRWXO)) != 0)
-	return 0;
-
-    fp = fopen(expandName(passwd_file), "r");
-    if (fp == NULL)
-	return 0;		/* never? */
-
-    while ((line = Strfgets(fp))->length > 0) {
-	d = line->ptr;
-	if (d[0] == '#')
-	    continue;
-	tok = strtok(d, " \t\n\r");
-	if (tok == NULL)
-	    continue;
-	d = strtok(NULL, "\n\r");
-	if (d == NULL)
-	    continue;
-	if (strcmp(tok, "machine") == 0) {
-	    if (matched && *uname && *pwd)
-		break;
-	    *uname = NULL;
-	    *pwd = NULL;
-	    if (strcmp(d, host) == 0)
-		matched = 1;
-	    continue;
-	}
-	else if (strcmp(tok, "port") == 0) {
-	    if (matched && (atoi(d) != port))
-		matched = 0;
-	}
-	else if (strcmp(tok, "path") == 0) {
-	    if (matched && file && (strcmp(d, file) != 0))
-		matched = 0;
-	}
-	else if (strcmp(tok, "realm") == 0) {
-	    if (matched && realm && (strcmp(d, realm) != 0))
-		matched = 0;
-	}
-	else if (strcmp(tok, "login") == 0) {
-	    if (matched)
-		*uname = Strnew_charp(d);
-	}
-	else if (strcmp(tok, "password") == 0 || strcmp(tok, "passwd") == 0) {
-	    if (matched)
-		*pwd = Strnew_charp(d);
-	}
-	else {
-	    /* ignore? */ ;
-	}
-    }
-    fclose(fp);
-    if (matched && *uname && *pwd)
-	return 1;
-
-    return 0;
-}
-
 static Str
 getAuthCookie(struct http_auth *hauth, char *auth_header,
 	      TextList *extra_header, ParsedURL *pu, HRequest *hr,
@@ -1436,7 +1350,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     Str ss;
     Str uname, pwd;
     Str tmp;
-    TextListItem *i, **i0;
+    TextListItem *i;
     int a_found;
     int auth_header_len = strlen(auth_header);
     char *realm = NULL;
@@ -1445,8 +1359,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	realm = qstr_unquote(get_auth_param(hauth->param, "realm"))->ptr;
 
     a_found = FALSE;
-    for (i0 = &(extra_header->first), i = *i0; i != NULL;
-	 i0 = &(i->next), i = *i0) {
+    for (i = extra_header->first; i != NULL; i = i->next) {
 	if (!strncasecmp(i->ptr, auth_header, auth_header_len)) {
 	    a_found = TRUE;
 	    break;
@@ -1466,15 +1379,19 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	    fprintf(stderr, "Wrong username or password\n");
 	sleep(1);
 	ss = NULL;
-	*i0 = i->next;		/* delete Authenticate: header from *
-				 * extra_header */
+	/* delete Authenticate: header from extra_header */
+	delText(extra_header, i);
+
     }
     else
 	ss = find_auth_cookie(pu->host, pu->port, pu->file, realm);
     if (realm && ss == NULL) {
+	int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
+				 auth_header_len);
+
 	if (!a_found &&
 	    find_auth_user_passwd(pu->host, pu->port, pu->file, realm,
-				  &uname, &pwd)) {
+				  &uname, &pwd, proxy)) {
 	    /* found username & password in passwd file */ ;
 	}
 	else {
@@ -1497,9 +1414,6 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 		pwd = Str_conv_to_system(Strnew_charp(pp));
 	    }
 	    else {
-		int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
-					 auth_header_len);
-
 		/*
 		 * If post file is specified as '-', stdin is closed at this
 		 * point.
@@ -1539,16 +1453,6 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     return ss;
 }
 
-void
-get_auth_cookie(char *auth_header,
-		TextList *extra_header, ParsedURL *pu, HRequest *hr,
-		FormList *request)
-{
-    getAuthCookie(NULL, auth_header, extra_header, pu, hr, request);
-}
-
-
-
 static int
 same_url_p(ParsedURL *pu1, ParsedURL *pu2)
 {
@@ -1584,6 +1488,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     URLOption url_option;
     Str tmp;
     HRequest hr;
+    ParsedURL *volatile auth_pu;
 
     tpath = path;
     prevtrap = NULL;
@@ -1774,7 +1679,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	}
 	if (add_auth_cookie_flag && realm && ss) {
 	    /* If authorization is required and passed */
-	    add_auth_cookie(pu.host, pu.port, pu.file,
+	    add_auth_cookie(auth_pu->host, auth_pu->port, auth_pu->file,
 			    qstr_unquote(realm)->ptr, ss);
 	    add_auth_cookie_flag = 0;
 	}
@@ -1784,8 +1689,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    struct http_auth hauth;
 	    if (findAuthentication(&hauth, t_buf, "WWW-Authenticate:") != NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
-		ss = getAuthCookie(&hauth, "Authorization:", extra_header, &pu,
-				   &hr, request);
+		auth_pu = &pu;
+		ss = getAuthCookie(&hauth, "Authorization:", extra_header,
+				   auth_pu, &hr, request);
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
@@ -1805,10 +1711,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (findAuthentication(&hauth, t_buf, "Proxy-Authenticate:")
 		!= NULL
 		&& (realm = get_auth_param(hauth.param, "realm")) != NULL) {
+		auth_pu = schemeToProxy(pu.scheme);
 		ss = getAuthCookie(&hauth, "Proxy-Authorization:",
-				   extra_header, &HTTP_proxy_parsed, &hr,
-				   request);
-		proxy_auth_cookie = ss;
+				   extra_header, auth_pu, &hr, request);
 		if (ss == NULL) {
 		    /* abort */
 		    UFclose(&f);
@@ -1816,15 +1721,13 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    return NULL;
 		}
 		UFclose(&f);
+		add_auth_cookie_flag = 1;
 		status = HTST_NORMAL;
 		goto load_doc;
 	    }
 	}
 	/* XXX: RFC2617 3.2.3 Authentication-Info: ? */
-	if (add_auth_cookie_flag)
-	    /* If authorization is required and passed */
-	    add_auth_cookie(pu.host, pu.port, pu.file,
-			    qstr_unquote(realm)->ptr, ss);
+
 	if (status == HTST_CONNECT) {
 	    of = &f;
 	    goto load_doc;

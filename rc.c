@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.48 2002/09/10 17:27:50 ukai Exp $ */
+/* $Id: rc.c,v 1.49 2002/09/24 16:35:02 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1234,6 +1234,7 @@ sync_with_option(void)
     if (fmInitialized && displayImage)
 	initImage();
 #endif
+    loadPasswd();
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 #if LANG == JA

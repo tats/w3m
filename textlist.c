@@ -1,4 +1,4 @@
-/* $Id: textlist.c,v 1.4 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: textlist.c,v 1.5 2002/09/24 16:35:02 ukai Exp $ */
 #include "textlist.h"
 #include "indep.h"
 #include "Str.h"
@@ -77,6 +77,20 @@ rpopValue(GeneralList *tl)
 	tl->first = NULL;
     tl->nitem--;
     return f->ptr;
+}
+
+void
+delValue(GeneralList *tl, ListItem *it)
+{
+    if (it->prev)
+	it->prev->next = it->next;
+    else
+	tl->first = it->next;
+    if (it->next)
+	it->next->prev = it->prev;
+    else
+	tl->last = it->prev;
+    tl->nitem--;
 }
 
 GeneralList *

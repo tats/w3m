@@ -1,3 +1,31 @@
+2002-09-25  AIDA Shinra <aida-s@jcom.home.ne.jp>
+
+	* [w3m-dev 03318] Re: Passwords
+	* etc.c (struct auth_path): added
+		(passwords): added
+		(dir_under): added
+		(add_auth_pass_entry): added
+		(find_auth_pass_entry): added
+		(find_auth_user_passwd): added
+		(loadPasswd): added
+		(find_auth): dir_under()
+		(add_auth_cookie): check file
+	* file.c (find_auth_user_passwd): removed
+		(getAuthCookie): use delText()
+				check proxy
+		(get_auth_cookie): removed
+		(loadGeneralFile): auth_pu
+	* proto.h (schemeToProxy): added
+		(get_auth_cookie): removed
+		(loadPasswd): added
+		(find_auth_user_passwd): added
+	* rc.c (sync_with_option): loadPasswd()
+	* textlist.c (delValue): added
+	* textlist.h (delValue): added
+		(delText): added
+	* url.c (HTTPrequest): seen_www_auth
+		(schemeToProxy): added
+
 2002-09-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03312] Re: Passwords
@@ -3787,4 +3815,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.427 2002/09/11 15:08:49 ukai Exp $
+$Id: ChangeLog,v 1.428 2002/09/24 16:35:02 ukai Exp $

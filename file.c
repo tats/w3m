@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.18 2001/11/29 10:22:58 ukai Exp $ */
+/* $Id: file.c,v 1.19 2001/11/29 10:48:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6029,7 +6029,7 @@ gunzip_stream(URLFile *uf)
 	signal(SIGINT, SIG_DFL);
 	close(fd1[0]);
 	if (tmpf) {
-#ifdef __CYGWIN__
+#ifdef USE_BINMODE_STREAM
 	    int tmpfd = open(tmpf, O_RDONLY | O_BINARY);
 #else
 	    int tmpfd = open(tmpf, O_RDONLY);

@@ -1,5 +1,8 @@
 2001-11-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02587]
+	* file.c (gunzip_stream): s/__CYGWIN__/USE_BINMODE_STREAM/
+
 	* [w3m-dev 02586]
 	* configure: typo s/_zdmachdep.c/zmachdep.c/
 

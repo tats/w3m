@@ -1,3 +1,8 @@
+2002-02-01  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
+
+	* [w3m-dev 02972] #include "config.h"
+	* url.c, mktable.c: fix the order of including files
+
 2002-02-01  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02968] fix problem with Netscape-Enterprise WWW-authenticate
@@ -2704,4 +2709,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.290 2002/02/01 05:01:47 ukai Exp $
+$Id: ChangeLog,v 1.291 2002/02/01 14:06:46 inu Exp $

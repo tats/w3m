@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.21 2001/12/06 22:45:06 ukai Exp $ */
+/* $Id: url.c,v 1.22 2001/12/07 07:58:07 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -464,8 +464,7 @@ openSocket(char *const hostname,
 #ifdef INET6
     /* rfc2732 compliance */
     hname = hostname;
-    if (hname != NULL && hname[0] == '[' &&
-	hname[strlen(hname) - 1] == ']') {
+    if (hname != NULL && hname[0] == '[' && hname[strlen(hname) - 1] == ']') {
 	hname = allocStr(hostname + 1, -1);
 	hname[strlen(hname) - 1] = '\0';
 	if (strspn(hname, "0123456789abcdefABCDEF:.") != strlen(hname))

@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.14 2001/12/07 07:24:22 ukai Exp $ */
+/* $Id: linein.c,v 1.15 2001/12/07 07:58:07 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -682,7 +682,7 @@ next_compl(int next)
 	else {
 	    for (b = CPos - 1; b >= 0; b--) {
 		if ((strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I) &&
-		    !((b > 0) && strBuf->ptr[b-1] == '\\'))
+		    !((b > 0) && strBuf->ptr[b - 1] == '\\'))
 		    break;
 	    }
 	    b++;
@@ -888,7 +888,7 @@ unescape_spaces(Str s)
     if (s == NULL)
 	return s;
     for (p = s->ptr; *p; p++) {
-	if (*p == '\\' && (*(p+1) == ' ' || *(p+1) == CTRL_I)) {
+	if (*p == '\\' && (*(p + 1) == ' ' || *(p + 1) == CTRL_I)) {
 	    if (tmp == NULL)
 		tmp = Strnew_charp_n(s->ptr, (int)(p - s->ptr));
 	}

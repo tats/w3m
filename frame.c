@@ -1,4 +1,4 @@
-/* $Id: frame.c,v 1.26 2002/12/06 16:38:05 ukai Exp $ */
+/* $Id: frame.c,v 1.27 2002/12/14 15:28:37 ukai Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
@@ -694,11 +694,11 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    fprintf(f1, "<!-- %s -->", html_quote(tok->ptr));
 			    goto token_end;
 			case HTML_META:
-			    parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &q);
-			    if (q && !strcasecmp(q, "refresh")) {
-				parsedtag_get_value(tag, ATTR_CONTENT, &q);
-				if (q) {
-				    Str s_tmp;
+			    if (parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &q)
+				&& !strcasecmp(q, "refresh")) {
+				if (parsedtag_get_value(tag, ATTR_CONTENT, &q)
+				    ) {
+				    Str s_tmp = NULL;
 				    int refresh_interval =
 					getMetaRefreshParam(q, &s_tmp);
 				    if (s_tmp) {

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.78 2002/03/08 16:02:51 ukai Exp $ */
+/* $Id: file.c,v 1.79 2002/03/08 16:58:12 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6204,7 +6204,7 @@ Buffer *
 loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 {
     Str tmp, lbuf, name, file, host, port;
-    char code;
+    char code = CODE_ASCII;
     char *p, *q;
     FILE *src;
     URLFile f;
@@ -6280,8 +6280,9 @@ loadGopherDir(URLFile *uf, Buffer *volatile newBuf)
 	}
 	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
 			   "/", file->ptr, NULL)->ptr;
-	Strcat_m_charp(tmp, "<a href=\"", url_quote(q), "\">", p,
-		       html_quote(name->ptr + 1), "</a>\n", NULL);
+	Strcat_m_charp(tmp, "<a href=\"",
+		       html_quote(url_quote_conv(q, code)),
+		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
     }
 
   gopher_end:

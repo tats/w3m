@@ -1,5 +1,12 @@
 2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [#496613] LASTLINE in terms.c
+	   by Kazuhiro NISHIYAMA (znz)
+	* terms.c (LASTLINE): defined(__CYGWIN__) instead of defined(CYGWIN)
+	* terms.c (setlinescols): ditto
+
+2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [#496610] #include <sys/wait.h>
 	   by Kazuhiro NISHIYAMA (znz)
 	* main.c: #if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
@@ -1556,4 +1563,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.174 2001/12/25 16:49:42 ukai Exp $
+$Id: ChangeLog,v 1.175 2001/12/25 16:54:45 ukai Exp $

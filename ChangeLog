@@ -1,3 +1,8 @@
+2003-01-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* ftp.c (ftp_pasv): ftp_command response
+		(readFTPDir): masked declaration of realpathname
+
 2003-01-12  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03633] Re: cleanup (don't close connection of news server)
@@ -6373,4 +6378,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.673 2003/01/11 15:54:08 ukai Exp $
+$Id: ChangeLog,v 1.674 2003/01/11 16:00:55 ukai Exp $

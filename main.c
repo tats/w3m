@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.19 2001/11/23 21:05:52 ukai Exp $ */
+/* $Id: main.c,v 1.20 2001/11/23 21:22:02 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -2374,9 +2374,10 @@ loadLink(char *url, char *target, char *referer, FormList * request)
 	if (al) {
 	    gotoLine(Currentbuf, al->start.line);
 #ifdef LABEL_TOPLINE
-    Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
-       Currentbuf->currentLine->linenumber - Currentbuf->topLine->linenumber,
-       FALSE);
+	    if (label_topline)
+		Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
+					       Currentbuf->currentLine->linenumber - Currentbuf->topLine->linenumber,
+					       FALSE);
 #endif
 	    Currentbuf->pos = al->start.pos;
 	    arrangeCursor(Currentbuf);
@@ -2408,9 +2409,11 @@ gotoLabel(char *label)
     pushBuffer(buf);
     gotoLine(Currentbuf, al->start.line);
 #ifdef LABEL_TOPLINE
-    Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
-       Currentbuf->currentLine->linenumber - Currentbuf->topLine->linenumber,
-       FALSE);
+    if (label_topline)
+	Currentbuf->topLine = lineSkip(Currentbuf, Currentbuf->topLine,
+				       Currentbuf->currentLine->linenumber 
+				       - Currentbuf->topLine->linenumber,
+				       FALSE);
 #endif
     Currentbuf->pos = al->start.pos;
     arrangeCursor(Currentbuf);

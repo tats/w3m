@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.11 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: file.c,v 1.12 2001/11/23 21:22:02 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1319,18 +1319,20 @@ loadGeneralFile(char *path, ParsedURL * current, char *referer, int flag, FormLi
 	    b->type = "text/plain";
         if (pu.label) {
 	    if (proc == loadHTMLBuffer) {
-	        Anchor *a;
+		Anchor *a;
 #ifdef JP_CHARSET
-	        a = searchURLLabel(b, conv(pu.label, b->document_code, InnerCode)->ptr);
+		a = searchURLLabel(b, conv(pu.label, b->document_code, InnerCode)->ptr);
 #else				/* not JP_CHARSET */
-	        a = searchURLLabel(b, pu.label);
+		a = searchURLLabel(b, pu.label);
 #endif				/* not JP_CHARSET */
-	        if (a != NULL) {
+		if (a != NULL) {
 		    gotoLine(b, a->start.line);
 #ifdef LABEL_TOPLINE
-            b->topLine = lineSkip(b, b->topLine,
-               b->currentLine->linenumber - b->topLine->linenumber,
-               FALSE);
+		    if (label_topline)
+			b->topLine = lineSkip(b, b->topLine,
+					      b->currentLine->linenumber 
+					      - b->topLine->linenumber,
+					      FALSE);
 #endif
 		    b->pos = a->start.pos;
 		    arrangeCursor(b);

@@ -1,5 +1,11 @@
 2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp
 
+	* fm.h (label_topline): runtime option label_topline
+	* file.c (loadGeneralFile): ditto
+	* main.c (loadLink): ditto
+	* rc.c (CMT_LABEL_TOPLINE): ditto
+	* rc.c (params3): ditto
+	
 	* fm.h (vi_prec_num): runtime option vi_prec_num
 	* main.c (pgFore): ditto
 	* main.c (pgBack): ditto

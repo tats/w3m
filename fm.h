@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.16 2001/11/23 21:06:24 ukai Exp $ */
+/* $Id: fm.h,v 1.17 2001/11/23 21:22:02 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -708,6 +708,9 @@ global int emacs_like_lineedit init(TRUE);
 #endif
 #ifdef VI_PREC_NUM
 global int vi_prec_num init(TRUE);
+#endif
+#ifdef LABEL_TOPLINE
+global int label_topline init(FALSE);
 #endif
 global int displayLink init(FALSE);
 global int retryAsHttp init(TRUE);

@@ -1,3 +1,8 @@
+2002-12-25  Hiroaki Shimotsu <shim@d5.bs1.fc.nec.co.jp>
+
+	* [w3m-dev 03596] LIST
+	* anchor.c (link_list_panel): check internal
+
 2002-12-25  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03595] tolower, toupper
@@ -6044,4 +6049,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.642 2002/12/24 17:20:45 ukai Exp $
+$Id: ChangeLog,v 1.643 2002/12/24 17:24:05 ukai Exp $

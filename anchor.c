@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.15 2002/12/16 15:41:27 ukai Exp $ */
+/* $Id: anchor.c,v 1.16 2002/12/24 17:24:05 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -621,6 +621,12 @@ link_list_panel(Buffer *buf)
     ParsedURL pu;
     Str tmp = Strnew_charp("<title>Link List</title>\
 <h1 align=center>Link List</h1>\n");
+
+    if (buf->bufferprop & BP_INTERNAL ||
+        (buf->linklist == NULL && buf->href == NULL &&
+         buf->img == NULL)) {
+		return NULL;
+    }
 
     if (buf->linklist) {
 	Strcat_charp(tmp, "<hr><h2>Links</h2>\n<ol>\n");

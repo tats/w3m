@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.80 2003/06/17 18:02:41 ukai Exp $ */
+/* $Id: url.c,v 1.81 2003/06/17 18:03:55 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -695,27 +695,27 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	 */
 	if (current) {
 	    switch (current->scheme) {
-		case SCM_LOCAL:
-		case SCM_LOCAL_CGI:
-		    p_url->scheme = SCM_LOCAL;
-		    break;
-		case SCM_FTP:
-		case SCM_FTPDIR:
-		    p_url->scheme = SCM_FTP;
-		    break;
+	    case SCM_LOCAL:
+	    case SCM_LOCAL_CGI:
+		p_url->scheme = SCM_LOCAL;
+		break;
+	    case SCM_FTP:
+	    case SCM_FTPDIR:
+		p_url->scheme = SCM_FTP;
+		break;
 #ifdef USE_NNTP
-		case SCM_NNTP:
-		case SCM_NNTP_GROUP:
-		    p_url->scheme = SCM_NNTP;
-		    break;
-		case SCM_NEWS:
-		case SCM_NEWS_GROUP:
-		    p_url->scheme = SCM_NEWS;
-		    break;
+	    case SCM_NNTP:
+	    case SCM_NNTP_GROUP:
+		p_url->scheme = SCM_NNTP;
+		break;
+	    case SCM_NEWS:
+	    case SCM_NEWS_GROUP:
+		p_url->scheme = SCM_NEWS;
+		break;
 #endif
-		default:
-		    p_url->scheme = current->scheme;
-		    break;
+	    default:
+		p_url->scheme = current->scheme;
+		break;
 	    }
 	}
 	else
@@ -1009,24 +1009,24 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	pu->host = current->host;
 	pu->port = current->port;
 	if (pu->file && *pu->file) {
-#ifdef USE_EXTERNAL_URI_LOADER	    
+#ifdef USE_EXTERNAL_URI_LOADER
 	    if (pu->scheme == SCM_UNKNOWN
 		&& strchr(pu->file, ':') == NULL
 		&& current && (p = strchr(current->file, ':')) != NULL) {
-		pu->file = Sprintf("%s:%s", 
-				   allocStr(current->file, 
-					    p - current->file),
-				   pu->file)->ptr;
-	    } else
+		pu->file = Sprintf("%s:%s",
+				   allocStr(current->file,
+					    p - current->file), pu->file)->ptr;
+	    }
+	    else
 #endif
-	    if (
+		if (
 #ifdef USE_GOPHER
-		   pu->scheme != SCM_GOPHER &&
+		       pu->scheme != SCM_GOPHER &&
 #endif				/* USE_GOPHER */
-		   pu->file[0] != '/'
+		       pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
-		   && !(pu->scheme == SCM_LOCAL && IS_ALPHA(pu->file[0])
-			&& pu->file[1] == ':')
+		       && !(pu->scheme == SCM_LOCAL && IS_ALPHA(pu->file[0])
+			    && pu->file[1] == ':')
 #endif
 		) {
 		/* file is relative [process 1] */
@@ -1050,7 +1050,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    }
 #endif				/* USE_GOPHER */
 	}
-	else {	/* scheme:[?query][#label] */
+	else {			/* scheme:[?query][#label] */
 	    pu->file = current->file;
 	    if (!pu->query)
 		pu->query = current->query;
@@ -1372,7 +1372,7 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 		seen_proxy_auth = 1;
 #ifdef USE_SSL
 		if (pu->scheme == SCM_HTTPS
-			&& hr->command != HR_COMMAND_CONNECT)
+		    && hr->command != HR_COMMAND_CONNECT)
 		    continue;
 #endif
 	    }
@@ -1381,9 +1381,9 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 
     if (!seen_www_auth
 #ifdef USE_SSL
-	    && hr->command != HR_COMMAND_CONNECT
+	&& hr->command != HR_COMMAND_CONNECT
 #endif
-	    ) {
+	) {
 	Str auth_cookie = find_auth_cookie(pu->host, pu->port, pu->file, NULL);
 	if (auth_cookie)
 	    Strcat_m_charp(tmp, "Authorization: ", auth_cookie->ptr,
@@ -1392,13 +1392,13 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 
     if (!seen_proxy_auth && (hr->flag & HR_FLAG_PROXY)
 #ifdef USE_SSL
-	    && (pu->scheme != SCM_HTTPS
-		|| hr->command == HR_COMMAND_CONNECT)
+	&& (pu->scheme != SCM_HTTPS || hr->command == HR_COMMAND_CONNECT)
 #endif
-	    ) {
+	) {
 	ParsedURL *proxy_pu = schemeToProxy(pu->scheme);
-	Str auth_cookie = find_auth_cookie(
-		proxy_pu->host, proxy_pu->port, proxy_pu->file, NULL);
+	Str auth_cookie =
+	    find_auth_cookie(proxy_pu->host, proxy_pu->port, proxy_pu->file,
+			     NULL);
 	if (!auth_cookie && proxy_auth_cookie)
 	    auth_cookie = proxy_auth_cookie;
 	if (auth_cookie)
@@ -1617,9 +1617,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    hr->command = HR_COMMAND_HEAD;
 	if ((
 #ifdef USE_SSL
-	    (pu->scheme == SCM_HTTPS) ? non_null(HTTPS_proxy) :
+		(pu->scheme == SCM_HTTPS) ? non_null(HTTPS_proxy) :
 #endif				/* USE_SSL */
-	    non_null(HTTP_proxy)) && !Do_not_use_proxy &&
+		non_null(HTTP_proxy)) && !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
 	    char *save_label;
 	    hr->flag |= HR_FLAG_PROXY;
@@ -1627,7 +1627,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    if (pu->scheme == SCM_HTTPS && *status == HTST_CONNECT) {
 		sock = ssl_socket_of(ouf->stream);
 		if (!(sslh = openSSLHandle(sock, pu->host,
-				&uf.ssl_certificate))) {
+					   &uf.ssl_certificate))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}
@@ -1686,7 +1686,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
 	    if (pu->scheme == SCM_HTTPS) {
 		if (!(sslh = openSSLHandle(sock, pu->host,
-				&uf.ssl_certificate))) {
+					   &uf.ssl_certificate))) {
 		    *status = HTST_MISSING;
 		    return uf;
 		}
@@ -1788,8 +1788,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	*q++ = '\0';
 	tmp = Strnew_charp(q);
 	q = strrchr(p, ';');
-	if (q != NULL && !strcmp(q, ";base64"))
-	{
+	if (q != NULL && !strcmp(q, ";base64")) {
 	    *q = '\0';
 	    uf.encoding = ENC_BASE64;
 	}
@@ -2202,25 +2201,25 @@ schemeToProxy(int scheme)
 {
     ParsedURL *pu = NULL;	/* for gcc */
     switch (scheme) {
-	case SCM_HTTP:
-	    pu = &HTTP_proxy_parsed;
-	    break;
+    case SCM_HTTP:
+	pu = &HTTP_proxy_parsed;
+	break;
 #ifdef USE_SSL
-	case SCM_HTTPS:
-	    pu = &HTTPS_proxy_parsed;
-	    break;
+    case SCM_HTTPS:
+	pu = &HTTPS_proxy_parsed;
+	break;
 #endif
-	case SCM_FTP:
-	    pu = &FTP_proxy_parsed;
-	    break;
+    case SCM_FTP:
+	pu = &FTP_proxy_parsed;
+	break;
 #ifdef USE_GOPHER
-	case SCM_GOPHER:
-	    pu = &GOPHER_proxy_parsed;
-	    break;
+    case SCM_GOPHER:
+	pu = &GOPHER_proxy_parsed;
+	break;
 #endif
 #ifdef DEBUG
-	default:
-	    abort();
+    default:
+	abort();
 #endif
     }
     return pu;

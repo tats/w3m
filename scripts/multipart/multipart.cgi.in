@@ -77,7 +77,11 @@ if (defined($v{'count'})) {
 			$_ = &decode($_, $MIME_DECODE);
 		}
 		if (s/^(\S+)\s*:\s*//) {
-			$hbody .= "$&$_\n";
+			$h = $&;
+			if ($h =~ /^w3m-control/i) {
+				$h = "WARNING: $h";
+			}
+			$hbody .= "$h$_\n";
 			$p = $1;
 			$p =~ tr/A-Z/a-z/;
 			$header{$p} = $_;
@@ -192,9 +196,16 @@ while(! $end) {
 		} else {
 			$name = "Content";
 		}
-		print "<form action=\"$qcgi?file=$qfile&amp;boundary=$qboundary&amp;count=$count\">\n";
+		print "<form action=\"$qcgi\">\n";
+		print "<input type=hidden name=file value=\"$qfile\">\n";
+		print "<input type=hidden name=boundary value=\"$qboundary\">\n";
+		print "<input type=hidden name=count value=\"$count\">\n";
 		if ($image) {
-			print "<input type=image name=submit src=\"$qcgi?file=$qfile&amp;boundary=$qboundary&amp;count=$count\" alt=\"",
+			print "<input type=image name=submit src=\"$qcgi?file=",
+				&html_quote(&form_encode($file)),
+				"&amp;boundary=",
+				&html_quote(&form_encode($boundary)),
+				"&amp;count=$count\" alt=\"",
 				&html_quote($name), "\">\n";
 		} else {
 			print "<input type=submit name=submit value=\"",
@@ -265,6 +276,12 @@ sub form_decode {
   local($_) = @_;
   s/\+/ /g;
   s/%([\da-f][\da-f])/pack('c', hex($1))/egi;
+  return $_;
+}
+
+sub form_encode {
+  local($_) = @_;
+  s/[\000-\040\+:#?&%<>"\177-\377]/sprintf('%%%02X', unpack('C', $&))/eg;
   return $_;
 }
 

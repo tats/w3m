@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.23 2003/01/10 16:58:31 ukai Exp $ */
+/* $Id: map.c,v 1.24 2003/01/10 16:59:32 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -478,7 +478,8 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		Strcat_m_charp(html, " ", q, "</a></pre_int><br>\n", NULL);
 #ifdef USE_SSL
 		if (frame.body->ssl_certificate)
-		    Strcat_m_charp(html, "<blockquote><h2>SSL certificate</h2><pre>\n",
+		    Strcat_m_charp(html,
+				   "<blockquote><h2>SSL certificate</h2><pre>\n",
 				   html_quote(frame.body->ssl_certificate),
 				   "</pre></blockquote>\n", NULL);
 #endif
@@ -515,7 +516,7 @@ page_info_panel(Buffer *buf)
     if (all == 0 && buf->lastLine)
 	all = buf->lastLine->linenumber;
     Strcat_m_charp(tmp, "<table cellpadding=0>",
-		  "<tr valign=top><td nowrap>Title<td>",
+		   "<tr valign=top><td nowrap>Title<td>",
 		   html_quote(buf->buffername),
 		   "<tr valign=top><td nowrap>Current URL<td>",
 		   html_quote(parsedURL2Str(&buf->currentURL)->ptr),
@@ -530,8 +531,7 @@ page_info_panel(Buffer *buf)
 		   "<tr valign=top><td nowrap>Number of lines<td>",
 		   Sprintf("%d", all)->ptr,
 		   "<tr valign=top><td nowrap>Transferred bytes<td>",
-		   Sprintf("%d", buf->trbyte)->ptr,
-		   NULL);
+		   Sprintf("%d", buf->trbyte)->ptr, NULL);
 
     a = retrieveCurrentAnchor(buf);
     if (a != NULL) {
@@ -539,24 +539,27 @@ page_info_panel(Buffer *buf)
 	parseURL2(a->url, &pu, baseURL(buf));
 	s = parsedURL2Str(&pu);
 	aurl = html_quote(s->ptr);
-	Strcat_m_charp(tmp, "<tr valign=top><td nowrap>URL of current anchor<td><a href=\"",
+	Strcat_m_charp(tmp,
+		       "<tr valign=top><td nowrap>URL of current anchor<td><a href=\"",
 		       aurl, "\">", aurl, "</a>", NULL);
     }
     a = retrieveCurrentImg(buf);
     if (a != NULL) {
 	parseURL2(a->url, &pu, baseURL(buf));
 	s = parsedURL2Str(&pu);
-	Strcat_m_charp(tmp, "<tr valign=top><td nowrap>URL of current image<td><a href=\"",
-		       html_quote(s->ptr), "\">", html_quote(s->ptr),
-		       "</a>", NULL);
+	Strcat_m_charp(tmp,
+		       "<tr valign=top><td nowrap>URL of current image<td><a href=\"",
+		       html_quote(s->ptr), "\">", html_quote(s->ptr), "</a>",
+		       NULL);
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {
 	FormItemList *fi = (FormItemList *)a->url;
-	Strcat_m_charp(tmp, "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
+	Strcat_m_charp(tmp,
+		       "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
 		       html_quote(form2str(fi)), NULL);
-	if (fi->parent->method == FORM_METHOD_INTERNAL &&
-	    !Strcmp_charp(fi->parent->action, "map"))
+	if (fi->parent->method == FORM_METHOD_INTERNAL
+	    && !Strcmp_charp(fi->parent->action, "map"))
 	    append_map_info(buf, tmp, fi->parent->item);
     }
     Strcat_charp(tmp, "</table>\n");

@@ -1,5 +1,9 @@
 2004-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* libwc/Makefile.in: add distclean
+
+2004-03-22  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* w3mimg/Makefile.in (distclean): rm -f w3mimg.a
 
 2004-03-22  Akihiro Sagawa <sagawa@sohgoh.net>
@@ -8318,4 +8322,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.902 2004/03/21 16:01:38 ukai Exp $
+$Id: ChangeLog,v 1.903 2004/03/21 16:04:01 ukai Exp $

@@ -166,4 +166,7 @@ wtf.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h wtf.h sjis.h big5.h \
 clean:
 	@-$(RM) -f *.o $(LIBRARY)
 
+distclean:
+	@-$(RM) -f Makefile
+
 

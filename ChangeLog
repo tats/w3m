@@ -4,7 +4,6 @@
 	* table.c (feed_table_tag): fix <center>,</center>,<div>,</div>,
 				<p>,<br>,<nobr>,</nobr>,<wbr>
 			check_rowcol() for <img>
-	
 
 2003-07-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
@@ -7924,4 +7923,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.850 2003/07/13 16:13:28 ukai Exp $
+$Id: ChangeLog,v 1.851 2003/07/13 16:14:47 ukai Exp $

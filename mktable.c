@@ -1,12 +1,12 @@
-/* $Id: mktable.c,v 1.5 2001/12/23 14:31:38 ukai Exp $ */
+/* $Id: mktable.c,v 1.6 2002/01/29 03:23:44 ukai Exp $ */
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#ifdef HAVE_STDINT_H
-#include "stdint.h"
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
 #else
-typedef unsigned int uintptr_t;
+typedef unsigned long uintptr_t;
 #endif
 #include "hash.h"
 #include "Str.h"
@@ -14,16 +14,24 @@ typedef unsigned int uintptr_t;
 
 #include "gcmain.c"
 
+/* *INDENT-OFF* */
 defhash(HashItem_ss *, int, hss_i)
+/* *INDENT-ON* */
+
 #define keycomp(x,y) ((x)==(y))
-     static uintptr_t hashfunc(HashItem_ss * x)
+
+static uintptr_t
+hashfunc(HashItem_ss * x)
 {
     return (uintptr_t) x;
 }
 
+/* *INDENT-OFF* */
 defhashfunc(HashItem_ss *, int, hss_i)
-     int
-      MAIN(int argc, char *argv[], char **envp)
+/* *INDENT-ON* */
+
+int
+MAIN(int argc, char *argv[], char **envp)
 {
     FILE *f;
     Hash_ss *hash;

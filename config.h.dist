@@ -185,7 +185,7 @@ MODEL=Linux.i686-monster-ja
 #define JMP_BUF sigjmp_buf
 #define HAVE_FLOAT_H
 #define HAVE_SYS_SELECT_H
-#undef HAVE_STDINT_H
+#undef HAVE_INTTYPES_H
 
 typedef void MySignalHandler;
 #define SIGNAL_ARG int _dummy

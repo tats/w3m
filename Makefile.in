@@ -140,8 +140,11 @@ keybind_lynx.o: funcname2.h
 parsetagx.o: html.c
 
 funcname.tab: main.c menu.c
-	(echo '#define DEFUN(x,y,z) x y'; grep -h '^DEFUN' $^) | $(CPP) - | \
-	 awk '$$1 ~ /^[_A-Za-z]/ { for (i=2;i<=NF;i++) { print $$i, $$1} }' > $@
+	(echo '#define DEFUN(x,y,z) x y';\
+	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $^) | $(CPP) - | \
+	 awk '$$1 ~ /^[_A-Za-z]/ { \
+	       for (i=2;i<=NF;i++) { print $$i, $$1} \
+	 }' > $@
 
 funcname.c: funcname.tab
 	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname0.awk > $@
@@ -153,7 +156,7 @@ funcname2.h: funcname.tab
 	sort funcname.tab | $(AWK) -f $(top_srcdir)/funcname2.awk > $@
 
 functable.c: funcname.tab mktable$(EXT)
-	sort funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.tab
+	sort funcname.tab | $(AWK) -f $(top_srcdir)/functable.awk > functable.ta	b
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
@@ -164,7 +167,7 @@ $(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS)
 
 $(HELPER): w3mhelperpanel.o dummy.o $(ALIB)
-	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)	
 $(INFLATE): inflate.o
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 

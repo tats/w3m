@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.10 2002/10/05 16:43:10 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.11 2002/12/25 16:14:45 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -355,6 +355,10 @@ x11_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy, int sw,
 #endif
     if (self == NULL)
 	return 0;
+
+    if (img->pixmap == NULL)
+	return 0;
+
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;

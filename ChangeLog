@@ -1,3 +1,10 @@
+2002-12-26  Hiroyuki Ito <hito@crl.go.jp>
+
+	* [w3m-dev 03602] Re: w3mimgdisplay core dump
+	* w3mimgdisplay.c (DrawImage): check load_image, imageBuf[n].pixmap
+	* w3mimg/fb/fb_w3mimg.c (w3mfb_show_image): check img->pixmap
+	* w3mimg/x11/x11_w3mimg.c (x11_show_image): check img->pixmap
+
 2002-12-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03601] Re: meta refresh
@@ -6079,4 +6086,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.647 2002/12/25 16:06:43 ukai Exp $
+$Id: ChangeLog,v 1.648 2002/12/25 16:14:45 ukai Exp $

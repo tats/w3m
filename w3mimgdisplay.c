@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.10 2002/11/27 16:46:34 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.11 2002/12/25 16:14:45 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -263,10 +263,12 @@ DrawImage(char *buf, int redraw)
 	imageBuf[n].pixmap = NULL;
     }
 
-    w_op->load_image(w_op, &imageBuf[n], p, w, h);
+    if (w_op->load_image(w_op, &imageBuf[n], p, w, h) == 0)
+       imageBuf[n].pixmap = NULL;
 
   draw_image:
-    w_op->show_image(w_op, &imageBuf[n], sx, sy, sw, sh, x, y);
+    if (imageBuf[n].pixmap)
+       w_op->show_image(w_op, &imageBuf[n], sx, sy, sw, sh, x, y);
 }
 
 void

@@ -1,3 +1,8 @@
+2001-11-29  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02588]
+	* configure: fix alarm() check
+
 2001-11-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02587]

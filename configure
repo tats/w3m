@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.26 2001/11/29 10:22:58 ukai Exp $
+# $Id: configure,v 1.27 2001/11/29 11:09:23 ukai Exp $
 #	Configuration.
 #
 
@@ -1612,7 +1612,7 @@ if [ "$use_alarm" = y ]; then
 main()
 {
     int sa = SIGALRM;
-    void (*)() = alarm;
+    void (*a)() = alarm;
 }
 EOF
   if $cc $cflags -o _zmachdep _zmachdep.c > /dev/null 2>&1

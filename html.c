@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.10 2002/02/07 14:16:00 ukai Exp $ */
+/* $Id: html.c,v 1.11 2002/02/25 15:55:39 ukai Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -134,11 +134,11 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"hr", ALST_HR, MAXA_HR, 0},	/*  16 HTML_HR         */
     {"dl", ALST_DL, MAXA_DL, 0},	/*  17 HTML_DL         */
     {"/dl", NULL, 0, TFLG_END},	/*  18 HTML_N_DL       */
-    {"dt", NULL, 0, 0},		/*  19 HTML_DT         */
-    {"dd", NULL, 0, 0},		/*  20 HTML_DD         */
+    {"dt", ALST_NOP, MAXA_NOP, 0},		/*  19 HTML_DT         */
+    {"dd", ALST_NOP, MAXA_NOP, 0},		/*  20 HTML_DD         */
     {"pre", ALST_PRE, MAXA_PRE, 0},	/*  21 HTML_PRE        */
     {"/pre", NULL, 0, TFLG_END},	/*  22 HTML_N_PRE      */
-    {"blockquote", NULL, 0, 0},	/*  23 HTML_BLQ        */
+    {"blockquote", ALST_NOP, MAXA_NOP, 0},	/*  23 HTML_BLQ        */
     {"/blockquote", NULL, 0, TFLG_END},	/*  24 HTML_N_BLQ      */
     {"img", ALST_IMG, MAXA_IMG, 0},	/*  25 HTML_IMG        */
     {"listing", NULL, 0, 0},	/*  26 HTML_LISTING    */
@@ -193,7 +193,7 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/tr", NULL, 0, TFLG_END},	/*  75 HTML_N_TR       */
     {"td", ALST_TD, MAXA_TD, 0},	/*  76 HTML_TD         */
     {"/td", NULL, 0, TFLG_END},	/*  77 HTML_N_TD       */
-    {"caption", NULL, 0, 0},	/*  78 HTML_CAPTION    */
+    {"caption", ALST_NOP, MAXA_NOP, 0},	/*  78 HTML_CAPTION    */
     {"/caption", NULL, 0, TFLG_END},	/*  79 HTML_N_CAPTION  */
     {"th", ALST_TD, MAXA_TD, 0},	/*  80 HTML_TH         */
     {"/th", NULL, 0, TFLG_END},	/*  81 HTML_N_TH       */

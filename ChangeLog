@@ -1,3 +1,8 @@
+2002-02-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 00691] Re: w3m 0.2.5.1 fails to recognize '<dt id="XXX">'
+	* html.c: ATTR_CORE for dt, dd, blockquote, caption 
+
 2002-02-26  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03064] Re: SELECTED form value
@@ -2991,4 +2996,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.324 2002/02/25 15:40:03 ukai Exp $
+$Id: ChangeLog,v 1.325 2002/02/25 15:55:39 ukai Exp $

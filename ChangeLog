@@ -1,6 +1,7 @@
 2002-07-09  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
 	* delete old mail addresses of aito-san from docs
+	* delete old ftp site from w3m-doc/install.html.in
 
 2002-07-01  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
@@ -3523,4 +3524,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.394 2002/07/09 05:54:46 inu Exp $
+$Id: ChangeLog,v 1.395 2002/07/09 06:14:14 inu Exp $

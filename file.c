@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.95 2002/08/20 17:49:39 ukai Exp $ */
+/* $Id: file.c,v 1.96 2002/08/27 16:25:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5811,7 +5811,7 @@ convert_size2(clen_t size1, clen_t size2, int usefloat)
 }
 
 void
-showProgress(clen_t *linelen, clen_t *trbyte)
+showProgress(clen_t * linelen, clen_t * trbyte)
 {
     int i, j, rate, duration, eta, pos;
     static time_t last_time, start_time;

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.35 2002/01/24 17:29:45 ukai Exp $ */
+/* $Id: rc.c,v 1.36 2002/01/25 14:55:20 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -364,12 +364,18 @@ static struct sel_c colorstr[] = {
 };
 #endif				/* USE_COLOR */
 
+#if 1 /* ANSI-C ? */
+#define N_STR(x)	#x
+#define N_S(x)	(x), N_STR(x)
+#else  /* for traditional cpp? */
 static char n_s[][2] = {
     {'0', 0},
     {'1', 0},
     {'2', 0},
 };
 #define N_S(x) (x), n_s[(x)]
+#endif
+
 
 static struct sel_c defaulturls[] = {
 #if LANG == JA

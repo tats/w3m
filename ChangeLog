@@ -1,5 +1,10 @@
 2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03273] Re: w3m-img for framebuffer merged
+	* configure (use_w3mimg_fb): check linux, use test -c
+
+2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* merge w3m-img for framebuffer support
 	* w3mimg/w3mimg.h: created
 	* w3mimg/x11/x11_w3mimg.c: created
@@ -3582,4 +3587,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.403 2002/07/17 21:21:56 ukai Exp $
+$Id: ChangeLog,v 1.404 2002/07/18 05:55:22 ukai Exp $

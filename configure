@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.70 2002/07/17 20:58:48 ukai Exp $
+# $Id: configure,v 1.71 2002/07/18 05:55:22 ukai Exp $
 #	Configuration.
 #
 
@@ -793,10 +793,14 @@ if [ "$use_image" = y ]; then
   imgtarget='$(IMGDISPLAY) $(IMGSIZE)'
   ask_param "X11 inline image support (you need Imlib1 library)" use_w3mimg_x11 y
   d_w3mimg_fb=n
-  if test -e /dev/fb0; then
+  case $sysname in
+  Linux|linux|LINUX)
+    if test -c /dev/fb0; then
       d_w3mimg_fb=y
-  fi
-  ask_param "Linux Framebuffer inline image support (you need Imlib2 or GdkPixbuf)" use_w3mimg_fb $d_w3mimg_fb
+    fi
+    ask_param "Linux Framebuffer inline image support (you need Imlib2 or GdkPixbuf)" use_w3mimg_fb $d_w3mimg_fb
+    ;;
+  esac
 else
   def_use_image="#undef USE_IMAGE"
   imgtarget=''

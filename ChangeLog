@@ -1,3 +1,14 @@
+2001-12-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02617]
+	* scripts/Makefile (HELP_LIBS): added
+	* scripts/Makefile (all): depends $(HELP_LIBS)
+	* scripts/Makefile (install): depends $(HELP_LIBS)
+	* scripts/Makefile (w3mhelp-funcname.pl): split from helplibs
+	* scripts/Makefile (w3mhelp-funcdesc.pl): split from helplibs, touch
+	* scripts/Makefile (clean): clean *-stamp
+	* scripts/.cvsignore: add w3mhelp-funcdesc-stamp
+
 2001-12-05  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02616]

@@ -6,6 +6,7 @@ LIB_DIR		= $(prefix)/lib/w3m
 HELP_DIR	= $(prefix)/lib/w3m
 
 LIB_TARGETS	= dirlist.cgi w3mhelp.cgi
+HELP_LIBS	= w3mhelp-funcname.pl w3mhelp-funcdesc.pl
 
 MKDIR		= mkdir -p
 INSTALL		= install -c
@@ -18,7 +19,7 @@ DOCDIRS = doc:en_English doc-jp:ja_Japanese
 
 .SUFFIXES: .in
 
-all: $(LIB_TARGETS) helplibs
+all: $(LIB_TARGETS) $(HELP_LIBS)
 
 .in:
 	@echo "generating $@..."
@@ -27,7 +28,7 @@ all: $(LIB_TARGETS) helplibs
 	@chmod +x $@
 	@echo done
 
-helplibs:
+w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab ../doc/keymap.default ../doc/keymap.lynx
 	@echo "generating w3mhelp-funcname.pl..."
 	@echo '%funcname = (' > w3mhelp-funcname.pl
 	@while read fname fid; do \
@@ -46,6 +47,8 @@ helplibs:
 	@cat w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
 	@echo "done"
 
+w3mhelp-funcdesc.pl: w3mhelp-funcdesc-stamp
+w3mhelp-funcdesc-stamp:
 	@echo "generating w3mhelp-funcdesc*.pl..."
 	@for dirlang in $(DOCDIRS); do \
 	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
@@ -58,8 +61,9 @@ helplibs:
 	  cat w3mhelp-funcdesc.$$lang.pl.in >> w3mhelp-funcdesc.$$lang.pl; \
 	done
 	@echo done
+	touch w3mhelp-funcdesc-stamp
 
-install: $(LIB_TARGETS)
+install: $(LIB_TARGETS) $(HELP_LIBS)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	for file in $(LIB_TARGETS);     \
@@ -82,4 +86,4 @@ uninstall:
 	done
 
 clean:
-	-rm -f $(LIB_TARGETS) w3mhelp-*.pl
+	-rm -f $(LIB_TARGETS) w3mhelp-*.pl *-stamp

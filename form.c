@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.21 2002/11/12 12:42:50 ukai Exp $ */
+/* $Id: form.c,v 1.22 2002/11/12 13:06:14 ukai Exp $ */
 /* 
  * HTML forms
  */
@@ -740,7 +740,7 @@ loadPreForm(void)
     struct pre_form *pf = NULL;
     struct pre_form_item *pi = NULL;
     int type = -1;
-    char *name;
+    char *name = NULL;
 
     PreForm = NULL;
     fp = openSecretFile(pre_form_file);
@@ -795,9 +795,10 @@ loadPreForm(void)
 	    textarea = Strnew();
 	    continue;
 	}
-	else if (!strcmp(s, "/textarea")) {
+	else if (textarea && name && !strcmp(s, "/textarea")) {
 	    pi = add_pre_form_item(pf, pi, type, name, textarea->ptr, NULL);
 	    textarea = NULL;
+	    name = NULL;
 	    continue;
 	}
 	else

@@ -1,4 +1,4 @@
-/* $Id: w3mimgdisplay.c,v 1.3 2002/07/17 20:58:48 ukai Exp $ */
+/* $Id: w3mimgdisplay.c,v 1.4 2002/07/18 06:27:23 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -74,16 +74,16 @@ main(int argc, char **argv)
 	    fputs("\n", stdout);
 	    fflush(stdout);
 	    break;
-#if 0 /* def USE_W3MIMG_FB */
 	case '5':
-	    if (w3mimg_mode == W3MIMG_FB_MODE) {
-		IMAGE *im = fb_load_image(&buf[2], 0, 0);
-		fprintf(stdout, "%d %d\n", im->width, im->height);
-		fflush(stdout);
-		fb_free_image(im);
+	    if (w_op->init(w_op)) {
+		W3MImage img;
+		if (w_op->load_image(w_op, &img, &buf[2], 0, 0)) {
+		    fprintf(stdout, "%d %d\n", img.width, img.height);
+		    fflush(stdout);
+		    w_op->free_image(w_op, &img);
+		}
 	    }
 	    break;
-#endif
 	}
     }
     ClearImage();

@@ -1,3 +1,7 @@
+2002-07-18  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3mimgdisplay.c (main): '5' for w3mimgsize
+
 2002-07-18  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03270] Re: w3m-img for framebuffer merged
@@ -3606,4 +3610,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.407 2002/07/18 06:23:51 ukai Exp $
+$Id: ChangeLog,v 1.408 2002/07/18 06:27:23 ukai Exp $

@@ -1,3 +1,8 @@
+2001-12-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02666] resizing on xterm with gpm support
+	* terms.c (mouse_init): check Gpm_Open return value, signal(SIGWINCH)
+
 2001-12-16  Rin Okuyama <okuyama@cna.ne.jp>
 
 	* [w3m-dev 02664] install-sh -s option
@@ -1256,4 +1261,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.130 2001/12/15 17:25:45 ukai Exp $
+$Id: ChangeLog,v 1.131 2001/12/15 18:33:41 ukai Exp $

@@ -1,3 +1,9 @@
+2002-09-11  Yuuichi Teranishi <teranisi@gohome.org>
+
+	* [w3m-dev 03311] Re: Passwords
+	* configure (config.h): default PASSWD_FILE
+	* fm.h (passwd_file): default PASSWD_FILE
+
 2002-09-11  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03307] add password_file support
@@ -3775,4 +3781,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.425 2002/09/10 17:27:39 ukai Exp $
+$Id: ChangeLog,v 1.426 2002/09/11 14:54:33 ukai Exp $

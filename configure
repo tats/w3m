@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.75 2002/09/09 13:50:44 ukai Exp $
+# $Id: configure,v 1.76 2002/09/11 14:54:33 ukai Exp $
 #	Configuration.
 #
 
@@ -2376,6 +2376,7 @@ $def_use_xface
 #define COOKIE_FILE  "cookie"
 #define HISTORY_FILE "history"
 
+#define PASSWD_FILE RC_DIR "/passwd"
 #define USER_MAILCAP RC_DIR "/mailcap"
 #define SYS_MAILCAP  "/etc/mailcap"
 #define USER_MIMETYPES "~/.mime.types"

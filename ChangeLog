@@ -1,3 +1,9 @@
+2001-11-25  Rin Okuyama <okuyama@cna.ne.jp>
+
+	* [w3m-dev 02533] setpgrp bug in configure
+	* configure: s/have_setpgrp/def_have_setpgrp/
+	   s/setpgrp/def_setpgrp/
+
 2001-11-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Makefile (indent): indent

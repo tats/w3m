@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.161 2002/12/14 15:24:03 ukai Exp $ */
+/* $Id: file.c,v 1.162 2002/12/14 15:26:44 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1898,7 +1898,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    if (PreserveTimestamp && !stat(pu.real_file, &st))
 		f.modtime = st.st_mtime;
 	    file = conv_from_system(guess_save_name(NULL, pu.real_file));
-	} else
+	}
+	else
 	    file = guess_save_name(t_buf, pu.file);
 	doFileSave(f, file);
 	if (f.scheme == SCM_FTP)
@@ -7866,9 +7867,9 @@ guess_save_name(Buffer *buf, char *path)
 	    matchattr(q, "filename", 8, &name))
 	    path = name->ptr;
 	else if ((p = checkHeader(buf, "Content-Type:")) != NULL &&
-	    (q = strcasestr(p, "name")) != NULL &&
-	    (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
-	    matchattr(q, "name", 4, &name))
+		 (q = strcasestr(p, "name")) != NULL &&
+		 (q == p || IS_SPACE(*(q - 1)) || *(q - 1) == ';') &&
+		 matchattr(q, "name", 4, &name))
 	    path = name->ptr;
     }
     return guess_filename(path);

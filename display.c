@@ -1,4 +1,4 @@
-/* $Id: display.c,v 1.46 2002/12/13 02:19:01 ukai Exp $ */
+/* $Id: display.c,v 1.47 2002/12/14 15:26:44 ukai Exp $ */
 #include <signal.h>
 #include "fm.h"
 
@@ -248,7 +248,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
 	if (url)
 	    Strcat_charp(s, " ");
 	l -= s->length;
-        if (l <= 0)
+	if (l <= 0)
 	    return s;
     }
     if (!url)
@@ -283,7 +283,7 @@ make_lastline_message(Buffer *buf)
 #ifdef USE_IMAGE
 	MapArea *a = retrieveCurrentMapArea(buf);
 	if (a)
-	   s = make_lastline_link(buf, a->alt, a->url);
+	    s = make_lastline_link(buf, a->alt, a->url);
 	else
 #endif
 	{
@@ -297,7 +297,7 @@ make_lastline_message(Buffer *buf)
 		    p = a_img->title;
 	    }
 	    if (p || a)
-	        s = make_lastline_link(buf, p, a ? a->url : NULL);
+		s = make_lastline_link(buf, p, a ? a->url : NULL);
 	}
 	if (s && s->length >= COLS - 3)
 	    return s;
@@ -331,7 +331,7 @@ make_lastline_message(Buffer *buf)
 	    char *p;
 	    int i;
 	    for (p = msg->ptr; *p; p += i) {
-	        i = get_mclen(get_mctype(p));
+		i = get_mclen(get_mctype(p));
 		l -= i;
 		if (l < 0)
 		    break;

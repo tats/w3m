@@ -2445,7 +2445,7 @@ if test "${enable_image+set}" = set; then
   enableval="$enable_image"
   :
 else
-  enable_image="x11,fb"
+  enable_image="yes"
 fi
 
  echo "$ac_t""$enable_image" 1>&6

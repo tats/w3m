@@ -488,7 +488,7 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_MSG_CHECKING(if image is enabled)
  AC_ARG_ENABLE(image,
  [  --disable-image=x11,fb,fb+s	disable inline image],,
- [enable_image="x11,fb"])
+ [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
  if test x$enable_image != xno; then
   IMGOBJS=w3mimg/w3mimg.o

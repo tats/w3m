@@ -227,27 +227,27 @@ msgstr "フォームの色"
 
 #: rc.c:96
 msgid "Enable coloring of active link"
-msgstr "背景の色"
+msgstr "現在選択されているリンクの色を指定する"
 
 #: rc.c:97
 msgid "Color of currently active link"
-msgstr "マークの色"
+msgstr "現在選択されているリンクの色"
 
 #: rc.c:98
 msgid "Use visited link color"
-msgstr "現在選択されているリンクの色を指定する"
+msgstr "訪れたことがあるリンクは色を変える"
 
 #: rc.c:99
 msgid "Color of visited link"
-msgstr "現在選択されているリンクの色"
+msgstr "訪れたことがあるリンクの色"
 
 #: rc.c:100
 msgid "Color of background"
-msgstr "訪れたことがあるリンクは色を変える"
+msgstr "背景の色"
 
 #: rc.c:101
 msgid "Color of mark"
-msgstr "訪れたことがあるリンクの色"
+msgstr "マークの色"
 
 #: rc.c:102
 msgid "Use proxy"

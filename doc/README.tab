@@ -1,0 +1,45 @@
+w3m tab browsing
+
+No default keybinding for tab browsing. Pleaes configure following
+function to appropriate keys:
+
+  NEW_TAB      open new tab, clone current page
+  TAB_LINK     open document refered by link in a new tab
+               Num(N) + TAB_LINK will open in Nth tab
+  TAB_GOTO     open URL in a new tab
+               Num(N) + TAB_GOTO will open in Nth tab
+  TAB_GOTO_RELATIVE
+               open relative URL in a new tab
+               Num(N) + TAB_GOTO_RELATIVE will open in Nth tab
+  CLOSE_TAB    close current tab
+               Num(N) + CLOSE_TAB will close Nth tab
+  NEXT_TAB     change to next tab
+               Num(N) + NEXT_TAB will change to Nth next tab
+  PREV_TAB     change to prev tab
+               Num(N) + PREV_TAB will change to Nth prev tab
+  TAB_RIGHT    move current tab to right
+               Num(N) + TAB_RIGHT will move current tab to N right
+  TAB_LEFT     move current tab to left
+               Num(N) + TAB_LEFT will move current tab to N left
+  TAB_MENU     open tab selection menu
+               operation in tab selection menu is same as operation 
+		in buffer selection menu
+
+You can operate with mouse
+
+  left button .. 	move the tab if you click on the tab
+		      	dragging a tab to another tab will move tab
+			dragging a link to tab will open the link in the tab
+			clicking on right upper `x' will current tab
+  middle button ..	close the tab if you clink on the tab
+  right button ..	open menu as usual
+
+Options:
+
+  open_tab_blank ...	open new tab if target is _blank or _new
+			default: OFF
+  close_tab_back ...	close the tab when you back from last buffer in the tab
+			default: OFF (= Can't back...)
+
+
+

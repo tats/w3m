@@ -1,3 +1,8 @@
+2002-11-06  Fumitoshi UKAI  <ukai@debian.or.jp>
+	
+	* doc-jp/README.tab: added [w3m-dev 03372]
+	* doc/README.tab: brief translation
+
 2002-11-06  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03372] tab browser
@@ -4282,4 +4287,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.473 2002/11/05 17:10:04 ukai Exp $
+$Id: ChangeLog,v 1.474 2002/11/05 17:24:47 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.123 2002/11/18 18:11:25 ukai Exp $ */
+/* $Id: file.c,v 1.124 2002/11/22 15:49:43 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7090,11 +7090,10 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     if (uf.ext && *uf.ext) {
 	Strcat_charp(tmpf, uf.ext);
     }
+
   _save:
     if (IStype(uf.stream) != IST_ENCODED)
 	uf.stream = newEncodedStream(uf.stream, uf.encoding);
-    if (save2tmp(uf, tmpf->ptr) < 0)
-	return 0;
     header = checkHeader(defaultbuf, "Content-Type:");
     if (header)
 	header = conv_to_system(header);
@@ -7105,6 +7104,31 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	command = tmp;
     }
 #endif
+
+    pushText(fileToDelete, tmpf->ptr);
+#ifdef HAVE_SETPGRP
+    if (! (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&
+	! (mcap->flags & MAILCAP_NEEDSTERMINAL) && BackgroundExtViewer) {
+	flush_tty();
+	if (! fork()) {
+	    reset_signals();
+	    signal(SIGINT, SIG_IGN);
+	    close_tty();
+	    QuietMessage = TRUE;
+	    fmInitialized = FALSE;
+	    if (save2tmp(uf, tmpf->ptr) < 0)
+		exit(1);
+	    myExec(command->ptr);
+	}
+	*bufp = NO_BUFFER;
+	return 1;
+    }
+    else
+#endif
+    {
+	if (save2tmp(uf, tmpf->ptr) < 0)
+	    return 0;	/* ??? */
+    }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
 	    defaultbuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -7147,7 +7171,6 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	buf->mailcap = mcap;
     }
     *bufp = buf;
-    pushText(fileToDelete, tmpf->ptr);
     return 1;
 }
 

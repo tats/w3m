@@ -1,3 +1,11 @@
+2002-11-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03459] background download when external viewer
+	* etc.c (myExec): added
+		(mySystem): rewrite to use myExec()
+	* file.c (doExternal): run background if BackgroundExtViewer
+	* proto.h (myExec): added
+
 2002-11-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* doc/README.mouse_menu: delete column 10 limit
@@ -5032,4 +5040,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.547 2002/11/22 15:45:01 ukai Exp $
+$Id: ChangeLog,v 1.548 2002/11/22 15:49:42 ukai Exp $

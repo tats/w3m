@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.37 2002/11/08 15:54:47 ukai Exp $ */
+/* $Id: etc.c,v 1.38 2002/11/22 15:49:43 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1295,6 +1295,27 @@ reset_signals(void)
 }
 
 void
+myExec(char *command)
+{
+    int i;
+
+    reset_signals();
+    SETPGRP();
+    close_tty();
+    dup2(open("/dev/null", O_RDONLY), 0);
+    dup2(open("/dev/null", O_WRONLY), 1);
+    dup2(open("/dev/null", O_WRONLY), 2);
+#ifndef FOPEN_MAX
+#define FOPEN_MAX 1024		/* XXX */
+#endif
+    /* close all other file descriptors (socket, ...) */
+    for (i = 3; i < FOPEN_MAX; i++)
+	close(i);
+    execl("/bin/sh", "sh", "-c", command, NULL);
+    exit(127);
+}
+
+void
 mySystem(char *command, int background)
 {
     if (background) {
@@ -1303,25 +1324,9 @@ mySystem(char *command, int background)
 	Strcat_charp(cmd, command);
 	system(cmd->ptr);
 #else
-	int pid;
 	flush_tty();
-	if ((pid = fork()) == 0) {
-	    int i;
-	    reset_signals();
-	    SETPGRP();
-	    close_tty();
-	    dup2(open("/dev/null", O_RDONLY), 0);
-	    dup2(open("/dev/null", O_WRONLY), 1);
-	    dup2(open("/dev/null", O_WRONLY), 2);
-#ifndef FOPEN_MAX
-#define FOPEN_MAX 1024		/* XXX */
-#endif
-	    /* close all other file descriptors (socket, ...) */
-	    for (i = 3; i < FOPEN_MAX; i++)
-		close(i);
-	    execl("/bin/sh", "sh", "-c", command, NULL);
-	    exit(127);
-	}
+	if (! fork())
+	    myExec(command);
 #endif
     }
     else

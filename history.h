@@ -1,4 +1,4 @@
-/* $Id: history.h,v 1.4 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: history.h,v 1.5 2002/01/26 17:24:01 ukai Exp $ */
 #ifndef HISTORY_H
 #define HISTORY_H
 
@@ -18,6 +18,7 @@ typedef struct {
 } Hist;
 
 extern Hist *newHist();
+extern Hist *copyHist(Hist *hist);
 extern HistItem *unshiftHist(Hist *hist, char *ptr);
 extern HistItem *pushHist(Hist *hist, char *ptr);
 extern HistItem *pushHashHist(Hist *hist, char *ptr);

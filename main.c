@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.72 2002/01/24 17:46:50 ukai Exp $ */
+/* $Id: main.c,v 1.73 2002/01/26 17:24:01 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -3621,19 +3621,28 @@ goURL0(char *prompt, int relative)
 
     url = searchKeyData();
     if (url == NULL) {
-	if (DefaultURLString == DEFAULT_URL_CURRENT) {
-	    current = baseURL(Currentbuf);
-	    if (current)
-		url = parsedURL2Str(current)->ptr;
+	Hist *hist = copyHist(URLHist);
+	Anchor *a;
+
+	current = baseURL(Currentbuf);
+	if (current) {
+	    char *c_url = parsedURL2Str(current)->ptr;
+	    if (DefaultURLString == DEFAULT_URL_CURRENT)
+		url = c_url;
+	    else
+		pushHist(hist, c_url);
 	}
-	else if (DefaultURLString == DEFAULT_URL_LINK) {
-	    Anchor *a = retrieveCurrentAnchor(Currentbuf);
-	    if (a) {
-		parseURL2(a->url, &p_url, baseURL(Currentbuf));
-		url = parsedURL2Str(&p_url)->ptr;
-	    }
+	a = retrieveCurrentAnchor(Currentbuf);
+	if (a) {
+	    char *a_url;
+	    parseURL2(a->url, &p_url, current);
+	    a_url = parsedURL2Str(&p_url)->ptr;
+	    if (DefaultURLString == DEFAULT_URL_LINK)
+		url = a_url;
+	    else
+		pushHist(hist, a_url);
 	}
-	url = inputLineHist(prompt, url, IN_URL, URLHist);
+	url = inputLineHist(prompt, url, IN_URL, hist);
 	if (url != NULL)
 	    SKIP_BLANKS(url);
     }

@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.6 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: history.c,v 1.7 2002/01/26 17:24:01 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -80,6 +80,20 @@ newHist()
     hist->current = NULL;
     hist->hash = NULL;
     return hist;
+}
+
+Hist *
+copyHist(Hist *hist)
+{
+    Hist *new;
+    HistItem *item;
+
+    if (hist == NULL)
+	return NULL;
+    new = newHist();
+    for (item = hist->list->first; item; item = item->next)
+	pushHist(new, (char *)item->ptr);
+    return new;
 }
 
 HistItem *

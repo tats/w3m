@@ -1,3 +1,9 @@
+2001-12-24  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02702] fix problem with emacs-w3m in [w3m-dev 02699]
+	* main.c (MAIN): remove some flag initialization, its too early?
+		this code caused problem with emacs-w3m.
+
 2001-12-23  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02700] search refactoring
@@ -1457,4 +1463,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.163 2001/12/23 14:44:00 ukai Exp $
+$Id: ChangeLog,v 1.164 2001/12/23 16:30:10 ukai Exp $

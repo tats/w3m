@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.42 2001/12/23 14:44:00 ukai Exp $ */
+/* $Id: main.c,v 1.43 2001/12/23 16:30:10 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -668,14 +668,7 @@ MAIN(int argc, char **argv, char **envp)
 	    COLS = 80;
     }
 
-    SearchHeader = FALSE;
-    DefaultType = NULL;
-#ifdef JP_CHARSET
-    UseContentCharset = TRUE;
-    UseAutoDetect = TRUE;
-#endif
-
-    if (isatty(1)) {
+    if (isatty(1) && !w3m_dump) {
 #ifdef SIGWINCH
 	signal(SIGWINCH, resize_hook);
 #else				/* not SIGWINCH */
@@ -686,6 +679,7 @@ MAIN(int argc, char **argv, char **envp)
 #ifdef SIGCHLD
     signal(SIGCHLD, sig_chld);
 #endif
+
 #ifdef USE_BINMODE_STREAM
     setmode(fileno(stdout), O_BINARY);
 #endif

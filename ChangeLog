@@ -1,3 +1,9 @@
+2003-08-12  TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+
+	* [w3m-dev 03950] rel attribute of anchor tag
+	* html.c (ALST_A): add ATTR_REL
+		(MAXA_A): +1
+
 2003-07-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03945] Re: application/xhtml+xml support
@@ -7983,4 +7989,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.856 2003/07/26 17:16:24 ukai Exp $
+$Id: ChangeLog,v 1.857 2003/08/11 17:33:08 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.57 2002/11/15 15:19:46 ukai Exp $ */
+/* $Id: url.c,v 1.58 2002/11/18 17:32:33 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -231,6 +231,7 @@ static MySignalHandler
 KeyAbort(SIGNAL_ARG)
 {
     LONGJMP(AbortLoading, 1);
+    SIGNAL_RETURN;
 }
 
 #ifdef USE_SSL

@@ -1,5 +1,13 @@
 2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03448] Some fixes
+	* url.c (KeyAbort): SIGNAL_RETURN
+	* .cvsginore: delete w3mimgsize
+	* scripts/.cvsignore: delete xface2xbm
+	* scripts/xface2xbm.in: deleted
+
+2002-11-19  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03447] Re: Open download list panel on new tab
 	* main.c (download_action): buffer management deleted
 		(ldDL): buffer management moved here
@@ -4855,4 +4863,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.531 2002/11/18 17:29:28 ukai Exp $
+$Id: ChangeLog,v 1.532 2002/11/18 17:32:18 ukai Exp $

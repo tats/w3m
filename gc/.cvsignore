@@ -1,3 +1,4 @@
+base_lib
 gctest
 if_mach
 if_not_there

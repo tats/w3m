@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.18 2002/11/15 15:56:36 ukai Exp $ */
+/* $Id: image.c,v 1.19 2002/11/15 15:57:16 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -630,16 +630,16 @@ getImageSize(ImageCache * cache)
     if (h == 0)
 	h = 1;
     if (cache->width < 0 && cache->height < 0) {
-	cache->width = (w > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: w;
-	cache->height = (h > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: h;
+	cache->width = (w > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : w;
+	cache->height = (h > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : h;
     }
     else if (cache->width < 0) {
-        int tmp = (int)((double)cache->height * w / h + 0.5);
-	cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: tmp;
+	int tmp = (int)((double)cache->height * w / h + 0.5);
+	cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     else if (cache->height < 0) {
-        int tmp = (int)((double)cache->width * h / w + 0.5);
-	cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE: tmp;
+	int tmp = (int)((double)cache->width * h / w + 0.5);
+	cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     if (cache->width == 0)
 	cache->width = 1;

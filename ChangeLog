@@ -1,3 +1,10 @@
+2001-12-25  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 02719] (based on [w3m-dev 02708] comments)
+	* resize_hook: set resized flag only
+	* main.c (MAIN): in key input loop, process resize 
+		when resized flag is set
+
 2001-12-24  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02702] fix problem with emacs-w3m in [w3m-dev 02699]
@@ -1463,4 +1470,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.164 2001/12/23 16:30:10 ukai Exp $
+$Id: ChangeLog,v 1.165 2001/12/25 09:08:58 ukai Exp $

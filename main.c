@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.43 2001/12/23 16:30:10 ukai Exp $ */
+/* $Id: main.c,v 1.44 2001/12/25 09:08:58 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -43,6 +43,10 @@ static short alarm_status = AL_UNSET;
 static Buffer *alarm_buffer;
 static Event alarm_event;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
+#endif
+
+#ifdef SIGWINCH
+static int resized = 0;
 #endif
 
 #ifdef USE_MARK
@@ -896,9 +900,7 @@ MAIN(int argc, char **argv, char **envp)
     setlinescols();
     setupscreen();
 #endif				/* not SIGWINCH */
-#ifdef SIGCHLD
-    signal(SIGCHLD, sig_chld);
-#endif
+
     Currentbuf = Firstbuf;
     displayBuffer(Currentbuf, B_NORMAL);
     if (line_str) {
@@ -936,6 +938,15 @@ MAIN(int argc, char **argv, char **envp)
 	if (alarm_sec > 0) {
 	    signal(SIGALRM, SigAlarm);
 	    alarm(alarm_sec);
+	}
+#endif
+#ifdef SIGWINCH
+	if (resized) {
+	    resized = 0;
+	    setlinescols();
+	    setupscreen();
+	    if (Currentbuf)
+		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}
 #endif
 	c = getch();
@@ -1166,10 +1177,7 @@ intTrap(SIGNAL_ARG)
 MySignalHandler
 resize_hook(SIGNAL_ARG)
 {
-    setlinescols();
-    setupscreen();
-    if (Currentbuf)
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    resized = 1;
     signal(SIGWINCH, resize_hook);
     SIGNAL_RETURN;
 }

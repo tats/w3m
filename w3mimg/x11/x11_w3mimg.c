@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.17 2003/03/26 15:35:20 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.18 2003/03/27 17:12:10 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -366,7 +366,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	width = gdk_pixbuf_get_width(pixbuf);
 	height = gdk_pixbuf_get_height(pixbuf);
 
-	if (delay >= 0)
+	if (delay > ximg->delay)
 	    ximg->delay = delay;
 
 	if (i > 0) {

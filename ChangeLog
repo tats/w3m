@@ -1,3 +1,8 @@
+2004-11-05  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04117] Re: start attribute and value attribute on ordered lists
+	* file.c (HTMLtagproc1): allow negative value for start attr
+
 2004-10-14  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* Bug#276246: w3m's locale parsing should at least see '@euro' modifier
@@ -8588,4 +8593,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.939 2004/10/13 16:52:49 ukai Exp $
+$Id: ChangeLog,v 1.940 2004/11/04 17:25:44 ukai Exp $

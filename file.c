@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.235 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: file.c,v 1.236 2004/11/04 17:25:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4180,7 +4180,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	PUSH_ENV(cmd);
 	if (cmd == HTML_UL || cmd == HTML_OL) {
-	    if (parsedtag_get_value(tag, ATTR_START, &count) && count > 0) {
+	    if (parsedtag_get_value(tag, ATTR_START, &count)) {
 		envs[h_env->envc].count = count - 1;
 	    }
 	}
@@ -4239,6 +4239,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		count = atoi(p);
 		if (count > 0)
 		    envs[h_env->envc].count = count;
+		else
+		    envs[h_env->envc].count = 0;
 	    }
 	    switch (envs[h_env->envc].env) {
 	    case HTML_UL:
@@ -4272,7 +4274,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    case HTML_OL:
 		if (parsedtag_get_value(tag, ATTR_TYPE, &p))
 		    envs[h_env->envc].type = (int)*p;
-		switch (envs[h_env->envc].type) {
+		switch ((envs[h_env->envc].count > 0)? envs[h_env->envc].type: '1') {
 		case 'i':
 		    num = romanNumeral(envs[h_env->envc].count);
 		    break;

@@ -1,3 +1,8 @@
+2003-01-16  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* file.c (loadGopherDir): convertLine RAW_MODE
+	* ftp.c (loadFTPDir): ditto
+
 2003-01-16  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03642] Re: cleanup (don't close connection of news server)
@@ -6471,4 +6476,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.683 2003/01/15 16:17:11 ukai Exp $
+$Id: ChangeLog,v 1.684 2003/01/15 16:24:25 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: news.c,v 1.13 2003/01/15 16:14:41 ukai Exp $ */
+/* $Id: news.c,v 1.14 2003/01/15 16:24:25 ukai Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include <stdio.h>
@@ -343,16 +343,14 @@ loadNewsgroup(ParsedURL *pu, char *code)
 
     if (SETJMP(AbortLoading) != 0) {
 	news_close(&current_news);
-	Strcat_charp(page,
-		     "</table>\n<p>Transfer Interrupted!\n");
+	Strcat_charp(page, "</table>\n<p>Transfer Interrupted!\n");
 	goto news_end;
     }
     trap = signal(SIGINT, KeyAbort);
     if (fmInitialized)
 	term_cbreak();
 
-    tmp =
-	news_command(&current_news, "GROUP", group, &status);
+    tmp = news_command(&current_news, "GROUP", group, &status);
     if (status != 211)
 	goto news_list;
     if (sscanf(tmp->ptr, "%d %d %d %d", &status, &i, &first, &last) != 4)
@@ -378,9 +376,7 @@ loadNewsgroup(ParsedURL *pu, char *code)
     }
     page = Sprintf("<html>\n<head>\n<base href=\"%s\">\n\
 <title>Newsgroup: %s %d-%d</title>\n\
-</head>\n<body>\n<h1>Newsgroup: %s %d-%d</h1>\n<hr>\n",
-		   parsedURL2Str(pu)->ptr, qgroup, start, end, qgroup, start,
-		   end);
+</head>\n<body>\n<h1>Newsgroup: %s %d-%d</h1>\n<hr>\n", parsedURL2Str(pu)->ptr, qgroup, start, end, qgroup, start, end);
     if (start > first) {
 	i = start - MaxNewsMessage;
 	if (i < first)
@@ -427,7 +423,8 @@ loadNewsgroup(ParsedURL *pu, char *code)
 	init_stream(&f, SCM_NEWS, current_news.rf);
 	buf = newBuffer(INIT_BUFFER_WIDTH);
 	for (i = start; i <= end && i <= last; i++) {
-	    news_command(&current_news, "HEAD", Sprintf("%d", i)->ptr, &status);
+	    news_command(&current_news, "HEAD", Sprintf("%d", i)->ptr,
+			 &status);
 	    if (status != 221)
 		continue;
 	    readHeader(&f, buf, FALSE, NULL);

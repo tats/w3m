@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.192 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: main.c,v 1.193 2003/01/15 16:24:25 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4414,7 +4414,7 @@ vwSrc(void)
     }
     else if (Currentbuf->real_scheme == SCM_LOCAL &&
 	     !(Currentbuf->real_type &&
-	      !strcasecmp(Currentbuf->real_type, "local:directory"))) {
+	       !strcasecmp(Currentbuf->real_type, "local:directory"))) {
 	fn = Currentbuf->filename;
     }
     else {

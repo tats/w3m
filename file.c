@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.185 2003/01/15 16:11:43 ukai Exp $ */
+/* $Id: file.c,v 1.186 2003/01/15 16:24:25 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1563,24 +1563,24 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 			return b;
 		    }
 		    else {
-		        page = loadLocalDir(pu.real_file);
+			page = loadLocalDir(pu.real_file);
 			t = "local:directory";
 #ifdef JP_CHARSET
 			code = SystemCode;
 #endif
 		    }
-	        }
-	     }
-	     break;
+		}
+	    }
+	    break;
 	case SCM_FTPDIR:
-	     page = loadFTPDir(&pu, &code);
-	     t = "ftp:directory";
-	     break;
+	    page = loadFTPDir(&pu, &code);
+	    t = "ftp:directory";
+	    break;
 #ifdef USE_NNTP
 	case SCM_NEWS_GROUP:
-	     page = loadNewsgroup(&pu, &code);
-	     t = "news:group";
-	     break;
+	    page = loadNewsgroup(&pu, &code);
+	    t = "news:group";
+	    break;
 #endif
 	case SCM_UNKNOWN:
 #ifdef USE_EXTERNAL_URI_LOADER
@@ -1896,15 +1896,15 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (do_download) {
 	    char *file;
 	    if (!src)
-	        return NULL;
+		return NULL;
 	    file = guess_filename(pu.file);
 #ifdef USE_GOPHER
 	    if (f.scheme == SCM_GOPHER)
-	        file = Sprintf("%s.html", file)->ptr;
+		file = Sprintf("%s.html", file)->ptr;
 #endif
 #ifdef USE_NNTP
 	    if (f.scheme == SCM_NEWS_GROUP)
-	        file = Sprintf("%s.html", file)->ptr;
+		file = Sprintf("%s.html", file)->ptr;
 #endif
 	    doFileMove(tmp->ptr, file);
 	    return NO_BUFFER;
@@ -6610,7 +6610,9 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, char *code)
 
     tmp = parsedURL2Str(pu);
     p = html_quote(tmp->ptr);
-    tmp = convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), code, NULL);
+    tmp =
+	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), code,
+		    RAW_MODE);
     q = html_quote(tmp->ptr);
     tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
 			 "</title>\n</head>\n<body>\n<h1>Index of ", q,
@@ -7488,7 +7490,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	    signal(SIGINT, SIG_IGN);
 	    SETPGRP();
 	    close_tty();
-	    close_all_fds(2); 
+	    close_all_fds(2);
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    if (!_MoveFile(tmpf, p) && PreserveTimestamp && !is_pipe &&
@@ -7595,7 +7597,7 @@ doFileSave(URLFile uf, char *defstr)
 	    signal(SIGINT, SIG_IGN);
 	    SETPGRP();
 	    close_tty();
-	    close_all_fds_except(2, UFfileno(&uf)); 
+	    close_all_fds_except(2, UFfileno(&uf));
 	    QuietMessage = TRUE;
 	    fmInitialized = FALSE;
 	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)

@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.19 2003/01/15 16:17:11 ukai Exp $ */
+/* $Id: local.c,v 1.20 2003/01/15 16:24:25 ukai Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -63,7 +63,7 @@ loadLocalDir(char *dname)
     qdir = html_quote(Str_conv_from_system(dirname)->ptr);
     tmp = Strnew_m_charp("<HTML>\n<HEAD>\n<BASE HREF=\"file://", qdir,
 			 "\">\n<TITLE>Directory list of ", qdir,
-		         "</TITLE>\n</HEAD>\n<BODY>\n<H1>Directory list of ",
+			 "</TITLE>\n</HEAD>\n<BODY>\n<H1>Directory list of ",
 			 qdir, "</H1>\n", NULL);
     flist = New_N(char *, nfile_max);
     nfile = 0;

@@ -1,5 +1,14 @@
 2002-11-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03464] Re: case insensitive regexp search
+	  (rewrite [w3m-dev 03462] by Hiroyuki Ito <hito@crl.go.jp>)
+	* regex.c (matchWhich): add int
+		(newRegex0): igncase
+		(regmatch1): matchWhich with re->mode & RE_IGNCASE
+		(matchWhich): add igncase
+
+2002-11-23  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03459] background download when external viewer
 	* etc.c (myExec): added
 		(mySystem): rewrite to use myExec()
@@ -5040,4 +5049,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.548 2002/11/22 15:49:42 ukai Exp $
+$Id: ChangeLog,v 1.549 2002/11/22 15:56:43 ukai Exp $

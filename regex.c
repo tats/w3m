@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.16 2002/01/21 17:57:28 ukai Exp $ */
+/* $Id: regex.c,v 1.17 2002/11/22 15:56:43 ukai Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -68,7 +68,7 @@ static Regex DefaultRegex;
 
 static int regmatch(regexchar *, char *, char *, int, char **);
 static int regmatch1(regexchar *, longchar);
-static int matchWhich(longchar *, longchar);
+static int matchWhich(longchar *, longchar, int);
 
 /* 
  * regexCompile: compile regular expression
@@ -190,6 +190,8 @@ newRegex0(char **ex, int igncase, Regex *regex, char **msg, int level)
 	    *(st_ptr++) = '\0';
 	    re->p.pattern = r;
 	    RE_SET_MODE(re, m);
+	    if (igncase)
+		re->mode |= RE_IGNCASE;
 	    re++;
 	    break;
 	case '|':
@@ -634,15 +636,15 @@ regmatch1(regexchar * re, longchar c)
 	else
 	    return (*re->p.pattern == c);
     case RE_WHICH:
-	return matchWhich(re->p.pattern, c);
+	return matchWhich(re->p.pattern, c, re->mode & RE_IGNCASE);
     case RE_EXCEPT:
-	return !matchWhich(re->p.pattern, c);
+	return !matchWhich(re->p.pattern, c, re->mode & RE_IGNCASE);
     }
     return 0;
 }
 
 static int
-matchWhich(longchar * pattern, longchar c)
+matchWhich(longchar * pattern, longchar c, int igncase)
 {
     longchar *p = pattern;
     int ans = 0;
@@ -657,10 +659,21 @@ matchWhich(longchar * pattern, longchar c)
 		ans = 1;
 		break;
 	    }
+	    else if (igncase && c < 127 && IS_ALPHA(c) && 
+		     ((*p <= c && tolower(c) <= *(p + 2)) ||
+		      (*p <= c && toupper(c) <= *(p + 2)))) {
+		ans = 1;
+		break;
+	    }
 	    p += 3;
 	}
 	else {
 	    if (*p == c) {
+		ans = 1;
+		break;
+	    }
+	    else if (igncase && c < 127 && IS_ALPHA(c) && 
+		     (*p == tolower(c) || *p == toupper(c))) {
 		ans = 1;
 		break;
 	    }

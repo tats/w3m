@@ -1,10 +1,12 @@
-/* $Id: file.c,v 1.32 2001/12/10 17:02:44 ukai Exp $ */
+/* $Id: file.c,v 1.33 2001/12/25 16:49:42 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
 #include <signal.h>
 #include <setjmp.h>
+#if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
 #include <sys/wait.h>
+#endif
 #include <stdio.h>
 #include <time.h>
 #include <sys/stat.h>

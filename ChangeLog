@@ -1,3 +1,11 @@
+2001-12-26  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [#496610] #include <sys/wait.h>
+	   by Kazuhiro NISHIYAMA (znz)
+	* main.c: #if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
+	* etc.c: ditto
+	* file.c: ditto
+
 2001-12-26  Kazuhiro NISHIYAMA <zn@mbf.nifty.com>
 
 	* [w3m-dev 02725] bcopy, bzero
@@ -1548,4 +1556,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.173 2001/12/25 16:19:28 ukai Exp $
+$Id: ChangeLog,v 1.174 2001/12/25 16:49:42 ukai Exp $

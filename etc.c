@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.13 2001/12/25 16:11:07 ukai Exp $ */
+/* $Id: etc.c,v 1.14 2001/12/25 16:49:42 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -14,7 +14,9 @@
 
 #include <sys/types.h>
 #include <time.h>
+#if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
 #include <sys/wait.h>
+#endif
 #include <signal.h>
 
 #ifdef	__WATT32__

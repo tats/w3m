@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.47 2001/12/25 13:43:51 ukai Exp $ */
+/* $Id: main.c,v 1.48 2001/12/25 16:49:42 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -6,7 +6,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#if defined(HAVE_WAITPID) || defined(HAVE_WAIT3)
 #include <sys/wait.h>
+#endif
 #include <time.h>
 #include "terms.h"
 #include "myctype.h"

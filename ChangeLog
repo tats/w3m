@@ -1,3 +1,10 @@
+2003-01-19  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 03654] file.c:image_source when undef USE_IMAGE
+	* file.c (readHeader): image_source ifdef USE_IMAGE
+		(loadGeneralFile): ditto
+		(uncompress_stream): ditto
+
 2003-01-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 03653] SourceForge.net: 576032 w3m https crashes with OpenSSL-0.9.7
@@ -6597,4 +6604,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.690 2003/01/18 18:40:32 ukai Exp $
+$Id: ChangeLog,v 1.691 2003/01/19 08:28:39 ukai Exp $

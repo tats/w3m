@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.192 2003/01/17 17:30:59 ukai Exp $ */
+/* $Id: file.c,v 1.193 2003/01/19 08:28:40 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -594,7 +594,11 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
     else
 	http_response_code = 0;
 
-    if (thru && !newBuf->header_source && !image_source) {
+    if (thru && !newBuf->header_source
+#ifdef USE_IMAGE
+		    && !image_source
+#endif
+		    ) {
 	Str tmpf = tmpfname(TMPF_DFL, NULL);
 	src = fopen(tmpf->ptr, "w");
 	if (src)
@@ -1899,8 +1903,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
   page_loaded:
     if (page) {
 	FILE *src;
+#ifdef USE_IMAGE
 	if (image_source)
 	    return NULL;
+#endif
 	tmp = tmpfname(TMPF_SRC, ".html");
 	src = fopen(tmp->ptr, "w");
 	if (src) {
@@ -7734,7 +7740,11 @@ uncompress_stream(URLFile *uf, char **src)
 	return;
     }
 
-    if (uf->scheme != SCM_LOCAL && !image_source) {
+    if (uf->scheme != SCM_LOCAL
+#ifdef USE_IMAGE
+		    && !image_source
+#endif
+		    ) {
 	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
 	if (save2tmp(*uf, tmpf) < 0) {
 	    UFclose(uf);

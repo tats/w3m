@@ -1,5 +1,15 @@
 2003-01-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03617] sourcefile when Content-Encoding: is specified.
+	* file.c (uncompress_stream): add src arg
+		(examineFile): change uncompress_stream
+		(loadGeneralFile): change uncompress_stream
+		(doExternal): src
+		(uncompress_stream): ext
+				tmpfile with same ext
+
+2003-01-09  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03616] Re: data: URL scheme
 	* file.c (loadGeneralFile): check SCM_DATA
 		(loadImageBuffer): newBuffer()
@@ -6218,4 +6228,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.659 2003/01/08 17:24:11 ukai Exp $
+$Id: ChangeLog,v 1.660 2003/01/08 17:32:36 ukai Exp $

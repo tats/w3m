@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.176 2003/01/08 17:24:12 ukai Exp $ */
+/* $Id: file.c,v 1.177 2003/01/08 17:32:54 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -30,7 +30,7 @@ static int frame_source = 0;
 
 static void FTPhalfclose(InputStream stream);
 static int _MoveFile(char *path1, char *path2);
-static void uncompress_stream(URLFile *uf);
+static void uncompress_stream(URLFile *uf, char **src);
 static FILE *lessopen_stream(char *path);
 static Buffer *loadcmdout(char *cmd,
 			  Buffer *(*loadproc) (URLFile *, Buffer *),
@@ -381,7 +381,7 @@ examineFile(char *path, URLFile *uf)
 	    char *t0 = uncompressed_file_type(path, &ext);
 	    uf->guess_type = t0;
 	    uf->ext = ext;
-	    uncompress_stream(uf);
+	    uncompress_stream(uf, NULL);
 	    return;
 	}
     }
@@ -1947,7 +1947,9 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (!(w3m_dump & DUMP_SOURCE) &&
 	    (w3m_dump & ~DUMP_FRAME || is_text_type(t)
 	     || searchExtViewer(t))) {
-	    uncompress_stream(&f);
+	    if (t_buf == NULL)
+		t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	    uncompress_stream(&f, &t_buf->sourcefile);
 	    uncompressed_file_type(pu.file, &f.ext);
 	}
 	else {
@@ -2029,7 +2031,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 
     if (flag & RG_FRAME) {
-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+	if (t_buf == NULL)
+	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	t_buf->bufferprop |= BP_FRAME;
     }
 #ifdef USE_SSL
@@ -7325,7 +7328,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     struct mailcap *mcap;
     int mc_stat;
     Buffer *buf = NULL;
-    char *header;
+    char *header, *src = NULL;
 
     if (!(mcap = searchExtViewer(type)))
 	return 0;
@@ -7387,6 +7390,11 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
 	    defaultbuf = newBuffer(INIT_BUFFER_WIDTH);
+	if (defaultbuf->sourcefile)
+	    src = defaultbuf->sourcefile;
+	else
+	    src = tmpf->ptr;
+	defaultbuf->sourcefile = NULL;
 	defaultbuf->mailcap = mcap;
     }
     if (mcap->flags & MAILCAP_HTMLOUTPUT) {
@@ -7394,7 +7402,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	if (buf && buf != NO_BUFFER) {
 	    buf->type = "text/html";
 	    buf->mailcap_source = buf->sourcefile;
-	    buf->sourcefile = tmpf->ptr;
+	    buf->sourcefile = src;
 	}
     }
     else if (mcap->flags & MAILCAP_COPIOUSOUTPUT) {
@@ -7402,7 +7410,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	if (buf && buf != NO_BUFFER) {
 	    buf->type = "text/plain";
 	    buf->mailcap_source = buf->sourcefile;
-	    buf->sourcefile = tmpf->ptr;
+	    buf->sourcefile = src;
 	}
     }
     else {
@@ -7737,13 +7745,14 @@ inputAnswer(char *prompt)
 }
 
 static void
-uncompress_stream(URLFile *uf)
+uncompress_stream(URLFile *uf, char **src)
 {
     int pid1;
     int fd1[2];
     char *expand_cmd = GUNZIP_CMDNAME;
     char *expand_name = GUNZIP_NAME;
     char *tmpf = NULL;
+    char *ext = NULL;
     struct compression_decoder *d;
 
     if (IStype(uf->stream) != IST_ENCODED) {
@@ -7757,6 +7766,7 @@ uncompress_stream(URLFile *uf)
 	    else
 		expand_cmd = d->cmd;
 	    expand_name = d->name;
+	    ext = d->ext;
 	    break;
 	}
     }
@@ -7767,8 +7777,8 @@ uncompress_stream(URLFile *uf)
 	return;
     }
 
-    if (uf->scheme != SCM_HTTP && uf->scheme != SCM_LOCAL) {
-	tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+    if (uf->scheme != SCM_LOCAL) {
+	tmpf = tmpfname(TMPF_DFL, ext)->ptr;
 	if (save2tmp(*uf, tmpf) < 0) {
 	    UFclose(uf);
 	    return;
@@ -7777,7 +7787,10 @@ uncompress_stream(URLFile *uf)
 	if (uf->scheme != SCM_FTP)
 #endif
 	    UFclose(uf);
-	uf->scheme = SCM_LOCAL;
+	if (src)
+	    *src = tmpf;
+	else
+	    uf->scheme = SCM_LOCAL;
 	pushText(fileToDelete, tmpf);
     }
 

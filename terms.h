@@ -1,4 +1,4 @@
-/* $Id: terms.h,v 1.3 2001/11/20 17:49:23 ukai Exp $ */
+/* $Id: terms.h,v 1.4 2001/11/22 15:02:17 ukai Exp $ */
 #ifndef TERMS_H
 #define TERMS_H
 
@@ -25,5 +25,19 @@ extern int LINES, COLS;
 #define STR_INNER_EUC	"EUC-JP (internal)"
 
 #define CODE_JIS(x) ((x)==CODE_JIS_n||(x)==CODE_JIS_m||(x)==CODE_JIS_N||(x)==CODE_JIS_j||(x)==CODE_JIS_J)
+
+#ifdef USE_MOUSE
+/* Addition:mouse event */
+#define MOUSE_BTN1_DOWN 0
+#define MOUSE_BTN2_DOWN 1
+#define MOUSE_BTN3_DOWN 2
+#define MOUSE_BTN4_DOWN_RXVT 3
+#define MOUSE_BTN5_DOWN_RXVT 4
+#define MOUSE_BTN4_DOWN_XTERM 64
+#define MOUSE_BTN5_DOWN_XTERM 65
+#define MOUSE_BTN_UP 3
+#define MOUSE_BTN_RESET -1
+#define MOUSE_SCROLL_LINE 5
+#endif
 
 #endif				/* not TERMS_H */

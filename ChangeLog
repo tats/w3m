@@ -1,3 +1,22 @@
+2001-11-22  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 02509] ([w3m-dev 02499] [w3m-dev 02508])
+	* terms.c (setlinescols): initialize LASTLINE 
+	* terms.c: add LASTLINE
+	* fm.h: extern int LASTLINE
+	* linein.c: remove defined(__CYGWIN__) && defined(JP_CHARSET)
+	* main.c: remove MOUSE_* definition
+	* terms.h: move MOUSE_* definition from main.c
+	* terms.c: add tty
+	* terms.c (check_win32_console): added
+	* terms.c (init_win32_console_handle): ditto
+	* terms.c (read_win32_console_input): ditto
+	* terms.c (read_win32_console): ditto
+	* terms.c (set_tty) add call init_win32_console
+	* terms.c (getch) use read_win32_console
+	* terms.c (mouse_init): check hConIn
+	* terms.c (mouse_end): ditto
+
 2001-11-22  aito@fw.ipsj.or.jp
 
 	* [w3m-dev 02503]

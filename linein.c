@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.5 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: linein.c,v 1.6 2001/11/22 15:02:17 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -15,13 +15,6 @@ extern int do_getch();
 
 #ifdef __EMX__
 #include <sys/kbdscan.h>
-#endif
-
-#if defined(__CYGWIN__) && defined(JP_CHARSET)
-#include <windows.h>
-static HANDLE hConIn;
-static int isWin95;
-int isWinConsole = FALSE;
 #endif
 
 #define STR_LEN	1024
@@ -88,80 +81,6 @@ static int in_kanji;
 static void ins_kanji(Str tmp);
 #endif
 
-#if defined(__CYGWIN__) && defined(JP_CHARSET)
-void
-check_win32_console(void)
-{
-    char *tty;
-
-    tty = ttyname(1);
-    if (!strncmp(tty, "/dev/con", 8)) {
-	isWinConsole = TRUE;
-    }
-    else {
-	isWinConsole = FALSE;
-    }
-}
-
-void
-init_win32_console_handle(void)
-{
-    OSVERSIONINFO winVersionInfo;
-
-    check_win32_console();
-    winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    if (GetVersionEx (&winVersionInfo) == 0) {
-        fprintf(stderr, "can't get Windows version information.\n");
-        exit(1);
-    }
-    if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
-        isWin95 = 1;
-    }
-    if (isWin95) {
-	if (isWinConsole) {
-	    if (isatty(0)) {
-		hConIn = GetStdHandle(STD_INPUT_HANDLE);
-	    }
-	    else {
-		hConIn = CreateFile("CONIN$", GENERIC_READ,
-			    FILE_SHARE_READ,
-			    NULL, OPEN_EXISTING,
-			    0, NULL);
-	    }
-	}
-    }
-}
-
-int test_ReadConsole() {
-    unsigned char buff[3];
-    DWORD p = 0;
-
-    return (ReadConsole(hConIn, buff, 1, &p, NULL) != 0);
-}
-
-char getch_Win95JP() {
-    static unsigned char buff[3];
-    static DWORD p = 0;
-    char c;
-    int i;
-
-    if (p == 0) {
-        if (ReadConsole(hConIn, buff, 1, &p, NULL) == 0) {
-            return getch();
-        }
-    }
-    if (p == 0) {
-        return getch();
-    }
-    c = buff[0];
-    for (i = 0; i < p-1; i++) {
-        buff[i] = buff[i+1];
-    }
-    p--;
-    return c;
-}
-#endif
-
 char *
 inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 {
@@ -222,13 +141,6 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
     cm_next = FALSE;
     cm_disp_next = -1;
     need_redraw = FALSE;
-#if defined(__CYGWIN__) && defined(JP_CHARSET)
-    if (isWin95 && (hConIn != INVALID_HANDLE_VALUE)) {
-	if (test_ReadConsole() == 0) {
-	    hConIn = INVALID_HANDLE_VALUE;
-	}
-    }
-#endif
     do {
 	x = calcPosition(strBuf->ptr, strProp, CLen, CPos, 0, CP_FORCE);
 	if (x - rpos > offset) {
@@ -254,16 +166,7 @@ inputLineHist(char *prompt, char *def_str, int flag, Hist * hist)
 	refresh();
 
     next_char:
-#if !defined(__CYGWIN__) || !defined(JP_CHARSET)
 	c = getch();
-#else
-    if (isWin95 && (hConIn != INVALID_HANDLE_VALUE)) {
-        c = getch_Win95JP();
-    }
-    else {
-           c = getch();
-    }
-#endif
 #ifdef __EMX__
 	if (c == 0) {
 	    if (!(c = getcntrl()))

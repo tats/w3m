@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.10 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: fm.h,v 1.11 2001/11/22 15:02:17 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -604,8 +604,7 @@ typedef struct http_request {
 
 extern int LINES, COLS;
 #if defined(__CYGWIN__) && LANG == JA
-extern int isWinConsole;
-#define LASTLINE (LINES-(isWinConsole ? 2 : 1))
+extern int LASTLINE;
 #else				/* not defined(__CYGWIN__) || LANG != JA */
 #define LASTLINE (LINES-1)
 #endif				/* not defined(__CYGWIN__) || LANG != JA */

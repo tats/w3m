@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.13 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: terms.c,v 1.14 2001/11/22 15:02:17 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -37,6 +37,8 @@ void mouse_init(), mouse_end();
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
 
+static int tty;
+
 #include "terms.h"
 #include "fm.h"
 #include "myctype.h"
@@ -49,6 +51,174 @@ int mouseActive = 0;
 extern int	CodePage;
 #endif				/* !JP_CHARSET */
 #endif				/* __EMX__ */
+
+#if defined(__CYGWIN__)
+#include <windows.h>
+static HANDLE hConIn;
+static int isWin95;
+static INPUT_RECORD *ConInV;
+static int iConIn, nConIn, nConInMax;
+#ifdef USE_MOUSE
+static char MouseConToXTerm[sizeof("\033[M !!") - sizeof("")];
+static int iMouseConToXTerm;
+static MOUSE_EVENT_RECORD lastConMouse;
+#endif
+
+void
+check_win32_console(void)
+{
+    char *tty;
+
+    tty = ttyname(1);
+    if (!strncmp(tty, "/dev/con", 8)) {
+	isWinConsole = TRUE;
+    }
+    else {
+	isWinConsole = FALSE;
+    }
+}
+
+void
+init_win32_console_handle(void)
+{
+    OSVERSIONINFO winVersionInfo;
+
+    check_win32_console();
+    winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    if (GetVersionEx (&winVersionInfo) == 0) {
+	fprintf(stderr, "can't get Windows version information.\n");
+	exit(1);
+    }
+    if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
+	isWin95 = 1;
+    }
+    hConIn = INVALID_HANDLE_VALUE;
+    if (isWin95) {
+	if (isWinConsole) {
+	    if (isatty(0)) {
+		hConIn = GetStdHandle(STD_INPUT_HANDLE);
+	    }
+	    else {
+		hConIn = CreateFile("CONIN$", GENERIC_READ,
+			    FILE_SHARE_READ,
+			    NULL, OPEN_EXISTING,
+			    0, NULL);
+	    }
+	}
+    }
+}
+
+static int
+read_win32_console_input(void)
+{
+   INPUT_RECORD *p;
+   DWORD nevents;
+
+   if (nConIn >= nConInMax) {
+	INPUT_RECORD *oldv;
+
+	nConInMax = (nConInMax / 2 + 1) * 3;
+	oldv = ConInV;
+	ConInV = GC_MALLOC_ATOMIC(sizeof(ConInV[0]) * nConInMax);
+	memcpy(ConInV, oldv, sizeof(ConInV[0]) * nConIn);
+    }
+
+    p = &ConInV[nConIn];
+
+    if (ReadConsoleInput(hConIn, p, 1, &nevents) && nevents) {
+	switch (p->EventType) {
+	case KEY_EVENT:
+	    if (p->Event.KeyEvent.bKeyDown 
+		|| !p->Event.KeyEvent.uChar.AsciiChar)
+		    break;
+#ifdef USE_MOUSE
+	event_found:
+#endif
+	    ++nConIn;
+	    return 1;
+#ifdef USE_MOUSE
+	case MOUSE_EVENT:
+	    if (mouseActive && p->Event.MouseEvent.dwButtonState & ~(~0 << 5))
+		goto event_found;
+#endif
+	default:
+	    break;
+	}
+    }
+    return 0;
+}
+
+int
+read_win32_console(char *s, int n)
+{
+    int i;
+    KEY_EVENT_RECORD *ker;
+#ifdef USE_MOUSE
+    int down, btn;
+    MOUSE_EVENT_RECORD *mer;
+#endif
+
+    if (hConIn == INVALID_HANDLE_VALUE)
+	return read(tty, s, n);
+
+    for (i = 0 ; i < n ;)
+#ifdef USE_MOUSE
+	if (iMouseConToXTerm) {
+	    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
+
+	    if (iMouseConToXTerm >= sizeof(MouseConToXTerm))
+		iMouseConToXTerm = 0;
+	}
+	else
+#endif
+	    if (iConIn < nConIn)
+		switch (ConInV[iConIn].EventType) {
+#ifdef USE_MOUSE
+		case MOUSE_EVENT:
+		    if (mouseActive) {
+			mer = &ConInV[iConIn++].Event.MouseEvent;
+			MouseConToXTerm[0] = '\033';
+			MouseConToXTerm[1] = '[';
+			MouseConToXTerm[2] = 'M';
+			MouseConToXTerm[4] = mer->dwMousePosition.X + '!';
+			MouseConToXTerm[5] = mer->dwMousePosition.Y + '!';
+			if (~(mer->dwButtonState) & lastConMouse.dwButtonState)
+			    MouseConToXTerm[3] = MOUSE_BTN_UP + ' ';
+			else if (!(down = mer->dwButtonState & ~lastConMouse.dwButtonState & ~(~0 << 5))) {
+			    lastConMouse = *mer;
+			    break;
+			}
+			else
+			    MouseConToXTerm[3] = (down & (1 << 0) ? MOUSE_BTN1_DOWN :
+				down & (1 << 1) ? MOUSE_BTN3_DOWN :
+				down & (1 << 2) ? MOUSE_BTN2_DOWN :
+				down & (1 << 3) ? MOUSE_BTN4_DOWN_XTERM :
+				MOUSE_BTN5_DOWN_XTERM) + ' ';
+
+			s[i++] = MouseConToXTerm[iMouseConToXTerm++];
+			lastConMouse = *mer;
+		    }
+		    else
+		        ++iConIn;
+		    break;
+#endif
+		default:
+		    s[i++] = ConInV[iConIn++].Event.KeyEvent.uChar.AsciiChar;
+		    break;
+		}
+	    else {
+		iConIn = nConIn = 0;
+
+		if (!read_win32_console_input())
+		    break;
+	    }
+
+    if (iConIn >= nConIn)
+	iConIn = nConIn = 0;
+
+    return i;
+}
+#endif
 
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
@@ -182,6 +352,9 @@ char *T_cd, *T_ce, *T_kr, *T_kl, *T_cr, *T_bt, *T_ta, *T_sc, *T_rc,
 *T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
 
 int LINES, COLS;
+#if defined(CYGWIN) && LANG == JA
+int LASTLINE;
+#endif				/* defined(CYGWIN) && LANG == JA */
 static int max_LINES = 0, max_COLS = 0;
 static int tab_step = 8;
 static int CurLine, CurColumn;
@@ -239,6 +412,9 @@ set_tty(void)
 	tty = 2;
     }
     ttyf = fdopen(tty, "w");
+#ifdef __CYGWIN__
+    init_win32_console_handle();
+#endif
     TerminalGet(tty, &d_ioval);
 #ifdef USE_MOUSE
     {
@@ -529,6 +705,9 @@ setlinescols(void)
 	COLS = MAX_COLUMN;
     if (LINES > MAX_LINE)
 	LINES = MAX_LINE;
+#if defined(CYGWIN) && LANG == JA
+    LASTLINE = LINES - (isWinConsole ? 2 : 1);
+#endif				/* defined(CYGWIN) && LANG == JA */
 }
 
 void
@@ -1567,7 +1746,13 @@ getch(void)
 {
     char c;
 
-    while (read(tty, &c, 1) < (int)1) {
+    while (
+#ifdef __CYGWIN__
+	    read_win32_console(&c, 1)
+#else
+	    read(tty, &c, 1)
+#endif
+	    < (int)1) {
         if (errno == EINTR || errno == EAGAIN) continue;
         /* error happend on read(2) */
         quitfm();
@@ -1825,7 +2010,11 @@ mouse_init()
 {
     if (mouseActive)
 	return;
-    if (is_xterm) {
+    if (is_xterm
+#ifdef __CYGWIN__
+	&& hConIn == INVALID_HANDLE_VALUE
+#endif
+	    ) {
 	XTERM_ON;
     }
     mouseActive = 1;
@@ -1836,7 +2025,11 @@ mouse_end()
 {
     if (mouseActive == 0)
 	return;
-    if (is_xterm) {
+    if (is_xterm
+#ifdef __CYGWIN__
+	&& hConIn == INVALID_HANDLE_VALUE
+#endif
+	    ) {
 	XTERM_OFF;
     }
     mouseActive = 0;

@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.28 2003/03/05 18:19:17 ukai Exp $ */
+/* $Id: search.c,v 1.29 2003/03/05 18:56:30 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <signal.h>
@@ -107,7 +107,7 @@ forwardSearch(Buffer *buf, char *str)
     if (l == NULL) {
 	return SR_NOTFOUND;
     }
-    pos = buf->pos + 1;
+    pos = buf->pos;
     if (l->bpos) {
 	pos += l->bpos;
 	while (l->bpos && l->prev)

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.216 2003/03/05 18:19:15 ukai Exp $ */
+/* $Id: main.c,v 1.217 2003/03/05 18:56:28 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1603,7 +1603,6 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
     if (ch == 0 && buf == NULL) {
 	SAVE_BUFPOSITION(&sbuf);	/* search starting point */
 	currentLine = sbuf.currentLine;
-	sbuf.pos -= 1; /* XXX start from current position */
 	pos = sbuf.pos;
 	return -1;
     }
@@ -1632,12 +1631,16 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
 
     if (do_next_search) {
 	if (*str) {
+	    if (searchRoutine == forwardSearch)
+		Currentbuf->pos += 1;
 	    SAVE_BUFPOSITION(&sbuf);
 	    srchcore(str, searchRoutine);
 	    arrangeCursor(Currentbuf);
 	    if (Currentbuf->currentLine == currentLine
 		&& Currentbuf->pos == pos) {
 		SAVE_BUFPOSITION(&sbuf);
+		if (searchRoutine == forwardSearch)
+		    Currentbuf->pos += 1;
 		srchcore(str, searchRoutine);
 		arrangeCursor(Currentbuf);
 	    }
@@ -1692,6 +1695,7 @@ srch(int (*func) (Buffer *, char *), char *prompt)
     char *str;
     int result;
     int disp = FALSE;
+    int pos;
 
     str = searchKeyData();
     if (str == NULL || *str == '\0') {
@@ -1704,9 +1708,14 @@ srch(int (*func) (Buffer *, char *), char *prompt)
 	}
 	disp = TRUE;
     }
+    pos = Currentbuf->pos;
+    if (func == forwardSearch)
+	Currentbuf->pos += 1;
     result = srchcore(str, func);
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);
+    else
+	Currentbuf->pos = pos;
     displayBuffer(Currentbuf, B_NORMAL);
     if (disp)
 	disp_srchresult(result, prompt, str);
@@ -1759,6 +1768,8 @@ srch_nxtprv(int reverse)
 	reverse = 1;
     if (searchRoutine == backwardSearch)
 	reverse ^= 1;
+    if (reverse == 0)
+	Currentbuf->pos += 1;
     result = srchcore(SearchString, routine[reverse]);
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);

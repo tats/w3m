@@ -1,5 +1,11 @@
 2002-02-05  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02990]
+	* file.c (doFileCopy): use Strfgets() instead of fgets()
+	* file.c (doFileSave): ditto
+
+2002-02-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 02989]
 	* file.c (inputAnswer): use Strfgets() instead of fgets()
 
@@ -2799,4 +2805,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.300 2002/02/05 03:45:33 ukai Exp $
+$Id: ChangeLog,v 1.301 2002/02/05 11:58:03 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.64 2002/02/05 03:45:33 ukai Exp $ */
+/* $Id: file.c,v 1.65 2002/02/05 11:58:04 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6818,7 +6818,7 @@ void
 doFileCopy(char *tmpf, char *defstr)
 {
     Str msg;
-    char filen[256];
+    Str filen;
     char *p, *q;
 
     if (fmInitialized) {
@@ -6850,10 +6850,10 @@ doFileCopy(char *tmpf, char *defstr)
 	if (q == NULL || *q == '\0') {
 	    printf("(Download)Save file to: ");
 	    fflush(stdout);
-	    p = fgets(filen, sizeof(filen), stdin);
-	    if (p == NULL || filen[0] == '\0')
+	    filen = Strfgets(stdin);
+	    if (filen->length == 0)
 		return;
-	    q = filen;
+	    q = filen->ptr;
 	}
 	for (p = q + strlen(q) - 1; IS_SPACE(*p); p--) ;
 	*(p + 1) = '\0';
@@ -6886,7 +6886,7 @@ void
 doFileSave(URLFile uf, char *defstr)
 {
     Str msg;
-    char filen[256];
+    Str filen;
     char *p, *q;
 
     if (fmInitialized) {
@@ -6915,10 +6915,10 @@ doFileSave(URLFile uf, char *defstr)
 	if (q == NULL || *q == '\0') {
 	    printf("(Download)Save file to: ");
 	    fflush(stdout);
-	    p = fgets(filen, sizeof(filen), stdin);
-	    if (p == NULL || filen[0] == '\0')
+	    filen = Strfgets(stdin);
+	    if (filen->length == 0)
 		return;
-	    q = filen;
+	    q = filen->ptr;
 	}
 	for (p = q + strlen(q) - 1; IS_SPACE(*p); p--) ;
 	*(p + 1) = '\0';

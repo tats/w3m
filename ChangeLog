@@ -1,3 +1,7 @@
+2001-12-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* linein.c (next_dcompl): fix ifdef EMACS_LIKE_LINEEDIT
+
 2001-12-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02640]
@@ -1086,4 +1090,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.113 2001/12/07 07:24:22 ukai Exp $
+$Id: ChangeLog,v 1.114 2001/12/07 08:01:33 ukai Exp $

@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.15 2001/12/07 07:58:07 ukai Exp $ */
+/* $Id: linein.c,v 1.16 2001/12/07 08:01:33 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -848,9 +848,8 @@ next_dcompl(int next)
 	if (emacs_like_lineedit)
 	    addstr("----- Press TAB to continue -----");
 	else
-#else
-	addstr("----- Press CTRL-D to continue -----");
 #endif
+	    addstr("----- Press CTRL-D to continue -----");
 	boldend();
     }
 }

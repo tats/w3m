@@ -77,12 +77,24 @@ w3m でインライン画像を表示
 
 必要なもの
 
-  * w3m-0.2.5+cvs-1.287 以上
-    http://w3m.sourceforge.net/
-    http://sourceforge.net/projects/w3m/
-    http://prdownloads.sourceforge.net/w3m/
-  * Imlib-1.9.8 (1.9.10 以上推奨)
-    libungif-4.1.0b1 推奨
+  * Imlib-1.9.8以上 (1.9.10 以上推奨)
+    ftp://ftp.gnome.org/pub/GNOME/stable/sources/imlib/
+  * libungif-4.1.0b1 以上
+    ftp://prtr-13.ucsc.edu/pub/libungif/
+    http://prtr-13.ucsc.edu/~badger/software/libungif/
+
+  以下は Imlib のインストールに必要
+  * libjpeg
+    ftp://ftp.uu.net/graphics/jpeg/
+  * libpng
+    http://www.libpng.org/pub/png/libpng.html
+    http://libpng.sourceforge.net/
+  * libtiff
+    http://www.libtiff.org/
+  * zlib-1.1.4
+    http://www.gzip.org/zlib/
+  * netpbm
+    http://netpbm.sourceforge.net/
 
 w3mimgdisplay の設定
 

@@ -1,3 +1,11 @@
+2002-07-10  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 03240] doc-jp update
+	* doc-jp/MANUAL.html: update
+	* doc-jp/README: update
+	* doc-jp/README.SSL: update
+	* doc-jp/README.img: update
+
 2002-07-10  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* gc/: import gc6.1alpha5
@@ -3528,4 +3536,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.396 2002/07/10 14:21:42 ukai Exp $
+$Id: ChangeLog,v 1.397 2002/07/10 14:28:09 ukai Exp $

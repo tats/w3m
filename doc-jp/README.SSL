@@ -5,7 +5,7 @@ SSL サポートについて
                                                          (2001/12/27)  鵜飼文敏
                                                               ukai@debian.or.jp
 
- ・ SSLeay/OpenSSL ライブラリを通じて, SSL をサポートしています.
+ ・ OpenSSL ライブラリを通じて, SSL をサポートしています.
     あらかじめインストールしておいてください.
    
  ・ configure スクリプト実行時, "5 - Monster model" または "6 - Customize" を選
@@ -18,11 +18,14 @@ SSL サポートについて
     フラグに '-I(SSLeay/OpenSSL のヘッダがあるディレクトリ)' があるか確認してく
     ださい.
    
-    SSL サポートが有効になっているかどうかは, Option Setting Panel で確認できま
-    す.
+    SSL サポートが有効になっているかどうかは, Option Setting Panel に「SSLの設
+    定」が含まれているかどうかで確認できます.
    
  ・ SSL に関して以下の設定が可能になってます:
 
+    ssl_forbid_method
+        使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1)
+        (デフォルトは<NULL>).
     ssl_verify_server ON/OFF
         SSLのサーバ認証を行う(デフォルトはOFF).
     ssl_cert_file ファイル名
@@ -62,8 +65,14 @@ SSL サポートについて
  ・ バージョン 0.9.5 以降の OpenSSL ライブラリは, 乱数を初期化するために幾つか
     のシードを設定する必要があります.
     デフォルトでは /dev/urandom があればそれを利用しますが, 無ければ w3m 内部
-    で生成します. もし, EGD (Entropy Gathering Daemon) が利用できる環境でこれ
-    を使いたい場合は, USE_EGD マクロをチェックしてみてください.
+    で生成します. もし, EGD (Entropy Gathering Daemon) または PRNGD (Pseudo
+    Random Number Generator Daemon) が利用できる環境でこれを使いたい場合は,
+    USE_EGD マクロをチェックしてみてください.
+
+ ・ URL
+
+    OpenSSL - http://www.openssl.org/
+    PRNGD - http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html
 
 ----------------------------------------------------------------
 #!/usr/bin/ruby

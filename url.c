@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.60 2002/12/14 16:09:51 ukai Exp $ */
+/* $Id: url.c,v 1.61 2002/12/27 16:07:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -54,6 +54,7 @@ static int
     0,				/* exec - not defined? */
     119,			/* nntp */
     119,			/* news */
+    119,			/* news group */
     0,				/* mailto - not defined */
 #ifdef USE_SSL
     443,			/* https */
@@ -69,6 +70,7 @@ struct cmdtable schemetable[] = {
     /*  {"exec", SCM_EXEC}, */
     {"nntp", SCM_NNTP},
     {"news", SCM_NEWS},
+    /*  {"news", SCM_NEWS_GROUP}, */
 #ifndef USE_W3MMAILER
     {"mailto", SCM_MAILTO},
 #endif
@@ -969,6 +971,11 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     if (pu->scheme == SCM_MAILTO)
 	return;
 #endif
+    if (pu->scheme == SCM_NEWS) {
+	if (pu->file && !strchr(pu->file, '@'))
+	    pu->scheme = SCM_NEWS_GROUP;
+	return;
+    }
     if (pu->scheme == SCM_LOCAL)
 	pu->file = expandName(pu->file);
 
@@ -989,7 +996,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 		   pu->scheme != SCM_GOPHER &&
 #endif				/* USE_GOPHER */
 #ifdef USE_NNTP
-		   pu->scheme != SCM_NEWS &&
+		   pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
 #endif				/* USE_NNTP */
 		   pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
@@ -1070,7 +1077,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 		    pu->scheme != SCM_GOPHER &&
 #endif				/* USE_GOPHER */
 #ifdef USE_NNTP
-		    pu->scheme != SCM_NEWS &&
+		    pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
 #endif				/* USE_NNTP */
 		    pu->file[0] == '/') {
 	    /*
@@ -1102,7 +1109,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     Str tmp;
     static char *scheme_str[] = {
 	"http", "gopher", "ftp", "ftp", "file", "file", "exec", "nntp", "news",
-	"mailto",
+	"news", "mailto",
 #ifdef USE_SSL
 	"https",
 #endif				/* USE_SSL */
@@ -1139,7 +1146,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     }
 #endif
 #ifdef USE_NNTP
-    if (pu->scheme != SCM_NEWS)
+    if (pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP)
 #endif				/* USE_NNTP */
     {
 	Strcat_charp(tmp, "//");
@@ -1161,7 +1168,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     }
     if (
 #ifdef USE_NNTP
-	   pu->scheme != SCM_NEWS &&
+	   pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
 #endif				/* USE_NNTP */
 	   (pu->file == NULL || (pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
@@ -1766,80 +1773,14 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     case SCM_NNTP:
 	/* nntp://<host>:<port>/<newsgroup-name>/<article-number> */
     case SCM_NEWS:
-        /* news:<newsgroup-name> XXX: not yet */
         /* news:<unique>@<full_domain_name> */
-	if (pu->scheme == SCM_NNTP) {
-	    p = pu->host;
-	}
-	else {
-	    p = getenv("NNTPSERVER");
-	}
-	r = getenv("NNTPMODE");
-	if (p == NULL)
-	    return uf;
-	sock = openSocket(p, "nntp", pu->port);
-	if (sock < 0)
-	    return uf;
-	stream = newInputStream(sock);
-	fw = fdopen(sock, "wb");
-	if (stream == NULL || fw == NULL)
-	    return uf;
-	tmp = StrISgets(stream);
-	if (tmp->length == 0)
-	    goto nntp_error;
-	sscanf(tmp->ptr, "%d", &i);
-	if (i != 200 && i != 201)
-	    goto nntp_error;
-	if (r && *r != '\0') {
-	    fprintf(fw, "MODE %s\r\n", r);
-	    fflush(fw);
-	    tmp = StrISgets(stream);
-	    if (tmp->length == 0)
-		goto nntp_error;
-	    sscanf(tmp->ptr, "%d", &i);
-	    if (i != 200 && i != 201)
-		goto nntp_error;
-	}
-	if (pu->scheme == SCM_NNTP) {
-	    char *group;
-	    if (pu->file == NULL || *pu->file == '\0')
-		goto nntp_error;
-	    /* first char of pu->file is '/' */
-	    group = url_unquote(Strnew_charp(pu->file + 1)->ptr);
-	    p = strchr(group, '/');
-	    if (p == NULL)
-		goto nntp_error;
-	    *p++ = '\0';
-	    fprintf(fw, "GROUP %s\r\n", group);
-	    fflush(fw);
-	    tmp = StrISgets(stream);
-	    if (tmp->length == 0) {
-		goto nntp_error;
-	    }
-	    sscanf(tmp->ptr, "%d", &i);
-	    if (i != 211)
-		goto nntp_error;
-	    fprintf(fw, "ARTICLE %s\r\n", p);
-	}
-	else {
-	    if (pu->file == NULL || *pu->file == '\0')
-		goto nntp_error;
-	    /* pu-file contains '@' => news:<message-id> */
-	    fprintf(fw, "ARTICLE <%s>\r\n", url_unquote(pu->file));
-	}
-	fflush(fw);
-	tmp = StrISgets(stream);
-	if (tmp->length == 0)
-	    goto nntp_error;
-	sscanf(tmp->ptr, "%d", &i);
-	if (i != 220)
-	    goto nntp_error;
-	uf.scheme = SCM_NEWS;	/* XXX */
-	uf.stream = stream;
-	return uf;
-      nntp_error:
-	ISclose(stream);
-	fclose(fw);
+    case SCM_NEWS_GROUP:
+        /* news:<newsgroup-name> */
+	uf.stream = openNewsStream(pu);
+	if (uf.stream)
+	    uf.scheme = SCM_NEWS;	/* XXX */
+	else
+	    uf.scheme = pu->scheme;
 	return uf;
 #endif				/* USE_NNTP */
     case SCM_UNKNOWN:

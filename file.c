@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.171 2002/12/26 15:25:04 ukai Exp $ */
+/* $Id: file.c,v 1.172 2002/12/27 16:07:44 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -222,7 +222,8 @@ loadSomething(URLFile *f,
     buf->real_scheme = f->scheme;
     if (f->scheme == SCM_LOCAL && buf->sourcefile == NULL)
 	buf->sourcefile = path;
-    UFclose(f);
+    if (f->scheme != SCM_NNTP && f->scheme != SCM_NEWS)
+	UFclose(f);
     return buf;
 }
 
@@ -577,6 +578,10 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    newBuf->header_source = tmpf->ptr;
     }
     while ((tmp = StrmyUFgets(uf))->length) {
+#ifdef USE_NNTP
+	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
+	    Strshrinkfirst(tmp, 1);
+#endif
 #ifdef HTTP_DEBUG
 	{
 	    FILE *ff;
@@ -588,13 +593,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if (src)
 	    Strfputs(tmp, src);
 	cleanup_line(tmp, HEADER_MODE);
-	if ((tmp->ptr[0] == '\n' || tmp->ptr[0] == '\r' || tmp->ptr[0] == '\0')
-#ifdef USE_NNTP
-	    ||
-	    (uf->scheme == SCM_NEWS &&
-	     Str_news_endline(tmp) && (iseos(uf->stream) = TRUE))
-#endif				/* USE_NNTP */
-	    ) {
+	if (tmp->ptr[0] == '\n' || tmp->ptr[0] == '\r' || tmp->ptr[0] == '\0') {
 	    if (!lineBuf2)
 		/* there is no header */
 		break;
@@ -651,7 +650,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		if (tmpf) {
 		    src =
 			Sprintf
-			("<img src=\"%s\" alt=\"X-Face\" width=48 height=48>",
+			("<img src=\"file:%s\" alt=\"X-Face\" width=48 height=48>",
 			 html_quote(tmpf));
 		    init_stream(&f, SCM_LOCAL, newStrStream(src));
 		    loadHTMLstream(&f, newBuf, NULL, TRUE);
@@ -1580,6 +1579,34 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		}
 	    }
 	    break;
+#ifdef USE_NNTP
+	case SCM_NEWS_GROUP:
+	    {
+		Str group = readNewsgroup(&pu);
+		if (group && group->length > 0) {
+		    FILE *src;
+		    tmp = tmpfname(TMPF_SRC, ".html");
+		    pushText(fileToDelete, tmp->ptr);
+		    src = fopen(tmp->ptr, "w");
+		    if (src) {
+			Strfputs(group, src);
+			fclose(src);
+		    }
+		    b = loadHTMLString(group);
+		    if (b) {
+			b->real_type = "news:group";
+			if (b->currentURL.host == NULL
+			    && b->currentURL.file == NULL)
+			    copyParsedURL(&b->currentURL, &pu);
+			b->real_scheme = pu.scheme;
+			if (src)
+			    b->sourcefile = tmp->ptr;
+		    }
+		    return b;
+		}
+	    }
+	    break;
+#endif
 	case SCM_UNKNOWN:
 #ifdef USE_EXTERNAL_URI_LOADER
 	    tmp = searchURIMethods(&pu);
@@ -1905,7 +1932,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	doFileSave(f, file);
 	if (f.scheme == SCM_FTP)
 	    FTPhalfclose(f.stream);
-	else
+	else if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
 	    UFclose(&f);
 	return NO_BUFFER;
     }
@@ -1965,7 +1992,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 		    copyParsedURL(&b->currentURL, &pu);
 	    }
-	    UFclose(&f);
+	    if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
+		UFclose(&f);
 	    if (fmInitialized)
 		term_raw();
 	    signal(SIGINT, prevtrap);
@@ -1987,7 +2015,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		doFileSave(f, guess_save_name(t_buf, pu.file));
 		if (f.scheme == SCM_FTP)
 		    FTPhalfclose(f.stream);
-		else
+		else if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
 		    UFclose(&f);
 	    }
 	    return NO_BUFFER;
@@ -2005,7 +2033,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     frame_source = flag & RG_FRAME_SRC;
     b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
     frame_source = 0;
-    UFclose(&f);
+    if (f.scheme != SCM_NNTP && f.scheme != SCM_NEWS)
+        UFclose(&f);
     if (b) {
 	b->real_scheme = f.scheme;
 	b->real_type = real_type;
@@ -6343,6 +6372,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     clen_t linelen = 0;
     clen_t trbyte = 0;
     Str lineBuf2 = Strnew();
+    char *p;
     char code;
     struct html_feed_environ htmlenv1;
     struct readbuffer obuf;
@@ -6424,6 +6454,18 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     if (IStype(f->stream) != IST_ENCODED)
 	f->stream = newEncodedStream(f->stream, f->encoding);
     while ((lineBuf2 = StrmyUFgets(f))->length) {
+#ifdef USE_NNTP
+	if (f->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
+	    Strshrinkfirst(lineBuf2, 1);
+	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
+	        lineBuf2->ptr[0] == '\0') {
+/*
+		iseos(f->stream) = TRUE;
+*/
+		break;
+	    }
+	}
+#endif				/* USE_NNTP */
 	if (src)
 	    Strfputs(lineBuf2, src);
 	linelen += lineBuf2->length;
@@ -6453,14 +6495,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
 #endif
 	}
-#ifdef USE_NNTP
-	if (f->scheme == SCM_NEWS) {
-	    if (Str_news_endline(lineBuf2)) {
-		iseos(f->stream) = TRUE;
-		break;
-	    }
-	}
-#endif				/* USE_NNTP */
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
     }
     if (obuf.status != R_ST_NORMAL) {
@@ -6725,6 +6759,18 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
     while ((lineBuf2 = StrmyISgets(uf->stream))->length) {
+#ifdef USE_NNTP
+	if (uf->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
+	    Strshrinkfirst(lineBuf2, 1);
+	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
+	        lineBuf2->ptr[0] == '\0') {
+/*
+		iseos(uf->stream) = TRUE;
+*/
+		break;
+	    }
+	}
+#endif				/* USE_NNTP */
 	if (src)
 	    Strfputs(lineBuf2, src);
 	linelen += lineBuf2->length;
@@ -6742,14 +6788,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	    pre_lbuf = lineBuf2->ptr[0];
 	}
 	++nlines;
-#ifdef USE_NNTP
-	if (uf->scheme == SCM_NEWS) {
-	    if (Str_news_endline(lineBuf2)) {
-		iseos(uf->stream) = TRUE;
-		break;
-	    }
-	}
-#endif				/* USE_NNTP */
 	Strchop(lineBuf2);
 	lineBuf2 = checkType(lineBuf2, propBuffer,
 #ifdef USE_ANSI_COLOR

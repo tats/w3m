@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.73 2002/12/24 17:20:48 ukai Exp $ */
+/* $Id: rc.c,v 1.74 2002/12/27 16:07:44 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -106,6 +106,11 @@ static char *config_file = NULL;
 #define CMT_NO_PROXY     "プロキシから除外するドメイン"
 #define CMT_NOPROXY_NETADDR	"ネットワークアドレスでプロキシ除外のチェック"
 #define CMT_NO_CACHE     "Cache を使わない"
+#ifdef USE_NNTP
+#define CMT_NNTP_SERVER  "News サーバ"
+#define CMT_NNTP_MODE    "News サーバのモード"
+#define CMT_MAX_NEWS     "News を一覧表示する時の数"
+#endif
 #define CMT_DNS_ORDER	"名前解決の順序"
 #define CMT_DROOT        "/ で表されるディレクトリ(document root)"
 #define CMT_PDROOT       "/~user で表されるディレクトリ"
@@ -264,6 +269,11 @@ static char *config_file = NULL;
 #define CMT_NO_PROXY     "Domains to be accessed directly (no proxy)"
 #define CMT_NOPROXY_NETADDR	"Check noproxy by network address"
 #define CMT_NO_CACHE     "Disable cache"
+#ifdef USE_NNTP
+#define CMT_NNTP_SERVER  "News server"
+#define CMT_NNTP_MODE    "Mode of news server"
+#define CMT_MAX_NEWS     "Number of news messages"
+#endif
 #define CMT_DNS_ORDER	"Order of name resolution"
 #define CMT_DROOT        "Directory corresponding to / (document root)"
 #define CMT_PDROOT       "Directory corresponding to /~user"
@@ -783,6 +793,12 @@ struct param_ptr params9[] = {
     {"dns_order", P_INT, PI_SEL_C, (void *)&DNS_order, CMT_DNS_ORDER,
      dnsorders},
 #endif				/* INET6 */
+#ifdef USE_NNTP
+    {"nntpserver", P_STRING, PI_TEXT, (void *)&NNTP_server, CMT_NNTP_SERVER,
+     NULL},
+    {"nntpmode", P_STRING, PI_TEXT, (void *)&NNTP_mode, CMT_NNTP_MODE, NULL},
+    {"max_news", P_INT, PI_TEXT, (void *)&MaxNewsMessage, CMT_MAX_NEWS, NULL},
+#endif
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 

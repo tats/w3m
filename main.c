@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.182 2002/12/27 15:50:33 ukai Exp $ */
+/* $Id: main.c,v 1.183 2002/12/27 16:07:44 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -445,6 +445,12 @@ main(int argc, char **argv, char **envp)
 	((p = getenv("NO_PROXY")) ||
 	 (p = getenv("no_proxy")) || (p = getenv("NO_proxy"))))
 	NO_proxy = p;
+#ifdef USE_NNTP
+    if (!non_null(NNTP_server) && (p = getenv("NNTPSERVER")) != NULL)
+	NNTP_server = p;
+    if (!non_null(NNTP_mode) && (p = getenv("NNTPMODE")) != NULL)
+	NNTP_mode = p;
+#endif
 
     if (!non_null(Editor) && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
@@ -871,6 +877,7 @@ main(int argc, char **argv, char **envp)
 #ifdef USE_NNTP
 	    case SCM_NNTP:
 	    case SCM_NEWS:
+	    case SCM_NEWS_GROUP:
 #endif				/* USE_NNTP */
 	    case SCM_MAILTO:
 		break;
@@ -2869,7 +2876,7 @@ followA(void)
 	pushHashHist(URLHist, a->url);
 	return;
     }
-#ifdef USE_NNTP
+#if 0
     else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
 	/* news:newsgroup is not supported */
 	disp_err_message("news:newsgroup_name is not supported", TRUE);
@@ -3824,7 +3831,7 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer)
 	pushHashHist(URLHist, url);
 	return;
     }
-#ifdef USE_NNTP
+#if 0
     if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
 	/* news:newsgroup is not supported */
 	disp_err_message("news:newsgroup_name is not supported", TRUE);
@@ -5449,6 +5456,9 @@ w3m_exit(int i)
     deleteFiles();
 #ifdef USE_SSL
     free_ssl_ctx();
+#endif
+#ifdef USE_NNTP
+    disconnectNews();
 #endif
     exit(i);
 }

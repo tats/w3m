@@ -1,3 +1,8 @@
+2002-07-19  Hideyuki SHIRAI <shirai@rdmg.mgcs.mei.co.jp>
+
+	* [w3m-dev 03277] compile error on Solaris7
+	* w3mimg/w3mimg.c: include <stdio.h> for NULL
+
 2002-07-19  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03276] compile error on EWS4800
@@ -3622,4 +3627,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.410 2002/07/19 03:24:28 ukai Exp $
+$Id: ChangeLog,v 1.411 2002/07/19 03:25:56 ukai Exp $

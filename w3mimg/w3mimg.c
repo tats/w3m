@@ -1,5 +1,6 @@
-/* $Id: w3mimg.c,v 1.3 2002/07/19 03:24:28 ukai Exp $ */
+/* $Id: w3mimg.c,v 1.4 2002/07/19 03:25:56 ukai Exp $ */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include "w3mimg/w3mimg.h"
 

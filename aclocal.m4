@@ -151,7 +151,8 @@ AC_SUBST(DISPLAY_CODE)
 AC_SUBST(SYSTEM_CODE)
 AC_MSG_CHECKING(if japanese support is enabled)
 AC_ARG_ENABLE(japanese,
- [  --enable-japanese=CODE	support Japanese character sets, CODE=(S|E|j|N|n|m)],,
+ [  --enable-japanese=CODE	support Japanese character sets
+				CODE=(S|E|j|N|n|m)],,
  [enable_japanese="no"])
 AC_MSG_RESULT($enable_japanese)
 if test x"$enable_japanese" = xno; then
@@ -340,7 +341,7 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 AC_DEFUN([AC_W3M_TERMLIB],
 [AC_MSG_CHECKING(terminal library)
 AC_ARG_WITH(termlib,
- [  --with-termlib[=LIBS]	terminal library
+ [  --with-termlib[=LIBS]		terminal library
 				LIBS is space separated list of:
 				  terminfo mytinfo termcap ncurses curses],,
  [with_termlib="yes"])

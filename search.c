@@ -1,4 +1,4 @@
-/* $Id: search.c,v 1.10 2002/01/16 19:02:16 ukai Exp $ */
+/* $Id: search.c,v 1.11 2002/01/16 19:05:37 ukai Exp $ */
 #include "fm.h"
 #include "regex.h"
 #include <errno.h>
@@ -6,8 +6,8 @@
 static void
 set_mark(Line *l, int pos, int epos)
 {
-    for (; pos < epos && pos < l->len; pos++) 
-        l->propBuf[pos] |= PE_MARK;
+    for (; pos < epos && pos < l->len; pos++)
+	l->propBuf[pos] |= PE_MARK;
 }
 
 #ifdef USE_MIGEMO
@@ -53,13 +53,13 @@ open_migemo(char *migemo_command)
     migemor = fdopen(fdr[0], "r");
     migemow = fdopen(fdw[1], "w");
     return 1;
-err2:
+  err2:
     close(fdw[0]);
     close(fdw[1]);
-err1:
+  err1:
     close(fdr[0]);
     close(fdr[1]);
-err0:
+  err0:
     use_migemo = 0;
     return 0;
 }
@@ -72,11 +72,13 @@ migemostr(char *str)
 	if (open_migemo(migemo_command) == 0)
 	    return str;
     fprintf(migemow, "%s\n", str);
-again:
+  again:
     if (fflush(migemow) != 0) {
 	switch (errno) {
-	case EINTR: goto again;
-	default: goto err;
+	case EINTR:
+	    goto again;
+	default:
+	    goto err;
 	}
     }
     tmp = Strfgets(migemor);
@@ -84,7 +86,7 @@ again:
     if (tmp->length == 0)
 	goto err;
     return tmp->ptr;
-err:
+  err:
     /* XXX: backend migemo is not working? */
     init_migemo();
     use_migemo = 0;

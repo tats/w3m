@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.63 2002/01/16 19:02:15 ukai Exp $ */
+/* $Id: main.c,v 1.64 2002/01/16 19:05:37 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1444,7 +1444,7 @@ dispincsrch(int ch, Str buf)
 	    return -1;
 	}
 	else
-	    return 020;	/* _prev completion for C-s C-s */
+	    return 020;		/* _prev completion for C-s C-s */
     }
     else if (*str) {
 	RESTORE_BUFPOSITION(&sbuf);

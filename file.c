@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.4 2001/11/16 03:32:18 ukai Exp $ */
+/* $Id: file.c,v 1.5 2001/11/16 03:33:28 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4594,6 +4594,7 @@ loadHTMLBuffer(URLFile * f, Buffer * newBuf)
     if (newBuf->sourcefile == NULL &&
 	(f->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmp = tmpfname(TMPF_SRC, ".html");
+	pushText(fileToDelete, tmp->ptr);
 	src = fopen(tmp->ptr, "w");
 	if (src)
 	    newBuf->sourcefile = tmp->ptr;

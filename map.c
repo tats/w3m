@@ -1,4 +1,4 @@
-/* $Id: map.c,v 1.11 2002/11/06 15:07:40 ukai Exp $ */
+/* $Id: map.c,v 1.13 2002/11/13 15:51:39 ukai Exp $ */
 /*
  * client-side image maps
  */
@@ -64,7 +64,7 @@ nearestMapArea(MapList *ml, int x, int y)
     ListItem *al;
     MapArea *a;
     int i, l, n = 0, min = -1, limit = pixel_per_char * pixel_per_char
-				     + pixel_per_line * pixel_per_line;
+	+ pixel_per_line * pixel_per_line;
 
     if (!ml || !ml->area)
 	return n;
@@ -72,7 +72,7 @@ nearestMapArea(MapList *ml, int x, int y)
 	a = (MapArea *) al->ptr;
 	if (a) {
 	    l = (a->center_x - x) * (a->center_x - x)
-	      + (a->center_y - y) * (a->center_y - y);
+		+ (a->center_y - y) * (a->center_y - y);
 	    if ((min < 0 || l < min) && l < limit) {
 		n = i;
 		min = l;
@@ -271,7 +271,7 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
     for (i = 0, p = coords; (a->shape == SHAPE_POLY || i < a->ncoords) && *p;) {
 	while (IS_SPACE(*p))
 	    p++;
-	if (!IS_DIGIT(*p))
+	if (!IS_DIGIT(*p) && *p != '-' && *p != '+')
 	    break;
 	if (a->shape == SHAPE_POLY) {
 	    if (max <= i) {
@@ -282,6 +282,8 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 	}
 	a->coords[i] = (short)atoi(p);
 	i++;
+	if (*p == '-' || *p == '+')
+	    p++;
 	while (IS_DIGIT(*p))
 	    p++;
 	if (*p != ',' && !IS_SPACE(*p))
@@ -295,6 +297,7 @@ newMapArea(char *url, char *target, char *alt, char *shape, char *coords)
 	a->shape = SHAPE_UNKNOWN;
 	a->coords = NULL;
 	a->ncoords = 0;
+	return a;
     }
     if (a->shape == SHAPE_POLY) {
 	a->ncoords = a->ncoords / 2 * 2;

@@ -40,7 +40,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-gopher		enable GOPHER"
 ac_help="$ac_help
-  --enable-lynx			lynx style keybind"
+  --enable-keymap[=w3m|lynx]	default keybind style(w3m or lynx)"
 ac_help="$ac_help
   --with-editor=EDITOR		default editor (/usr/bin/vi)"
 ac_help="$ac_help
@@ -1597,34 +1597,34 @@ EOF
  echo "$ac_t""$enable_gopher" 1>&6
 
 
- w3m_keybind="w3m"
- echo $ac_n "checking lynx style keybind is used""... $ac_c" 1>&6
-echo "configure:1603: checking lynx style keybind is used" >&5
- # Check whether --enable-lynx or --disable-lynx was given.
-if test "${enable_lynx+set}" = set; then
-  enableval="$enable_lynx"
+ echo $ac_n "checking default keymap""... $ac_c" 1>&6
+echo "configure:1602: checking default keymap" >&5
+ # Check whether --enable-keymap or --disable-keymap was given.
+if test "${enable_keymap+set}" = set; then
+  enableval="$enable_keymap"
   :
 else
-  enable_lynx="no"
+  enable_keymap="w3m"
 fi
 
- echo "$ac_t""$enable_lynx" 1>&6
- if test x"$enable_lynx" = xyes; then
-  w3m_keybind="lynx"
-  KEYMAP_FILE="keybind_lynx"
- else
-  w3m_keybind="w3m"
-  KEYMAP_FILE="keybind"
- fi
+ echo "$ac_t""$enable_keymap" 1>&6
+ case x"$enable_keymap" in
+ xw3m)
+  KEYMAP_FILE="keybind";;
+ xlynx)
+  KEYMAP_FILE="keybind_lynx";;
+ *)
+  { echo "configure: error: keymap should be either w3m or lynx." 1>&2; exit 1; };;
+ esac
  
- HELP_FILE=w3mhelp-${w3m_keybind}_$w3m_lang.html
+ HELP_FILE=w3mhelp-${enable_keymap}_$w3m_lang.html
  cat >> confdefs.h <<EOF
 #define HELP_FILE "$HELP_FILE"
 EOF
 
  
  cat >> confdefs.h <<EOF
-#define KEYBIND $w3m_keybind
+#define KEYBIND $enable_keymap
 EOF
 
 

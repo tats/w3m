@@ -100,7 +100,7 @@ opt_enable_set "$use_history" history
 opt_enable_set "$use_digest_auth" digest-auth
 opt_enable_set "$use_nntp" nntp
 opt_enable_set "$use_gopher" gopher
-opt_enable_set "$use_lynx_key" lynx
+opt_enable_set "$use_lynx_key" keymap=lynx
 opt_with_set "$ded" editor
 opt_with_set "$dmail" mailer
 opt_with_set "$dbrowser" browser

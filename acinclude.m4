@@ -181,24 +181,24 @@ fi])
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_KEYMAP],
 [AC_SUBST(KEYMAP_FILE)
- w3m_keybind="w3m"
- AC_MSG_CHECKING(lynx style keybind is used)
- AC_ARG_ENABLE(lynx,
-  [  --enable-lynx			lynx style keybind],,
-  [enable_lynx="no"])
- AC_MSG_RESULT($enable_lynx)
- if test x"$enable_lynx" = xyes; then
-  w3m_keybind="lynx"
-  KEYMAP_FILE="keybind_lynx"
- else
-  w3m_keybind="w3m"
-  KEYMAP_FILE="keybind"
- fi
+ AC_MSG_CHECKING(default keymap)
+ AC_ARG_ENABLE(keymap,
+  [  --enable-keymap[=w3m|lynx]	default keybind style(w3m or lynx)],,
+  [enable_keymap="w3m"])
+ AC_MSG_RESULT($enable_keymap)
+ case x"$enable_keymap" in
+ xw3m)
+  KEYMAP_FILE="keybind";;
+ xlynx)
+  KEYMAP_FILE="keybind_lynx";;
+ *)
+  AC_MSG_ERROR([keymap should be either w3m or lynx.]);;
+ esac
  AC_SUBST(HELP_FILE)
- HELP_FILE=w3mhelp-${w3m_keybind}_$w3m_lang.html
+ HELP_FILE=w3mhelp-${enable_keymap}_$w3m_lang.html
  AC_DEFINE_UNQUOTED(HELP_FILE, "$HELP_FILE")
  AC_SUBST(KEYBIND)
- AC_DEFINE_UNQUOTED(KEYBIND, $w3m_keybind)])
+ AC_DEFINE_UNQUOTED(KEYBIND, $enable_keymap)])
 #
 # ----------------------------------------------------------------
 # AC_W3M_DIGEST_AUTH

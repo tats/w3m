@@ -1,3 +1,9 @@
+2003-03-12  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03816] --enable-lynx => --enable-keymap=lynx 
+	* acinclude.m4 (AC_W3M_KEYMAP): --enable-lynx => --enable-keymap=lynx
+	* Bonus/oldconfigure.sh: ditto
+
 2003-03-12  Yuji Abe <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03814] fix autoconf
@@ -7478,4 +7484,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.787 2003/03/11 16:52:09 ukai Exp $
+$Id: ChangeLog,v 1.788 2003/03/11 17:11:12 ukai Exp $

@@ -1,244 +1,21 @@
-2001-11-22  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+2001-11-23  Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
 
-	* [w3m-dev 02509] ([w3m-dev 02499] [w3m-dev 02508])
-	* terms.c (setlinescols): initialize LASTLINE 
-	* terms.c: add LASTLINE
-	* fm.h: extern int LASTLINE
-	* linein.c: remove defined(__CYGWIN__) && defined(JP_CHARSET)
-	* main.c: remove MOUSE_* definition
-	* terms.h: move MOUSE_* definition from main.c
-	* terms.c: add tty
-	* terms.c (check_win32_console): added
-	* terms.c (init_win32_console_handle): ditto
-	* terms.c (read_win32_console_input): ditto
-	* terms.c (read_win32_console): ditto
-	* terms.c (set_tty) add call init_win32_console
-	* terms.c (getch) use read_win32_console
-	* terms.c (mouse_init): check hConIn
-	* terms.c (mouse_end): ditto
+	* README.inu: new file
 
-2001-11-22  aito@fw.ipsj.or.jp
+	* Bohem GC: replaced with GC 6.1 alpha2
 
-	* [w3m-dev 02503]
-	* indep.c (getescapechar): allow incomplete entity references in URL
-	  closes: Debian Bug#120540
-
-2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02506]
-	* anchor.c (putHmarker): remove #ifdef __CYGWIN__ for bzero()
-	* matrix.h (m_copy): ditto
-	* table.c (pushTable): ditto
-
-2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02505]
-	* configure (alarm): check alarm if USE_ALARM
-
-2001-11-22  Tsutomu Okada <okada@furuno.co.jp>
-
-	* [w3m-dev 02501]
-	* .cvsignore: add funcname.c funcname1.h funcname2.h tagtable.c
-	* scripts/.cvsignore: added, dirlist.cgi
-	* scripts/multipart/.cvsignore: added, multipart.cgi
-	* scripts/w3mman/.cvsignore: added, w3mman w3mman2html.cgi
-	* doc-jp/README.kokb: deleted
-	* gc/makefile.depend: deleted
-
-2001-11-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
-
-	* table.c (feed_table): fix the following table
-	  <table border=1><tr><td>&lt &lt;</table>
-
-2001-11-22  WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
-
-	* [w3m-dev 02497] 
-	* url.c (parseURL2): fix #ifdef __EMX__ code
-	* indep.c (cleanupName): remove #if 0 /* SUPPORT_NETBIOS_SHARE */ code
-
-2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02494]
-	* configure (MIME_TYPES): check if mimetypes is empty
-	* configure (label_topline): add missing =
-	* configure (nextpage_topline): ditto
-
-2001-11-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
-
-	* [w3m-dev 02493]
-	* scripts/multipart/Makefile: s/DISTDIR/DESTDIR/
-
-2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02481]
-	* s/BG_COLOR/USE_BG_COLOR/
-	* s/ANSI_COLOR/USE_ANSI_COLOR/
-	* s/COLOR/USE_COLOR/
-	* s/MENU/USE_MENU/
-	* s/MOUSE/USE_MOUSE/
-
-	* [w3m-dev 02480] new configure
-	* config.h.dist: updated
-	* configure: $def_emacs_like_lineedit, $def_vi_prec_num
-	   $def_label_topline, $def_nextpage_topline
-	   $def_use_mark, $def_use_gopher, $def_use_alarm
-	* configure: add --{ssl,gc}-{include,lib}dir, --mimetypes
-	* configure: BoehmGC Debian hack
-	* XMakefile: add $(OPTS)
-	* terms.c: use HAVE_SYS_SELECT_H
-	* configure: add sys/select.h detection
-	* configure: no_float_h -> float_h
-	* configure: add chdir() detection
-	* local.c (localcgi_post): use HAVE_CHDIR instead of __EMX__
-	* local.c (localcgi_get): ditto
-	* main.c: <time.h> no need for #ifdef __EMX__
-	   other files already do #include <time.h>
-
-	[w3m-dev 02479]
-	* rc.c (init_rc): remove #ifdef __EMX__ for tmpdir
-	* config.h.dit: updated
-	* url.c (openURL): use CGI_EXTENSION
-	  add extlen
-	* rc.c (helpFile): remove #ifdef __EMX__
-	  use w3m_help_dir()
-	* w3mbookmark.c (lib_dir): removed
-	* w3mbookmark.c (print_bookmark_panel): use w3m_lib_dir()
-	* rc.c (libFile): remove #ifdef __EMX__
-	  use w3m_lib_dir() 
-	* local.c (get_os2_dft): removed
-	* local.c (check_local_cgi): use w3m_lib_dir() instead of lib_dir
-	* local.c (cgi_filename): ditto
-	* indep.c (w3m_dir): added
-	* indep.c (w3m_lib_dir w3m_help_dir): ditto
-	* indep.h (w3m_lib_dir w3m_help_dir): ditto
-	* terms.c (set_tty): remove #ifdef __EMX__
-	  use DEV_TTY_PATH
-	* local.c (localcgi_get): use DEV_NULL_PATH
-	* w3mhelperpanel.c (printMailcapPanal): remove #ifdef __EMX__
-	  use W3mHELPERPANEL_CMDNAME
-	* rc.c (optionpanel_src1): ditto
-	* w3mbookmark.c (bkmark_src1): remove #ifdef __EMX__
-	  use W3MBOOKMARK_CMDNAME
-	* main.c (adBmark): ditto
-	  use w3m_lib_dir()
-	* terms.c (getTCstr): remove #ifdef __DJGPP__
-	  use DEFAULT_TERM
-	  check ent is NULL
-	* main.c (fusage): remove #ifdef SHOW_PARAMS
-	* main.c (MAIN): ditto
-	* rc.c (show_params): ditto
-	* fm.h (view_unseenobject): remove #ifdef VIEW_UNSEENOBJECTS
-	* url.c (check_no_proxy): remove #ifdef NOPROXY_NETADDR
-	* configure (show_params): removed
-	* configure (config.h): 
-	  - fix comment for USE_MARK
-	  - add MENU_THIN_FRAME
-	  - move $def_nntp (USE_NNTP), $def_ansi_color (ANSI_COLOR)
-	  - remove VIEW_UNSEENOBJECTS
-	  - remove $def_show_params (SHOW_PARAMS)
-	  - define DEFAULT_TERM
-	  - define W3MBOOKMARK_CMDNAME
-	  - define W3MHELPERPANEL_CMDNAME
-	  - define DEV_NULL_PATH
-	  - define DEV_TTY_PATH
-	  - define CGI_EXTENSION
-
-	[w3m-dev 02478]
-	* Makefile: make -> $(MAKE)
-	
-2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02473]
-	* scripts/Makefile: chmod +x
-	* scripts/Makefile: add clean target
-	* scripts/multipart/Makefile: ditto
-	* scripts/w3mman/Makefile: ditto
-	* XMakefile: clean scripts
-	* scripts/dirlist.cgi: removed from CVS
-	* Makefile (install-scripts): added
-	* XMakefile: (install-scripts): depends all-scripts
-
-2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
-
-	* [w3m-dev 02470]
-	* XMakefile: all of scripts are generated by this instead of configure
-	* configure: add PERL, remove scripts/dirlist.cgi generation
-	* config.h.dist: add PERL
-	* scripts/Makefile: added
-	* scripts/multipart/Makefile scripts/w3mman/Makefile:
-	  new scripts generation and installation
-	* scripts/multipart/README scripts/w3mman/README: update
-
-2001-11-21  Tsutomu Okada <okada@furuno.co.jp>
-
-	* [w3m-dev 02472] cleanup CYGWIN macro
-	* display.c (displayBuffer): use __CYGWIN__ macro
-	* fm.h: ditto
-	* terms.c (refresh): add condition for isWinConsole which
-          defined only japanese cygwin environment
-
-2001-11-21  Akinori Ito <aito@fw.ipsj.or.jp>
+	* frame.c: fixed buffer overflow in newFrameSet()
+	* personally indecated by Suto-san.
 
 	* [w3m-dev 02466]
-	  Homepage URLs and author's mail addresses in the documents
+	* Homepage URLs and author's mail addresses in the documents
 	  are changed.
-
-2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02459] 
-	* XMakefile: update scripts/dirlist.cgi generation
-	* scripts/multipart/multipart.cgi: removed
-	* scripts/w3mman/w3mman scripts/w3mman/w3mman2html.cgi: removed
-	
-	* [w3m-dev 02462]
-	* scripts/dirlist.in scripts/dirlist.cgi: removed
-	* scripts/dirlist.cgi.in: added
-
-2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* add rcsids
-
-2001-11-21  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
-
-	* [w3m-dev 02454]
-	* buffer.c (newBuffer): set COLS
-	* display.c (displayBuffer redrawLine redrawLineRegion
-	    cursorRight arrangeCursor cursorXY): 
-	  new showLineNumber implementation
-	* main.c (ctrCsrH shiftvisualpos shiftl shiftr _movL _movR
-	   _followForm follow_map process_mouse):
-	  use buf->COLS, buf->rootX
-	* menu.c (popupMenu mainMn initSelectMenu):
-	  use buf->rootX
-	* etc.c (columnSkip): use buf->COLS
-	* file.c (HTMLlineproc2body loadBuffer saveBufferDelNum getNextPage)
-	  remove old showLineNumber codes
-	* fm.h (Buffer): add rootX, COLS
-
-2001-11-21  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* XMakefile (clean): rm tagtable.c
-	* .cvsignore: XXMakefile config.h config.param
-
-2001-11-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 02455]
 	* XMakefile.dist deflate.c: removed, not used
 	* tagtable.c: removed, autogenerated files
 	* XMakefile (mktable w3mbookmark w3mhelperpanel): use LIBS2
 	* configure: add $bsdlib
-
-2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
-
-	* frame.c (newFrameSet): fix possible buffer overrun
-
-2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* XXMakefile config.h: removed from CVS
-	  these are autogenerated files.
-	  config.h is moved to config.h.dist as sample config file.
-
-2001-11-20  Tsutomu Okada <okada@furuno.co.jp>
 
 	* [w3m-dev 02449]
 	* file.c (HTMLtagproc1): reimplement meta refresh with
@@ -254,104 +31,24 @@
 	* main.c (setAlarm): use setAlarmEvent()
 	* proto.h: add setAlarmEvent()
 
-2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* w3mhelperpanel.c (extractMailcapEntry): remove unused variables
-	* istream.c (StrISgets): add parentheses around assignment used 
-	  as truth value
-	
-	* XMakefile (clean): remove funcname.c funcname1.h funcname2.h
-	  these are autogenerated files.
-	* funcname.c funcname1.h funcname2.h: removed from CVS
-
-	* main.c (MAIN): add braces to avoid ambiguous `else'
-	* main.c (set_buffer_environ): remove unused variables
-	* linein.c (_rcompl): not EMACS_LIKE_LINEEDIT only
-	* local.c (localcgi_get): remove unused variables
-	* mailcap.c (unquote_mailcap_loop): remove unused variables
-	* url.c (init_PRNG) add parentheses around assignment used as true value
-	* url.c (parseURL): remove unsed label
-	* url.c (parseURL2): remove unused variables
-	* ftp.c (ftp_escape_str ftp_restore_str): remove not used functions
-	* indep.c (getescapechar): remove unused variable
-	
-	* proto.h: add missing prototypes
-
-2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
-
-	* [w3m-dev 02447]
-	* terms.c (skip_escseq): is_xterm && ESC [ M <ch> <ch> <ch>
-
-2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02448]
+	* [w3m-dev 2448]
 	* terms.c (mouse_init): Gpm_Close() is required.
 	  closes: Debian Bug#120221: w3m-ssl: trashes terminal on exit
 
-2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
-
-	* [w3m-dev 02444]
-	* XMakefile (funcname1.h funcname2.h): sort as well as funcname.c
-
-2001-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02439]
+	* [w3m-dev 2439]
 	* terms.c (xterm_mouse_term set_tty): add cygwin as xterm-style
 	  mouse terminal
 
-2001-11-19  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
-
-	* [w3m-dev 02436] 
+	* [w3m-dev 02436]
 	* main.c (GetWord): closes: #482763 segmentation fault in main.c
 
-2001-11-19  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* gc/.cvsignore:
-	  remove gctest, if_mach, if_not_there, threadlibs
-	  closes: #482765 i386 binaries in gc directory
+	* [w3m-dev 02425]
+	* excess files are deleted
+	  _zmachdep.c
+	  doc/histroy, doc-jp/README.kokb
+	  gc: if_mach, if_not_there, gctest, makefile.depend, threadlibs
 
 2001-11-17  Fumitoshi UKAI  <ukai@debian.or.jp>
-
-	* [w3m-dev 02432]
-	* configure: follow autoconf conventions
-	  STRCASECMP -> HAVE_STRCASECMP
-	  STRCHR -> HAVE_STRCHR
-	  STRERROR -> HAVE_STRERROR
-	  SYS_ERRLIST -> HAVE_SYS_ERRLIST
-	  NOBCOPY -> HAVE_BCOPY
-	  GETCWD -> HAVE_GETCWD
-	  GETWD -> HAVE_GETWD
-	  READLINK -> HAVE_READLINK (HAVE_LSTAT?)
-	  TERMIO -> HAVE_TERMIO_H
-	  TERMIOS -> HAVE_TERMIOS_H
-	  SGTTY -> HAVE_SGTTY_H
-	  DIRENT -> HAVE_DIRENT_H
-	  NO_FLOAT_H -> HAVE_FLOAT_H
-	* etc.c fm.h config.h: HAVE_STRCASECMP
-	* etc.c config.h file.c: HAVE_STRCHR
-	    strchr() moved from file.c to etc.c
-	* etc.c config.h: HAVE_STRERROR
-	* etc.c config.h main.c (MAIN): HAVE_SYS_ERRLIST
-	* etc.c fm.h: HAVE_BCOPY
-	* etc.c indep.c (currentdir) config.h: HAVE_GETCWD
-	* indep.c (currentdir) config.h: HAVE_GETWD
-	* form.c (form_write_from_file) local.c (dirBuffer) 
-	  config.h: HAVE_READLINK
-	* config.h terms.c: HAVE_TERMIO_H, HAVE_TERMIOS_H, HAVE_SGTTY_H
-	* config.h local.h: HAVE_DIRENT_H
-	* config.h matric.c: HAVE_FLOAT_H
-
-	* anchor.c cookie.c file.c parsetagx.c regex.c table.c url.c: 
-	  remove include <strings.h> ifdef __EMX__
-	   it will be included in fm.h
-	* frame.c: remove include <strings.h> for bzero() and bcopy()
-	    these are declared in fm.h
-	* indep.c: remove include <strings.h> for bcopy()
-	    this is declared in fm.h
-	* istream.c mailcap.c: remove include <strings.h> for bzero()
-	    this is declared in fm.h
-	* parsetag.c: remove include <strings.h> for bzero()
-	    no bzero() used in this file
 
 	* [w3m-dev 02431]
 	* terms.c (set_tty): "rxvt" is xterm

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.11 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: fm.h,v 1.4.2.1 2001/11/22 17:52:28 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -18,13 +18,13 @@
 #include "config.h"
 #include "history.h"
 
-#ifdef USE_MENU
+#ifdef MENU
 #define MENU_SELECT
 #define MENU_MAP
-#endif				/* USE_MENU */
+#endif				/* MENU */
 
-#ifndef USE_COLOR
-#undef USE_ANSI_COLOR
+#ifndef COLOR
+#undef ANSI_COLOR
 #endif
 
 #include "ctrlcode.h"
@@ -41,13 +41,12 @@
 #include "funcname1.h"
 #include "terms.h"
 
-#ifndef HAVE_BCOPY
+#ifdef NOBCOPY
 void bcopy(void *, void *, int);
 void bzero(void *, int);
-#endif				/* HAVE_BCOPY */
-#ifdef __EMX__
-#include <strings.h>	/* for bzero() and bcopy() */
-#endif
+#else				/* not NOBCOPY */
+#include <string.h>
+#endif				/* not NOBCOPY */
 
 #ifdef MAINPROGRAM
 #define global
@@ -230,7 +229,7 @@ extern int REV_LB[];
 #define free(x)  GC_free(x)	/* let GC do it. */
 
 #ifdef __EMX__
-#define HAVE_STRCASECMP
+#define STRCASECMP
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
 #endif				/* __EMX__ */
@@ -255,7 +254,7 @@ extern int REV_LB[];
  */
 
 typedef unsigned short Lineprop;
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 typedef unsigned char Linecolor;
 #endif
 
@@ -269,7 +268,7 @@ typedef struct _MapList {
 typedef struct _Line {
     char *lineBuf;
     Lineprop *propBuf;
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
     Linecolor *colorBuf;
 #endif
     struct _Line *next;
@@ -333,8 +332,6 @@ typedef struct _Buffer {
     short cursorY;
     short pos;
     short visualpos;
-    short rootX;
-    short COLS;
     InputStream pagerSource;
     AnchorList *href;
     AnchorList *name;
@@ -603,11 +600,12 @@ typedef struct http_request {
  */
 
 extern int LINES, COLS;
-#if defined(__CYGWIN__) && LANG == JA
-extern int LASTLINE;
-#else				/* not defined(__CYGWIN__) || LANG != JA */
+#if defined(CYGWIN) && LANG == JA
+extern int isWinConsole;
+#define LASTLINE (LINES-(isWinConsole ? 2 : 1))
+#else				/* not defined(CYGWIN) && LANG == JA */
 #define LASTLINE (LINES-1)
-#endif				/* not defined(__CYGWIN__) || LANG != JA */
+#endif				/* not defined(CYGWIN) && LANG == JA */
 
 global int Tabstop init(8);
 global int ShowEffect init(TRUE);
@@ -668,7 +666,7 @@ global Buffer *Currentbuf;
 global Buffer *Firstbuf;
 global int CurrentKey;
 global char *CurrentKeyData;
-#ifdef USE_MENU
+#ifdef MENU
 global char *CurrentMenuData;
 #endif
 extern char *ullevel[];
@@ -688,20 +686,20 @@ global int w3m_halfload init(FALSE);
 global Str header_string init(NULL);
 global int override_content_type init(FALSE);
 
-#ifdef USE_COLOR
+#ifdef COLOR
 global int useColor init(TRUE);
 global int basic_color init(8);	/* don't change */
 global int anchor_color init(4);	/* blue  */
 global int image_color init(2);	/* green */
 global int form_color init(1);	/* red   */
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 global int bg_color init(8);	/* don't change */
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 global int useActiveColor init(FALSE);
 global int active_color init(6);	/* cyan */
 global int useVisitedColor init(FALSE);
 global int visited_color init(5);	/* magenta  */
-#endif				/* USE_COLOR */
+#endif				/* COLOR */
 global int confirm_on_quit init(TRUE);
 global int displayLink init(FALSE);
 global int retryAsHttp init(TRUE);
@@ -785,11 +783,11 @@ extern char UseAltEntity;
 global char *rc_dir;
 global int rc_dir_is_tmp init(FALSE);
 
-#ifdef USE_MOUSE
+#ifdef MOUSE
 global int use_mouse init(TRUE);
 extern int mouseActive;
 global int reverse_mouse init(FALSE);
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);
@@ -802,7 +800,9 @@ global TextList *Cookie_reject_domains;
 global TextList *Cookie_accept_domains;
 #endif				/* USE_COOKIE */
 
+#ifdef VIEW_UNSEENOBJECTS
 global int view_unseenobject init(TRUE);
+#endif				/* VIEW_UNSEENOBJECTS */
 
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
 global int ssl_verify_server init(FALSE);

@@ -1,4 +1,3 @@
-# $Id: XMakefile,v 1.10 2001/11/21 18:51:48 ukai Exp $
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c\
 	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
@@ -20,20 +19,17 @@ HELPER=w3mhelperpanel$(EXT)
 INFLATE=inflate$(EXT)
 TARGETS=$(TARGET) $(EXT_TARGETS)
 
-SCRIPTSUBDIRS = scripts scripts/multipart scripts/w3mman
-SUBDIRS = $(SCRIPTSUBDIRS)
-
 INCLUDES=-I.
 
 DEFS=$(INCLUDES) # -DDEBUG
-CFLAGS=$(OPTS) $(MYCFLAGS) $(DEFS) 
+CFLAGS=$(MYCFLAGS) $(DEFS) 
 LIBS=-L. -lindep $(GCLIB) $(MATHLIB) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES)
 LIBS2=-L. -lindep $(GCLIB) $(LOCAL_LIBRARIES)
 INSTALL=sh install.sh
 INSTALL2=sh ../install.sh
 AR=ar
 
-all: $(TARGETS) all-scripts
+all: $(TARGETS)
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(GCTARGET)
 	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LIBS)
@@ -59,10 +55,10 @@ funcname.c: funcname.tab
 	sort funcname.tab | awk -f funcname0.awk > funcname.c
 
 funcname1.h: funcname.tab
-	sort funcname.tab | awk -f funcname1.awk > funcname1.h
+	awk -f funcname1.awk funcname.tab > funcname1.h
 
 funcname2.h: funcname.tab
-	sort funcname.tab | awk -f funcname2.awk > funcname2.h
+	awk -f funcname2.awk funcname.tab > funcname2.h
 
 mktable$(EXT): mktable.o hash.o $(ALIB) $(GCTARGET)
 	$(CC) $(CFLAGS) -o mktable$(EXT) mktable.o hash.o  $(LIBS2)
@@ -80,10 +76,9 @@ inflate.o: inflate.c
 	$(CC) $(CFLAGS) $(Z_CFLAGS) -c inflate.c
 
 gc/gc.a:
-	cd gc; $(MAKE) CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
+	cd gc; make CC='$(CC)' CFLAGS='$(GCCFLAGS) $(GC_CFLAGS)' SPECIALCFLAGS='-I./\$(srcdir)/include $(GC_CFLAGS)'
 
-
-install: $(TARGETS) all-scripts
+install: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
@@ -95,18 +90,6 @@ install: $(TARGETS) all-scripts
 	$(INSTALL) -m 644 $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/w3mhelp.html
 	for d in $(EXT_TARGETS); do $(INSTALL) -m 755 $$d $(DESTDIR)$(LIB_DIR)/$$d; done
 	(cd scripts; for i in *.cgi; do $(INSTALL2) -m 755 $$i $(DESTDIR)$(LIB_DIR)/$$i; done)
-
-all-scripts:
-	for dir in $(SCRIPTSUBDIRS);	\
-	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)');	\
-	done
-
-install-scripts: all-scripts
-	for dir in $(SCRIPTSUBDIRS);	\
-	do	\
-		(cd $$dir; $(MAKE) PERL='$(PERL)' BIN_DIR='$(BIN_DIR)' LIB_DIR='$(LIB_DIR)' DESTDIR='$(DESTDIR)' INSTALL='sh $(PWD)/install.sh' install);	\
-	done
 
 uninstall:
 	-$(RM) $(BIN_DIR)/$(TARGET)
@@ -121,11 +104,6 @@ uninstall:
 
 clean: sweep
 	rm -f *.o *.a $(TARGETS) mktable$(EXT)
-	rm -f funcname.c funcname1.h funcname2.h tagtable.c
-	for dir in $(SCRIPTSUBDIRS);	\
-	do	\
-		(cd $$dir; $(MAKE) clean); \
-	done
 
 sweep:
 	-rm -f core *~ *.bak *.orig *.rej

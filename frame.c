@@ -1,9 +1,12 @@
-/* $Id: frame.c,v 1.5 2001/11/20 13:17:13 ukai Exp $ */
+/* $Id: frame.c,v 1.3.2.1 2001/11/22 17:52:28 inu Exp $ */
 #include "fm.h"
 #include "parsetagx.h"
 #include "myctype.h"
 #include <signal.h>
 #include <setjmp.h>
+#ifdef __EMX__
+#include <strings.h>        /* for bzero() and bcopy() */
+#endif                /* __EMX__ */
 
 #ifdef KANJI_SYMBOLS
 #define RULE_WIDTH 2
@@ -38,10 +41,10 @@ newFrameSet(struct parsed_tag *tag)
     if (cols) {
 	length[i] = p = cols;
 	while (*p != '\0')
-	    if (*p++ == ',') {
+           if (*p++ == ',') {
 		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
-	    }
+               if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+           }
 	length[++i] = p + 1;
     }
     if (i > 1) {
@@ -76,10 +79,10 @@ newFrameSet(struct parsed_tag *tag)
     if (rows) {
 	length[i] = p = rows;
 	while (*p != '\0')
-	    if (*p++ == ',') {
+           if (*p++ == ',') {
 		length[++i] = p;
-		if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
-	    }
+               if (i >= sizeof(length) / sizeof(length[0]) - 2) break;
+           }
 	length[++i] = p + 1;
     }
     if (i > 1) {

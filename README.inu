@@ -1,0 +1,9 @@
+       w3m-0.2.2-inu: version 1.1
+        Maintained by Dai Sato <satodai@dog.intcul.tohoku.ac.jp>
+
+w3m-0.2.2-inu is a bug-fixed version of w3m-0.2.2. 
+And also Bohem GC is replaced from GC 6.0 to GC 6.1 alpha2.
+Fixed bugs are listed in ChangeLog.
+
+If you interested in new functions added to w3m-0.2.2, check the head of
+main trank.

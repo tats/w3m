@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.11 2001/11/21 19:24:35 ukai Exp $ */
+/* $Id: file.c,v 1.6.2.1 2001/11/22 17:52:28 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7,6 +7,9 @@
 #include <sys/wait.h>
 #include <stdio.h>
 #include <time.h>
+#ifdef __EMX__
+#include <strings.h>
+#endif				/* __EMX__ */
 #include <sys/stat.h>
 #include <fcntl.h>
 /* foo */
@@ -30,13 +33,13 @@ static Buffer *loadcmdout(char *cmd,
 			  Buffer *defaultbuf);
 static void close_textarea(struct html_feed_environ *h_env);
 static void addnewline(Buffer * buf, char *line, Lineprop * prop,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 		       Linecolor * color,
 #endif
 		       int pos, int nlines);
 
 static Lineprop propBuffer[LINELEN];
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 static Linecolor colorBuffer[LINELEN];
 #endif
 
@@ -146,6 +149,19 @@ char           *violations[COO_EMAX] = {
 #endif
 
 #define SAVE_BUF_SIZE 1536
+
+#ifndef STRCHR
+char *
+strchr(char *s, char c)
+{
+    while (*s) {
+	if (*s == c)
+	    return s;
+	s++;
+    }
+    return NULL;
+}
+#endif				/* not STRCHR */
 
 static MySignalHandler
 KeyAbort(SIGNAL_ARG)
@@ -487,14 +503,14 @@ readHeader(URLFile * uf,
 	    for (p = lineBuf2->ptr; *p; p = q) {
 		for (q = p; *q && *q != '\r' && *q != '\n'; q++);
 		lineBuf2 = checkType(Strnew_charp(p), propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 				     NULL, NULL,
 #endif
 				     min(LINELEN, q - p));
 		Strcat(tmp, lineBuf2);
 		if (thru)
 		    addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 			       NULL,
 #endif
 			       lineBuf2->length, -1);
@@ -703,7 +719,7 @@ readHeader(URLFile * uf,
     }
     if (thru)
 	addnewline(newBuf, "", propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 		   NULL,
 #endif
 		   0, -1);
@@ -3579,16 +3595,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		}
 #ifdef USE_ALARM
 		else if (!is_redisplay && refresh > 0 && MetaRefresh) {
-		    setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_goURL, s_tmp->ptr);
+            setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_goURL, s_tmp->ptr);
 		}
 #endif
 	    }
 #ifdef USE_ALARM
             else if (!is_redisplay && refresh > 0 && MetaRefresh) {
-		tmp = Sprintf("Refresh (%d sec)", refresh);
-		push_str(obuf, 0, tmp, PC_ASCII);
-		flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-		setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_reload, NULL);
+        tmp = Sprintf("Refresh (%d sec)", refresh);
+        push_str(obuf, 0, tmp, PC_ASCII);
+        flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+        setAlarmEvent(refresh, AL_IMPLICIT, FUNCNAME_reload, NULL);
             }
 #endif
 	}
@@ -3614,6 +3630,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_FONT:
     case HTML_NOP:
 	return 1;
+#ifdef VIEW_UNSEENOBJECTS
     case HTML_BGSOUND:
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
@@ -3644,7 +3661,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    }
 	}
 	return 1;
+#endif				/* VIEW_UNSEENOBJECTS */
     case HTML_BODY:
+#ifdef VIEW_UNSEENOBJECTS
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_BACKGROUND, &p)) {
 		Str s;
@@ -3654,6 +3673,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		HTMLlineproc1(s->ptr, h_env);
 	    }
 	}
+#endif				/* VIEW_UNSEENOBJECTS */
     case HTML_N_BODY:
 	obuf->flag |= RB_IGNORE_P;
 	return 1;
@@ -3718,6 +3738,12 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 	if (++nlines == llimit)
 	    break;
 	pos = 0;
+	if (showLineNum) {
+	    tmp = Sprintf("%4d:", nlines);
+	    for (p = tmp->ptr; *p; p++) {
+		PPUSH(PC_ASCII, *p);
+	    }
+	}
 #ifdef ENABLE_REMOVE_TRAILINGSPACES
 	Strremovetrailingspaces(line);
 #endif
@@ -4014,7 +4040,7 @@ HTMLlineproc2body(Buffer * buf, Str (*feed) (), int llimit)
 	}
 	/* end of processing for one line */
 	addnewline(buf, outc, outp,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 		   NULL,
 #endif
 		   pos, nlines);
@@ -4517,7 +4543,7 @@ extern Lineprop NullProp[];
 
 static void
 addnewline(Buffer * buf, char *line, Lineprop * prop,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 	   Linecolor * color,
 #endif
 	   int pos, int nlines)
@@ -4534,7 +4560,7 @@ addnewline(Buffer * buf, char *line, Lineprop * prop,
 	l->lineBuf = NullLine;
 	l->propBuf = NullProp;
     }
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
     if (pos > 0 && color) {
 	l->colorBuf = NewAtom_N(Linecolor, pos);
 	bcopy((void *) color, (void *) l->colorBuf, pos * sizeof(Linecolor));
@@ -4581,7 +4607,7 @@ loadHTMLBuffer(URLFile * f, Buffer * newBuf)
     if (newBuf->sourcefile == NULL &&
 	(f->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmp = tmpfname(TMPF_SRC, ".html");
-	pushText(fileToDelete, tmp->ptr);
+       pushText(fileToDelete, tmp->ptr);
 	src = fopen(tmp->ptr, "w");
 	if (src)
 	    newBuf->sourcefile = tmp->ptr;
@@ -4849,12 +4875,12 @@ loadHTMLstream(URLFile * f, Buffer * newBuf, FILE * src, int internal)
 	htmlenv1.buf = newTextLineList();
 
     if (SETJMP(AbortLoading) != 0) {
-	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-	goto phase2;
+       HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
+       goto phase2;
     }
     if (fmInitialized) {
-	prevtrap = signal(SIGINT, KeyAbort);
-	term_cbreak();
+       prevtrap = signal(SIGINT, KeyAbort);
+       term_cbreak();
     }
 
 #ifdef JP_CHARSET
@@ -5093,7 +5119,7 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
     int nlines;
     Str tmpf;
     int linelen = 0, trbyte = 0;
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
     int check_color;
 #endif
     MySignalHandler(*prevtrap) ();
@@ -5144,6 +5170,11 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 	    pre_lbuf = lineBuf2->ptr[0];
 	}
 	++nlines;
+	if (showLineNum) {
+	    Str tmp = Sprintf("%4d:", nlines);
+	    Strcat(tmp, lineBuf2);
+	    lineBuf2 = tmp;
+	}
 #ifdef USE_NNTP
 	if (uf->scheme == SCM_NEWS) {
 	    if (Str_news_endline(lineBuf2)) {
@@ -5154,12 +5185,12 @@ loadBuffer(URLFile * uf, Buffer * newBuf)
 #endif				/* USE_NNTP */
 	Strchop(lineBuf2);
 	lineBuf2 = checkType(lineBuf2, propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 			     colorBuffer, &check_color,
 #endif
 			     LINELEN);
 	addnewline(newBuf, lineBuf2->ptr, propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 		   check_color ? colorBuffer : NULL,
 #endif
 		   lineBuf2->length, nlines);
@@ -5239,6 +5270,8 @@ saveBufferDelNum(Buffer * buf, FILE * f, int del)
         else
 #endif
             tmp = Strnew_charp_n(l->lineBuf, l->len);
+        if (del && l->real_linenumber && (p = strchr(tmp->ptr, ':')) != NULL)
+            Strdelete(tmp, 0, p - tmp->ptr + 1);
 #ifdef JP_CHARSET
 	tmp = conv_str(tmp, InnerCode, DisplayCode);
 #endif
@@ -5405,7 +5438,7 @@ getNextPage(Buffer * buf, int plen)
     URLFile uf;
     char code;
     int squeeze_flag = 0;
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
     int check_color;
 #endif
 
@@ -5417,6 +5450,11 @@ getNextPage(Buffer * buf, int plen)
     if (pl != NULL) {
 	nlines = pl->real_linenumber;
 	pre_lbuf = *(pl->lineBuf);
+	if (showLineNum) {
+	    char *p;
+	    if ((p = strchr(pl->lineBuf, ':')) != NULL)
+		pre_lbuf = *(p + 1);
+	}
 	if (pre_lbuf == '\0')
 	    pre_lbuf = '\n';
     }
@@ -5453,9 +5491,14 @@ getNextPage(Buffer * buf, int plen)
 	    pre_lbuf = lineBuf2->ptr[0];
 	}
 	++nlines;
+	if (showLineNum) {
+	    Str tmp = Sprintf("%4d:", nlines);
+	    Strcat(tmp, lineBuf2);
+	    lineBuf2 = tmp;
+	}
 	Strchop(lineBuf2);
 	lineBuf2 = checkType(lineBuf2, propBuffer,
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 			     colorBuffer, &check_color,
 #endif
 			     LINELEN);
@@ -5464,7 +5507,7 @@ getNextPage(Buffer * buf, int plen)
 	l->lineBuf = lineBuf2->ptr;
 	l->propBuf = NewAtom_N(Lineprop, len);
 	bcopy((void *) propBuffer, (void *) l->propBuf, len * sizeof(Lineprop));
-#ifdef USE_ANSI_COLOR
+#ifdef ANSI_COLOR
 	if (check_color) {
 	    l->colorBuf = NewAtom_N(Linecolor, len);
 	    bcopy((void *) colorBuffer, (void *) l->colorBuf, len * sizeof(Linecolor));

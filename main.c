@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.16 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: main.c,v 1.6.2.1 2001/11/22 17:52:28 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -7,14 +7,15 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <time.h>
 #include "terms.h"
 #include "myctype.h"
-#include "regex.h"
-#ifdef USE_MOUSE
+#ifdef MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
+#ifdef __EMX__
+#include <time.h>                /* for time() */
+#endif                /* __EMX__ */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
 extern int do_getch();
 #define getch()	do_getch()
@@ -61,8 +62,10 @@ static void keyPressEventProc(int c);
 #ifdef USE_MARK
 static void cmd_mark(Lineprop * p);
 #endif				/* USE_MARK */
+#ifdef SHOW_PARAMS
 int show_params_p = 0;
 void show_params(FILE * fp);
+#endif
 
 static int display_ok = FALSE;
 static void dump_source(Buffer *);
@@ -107,9 +110,9 @@ fusage(FILE *f, int err)
     fprintf(f, "    -T type          specify content-type\n");
     fprintf(f, "    -m               internet message mode\n");
     fprintf(f, "    -v               visual startup mode\n");
-#ifdef USE_COLOR
+#ifdef COLOR
     fprintf(f, "    -M               monochrome display\n");
-#endif				/* USE_COLOR */
+#endif				/* COLOR */
     fprintf(f, "    -F               automatically render frame\n");
     fprintf(f, "    -cols width      specify column width (used with -dump)\n");
     fprintf(f, "    -ppc count       specify the number of pixels per character (4.0...32.0)\n");
@@ -123,9 +126,9 @@ fusage(FILE *f, int err)
     fprintf(f, "    +<num>           goto <num> line\n");
     fprintf(f, "    -num             show line number\n");
     fprintf(f, "    -no-proxy        don't use proxy\n");
-#ifdef USE_MOUSE
+#ifdef MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 #ifdef USE_COOKIE
     fprintf(f, "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
@@ -143,8 +146,10 @@ fusage(FILE *f, int err)
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -debug           DO NOT USE\n");
+#ifdef SHOW_PARAMS
     if (show_params_p)
 	show_params(f);
+#endif
     exit(err);
 }
 
@@ -266,9 +271,9 @@ MAIN(int argc, char **argv, char **envp)
     char *post_file = NULL;
     Str err_msg;
 
-#ifndef HAVE_SYS_ERRLIST
+#ifndef SYS_ERRLIST
     prepare_sys_errlist();
-#endif				/* not HAVE_SYS_ERRLIST */
+#endif				/* not SYS_ERRLIST */
 
     srand48(time(0));
 
@@ -425,10 +430,10 @@ MAIN(int argc, char **argv, char **envp)
 		SearchHeader = search_header = TRUE;
 	    else if (!strcmp("-v", argv[i]))
 		visual_start = TRUE;
-#ifdef USE_COLOR
+#ifdef COLOR
 	    else if (!strcmp("-M", argv[i]))
 		useColor = FALSE;
-#endif				/* USE_COLOR */
+#endif				/* COLOR */
 	    else if (!strcmp("-B", argv[i]))
 		load_bookmark = TRUE;
 	    else if (!strcmp("-bookmark", argv[i])) {
@@ -508,18 +513,17 @@ MAIN(int argc, char **argv, char **envp)
                Str hs;
                if (++i >= argc)
                    usage();
-               if ((hs = make_optional_header_string(argv[i])) != NULL) {
+               if ((hs = make_optional_header_string(argv[i])) != NULL)
                    if (header_string == NULL)
                        header_string = hs;
                    else
                        Strcat (header_string, hs);
-	       }
            }       
-#ifdef USE_MOUSE
+#ifdef MOUSE
 	    else if (!strcmp("-no-mouse", argv[i])) {
 		use_mouse = FALSE;
 	    }
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 #ifdef USE_COOKIE
 	    else if (!strcmp("-no-cookie", argv[i])) {
 		use_cookie = FALSE;
@@ -548,15 +552,24 @@ MAIN(int argc, char **argv, char **envp)
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
 	    else if (!strcmp("-o", argv[i])) {
+#ifdef SHOW_PARAMS
 		if (++i >= argc || !strcmp(argv[i], "?")) {
 		    show_params_p = 1;
 		    usage();
 		}
+#else
+		if (++i >= argc)
+		    usage();
+#endif
 		if (!set_param_option(argv[i])) {
 		    /* option set failed */
 		    fprintf(stderr, "%s: bad option\n", argv[i]);
+#ifdef SHOW_PARAMS
 		    show_params_p = 1;
 		    usage();
+#else
+		    exit(1);
+#endif
 		}
 		option_assigned = 1;
 	    }
@@ -608,7 +621,7 @@ MAIN(int argc, char **argv, char **envp)
 	backend();
     if (!w3m_dump) {
        initKeymap();
-#ifdef USE_MENU
+#ifdef MENU
        initMenu();
        CurrentMenuData = NULL;
 #endif                /* MENU */
@@ -633,11 +646,11 @@ MAIN(int argc, char **argv, char **envp)
 	else if (visual_start) {
 	    Str s_page;
 	    s_page = Strnew_charp("<title>W3M startup page</title><center><b>Welcome to ");
-	    Strcat_charp(s_page, "<a href='http://w3m.sourceforge.net/'>");
+           Strcat_charp(s_page, "<a href='http://w3m.sourceforge.net/'>");
 	    Strcat_m_charp(s_page,
 			   "w3m</a>!<p><p>This is w3m version ",
 			   version,
-			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
+                  "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
 			   NULL);
 #ifdef DEBIAN
 	    Strcat_m_charp(s_page,
@@ -820,7 +833,7 @@ MAIN(int argc, char **argv, char **envp)
 	    for (i = 0; i < n_event_queue; i++) {
 		CurrentKey = -1;
 		CurrentKeyData = eventQueue[i].user_data;
-#ifdef USE_MENU
+#ifdef MENU
 		CurrentMenuData = NULL;
 #endif
 		w3mFuncList[eventQueue[i].cmd].func();
@@ -829,18 +842,18 @@ MAIN(int argc, char **argv, char **envp)
 	}
 	CurrentKeyData = NULL;
 	/* get keypress event */
-#ifdef USE_MOUSE
+#ifdef MOUSE
 	if (use_mouse)
 	    mouse_active();
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 #ifdef USE_ALARM
-	if (alarm_status == AL_IMPLICIT) {
-	    alarm_buffer = Currentbuf;
-	    alarm_status = AL_IMPLICIT_DONE;
-	} else if (alarm_status == AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
-	    alarm_sec = 0;
-	    alarm_status = AL_UNSET;
-	}
+       if (alarm_status == AL_IMPLICIT) {
+           alarm_buffer = Currentbuf;
+           alarm_status = AL_IMPLICIT_DONE;
+       } else if (alarm_status == AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
+           alarm_sec = 0;
+           alarm_status = AL_UNSET;
+       }
        if (alarm_sec > 0) {
            signal(SIGALRM, SigAlarm);
            alarm(alarm_sec);
@@ -852,10 +865,10 @@ MAIN(int argc, char **argv, char **envp)
            alarm(0);
        }
 #endif
-#ifdef USE_MOUSE
+#ifdef MOUSE
 	if (use_mouse)
 	    mouse_inactive();
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
 	    if (((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
 		prec_num = prec_num * 10 + (int) (c - '0');
@@ -1185,7 +1198,7 @@ ctrCsrH(void)
     int offsetx;
     if (Currentbuf->firstLine == NULL)
 	return;
-    offsetx = Currentbuf->cursorX - Currentbuf->COLS / 2;
+    offsetx = Currentbuf->cursorX - COLS / 2;
     if (offsetx != 0) {
 	columnSkip(Currentbuf, offsetx);
 	arrangeCursor(Currentbuf);
@@ -1322,8 +1335,8 @@ static void
 shiftvisualpos(Buffer * buf, int shift)
 {
     buf->visualpos -= shift;
-    if (buf->visualpos >= buf->COLS)
-	buf->visualpos = buf->COLS - 1;
+    if (buf->visualpos >= COLS)
+	buf->visualpos = COLS - 1;
     else if (buf->visualpos < 0)
 	buf->visualpos = 0;
     arrangeLine(buf);
@@ -1340,7 +1353,7 @@ shiftl(void)
     if (Currentbuf->firstLine == NULL)
 	return;
     column = Currentbuf->currentColumn;
-    columnSkip(Currentbuf, searchKeyNum() * (- Currentbuf->COLS + 1) + 1);
+    columnSkip(Currentbuf, searchKeyNum() * (-COLS + 1) + 1);
     shiftvisualpos(Currentbuf, Currentbuf->currentColumn - column);
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -1354,7 +1367,7 @@ shiftr(void)
     if (Currentbuf->firstLine == NULL)
 	return;
     column = Currentbuf->currentColumn;
-    columnSkip(Currentbuf, searchKeyNum() * (Currentbuf->COLS - 1) - 1);
+    columnSkip(Currentbuf, searchKeyNum() * (COLS - 1) - 1);
     shiftvisualpos(Currentbuf, Currentbuf->currentColumn - column);
     displayBuffer(Currentbuf, B_NORMAL);
 }
@@ -1613,7 +1626,7 @@ _movL(int n)
 void
 movL(void)
 {
-    _movL(Currentbuf->COLS  / 2);
+    _movL(COLS / 2);
 }
 
 void
@@ -1685,7 +1698,7 @@ _movR(int n)
 void
 movR(void)
 {
-    _movR(Currentbuf->COLS / 2);
+    _movR(COLS / 2);
 }
 
 void
@@ -2234,7 +2247,7 @@ reMark(void)
 	return;
     }
     if ((p = regexCompile(str, 1)) != NULL) {
-	disp_message(p, TRUE);
+       disp_message(p, TRUE);
 	return;
     }
     MarkString = str;
@@ -2802,7 +2815,7 @@ _followForm(int submit)
        if (submit)
            goto do_submit;
        if (! formChooseOptionByMenu(fi,
-        Currentbuf->cursorX - Currentbuf->pos + a->start.pos + Currentbuf->rootX,
+        Currentbuf->cursorX - Currentbuf->pos + a->start.pos,
         Currentbuf->cursorY))
            break;
 	formUpdateBuffer(a, Currentbuf, fi);
@@ -3479,9 +3492,13 @@ adBmark(void)
 {
     Str tmp;
 
-    tmp = Sprintf("file://%s/" W3MBOOKMARK_CMDNAME 
-		  "?mode=panel&bmark=%s&url=%s&title=%s", 
-		  w3m_lib_dir(),
+#ifdef __EMX__
+    tmp = Sprintf("file://%s/w3mbookmark.exe?mode=panel&bmark=%s&url=%s&title=%s",
+		get_os2_dft("W3M_LIB_DIR", LIB_DIR),
+#else				/* not __EMX__ */
+    tmp = Sprintf("file://%s/w3mbookmark?mode=panel&bmark=%s&url=%s&title=%s",
+		LIB_DIR,
+#endif				/* not __EMX__ */
        (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
        (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->ptr,
        (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
@@ -3558,9 +3575,9 @@ follow_map(struct parsed_tagarg *arg)
 
     a = retrieveCurrentImg(Currentbuf);
     if (a != NULL)
-	x = Currentbuf->cursorX - Currentbuf->pos + a->start.pos + Currentbuf->rootX;
+	x = Currentbuf->cursorX - Currentbuf->pos + a->start.pos;
     else
-	x = Currentbuf->cursorX + Currentbuf->rootX;
+	x = Currentbuf->cursorX;
     url = follow_map_menu(Currentbuf, arg, x, Currentbuf->cursorY + 2);
     if (url == NULL || *url == '\0')
 	return;
@@ -3999,7 +4016,7 @@ chkURL(void)
 	"news:[^<> 	][^<> 	]*",
 	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_NNTP */
-       "mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
+       "mailto:[^<>        ][^<>        ]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
 	NULL,
     };
     int i;
@@ -4180,7 +4197,18 @@ curlno()
     disp_message(tmp->ptr, FALSE);
 }
 
-#ifdef USE_MOUSE
+#ifdef MOUSE
+/* Addition:mouse event */
+#define MOUSE_BTN1_DOWN 0
+#define MOUSE_BTN2_DOWN 1
+#define MOUSE_BTN3_DOWN 2
+#define MOUSE_BTN4_DOWN_RXVT 3
+#define MOUSE_BTN5_DOWN_RXVT 4
+#define MOUSE_BTN4_DOWN_XTERM 64
+#define MOUSE_BTN5_DOWN_XTERM 65
+#define MOUSE_BTN_UP 3
+#define MOUSE_BTN_RESET -1
+#define MOUSE_SCROLL_LINE 5
 
 static void
 process_mouse(int btn, int x, int y)
@@ -4239,18 +4267,18 @@ process_mouse(int btn, int x, int y)
 		    return;
 		}
 		if (y == Currentbuf->cursorY &&
-		    (x == Currentbuf->cursorX + Currentbuf->rootX 
+		    (x == Currentbuf->cursorX
 #ifdef JP_CHARSET
 		     || (Currentbuf->currentLine != NULL &&
 			 (Currentbuf->currentLine->propBuf[Currentbuf->pos] & PC_KANJI1)
-			 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
+			 && x == Currentbuf->cursorX + 1)
 #endif				/* JP_CHARSET */
 		    )) {
 		    followA();
 		    return;
 		}
-		if (x >= Currentbuf->rootX)
-		cursorXY(Currentbuf, x - Currentbuf->rootX, y);
+
+		cursorXY(Currentbuf, x, y);
 		displayBuffer(Currentbuf, B_NORMAL);
 
 	    }
@@ -4259,12 +4287,11 @@ process_mouse(int btn, int x, int y)
 	    backBf();
 	    break;
 	case MOUSE_BTN3_DOWN:
-#ifdef USE_MENU
-	    if (x >= Currentbuf->rootX)
-	    cursorXY(Currentbuf, x - Currentbuf->rootX, y);
+#ifdef MENU
+	    cursorXY(Currentbuf, x, y);
 	    onA();
 	    mainMenu(x, y);
-#endif				/* USE_MENU */
+#endif				/* MENU */
 	    break;
 	case MOUSE_BTN4_DOWN_RXVT:
 	    for (i = 0; i < MOUSE_SCROLL_LINE; i++)
@@ -4374,7 +4401,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
     return 0;
 }
 #endif				/* USE_SYSMOUSE */
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 
 void
 dispVer()
@@ -4408,14 +4435,14 @@ GetWord(Buffer * buf)
 
     e = buf->pos;
     while (e > 0 && !IS_ALPHA(lb[e]))
-	e--;
+       e--;
     if (!IS_ALPHA(lb[e]))
 	return NULL;
     b = e;
     while (b > 0 && IS_ALPHA(lb[b-1]))
-	b--;
+       b--;
     while (e < l->len && IS_ALPHA(lb[e]))
-	e++;
+       e++;
     return Strnew_charp_n(&lb[b], e - b)->ptr;
 }
 
@@ -4481,6 +4508,9 @@ set_buffer_environ(Buffer *buf)
     Anchor *a;
     Str s;
     ParsedURL pu;
+    TextListItem *ti;
+    struct frameset *f_set = NULL;
+    int all;
 
     if (buf == NULL)
 	return;
@@ -4531,7 +4561,7 @@ searchKeyData(void)
 
     if (CurrentKeyData != NULL && *CurrentKeyData != '\0')
 	return allocStr(CurrentKeyData, 0);
-#ifdef USE_MENU
+#ifdef MENU
     if (CurrentMenuData != NULL && *CurrentMenuData != '\0')
 	return allocStr(CurrentMenuData, 0);
 #endif
@@ -4586,17 +4616,17 @@ SigAlarm(SIGNAL_ARG)
     if (alarm_sec > 0) {
        CurrentKey = -1;
        CurrentKeyData = (char *)alarm_event.user_data;
-#ifdef USE_MENU
+#ifdef MENU
        CurrentMenuData = NULL;
 #endif
        w3mFuncList[alarm_event.cmd].func();
        onA();
        if (alarm_status == AL_IMPLICIT) {
-	   alarm_buffer = Currentbuf;
-	   alarm_status = AL_IMPLICIT_DONE;
+          alarm_buffer = Currentbuf;
+          alarm_status = AL_IMPLICIT_DONE;
        } else if (alarm_status == AL_IMPLICIT_DONE && alarm_buffer != Currentbuf) {
 	   alarm_sec = 0;
-	   alarm_status = AL_UNSET;
+          alarm_status = AL_UNSET;
        }
        if (alarm_sec > 0) {
            signal(SIGALRM, SigAlarm);
@@ -4628,7 +4658,7 @@ setAlarm(void)
            cmd = getFuncList(getWord(&data), w3mFuncList, w3mNFuncList);
     }
     if (cmd >= 0) {
-	setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));
+       setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));
     } else {
        alarm_sec = 0;
     }
@@ -4639,12 +4669,12 @@ void
 setAlarmEvent(int sec, short status, int cmd, void *data)
 {
     if (status == AL_EXPLICIT || (status == AL_IMPLICIT && alarm_status != AL_EXPLICIT)) {
-	alarm_sec = sec;
-	alarm_status = status;
-	alarm_event.cmd = cmd;
-	alarm_event.user_data = data;
-	signal(SIGALRM, SigAlarm);
-	alarm(alarm_sec);
+       alarm_sec = sec;
+       alarm_status = status;
+       alarm_event.cmd = cmd;
+       alarm_event.user_data = data;
+       signal(SIGALRM, SigAlarm);
+       alarm(alarm_sec);
     }
 }
 #endif

@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.14 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: terms.c,v 1.5.2.1 2001/11/22 17:52:28 inu Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -12,10 +12,7 @@
 #include <unistd.h>
 #include "config.h"
 #include <string.h>
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-#ifdef USE_MOUSE
+#ifdef MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
 #endif				/* USE_GPM */
@@ -35,9 +32,11 @@ static int xpix, ypix, nbs, obs = 0;
 static int is_xterm = 0;
 void mouse_init(), mouse_end();
 int mouseActive = 0;
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 
-static int tty;
+#ifdef AIX
+#include <sys/select.h>
+#endif				/* AIX */
 
 #include "terms.h"
 #include "fm.h"
@@ -46,179 +45,12 @@ static int tty;
 #ifdef __EMX__
 #define INCL_DOSNLS
 #include <os2.h>
+#include <sys/select.h>
 
 #ifndef JP_CHARSET
 extern int	CodePage;
 #endif				/* !JP_CHARSET */
 #endif				/* __EMX__ */
-
-#if defined(__CYGWIN__)
-#include <windows.h>
-static HANDLE hConIn;
-static int isWin95;
-static INPUT_RECORD *ConInV;
-static int iConIn, nConIn, nConInMax;
-#ifdef USE_MOUSE
-static char MouseConToXTerm[sizeof("\033[M !!") - sizeof("")];
-static int iMouseConToXTerm;
-static MOUSE_EVENT_RECORD lastConMouse;
-#endif
-
-void
-check_win32_console(void)
-{
-    char *tty;
-
-    tty = ttyname(1);
-    if (!strncmp(tty, "/dev/con", 8)) {
-	isWinConsole = TRUE;
-    }
-    else {
-	isWinConsole = FALSE;
-    }
-}
-
-void
-init_win32_console_handle(void)
-{
-    OSVERSIONINFO winVersionInfo;
-
-    check_win32_console();
-    winVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    if (GetVersionEx (&winVersionInfo) == 0) {
-	fprintf(stderr, "can't get Windows version information.\n");
-	exit(1);
-    }
-    if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
-	isWin95 = 1;
-    }
-    hConIn = INVALID_HANDLE_VALUE;
-    if (isWin95) {
-	if (isWinConsole) {
-	    if (isatty(0)) {
-		hConIn = GetStdHandle(STD_INPUT_HANDLE);
-	    }
-	    else {
-		hConIn = CreateFile("CONIN$", GENERIC_READ,
-			    FILE_SHARE_READ,
-			    NULL, OPEN_EXISTING,
-			    0, NULL);
-	    }
-	}
-    }
-}
-
-static int
-read_win32_console_input(void)
-{
-   INPUT_RECORD *p;
-   DWORD nevents;
-
-   if (nConIn >= nConInMax) {
-	INPUT_RECORD *oldv;
-
-	nConInMax = (nConInMax / 2 + 1) * 3;
-	oldv = ConInV;
-	ConInV = GC_MALLOC_ATOMIC(sizeof(ConInV[0]) * nConInMax);
-	memcpy(ConInV, oldv, sizeof(ConInV[0]) * nConIn);
-    }
-
-    p = &ConInV[nConIn];
-
-    if (ReadConsoleInput(hConIn, p, 1, &nevents) && nevents) {
-	switch (p->EventType) {
-	case KEY_EVENT:
-	    if (p->Event.KeyEvent.bKeyDown 
-		|| !p->Event.KeyEvent.uChar.AsciiChar)
-		    break;
-#ifdef USE_MOUSE
-	event_found:
-#endif
-	    ++nConIn;
-	    return 1;
-#ifdef USE_MOUSE
-	case MOUSE_EVENT:
-	    if (mouseActive && p->Event.MouseEvent.dwButtonState & ~(~0 << 5))
-		goto event_found;
-#endif
-	default:
-	    break;
-	}
-    }
-    return 0;
-}
-
-int
-read_win32_console(char *s, int n)
-{
-    int i;
-    KEY_EVENT_RECORD *ker;
-#ifdef USE_MOUSE
-    int down, btn;
-    MOUSE_EVENT_RECORD *mer;
-#endif
-
-    if (hConIn == INVALID_HANDLE_VALUE)
-	return read(tty, s, n);
-
-    for (i = 0 ; i < n ;)
-#ifdef USE_MOUSE
-	if (iMouseConToXTerm) {
-	    s[i++] = MouseConToXTerm[iMouseConToXTerm++];
-
-	    if (iMouseConToXTerm >= sizeof(MouseConToXTerm))
-		iMouseConToXTerm = 0;
-	}
-	else
-#endif
-	    if (iConIn < nConIn)
-		switch (ConInV[iConIn].EventType) {
-#ifdef USE_MOUSE
-		case MOUSE_EVENT:
-		    if (mouseActive) {
-			mer = &ConInV[iConIn++].Event.MouseEvent;
-			MouseConToXTerm[0] = '\033';
-			MouseConToXTerm[1] = '[';
-			MouseConToXTerm[2] = 'M';
-			MouseConToXTerm[4] = mer->dwMousePosition.X + '!';
-			MouseConToXTerm[5] = mer->dwMousePosition.Y + '!';
-			if (~(mer->dwButtonState) & lastConMouse.dwButtonState)
-			    MouseConToXTerm[3] = MOUSE_BTN_UP + ' ';
-			else if (!(down = mer->dwButtonState & ~lastConMouse.dwButtonState & ~(~0 << 5))) {
-			    lastConMouse = *mer;
-			    break;
-			}
-			else
-			    MouseConToXTerm[3] = (down & (1 << 0) ? MOUSE_BTN1_DOWN :
-				down & (1 << 1) ? MOUSE_BTN3_DOWN :
-				down & (1 << 2) ? MOUSE_BTN2_DOWN :
-				down & (1 << 3) ? MOUSE_BTN4_DOWN_XTERM :
-				MOUSE_BTN5_DOWN_XTERM) + ' ';
-
-			s[i++] = MouseConToXTerm[iMouseConToXTerm++];
-			lastConMouse = *mer;
-		    }
-		    else
-		        ++iConIn;
-		    break;
-#endif
-		default:
-		    s[i++] = ConInV[iConIn++].Event.KeyEvent.uChar.AsciiChar;
-		    break;
-		}
-	    else {
-		iConIn = nConIn = 0;
-
-		if (!read_win32_console_input())
-		    break;
-	    }
-
-    if (iConIn >= nConIn)
-	iConIn = nConIn = 0;
-
-    return i;
-}
-#endif
 
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
@@ -229,7 +61,7 @@ void flush_tty();
 #define SIGIOT SIGABRT
 #endif				/* not SIGIOT */
 
-#ifdef HAVE_TERMIO_H
+#ifdef TERMIO
 #include        <sys/ioctl.h>
 #include        <termio.h>
 typedef struct termio TerminalMode;
@@ -237,9 +69,9 @@ typedef struct termio TerminalMode;
 #define TerminalGet(fd,x)       ioctl(fd,TCGETA,x)
 #define MODEFLAG(d)     ((d).c_lflag)
 #define IMODEFLAG(d)    ((d).c_iflag)
-#endif				/* HAVE_TERMIO_H */
+#endif				/* TERMIO */
 
-#ifdef HAVE_TERMIOS_H
+#ifdef TERMIOS
 #include <termios.h>
 #include <unistd.h>
 typedef struct termios TerminalMode;
@@ -247,16 +79,16 @@ typedef struct termios TerminalMode;
 #define TerminalGet(fd,x)       tcgetattr(fd,x)
 #define MODEFLAG(d)     ((d).c_lflag)
 #define IMODEFLAG(d)    ((d).c_iflag)
-#endif				/* HAVE_TERMIOS_H */
+#endif				/* TERMIOS */
 
-#ifdef HAVE_SGTTY_H
+#ifdef SGTTY
 #include        <sys/ioctl.h>
 #include        <sgtty.h>
 typedef struct sgttyb TerminalMode;
 #define TerminalSet(fd,x)       ioctl(fd,TIOCSETP,x)
 #define TerminalGet(fd,x)       ioctl(fd,TIOCGETP,x)
 #define MODEFLAG(d)     ((d).sg_flags)
-#endif				/* HAVE_SGTTY_H */
+#endif				/* SGTTY */
 
 #define MAX_LINE        200
 #define MAX_COLUMN      400
@@ -295,7 +127,7 @@ typedef struct sgttyb TerminalMode;
 
 #define S_COLORED       0xf00
 
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 /* Background Color */
 #define COL_BCOLOR      0xf000
 #define COL_BBLACK      0x8000
@@ -309,7 +141,7 @@ typedef struct sgttyb TerminalMode;
 #define COL_BTERM       0x0000
 
 #define S_BCOLORED      0xf000
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 
 
 #define S_GRAPHICS      0x10
@@ -352,9 +184,6 @@ char *T_cd, *T_ce, *T_kr, *T_kl, *T_cr, *T_bt, *T_ta, *T_sc, *T_rc,
 *T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
 
 int LINES, COLS;
-#if defined(CYGWIN) && LANG == JA
-int LASTLINE;
-#endif				/* defined(CYGWIN) && LANG == JA */
 static int max_LINES = 0, max_COLS = 0;
 static int tab_step = 8;
 static int CurLine, CurColumn;
@@ -390,7 +219,7 @@ writestr(char *s)
 
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
-#ifdef USE_MOUSE
+#ifdef MOUSE
 static char *xterm_mouse_term[] = {
      "xterm", "kterm", "rxvt", "cygwin", 
      NULL
@@ -401,31 +230,35 @@ int
 set_tty(void)
 {
     char *ttyn;
+#ifdef MOUSE
+    char *term;
+#endif
 
     if (isatty(0))		/* stdin */
 	ttyn = ttyname(0);
     else
-	ttyn = DEV_TTY_PATH;
+#ifndef __EMX__
+	ttyn = "/dev/tty";
+#else				/* __EMX__ */
+	ttyn = "con";
+#endif				/* __EMX__ */
     tty = open(ttyn, O_RDWR);
     if (tty < 0) {
 	/* use stderr instead of stdin... is it OK???? */
 	tty = 2;
     }
     ttyf = fdopen(tty, "w");
-#ifdef __CYGWIN__
-    init_win32_console_handle();
-#endif
     TerminalGet(tty, &d_ioval);
-#ifdef USE_MOUSE
+#ifdef MOUSE
+    term = getenv("TERM");
     {
-	char *term = getenv("TERM");
-	char **p;
-	for (p = xterm_mouse_term; *p != NULL; p++) {
-	     if (!strncmp(term, *p, strlen(*p))) {
-		  is_xterm = 1;
-		  break;
-	     }
-	}
+       char **p;
+       for (p = xterm_mouse_term; *p != NULL; p++) {
+            if (!strncmp(term, *p, strlen(*p))) {
+          is_xterm = 1;
+          break;
+            }
+       }
     }
 #endif
     return 0;
@@ -438,9 +271,9 @@ ttymode_set(int mode, int imode)
 
     TerminalGet(tty, &ioval);
     MODEFLAG(ioval) |= mode;
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
     IMODEFLAG(ioval) |= imode;
-#endif				/* not HAVE_SGTTY_H */
+#endif				/* not SGTTY */
 
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN) continue;
@@ -456,9 +289,9 @@ ttymode_reset(int mode, int imode)
 
     TerminalGet(tty, &ioval);
     MODEFLAG(ioval) &= ~mode;
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
     IMODEFLAG(ioval) &= ~imode;
-#endif				/* not HAVE_SGTTY_H */
+#endif				/* not SGTTY */
 
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN) continue;
@@ -467,7 +300,7 @@ ttymode_reset(int mode, int imode)
     }
 }
 
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
 void
 set_cc(int spec, int val)
 {
@@ -481,7 +314,7 @@ set_cc(int spec, int val)
 	reset_exit(SIGNAL_ARGLIST);
     }
 }
-#endif				/* not HAVE_SGTTY_H */
+#endif				/* not SGTTY */
 
 void
 close_tty(void)
@@ -515,10 +348,10 @@ MySignalHandler
 reset_exit(SIGNAL_ARG)
 {
     reset_tty();
-#ifdef USE_MOUSE
+#ifdef MOUSE
     if (mouseActive)
 	mouse_end();
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
     w3m_exit(0);
     SIGNAL_RETURN;
 }
@@ -580,12 +413,11 @@ getTCstr(void)
     char *pt = funcstr;
     int r;
 
-    ent = getenv("TERM") ? getenv("TERM") : DEFAULT_TERM;
-    if (ent == NULL) {
-	fprintf(stderr, "TERM is not set\n");
-	reset_exit(SIGNAL_ARGLIST);
-    }
-
+#ifdef	__DJGPP__
+    ent = getenv("TERM") ? getenv("TERM") : "dosansi";
+#else
+    ent = getenv("TERM");
+#endif				/* __DJGPP__ */
     r = tgetent(bp, ent);
     if (r != 1) {
 	/* Can't find termcap entry */
@@ -680,7 +512,7 @@ setlinescols(void)
 	}
 #endif
     }
-#elif defined(HAVE_TERMIOS_H) && defined(TIOCGWINSZ)
+#elif defined(TERMIOS) && defined(TIOCGWINSZ)
     struct winsize wins;
 
     i = ioctl(tty, TIOCGWINSZ, &wins);
@@ -688,7 +520,9 @@ setlinescols(void)
 	LINES = wins.ws_row;
 	COLS = wins.ws_col;
     }
-#endif /* defined(HAVE-TERMIOS_H) && defined(TIOCGWINSZ) */
+#endif				/* defined(TERMIOS) && defined(TIOCGWINSZ) 
+				 * 
+				 */
     if (LINES <= 0 &&
 	(p = getenv("LINES")) != NULL &&
 	(i = atoi(p)) >= 0)
@@ -705,9 +539,6 @@ setlinescols(void)
 	COLS = MAX_COLUMN;
     if (LINES > MAX_LINE)
 	LINES = MAX_LINE;
-#if defined(CYGWIN) && LANG == JA
-    LASTLINE = LINES - (isWinConsole ? 2 : 1);
-#endif				/* defined(CYGWIN) && LANG == JA */
 }
 
 void
@@ -878,11 +709,11 @@ move(int line, int column)
 	CurColumn = column;
 }
 
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 #define M_SPACE (S_SCREENPROP|S_COLORED|S_BCOLORED|S_GRAPHICS)
-#else				/* not USE_BG_COLOR */
+#else				/* not BG_COLOR */
 #define M_SPACE (S_SCREENPROP|S_COLORED|S_GRAPHICS)
-#endif				/* not USE_BG_COLOR */
+#endif				/* not BG_COLOR */
 
 static int
 need_redraw(char c1, l_prop pr1, char c2, l_prop pr2)
@@ -1154,7 +985,7 @@ color_seq(int colmode)
     return seqbuf;
 }
 
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 void
 setbcolor(int color)
 {
@@ -1170,16 +1001,16 @@ bcolor_seq(int colmode)
     sprintf(seqbuf, "\033[%dm", ((colmode >> 12) & 7) + 40);
     return seqbuf;
 }
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 
 #define RF_NEED_TO_MOVE    0
 #define RF_CR_OK           1
 #define RF_NONEED_TO_MOVE  2
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 #define M_MEND (S_STANDOUT|S_UNDERLINE|S_BOLD|S_COLORED|S_BCOLORED|S_GRAPHICS)
-#else				/* not USE_BG_COLOR */
+#else				/* not BG_COLOR */
 #define M_MEND (S_STANDOUT|S_UNDERLINE|S_BOLD|S_COLORED|S_GRAPHICS)
-#endif				/* not USE_BG_COLOR */
+#endif				/* not BG_COLOR */
 void
 refresh(void)
 {
@@ -1189,9 +1020,9 @@ refresh(void)
     char *pc;
     l_prop *pr, mode = 0;
     l_prop color = COL_FTERM;
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
     l_prop bcolor = COL_BTERM;
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
     short *dirty;
 
     for (line = 0; line <= LASTLINE; line++) {
@@ -1260,25 +1091,25 @@ refresh(void)
 		 * avoid the scroll, I prohibit to draw character on
 		 * (COLS-1,LINES-1).
 		 */
-#if !defined(USE_BG_COLOR) || defined(__CYGWIN__)
-#if defined(__CYGWIN__) && LANG == JA
+#if !defined( BG_COLOR ) || defined( CYGWIN )
+#ifdef CYGWIN
 		if (isWinConsole)
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#endif
 		if (line == LINES - 1 && col == COLS - 1)
 		    break;
-#endif			/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */
+#endif				/* not BG_COLOR */
 		if ((!(pr[col] & S_STANDOUT) && (mode & S_STANDOUT)) ||
 		    (!(pr[col] & S_UNDERLINE) && (mode & S_UNDERLINE)) ||
 		    (!(pr[col] & S_BOLD) && (mode & S_BOLD)) ||
 		    (!(pr[col] & S_COLORED) && (mode & S_COLORED))
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 		    || (!(pr[col] & S_BCOLORED) && (mode & S_BCOLORED))
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 		    || (!(pr[col] & S_GRAPHICS) && (mode & S_GRAPHICS))) {
             if ((mode & S_COLORED)
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
               || (mode & S_BCOLORED)
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 			)
 			writestr(T_op);
             if (mode & S_GRAPHICS)
@@ -1310,13 +1141,13 @@ refresh(void)
                mode = ((mode & ~COL_FCOLOR) | color);
                writestr(color_seq(color));
             }
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
             if ((pr[col] & S_BCOLORED) && (pr[col] ^ mode) & COL_BCOLOR) {
                bcolor = (pr[col] & COL_BCOLOR);
                mode = ((mode & ~COL_BCOLOR) | bcolor);
                writestr(bcolor_seq(bcolor));
             }
-#endif                /* USE_BG_COLOR */
+#endif                /* BG_COLOR */
 		    if ((pr[col] & S_GRAPHICS) && !(mode & S_GRAPHICS)) {
 			if (!graph_enabled) {
 			    graph_enabled = 1;
@@ -1337,9 +1168,9 @@ refresh(void)
 	*dirty &= ~(L_NEED_CE | L_CLRTOEOL);
 	if (mode & M_MEND) {
 	    if (mode & (S_COLORED
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 			| S_BCOLORED
-#endif				/* USE_BG_COLOR */
+#endif				/* BG_COLOR */
 		))
 		writestr(T_op);
 	    if (mode & S_GRAPHICS)
@@ -1502,7 +1333,7 @@ clrtoeol(void)
     }
 }
 
-#ifdef USE_BG_COLOR
+#ifdef BG_COLOR
 void
 clrtoeol_with_bcolor(void)
 {
@@ -1528,14 +1359,14 @@ clrtoeolx(void)
 {
     clrtoeol_with_bcolor();
 }
-#else				/* not USE_BG_COLOR */
+#else				/* not BG_COLOR */
 
 void
 clrtoeolx(void)
 {
     clrtoeol();
 }
-#endif				/* not USE_BG_COLOR */
+#endif				/* not BG_COLOR */
 
 void
 clrtobot_eol(void (*clrtoeol) ())
@@ -1643,38 +1474,38 @@ addnstr_sup(char *s, int n)
 
 void
 crmode(void)
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
 {
     ttymode_reset(ICANON, IXON);
     ttymode_set(ISIG, 0);
-#ifdef HAVE_TERMIOS_H
+#ifdef TERMIOS
     set_cc(VMIN, 1);
-#else				/* not HAVE_TERMIOS_H */
+#else				/* not TERMIOS */
     set_cc(VEOF, 1);
-#endif				/* not HAVE_TERMIOS_H */
+#endif				/* not TERMIOS */
 }
-#else				/* HAVE_SGTTY_H */
+#else				/* SGTTY */
 {
     ttymode_set(CBREAK, 0);
 }
-#endif				/* HAVE_SGTTY_H */
+#endif				/* SGTTY */
 
 void
 nocrmode(void)
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
 {
     ttymode_set(ICANON, 0);
-#ifdef HAVE_TERMIOS_H
+#ifdef TERMIOS
     set_cc(VMIN, 4);
-#else				/* not HAVE_TERMIOS_H */
+#else				/* not TERMIOS */
     set_cc(VEOF, 4);
-#endif				/* not HAVE_TERMIOS_H */
+#endif				/* not TERMIOS */
 }
-#else				/* HAVE_SGTTY_H */
+#else				/* SGTTY */
 {
     ttymode_reset(CBREAK, 0);
 }
-#endif				/* HAVE_SGTTY_H */
+#endif				/* SGTTY */
 
 void
 term_echo(void)
@@ -1690,7 +1521,7 @@ term_noecho(void)
 
 void
 term_raw(void)
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
 #ifdef IEXTEN
 #define TTY_MODE ISIG|ICANON|ECHO|IEXTEN
 #else				/* not IEXTEN */
@@ -1698,21 +1529,21 @@ term_raw(void)
 #endif				/* not IEXTEN */
 {
     ttymode_reset(TTY_MODE, IXON | IXOFF);
-#ifdef HAVE_TERMIOS_H
+#ifdef TERMIOS
     set_cc(VMIN, 1);
-#else				/* not HAVE_TERMIOS_H */
+#else				/* not TERMIOS */
     set_cc(VEOF, 1);
-#endif				/* not HAVE_TERMIOS_H */
+#endif				/* not TERMIOS */
 }
-#else				/* HAVE_SGTTY_H */
+#else				/* SGTTY */
 {
     ttymode_set(RAW, 0);
 }
-#endif				/* HAVE_SGTTY_H */
+#endif				/* SGTTY */
 
 void
 term_cooked(void)
-#ifndef HAVE_SGTTY_H
+#ifndef SGTTY
 {
 #ifdef __EMX__
     /* On XFree86/OS2, some scrambled characters
@@ -1722,17 +1553,17 @@ term_cooked(void)
 #else
     ttymode_set(TTY_MODE, 0);
 #endif
-#ifdef HAVE_TERMIOS_H
+#ifdef TERMIOS
     set_cc(VMIN, 4);
-#else				/* not HAVE_TERMIOS_H */
+#else				/* not TERMIOS */
     set_cc(VEOF, 4);
-#endif				/* not HAVE_TERMIOS_H */
+#endif				/* not TERMIOS */
 }
-#else				/* HAVE_SGTTY_H */
+#else				/* SGTTY */
 {
     ttymode_reset(RAW, 0);
 }
-#endif				/* HAVE_SGTTY_H */
+#endif				/* SGTTY */
 
 void
 term_cbreak(void)
@@ -1746,13 +1577,7 @@ getch(void)
 {
     char c;
 
-    while (
-#ifdef __CYGWIN__
-	    read_win32_console(&c, 1)
-#else
-	    read(tty, &c, 1)
-#endif
-	    < (int)1) {
+    while (read(tty, &c, 1) < (int)1) {
         if (errno == EINTR || errno == EAGAIN) continue;
         /* error happend on read(2) */
         quitfm();
@@ -1761,7 +1586,7 @@ getch(void)
     return c;
 }
 
-#ifdef USE_MOUSE
+#ifdef MOUSE
 #ifdef USE_GPM
 char
 wgetch(void)
@@ -1831,7 +1656,7 @@ sysmouse(SIGNAL_ARG)
     ioctl(tty, CONS_MOUSECTL, &mi);
 }
 #endif				/* USE_SYSMOUSE */
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 
 void
 bell(void)
@@ -1847,14 +1672,6 @@ skip_escseq(void)
     c = getch();
     if (c == '[' || c == 'O') {
 	c = getch();
-#ifdef USE_MOUSE
-	if (is_xterm && c == 'M') {
-	  getch();
-	  getch();
-	  getch();
-	}
-	else
-#endif	
 	while (IS_DIGIT(c))
 	    c = getch();
     }
@@ -1889,7 +1706,7 @@ sleep_till_anykey(int sec, int purge)
     }
 }
 
-#ifdef USE_MOUSE
+#ifdef MOUSE
 
 #define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
 #define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
@@ -1911,19 +1728,19 @@ mouse_init()
     conn.minMod = 0;
     if (Gpm_Open(&conn, 0) == -2) {
         /*
-	 * If Gpm_Open() success, returns >= 0
-	 * Gpm_Open() returns -2 in case of xterm.
-	 * Gpm_Close() is necessary here. Otherwise,
-	 * xterm is being left in the mode where the mouse clicks are
-	 * passed through to the application.
-	 */
-	Gpm_Close();
-	is_xterm = 1;
+        * If Gpm_Open() success, returns >= 0
+        * Gpm_Open() returns -2 in case of xterm.
+        * Gpm_Close() is necessary here. Otherwise,
+        * xterm is being left in the mode where the mouse clicks are
+        * passed through to the application.
+        */
+       Gpm_Close();
+       is_xterm = 1;
     } else {
-	gpm_handler = gpm_process_mouse;
+       gpm_handler = gpm_process_mouse;
     }
     if (is_xterm) {
-	XTERM_ON;
+       XTERM_ON;
     }
     mouseActive = 1;
 }
@@ -2010,11 +1827,7 @@ mouse_init()
 {
     if (mouseActive)
 	return;
-    if (is_xterm
-#ifdef __CYGWIN__
-	&& hConIn == INVALID_HANDLE_VALUE
-#endif
-	    ) {
+    if (is_xterm) {
 	XTERM_ON;
     }
     mouseActive = 1;
@@ -2025,11 +1838,7 @@ mouse_end()
 {
     if (mouseActive == 0)
 	return;
-    if (is_xterm
-#ifdef __CYGWIN__
-	&& hConIn == INVALID_HANDLE_VALUE
-#endif
-	    ) {
+    if (is_xterm) {
 	XTERM_OFF;
     }
     mouseActive = 0;
@@ -2052,7 +1861,7 @@ mouse_inactive()
 	mouse_end();
 }
 
-#endif				/* USE_MOUSE */
+#endif				/* MOUSE */
 
 void
 flush_tty()

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.31 2001/12/10 16:29:37 ukai Exp $ */
+/* $Id: file.c,v 1.32 2001/12/10 17:02:44 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -768,14 +768,13 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		 uf->scheme == SCM_LOCAL_CGI) {
 	    Str funcname = Strnew();
 	    int f;
-	    extern int w3mNFuncList;
 
 	    p = lineBuf2->ptr + 12;
 	    SKIP_BLANKS(p);
 	    while (*p && !IS_SPACE(*p))
 		Strcat_char(funcname, *(p++));
 	    SKIP_BLANKS(p);
-	    f = getFuncList(funcname->ptr, w3mFuncList, w3mNFuncList);
+	    f = getFuncList(funcname->ptr);
 	    if (f >= 0) {
 		tmp = Strnew_charp(p);
 		Strchop(tmp);

@@ -1,4 +1,4 @@
-/* $Id: hash.c,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: hash.c,v 1.4 2001/12/10 17:02:44 ukai Exp $ */
 #include <string.h>
 #include "hash.h"
 #include "gc.h"
@@ -25,5 +25,6 @@ hashfunc(char *s)
 /* *INDENT-OFF* */
 defhashfunc(char *, int, si)
 defhashfunc(char *, char *, ss)
-defhashfunc(char *, void *, hist)
+defhashfunc(char *, void *, sv)
+defhashfunc_i(int, void *, iv)
 /* *INDENT-ON* */

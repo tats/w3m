@@ -1,4 +1,4 @@
-/* $Id: history.h,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: history.h,v 1.4 2001/12/10 17:02:44 ukai Exp $ */
 #ifndef HISTORY_H
 #define HISTORY_H
 
@@ -14,7 +14,7 @@ typedef GeneralList HistList;
 typedef struct {
     HistList *list;
     HistItem *current;
-    Hash_hist *hash;
+    Hash_sv *hash;
 } Hist;
 
 extern Hist *newHist();

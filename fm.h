@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.27 2001/12/09 13:59:04 ukai Exp $ */
+/* $Id: fm.h,v 1.28 2001/12/10 17:02:44 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -640,7 +640,6 @@ extern char EscDKeymap[];
 extern char PcKeymap[];
 #endif
 extern FuncList w3mFuncList[];
-extern KeyList w3mKeyList;
 
 global char *HTTP_proxy init(NULL);
 #ifdef USE_GOPHER

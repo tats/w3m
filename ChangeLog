@@ -1,3 +1,52 @@
+2001-12-11  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02651] search keymap using hash
+	* XMakefile (func.c): depends functable.c funcname1.h
+	* XMakefile (functable.c): generated from funcname.tab
+	* functable.awk: added
+	* fm.h (w3mKeyList): deleted
+	* func.c (w3mKeyList): ditto
+	* file.c (readHeader): change getFuncList()
+	* func.c (w3mNFuncList): deleted
+	* func.c (functable.c): include
+	* func.c (initKeymap): no need to count w3mFuncList
+	* func.c (initKeymap): change getFuncList()
+	* func.c (initKeymap): put data to keyData hashtable
+	* func.c (countFuncList): deleted
+	* func.c (getFuncList): use getHash_si()
+	* func.c (getKeyData): use getHash_iv()
+	* func.c (addKeyList): deleted
+	* func.c (searchKeyList): deleted
+	* func.h (textlist.h): include
+	* func.h (hash.h): include
+	* func.h (KEY_HASH_SIZE): added
+	* func.h (KeyListItem): deleted
+	* func.h (KeyList): deleted
+	* hash.c: s/hist/sv/
+	* hash.c: add defhashfunc_i(int, void *, iv)
+	* hash.h: s/hist/sv/
+	* hash.h: defhash(int, void *, iv)
+	* hash.h (putHash_*): added
+	* hash.h (getHash_*): added
+	* hash.h (defhashfunc_i): added
+	* history.c (pushHashHist): s/hist/sv/
+	* history.c (getHashHist): s/hist/sv/
+	* history.h (Hist): s/hist/sv/
+	* main.c (searchKeyData): item deleted
+	* main.c (searchKeyData): data added
+	* main.c (searchKeyData): use getKayData() instead of searchKeyList()
+	* main.c (setAlarm): w3mNFuncList deleted
+	* main.c (setAlarm): change getFuncList()
+	* menu.c (w3mNFuncList): deleted
+	* menu.c (w3mFuncList): deleted
+	* menu.c (initMenu): no need to count w3mFuncList
+	* menu.c (setMenuItem): change getFuncList()
+	* proto.h (countFuncList): deleted
+	* proto.h (getFuncList): change args
+	* proto.h (addKeyList): deleted
+	* proto.h (searchKeyList): deleted
+	* proto.h (getKeyData): added
+
 2001-12-11  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02650]
@@ -1150,4 +1199,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.123 2001/12/10 16:29:37 ukai Exp $
+$Id: ChangeLog,v 1.124 2001/12/10 17:02:43 ukai Exp $

@@ -4,6 +4,7 @@ config.param
 funcname.c
 funcname1.h
 funcname2.h
+functable.c
 tagtable.c
 inflate
 mktable

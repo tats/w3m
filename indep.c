@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.16 2001/12/10 15:27:59 ukai Exp $ */
+/* $Id: indep.c,v 1.17 2001/12/10 17:02:44 ukai Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>
@@ -33,7 +33,7 @@ allocStr(const char *s, int len)
 int
 strCmp(const void *s1, const void *s2)
 {
-    return strcmp(*(const char **)s1,  *(const char **)s2);
+    return strcmp(*(const char **)s1, *(const char **)s2);
 }
 
 char *

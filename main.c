@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.33 2001/12/06 15:31:58 ukai Exp $ */
+/* $Id: main.c,v 1.34 2001/12/10 17:02:44 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4615,7 +4615,7 @@ set_buffer_environ(Buffer *buf)
 char *
 searchKeyData(void)
 {
-    KeyListItem *item;
+    char *data;
 
     if (CurrentKeyData != NULL && *CurrentKeyData != '\0')
 	return allocStr(CurrentKeyData, -1);
@@ -4625,10 +4625,10 @@ searchKeyData(void)
 #endif
     if (CurrentKey < 0)
 	return NULL;
-    item = searchKeyList(&w3mKeyList, CurrentKey);
-    if (item == NULL || item->data == NULL || *item->data == '\0')
+    data = getKeyData(CurrentKey);
+    if (data == NULL || *data == '\0')
 	return NULL;
-    return allocStr(item->data, -1);
+    return allocStr(data, -1);
 }
 
 static int
@@ -4700,7 +4700,6 @@ setAlarm(void)
 {
     char *data;
     int sec = 0, cmd = -1;
-    extern int w3mNFuncList;
 
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     data = searchKeyData();
@@ -4714,7 +4713,7 @@ setAlarm(void)
     if (*data != '\0') {
 	sec = atoi(getWord(&data));
 	if (sec > 0)
-	    cmd = getFuncList(getWord(&data), w3mFuncList, w3mNFuncList);
+	    cmd = getFuncList(getWord(&data));
     }
     if (cmd >= 0) {
 	setAlarmEvent(sec, AL_EXPLICIT, cmd, getQWord(&data));

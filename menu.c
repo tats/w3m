@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.8 2001/11/30 10:10:24 ukai Exp $ */
+/* $Id: menu.c,v 1.9 2001/12/10 17:02:44 ukai Exp $ */
 /* 
  * w3m menu.c
  */
@@ -329,8 +329,6 @@ static MenuItem MainMenuItem[] = {
 
 /* --- MainMenu (END) --- */
 
-extern int w3mNFuncList;
-extern FuncList w3mFuncList[];
 static MenuList *w3mMenuList;
 
 static Menu *CurrentMenu = NULL;
@@ -1421,9 +1419,6 @@ initMenu(void)
     if ((mf = fopen(rcFile(MENU_FILE), "rt")) == NULL)
 	goto create_menu;
 
-    if (!w3mNFuncList)
-	w3mNFuncList = countFuncList(w3mFuncList);
-
     in_menu = 0;
     while (!feof(mf)) {
 	line = Strfgets(mf);
@@ -1501,7 +1496,7 @@ setMenuItem(MenuItem *item, char *type, char *line)
 	    return -1;
 	item->type = MENU_FUNC;
 	item->label = label;
-	f = getFuncList(func, w3mFuncList, w3mNFuncList);
+	f = getFuncList(func);
 	item->func = w3mFuncList[(f >= 0) ? f : FUNCNAME_nulcmd].func;
 	item->keys = keys;
 	item->data = data;

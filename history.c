@@ -1,4 +1,4 @@
-/* $Id: history.c,v 1.5 2001/12/02 16:26:08 ukai Exp $ */
+/* $Id: history.c,v 1.6 2001/12/10 17:02:44 ukai Exp $ */
 #include "fm.h"
 
 #ifdef USE_HISTORY
@@ -140,7 +140,7 @@ pushHashHist(Hist *hist, char *ptr)
 	hist->list->nitem--;
     }
     item = pushHist(hist, ptr);
-    putHash_hist(hist->hash, ptr, (void *)item);
+    putHash_sv(hist->hash, ptr, (void *)item);
     return item;
 }
 
@@ -152,11 +152,11 @@ getHashHist(Hist *hist, char *ptr)
     if (hist == NULL || hist->list == NULL)
 	return NULL;
     if (hist->hash == NULL) {
-	hist->hash = newHash_hist(HIST_HASH_SIZE);
+	hist->hash = newHash_sv(HIST_HASH_SIZE);
 	for (item = hist->list->first; item; item = item->next)
-	    putHash_hist(hist->hash, (char *)item->ptr, (void *)item);
+	    putHash_sv(hist->hash, (char *)item->ptr, (void *)item);
     }
-    return (HistItem *)getHash_hist(hist->hash, ptr, NULL);
+    return (HistItem *)getHash_sv(hist->hash, ptr, NULL);
 }
 
 char *

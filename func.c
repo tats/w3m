@@ -1,4 +1,4 @@
-/* $Id: func.c,v 1.6 2001/12/03 18:29:37 ukai Exp $ */
+/* $Id: func.c,v 1.7 2001/12/10 17:02:44 ukai Exp $ */
 /*
  * w3m func.c
  */
@@ -10,11 +10,10 @@
 #include "myctype.h"
 
 #include "funcname.c"
-int w3mNFuncList = 0;
+#include "functable.c"
 
-KeyList w3mKeyList = {
-    NULL, 0, 0
-};
+#define KEYDATA_HASH_SIZE 16
+static Hash_iv *keyData = NULL;
 
 void
 initKeymap(void)
@@ -27,9 +26,6 @@ initKeymap(void)
     int lineno;
     int verbose = 1;
     extern int str_to_bool(char *value, int old);
-
-    if (!w3mNFuncList)
-	w3mNFuncList = countFuncList(w3mFuncList);
 
     if ((kf = fopen(rcFile(KEYMAP_FILE), "rt")) == NULL)
 	return;
@@ -70,7 +66,7 @@ initKeymap(void)
 	    continue;
 	}
 	s = getWord(&p);
-	f = getFuncList(s, w3mFuncList, w3mNFuncList);
+	f = getFuncList(s);
 	if (f < 0) {
 	    emsg = Sprintf("line %d: invalid command '%s'", lineno, s)->ptr;
 	    record_err_message(emsg);
@@ -87,41 +83,27 @@ initKeymap(void)
 	else
 	    GlobalKeymap[c] = f;
 	s = getQWord(&p);
-	addKeyList(&w3mKeyList, c, s);
+	if (*s) {
+	    if (keyData == NULL)
+		keyData = newHash_iv(KEYDATA_HASH_SIZE);
+	    putHash_iv(keyData, c, (void *)s);
+	}
     }
     fclose(kf);
 }
 
 int
-countFuncList(FuncList *list)
+getFuncList(char *id)
 {
-    int i;
-
-    for (i = 0; list->id != NULL; i++, list++) ;
-    return i;
+    return getHash_si(&functable, id, -1);
 }
 
-int
-getFuncList(char *id, FuncList *list, int nlist)
+char *
+getKeyData(int key)
 {
-    int i, is, ie, m;
-
-    if (id == NULL || *id == '\0' || nlist <= 0)
-	return -1;
-
-    is = 0;
-    ie = nlist - 1;
-    while (1) {
-	i = is + (ie - is) / 2;
-	if ((m = strcmp(id, list[i].id)) == 0)
-	    return i;
-	else if (is >= ie)
-	    return -1;
-	else if (m > 0)
-	    is = i + 1;
-	else
-	    ie = i - 1;
-    }
+    if (keyData == NULL)
+	return NULL;
+    return (char *)getHash_iv(keyData, key, NULL);
 }
 
 int
@@ -238,46 +220,6 @@ getKey(char *s)
 	return esc | *s;
     else
 	return -1;
-}
-
-void
-addKeyList(KeyList *list, int key, char *data)
-{
-    KeyListItem *item;
-
-    if (data == NULL || *data == '\0')
-	data = NULL;
-    else
-	data = allocStr(data, -1);
-    item = searchKeyList(list, key);
-    if (item == NULL) {
-	if (data == NULL)
-	    return;
-	list->nitem++;
-	if (list->nitem > list->size) {
-	    list->size = (list->size >= 2) ? (list->size * 3 / 2) : 2;
-	    list->item = New_Reuse(KeyListItem, list->item,
-				   list->size * sizeof(KeyListItem));
-	}
-	item = &(list->item[list->nitem - 1]);
-	item->key = key;
-    }
-    item->data = data;
-}
-
-KeyListItem *
-searchKeyList(KeyList *list, int key)
-{
-    int i;
-    KeyListItem *item;
-
-    if (list == NULL)
-	return NULL;
-    for (i = 0, item = list->item; i < list->nitem; i++, item++) {
-	if (key == item->key)
-	    return item;
-    }
-    return NULL;
 }
 
 char *

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.5 2001/11/16 03:58:49 ukai Exp $ */
+/* $Id: main.c,v 1.6 2001/11/16 17:25:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4005,6 +4005,7 @@ chkURL(void)
 	"news:[^<> 	][^<> 	]*",
 	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_NNTP */
+       "mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
 	NULL,
     };
     int i;

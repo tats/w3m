@@ -14,6 +14,10 @@ forwardSearch(Buffer * buf, char *str)
 	return FALSE;
     }
     l = begin = buf->currentLine;
+    if (l == NULL) {
+	disp_message("Not found", FALSE);
+	return FALSE;
+    }
     pos = buf->pos + 1;
 #ifdef JP_CHARSET
     if (l->propBuf[pos] & PC_KANJI2)
@@ -78,6 +82,10 @@ backwardSearch(Buffer * buf, char *str)
 	return FALSE;
     }
     l = begin = buf->currentLine;
+    if (l == NULL) {
+        disp_message("Not found", FALSE);
+        return FALSE;
+    }
     if (buf->pos > 0) {
 	pos = buf->pos - 1;
 #ifdef JP_CHARSET

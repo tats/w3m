@@ -1,3 +1,11 @@
+2001-11-16  Tsutomu Okada <okada@furuno.co.jp>
+
+	* main.c (chkURL): add mailto: like pattern to mark as anchor
+
+	* search.c (forwardSearch): check whether currentLine is NULL 
+
+	* search.c (backwardSearch): ditto
+
 2001-11-16  Dai Sato  <satodai@dog.intcul.tohoku.ac.jp>
 
 	* configure: [w3m-dev-en 00641] Re: w3m-0.2.1-inu-1.6

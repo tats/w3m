@@ -1,137 +1,123 @@
-/* $Id: fb_gdkpixbuf.c,v 1.5 2002/07/18 15:12:06 ukai Exp $ */
+/* $Id: fb_gdkpixbuf.c,v 1.6 2002/07/22 16:17:32 ukai Exp $ */
 /**************************************************************************
-                fb_gdkpixbuf.c 0.2 Copyright (C) 2002, hito
+                fb_gdkpixbuf.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
 
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "fb.h"
 #include "fb_img.h"
 
-static void set_prm(IMAGE * img);
+static void draw(FB_IMAGE * img, GdkPixbuf * pixbuf);
+static GdkPixbuf *resize_image(GdkPixbuf * pixbuf, int width, int height);
 
-IMAGE *
-fb_load_image(char *filename, int w, int h)
+int
+get_image_size(char *filename, int *w, int *h)
 {
     GdkPixbuf *pixbuf;
-    IMAGE *img;
+
+    if (filename == NULL)
+	return 1;
+
+    pixbuf = gdk_pixbuf_new_from_file(filename);
+    if (pixbuf == NULL)
+	return 1;
+
+    *w = gdk_pixbuf_get_width(pixbuf);
+    *h = gdk_pixbuf_get_height(pixbuf);
+
+    gdk_pixbuf_finalize(pixbuf);
+    return 0;
+}
+
+FB_IMAGE *
+fb_image_load(char *filename, int w, int h)
+{
+    GdkPixbuf *pixbuf;
+    FB_IMAGE *img;
 
     if (filename == NULL)
 	return NULL;
 
-    img = malloc(sizeof(*img));
-    if (img == NULL)
+    pixbuf = gdk_pixbuf_new_from_file(filename);
+    if (pixbuf == NULL)
 	return NULL;
 
-    pixbuf = gdk_pixbuf_new_from_file(filename);
-    if (pixbuf == NULL) {
-	free(img);
+    pixbuf = resize_image(pixbuf, w, h);
+    if (pixbuf == NULL)
+	return NULL;
+
+    w = gdk_pixbuf_get_width(pixbuf);
+    h = gdk_pixbuf_get_height(pixbuf);
+
+    img = fb_image_new(w, h);
+
+    if (img == NULL) {
+	gdk_pixbuf_finalize(pixbuf);
 	return NULL;
     }
 
-    img->pixbuf = pixbuf;
-    set_prm(img);
+    draw(img, pixbuf);
 
-    fb_resize_image(img, w, h);
+    gdk_pixbuf_finalize(pixbuf);
 
     return img;
 }
 
-int
-fb_draw_image(IMAGE * img, int x, int y, int sx, int sy, int width, int height)
+void
+draw(FB_IMAGE * img, GdkPixbuf * pixbuf)
 {
-    int i, j, r, g, b, offset, bpp;
+    int i, j, r, g, b, offset, bpp, rowstride;
+    guchar *pixels;
+    gboolean alpha;
 
-    if (img == NULL)
-	return 1;
+    if (img == NULL || pixbuf == NULL)
+	return;
 
-    bpp = img->rowstride / img->width;
-    for (j = sy; j < sy + height && j < img->height; j++) {
-	offset = j * img->rowstride + bpp * sx;
-	for (i = sx; i < sx + width && i < img->width; i++, offset += bpp) {
-	    r = img->pixels[offset];
-	    g = img->pixels[offset + 1];
-	    b = img->pixels[offset + 2];
-	    if (img->alpha && img->pixels[offset + 3] == 0)
-		fb_pset(i + x - sx, j + y - sy, bg_r, bg_g, bg_b);
+    rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+    pixels = gdk_pixbuf_get_pixels(pixbuf);
+    alpha = gdk_pixbuf_get_has_alpha(pixbuf);
+
+    bpp = rowstride / img->width;
+    for (j = 0; j < img->height; j++) {
+	offset = j * rowstride;
+	for (i = 0; i < img->width; i++, offset += bpp) {
+	    r = pixels[offset];
+	    g = pixels[offset + 1];
+	    b = pixels[offset + 2];
+	    if (alpha && pixels[offset + 3] == 0)
+		fb_image_pset(img, i, j, bg_r, bg_g, bg_b);
 	    else
-		fb_pset(i + x - sx, j + y - sy, r, g, b);
+		fb_image_pset(img, i, j, r, g, b);
 	}
     }
-    return 0;
+    return;
 }
 
-int
-fb_resize_image(IMAGE * img, int width, int height)
+static GdkPixbuf *
+resize_image(GdkPixbuf * pixbuf, int width, int height)
 {
-    GdkPixbuf *pixbuf;
-    if (width < 1 || height < 1 || img == NULL)
-	return 1;
+    GdkPixbuf * resized_pixbuf;
+    int w, h;
 
-    if (width == img->width && height == img->height)
-	return 0;
-
-    pixbuf =
-	gdk_pixbuf_scale_simple(img->pixbuf, width, height, GDK_INTERP_HYPER);
     if (pixbuf == NULL)
-	return 1;
-    gdk_pixbuf_finalize(img->pixbuf);
-
-    img->pixbuf = pixbuf;
-    set_prm(img);
-    return 0;
-}
-
-void
-fb_free_image(IMAGE * img)
-{
-    if (img == NULL)
-	return;
-
-    gdk_pixbuf_finalize(img->pixbuf);
-    free(img);
-}
-
-IMAGE *
-fb_dup_image(IMAGE * img)
-{
-    GdkPixbuf *pixbuf;
-    IMAGE *new_img;
-
-    if (img == NULL)
 	return NULL;
 
-    new_img = malloc(sizeof(*img));
-    if (new_img == NULL)
+    w = gdk_pixbuf_get_width(pixbuf);
+    h = gdk_pixbuf_get_height(pixbuf);
+
+    if (width < 1 || height < 1)
+	return pixbuf;
+
+    if (w == width && h == height)
+	return pixbuf;
+
+    resized_pixbuf = 
+	gdk_pixbuf_scale_simple(pixbuf, width, height, GDK_INTERP_HYPER);
+
+    gdk_pixbuf_finalize(pixbuf);
+
+    if (resized_pixbuf == NULL)
 	return NULL;
 
-    pixbuf = gdk_pixbuf_copy(img->pixbuf);
-    if (pixbuf == NULL) {
-	free(new_img);
-	return NULL;
-    }
-
-    new_img->pixbuf = pixbuf;
-    set_prm(new_img);
-    return new_img;
-}
-
-int
-fb_rotate_image(IMAGE * img, int angle)
-{
-    return 1;
-}
-
-static void
-set_prm(IMAGE * img)
-{
-    GdkPixbuf *pixbuf;
-
-    if (img == NULL)
-	return;
-    pixbuf = img->pixbuf;
-
-    img->pixels = gdk_pixbuf_get_pixels(pixbuf);
-    img->width = gdk_pixbuf_get_width(pixbuf);
-    img->height = gdk_pixbuf_get_height(pixbuf);
-    img->alpha = gdk_pixbuf_get_has_alpha(pixbuf);
-    img->rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+    return resized_pixbuf;
 }

@@ -1,4 +1,4 @@
-/* $Id: w3mimgsize.c,v 1.2 2002/07/17 20:58:48 ukai Exp $ */
+/* $Id: w3mimgsize.c,v 1.3 2002/07/22 16:17:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,6 +10,7 @@ main(int argc, char **argv)
 {
     w3mimg_op *w_op = NULL;
     W3MImage img;
+    int w, h;
 
     fclose(stderr);
     if (argc < 2)
@@ -21,8 +22,8 @@ main(int argc, char **argv)
     if (!w_op->init(w_op))
 	exit(1);
 
-    if (!w_op->load_image(w_op, &img, argv[1], -1, -1))
+    if (!w_op->get_image_size(w_op, &img, argv[1], &w, &h))
 	exit(1);
-    printf("%d %d\n", img.width, img.height);
+    printf("%d %d\n", w, h);
     exit(0);
 }

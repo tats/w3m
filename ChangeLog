@@ -1,3 +1,22 @@
+2002-07-23  Hiroyuki Ito <hito@crl.go.jp>
+	
+	* [w3m-dev 03279] w3m-img for framebuffer update
+	  http://homepage3.nifty.com/slokar/fb/w3mfb.patch.gz
+	* w3mimg/fb/readme.txt: update
+	* w3mimg/fb/fb.c: update
+	* w3mimg/fb/fb.h: update
+	* w3mimg/fb/fb_gdkpixbuf.c: update
+	* w3mimg/fb/fb_img.c: update
+	* w3mimg/fb/fb_img.h: update
+	* w3mimg/fb/fb_imlib2.c: update
+	* w3mimg/fb/fb_w3mimg.c: update
+	* w3mimg/fb/fb_gdkpixbuf.h: deleted
+	* w3mimg/fb/fb_imlib2.h: deleted
+	* w3mimg/w3mimg.h (w3mimg_op): add get_image_size()
+	* w3mimg/x11/x11_w3mimg.c: update
+	* w3mimgdisplay.c (main): use get_image_size()
+	* w3mimgsize.c (main): use get_image_size()
+
 2002-07-19  Hideyuki SHIRAI <shirai@rdmg.mgcs.mei.co.jp>
 
 	* [w3m-dev 03277] compile error on Solaris7
@@ -3627,4 +3646,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.411 2002/07/19 03:25:56 ukai Exp $
+$Id: ChangeLog,v 1.412 2002/07/22 16:17:32 ukai Exp $

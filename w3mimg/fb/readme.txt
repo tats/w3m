@@ -63,6 +63,10 @@ original readme.txt
   ・2002/07/07 ImageMagick 版動作確認
   ・2002/07/10 GdkPixbuf 版動作確認
   ・2002/07/11 Imlib2 版動作確認
+  ・2002/07/15 Version 0.1
+               公開
+  ・2002/07/22 Version 0.2
+               描画の高速化
 
 ■連絡先
   ZXB01226@nifty.com

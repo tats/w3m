@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.4 2002/07/18 15:15:32 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.5 2002/07/22 16:17:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -194,6 +194,27 @@ x11_free_image(w3mimg_op * self, W3MImage * img)
     }
 }
 
+static int
+x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w, int *h)
+{
+    struct x11_info *xi;
+    ImlibImage *im;
+
+    if (self == NULL)
+	return 0;
+    xi = (struct x11_info *)self->priv;
+    if (xi == NULL)
+	return 0;
+
+    im = Imlib_load_image(xi->id, fname);
+    if (!im)
+	return 0;
+
+    *w = im->rgb_width;
+    *h = im->rgb_height;
+    Imlib_kill_image(xi->id, im);
+    return 1;
+}
 
 /* *INDENT-OFF* */
 /*
@@ -319,6 +340,7 @@ w3mimg_x11open()
     wop->load_image = x11_load_image;
     wop->show_image = x11_show_image;
     wop->free_image = x11_free_image;
+    wop->get_image_size = x11_get_image_size;
 
     return wop;
   error:

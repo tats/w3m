@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.1 2002/07/17 20:58:48 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.2 2002/07/22 16:17:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -39,7 +39,7 @@ w3mfb_set_background(w3mimg_op *self, char *background)
     if (background) {
 	int r, g, b;
 	if (sscanf(background, "#%02x%02x%02x", &r, &g, &b) == 3)
-	    fb_set_bg(r, g, b);
+	    fb_image_set_bg(r, g, b);
     }
 }
 
@@ -58,11 +58,11 @@ w3mfb_close(w3mimg_op *self)
 static int
 w3mfb_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
 {
-    IMAGE *im;
+    FB_IMAGE *im;
 
     if (self == NULL)
 	return 0;
-    im = fb_load_image(fname, w, h);
+    im = fb_image_load(fname, w, h);
     if (!im)
 	return 0;
     img->pixmap = im;
@@ -79,7 +79,7 @@ w3mfb_show_image(w3mimg_op *self, W3MImage *img, int sx, int sy,
     if (self == NULL)
 	return 0;
 
-    fb_draw_image((IMAGE *)img->pixmap,
+    fb_image_draw((FB_IMAGE *)img->pixmap,
 		  x + self->offset_x, y + self->offset_y,
 		  sx, sy,
 		  (sw ? sw : img->width),
@@ -93,11 +93,25 @@ w3mfb_free_image(w3mimg_op *self, W3MImage *img)
     if (self == NULL)
 	return;
     if (img && img->pixmap) {
-	fb_free_image((IMAGE *)img->pixmap);
+	fb_image_free((FB_IMAGE *)img->pixmap);
 	img->pixmap = NULL;
 	img->width = 0;
 	img->height = 0;
     }
+}
+
+static int
+w3mfb_get_image_size(w3mimg_op *self, W3MImage *img, 
+		     char *fname, int *w, int *h)
+{
+    int i;
+
+    if (self == NULL)
+	return 0;
+    i = get_image_size(fname, w, h);
+    if (i)
+	return 0;
+    return 1;
 }
 
 w3mimg_op *
@@ -125,6 +139,7 @@ w3mimg_fbopen()
     wop->load_image = w3mfb_load_image;
     wop->show_image = w3mfb_show_image;
     wop->free_image = w3mfb_free_image;
+    wop->get_image_size = w3mfb_get_image_size;
 
     return wop;
 error:

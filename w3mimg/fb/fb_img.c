@@ -1,4 +1,4 @@
-/* $Id: fb_img.c,v 1.3 2002/07/18 15:13:13 ukai Exp $ */
+/* $Id: fb_img.c,v 1.4 2002/07/22 16:17:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -18,13 +18,13 @@ static int bg_r = 0, bg_g = 0, bg_b = 0;
 #endif
 
 int
-fb_draw_image_simple(IMAGE * img, int x, int y)
+fb_image_draw_simple(FB_IMAGE * img, int x, int y)
 {
-    return fb_draw_image(img, x, y, 0, 0, img->width, img->height);
+    return fb_image_draw(img, x, y, 0, 0, img->width, img->height);
 }
 
 void
-fb_set_bg(int r, int g, int b)
+fb_image_set_bg(int r, int g, int b)
 {
     bg_r = r;
     bg_g = g;

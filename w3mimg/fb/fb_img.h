@@ -1,24 +1,11 @@
-/* $Id: fb_img.h,v 1.3 2002/07/18 15:01:31 ukai Exp $ */
+/* $Id: fb_img.h,v 1.4 2002/07/22 16:17:32 ukai Exp $ */
 #ifndef fb_img_header
 #define fb_img_header
-#include "config.h"
+#include "fb.h"
 
-#if defined(USE_IMLIB2)
-#include "w3mimg/fb/fb_imlib2.h"
-#elif defined(USE_GDKPIXBUF)
-#include "w3mimg/fb/fb_gdkpixbuf.h"
-#else
-#error no Imlib2 and GdkPixbuf support
-#endif
-
-IMAGE *fb_load_image(char *filename, int w, int h);
-int fb_draw_image(IMAGE * img, int x, int y, int sx, int sy, int width,
-		  int height);
-int fb_draw_image_simple(IMAGE * img, int x, int y);
-int fb_resize_image(IMAGE * img, int width, int height);
-void fb_free_image(IMAGE * img);
-void fb_set_bg(int r, int g, int b);
-IMAGE *fb_dup_image(IMAGE * img);
-int fb_rotate_image(IMAGE * img, int angle);
+FB_IMAGE *fb_image_load(char *filename, int w, int h);
+int fb_image_draw_simple(FB_IMAGE * img, int x, int y);
+void fb_image_set_bg(int r, int g, int b);
+int get_image_size(char *filename, int *w, int *h);
 
 #endif

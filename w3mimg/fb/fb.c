@@ -1,6 +1,6 @@
-/* $Id: fb.c,v 1.3 2002/07/18 15:10:52 ukai Exp $ */
+/* $Id: fb.c,v 1.4 2002/07/22 16:17:32 ukai Exp $ */
 /**************************************************************************
-                fb.c 0.2 Copyright (C) 2002, hito
+                fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
 
 #include <stdio.h>
@@ -21,6 +21,8 @@
 #define FALSE 0
 #define TRUE  1
 
+#define IMAGE_SIZE_MAX 10000
+
 static struct fb_cmap *fb_cmap_create(struct fb_fix_screeninfo *,
 				      struct fb_var_screeninfo *);
 static void fb_cmap_destroy(struct fb_cmap *cmap);
@@ -34,6 +36,7 @@ static struct fb_var_screeninfo vscinfo;
 static struct fb_cmap *cmap = NULL;
 static int is_open = FALSE;
 static int fbfp = -1;
+static size_t pixel_size = 0;
 static unsigned char *buf = NULL;
 
 int
@@ -75,51 +78,6 @@ fb_open(void)
 	goto ERR_END;
     }
 
-#if 0
-    if (fscinfo.visual == FB_VISUAL_PSEUDOCOLOR) {
-	printf("FB_VISUAL_PSEUDOCOLOR\n");
-	if (vscinfo.bits_per_pixel != 8) {
-	    fprintf(stderr, "未対応フレームバッファ\n");
-	    goto ERR_END;
-	}
-
-	if (fb_cmap_get(fbfp, cmap)) {
-	    fprintf(stderr, "カラーマップ獲得失敗\n");
-	    //      fb_cmap_destroy(cmap);
-	    goto ERR_END;
-	}
-	//    fb_cmap_disp(cmap);
-
-	if (cmap->len < (LINUX_LOGO_COLORS + LOGO_COLOR_OFFSET)) {
-	    fprintf(stderr, "色の割付領域が不足しています\n");
-	    goto ERR_END;
-	}
-
-	cmap->start = LOGO_COLOR_OFFSET;
-	cmap->len = LINUX_LOGO_COLORS;
-
-	for (lp = 0; lp < LINUX_LOGO_COLORS; lp++) {
-	    if (cmap->red) {
-		*(cmap->red + lp) =
-		    (linux_logo_red[lp] << CHAR_BIT) + linux_logo_red[lp];
-	    }
-	    if (cmap->green) {
-		*(cmap->green + lp) =
-		    (linux_logo_green[lp] << CHAR_BIT) + linux_logo_green[lp];
-	    }
-	    if (cmap->blue) {
-		*(cmap->blue + lp) =
-		    (linux_logo_blue[lp] << CHAR_BIT) + linux_logo_blue[lp];
-	    }
-	}
-	if (fb_cmap_set(fbfp, cmap)) {
-	    fb_cmap_destroy(cmap);
-	    fprintf(stderr, "カラーマップ獲得失敗\n");
-	    goto ERR_END;
-	}
-    }
-#endif
-
     if (!(fscinfo.visual == FB_VISUAL_TRUECOLOR &&
 	  (vscinfo.bits_per_pixel == 15 ||
 	   vscinfo.bits_per_pixel == 16 ||
@@ -127,6 +85,8 @@ fb_open(void)
 	fprintf(stderr, "This type of framebuffer is not supported.\n");
 	goto ERR_END;
     }
+
+    pixel_size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
 
     is_open = TRUE;
     return 0;
@@ -158,20 +118,150 @@ fb_close(void)
     is_open = FALSE;
 }
 
+FB_IMAGE *
+fb_image_new(int width, int height)
+{
+    FB_IMAGE *image;
+
+    if (is_open != TRUE)
+	return NULL;
+
+    if (width > IMAGE_SIZE_MAX || height > IMAGE_SIZE_MAX)
+	return NULL;
+
+    image = malloc(sizeof(*image));
+    if (image == NULL)
+	return NULL;
+
+    image->data = malloc(width * height * pixel_size);
+    if (image->data == NULL) {
+	free(image);
+	return NULL;
+    }
+
+    image->width = width;
+    image->height = height;
+    image->rowstride = width * pixel_size;
+    image->len = width * height * pixel_size;
+
+    return image;
+}
+
+void
+fb_image_free(FB_IMAGE * image)
+{
+    if (image == NULL)
+	return;
+
+    if (image->data != NULL)
+	free(image->data);
+
+    free(image);
+}
+
+void
+fb_image_pset(FB_IMAGE * image, int x, int y, int r, int g, int b)
+{
+    unsigned long work;
+    int offset;
+
+    if (image == NULL || is_open != TRUE || x >= image->width
+	|| y >= image->height)
+	return;
+
+    offset = image->rowstride * y + pixel_size * x;
+
+    work = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.
+	    offset) +
+	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
+	 offset) +
+	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+
+    memcpy(image->data + offset, &work, pixel_size);
+}
+
+int
+fb_image_draw(FB_IMAGE * image, int x, int y, int sx, int sy, int width,
+	      int height)
+{
+    int i, offset_fb, offset_img;
+
+    if (image == NULL || is_open != TRUE ||
+	sx > image->width || sy > image->height ||
+	x > fb_width() || y > fb_height())
+	return 1;
+
+    if (x + width > fb_width())
+	width = fb_width() - x;
+
+    if (y + height > fb_height())
+	height = fb_height() - y;
+
+    offset_fb = fscinfo.line_length * y + pixel_size * x;
+    offset_img = image->rowstride * sy + pixel_size * sx;
+    for (i = 0; i < height; i++) {
+	memcpy(buf + offset_fb, image->data + offset_img, pixel_size * width);
+	offset_fb += fscinfo.line_length;
+	offset_img += image->rowstride;
+    }
+
+    return 0;
+}
+
+void
+fb_image_rotete(FB_IMAGE * image, int direction)
+{
+    unsigned char *src, *dest, *tmp;
+    int x, y, i, ofst;
+
+    if (image == NULL)
+	return;
+
+    tmp = malloc(image->len);
+    if (tmp == NULL)
+	return;
+
+    src = image->data;
+    dest = tmp;
+
+    if (direction) {
+	int ofst2 = image->rowstride * (image->height - 1);
+	for (x = 0; x < image->rowstride; x += pixel_size) {
+	    ofst = ofst2 + x;
+	    for (y = image->height - 1; y >= 0; y--) {
+		memcpy(dest, src + ofst, pixel_size);
+		dest += pixel_size;
+		ofst -= image->rowstride;
+	    }
+	}
+    } else {
+	for (x = image->rowstride - pixel_size; x >= 0; x -= pixel_size) {
+	    ofst = x;
+	    for (y = 0; y < image->height; y++) {
+		memcpy(dest, src + ofst, pixel_size);
+		dest += pixel_size;
+		ofst += image->rowstride;
+	    }
+	}
+    }
+    memcpy(src, tmp, image->len);
+    i = image->width;
+    image->width = image->height;
+    image->height = i;
+    image->rowstride = image->width * pixel_size;
+    free(tmp);
+}
+
 void
 fb_pset(int x, int y, int r, int g, int b)
 {
     unsigned long work;
     int offset;
-    static size_t size = 0;
 
     if (is_open != TRUE || x >= vscinfo.xres || y >= vscinfo.yres)
 	return;
 
-    if (size == 0)
-	size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
-
-    offset = fscinfo.line_length * y + size * x;
+    offset = fscinfo.line_length * y + pixel_size * x;
 
     if (offset >= fscinfo.smem_len)
 	return;
@@ -180,7 +270,7 @@ fb_pset(int x, int y, int r, int g, int b)
 	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
 	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
 	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
-    memcpy(buf + offset, &work, size);
+    memcpy(buf + offset, &work, pixel_size);
 }
 
 int
@@ -188,19 +278,16 @@ fb_get_color(int x, int y, int *r, int *g, int *b)
 {
     unsigned long work = 0;
     int offset;
-    static size_t size = 0;
 
     if (is_open != TRUE || x >= vscinfo.xres || y >= vscinfo.yres)
 	return 1;
 
-    if (size == 0)
-	size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
+    offset = fscinfo.line_length * y + pixel_size * x;
 
-    offset = fscinfo.line_length * y + size * x;
     if (offset >= fscinfo.smem_len)
 	return 1;
 
-    memcpy(&work, buf + offset, size);
+    memcpy(&work, buf + offset, pixel_size);
 
     *r = ((work >> vscinfo.red.
 	   offset) & (0x000000ff >> (CHAR_BIT - vscinfo.red.length)))

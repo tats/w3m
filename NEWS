@@ -1,7 +1,9 @@
 w3m 0.3?
 
+* rc: default_url=0(empty) 1(current URL) 2(link URL)
+* GOTO_RELATIVE (M-u)
 * highlight for incremental search
-* support migemo (romaji search) [experimental]
+* support migemo (romaji search)
 * use w3mmail.cgi for mailto: URL
 * support external URI loader
 * support -dump_extra ftp://

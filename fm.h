@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.51 2002/02/19 15:25:19 ukai Exp $ */
+/* $Id: fm.h,v 1.52 2002/02/19 15:50:18 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -600,6 +600,7 @@ struct html_feed_environ {
 struct auth_cookie {
     Str host;
     int port;
+    Str file;
     Str realm;
     Str cookie;
     struct auth_cookie *next;

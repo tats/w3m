@@ -1,5 +1,26 @@
 2002-02-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 03057] Re: Bug#134350: w3m: Forgets (http auth) login information upon reload (or almost anything else)
+	* etc.c (find_auth): add `file'
+			check file as well
+	* etc.c (find_auth_cookie): add `file'
+	* etc.c (add_auth_cookie): add `file'
+	* file.c (AuthBasicCred): add "Basic "
+	* file.c (AuthDigestCred): add "Digest "
+	* file.c (getAuthCookie): if h_auth == NULL, get recorded cookie
+	* file.c (get_auth_cookie): get recorded cookie
+	* file.c (loadGeneralFile): don't clear add_auth_cookie_flag 
+				by redirection
+		add_auth_cookie if authorization is required and passed 
+	* fm.h (auth_cookie): add file
+	* ftp.c (openFTP): follow change auth_cookie
+	* proto.h (get_auth_cookie): added
+	* proto.h (find_auth_cookie): add `file'
+	* proto.h (add_auth_cookie): add `file'
+	* url.c (openURL): get_auth_cookie
+
+2002-02-20  Fumitoshi UKAI  <ukai@debian.or.jp>
+
 	* [w3m-dev 03058] mailer
 	* NEWS: rc: mailer
 	* fm.h (Mailer): change default
@@ -2955,4 +2976,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.320 2002/02/19 15:25:19 ukai Exp $
+$Id: ChangeLog,v 1.321 2002/02/19 15:50:17 ukai Exp $

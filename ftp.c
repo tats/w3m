@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.10 2002/01/11 20:05:58 ukai Exp $ */
+/* $Id: ftp.c,v 1.11 2002/02/19 15:50:18 ukai Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>
@@ -411,7 +411,7 @@ openFTP(ParsedURL *pu)
     if (pu->pass)
 	pass = pu->pass;
     else if (pu->user) {
-	pwd = find_auth_cookie(pu->host, pu->port, pu->user);
+	pwd = find_auth_cookie(pu->host, pu->port, pu->file, pu->user);
 	if (pwd == NULL) {
 	    if (fmInitialized) {
 		term_raw();
@@ -441,7 +441,7 @@ openFTP(ParsedURL *pu)
     if (FtpError(s))
 	return NULL;
     if (add_auth_cookie_flag)
-	add_auth_cookie(pu->host, pu->port, pu->user, pwd);
+	add_auth_cookie(pu->host, pu->port, pu->file, pu->user, pwd);
     if (pu->file == NULL || *pu->file == '\0')
 	goto ftp_dir;
     else

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.69 2002/02/08 11:18:10 ukai Exp $ */
+/* $Id: file.c,v 1.70 2002/02/19 15:50:18 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1006,7 +1006,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     Str s = Strdup(uname);
     Strcat_char(s, ':');
     Strcat(s, pw);
-    return encodeB(s->ptr);
+    return Strnew_m_charp("Basic ", encodeB(s->ptr)->ptr, NULL);
 }
 
 #ifdef USE_DIGEST_AUTH
@@ -1154,7 +1154,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
      *                          [nonce-count]  | [auth-param] )
      */
 
-    tmp = Strnew_m_charp("username=\"", uname->ptr, "\"", NULL);
+    tmp = Strnew_m_charp("Digest username=\"", uname->ptr, "\"", NULL);
     Strcat_m_charp(tmp, ", realm=",
 		   get_auth_param(ha->param, "realm")->ptr, NULL);
     Strcat_m_charp(tmp, ", nonce=",
@@ -1292,7 +1292,10 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     TextListItem *i, **i0;
     int a_found;
     int auth_header_len = strlen(auth_header);
-    char *realm = qstr_unquote(get_auth_param(hauth->param, "realm"))->ptr;
+    char *realm = NULL;
+
+    if (hauth)
+	realm = qstr_unquote(get_auth_param(hauth->param, "realm"))->ptr;
 
     a_found = FALSE;
     for (i0 = &(extra_header->first), i = *i0; i != NULL;
@@ -1303,6 +1306,8 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 	}
     }
     if (a_found) {
+	if (!realm)
+	    return NULL;
 	/* This means that *-Authenticate: header is received after
 	 * Authorization: header is sent to the server. 
 	 */
@@ -1318,8 +1323,8 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 				 * extra_header */
     }
     else
-	ss = find_auth_cookie(pu->host, pu->port, realm);
-    if (ss == NULL) {
+	ss = find_auth_cookie(pu->host, pu->port, pu->file, realm);
+    if (realm && ss == NULL) {
 	if (QuietMessage)
 	    return ss;
 	/* input username and password */
@@ -1372,13 +1377,20 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     }
     if (ss) {
 	tmp = Strnew_charp(auth_header);
-	Strcat_m_charp(tmp, " ", hauth->scheme, NULL);
-	Strcat(tmp, ss);
-	Strcat_charp(tmp, "\r\n");
+	Strcat_m_charp(tmp, " ", ss->ptr, "\r\n", NULL);
 	pushText(extra_header, tmp->ptr);
     }
     return ss;
 }
+
+void
+get_auth_cookie(char *auth_header,
+		TextList *extra_header, ParsedURL *pu, HRequest *hr,
+		FormList *request)
+{
+    getAuthCookie(NULL, auth_header, extra_header, pu, hr, request);
+}
+
 
 
 static int
@@ -1599,13 +1611,18 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		tpath = tmp->ptr;
 		request = NULL;
 		UFclose(&f);
-		add_auth_cookie_flag = 0;
 		current = New(ParsedURL);
 		copyParsedURL(current, &pu);
 		t_buf->bufferprop |= BP_REDIRECTED;
 		status = HTST_NORMAL;
 		goto load_doc;
 	    }
+	}
+	if (add_auth_cookie_flag && realm && ss) {
+	    /* If authorization is required and passed */
+	    add_auth_cookie(pu.host, pu.port, pu.file,
+			    qstr_unquote(realm)->ptr, ss);
+	    add_auth_cookie_flag = 0;
 	}
 	if ((p = checkHeader(t_buf, "WWW-Authenticate:")) != NULL &&
 	    http_response_code == 401) {
@@ -1652,7 +1669,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	/* XXX: RFC2617 3.2.3 Authentication-Info: ? */
 	if (add_auth_cookie_flag)
 	    /* If authorization is required and passed */
-	    add_auth_cookie(pu.host, pu.port, qstr_unquote(realm)->ptr, ss);
+	    add_auth_cookie(pu.host, pu.port, pu.file,
+			    qstr_unquote(realm)->ptr, ss);
 	if (status == HTST_CONNECT) {
 	    of = &f;
 	    goto load_doc;

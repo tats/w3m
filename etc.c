@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.18 2002/01/31 17:54:50 ukai Exp $ */
+/* $Id: etc.c,v 1.19 2002/02/19 15:50:18 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -888,40 +888,45 @@ correct_irrtag(int status)
 
 /* authentication */
 struct auth_cookie *
-find_auth(char *host, int port, char *realm)
+find_auth(char *host, int port, char *file, char *realm)
 {
     struct auth_cookie *p;
 
     for (p = Auth_cookie; p != NULL; p = p->next) {
 	if (!Strcasecmp_charp(p->host, host) &&
-	    p->port == port && !Strcasecmp_charp(p->realm, realm))
+	    p->port == port &&
+	    ((realm && !Strcasecmp_charp(p->realm, realm)) ||
+	     (p->file && file && !Strcasecmp_charp(p->file, file))))
 	    return p;
     }
     return NULL;
 }
 
 Str
-find_auth_cookie(char *host, int port, char *realm)
+find_auth_cookie(char *host, int port, char *file, char *realm)
 {
-    struct auth_cookie *p = find_auth(host, port, realm);
+    struct auth_cookie *p = find_auth(host, port, file, realm);
     if (p)
 	return p->cookie;
     return NULL;
 }
 
 void
-add_auth_cookie(char *host, int port, char *realm, Str cookie)
+add_auth_cookie(char *host, int port, char *file, char *realm, Str cookie)
 {
     struct auth_cookie *p;
 
-    p = find_auth(host, port, realm);
+    p = find_auth(host, port, file, realm);
     if (p) {
+	if (realm && p->realm == NULL)
+	    p->realm = Strnew_charp(realm);
 	p->cookie = cookie;
 	return;
     }
     p = New(struct auth_cookie);
     p->host = Strnew_charp(host);
     p->port = port;
+    p->file = file ? Strnew_charp(file) : NULL;
     p->realm = Strnew_charp(realm);
     p->cookie = cookie;
     p->next = Auth_cookie;

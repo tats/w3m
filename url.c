@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.43 2002/02/08 11:25:24 ukai Exp $ */
+/* $Id: url.c,v 1.44 2002/02/19 15:50:18 ukai Exp $ */
 #include <stdio.h>
 #include "config.h"
 #include "fm.h"
@@ -1535,6 +1535,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_SSL
     case SCM_HTTPS:
 #endif				/* USE_SSL */
+	get_auth_cookie("Authorization:", extra_header, pu, hr, request);
 	if (pu->file == NULL)
 	    pu->file = allocStr("/", -1);
 	if (request && request->method == FORM_METHOD_POST && request->body)

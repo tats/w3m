@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.111 2002/09/05 15:43:21 ukai Exp $ */
+/* $Id: main.c,v 1.112 2002/09/05 15:49:50 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -75,7 +75,8 @@ static void keyPressEventProc(int c);
 int show_params_p = 0;
 void show_params(FILE * fp);
 
-static char *getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars);
+static char *getCurWord(Buffer *buf, int *spos, int *epos,
+			const char *badchars);
 
 static int display_ok = FALSE;
 static void dump_source(Buffer *);
@@ -4843,7 +4844,7 @@ getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
     if (!is_wordchar(p[e], badchars))
 	return NULL;
     b = e;
-    while (b > 0 && is_wordchar(p[b-1], badchars))
+    while (b > 0 && is_wordchar(p[b - 1], badchars))
 	b--;
     while (e < l->len && is_wordchar(p[e], badchars))
 	e++;

@@ -1,4 +1,4 @@
-/* $Id: fb_imlib2.c,v 1.6 2002/07/22 16:17:32 ukai Exp $ */
+/* $Id: fb_imlib2.c,v 1.7 2002/07/29 15:25:37 ukai Exp $ */
 /**************************************************************************
                 fb_imlib2.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -31,11 +31,11 @@ get_image_size(char *filename, int *w, int *h)
     return 0;
 }
 
-FB_IMAGE *
+FB_IMAGE **
 fb_image_load(char *filename, int w, int h)
 {
     Imlib_Image image;
-    FB_IMAGE *img;
+    FB_IMAGE **frame;
 
     if (filename == NULL)
 	return NULL;
@@ -53,18 +53,18 @@ fb_image_load(char *filename, int w, int h)
     w = imlib_image_get_width();
     h = imlib_image_get_height();
 
-    img = fb_image_new(w, h);
+    frame = fb_frame_new(w, h, 1);
 
-    if (img == NULL) {
+    if (frame == NULL) {
 	imlib_free_image();
 	return NULL;
     }
 
-    draw(img, image);
+    draw(frame[0], image);
 
     imlib_free_image();
 
-    return img;
+    return frame;
 }
 
 static void
@@ -87,10 +87,11 @@ draw(FB_IMAGE * img, Imlib_Image image)
 	    g = (data[offset + i] >> 8) & 0x000000ff;
 	    b = (data[offset + i]) & 0x000000ff;
 
-	    if (a == 0)
+	    if (a == 0) {
 		fb_image_pset(img, i, j, bg_r, bg_g, bg_b);
-	    else
+	    } else {
 		fb_image_pset(img, i, j, r, g, b);
+	    }
 	}
     }
     return;
@@ -115,7 +116,7 @@ resize_image(Imlib_Image image, int width, int height)
     if (w == width && h == height)
 	return image;
 
-    resized_image = 
+    resized_image =
 	imlib_create_cropped_scaled_image(0, 0, w, h, width, height);
 
     imlib_free_image();

@@ -1,4 +1,4 @@
-/* $Id: fb.c,v 1.4 2002/07/22 16:17:32 ukai Exp $ */
+/* $Id: fb.c,v 1.5 2002/07/29 15:25:37 ukai Exp $ */
 /**************************************************************************
                 fb.c 0.3 Copyright (C) 2002, hito
  **************************************************************************/
@@ -118,6 +118,8 @@ fb_close(void)
     is_open = FALSE;
 }
 
+/***********   fb_image_*  ***********/
+
 FB_IMAGE *
 fb_image_new(int width, int height)
 {
@@ -126,18 +128,23 @@ fb_image_new(int width, int height)
     if (is_open != TRUE)
 	return NULL;
 
-    if (width > IMAGE_SIZE_MAX || height > IMAGE_SIZE_MAX)
+    if (width > IMAGE_SIZE_MAX || height > IMAGE_SIZE_MAX || width < 1
+	|| height < 1)
 	return NULL;
 
     image = malloc(sizeof(*image));
     if (image == NULL)
 	return NULL;
 
-    image->data = malloc(width * height * pixel_size);
+    image->data = calloc(sizeof(*(image->data)), width * height * pixel_size);
     if (image->data == NULL) {
 	free(image);
 	return NULL;
     }
+
+    image->num = 1;
+    image->id = 0;
+    image->delay = 0;
 
     image->width = width;
     image->height = height;
@@ -171,13 +178,31 @@ fb_image_pset(FB_IMAGE * image, int x, int y, int r, int g, int b)
 
     offset = image->rowstride * y + pixel_size * x;
 
-    work = ((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.
-	    offset) +
-	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.
-	 offset) +
+    work =
+	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
 	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
 
     memcpy(image->data + offset, &work, pixel_size);
+}
+
+void
+fb_image_fill(FB_IMAGE * image, int r, int g, int b)
+{
+    unsigned long work;
+    int offset;
+
+    if (image == NULL || is_open != TRUE)
+	return;
+
+    work =
+	((r >> (CHAR_BIT - vscinfo.red.length)) << vscinfo.red.offset) +
+	((g >> (CHAR_BIT - vscinfo.green.length)) << vscinfo.green.offset) +
+	((b >> (CHAR_BIT - vscinfo.blue.length)) << vscinfo.blue.offset);
+
+    for (offset = 0; offset < image->len; offset += pixel_size) {
+	memcpy(image->data + offset, &work, pixel_size);
+    }
 }
 
 int
@@ -190,6 +215,12 @@ fb_image_draw(FB_IMAGE * image, int x, int y, int sx, int sy, int width,
 	sx > image->width || sy > image->height ||
 	x > fb_width() || y > fb_height())
 	return 1;
+
+    if (sx + width > image->width)
+	width = image->width - sx;
+
+    if (sy + height > image->height)
+	height = image->height - sy;
 
     if (x + width > fb_width())
 	width = fb_width() - x;
@@ -209,7 +240,7 @@ fb_image_draw(FB_IMAGE * image, int x, int y, int sx, int sy, int width,
 }
 
 void
-fb_image_rotete(FB_IMAGE * image, int direction)
+fb_image_rotate(FB_IMAGE * image, int direction)
 {
     unsigned char *src, *dest, *tmp;
     int x, y, i, ofst;
@@ -250,6 +281,77 @@ fb_image_rotete(FB_IMAGE * image, int direction)
     image->height = i;
     image->rowstride = image->width * pixel_size;
     free(tmp);
+}
+
+void
+fb_image_copy(FB_IMAGE * dest, FB_IMAGE * src)
+{
+    if (dest == NULL || src == NULL)
+	return;
+
+    if (dest->len != src->len)
+	return;
+
+    memcpy(dest->data, src->data, src->len);
+}
+
+/***********   fb_frame_*  ***********/
+
+FB_IMAGE **
+fb_frame_new(int w, int h, int n)
+{
+    FB_IMAGE **frame;
+    int i, error = 0;
+
+    if (w > IMAGE_SIZE_MAX || h > IMAGE_SIZE_MAX || w < 1 || h < 1 || n < 1)
+	return NULL;
+
+    frame = malloc(sizeof(*frame) * n);
+    if (frame == NULL)
+	return NULL;
+
+    for (i = 0; i < n; i++) {
+	frame[i] = fb_image_new(w, h);
+	frame[i]->num = n;
+	frame[i]->id = i;
+	frame[i]->delay = 1000;
+	if (frame[i] == NULL)
+	    error = 1;
+    }
+
+    if (error) {
+	fb_frame_free(frame);
+	return NULL;
+    }
+
+    return frame;
+}
+
+
+void
+fb_frame_free(FB_IMAGE ** frame)
+{
+    int i, n;
+
+    if (frame == NULL)
+	return;
+
+    n = frame[0]->num;
+    for (i = 0; i < n; i++) {
+	fb_image_free(frame[i]);
+    }
+    free(frame);
+}
+
+void
+fb_frame_rotate(FB_IMAGE ** frame, int direction)
+{
+    int i, n;
+
+    n = frame[0]->num;
+    for (i = 0; i < n; i++) {
+	fb_image_rotate(frame[i], direction);
+    }
 }
 
 void

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.10 2002/07/22 16:27:31 ukai Exp $ */
+/* $Id: image.c,v 1.11 2002/07/29 15:25:37 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -597,19 +597,19 @@ getImageSize(ImageCache * cache)
 	return FALSE;
     tmp = Strnew();
     if (!(Imgdisplay_rf && Imgdisplay_wf)) {
-      if (!openImgdisplay())
-	return FALSE;
+	if (!openImgdisplay())
+	    return FALSE;
     }
     fputs("5;", Imgdisplay_wf);	/* Get Size */
     fputs(cache->file, Imgdisplay_wf);
     fputs("\n", Imgdisplay_wf);
     fflush(Imgdisplay_wf);
     {
-      char buf[1024];
-      fgets(buf, sizeof(buf), Imgdisplay_rf);
-      if(sscanf(buf, "%d %d", &w, &h) != 2) {
-	return FALSE;
-      }
+	char buf[1024];
+	fgets(buf, sizeof(buf), Imgdisplay_rf);
+	if (sscanf(buf, "%d %d", &w, &h) != 2) {
+	    return FALSE;
+	}
     }
 
     if (!(w > 0 && h > 0))

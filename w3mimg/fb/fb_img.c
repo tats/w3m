@@ -1,4 +1,4 @@
-/* $Id: fb_img.c,v 1.2 2002/07/18 15:01:31 ukai Exp $ */
+/* $Id: fb_img.c,v 1.3 2002/07/18 15:13:13 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -10,21 +10,23 @@
 static int bg_r = 0, bg_g = 0, bg_b = 0;
 
 #if defined(USE_IMLIB2)
- #include "w3mimg/fb/fb_imlib2.c"
+#include "w3mimg/fb/fb_imlib2.c"
 #elif defined(USE_GDKPIXBUF)
- #include "w3mimg/fb/fb_gdkpixbuf.c"
+#include "w3mimg/fb/fb_gdkpixbuf.c"
 #else
 #error no Imlib2 and GdkPixbuf support
 #endif
 
-int fb_draw_image_simple(IMAGE *img, int x, int y)
+int
+fb_draw_image_simple(IMAGE * img, int x, int y)
 {
-  return fb_draw_image(img, x, y, 0, 0, img->width, img->height);
+    return fb_draw_image(img, x, y, 0, 0, img->width, img->height);
 }
 
-void fb_set_bg(int r, int g, int b)
+void
+fb_set_bg(int r, int g, int b)
 {
-  bg_r = r;
-  bg_g = g;
-  bg_b = b;
+    bg_r = r;
+    bg_g = g;
+    bg_b = b;
 }

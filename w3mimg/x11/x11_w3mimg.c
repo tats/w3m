@@ -1,4 +1,4 @@
-/* $Id: x11_w3mimg.c,v 1.3 2002/07/18 14:32:12 ukai Exp $ */
+/* $Id: x11_w3mimg.c,v 1.4 2002/07/18 15:15:32 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -19,7 +19,7 @@ struct x11_info {
 };
 
 static int
-x11_init(w3mimg_op *self)
+x11_init(w3mimg_op * self)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -27,21 +27,21 @@ x11_init(w3mimg_op *self)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
-    if (! xi->id) {
+    if (!xi->id) {
 	xi->id = Imlib_init(xi->display);
-	if (! xi->id)
+	if (!xi->id)
 	    return 0;
     }
-    if (! xi->imageGC) {
+    if (!xi->imageGC) {
 	xi->imageGC = XCreateGC(xi->display, xi->parent, 0, NULL);
-	if (! xi->imageGC)
+	if (!xi->imageGC)
 	    return 0;
     }
     return 1;
 }
 
 static int
-x11_finish(w3mimg_op *self)
+x11_finish(w3mimg_op * self)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -57,7 +57,7 @@ x11_finish(w3mimg_op *self)
 }
 
 static int
-x11_active(w3mimg_op *self)
+x11_active(w3mimg_op * self)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -65,13 +65,13 @@ x11_active(w3mimg_op *self)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
-    if (! xi->imageGC)
+    if (!xi->imageGC)
 	return 0;
     return 1;
 }
 
 static void
-x11_set_background(w3mimg_op *self, char *background)
+x11_set_background(w3mimg_op * self, char *background)
 {
     XColor screen_def, exact_def;
     struct x11_info *xi;
@@ -81,7 +81,7 @@ x11_set_background(w3mimg_op *self, char *background)
     if (xi == NULL)
 	return;
 
-    if (background && 
+    if (background &&
 	XAllocNamedColor(xi->display, DefaultColormap(xi->display, 0),
 			 background, &screen_def, &exact_def))
 	xi->background_pixel = screen_def.pixel;
@@ -90,11 +90,11 @@ x11_set_background(w3mimg_op *self, char *background)
 	GC gc;
 	XImage *i;
 
-	p = XCreatePixmap(xi->display, xi->window, 1, 1, 
+	p = XCreatePixmap(xi->display, xi->window, 1, 1,
 			  DefaultDepth(xi->display, 0));
 	gc = XCreateGC(xi->display, xi->window, 0, NULL);
 	if (!p || !gc)
-	    exit(1); /* XXX */
+	    exit(1);		/* XXX */
 	XCopyArea(xi->display, xi->window, p, gc,
 		  (self->offset_x >= 1) ? (self->offset_x - 1) : 0,
 		  (self->offset_y >= 1) ? (self->offset_y - 1) : 0,
@@ -110,7 +110,7 @@ x11_set_background(w3mimg_op *self, char *background)
 }
 
 static void
-x11_sync(w3mimg_op *self)
+x11_sync(w3mimg_op * self)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -122,13 +122,13 @@ x11_sync(w3mimg_op *self)
 }
 
 static void
-x11_close(w3mimg_op *self)
+x11_close(w3mimg_op * self)
 {
     /* XCloseDisplay(xi->display); */
 }
 
 static int
-x11_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
+x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 {
     struct x11_info *xi;
     ImlibImage *im;
@@ -148,11 +148,11 @@ x11_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
 	h = im->rgb_height;
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					DefaultDepth(xi->display, 0));
-    if (! img->pixmap)
+    if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
-    XFillRectangle(xi->display, (Pixmap)img->pixmap, xi->imageGC, 0, 0, w, h);
-    Imlib_paste_image(xi->id, im, (Pixmap)img->pixmap, 0, 0, w, h);
+    XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
+    Imlib_paste_image(xi->id, im, (Pixmap) img->pixmap, 0, 0, w, h);
     Imlib_kill_image(xi->id, im);
     img->width = w;
     img->height = h;
@@ -160,8 +160,8 @@ x11_load_image(w3mimg_op *self, W3MImage *img, char *fname, int w, int h)
 }
 
 static int
-x11_show_image(w3mimg_op *self, W3MImage *img, int sx, int sy, int sw, int sh,
-	       int x, int y)
+x11_show_image(w3mimg_op * self, W3MImage * img, int sx, int sy, int sw,
+	       int sh, int x, int y)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -170,16 +170,15 @@ x11_show_image(w3mimg_op *self, W3MImage *img, int sx, int sy, int sw, int sh,
     if (xi == NULL)
 	return 0;
 
-    XCopyArea(xi->display, (Pixmap)img->pixmap, xi->window, xi->imageGC,
-	      sx, sy, 
+    XCopyArea(xi->display, (Pixmap) img->pixmap, xi->window, xi->imageGC,
+	      sx, sy,
 	      (sw ? sw : img->width),
-	      (sh ? sh : img->height),
-	      x + self->offset_x, y + self->offset_y);
+	      (sh ? sh : img->height), x + self->offset_x, y + self->offset_y);
     return 1;
 }
 
 static void
-x11_free_image(w3mimg_op *self, W3MImage *img)
+x11_free_image(w3mimg_op * self, W3MImage * img)
 {
     struct x11_info *xi;
     if (self == NULL)
@@ -188,7 +187,7 @@ x11_free_image(w3mimg_op *self, W3MImage *img)
     if (xi == NULL)
 	return;
     if (img && img->pixmap) {
-	XFreePixmap(xi->display,  (Pixmap)img->pixmap);
+	XFreePixmap(xi->display, (Pixmap) img->pixmap);
 	img->pixmap = NULL;
 	img->width = 0;
 	img->height = 0;

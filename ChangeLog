@@ -1,5 +1,17 @@
 2002-03-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03127] X-Face
+	* NEWS: X-Face support
+	* configure (use_xface): added
+	* config.h.dist (USE_XFACE): added
+		(XFACE2XBM): added
+	* file.c (xface2xbm): added
+		(readHeader): X-Face: handling
+	* scripts/Makefile (LIB_TARGETS): add xface2xbm
+	* scripts/xface2xbm.in: added
+
+2002-03-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03126] reshapeBuffer() and -m option
 	* buffer.c (reshapeBuffer): fix reshapeBuffer() in case of -m option
 
@@ -3137,4 +3149,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.346 2002/03/13 15:51:36 ukai Exp $
+$Id: ChangeLog,v 1.347 2002/03/13 17:04:56 ukai Exp $

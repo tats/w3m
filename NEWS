@@ -1,3 +1,8 @@
+w3m 0.4?
+
+* X-Face support: USE_XFACE, require uncompface
+
+----------------------------------------------------------------
 w3m 0.3 - 2002-03-06
 
 * rc: mailer

@@ -123,6 +123,7 @@ MODEL=Linux.i686-monster-ja
 #undef USE_ALARM
 #undef USE_IMAGE
 #define USE_HELP_CGI
+#undef USE_XFACE
 
 #define DEF_EDITOR "/bin/vi"
 #define DEF_MAILER "/bin/mail"
@@ -143,6 +144,7 @@ MODEL=Linux.i686-monster-ja
 #define W3MCONFIG    "w3mconfig"
 #define IMGSIZE      "w3mimgsize"
 #define IMGDISPLAY   "w3mimgdisplay"
+#define XFACE2XBM    "xface2xbm"
 
 #define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"

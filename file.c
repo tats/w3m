@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.83 2002/03/13 15:48:20 ukai Exp $ */
+/* $Id: file.c,v 1.84 2002/03/13 17:04:56 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -504,6 +504,26 @@ matchattr(char *p, char *attr, int len, Str *value)
     return 0;
 }
 
+#ifdef USE_IMAGE
+#ifdef USE_XFACE
+static char *
+xface2xbm(char *xface)
+{
+    char *xbm;
+    FILE *f;
+
+    xbm = tmpfname(TMPF_DFL, ".xbm")->ptr;
+    pushText(fileToDelete, xbm);
+    f = popen(Sprintf("%s > %s", libFile(XFACE2XBM), xbm)->ptr, "w");
+    if (!f)
+	return NULL;
+    fprintf(f, "%s", xface);
+    pclose(f);
+    return xbm;
+}
+#endif
+#endif
+
 void
 readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 {
@@ -589,6 +609,27 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			       lineBuf2->length, -1);
 		for (; *q && (*q == '\r' || *q == '\n'); q++) ;
 	    }
+#ifdef USE_IMAGE
+#ifdef USE_XFACE
+	    if (thru && !strncasecmp(tmp->ptr, "X-Face:", 7)) {
+		char *tmpf;
+		Str src;
+		URLFile f;
+		Line *l;
+
+		tmpf = xface2xbm(&tmp->ptr[7]);
+		if (tmpf) {
+		    src = Sprintf("<img src=\"%s\" alt=\"X-Face\" width=48 height=48>",
+				  html_quote(tmpf));
+		    init_stream(&f, SCM_LOCAL, newStrStream(src));
+		    loadHTMLstream(&f, newBuf, NULL, TRUE);
+		    for (l = newBuf->lastLine; l && l->real_linenumber;
+			 l = l->prev)
+			l->real_linenumber = 0;
+		}
+	    }
+#endif
+#endif
 	    lineBuf2 = tmp;
 	}
 	else {

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.63 2002/03/06 03:32:10 ukai Exp $
+# $Id: configure,v 1.64 2002/03/13 17:04:56 ukai Exp $
 #	Configuration.
 #
 
@@ -770,6 +770,7 @@ def_param vi_prec_num $include_opt
 def_param label_topline $include_opt
 def_param nextpage_topline $include_opt
 def_param ftppass_hostnamegen $include_opt
+def_param use_xface $use_image
 
 def_param table_expand n
 def_param table_no_compact n
@@ -2127,6 +2128,7 @@ $def_use_gopher
 $def_use_alarm
 $def_use_image
 $def_use_help_cgi
+$def_use_xface
 
 #define DEF_EDITOR "$editor"
 #define DEF_MAILER "$mailer"
@@ -2147,6 +2149,7 @@ $def_use_help_cgi
 #define W3MCONFIG    "w3mconfig"
 #define IMGSIZE      "w3mimgsize"
 #define IMGDISPLAY   "w3mimgdisplay"
+#define XFACE2XBM    "xface2xbm"
 
 #define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"

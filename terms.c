@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.8 2001/11/19 19:19:21 ukai Exp $ */
+/* $Id: terms.c,v 1.9 2001/11/19 19:21:11 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1670,6 +1670,14 @@ skip_escseq(void)
     c = getch();
     if (c == '[' || c == 'O') {
 	c = getch();
+#ifdef MOUSE
+	if (is_xterm && c == 'M') {
+	  getch();
+	  getch();
+	  getch();
+	}
+	else
+#endif	
 	while (IS_DIGIT(c))
 	    c = getch();
     }

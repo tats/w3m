@@ -1,3 +1,8 @@
+2001-11-20  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* terms.c (skip_escseq): [w3m-dev 02447]
+	  is_xterm && ESC [ M <ch> <ch> <ch>
+
 2001-11-20  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* terms.c (mouse_init): Gpm_Close() is required.

@@ -1,3 +1,7 @@
+2001-11-23  Tsutomu Okada <okada@furuno.co.jp>
+
+	* terms.c (isWinConsole): added
+
 2001-11-22  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02509] ([w3m-dev 02499] [w3m-dev 02508])

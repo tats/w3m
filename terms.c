@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.14 2001/11/22 15:02:17 ukai Exp $ */
+/* $Id: terms.c,v 1.15 2001/11/22 19:44:33 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -56,6 +56,7 @@ extern int	CodePage;
 #include <windows.h>
 static HANDLE hConIn;
 static int isWin95;
+static int isWinConsole;
 static INPUT_RECORD *ConInV;
 static int iConIn, nConIn, nConInMax;
 #ifdef USE_MOUSE

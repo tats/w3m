@@ -1,3 +1,8 @@
+2002-02-10  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03033] SSL indicator
+	* display.c (displayBuffer): show SSL indicator
+
 2002-02-08  Yoshinobu Sakane <sakane@d4.bsd.nes.nec.co.jp>
 
 	* [w3m-dev 03025] fix image loading on EWS4800
@@ -2899,4 +2904,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.311 2002/02/08 14:29:52 ukai Exp $
+$Id: ChangeLog,v 1.312 2002/02/09 15:12:34 ukai Exp $

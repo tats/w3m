@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.96 2002/08/27 16:25:54 ukai Exp $ */
+/* $Id: file.c,v 1.97 2002/09/10 17:27:46 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1342,6 +1342,89 @@ findAuthentication(struct http_auth *hauth, Buffer *buf, char *auth_field)
     return hauth->scheme ? hauth : NULL;
 }
 
+/* passwd */
+/*
+ * machine <name>
+ * port <port>
+ * path <file>
+ * realm <realm>
+ * login <login>
+ * passwd <passwd>
+ */
+static int
+find_auth_user_passwd(char *host, int port, char *file, char *realm,
+		      Str *uname, Str *pwd)
+{
+    struct stat st;
+    FILE *fp;
+    Str line;
+    char *d, *tok;
+    int matched = 0;
+
+    *uname = NULL;
+    *pwd = NULL;
+    if (stat(expandName(passwd_file), &st) < 0)
+	return 0;
+
+    /* check permissions, if group or others readable or writable,
+     * refuse it, because it's insecure.
+     */
+    if ((st.st_mode & (S_IRWXG | S_IRWXO)) != 0)
+	return 0;
+
+    fp = fopen(expandName(passwd_file), "r");
+    if (fp == NULL)
+	return 0;		/* never? */
+
+    while ((line = Strfgets(fp))->length > 0) {
+	d = line->ptr;
+	if (d[0] == '#')
+	    continue;
+	tok = strtok(d, " \t\n\r");
+	if (tok == NULL)
+	    continue;
+	d = strtok(NULL, "\n\r");
+	if (d == NULL)
+	    continue;
+	if (strcmp(tok, "machine") == 0) {
+	    if (matched && *uname && *pwd)
+		return 1;
+	    *uname = NULL;
+	    *pwd = NULL;
+	    if (strcmp(d, host) == 0)
+		matched = 1;
+	    continue;
+	}
+	else if (strcmp(tok, "port") == 0) {
+	    if (matched && (atoi(d) != port))
+		matched = 0;
+	}
+	else if (strcmp(tok, "path") == 0) {
+	    if (matched && file && (strcmp(d, file) != 0))
+		matched = 0;
+	}
+	else if (strcmp(tok, "realm") == 0) {
+	    if (matched && realm && (strcmp(d, realm) != 0))
+		matched = 0;
+	}
+	else if (strcmp(tok, "login") == 0) {
+	    if (matched)
+		*uname = Strnew_charp(d);
+	}
+	else if (strcmp(tok, "password") == 0 || strcmp(tok, "passwd") == 0) {
+	    if (matched)
+		*pwd = Strnew_charp(d);
+	}
+	else {
+	    /* ignore? */ ;
+	}
+    }
+    if (matched && *uname && *pwd)
+	return 1;
+
+    return 0;
+}
+
 static Str
 getAuthCookie(struct http_auth *hauth, char *auth_header,
 	      TextList *extra_header, ParsedURL *pu, HRequest *hr,
@@ -1386,53 +1469,61 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     else
 	ss = find_auth_cookie(pu->host, pu->port, pu->file, realm);
     if (realm && ss == NULL) {
-	if (QuietMessage)
-	    return ss;
-	/* input username and password */
-	sleep(2);
-	if (fmInitialized) {
-	    char *pp;
-	    term_raw();
-	    if ((pp =
-		 inputStr(Sprintf("Username for %s: ", realm)->ptr,
-			  NULL)) == NULL)
-		return NULL;
-	    uname = Str_conv_to_system(Strnew_charp(pp));
-	    if ((pp =
-		 inputLine(Sprintf("Password for %s: ", realm)->ptr, NULL,
-			   IN_PASSWORD)) == NULL)
-		return NULL;
-	    pwd = Str_conv_to_system(Strnew_charp(pp));
+	if (find_auth_user_passwd(pu->host, pu->port, pu->file, realm,
+				  &uname, &pwd)) {
+	    /* found username & password in passwd file */ ;
 	}
 	else {
-	    int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
-				     auth_header_len);
-
-	    /*
-	     * If post file is specified as '-', stdin is closed at this point.
-	     * In this case, w3m cannot read username from stdin.
-	     * So exit with error message.
-	     * (This is same behavior as lwp-request.)
-	     */
-	    if (feof(stdin) || ferror(stdin)) {
-		fprintf(stderr, "w3m: Authorization required for %s\n", realm);
-		exit(1);
+	    if (QuietMessage)
+		return ss;
+	    /* input username and password */
+	    sleep(2);
+	    if (fmInitialized) {
+		char *pp;
+		term_raw();
+		if ((pp =
+		     inputStr(Sprintf("Username for %s: ", realm)->ptr,
+			      NULL)) == NULL)
+		    return NULL;
+		uname = Str_conv_to_system(Strnew_charp(pp));
+		if ((pp =
+		     inputLine(Sprintf("Password for %s: ", realm)->ptr, NULL,
+			       IN_PASSWORD)) == NULL)
+		    return NULL;
+		pwd = Str_conv_to_system(Strnew_charp(pp));
 	    }
+	    else {
+		int proxy = !strncasecmp("Proxy-Authorization:", auth_header,
+					 auth_header_len);
 
-	    printf(proxy ? "Proxy Username for %s: " : "Username for %s: ",
-		   realm);
-	    fflush(stdout);
-	    uname = Strfgets(stdin);
-	    Strchop(uname);
+		/*
+		 * If post file is specified as '-', stdin is closed at this
+		 * point.
+		 * In this case, w3m cannot read username from stdin.
+		 * So exit with error message.
+		 * (This is same behavior as lwp-request.)
+		 */
+		if (feof(stdin) || ferror(stdin)) {
+		    fprintf(stderr, "w3m: Authorization required for %s\n",
+			    realm);
+		    exit(1);
+		}
+
+		printf(proxy ? "Proxy Username for %s: " : "Username for %s: ",
+		       realm);
+		fflush(stdout);
+		uname = Strfgets(stdin);
+		Strchop(uname);
 #ifdef HAVE_GETPASSPHRASE
-	    pwd = Strnew_charp((char *)
-			       getpassphrase(proxy ? "Proxy Password: " :
-					     "Password: "));
+		pwd = Strnew_charp((char *)
+				   getpassphrase(proxy ? "Proxy Password: " :
+						 "Password: "));
 #else
-	    pwd = Strnew_charp((char *)
-			       getpass(proxy ? "Proxy Password: " :
-				       "Password: "));
+		pwd = Strnew_charp((char *)
+				   getpass(proxy ? "Proxy Password: " :
+					   "Password: "));
 #endif
+	    }
 	}
 	ss = hauth->cred(hauth, uname, pwd, pu, hr, request);
     }

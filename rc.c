@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.47 2002/07/22 16:27:31 ukai Exp $ */
+/* $Id: rc.c,v 1.48 2002/09/10 17:27:50 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -127,6 +127,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ       "外部ブラウザ"
 #define CMT_EXTBRZ2      "外部ブラウザその2"
 #define CMT_EXTBRZ3      "外部ブラウザその3"
+#define CMT_PASSWDFILE	 "パスワードファイル"
 #define CMT_FTPPASS      "FTPのパスワード(普通は自分のmail addressを使う)"
 #ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN	"FTPのパスワードのドメイン名を自動生成する"
@@ -268,6 +269,7 @@ static char *config_file = NULL;
 #define CMT_EXTBRZ       "External Browser"
 #define CMT_EXTBRZ2      "Second External Browser"
 #define CMT_EXTBRZ3      "Third External Browser"
+#define CMT_PASSWDFILE	 "Password file"
 #define CMT_FTPPASS      "Password for anonymous FTP (your mail address)"
 #ifdef FTPPASS_HOSTNAMEGEN
 #define CMT_FTPPASS_HOSTNAMEGEN "Generate domain part of password for FTP"
@@ -665,6 +667,8 @@ struct param_ptr params8[] = {
 };
 #endif
 struct param_ptr params9[] = {
+    {"passwd_file", P_STRING, PI_TEXT, (void *)&passwd_file, CMT_PASSWDFILE,
+     NULL},
     {"ftppasswd", P_STRING, PI_TEXT, (void *)&ftppasswd, CMT_FTPPASS, NULL},
 #ifdef FTPPASS_HOSTNAMEGEN
     {"ftppass_hostnamegen", P_INT, PI_ONOFF, (void *)&ftppass_hostnamegen,

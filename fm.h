@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.62 2002/08/20 17:49:39 ukai Exp $ */
+/* $Id: fm.h,v 1.63 2002/09/10 17:27:47 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -838,6 +838,7 @@ global char *ExtBrowser init(DEF_EXT_BROWSER);
 global char *ExtBrowser2 init(NULL);
 global char *ExtBrowser3 init(NULL);
 global int BackgroundExtViewer init(TRUE);
+global char *passwd_file init(NULL);
 global char *ftppasswd init(NULL);
 #ifdef FTPPASS_HOSTNAMEGEN
 global int ftppass_hostnamegen init(TRUE);

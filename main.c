@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.140 2002/11/15 16:46:12 ukai Exp $ */
+/* $Id: main.c,v 1.141 2002/11/18 16:46:52 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -927,6 +927,21 @@ main(int argc, char **argv, char **envp)
 	w3m_exit(0);
     }
 
+    if (add_download_list) {
+	add_download_list = FALSE;
+	if (!FirstTab) {
+	    FirstTab = LastTab = CurrentTab = newTab();
+	    nTab = 1;
+	}
+	if (!Firstbuf || Firstbuf == NO_BUFFER) {
+	    Firstbuf = Currentbuf = newBuffer(INIT_BUFFER_WIDTH);
+	    Currentbuf->bufferprop = BP_INTERNAL | BP_NO_URL;
+	    Currentbuf->buffername = DOWNLOAD_LIST_TITLE;
+	}
+	else
+	    Currentbuf = Firstbuf;
+	ldDL();
+    }
     if (!FirstTab || !Firstbuf || Firstbuf == NO_BUFFER) {
 	if (newbuf == NO_BUFFER) {
 	    if (fmInitialized)

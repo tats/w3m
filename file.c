@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.179 2003/01/10 16:08:21 ukai Exp $ */
+/* $Id: file.c,v 1.180 2003/01/10 16:16:45 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7808,6 +7808,10 @@ uncompress_stream(URLFile *uf, char **src)
     /* fd1[0]: read, fd1[1]: write */
     if ((pid1 = fork()) == 0) {
 	reset_signals();
+	signal(SIGINT, SIG_IGN);
+	close_tty();
+	QuietMessage = TRUE;
+	fmInitialized = FALSE;
 	close(fd1[0]);
 	if (tmpf) {
 #ifdef USE_BINMODE_STREAM
@@ -7825,10 +7829,6 @@ uncompress_stream(URLFile *uf, char **src)
 	    /* child */
 	    int pid2;
 	    int fd2[2];
-	    if (fmInitialized) {
-		close_tty();
-		fmInitialized = FALSE;
-	    }
 	    if (pipe(fd2) < 0) {
 		close(fd1[1]);
 		UFclose(uf);

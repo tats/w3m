@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.42 2002/12/18 16:42:32 ukai Exp $ */
+/* $Id: terms.c,v 1.43 2003/01/10 16:16:45 ukai Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -362,12 +362,9 @@ typedef struct scline {
     short eol;
 } Screen;
 
-static
-TerminalMode d_ioval;
-static
-int tty;
-static
-FILE *ttyf;
+static TerminalMode d_ioval;
+static int tty = -1;
+static FILE *ttyf = NULL;
 
 static
 char bp[1024], funcstr[256];
@@ -556,7 +553,8 @@ set_cc(int spec, int val)
 void
 close_tty(void)
 {
-    close(tty);
+    if (tty > 2)
+	close(tty);
 }
 
 char *
@@ -582,10 +580,9 @@ reset_tty(void)
 	    writestr(T_cl);
     }
     writestr(T_se);		/* reset terminal */
-    fflush(ttyf);
+    flush_tty();
     TerminalSet(tty, &d_ioval);
-    if (tty != 2)
-	close(tty);
+    close_tty();
 }
 
 MySignalHandler
@@ -871,7 +868,7 @@ write1(char c)
     putc(c, ttyf);
 #endif				/* not JP_CHARSET */
 #ifdef SCREEN_DEBUG
-    fflush(ttyf);
+    flush_tty();
 #endif				/* SCREEN_DEBUG */
     return 0;
 }
@@ -1427,7 +1424,7 @@ refresh(void)
 #endif				/* JP_CHARSET */
     }
     MOVE(CurLine, CurColumn);
-    fflush(ttyf);
+    flush_tty();
 }
 
 void
@@ -2170,7 +2167,8 @@ mouse_inactive()
 void
 flush_tty()
 {
-    fflush(ttyf);
+    if (ttyf)
+	fflush(ttyf);
 }
 
 #ifdef USE_IMAGE

@@ -45,7 +45,7 @@ bindist: XXMakefile
 	$(MAKE) -f XXMakefile bindist
 
 indent:
-	mv -f config.h config.h-
+	test -f config.h && mv -f config.h config.h-
 #	indent -orig -nce -ncdb -i4 -di1 -nbc *.c *.h
 	indent -orig -nce -ncdb -i4 -di1 -nbc -l79 -ncs -npcs -nfca -ss \
 	   -TAnchor -TAnchorList -TBuffer -TBufferPoint -TBreakpoint \
@@ -69,8 +69,8 @@ indent:
 	   -TTextLine -TTextLineList -TTextLineListItem \
 	   -TURLOption -TURLFile \
 	   -TVector \
-	   *.c *.h
-	mv -f config.h- config.h
+	   *.c *.h w3mimg/*.c w3mimg/*.h w3mimg/*/*.c w3mimg/*/*.h
+	test -f config.h- && mv -f config.h- config.h
 
 XXMakefile: XMakefile config.h
 	awk '/^#ifdef makefile_parameter/,/^#else/' config.h | cat - XMakefile > XXMakefile

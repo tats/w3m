@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.35 2002/01/17 11:06:45 ukai Exp $ */
+/* $Id: url.c,v 1.36 2002/01/21 15:56:13 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -2081,7 +2081,7 @@ searchURIMethods(ParsedURL *pu)
  * escaped       = "%" hex hex
  */
 
-#define URI_PATTERN	"[-;/?:@&=+$,a-zA-Z0-9_.!~*'()%]*"
+#define URI_PATTERN	"[\\-;/?:@&=+$,a-zA-Z0-9_.!~*'()%]*"
 void
 chkExternalURIBuffer(Buffer *buf)
 {

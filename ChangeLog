@@ -1,3 +1,17 @@
+2002-01-22  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 02877] some fixes for urimethodmap
+	* config.h.dist (RC_DIR): remove tailing /
+	* configure (mailer): if use_w3mmailer = y, don't ask mailer
+	* configure (RC_DIR): remove tailing /
+	* fm.h (Mailer): ifndef USE_W3MMAILER
+	* main.c (MAIN): ifndef USE_W3MMAILER getenv("MAILER")
+	* rc.c ("mailer"): ifndef USE_W3MMAILER
+	* regex.c (newRegex0): \ escape kanji chars
+	* url.c (searchURIMethods): need escape for - 
+	* scripts/w3mmail.cgi.in: move $url, $qurl
+	* scripts/w3mmail.cgi.in: url_unquote $to
+
 2002-01-21  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [w3m-dev 02876] w3mmail.cgi.in backport from w3mmee
@@ -2149,4 +2163,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.244 2002/01/20 17:06:42 ukai Exp $
+$Id: ChangeLog,v 1.245 2002/01/21 15:56:12 ukai Exp $

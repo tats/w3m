@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.31 2002/01/16 16:49:54 ukai Exp $ */
+/* $Id: rc.c,v 1.32 2002/01/21 15:56:13 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -529,7 +529,9 @@ struct param_ptr params6[] = {
      CMT_URIMETHODMAP, NULL},
 #endif
     {"editor", P_STRING, PI_TEXT, (void *)&Editor, CMT_EDITOR, NULL},
+#ifndef USE_W3MMAILER
     {"mailer", P_STRING, PI_TEXT, (void *)&Mailer, CMT_MAILER, NULL},
+#endif
     {"extbrowser", P_STRING, PI_TEXT, (void *)&ExtBrowser, CMT_EXTBRZ, NULL},
     {"extbrowser2", P_STRING, PI_TEXT, (void *)&ExtBrowser2, CMT_EXTBRZ2,
      NULL},

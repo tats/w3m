@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.66 2002/01/17 15:05:43 ukai Exp $ */
+/* $Id: main.c,v 1.67 2002/01/21 15:56:13 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -439,8 +439,10 @@ MAIN(int argc, char **argv, char **envp)
 
     if (Editor == NULL && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
+#ifndef USE_W3MMAILER
     if (Mailer == NULL && (p = getenv("MAILER")) != NULL)
 	Mailer = p;
+#endif
 
     /* argument search 2 */
     i = 1;
@@ -4780,7 +4782,7 @@ void
 w3m_exit(int i)
 {
 #ifdef USE_MIGEMO
-    init_migemo();	/* close pipe to migemo */
+    init_migemo();		/* close pipe to migemo */
 #endif
     deleteFiles();
 #ifdef USE_SSL

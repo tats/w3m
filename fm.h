@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.40 2002/01/16 16:49:54 ukai Exp $ */
+/* $Id: fm.h,v 1.41 2002/01/21 15:56:13 ukai Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -748,7 +748,9 @@ global int retryAsHttp init(TRUE);
 global int showLineNum init(FALSE);
 global int show_srch_str init(TRUE);
 global char *Editor init(DEF_EDITOR);
+#ifndef USE_W3MMAILER
 global char *Mailer init(DEF_MAILER);
+#endif
 global char *ExtBrowser init(DEF_EXT_BROWSER);
 global char *ExtBrowser2 init(NULL);
 global char *ExtBrowser3 init(NULL);

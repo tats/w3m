@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.54 2002/01/18 13:06:14 ukai Exp $
+# $Id: configure,v 1.55 2002/01/21 15:56:13 ukai Exp $
 #	Configuration.
 #
 
@@ -744,7 +744,8 @@ readdir "$ded"
 editor=$_dir
 echo "ded='$editor'" >> config.param
 
-if [ -z "$dmail" ] ; then 
+if [ "$use_w3mmailer" != 'y' ]; then
+ if [ -z "$dmail" ] ; then 
   if ./which \mailx > /dev/null
   then
     dmail=`./which \mailx` 
@@ -752,13 +753,15 @@ if [ -z "$dmail" ] ; then
     dmail=`./which \mail`
   fi
   if [ -n  "`echo $dmail | grep 'no'`" ] ; then dmail=mailx ; fi
+ fi
+ echo "Input your favorite mailer program."
+ Echo "(Default: $dmail) "
+ readdir "$dmail"
+ mailer=$_dir
+else
+ mailer="$dmail"
 fi
-echo "Input your favorite mailer program."
-Echo "(Default: $dmail) "
-readdir "$dmail"
-mailer=$_dir
 echo "dmail='$mailer'" >> config.param
-
 
 if [ -z "$dbrowser" ] ; then 
   if ./which netscape > /dev/null
@@ -2086,7 +2089,7 @@ $def_use_help_cgi
 #define HELP_CGI     "w3mhelp"
 #define W3MCONFIG    "w3mconfig"
 
-#define RC_DIR       "~/.w3m/"
+#define RC_DIR       "~/.w3m"
 #define BOOKMARK     "bookmark.html"
 #define CONFIG_FILE  "config"
 #define KEYMAP_FILE  "keymap"

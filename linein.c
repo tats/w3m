@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.12 2001/12/06 16:36:54 ukai Exp $ */
+/* $Id: linein.c,v 1.13 2001/12/07 07:20:26 ukai Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -681,7 +681,8 @@ next_compl(int next)
 	}
 	else {
 	    for (b = CPos - 1; b >= 0; b--) {
-		if (strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I)
+		if ((strBuf->ptr[b] == ' ' || strBuf->ptr[b] == CTRL_I) &&
+		    !((b > 0) && strBuf->ptr[b-1] == '\\'))
 		    break;
 	    }
 	    b++;
@@ -854,6 +855,40 @@ next_dcompl(int next)
     }
 }
 
+Str
+escape_spaces(Str s)
+{
+    char *p;
+
+    if (s == NULL)
+	return;
+    p = s->ptr;
+    s = Strnew();
+    while(*p) {
+	if (*p == ' ')
+	    Strcat_char(s, '\\');
+	Strcat_char(s, *p++);
+    }
+    return s;
+}
+
+Str
+unescape_spaces(Str s)
+{
+    char *p;
+
+    if (s == NULL)
+	return;
+    p = s->ptr;
+    s = Strnew();
+    while (*p) {
+	if (!(*p == '\\' && *(p+1) && *(p+1) == ' '))
+	    Strcat_char(s, *p);
+	p++;
+    }
+    return s;
+}
+
 static Str
 doComplete(Str ifn, int *status, int next)
 {
@@ -866,6 +901,8 @@ doComplete(Str ifn, int *status, int next)
     if (!cm_next) {
 	NCFileBuf = 0;
 	ifn = Str_conv_to_system(ifn);
+	if (cm_mode & CPL_ON)
+	    ifn = unescape_spaces(ifn);
 	CompleteBuf = Strdup(ifn);
 	while (Strlastchar(CompleteBuf) != '/' && CompleteBuf->length > 0)
 	    Strshrink(CompleteBuf, 1);
@@ -893,6 +930,8 @@ doComplete(Str ifn, int *status, int next)
 	if ((d = opendir(expandName(CompleteBuf->ptr))) == NULL) {
 	    CompleteBuf = Strdup(ifn);
 	    *status = CPL_FAIL;
+	    if (cm_mode & CPL_ON)
+		CompleteBuf = escape_spaces(CompleteBuf);
 	    return CompleteBuf;
 	}
 	fn = lastFileName(ifn->ptr);
@@ -924,6 +963,8 @@ doComplete(Str ifn, int *status, int next)
 	if (NCFileBuf == 0) {
 	    CompleteBuf = Strdup(ifn);
 	    *status = CPL_FAIL;
+	    if (cm_mode & CPL_ON)
+		CompleteBuf = escape_spaces(CompleteBuf);
 	    return CompleteBuf;
 	}
 	qsort(CFileBuf, NCFileBuf, sizeof(CFileBuf[0]), strCmp);
@@ -963,6 +1004,8 @@ doComplete(Str ifn, int *status, int next)
 	if (stat(expandName(p), &st) != -1 && S_ISDIR(st.st_mode))
 	    Strcat_char(CompleteBuf, '/');
     }
+    if (cm_mode & CPL_ON)
+	CompleteBuf = escape_spaces(CompleteBuf);
     return Str_conv_from_system(CompleteBuf);
 }
 

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.232 2003/10/21 17:12:10 ukai Exp $ */
+/* $Id: file.c,v 1.233 2003/10/22 18:41:11 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -6608,7 +6608,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	}
 #endif
 	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
-#ifdef USE_M17N
+#if defined(USE_M17N) && defined(USE_IMAGE)
 	cur_document_charset = charset;
 #endif
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);

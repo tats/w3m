@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.35 2001/12/14 17:13:13 ukai Exp $ */
+/* $Id: main.c,v 1.36 2001/12/14 17:35:08 ukai Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1322,7 +1322,7 @@ srch_nxtprv(volatile int reverse)
     if (wrapped) {
 	disp_message("Search wrapped", FALSE);
     }
-    else {
+    else if (show_srch_str) {
 	disp_message(Sprintf("%s%s",
 			     routine[reverse] ==
 			     forwardSearch ? "Forward: " : "Backward: ",

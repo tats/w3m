@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.22 2001/11/30 19:59:26 ukai Exp $ */
+/* $Id: rc.c,v 1.23 2001/12/14 17:35:08 ukai Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -106,6 +106,7 @@ static char *config_file = NULL;
 #define CMT_NEXTPAGE_TOPLINE	"次のページに移動する時にカーソルがトップになるようにする"
 #endif
 #define CMT_SHOW_NUM     "行番号を表示する"
+#define CMT_SHOW_SRCH_STR "検索文字列を表示する"
 #define CMT_MIMETYPES    "利用するmime.types"
 #define CMT_MAILCAP      "利用するmailcap"
 #define CMT_EDITOR       "利用するエディタ"
@@ -221,6 +222,7 @@ static char *config_file = NULL;
 #define CMT_NEXTPAGE_TOPLINE	"move cursor to top line when moving to next page"
 #endif
 #define CMT_SHOW_NUM     "Show line number"
+#define CMT_SHOW_SRCH_STR "Show search strings"
 #define CMT_MIMETYPES    "mime.types files"
 #define CMT_MAILCAP      "mailcap files"
 #define CMT_EDITOR       "Editor"
@@ -393,6 +395,8 @@ struct param_ptr params1[] = {
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,
      CMT_VIEW_UNSEENOBJECTS, NULL},
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
+    {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
+     CMT_SHOW_SRCH_STR, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 

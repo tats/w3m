@@ -1,3 +1,10 @@
+2001-12-15  Rin Okuyama <okuyama@cna.ne.jp>
+
+	* [w3m-dev 02659] rc.c (show_srch_str)
+	* fm.h (show_srch_str): added
+	* main.c (srch_nxtprv): check show_srch_str
+	* rc.c (CMT_SHOW_SRCH_STR): added
+
 2001-12-15  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* [w3m-dev 02657] 
@@ -1237,4 +1244,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.127 2001/12/14 17:13:13 ukai Exp $
+$Id: ChangeLog,v 1.128 2001/12/14 17:35:08 ukai Exp $

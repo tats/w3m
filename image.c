@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.6 2002/02/09 15:24:58 ukai Exp $ */
+/* $Id: image.c,v 1.7 2002/02/14 03:50:03 ukai Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -53,7 +53,7 @@ getCharSize()
 
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
-	Strcat_m_charp(tmp, LIB_DIR, "/", NULL);
+	Strcat_m_charp(tmp, w3m_lib_dir(), "/", NULL);
     Strcat_m_charp(tmp, Imgdisplay, " -test 2> /dev/null", NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
@@ -115,7 +115,7 @@ openImgdisplay()
 	dup2(fdr[1], 1);
 	close(2);
 	if (!strchr(Imgdisplay, '/'))
-	    cmd = Strnew_m_charp(LIB_DIR, "/", Imgdisplay, NULL)->ptr;
+	    cmd = Strnew_m_charp(w3m_lib_dir(), "/", Imgdisplay, NULL)->ptr;
 	else
 	    cmd = Imgdisplay;
 	execl("/bin/sh", "sh", "-c", cmd, NULL);
@@ -594,7 +594,7 @@ getImageSize(ImageCache * cache)
 	return FALSE;
     tmp = Strnew();
     if (!strchr(Imgsize, '/'))
-	Strcat_m_charp(tmp, LIB_DIR, "/", NULL);
+	Strcat_m_charp(tmp, w3m_lib_dir(), "/", NULL);
     Strcat_m_charp(tmp, Imgsize, " ", shell_quote(cache->file),
 		   " 2> /dev/null", NULL);
     f = popen(tmp->ptr, "r");

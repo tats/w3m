@@ -1,5 +1,12 @@
 2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03055] LIB_DIR -> w3m_lib_dir()
+	* image.c (getCharSize): s/LIB_DIR/w3m_lib_dir()/
+	* image.c (openImgdisplay): ditto
+	* image.c (getImageSize): ditto
+
+2002-02-14  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03048] garbage of images on the right edge of termical.
 	* display.c (redrawLineImage): fix width calculation
 
@@ -2931,4 +2938,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.317 2002/02/14 03:47:48 ukai Exp $
+$Id: ChangeLog,v 1.318 2002/02/14 03:50:03 ukai Exp $

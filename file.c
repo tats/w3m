@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.190 2003/01/17 17:13:08 ukai Exp $ */
+/* $Id: file.c,v 1.191 2003/01/17 17:30:01 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -914,8 +914,7 @@ checkHeader(Buffer *buf, char *field)
     for (i = buf->document_header->first; i != NULL; i = i->next) {
 	if (!strncasecmp(i->ptr, field, len)) {
 	    p = i->ptr + len;
-	    SKIP_BLANKS(p);
-	    return p;
+	    return remove_space(p);
 	}
     }
     return NULL;
@@ -1702,7 +1701,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    && (p = checkHeader(t_buf, "Location:")) != NULL
 	    && checkRedirection(&pu)) {
 	    /* document moved */
-	    tpath = url_quote_conv(remove_space(p), DocumentCode);
+	    tpath = url_quote_conv(p, DocumentCode);
 	    request = NULL;
 	    UFclose(&f);
 	    current = New(ParsedURL);

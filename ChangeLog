@@ -1,3 +1,10 @@
+2002-03-08  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 03088] gopher broken 
+		(Re: Bug#137287: w3m: segfault on gopher://xxxx.xxx URI)
+	* file.c (form_max): initial value should be -1
+	* file.c (loadGopherDir): </A>
+
 2002-03-08  YAMAMOTO Takashi <yamt@mwd.biglobe.ne.jp>
 
 	* [w3m-dev 03087] vi +1 emptyfile
@@ -3068,4 +3075,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.335 2002/03/07 16:10:22 ukai Exp $
+$Id: ChangeLog,v 1.336 2002/03/08 03:28:38 ukai Exp $

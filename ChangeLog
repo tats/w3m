@@ -1,5 +1,6 @@
-2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp
+2001-11-22  Fumitoshi UKAI  <ukai@debian.or.jp>
 
+	* [w3m-dev 02505]
 	* configure (alarm): check alarm if USE_ALARM
 
 2001-11-22  Tsutomu Okada <okada@furuno.co.jp>

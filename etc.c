@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.66 2003/02/18 15:44:33 ukai Exp $ */
+/* $Id: etc.c,v 1.67 2003/02/26 17:22:02 ukai Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"
@@ -1495,8 +1495,12 @@ myExtCommand(char *cmd, char *arg, int redirect)
 		Strcat_char(tmp, *p);
 	}
     }
-    if (!set_arg)
-	tmp = Strnew_m_charp(cmd, (redirect ? " < " : " "), arg, NULL);
+    if (!set_arg) {
+	if (redirect)
+	    tmp = Strnew_m_charp("(", cmd, ") < ", arg, NULL);
+	else
+	    tmp = Strnew_m_charp(cmd, " ", arg, NULL);
+    }
     return tmp;
 }
 

@@ -1,3 +1,11 @@
+2003-02-27  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03783] pipe to "command1 | command2"
+	* etc.c (myExtCommand): redirect to subshell
+	* main.c (pipeBuf): conv_to_system(cmd)
+			shell_quote()
+			set buf->filename, buf->buffername
+
 2003-02-26  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03782] real linenumber for EDIT and EDIT_SCREEN
@@ -7263,4 +7271,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.766 2003/02/25 16:05:43 ukai Exp $
+$Id: ChangeLog,v 1.767 2003/02/26 17:22:01 ukai Exp $

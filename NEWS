@@ -1,4 +1,4 @@
-w3m 0.3?
+w3m 0.2.5 - 2002-01-31
 
 * RFC2617: HTTP Digest authentication
 * rc: default_url=0(empty) 1(current URL) 2(link URL)

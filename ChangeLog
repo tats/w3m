@@ -1,3 +1,11 @@
+2002-01-31  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3m 0.2.5
+	* version.c.in: update
+	* doc/README: version 0.2.5, release date
+	* doc-jp/README: ditto
+	* NEWS: update
+
 2002-01-31  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
 
 	* inflate.c: support raw deflate without zlib header
@@ -2472,4 +2480,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.283 2002/01/31 14:03:49 ukai Exp $
+$Id: ChangeLog,v 1.284 2002/01/31 15:00:58 ukai Exp $

@@ -413,6 +413,9 @@ if test x"$with_ssl" != xno; then
   do
      if test -f "$dir/include/openssl/ssl.h"; then
         CFLAGS="$CFLAGS -I$dir/include/openssl"
+        if test "$dir" != "/usr"; then
+           CFLAGS="$CFLAGS -I$dir/include"
+        fi
      elif test "$dir" != "/usr" -a -f "$dir/include/ssl.h"; then
         CFLAGS="$CFLAGS -I$dir/include"
      fi

@@ -1,3 +1,8 @@
+2003-03-28  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 03836] CFLAGS for SSL in configure
+	* acinclude.m4 (AC_W3M_SSL): add -I$dir/include to CFLAGS
+
 2003-03-28  ABE Yuji <cbo46560@pop12.odn.ne.jp>
 
 	* [w3m-dev 03834] Re: gif animation with no delay_time
@@ -7610,4 +7615,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.805 2003/03/27 17:12:08 ukai Exp $
+$Id: ChangeLog,v 1.806 2003/03/27 17:18:34 ukai Exp $

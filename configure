@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: configure,v 1.65 2002/03/14 16:12:06 ukai Exp $
+# $Id: configure,v 1.66 2002/03/19 16:27:20 ukai Exp $
 #	Configuration.
 #
 
@@ -64,6 +64,9 @@ do
   -helpdir=*|--helpdir=*)
     helpdir=`expr "$1" : "-*helpdir=\(.*\)"`
     ;;
+  -mandir=*|--mandir=*)
+    mandir=`expr "$1" : "-*mandir=\(.*\)"`
+    ;;
   -sysconfdir=*|--sysconfdir=*)
     sysconfdir=`expr "$1" : "-*sysconfdir=\(.*\)"`
     ;;
@@ -122,6 +125,7 @@ do
     echo "-bindir=DIR     user executable in DIR (default: PREFIX/bin)"
     echo "-libdir=DIR     program executables in DIR (default: PREFIX/lib/w3m)"
     echo "-helpdir=DIR    help file in DIR (default: PREFIX/share/w3m)"
+    echo "-mandir=DIR     manual in DIR (default: PREFIX/man)"
     echo "-sysconfdir=DIR w3mconfig in DIR [PREFIX/etc/w3m]"
     echo "-lang=(en|ja)   Specify default language"
     echo "-model=(baby|little|mouse|cookie|monster|custom)"
@@ -540,6 +544,16 @@ Echo "(default: $d_helpdir) "
 readdir "$d_helpdir"
 helpdir=$_dir
 echo "helpdir='$helpdir'" >> config.param
+
+d_mandir=$mandir
+if [ -z "$d_mandir" ]; then
+  d_mandir="$topdir/man"
+fi
+echo "Which directory do you want to put the manfile?"
+Echo "(default: $d_mandir) "
+readdir "$d_mandir"
+mandir=$_dir
+echo "mandir='$mandir'" >> config.param
 
 d_sysconfdir=$sysconfdir
 if [ -z "$d_sysconfdir" ]; then
@@ -2072,8 +2086,11 @@ $def_matrix
 #ifdef makefile_parameter
 
 BIN_DIR = $bindir
-HELP_DIR = $helpdir
 LIB_DIR = $libdir
+HELP_DIR = $helpdir
+MAN_DIR = $mandir
+MAN1_DIR = \$(MAN_DIR)/man1
+MAN1_JA_DIR = \$(MAN_DIR)/ja/man1
 ETC_DIR = $sysconfdir
 RC_DIR = ~/.w3m
 HELP_FILE = $helpfile

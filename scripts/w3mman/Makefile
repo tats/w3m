@@ -3,6 +3,7 @@ prefix		= /usr/local
 BIN_DIR		= $(prefix)/bin
 LIB_DIR		= $(prefix)/lib/w3m
 MAN_DIR		= $(prefix)/man
+MAN1_DIR	= $(MAN_DIR)/man1
 DESTDIR		=
 distdir		= ./distfiles
 
@@ -36,6 +37,7 @@ all: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 install: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
 	-$(MKDIR) $(DESTDIR)$(LIB_DIR)
+	-$(MKDIR) $(DESTDIR)$(MAN1_DIR)
 	for file in $(TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(BIN_DIR);	\
@@ -46,7 +48,7 @@ install: $(TARGETS) $(LIB_TARGETS) $(MAN_TARGETS)
 	done
 	for file in $(MAN1_TARGETS); \
 	do	\
-		$(INSTALL_MAN) $$file $(DESTDIR)$(MAN_DIR)/man1; \
+		$(INSTALL_MAN) $$file $(DESTDIR)$(MAN1_DIR); \
 	done
 
 uninstall:
@@ -58,9 +60,9 @@ uninstall:
 	do      \
 		rm -f $(LIB_DIR)/$$file;	\
 	done
-	-for file in $(MAN_TARGETS); \
+	-for file in $(MAN1_TARGETS); \
 	do \
-		rm -f $(MAN_DIR)/$$file; \
+		rm -f $(MAN1_DIR)/$$file; \
 	done
 
 clean:

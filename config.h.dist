@@ -65,8 +65,11 @@
 #ifdef makefile_parameter
 
 BIN_DIR = /usr/local/bin
-HELP_DIR = /usr/local/lib/w3m
 LIB_DIR = /usr/local/lib/w3m
+HELP_DIR = /usr/local/share/w3m
+MAN_DIR = /usr/local/man
+MAN1_DIR = $(MAN_DIR)/man1
+MAN1_JA_DIR = $(MAN_DIR)/ja/man1
 ETC_DIR = /usr/local/etc/w3m
 RC_DIR = ~/.w3m
 HELP_FILE = w3mhelp-w3m_ja.html

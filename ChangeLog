@@ -1,5 +1,20 @@
 2002-03-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 03137] Re: w3mman.1
+	* XMakefile (MAN1): added
+		    (MAN1_JA): added
+		    (install-core): install man
+		    (install-scripts): pass MAN_DIR
+		    (uninstall): uninstall man, pass MAN_DIR to subdirs
+	* config.h.dist (MAN_DIR): added
+			(MAN1_DIR): added
+			(MAN1_JA_DIR): added
+	* configure: -mandir
+		  (config.h): add MAN_DIR, MAN1_DIR, MAN1_JA_DIR
+	* scripts/w3mman/Makefile (MAN1_DIR): added
+
+2002-03-20  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 03136] Add COMMAND to execute multiple commands
 	* fm.h (CurrentMenuData): deleted
 		(CurrentCmdData): added
@@ -3262,4 +3277,4 @@
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.357 2002/03/19 16:06:52 ukai Exp $
+$Id: ChangeLog,v 1.358 2002/03/19 16:27:20 ukai Exp $

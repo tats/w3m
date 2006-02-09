@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.237 2005/01/04 15:51:04 ukai Exp $ */
+/* $Id: file.c,v 1.238 2006/02/09 12:49:52 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -8027,7 +8027,7 @@ uncompress_stream(URLFile *uf, char **src)
 	    uf->scheme = SCM_LOCAL;
     }
     UFhalfclose(uf);
-    uf->stream = newFileStream(f1, (void (*)())pclose);
+    uf->stream = newFileStream(f1, (void (*)())fclose);
 }
 
 static FILE *

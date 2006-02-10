@@ -1,3 +1,8 @@
+2006-02-10  Dai Sato  <satodai@w3m.jp>
+
+	* http://dog.w3m.jp/bbs/spool/until200602.html#20060210153135@keijiwan
+	* url.c: replace pclose passed to localcgi_post/get() with fclose in openURL()
+
 2006-02-09  Dai Sato  <satodai@w3m.jp>
 
 	* http://vimrc.hp.infoseek.co.jp/w3m-pclose.html
@@ -8648,4 +8653,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.947 2006/02/09 12:49:52 inu Exp $
+$Id: ChangeLog,v 1.948 2006/02/10 12:52:23 inu Exp $

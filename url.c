@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.89 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: url.c,v 1.90 2006/02/10 12:52:23 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1526,12 +1526,12 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    /* local CGI: POST */
 	    uf.stream = newFileStream(localcgi_post(pu->real_file, pu->query,
 						    request, option->referer),
-				      (void (*)())pclose);
+				      (void (*)())fclose);
 	else
 	    /* lodal CGI: GET */
 	    uf.stream = newFileStream(localcgi_get(pu->real_file, pu->query,
 						   option->referer),
-				      (void (*)())pclose);
+				      (void (*)())fclose);
 	if (uf.stream) {
 	    uf.is_cgi = TRUE;
 	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;

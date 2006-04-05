@@ -1,6 +1,8 @@
-/* $Id: etc.c,v 1.78 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: etc.c,v 1.79 2006/04/05 14:18:54 inu Exp $ */
 #include "fm.h"
+#ifndef __MINGW32_VERSION
 #include <pwd.h>
+#endif
 #include "myctype.h"
 #include "html.h"
 #include "local.h"
@@ -1310,9 +1312,13 @@ romanAlphabet(int n)
 static void
 reset_signals(void)
 {
+#ifdef SIGHUP
     mySignal(SIGHUP, SIG_DFL);	/* terminate process */
+#endif
     mySignal(SIGINT, SIG_DFL);	/* terminate process */
+#ifdef SIGQUIT
     mySignal(SIGQUIT, SIG_DFL);	/* terminate process */
+#endif
     mySignal(SIGTERM, SIG_DFL);	/* terminate process */
     mySignal(SIGILL, SIG_DFL);	/* create core image */
     mySignal(SIGIOT, SIG_DFL);	/* create core image */
@@ -1355,8 +1361,10 @@ setup_child(int child, int i, int f)
 {
     reset_signals();
     mySignal(SIGINT, SIG_IGN);
+#ifndef __MINGW32_VERSION
     if (!child)
 	SETPGRP();
+#endif /* __MINGW32_VERSION */
     close_tty();
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
@@ -1364,6 +1372,7 @@ setup_child(int child, int i, int f)
     TrapSignal = FALSE;
 }
 
+#ifndef __MINGW32_VERSION
 pid_t
 open_pipe_rw(FILE ** fr, FILE ** fw)
 {
@@ -1421,6 +1430,7 @@ open_pipe_rw(FILE ** fr, FILE ** fw)
   err0:
     return (pid_t) - 1;
 }
+#endif /* __MINGW32_VERSION */
 
 void
 myExec(char *command)
@@ -1433,6 +1443,7 @@ myExec(char *command)
 void
 mySystem(char *command, int background)
 {
+#ifndef __MINGW32_VERSION
     if (background) {
 #ifndef __EMX__
 	flush_tty();
@@ -1447,6 +1458,7 @@ mySystem(char *command, int background)
 #endif
     }
     else
+#endif /* __MINGW32_VERSION */
 	system(command);
 }
 
@@ -1516,6 +1528,13 @@ myEditor(char *cmd, char *file, int line)
     return tmp;
 }
 
+#ifdef __MINGW32_VERSION
+char *
+expandName(char *name)
+{
+    return getenv("HOME");
+}
+#else
 char *
 expandName(char *name)
 {
@@ -1559,6 +1578,7 @@ expandName(char *name)
   rest:
     return name;
 }
+#endif
 
 char *
 file_to_url(char *file)
@@ -1898,7 +1918,11 @@ mymktime(char *timestr)
 #ifdef INET6
 #include <sys/socket.h>
 #endif				/* INET6 */
+#ifndef __MINGW32_VERSION
 #include <netdb.h>
+#else
+#include <winsock.h>
+#endif
 char *
 FQDN(char *host)
 {

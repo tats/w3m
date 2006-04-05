@@ -1,4 +1,4 @@
-/* $Id: parsetagx.c,v 1.14 2003/02/05 16:44:00 ukai Exp $ */
+/* $Id: parsetagx.c,v 1.15 2006/04/05 14:18:54 inu Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "indep.h"
@@ -182,6 +182,8 @@ parse_tag(char **s, int internal)
 		while (*q && *q != '"') {
 		    if (*q != '\n')
 			Strcat_char(value, *q);
+		    else
+		        Strcat_char(value, ' ');
 		    if (!tag->need_reconstruct && is_html_quote(*q))
 			tag->need_reconstruct = TRUE;
 		    q++;
@@ -194,6 +196,8 @@ parse_tag(char **s, int internal)
 		while (*q && *q != '\'') {
 		    if (*q != '\n')
 			Strcat_char(value, *q);
+		    else
+		        Strcat_char(value, ' ');
 		    if (!tag->need_reconstruct && is_html_quote(*q))
 			tag->need_reconstruct = TRUE;
 		    q++;

@@ -1,7 +1,7 @@
 # A sample of ~/.w3m/menu  (submenu type)
 #
 # menu MENU_ID
-#  func  LABEL FUNCTION KEYS
+#  func  LABEL FUNCTION KEYS FUNCTION_ARGUMENT
 #  popup LABEL MENU_ID  KEYS
 #  nop   LABEL
 # end

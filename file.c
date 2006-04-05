@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.238 2006/02/09 12:49:52 inu Exp $ */
+/* $Id: file.c,v 1.239 2006/04/05 14:18:54 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -50,7 +50,7 @@ static struct table_mode table_mode[MAX_TABLE];
 #ifdef USE_IMAGE
 static ParsedURL *cur_baseURL = NULL;
 #ifdef USE_M17N
-static char cur_document_charset;
+static wc_ces cur_document_charset;
 #endif
 #endif
 
@@ -836,13 +836,15 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    }
 	    if (pu && name->length > 0) {
 		int err;
-		if (flag & COO_SECURE)
-		    disp_message_nsec("Received a secured cookie", FALSE, 1,
+		if (show_cookie) {
+		    if (flag & COO_SECURE)
+		        disp_message_nsec("Received a secured cookie", FALSE, 1,
 				      TRUE, FALSE);
-		else
-		    disp_message_nsec(Sprintf("Received cookie: %s=%s",
+		    else
+		        disp_message_nsec(Sprintf("Received cookie: %s=%s",
 					      name->ptr, value->ptr)->ptr,
 				      FALSE, 1, TRUE, FALSE);
+		}
 		err =
 		    add_cookie(pu, name, value, expires, domain, path, flag,
 			       comment, version, port, commentURL);
@@ -874,10 +876,12 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			    emsg =
 				"This cookie was rejected to prevent security violation.";
 			record_err_message(emsg);
-			disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+			if (show_cookie)
+			    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 		    }
 		    else
-			disp_message_nsec(Sprintf
+			if (show_cookie)
+			    disp_message_nsec(Sprintf
 					  ("Accepting invalid cookie: %s=%s",
 					   name->ptr, value->ptr)->ptr, FALSE,
 					  1, TRUE, FALSE);
@@ -1599,9 +1603,17 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 				getpassphrase(proxy ? "Proxy Password: " :
 					      "Password: "));
 #else
+#ifndef __MINGW32_VERSION
 	    *pwd = Strnew_charp((char *)
 				getpass(proxy ? "Proxy Password: " :
 					"Password: "));
+#else
+	    term_raw();
+	    *pwd = Strnew_charp((char *)
+				inputLine(proxy ? "Proxy Password: " :
+					  "Password: ", NULL, IN_PASSWORD));
+	    term_cbreak();
+#endif /* __MINGW32_VERSION */
 #endif
 	}
     }
@@ -5281,6 +5293,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			buf->hmarklist =
 			    putHmarker(buf->hmarklist, currentLn(buf),
 				       pos, hseq - 1);
+		    else if (hseq < 0) {
+			int h = -hseq - 1;
+			if (buf->hmarklist &&
+			    h < buf->hmarklist->nmark &&
+			    buf->hmarklist->marks[h].invalid) {
+			    buf->hmarklist->marks[h].pos = pos;
+			    buf->hmarklist->marks[h].line = currentLn(buf);
+			    buf->hmarklist->marks[h].invalid = 0;
+			    hseq = -hseq;
+			}
+		    }
 		    if (id && idFrame)
 			idFrame->body->nameList =
 			    putAnchor(idFrame->body->nameList, id, NULL,
@@ -5300,8 +5323,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			a_href->end.line = currentLn(buf);
 			a_href->end.pos = pos;
 			if (a_href->start.line == a_href->end.line &&
-			    a_href->start.pos == a_href->end.pos)
+			    a_href->start.pos == a_href->end.pos) {
+			    if (buf->hmarklist &&
+				a_href->hseq < buf->hmarklist->nmark)
+				buf->hmarklist->marks[a_href->hseq].invalid = 1;
 			    a_href->hseq = -1;
+			}
 			a_href = NULL;
 		    }
 		    break;
@@ -7670,6 +7697,7 @@ _MoveFile(char *path1, char *path2)
 int
 _doFileCopy(char *tmpf, char *defstr, int download)
 {
+#ifndef __MINGW32_VERSION
     Str msg;
     Str filen;
     char *p, *q = NULL;
@@ -7776,6 +7804,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (PreserveTimestamp && !is_pipe && !stat(tmpf, &st))
 	    setModtime(p, st.st_mtime);
     }
+#endif /* __MINGW32_VERSION */
     return 0;
 }
 
@@ -7790,6 +7819,7 @@ doFileMove(char *tmpf, char *defstr)
 int
 doFileSave(URLFile uf, char *defstr)
 {
+#ifndef __MINGW32_VERSION
     Str msg;
     Str filen;
     char *p, *q;
@@ -7875,6 +7905,7 @@ doFileSave(URLFile uf, char *defstr)
 	if (PreserveTimestamp && uf.modtime != -1)
 	    setModtime(p, uf.modtime);
     }
+#endif /* __MINGW32_VERSION */
     return 0;
 }
 
@@ -7945,6 +7976,7 @@ inputAnswer(char *prompt)
 static void
 uncompress_stream(URLFile *uf, char **src)
 {
+#ifndef __MINGW32_VERSION
     pid_t pid1;
     FILE *f1;
     char *expand_cmd = GUNZIP_CMDNAME;
@@ -8028,6 +8060,7 @@ uncompress_stream(URLFile *uf, char **src)
     }
     UFhalfclose(uf);
     uf->stream = newFileStream(f1, (void (*)())fclose);
+#endif /* __MINGW32_VERSION */
 }
 
 static FILE *

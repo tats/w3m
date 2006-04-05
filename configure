@@ -310,7 +310,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_GTK2 USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS PACKAGE VERSION W3M W3M_LANG AWK CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA LN_S SET_MAKE RANLIB ac_ct_RANLIB PERL NKF MAN build build_cpu build_vendor build_os host host_cpu host_vendor host_os W3M_TARGET W3M_LIBS USE_M17N USE_UNICODE WCTARGET WCCFLAGS DISPLAY_CHARSET SYSTEM_CHARSET DOCUMENT_CHARSET POSUBST POLANG MKINSTALLDIRS USE_NLS MSGFMT GMSGFMT XGETTEXT MSGMERGE LIBICONV LTLIBICONV INTLLIBS LIBINTL LTLIBINTL POSUB INTLTARGET NLSTARGET USE_COLOR USE_ANSI_COLOR USE_BG_COLOR USE_IMAGE USE_W3MIMG_X11 USE_W3MIMG_FB W3MIMGDISPLAY_SETUID INSTALL_W3MIMGDISPLAY USE_GDKPIXBUF USE_GTK2 USE_IMLIB USE_IMLIB2 IMGTARGETS IMGOBJS IMGX11CFLAGS IMGX11LDFLAGS IMGFBCFLAGS IMGFBLDFLAGS USE_XFACE uncompface KEYMAP_FILE HELP_FILE KEYBIND USE_MENU USE_MOUSE USE_HISTORY USE_ALARM USE_COOKIE USE_DIGEST_AUTH USE_NNTP USE_GOPHER USE_DICT USE_HELP_CGI USE_EXTERNAL_URI_LOADER USE_W3MMAILER USE_MIGEMO DEF_MIGEMO_COMMAND DEF_EDITOR DEF_MAILER DEF_EXT_BROWSER INET6 HAVE_OLD_SS_FAMILY USE_SSL USE_SSL_VERIFY PKG_CONFIG SSL_CFLAGS SSL_LIBS USE_W3M USE_SYSMOUSE AUXBIN_TARGETS EGREP USE_BINMODE_STREAM HAVE_SYS_ERRLIST HAVE_SIGSETJMP RETSIGTYPE SIGNAL_RETURN HAVE_SO_PEERCRED HAVE_GETPEEREID HELP_DIR RC_DIR DOCDIRS CURRENT_VERSION LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -866,6 +866,7 @@ Optional Features:
   --disable-mouse		disable mouse operation
   --disable-history		disable URL history
   --disable-alarm		disable alarm
+  --disable-remote		disable remote operation
   --disable-cookie		disable cookie
   --disable-digest-auth		disable digest auth
   --disable-nntp		disable NNTP
@@ -5501,6 +5502,22 @@ sed 's/^/| /' conftest.$ac_ext >&5
 fi
 rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
  fi
+
+echo "$as_me:$LINENO: checking if remote operation enabled" >&5
+echo $ECHO_N "checking if remote operation enabled... $ECHO_C" >&6
+# Check whether --enable-remote or --disable-remote was given.
+if test "${enable_remote+set}" = set; then
+  enableval="$enable_remote"
+
+else
+  enable_remote="yes"
+fi;
+test x"$enable_remote" = xyes && cat >>confdefs.h <<\_ACEOF
+#define USE_REMOTE 1
+_ACEOF
+
+echo "$as_me:$LINENO: result: $enable_remote" >&5
+echo "${ECHO_T}$enable_remote" >&6
 
 
 echo "$as_me:$LINENO: checking if cookie is enabled" >&5
@@ -10256,6 +10273,160 @@ _ACEOF
 
  fi
 
+echo "$as_me:$LINENO: checking for SO_PEERCRED" >&5
+echo $ECHO_N "checking for SO_PEERCRED... $ECHO_C" >&6
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <sys/socket.h>
+int
+main ()
+{
+ int sopt = SO_PEERCRED;
+   exit(sopt);
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
+  (eval $ac_compile) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest.$ac_objext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  have_so_peercred="yes"; cat >>confdefs.h <<\_ACEOF
+#define HAVE_SO_PEERCRED 1
+_ACEOF
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+have_so_peercred="no"
+fi
+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
+echo "$as_me:$LINENO: result: $have_so_peercred" >&5
+echo "${ECHO_T}$have_so_peercred" >&6
+
+echo "$as_me:$LINENO: checking for getpeereid" >&5
+echo $ECHO_N "checking for getpeereid... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking for getpeereid" >&5
+echo $ECHO_N "checking for getpeereid... $ECHO_C" >&6
+if test "${ac_cv_func_getpeereid+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* Define getpeereid to an innocuous variant, in case <limits.h> declares getpeereid.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define getpeereid innocuous_getpeereid
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char getpeereid (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef getpeereid
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char getpeereid ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_getpeereid) || defined (__stub___getpeereid)
+choke me
+#else
+char (*f) () = getpeereid;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != getpeereid;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_func_getpeereid=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_func_getpeereid=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_func_getpeereid" >&5
+echo "${ECHO_T}$ac_cv_func_getpeereid" >&6
+if test $ac_cv_func_getpeereid = yes; then
+  have_getpeereid="yes"; cat >>confdefs.h <<\_ACEOF
+#define HAVE_GETPEEREID 1
+_ACEOF
+
+else
+  have_getpeereid="no"
+fi
+
+
 
 HELP_DIR="$datadir/$PACKAGE"
 cat >>confdefs.h <<\_ACEOF
@@ -11042,6 +11213,8 @@ s,@HAVE_SYS_ERRLIST@,$HAVE_SYS_ERRLIST,;t t
 s,@HAVE_SIGSETJMP@,$HAVE_SIGSETJMP,;t t
 s,@RETSIGTYPE@,$RETSIGTYPE,;t t
 s,@SIGNAL_RETURN@,$SIGNAL_RETURN,;t t
+s,@HAVE_SO_PEERCRED@,$HAVE_SO_PEERCRED,;t t
+s,@HAVE_GETPEEREID@,$HAVE_GETPEEREID,;t t
 s,@HELP_DIR@,$HELP_DIR,;t t
 s,@RC_DIR@,$RC_DIR,;t t
 s,@DOCDIRS@,$DOCDIRS,;t t

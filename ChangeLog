@@ -1,3 +1,22 @@
+2006-04-05  Dai Sato  <satodai@w3m.jp>
+	* [w3m-dev-en 01060] Some patches
+	* fix many problems with w3m 0.5.1.
+	* http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev-en/200511.month/1060.html
+	* [w3m-dev 04150] vi_prec_num
+	* main.c: fixed the switching on/off of vi-like prefix.
+	* [w3m-dev 04151] Re: w3m -remote
+	* acinclude.m4, aclocal.m4, config.h.in, configure, configure.ac, main.c, proto.h, terms.c: 
+	* added "-remote" option to receive commands from external processes.
+	* [w3m-dev 04152] [PATCH] Add more explanation for the usage of the option setting panel.
+	* doc/FAQ.html, doc-jp/FAQ.html, doc-jp/MANUAL.html: added some explanations.
+	* [w3m-dev 04153] NEXT_LINK error
+	* anchor.c, file.c, fm.h: fixed behavior of NEXT_LINK.
+	* [w3m-dev 04154] Unclosed textarea in table
+	* table.c: added handling </table> tag in textarea.
+	* [w3m-dev 04155] w3m mingw patch
+	* config.h, configure.ac, etc.c, file.c, ftp.c, indep.c, istream.c, local.c, main.c, rc.c, terms.c, url.c:
+	* to compile on MingW. can't handle basic certification.
+
 2006-02-10  Dai Sato  <satodai@w3m.jp>
 
 	* http://dog.w3m.jp/bbs/spool/until200602.html#20060210153135@keijiwan
@@ -8653,4 +8672,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.948 2006/02/10 12:52:23 inu Exp $
+$Id: ChangeLog,v 1.949 2006/04/05 14:18:53 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.247 2005/02/26 17:06:44 ukai Exp $ */
+/* $Id: main.c,v 1.248 2006/04/05 14:18:54 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -14,6 +14,13 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
+
+#ifdef USE_REMOTE
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <dirent.h>
+#endif
+
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -22,6 +29,12 @@
 extern int do_getch();
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
+#endif
+
+#ifdef __MINGW32_VERSION
+#include <winsock.h>
+
+WSADATA WSAData;
 #endif
 
 #define DSTR_LEN	256
@@ -65,7 +78,11 @@ static char *MarkString = NULL;
 static char *SearchString = NULL;
 int (*searchRoutine) (Buffer *, char *);
 
+#ifndef __MINGW32_VERSION
 JMP_BUF IntReturn;
+#else
+_JBTYPE IntReturn[_JBLEN];
+#endif /* __MINGW32_VERSION */
 
 static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
@@ -104,6 +121,19 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
+#ifdef USE_REMOTE
+static int open_remote(int id);
+static void execute_remote(int sock, char *arg);
+static Str find_sock(int pid);
+static int init_serv(void);
+static int init_remote(char *prefix);
+static void parse_sock_data(void);
+static Str SockName;
+static int SockFd = -1, UseRemote = FALSE, ExecuteRemote = FALSE, RemoteId = -1;
+struct sockaddr_un SockAddr;
+socklen_t SockLength; 
+#endif
+
 static void
 fversion(FILE * f)
 {
@@ -133,6 +163,9 @@ fversion(FILE * f)
 #ifdef USE_SYSMOUSE
 	    ",sysmouse"
 #endif
+#endif
+#ifdef USE_REMOTE
+	    ",remote"
 #endif
 #ifdef USE_MENU
 	    ",menu"
@@ -228,6 +261,11 @@ fusage(FILE * f, int err)
 #endif
 #ifdef USE_MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
+#endif				/* USE_MOUSE */
+#ifdef USE_REMOTE
+    fprintf(f, "    -enable_remote   accept remote operation\n");
+    fprintf(f, "    -remote command  execute command in an already running w3m process\n");
+    fprintf(f, "    -remote_id pid   select a w3m to control with -remote option\n");
 #endif				/* USE_MOUSE */
 #ifdef USE_COOKIE
     fprintf(f,
@@ -727,6 +765,33 @@ main(int argc, char **argv, char **envp)
 	    else if (!strcmp("-dummy", argv[i])) {
 		/* do nothing */
 	    }
+#ifdef USE_REMOTE
+	    else if (!strcmp("-enable_remote", argv[i])) {
+	      UseRemote = TRUE;
+	    }
+	    else if (!strcmp("-remote_id", argv[i])) {
+	      if (++i >= argc)
+		usage();
+	      RemoteId = atoi(argv[i]);
+	    }
+	    else if (!strcmp("-remote", argv[i])) {
+	      ExecuteRemote = TRUE;
+
+	      SockFd = open_remote(RemoteId);
+	      if (SockFd < 0) {
+		fprintf(stderr, "Can't find w3m process.\n");
+		exit(1);
+	      }
+	      while (++i < argc) {
+		if ((*argv[i] == '+') || (*argv[i] == '-')) {
+		  i--;
+		  break;
+		}
+		execute_remote(SockFd, argv[i]);
+	      }
+	      close(SockFd);
+	    }
+#endif
 	    else if (!strcmp("-debug", argv[i]))
 		w3m_debug = TRUE;
 	    else {
@@ -741,11 +806,32 @@ main(int argc, char **argv, char **envp)
 	}
 	i++;
     }
-
+#ifdef USE_REMOTE
+    if (ExecuteRemote) {
+      exit(0);
+    }
+#endif
 #ifdef	__WATT32__
     if (w3m_debug)
 	dbug_init();
     sock_init();
+#endif
+
+#ifdef __MINGW32_VERSION
+    {
+      int err;
+      WORD wVerReq;
+
+      wVerReq = MAKEWORD(1, 1);
+
+      err = WSAStartup(wVerReq, &WSAData);
+      if (err != 0)
+        {
+	  fprintf(stderr, "Can't find winsock\n");
+	  return 1;
+        }
+      _fmode = _O_BINARY;
+    }
 #endif
 
     FirstTab = NULL;
@@ -1028,6 +1114,13 @@ main(int argc, char **argv, char **envp)
     if (line_str) {
 	_goLine(line_str);
     }
+
+#ifdef USE_REMOTE
+    if (UseRemote) {
+      init_serv();
+    }
+#endif
+
     for (;;) {
 	if (add_download_list) {
 	    add_download_list = FALSE;
@@ -1044,7 +1137,6 @@ main(int argc, char **argv, char **envp)
 	/* event processing */
 	if (CurrentEvent) {
 	    CurrentKey = -1;
-	    CurrentKeyData = NULL;
 	    CurrentCmdData = (char *)CurrentEvent->data;
 	    w3mFuncList[CurrentEvent->cmd].func();
 	    CurrentCmdData = NULL;
@@ -1059,7 +1151,6 @@ main(int argc, char **argv, char **envp)
 		if (CurrentAlarm->sec == 0) {	/* refresh (0sec) */
 		    Currentbuf->event = NULL;
 		    CurrentKey = -1;
-		    CurrentKeyData = NULL;
 		    CurrentCmdData = (char *)CurrentAlarm->data;
 		    w3mFuncList[CurrentAlarm->cmd].func();
 		    CurrentCmdData = NULL;
@@ -1098,7 +1189,20 @@ main(int argc, char **argv, char **envp)
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 #endif
+#ifdef USE_REMOTE
+	if (UseRemote) {
+	  int n;
+	  c = getch_select(SockFd, &n);
+	  if (n == 1) {
+	    parse_sock_data();
+	    continue;
+	  }
+	} else {
+	  c = getch();
+	}
+#else
 	c = getch();
+#endif
 #ifdef SIGWINCH
 	mySignal(SIGWINCH, resize_hook);
 #endif
@@ -1126,9 +1230,239 @@ main(int argc, char **argv, char **envp)
 	}
 	prev_key = CurrentKey;
 	CurrentKey = -1;
-	CurrentKeyData = NULL;
     }
 }
+
+#ifdef USE_REMOTE
+#ifndef HAVE_GETPEEREID
+#ifdef HAVE_SO_PEERCRED
+int
+getpeereid(int s, uid_t *euid, gid_t *egid)
+{
+  struct ucred cr;
+  int cl = sizeof(cr), r;
+
+  r = getsockopt(s, SOL_SOCKET, SO_PEERCRED, &cr, &cl);
+  if (r)
+    return r;
+
+  *euid = cr.uid;
+  *egid = cr.gid;
+  return 0;
+}
+#endif /* HAVE_SO_PEERCRED */
+#endif /* ! HAVE_GETPEEREID */
+
+static int
+open_remote(int id)
+{
+#if defined(HAVE_SO_PEERCRED) || defined(HAVE_GETPEEREID)
+  uid_t euid;
+  gid_t egid;
+#endif
+  Str sock_name = find_sock(id);
+
+  if (! sock_name)
+    return -1;
+
+  if (sizeof(SockAddr.sun_path) <= sock_name->length)
+    return -1;
+
+  if (init_remote("w3mclis"))
+    return -1;
+
+  SockAddr.sun_family = AF_UNIX;
+  strcpy(SockAddr.sun_path, sock_name->ptr);
+  SockLength = sizeof(SockAddr.sun_family) + strlen(SockAddr.sun_path);
+
+  if (connect(SockFd, (struct sockaddr *) &SockAddr, SockLength)) {
+    close(SockFd);
+    unlink(SockName->ptr);
+    return -1;
+  }
+
+#if defined(HAVE_SO_PEERCRED) || defined(HAVE_GETPEEREID)
+  if (getpeereid(SockFd, &euid, &egid) != 0 || euid != getuid()) {
+    close(SockFd);
+    unlink(SockName->ptr);
+    return -1;
+  }
+#endif
+
+  return SockFd;
+}
+
+static void
+execute_remote(int sock, char *arg)
+{
+  write(sock, arg, strlen(arg));
+  write(sock, "\n", 1);
+}
+
+static Str
+find_sock(int pid)
+{
+  DIR *dot_w3m;
+  Str sock_name;
+  struct dirent *file = NULL;
+  struct stat sbuf;
+ 
+  if (pid > 0) {
+    sock_name = Sprintf("w3msock%d", pid);
+  } else {
+    sock_name = Strnew_charp("w3msock");
+  }
+
+  dot_w3m = opendir(rc_dir);
+  if (! dot_w3m)
+    return NULL;
+
+  while ((file = readdir(dot_w3m))) {
+    if ((pid > 0 && (Strcmp_charp(sock_name, file->d_name) == 0)) ||
+	(pid <= 0 && Strncmp_charp(sock_name, file->d_name, sock_name->length) == 0)) {
+	sock_name = Sprintf("%s/%s", rc_dir, file->d_name);
+	if ((stat(sock_name->ptr, &sbuf) == 0) &&
+	    (sbuf.st_mode & S_IFSOCK) &&
+	    !(sbuf.st_mode & (S_IRWXO | S_IRWXG)) &&
+	    (sbuf.st_uid == getuid()))
+	  goto SockFound;
+    }
+  }
+  closedir(dot_w3m);
+  return NULL;
+
+ SockFound:
+  closedir(dot_w3m);
+  return sock_name;
+}
+
+static int
+init_serv(void)
+{
+  if (init_remote("w3msock")) {
+    return 1;
+  }
+
+  if (listen(SockFd, 5)) {
+    unlink(SockName->ptr);
+    close(SockFd);
+    SockFd = -1;
+    UseRemote = FALSE;
+    return 1;
+  }
+
+  fcntl(SockFd, F_SETFL, O_NONBLOCK);
+  return 0;
+}
+
+
+static int
+init_remote(char *prefix)
+{
+  SockName = Sprintf("%s/%s%d", rc_dir, prefix, CurrentPid);
+  if (sizeof(SockAddr.sun_path) <= SockName->length)
+    goto SockErr;
+
+  SockAddr.sun_family = AF_UNIX;
+  strcpy(SockAddr.sun_path, SockName->ptr);
+  SockLength = sizeof(SockAddr.sun_family) + strlen(SockAddr.sun_path);
+
+  if ((SockFd = socket(PF_UNIX, SOCK_STREAM, 0)) < 0)
+    goto SockErr;
+
+  unlink(SockName->ptr);
+  if (bind(SockFd, (struct sockaddr *) &SockAddr, SockLength))
+    goto SockErr;
+
+  chmod(SockName->ptr, S_IRUSR | S_IWUSR);
+  return 0;
+
+ SockErr:
+  unlink(SockName->ptr);
+  if (SockFd >= 0) {
+    close(SockFd);
+  }
+  SockFd = -1;
+  UseRemote = FALSE;
+  return 1;
+}
+
+static void
+parse_sock_data(void)
+{
+  Str data = NULL;
+  char buf[64];
+  char *p, *q, *s;
+  int l, f, conn;
+  struct sockaddr_un sock_addr = SockAddr;
+  socklen_t sock_length = SockLength; 
+#if defined(HAVE_SO_PEERCRED) || defined(HAVE_GETPEEREID)
+  uid_t euid;
+  gid_t egid;
+#else
+  struct stat sbuf;
+  time_t staletime;
+#endif
+
+  if (!UseRemote || SockFd < 0) {
+    return;
+  }
+
+  if (!data)
+    data = Strnew();
+
+  conn = accept(SockFd, (struct sockaddr *) &sock_addr, &sock_length);
+
+  if (conn < 0)
+    return;
+
+
+  sock_length -= sizeof(sock_addr.sun_family);
+  sock_addr.sun_path[sock_length] = '\0';
+#if defined(HAVE_SO_PEERCRED) || defined(HAVE_GETPEEREID)
+  if (getpeereid(conn, &euid, &egid) != 0 || euid != getuid()) {
+#else
+#define STALE_LIMIT 60
+  staletime = time(NULL) - STALE_LIMIT;
+  if ((stat(sock_addr.sun_path, &sbuf) < 0) ||
+      !(sbuf.st_mode & S_IFSOCK) ||
+      (sbuf.st_mode & (S_IRWXO | S_IRWXG)) ||
+      (sbuf.st_uid != getuid()) ||
+      (sbuf.st_atime < staletime) ||
+      (sbuf.st_ctime < staletime) ||
+      (sbuf.st_mtime < staletime)) {
+#endif
+    close(conn);
+    return;
+  }
+  unlink(sock_addr.sun_path);
+  while ((l = read(conn, buf, sizeof(buf))) > 0) {
+    Strcat_charp_n(data, buf, l);
+  }
+  close(conn);
+
+  p = data->ptr;
+
+  while ((q = strchr(p, '\n'))) {
+    Str funcname = Strnew();
+    Str cmd = Strnew_charp_n(p, q - p);
+
+    s = cmd->ptr;
+    SKIP_BLANKS(s);
+    while (*s && !IS_SPACE(*s))
+      Strcat_char(funcname, *(s++));
+
+    SKIP_BLANKS(s);
+    f = getFuncList(funcname->ptr);
+    if (f >= 0) {
+      Str tmp = Strnew_charp(s);
+      Strchop(tmp);
+      pushEvent(f, tmp->ptr);
+    }
+    p = q + 1;
+  }
+}
+#endif /* USE_REMOTE */
 
 static void
 keyPressEventProc(int c)
@@ -1908,7 +2242,6 @@ DEFUN(setEnv, SETENV, "Set environment variable")
     char *env;
     char *var, *value;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     env = searchKeyData();
     if (env == NULL || *env == '\0' || strchr(env, '=') == NULL) {
 	if (env != NULL && *env != '\0')
@@ -1933,7 +2266,6 @@ DEFUN(pipeBuf, PIPE_BUF, "Send rendered document to pipe")
     char *cmd, *tmpf;
     FILE *f;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
 	/* FIXME: gettextize? */
@@ -1978,7 +2310,6 @@ DEFUN(pipesh, PIPE_SHELL, "Execute shell command and browse")
     Buffer *buf;
     char *cmd;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
 	cmd = inputLineHist("(read shell[pipe])!", "", IN_COMMAND, ShellHist);
@@ -2010,7 +2341,6 @@ DEFUN(readsh, READ_SHELL, "Execute shell command and load")
     MySignalHandler(*prevtrap) ();
     char *cmd;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
 	cmd = inputLineHist("(read shell)!", "", IN_COMMAND, ShellHist);
@@ -2045,7 +2375,6 @@ DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command")
 {
     char *cmd;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
 	cmd = inputLineHist("(exec shell)!", "", IN_COMMAND, ShellHist);
@@ -4149,7 +4478,6 @@ DEFUN(setOpt, SET_OPTION, "Set option")
 {
     char *opt;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     opt = searchKeyData();
     if (opt == NULL || *opt == '\0' || strchr(opt, '=') == NULL) {
 	if (opt != NULL && *opt != '\0') {
@@ -4335,7 +4663,6 @@ DEFUN(ldHist, HISTORY, "View history of URL")
 /* download HREF link */
 DEFUN(svA, SAVE_LINK, "Save link to file")
 {
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     do_download = TRUE;
     followA();
     do_download = FALSE;
@@ -4344,7 +4671,6 @@ DEFUN(svA, SAVE_LINK, "Save link to file")
 /* download IMG link */
 DEFUN(svI, SAVE_IMAGE, "Save image to file")
 {
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     do_download = TRUE;
     followI();
     do_download = FALSE;
@@ -4357,7 +4683,6 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
     FILE *f;
     int is_pipe;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     file = searchKeyData();
     if (file == NULL || *file == '\0') {
 	/* FIXME: gettextize? */
@@ -4406,7 +4731,6 @@ DEFUN(svSrc, DOWNLOAD SAVE, "Save document source to file")
 
     if (Currentbuf->sourcefile == NULL)
 	return;
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     PermitSaveToPipe = TRUE;
     if (Currentbuf->real_scheme == SCM_LOCAL)
 	file = conv_from_system(guess_save_name(NULL,
@@ -4943,7 +5267,6 @@ invoke_browser(char *url)
     char *browser = NULL;
     int bg = 0, len;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     browser = searchKeyData();
     if (browser == NULL || *browser == '\0') {
 	switch (prec_num) {
@@ -5184,7 +5507,6 @@ do_mouse_action(int btn, int x, int y)
 	mouse_action.cursorX = x;
 	mouse_action.cursorY = y;
 	CurrentKey = -1;
-	CurrentKeyData = NULL;
 	CurrentCmdData = map->data;
 	(*map->func) ();
 	CurrentCmdData = NULL;
@@ -5643,13 +5965,10 @@ searchKeyData(void)
 {
     char *data = NULL;
 
-    if (CurrentKeyData != NULL && *CurrentKeyData != '\0')
-	data = CurrentKeyData;
-    else if (CurrentCmdData != NULL && *CurrentCmdData != '\0')
+    if (CurrentCmdData != NULL && *CurrentCmdData != '\0')
 	data = CurrentCmdData;
     else if (CurrentKey >= 0)
 	data = getKeyData(CurrentKey);
-    CurrentKeyData = NULL;
     CurrentCmdData = NULL;
     if (data == NULL || *data == '\0')
 	return NULL;
@@ -5714,6 +6033,14 @@ w3m_exit(int i)
 #ifdef USE_NNTP
     disconnectNews();
 #endif
+#ifdef USE_REMOTE
+    if (UseRemote) {
+      unlink(SockName->ptr);
+    }
+#endif
+#ifdef __MINGW32_VERSION
+    WSACleanup();
+#endif
     exit(i);
 }
 
@@ -5722,7 +6049,6 @@ DEFUN(execCmd, COMMAND, "Execute w3m command(s)")
     char *data, *p;
     int cmd;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     data = searchKeyData();
     if (data == NULL || *data == '\0') {
 	data = inputStrHist("command [; ...]: ", "", TextHist);
@@ -5744,7 +6070,6 @@ DEFUN(execCmd, COMMAND, "Execute w3m command(s)")
 	    break;
 	p = getQWord(&data);
 	CurrentKey = -1;
-	CurrentKeyData = NULL;
 	CurrentCmdData = *p ? p : NULL;
 #ifdef USE_MOUSE
 	if (use_mouse)
@@ -5768,7 +6093,6 @@ SigAlarm(SIGNAL_ARG)
 
     if (CurrentAlarm->sec > 0) {
 	CurrentKey = -1;
-	CurrentKeyData = NULL;
 	CurrentCmdData = data = (char *)CurrentAlarm->data;
 #ifdef USE_MOUSE
 	if (use_mouse)
@@ -5806,7 +6130,6 @@ DEFUN(setAlarm, ALARM, "Set alarm")
     char *data;
     int sec = 0, cmd = -1;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     data = searchKeyData();
     if (data == NULL || *data == '\0') {
 	data = inputStrHist("(Alarm)sec command: ", "", TextHist);
@@ -5919,7 +6242,6 @@ DEFUN(defKey, DEFINE_KEY,
 {
     char *data;
 
-    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     data = searchKeyData();
     if (data == NULL || *data == '\0') {
 	data = inputStrHist("Key definition: ", "", TextHist);
@@ -6438,7 +6760,9 @@ download_action(struct parsed_tagarg *arg)
     for (; arg; arg = arg->next) {
 	if (!strncmp(arg->arg, "stop", 4)) {
 	    pid = (pid_t) atoi(&arg->arg[4]);
+#ifndef __MINGW32_VERSION
 	    kill(pid, SIGKILL);
+#endif
 	}
 	else if (!strncmp(arg->arg, "ok", 2))
 	    pid = (pid_t) atoi(&arg->arg[2]);
@@ -6472,7 +6796,9 @@ stopDownload(void)
     for (d = FirstDL; d != NULL; d = d->next) {
 	if (d->ok)
 	    continue;
+#ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);
+#endif
 	unlink(d->lock);
     }
 }

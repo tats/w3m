@@ -1,6 +1,12 @@
 2006-04-07  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev-en 01060] Some patches
+	* parsetagx.c: Replace '\n' (newline) with ' ' (space) in attributes of html tags instead of ignoring them.
+	* Fixes Debian bug #326167: w3m: new lines in hidden form fields are stripped
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
 	* scripts/w3mman/w3mman*.in: Add w3mman -l <file> command line argument for viewing of local man files.
 	* Fixes Debian bug #138805: w3mman -l doesn't work.
 
@@ -8671,4 +8677,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.953 2006/04/07 14:59:02 inu Exp $
+$Id: ChangeLog,v 1.954 2006/04/07 15:38:42 inu Exp $

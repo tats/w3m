@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.240 2006/04/07 13:21:11 inu Exp $ */
+/* $Id: file.c,v 1.241 2006/04/07 15:48:56 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -836,13 +836,15 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    }
 	    if (pu && name->length > 0) {
 		int err;
-		if (flag & COO_SECURE)
-		    disp_message_nsec("Received a secured cookie", FALSE, 1,
+		if (show_cookie) {
+		    if (flag & COO_SECURE)
+		        disp_message_nsec("Received a secured cookie", FALSE, 1,
 				      TRUE, FALSE);
-		else
-		    disp_message_nsec(Sprintf("Received cookie: %s=%s",
+		    else
+		        disp_message_nsec(Sprintf("Received cookie: %s=%s",
 					      name->ptr, value->ptr)->ptr,
 				      FALSE, 1, TRUE, FALSE);
+		}
 		err =
 		    add_cookie(pu, name, value, expires, domain, path, flag,
 			       comment, version, port, commentURL);
@@ -874,10 +876,12 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			    emsg =
 				"This cookie was rejected to prevent security violation.";
 			record_err_message(emsg);
-			disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
+			if (show_cookie)
+			    disp_message_nsec(emsg, FALSE, 1, TRUE, FALSE);
 		    }
 		    else
-			disp_message_nsec(Sprintf
+			if (show_cookie)
+			    disp_message_nsec(Sprintf
 					  ("Accepting invalid cookie: %s=%s",
 					   name->ptr, value->ptr)->ptr, FALSE,
 					  1, TRUE, FALSE);

@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.129 2006/04/07 13:21:11 inu Exp $ */
+/* $Id: fm.h,v 1.130 2006/04/07 15:48:56 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1076,6 +1076,7 @@ global MouseAction mouse_action;
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);
 global int use_cookie init(FALSE);
+global int show_cookie init(TRUE);
 global int accept_cookie init(FALSE);
 #define ACCEPT_BAD_COOKIE_DISCARD	0
 #define ACCEPT_BAD_COOKIE_ACCEPT	1

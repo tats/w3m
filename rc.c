@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.101 2006/04/07 13:21:12 inu Exp $ */
+/* $Id: rc.c,v 1.102 2006/04/07 15:48:56 inu Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -192,6 +192,7 @@ static int OptionEncode = FALSE;
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
+#define CMT_SHOWCOOKIE  N_("Print a message when receiving a cookie")
 #define CMT_ACCEPTCOOKIE N_("Accept cookies")
 #define CMT_ACCEPTBADCOOKIE N_("Action to be taken on invalid cookie")
 #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
@@ -552,6 +553,8 @@ struct param_ptr params7[] = {
 #ifdef USE_COOKIE
 struct param_ptr params8[] = {
     {"use_cookie", P_INT, PI_ONOFF, (void *)&use_cookie, CMT_USECOOKIE, NULL},
+    {"show_cookie", P_INT, PI_ONOFF, (void *)&show_cookie,
+     CMT_SHOWCOOKIE, NULL},
     {"accept_cookie", P_INT, PI_ONOFF, (void *)&accept_cookie,
      CMT_ACCEPTCOOKIE, NULL},
     {"accept_bad_cookie", P_INT, PI_SEL_C, (void *)&accept_bad_cookie,

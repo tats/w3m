@@ -19,7 +19,7 @@ if ($QUERY =~ /\=/) {
   $query{"man"} = &form_decode($QUERY);
 }
 
-if ((! $query{"man"}) && (! $query{"local"})) {
+if (! $query{"man"}) {
   if ($query{"keyword"}) {
     $keyword = $query{"keyword"};
     $k = &html_quote($keyword);
@@ -71,29 +71,21 @@ EOF
   exit;
 }
 
-if ($query{"local"}) {
-  $file = $query{"local"};
-  if (! ($file =~ /^\//)) {
-    $file = $query{"pwd"} . '/' . $file;
-  }
-  open(F, "$MAN -l $file 2> /dev/null |");
+$man = $query{"man"};
+if ($man =~ s/\((\w+)\)$//) {
+  $section = $1;
+  $man_section = "$man($1)";
+} elsif ($query{"section"}) {
+  $section = $query{"section"};
+  $man_section = "$man($section)";
 } else {
-  $man = $query{"man"};
-  if ($man =~ s/\((\w+)\)$//) {
-    $section = $1;
-    $man_section = "$man($1)";
-  } elsif ($query{"section"}) {
-    $section = $query{"section"};
-    $man_section = "$man($section)";
-  } else {
-    $section = "";
-    $man_section = "$man";
-  }
-
-  $section =~ s:([^-\w\200-\377.,])::g;
-  $man =~ s:([^-\w\200-\377.,])::g;
-  open(F, "$MAN $section $man 2> /dev/null |");
+  $section = "";
+  $man_section = "$man";
 }
+
+$section =~ s:([^-\w\200-\377.,])::g;
+$man =~ s:([^-\w\200-\377.,])::g;
+open(F, "$MAN $section $man 2> /dev/null |");
 $ok = 0;
 undef $header;
 $blank = -1;
@@ -184,11 +176,6 @@ if ($prev) {
 close(F);
 if (! $ok) {
   if ($query{'quit'}) {
-    if ($query{'local'}) {
-      print STDERR "File $file not found.\n";
-    } else {
-      print STDERR "No manual entry for $man_section.\n";
-    }
     print STDERR "No manual entry for $man_section.\n";
     print <<EOF;
 w3m-control: EXIT
@@ -203,11 +190,7 @@ Content-Type: text/html
 <body>
 <pre>
 EOF
-  if ($query{'local'}) {
-    print "File <B>$file</B> not found.\n";
-  } else {
-    print "No manual entry for <B>$man_section</B>.\n";
-  }
+  print "No manual entry for <B>$man_section</B>.\n";
 }
 print <<EOF;
 </pre>

@@ -1,4 +1,4 @@
-.TH W3MMAN 1 "Nov 5, 2005"
+.TH W3MMAN 1 "Mar 14, 2002"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -19,9 +19,6 @@ w3mman \- an interface to the on-line reference manuals by w3m(1)
 .br
 .B w3mman
 .RI "[-M " path "] -k " keyword
-.br
-.B w3mman
-.RI -l " file
 .SH DESCRIPTION
 .B w3mman
 is the system's manual pager by 
@@ -34,13 +31,9 @@ Specify
 .I path
 as MANPATH.
 .TP
-.BI \-k " keyword"
+.B \-k " keyword"
 Specify 
 .I keyword.
-.TP
-.BI \-l " file"
-Specify a  
-.I file.
 .SH ENVIRONMENT
 .TP
 .B W3MMAN_W3M

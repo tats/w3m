@@ -1,6 +1,12 @@
 2006-04-07  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev-en 01060] Some patches
+	* libwc/detect.c: Use the hint instead of US_ASCII in wc_auto_detect.
+	* Fixes Debian bug #291735: w3m shouldn't "simplify" page's charset
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
 	* Str.h, table.c: Use Strnew_charp() instead of the wrong Strnew().
 	* Fixes SF bug #895351 Strnew called with argument in table.c.
 
@@ -8659,4 +8665,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.951 2006/04/07 13:35:35 inu Exp $
+$Id: ChangeLog,v 1.952 2006/04/07 13:56:47 inu Exp $

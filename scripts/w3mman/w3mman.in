@@ -8,6 +8,7 @@ sub usage {
   ($_ = $0) =~ s@.*/@@;
   print STDERR "$_ [-M <path>] [[<section>] <command>]\n";
   print STDERR "$_ [-M <path>] [-k <keyword>]\n";
+  print STDERR "$_ [-l <file>]\n";
   exit 1;
 }
 
@@ -20,6 +21,10 @@ while (@ARGV) {
   } elsif (/^-k$/) {
     @ARGV || &usage();
     $query = "?keyword=" . &form_encode(shift @ARGV);
+  } elsif (/^-l$/) {
+    @ARGV || &usage(); 
+    $query = "?quit=ok&local=" . &form_encode(shift @ARGV);
+    $query .= "&pwd=" . &form_encode($ENV{'PWD'});
   } elsif (/^-/) {
     &usage();
   } elsif (/^\d/ || $_ eq 'n') {

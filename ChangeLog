@@ -1,3 +1,9 @@
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* Str.h, table.c: Use Strnew_charp() instead of the wrong Strnew().
+	* Fixes SF bug #895351 Strnew called with argument in table.c.
+
 2006-02-10  Dai Sato  <satodai@w3m.jp>
 
 	* http://dog.w3m.jp/bbs/spool/until200602.html#20060210153135@keijiwan
@@ -8653,4 +8659,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.950 2006/04/07 13:21:11 inu Exp $
+$Id: ChangeLog,v 1.951 2006/04/07 13:35:35 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.51 2006/04/07 13:21:12 inu Exp $ */
+/* $Id: table.c,v 1.52 2006/04/07 13:35:35 inu Exp $ */
 /* 
  * HTML table
  */
@@ -1984,7 +1984,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 	break;
     }
     if (t->total_height == 0) {
-	renderbuf = Strnew(" ");
+       renderbuf = Strnew_charp(" ");
 	t->total_height++;
 	t->total_width = 1;
 	push_render_image(renderbuf, 1, t->total_width, h_env);

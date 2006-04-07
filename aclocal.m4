@@ -82,18 +82,6 @@ test x"$enable_mouse" = xyes && AC_DEFINE(USE_MOUSE)
 AC_MSG_RESULT($enable_mouse)])
 #
 # ----------------------------------------------------------------
-# AC_W3M_REMOTE
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_REMOTE],
-[AC_SUBST(USE_MOUSE)
-AC_MSG_CHECKING(if remote operation enabled)
-AC_ARG_ENABLE(remote,
- [  --disable-remote		disable remote operation],,
- [enable_remote="yes"])
-test x"$enable_remote" = xyes && AC_DEFINE(USE_REMOTE)
-AC_MSG_RESULT($enable_remote)])
-#
-# ----------------------------------------------------------------
 # AC_W3M_COOKIE
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_COOKIE],
@@ -901,31 +889,6 @@ AC_DEFUN([AC_W3M_SIGNAL],
  else
   AC_DEFINE(SIGNAL_RETURN,return 0)
  fi])
-
-#
-# ----------------------------------------------------------------
-# AC_W3M_SO_PEERCRED
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_SO_PEERCRED],
-[AC_SUBST(HAVE_SO_PEERCRED)
-AC_MSG_CHECKING(for SO_PEERCRED)
-AC_TRY_COMPILE(
-[#include <sys/socket.h>],
-[ int sopt = SO_PEERCRED;
-   exit(sopt);],
-[have_so_peercred="yes"; AC_DEFINE(HAVE_SO_PEERCRED)],
-[have_so_peercred="no"])
-AC_MSG_RESULT($have_so_peercred)])
-#
-# ----------------------------------------------------------------
-# AC_W3M_GETPEEREID
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_GETPEEREID],
-[AC_SUBST(HAVE_GETPEEREID)
-AC_MSG_CHECKING(for getpeereid)
-AC_CHECK_FUNC(getpeereid, 
-[have_getpeereid="yes"; AC_DEFINE(HAVE_GETPEEREID)],
-[have_getpeereid="no"])])
 
 # lib-prefix.m4 serial 3 (gettext-0.13)
 dnl Copyright (C) 2001-2003 Free Software Foundation, Inc.

@@ -1,9 +1,7 @@
-/* $Id: indep.c,v 1.36 2006/04/05 14:18:54 inu Exp $ */
+/* $Id: indep.c,v 1.37 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include <stdio.h>
-#ifndef __MINGW32_VERSION
 #include <pwd.h>
-#endif /* __MINGW32_VERSION */
 #include <sys/param.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -227,7 +225,6 @@ expandPath(char *name)
     p = name;
     if (*p == '~') {
 	p++;
-#ifndef __MINGW32_VERSION
 	if (IS_ALPHA(*p)) {
 	    char *q = strchr(p, '/');
 	    if (q) {		/* ~user/dir... */
@@ -241,9 +238,8 @@ expandPath(char *name)
 	    if (!passent)
 		goto rest;
 	    extpath = Strnew_charp(passent->pw_dir);
-	} else
-#endif /* __MINGW32_VERSION */
-	  if (*p == '/' || *p == '\0') {	/* ~/dir... or ~ */
+	}
+	else if (*p == '/' || *p == '\0') {	/* ~/dir... or ~ */
 	    extpath = Strnew_charp(getenv("HOME"));
 	}
 	else

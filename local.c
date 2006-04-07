@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.32 2006/04/05 14:18:54 inu Exp $ */
+/* $Id: local.c,v 1.33 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -15,10 +15,6 @@
 #endif				/* __EMX__ */
 #include "local.h"
 #include "hash.h"
-
-#ifdef __MINGW32_VERSION
-#include <winsock.h>
-#endif
 
 #define CGIFN_NORMAL     0
 #define CGIFN_LIBDIR     1
@@ -197,10 +193,8 @@ check_local_cgi(char *file, int status)
 	return -1;
     if (S_ISDIR(st.st_mode))
 	return -1;
-#ifndef __MINGW32_VERSION
     if ((st.st_uid == geteuid() && (st.st_mode & S_IXUSR)) || (st.st_gid == getegid() && (st.st_mode & S_IXGRP)) || (st.st_mode & S_IXOTH))	/* executable */
 	return 0;
-#endif
     return -1;
 }
 
@@ -359,9 +353,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     pid_t pid;
     char *file = uri, *name = uri, *path_info = NULL, *tmpf = NULL;
 
-#ifdef __MINGW32_VERSION
-    return NULL;
-#else
     status = cgi_filename(uri, &file, &name, &path_info);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
@@ -421,5 +412,4 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	    file, mybasename(file), strerror(errno));
     exit(1);
     return NULL;
-#endif
 }

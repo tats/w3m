@@ -67,7 +67,6 @@ AC_W3M_MENU
 AC_W3M_MOUSE
 AC_W3M_HISTORY
 AC_W3M_ALARM
-AC_W3M_REMOTE
 
 AC_W3M_COOKIE
 AC_W3M_DIGEST_AUTH
@@ -84,7 +83,7 @@ AC_W3M_MAILER
 AC_W3M_EXT_BROWSER
 
 dnl Checks for ext libs
-for lib in bsd BSD 44bsd socket dld
+for lib in bsd BSD 44bsd socket nsl dld dl
 do
  AC_W3M_EXTLIBS($lib)
 done
@@ -111,7 +110,7 @@ AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
 case "$host_os" in
-  *cygwin*|*os2-emx*|*mingw*)
+  *cygwin*|*os2-emx*)
     AC_DEFINE(USE_BINMODE_STREAM)
     ;;
 esac
@@ -153,8 +152,6 @@ AM_LANGINFO_CODESET
 AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL
-AC_W3M_SO_PEERCRED
-AC_W3M_GETPEEREID
 
 AC_SUBST(HELP_DIR)
 HELP_DIR="$datadir/$PACKAGE"

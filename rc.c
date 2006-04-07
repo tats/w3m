@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.100 2006/04/05 14:18:54 inu Exp $ */
+/* $Id: rc.c,v 1.101 2006/04/07 13:21:12 inu Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -192,7 +192,6 @@ static int OptionEncode = FALSE;
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
-#define CMT_SHOWCOOKIE  N_("Print a message when receiving a cookie")
 #define CMT_ACCEPTCOOKIE N_("Accept cookies")
 #define CMT_ACCEPTBADCOOKIE N_("Action to be taken on invalid cookie")
 #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
@@ -302,7 +301,9 @@ static struct sel_c dnsorders[] = {
 #ifdef USE_COOKIE
 static struct sel_c badcookiestr[] = {
     {N_S(ACCEPT_BAD_COOKIE_DISCARD), N_("discard")},
+#if 0
     {N_S(ACCEPT_BAD_COOKIE_ACCEPT), N_("accept")},
+#endif
     {N_S(ACCEPT_BAD_COOKIE_ASK), N_("ask")},
     {0, NULL, NULL}
 };
@@ -551,8 +552,6 @@ struct param_ptr params7[] = {
 #ifdef USE_COOKIE
 struct param_ptr params8[] = {
     {"use_cookie", P_INT, PI_ONOFF, (void *)&use_cookie, CMT_USECOOKIE, NULL},
-    {"show_cookie", P_INT, PI_ONOFF, (void *)&show_cookie,
-     CMT_SHOWCOOKIE, NULL},
     {"accept_cookie", P_INT, PI_ONOFF, (void *)&accept_cookie,
      CMT_ACCEPTCOOKIE, NULL},
     {"accept_bad_cookie", P_INT, PI_SEL_C, (void *)&accept_bad_cookie,
@@ -1112,11 +1111,7 @@ do_mkdir(const char *dir, long mode)
     return mkdir(abs, mode);
 }
 #else				/* not __EMX__ */
-#ifdef __MINGW32_VERSION
-#define do_mkdir(dir,mode) mkdir(dir)
-#else
 #define do_mkdir(dir,mode) mkdir(dir,mode)
-#endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
 void

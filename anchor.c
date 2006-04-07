@@ -1,4 +1,4 @@
-/* $Id: anchor.c,v 1.31 2006/04/05 14:18:53 inu Exp $ */
+/* $Id: anchor.c,v 1.32 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "regex.h"
@@ -175,8 +175,6 @@ searchAnchor(AnchorList *al, char *str)
 	return NULL;
     for (i = 0; i < al->nanchor; i++) {
 	a = &al->anchors[i];
-	if (a->hseq < 0)
-	  continue;
 	if (!strcmp(a->url, str))
 	    return a;
     }
@@ -473,7 +471,6 @@ putHmarker(HmarkerList *ml, int line, int pos, int seq)
     }
     ml->marks[seq].line = line;
     ml->marks[seq].pos = pos;
-    ml->marks[seq].invalid = 0;
     return ml;
 }
 
@@ -781,7 +778,7 @@ link_list_panel(Buffer *buf)
 	al = buf->href;
 	for (i = 0; i < al->nanchor; i++) {
 	    a = &al->anchors[i];
-	    if (a->hseq < 0 || a->slave)
+	    if (a->slave)
 		continue;
 	    parseURL2(a->url, &pu, baseURL(buf));
 	    p = parsedURL2Str(&pu)->ptr;

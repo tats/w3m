@@ -1,14 +1,10 @@
-/* $Id: url.c,v 1.91 2006/04/05 14:18:54 inu Exp $ */
+/* $Id: url.c,v 1.92 2006/04/07 13:21:12 inu Exp $ */
 #include "fm.h"
-#ifndef __MINGW32_VERSION
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#else
-#include <winsock.h>
-#endif /* __MINGW32_VERSION */
 
 #include <signal.h>
 #include <setjmp.h>
@@ -34,11 +30,6 @@
 #ifdef	__WATT32__
 #define	write(a,b,c)	write_s(a,b,c)
 #endif				/* __WATT32__ */
-
-#ifdef __MINGW32_VERSION
-#define	write(a,b,c)	send(a,b,c, 0)
-#define close(fd)	closesocket(fd)
-#endif
 
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */

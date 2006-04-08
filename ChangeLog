@@ -1,5 +1,10 @@
 2006-04-08  Dai Sato  <satodai@w3m.jp>
 
+	* [w3m-dev 04154] Unclosed textarea in table
+	* table.c: close textarea when table related tags found.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
 	* [w3m-dev 04153] NEXT_LINK error
 	* anchor.c, filc.c, fm.h: check A tag in HTMLlineproc2body().
 
@@ -8703,4 +8708,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.959 2006/04/08 11:33:16 inu Exp $
+$Id: ChangeLog,v 1.960 2006/04/08 11:51:59 inu Exp $

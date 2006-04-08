@@ -148,7 +148,13 @@ AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir 
 AC_FUNC_STRFTIME
 AC_FUNC_WAIT3
 AC_FUNC_SETPGRP
-AM_LANGINFO_CODESET
+case "$host_os" in
+  *cygwin*)
+    ;;
+  *)
+    AM_LANGINFO_CODESET
+    ;;
+esac
 AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL

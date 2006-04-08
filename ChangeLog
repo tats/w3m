@@ -1,4 +1,9 @@
-2006-04-07  Dai Sato  <satodai@w3m.jp>
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04150] vi-prec_num
+	* main.c: fix vi_prec_num switching.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev 04146] disable HAVE_LANGINFO_CODESET on cygwin
 	* configure.ac: avoid AM_LANGINFO_CODESET check for Cygwin.
@@ -8688,4 +8693,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.956 2006/04/08 11:15:57 inu Exp $
+$Id: ChangeLog,v 1.957 2006/04/08 11:21:07 inu Exp $

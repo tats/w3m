@@ -1,5 +1,10 @@
 2006-04-08  Dai Sato  <satodai@w3m.jp>
 
+	* [w3m-dev 04153] NEXT_LINK error
+	* anchor.c, filc.c, fm.h: check A tag in HTMLlineproc2body().
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
 	* [w3m-dev 04152] [PATCH] Add more explanation for the usage of the option setting panel.
 	* doc(-jp)/FAQ.html, doc-jp/MANUAL.html: add explanations for .w3m/config and -o option.
 
@@ -8698,4 +8703,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.958 2006/04/08 11:26:22 inu Exp $
+$Id: ChangeLog,v 1.959 2006/04/08 11:33:16 inu Exp $

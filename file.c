@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.241 2006/04/07 15:48:56 inu Exp $ */
+/* $Id: file.c,v 1.242 2006/04/08 11:33:16 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5285,6 +5285,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			buf->hmarklist =
 			    putHmarker(buf->hmarklist, currentLn(buf),
 				       pos, hseq - 1);
+		    else if (hseq < 0) {
+			int h = -hseq - 1;
+			if (buf->hmarklist &&
+			    h < buf->hmarklist->nmark &&
+			    buf->hmarklist->marks[h].invalid) {
+			    buf->hmarklist->marks[h].pos = pos;
+			    buf->hmarklist->marks[h].line = currentLn(buf);
+			    buf->hmarklist->marks[h].invalid = 0;
+			    hseq = -hseq;
+			}
+		    }
 		    if (id && idFrame)
 			idFrame->body->nameList =
 			    putAnchor(idFrame->body->nameList, id, NULL,
@@ -5304,8 +5315,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			a_href->end.line = currentLn(buf);
 			a_href->end.pos = pos;
 			if (a_href->start.line == a_href->end.line &&
-			    a_href->start.pos == a_href->end.pos)
+			    a_href->start.pos == a_href->end.pos) {
+			    if (buf->hmarklist &&
+				a_href->hseq < buf->hmarklist->nmark)
+				buf->hmarklist->marks[a_href->hseq].invalid = 1;
 			    a_href->hseq = -1;
+			}
 			a_href = NULL;
 		    }
 		    break;

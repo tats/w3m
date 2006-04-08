@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.130 2006/04/07 15:48:56 inu Exp $ */
+/* $Id: fm.h,v 1.131 2006/04/08 11:33:16 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -336,6 +336,7 @@ typedef struct _Line {
 typedef struct {
     int line;
     int pos;
+    int invalid;
 } BufferPoint;
 
 #ifdef USE_IMAGE

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.251 2006/05/29 12:28:01 inu Exp $ */
+/* $Id: main.c,v 1.252 2006/05/29 12:42:22 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -293,10 +293,9 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 
 	    for (; n > 0; --n, ++i) {
 		i %= sizeof(msg_ring) / sizeof(msg_ring[0]);
-		disp_message_nsec(Sprintf
-				  (msg_ring[i].msg,
-				   (unsigned long)msg_ring[i].arg)->ptr, FALSE,
-				  1, TRUE, FALSE);
+
+		printf(msg_ring[i].msg,	(unsigned long)msg_ring[i].arg);
+		sleep_till_anykey(1, 1);
 	    }
 
 	    lock = 0;

@@ -1,6 +1,11 @@
 2006-05-29  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev-en 01067] Some more patches
+	* main.c: delete calls to GC from wrap_GC_warn_proc to avoid deadlocks.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
 	* main.c: fix unsafe usages of SIGWINCH handler.
 
 2006-05-29  Dai Sato  <satodai@w3m.jp>
@@ -8718,4 +8723,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.962 2006/05/29 12:28:01 inu Exp $
+$Id: ChangeLog,v 1.963 2006/05/29 12:42:22 inu Exp $

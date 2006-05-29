@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.250 2006/04/08 11:21:07 inu Exp $ */
+/* $Id: main.c,v 1.251 2006/05/29 12:28:01 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -51,7 +51,6 @@ static MySignalHandler SigAlarm(SIGNAL_ARG);
 #ifdef SIGWINCH
 static int need_resize_screen = FALSE;
 static MySignalHandler resize_hook(SIGNAL_ARG);
-static MySignalHandler resize_handler(SIGNAL_ARG);
 static void resize_screen(void);
 #endif
 
@@ -1084,24 +1083,32 @@ main(int argc, char **argv, char **envp)
 	}
 #endif
 #ifdef SIGWINCH
-	if (need_resize_screen) {
-	    need_resize_screen = FALSE;
-	    resize_screen();
-	}
-	mySignal(SIGWINCH, resize_handler);
+	mySignal(SIGWINCH, resize_hook);
 #endif
 #ifdef USE_IMAGE
 	if (activeImage && displayImage && Currentbuf->img &&
 	    !Currentbuf->image_loaded) {
 	    do {
+#ifdef SIGWINCH
+		if (need_resize_screen)
+		    resize_screen();
+#endif
 		loadImage(Currentbuf, IMG_FLAG_NEXT);
+	    } while (sleep_till_anykey(1, 0) <= 0);
+	}
+#ifdef SIGWINCH
+	else
+#endif
+#endif
+#ifdef SIGWINCH
+	{
+	    do {
+		if (need_resize_screen)
+		    resize_screen();
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 #endif
 	c = getch();
-#ifdef SIGWINCH
-	mySignal(SIGWINCH, resize_hook);
-#endif
 #ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
 	    alarm(0);
@@ -1427,17 +1434,10 @@ resize_hook(SIGNAL_ARG)
     SIGNAL_RETURN;
 }
 
-static MySignalHandler
-resize_handler(SIGNAL_ARG)
-{
-    resize_screen();
-    mySignal(SIGWINCH, resize_handler);
-    SIGNAL_RETURN;
-}
-
 static void
 resize_screen(void)
 {
+    need_resize_screen = FALSE;
     setlinescols();
     setupscreen();
     if (CurrentTab)

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.242 2006/04/08 11:33:16 inu Exp $ */
+/* $Id: file.c,v 1.243 2006/05/29 12:54:26 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -748,6 +748,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		if (uf->compression != CMP_NOCOMPRESS)
 		    break;
 	    }
+	    uf->content_encoding = uf->compression;
 	}
 #ifdef USE_COOKIE
 	else if (use_cookie && accept_cookie &&
@@ -2125,7 +2126,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	return NO_BUFFER;
     }
 
-    if (f.compression != CMP_NOCOMPRESS) {
+    if (f.content_encoding != CMP_NOCOMPRESS) {
+	uncompress_stream(&f, &pu.real_file);
+    }
+    else if (f.compression != CMP_NOCOMPRESS) {
 	if (!(w3m_dump & DUMP_SOURCE) &&
 	    (w3m_dump & ~DUMP_FRAME || is_text_type(t)
 	     || searchExtViewer(t))) {
@@ -7814,6 +7818,7 @@ doFileSave(URLFile uf, char *defstr)
     char *p, *q;
     pid_t pid;
     char *lock;
+    char *tmpf = NULL; 
 #if !(defined(HAVE_SYMLINK) && defined(HAVE_LSTAT))
     FILE *f;
 #endif
@@ -7854,6 +7859,11 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
+	    if (uf.content_encoding != CMP_NOCOMPRESS) {
+		uncompress_stream(&uf, &tmpf);
+		if (tmpf)
+		    unlink(tmpf);
+	    }
 	    setup_child(FALSE, 0, UFfileno(&uf));
 	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
 		setModtime(p, uf.modtime);
@@ -7885,6 +7895,11 @@ doFileSave(URLFile uf, char *defstr)
 	    /* FIXME: gettextize? */
 	    printf("Can't save. Load file and %s are identical.", p);
 	    return -1;
+	}
+	if (uf.content_encoding != CMP_NOCOMPRESS) {
+	    uncompress_stream(&uf, &tmpf);
+	    if (tmpf)
+		unlink(tmpf);
 	}
 	if (save2tmp(uf, p) < 0) {
 	    /* FIXME: gettextize? */

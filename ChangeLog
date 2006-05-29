@@ -1,6 +1,11 @@
 2006-05-29  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev-en 01067] Some more patches
+	* file.c, html.h, url.c: decode content-encoding in all situations.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
 	* main.c: delete calls to GC from wrap_GC_warn_proc to avoid deadlocks.
 
 2006-05-29  Dai Sato  <satodai@w3m.jp>
@@ -8723,4 +8728,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.963 2006/05/29 12:42:22 inu Exp $
+$Id: ChangeLog,v 1.964 2006/05/29 12:54:26 inu Exp $

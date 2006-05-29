@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.92 2006/04/07 13:21:12 inu Exp $ */
+/* $Id: url.c,v 1.93 2006/05/29 12:54:26 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1453,7 +1453,8 @@ init_stream(URLFile *uf, int scheme, InputStream stream)
     uf->scheme = scheme;
     uf->encoding = ENC_7BIT;
     uf->is_cgi = FALSE;
-    uf->compression = 0;
+    uf->compression = CMP_NOCOMPRESS;
+    uf->content_encoding = CMP_NOCOMPRESS;
     uf->guess_type = NULL;
     uf->ext = NULL;
     uf->modtime = -1;

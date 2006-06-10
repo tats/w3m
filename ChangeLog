@@ -1,4 +1,9 @@
-2006-06-07  Dai Sato  <satodai@w3m.jp>
+2006-06-10  Dai Sato  <satodai@w3m.jp>
+
+	* fix for [w3m-dev-en 01067] Some more patches
+	* file.c (loadGeneralFile): avoid decoding when dump_extra option is specified.
+
+2006-06-10  Dai Sato  <satodai@w3m.jp>
 
 	* [w3m-dev 03992] Change to display progress status when dump_extra option is specified
 	* file.c (loadHTMLstream): Show progress status when dump_extra option is specified.
@@ -8738,4 +8743,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.966 2006/06/10 10:01:18 inu Exp $
+$Id: ChangeLog,v 1.967 2006/06/10 11:09:06 inu Exp $

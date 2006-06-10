@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.244 2006/06/10 10:01:18 inu Exp $ */
+/* $Id: file.c,v 1.245 2006/06/10 11:09:06 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2126,7 +2126,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	return NO_BUFFER;
     }
 
-    if (f.content_encoding != CMP_NOCOMPRESS) {
+    if ((f.content_encoding != CMP_NOCOMPRESS) && !(w3m_dump & DUMP_EXTRA)) {
 	uncompress_stream(&f, &pu.real_file);
     }
     else if (f.compression != CMP_NOCOMPRESS) {

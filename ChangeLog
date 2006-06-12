@@ -1,3 +1,8 @@
+2006-06-12  Dai Sato  <satodai@w3m.jp>
+
+	* another fix for [w3m-dev-en 01067] Some more patches
+	* file.c (loadBuffer): avoid decoding when dump_extra option is specified.
+
 2006-06-10  Dai Sato  <satodai@w3m.jp>
 
 	* fix for [w3m-dev-en 01067] Some more patches
@@ -8743,4 +8748,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.967 2006/06/10 11:09:06 inu Exp $
+$Id: ChangeLog,v 1.968 2006/06/12 11:51:59 inu Exp $

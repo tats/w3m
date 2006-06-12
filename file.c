@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.245 2006/06/10 11:09:06 inu Exp $ */
+/* $Id: file.c,v 1.246 2006/06/12 11:51:59 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7015,6 +7015,8 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 	if (src)
 	    Strfputs(lineBuf2, src);
 	linelen += lineBuf2->length;
+	if (w3m_dump & DUMP_EXTRA)
+	    printf("W3m-in-progress: %s\n", convert_size2(linelen, current_content_length, TRUE));
 	if (w3m_dump & DUMP_SOURCE)
 	    continue;
 	showProgress(&linelen, &trbyte);

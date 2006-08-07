@@ -1,3 +1,9 @@
+2006-08-07  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* mailcap.c (acceptableMimeTypes): change default accept: line
+	    w3m should prefer text/html to other text/*.
+	    reported as Debian Bug#374296
+
 2006-06-12  Dai Sato  <satodai@w3m.jp>
 
 	* another fix for [w3m-dev-en 01067] Some more patches
@@ -8748,4 +8754,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.968 2006/06/12 11:51:59 inu Exp $
+$Id: ChangeLog,v 1.969 2006/08/07 03:10:26 ukai Exp $

@@ -21,8 +21,8 @@ p		HTML_P
 br		HTML_BR
 b		HTML_B
 /b		HTML_N_B
-i		HTML_NOP
-/i		HTML_NOP
+i		HTML_I
+/i		HTML_N_I
 tt		HTML_NOP
 /tt		HTML_NOP
 ul		HTML_UL
@@ -60,8 +60,8 @@ kbd		HTML_NOP
 /kbd		HTML_NOP
 samp		HTML_NOP
 /samp		HTML_NOP
-strong		HTML_EM
-/strong		HTML_N_EM
+strong		HTML_STRONG
+/strong		HTML_N_STRONG
 var		HTML_NOP
 /var		HTML_NOP
 address		HTML_BR

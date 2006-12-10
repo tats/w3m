@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.133 2006/12/10 11:01:24 inu Exp $ */
+/* $Id: fm.h,v 1.134 2006/12/10 11:06:12 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -165,6 +165,9 @@ void bzero(void *, int);
 #define PE_FORM         0x40
 #define PE_ACTIVE	0x80
 #define PE_VISITED	0x4000
+
+/* Extra effect */
+#define PE_EX_ITALIC	PE_BOLD
 
 #define CharType(c)	((c)&P_CHARTYPE)
 #define CharEffect(c)	((c)&(P_EFFECT|PC_SYMBOL))
@@ -536,7 +539,7 @@ typedef struct _DownloadList {
 
 #define FONT_STACK_SIZE 5
 
-#define FONTSTAT_SIZE 4
+#define FONTSTAT_SIZE 5
 
 #define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
@@ -584,7 +587,8 @@ struct readbuffer {
 
 #define in_bold fontstat[0]
 #define in_under fontstat[1]
-#define in_stand fontstat[2]
+#define in_italic fontstat[2]
+#define in_stand fontstat[3]
 
 #define RB_PRE		0x01
 #define RB_SCRIPT	0x02

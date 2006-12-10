@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.26 2006/05/29 12:54:26 inu Exp $ */
+/* $Id: html.h,v 1.27 2006/12/10 11:06:12 inu Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -198,35 +198,39 @@ typedef struct {
 #define HTML_N_S        106
 #define HTML_Q		107
 #define HTML_N_Q	108
+#define HTML_I		109
+#define HTML_N_I	110
+#define HTML_STRONG	111
+#define HTML_N_STRONG	112
 
    /* pseudo tag */
-#define HTML_SELECT_INT     110
-#define HTML_N_SELECT_INT   111
-#define HTML_OPTION_INT     112
-#define HTML_TEXTAREA_INT   113
-#define HTML_N_TEXTAREA_INT 114
-#define HTML_TABLE_ALT      115
-#define HTML_SYMBOL         116
-#define HTML_N_SYMBOL       117
-#define HTML_PRE_INT        118
-#define HTML_N_PRE_INT      119
-#define HTML_TITLE_ALT      120
-#define HTML_FORM_INT       121
-#define HTML_N_FORM_INT     122
-#define HTML_DL_COMPACT     123
-#define HTML_INPUT_ALT      124
-#define HTML_N_INPUT_ALT    125
-#define HTML_IMG_ALT        126
-#define HTML_N_IMG_ALT      127
-#define HTML_NOP	    128
-#define HTML_PRE_PLAIN	    129
-#define HTML_N_PRE_PLAIN    130
-#define HTML_INTERNAL       131
-#define HTML_N_INTERNAL     132
-#define HTML_DIV_INT        133
-#define HTML_N_DIV_INT      134
+#define HTML_SELECT_INT     120
+#define HTML_N_SELECT_INT   121
+#define HTML_OPTION_INT     122
+#define HTML_TEXTAREA_INT   123
+#define HTML_N_TEXTAREA_INT 124
+#define HTML_TABLE_ALT      125
+#define HTML_SYMBOL         126
+#define HTML_N_SYMBOL       127
+#define HTML_PRE_INT        128
+#define HTML_N_PRE_INT      129
+#define HTML_TITLE_ALT      130
+#define HTML_FORM_INT       131
+#define HTML_N_FORM_INT     132
+#define HTML_DL_COMPACT     133
+#define HTML_INPUT_ALT      134
+#define HTML_N_INPUT_ALT    135
+#define HTML_IMG_ALT        136
+#define HTML_N_IMG_ALT      137
+#define HTML_NOP	    138
+#define HTML_PRE_PLAIN	    139
+#define HTML_N_PRE_PLAIN    140
+#define HTML_INTERNAL       141
+#define HTML_N_INTERNAL     142
+#define HTML_DIV_INT        143
+#define HTML_N_DIV_INT      144
 
-#define MAX_HTMLTAG	    135
+#define MAX_HTMLTAG	    145
 
 /* Tag attribute */
 

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.248 2006/12/10 11:01:24 inu Exp $ */
+/* $Id: file.c,v 1.249 2006/12/10 11:06:12 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2442,6 +2442,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
 	  sizeof(obuf->anchor));
     obuf->bp.img_alt = obuf->img_alt;
     obuf->bp.in_bold = obuf->in_bold;
+    obuf->bp.in_italic = obuf->in_italic;
     obuf->bp.in_under = obuf->in_under;
     obuf->bp.nobr_level = obuf->nobr_level;
     obuf->bp.prev_ctype = obuf->prev_ctype;
@@ -2456,6 +2457,7 @@ back_to_breakpoint(struct readbuffer *obuf)
 	  sizeof(obuf->anchor));
     obuf->img_alt = obuf->bp.img_alt;
     obuf->in_bold = obuf->bp.in_bold;
+    obuf->in_italic = obuf->bp.in_italic;
     obuf->in_under = obuf->bp.in_under;
     obuf->prev_ctype = obuf->bp.prev_ctype;
     obuf->pos = obuf->bp.pos;
@@ -2478,6 +2480,7 @@ append_tags(struct readbuffer *obuf)
 	case HTML_IMG_ALT:
 	case HTML_B:
 	case HTML_U:
+	case HTML_I:
 	    push_link(obuf->tag_stack[i]->cmd, obuf->line->length, obuf->pos);
 	    break;
 	}
@@ -2692,7 +2695,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     FILE *f = h_env->f;
     Str line = obuf->line, pass = NULL;
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
-	*hidden_under = NULL, *hidden = NULL;
+	*hidden_under = NULL, *hidden_italic = NULL, *hidden = NULL;
 
 #ifdef DEBUG
     if (w3m_debug) {
@@ -2730,6 +2733,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 		hidden = hidden_bold;
 	}
     }
+    if (obuf->in_italic) {
+	if ((hidden_italic = has_hidden_link(obuf, HTML_I)) != NULL) {
+	    if (!hidden || hidden_italic < hidden)
+		hidden = hidden_italic;
+	}
+    }
     if (obuf->in_under) {
 	if ((hidden_under = has_hidden_link(obuf, HTML_U)) != NULL) {
 	    if (!hidden || hidden_under < hidden)
@@ -2759,6 +2768,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(line, "</img_alt>");
     if (obuf->in_bold && !hidden_bold)
 	Strcat_charp(line, "</b>");
+    if (obuf->in_italic && !hidden_italic)
+	Strcat_charp(line, "</i>");
     if (obuf->in_under && !hidden_under)
 	Strcat_charp(line, "</u>");
 
@@ -2963,6 +2974,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     }
     if (!hidden_bold && obuf->in_bold)
 	push_tag(obuf, "<B>", HTML_B);
+    if (!hidden_italic && obuf->in_italic)
+	push_tag(obuf, "<I>", HTML_I);
     if (!hidden_under && obuf->in_under)
 	push_tag(obuf, "<U>", HTML_U);
 }
@@ -3075,6 +3088,8 @@ save_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
     obuf->fontstat_sp++;
     if (obuf->in_bold)
 	push_tag(obuf, "</b>", HTML_N_B);
+    if (obuf->in_italic)
+	push_tag(obuf, "</i>", HTML_N_I);
     if (obuf->in_under)
 	push_tag(obuf, "</u>", HTML_N_U);
     bzero(obuf->fontstat, FONTSTAT_SIZE);
@@ -3090,6 +3105,8 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	      FONTSTAT_SIZE);
     if (obuf->in_bold)
 	push_tag(obuf, "<b>", HTML_B);
+    if (obuf->in_italic)
+	push_tag(obuf, "<i>", HTML_I);
     if (obuf->in_under)
 	push_tag(obuf, "<u>", HTML_U);
 }
@@ -4245,6 +4262,20 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		return 0;
 	}
 	return 1;
+    case HTML_I:
+	obuf->in_italic++;
+	if (obuf->in_italic > 1)
+	    return 1;
+	return 0;
+    case HTML_N_I:
+	if (obuf->in_italic == 1 && close_effect0(obuf, HTML_I))
+	    obuf->in_italic = 0;
+	if (obuf->in_italic > 0) {
+	    obuf->in_italic--;
+	    if (obuf->in_italic == 0)
+		return 0;
+	}
+	return 1;
     case HTML_U:
 	obuf->in_under++;
 	if (obuf->in_under > 1)
@@ -4260,9 +4291,15 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_EM:
-	HTMLlineproc1("<b>", h_env);
+	HTMLlineproc1("<i>", h_env);
 	return 1;
     case HTML_N_EM:
+	HTMLlineproc1("</i>", h_env);
+	return 1;
+    case HTML_STRONG:
+	HTMLlineproc1("<b>", h_env);
+	return 1;
+    case HTML_N_STRONG:
 	HTMLlineproc1("</b>", h_env);
 	return 1;
     case HTML_Q:
@@ -5077,7 +5114,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     static int out_size = 0;
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
     char *p, *q, *r, *s, *t, *str;
-    Lineprop mode, effect;
+    Lineprop mode, effect, ex_effect;
     int pos;
     int nlines;
 #ifdef DEBUG
@@ -5124,6 +5161,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #endif
 
     effect = 0;
+    ex_effect = 0;
     nlines = 0;
     while ((line = feed()) != NULL) {
 #ifdef DEBUG
@@ -5148,7 +5186,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	while (str < endp) {
 	    PSIZE;
 	    mode = get_mctype(str);
-	    if (effect & PC_SYMBOL && *str != '<') {
+	    if ((effect | ex_effect) & PC_SYMBOL && *str != '<') {
 #ifdef USE_M17N
 		char **buf = set_symbol(symbol_width0);
 		int len;
@@ -5156,16 +5194,16 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		p = buf[(int)symbol];
 		len = get_mclen(p);
 		mode = get_mctype(p);
-		PPUSH(mode | effect, *(p++));
+		PPUSH(mode | effect | ex_effect, *(p++));
 		if (--len) {
 		    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 		    while (len--) {
 			PSIZE;
-			PPUSH(mode | effect, *(p++));
+			PPUSH(mode | effect | ex_effect, *(p++));
 		    }
 		}
 #else
-		PPUSH(PC_ASCII | effect, SYMBOL_BASE + symbol);
+		PPUSH(PC_ASCII | effect | ex_effect, SYMBOL_BASE + symbol);
 #endif
 		str += symbol_width;
 	    }
@@ -5174,12 +5212,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #else
 	    else if (mode == PC_CTRL || IS_INTSPACE(*str)) {
 #endif
-		PPUSH(PC_ASCII | effect, ' ');
+		PPUSH(PC_ASCII | effect | ex_effect, ' ');
 		str++;
 	    }
 #ifdef USE_M17N
 	    else if (mode & PC_UNKNOWN) {
-		PPUSH(PC_ASCII | effect, ' ');
+		PPUSH(PC_ASCII | effect | ex_effect, ' ');
 		str += get_mclen(str);
 	    }
 #endif
@@ -5187,13 +5225,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_M17N
 		int len = get_mclen(str);
 #endif
-		PPUSH(mode | effect, *(str++));
+		PPUSH(mode | effect | ex_effect, *(str++));
 #ifdef USE_M17N
 		if (--len) {
 		    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 		    while (len--) {
 			PSIZE;
-			PPUSH(mode | effect, *(str++));
+			PPUSH(mode | effect | ex_effect, *(str++));
 		    }
 		}
 #endif
@@ -5211,12 +5249,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #else
 		    if (mode == PC_CTRL || IS_INTSPACE(*str)) {
 #endif
-			PPUSH(PC_ASCII | effect, ' ');
+			PPUSH(PC_ASCII | effect | ex_effect, ' ');
 			p++;
 		    }
 #ifdef USE_M17N
 		    else if (mode & PC_UNKNOWN) {
-			PPUSH(PC_ASCII | effect, ' ');
+			PPUSH(PC_ASCII | effect | ex_effect, ' ');
 			p += get_mclen(p);
 		    }
 #endif
@@ -5224,13 +5262,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_M17N
 			int len = get_mclen(p);
 #endif
-			PPUSH(mode | effect, *(p++));
+			PPUSH(mode | effect | ex_effect, *(p++));
 #ifdef USE_M17N
 			if (--len) {
 			    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 			    while (len--) {
 				PSIZE;
-				PPUSH(mode | effect, *(p++));
+				PPUSH(mode | effect | ex_effect, *(p++));
 			    }
 			}
 #endif
@@ -5248,6 +5286,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 		case HTML_N_B:
 		    effect &= ~PE_BOLD;
+		    break;
+		case HTML_I:
+		    ex_effect |= PE_EX_ITALIC;
+		    break;
+		case HTML_N_I:
+		    ex_effect &= ~PE_EX_ITALIC;
 		    break;
 		case HTML_U:
 		    effect |= PE_UNDER;
@@ -6505,6 +6549,7 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
     obuf->in_bold = 0;
+    obuf->in_italic = 0;
     obuf->in_under = 0;
     obuf->prev_ctype = PC_ASCII;
     obuf->tag_sp = 0;
@@ -6539,6 +6584,10 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     if (obuf->in_bold) {
 	push_tag(obuf, "</b>", HTML_N_B);
 	obuf->in_bold = 0;
+    }
+    if (obuf->in_italic) {
+	push_tag(obuf, "</i>", HTML_N_I);
+	obuf->in_italic = 0;
     }
     if (obuf->in_under) {
 	push_tag(obuf, "</u>", HTML_N_U);

@@ -1,3 +1,9 @@
+2006-12-10  noz
+
+	* [20051124052846@w3mbbs] LiveHTTPHeaders
+	* file.c, fm.h, main.c, url.c: add -reqlog option which makes
+	  ~/.w3m/request.log like LiveHTTPHeaders of FireFox.
+
 2006-08-07  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* mailcap.c (acceptableMimeTypes): change default accept: line
@@ -8754,4 +8760,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.969 2006/08/07 03:10:26 ukai Exp $
+$Id: ChangeLog,v 1.970 2006/12/10 10:49:23 inu Exp $

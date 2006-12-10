@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.93 2006/05/29 12:54:26 inu Exp $ */
+/* $Id: url.c,v 1.94 2006/12/10 10:49:23 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1694,9 +1694,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		SSL_write(sslh, tmp->ptr, tmp->length);
 	    else
 		write(sock, tmp->ptr, tmp->length);
-#ifdef HTTP_DEBUG
-	    {
-		FILE *ff = fopen("zzrequest", "a");
+	    if(w3m_reqlog){
+		FILE *ff = fopen(w3m_reqlog, "a");
 		if (sslh)
 		    fputs("HTTPS: request via SSL\n", ff);
 		else
@@ -1704,7 +1703,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
 		fclose(ff);
 	    }
-#endif				/* HTTP_DEBUG */
 	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART) {
 		if (sslh)
@@ -1718,13 +1716,11 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #endif				/* USE_SSL */
 	{
 	    write(sock, tmp->ptr, tmp->length);
-#ifdef HTTP_DEBUG
-	    {
-		FILE *ff = fopen("zzrequest", "a");
+	    if(w3m_reqlog){
+		FILE *ff = fopen(w3m_reqlog, "a");
 		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
 		fclose(ff);
 	    }
-#endif				/* HTTP_DEBUG */
 	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART)
 		write_from_file(sock, request->body);

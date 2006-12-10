@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.131 2006/04/08 11:33:16 inu Exp $ */
+/* $Id: fm.h,v 1.132 2006/12/10 10:49:23 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -870,7 +870,7 @@ global DownloadList *LastDL init(NULL);
 global int CurrentKey;
 global char *CurrentKeyData;
 global char *CurrentCmdData;
-
+global char *w3m_reqlog;
 extern char *w3m_version;
 
 #define DUMP_BUFFER   0x01

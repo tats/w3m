@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.246 2006/06/12 11:51:59 inu Exp $ */
+/* $Id: file.c,v 1.247 2006/12/10 10:49:23 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -614,14 +614,12 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
 	    Strshrinkfirst(tmp, 1);
 #endif
-#ifdef HTTP_DEBUG
-	{
+	if(w3m_reqlog){
 	    FILE *ff;
-	    ff = fopen("zzrequest", "a");
+	    ff = fopen(w3m_reqlog, "a");
 	    Strfputs(tmp, ff);
 	    fclose(ff);
 	}
-#endif				/* HTTP_DEBUG */
 	if (src)
 	    Strfputs(tmp, src);
 	cleanup_line(tmp, HEADER_MODE);

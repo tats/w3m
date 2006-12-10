@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.132 2006/12/10 10:49:23 inu Exp $ */
+/* $Id: fm.h,v 1.133 2006/12/10 11:01:24 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -777,6 +777,7 @@ global char RenderFrame init(FALSE);
 global char TargetSelf init(FALSE);
 global char PermitSaveToPipe init(FALSE);
 global char DecodeCTE init(FALSE);
+global char AutoUncompress init(FALSE);
 global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(FALSE);
 global char MetaRefresh init(FALSE);

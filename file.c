@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.247 2006/12/10 10:49:23 inu Exp $ */
+/* $Id: file.c,v 1.248 2006/12/10 11:01:24 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2124,7 +2124,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	return NO_BUFFER;
     }
 
-    if ((f.content_encoding != CMP_NOCOMPRESS) && !(w3m_dump & DUMP_EXTRA)) {
+    if ((f.content_encoding != CMP_NOCOMPRESS) && AutoUncompress
+	&& !(w3m_dump & DUMP_EXTRA)) {
 	uncompress_stream(&f, &pu.real_file);
     }
     else if (f.compression != CMP_NOCOMPRESS) {
@@ -7861,7 +7862,7 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
-	    if (uf.content_encoding != CMP_NOCOMPRESS) {
+	    if ((uf.content_encoding != CMP_NOCOMPRESS) && AutoUncompress) {
 		uncompress_stream(&uf, &tmpf);
 		if (tmpf)
 		    unlink(tmpf);
@@ -7898,7 +7899,7 @@ doFileSave(URLFile uf, char *defstr)
 	    printf("Can't save. Load file and %s are identical.", p);
 	    return -1;
 	}
-	if (uf.content_encoding != CMP_NOCOMPRESS) {
+	if (uf.content_encoding != CMP_NOCOMPRESS && AutoUncompress) {
 	    uncompress_stream(&uf, &tmpf);
 	    if (tmpf)
 		unlink(tmpf);

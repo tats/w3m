@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.102 2006/04/07 15:48:56 inu Exp $ */
+/* $Id: rc.c,v 1.103 2006/12/10 11:01:24 inu Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -152,6 +152,7 @@ static int OptionEncode = FALSE;
 #define CMT_MARK_ALL_PAGES N_("Treat URL-like strings as links in all pages")
 #define CMT_WRAP         N_("Wrap search")
 #define CMT_VIEW_UNSEENOBJECTS N_("Display unseen objects (e.g. bgimage tag)")
+#define CMT_AUTO_UNCOMPRESS	N_("Uncompress compressed data automatically when downloading")
 #ifdef __EMX__
 #define CMT_BGEXTVIEW	 N_("Run external viewer in a separate session")
 #else
@@ -469,6 +470,8 @@ struct param_ptr params3[] = {
      NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *)&DecodeCTE, CMT_DECODE_CTE,
      NULL},
+    {"auto_uncompress", P_CHARINT, PI_ONOFF, (void *)&AutoUncompress,
+     CMT_AUTO_UNCOMPRESS, NULL},
     {"preserve_timestamp", P_CHARINT, PI_ONOFF, (void *)&PreserveTimestamp,
      CMT_PRESERVE_TIMESTAMP, NULL},
     {"keymap_file", P_STRING, PI_TEXT, (void *)&keymap_file, CMT_KEYMAP_FILE,

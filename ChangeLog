@@ -1,3 +1,9 @@
+2006-12-10  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04159] Re: Is this mailing list still alive?
+	* cookie.c: accept invalid "set-cookies" headers
+	  when "domainName == .hostName".
+
 2006-12-10  noz
 
 	* [20051124052846@w3mbbs] LiveHTTPHeaders
@@ -8760,4 +8766,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.970 2006/12/10 10:49:23 inu Exp $
+$Id: ChangeLog,v 1.971 2006/12/10 10:53:22 inu Exp $

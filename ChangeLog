@@ -1,3 +1,8 @@
+2006-12-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [SECURITY] fix format string vulnerability
+	* file.c (inputAnswer) fix format string bug
+
 2006-12-07  Hiroyuki Ito  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04185] Re: italic text
@@ -8784,4 +8789,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.973 2006/12/10 11:06:12 inu Exp $
+$Id: ChangeLog,v 1.974 2006/12/27 02:15:24 ukai Exp $

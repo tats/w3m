@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.249 2006/12/10 11:06:12 inu Exp $ */
+/* $Id: file.c,v 1.250 2006/12/27 02:15:24 ukai Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -8021,7 +8021,7 @@ inputAnswer(char *prompt)
 	ans = inputChar(prompt);
     }
     else {
-	printf(prompt);
+	printf("%s", prompt);
 	fflush(stdout);
 	ans = Strfgets(stdin)->ptr;
     }

@@ -1,3 +1,8 @@
+2007-04-19  Hiroyuki Ito  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04197] Re: italic text
+	* fm.h: display <em> and <i> elements with underline.
+
 2006-12-27  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* [SECURITY] fix format string vulnerability
@@ -8789,4 +8794,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.974 2006/12/27 02:15:24 ukai Exp $
+$Id: ChangeLog,v 1.975 2007/04/19 11:42:29 inu Exp $

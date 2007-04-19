@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.134 2006/12/10 11:06:12 inu Exp $ */
+/* $Id: fm.h,v 1.135 2007/04/19 11:42:29 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -167,7 +167,7 @@ void bzero(void *, int);
 #define PE_VISITED	0x4000
 
 /* Extra effect */
-#define PE_EX_ITALIC	PE_BOLD
+#define PE_EX_ITALIC	PE_UNDER
 
 #define CharType(c)	((c)&P_CHARTYPE)
 #define CharEffect(c)	((c)&(P_EFFECT|PC_SYMBOL))

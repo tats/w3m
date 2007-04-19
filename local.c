@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.33 2006/04/07 13:21:11 inu Exp $ */
+/* $Id: local.c,v 1.34 2007/04/19 12:07:04 inu Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>
@@ -85,7 +85,8 @@ loadLocalDir(char *dname)
 	Strcat_char(dirname, '/');
     qdir = html_quote(Str_conv_from_system(dirname)->ptr);
     /* FIXME: gettextize? */
-    tmp = Strnew_m_charp("<HTML>\n<HEAD>\n<BASE HREF=\"file://", qdir,
+    tmp = Strnew_m_charp("<HTML>\n<HEAD>\n<BASE HREF=\"file://",
+			html_quote(file_quote(dirname->ptr)),
 			 "\">\n<TITLE>Directory list of ", qdir,
 			 "</TITLE>\n</HEAD>\n<BODY>\n<H1>Directory list of ",
 			 qdir, "</H1>\n", NULL);

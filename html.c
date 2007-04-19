@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.29 2006/12/10 11:06:12 inu Exp $ */
+/* $Id: html.c,v 1.30 2007/04/19 12:00:38 inu Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -29,9 +29,9 @@ unsigned char ALST_PRE[] = { ATTR_FOR_TABLE, ATTR_CORE };
 #define MAXA_PRE	MAXA_CORE + 1
 unsigned char ALST_IMG[] =
     { ATTR_SRC, ATTR_ALT, ATTR_WIDTH, ATTR_HEIGHT, ATTR_ALIGN, ATTR_USEMAP,
-    ATTR_ISMAP, ATTR_TITLE, ATTR_CORE
+    ATTR_ISMAP, ATTR_TITLE, ATTR_PRE_INT, ATTR_CORE
 };
-#define MAXA_IMG	MAXA_CORE + 8
+#define MAXA_IMG	MAXA_CORE + 9
 unsigned char ALST_TABLE[] =
     { ATTR_BORDER, ATTR_WIDTH, ATTR_HBORDER, ATTR_CELLSPACING,
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
@@ -348,4 +348,5 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"referer", VTYPE_STR, AFLG_INT},	/* 71 ATTR_REFERER        */
     {"selectnumber", VTYPE_NUMBER, AFLG_INT},	/* 72 ATTR_SELECTNUMBER   */
     {"textareanumber", VTYPE_NUMBER, AFLG_INT},	/* 73 ATTR_TEXTAREANUMBER */
+    {"pre_int", VTYPE_NONE, AFLG_INT},	/* 74 ATTR_PRE_INT      */
 };

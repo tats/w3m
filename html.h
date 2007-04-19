@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.27 2006/12/10 11:06:12 inu Exp $ */
+/* $Id: html.h,v 1.28 2007/04/19 12:00:38 inu Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -301,8 +301,9 @@ typedef struct {
 #define ATTR_REFERER		71
 #define ATTR_SELECTNUMBER	72
 #define ATTR_TEXTAREANUMBER	73
+#define ATTR_PRE_INT		74
 
-#define MAX_TAGATTR		74
+#define MAX_TAGATTR		75
 
 /* HTML Tag Information Table */
 

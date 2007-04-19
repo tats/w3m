@@ -1,3 +1,9 @@
+2007-04-19  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 04211] input type=image
+	* file.c, html.[ch]: avoid conflicts between input_alt and img_alt.
+	  fix calculation of labeled line numbers when fold_line=1.
+
 2007-04-19  Hiroyuki Ito  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04197] Re: italic text
@@ -8794,4 +8800,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.975 2007/04/19 11:42:29 inu Exp $
+$Id: ChangeLog,v 1.976 2007/04/19 12:00:37 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.250 2006/12/27 02:15:24 ukai Exp $ */
+/* $Id: file.c,v 1.251 2007/04/19 12:00:37 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -2250,7 +2250,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    }
 	    else {		/* plain text */
 		int l = atoi(pu.label);
-		gotoLine(b, l);
+		gotoRealLine(b, l);
 		b->pos = 0;
 		arrangeCursor(b);
 	    }
@@ -3161,7 +3161,7 @@ process_img(struct parsed_tag *tag, int width)
 #else
     int w, i, nw, n;
 #endif
-    int pre_int = FALSE;
+    int pre_int = FALSE, ext_pre_int = FALSE;
     Str tmp = Strnew();
 
     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
@@ -3217,6 +3217,8 @@ process_img(struct parsed_tag *tag, int width)
 	parsedtag_get_value(tag, ATTR_HEIGHT, &i);
     r = NULL;
     parsedtag_get_value(tag, ATTR_USEMAP, &r);
+    if (parsedtag_exists(tag, ATTR_PRE_INT))
+	ext_pre_int = TRUE;
 
     tmp = Strnew_size(128);
 #ifdef USE_IMAGE
@@ -3445,7 +3447,7 @@ process_img(struct parsed_tag *tag, int width)
     }
 #endif
     Strcat_charp(tmp, "</img_alt>");
-    if (pre_int)
+    if (pre_int && !ext_pre_int)
 	Strcat_charp(tmp, "</pre_int>");
     if (r) {
 	Strcat_charp(tmp, "</input_alt>");
@@ -3584,7 +3586,7 @@ process_input(struct parsed_tag *tag)
 		    Strcat(tmp, Sprintf(" width=\"%d\"", iw));
 		if (parsedtag_get_value(tag, ATTR_HEIGHT, &ih))
 		    Strcat(tmp, Sprintf(" height=\"%d\"", ih));
-		Strcat_charp(tmp, ">");
+		Strcat_charp(tmp, " pre_int>");
 		Strcat_charp(tmp, "</input_alt></pre_int>");
 		return tmp;
 	    }

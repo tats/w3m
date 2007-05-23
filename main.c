@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.253 2006/12/10 10:49:23 inu Exp $ */
+/* $Id: main.c,v 1.254 2007/05/23 12:34:20 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -383,8 +383,10 @@ main(int argc, char **argv, char **envp)
 #endif
 #endif
     GC_init();
-#if ENABLE_NLS
+#if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
+#endif
+#ifdef ENABLE_NLS
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif

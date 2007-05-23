@@ -1,4 +1,10 @@
-2007-04-19  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+2007-05-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 04240] nl_langinfo() requires setlocale()
+	* fm.h, main.c, menu.c, rc.c: add "#ifdef"s.
+	* libwc/charset.c: add setlocale() for nl_langinfo().
+
+2007-05-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 03923] <pre> in <table>
 	* file.c, table.c: avoid extra blanks in pre in table.
@@ -8826,4 +8832,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.981 2007/05/23 12:26:56 inu Exp $
+$Id: ChangeLog,v 1.982 2007/05/23 12:34:20 inu Exp $

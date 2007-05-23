@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.135 2007/04/19 11:42:29 inu Exp $ */
+/* $Id: fm.h,v 1.136 2007/05/23 12:34:20 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -53,7 +53,7 @@ typedef int wc_ces;	/* XXX: not used */
 #define setlocale(category, locale)	/* empty */
 #endif
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(String) gettext (String)
 #define N_(String) (String)

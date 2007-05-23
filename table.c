@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.53 2006/04/08 11:52:02 inu Exp $ */
+/* $Id: table.c,v 1.54 2007/05/23 12:26:56 inu Exp $ */
 /* 
  * HTML table
  */
@@ -537,48 +537,18 @@ visible_length_plain(char *str)
     return len > max_len ? len : max_len;
 }
 
-int
-maximum_visible_length(char *str)
+static int
+maximum_visible_length(char *str, int offset)
 {
-    int maxlen, len;
-
-    visible_length_offset = 0;
-    maxlen = visible_length(str);
-
-    if (!strchr(str, '\t'))
-	return maxlen;
-
-    for (visible_length_offset = 1; visible_length_offset < Tabstop;
-	 visible_length_offset++) {
-	len = visible_length(str);
-	if (maxlen < len) {
-	    maxlen = len;
-	    break;
-	}
-    }
-    return maxlen;
+    visible_length_offset = offset;
+    return visible_length(str);
 }
 
-int
-maximum_visible_length_plain(char *str)
+static int
+maximum_visible_length_plain(char *str, int offset)
 {
-    int maxlen, len;
-
-    visible_length_offset = 0;
-    maxlen = visible_length_plain(str);
-
-    if (!strchr(str, '\t'))
-	return maxlen;
-
-    for (visible_length_offset = 1; visible_length_offset < Tabstop;
-	 visible_length_offset++) {
-	len = visible_length_plain(str);
-	if (maxlen < len) {
-	    maxlen = len;
-	    break;
-	}
-    }
-    return maxlen;
+    visible_length_offset = offset;
+    return visible_length_plain(str);
 }
 
 void
@@ -3205,7 +3175,7 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 	check_rowcol(tbl, mode);
 	if (mode->nobr_offset < 0)
 	    mode->nobr_offset = tbl->tabcontentssize;
-	addcontentssize(tbl, maximum_visible_length(line));
+	addcontentssize(tbl, maximum_visible_length(line, tbl->tabcontentssize));
 	setwidth(tbl, mode);
 	pushdata(tbl, tbl->row, tbl->col, line);
     }
@@ -3234,9 +3204,9 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		line = "";
 	    }
 	    if (mode->pre_mode & TBLM_PLAIN)
-		i = maximum_visible_length_plain(p);
+		i = maximum_visible_length_plain(p, tbl->tabcontentssize);
 	    else
-		i = maximum_visible_length(p);
+		i = maximum_visible_length(p, tbl->tabcontentssize);
 	    addcontentssize(tbl, i);
 	    setwidth(tbl, mode);
 	    if (nl)

@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.28 2007/04/19 12:00:38 inu Exp $ */
+/* $Id: html.h,v 1.29 2007/05/23 12:01:43 inu Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -349,7 +349,7 @@ extern TagInfo TagMAP[];
 extern TagAttrInfo AttrMAP[];
 
 struct environment {
-    char env;
+    unsigned char env;
     int type;
     int count;
     char indent;

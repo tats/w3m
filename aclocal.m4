@@ -295,18 +295,6 @@ AC_DEFUN([AC_W3M_KEYMAP],
  AC_DEFINE_UNQUOTED(KEYBIND, $enable_keymap)])
 #
 # ----------------------------------------------------------------
-# AC_W3M_DIGEST_AUTH
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_DIGEST_AUTH],
-[AC_SUBST(USE_DIGEST_AUTH)
- AC_MSG_CHECKING(if digest auth is enabled)
- AC_ARG_ENABLE(digest_auth,
- [  --disable-digest-auth		disable digest auth],,
- [enable_digest_auth="yes"])
- test x"$enable_digest_auth" = xyes && AC_DEFINE(USE_DIGEST_AUTH)
- AC_MSG_RESULT($enable_digest_auth)])
-#
-# ----------------------------------------------------------------
 # AC_W3M_MIGEMO
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_MIGEMO],
@@ -487,9 +475,9 @@ AC_ARG_WITH(gc,
  fi])
 #
 # ----------------------------------------------------------------
-# AC_W3M_SSL
+# AC_W3M_SSL_DIGEST_AUTH
 # ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_SSL],
+AC_DEFUN([AC_W3M_SSL_DIGEST_AUTH],
 [AC_SUBST(USE_SSL)
 AC_SUBST(USE_SSL_VERIFY)
 AC_MSG_CHECKING(if SSL is suported)
@@ -531,7 +519,19 @@ if test x"$with_ssl" != xno; then
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
   fi
-fi])
+fi
+AC_SUBST(USE_DIGEST_AUTH)
+AC_MSG_CHECKING(if digest auth is enabled)
+AC_ARG_ENABLE(digest_auth,
+ [  --disable-digest-auth		disable digest auth],,
+ [enable_digest_auth="yes"])
+if test x"$enable_digest_auth" = xyes -a x"$w3m_ssl" = xfound; then
+  AC_DEFINE(USE_DIGEST_AUTH)
+else
+  enable_digest_auth="no"
+fi
+AC_MSG_RESULT($enable_digest_auth)
+])
 #
 # ----------------------------------------------------------------
 # AC_W3M_ALARM

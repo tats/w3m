@@ -1,7 +1,8 @@
 2007-05-23  NOKUBI Takatsugu <knok@daionet.gr.jp>
 
 	* [w3m-dev 04246] Re: road to 0.5.2
-	* delete nsl and dl for cross building.
+	* configure.ac: delete nsl and dl for cross building.
+	* configure: regenerated.
 
 2007-05-23  Hiroyuki Ito <ZXB01226@nifty.com>
 
@@ -8849,4 +8850,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.985 2007/05/23 13:14:25 inu Exp $
+$Id: ChangeLog,v 1.986 2007/05/23 13:15:36 inu Exp $

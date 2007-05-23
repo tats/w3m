@@ -1,3 +1,8 @@
+2007-05-23  tamo
+
+	* [20070121110209@w3mbbs] unnecessary decoding in linein.c
+	* linein.c: decoding URLs in correct condition.
+
 2007-05-23  Tsutomu OKADA
 
 	* [20061228000713@w3mbbs] avoid warning for file.c
@@ -8816,4 +8821,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.979 2007/05/23 12:01:43 inu Exp $
+$Id: ChangeLog,v 1.980 2007/05/23 12:14:24 inu Exp $

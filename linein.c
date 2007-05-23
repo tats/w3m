@@ -1,4 +1,4 @@
-/* $Id: linein.c,v 1.34 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: linein.c,v 1.35 2007/05/23 12:14:24 inu Exp $ */
 #include "fm.h"
 #include "local.h"
 #include "myctype.h"
@@ -1025,7 +1025,7 @@ _prev(void)
 	    return;
 	strCurrentBuf = strBuf;
     }
-    if (DecodeURL)
+    if (DecodeURL && (cm_mode & CPL_URL) )
 	p = url_unquote_conv(p, 0);
     strBuf = Strnew_charp(p);
     CLen = CPos = setStrType(strBuf, strProp);
@@ -1044,7 +1044,7 @@ _next(void)
 	return;
     p = nextHist(hist);
     if (p) {
-	if (DecodeURL)
+	if (DecodeURL && (cm_mode & CPL_URL) )
 	    p = url_unquote_conv(p, 0);
 	strBuf = Strnew_charp(p);
     }

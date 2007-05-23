@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.136 2007/05/23 12:34:20 inu Exp $ */
+/* $Id: fm.h,v 1.137 2007/05/23 13:07:44 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -167,7 +167,13 @@ void bzero(void *, int);
 #define PE_VISITED	0x4000
 
 /* Extra effect */
-#define PE_EX_ITALIC	PE_UNDER
+#define PE_EX_ITALIC	0x01
+#define PE_EX_INSERT	0x02
+#define PE_EX_STRIKE	0x04
+
+#define PE_EX_ITALIC_E	PE_UNDER
+#define PE_EX_INSERT_E	PE_UNDER
+#define PE_EX_STRIKE_E	PE_STAND
 
 #define CharType(c)	((c)&P_CHARTYPE)
 #define CharEffect(c)	((c)&(P_EFFECT|PC_SYMBOL))
@@ -539,7 +545,7 @@ typedef struct _DownloadList {
 
 #define FONT_STACK_SIZE 5
 
-#define FONTSTAT_SIZE 5
+#define FONTSTAT_SIZE 7
 
 #define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
@@ -588,7 +594,9 @@ struct readbuffer {
 #define in_bold fontstat[0]
 #define in_under fontstat[1]
 #define in_italic fontstat[2]
-#define in_stand fontstat[3]
+#define in_strike fontstat[3]
+#define in_ins fontstat[4]
+#define in_stand fontstat[5]
 
 #define RB_PRE		0x01
 #define RB_SCRIPT	0x02
@@ -970,7 +978,10 @@ global int UseDictCommand init(FALSE);
 global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
 #endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);
-global int displayInsDel init(TRUE);
+#define DISPLAY_INS_DEL_SIMPLE	0
+#define DISPLAY_INS_DEL_NORMAL	1
+#define DISPLAY_INS_DEL_FONTIFY	2
+global int displayInsDel init(DISPLAY_INS_DEL_NORMAL);
 global int FoldTextarea init(FALSE);
 global int FoldLine init(FALSE);
 #define DEFAULT_URL_EMPTY	0

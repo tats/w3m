@@ -6220,7 +6220,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-for lib in bsd BSD 44bsd socket dld
+for lib in bsd BSD 44bsd socket nsl dld dl
 do
  lib=$lib
  { echo "$as_me:$LINENO: checking for -l$lib" >&5
@@ -8072,7 +8072,7 @@ _ACEOF
 
 
 case "$host_os" in
-  *cygwin*|*os2-emx*)
+  *cygwin*|*os2-emx*|*mingw*)
     cat >>confdefs.h <<\_ACEOF
 #define USE_BINMODE_STREAM 1
 _ACEOF

@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.105 2007/05/23 13:07:44 inu Exp $ */
+/* $Id: rc.c,v 1.106 2007/05/23 15:06:06 inu Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1126,7 +1126,11 @@ do_mkdir(const char *dir, long mode)
     return mkdir(abs, mode);
 }
 #else				/* not __EMX__ */
+#ifdef __MINGW32_VERSION
+#define do_mkdir(dir,mode) mkdir(dir)
+#else
 #define do_mkdir(dir,mode) mkdir(dir,mode)
+#endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
 void

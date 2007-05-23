@@ -1,7 +1,8 @@
 2007-05-23  NOKUBI Takatsugu <knok@daionet.gr.jp>
-
-	* [w3m-dev 04246] Re: road to 0.5.2
-	* configure.ac: delete nsl and dl for cross building.
+	* [w3m-dev 04155] w3m mingw patch
+	* config.h, configure.ac, etc.c, file.c, ftp.c, indep.c, istream.c, 
+	  local.c, main.c, rc.c, terms.c, url.c: fix for minpw, except for
+	    deleting nsl and dl from configure.ac.
 	* configure: regenerated.
 
 2007-05-23  Hiroyuki Ito <ZXB01226@nifty.com>
@@ -8850,4 +8851,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.986 2007/05/23 13:15:36 inu Exp $
+$Id: ChangeLog,v 1.987 2007/05/23 15:06:05 inu Exp $

@@ -82,7 +82,7 @@ AC_W3M_MAILER
 AC_W3M_EXT_BROWSER
 
 dnl Checks for ext libs
-for lib in bsd BSD 44bsd socket dld
+for lib in bsd BSD 44bsd socket nsl dld dl
 do
  AC_W3M_EXTLIBS($lib)
 done
@@ -109,7 +109,7 @@ AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
 case "$host_os" in
-  *cygwin*|*os2-emx*)
+  *cygwin*|*os2-emx*|*mingw*)
     AC_DEFINE(USE_BINMODE_STREAM)
     ;;
 esac

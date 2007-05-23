@@ -1,3 +1,9 @@
+2007-05-23  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 04213] update Unicode characters' width
+	* libwc/ucs.c, libwc/ucs.h, libwc/map/ucs_wide.map: 
+	  catch-up to EastAsianWidth-5.0.0.txt.
+
 2007-04-19  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 04212] quote URL of local dir
@@ -8805,4 +8811,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.977 2007/04/19 12:07:02 inu Exp $
+$Id: ChangeLog,v 1.978 2007/05/23 11:34:09 inu Exp $

@@ -6220,7 +6220,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-for lib in bsd BSD 44bsd socket nsl dld dl
+for lib in bsd BSD 44bsd socket dld
 do
  lib=$lib
  { echo "$as_me:$LINENO: checking for -l$lib" >&5

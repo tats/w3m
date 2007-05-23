@@ -82,7 +82,7 @@ AC_W3M_MAILER
 AC_W3M_EXT_BROWSER
 
 dnl Checks for ext libs
-for lib in bsd BSD 44bsd socket nsl dld dl
+for lib in bsd BSD 44bsd socket dld
 do
  AC_W3M_EXTLIBS($lib)
 done

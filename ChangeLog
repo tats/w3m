@@ -1,3 +1,7 @@
+2007-05-27  Hiroyuki Ito <ZXB01226@nifty.com>
+	* [w3m-dev 04252] Re: road to 0.5.2
+	* Makefile.in: add datarootdir for Autoconf 2.60 and later.
+
 2007-05-23  NOKUBI Takatsugu <knok@daionet.gr.jp>
 	* [w3m-dev 04155] w3m mingw patch
 	* config.h, configure.ac, etc.c, file.c, ftp.c, indep.c, istream.c, 
@@ -8851,4 +8855,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.987 2007/05/23 15:06:05 inu Exp $
+$Id: ChangeLog,v 1.988 2007/05/27 10:43:41 inu Exp $

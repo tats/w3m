@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
-"POT-Creation-Date: 2007-05-07 10:49+0900\n"
+"POT-Creation-Date: 2007-05-28 19:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -201,7 +201,7 @@ msgid "Fold lines in TEXTAREA"
 msgstr ""
 
 #: rc.c:90
-msgid "Display DEL, S and STRIKE element"
+msgid "Display INS, DEL, S and STRIKE element"
 msgstr ""
 
 #: rc.c:91
@@ -721,7 +721,7 @@ msgid "simple"
 msgstr ""
 
 #: rc.c:286
-msgid "normal"
+msgid "use tag"
 msgstr ""
 
 #: rc.c:287
@@ -825,6 +825,6 @@ msgstr ""
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1163
+#: rc.c:1169
 msgid "en;q=1.0"
 msgstr ""

@@ -1,5 +1,12 @@
 2007-05-29  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
+	* [w3m-dev 04262] FreeBSD sysmouse (Re: road to 0.5.2)
+	* configure.ac: unbreak sysmouse support, pointed out by 
+	  Travis Poppe <tlp@lickwid.net>.
+	* configure: regenerated.
+
+2007-05-29  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
 	* [w3m-dev 04260] Warning (Re: road to 0.5.2)
 	* main.c, display.c: delete unused macros, change void to static void.
 
@@ -8878,4 +8885,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.992 2007/05/29 12:07:02 inu Exp $
+$Id: ChangeLog,v 1.993 2007/05/29 12:17:14 inu Exp $

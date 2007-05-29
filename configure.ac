@@ -97,8 +97,10 @@ if test x"$enable_mouse" = xyes; then
  AC_CHECK_LIB(gpm, Gpm_Open, [AC_DEFINE(USE_GPM)
    		W3M_LIBS="$W3M_LIBS -lgpm"])
  AC_SUBST(USE_SYSMOUSE)
- AC_TRY_CPP([#include <machine/console.h>
-   MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])
+ AC_TRY_CPP([#include <sys/consio.h>
+   MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)],
+   [AC_TRY_CPP([#include <machine/console.h>
+      MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])])
 fi
 AC_SUBST(AUXBIN_TARGETS)
 AC_W3M_TERMLIB

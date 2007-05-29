@@ -45,7 +45,8 @@ DEFS = @DEFS@ -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
 	-DRC_DIR=\"$(RC_DIR)\" \
         -DLOCALEDIR=\"$(localedir)\"
 LDFLAGS = @LDFLAGS@
-LIBS = -L. -lindep @LIBINTL@ @LIBS@
+LIBS = @LIBS@
+EXT_LIBS = -L. -lindep @LIBINTL@ @LIBGC@
 W3M_LIBS = @W3M_LIBS@
 WCTARGET = @WCTARGET@
 NLSTARGET = @NLSTARGET@
@@ -124,7 +125,7 @@ SUBDIRS = $(SCRIPTSUBDIRS) w3mimg libwc po
 all: $(TARGETS) all-scripts $(NLSTARGET)
 
 $(TARGET): $(ALLOBJS) $(ALIB) $(WCTARGET)
-	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(W3M_LIBS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(ALLOBJS) $(LDFLAGS) $(LIBS) $(EXT_LIBS) $(W3M_LIBS)
 
 $(ALIB): $(ALIBOBJS)
 	$(AR) rv $(ALIB) $(ALIBOBJS)
@@ -170,13 +171,14 @@ functable.c: funcname.tab mktable$(EXT)
 	-rm -f functable.tab
 
 mktable$(EXT): mktable.o dummy.o $(ALIB)
-	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)
 
 $(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
-	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)
 
 $(HELPER): w3mhelperpanel.o dummy.o $(ALIB)
-	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS)	
+	$(CC) $(CFLAGS) -o $(HELPER) w3mhelperpanel.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)
+
 $(INFLATE): inflate.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(INFLATE) inflate.o $(LDFLAGS) $(LIBS) -lz
 

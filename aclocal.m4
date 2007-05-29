@@ -426,6 +426,7 @@ AC_ARG_WITH(termlib,
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
+AC_SUBST(LIBGC)
 AC_ARG_WITH(gc,
  [  --with-gc[=PREFIX]	  	libgc PREFIX],
  [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
@@ -456,7 +457,7 @@ AC_ARG_WITH(gc,
    fi
  fi
  unset ac_cv_lib_gc_GC_init
- AC_CHECK_LIB(gc, GC_init, [LIBS="$LIBS -lgc"])
+ AC_CHECK_LIB(gc, GC_init, [LIBGC="-lgc"])
  if test x"$ac_cv_lib_gc_GC_init" = xno; then
     AC_MSG_CHECKING(GC library location)
     AC_MSG_RESULT($with_gc)
@@ -466,7 +467,7 @@ AC_ARG_WITH(gc,
       LDFLAGS="$LDFLAGS -L$dir/lib"
       AC_MSG_CHECKING($dir)
       unset ac_cv_lib_gc_GC_init
-      AC_CHECK_LIB(gc, GC_init, [gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break])
+      AC_CHECK_LIB(gc, GC_init, [gclibdir="$dir/lib"; LIBGC="-L$dir/lib -lgc"; break])
       LDFLAGS="$ldflags"
     done
     if test x"$gclibdir" = xno; then

@@ -756,6 +756,7 @@ USE_DIGEST_AUTH
 USE_W3M
 USE_SYSMOUSE
 AUXBIN_TARGETS
+LIBGC
 GREP
 EGREP
 USE_BINMODE_STREAM
@@ -7543,6 +7544,7 @@ done
 { echo "$as_me:$LINENO: checking GC library exists" >&5
 echo $ECHO_N "checking GC library exists... $ECHO_C" >&6; }
 
+
 # Check whether --with-gc was given.
 if test "${with_gc+set}" = set; then
   withval=$with_gc; test x"$with_gc" = xno && { { echo "$as_me:$LINENO: error: You can not build w3m without gc" >&5
@@ -7911,7 +7913,7 @@ fi
 { echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_init" >&5
 echo "${ECHO_T}$ac_cv_lib_gc_GC_init" >&6; }
 if test $ac_cv_lib_gc_GC_init = yes; then
-  LIBS="$LIBS -lgc"
+  LIBGC="-lgc"
 fi
 
  if test x"$ac_cv_lib_gc_GC_init" = xno; then
@@ -7988,7 +7990,7 @@ fi
 { echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_init" >&5
 echo "${ECHO_T}$ac_cv_lib_gc_GC_init" >&6; }
 if test $ac_cv_lib_gc_GC_init = yes; then
-  gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break
+  gclibdir="$dir/lib"; LIBGC="-L$dir/lib -lgc"; break
 fi
 
       LDFLAGS="$ldflags"
@@ -11623,6 +11625,7 @@ USE_DIGEST_AUTH!$USE_DIGEST_AUTH$ac_delim
 USE_W3M!$USE_W3M$ac_delim
 USE_SYSMOUSE!$USE_SYSMOUSE$ac_delim
 AUXBIN_TARGETS!$AUXBIN_TARGETS$ac_delim
+LIBGC!$LIBGC$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
 USE_BINMODE_STREAM!$USE_BINMODE_STREAM$ac_delim
@@ -11638,7 +11641,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 58; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 59; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

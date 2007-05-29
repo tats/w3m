@@ -1,11 +1,12 @@
 #!@PERL@
-# $Id: w3mhelp.cgi.in,v 1.28 2004/03/22 17:03:13 ukai Exp $
+# $Id: w3mhelp.cgi.in,v 1.29 2007/05/29 11:50:24 inu Exp $
 
 if ( $^O =~ /^(ms)?(dos|win(32|nt)?)/i ) {
   $CYGPATH = 1;
 }
 
 $prefix = "@prefix@";
+$datarootdir = "@datarootdir@";
 $helpdir = "@HELP_DIR@";
 if ($CYGPATH) {
   $helpdir = &cygwin_pathconv($helpdir);

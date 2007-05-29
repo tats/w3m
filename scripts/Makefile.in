@@ -10,6 +10,7 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 datadir = @datadir@
+datarootdir = @datarootdir@
 libdir = @libdir@
 includedir = @includedir@
 infodir = @infodir@

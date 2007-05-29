@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.255 2007/05/23 15:06:05 inu Exp $ */
+/* $Id: main.c,v 1.256 2007/05/29 12:07:02 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1493,9 +1493,6 @@ SigPipe(SIGNAL_ARG)
 /* 
  * Command functions: These functions are called with a keystroke.
  */
-
-#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 static void
 nscroll(int n, int mode)
@@ -6176,7 +6173,7 @@ DEFUN(prevT, PREV_TAB, "Move to previous tab")
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
-void
+static void
 followTab(TabBuffer * tab)
 {
     Buffer *buf;
@@ -6278,7 +6275,7 @@ DEFUN(tabrURL, TAB_GOTO_RELATIVE, "Open relative URL on new tab")
 	    "Goto relative URL on new tab: ", TRUE);
 }
 
-void
+static void
 moveTab(TabBuffer * t, TabBuffer * t2, int right)
 {
     if (t2 == NO_TABBUFFER)

@@ -1,9 +1,6 @@
-/* $Id: display.c,v 1.69 2004/07/15 16:32:38 ukai Exp $ */
+/* $Id: display.c,v 1.70 2007/05/29 12:07:02 inu Exp $ */
 #include <signal.h>
 #include "fm.h"
-
-#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 /* *INDENT-OFF* */
 #ifdef USE_COLOR

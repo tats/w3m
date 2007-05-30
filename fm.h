@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.137 2007/05/23 13:07:44 inu Exp $ */
+/* $Id: fm.h,v 1.138 2007/05/30 04:47:24 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -522,6 +522,13 @@ typedef struct _DownloadList {
     struct _DownloadList *prev;
 } DownloadList;
 #define DOWNLOAD_LIST_TITLE "Download List Panel"
+
+#define COPY_BUFROOT(dstbuf, srcbuf) {\
+ (dstbuf)->rootX = (srcbuf)->rootX; \
+ (dstbuf)->rootY = (srcbuf)->rootY; \
+ (dstbuf)->COLS = (srcbuf)->COLS; \
+ (dstbuf)->LINES = (srcbuf)->LINES; \
+}
 
 #define COPY_BUFPOSITION(dstbuf, srcbuf) {\
  (dstbuf)->topLine = (srcbuf)->topLine; \

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.256 2007/05/29 12:07:02 inu Exp $ */
+/* $Id: main.c,v 1.257 2007/05/30 04:47:24 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4717,8 +4717,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
 	buf->linkBuffer[LB_N_FRAME] = fbuf;
 	pushBuffer(buf);
 	Currentbuf = buf;
-	if (Currentbuf->firstLine)
+	if (Currentbuf->firstLine) {
+	    COPY_BUFROOT(Currentbuf, &sbuf);
 	    restorePosition(Currentbuf, &sbuf);
+	}
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
@@ -4783,8 +4785,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
     }
     Currentbuf->search_header = sbuf.search_header;
     Currentbuf->form_submit = sbuf.form_submit;
-    if (Currentbuf->firstLine)
+    if (Currentbuf->firstLine) {
+	COPY_BUFROOT(Currentbuf, &sbuf);
 	restorePosition(Currentbuf, &sbuf);
+    }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -5214,6 +5218,9 @@ do_mouse_action(int btn, int x, int y)
 		map = &mouse_action.anchor_map[btn];
 	    cursorXY(Currentbuf, cx, cy);
 	}
+    }
+    else {
+	return;
     }
     if (!(map && map->func))
 	map = &mouse_action.default_map[btn];
@@ -6555,8 +6562,10 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display download list panel")
 	return;
     }
     buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
-    if (replace)
+    if (replace) {
+	COPY_BUFROOT(buf, Currentbuf);
 	restorePosition(buf, Currentbuf);
+    }
     if (!replace && open_tab_dl_list) {
 	_newT();
 	new_tab = TRUE;

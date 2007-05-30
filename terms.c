@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.56 2007/05/23 15:06:06 inu Exp $ */
+/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1336,7 +1336,9 @@ refresh(void)
 		 * (COLS-1,LINES-1).
 		 */
 #if !defined(USE_BG_COLOR) || defined(__CYGWIN__)
+#ifdef __CYGWIN__
 		if (isWinConsole)
+#endif
 		    if (line == LINES - 1 && col == COLS - 1)
 			break;
 #endif				/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */

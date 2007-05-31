@@ -1,3 +1,14 @@
+2007-05-31  Dai Sato <satodai@w3m.jp>
+
+	* w3m 0.5.2
+	* version.c.in: update
+	* doc/README: version 0.5.2, release date, maintainer
+	* doc-jp/README: ditto
+	* po/w3m.pot, ja.po: ditto
+	* NEWS: update
+	* configure.ac: version 0.5.2
+	* configure: regenerated
+
 2007-05-31  Tsutomu OKADA
 
 	* [20070530101431@w3mbbs] Re: road to 0.5.2
@@ -8906,4 +8917,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.997 2007/05/31 01:19:50 inu Exp $
+$Id: ChangeLog,v 1.998 2007/05/31 12:17:05 inu Exp $

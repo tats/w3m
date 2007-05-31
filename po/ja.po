@@ -6,8 +6,8 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: w3m 0.5.1\n"
-"Report-Msgid-Bugs-To: ukai@debian.or.jp\n"
+"Project-Id-Version: w3m 0.5.2\n"
+"Report-Msgid-Bugs-To: satodai@w3m.jp\n"
 "POT-Creation-Date: 2007-05-07 10:49+0900\n"
 "PO-Revision-Date: 2007-05-07 10:52+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"

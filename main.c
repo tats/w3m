@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.257 2007/05/30 04:47:24 inu Exp $ */
+/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -392,7 +392,7 @@ main(int argc, char **argv, char **envp)
     wc_ces CodePage;
 #endif
 #endif
-    GC_init();
+    GC_INIT();
 #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
 #endif

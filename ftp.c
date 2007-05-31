@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.38 2007/05/23 15:06:05 inu Exp $ */
+/* $Id: ftp.c,v 1.39 2007/05/31 01:19:50 inu Exp $ */
 #include <stdio.h>
 #ifndef __MINGW32_VERSION
 #include <pwd.h>
@@ -398,7 +398,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
 	tmp = Strnew_charp(mypw ? mypw->pw_name : "anonymous");
 #else
 	tmp = Strnew_charp("anonymous");
-#endif __MINGW32_VERSION
+#endif /* __MINGW32_VERSION */
 	Strcat_char(tmp, '@');
 	pass = tmp->ptr;
     }

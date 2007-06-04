@@ -1,3 +1,8 @@
+2007-06-04  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+	* [w3m-dev 04271] vi_prec_num
+	* main.c: make number prefixes working when vi_prec_num=0.
+
 2007-05-31  Dai Sato <satodai@w3m.jp>
 
 	* w3m 0.5.2
@@ -8917,4 +8922,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.998 2007/05/31 12:17:05 inu Exp $
+$Id: ChangeLog,v 1.999 2007/06/04 13:21:10 inu Exp $

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
+/* $Id: main.c,v 1.259 2007/06/04 13:21:10 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -1152,18 +1152,11 @@ main(int argc, char **argv, char **envp)
 	    mouse_inactive();
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
-	    if( vi_prec_num ){
-		if(((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
-		    prec_num = prec_num * 10 + (int)(c - '0');
-		    if (prec_num > PREC_LIMIT)
-			prec_num = PREC_LIMIT;
-		}
-		else {
-		    set_buffer_environ(Currentbuf);
-		    save_buffer_position(Currentbuf);
-		    keyPressEventProc((int)c);
-		    prec_num = 0;
-		}
+	    if (('0' <= c) && (c <= '9') &&
+		(prec_num || (GlobalKeymap[c] == FUNCNAME_nulcmd))) {
+		prec_num = prec_num * 10 + (int)(c - '0');
+		if (prec_num > PREC_LIMIT)
+		   prec_num = PREC_LIMIT;
 	    }
 	    else {
 		set_buffer_environ(Currentbuf);

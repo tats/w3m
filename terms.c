@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
+/* $Id: terms.c,v 1.58 2007/06/07 10:54:10 inu Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1897,7 +1897,7 @@ wgetch(void *p)
 int
 do_getch()
 {
-    if (is_xterm)
+    if (is_xterm || !gpm_handler)
 	return getch();
     else
 	return Gpm_Getch();
@@ -2037,6 +2037,7 @@ mouse_init()
     conn.maxMod = 0;
     conn.minMod = 0;
 
+    gpm_handler = NULL;
     r = Gpm_Open(&conn, 0);
     if (r == -2) {
 	/*

@@ -76,7 +76,7 @@ if ($query{"local"}) {
   if (! ($file =~ /^\//)) {
     $file = $query{"pwd"} . '/' . $file;
   }
-  open(F, "$MAN -l $file 2> /dev/null |");
+  open(F, "MAN_KEEP_FORMATTING=1 $MAN -l $file 2> /dev/null |");
 } else {
   $man = $query{"man"};
   if ($man =~ s/\((\w+)\)$//) {
@@ -92,7 +92,7 @@ if ($query{"local"}) {
 
   $section =~ s:([^-\w\200-\377.,])::g;
   $man =~ s:([^-\w\200-\377.,])::g;
-  open(F, "$MAN $section $man 2> /dev/null |");
+  open(F, "MAN_KEEP_FORMATTING=1 $MAN $section $man 2> /dev/null |");
 }
 $ok = 0;
 undef $header;

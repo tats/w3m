@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.13 2003/09/22 21:02:16 ukai Exp $ */
+/* $Id: backend.c,v 1.14 2010/07/18 14:10:09 htrb Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -95,7 +95,7 @@ internal_get(char *url, int flag, FormList *request)
     buf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
     do_download = FALSE;
     if (buf != NULL && buf != NO_BUFFER) {
-	if (!strcasecmp(buf->type, "text/html") && backend_halfdump_buf) {
+	if (is_html_type(buf->type) && backend_halfdump_buf) {
 	    TextLineListItem *p;
 	    Str first, last;
 	    int len = 0;

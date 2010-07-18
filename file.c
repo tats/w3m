@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.254 2007/05/23 15:06:05 inu Exp $ */
+/* $Id: file.c,v 1.255 2010/07/18 14:10:09 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -272,6 +272,13 @@ is_plain_text_type(char *type)
 	    (is_text_type(type) && !is_dump_text_type(type)));
 }
 
+int
+is_html_type(char *type)
+{
+    return (type && (strcasecmp(type, "text/html") == 0 ||
+		     strcasecmp(type, "application/xhtml+xml") == 0));
+}
+
 static void
 check_compression(char *path, URLFile *uf)
 {
@@ -373,7 +380,7 @@ examineFile(char *path, URLFile *uf)
 	    uf->guess_type = guessContentType(path);
 	    if (uf->guess_type == NULL)
 		uf->guess_type = "text/plain";
-	    if (strcasecmp(uf->guess_type, "text/html") == 0)
+	    if (is_html_type(uf->guess_type))
 		return;
 	    if ((fp = lessopen_stream(path))) {
 		UFclose(uf);
@@ -2055,6 +2062,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    t = f.guess_type;
     }
 
+    /* XXX: can we use guess_type to give the type to loadHTMLstream
+     *      to support default utf8 encoding for XHTML here? */
+    f.guess_type = t;
+    
   page_loaded:
     if (page) {
 	FILE *src;
@@ -2166,7 +2177,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 #endif
 
-    if (!strcasecmp(t, "text/html"))
+    if (is_html_type(t))
 	proc = loadHTMLBuffer;
     else if (is_plain_text_type(t))
 	proc = loadBuffer;
@@ -2230,7 +2241,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	b->real_type = real_type;
 	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 	    copyParsedURL(&b->currentURL, &pu);
-	if (!strcasecmp(t, "text/html"))
+	if (is_html_type(t))
 	    b->type = "text/html";
 	else if (w3m_backend) {
 	    Str s = Strnew_charp(t);
@@ -6949,6 +6960,8 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     }
     if (content_charset && UseContentCharset)
 	doc_charset = content_charset;
+    else if (f->guess_type && !strcasecmp(f->guess_type, "application/xhtml+xml"))
+	doc_charset = WC_CES_UTF_8;
     meta_charset = 0;
 #endif
 #if	0
@@ -7383,8 +7396,7 @@ _saveBuffer(Buffer *buf, Line *l, FILE * f, int cont)
     wc_ces charset = DisplayCharset ? DisplayCharset : WC_CES_US_ASCII;
 #endif
 
-    if (buf->type && !strcasecmp(buf->type, "text/html"))
-	is_html = TRUE;
+    is_html = is_html_type(buf->type);
 
   pager_next:
     for (; l != NULL; l = l->next) {
@@ -7541,7 +7553,7 @@ openGeneralPagerBuffer(InputStream stream)
 	t = DefaultType;
 	DefaultType = NULL;
     }
-    if (!strcasecmp(t, "text/html")) {
+    if (is_html_type(t)) {
 	buf = loadHTMLBuffer(&uf, t_buf);
 	buf->type = "text/html";
     }
@@ -8351,7 +8363,7 @@ reloadBuffer(Buffer *buf)
 	buf->hmarklist->nmark = 0;
     if (buf->imarklist)
 	buf->imarklist->nmark = 0;
-    if (!strcasecmp(buf->type, "text/html"))
+    if (is_html_type(buf->type))
 	loadHTMLBuffer(&uf, buf);
     else
 	loadBuffer(&uf, buf);

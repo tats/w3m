@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.95 2007/05/23 15:06:06 inu Exp $ */
+/* $Id: url.c,v 1.96 2010/07/18 14:10:09 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
 #include <sys/types.h>
@@ -101,6 +101,7 @@ static struct table2 DefaultGuess[] = {
     {"html", "text/html"},
     {"htm", "text/html"},
     {"shtml", "text/html"},
+    {"xhtml", "application/xhtml+xml"},
     {"gif", "image/gif"},
     {"jpeg", "image/jpeg"},
     {"jpg", "image/jpeg"},

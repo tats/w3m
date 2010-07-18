@@ -1,3 +1,16 @@
+2010-07-18 d+w3m@vdr.jp
+
+	* [w3m-dev 04319] Re: w3m's bugs from bugs.debian.org
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=242599#21
+	* file.c (is_html_type): added.
+	(examineFile, loadGeneralFile, _saveBuffer)
+	(openGeneralPagerBuffer, reloadBuffer): use is_html_type() instead
+	of strcasecmp().
+	(loadGeneralFile): set f.guess_tupe
+	* display.c (displayBuffer): use is_html_type() instead of strcasecmp().
+	* buffer.c (reshapeBuffer): use is_html_type() instead of strcasecmp().
+	* backend.c (internal_get): use is_html_type() instead of strcasecmp().
+
 2010-07-18 Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
 
 	* [w3m-dev 04286] Re: break textform when buffer back
@@ -8951,4 +8964,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1007 2010/07/18 13:48:48 htrb Exp $
+$Id: ChangeLog,v 1.1008 2010/07/18 14:10:09 htrb Exp $

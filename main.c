@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.259 2007/06/04 13:21:10 inu Exp $ */
+/* $Id: main.c,v 1.260 2010/07/18 14:10:09 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -4616,10 +4616,10 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
 
     buf = newBuffer(INIT_BUFFER_WIDTH);
 
-    if (!strcasecmp(Currentbuf->type, "text/html")) {
+    if (is_html_type(Currentbuf->type)) {
 	buf->type = "text/plain";
 	if (Currentbuf->real_type &&
-	    !strcasecmp(Currentbuf->real_type, "text/html"))
+	    is_html_type(Currentbuf->real_type))
 	    buf->real_type = "text/plain";
 	else
 	    buf->real_type = Currentbuf->real_type;
@@ -4769,8 +4769,8 @@ DEFUN(reload, RELOAD, "Reload buffer")
     repBuffer(Currentbuf, buf);
     if ((buf->type != NULL) && (sbuf.type != NULL) &&
 	((!strcasecmp(buf->type, "text/plain") &&
-	  !strcasecmp(sbuf.type, "text/html")) ||
-	 (!strcasecmp(buf->type, "text/html") &&
+	  is_html_type(sbuf.type)) ||
+	 (is_html_type(buf->type) &&
 	  !strcasecmp(sbuf.type, "text/plain")))) {
 	vwSrc();
 	if (Currentbuf != buf)
@@ -5092,7 +5092,7 @@ DEFUN(dispI, DISPLAY_IMAGE, "Restart loading and drawing of images")
 	return;
     displayImage = TRUE;
     /*
-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
+     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
      * return;
      */
     Currentbuf->image_flag = IMG_FLAG_AUTO;
@@ -5105,7 +5105,7 @@ DEFUN(stopI, STOP_IMAGE, "Stop loading and drawing of images")
     if (!activeImage)
 	return;
     /*
-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
+     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
      * return;
      */
     Currentbuf->image_flag = IMG_FLAG_SKIP;

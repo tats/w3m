@@ -1,7 +1,9 @@
-2010-07-18  d+w3m@vdr.jp
+2010-07-18 d+w3m@vdr.jp
 	* [w3m-dev 04319] Re: w3m's bugs from bugs.debian.org
 	* doc/w3m.1: fix typo.
 	* doc-jp/w3m.1: update
+	* terms.c: fix version check logic for FreeBSD
+	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=493486
 
 2007-06-07  Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
 
@@ -8938,4 +8940,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1003 2010/07/18 13:24:03 htrb Exp $
+$Id: ChangeLog,v 1.1004 2010/07/18 13:31:24 htrb Exp $

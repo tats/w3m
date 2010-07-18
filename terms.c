@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.58 2007/06/07 10:54:10 inu Exp $ */
+/* $Id: terms.c,v 1.59 2010/07/18 13:31:24 htrb Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -26,7 +26,7 @@
 #endif				/* USE_GPM */
 #ifdef USE_SYSMOUSE
 #include <osreldate.h>
-#if (__FreeBSD_version >= 400017)
+#if (__FreeBSD_version >= 400017) || (__FreeBSD_kernel_version >= 400017)
 #include <sys/consio.h>
 #include <sys/fbio.h>
 #else

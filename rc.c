@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.108 2010/07/19 12:08:41 htrb Exp $ */
+/* $Id: rc.c,v 1.109 2010/07/19 12:19:54 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1256,7 +1256,7 @@ init_rc(void)
 	interpret_rc(f);
 	fclose(f);
     }
-    if ((f = fopen(config_file, "rt")) != NULL) {
+    if (config_file && (f = fopen(config_file, "rt")) != NULL) {
 	interpret_rc(f);
 	fclose(f);
     }
@@ -1268,6 +1268,8 @@ init_rc(void)
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
+    create_option_search_table();
+    goto open_rc;
 }
 
 
@@ -1449,8 +1451,8 @@ panel_set_option(struct parsed_tagarg *arg)
     FILE *f = NULL;
     char *p;
 
-    if (no_rc_dir) {
-	disp_message("There's no ~/.w3m directory... config not saved", FALSE);
+    if (config_file == NULL) {
+	disp_message("There's no config file... config not saved", FALSE);
     }
     else {
 	f = fopen(config_file, "wt");

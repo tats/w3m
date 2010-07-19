@@ -1,6 +1,13 @@
 2010-07-19  d+w3m@vdr.jp
 
 	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=366284#5
+	* rc.c (init_rc): check config_file is NULL or not.
+	(panel_set_option): check config_file instead of no_rc_dir.
+
+2010-07-19  d+w3m@vdr.jp
+
+	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=261174#10
 	* terms.c (graph_ok): check UseGraphicChar is GRAPHIC_CHAR_ALL or not.
 	* symbol.c (get_symbol): check UseGraphicChar.
@@ -8998,4 +9005,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1011 2010/07/19 12:08:41 htrb Exp $
+$Id: ChangeLog,v 1.1012 2010/07/19 12:19:54 htrb Exp $

@@ -1,6 +1,17 @@
 2010-07-19  d+w3m@vdr.jp
 
 	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329862#20
+	* table.c (feed_table_tag): check displayLinkNumber.
+	* proto.h: add getLinkNumberStr().
+	* main.c (do_dump): check displayLinkNumber.
+	* fm.h: add global variable displayLinkNumber.
+	* file.c (getLinkNumberStr): added.
+	(process_input, process_select, HTMLtagproc1): check displayLinkNumber.
+
+2010-07-19  d+w3m@vdr.jp
+
+	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329863#8
 	* rc.c: Introduce option pseudo_inlines.
 	* fm.h: add global variable pseudoInlines.
@@ -9019,4 +9030,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1014 2010/07/19 12:53:39 htrb Exp $
+$Id: ChangeLog,v 1.1015 2010/07/19 23:33:59 htrb Exp $

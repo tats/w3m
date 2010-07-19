@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.142 2010/07/19 12:53:39 htrb Exp $ */
+/* $Id: fm.h,v 1.143 2010/07/19 23:34:01 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -932,6 +932,7 @@ global int label_topline init(FALSE);
 global int nextpage_topline init(FALSE);
 global char *displayTitleTerm init(NULL);
 global int displayLink init(FALSE);
+global int displayLinkNumber init(FALSE);
 global int displayLineInfo init(FALSE);
 global int DecodeURL init(FALSE);
 global int retryAsHttp init(TRUE);

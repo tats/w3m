@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.111 2010/07/19 12:53:39 htrb Exp $ */
+/* $Id: rc.c,v 1.112 2010/07/19 23:34:01 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -72,6 +72,7 @@ static int OptionEncode = FALSE;
 #define CMT_OPEN_TAB_BLANK N_("Open link on new tab if target is _blank or _new")
 #define CMT_OPEN_TAB_DL_LIST N_("Open download list panel on new tab")
 #define CMT_DISPLINK     N_("Display link URL automatically")
+#define CMT_DISPLINKNUMBER N_("Display link numbers")
 #define CMT_DECODE_URL   N_("Display decoded URL")
 #define CMT_DISPLINEINFO N_("Display current line number")
 #define CMT_DISP_IMAGE   N_("Display inline images")
@@ -357,6 +358,8 @@ struct param_ptr params1[] = {
      CMT_OPEN_TAB_DL_LIST, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
+    {"display_link_number", P_INT, PI_ONOFF, (void *)&displayLinkNumber,
+     CMT_DISPLINKNUMBER, NULL},
     {"decode_url", P_INT, PI_ONOFF, (void *)&DecodeURL, CMT_DECODE_URL, NULL},
     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
      CMT_DISPLINEINFO, NULL},

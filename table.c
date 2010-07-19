@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.55 2007/05/23 13:07:44 inu Exp $ */
+/* $Id: table.c,v 1.56 2010/07/19 23:34:01 htrb Exp $ */
 /* 
  * HTML table
  */
@@ -2912,6 +2912,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    check_rowcol(tbl, mode);
 	    if (i == 0) {
 		Str tmp = process_anchor(tag, line);
+    		if (displayLinkNumber)
+		{
+			Str t = getLinkNumberStr(-1);
+			feed_table_inline_tag(tbl, NULL, mode, t->length);
+			Strcat(tmp, t);
+		}
 		pushdata(tbl, tbl->row, tbl->col, tmp->ptr);
 	    }
 	    else

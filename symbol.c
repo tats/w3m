@@ -86,24 +86,29 @@ get_symbol(wc_ces charset, int *width)
     charset_symbol_set *p;
     symbol_set *s = NULL;
 
-    if (charset == save_charset && save_symbol != NULL &&
-	*width == save_symbol->width) {
-	*width = save_symbol->width;
-	return save_symbol->item;
-    }
-    save_charset = charset;
-    for (p = charset_symbol_list; p->charset; p++) {
-	if (charset == p->charset &&
-	    (*width == 0 || *width == p->symbol->width)) {
-	    s = p->symbol;
-	    break;
+    if (UseGraphicChar != GRAPHIC_CHAR_ASCII) {
+	if (charset == save_charset && save_symbol != NULL &&
+	    *width == save_symbol->width)
+	    return save_symbol->item;
+	save_charset = charset;
+	for (p = charset_symbol_list; p->charset; p++) {
+	    if (charset == p->charset &&
+		(*width == 0 || *width == p->symbol->width)) {
+		s = p->symbol;
+		break;
+	    }
 	}
-    }
-    if (s == NULL)
+	if (s == NULL)
+	    s = (*width == 2) ? &alt2_symbol_set : &alt_symbol_set;
+	if (s != save_symbol) {
+	    if (!s->encode)
+		encode_symbol(s);
+	    save_symbol = s;
+	}
+    } else {
+	if (save_symbol != NULL && *width == save_symbol->width)
+	    return save_symbol->item;
 	s = (*width == 2) ? &alt2_symbol_set : &alt_symbol_set;
-    if (s != save_symbol) {
-	if (!s->encode)
-	    encode_symbol(s);
 	save_symbol = s;
     }
     *width = s->width;

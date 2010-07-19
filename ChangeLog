@@ -1,6 +1,17 @@
 2010-07-19  d+w3m@vdr.jp
 
 	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=261174#10
+	* terms.c (graph_ok): check UseGraphicChar is GRAPHIC_CHAR_ALL or not.
+	* symbol.c (get_symbol): check UseGraphicChar.
+	* rc.c (graphic_char_str): added.
+	* main.c (sig_chld): use GRAPHIC_CHAR_ASCII and GRAPHIC_CHAR_ALL.
+	* fm.h (GRAPHIC_CHAR_ASCII, GRAPHIC_CHAR_CHARSET, GRAPHIC_CHAR_ALL): added.
+	* fm.h: UseGraphicChar is initialized as GRAPHIC_CHAR_ASCII.
+
+2010-07-19  d+w3m@vdr.jp
+
+	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=185006#22
 	* main.c (sig_chld): save exit code to d->err.
 	(addDownloadList): initialize d->running and d->err.
@@ -8987,4 +8998,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1010 2010/07/19 11:45:23 htrb Exp $
+$Id: ChangeLog,v 1.1011 2010/07/19 12:08:41 htrb Exp $

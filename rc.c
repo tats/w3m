@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.107 2010/07/19 09:00:34 htrb Exp $ */
+/* $Id: rc.c,v 1.108 2010/07/19 12:08:41 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -331,6 +331,13 @@ static struct sel_c auto_detect_str[] = {
 };
 #endif
 
+static struct sel_c graphic_char_str[] = {
+    {N_S(GRAPHIC_CHAR_ASCII), N_("No")},
+    {N_S(GRAPHIC_CHAR_CHARSET), N_("Yes, but only charset specific")},
+    {N_S(GRAPHIC_CHAR_ALL), N_("Yes")},
+    {0, NULL, NULL}
+};
+
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
@@ -365,8 +372,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
-     CMT_GRAPHIC_CHAR, NULL},
+    {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
+     CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,

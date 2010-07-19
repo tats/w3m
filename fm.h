@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.140 2010/07/19 11:45:24 htrb Exp $ */
+/* $Id: fm.h,v 1.141 2010/07/19 12:08:41 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1057,7 +1057,10 @@ global char SimplePreserveSpace init(FALSE);
 #define wc_Str_conv_strict(x,charset0,charset1) (x)
 #endif
 global char UseAltEntity init(TRUE);
-global char UseGraphicChar init(FALSE);
+#define GRAPHIC_CHAR_ASCII 2
+#define GRAPHIC_CHAR_CHARSET 0
+#define GRAPHIC_CHAR_ALL 1
+global char UseGraphicChar init(GRAPHIC_CHAR_ASCII);
 extern char *graph_symbol[];
 extern char *graph2_symbol[];
 extern int symbol_width;

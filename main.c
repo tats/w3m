@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.260 2010/07/18 14:10:09 htrb Exp $ */
+/* $Id: main.c,v 1.261 2010/07/19 11:45:24 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -323,21 +323,26 @@ static void
 sig_chld(int signo)
 {
     int p_stat;
-#ifdef HAVE_WAITPID
     pid_t pid;
 
+#ifdef HAVE_WAITPID
     while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0) {
-	;
-    }
 #elif HAVE_WAIT3
-    int pid;
-
     while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0) {
-	;
-    }
 #else
-    wait(&p_stat);
+    if ((pid = wait(&p_stat)) > 0) {
 #endif
+	DownloadList *d;
+
+	if (WIFEXITED(p_stat)) {
+	    for (d = FirstDL; d != NULL; d = d->next) {
+		if (d->pid == pid) {
+		    d->err = WEXITSTATUS(p_stat);
+		    break;
+		}
+	    }
+	}
+    }
     mySignal(SIGCHLD, sig_chld);
     return;
 }
@@ -6348,7 +6353,8 @@ addDownloadList(pid_t pid, char *url, char *save, char *lock, clen_t size)
     d->lock = lock;
     d->size = size;
     d->time = time(0);
-    d->ok = FALSE;
+    d->running = TRUE;
+    d->err = 0;
     d->next = NULL;
     d->prev = LastDL;
     if (LastDL)
@@ -6368,7 +6374,7 @@ checkDownloadList(void)
     if (!FirstDL)
 	return FALSE;
     for (d = FirstDL; d != NULL; d = d->next) {
-	if (!d->ok && !lstat(d->lock, &st))
+	if (d->running && !lstat(d->lock, &st))
 	    return TRUE;
     }
     return FALSE;
@@ -6408,15 +6414,16 @@ DownloadListBuffer(void)
 		       "<form method=internal action=download><hr>\n");
     for (d = LastDL; d != NULL; d = d->prev) {
 	if (lstat(d->lock, &st))
-	    d->ok = TRUE;
+	    d->running = FALSE;
 	Strcat_charp(src, "<pre>\n");
 	Strcat(src, Sprintf("%s\n  --&gt; %s\n  ", html_quote(d->url),
 			    html_quote(conv_from_system(d->save))));
 	duration = cur_time - d->time;
 	if (!stat(d->save, &st)) {
 	    size = st.st_size;
-	    if (d->ok) {
-		d->size = size;
+	    if (!d->running) {
+		if (!d->err)
+		    d->size = size;
 		duration = st.st_mtime - d->time;
 	    }
 	}
@@ -6435,7 +6442,7 @@ DownloadListBuffer(void)
 		Strcat_char(src, '_');
 	    Strcat_char(src, '\n');
 	}
-	if (!d->ok && size < d->size)
+	if ((d->running || d->err) && size < d->size)
 	    Strcat(src, Sprintf("  %s / %s bytes (%d%%)",
 				convert_size3(size), convert_size3(d->size),
 				(int)(100.0 * size / d->size)));
@@ -6446,20 +6453,28 @@ DownloadListBuffer(void)
 	    Strcat(src, Sprintf("  %02d:%02d:%02d  rate %s/sec",
 				duration / (60 * 60), (duration / 60) % 60,
 				duration % 60, convert_size(rate, 1)));
-	    if (!d->ok && size < d->size && rate) {
+	    if (d->running && size < d->size && rate) {
 		eta = (d->size - size) / rate;
 		Strcat(src, Sprintf("  eta %02d:%02d:%02d", eta / (60 * 60),
 				    (eta / 60) % 60, eta % 60));
 	    }
 	}
 	Strcat_char(src, '\n');
-	if (d->ok) {
+	if (!d->running) {
 	    Strcat(src, Sprintf("<input type=submit name=ok%d value=OK>",
 				d->pid));
-	    if (size < d->size)
-		Strcat_charp(src, " Download incompleted");
-	    else
-		Strcat_charp(src, " Download completed");
+	    switch (d->err) {
+	    case 0: if (size < d->size)
+			Strcat_charp(src, " Download ended but probably not complete");
+		    else
+			Strcat_charp(src, " Download complete");
+		    break;
+	    case 1: Strcat_charp(src, " Error: could not open destination file");
+		    break;
+	    case 2: Strcat_charp(src, " Error: could not write to file (disk full)");
+		    break;
+	    default: Strcat_charp(src, " Error: unknown reason");
+	    }
 	}
 	else
 	    Strcat(src, Sprintf("<input type=submit name=stop%d value=STOP>",
@@ -6513,7 +6528,7 @@ stopDownload(void)
     if (!FirstDL)
 	return;
     for (d = FirstDL; d != NULL; d = d->next) {
-	if (d->ok)
+	if (!d->running)
 	    continue;
 #ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);

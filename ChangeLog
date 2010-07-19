@@ -1,5 +1,18 @@
 2010-07-19  d+w3m@vdr.jp
 
+	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=185006#22
+	* main.c (sig_chld): save exit code to d->err.
+	(addDownloadList): initialize d->running and d->err.
+	(DownloadListBuffer): check d->err.
+
+	* fm.h (_DownloadList): add running and err.
+
+	* file.c (save2tmp): check returned value of Strfputs().
+	(doFileSave): exit code is depend on the returned value of save2tmp().
+
+2010-07-19  d+w3m@vdr.jp
+
 	* [w3m-dev 04238] [patch] simple preserve space
 	* rc.c: Introduce option simple_preserve_space.
 	* fm.h: add global variable SimplePreserveSpace.
@@ -8974,4 +8987,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1009 2010/07/19 09:00:34 htrb Exp $
+$Id: ChangeLog,v 1.1010 2010/07/19 11:45:23 htrb Exp $

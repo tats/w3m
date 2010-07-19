@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.256 2010/07/19 09:00:34 htrb Exp $ */
+/* $Id: file.c,v 1.257 2010/07/19 11:45:24 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -7761,7 +7761,13 @@ save2tmp(URLFile uf, char *tmpf)
     {
 	Str buf = Strnew_size(SAVE_BUF_SIZE);
 	while (UFread(&uf, buf, SAVE_BUF_SIZE)) {
-	    Strfputs(buf, ff);
+	    if (Strfputs(buf, ff) != buf->length) {
+		bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
+		TRAP_OFF;
+		fclose(ff);
+		current_content_length = 0;
+		return -2;
+	    }
 	    linelen += buf->length;
 	    showProgress(&linelen, &trbyte);
 	}
@@ -8090,16 +8096,20 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
+	    int err;
 	    if ((uf.content_encoding != CMP_NOCOMPRESS) && AutoUncompress) {
 		uncompress_stream(&uf, &tmpf);
 		if (tmpf)
 		    unlink(tmpf);
 	    }
 	    setup_child(FALSE, 0, UFfileno(&uf));
-	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
+	    err = save2tmp(uf, p);
+	    if (err == 0 && PreserveTimestamp && uf.modtime != -1)
 		setModtime(p, uf.modtime);
 	    UFclose(&uf);
 	    unlink(lock);
+	    if (err != 0)
+		exit(-err);
 	    exit(0);
 	}
 	addDownloadList(pid, uf.url, p, lock, current_content_length);

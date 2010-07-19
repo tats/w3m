@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.139 2010/07/19 09:00:34 htrb Exp $ */
+/* $Id: fm.h,v 1.140 2010/07/19 11:45:24 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -517,7 +517,8 @@ typedef struct _DownloadList {
     char *lock;
     clen_t size;
     time_t time;
-    int ok;
+    int running;
+    int err;
     struct _DownloadList *next;
     struct _DownloadList *prev;
 } DownloadList;

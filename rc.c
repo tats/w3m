@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.109 2010/07/19 12:19:54 htrb Exp $ */
+/* $Id: rc.c,v 1.110 2010/07/19 12:25:53 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -1071,9 +1071,11 @@ interpret_rc(FILE * f)
 
     for (;;) {
 	line = Strfgets(f);
-	Strchop(line);
-	if (line->length == 0)
+	if (line->length == 0)		/* end of file */
 	    break;
+	Strchop(line);
+	if (line->length == 0)		/* blank line */
+	    continue;
 	Strremovefirstspaces(line);
 	if (line->ptr[0] == '#')	/* comment */
 	    continue;

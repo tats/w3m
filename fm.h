@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.141 2010/07/19 12:08:41 htrb Exp $ */
+/* $Id: fm.h,v 1.142 2010/07/19 12:53:39 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -948,6 +948,7 @@ global int image_map_list init(TRUE);
 #else
 global int displayImage init(FALSE);	/* XXX: emacs-w3m use display_image=off */
 #endif
+global int pseudoInlines init(TRUE);
 global char *Editor init(DEF_EDITOR);
 #ifdef USE_W3MMAILER
 global char *Mailer init(NULL);

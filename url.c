@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.96 2010/07/18 14:10:09 htrb Exp $ */
+/* $Id: url.c,v 1.97 2010/07/20 00:09:34 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
 #include <sys/types.h>
@@ -375,6 +375,9 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
     init_PRNG();
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
+#if (SSLEAY_VERSION_NUMBER >= 0x00908070) && !defined(OPENSSL_NO_TLSEXT)
+    SSL_set_tlsext_host_name(handle,hostname);
+#endif				/* (SSLEAY_VERSION_NUMBER >= 0x00908070) && !defined(OPENSSL_NO_TLSEXT) */
     if (SSL_connect(handle) > 0) {
 	Str serv_cert = ssl_get_certificate(handle, hostname);
 	if (serv_cert) {

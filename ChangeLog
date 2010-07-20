@@ -1,6 +1,10 @@
-2010-07-19  d+w3m@vdr.jp
+2010-07-20  Sascha Silbe <sascha-debian-bugs-w3m-1@silbe.org>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329862#20
+	* url.c (openSSLHandle): add support for TLS SNI (Server Name Indication)
+
+2010-07-19  Karsten Schoelzel <kuser@gmx.de>
+
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329862#20
 	* table.c (feed_table_tag): check displayLinkNumber.
 	* proto.h: add getLinkNumberStr().
@@ -9,30 +13,26 @@
 	* file.c (getLinkNumberStr): added.
 	(process_input, process_select, HTMLtagproc1): check displayLinkNumber.
 
-2010-07-19  d+w3m@vdr.jp
+2010-07-19  Karsten Schoelzel <kuser@gmx.de>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329863#8
 	* rc.c: Introduce option pseudo_inlines.
 	* fm.h: add global variable pseudoInlines.
 	* file.c (process_img): check q.
 
-2010-07-19  d+w3m@vdr.jp
+2010-07-19  "Trent W. Buck" <twb@cybersource.com.au>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=537706#10
 	* rc.c (interpret_rc): check line->length before call Strchop().
 
-2010-07-19  d+w3m@vdr.jp
+2010-07-19  Karsten Schoelzel <kuser@gmx.de>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=366284#5
 	* rc.c (init_rc): check config_file is NULL or not.
 	(panel_set_option): check config_file instead of no_rc_dir.
 
-2010-07-19  d+w3m@vdr.jp
+2010-07-19  Karsten Schoelzel <kuser@gmx.de>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=261174#10
 	* terms.c (graph_ok): check UseGraphicChar is GRAPHIC_CHAR_ALL or not.
 	* symbol.c (get_symbol): check UseGraphicChar.
@@ -41,9 +41,8 @@
 	* fm.h (GRAPHIC_CHAR_ASCII, GRAPHIC_CHAR_CHARSET, GRAPHIC_CHAR_ALL): added.
 	* fm.h: UseGraphicChar is initialized as GRAPHIC_CHAR_ASCII.
 
-2010-07-19  d+w3m@vdr.jp
+2010-07-19  Karsten Schoelzel <kuser@gmx.de>
 
-	* [w3m-dev 04321] Re: w3m's bugs from bugs.debian.org
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=185006#22
 	* main.c (sig_chld): save exit code to d->err.
 	(addDownloadList): initialize d->running and d->err.
@@ -61,9 +60,8 @@
 	* fm.h: add global variable SimplePreserveSpace.
 	* file.c (HTMLlineproc0): check SimplePreserveSpace.
 
-2010-07-18 d+w3m@vdr.jp
+2010-07-18 Karsten Schoelzel <kuser@gmx.de>
 
-	* [w3m-dev 04319] Re: w3m's bugs from bugs.debian.org
 	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=242599#21
 	* file.c (is_html_type): added.
 	(examineFile, loadGeneralFile, _saveBuffer)
@@ -87,11 +85,17 @@
 	* [w3m-dev 04319] Re: w3m's bugs from bugs.debian.org
 	* doc/w3m.1: fix typo.
 	* doc-jp/w3m.1: update
+
+2010-07-18 Petr Salinger <Petr.Salinger@seznam.cz>
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=493486
 	* terms.c: fix version check logic for FreeBSD
-	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=493486
-	* scripts/w3mman/w3mman2html.cgi.in (Content-Type):
-	"MAN_KEEP_FORMATTING=1"
-	http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=325699
+
+2010-07-18 Colin Watson <cjwatson@ubuntu.com>
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=325699
+	* scripts/w3mman/w3mman2html.cgi.in (Content-Type): "MAN_KEEP_FORMATTING=1"
+
+2010-07-18  Ludwig Nussel <ludwig.nussel@...e.de>
+	* http://www.openwall.com/lists/oss-security/2010/06/14/4
 	* istream.c (ssl_check_cert_ident): replace \0 to make full string
 	visible to user (CVE-2010-2074).
 
@@ -9030,4 +9034,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1015 2010/07/19 23:33:59 htrb Exp $
+$Id: ChangeLog,v 1.1016 2010/07/20 00:09:34 htrb Exp $

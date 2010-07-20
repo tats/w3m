@@ -1,6 +1,6 @@
 2010-07-20  Sascha Silbe <sascha-debian-bugs-w3m-1@silbe.org>
 
-	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329862#20
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=523159#5
 	* url.c (openSSLHandle): add support for TLS SNI (Server Name Indication)
 
 2010-07-19  Karsten Schoelzel <kuser@gmx.de>
@@ -9034,4 +9034,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1016 2010/07/20 00:09:34 htrb Exp $
+$Id: ChangeLog,v 1.1017 2010/07/20 12:34:43 htrb Exp $

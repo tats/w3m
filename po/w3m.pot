@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2007-05-28 19:49+0900\n"
+"POT-Creation-Date: 2010-07-21 19:30+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,674 +149,698 @@ msgid "Display link URL automatically"
 msgstr ""
 
 #: rc.c:75
-msgid "Display decoded URL"
+msgid "Display link numbers"
 msgstr ""
 
 #: rc.c:76
-msgid "Display current line number"
+msgid "Display decoded URL"
 msgstr ""
 
 #: rc.c:77
+msgid "Display current line number"
+msgstr ""
+
+#: rc.c:78
 msgid "Display inline images"
 msgstr ""
 
 #: rc.c:79
-msgid "Load inline images automatically"
-msgstr ""
-
-#: rc.c:80
-msgid "Maximum processes for parallel image loading"
+msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
 msgstr ""
 
 #: rc.c:81
-msgid "Use external image viewer"
+msgid "Load inline images automatically"
 msgstr ""
 
 #: rc.c:82
-msgid "Scale of image (%)"
+msgid "Maximum processes for parallel image loading"
 msgstr ""
 
 #: rc.c:83
-msgid "External command to display image"
+msgid "Use external image viewer"
 msgstr ""
 
 #: rc.c:84
-msgid "Use link list of image map"
+msgid "Scale of image (%)"
+msgstr ""
+
+#: rc.c:85
+msgid "External command to display image"
 msgstr ""
 
 #: rc.c:86
-msgid "Display file names in multi-column format"
-msgstr ""
-
-#: rc.c:87
-msgid "Use ASCII equivalents to display entities"
+msgid "Use link list of image map"
 msgstr ""
 
 #: rc.c:88
-msgid "Use graphic char for border of table and menu"
+msgid "Display file names in multi-column format"
 msgstr ""
 
 #: rc.c:89
-msgid "Fold lines in TEXTAREA"
+msgid "Use ASCII equivalents to display entities"
 msgstr ""
 
 #: rc.c:90
-msgid "Display INS, DEL, S and STRIKE element"
+msgid "Use graphic char for border of table and menu"
 msgstr ""
 
 #: rc.c:91
-msgid "Display with color"
+msgid "Fold lines in TEXTAREA"
 msgstr ""
 
 #: rc.c:92
-msgid "Color of normal character"
+msgid "Display INS, DEL, S and STRIKE element"
 msgstr ""
 
 #: rc.c:93
-msgid "Color of anchor"
+msgid "Display with color"
 msgstr ""
 
 #: rc.c:94
-msgid "Color of image link"
+msgid "Color of normal character"
 msgstr ""
 
 #: rc.c:95
-msgid "Color of form"
+msgid "Color of anchor"
 msgstr ""
 
 #: rc.c:96
-msgid "Enable coloring of active link"
+msgid "Color of image link"
 msgstr ""
 
 #: rc.c:97
-msgid "Color of currently active link"
+msgid "Color of form"
 msgstr ""
 
 #: rc.c:98
-msgid "Use visited link color"
+msgid "Enable coloring of active link"
 msgstr ""
 
 #: rc.c:99
-msgid "Color of visited link"
+msgid "Color of currently active link"
 msgstr ""
 
 #: rc.c:100
-msgid "Color of background"
+msgid "Use visited link color"
 msgstr ""
 
 #: rc.c:101
-msgid "Color of mark"
+msgid "Color of visited link"
 msgstr ""
 
 #: rc.c:102
-msgid "Use proxy"
+msgid "Color of background"
 msgstr ""
 
 #: rc.c:103
-msgid "URL of HTTP proxy host"
+msgid "Color of mark"
+msgstr ""
+
+#: rc.c:104
+msgid "Use proxy"
 msgstr ""
 
 #: rc.c:105
+msgid "URL of HTTP proxy host"
+msgstr ""
+
+#: rc.c:107
 msgid "URL of HTTPS proxy host"
 msgstr ""
 
-#: rc.c:108
+#: rc.c:110
 msgid "URL of GOPHER proxy host"
 msgstr ""
 
-#: rc.c:110
+#: rc.c:112
 msgid "URL of FTP proxy host"
 msgstr ""
 
-#: rc.c:111
+#: rc.c:113
 msgid "Domains to be accessed directly (no proxy)"
 msgstr ""
 
-#: rc.c:112
+#: rc.c:114
 msgid "Check noproxy by network address"
 msgstr ""
 
-#: rc.c:113
+#: rc.c:115
 msgid "Disable cache"
 msgstr ""
 
-#: rc.c:115
+#: rc.c:117
 msgid "News server"
 msgstr ""
 
-#: rc.c:116
+#: rc.c:118
 msgid "Mode of news server"
 msgstr ""
 
-#: rc.c:117
+#: rc.c:119
 msgid "Number of news messages"
 msgstr ""
 
-#: rc.c:119
+#: rc.c:121
 msgid "Order of name resolution"
 msgstr ""
 
-#: rc.c:120
+#: rc.c:122
 msgid "Directory corresponding to / (document root)"
 msgstr ""
 
-#: rc.c:121
+#: rc.c:123
 msgid "Directory corresponding to /~user"
 msgstr ""
 
-#: rc.c:122
+#: rc.c:124
 msgid "Directory corresponding to /cgi-bin"
 msgstr ""
 
-#: rc.c:123
+#: rc.c:125
 msgid "Confirm when quitting with q"
 msgstr ""
 
-#: rc.c:124
+#: rc.c:126
 msgid "Close tab if buffer is last when back"
 msgstr ""
 
-#: rc.c:126
+#: rc.c:128
 msgid "Enable mark operations"
 msgstr ""
 
-#: rc.c:128
+#: rc.c:130
 msgid "Enable Emacs-style line editing"
 msgstr ""
 
-#: rc.c:129
+#: rc.c:131
 msgid "Enable vi-like numeric prefix"
 msgstr ""
 
-#: rc.c:130
+#: rc.c:132
 msgid "Move cursor to top line when going to label"
 msgstr ""
 
-#: rc.c:131
+#: rc.c:133
 msgid "Move cursor to top line when moving to next page"
 msgstr ""
 
-#: rc.c:132
+#: rc.c:134
 msgid "Fold lines of plain text file"
 msgstr ""
 
-#: rc.c:133
+#: rc.c:135
 msgid "Show line numbers"
 msgstr ""
 
-#: rc.c:134
+#: rc.c:136
 msgid "Show search string"
 msgstr ""
 
-#: rc.c:135
+#: rc.c:137
 msgid "List of mime.types files"
 msgstr ""
 
-#: rc.c:136
+#: rc.c:138
 msgid "List of mailcap files"
 msgstr ""
 
-#: rc.c:137
+#: rc.c:139
 msgid "List of urimethodmap files"
 msgstr ""
 
-#: rc.c:138
+#: rc.c:140
 msgid "Editor"
 msgstr ""
 
-#: rc.c:139
+#: rc.c:141
 msgid "Mailer"
 msgstr ""
 
-#: rc.c:140
+#: rc.c:142
 msgid "External Browser"
 msgstr ""
 
-#: rc.c:141
+#: rc.c:143
 msgid "Second External Browser"
 msgstr ""
 
-#: rc.c:142
+#: rc.c:144
 msgid "Third External Browser"
 msgstr ""
 
-#: rc.c:143
+#: rc.c:145
 msgid "Disable secret file security check"
 msgstr ""
 
-#: rc.c:144
+#: rc.c:146
 msgid "Password file"
 msgstr ""
 
-#: rc.c:145
+#: rc.c:147
 msgid "File for setting form on loading"
 msgstr ""
 
-#: rc.c:146
+#: rc.c:148
 msgid "Password for anonymous FTP (your mail address)"
 msgstr ""
 
-#: rc.c:147
+#: rc.c:149
 msgid "Generate domain part of password for FTP"
 msgstr ""
 
-#: rc.c:148
+#: rc.c:150
 msgid "User-Agent identification string"
 msgstr ""
 
-#: rc.c:149
+#: rc.c:151
 msgid "Accept-Encoding header"
 msgstr ""
 
-#: rc.c:150
+#: rc.c:152
 msgid "Accept header"
 msgstr ""
 
-#: rc.c:151
+#: rc.c:153
 msgid "Accept-Language header"
 msgstr ""
 
-#: rc.c:152
+#: rc.c:154
 msgid "Treat URL-like strings as links in all pages"
 msgstr ""
 
-#: rc.c:153
+#: rc.c:155
 msgid "Wrap search"
 msgstr ""
 
-#: rc.c:154
+#: rc.c:156
 msgid "Display unseen objects (e.g. bgimage tag)"
 msgstr ""
 
-#: rc.c:155
+#: rc.c:157
 msgid "Uncompress compressed data automatically when downloading"
 msgstr ""
 
-#: rc.c:157
+#: rc.c:159
 msgid "Run external viewer in a separate session"
 msgstr ""
 
-#: rc.c:159
+#: rc.c:161
 msgid "Run external viewer in the background"
 msgstr ""
 
-#: rc.c:161
+#: rc.c:163
 msgid "Use external program for directory listing"
 msgstr ""
 
-#: rc.c:162
+#: rc.c:164
 msgid "URL of directory listing command"
 msgstr ""
 
-#: rc.c:164
+#: rc.c:166
 msgid "Enable dictionary lookup through CGI"
 msgstr ""
 
-#: rc.c:165
+#: rc.c:167
 msgid "URL of dictionary lookup command"
 msgstr ""
 
-#: rc.c:167
+#: rc.c:169
 msgid "Display link name for images lacking ALT"
 msgstr ""
 
-#: rc.c:168
+#: rc.c:170
 msgid "Index file for directories"
 msgstr ""
 
-#: rc.c:169
+#: rc.c:171
 msgid "Prepend http:// to URL automatically"
 msgstr ""
 
-#: rc.c:170
+#: rc.c:172
 msgid "Default value for open-URL command"
 msgstr ""
 
-#: rc.c:171
+#: rc.c:173
 msgid "Decode Content-Transfer-Encoding when saving"
 msgstr ""
 
-#: rc.c:172
+#: rc.c:174
 msgid "Preserve timestamp when saving"
 msgstr ""
 
-#: rc.c:174
+#: rc.c:176
 msgid "Enable mouse"
 msgstr ""
 
-#: rc.c:175
+#: rc.c:177
 msgid "Scroll in reverse direction of mouse drag"
 msgstr ""
 
-#: rc.c:176
+#: rc.c:178
 msgid "Behavior of wheel scroll speed"
 msgstr ""
 
-#: rc.c:177
+#: rc.c:179
 msgid "(A only)Scroll by # (%) of screen"
 msgstr ""
 
-#: rc.c:178
+#: rc.c:180
 msgid "(B only)Scroll by # lines"
 msgstr ""
 
-#: rc.c:180
+#: rc.c:182
 msgid "Free memory of undisplayed buffers"
 msgstr ""
 
-#: rc.c:181
+#: rc.c:183
 msgid "Suppress `Referer:' header"
 msgstr ""
 
-#: rc.c:182
+#: rc.c:184
 msgid "Search case-insensitively"
 msgstr ""
 
-#: rc.c:183
+#: rc.c:185
 msgid "Use LESSOPEN"
 msgstr ""
 
-#: rc.c:186
+#: rc.c:188
 msgid "Perform SSL server verification"
 msgstr ""
 
-#: rc.c:187
+#: rc.c:189
 msgid "PEM encoded certificate file of client"
 msgstr ""
 
-#: rc.c:188
+#: rc.c:190
 msgid "PEM encoded private key file of client"
 msgstr ""
 
-#: rc.c:189
+#: rc.c:191
 msgid "Path to directory for PEM encoded certificates of CAs"
 msgstr ""
 
-#: rc.c:190
+#: rc.c:192
 msgid "File consisting of PEM encoded certificates of CAs"
 msgstr ""
 
-#: rc.c:192
+#: rc.c:194
 msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
 msgstr ""
 
-#: rc.c:195
+#: rc.c:197
 msgid "Enable cookie processing"
 msgstr ""
 
-#: rc.c:196
+#: rc.c:198
 msgid "Print a message when receiving a cookie"
 msgstr ""
 
-#: rc.c:197
+#: rc.c:199
 msgid "Accept cookies"
 msgstr ""
 
-#: rc.c:198
+#: rc.c:200
 msgid "Action to be taken on invalid cookie"
 msgstr ""
 
-#: rc.c:199
+#: rc.c:201
 msgid "Domains to reject cookies from"
 msgstr ""
 
-#: rc.c:200
+#: rc.c:202
 msgid "Domains to accept cookies from"
 msgstr ""
 
-#: rc.c:202
+#: rc.c:204
 msgid "Number of redirections to follow"
 msgstr ""
 
-#: rc.c:203
+#: rc.c:205
 msgid "Enable processing of meta-refresh tag"
 msgstr ""
 
-#: rc.c:206
+#: rc.c:208
 msgid "Enable Migemo (Roma-ji search)"
 msgstr ""
 
-#: rc.c:207
+#: rc.c:209
 msgid "Migemo command"
 msgstr ""
 
-#: rc.c:211
+#: rc.c:213
 msgid "Display charset"
 msgstr ""
 
-#: rc.c:212
+#: rc.c:214
 msgid "Default document charset"
 msgstr ""
 
-#: rc.c:213
+#: rc.c:215
 msgid "Automatic charset detect when loading"
 msgstr ""
 
-#: rc.c:214
+#: rc.c:216
 msgid "System charset"
 msgstr ""
 
-#: rc.c:215
+#: rc.c:217
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr ""
 
-#: rc.c:216
+#: rc.c:218
 msgid "Output halfdump with display charset"
 msgstr ""
 
-#: rc.c:217
+#: rc.c:219
 msgid "Use multi column characters"
 msgstr ""
 
-#: rc.c:218
+#: rc.c:220
 msgid "Use combining characters"
 msgstr ""
 
-#: rc.c:219
+#: rc.c:221
 msgid "Use Unicode language tags"
 msgstr ""
 
-#: rc.c:220
+#: rc.c:222
 msgid "Charset conversion using Unicode map"
 msgstr ""
 
-#: rc.c:221
+#: rc.c:223
 msgid "Charset conversion when loading"
 msgstr ""
 
-#: rc.c:222
+#: rc.c:224
 msgid "Adjust search string for document charset"
 msgstr ""
 
-#: rc.c:223
+#: rc.c:225
 msgid "Fix character width when conversion"
 msgstr ""
 
-#: rc.c:224
+#: rc.c:226
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr ""
 
-#: rc.c:225
+#: rc.c:227
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr ""
 
-#: rc.c:226
+#: rc.c:228
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr ""
 
-#: rc.c:227
+#: rc.c:229
 msgid "Use JIS X 0201 Katakana"
 msgstr ""
 
-#: rc.c:228
+#: rc.c:230
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr ""
 
-#: rc.c:229
+#: rc.c:231
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr ""
 
-#: rc.c:230
+#: rc.c:232
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr ""
 
-#: rc.c:231
+#: rc.c:233
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr ""
 
 #: rc.c:234
+msgid "Simple Preserve space"
+msgstr ""
+
+#: rc.c:237
 msgid "keymap file"
 msgstr ""
 
-#: rc.c:251
+#: rc.c:254
 msgid "black"
 msgstr ""
 
-#: rc.c:252
+#: rc.c:255
 msgid "red"
 msgstr ""
 
-#: rc.c:253
+#: rc.c:256
 msgid "green"
 msgstr ""
 
-#: rc.c:254
+#: rc.c:257
 msgid "yellow"
 msgstr ""
 
-#: rc.c:255
+#: rc.c:258
 msgid "blue"
 msgstr ""
 
-#: rc.c:256
+#: rc.c:259
 msgid "magenta"
 msgstr ""
 
-#: rc.c:257
+#: rc.c:260
 msgid "cyan"
 msgstr ""
 
-#: rc.c:258
+#: rc.c:261
 msgid "white"
 msgstr ""
 
-#: rc.c:259
+#: rc.c:262
 msgid "terminal"
 msgstr ""
 
-#: rc.c:278
+#: rc.c:281
 msgid "none"
 msgstr ""
 
-#: rc.c:279
+#: rc.c:282
 msgid "current URL"
 msgstr ""
 
-#: rc.c:280
+#: rc.c:283
 msgid "link URL"
 msgstr ""
 
-#: rc.c:285
+#: rc.c:288
 msgid "simple"
 msgstr ""
 
-#: rc.c:286
+#: rc.c:289
 msgid "use tag"
 msgstr ""
 
-#: rc.c:287
+#: rc.c:290
 msgid "fontify"
 msgstr ""
 
-#: rc.c:293
+#: rc.c:296
 msgid "A:relative to screen height"
 msgstr ""
 
-#: rc.c:294
+#: rc.c:297
 msgid "B:fixed speed"
 msgstr ""
 
-#: rc.c:301
+#: rc.c:304
 msgid "unspecified"
 msgstr ""
 
-#: rc.c:302
+#: rc.c:305
 msgid "inet inet6"
 msgstr ""
 
-#: rc.c:303
+#: rc.c:306
 msgid "inet6 inet"
 msgstr ""
 
-#: rc.c:304
+#: rc.c:307
 msgid "inet only"
 msgstr ""
 
-#: rc.c:305
+#: rc.c:308
 msgid "inet6 only"
 msgstr ""
 
-#: rc.c:312
+#: rc.c:315
 msgid "discard"
 msgstr ""
 
-#: rc.c:314
+#: rc.c:317
 msgid "accept"
 msgstr ""
 
-#: rc.c:316
+#: rc.c:319
 msgid "ask"
 msgstr ""
 
-#: rc.c:326
+#: rc.c:329
 msgid "OFF"
 msgstr ""
 
-#: rc.c:327
+#: rc.c:330
 msgid "Only ISO 2022"
 msgstr ""
 
-#: rc.c:328
+#: rc.c:331
 msgid "ON"
 msgstr ""
 
-#: rc.c:679
-msgid "Display Settings"
+#: rc.c:337
+msgid "No"
 msgstr ""
 
-#: rc.c:681
-msgid "Color Settings"
+#: rc.c:338
+msgid "Yes, but only charset specific"
 msgstr ""
 
-#: rc.c:683
-msgid "Miscellaneous Settings"
-msgstr ""
-
-#: rc.c:684
-msgid "Directory Settings"
-msgstr ""
-
-#: rc.c:685
-msgid "External Program Settings"
-msgstr ""
-
-#: rc.c:686
-msgid "Network Settings"
-msgstr ""
-
-#: rc.c:687
-msgid "Proxy Settings"
-msgstr ""
-
-#: rc.c:689
-msgid "SSL Settings"
-msgstr ""
-
-#: rc.c:692
-msgid "Cookie Settings"
+#: rc.c:339
+msgid "Yes"
 msgstr ""
 
 #: rc.c:695
+msgid "Display Settings"
+msgstr ""
+
+#: rc.c:697
+msgid "Color Settings"
+msgstr ""
+
+#: rc.c:699
+msgid "Miscellaneous Settings"
+msgstr ""
+
+#: rc.c:700
+msgid "Directory Settings"
+msgstr ""
+
+#: rc.c:701
+msgid "External Program Settings"
+msgstr ""
+
+#: rc.c:702
+msgid "Network Settings"
+msgstr ""
+
+#: rc.c:703
+msgid "Proxy Settings"
+msgstr ""
+
+#: rc.c:705
+msgid "SSL Settings"
+msgstr ""
+
+#: rc.c:708
+msgid "Cookie Settings"
+msgstr ""
+
+#: rc.c:711
 msgid "Charset Settings"
 msgstr ""
 
@@ -825,6 +849,6 @@ msgstr ""
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1169
+#: rc.c:1187
 msgid "en;q=1.0"
 msgstr ""

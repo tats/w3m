@@ -1,5 +1,5 @@
 # Japanese translations for w3m package
-# w3m ¥Ñ¥Ã¥±¡¼¥¸¤ËÂĞ¤¹¤ë±ÑÌõ.
+# w3m ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã«å¯¾ã™ã‚‹è‹±è¨³.
 # Copyright (C) 2003 THE w3m'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the w3m package.
 # Fumitoshi UKAI <ukai@debian.or.jp>, 2003.
@@ -8,42 +8,42 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.2\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2007-05-07 10:49+0900\n"
-"PO-Revision-Date: 2007-05-07 10:52+0900\n"
+"POT-Creation-Date: 2010-07-21 19:30+0900\n"
+"PO-Revision-Date: 2010-07-21 19:38+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=EUC-JP\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: menu.c:267
 msgid " Back         (b) "
-msgstr "Ìá¤ë         (b)"
+msgstr "æˆ»ã‚‹         (b)"
 
 #: menu.c:268
 msgid " Select Buffer(s) "
-msgstr "¥Ğ¥Ã¥Õ¥¡ÁªÂò (s)"
+msgstr "ãƒãƒƒãƒ•ã‚¡é¸æŠ (s)"
 
 #: menu.c:270
 msgid " Select Tab   (t) "
-msgstr "¥¿¥ÖÁªÂò     (t)"
+msgstr "ã‚¿ãƒ–é¸æŠ     (t)"
 
 #: menu.c:272
 msgid " View Source  (v) "
-msgstr "¥½¡¼¥¹¤òÉ½¼¨ (v)"
+msgstr "ã‚½ãƒ¼ã‚¹ã‚’è¡¨ç¤º (v)"
 
 #: menu.c:273
 msgid " Edit Source  (e) "
-msgstr "¥½¡¼¥¹¤òÊÔ½¸ (e)"
+msgstr "ã‚½ãƒ¼ã‚¹ã‚’ç·¨é›† (e)"
 
 #: menu.c:274
 msgid " Save Source  (S) "
-msgstr "¥½¡¼¥¹¤òÊİÂ¸ (S)"
+msgstr "ã‚½ãƒ¼ã‚¹ã‚’ä¿å­˜ (S)"
 
 #: menu.c:275
 msgid " Reload       (r) "
-msgstr "ºÆÆÉ¤ß¹ş¤ß   (r)"
+msgstr "å†èª­ã¿è¾¼ã¿   (r)"
 
 #: menu.c:276 menu.c:283 menu.c:287
 msgid " ---------------- "
@@ -51,781 +51,805 @@ msgstr "----------------"
 
 #: menu.c:277
 msgid " Go Link      (a) "
-msgstr "¥ê¥ó¥¯¤òÉ½¼¨ (a)"
+msgstr "ãƒªãƒ³ã‚¯ã‚’è¡¨ç¤º (a)"
 
 #: menu.c:278
 msgid "   on New Tab (n) "
-msgstr "¿·¥¿¥Ö¤ÇÉ½¼¨ (n)"
+msgstr "æ–°ã‚¿ãƒ–ã§è¡¨ç¤º (n)"
 
 #: menu.c:279
 msgid " Save Link    (A) "
-msgstr "¥ê¥ó¥¯¤òÊİÂ¸ (A)"
+msgstr "ãƒªãƒ³ã‚¯ã‚’ä¿å­˜ (A)"
 
 #: menu.c:280
 msgid " View Image   (i) "
-msgstr "²èÁü¤òÉ½¼¨   (i)"
+msgstr "ç”»åƒã‚’è¡¨ç¤º   (i)"
 
 #: menu.c:281
 msgid " Save Image   (I) "
-msgstr "²èÁü¤òÊİÂ¸   (I)"
+msgstr "ç”»åƒã‚’ä¿å­˜   (I)"
 
 #: menu.c:282
 msgid " View Frame   (f) "
-msgstr "¥Õ¥ì¡¼¥àÉ½¼¨ (f)"
+msgstr "ãƒ•ãƒ¬ãƒ¼ãƒ è¡¨ç¤º (f)"
 
 #: menu.c:284
 msgid " Bookmark     (B) "
-msgstr "¥Ö¥Ã¥¯¥Ş¡¼¥¯ (B)"
+msgstr "ãƒ–ãƒƒã‚¯ãƒãƒ¼ã‚¯ (B)"
 
 #: menu.c:285
 msgid " Help         (h) "
-msgstr "¥Ø¥ë¥×       (h)"
+msgstr "ãƒ˜ãƒ«ãƒ—       (h)"
 
 #: menu.c:286
 msgid " Option       (o) "
-msgstr "¥ª¥×¥·¥ç¥ó   (o)"
+msgstr "ã‚ªãƒ—ã‚·ãƒ§ãƒ³   (o)"
 
 #: menu.c:288
 msgid " Quit         (q) "
-msgstr "½ªÎ»         (q)"
+msgstr "çµ‚äº†         (q)"
 
 #: rc.c:60
 msgid "External Viewer Setup"
-msgstr "³°Éô¥Ó¥å¡¼¥¢¤ÎÊÔ½¸"
+msgstr "å¤–éƒ¨ãƒ“ãƒ¥ãƒ¼ã‚¢ã®ç·¨é›†"
 
 #: rc.c:61
 msgid "Tab width in characters"
-msgstr "¥¿¥ÖÉı"
+msgstr "ã‚¿ãƒ–å¹…"
 
 #: rc.c:62
 msgid "Indent for HTML rendering"
-msgstr "HTMLÀ°·Á»ş¤Î¥¤¥ó¥Ç¥ó¥ÈÉı"
+msgstr "HTMLæ•´å½¢æ™‚ã®ã‚¤ãƒ³ãƒ‡ãƒ³ãƒˆå¹…"
 
 #: rc.c:63
 msgid "Number of pixels per character (4.0...32.0)"
-msgstr "Ê¸»úÉı (4.0...32.0)"
+msgstr "æ–‡å­—å¹… (4.0...32.0)"
 
 #: rc.c:64
 msgid "Number of pixels per line (4.0...64.0)"
-msgstr "°ì¹Ô¤Î¹â¤µ (4.0...64.0)"
+msgstr "ä¸€è¡Œã®é«˜ã• (4.0...64.0)"
 
 #: rc.c:65
 msgid "Number of remembered lines when used as a pager"
-msgstr "¥Ú¡¼¥¸¥ã¤È¤·¤ÆÍøÍÑ¤·¤¿»ş¤ËÊİÂ¸¤µ¤ì¤ë¹Ô¿ô"
+msgstr "ãƒšãƒ¼ã‚¸ãƒ£ã¨ã—ã¦åˆ©ç”¨ã—ãŸæ™‚ã«ä¿å­˜ã•ã‚Œã‚‹è¡Œæ•°"
 
 #: rc.c:66
 msgid "Use URL history"
-msgstr "ÍúÎò¤ò»È¤¦"
+msgstr "å±¥æ­´ã‚’ä½¿ã†"
 
 #: rc.c:67
 msgid "Number of remembered URL"
-msgstr "Êİ»ı¤¹¤ëURLÍúÎò¤Î¿ô"
+msgstr "ä¿æŒã™ã‚‹URLå±¥æ­´ã®æ•°"
 
 #: rc.c:68
 msgid "Save URL history"
-msgstr "URLÍúÎò¤ÎÊİÂ¸"
+msgstr "URLå±¥æ­´ã®ä¿å­˜"
 
 #: rc.c:69
 msgid "Render frames automatically"
-msgstr "¥Õ¥ì¡¼¥à¤Î¼«Æ°É½¼¨"
+msgstr "ãƒ•ãƒ¬ãƒ¼ãƒ ã®è‡ªå‹•è¡¨ç¤º"
 
 #: rc.c:70
 msgid "Treat argument without scheme as URL"
-msgstr "scheme ¤Î¤Ê¤¤°ú¿ô¤â URL ¤È¤ß¤Ê¤¹"
+msgstr "scheme ã®ãªã„å¼•æ•°ã‚‚ URL ã¨ã¿ãªã™"
 
 #: rc.c:71
 msgid "Use _self as default target"
-msgstr "target¤¬Ì¤»ØÄê¤Î¾ì¹ç¤Ë_self¤ò»ÈÍÑ¤¹¤ë"
+msgstr "targetãŒæœªæŒ‡å®šã®å ´åˆã«_selfã‚’ä½¿ç”¨ã™ã‚‹"
 
 #: rc.c:72
 msgid "Open link on new tab if target is _blank or _new"
-msgstr "target¤¬_blank¤«_new¤Î¾ì¹ç¤Ï¿·¤·¤¤¥¿¥Ö¤Ç³«¤¯"
+msgstr "targetãŒ_blankã‹_newã®å ´åˆã¯æ–°ã—ã„ã‚¿ãƒ–ã§é–‹ã"
 
 #: rc.c:73
 msgid "Open download list panel on new tab"
-msgstr "Download list panel ¤ò¿·¤·¤¤¥¿¥Ö¤Ç³«¤¯"
+msgstr "Download list panel ã‚’æ–°ã—ã„ã‚¿ãƒ–ã§é–‹ã"
 
 #: rc.c:74
 msgid "Display link URL automatically"
-msgstr "¥ê¥ó¥¯Àè¤Î¼«Æ°É½¼¨"
+msgstr "ãƒªãƒ³ã‚¯å…ˆã®è‡ªå‹•è¡¨ç¤º"
 
 #: rc.c:75
-msgid "Display decoded URL"
-msgstr "URL¤ò¥Ç¥³¡¼¥É¤·¤ÆÉ½¼¨"
+msgid "Display link numbers"
+msgstr "ãƒªãƒ³ã‚¯ç•ªå·ã®è¡¨ç¤º"
 
 #: rc.c:76
-msgid "Display current line number"
-msgstr "¸½ºß¤Î¹ÔÈÖ¹æ¤ÎÉ½¼¨"
+msgid "Display decoded URL"
+msgstr "URLã‚’ãƒ‡ã‚³ãƒ¼ãƒ‰ã—ã¦è¡¨ç¤º"
 
 #: rc.c:77
+msgid "Display current line number"
+msgstr "ç¾åœ¨ã®è¡Œç•ªå·ã®è¡¨ç¤º"
+
+#: rc.c:78
 msgid "Display inline images"
-msgstr "¥¤¥ó¥é¥¤¥ó²èÁü¤òÉ½¼¨"
+msgstr "ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ç”»åƒã‚’è¡¨ç¤º"
 
 #: rc.c:79
-msgid "Load inline images automatically"
-msgstr "¥¤¥ó¥é¥¤¥ó²èÁü¤ò¼«Æ°¤ÇÆÉ¤ß¹ş¤à"
-
-#: rc.c:80
-msgid "Maximum processes for parallel image loading"
-msgstr "²èÁüÆÉ¤ß¹ş¤ß»ş¤ÎºÇÂç¥×¥í¥»¥¹¿ô"
+msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
+msgstr "ALT ã¾ãŸã¯ TITLE ãŒãªã„ç”»åƒã®ä»£æ›¿ãƒ†ã‚­ã‚¹ãƒˆè¡¨ç¤º"
 
 #: rc.c:81
-msgid "Use external image viewer"
-msgstr "²èÁü¤ò³°Éô¥Ó¥å¡¼¥ï¤ÇÉ½¼¨"
+msgid "Load inline images automatically"
+msgstr "ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ç”»åƒã‚’è‡ªå‹•ã§èª­ã¿è¾¼ã‚€"
 
 #: rc.c:82
-msgid "Scale of image (%)"
-msgstr "²èÁü¤Î¥¹¥±¡¼¥ë(%)"
+msgid "Maximum processes for parallel image loading"
+msgstr "ç”»åƒèª­ã¿è¾¼ã¿æ™‚ã®æœ€å¤§ãƒ—ãƒ­ã‚»ã‚¹æ•°"
 
 #: rc.c:83
-msgid "External command to display image"
-msgstr "²èÁü¤òÉ½¼¨¤¹¤ë¤¿¤á¤Î¥³¥Ş¥ó¥É"
+msgid "Use external image viewer"
+msgstr "ç”»åƒã‚’å¤–éƒ¨ãƒ“ãƒ¥ãƒ¼ãƒ¯ã§è¡¨ç¤º"
 
 #: rc.c:84
-msgid "Use link list of image map"
-msgstr "¥¤¥á¡¼¥¸¥Ş¥Ã¥×¤Î¥ê¥ó¥¯Àè°ìÍ÷¤òÉ½¼¨"
+msgid "Scale of image (%)"
+msgstr "ç”»åƒã®ã‚¹ã‚±ãƒ¼ãƒ«(%)"
+
+#: rc.c:85
+msgid "External command to display image"
+msgstr "ç”»åƒã‚’è¡¨ç¤ºã™ã‚‹ãŸã‚ã®ã‚³ãƒãƒ³ãƒ‰"
 
 #: rc.c:86
-msgid "Display file names in multi-column format"
-msgstr "¥Õ¥¡¥¤¥ëÌ¾¤Î¥Ş¥ë¥Á¥«¥é¥àÉ½¼¨"
-
-#: rc.c:87
-msgid "Use ASCII equivalents to display entities"
-msgstr "¥¨¥ó¥Æ¥£¥Æ¥£¤ò ASCII ¤ÎÂåÂØÉ½¸½¤ÇÉ½¤¹"
+msgid "Use link list of image map"
+msgstr "ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒãƒƒãƒ—ã®ãƒªãƒ³ã‚¯å…ˆä¸€è¦§ã‚’è¡¨ç¤º"
 
 #: rc.c:88
-msgid "Use graphic char for border of table and menu"
-msgstr "¥Æ¡¼¥Ö¥ë¤ä¥á¥Ë¥å¡¼¤ÎÏÈ¤Ë graphic Ê¸»ú¤ò»È¤¦"
+msgid "Display file names in multi-column format"
+msgstr "ãƒ•ã‚¡ã‚¤ãƒ«åã®ãƒãƒ«ãƒã‚«ãƒ©ãƒ è¡¨ç¤º"
 
 #: rc.c:89
-msgid "Fold lines in TEXTAREA"
-msgstr "TEXTAREA ¤Î¹Ô¤òÀŞ¤êÊÖ¤·¤ÆÉ½¼¨"
+msgid "Use ASCII equivalents to display entities"
+msgstr "ã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã‚’ ASCII ã®ä»£æ›¿è¡¨ç¾ã§è¡¨ã™"
 
 #: rc.c:90
-msgid "Display INS, DEL, S and STRIKE element"
-msgstr "INS, DEL, S, STRIKE Í×ÁÇ¤ÎÉ½¼¨"
+msgid "Use graphic char for border of table and menu"
+msgstr "ãƒ†ãƒ¼ãƒ–ãƒ«ã‚„ãƒ¡ãƒ‹ãƒ¥ãƒ¼ã®æ ã« graphic æ–‡å­—ã‚’ä½¿ã†"
 
 #: rc.c:91
-msgid "Display with color"
-msgstr "¥«¥é¡¼É½¼¨"
+msgid "Fold lines in TEXTAREA"
+msgstr "TEXTAREA ã®è¡Œã‚’æŠ˜ã‚Šè¿”ã—ã¦è¡¨ç¤º"
 
 #: rc.c:92
-msgid "Color of normal character"
-msgstr "Ê¸»ú¤Î¿§"
+msgid "Display INS, DEL, S and STRIKE element"
+msgstr "INS, DEL, S, STRIKE è¦ç´ ã®è¡¨ç¤º"
 
 #: rc.c:93
-msgid "Color of anchor"
-msgstr "¥¢¥ó¥«¡¼¤Î¿§"
+msgid "Display with color"
+msgstr "ã‚«ãƒ©ãƒ¼è¡¨ç¤º"
 
 #: rc.c:94
-msgid "Color of image link"
-msgstr "²èÁü¥ê¥ó¥¯¤Î¿§"
+msgid "Color of normal character"
+msgstr "æ–‡å­—ã®è‰²"
 
 #: rc.c:95
-msgid "Color of form"
-msgstr "¥Õ¥©¡¼¥à¤Î¿§"
+msgid "Color of anchor"
+msgstr "ã‚¢ãƒ³ã‚«ãƒ¼ã®è‰²"
 
 #: rc.c:96
-msgid "Enable coloring of active link"
-msgstr "¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ë¥ê¥ó¥¯¤Î¿§¤ò»ØÄê¤¹¤ë"
+msgid "Color of image link"
+msgstr "ç”»åƒãƒªãƒ³ã‚¯ã®è‰²"
 
 #: rc.c:97
-msgid "Color of currently active link"
-msgstr "¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ë¥ê¥ó¥¯¤Î¿§"
+msgid "Color of form"
+msgstr "ãƒ•ã‚©ãƒ¼ãƒ ã®è‰²"
 
 #: rc.c:98
-msgid "Use visited link color"
-msgstr "Ë¬¤ì¤¿¤³¤È¤¬¤¢¤ë¥ê¥ó¥¯¤Ï¿§¤òÊÑ¤¨¤ë"
+msgid "Enable coloring of active link"
+msgstr "ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹ãƒªãƒ³ã‚¯ã®è‰²ã‚’æŒ‡å®šã™ã‚‹"
 
 #: rc.c:99
-msgid "Color of visited link"
-msgstr "Ë¬¤ì¤¿¤³¤È¤¬¤¢¤ë¥ê¥ó¥¯¤Î¿§"
+msgid "Color of currently active link"
+msgstr "ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹ãƒªãƒ³ã‚¯ã®è‰²"
 
 #: rc.c:100
-msgid "Color of background"
-msgstr "ÇØ·Ê¤Î¿§"
+msgid "Use visited link color"
+msgstr "è¨ªã‚ŒãŸã“ã¨ãŒã‚ã‚‹ãƒªãƒ³ã‚¯ã¯è‰²ã‚’å¤‰ãˆã‚‹"
 
 #: rc.c:101
-msgid "Color of mark"
-msgstr "¥Ş¡¼¥¯¤Î¿§"
+msgid "Color of visited link"
+msgstr "è¨ªã‚ŒãŸã“ã¨ãŒã‚ã‚‹ãƒªãƒ³ã‚¯ã®è‰²"
 
 #: rc.c:102
-msgid "Use proxy"
-msgstr "¥×¥í¥­¥·¤ò»ÈÍÑ¤¹¤ë"
+msgid "Color of background"
+msgstr "èƒŒæ™¯ã®è‰²"
 
 #: rc.c:103
-msgid "URL of HTTP proxy host"
-msgstr "HTTP¥×¥í¥­¥·(URL¤ÇÆşÎÏ)"
+msgid "Color of mark"
+msgstr "ãƒãƒ¼ã‚¯ã®è‰²"
+
+#: rc.c:104
+msgid "Use proxy"
+msgstr "ãƒ—ãƒ­ã‚­ã‚·ã‚’ä½¿ç”¨ã™ã‚‹"
 
 #: rc.c:105
-msgid "URL of HTTPS proxy host"
-msgstr "HTTPS¥×¥í¥­¥·(URL¤ÇÆşÎÏ)"
+msgid "URL of HTTP proxy host"
+msgstr "HTTPãƒ—ãƒ­ã‚­ã‚·(URLã§å…¥åŠ›)"
 
-#: rc.c:108
-msgid "URL of GOPHER proxy host"
-msgstr "GOPHER¥×¥í¥­¥·(URL¤ÇÆşÎÏ)"
+#: rc.c:107
+msgid "URL of HTTPS proxy host"
+msgstr "HTTPSãƒ—ãƒ­ã‚­ã‚·(URLã§å…¥åŠ›)"
 
 #: rc.c:110
-msgid "URL of FTP proxy host"
-msgstr "FTP¥×¥í¥­¥·(URL¤ÇÆşÎÏ)"
-
-#: rc.c:111
-msgid "Domains to be accessed directly (no proxy)"
-msgstr "¥×¥í¥­¥·¤«¤é½ü³°¤¹¤ë¥É¥á¥¤¥ó"
+msgid "URL of GOPHER proxy host"
+msgstr "GOPHERãƒ—ãƒ­ã‚­ã‚·(URLã§å…¥åŠ›)"
 
 #: rc.c:112
-msgid "Check noproxy by network address"
-msgstr "¥Í¥Ã¥È¥ï¡¼¥¯¥¢¥É¥ì¥¹¤Ç¥×¥í¥­¥·½ü³°¤Î¥Á¥§¥Ã¥¯"
+msgid "URL of FTP proxy host"
+msgstr "FTPãƒ—ãƒ­ã‚­ã‚·(URLã§å…¥åŠ›)"
 
 #: rc.c:113
-msgid "Disable cache"
-msgstr "Cache ¤ò»È¤ï¤Ê¤¤"
+msgid "Domains to be accessed directly (no proxy)"
+msgstr "ãƒ—ãƒ­ã‚­ã‚·ã‹ã‚‰é™¤å¤–ã™ã‚‹ãƒ‰ãƒ¡ã‚¤ãƒ³"
+
+#: rc.c:114
+msgid "Check noproxy by network address"
+msgstr "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã‚¢ãƒ‰ãƒ¬ã‚¹ã§ãƒ—ãƒ­ã‚­ã‚·é™¤å¤–ã®ãƒã‚§ãƒƒã‚¯"
 
 #: rc.c:115
-msgid "News server"
-msgstr "News ¥µ¡¼¥Ğ"
-
-#: rc.c:116
-msgid "Mode of news server"
-msgstr "News ¥µ¡¼¥Ğ¤Î¥â¡¼¥É"
+msgid "Disable cache"
+msgstr "Cache ã‚’ä½¿ã‚ãªã„"
 
 #: rc.c:117
-msgid "Number of news messages"
-msgstr "News ¤ò°ìÍ÷É½¼¨¤¹¤ë»ş¤Î¿ô"
+msgid "News server"
+msgstr "News ã‚µãƒ¼ãƒ"
+
+#: rc.c:118
+msgid "Mode of news server"
+msgstr "News ã‚µãƒ¼ãƒã®ãƒ¢ãƒ¼ãƒ‰"
 
 #: rc.c:119
-msgid "Order of name resolution"
-msgstr "Ì¾Á°²ò·è¤Î½ç½ø"
-
-#: rc.c:120
-msgid "Directory corresponding to / (document root)"
-msgstr "/ ¤ÇÉ½¤µ¤ì¤ë¥Ç¥£¥ì¥¯¥È¥ê(document root)"
+msgid "Number of news messages"
+msgstr "News ã‚’ä¸€è¦§è¡¨ç¤ºã™ã‚‹æ™‚ã®æ•°"
 
 #: rc.c:121
-msgid "Directory corresponding to /~user"
-msgstr "/~user ¤ÇÉ½¤µ¤ì¤ë¥Ç¥£¥ì¥¯¥È¥ê"
+msgid "Order of name resolution"
+msgstr "åå‰è§£æ±ºã®é †åº"
 
 #: rc.c:122
-msgid "Directory corresponding to /cgi-bin"
-msgstr "/cgi-bin ¤ÇÉ½¤µ¤ì¤ë¥Ç¥£¥ì¥¯¥È¥ê"
+msgid "Directory corresponding to / (document root)"
+msgstr "/ ã§è¡¨ã•ã‚Œã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª(document root)"
 
 #: rc.c:123
-msgid "Confirm when quitting with q"
-msgstr "q ¤Ç¤Î½ªÎ»»ş¤Ë³ÎÇ§¤¹¤ë"
+msgid "Directory corresponding to /~user"
+msgstr "/~user ã§è¡¨ã•ã‚Œã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª"
 
 #: rc.c:124
-msgid "Close tab if buffer is last when back"
-msgstr "Ìá¤ë»ş¤Ë¥Ğ¥Ã¥Õ¥¡¤¬ºÇ¸å¤Ê¤é¥¿¥Ö¤òÊÄ¤¸¤ë"
+msgid "Directory corresponding to /cgi-bin"
+msgstr "/cgi-bin ã§è¡¨ã•ã‚Œã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª"
+
+#: rc.c:125
+msgid "Confirm when quitting with q"
+msgstr "q ã§ã®çµ‚äº†æ™‚ã«ç¢ºèªã™ã‚‹"
 
 #: rc.c:126
-msgid "Enable mark operations"
-msgstr "¥Ş¡¼¥¯µ¡Ç½¤òÍ­¸ú¤Ë¤¹¤ë"
+msgid "Close tab if buffer is last when back"
+msgstr "æˆ»ã‚‹æ™‚ã«ãƒãƒƒãƒ•ã‚¡ãŒæœ€å¾Œãªã‚‰ã‚¿ãƒ–ã‚’é–‰ã˜ã‚‹"
 
 #: rc.c:128
-msgid "Enable Emacs-style line editing"
-msgstr "EmacsÉ÷¤Î¹ÔÊÔ½¸¤Ë¤¹¤ë"
-
-#: rc.c:129
-msgid "Enable vi-like numeric prefix"
-msgstr "viÉ÷¤Î¿ôÃÍ¥×¥ì¥Õ¥£¥¯¥¹"
+msgid "Enable mark operations"
+msgstr "ãƒãƒ¼ã‚¯æ©Ÿèƒ½ã‚’æœ‰åŠ¹ã«ã™ã‚‹"
 
 #: rc.c:130
-msgid "Move cursor to top line when going to label"
-msgstr "¥é¥Ù¥ë¤Ë°ÜÆ°¤¹¤ë»ş¤Ë¥«¡¼¥½¥ë¤¬¥È¥Ã¥×¤Ë¤Ê¤ë¤è¤¦¤Ë¤¹¤ë"
+msgid "Enable Emacs-style line editing"
+msgstr "Emacsé¢¨ã®è¡Œç·¨é›†ã«ã™ã‚‹"
 
 #: rc.c:131
-msgid "Move cursor to top line when moving to next page"
-msgstr "¼¡¤Î¥Ú¡¼¥¸¤Ë°ÜÆ°¤¹¤ë»ş¤Ë¥«¡¼¥½¥ë¤¬¥È¥Ã¥×¤Ë¤Ê¤ë¤è¤¦¤Ë¤¹¤ë"
+msgid "Enable vi-like numeric prefix"
+msgstr "vié¢¨ã®æ•°å€¤ãƒ—ãƒ¬ãƒ•ã‚£ã‚¯ã‚¹"
 
 #: rc.c:132
-msgid "Fold lines of plain text file"
-msgstr "plain text ¥Õ¥¡¥¤¥ë¤Î¹Ô¤òÀŞ¤êÊÖ¤¹"
+msgid "Move cursor to top line when going to label"
+msgstr "ãƒ©ãƒ™ãƒ«ã«ç§»å‹•ã™ã‚‹æ™‚ã«ã‚«ãƒ¼ã‚½ãƒ«ãŒãƒˆãƒƒãƒ—ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹"
 
 #: rc.c:133
-msgid "Show line numbers"
-msgstr "¹ÔÈÖ¹æ¤òÉ½¼¨¤¹¤ë"
+msgid "Move cursor to top line when moving to next page"
+msgstr "æ¬¡ã®ãƒšãƒ¼ã‚¸ã«ç§»å‹•ã™ã‚‹æ™‚ã«ã‚«ãƒ¼ã‚½ãƒ«ãŒãƒˆãƒƒãƒ—ã«ãªã‚‹ã‚ˆã†ã«ã™ã‚‹"
 
 #: rc.c:134
-msgid "Show search string"
-msgstr "¸¡º÷Ê¸»úÎó¤òÉ½¼¨¤¹¤ë"
+msgid "Fold lines of plain text file"
+msgstr "plain text ãƒ•ã‚¡ã‚¤ãƒ«ã®è¡Œã‚’æŠ˜ã‚Šè¿”ã™"
 
 #: rc.c:135
-msgid "List of mime.types files"
-msgstr "ÍøÍÑ¤¹¤ëmime.types"
+msgid "Show line numbers"
+msgstr "è¡Œç•ªå·ã‚’è¡¨ç¤ºã™ã‚‹"
 
 #: rc.c:136
-msgid "List of mailcap files"
-msgstr "ÍøÍÑ¤¹¤ëmailcap"
+msgid "Show search string"
+msgstr "æ¤œç´¢æ–‡å­—åˆ—ã‚’è¡¨ç¤ºã™ã‚‹"
 
 #: rc.c:137
-msgid "List of urimethodmap files"
-msgstr "ÍøÍÑ¤¹¤ëurimethodmap"
+msgid "List of mime.types files"
+msgstr "åˆ©ç”¨ã™ã‚‹mime.types"
 
 #: rc.c:138
-msgid "Editor"
-msgstr "ÍøÍÑ¤¹¤ë¥¨¥Ç¥£¥¿"
+msgid "List of mailcap files"
+msgstr "åˆ©ç”¨ã™ã‚‹mailcap"
 
 #: rc.c:139
-msgid "Mailer"
-msgstr "ÍøÍÑ¤¹¤ë¥á¡¼¥é"
+msgid "List of urimethodmap files"
+msgstr "åˆ©ç”¨ã™ã‚‹urimethodmap"
 
 #: rc.c:140
-msgid "External Browser"
-msgstr "³°Éô¥Ö¥é¥¦¥¶"
+msgid "Editor"
+msgstr "åˆ©ç”¨ã™ã‚‹ã‚¨ãƒ‡ã‚£ã‚¿"
 
 #: rc.c:141
-msgid "Second External Browser"
-msgstr "³°Éô¥Ö¥é¥¦¥¶¤½¤Î2"
+msgid "Mailer"
+msgstr "åˆ©ç”¨ã™ã‚‹ãƒ¡ãƒ¼ãƒ©"
 
 #: rc.c:142
-msgid "Third External Browser"
-msgstr "³°Éô¥Ö¥é¥¦¥¶¤½¤Î3"
+msgid "External Browser"
+msgstr "å¤–éƒ¨ãƒ–ãƒ©ã‚¦ã‚¶"
 
 #: rc.c:143
-msgid "Disable secret file security check"
-msgstr "¥Ñ¥¹¥ï¡¼¥É¥Õ¥¡¥¤¥ë¤Î¥Ñ¡¼¥ß¥Ã¥·¥ç¥ó¤ò¥Á¥§¥Ã¥¯¤·¤Ê¤¤"
+msgid "Second External Browser"
+msgstr "å¤–éƒ¨ãƒ–ãƒ©ã‚¦ã‚¶ãã®2"
 
 #: rc.c:144
-msgid "Password file"
-msgstr "¥Ñ¥¹¥ï¡¼¥É¥Õ¥¡¥¤¥ë"
+msgid "Third External Browser"
+msgstr "å¤–éƒ¨ãƒ–ãƒ©ã‚¦ã‚¶ãã®3"
 
 #: rc.c:145
-msgid "File for setting form on loading"
-msgstr "Ê¸½ñÆÉ¹ş»ş¤Î¥Õ¥©¡¼¥àÀßÄêÍÑ¥Õ¥¡¥¤¥ë"
+msgid "Disable secret file security check"
+msgstr "ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ãƒ¼ãƒŸãƒƒã‚·ãƒ§ãƒ³ã‚’ãƒã‚§ãƒƒã‚¯ã—ãªã„"
 
 #: rc.c:146
-msgid "Password for anonymous FTP (your mail address)"
-msgstr "FTP¤Î¥Ñ¥¹¥ï¡¼¥É(ÉáÄÌ¤Ï¼«Ê¬¤Îmail address¤ò»È¤¦)"
+msgid "Password file"
+msgstr "ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«"
 
 #: rc.c:147
-msgid "Generate domain part of password for FTP"
-msgstr "FTP¤Î¥Ñ¥¹¥ï¡¼¥É¤Î¥É¥á¥¤¥óÌ¾¤ò¼«Æ°À¸À®¤¹¤ë"
+msgid "File for setting form on loading"
+msgstr "æ–‡æ›¸èª­è¾¼æ™‚ã®ãƒ•ã‚©ãƒ¼ãƒ è¨­å®šç”¨ãƒ•ã‚¡ã‚¤ãƒ«"
 
 #: rc.c:148
+msgid "Password for anonymous FTP (your mail address)"
+msgstr "FTPã®ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰(æ™®é€šã¯è‡ªåˆ†ã®mail addressã‚’ä½¿ã†)"
+
+#: rc.c:149
+msgid "Generate domain part of password for FTP"
+msgstr "FTPã®ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ã®ãƒ‰ãƒ¡ã‚¤ãƒ³åã‚’è‡ªå‹•ç”Ÿæˆã™ã‚‹"
+
+#: rc.c:150
 msgid "User-Agent identification string"
 msgstr "User-Agent"
 
-#: rc.c:149
-msgid "Accept-Encoding header"
-msgstr "°µ½ÌÊıË¡(Accept-Encoding:)"
-
-#: rc.c:150
-msgid "Accept header"
-msgstr "¼õ¤±¤Ä¤±¤ë¥á¥Ç¥£¥¢¥¿¥¤¥×(Accept:)"
-
 #: rc.c:151
-msgid "Accept-Language header"
-msgstr "¼õ¤±¤Ä¤±¤ë¸À¸ì(Accept-Language:)"
+msgid "Accept-Encoding header"
+msgstr "åœ§ç¸®æ–¹æ³•(Accept-Encoding:)"
 
 #: rc.c:152
-msgid "Treat URL-like strings as links in all pages"
-msgstr "Á´¤Æ¤Î¥Ú¡¼¥¸¤ÎURLÉ÷¤ÎÊ¸»úÎó¤ò¥ê¥ó¥¯¤Ë¤¹¤ë"
+msgid "Accept header"
+msgstr "å—ã‘ã¤ã‘ã‚‹ãƒ¡ãƒ‡ã‚£ã‚¢ã‚¿ã‚¤ãƒ—(Accept:)"
 
 #: rc.c:153
-msgid "Wrap search"
-msgstr "ÀŞ¤êÊÖ¤·¸¡º÷"
+msgid "Accept-Language header"
+msgstr "å—ã‘ã¤ã‘ã‚‹è¨€èª(Accept-Language:)"
 
 #: rc.c:154
-msgid "Display unseen objects (e.g. bgimage tag)"
-msgstr "ÇØ·Ê²èÁüÅù¤Ø¤Î¥ê¥ó¥¯¤òºî¤ë"
+msgid "Treat URL-like strings as links in all pages"
+msgstr "å…¨ã¦ã®ãƒšãƒ¼ã‚¸ã®URLé¢¨ã®æ–‡å­—åˆ—ã‚’ãƒªãƒ³ã‚¯ã«ã™ã‚‹"
 
 #: rc.c:155
-msgid "Uncompress compressed data automatically when downloading"
-msgstr "¥À¥¦¥ó¥í¡¼¥É»ş¤Ë¼«Æ°Åª¤Ë°µ½Ì¤µ¤ì¤¿¥Ç¡¼¥¿¤ò²òÅà¤¹¤ë"
+msgid "Wrap search"
+msgstr "æŠ˜ã‚Šè¿”ã—æ¤œç´¢"
+
+#: rc.c:156
+msgid "Display unseen objects (e.g. bgimage tag)"
+msgstr "èƒŒæ™¯ç”»åƒç­‰ã¸ã®ãƒªãƒ³ã‚¯ã‚’ä½œã‚‹"
 
 #: rc.c:157
-msgid "Run external viewer in a separate session"
-msgstr "³°Éô¥Ó¥å¡¼¥¢¤òÊÌ¥»¥Ã¥·¥ç¥ó¤ÇÆ°¤«¤¹"
+msgid "Uncompress compressed data automatically when downloading"
+msgstr "ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰æ™‚ã«è‡ªå‹•çš„ã«åœ§ç¸®ã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿ã‚’è§£å‡ã™ã‚‹"
 
 #: rc.c:159
-msgid "Run external viewer in the background"
-msgstr "³°Éô¥Ó¥å¡¼¥¢¤ò¥Ğ¥Ã¥¯¥°¥é¥¦¥ó¥É¤ÇÆ°¤«¤¹"
+msgid "Run external viewer in a separate session"
+msgstr "å¤–éƒ¨ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’åˆ¥ã‚»ãƒƒã‚·ãƒ§ãƒ³ã§å‹•ã‹ã™"
 
 #: rc.c:161
-msgid "Use external program for directory listing"
-msgstr "¥Ç¥£¥ì¥¯¥È¥ê¥ê¥¹¥È¤Ë³°Éô¥³¥Ş¥ó¥É¤ò»È¤¦"
+msgid "Run external viewer in the background"
+msgstr "å¤–éƒ¨ãƒ“ãƒ¥ãƒ¼ã‚¢ã‚’ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã§å‹•ã‹ã™"
 
-#: rc.c:162
-msgid "URL of directory listing command"
-msgstr "¥Ç¥£¥ì¥¯¥È¥ê¥ê¥¹¥ÈÍÑ¥³¥Ş¥ó¥É"
+#: rc.c:163
+msgid "Use external program for directory listing"
+msgstr "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒªã‚¹ãƒˆã«å¤–éƒ¨ã‚³ãƒãƒ³ãƒ‰ã‚’ä½¿ã†"
 
 #: rc.c:164
-msgid "Enable dictionary lookup through CGI"
-msgstr "¼­½ñ°ú¤­¤òCGI·ĞÍ³¤Ç¤ª¤³¤Ê¤¦"
+msgid "URL of directory listing command"
+msgstr "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒªã‚¹ãƒˆç”¨ã‚³ãƒãƒ³ãƒ‰"
 
-#: rc.c:165
-msgid "URL of dictionary lookup command"
-msgstr "¼­½ñ°ú¤­¥³¥Ş¥ó¥É¤ÎURL"
+#: rc.c:166
+msgid "Enable dictionary lookup through CGI"
+msgstr "è¾æ›¸å¼•ãã‚’CGIçµŒç”±ã§ãŠã“ãªã†"
 
 #: rc.c:167
-msgid "Display link name for images lacking ALT"
-msgstr "¶õ¤ÎIMG ALTÂ°À­¤Î»ş¤Ë¥ê¥ó¥¯Ì¾¤òÉ½¼¨¤¹¤ë"
-
-#: rc.c:168
-msgid "Index file for directories"
-msgstr "³Æ¥Ç¥£¥ì¥¯¥È¥ê¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¥Õ¥¡¥¤¥ë"
+msgid "URL of dictionary lookup command"
+msgstr "è¾æ›¸å¼•ãã‚³ãƒãƒ³ãƒ‰ã®URL"
 
 #: rc.c:169
-msgid "Prepend http:// to URL automatically"
-msgstr "URL¤Ë¼«Æ°Åª¤Ë http:// ¤òÊä¤¦"
+msgid "Display link name for images lacking ALT"
+msgstr "ç©ºã®IMG ALTå±æ€§ã®æ™‚ã«ãƒªãƒ³ã‚¯åã‚’è¡¨ç¤ºã™ã‚‹"
 
 #: rc.c:170
-msgid "Default value for open-URL command"
-msgstr "URL¤ò³«¤¯»ş¤Î¥Ç¥Õ¥©¥ë¥ÈÊ¸»úÎó"
+msgid "Index file for directories"
+msgstr "å„ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ãƒ•ã‚¡ã‚¤ãƒ«"
 
 #: rc.c:171
-msgid "Decode Content-Transfer-Encoding when saving"
-msgstr "ÊİÂ¸»ş¤Ë Content-Transfer-Encoding ¤ò¥Ç¥³¡¼¥É¤¹¤ë"
+msgid "Prepend http:// to URL automatically"
+msgstr "URLã«è‡ªå‹•çš„ã« http:// ã‚’è£œã†"
 
 #: rc.c:172
-msgid "Preserve timestamp when saving"
-msgstr "ÊİÂ¸»ş¤Ë¥¿¥¤¥à¥¹¥¿¥ó¥×¤òÊİ»ı¤¹¤ë"
+msgid "Default value for open-URL command"
+msgstr "URLã‚’é–‹ãæ™‚ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆæ–‡å­—åˆ—"
+
+#: rc.c:173
+msgid "Decode Content-Transfer-Encoding when saving"
+msgstr "ä¿å­˜æ™‚ã« Content-Transfer-Encoding ã‚’ãƒ‡ã‚³ãƒ¼ãƒ‰ã™ã‚‹"
 
 #: rc.c:174
-msgid "Enable mouse"
-msgstr "¥Ş¥¦¥¹¤ò»È¤¦"
-
-#: rc.c:175
-msgid "Scroll in reverse direction of mouse drag"
-msgstr "¥Ş¥¦¥¹¤Î¥É¥é¥Ã¥°Æ°ºî¤òµÕ¤Ë¤¹¤ë"
+msgid "Preserve timestamp when saving"
+msgstr "ä¿å­˜æ™‚ã«ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’ä¿æŒã™ã‚‹"
 
 #: rc.c:176
-msgid "Behavior of wheel scroll speed"
-msgstr "¥Û¥¤¡¼¥ë¤Ç¤Î¥¹¥¯¥í¡¼¥ëÂ®ÅÙ¤Î°·¤¤"
+msgid "Enable mouse"
+msgstr "ãƒã‚¦ã‚¹ã‚’ä½¿ã†"
 
 #: rc.c:177
-msgid "(A only)Scroll by # (%) of screen"
-msgstr "(A¤Î¤ß)²èÌÌ¤Î²¿%¥¹¥¯¥í¡¼¥ë¤¹¤ë¤«"
+msgid "Scroll in reverse direction of mouse drag"
+msgstr "ãƒã‚¦ã‚¹ã®ãƒ‰ãƒ©ãƒƒã‚°å‹•ä½œã‚’é€†ã«ã™ã‚‹"
 
 #: rc.c:178
-msgid "(B only)Scroll by # lines"
-msgstr "(B¤Î¤ß)¥¹¥¯¥í¡¼¥ë¤¹¤ë¹Ô¿ô"
+msgid "Behavior of wheel scroll speed"
+msgstr "ãƒ›ã‚¤ãƒ¼ãƒ«ã§ã®ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«é€Ÿåº¦ã®æ‰±ã„"
+
+#: rc.c:179
+msgid "(A only)Scroll by # (%) of screen"
+msgstr "(Aã®ã¿)ç”»é¢ã®ä½•%ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹ã‹"
 
 #: rc.c:180
-msgid "Free memory of undisplayed buffers"
-msgstr "É½¼¨¤µ¤ì¤Æ¤¤¤Ê¤¤¥Ğ¥Ã¥Õ¥¡¤Î¥á¥â¥ê¤ò²òÊü¤¹¤ë"
-
-#: rc.c:181
-msgid "Suppress `Referer:' header"
-msgstr "Referer: ¤òÁ÷¤é¤Ê¤¤¤è¤¦¤Ë¤¹¤ë"
+msgid "(B only)Scroll by # lines"
+msgstr "(Bã®ã¿)ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã™ã‚‹è¡Œæ•°"
 
 #: rc.c:182
-msgid "Search case-insensitively"
-msgstr "¥µ¡¼¥Á»ş¤ËÂçÊ¸»ú¾®Ê¸»ú¤Î¶èÊÌ¤ò¤·¤Ê¤¤"
+msgid "Free memory of undisplayed buffers"
+msgstr "è¡¨ç¤ºã•ã‚Œã¦ã„ãªã„ãƒãƒƒãƒ•ã‚¡ã®ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹"
 
 #: rc.c:183
+msgid "Suppress `Referer:' header"
+msgstr "Referer: ã‚’é€ã‚‰ãªã„ã‚ˆã†ã«ã™ã‚‹"
+
+#: rc.c:184
+msgid "Search case-insensitively"
+msgstr "ã‚µãƒ¼ãƒæ™‚ã«å¤§æ–‡å­—å°æ–‡å­—ã®åŒºåˆ¥ã‚’ã—ãªã„"
+
+#: rc.c:185
 msgid "Use LESSOPEN"
-msgstr "LESSOPEN¤ò»ÈÍÑ"
-
-#: rc.c:186
-msgid "Perform SSL server verification"
-msgstr "SSL¤Î¥µ¡¼¥ĞÇ§¾Ú¤ò¹Ô¤¦"
-
-#: rc.c:187
-msgid "PEM encoded certificate file of client"
-msgstr "SSL¤Î¥¯¥é¥¤¥¢¥ó¥ÈÍÑPEM·Á¼°¾ÚÌÀ½ñ¥Õ¥¡¥¤¥ë"
+msgstr "LESSOPENã‚’ä½¿ç”¨"
 
 #: rc.c:188
-msgid "PEM encoded private key file of client"
-msgstr "SSL¤Î¥¯¥é¥¤¥¢¥ó¥ÈÍÑPEM·Á¼°ÈëÌ©¸°¥Õ¥¡¥¤¥ë"
+msgid "Perform SSL server verification"
+msgstr "SSLã®ã‚µãƒ¼ãƒèªè¨¼ã‚’è¡Œã†"
 
 #: rc.c:189
-msgid "Path to directory for PEM encoded certificates of CAs"
-msgstr "SSL¤ÎÇ§¾Ú¶É¤ÎPEM·Á¼°¾ÚÌÀ½ñ·²¤Î¤¢¤ë¥Ç¥£¥ì¥¯¥È¥ê¤Ø¤Î¥Ñ¥¹"
+msgid "PEM encoded certificate file of client"
+msgstr "SSLã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆç”¨PEMå½¢å¼è¨¼æ˜æ›¸ãƒ•ã‚¡ã‚¤ãƒ«"
 
 #: rc.c:190
-msgid "File consisting of PEM encoded certificates of CAs"
-msgstr "SSL¤ÎÇ§¾Ú¶É¤ÎPEM·Á¼°¾ÚÌÀ½ñ·²¤Î¥Õ¥¡¥¤¥ë"
+msgid "PEM encoded private key file of client"
+msgstr "SSLã®ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆç”¨PEMå½¢å¼ç§˜å¯†éµãƒ•ã‚¡ã‚¤ãƒ«"
+
+#: rc.c:191
+msgid "Path to directory for PEM encoded certificates of CAs"
+msgstr "SSLã®èªè¨¼å±€ã®PEMå½¢å¼è¨¼æ˜æ›¸ç¾¤ã®ã‚ã‚‹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¸ã®ãƒ‘ã‚¹"
 
 #: rc.c:192
+msgid "File consisting of PEM encoded certificates of CAs"
+msgstr "SSLã®èªè¨¼å±€ã®PEMå½¢å¼è¨¼æ˜æ›¸ç¾¤ã®ãƒ•ã‚¡ã‚¤ãƒ«"
+
+#: rc.c:194
 msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
-msgstr "»È¤ï¤Ê¤¤SSL¥á¥½¥Ã¥É¤Î¥ê¥¹¥È(2: SSLv2, 3: SSLv3, t:TLSv1)"
-
-#: rc.c:195
-msgid "Enable cookie processing"
-msgstr "¥¯¥Ã¥­¡¼¤ò»ÈÍÑ¤¹¤ë"
-
-#: rc.c:196
-msgid "Print a message when receiving a cookie"
-msgstr "¥¯¥Ã¥­¡¼¤ò¼õ¤±ÉÕ¤±¤¿¤È¤­¤Ë¥á¥Ã¥»¡¼¥¸¤òÉ½¼¨¤¹¤ë"
+msgstr "ä½¿ã‚ãªã„SSLãƒ¡ã‚½ãƒƒãƒ‰ã®ãƒªã‚¹ãƒˆ(2: SSLv2, 3: SSLv3, t:TLSv1)"
 
 #: rc.c:197
-msgid "Accept cookies"
-msgstr "¥¯¥Ã¥­¡¼¤ò¼õ¤±ÉÕ¤±¤ë"
+msgid "Enable cookie processing"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã‚’ä½¿ç”¨ã™ã‚‹"
 
 #: rc.c:198
-msgid "Action to be taken on invalid cookie"
-msgstr "ÌäÂê¤Î¤¢¤ë¥¯¥Ã¥­¡¼¤Ç¤â¼õ¤±ÉÕ¤±¤ë"
+msgid "Print a message when receiving a cookie"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã‚’å—ã‘ä»˜ã‘ãŸã¨ãã«ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’è¡¨ç¤ºã™ã‚‹"
 
 #: rc.c:199
-msgid "Domains to reject cookies from"
-msgstr "¥¯¥Ã¥­¡¼¤ò¼õ¤±ÉÕ¤±¤Ê¤¤¥É¥á¥¤¥ó"
+msgid "Accept cookies"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã‚’å—ã‘ä»˜ã‘ã‚‹"
 
 #: rc.c:200
-msgid "Domains to accept cookies from"
-msgstr "¥¯¥Ã¥­¡¼¤ò¼õ¤±ÉÕ¤±¤ë¥É¥á¥¤¥ó"
+msgid "Action to be taken on invalid cookie"
+msgstr "å•é¡Œã®ã‚ã‚‹ã‚¯ãƒƒã‚­ãƒ¼ã§ã‚‚å—ã‘ä»˜ã‘ã‚‹"
+
+#: rc.c:201
+msgid "Domains to reject cookies from"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã‚’å—ã‘ä»˜ã‘ãªã„ãƒ‰ãƒ¡ã‚¤ãƒ³"
 
 #: rc.c:202
+msgid "Domains to accept cookies from"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã‚’å—ã‘ä»˜ã‘ã‚‹ãƒ‰ãƒ¡ã‚¤ãƒ³"
+
+#: rc.c:204
 msgid "Number of redirections to follow"
-msgstr "½¾¤¦¥ê¥À¥¤¥ì¥¯¥È¤Î²ó¿ô"
+msgstr "å¾“ã†ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã®å›æ•°"
 
-#: rc.c:203
+#: rc.c:205
 msgid "Enable processing of meta-refresh tag"
-msgstr "meta refresh ¤ËÂĞ±ş¤¹¤ë"
+msgstr "meta refresh ã«å¯¾å¿œã™ã‚‹"
 
-#: rc.c:206
+#: rc.c:208
 msgid "Enable Migemo (Roma-ji search)"
-msgstr "Migemo(¥í¡¼¥Ş»ú¸¡º÷)¤ò»ÈÍÑ¤¹¤ë"
+msgstr "Migemo(ãƒ­ãƒ¼ãƒå­—æ¤œç´¢)ã‚’ä½¿ç”¨ã™ã‚‹"
 
-#: rc.c:207
+#: rc.c:209
 msgid "Migemo command"
-msgstr "Migemo¥³¥Ş¥ó¥É"
-
-#: rc.c:211
-msgid "Display charset"
-msgstr "É½¼¨ÍÑÊ¸»ú¥³¡¼¥É"
-
-#: rc.c:212
-msgid "Default document charset"
-msgstr "Ê¸½ñ¤ÎÉ¸½à¤ÎÊ¸»ú¥³¡¼¥É"
+msgstr "Migemoã‚³ãƒãƒ³ãƒ‰"
 
 #: rc.c:213
-msgid "Automatic charset detect when loading"
-msgstr "Ê¸½ñ¤ÎÆÉ¤ß¹ş¤ß»ş¤ËÊ¸»ú¥³¡¼¥É¤Î¼«Æ°È½Äê¤ò¹Ô¤¦"
+msgid "Display charset"
+msgstr "è¡¨ç¤ºç”¨æ–‡å­—ã‚³ãƒ¼ãƒ‰"
 
 #: rc.c:214
-msgid "System charset"
-msgstr "¥·¥¹¥Æ¥à¤ÎÊ¸»ú¥³¡¼¥É"
+msgid "Default document charset"
+msgstr "æ–‡æ›¸ã®æ¨™æº–ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰"
 
 #: rc.c:215
-msgid "System charset follows locale(LC_CTYPE)"
-msgstr "Locale(LC_CTYPE) ¤Ë½¾¤Ã¤Æ¥·¥¹¥Æ¥à¤ÎÊ¸»ú¥³¡¼¥É¤òÀßÄê"
+msgid "Automatic charset detect when loading"
+msgstr "æ–‡æ›¸ã®èª­ã¿è¾¼ã¿æ™‚ã«æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®è‡ªå‹•åˆ¤å®šã‚’è¡Œã†"
 
 #: rc.c:216
-msgid "Output halfdump with display charset"
-msgstr "É½¼¨ÍÑÊ¸»ú¥³¡¼¥É¤Ç halfdump ¤Î½ĞÎÏ¤ò¹Ô¤¦"
+msgid "System charset"
+msgstr "ã‚·ã‚¹ãƒ†ãƒ ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰"
 
 #: rc.c:217
-msgid "Use multi column characters"
-msgstr "Ê£¿ô¥«¥é¥à¤ÎÊ¸»ú¤ò»È¤¦"
+msgid "System charset follows locale(LC_CTYPE)"
+msgstr "Locale(LC_CTYPE) ã«å¾“ã£ã¦ã‚·ã‚¹ãƒ†ãƒ ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã‚’è¨­å®š"
 
 #: rc.c:218
-msgid "Use combining characters"
-msgstr "·ë¹çÊ¸»ú¤ò»È¤¦"
+msgid "Output halfdump with display charset"
+msgstr "è¡¨ç¤ºç”¨æ–‡å­—ã‚³ãƒ¼ãƒ‰ã§ halfdump ã®å‡ºåŠ›ã‚’è¡Œã†"
 
 #: rc.c:219
-msgid "Use Unicode language tags"
-msgstr "Unicode ¤Î¸À¸ì¥¿¥°¤ò»È¤¦"
+msgid "Use multi column characters"
+msgstr "è¤‡æ•°ã‚«ãƒ©ãƒ ã®æ–‡å­—ã‚’ä½¿ã†"
 
 #: rc.c:220
-msgid "Charset conversion using Unicode map"
-msgstr "Unicode¤ò²ğ¤·¤¿¥³¡¼¥ÉÊÑ´¹"
+msgid "Use combining characters"
+msgstr "çµåˆæ–‡å­—ã‚’ä½¿ã†"
 
 #: rc.c:221
-msgid "Charset conversion when loading"
-msgstr "Ê¸½ñ¤ÎÆÉ¤ß¹ş¤ß»ş¤ËÊ¸»ú¥³¡¼¥É¤òÊÑ´¹¤¹¤ë"
+msgid "Use Unicode language tags"
+msgstr "Unicode ã®è¨€èªã‚¿ã‚°ã‚’ä½¿ã†"
 
 #: rc.c:222
-msgid "Adjust search string for document charset"
-msgstr "¸¡º÷Ê¸»úÎó¤òÊ¸½ñ¤ÎÊ¸»ú¥³¡¼¥É¤ËÊÑ´¹¤¹¤ë"
+msgid "Charset conversion using Unicode map"
+msgstr "Unicodeã‚’ä»‹ã—ãŸã‚³ãƒ¼ãƒ‰å¤‰æ›"
 
 #: rc.c:223
-msgid "Fix character width when conversion"
-msgstr "Ê¸»úÉı¤ÎÊÑ¤ï¤ëÊÑ´¹¤ò¤·¤Ê¤¤"
+msgid "Charset conversion when loading"
+msgstr "æ–‡æ›¸ã®èª­ã¿è¾¼ã¿æ™‚ã«æ–‡å­—ã‚³ãƒ¼ãƒ‰ã‚’å¤‰æ›ã™ã‚‹"
 
 #: rc.c:224
-msgid "Use GB 12345 Unicode map instead of GB 2312's"
-msgstr "GB 12345 ¤Î Unicode ¥Ş¥Ã¥×¤ò GB 2312 ÍÑ¤Ë»È¤¦"
+msgid "Adjust search string for document charset"
+msgstr "æ¤œç´¢æ–‡å­—åˆ—ã‚’æ–‡æ›¸ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã™ã‚‹"
 
 #: rc.c:225
-msgid "Use JIS X 0201 Roman for ISO-2022-JP"
-msgstr "ISO-2022-JP ¤Ç JIS X 0201-Roman ¤ò»È¤¦"
+msgid "Fix character width when conversion"
+msgstr "æ–‡å­—å¹…ã®å¤‰ã‚ã‚‹å¤‰æ›ã‚’ã—ãªã„"
 
 #: rc.c:226
-msgid "Use JIS C 6226:1978 for ISO-2022-JP"
-msgstr "ISO-2022-JP ¤Ç JIS C 6226:1978(µìJIS) ¤ò»È¤¦"
+msgid "Use GB 12345 Unicode map instead of GB 2312's"
+msgstr "GB 12345 ã® Unicode ãƒãƒƒãƒ—ã‚’ GB 2312 ç”¨ã«ä½¿ã†"
 
 #: rc.c:227
-msgid "Use JIS X 0201 Katakana"
-msgstr "JIS X 0201-Katakana ¤ò»È¤¦"
+msgid "Use JIS X 0201 Roman for ISO-2022-JP"
+msgstr "ISO-2022-JP ã§ JIS X 0201-Roman ã‚’ä½¿ã†"
 
 #: rc.c:228
-msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
-msgstr "JIS X 0212:1990(Êä½õ´Á»ú) ¤ò»È¤¦"
+msgid "Use JIS C 6226:1978 for ISO-2022-JP"
+msgstr "ISO-2022-JP ã§ JIS C 6226:1978(æ—§JIS) ã‚’ä½¿ã†"
 
 #: rc.c:229
-msgid "Use JIS X 0213:2000 (2000JIS)"
-msgstr "JIS X 0213:2000(2000JIS) ¤ò»È¤¦"
+msgid "Use JIS X 0201 Katakana"
+msgstr "JIS X 0201-Katakana ã‚’ä½¿ã†"
 
 #: rc.c:230
-msgid "Strict ISO-2022-JP/KR/CN"
-msgstr "¸·³Ê¤Ê ISO-2022-JP/KR/CN ¤ò»È¤¦"
+msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
+msgstr "JIS X 0212:1990(è£œåŠ©æ¼¢å­—) ã‚’ä½¿ã†"
 
 #: rc.c:231
+msgid "Use JIS X 0213:2000 (2000JIS)"
+msgstr "JIS X 0213:2000(2000JIS) ã‚’ä½¿ã†"
+
+#: rc.c:232
+msgid "Strict ISO-2022-JP/KR/CN"
+msgstr "å³æ ¼ãª ISO-2022-JP/KR/CN ã‚’ä½¿ã†"
+
+#: rc.c:233
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
-msgstr "GB18030 ¤Î 4¥Ğ¥¤¥ÈÊ¸»ú¤ò Unicode ¤È¤·¤Æ°·¤¦"
+msgstr "GB18030 ã® 4ãƒã‚¤ãƒˆæ–‡å­—ã‚’ Unicode ã¨ã—ã¦æ‰±ã†"
 
 #: rc.c:234
+msgid "Simple Preserve space"
+msgstr "å˜ç´”ãªç©ºç™½ã®ä¿å­˜"
+
+#: rc.c:237
 msgid "keymap file"
-msgstr "keymap¥Õ¥¡¥¤¥ë"
-
-#: rc.c:251
-msgid "black"
-msgstr "¹õ"
-
-#: rc.c:252
-msgid "red"
-msgstr "ÀÖ"
-
-#: rc.c:253
-msgid "green"
-msgstr "ÎĞ"
+msgstr "keymapãƒ•ã‚¡ã‚¤ãƒ«"
 
 #: rc.c:254
-msgid "yellow"
-msgstr "²«"
+msgid "black"
+msgstr "é»’"
 
 #: rc.c:255
-msgid "blue"
-msgstr "ÀÄ"
+msgid "red"
+msgstr "èµ¤"
 
 #: rc.c:256
-msgid "magenta"
-msgstr "»ç"
+msgid "green"
+msgstr "ç·‘"
 
 #: rc.c:257
-msgid "cyan"
-msgstr "¶õ¿§"
+msgid "yellow"
+msgstr "é»„"
 
 #: rc.c:258
-msgid "white"
-msgstr "Çò"
+msgid "blue"
+msgstr "é’"
 
 #: rc.c:259
+msgid "magenta"
+msgstr "ç´«"
+
+#: rc.c:260
+msgid "cyan"
+msgstr "ç©ºè‰²"
+
+#: rc.c:261
+msgid "white"
+msgstr "ç™½"
+
+#: rc.c:262
 msgid "terminal"
-msgstr "Ã¼Ëö"
+msgstr "ç«¯æœ«"
 
-#: rc.c:278
+#: rc.c:281
 msgid "none"
-msgstr "Ìµ¤·"
+msgstr "ç„¡ã—"
 
-#: rc.c:279
+#: rc.c:282
 msgid "current URL"
-msgstr "¸½ºß¤ÎURL"
+msgstr "ç¾åœ¨ã®URL"
 
-#: rc.c:280
+#: rc.c:283
 msgid "link URL"
-msgstr "¥ê¥ó¥¯Àè¤ÎURL"
+msgstr "ãƒªãƒ³ã‚¯å…ˆã®URL"
 
-#: rc.c:285
+#: rc.c:288
 msgid "simple"
-msgstr "¥·¥ó¥×¥ë"
+msgstr "ã‚·ãƒ³ãƒ—ãƒ«"
 
-#: rc.c:286
+#: rc.c:289
 msgid "use tag"
-msgstr "¥¿¥°¤ÇÉ½¼¨"
+msgstr "ã‚¿ã‚°ã§è¡¨ç¤º"
 
-#: rc.c:287
+#: rc.c:290
 msgid "fontify"
-msgstr "Ê¸»úÁõ¾ş"
+msgstr "æ–‡å­—è£…é£¾"
 
-#: rc.c:293
+#: rc.c:296
 msgid "A:relative to screen height"
-msgstr "A:²èÌÌ¥µ¥¤¥º¤ËÈæÎã"
+msgstr "A:ç”»é¢ã‚µã‚¤ã‚ºã«æ¯”ä¾‹"
 
-#: rc.c:294
+#: rc.c:297
 msgid "B:fixed speed"
-msgstr "B:°ìÄê¤Î¹Ô¿ô"
-
-#: rc.c:301
-msgid "unspecified"
-msgstr "»ØÄê¤·¤Ê¤¤"
-
-#: rc.c:302
-msgid "inet inet6"
-msgstr "IPv4Í¥Àè"
-
-#: rc.c:303
-msgid "inet6 inet"
-msgstr "IPv6Í¥Àè"
+msgstr "B:ä¸€å®šã®è¡Œæ•°"
 
 #: rc.c:304
-msgid "inet only"
-msgstr "IPv4¤Î¤ß"
+msgid "unspecified"
+msgstr "æŒ‡å®šã—ãªã„"
 
 #: rc.c:305
+msgid "inet inet6"
+msgstr "IPv4å„ªå…ˆ"
+
+#: rc.c:306
+msgid "inet6 inet"
+msgstr "IPv6å„ªå…ˆ"
+
+#: rc.c:307
+msgid "inet only"
+msgstr "IPv4ã®ã¿"
+
+#: rc.c:308
 msgid "inet6 only"
-msgstr "IPv6¤Î¤ß"
+msgstr "IPv6ã®ã¿"
 
-#: rc.c:312
+#: rc.c:315
 msgid "discard"
-msgstr "ÇË´ş¤¹¤ë"
+msgstr "ç ´æ£„ã™ã‚‹"
 
-#: rc.c:314
+#: rc.c:317
 msgid "accept"
-msgstr "¼õ¤±Æş¤ì¤ë"
+msgstr "å—ã‘å…¥ã‚Œã‚‹"
 
-#: rc.c:316
+#: rc.c:319
 msgid "ask"
-msgstr "³ÎÇ§¤¹¤ë"
+msgstr "ç¢ºèªã™ã‚‹"
 
-#: rc.c:326
+#: rc.c:329
 msgid "OFF"
-msgstr "Ìµ¸ú"
+msgstr "ç„¡åŠ¹"
 
-#: rc.c:327
+#: rc.c:330
 msgid "Only ISO 2022"
-msgstr "ISO 2022 ¤Î¤ß"
+msgstr "ISO 2022 ã®ã¿"
 
-#: rc.c:328
+#: rc.c:331
 msgid "ON"
-msgstr "Í­¸ú"
+msgstr "æœ‰åŠ¹"
 
-#: rc.c:679
-msgid "Display Settings"
-msgstr "É½¼¨´Ø·¸"
+#: rc.c:337
+msgid "No"
+msgstr "ã„ã„ãˆ"
 
-#: rc.c:681
-msgid "Color Settings"
-msgstr "É½¼¨¿§"
+#: rc.c:338
+msgid "Yes, but only charset specific"
+msgstr "æ–‡å­—ã‚³ãƒ¼ãƒ‰å›ºæœ‰"
 
-#: rc.c:683
-msgid "Miscellaneous Settings"
-msgstr "»¨Â¿¤ÊÀßÄê"
-
-#: rc.c:684
-msgid "Directory Settings"
-msgstr "¥Ç¥£¥ì¥¯¥È¥êÀßÄê"
-
-#: rc.c:685
-msgid "External Program Settings"
-msgstr "³°Éô¥×¥í¥°¥é¥à"
-
-#: rc.c:686
-msgid "Network Settings"
-msgstr "¥Í¥Ã¥È¥ï¡¼¥¯¤ÎÀßÄê"
-
-#: rc.c:687
-msgid "Proxy Settings"
-msgstr "¥×¥í¥­¥·¤ÎÀßÄê"
-
-#: rc.c:689
-msgid "SSL Settings"
-msgstr "SSL¤ÎÀßÄê"
-
-#: rc.c:692
-msgid "Cookie Settings"
-msgstr "¥¯¥Ã¥­¡¼¤ÎÀßÄê"
+#: rc.c:339
+msgid "Yes"
+msgstr "ã¯ã„"
 
 #: rc.c:695
+msgid "Display Settings"
+msgstr "è¡¨ç¤ºé–¢ä¿‚"
+
+#: rc.c:697
+msgid "Color Settings"
+msgstr "è¡¨ç¤ºè‰²"
+
+#: rc.c:699
+msgid "Miscellaneous Settings"
+msgstr "é›‘å¤šãªè¨­å®š"
+
+#: rc.c:700
+msgid "Directory Settings"
+msgstr "ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªè¨­å®š"
+
+#: rc.c:701
+msgid "External Program Settings"
+msgstr "å¤–éƒ¨ãƒ—ãƒ­ã‚°ãƒ©ãƒ "
+
+#: rc.c:702
+msgid "Network Settings"
+msgstr "ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã®è¨­å®š"
+
+#: rc.c:703
+msgid "Proxy Settings"
+msgstr "ãƒ—ãƒ­ã‚­ã‚·ã®è¨­å®š"
+
+#: rc.c:705
+msgid "SSL Settings"
+msgstr "SSLã®è¨­å®š"
+
+#: rc.c:708
+msgid "Cookie Settings"
+msgstr "ã‚¯ãƒƒã‚­ãƒ¼ã®è¨­å®š"
+
+#: rc.c:711
 msgid "Charset Settings"
-msgstr "Ê¸»ú¥³¡¼¥É¤ÎÀßÄê"
+msgstr "æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®è¨­å®š"
 
 #. TRANSLATORS:
 #. * AcceptLang default: this is used in Accept-Language: HTTP request
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1163
+#: rc.c:1187
 msgid "en;q=1.0"
 msgstr "ja;q=1.0, en;q=0.5"

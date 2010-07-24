@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.259 2010/07/19 23:34:00 htrb Exp $ */
+/* $Id: file.c,v 1.260 2010/07/24 04:30:40 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1216,7 +1216,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
  */
 
 static Str
-digest_hex(char *p)
+digest_hex(unsigned char *p)
 {
     char *h = "0123456789abcdef";
     Str tmp = Strnew_size(MD5_DIGEST_LENGTH * 2 + 1);
@@ -1239,7 +1239,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	       HRequest *hr, FormList *request)
 {
     Str tmp, a1buf, a2buf, rd, s;
-    char md5[MD5_DIGEST_LENGTH + 1];
+    unsigned char md5[MD5_DIGEST_LENGTH + 1];
     Str uri = HTTPrequestURI(pu, hr);
     char nc[] = "00000001";
 
@@ -1251,7 +1251,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 
     static union {
 	int r[4];
-	char s[sizeof(int) * 4];
+	unsigned char s[sizeof(int) * 4];
     } cnonce_seed;
     int qop_i = QOP_NONE;
 
@@ -5264,6 +5264,7 @@ textlist_feed()
     return NULL;
 }
 
+static int
 ex_efct(int ex)
 {
     int effect = 0;

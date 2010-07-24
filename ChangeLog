@@ -1,3 +1,10 @@
+2010-07-24  Ito Hiroyuki  <ZXB01226 at nifty.com>
+
+	* [w3m-dev 04326] suppress compile warnings
+	* file.c (digest_hex): type of the parameter s is "unsigned char *".
+	(AuthDigestCred): use unsigned char.
+	(ex_efct): type of the function is "static int".
+
 2010-07-20  Sascha Silbe <sascha-debian-bugs-w3m-1@silbe.org>
 
 	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=523159#5
@@ -9034,4 +9041,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1017 2010/07/20 12:34:43 htrb Exp $
+$Id: ChangeLog,v 1.1018 2010/07/24 04:42:38 htrb Exp $

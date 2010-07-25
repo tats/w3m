@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.263 2010/07/19 23:34:01 htrb Exp $ */
+/* $Id: main.c,v 1.264 2010/07/25 09:55:05 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -562,9 +562,9 @@ main(int argc, char **argv, char **envp)
 	    }
 #endif
 	    else if (!strcmp("-graph", argv[i]))
-		UseGraphicChar = GRAPHIC_CHAR_ALL;
+		UseGraphicChar = TRUE;
 	    else if (!strcmp("-no-graph", argv[i]))
-		UseGraphicChar = GRAPHIC_CHAR_ASCII;
+		UseGraphicChar = FALSE;
 	    else if (!strcmp("-T", argv[i])) {
 		if (++i >= argc)
 		    usage();

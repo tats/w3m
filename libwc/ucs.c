@@ -17,6 +17,7 @@
 
 #include "ucs.map"
 
+#include "map/ucs_ambwidth.map"
 #include "map/ucs_wide.map"
 #include "map/ucs_combining.map"
 #include "map/ucs_precompose.map"
@@ -511,8 +512,23 @@ wc_ucs_to_ccs(wc_uint32 ucs)
     if (0x80 <= ucs && ucs <= 0x9F)
 	return WC_CCS_C1;
     return ((ucs <= WC_C_UCS2_END) ? WC_CCS_UCS2 : WC_CCS_UCS4)
+	| ((WcOption.east_asian_width && wc_is_ucs_ambiguous_width(ucs))
+		    ? WC_CCS_A_WIDE : 0)
 	| (wc_is_ucs_wide(ucs) ? WC_CCS_A_WIDE : 0)
 	| (wc_is_ucs_combining(ucs) ? WC_CCS_A_COMB : 0);
+}
+
+wc_bool
+wc_is_ucs_ambiguous_width(wc_uint32 ucs)
+{
+    if (0xa1 <= ucs && ucs <= 0xfe && WcOption.use_jisx0213)
+	return 1;
+    else if (ucs <= WC_C_UCS2_END)
+	return (wc_map_range_search((wc_uint16)ucs,
+		    ucs_ambwidth_map, N_ucs_ambwidth_map) != NULL);
+    else
+	return ((0xF0000 <= ucs && ucs <= 0xFFFFD)
+		|| (0x100000 <= ucs && ucs <= 0x10FFFD));
 }
 
 wc_bool

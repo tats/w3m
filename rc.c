@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.112 2010/07/19 23:34:01 htrb Exp $ */
+/* $Id: rc.c,v 1.113 2010/07/25 09:55:05 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -218,6 +218,7 @@ static int OptionEncode = FALSE;
 #define CMT_EXT_HALFDUMP     N_("Output halfdump with display charset")
 #define CMT_USE_WIDE         N_("Use multi column characters")
 #define CMT_USE_COMBINING    N_("Use combining characters")
+#define CMT_EAST_ASIAN_WIDTH N_("Use double width for some Unicode characters")
 #define CMT_USE_LANGUAGE_TAG N_("Use Unicode language tags")
 #define CMT_UCS_CONV         N_("Charset conversion using Unicode map")
 #define CMT_PRE_CONV         N_("Charset conversion when loading")
@@ -333,13 +334,6 @@ static struct sel_c auto_detect_str[] = {
 };
 #endif
 
-static struct sel_c graphic_char_str[] = {
-    {N_S(GRAPHIC_CHAR_ASCII), N_("No")},
-    {N_S(GRAPHIC_CHAR_CHARSET), N_("Yes, but only charset specific")},
-    {N_S(GRAPHIC_CHAR_ALL), N_("Yes")},
-    {0, NULL, NULL}
-};
-
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
@@ -376,8 +370,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
-     CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
+    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
+     CMT_GRAPHIC_CHAR, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
@@ -654,6 +648,8 @@ struct param_ptr params10[] = {
     {"use_combining", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_combining,
      CMT_USE_COMBINING, NULL},
 #ifdef USE_UNICODE
+    {"east_asian_width", P_CHARINT, PI_ONOFF,
+     (void *)&WcOption.east_asian_width, CMT_EAST_ASIAN_WIDTH, NULL},
     {"use_language_tag", P_CHARINT, PI_ONOFF,
      (void *)&WcOption.use_language_tag, CMT_USE_LANGUAGE_TAG, NULL},
     {"ucs_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.ucs_conv, CMT_UCS_CONV,
@@ -1190,6 +1186,9 @@ sync_with_option(void)
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();
+#ifdef USE_UNICODE
+    update_utf8_symbol();
+#endif
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE

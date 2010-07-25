@@ -25,6 +25,7 @@ wc_option WcOption = {
     WC_FALSE,		/* gb18030_as_ucs */
     WC_FALSE,		/* no_replace */
     WC_TRUE,		/* use_wide */
+    WC_FALSE,		/* east_asian_width */
 };
 
 static wc_status output_st;

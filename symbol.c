@@ -18,7 +18,7 @@ typedef struct {
     wc_ces ces;
     char width;
     char **item;
-    char encode;
+    char **conved_item;
 } symbol_set;
 
 typedef struct {
@@ -27,17 +27,17 @@ typedef struct {
 } charset_symbol_set;
 
 /* *INDENT-OFF* */
-static symbol_set alt_symbol_set   = { WC_CES_US_ASCII, 1, alt_symbol,   1 };
-static symbol_set alt2_symbol_set  = { WC_CES_US_ASCII, 2, alt2_symbol,  1 };
-static symbol_set eucjp_symbol_set = { WC_CES_EUC_JP,   2, eucjp_symbol, 0 };
-static symbol_set euckr_symbol_set = { WC_CES_EUC_KR,   2, euckr_symbol, 0 };
-static symbol_set euccn_symbol_set = { WC_CES_EUC_CN,   2, euccn_symbol, 0 };
-static symbol_set euctw_symbol_set = { WC_CES_EUC_TW,   2, euctw_symbol, 0 };
-static symbol_set big5_symbol_set  = { WC_CES_BIG5,     2, big5_symbol,  0 };
+static symbol_set alt_symbol_set   = { WC_CES_US_ASCII, 1, alt_symbol,   alt_symbol };
+static symbol_set alt2_symbol_set  = { WC_CES_US_ASCII, 2, alt2_symbol,  alt2_symbol };
+static symbol_set eucjp_symbol_set = { WC_CES_EUC_JP,   2, eucjp_symbol, NULL };
+static symbol_set euckr_symbol_set = { WC_CES_EUC_KR,   2, euckr_symbol, NULL };
+static symbol_set euccn_symbol_set = { WC_CES_EUC_CN,   2, euccn_symbol, NULL };
+static symbol_set euctw_symbol_set = { WC_CES_EUC_TW,   2, euctw_symbol, NULL };
+static symbol_set big5_symbol_set  = { WC_CES_BIG5,     2, big5_symbol,  NULL };
 #ifdef USE_UNICODE
-static symbol_set utf8_symbol_set  = { WC_CES_UTF_8,    1, utf8_symbol,  0 };
+static symbol_set utf8_symbol_set  = { WC_CES_UTF_8,    1, utf8_symbol,  NULL };
 #endif
-static symbol_set cp850_symbol_set = { WC_CES_CP850,    1, cp850_symbol, 0 };
+static symbol_set cp850_symbol_set = { WC_CES_CP850,    1, cp850_symbol, NULL };
 
 static charset_symbol_set charset_symbol_list[] = {
     { WC_CES_EUC_JP,        &eucjp_symbol_set },
@@ -73,11 +73,12 @@ encode_symbol(symbol_set * s)
 {
     int i;
 
+    for (i = 0; s->item[i]; i++) ;
+    s->conved_item = New_N(char *, i);
     for (i = 0; s->item[i]; i++) {
 	if (*(s->item[i]))
-	    s->item[i] = wc_conv(s->item[i], s->ces, InnerCharset)->ptr;
+	    s->conved_item[i] = wc_conv(s->item[i], s->ces, InnerCharset)->ptr;
     }
-    s->encode = 1;
 }
 
 char **
@@ -86,10 +87,11 @@ get_symbol(wc_ces charset, int *width)
     charset_symbol_set *p;
     symbol_set *s = NULL;
 
-    if (UseGraphicChar != GRAPHIC_CHAR_ASCII) {
+    if (UseGraphicChar) {
 	if (charset == save_charset && save_symbol != NULL &&
-	    *width == save_symbol->width)
-	    return save_symbol->item;
+	    *width == save_symbol->width) {
+	    return save_symbol->conved_item;
+	}
 	save_charset = charset;
 	for (p = charset_symbol_list; p->charset; p++) {
 	    if (charset == p->charset &&
@@ -101,18 +103,18 @@ get_symbol(wc_ces charset, int *width)
 	if (s == NULL)
 	    s = (*width == 2) ? &alt2_symbol_set : &alt_symbol_set;
 	if (s != save_symbol) {
-	    if (!s->encode)
+	    if (!s->conved_item)
 		encode_symbol(s);
 	    save_symbol = s;
 	}
     } else {
 	if (save_symbol != NULL && *width == save_symbol->width)
-	    return save_symbol->item;
+	    return save_symbol->conved_item;
 	s = (*width == 2) ? &alt2_symbol_set : &alt_symbol_set;
 	save_symbol = s;
     }
     *width = s->width;
-    return s->item;
+    return s->conved_item;
 }
 
 char **
@@ -141,6 +143,21 @@ set_symbol(int width)
     save_width = width;
     return symbol_buf;
 }
+
+#ifdef USE_UNICODE
+void
+update_utf8_symbol(void)
+{
+    charset_symbol_set *p;
+    utf8_symbol_set.width = WcOption.east_asian_width ? 2 : 1;
+    for (p = charset_symbol_list; p->charset; p++) {
+	if (p->charset == WC_CES_UTF_8) {
+	    encode_symbol(p->symbol);
+	    break;
+	}
+    }
+}
+#endif
 
 #else
 

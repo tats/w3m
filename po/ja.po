@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.2\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2010-07-21 19:30+0900\n"
-"PO-Revision-Date: 2010-07-21 19:38+0900\n"
+"POT-Creation-Date: 2010-07-24 17:31+0900\n"
+"PO-Revision-Date: 2010-07-24 13:50+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
 "MIME-Version: 1.0\n"
@@ -622,226 +622,218 @@ msgid "Use combining characters"
 msgstr "結合文字を使う"
 
 #: rc.c:221
+msgid "Use double width for some Unicode characters"
+msgstr "ある種のUnicode文字を全角にする"
+
+#: rc.c:222
 msgid "Use Unicode language tags"
 msgstr "Unicode の言語タグを使う"
 
-#: rc.c:222
+#: rc.c:223
 msgid "Charset conversion using Unicode map"
 msgstr "Unicodeを介したコード変換"
 
-#: rc.c:223
+#: rc.c:224
 msgid "Charset conversion when loading"
 msgstr "文書の読み込み時に文字コードを変換する"
 
-#: rc.c:224
+#: rc.c:225
 msgid "Adjust search string for document charset"
 msgstr "検索文字列を文書の文字コードに変換する"
 
-#: rc.c:225
+#: rc.c:226
 msgid "Fix character width when conversion"
 msgstr "文字幅の変わる変換をしない"
 
-#: rc.c:226
+#: rc.c:227
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr "GB 12345 の Unicode マップを GB 2312 用に使う"
 
-#: rc.c:227
+#: rc.c:228
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr "ISO-2022-JP で JIS X 0201-Roman を使う"
 
-#: rc.c:228
+#: rc.c:229
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr "ISO-2022-JP で JIS C 6226:1978(旧JIS) を使う"
 
-#: rc.c:229
+#: rc.c:230
 msgid "Use JIS X 0201 Katakana"
 msgstr "JIS X 0201-Katakana を使う"
 
-#: rc.c:230
+#: rc.c:231
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr "JIS X 0212:1990(補助漢字) を使う"
 
-#: rc.c:231
+#: rc.c:232
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr "JIS X 0213:2000(2000JIS) を使う"
 
-#: rc.c:232
+#: rc.c:233
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr "厳格な ISO-2022-JP/KR/CN を使う"
 
-#: rc.c:233
+#: rc.c:234
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr "GB18030 の 4バイト文字を Unicode として扱う"
 
-#: rc.c:234
+#: rc.c:235
 msgid "Simple Preserve space"
 msgstr "単純な空白の保存"
 
-#: rc.c:237
+#: rc.c:238
 msgid "keymap file"
 msgstr "keymapファイル"
 
-#: rc.c:254
+#: rc.c:255
 msgid "black"
 msgstr "黒"
 
-#: rc.c:255
+#: rc.c:256
 msgid "red"
 msgstr "赤"
 
-#: rc.c:256
+#: rc.c:257
 msgid "green"
 msgstr "緑"
 
-#: rc.c:257
+#: rc.c:258
 msgid "yellow"
 msgstr "黄"
 
-#: rc.c:258
+#: rc.c:259
 msgid "blue"
 msgstr "青"
 
-#: rc.c:259
+#: rc.c:260
 msgid "magenta"
 msgstr "紫"
 
-#: rc.c:260
+#: rc.c:261
 msgid "cyan"
 msgstr "空色"
 
-#: rc.c:261
+#: rc.c:262
 msgid "white"
 msgstr "白"
 
-#: rc.c:262
+#: rc.c:263
 msgid "terminal"
 msgstr "端末"
 
-#: rc.c:281
+#: rc.c:282
 msgid "none"
 msgstr "無し"
 
-#: rc.c:282
+#: rc.c:283
 msgid "current URL"
 msgstr "現在のURL"
 
-#: rc.c:283
+#: rc.c:284
 msgid "link URL"
 msgstr "リンク先のURL"
 
-#: rc.c:288
+#: rc.c:289
 msgid "simple"
 msgstr "シンプル"
 
-#: rc.c:289
+#: rc.c:290
 msgid "use tag"
 msgstr "タグで表示"
 
-#: rc.c:290
+#: rc.c:291
 msgid "fontify"
 msgstr "文字装飾"
 
-#: rc.c:296
+#: rc.c:297
 msgid "A:relative to screen height"
 msgstr "A:画面サイズに比例"
 
-#: rc.c:297
+#: rc.c:298
 msgid "B:fixed speed"
 msgstr "B:一定の行数"
 
-#: rc.c:304
+#: rc.c:305
 msgid "unspecified"
 msgstr "指定しない"
 
-#: rc.c:305
+#: rc.c:306
 msgid "inet inet6"
 msgstr "IPv4優先"
 
-#: rc.c:306
+#: rc.c:307
 msgid "inet6 inet"
 msgstr "IPv6優先"
 
-#: rc.c:307
+#: rc.c:308
 msgid "inet only"
 msgstr "IPv4のみ"
 
-#: rc.c:308
+#: rc.c:309
 msgid "inet6 only"
 msgstr "IPv6のみ"
 
-#: rc.c:315
+#: rc.c:316
 msgid "discard"
 msgstr "破棄する"
 
-#: rc.c:317
+#: rc.c:318
 msgid "accept"
 msgstr "受け入れる"
 
-#: rc.c:319
+#: rc.c:320
 msgid "ask"
 msgstr "確認する"
 
-#: rc.c:329
+#: rc.c:330
 msgid "OFF"
 msgstr "無効"
 
-#: rc.c:330
+#: rc.c:331
 msgid "Only ISO 2022"
 msgstr "ISO 2022 のみ"
 
-#: rc.c:331
+#: rc.c:332
 msgid "ON"
 msgstr "有効"
 
-#: rc.c:337
-msgid "No"
-msgstr "いいえ"
-
-#: rc.c:338
-msgid "Yes, but only charset specific"
-msgstr "文字コード固有"
-
-#: rc.c:339
-msgid "Yes"
-msgstr "はい"
-
-#: rc.c:695
+#: rc.c:691
 msgid "Display Settings"
 msgstr "表示関係"
 
-#: rc.c:697
+#: rc.c:693
 msgid "Color Settings"
 msgstr "表示色"
 
-#: rc.c:699
+#: rc.c:695
 msgid "Miscellaneous Settings"
 msgstr "雑多な設定"
 
-#: rc.c:700
+#: rc.c:696
 msgid "Directory Settings"
 msgstr "ディレクトリ設定"
 
-#: rc.c:701
+#: rc.c:697
 msgid "External Program Settings"
 msgstr "外部プログラム"
 
-#: rc.c:702
+#: rc.c:698
 msgid "Network Settings"
 msgstr "ネットワークの設定"
 
-#: rc.c:703
+#: rc.c:699
 msgid "Proxy Settings"
 msgstr "プロキシの設定"
 
-#: rc.c:705
+#: rc.c:701
 msgid "SSL Settings"
 msgstr "SSLの設定"
 
-#: rc.c:708
+#: rc.c:704
 msgid "Cookie Settings"
 msgstr "クッキーの設定"
 
-#: rc.c:711
+#: rc.c:707
 msgid "Charset Settings"
 msgstr "文字コードの設定"
 
@@ -850,6 +842,6 @@ msgstr "文字コードの設定"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1187
+#: rc.c:1183
 msgid "en;q=1.0"
 msgstr "ja;q=1.0, en;q=0.5"

@@ -1,3 +1,11 @@
+2010-07-25  AIDA Shinra <shinra@j10n.org>
+
+	* [w3m-dev 04049] Ctrl-C safe resolver
+	* fm.h (GRAPHIC_CHAR_ASCII, GRAPHIC_CHAR_CHARSET, GRAPHIC_CHAR_ALL): removed.
+	* fm.h: UseGraphicChar is initialized as FALSE.
+	* main.c (sig_chld): use TRUE and FALSE instead of GRAPHIC_CHAR_ALL and GRAPHIC_CHAR_ASCII.
+	* merge ambiguous width patch ( http://www.j10n.org/files/w3m-cvs-1.914-ambwidth.patch ).
+
 2010-07-24  Ito Hiroyuki  <ZXB01226 at nifty.com>
 
 	* [w3m-dev 04326] suppress compile warnings
@@ -9041,4 +9049,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1018 2010/07/24 04:42:38 htrb Exp $
+$Id: ChangeLog,v 1.1019 2010/07/25 09:55:05 htrb Exp $

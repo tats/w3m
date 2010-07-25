@@ -44,6 +44,7 @@ extern wc_wchar_t wc_any_to_iso2022(wc_wchar_t cc, wc_status *st);
 extern wc_wchar_t wc_ucs_to_iso2022(wc_uint32 ucs);
 extern wc_wchar_t wc_ucs_to_iso2022w(wc_uint32 ucs);
 extern wc_ccs     wc_ucs_to_ccs(wc_uint32 ucs);
+extern wc_bool    wc_is_ucs_ambiguous_width(wc_uint32 ucs);
 extern wc_bool    wc_is_ucs_wide(wc_uint32 ucs);
 extern wc_bool    wc_is_ucs_combining(wc_uint32 ucs);
 extern wc_bool    wc_is_ucs_hangul(wc_uint32 ucs);

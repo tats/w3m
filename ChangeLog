@@ -1,3 +1,7 @@
+2010-07-26  Ito Hiroyuki  <ZXB01226 at nifty.com>
+
+	* acinclude.m4: define AC_W3M_SSL_DIGEST_AUTH
+
 2010-07-25  AIDA Shinra <shinra@j10n.org>
 
 	* [w3m-dev 04049] Ctrl-C safe resolver
@@ -9049,4 +9053,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1019 2010/07/25 09:55:05 htrb Exp $
+$Id: ChangeLog,v 1.1020 2010/07/26 11:24:14 htrb Exp $

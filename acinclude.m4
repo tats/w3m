@@ -283,18 +283,6 @@ AC_DEFUN([AC_W3M_KEYMAP],
  AC_DEFINE_UNQUOTED(KEYBIND, $enable_keymap)])
 #
 # ----------------------------------------------------------------
-# AC_W3M_DIGEST_AUTH
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_DIGEST_AUTH],
-[AC_SUBST(USE_DIGEST_AUTH)
- AC_MSG_CHECKING(if digest auth is enabled)
- AC_ARG_ENABLE(digest_auth,
- [  --disable-digest-auth		disable digest auth],,
- [enable_digest_auth="yes"])
- test x"$enable_digest_auth" = xyes && AC_DEFINE(USE_DIGEST_AUTH)
- AC_MSG_RESULT($enable_digest_auth)])
-#
-# ----------------------------------------------------------------
 # AC_W3M_MIGEMO
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_MIGEMO],
@@ -426,6 +414,7 @@ AC_ARG_WITH(termlib,
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
+AC_SUBST(LIBGC)
 AC_ARG_WITH(gc,
  [  --with-gc[=PREFIX]	  	libgc PREFIX],
  [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
@@ -456,7 +445,7 @@ AC_ARG_WITH(gc,
    fi
  fi
  unset ac_cv_lib_gc_GC_init
- AC_CHECK_LIB(gc, GC_init, [LIBS="$LIBS -lgc"])
+ AC_CHECK_LIB(gc, GC_init, [LIBGC="-lgc"])
  if test x"$ac_cv_lib_gc_GC_init" = xno; then
     AC_MSG_CHECKING(GC library location)
     AC_MSG_RESULT($with_gc)
@@ -466,7 +455,7 @@ AC_ARG_WITH(gc,
       LDFLAGS="$LDFLAGS -L$dir/lib"
       AC_MSG_CHECKING($dir)
       unset ac_cv_lib_gc_GC_init
-      AC_CHECK_LIB(gc, GC_init, [gclibdir="$dir/lib"; LIBS="$LIBS -L$dir/lib -lgc"; break])
+      AC_CHECK_LIB(gc, GC_init, [gclibdir="$dir/lib"; LIBGC="-L$dir/lib -lgc"; break])
       LDFLAGS="$ldflags"
     done
     if test x"$gclibdir" = xno; then
@@ -475,9 +464,9 @@ AC_ARG_WITH(gc,
  fi])
 #
 # ----------------------------------------------------------------
-# AC_W3M_SSL
+# AC_W3M_SSL_DIGEST_AUTH
 # ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_SSL],
+AC_DEFUN([AC_W3M_SSL_DIGEST_AUTH],
 [AC_SUBST(USE_SSL)
 AC_SUBST(USE_SSL_VERIFY)
 AC_MSG_CHECKING(if SSL is suported)
@@ -519,7 +508,19 @@ if test x"$with_ssl" != xno; then
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
   fi
-fi])
+fi
+AC_SUBST(USE_DIGEST_AUTH)
+AC_MSG_CHECKING(if digest auth is enabled)
+AC_ARG_ENABLE(digest_auth,
+ [  --disable-digest-auth		disable digest auth],,
+ [enable_digest_auth="yes"])
+if test x"$enable_digest_auth" = xyes -a x"$w3m_ssl" = xfound; then
+  AC_DEFINE(USE_DIGEST_AUTH)
+else
+  enable_digest_auth="no"
+fi
+AC_MSG_RESULT($enable_digest_auth)
+])
 #
 # ----------------------------------------------------------------
 # AC_W3M_ALARM

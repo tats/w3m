@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.144 2010/07/25 09:55:05 htrb Exp $ */
+/* $Id: fm.h,v 1.145 2010/07/26 11:38:53 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -1112,8 +1112,10 @@ global int accept_cookie init(FALSE);
 global int accept_bad_cookie init(ACCEPT_BAD_COOKIE_DISCARD);
 global char *cookie_reject_domains init(NULL);
 global char *cookie_accept_domains init(NULL);
+global char *cookie_avoid_wrong_number_of_dots init(NULL);
 global TextList *Cookie_reject_domains;
 global TextList *Cookie_accept_domains;
+global TextList *Cookie_avoid_wrong_number_of_dots_domains;
 #endif				/* USE_COOKIE */
 
 #ifdef USE_IMAGE

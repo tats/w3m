@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.113 2010/07/25 09:55:05 htrb Exp $ */
+/* $Id: rc.c,v 1.114 2010/07/26 11:38:53 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -200,6 +200,7 @@ static int OptionEncode = FALSE;
 #define CMT_ACCEPTBADCOOKIE N_("Action to be taken on invalid cookie")
 #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
 #define CMT_COOKIE_ACCEPT_DOMAINS N_("Domains to accept cookies from")
+#define CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS N_("Domains to avoid [wrong number of dots]")
 #endif
 #define CMT_FOLLOW_REDIRECTION N_("Number of redirections to follow")
 #define CMT_META_REFRESH N_("Enable processing of meta-refresh tag")
@@ -581,6 +582,9 @@ struct param_ptr params8[] = {
      (void *)&cookie_reject_domains, CMT_COOKIE_REJECT_DOMAINS, NULL},
     {"cookie_accept_domains", P_STRING, PI_TEXT,
      (void *)&cookie_accept_domains, CMT_COOKIE_ACCEPT_DOMAINS, NULL},
+    {"cookie_avoid_wrong_number_of_dots", P_STRING, PI_TEXT,
+     (void *)&cookie_avoid_wrong_number_of_dots,
+     CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif
@@ -1119,6 +1123,9 @@ parse_cookie()
 	Cookie_reject_domains = make_domain_list(cookie_reject_domains);
     if (non_null(cookie_accept_domains))
 	Cookie_accept_domains = make_domain_list(cookie_accept_domains);
+    if (non_null(cookie_avoid_wrong_number_of_dots))
+	Cookie_avoid_wrong_number_of_dots_domains
+	       	= make_domain_list(cookie_avoid_wrong_number_of_dots);
 }
 #endif
 

@@ -1,3 +1,11 @@
+2010-07-26  d+w3m@vdr.jp
+
+	* [w3m-dev 04237] [patch] cookie avoid [wrong number of dots]
+	* rc.c: Introduce option cookie_avoid_wrong_number_of_dots.
+	* fm.h: add global variables cookie_avoid_wrong_number_of_dots and Cookie_avoid_wrong_number_of_dots_domains.
+	* cookie.c (check_avoid_wrong_number_of_dots_domain): added.
+	(add_cookie): use check_avoid_wrong_number_of_dots_domain().
+
 2010-07-26  Ito Hiroyuki  <ZXB01226 at nifty.com>
 
 	* acinclude.m4: define AC_W3M_SSL_DIGEST_AUTH
@@ -9053,4 +9061,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1020 2010/07/26 11:24:14 htrb Exp $
+$Id: ChangeLog,v 1.1021 2010/07/26 11:38:53 htrb Exp $

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2010-07-24 17:31+0900\n"
+"POT-Creation-Date: 2010-07-26 16:12+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -572,267 +572,271 @@ msgstr ""
 msgid "Domains to accept cookies from"
 msgstr ""
 
-#: rc.c:204
-msgid "Number of redirections to follow"
+#: rc.c:203
+msgid "Domains to avoid [wrong number of dots]"
 msgstr ""
 
 #: rc.c:205
+msgid "Number of redirections to follow"
+msgstr ""
+
+#: rc.c:206
 msgid "Enable processing of meta-refresh tag"
 msgstr ""
 
-#: rc.c:208
+#: rc.c:209
 msgid "Enable Migemo (Roma-ji search)"
 msgstr ""
 
-#: rc.c:209
+#: rc.c:210
 msgid "Migemo command"
 msgstr ""
 
-#: rc.c:213
+#: rc.c:214
 msgid "Display charset"
 msgstr ""
 
-#: rc.c:214
+#: rc.c:215
 msgid "Default document charset"
 msgstr ""
 
-#: rc.c:215
+#: rc.c:216
 msgid "Automatic charset detect when loading"
 msgstr ""
 
-#: rc.c:216
+#: rc.c:217
 msgid "System charset"
 msgstr ""
 
-#: rc.c:217
+#: rc.c:218
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr ""
 
-#: rc.c:218
+#: rc.c:219
 msgid "Output halfdump with display charset"
 msgstr ""
 
-#: rc.c:219
+#: rc.c:220
 msgid "Use multi column characters"
 msgstr ""
 
-#: rc.c:220
+#: rc.c:221
 msgid "Use combining characters"
 msgstr ""
 
-#: rc.c:221
+#: rc.c:222
 msgid "Use double width for some Unicode characters"
 msgstr ""
 
-#: rc.c:222
+#: rc.c:223
 msgid "Use Unicode language tags"
 msgstr ""
 
-#: rc.c:223
+#: rc.c:224
 msgid "Charset conversion using Unicode map"
 msgstr ""
 
-#: rc.c:224
+#: rc.c:225
 msgid "Charset conversion when loading"
 msgstr ""
 
-#: rc.c:225
+#: rc.c:226
 msgid "Adjust search string for document charset"
 msgstr ""
 
-#: rc.c:226
+#: rc.c:227
 msgid "Fix character width when conversion"
 msgstr ""
 
-#: rc.c:227
+#: rc.c:228
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr ""
 
-#: rc.c:228
+#: rc.c:229
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr ""
 
-#: rc.c:229
+#: rc.c:230
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr ""
 
-#: rc.c:230
+#: rc.c:231
 msgid "Use JIS X 0201 Katakana"
 msgstr ""
 
-#: rc.c:231
+#: rc.c:232
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr ""
 
-#: rc.c:232
+#: rc.c:233
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr ""
 
-#: rc.c:233
+#: rc.c:234
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr ""
 
-#: rc.c:234
+#: rc.c:235
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr ""
 
-#: rc.c:235
+#: rc.c:236
 msgid "Simple Preserve space"
 msgstr ""
 
-#: rc.c:238
+#: rc.c:239
 msgid "keymap file"
 msgstr ""
 
-#: rc.c:255
+#: rc.c:256
 msgid "black"
 msgstr ""
 
-#: rc.c:256
+#: rc.c:257
 msgid "red"
 msgstr ""
 
-#: rc.c:257
+#: rc.c:258
 msgid "green"
 msgstr ""
 
-#: rc.c:258
+#: rc.c:259
 msgid "yellow"
 msgstr ""
 
-#: rc.c:259
+#: rc.c:260
 msgid "blue"
 msgstr ""
 
-#: rc.c:260
+#: rc.c:261
 msgid "magenta"
 msgstr ""
 
-#: rc.c:261
+#: rc.c:262
 msgid "cyan"
 msgstr ""
 
-#: rc.c:262
+#: rc.c:263
 msgid "white"
 msgstr ""
 
-#: rc.c:263
+#: rc.c:264
 msgid "terminal"
 msgstr ""
 
-#: rc.c:282
+#: rc.c:283
 msgid "none"
 msgstr ""
 
-#: rc.c:283
+#: rc.c:284
 msgid "current URL"
 msgstr ""
 
-#: rc.c:284
+#: rc.c:285
 msgid "link URL"
 msgstr ""
 
-#: rc.c:289
+#: rc.c:290
 msgid "simple"
 msgstr ""
 
-#: rc.c:290
+#: rc.c:291
 msgid "use tag"
 msgstr ""
 
-#: rc.c:291
+#: rc.c:292
 msgid "fontify"
 msgstr ""
 
-#: rc.c:297
+#: rc.c:298
 msgid "A:relative to screen height"
 msgstr ""
 
-#: rc.c:298
+#: rc.c:299
 msgid "B:fixed speed"
 msgstr ""
 
-#: rc.c:305
+#: rc.c:306
 msgid "unspecified"
 msgstr ""
 
-#: rc.c:306
+#: rc.c:307
 msgid "inet inet6"
 msgstr ""
 
-#: rc.c:307
+#: rc.c:308
 msgid "inet6 inet"
 msgstr ""
 
-#: rc.c:308
+#: rc.c:309
 msgid "inet only"
 msgstr ""
 
-#: rc.c:309
+#: rc.c:310
 msgid "inet6 only"
 msgstr ""
 
-#: rc.c:316
+#: rc.c:317
 msgid "discard"
 msgstr ""
 
-#: rc.c:318
+#: rc.c:319
 msgid "accept"
 msgstr ""
 
-#: rc.c:320
+#: rc.c:321
 msgid "ask"
 msgstr ""
 
-#: rc.c:330
+#: rc.c:331
 msgid "OFF"
 msgstr ""
 
-#: rc.c:331
+#: rc.c:332
 msgid "Only ISO 2022"
 msgstr ""
 
-#: rc.c:332
+#: rc.c:333
 msgid "ON"
 msgstr ""
 
-#: rc.c:691
+#: rc.c:695
 msgid "Display Settings"
 msgstr ""
 
-#: rc.c:693
+#: rc.c:697
 msgid "Color Settings"
 msgstr ""
 
-#: rc.c:695
+#: rc.c:699
 msgid "Miscellaneous Settings"
 msgstr ""
 
-#: rc.c:696
+#: rc.c:700
 msgid "Directory Settings"
 msgstr ""
 
-#: rc.c:697
+#: rc.c:701
 msgid "External Program Settings"
 msgstr ""
 
-#: rc.c:698
+#: rc.c:702
 msgid "Network Settings"
 msgstr ""
 
-#: rc.c:699
+#: rc.c:703
 msgid "Proxy Settings"
 msgstr ""
 
-#: rc.c:701
+#: rc.c:705
 msgid "SSL Settings"
 msgstr ""
 
-#: rc.c:704
+#: rc.c:708
 msgid "Cookie Settings"
 msgstr ""
 
-#: rc.c:707
+#: rc.c:711
 msgid "Charset Settings"
 msgstr ""
 
@@ -841,6 +845,6 @@ msgstr ""
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1183
+#: rc.c:1190
 msgid "en;q=1.0"
 msgstr ""

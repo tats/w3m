@@ -1,3 +1,9 @@
+2010-07-30  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04345] Re: "important" bugs from bugs.debian.org
+	* file.c (HR_ATTR_WIDTH_MAX): added.
+	* file.c (process_hr): check w > HR_ATTR_WIDTH_MAX
+
 2010-07-26  d+w3m@vdr.jp
 
 	* [w3m-dev 04237] [patch] cookie avoid [wrong number of dots]
@@ -9061,4 +9067,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1021 2010/07/26 11:38:53 htrb Exp $
+$Id: ChangeLog,v 1.1022 2010/07/30 08:50:39 htrb Exp $

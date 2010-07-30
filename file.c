@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.261 2010/07/30 08:50:39 htrb Exp $ */
+/* $Id: file.c,v 1.262 2010/07/30 08:57:49 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3914,6 +3914,8 @@ process_textarea(struct parsed_tag *tag, int width)
 {
     Str tmp = NULL;
     char *p;
+#define TEXTAREA_ATTR_COL_MAX 4096
+#define TEXTAREA_ATTR_ROWS_MAX 4096
 
     if (cur_form_id < 0) {
 	char *s = "<form_int method=internal action=none>";
@@ -3928,14 +3930,20 @@ process_textarea(struct parsed_tag *tag, int width)
 	cur_textarea_size = atoi(p);
 	if (p[strlen(p) - 1] == '%')
 	    cur_textarea_size = width * cur_textarea_size / 100 - 2;
-	if (cur_textarea_size <= 0)
+	if (cur_textarea_size <= 0) {
 	    cur_textarea_size = 20;
+	} else if (cur_textarea_size > TEXTAREA_ATTR_COL_MAX) {
+	    cur_textarea_size = TEXTAREA_ATTR_COL_MAX;
+	}
     }
     cur_textarea_rows = 1;
     if (parsedtag_get_value(tag, ATTR_ROWS, &p)) {
 	cur_textarea_rows = atoi(p);
-	if (cur_textarea_rows <= 0)
+	if (cur_textarea_rows <= 0) {
 	    cur_textarea_rows = 1;
+	} else if (cur_textarea_rows > TEXTAREA_ATTR_ROWS_MAX) {
+	    cur_textarea_rows = TEXTAREA_ATTR_ROWS_MAX;
+	}
     }
     cur_textarea_readonly = parsedtag_exists(tag, ATTR_READONLY);
     if (n_textarea >= max_textarea) {

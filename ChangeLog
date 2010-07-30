@@ -1,8 +1,14 @@
 2010-07-30  Ito Hiroyuki  <ZXB01226@nifty.com>
 
+	* [w3m-dev 04348] Re: "important" bugs from bugs.debian.org
+	* file.c (TEXTAREA_ATTR_COL_MAX, TEXTAREA_ATTR_ROWS_MAX): added.
+	(process_textarea): check cur_textarea_size > TEXTAREA_ATTR_COL_MAX and cur_textarea_rows > TEXTAREA_ATTR_ROWS_MAX
+
+2010-07-30  Ito Hiroyuki  <ZXB01226@nifty.com>
+
 	* [w3m-dev 04345] Re: "important" bugs from bugs.debian.org
 	* file.c (HR_ATTR_WIDTH_MAX): added.
-	* file.c (process_hr): check w > HR_ATTR_WIDTH_MAX
+	(process_hr): check w > HR_ATTR_WIDTH_MAX
 
 2010-07-26  d+w3m@vdr.jp
 
@@ -12,7 +18,7 @@
 	* cookie.c (check_avoid_wrong_number_of_dots_domain): added.
 	(add_cookie): use check_avoid_wrong_number_of_dots_domain().
 
-2010-07-26  Ito Hiroyuki  <ZXB01226 at nifty.com>
+2010-07-26  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* acinclude.m4: define AC_W3M_SSL_DIGEST_AUTH
 
@@ -24,7 +30,7 @@
 	* main.c (sig_chld): use TRUE and FALSE instead of GRAPHIC_CHAR_ALL and GRAPHIC_CHAR_ASCII.
 	* merge ambiguous width patch ( http://www.j10n.org/files/w3m-cvs-1.914-ambwidth.patch ).
 
-2010-07-24  Ito Hiroyuki  <ZXB01226 at nifty.com>
+2010-07-24  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04326] suppress compile warnings
 	* file.c (digest_hex): type of the parameter s is "unsigned char *".
@@ -9067,4 +9073,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1022 2010/07/30 08:50:39 htrb Exp $
+$Id: ChangeLog,v 1.1023 2010/07/30 08:57:49 htrb Exp $

@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.262 2010/07/30 08:57:49 htrb Exp $ */
+/* $Id: file.c,v 1.263 2010/08/02 10:33:35 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -3228,15 +3228,10 @@ process_img(struct parsed_tag *tag, int width)
     p = remove_space(p);
     q = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &q);
+    if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
+	return tmp;
     t = q;
     parsedtag_get_value(tag, ATTR_TITLE, &t);
-    if (q == NULL || (*q == '\0' && ignore_null_img_alt)) {
-	if (!pseudoInlines && (t == NULL ||
-			       (*t == '\0' && ignore_null_img_alt)))
-	    return tmp;
-	q = t;
-    }
-  
     w = -1;
     if (parsedtag_get_value(tag, ATTR_WIDTH, &w)) {
 	if (w < 0) {

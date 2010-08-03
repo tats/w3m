@@ -1,3 +1,17 @@
+2010-08-03  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04343]
+	* file.c (loadGeneralFile): register user name and password for proxy authentication.
+	* url.c (HTTPrequest): unused variable seen_proxy_auth was removed
+	* fm.h: global variables proxy_auth_cookie and pauth are removed
+	* main.c (main): remove option -pauth
+	* doc/MANUAL.html: ditto
+	* doc-jp/MANUAL.html: ditto
+	* doc-jp/w3m.1: ditto
+	* doc/w3m.1: ditto
+	* doc/README.passwd: added
+	* doc-jp/README.passwd: added
+
 2010-07-31  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
 
 	* [w3m-dev 04350] Re: w3m's bugs from bugs.debian.org
@@ -9078,4 +9092,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1024 2010/08/02 10:33:35 htrb Exp $
+$Id: ChangeLog,v 1.1025 2010/08/03 10:02:16 htrb Exp $

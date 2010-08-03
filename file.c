@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.263 2010/08/02 10:33:35 htrb Exp $ */
+/* $Id: file.c,v 1.264 2010/08/03 10:02:16 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -1924,6 +1924,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		UFclose(&f);
 		add_auth_cookie_flag = 1;
 		status = HTST_NORMAL;
+		add_auth_user_passwd(auth_pu, qstr_unquote(realm)->ptr, uname, pwd, 1);
 		goto load_doc;
 	    }
 	}

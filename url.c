@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.97 2010/07/20 00:09:34 htrb Exp $ */
+/* $Id: url.c,v 1.98 2010/08/03 10:02:16 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
 #include <sys/types.h>
@@ -1379,7 +1379,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
     Str tmp;
     TextListItem *i;
     int seen_www_auth = 0;
-    int seen_proxy_auth = 0;
 #ifdef USE_COOKIE
     Str cookie;
 #endif				/* USE_COOKIE */
@@ -1403,7 +1402,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	    }
 	    if (strncasecmp(i->ptr, "Proxy-Authorization:",
 			    sizeof("Proxy-Authorization:") - 1) == 0) {
-		seen_proxy_auth = 1;
 #ifdef USE_SSL
 		if (pu->scheme == SCM_HTTPS
 		    && hr->command != HR_COMMAND_CONNECT)

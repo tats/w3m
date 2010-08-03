@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.145 2010/07/26 11:38:53 htrb Exp $ */
+/* $Id: fm.h,v 1.146 2010/08/03 10:02:16 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -979,8 +979,6 @@ global int IgnoreCase init(TRUE);
 global int WrapSearch init(FALSE);
 global int squeezeBlankLine init(FALSE);
 global char *BookmarkFile init(NULL);
-global char *pauth init(NULL);
-global Str proxy_auth_cookie init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 #ifdef USE_DICT

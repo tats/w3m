@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.265 2010/08/03 10:02:16 htrb Exp $ */
+/* $Id: main.c,v 1.266 2010/08/03 10:25:23 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -194,11 +194,9 @@ fusage(FILE * f, int err)
 #ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
-#ifndef DEBIAN			/* disabled by ukai: -s is used for squeeze multi lines */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
-#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -244,11 +242,7 @@ fusage(FILE * f, int err)
 #endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use graphic character\n");
     fprintf(f, "    -no-graph        don't use graphic character\n");
-#ifdef DEBIAN			/* replaced by ukai: pager requires -s */
-    fprintf(f, "    -s               squeeze multiple blank lines\n");
-#else
     fprintf(f, "    -S               squeeze multiple blank lines\n");
-#endif
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -530,14 +524,12 @@ main(int argc, char **argv, char **envp)
 		    PagerMax = atoi(argv[i]);
 	    }
 #ifdef USE_M17N
-#ifndef DEBIAN			/* XXX: use -o kanjicode={S|J|E} */
 	    else if (!strcmp("-s", argv[i]))
 		DisplayCharset = WC_CES_SHIFT_JIS;
 	    else if (!strcmp("-j", argv[i]))
 		DisplayCharset = WC_CES_ISO_2022_JP;
 	    else if (!strcmp("-e", argv[i]))
 		DisplayCharset = WC_CES_EUC_JP;
-#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -702,11 +694,7 @@ main(int argc, char **argv, char **envp)
 		accept_cookie = TRUE;
 	    }
 #endif				/* USE_COOKIE */
-#ifdef DEBIAN
-	    else if (!strcmp("-s", argv[i]))
-#else
 	    else if (!strcmp("-S", argv[i]))
-#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
@@ -862,12 +850,6 @@ main(int argc, char **argv, char **envp)
 			   w3m_version,
 			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
 			   NULL);
-#ifdef DEBIAN
-	    Strcat_m_charp(s_page,
-			   "<p>Debian package is maintained by <a href='mailto:ukai@debian.or.jp'>Fumitoshi UKAI</a>.",
-			   "You can read <a href='file:///usr/share/doc/w3m/'>w3m documents on your local system</a>.",
-			   NULL);
-#endif				/* DEBIAN */
 	    newbuf = loadHTMLString(s_page);
 	    if (newbuf == NULL)
 		Strcat_charp(err_msg, "w3m: Can't load string.\n");

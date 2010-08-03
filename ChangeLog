@@ -1,3 +1,10 @@
+2010-08-03  d+w3m@vdr.jp
+
+	* [w3m-dev 04363] Re: w3m's bugs from bugs.debian.org
+	* doc/w3m.1: revert option -S
+	* doc-jp/w3m.1: revert option -S, -e, -j and -s
+	* main.c: remove codes for Debian
+
 2010-08-03  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04343]
@@ -9092,4 +9099,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1025 2010/08/03 10:02:16 htrb Exp $
+$Id: ChangeLog,v 1.1026 2010/08/03 10:25:23 htrb Exp $

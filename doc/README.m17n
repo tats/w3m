@@ -202,7 +202,7 @@ Option pannel
        Use alternate expression with ASCII for entities. (Default: ON)
        If it is OFF, entities are treated as ISO 8859-1
    graphic_char
-       Use graphic char for border of table and menu.
+       Use DEC special graphics for border of table and menu.
        If it is OFF, ruled line is used with CJK charset or UTF-8.
 
 Code conversion

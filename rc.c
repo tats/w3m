@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.114 2010/07/26 11:38:53 htrb Exp $ */
+/* $Id: rc.c,v 1.115 2010/08/04 14:06:36 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -87,7 +87,7 @@ static int OptionEncode = FALSE;
 #endif
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
-#define CMT_GRAPHIC_CHAR N_("Use graphic char for border of table and menu")
+#define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
@@ -335,6 +335,13 @@ static struct sel_c auto_detect_str[] = {
 };
 #endif
 
+static struct sel_c graphic_char_str[] = {
+    {N_S(GRAPHIC_CHAR_ASCII), N_("ASCII")},
+    {N_S(GRAPHIC_CHAR_CHARSET), N_("charset specific")},
+    {N_S(GRAPHIC_CHAR_DEC), N_("DEC special graphics")},
+    {0, NULL, NULL}
+};
+
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
@@ -371,8 +378,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
-     CMT_GRAPHIC_CHAR, NULL},
+    {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
+     CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,

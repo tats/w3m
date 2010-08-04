@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.2\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2010-07-26 16:12+0900\n"
-"PO-Revision-Date: 2010-07-26 16:13+0900\n"
+"POT-Creation-Date: 2010-08-04 18:33+0900\n"
+"PO-Revision-Date: 2010-08-04 18:36+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -202,8 +203,8 @@ msgid "Use ASCII equivalents to display entities"
 msgstr "エンティティを ASCII の代替表現で表す"
 
 #: rc.c:90
-msgid "Use graphic char for border of table and menu"
-msgstr "テーブルやメニューの枠に graphic 文字を使う"
+msgid "Character type for border of table and menu"
+msgstr "テーブルやメニューの枠に使う文字"
 
 #: rc.c:91
 msgid "Fold lines in TEXTAREA"
@@ -801,43 +802,55 @@ msgstr "ISO 2022 のみ"
 msgid "ON"
 msgstr "有効"
 
-#: rc.c:695
+#: rc.c:339
+msgid "ASCII"
+msgstr "ASCII"
+
+#: rc.c:340
+msgid "charset specific"
+msgstr "文字コード依存"
+
+#: rc.c:341
+msgid "DEC special graphics"
+msgstr "DEC 特殊文字"
+
+#: rc.c:702
 msgid "Display Settings"
 msgstr "表示関係"
 
-#: rc.c:697
+#: rc.c:704
 msgid "Color Settings"
 msgstr "表示色"
 
-#: rc.c:699
+#: rc.c:706
 msgid "Miscellaneous Settings"
 msgstr "雑多な設定"
 
-#: rc.c:700
+#: rc.c:707
 msgid "Directory Settings"
 msgstr "ディレクトリ設定"
 
-#: rc.c:701
+#: rc.c:708
 msgid "External Program Settings"
 msgstr "外部プログラム"
 
-#: rc.c:702
+#: rc.c:709
 msgid "Network Settings"
 msgstr "ネットワークの設定"
 
-#: rc.c:703
+#: rc.c:710
 msgid "Proxy Settings"
 msgstr "プロキシの設定"
 
-#: rc.c:705
+#: rc.c:712
 msgid "SSL Settings"
 msgstr "SSLの設定"
 
-#: rc.c:708
+#: rc.c:715
 msgid "Cookie Settings"
 msgstr "クッキーの設定"
 
-#: rc.c:711
+#: rc.c:718
 msgid "Charset Settings"
 msgstr "文字コードの設定"
 
@@ -846,6 +859,6 @@ msgstr "文字コードの設定"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1190
+#: rc.c:1197
 msgid "en;q=1.0"
 msgstr "ja;q=1.0, en;q=0.5"

@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2010-07-26 16:12+0900\n"
+"POT-Creation-Date: 2010-08-04 18:33+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -201,7 +202,7 @@ msgid "Use ASCII equivalents to display entities"
 msgstr ""
 
 #: rc.c:90
-msgid "Use graphic char for border of table and menu"
+msgid "Character type for border of table and menu"
 msgstr ""
 
 #: rc.c:91
@@ -800,43 +801,55 @@ msgstr ""
 msgid "ON"
 msgstr ""
 
-#: rc.c:695
-msgid "Display Settings"
+#: rc.c:339
+msgid "ASCII"
 msgstr ""
 
-#: rc.c:697
-msgid "Color Settings"
+#: rc.c:340
+msgid "charset specific"
 msgstr ""
 
-#: rc.c:699
-msgid "Miscellaneous Settings"
-msgstr ""
-
-#: rc.c:700
-msgid "Directory Settings"
-msgstr ""
-
-#: rc.c:701
-msgid "External Program Settings"
+#: rc.c:341
+msgid "DEC special graphics"
 msgstr ""
 
 #: rc.c:702
-msgid "Network Settings"
+msgid "Display Settings"
 msgstr ""
 
-#: rc.c:703
-msgid "Proxy Settings"
+#: rc.c:704
+msgid "Color Settings"
 msgstr ""
 
-#: rc.c:705
-msgid "SSL Settings"
+#: rc.c:706
+msgid "Miscellaneous Settings"
+msgstr ""
+
+#: rc.c:707
+msgid "Directory Settings"
 msgstr ""
 
 #: rc.c:708
+msgid "External Program Settings"
+msgstr ""
+
+#: rc.c:709
+msgid "Network Settings"
+msgstr ""
+
+#: rc.c:710
+msgid "Proxy Settings"
+msgstr ""
+
+#: rc.c:712
+msgid "SSL Settings"
+msgstr ""
+
+#: rc.c:715
 msgid "Cookie Settings"
 msgstr ""
 
-#: rc.c:711
+#: rc.c:718
 msgid "Charset Settings"
 msgstr ""
 
@@ -845,6 +858,6 @@ msgstr ""
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1190
+#: rc.c:1197
 msgid "en;q=1.0"
 msgstr ""

@@ -1,3 +1,12 @@
+2010-08-04  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04369] Re: w3m's bugs from bugs.debian.org
+	* terms.c (graph_ok): fix condition (UseGraphicChar != GRAPHIC_CHAR_DEC)
+	* symbol.c (get_symbol): fix condition (UseGraphicChar != GRAPHIC_CHAR_ASCII)
+	* rc.c (params1): type of graphic_char option is PI_SEL_C
+	* main.c (main): use GRAPHIC_CHAR_ASCII and GRAPHIC_CHAR_DEC instead of FALSE and TRUE
+	* fm.h (GRAPHIC_CHAR_ASCII, GRAPHIC_CHAR_DEC, GRAPHIC_CHAR_CHARSET): added
+
 2010-08-03  d+w3m@vdr.jp
 
 	* [w3m-dev 04363] Re: w3m's bugs from bugs.debian.org
@@ -9099,4 +9108,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1026 2010/08/03 10:25:23 htrb Exp $
+$Id: ChangeLog,v 1.1027 2010/08/04 14:06:35 htrb Exp $

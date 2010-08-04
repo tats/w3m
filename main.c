@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.266 2010/08/03 10:25:23 htrb Exp $ */
+/* $Id: main.c,v 1.267 2010/08/04 14:06:36 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -240,8 +240,8 @@ fusage(FILE * f, int err)
     fprintf(f,
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
-    fprintf(f, "    -graph           use graphic character\n");
-    fprintf(f, "    -no-graph        don't use graphic character\n");
+    fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
+    fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
     fprintf(f, "    -S               squeeze multiple blank lines\n");
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
@@ -554,9 +554,9 @@ main(int argc, char **argv, char **envp)
 	    }
 #endif
 	    else if (!strcmp("-graph", argv[i]))
-		UseGraphicChar = TRUE;
+		UseGraphicChar = GRAPHIC_CHAR_DEC;
 	    else if (!strcmp("-no-graph", argv[i]))
-		UseGraphicChar = FALSE;
+		UseGraphicChar = GRAPHIC_CHAR_ASCII;
 	    else if (!strcmp("-T", argv[i])) {
 		if (++i >= argc)
 		    usage();

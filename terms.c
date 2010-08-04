@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.61 2010/07/25 09:55:05 htrb Exp $ */
+/* $Id: terms.c,v 1.62 2010/08/04 14:06:36 htrb Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -1201,7 +1201,7 @@ graphend(void)
 int
 graph_ok(void)
 {
-    if (! UseGraphicChar)
+    if (UseGraphicChar != GRAPHIC_CHAR_DEC)
 	return 0;
     return T_as[0] != 0 && T_ae[0] != 0 && T_ac[0] != 0;
 }

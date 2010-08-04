@@ -87,7 +87,7 @@ get_symbol(wc_ces charset, int *width)
     charset_symbol_set *p;
     symbol_set *s = NULL;
 
-    if (UseGraphicChar) {
+    if (UseGraphicChar != GRAPHIC_CHAR_ASCII) {
 	if (charset == save_charset && save_symbol != NULL &&
 	    *width == save_symbol->width) {
 	    return save_symbol->conved_item;

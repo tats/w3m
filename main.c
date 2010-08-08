@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.267 2010/08/04 14:06:36 htrb Exp $ */
+/* $Id: main.c,v 1.268 2010/08/08 09:53:42 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -626,6 +626,9 @@ main(int argc, char **argv, char **envp)
 		if (++i >= argc)
 		    usage();
 		COLS = atoi(argv[i]);
+		if (COLS > MAXIMUM_COLS) {
+		    COLS = MAXIMUM_COLS;
+		}
 	    }
 	    else if (!strcmp("-ppc", argv[i])) {
 		double ppc;
@@ -776,7 +779,7 @@ main(int argc, char **argv, char **envp)
     }
     if (w3m_dump) {
 	if (COLS == 0)
-	    COLS = 80;
+	    COLS = DEFAULT_COLS;
     }
 
 #ifdef USE_BINMODE_STREAM

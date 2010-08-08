@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.147 2010/08/04 14:06:36 htrb Exp $ */
+/* $Id: fm.h,v 1.148 2010/08/08 09:53:42 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -100,6 +100,9 @@ void bzero(void *, int);
  */
 #define LINELEN	256		/* Initial line length */
 #define PAGER_MAX_LINE	10000	/* Maximum line kept as pager */
+
+#define MAXIMUM_COLS 1024
+#define DEFAULT_COLS 80
 
 #ifdef USE_IMAGE
 #define MAX_IMAGE 1000

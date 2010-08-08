@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.14 2010/07/18 14:10:09 htrb Exp $ */
+/* $Id: backend.c,v 1.15 2010/08/08 09:53:42 htrb Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -294,7 +294,7 @@ backend(void)
 
     w3m_dump = 0;
     if (COLS == 0)
-	COLS = 80;
+	COLS = DEFAULT_COLS;
 #ifdef USE_MOUSE
     use_mouse = FALSE;
 #endif				/* USE_MOUSE */

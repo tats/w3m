@@ -1,3 +1,11 @@
+2010-08-08  d+w3m@vdr.jp
+
+	* [w3m-dev 04360] Re: "important" bugs from bugs.debian.org
+	* main.c (main): use DEFAULT_COLS
+	(main): the maximum value of the -cols option is MAXIMUM_COLS
+	* backend.c (backend): use DEFAULT_COLS
+	* fm.h (MAXIMUM_COLS, DEFAULT_COLS): added
+
 2010-08-04  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04369] Re: w3m's bugs from bugs.debian.org
@@ -9108,4 +9116,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1027 2010/08/04 14:06:35 htrb Exp $
+$Id: ChangeLog,v 1.1028 2010/08/08 09:53:42 htrb Exp $

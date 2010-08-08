@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.56 2010/07/19 23:34:01 htrb Exp $ */
+/* $Id: table.c,v 1.57 2010/08/08 10:14:32 htrb Exp $ */
 /* 
  * HTML table
  */
@@ -2408,6 +2408,8 @@ table_close_anchor0(struct table *tbl, struct table_mode *mode)
 	case HTML_N_COLGROUP:\
 	case HTML_COL
 
+#define ATTR_ROWSPAN_MAX 32766
+
 static int
 feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	       int width, struct parsed_tag *tag)
@@ -2592,6 +2594,11 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	else
 	    valign = HTT_MIDDLE;
 	if (parsedtag_get_value(tag, ATTR_ROWSPAN, &rowspan)) {
+        if(rowspan > ATTR_ROWSPAN_MAX)
+        {
+            fprintf(stderr, "  Table Rowspan too large. Limiting to %d.\n", ATTR_ROWSPAN_MAX);
+            rowspan = ATTR_ROWSPAN_MAX;
+        }
 	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
 		check_row(tbl, tbl->row + rowspan);
 	}

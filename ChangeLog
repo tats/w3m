@@ -1,6 +1,6 @@
 2010-08-09  Ito Hiroyuki  <ZXB01226 at nifty.com>
 
-	* [w3m-dev 04375] Re: "important" bugs from bugs.debian.org
+	* [w3m-dev 04374] Re: "important" bugs from bugs.debian.org
 	* table.c (feed_table_tag): don't show message when rowspan is greater than ATTR_ROWSPAN_MAX
 	* [w3m-dev 04376] Re: "important" bugs from bugs.debian.org
 	* table.c (feed_table_tag): fix indent
@@ -9130,4 +9130,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1030 2010/08/09 11:59:19 htrb Exp $
+$Id: ChangeLog,v 1.1031 2010/08/09 12:00:19 htrb Exp $

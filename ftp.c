@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.39 2007/05/31 01:19:50 inu Exp $ */
+/* $Id: ftp.c,v 1.40 2010/08/10 10:16:57 htrb Exp $ */
 #include <stdio.h>
 #ifndef __MINGW32_VERSION
 #include <pwd.h>
@@ -24,6 +24,10 @@
 #else
 #include <winsock.h>
 #endif /* __MINGW32_VERSION */
+
+#ifdef HAVE_SOCKLEN_T
+typedef int socklen_t;
+#endif
 
 typedef struct _FTP {
     char *host;
@@ -128,7 +132,7 @@ ftp_login(FTP ftp)
 
 	if (n > 0 && ftp->pass[n - 1] == '@') {
 	    struct sockaddr_in sockname;
-	    int socknamelen = sizeof(sockname);
+	    socklen_t socknamelen = sizeof(sockname);
 
 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
 		struct hostent *sockent;
@@ -192,7 +196,8 @@ ftp_pasv(FTP ftp)
     int family;
 #ifdef INET6
     struct sockaddr_storage sockaddr;
-    int sockaddrlen, port;
+    int port;
+    socklen_t sockaddrlen;
     unsigned char d1, d2, d3, d4;
     char abuf[INET6_ADDRSTRLEN];
 #endif

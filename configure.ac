@@ -107,6 +107,11 @@ AC_W3M_TERMLIB
 AC_W3M_GC
 AC_CHECK_LIB(z, zError, [AUXBIN_TARGETS="$AUXBIN_TARGETS inflate\$(EXT)"])
 
+AC_CHECK_TYPE([socklen_t],
+	 [AC_DEFINE(HAVE_SOCKLEN_T)], ,
+	 [#include <sys/types.h>
+	  #include <sys/socket.h>])
+
 AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)

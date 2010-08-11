@@ -1,3 +1,8 @@
+2010-08-11  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
+
+	* [w3m-dev 04381] Re: check socklen_t
+	* ftp.c: fix condition (#ifndef HAVE_SOCKLEN_T)
+
 2010-08-10  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04379] check socklen_t
@@ -9136,4 +9141,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1032 2010/08/10 10:16:57 htrb Exp $
+$Id: ChangeLog,v 1.1033 2010/08/11 10:07:02 htrb Exp $

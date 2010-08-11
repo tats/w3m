@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.40 2010/08/10 10:16:57 htrb Exp $ */
+/* $Id: ftp.c,v 1.41 2010/08/11 09:31:33 htrb Exp $ */
 #include <stdio.h>
 #ifndef __MINGW32_VERSION
 #include <pwd.h>
@@ -25,7 +25,7 @@
 #include <winsock.h>
 #endif /* __MINGW32_VERSION */
 
-#ifdef HAVE_SOCKLEN_T
+#ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif
 

@@ -60,6 +60,8 @@ kbd		HTML_NOP
 /kbd		HTML_NOP
 samp		HTML_NOP
 /samp		HTML_NOP
+span		HTML_SPAN
+/span		HTML_N_SPAN
 strong		HTML_STRONG
 /strong		HTML_N_STRONG
 var		HTML_NOP

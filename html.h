@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.29 2007/05/23 12:01:43 inu Exp $ */
+/* $Id: html.h,v 1.30 2010/08/12 08:56:14 htrb Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -202,6 +202,8 @@ typedef struct {
 #define HTML_N_I	110
 #define HTML_STRONG	111
 #define HTML_N_STRONG	112
+#define HTML_SPAN	113
+#define HTML_N_SPAN	114
 
    /* pseudo tag */
 #define HTML_SELECT_INT     120

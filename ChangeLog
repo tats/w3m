@@ -1,3 +1,11 @@
+2010-08-12  Peter J. R. Moulder
+
+	* [w3m-dev 04384]
+	* http://sourceforge.net/tracker/index.php?func=detail&aid=2987194&group_id=39518&atid=425441
+	* html.c: some tags have ALST_NOP attribute
+	* tagtable.tab: add <span> and </span>
+	* html.h (HTML_SPAN, HTML_N_SPAN): added
+
 2010-08-11  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
 
 	* [w3m-dev 04381] Re: check socklen_t
@@ -9141,4 +9149,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1033 2010/08/11 10:07:02 htrb Exp $
+$Id: ChangeLog,v 1.1034 2010/08/12 08:56:14 htrb Exp $

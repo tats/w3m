@@ -1,3 +1,9 @@
+2010-08-14  "Adam C. Emerson" <azure@azureprime.com>
+
+	* [w3m-dev 04390]
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=573789
+	* html.c: All elements have the id attribute.
+
 2010-08-12  Peter J. R. Moulder
 
 	* [w3m-dev 04384]
@@ -9149,4 +9155,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1034 2010/08/12 08:56:14 htrb Exp $
+$Id: ChangeLog,v 1.1035 2010/08/14 01:29:40 htrb Exp $

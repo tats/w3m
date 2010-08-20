@@ -1,3 +1,11 @@
+2010-08-20  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04402] Re: "normal" bugs from bugs.debian.org
+	* terms.c (reset_exit_with_value, reset_error_exit): added
+	(reset_exit): use reset_exit_with_value()
+	(ttymode_set, ttymode_reset, set_cc, getTCstr)
+	(sleep_till_anykey): use reset_error_exit() instead of reset_exit()
+
 2010-08-14  "Adam C. Emerson" <azure@azureprime.com>
 
 	* [w3m-dev 04390]
@@ -9155,4 +9163,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1035 2010/08/14 01:29:40 htrb Exp $
+$Id: ChangeLog,v 1.1036 2010/08/20 09:34:47 htrb Exp $

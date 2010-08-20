@@ -1,3 +1,12 @@
+2010-08-20  Karsten Schoelzel <kuser@gmx.de>
+
+	* [w3m-dev 04401] Re: mailto with options handling
+	* rc.c: Introduce option mailto_options
+	* main.c (handleMailto): added
+	(followA, cmd_loadURL): use handleMailto()
+	* fm.h (MAILTO_OPTIONS_USE_W3MMAILER, MAILTO_OPTIONS_IGNORE)
+	(MAILTO_OPTIONS_USE_MAILTO_URL): added
+
 2010-08-20  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04402] Re: "normal" bugs from bugs.debian.org
@@ -9163,4 +9172,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1036 2010/08/20 09:34:47 htrb Exp $
+$Id: ChangeLog,v 1.1037 2010/08/20 09:47:09 htrb Exp $

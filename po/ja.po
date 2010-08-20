@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.2\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2010-08-04 18:33+0900\n"
-"PO-Revision-Date: 2010-08-04 18:36+0900\n"
+"POT-Creation-Date: 2010-08-20 18:44+0900\n"
+"PO-Revision-Date: 2010-08-20 18:45+0900\n"
 "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
 "Language-Team: Japanese\n"
 "Language: \n"
@@ -379,478 +379,494 @@ msgid "Mailer"
 msgstr "利用するメーラ"
 
 #: rc.c:142
+msgid "How to call Mailer for mailto URLs with options"
+msgstr "mailto タグの取り扱い"
+
+#: rc.c:143
 msgid "External Browser"
 msgstr "外部ブラウザ"
 
-#: rc.c:143
+#: rc.c:144
 msgid "Second External Browser"
 msgstr "外部ブラウザその2"
 
-#: rc.c:144
+#: rc.c:145
 msgid "Third External Browser"
 msgstr "外部ブラウザその3"
 
-#: rc.c:145
+#: rc.c:146
 msgid "Disable secret file security check"
 msgstr "パスワードファイルのパーミッションをチェックしない"
 
-#: rc.c:146
+#: rc.c:147
 msgid "Password file"
 msgstr "パスワードファイル"
 
-#: rc.c:147
+#: rc.c:148
 msgid "File for setting form on loading"
 msgstr "文書読込時のフォーム設定用ファイル"
 
-#: rc.c:148
+#: rc.c:149
 msgid "Password for anonymous FTP (your mail address)"
 msgstr "FTPのパスワード(普通は自分のmail addressを使う)"
 
-#: rc.c:149
+#: rc.c:150
 msgid "Generate domain part of password for FTP"
 msgstr "FTPのパスワードのドメイン名を自動生成する"
 
-#: rc.c:150
+#: rc.c:151
 msgid "User-Agent identification string"
 msgstr "User-Agent"
 
-#: rc.c:151
+#: rc.c:152
 msgid "Accept-Encoding header"
 msgstr "圧縮方法(Accept-Encoding:)"
 
-#: rc.c:152
+#: rc.c:153
 msgid "Accept header"
 msgstr "受けつけるメディアタイプ(Accept:)"
 
-#: rc.c:153
+#: rc.c:154
 msgid "Accept-Language header"
 msgstr "受けつける言語(Accept-Language:)"
 
-#: rc.c:154
+#: rc.c:155
 msgid "Treat URL-like strings as links in all pages"
 msgstr "全てのページのURL風の文字列をリンクにする"
 
-#: rc.c:155
+#: rc.c:156
 msgid "Wrap search"
 msgstr "折り返し検索"
 
-#: rc.c:156
+#: rc.c:157
 msgid "Display unseen objects (e.g. bgimage tag)"
 msgstr "背景画像等へのリンクを作る"
 
-#: rc.c:157
+#: rc.c:158
 msgid "Uncompress compressed data automatically when downloading"
 msgstr "ダウンロード時に自動的に圧縮されたデータを解凍する"
 
-#: rc.c:159
+#: rc.c:160
 msgid "Run external viewer in a separate session"
 msgstr "外部ビューアを別セッションで動かす"
 
-#: rc.c:161
+#: rc.c:162
 msgid "Run external viewer in the background"
 msgstr "外部ビューアをバックグラウンドで動かす"
 
-#: rc.c:163
+#: rc.c:164
 msgid "Use external program for directory listing"
 msgstr "ディレクトリリストに外部コマンドを使う"
 
-#: rc.c:164
+#: rc.c:165
 msgid "URL of directory listing command"
 msgstr "ディレクトリリスト用コマンド"
 
-#: rc.c:166
+#: rc.c:167
 msgid "Enable dictionary lookup through CGI"
 msgstr "辞書引きをCGI経由でおこなう"
 
-#: rc.c:167
+#: rc.c:168
 msgid "URL of dictionary lookup command"
 msgstr "辞書引きコマンドのURL"
 
-#: rc.c:169
+#: rc.c:170
 msgid "Display link name for images lacking ALT"
 msgstr "空のIMG ALT属性の時にリンク名を表示する"
 
-#: rc.c:170
+#: rc.c:171
 msgid "Index file for directories"
 msgstr "各ディレクトリのインデックスファイル"
 
-#: rc.c:171
+#: rc.c:172
 msgid "Prepend http:// to URL automatically"
 msgstr "URLに自動的に http:// を補う"
 
-#: rc.c:172
+#: rc.c:173
 msgid "Default value for open-URL command"
 msgstr "URLを開く時のデフォルト文字列"
 
-#: rc.c:173
+#: rc.c:174
 msgid "Decode Content-Transfer-Encoding when saving"
 msgstr "保存時に Content-Transfer-Encoding をデコードする"
 
-#: rc.c:174
+#: rc.c:175
 msgid "Preserve timestamp when saving"
 msgstr "保存時にタイムスタンプを保持する"
 
-#: rc.c:176
+#: rc.c:177
 msgid "Enable mouse"
 msgstr "マウスを使う"
 
-#: rc.c:177
+#: rc.c:178
 msgid "Scroll in reverse direction of mouse drag"
 msgstr "マウスのドラッグ動作を逆にする"
 
-#: rc.c:178
+#: rc.c:179
 msgid "Behavior of wheel scroll speed"
 msgstr "ホイールでのスクロール速度の扱い"
 
-#: rc.c:179
+#: rc.c:180
 msgid "(A only)Scroll by # (%) of screen"
 msgstr "(Aのみ)画面の何%スクロールするか"
 
-#: rc.c:180
+#: rc.c:181
 msgid "(B only)Scroll by # lines"
 msgstr "(Bのみ)スクロールする行数"
 
-#: rc.c:182
+#: rc.c:183
 msgid "Free memory of undisplayed buffers"
 msgstr "表示されていないバッファのメモリを解放する"
 
-#: rc.c:183
+#: rc.c:184
 msgid "Suppress `Referer:' header"
 msgstr "Referer: を送らないようにする"
 
-#: rc.c:184
+#: rc.c:185
 msgid "Search case-insensitively"
 msgstr "サーチ時に大文字小文字の区別をしない"
 
-#: rc.c:185
+#: rc.c:186
 msgid "Use LESSOPEN"
 msgstr "LESSOPENを使用"
 
-#: rc.c:188
+#: rc.c:189
 msgid "Perform SSL server verification"
 msgstr "SSLのサーバ認証を行う"
 
-#: rc.c:189
+#: rc.c:190
 msgid "PEM encoded certificate file of client"
 msgstr "SSLのクライアント用PEM形式証明書ファイル"
 
-#: rc.c:190
+#: rc.c:191
 msgid "PEM encoded private key file of client"
 msgstr "SSLのクライアント用PEM形式秘密鍵ファイル"
 
-#: rc.c:191
+#: rc.c:192
 msgid "Path to directory for PEM encoded certificates of CAs"
 msgstr "SSLの認証局のPEM形式証明書群のあるディレクトリへのパス"
 
-#: rc.c:192
+#: rc.c:193
 msgid "File consisting of PEM encoded certificates of CAs"
 msgstr "SSLの認証局のPEM形式証明書群のファイル"
 
-#: rc.c:194
+#: rc.c:195
 msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
 msgstr "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t:TLSv1)"
 
-#: rc.c:197
+#: rc.c:198
 msgid "Enable cookie processing"
 msgstr "クッキーを使用する"
 
-#: rc.c:198
+#: rc.c:199
 msgid "Print a message when receiving a cookie"
 msgstr "クッキーを受け付けたときにメッセージを表示する"
 
-#: rc.c:199
+#: rc.c:200
 msgid "Accept cookies"
 msgstr "クッキーを受け付ける"
 
-#: rc.c:200
+#: rc.c:201
 msgid "Action to be taken on invalid cookie"
 msgstr "問題のあるクッキーでも受け付ける"
 
-#: rc.c:201
+#: rc.c:202
 msgid "Domains to reject cookies from"
 msgstr "クッキーを受け付けないドメイン"
 
-#: rc.c:202
+#: rc.c:203
 msgid "Domains to accept cookies from"
 msgstr "クッキーを受け付けるドメイン"
 
-#: rc.c:203
+#: rc.c:204
 msgid "Domains to avoid [wrong number of dots]"
 msgstr "[wrong number of dots] を無視するドメイン"
 
-#: rc.c:205
+#: rc.c:206
 msgid "Number of redirections to follow"
 msgstr "従うリダイレクトの回数"
 
-#: rc.c:206
+#: rc.c:207
 msgid "Enable processing of meta-refresh tag"
 msgstr "meta refresh に対応する"
 
-#: rc.c:209
+#: rc.c:210
 msgid "Enable Migemo (Roma-ji search)"
 msgstr "Migemo(ローマ字検索)を使用する"
 
-#: rc.c:210
+#: rc.c:211
 msgid "Migemo command"
 msgstr "Migemoコマンド"
 
-#: rc.c:214
+#: rc.c:215
 msgid "Display charset"
 msgstr "表示用文字コード"
 
-#: rc.c:215
+#: rc.c:216
 msgid "Default document charset"
 msgstr "文書の標準の文字コード"
 
-#: rc.c:216
+#: rc.c:217
 msgid "Automatic charset detect when loading"
 msgstr "文書の読み込み時に文字コードの自動判定を行う"
 
-#: rc.c:217
+#: rc.c:218
 msgid "System charset"
 msgstr "システムの文字コード"
 
-#: rc.c:218
+#: rc.c:219
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr "Locale(LC_CTYPE) に従ってシステムの文字コードを設定"
 
-#: rc.c:219
+#: rc.c:220
 msgid "Output halfdump with display charset"
 msgstr "表示用文字コードで halfdump の出力を行う"
 
-#: rc.c:220
+#: rc.c:221
 msgid "Use multi column characters"
 msgstr "複数カラムの文字を使う"
 
-#: rc.c:221
+#: rc.c:222
 msgid "Use combining characters"
 msgstr "結合文字を使う"
 
-#: rc.c:222
+#: rc.c:223
 msgid "Use double width for some Unicode characters"
 msgstr "ある種のUnicode文字を全角にする"
 
-#: rc.c:223
+#: rc.c:224
 msgid "Use Unicode language tags"
 msgstr "Unicode の言語タグを使う"
 
-#: rc.c:224
+#: rc.c:225
 msgid "Charset conversion using Unicode map"
 msgstr "Unicodeを介したコード変換"
 
-#: rc.c:225
+#: rc.c:226
 msgid "Charset conversion when loading"
 msgstr "文書の読み込み時に文字コードを変換する"
 
-#: rc.c:226
+#: rc.c:227
 msgid "Adjust search string for document charset"
 msgstr "検索文字列を文書の文字コードに変換する"
 
-#: rc.c:227
+#: rc.c:228
 msgid "Fix character width when conversion"
 msgstr "文字幅の変わる変換をしない"
 
-#: rc.c:228
+#: rc.c:229
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr "GB 12345 の Unicode マップを GB 2312 用に使う"
 
-#: rc.c:229
+#: rc.c:230
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr "ISO-2022-JP で JIS X 0201-Roman を使う"
 
-#: rc.c:230
+#: rc.c:231
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr "ISO-2022-JP で JIS C 6226:1978(旧JIS) を使う"
 
-#: rc.c:231
+#: rc.c:232
 msgid "Use JIS X 0201 Katakana"
 msgstr "JIS X 0201-Katakana を使う"
 
-#: rc.c:232
+#: rc.c:233
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr "JIS X 0212:1990(補助漢字) を使う"
 
-#: rc.c:233
+#: rc.c:234
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr "JIS X 0213:2000(2000JIS) を使う"
 
-#: rc.c:234
+#: rc.c:235
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr "厳格な ISO-2022-JP/KR/CN を使う"
 
-#: rc.c:235
+#: rc.c:236
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr "GB18030 の 4バイト文字を Unicode として扱う"
 
-#: rc.c:236
+#: rc.c:237
 msgid "Simple Preserve space"
 msgstr "単純な空白の保存"
 
-#: rc.c:239
+#: rc.c:240
 msgid "keymap file"
 msgstr "keymapファイル"
 
-#: rc.c:256
+#: rc.c:257
 msgid "black"
 msgstr "黒"
 
-#: rc.c:257
+#: rc.c:258
 msgid "red"
 msgstr "赤"
 
-#: rc.c:258
+#: rc.c:259
 msgid "green"
 msgstr "緑"
 
-#: rc.c:259
+#: rc.c:260
 msgid "yellow"
 msgstr "黄"
 
-#: rc.c:260
+#: rc.c:261
 msgid "blue"
 msgstr "青"
 
-#: rc.c:261
+#: rc.c:262
 msgid "magenta"
 msgstr "紫"
 
-#: rc.c:262
+#: rc.c:263
 msgid "cyan"
 msgstr "空色"
 
-#: rc.c:263
+#: rc.c:264
 msgid "white"
 msgstr "白"
 
-#: rc.c:264
+#: rc.c:265
 msgid "terminal"
 msgstr "端末"
 
-#: rc.c:283
+#: rc.c:284
 msgid "none"
 msgstr "無し"
 
-#: rc.c:284
+#: rc.c:285
 msgid "current URL"
 msgstr "現在のURL"
 
-#: rc.c:285
+#: rc.c:286
 msgid "link URL"
 msgstr "リンク先のURL"
 
-#: rc.c:290
+#: rc.c:291
 msgid "simple"
 msgstr "シンプル"
 
-#: rc.c:291
+#: rc.c:292
 msgid "use tag"
 msgstr "タグで表示"
 
-#: rc.c:292
+#: rc.c:293
 msgid "fontify"
 msgstr "文字装飾"
 
-#: rc.c:298
+#: rc.c:299
 msgid "A:relative to screen height"
 msgstr "A:画面サイズに比例"
 
-#: rc.c:299
+#: rc.c:300
 msgid "B:fixed speed"
 msgstr "B:一定の行数"
 
-#: rc.c:306
+#: rc.c:307
 msgid "unspecified"
 msgstr "指定しない"
 
-#: rc.c:307
+#: rc.c:308
 msgid "inet inet6"
 msgstr "IPv4優先"
 
-#: rc.c:308
+#: rc.c:309
 msgid "inet6 inet"
 msgstr "IPv6優先"
 
-#: rc.c:309
+#: rc.c:310
 msgid "inet only"
 msgstr "IPv4のみ"
 
-#: rc.c:310
+#: rc.c:311
 msgid "inet6 only"
 msgstr "IPv6のみ"
 
-#: rc.c:317
+#: rc.c:318
 msgid "discard"
 msgstr "破棄する"
 
-#: rc.c:319
+#: rc.c:320
 msgid "accept"
 msgstr "受け入れる"
 
-#: rc.c:321
+#: rc.c:322
 msgid "ask"
 msgstr "確認する"
 
+#: rc.c:329
+msgid "use internal mailer instead"
+msgstr "内部メーラを使用"
+
 #: rc.c:331
+msgid "ignore options and use only the address"
+msgstr "アドレスのみ使用"
+
+#: rc.c:332
+msgid "use full mailto URL"
+msgstr "URL 全体を使用"
+
+#: rc.c:341
 msgid "OFF"
 msgstr "無効"
 
-#: rc.c:332
+#: rc.c:342
 msgid "Only ISO 2022"
 msgstr "ISO 2022 のみ"
 
-#: rc.c:333
+#: rc.c:343
 msgid "ON"
 msgstr "有効"
 
-#: rc.c:339
+#: rc.c:349
 msgid "ASCII"
 msgstr "ASCII"
 
-#: rc.c:340
+#: rc.c:350
 msgid "charset specific"
 msgstr "文字コード依存"
 
-#: rc.c:341
+#: rc.c:351
 msgid "DEC special graphics"
 msgstr "DEC 特殊文字"
 
-#: rc.c:702
+#: rc.c:714
 msgid "Display Settings"
 msgstr "表示関係"
 
-#: rc.c:704
+#: rc.c:716
 msgid "Color Settings"
 msgstr "表示色"
 
-#: rc.c:706
+#: rc.c:718
 msgid "Miscellaneous Settings"
 msgstr "雑多な設定"
 
-#: rc.c:707
+#: rc.c:719
 msgid "Directory Settings"
 msgstr "ディレクトリ設定"
 
-#: rc.c:708
+#: rc.c:720
 msgid "External Program Settings"
 msgstr "外部プログラム"
 
-#: rc.c:709
+#: rc.c:721
 msgid "Network Settings"
 msgstr "ネットワークの設定"
 
-#: rc.c:710
+#: rc.c:722
 msgid "Proxy Settings"
 msgstr "プロキシの設定"
 
-#: rc.c:712
+#: rc.c:724
 msgid "SSL Settings"
 msgstr "SSLの設定"
 
-#: rc.c:715
+#: rc.c:727
 msgid "Cookie Settings"
 msgstr "クッキーの設定"
 
-#: rc.c:718
+#: rc.c:730
 msgid "Charset Settings"
 msgstr "文字コードの設定"
 
@@ -859,6 +875,6 @@ msgstr "文字コードの設定"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1197
+#: rc.c:1209
 msgid "en;q=1.0"
 msgstr "ja;q=1.0, en;q=0.5"

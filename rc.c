@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.115 2010/08/04 14:06:36 htrb Exp $ */
+/* $Id: rc.c,v 1.116 2010/08/20 09:47:09 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -139,6 +139,7 @@ static int OptionEncode = FALSE;
 #define CMT_URIMETHODMAP N_("List of urimethodmap files")
 #define CMT_EDITOR       N_("Editor")
 #define CMT_MAILER       N_("Mailer")
+#define CMT_MAILTO_OPTIONS N_("How to call Mailer for mailto URLs with options")
 #define CMT_EXTBRZ       N_("External Browser")
 #define CMT_EXTBRZ2      N_("Second External Browser")
 #define CMT_EXTBRZ3      N_("Third External Browser")
@@ -322,6 +323,15 @@ static struct sel_c badcookiestr[] = {
     {0, NULL, NULL}
 };
 #endif				/* USE_COOKIE */
+
+static struct sel_c mailtooptionsstr[] = {
+#ifdef USE_W3MMAILER
+    {N_S(MAILTO_OPTIONS_USE_W3MMAILER), N_("use internal mailer instead")},
+#endif
+    {N_S(MAILTO_OPTIONS_IGNORE), N_("ignore options and use only the address")},
+    {N_S(MAILTO_OPTIONS_USE_MAILTO_URL), N_("use full mailto URL")},
+    {0, NULL, NULL}
+};
 
 #ifdef USE_M17N
 static wc_ces_list *display_charset_str = NULL;
@@ -543,6 +553,8 @@ struct param_ptr params6[] = {
      CMT_URIMETHODMAP, NULL},
 #endif
     {"editor", P_STRING, PI_TEXT, (void *)&Editor, CMT_EDITOR, NULL},
+    {"mailto_options", P_INT, PI_SEL_C, (void *)&MailtoOptions,
+     CMT_MAILTO_OPTIONS, (void *)mailtooptionsstr},
     {"mailer", P_STRING, PI_TEXT, (void *)&Mailer, CMT_MAILER, NULL},
     {"extbrowser", P_STRING, PI_TEXT, (void *)&ExtBrowser, CMT_EXTBRZ, NULL},
     {"extbrowser2", P_STRING, PI_TEXT, (void *)&ExtBrowser2, CMT_EXTBRZ2,

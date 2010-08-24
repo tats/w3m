@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.269 2010/08/20 09:47:09 htrb Exp $ */
+/* $Id: main.c,v 1.270 2010/08/24 10:11:51 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -14,6 +14,13 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
+#ifdef USE_M17N
+#include "wc.h"
+#include "wtf.h"
+#ifdef USE_UNICODE
+#include "ucs.h"
+#endif
+#endif
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -85,8 +92,7 @@ static void keyPressEventProc(int c);
 int show_params_p = 0;
 void show_params(FILE * fp);
 
-static char *getCurWord(Buffer *buf, int *spos, int *epos,
-			const char *badchars);
+static char *getCurWord(Buffer *buf, int *spos, int *epos);
 
 static int display_ok = FALSE;
 static void do_dump(Buffer *);
@@ -2248,7 +2254,32 @@ DEFUN(movR1, MOVE_RIGHT1,
  * From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp> Date: Mon, 14 Jun
  * 1999 09:29:56 +0900 
  */
-#define IS_WORD_CHAR(c,p) (IS_ALNUM(c) && CharType(p) == PC_ASCII)
+#if defined(USE_M17N) && defined(USE_UNICODE)
+#define nextChar(s, l)	do { (s)++; } while ((s) < (l)->len && (l)->propBuf[s] & PC_WCHAR2)
+#define prevChar(s, l)	do { (s)--; } while ((s) > 0 && (l)->propBuf[s] & PC_WCHAR2)
+
+static wc_uint32
+getChar(char *p)
+{
+    return wc_any_to_ucs(wtf_parse1(&p));
+}
+
+static int
+is_wordchar(wc_uint32 c)
+{
+    return wc_is_ucs_alnum(c);
+}
+#else 
+#define nextChar(s, l)	(s)++
+#define prevChar(s, l)	(s)--
+#define getChar(p)	((int)*(p))
+
+static int
+is_wordchar(int c)
+{
+    return IS_ALNUM(c);
+}
+#endif
 
 static int
 prev_nonnull_line(Line *line)
@@ -2268,8 +2299,7 @@ prev_nonnull_line(Line *line)
 DEFUN(movLW, PREV_WORD, "Move to previous word")
 {
     char *lb;
-    Lineprop *pb;
-    Line *pline;
+    Line *pline, *l;
     int ppos;
     int i, n = searchKeyNum();
 
@@ -2284,12 +2314,14 @@ DEFUN(movLW, PREV_WORD, "Move to previous word")
 	    goto end;
 
 	while (1) {
-	    lb = Currentbuf->currentLine->lineBuf;
-	    pb = Currentbuf->currentLine->propBuf;
-	    while (Currentbuf->pos > 0 &&
-		   !IS_WORD_CHAR(lb[Currentbuf->pos - 1],
-				 pb[Currentbuf->pos - 1])) {
-		Currentbuf->pos--;
+	    l = Currentbuf->currentLine;
+	    lb = l->lineBuf;
+	    while (Currentbuf->pos > 0) {
+		int tmp = Currentbuf->pos;
+		prevChar(tmp, l);
+		if (is_wordchar(getChar(&lb[tmp])))
+		    break;
+		Currentbuf->pos = tmp;
 	    }
 	    if (Currentbuf->pos > 0)
 		break;
@@ -2301,12 +2333,14 @@ DEFUN(movLW, PREV_WORD, "Move to previous word")
 	    Currentbuf->pos = Currentbuf->currentLine->len;
 	}
 
-	lb = Currentbuf->currentLine->lineBuf;
-	pb = Currentbuf->currentLine->propBuf;
-	while (Currentbuf->pos > 0 &&
-	       IS_WORD_CHAR(lb[Currentbuf->pos - 1],
-			    pb[Currentbuf->pos - 1])) {
-	    Currentbuf->pos--;
+	l = Currentbuf->currentLine;
+	lb = l->lineBuf;
+	while (Currentbuf->pos > 0) {
+	    int tmp = Currentbuf->pos;
+	    prevChar(tmp, l);
+	    if (!is_wordchar(getChar(&lb[tmp])))
+		break;
+	    Currentbuf->pos = tmp;
 	}
     }
   end:
@@ -2333,8 +2367,7 @@ next_nonnull_line(Line *line)
 DEFUN(movRW, NEXT_WORD, "Move to next word")
 {
     char *lb;
-    Lineprop *pb;
-    Line *pline;
+    Line *pline, *l;
     int ppos;
     int i, n = searchKeyNum();
 
@@ -2348,18 +2381,17 @@ DEFUN(movRW, NEXT_WORD, "Move to next word")
 	if (next_nonnull_line(Currentbuf->currentLine) < 0)
 	    goto end;
 
-	lb = Currentbuf->currentLine->lineBuf;
-	pb = Currentbuf->currentLine->propBuf;
-
-	while (lb[Currentbuf->pos] &&
-	       IS_WORD_CHAR(lb[Currentbuf->pos], pb[Currentbuf->pos]))
-	    Currentbuf->pos++;
+	l = Currentbuf->currentLine;
+	lb = l->lineBuf;
+	while (Currentbuf->pos < l->len &&
+	       is_wordchar(getChar(&lb[Currentbuf->pos])))
+	    nextChar(Currentbuf->pos, l);
 
 	while (1) {
-	    while (lb[Currentbuf->pos] &&
-		   !IS_WORD_CHAR(lb[Currentbuf->pos], pb[Currentbuf->pos]))
-		Currentbuf->pos++;
-	    if (lb[Currentbuf->pos])
+	    while (Currentbuf->pos < l->len &&
+		   !is_wordchar(getChar(&lb[Currentbuf->pos])))
+		nextChar(Currentbuf->pos, l);
+	    if (Currentbuf->pos < l->len)
 		break;
 	    if (next_nonnull_line(Currentbuf->currentLine->next) < 0) {
 		Currentbuf->currentLine = pline;
@@ -2367,8 +2399,8 @@ DEFUN(movRW, NEXT_WORD, "Move to next word")
 		goto end;
 	    }
 	    Currentbuf->pos = 0;
-	    lb = Currentbuf->currentLine->lineBuf;
-	    pb = Currentbuf->currentLine->propBuf;
+	    l = Currentbuf->currentLine;
+	    lb = l->lineBuf;
 	}
     }
   end:
@@ -4893,7 +4925,7 @@ DEFUN(chkWORD, MARK_WORD, "Mark current word as anchor")
 {
     char *p;
     int spos, epos;
-    p = getCurWord(Currentbuf, &spos, &epos, ":\"\'`<>()[]{}&|;*?$");
+    p = getCurWord(Currentbuf, &spos, &epos);
     if (p == NULL)
 	return;
     reAnchorWord(Currentbuf, Currentbuf->currentLine, spos, epos);
@@ -5505,17 +5537,8 @@ DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle wrap search mode")
     }
 }
 
-static int
-is_wordchar(int c, const char *badchars)
-{
-    if (badchars)
-	return !(IS_SPACE(c) || strchr(badchars, c));
-    else
-	return IS_ALPHA(c);
-}
-
 static char *
-getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
+getCurWord(Buffer *buf, int *spos, int *epos)
 {
     char *p;
     Line *l = buf->currentLine;
@@ -5527,15 +5550,20 @@ getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
 	return NULL;
     p = l->lineBuf;
     e = buf->pos;
-    while (e > 0 && !is_wordchar(p[e], badchars))
-	e--;
-    if (!is_wordchar(p[e], badchars))
+    while (e > 0 && !is_wordchar(getChar(&p[e])))
+	prevChar(e, l);
+    if (!is_wordchar(getChar(&p[e])))
 	return NULL;
     b = e;
-    while (b > 0 && is_wordchar(p[b - 1], badchars))
-	b--;
-    while (e < l->len && is_wordchar(p[e], badchars))
-	e++;
+    while (b > 0) {
+	int tmp = b;
+	prevChar(tmp, l);
+	if (!is_wordchar(getChar(&p[tmp])))
+	    break;
+	b = tmp;
+    }
+    while (e < l->len && is_wordchar(getChar(&p[e])))
+	nextChar(e, l);
     *spos = b;
     *epos = e;
     return &p[b];
@@ -5547,7 +5575,7 @@ GetWord(Buffer *buf)
     int b, e;
     char *p;
 
-    if ((p = getCurWord(buf, &b, &e, 0)) != NULL) {
+    if ((p = getCurWord(buf, &b, &e)) != NULL) {
 	return Strnew_charp_n(p, e - b)->ptr;
     }
     return NULL;

@@ -1,3 +1,25 @@
+2010-08-24   Karsten Schoelzel <kuser@gmx.de>
+
+	* [w3m-dev 04393] [patch] locale-related character management
+	* http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=313365
+	* libwc/map/ucs_isalpha.map: added
+	* libwc/map/ucs_islower.map: added
+	* libwc/map/ucs_isupper.map: added
+	* libwc/map/mk_ucs_case_map.pl: added
+	* libwc/map/ucs_case.map: added
+	* libwc/map/mk_ucs_isdigit_map.pl: added
+	* libwc/map/ucs_isdigit.map: added
+	* libwc/ucs.c (wc_any_to_ucs): ceck if cc.ccs == WC_CCS_US_ASCII
+	(wc_is_ucs_alpha, wc_is_ucs_digit, wc_is_ucs_alnum)
+	(wc_is_ucs_lower, wc_is_ucs_upper, wc_ucs_toupper)
+	(wc_ucs_tolower, wc_ucs_totitle): added
+	* regex.c (match_longchar, match_range_longchar): use wc_any_to_ucs(), wc_ucs_tolower(), wc_ucs_toupper() and wc_ucs_totitle()
+	* main.c (nextChar, prevChar, getChar, is_wordchar): added
+	(movLW): use prevChar() and is_wordchar()
+	(movRW): use nextChar() and is_wordchar()
+	(getCurWord): remove 4th parameter
+	(getCurWord): use prevChar(), nextChar() and is_wordchar()
+
 2010-08-20  Karsten Schoelzel <kuser@gmx.de>
 
 	* [w3m-dev 04401] Re: mailto with options handling
@@ -9172,4 +9194,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1037 2010/08/20 09:47:09 htrb Exp $
+$Id: ChangeLog,v 1.1038 2010/08/24 10:11:51 htrb Exp $

@@ -8,7 +8,6 @@ w3m \- a text based Web browser and pager
 .B w3m
 [options] [URL or filename]
 .PP
-Use "w3m -h" to display a complete list of current options.
 .SH DESCRIPTION
 .\" This defines appropriate quote strings for nroff and troff
 .ds lq \&"
@@ -53,6 +52,12 @@ ignore backspace effect
 .B -l line
 # of preserved line (default 10000)
 .TP
+.B -I charset
+document charset
+.TP
+.B -O charset
+display/output charset
+.TP
 .B -B
 load bookmark
 .TP
@@ -71,6 +76,9 @@ visual startup mode
 .B -M
 monochrome display
 .TP
+.B -N
+open URL of command line on each new tab
+.TP
 .B -F
 automatically render frame
 .TP
@@ -81,8 +89,11 @@ dump formatted page into stdout
 specify column width (used with -dump)
 .TP
 .B -ppc count
-specify the number of pixels per character (default 8.0)
-Larger values will make tables narrower.
+specify the number of pixels per character (4.0...32.0).
+Larger values will make tables narrower.  [default 8.0]
+.TP
+.B -ppl count
+specify the number of pixels per line (4.0...64.0)
 .TP
 .B -dump_source
 dump page source into stdout
@@ -111,6 +122,12 @@ show line number
 .B -no-proxy
 don't use proxy
 .TP
+.B -4
+IPv4 only (-o dns_order=4)
+.TP
+.B -6
+IPv6 only (-o dns_order=6)
+.TP
 .B -no-mouse
 don't use mouse
 .TP
@@ -119,6 +136,12 @@ use cookie.
 .TP
 .B -no-cookie
 don't use cookie
+.TP
+.B -graph
+use graphic character
+.TP
+.B -no-graph
+don't use graphic character
 .TP
 .B -S
 squeeze multiple blank lines
@@ -148,6 +171,9 @@ show usage
 .B -version
 show w3m version
 .TP
+.B -reqlog
+write request logfile
+.TP
 .B -debug
 DO NOT USE
 .SH EXAMPLES
@@ -164,12 +190,49 @@ $ cat foo.html | w3m -T text/html
 or
 .br
 $ cat foo.html | w3m -dump -T text/html >foo.txt
+.SH FILES
+.TP
+.I ${HOME}/.w3m/config
+configuration file
+.TP
+.I ${HOME}/.w3m/keymap
+key binding configuration file
+.\" .TP
+.\" .I ${HOME}/.w3m/menu
+.\" ???
+.TP
+.I ${HOME}/.w3m/mouse
+mouse configuration file
+.TP
+.I ${HOME}/.w3m/cookie
+cookie file
+.TP
+.I ${HOME}/.w3m/history
+history file
+.TP
+.I ${HOME}/.w3m/passwd
+passowrd and username file
+.TP
+.I ${HOME}/.w3m/pre_form
+form parameters file
+.TP
+.I ${HOME}/.w3m/mailcap
+external viewer configuration file
+.TP
+.I ${HOME}/.w3m/mime.types
+MIME types file
+.\" .TP
+.\" .I ${HOME}/.w3m/urimethodmap
+.\" ???
 .SH NOTES
 This is the
 .I
 w3m
-0.2.1 Release.
+0.5.2 Release.
 .PP
+Please see the MANUAL.html file distributed with w3m for
+more detailed documentation.
+
 Additional information about
 .I
 w3m

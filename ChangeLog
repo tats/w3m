@@ -1,3 +1,9 @@
+2010-10-11  d+w3m@vdr.jp
+
+	* [w3m-dev 04414] Re: "normal" bugs from bugs.debian.org
+	* doc/w3m.1: add documents about some options.
+	* doc/FAQ.html: fix typo.
+
 2010-08-24   Karsten Schoelzel <kuser@gmx.de>
 
 	* [w3m-dev 04393] [patch] locale-related character management
@@ -9194,4 +9200,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1038 2010/08/24 10:11:51 htrb Exp $
+$Id: ChangeLog,v 1.1039 2010/10/11 12:59:36 htrb Exp $

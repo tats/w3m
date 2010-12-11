@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.98 2010/08/03 10:02:16 htrb Exp $ */
+/* $Id: url.c,v 1.99 2010/12/11 13:00:11 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
 #include <sys/types.h>
@@ -1307,6 +1307,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	Strcat_charp(s, "Cache-control: no-cache\r\n");
     }
     if (!NoSendReferer) {
+#ifdef USE_SSL
+        if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
+	  /* Don't send Referer: if https:// -> http:// */
+	}
+	else
+#endif
 	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
 	    (current->scheme != SCM_FTP ||
 	     (current->user == NULL && current->pass == NULL))) {

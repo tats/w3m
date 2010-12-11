@@ -1,3 +1,8 @@
+2010-12-11  theme.of.n@gmail.com
+
+	* [w3m-dev 04421] Patch to prevent sending `Referer: ' header from HTTPS to HTTP
+	* url.c (otherinfo): Don't send Referer: if https:// -> http://
+
 2010-10-11  d+w3m@vdr.jp
 
 	* [w3m-dev 04414] Re: "normal" bugs from bugs.debian.org
@@ -9200,4 +9205,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1039 2010/10/11 12:59:36 htrb Exp $
+$Id: ChangeLog,v 1.1040 2010/12/11 13:00:11 htrb Exp $

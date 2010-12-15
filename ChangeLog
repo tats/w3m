@@ -1,3 +1,8 @@
+2010-12-15  Kazuhiko <kazuhiko@fdiary.net>
+
+	* [w3m-dev 04419] AC_W3M_EXTLIBS does not check /lib64
+	* acinclude.m4 (AC_W3M_EXTLIBS): search /lib64 and /usr/lib64.
+
 2010-12-11  theme.of.n@gmail.com
 
 	* [w3m-dev 04421] Patch to prevent sending `Referer: ' header from HTTPS to HTTP
@@ -9205,4 +9210,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1040 2010/12/11 13:00:11 htrb Exp $
+$Id: ChangeLog,v 1.1041 2010/12/15 10:30:07 htrb Exp $

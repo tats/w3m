@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.41 2010/08/11 09:31:33 htrb Exp $ */
+/* $Id: ftp.c,v 1.42 2010/12/15 10:50:24 htrb Exp $ */
 #include <stdio.h>
 #ifndef __MINGW32_VERSION
 #include <pwd.h>
@@ -131,12 +131,30 @@ ftp_login(FTP ftp)
 	size_t n = strlen(ftp->pass);
 
 	if (n > 0 && ftp->pass[n - 1] == '@') {
+#ifdef INET6
+	    struct sockaddr_storage sockname;
+#else
 	    struct sockaddr_in sockname;
+#endif
 	    socklen_t socknamelen = sizeof(sockname);
 
 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
 		struct hostent *sockent;
 		Str tmp = Strnew_charp(ftp->pass);
+#ifdef INET6
+		char hostbuf[NI_MAXHOST];
+
+		if (getnameinfo((struct sockaddr *)&sockname, socknamelen,
+				hostbuf, sizeof hostbuf, NULL, 0, NI_NAMEREQD)
+			== 0)
+		    Strcat_charp(tmp, hostbuf);
+		else if (getnameinfo((struct sockaddr *)&sockname, socknamelen,
+				        hostbuf, sizeof hostbuf, NULL, 0, NI_NUMERICHOST)
+			== 0)
+		    Strcat_m_charp(tmp, "[", hostbuf, "]", NULL);
+		else
+		    Strcat_charp(tmp, "unknown");
+#else
 
 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
 					     sizeof(sockname.sin_addr),
@@ -145,7 +163,7 @@ ftp_login(FTP ftp)
 		else
 		    Strcat_m_charp(tmp, "[", inet_ntoa(sockname.sin_addr),
 				   "]", NULL);
-
+#endif
 		ftp->pass = tmp->ptr;
 	    }
 	}

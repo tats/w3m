@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.264 2010/08/03 10:02:16 htrb Exp $ */
+/* $Id: file.c,v 1.265 2010/12/15 10:50:24 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -262,6 +262,8 @@ is_text_type(char *type)
 {
     return (type == NULL || type[0] == '\0' ||
 	    strncasecmp(type, "text/", 5) == 0 ||
+	    (strncasecmp(type, "application/", 12) == 0 &&
+		strstr(type, "xhtml") != NULL) ||
 	    strncasecmp(type, "message/", sizeof("message/") - 1) == 0);
 }
 

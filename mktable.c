@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.15 2007/05/31 01:19:50 inu Exp $ */
+/* $Id: mktable.c,v 1.16 2010/12/15 10:50:24 htrb Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "myctype.h"
@@ -102,7 +102,7 @@ main(int argc, char *argv[], char **envp)
     }
     printf("static HashItem_si MyHashItem[] = {\n");
     for (i = 0; i < j; i++) {
-	printf("  /* %d */ {\"%s\",%s,", i,
+	printf("    /* %d */ {\"%s\", %s, ", i,
 	       hashitems[i]->key, hashitems[i]->value);
 	if (hashitems[i]->next == NULL) {
 	    printf("NULL},\n");
@@ -116,13 +116,13 @@ main(int argc, char *argv[], char **envp)
 
     for (i = 0; i < hash->size; i++) {
 	if (hash->tab[i])
-	    printf("  &MyHashItem[%d],\n",
+	    printf("    &MyHashItem[%d],\n",
 		   getHash_hss_i(rhash, hash->tab[i], -1));
 	else
-	    printf("  NULL,\n");
+	    printf("    NULL,\n");
     }
     printf("};\n\n");
-    printf("Hash_si %s = {%d, MyHashItemTbl};\n", fbase->ptr, hash->size);
+    printf("Hash_si %s = { %d, MyHashItemTbl };\n", fbase->ptr, hash->size);
 
     exit(0);
 }

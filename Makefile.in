@@ -27,7 +27,6 @@ sysconfdir = @sysconfdir@
 top_srcdir = @top_srcdir@
 top_builddir = .
 VPATH = $(top_srcdir):.
-DESTDIR = 
 
 CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
 AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
@@ -46,7 +45,8 @@ DEFS = @DEFS@ -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
         -DLOCALEDIR=\"$(localedir)\"
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-EXT_LIBS = -L. -lindep @LIBINTL@ @LIBGC@
+GC_LIBS = @LIBGC@
+EXT_LIBS = -L. -lindep @LIBINTL@ $(GC_LIBS)
 W3M_LIBS = @W3M_LIBS@
 WCTARGET = @WCTARGET@
 NLSTARGET = @NLSTARGET@
@@ -136,7 +136,11 @@ $(OBJS) $(LOBJS): fm.h funcname1.h
 tagtable.c: tagtable.tab mktable$(EXT) html.h 
 	./mktable$(EXT) 100 $(srcdir)/tagtable.tab > $@
 
-indep.o: indep.c fm.h funcname1.h
+entity.h: entity.tab mktable$(EXT)
+	echo '/* $$I''d$$ */' > $@
+	./mktable$(EXT) 100 $(srcdir)/entity.tab >> $@
+
+indep.o: indep.c fm.h funcname1.h entity.h
 func.o: funcname.c functable.c funcname1.h
 keybind.o: funcname2.h
 keybind_lynx.o: funcname2.h
@@ -170,8 +174,8 @@ functable.c: funcname.tab mktable$(EXT)
 	./mktable$(EXT) 100 functable.tab > $@
 	-rm -f functable.tab
 
-mktable$(EXT): mktable.o dummy.o $(ALIB)
-	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)
+mktable$(EXT): mktable.o dummy.o Str.o hash.o myctype.o
+	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o Str.o hash.o myctype.o $(LDFLAGS) $(LIBS) $(GC_LIBS)
 
 $(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)

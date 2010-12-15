@@ -1,3 +1,20 @@
+2010-12-15  AIDA Shinra <shinra@j10n.org>
+
+	* [w3m-dev 04424] Windows版w3mimg、他
+	* scripts/w3mman/Makefile.in (DESTDIR): removed.
+	* scripts/multipart/Makefile.in (DESTDIR): removed.
+	* scripts/Makefile.in (DESTDIR): removed.
+	* url.c (add_index_file): can specify multiple files as an index file for directories.
+	* mktable.c (defhashfunc): fi indent of output.
+	* ftp.c (ftp_login): support IPv6.
+	* file.c (is_text_type): check if the type is "application/xhtml".
+	* Makefile.in (DESTDIR): removed.
+	(GC_LIBS): added.
+	(EXT_LIBS): use "GC_LIBS".
+	(entity.h): depend on entity.tab and mktable$(EXT).
+	(indep.o): depend on entity.h
+	(mktable$(EXT)): depend on Str.o, hash.o and myctype.o instead of $(ALIB).
+
 2010-12-15  Kazuhiko <kazuhiko@fdiary.net>
 
 	* [w3m-dev 04419] AC_W3M_EXTLIBS does not check /lib64
@@ -9210,4 +9227,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1041 2010/12/15 10:30:07 htrb Exp $
+$Id: ChangeLog,v 1.1042 2010/12/15 10:50:24 htrb Exp $

@@ -1,3 +1,8 @@
+2010-12-20  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* doc/README.img: add documents about some options.
+	* doc-jp/README.img: ditto.
+
 2010-12-15  AIDA Shinra <shinra@j10n.org>
 
 	* [w3m-dev 04424] Windows版w3mimg、他
@@ -9227,4 +9232,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1042 2010/12/15 10:50:24 htrb Exp $
+$Id: ChangeLog,v 1.1043 2010/12/20 10:22:06 htrb Exp $

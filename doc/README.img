@@ -122,6 +122,12 @@ Setting w3mimgdisplay
       automatically detected.
       The default value for Linux framebuffer device is #000000 (black).
       When the color is specified as #RRGGBB, escape '#'.
+  -anim <n>
+      Maximum number of frames for animation. It means without limit
+      if the number is 0. Negative value count backward from the end
+      of the frames. The default value is 100.
+  -margin <n>
+      Margin of an area to clear an image. The default value is 0.
 
   ex.)
     w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'

@@ -1,4 +1,4 @@
-/* $Id: image.c,v 1.36 2003/07/07 15:49:03 ukai Exp $ */
+/* $Id: image.c,v 1.37 2010/12/21 10:13:55 htrb Exp $ */
 
 #include "fm.h"
 #include <sys/types.h>
@@ -115,10 +115,13 @@ openImgdisplay()
 static void
 closeImgdisplay()
 {
-    if (Imgdisplay_rf)
-	fclose(Imgdisplay_rf);
     if (Imgdisplay_wf)
 	fclose(Imgdisplay_wf);
+    if (Imgdisplay_rf) {
+	/* sync with the child */
+	getc(Imgdisplay_rf); /* EOF expected */
+	fclose(Imgdisplay_rf);
+    }
     if (Imgdisplay_pid)
 	kill(Imgdisplay_pid, SIGKILL);
     Imgdisplay_rf = NULL;

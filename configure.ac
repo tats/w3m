@@ -17,7 +17,7 @@ W3M_LANG=${LC_ALL:-$LANG}
 dnl AM_INIT_AUTOMAKE(w3m, 0.4)
 AC_CONFIG_HEADER(config.h)
 dnl Checks for programs.
-dnl AC_PROG_CXX
+AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -184,7 +184,7 @@ scripts/multipart/Makefile scripts/multipart/multipart.cgi \
 scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 \
 scripts/w3mman/w3mman2html.cgi \
 libwc/Makefile \
-w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile \
+w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile \
 w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 w3mhelp-lynx_en.html w3mhelp-lynx_ja.html])
 

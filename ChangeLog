@@ -1,3 +1,24 @@
+2010-12-21  Ito Hiroyuki  <ZXB01226 at nifty.com>
+
+
+2010-12-20  AIDA Shinra <shinra@j10n.org>
+
+	* [w3m-dev 04425] Re: Windows版w3mimg、他
+	* w3mimgdisplay: supports Windows console (http://www.j10n.org/files/w3m-cvs-1.1040-misc.patch).
+	* image.c: ditto.
+	* configure.ac: ditto.
+	* config.h.in: ditto.
+	* acinclude.m4: ditto.
+	* Makefile.in: ditto.
+	* w3mimg/w3mimg.h: ditto.
+	* w3mimg/w3mimg.c: ditto.
+	* w3mimg/Makefile.in: ditto.
+	* doc/README.img: ditto.
+	* doc-jp/README.img: ditto.
+	* w3mimgdisplay.c (main): call "w_op->close(w_op)" before exit.
+	* w3mimg/win/win_w3mimg.cpp: added.
+	* w3mimg/win/Makefile.in: added.
+
 2010-12-20  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* doc/README.img: add documents about some options.
@@ -9232,4 +9253,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1043 2010/12/20 10:22:06 htrb Exp $
+$Id: ChangeLog,v 1.1044 2010/12/21 10:13:55 htrb Exp $

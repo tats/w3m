@@ -58,10 +58,12 @@ MAKE_ARGS = PERL='$(PERL)' MKDIR='$(MKDIR)' \
 	CONF_DIR='$(CONF_DIR)' \
 	RC_DIR='$(RC_DIR)' DESTDIR='$(DESTDIR)' KEYBIND_SRC='$(KEYBIND_SRC)'
 
-IMGCFLAGS = @IMGX11CFLAGS@ @IMGFBCFLAGS@
-IMGLDFLAGS = @IMGX11LDFLAGS@ @IMGFBLDFLAGS@
+IMGCFLAGS = @IMGX11CFLAGS@ @IMGFBCFLAGS@ @IMGWINCFLAGS@
+IMGLDFLAGS = @IMGX11LDFLAGS@ @IMGFBLDFLAGS@ @IMGWINLDFLAGS@
 
 CC0 = @CC@
+CXX = @CXX@
+IMGLINK = @IMGLINK@
 CC = @POSUBST@ $(CC0)
 CPP = @CPP@
 RANLIB=@RANLIB@
@@ -197,7 +199,7 @@ dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
 $(IMGDISPLAY): w3mimgdisplay.o $(ALIB) w3mimg/w3mimg.a
-	$(CC) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
+	$(IMGLINK) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
 w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c

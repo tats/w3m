@@ -11,10 +11,11 @@ AR=ar
 RANLIB=@RANLIB@
 RM=rm
 
-IMGCFLAGS=@IMGX11CFLAGS@ @IMGFBCFLAGS@
+SUBDIRS=fb x11 win
+IMGCFLAGS=@IMGX11CFLAGS@ @IMGFBCFLAGS@ @IMGWINCFLAGS@
 IMGOBJS=@IMGOBJS@
 
-.PHONY: fb x11
+.PHONY: $(SUBDIRS)
 all: @IMGTARGETS@ w3mimg.a
 
 w3mimg.a: $(IMGOBJS)
@@ -24,18 +25,18 @@ w3mimg.a: $(IMGOBJS)
 w3mimg.o: w3mimg.c
 	$(CC) $(CFLAGS) -c $<
 
-fb x11:
+$(SUBDIRS):
 	cd $@ && $(MAKE) CC="$(CC)" OPTS="$(OPTS)"
 
 clean:
 	@-$(RM) -f *.o
-	@for dir in fb x11; do \
+	@for dir in $(SUBDIRS); do \
 		(cd $$dir && $(MAKE) clean RM=$(RM)); \
 	 done
 	-$(RM) -f w3mimg.a
 
 distclean: clean
-	for subdir in fb x11; \
+	for subdir in $(SUBDIRS); \
 	do \
 		(cd $$subdir && $(MAKE) distclean); \
 	done

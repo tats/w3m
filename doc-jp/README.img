@@ -11,8 +11,8 @@ w3m でインライン画像を表示
 
 機能
 
-  ・X11 上の端末(xterm,kterm,rxvt,...)または Linux の framebuffer 上に
-    画像(GIF,PNG,JPEG 等)を表示します。
+  ・X11 上の端末(xterm,kterm,rxvt,...)、 Linux の framebuffer 上または
+    Windows 端末上に画像(GIF,PNG,JPEG 等)を表示します。
   ・img タグで指定されたインライン画像を表示できます。
     width,height 属性に応じて必要な領域を確保してレンダリングします。
     align 属性に対応しています。
@@ -144,6 +144,7 @@ w3mimgdisplay の設定
     の適当なキーを連打してください。
   ・framebuffer 描画関係には、下記 URI のコードを利用しました。
     http://www.sainet.or.jp/~yamasaki/download/fb-sample.tar.gz
+  ・Windows では標準コンソール、Cygwin rxvt、PuTTYで動作確認しています。
 
 
 更新記録

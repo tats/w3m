@@ -12,7 +12,8 @@ Introduction
 Support
 
   * Display inline image (GIF,PNG,JPEG, etc.) on terminals
-    (xterm,rxvt, etc.) of X11 or Linux framebuffer device.
+    (xterm,rxvt, etc.) of X11, Linux framebuffer device or
+    terminals of Windows.
   * Support inline image of <img> tag.
     Support of attributes "width", "height", and "align".
   * Direct display of image file which header is "Content-type: image/*"
@@ -42,7 +43,7 @@ Key functions
       keymap  C-c  STOP_IMAGE
       keyamp  t    SET_OPTION  display_image=toggle
 
-Comandline options
+Commandline options
 
   -ppc <pixel>
       # of pixels per character. The default value is automatically
@@ -70,7 +71,7 @@ Option panel
   ext_image_viewer
       Use external image viewer, when a command VIEW_IMAGE or
       view of image file which header is "Content-type: image/*".
-      The default is ON. If it is OFF, the image is directly displaied.
+      The default is ON. If it is OFF, the image is directly displayed.
   image_scale
       Scale of image (%). The default value is 100(%).
   imgdisplay
@@ -140,6 +141,10 @@ Notice
     Some code in w3mimg/fb/fb.c was originally written by Mr. Yamasaki.
     http://www.sainet.or.jp/~yamasaki/download/fb-sample.tar.gz
 
+    On Windows, we check the behaver on standard console, Cygwin rxvt
+    and PuTTY.
+
+
 Change log
 
 2002/02/04
@@ -157,7 +162,7 @@ Change log
 2002/01/28	w3m-0.2.4-img-2.0
  * Based on w3m-0.2.4+cvs-1.265.
  * pixel_per_char and pixel_per_line are automatically detected.
- * The bckground color of terminal is automatically detected.
+ * The background color of terminal is automatically detected.
  * The source code to display images is moved to image.c
 
 2002/01/08	w3m-0.2.4-img-1.18

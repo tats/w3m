@@ -1,4 +1,4 @@
-/* $Id: win_w3mimg.cpp,v 1.1 2010/12/21 10:13:55 htrb Exp $ */
+/* $Id: win_w3mimg.cpp,v 1.2 2010/12/24 09:52:06 htrb Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +20,6 @@
 #define OFFSET_X	2
 #define OFFSET_Y	2
 #define DEBUG
-#define USE_GDIP_CACHED_BITMAP
 
 #ifdef DEBUG
 #define THROW_NONE throw()
@@ -41,11 +40,7 @@ struct window_list {
     size_t capacity;
 };
 
-#ifdef USE_GDIP_CACHED_BITMAP
 typedef Gdiplus::CachedBitmap *cache_handle;
-#else
-typedef HBITMAP cache_handle;
-#endif
 class win_image {
 private:
     win_image(const win_image &); // decl only
@@ -110,12 +105,7 @@ win_image::~win_image() THROW_NONE
 {
     if (this->cache) {
 	for (size_t i = 0; i != this->nframe; ++i) {
-#ifdef USE_GDIP_CACHED_BITMAP
 	    delete this->cache[i];
-#else
-	    if (this->cache[i])
-		DeleteObject(this->cache[i]);
-#endif
 	}
 	delete[] this->cache;
     }
@@ -146,6 +136,7 @@ win_image::load(w3mimg_op *wop, Gdiplus::Bitmap **p_gpbitmap, int *wreturn, int 
 	unsigned int height = gpbitmap->GetHeight();
 	unsigned int nframe = gpbitmap->GetFrameCount(&Gdiplus::FrameDimensionTime);
 	unsigned long loopcount = 0;
+	unsigned int first_frame = 0;
 
 	if (xi->logfile)
 	    fprintf(xi->logfile, "win_image::load(): size[0]=%ux%u\n", width, height);
@@ -224,12 +215,13 @@ win_image::load(w3mimg_op *wop, Gdiplus::Bitmap **p_gpbitmap, int *wreturn, int 
 		if (xi->logfile)
 		    fprintf(xi->logfile, "win_image::load(): size[%u]=%ux%u\n", nextframe, iw, ih);
 	    }
-	    // Back to the top
-	    status = gpbitmap->SelectActiveFrame(&Gdiplus::FrameDimensionTime, 0);
+	    // Go to the first frame
+	    first_frame = (0 < -wop->max_anim && -wop->max_anim < nframe) ? (nframe + wop->max_anim) : 0;
+	    status = gpbitmap->SelectActiveFrame(&Gdiplus::FrameDimensionTime, first_frame);
 	    if (status != Gdiplus::Ok) {
 		if (xi->logfile)
 		    fprintf(xi->logfile, "win_image::load(): SelectActiveFrame() to %u frame = %d: %s\n",
-			    1U, (int)status, gdip_strerror(status));
+			    first_frame, (int)status, gdip_strerror(status));
 		goto last;
 	    }
 	}
@@ -252,7 +244,7 @@ win_image::load(w3mimg_op *wop, Gdiplus::Bitmap **p_gpbitmap, int *wreturn, int 
 	this->gpbitmap = gpbitmap;
 	*p_gpbitmap = NULL; // ownership transfer
 	this->nframe = nframe;
-	this->current = 0;
+	this->current = first_frame;
 	this->tick = 0;
 	this->loopcount = loopcount;
 	this->delay = delay;
@@ -283,21 +275,16 @@ win_image::show(w3mimg_op *wop, int sx, int sy, int sw, int sh, int x, int y) TH
     int retval = 0;
     Gdiplus::Status status = Gdiplus::Ok;
     cache_handle newcache = NULL;
-#ifndef USE_GDIP_CACHED_BITMAP
-    HDC windc = NULL;
-    HDC memdc = NULL;
-#endif
 
     if (xi->logfile)
-	fprintf(xi->logfile, "win_image::show(%p, %d, %d, %d, %d, %d, %d) start\n",
-		wop, sx, sy, sw, sh, x, y);
+	fprintf(xi->logfile, "win_image::show(%p, %d, %d, %d, %d, %d, %d) start current=%u\n",
+		wop, sx, sy, sw, sh, x, y, this->current);
     if (!window_alive(wop))
 	goto last;
     {
 	int xx = x + wop->offset_x;
 	int yy = y + wop->offset_y;
 
-#ifdef USE_GDIP_CACHED_BITMAP
 	// Prepare the Graphics object for painting
 	Gdiplus::Graphics graphics(xi->window);
 	if ((status = graphics.GetLastStatus()) != Gdiplus::Ok)
@@ -307,16 +294,23 @@ win_image::show(w3mimg_op *wop, int sx, int sy, int sw, int sh, int x, int y) TH
 	if (status != Gdiplus::Ok)
 	    goto gdip_error;
 
-	// Clear the area first as the picture may be transparent
-	status = graphics.Clear(Gdiplus::Color(xi->background_pixel));
-	if (status != Gdiplus::Ok)
-	    goto gdip_error;
-
 	unsigned int retry_count = 2;
 	do {
 	    if (this->cache[this->current] == NULL) {
 		// Cache the image
-		Gdiplus::CachedBitmap *newcache = new Gdiplus::CachedBitmap(this->gpbitmap, &graphics);
+		Gdiplus::Bitmap tmp_bitmap(sw, sh, &graphics);
+		if ((status = tmp_bitmap.GetLastStatus()) != Gdiplus::Ok)
+		    goto gdip_error;
+		Gdiplus::Graphics tmp_graphics(&tmp_bitmap);
+		if ((status = tmp_graphics.GetLastStatus()) != Gdiplus::Ok)
+		    goto gdip_error;
+		status = tmp_graphics.Clear(Gdiplus::Color(xi->background_pixel));
+		if (status != Gdiplus::Ok)
+		    goto gdip_error;
+		status = tmp_graphics.DrawImage(this->gpbitmap, 0, 0, sw, sh);
+		if (status != Gdiplus::Ok)
+		    goto gdip_error;
+		Gdiplus::CachedBitmap *newcache = new Gdiplus::CachedBitmap(&tmp_bitmap, &graphics);
 		if (newcache == NULL)
 		    goto last;
 		if ((status = newcache->GetLastStatus()) != Gdiplus::Ok)
@@ -338,92 +332,15 @@ win_image::show(w3mimg_op *wop, int sx, int sy, int sw, int sh, int x, int y) TH
 	    if (retry_count == 0)
 		goto last;
 	} while (1);
-#else /* !USE_GDIP_CACHED_BITMAP */
-	// Prepare the GC for painting
-	windc = GetDC(xi->window);
-	if (windc == NULL)
-	    goto win32_error;
-	// Prepare the GC for read/write access to the cached bitmap
-	memdc = CreateCompatibleDC(windc);
-	if (memdc == NULL)
-	    goto win32_error;
-	unsigned int retry_count = 2;
-	do {
-	    HGDIOBJ hbitmap_save;
-	    if (this->cache[this->current] == NULL) {
-		unsigned int ow = gpbitmap->GetWidth();
-		unsigned int oh = gpbitmap->GetHeight();
-		// Cache the image
-		newcache = CreateCompatibleBitmap(windc, ow, oh);
-		if (newcache == NULL)
-		    goto win32_error;
-		SetLastError(ERROR_SUCCESS); // SelectObject sometimes leave the error unchanged
-		hbitmap_save = SelectObject(memdc, newcache);
-		if (hbitmap_save == NULL || hbitmap_save == HGDI_ERROR)
-		    goto win32_error;
-		Gdiplus::Graphics tmp_graphics(memdc);
-		if ((status = tmp_graphics.GetLastStatus()) != Gdiplus::Ok)
-		    goto gdip_error;
-		status = tmp_graphics.Clear(Gdiplus::Color(xi->background_pixel));
-		if (status != Gdiplus::Ok)
-		    goto gdip_error;
-		status = tmp_graphics.DrawImage(this->gpbitmap, 0, 0, ow, oh);
-		if (status != Gdiplus::Ok)
-		    goto gdip_error;
-		this->cache[this->current] = newcache;
-		newcache = NULL; // ownership transfer
-		--retry_count;
-	    } else {
-		SetLastError(ERROR_SUCCESS); // SelectObject sometimes leave the error unchanged
-		hbitmap_save = SelectObject(memdc, this->cache[this->current]);
-		if (hbitmap_save == NULL || hbitmap_save == HGDI_ERROR)
-		    goto stale_cache;
-	    }
-	    // Draw it
-	    if (BitBlt(windc, xx, yy, sw, sh, memdc, sx, sy, SRCCOPY))
-		break;
-	    // maybe the user altered the display configuration
-stale_cache:
-	    if (xi->logfile) {
-		DWORD ecode = GetLastError();
-		char *msg = win32_strerror_alloc(ecode);
-		fprintf(xi->logfile, "win_image::show(): stale cache = %u: %s\n",
-			(unsigned int)ecode, msg ? msg : "(unknown)");
-		LocalFree(msg);
-	    }
-	    SetLastError(ERROR_SUCCESS); // SelectObject sometimes leave the error unchanged
-	    hbitmap_save = SelectObject(memdc, hbitmap_save);
-	    if (hbitmap_save == NULL || hbitmap_save == HGDI_ERROR)
-		goto win32_error;
-	    DeleteObject(this->cache[this->current]);
-	    this->cache[this->current] = NULL;
-	    if (retry_count == 0)
-		goto last;
-	} while (1);
-#endif /* !USE_GDIP_CACHED_BITMAP */
 
 	retval = 1;
     }
     goto last;
-#ifndef USE_GDIP_CACHED_BITMAP
-win32_error:
-    win32_perror(wop, GetLastError(), "win_image::show");
-    goto last;
-#endif
 gdip_error:
     gdip_perror(wop, status, "win_image::show");
     goto last;
 last:
-#ifdef USE_GDIP_CACHED_BITMAP
     delete newcache;
-#else
-    if (memdc)
-	DeleteDC(memdc);
-    if (windc)
-	ReleaseDC(xi->window, windc);
-    if (newcache)
-	DeleteObject(newcache);
-#endif
     if (xi->logfile)
 	fprintf(xi->logfile, "win_image::show() = %d\n", retval);
     return retval;
@@ -447,8 +364,10 @@ win_image::animate(w3mimg_op * wop) THROW_NONE
 	if (this->tick >= MIN_DELAY && this->tick >= this->delay[this->current]) {
 	    this->tick = 0;
 	    unsigned int nextframe = this->current + 1;
+	    if (wop->max_anim == nextframe)
+		goto animation_end;
 	    if (nextframe >= this->nframe) {
-		if (this->loopcount == 1) // end of the loop
+		if (this->loopcount == 1 || wop->max_anim < 0) // end of the loop
 		    goto animation_end;
 		nextframe = 0;
 	    }

@@ -1,9 +1,13 @@
-2010-12-21  Ito Hiroyuki  <ZXB01226 at nifty.com>
+2010-12-24  AIDA Shinra <shinra@j10n.org>
 
+	* [w3m-dev 04437] Re: Windows版w3mimg、他
+	* w3mimg/win/win_w3mimg.cpp: remove unused ifdefs.
+	(load, animate): support "-anim" option.
+	(show): support "image_scale".
 
 2010-12-20  AIDA Shinra <shinra@j10n.org>
 
-	* [w3m-dev 04425] Re: Windows$BHG(Bw3mimg$B!"B>(B
+	* [w3m-dev 04425] Re: Windows版w3mimg、他
 	* w3mimgdisplay: supports Windows console (http://www.j10n.org/files/w3m-cvs-1.1040-misc.patch).
 	* image.c: ditto.
 	* configure.ac: ditto.
@@ -26,7 +30,7 @@
 
 2010-12-15  AIDA Shinra <shinra@j10n.org>
 
-	* [w3m-dev 04424] Windows$BHG(Bw3mimg$B!"B>(B
+	* [w3m-dev 04424] Windows版w3mimg、他
 	* scripts/w3mman/Makefile.in (DESTDIR): removed.
 	* scripts/multipart/Makefile.in (DESTDIR): removed.
 	* scripts/Makefile.in (DESTDIR): removed.
@@ -9253,4 +9257,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1044 2010/12/21 10:13:55 htrb Exp $
+$Id: ChangeLog,v 1.1045 2010/12/24 09:52:06 htrb Exp $

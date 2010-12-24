@@ -197,6 +197,14 @@ Option pannel
        Strict ISO-2022-JP/KR/CN. (Default: ON)
        If it is OFF, all ISO 2022 base character set can be displayed
        with ISO-2022-JP/KR/CN.
+   east_asian_width
+       Use double width for some Unicode characters. (Default: OFF)
+       If it is ON, treat East Asian Ambiguous characters as double width.
+   gb18030_as_ucs
+       Treat 4 bytes char. of GB18030 as Unicode. (Default: OFF)
+   simple_preserve_space
+       Simple Preserve space.
+       If it is ON, a space is remained in Japanese and some other languages.
 
    alt_entity
        Use alternate expression with ASCII for entities. (Default: ON)

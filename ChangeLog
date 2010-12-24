@@ -1,3 +1,9 @@
+2010-12-24  Ito Hiroyuki  <ZXB01226@nifty.com>
+
+	* [w3m-dev 04439] Update documents (README.m17n)
+	* doc-jp/README.m17n: add documents for options "east_asian_width", "gb18030_as_ucs" and "simple_preserve_space".
+	* doc/README.m17n: ditto.
+
 2010-12-24  AIDA Shinra <shinra@j10n.org>
 
 	* [w3m-dev 04437] Re: Windows版w3mimg、他
@@ -9257,4 +9263,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1045 2010/12/24 09:52:06 htrb Exp $
+$Id: ChangeLog,v 1.1046 2010/12/24 10:53:26 htrb Exp $

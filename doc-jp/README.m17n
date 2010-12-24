@@ -225,6 +225,14 @@
    strict_iso2022
        厳密な ISO-2022-JP/KR/CN を使う(デフォルト ON)
        OFF にすると ISO 2022 系の文字集合は全て表示/出力する。
+   east_asian_width
+       ある種のUnicode文字を全角にする(デフォルト OFF)
+       ON にすると East Asian Ambiguous 文字を全角とみなす。
+   gb18030_as_ucs
+       GB18030 の 4バイト文字を Unicode として扱う(デフォルト OFF)
+   simple_preserve_space
+       単純な空白の保存。
+       ON にすると日本語などでも文字間の空白が削除されない。
 
    alt_entity
        エンティティを ASCII の代替表現で表す(デフォルト ON)

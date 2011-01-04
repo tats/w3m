@@ -1,3 +1,12 @@
+2011-01-04  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
+
+	* [w3m-dev 04441] error when 'make install'
+	* update followig files. ABOUT-NLS Makefile.in acinclude.m4
+	aclocal.m4 config.rpath configure configure.ac entity.h install-sh
+	po/ChangeLog po/Makefile.in.in po/Rules-quot po/boldquot.sed
+	po/en@boldquot.header po/en@quot.header po/insert-header.sin
+	po/quot.sed po/remove-potcdate.sin
+
 2010-12-28  Ito Hiroyuki  <ZXB01226@nifty.com>
 
 	* [w3m-dev 04440] Update documents (README.cookie)
@@ -9269,4 +9278,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1047 2010/12/28 12:28:21 htrb Exp $
+$Id: ChangeLog,v 1.1048 2011/01/04 11:03:20 htrb Exp $

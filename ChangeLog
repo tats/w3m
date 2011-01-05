@@ -1,3 +1,14 @@
+2011-01-05  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
+
+	* [w3m-dev 04445] Re: Update documents (README.cookie)
+	* doc-jp/README.cookie: refer to RFC 2109.
+	* doc/README.cookie: diito.
+
+2011-01-05  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
+
+	* [w3m-dev 04444] Re: error when 'make install'
+	* w3mimg/win/.cvsignore: added.
+
 2011-01-04  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
 
 	* [w3m-dev 04441] error when 'make install'
@@ -9278,4 +9289,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1048 2011/01/04 11:03:20 htrb Exp $
+$Id: ChangeLog,v 1.1049 2011/01/05 10:09:19 htrb Exp $

@@ -38,7 +38,7 @@ cookie support of w3m
 
 
  ¡¦ If the number of "." in domain name is lesser than 2, it is
-    assumed as invalid cookie, however, you can use
-    cookie_avoid_wrong_number_of_dots to avoid this restriction. You
-    can set this in "Domains to avoid [wrong number of dots]" on the
-    Option Setting Panel.
+    assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can
+    use cookie_avoid_wrong_number_of_dots to avoid this
+    restriction. You can set this in "Domains to avoid [wrong number
+    of dots]" on the Option Setting Panel.

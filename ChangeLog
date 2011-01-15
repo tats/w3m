@@ -1,3 +1,14 @@
+2011-01-15  Dai Sato <satodai@w3m.jp>
+
+	* w3m 0.5.2
+	* version.c.in: update
+	* doc/README: version 0.5.2, release date, maintainer
+	* doc-jp/README: ditto
+	* po/w3m.pot, ja.po: ditto
+	* NEWS: update
+	* configure.ac: version 0.5.2
+	* configure: regenerated
+
 2011-01-05  SAKAI Kiyotaka <kiyotaka.sakai@ntt-at.co.jp>
 
 	* [w3m-dev 04445] Re: Update documents (README.cookie)
@@ -9289,4 +9300,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1049 2011/01/05 10:09:19 htrb Exp $
+$Id: ChangeLog,v 1.1050 2011/01/15 07:52:48 inu Exp $

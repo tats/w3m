@@ -1,3 +1,19 @@
+w3m 0.5.3 - 2011-01-15
+
+* security fix
+ - fix vulnerabilities indicated by bugs.debian.org.
+ - suppress sending Referer, if https:// -> http://
+* new features
+ - adapt w3mimg to native windows on MS Windows.
+ - support xterm-incompatible terminals without gpm.
+ - add "xhtml" to default guess.
+ - introduce option pseudo_inlines.
+ - add option to avoid "wrong number of dots" error in cookies.
+* other bug fixes
+ - fix "important" bugs from bugs.debian.org
+ - preserve spaces in multibyte context.
+ - fix proxy authentication.
+
 w3m 0.5.2 - 2007-05-31
 
 * security fix

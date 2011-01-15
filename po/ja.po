@@ -6,7 +6,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: w3m 0.5.2\n"
+"Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
 "POT-Creation-Date: 2010-08-20 18:44+0900\n"
 "PO-Revision-Date: 2010-08-20 18:45+0900\n"

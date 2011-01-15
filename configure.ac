@@ -1,8 +1,8 @@
 dnl w3m autoconf
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(w3m, 0.5.2, satodai@w3m.jp)
+AC_INIT(w3m, 0.5.3, satodai@w3m.jp)
 PACKAGE=w3m
-VERSION=0.5.2
+VERSION=0.5.3
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_SUBST(PACKAGE)

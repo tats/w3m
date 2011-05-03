@@ -1,0 +1,119 @@
+#!/usr/bin/make -f
+# Made with the aid of dh_make, by Craig Small
+# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
+# Some lines taken from debmake, by Cristoph Lameter.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+nossl:
+	@echo already nossl version environments
+
+ssl:
+	@echo change to ssl version...
+	@cd debian && for i in *-ssl; do \
+		f=`echo $$i | sed -e 's/-ssl//'`; \
+		mv $$f $$f-nossl; \
+		mv $$i $$f; \
+		echo -n "$$f "; \
+	done
+	@chmod +x debian/rules
+	@echo done
+
+include debian/rules.mk
+
+build: build-stamp
+build-stamp: setup-ja setup-en
+	dh_testdir
+	# Add here commands to compile the package.
+	cp -p debian/config.h-ja $(buildjadir)/config.h
+	cd $(buildjadir) && $(MAKE)
+	cp -p debian/config.h-en $(buildendir)/config.h
+	cd $(buildendir) && $(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -rf $(buildtree)
+	rm -f extract-stamp patch-stamp build-stamp install-stamp
+	rm -f debian/docs debian/examples
+	dh_clean
+
+install: install-stamp
+install-stamp: build-stamp
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	# Add here commands to install the package into debian/tmp.
+	cd $(buildendir) && $(MAKE) install DESTDIR=`pwd`/../../debian/tmp
+	cd $(buildendir)/Bonus && find . -type f -perm 0100 -print | \
+	while read i; \
+	do \
+		sed -e 's:/usr/local/bin/ruby:/usr/bin/ruby:' \
+		    -e 's:/bin/env:/usr/bin/env:' \
+			$$i \
+			> `pwd`/../../../debian/tmp/usr/share/doc/w3m/examples/$$i ; \
+	done
+	cd `pwd`/debian/tmp/usr/lib/w3m && for i in dirlist.cgi; \
+	do \
+	   perl -i -ple 's:^#!/usr/local/bin/perl:#!/usr/bin/perl:' $$i; \
+	done
+	cd `pwd`/debian/tmp && mv usr/bin/w3m usr/bin/w3m-en
+	cd `pwd`/debian/tmp && mv usr/lib/w3m/w3mbookmark usr/lib/w3m/w3mbookmark-en
+	cd `pwd`/debian/tmp && mv usr/lib/w3m/w3mhelperpanel usr/lib/w3m/w3mhelperpanel-en
+	install -m 755 debian/w3m.sh `pwd`/debian/tmp/usr/bin/w3m
+	install -m 755 debian/w3mbookmark.sh `pwd`/debian/tmp/usr/lib/w3m/w3mbookmark
+	install -m 755 debian/w3mhelperpanel.sh `pwd`/debian/tmp/usr/lib/w3m/w3mhelperpanel
+	install -m 755 $(buildjadir)/w3m `pwd`/debian/tmp/usr/bin/w3m-ja
+	install -m 755 $(buildjadir)/w3mbookmark `pwd`/debian/tmp/usr/lib/w3m/w3mbookmark-ja
+	install -m 755 $(buildjadir)/w3mhelperpanel `pwd`/debian/tmp/usr/lib/w3m/w3mhelperpanel-ja
+	# install -m 644 lisp/w3m.el `pwd`/debian/tmp/usr/share/emacs/site-lisp/w3m/
+	install -m 644 lisp/w3m.el `pwd`/debian/tmp/usr/share/doc/w3m/examples/
+	touch install-stamp
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+#	dh_testversion
+	dh_testdir
+	dh_testroot
+	sed -e 's:^:$(builddir)/:' debian/docs.in > debian/docs
+	dh_installdocs
+	cp -a $(builddir)/doc-jp/* `pwd`/debian/tmp/usr/share/doc/w3m/ja/
+	sed -e 's:^:$(builddir)/:' debian/examples.in > debian/examples
+	dh_installexamples
+	cd `pwd`/debian/tmp/usr/share/doc/w3m && \
+		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
+	dh_installmenu
+	dh_installmime
+	dh_installemacsen
+#	dh_installinit
+	dh_installcron
+	dh_installmanpages
+	install -m 644 $(builddir)/doc-jp/HISTORY.kokb `pwd`/debian/tmp/usr/share/doc/w3m/changelog.w3m-kokb
+	dh_installchangelogs $(builddir)/doc/HISTORY
+	install -m 644 lisp/ChangeLog `pwd`/debian/tmp/usr/share/doc/w3m/changelog.w3m.el
+	dh_strip
+	dh_compress
+	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-ja.1.gz
+	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-en.1.gz
+	dh_fixperms
+	dh_suidregister
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+#	dh_makeshlibs
+	dh_md5sums
+	dh_builddeb
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary

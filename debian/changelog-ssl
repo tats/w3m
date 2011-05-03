@@ -1,0 +1,810 @@
+w3m-ssl (0.1.10+0.1.11pre+kokb23-4) stable; urgency=high
+
+  * [SECURITY FIX] backport fix of mime header buffer overflow
+    SNS Advisory No.32
+    w3m malformed MIME header Buffer Overflow Vulnerability
+    http://www.lac.co.jp/security/snsadv/32.html (Japanese)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 20 Jun 2001 11:15:03 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb23-3) unstable; urgency=low
+
+  * don't remove pager alternative when upgrading, (same as Bug#87331)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 25 Feb 2001 00:27:58 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb23-2) unstable; urgency=high
+
+  * link with libssl096, closes: Bug#66306, Bug#86387, Bug#83681, Bug#82271
+  * view information on SSL certificates, closes: Bug#79689
+  * w3m-dev-01739
+    Add wheel mouse patch
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 19 Feb 2001 01:42:37 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb23-1) stable unstable; urgency=high
+
+  * new upstream pre release
+    more security fixes
+    - fix table stack overflow
+    - more internal tag and attribute check
+    - fix some buffer overflow bug
+    null character handling
+  * w3m-dev-01500
+    fix risky code in url.c
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 14 Dec 2000 01:10:10 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb22-1) stable unstable; urgency=high
+
+  * new upstream pre release
+    including important security fix
+  * apply patches on w3m-dev
+    w3m-dev-01432,01437,01443,01445
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun,  3 Dec 2000 01:36:42 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb21-3) unstable; urgency=high
+
+  * SECURITY FIX:
+    more checking internal tag
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  1 Dec 2000 11:46:50 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb21-2) unstable; urgency=HIGH
+
+  * SECURITY FIX:
+    check internal tag
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  1 Dec 2000 10:48:21 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb21-1) unstable; urgency=low
+
+  * new upstream pre release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 28 Nov 2000 10:59:02 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb20-1) unstable; urgency=low
+
+  * new upstream pre release
+  * fix mailcap handling, closes: Bug#77679
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 23 Nov 2000 05:47:03 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb19-2) unstable; urgency=low
+
+  * for JIS output, kanjicode=j instead of kanjicode=J, closes: Bug#76605
+  * fix configuration. no block in sig_chld(), closes: Bug#77167
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 19 Nov 2000 00:53:37 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb19-1) unstable; urgency=low
+
+  * new upstream pre release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 10 Nov 2000 00:27:36 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb18-3) unstable; urgency=low
+
+  * fix again rxvt mouse support, closes: Bug#76036
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  2 Nov 2000 18:47:13 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb18-2) unstable; urgency=low
+
+  * fix pager alternatives' slave
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 31 Oct 2000 10:28:15 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb18-1) unstable; urgency=low
+
+  * new upstream pre release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 30 Oct 2000 11:46:55 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb17-3) unstable; urgency=low
+
+  * apply patches
+    w3m-dev:01258 filename/URI input line completion
+    w3m-dev:01263 setting user mailcap and mime.type
+    w3m-dev:01269 news: URL fix
+    w3m-dev:01273 USE_NNTP fix
+    w3m-dev:01274 support nntp:
+    w3m-dev:01275 change squeeze multiple blank line option to -s
+    		closes: Bug#75527
+    w3m-dev:01276 fix URL in visual mode
+    		closes: Bug#75573
+    w3m-dev:01277 add Accept-Encoding: gzip
+    		closes: Bug#74695
+  * (config.h-*) add USE_GOPHER, USE_NNTP
+  * w3m.sh: fix for -ppc, -o, -config
+  * w3m.1: update
+  * emacsen-startup: remove extra right paren, closes: Bug#75795
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 26 Oct 2000 21:42:45 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb17-2) unstable; urgency=low
+
+  * apply patches
+    w3m-dev:01240: fix segfault, incompatible pointer, closes: Bug#75513
+    w3m-dev:01247: cummulative menu patch
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 25 Oct 2000 12:38:30 +0900
+
+w3m-ssl (0.1.10+0.1.11pre+kokb17-1) unstable; urgency=low
+
+  * new upstream pre release with several patches
+   - can't reproduce "run in an xterm gets trashed by the \x96 character"
+     closes: Bug#53048
+   - fixed: w3m in xterm horribly confused by Japanese in title
+     closes: Bug#62474
+   - fixed: Won't warn if can't understand config files.
+     closes: Bug#74069
+   - apply keymap.lynx example could be better.
+     closes: Bug#74070
+  * include w3m.el
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 24 Oct 2000 13:37:53 +0900
+
+w3m-ssl (0.1.10-3) unstable; urgency=low
+
+  * several bug fixes:
+    - resize on rxvt works fine, closes: Bug#64678, #71597
+    - No segfault from history page in 0.1.10, closes: Bug#65101
+    - As bug submitter said, download problem was fixed in 0.1.10, 
+      closes: Bug#66235
+    - no nbsp leaks with 0.1.10, closes: Bug#67581
+    - fix debian/rules to check -perm 0100 instead of -perm 0111,
+      closes: Bug#72100
+    - support rxvt mouse support: closes: Bug#71380, Bug#58280
+    - mailcap test, closes: Bug#63309
+    - quote space in form submit: closes: Bug#60825, Bug#67466
+    - ignore space in leading blanks: closes: Bug#66887
+    If you claim not yet fixed, please reopen
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun,  1 Oct 2000 04:15:08 +0900
+
+w3m-ssl (0.1.10-2) stable unstable; urgency=medium
+
+  * proposed-updates release
+    since I believe 0.1.10-1 (in woody) is more stable than 0.9.5-5 (in potato)
+    and I plan w3m move to next unstable/experimental release for woody,
+    so I'd like to put it in stable(proposed-updates)
+    I'd not like to backport to 0.9.5 from 0.1.10, because it might include
+    some bugs, so I think 0.1.10 (proven stable) is better than backported
+    0.9.5
+    Followings are already fixed in 0.1.10 (and trivial fix to #72100),
+    - resize on rxvt works fine, closes: Bug#64678, #71597
+    - No segfault from history page in 0.1.10, closes: Bug#65101
+    - As bug submitter said, download problem was fixed in 0.1.10,
+      closes: Bug#66235
+    - no nbsp leaks with 0.1.10, closes: Bug#67581
+    - fix debian/rules to check -perm 0100 instead of -perm 0111,
+      closes: Bug#72100
+    If you claim not yet fixed, please reopen
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 27 Sep 2000 16:46:47 +0900
+
+w3m-ssl (0.1.10-1) unstable; urgency=low
+
+  * new upstream version
+  * apply patches in w3m-dev mailing-lists (until [w3m-dev 00899])
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 13 Jun 2000 17:35:31 +0900
+
+w3m-ssl (0.1.9-5) frozen unstable; urgency=high
+
+  * fix bug of Segfaults on certain pages: 'http://www.linuxshop.cz/hardware.php3?typ=8&stranka=0&navrat=', closes: Bug#63937
+  * closes: Bug#64142: w3m and w3m-ssl doesn't work with zero length string proxy host.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 16 May 2000 01:58:23 +0900
+
+w3m-ssl (0.1.9-4) frozen unstable; urgency=high
+
+  * Fix RC bug#63274, thanks Falk Hueffner <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
+  * Fix RC bug#63721, closes: Bug#63423, Bug#63612, Bug#63721
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  8 May 2000 19:14:35 +0900
+
+w3m-ssl (0.1.9-3) frozen unstable; urgency=high
+
+  * Fix RC bug#63274, thanks Falk Hueffner <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
+  * I think this version also closes: Bug#63423, Bug#63612,
+    if not yet fixed, please reopen it
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  8 May 2000 01:10:48 +0900
+
+w3m-ssl (0.1.9-2) frozen unstable; urgency=HIGH
+
+  * security fix: remote exploit
+   - When viewing image by `I', web author can run arbitrary command in
+     user's environment, because of mishandling image URL.
+     This revision fixes this problem (from [w3m-dev 00518] Security hole)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 26 Apr 2000 01:38:58 +0900
+
+w3m-ssl (0.1.9-1) unstable; urgency=low
+
+  * new upstream version
+  * apply patches in w3m-dev mailing-lists
+   [w3m-dev 00482] [w3m-dev 00487] [w3m-dev 00483] [w3m-dev 00488]
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 22 Apr 2000 03:58:27 +0900
+
+w3m-ssl (0.1.8-1) frozen unstable; urgency=medium
+
+  * apply patches in w3m-dev mailing-lists
+  * new upstream version
+  - security fix potential buffer overflow exploit
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 13 Apr 2000 00:52:01 +0900
+
+w3m-ssl (0.1.7-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 29 Jan 2000 02:27:18 +0900
+
+w3m-ssl (0.1.6-2) frozen unstable; urgency=high
+
+  * do doc file symlink instead of doc directory symlinks,
+    closes: Bug#56401, Bug#56405.
+    I do symlink because almost of all documents of w3m and w3m-ssl
+    is identical. Difference between w3m and w3m-ssl is only
+    that w3m-ssl is built with SSL library
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 29 Jan 2000 01:29:11 +0900
+
+w3m-ssl (0.1.6-1) frozen unstable; urgency=high
+
+  * This fix also apply to w3m-ssl too, because difference between w3m
+    and w3m-ssl is only ssl supports.
+  * new upstream release fixing several bugs
+   - fix HTTP Auth mecanism, closes: Bug#51258
+   - When '<' is used as other than start of a tag, let the '<'
+     be displayed., closes: Bug#52566
+   - modify GPM support, closes: Bug#55735
+   - don't use graphics character for progress bar, closes: Bug#53053
+   - http://www.egreetings.com/v/spEJQDu7Zm doesn't causes an unstoppable
+     loop of cookies any more, closes: Bug#54334
+   - Accept discard attribute of Set-Cookie2.
+   - insert a blank line just after </dl>.
+   - <table> Geometry calculation bugfix.
+   - Bugfix of inputLineHist().
+   - fix handling the very strange frameset with only one frame.
+     <frameset rows="100%,*" ... >
+   - When no scheme is specified in the URL, w3m tries to open local file,
+     and when it fails w3m prepends "http://".
+   - target="_parent" support, frame-relatex bugfixes.
+   - Screen redraw bugfix.
+  * fix segfault aborting to send mail, closes: Bug#55833
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 22 Jan 2000 23:26:49 +0900
+
+w3m-ssl (0.1.4-4) frozen unstable; urgency=HIGH
+
+  * fix build-depends, libncurses4-dev -> libncurses5-dev
+  * do symlink usr/share/doc/w3m-ssl, instead of install it
+    closes: Bug#55215, Bug#55699
+  * (security) fix bug: password auth leaks passwords (both w3m and w3m-ssl
+    have the same bug), closes: Bug#55655
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 20 Jan 2000 19:21:27 +0900
+
+w3m-ssl (0.1.4-3) unstable; urgency=low
+
+  * apply patch [w3m-dev 00176] Right justification bug
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 15 Jan 2000 03:06:43 +0900
+
+w3m-ssl (0.1.4-2) unstable; urgency=low
+
+  * rebuild with latest version of libncurses5-dev and libgpmg1-dev
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 15 Jan 2000 01:39:28 +0900
+
+w3m-ssl (0.1.4-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 13 Jan 2000 00:38:33 +0900
+
+w3m-ssl (0.1.1-2) unstable; urgency=low
+
+  * bug in comment parsing
+  - apply patch from  Bonard B.Timmons III <timmons@delanet.com>
+    closes: Bug#54703
+  * script interpreter should be /usr/bin/perl not /usr/local/bin/perl
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 12 Jan 2000 01:48:15 +0900
+
+w3m-ssl (0.1.1-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  6 Jan 2000 00:18:39 +0900
+
+w3m-ssl (0.0.19991203-4) unstable; urgency=low
+
+  * fix infinite loop in parse HTML, closes: Bug#53855
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  3 Jan 2000 02:16:58 +0900
+
+w3m-ssl (0.0.19991203-3) unstable; urgency=low
+
+  * Add option to configure ALT="" handling, closes: Bug#47001
+    (but it might be refused by upstream author...)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  7 Dec 1999 01:14:21 +0900
+
+w3m-ssl (0.0.19991203-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  3 Dec 1999 21:37:13 +0900
+
+w3m-ssl (0.0.19991126-4) unstable; urgency=low
+
+  * arrow keys available when TERM=xterm, closes: Bug#51582.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  2 Dec 1999 00:00:46 +0900
+
+w3m-ssl (0.0.19991126-3) unstable; urgency=low
+
+  * fix segfault with -v option,  closes: Bug#51532
+  * recognize Content-Type:text/html (no space)
+  * fix out of order of anchor lists with nested table. (w3m-dev)
+  * fix some array out of range access to cause random segfault.
+  * apply Tsutomu Okada <okada@furuno.co.jp> patch in w3m-dev
+  * new w3m wrapper based on Jacobo Tarrio <jtarrio@ceu.fi.udc.es>,
+    closes: Bug#48474
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  1 Dec 1999 00:51:14 +0900
+
+w3m-ssl (0.0.19991126-2) unstable; urgency=low
+
+  * fixed fail to load help file
+  * fixed segfault bug in form selection
+  * apply patch to fix w3m crash with $WWW_HOME
+    by hsaka@mth.biglobe.ne.jp (Hironori Sakamoto) on w3m-dev ML
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 27 Nov 1999 18:08:32 +0900
+
+w3m-ssl (0.0.19991126-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 26 Nov 1999 23:46:35 +0900
+
+w3m-ssl (0.0.19991117-5) unstable; urgency=low
+
+  * fix mySystem() to handle quote in arguments
+  * fix memory allocation error, closes: Bug#51046
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 26 Nov 1999 02:33:57 +0900
+
+w3m-ssl (0.0.19991117-4) unstable; urgency=low
+
+  * should depends: w3m (>= 0.0.19991117-4) for w3mbookmark
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 22 Nov 1999 03:47:15 +0900
+
+w3m-ssl (0.0.19991117-3) unstable; urgency=medium
+
+  * help file loaded from /usr/share/w3m, closes: Bug#50774
+  * back changes wrapper scripts, closes: Bug#50737, Bug#50782, Bug#50738
+    but repoen Bug#48474
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 22 Nov 1999 02:49:56 +0900
+
+w3m-ssl (0.0.19991117-2) unstable; urgency=medium
+
+  * apply various patches reported in w3m-dev mailing-list, closes: Bug#50603
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 19 Nov 1999 16:15:05 +0900
+
+w3m-ssl (0.0.19991117-1) unstable; urgency=high
+
+  * apply patches, already reported in w3m-dev mailing-list
+  * new upstream version
+   - fix security problem, closes: Bug#50192
+   - add http:// when command line argument is not file, closes: Bug#48474
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 18 Nov 1999 17:08:27 +0900
+
+w3m-ssl (0.0.19991028.2-7) unstable; urgency=low
+
+  * fix check_no_proxy() possibly infinite loop?
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 13 Nov 1999 15:05:41 +0900
+
+w3m-ssl (0.0.19991028.2-6) unstable; urgency=low
+
+  * add dns_order, noproxy_netaddr for more good IPv6 support
+    thanks Takuo KITAME <kitame@northeye.org>, closes:47788
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 11 Nov 1999 01:42:53 +0900
+
+w3m-ssl (0.0.19991028.2-5.1) unstable; urgency=low
+
+  * add dependency w3m (>= 0.0.19991015-1) because old version of
+    /usr/bin/w3m does not support w3m-ssl, closes: Bug#49665
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 10 Nov 1999 01:20:16 +0900
+
+w3m-ssl (0.0.19991028.2-5) unstable; urgency=low
+
+  * (ftp.c) fix ftp login problem against proftpd.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  3 Nov 1999 04:21:54 +0900
+
+w3m-ssl (0.0.19991028.2-4) unstable; urgency=low
+
+  * (Str.c) Strgrow() must grow at least 2 bytes.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  1 Nov 1999 03:15:54 +0900
+
+w3m-ssl (0.0.19991028.2-3) unstable; urgency=low
+
+  * (Str.h) fix Strcat_char() macro.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 31 Oct 1999 23:43:22 +0900
+
+w3m-ssl (0.0.19991028.2-2) unstable; urgency=low
+
+  * need GC_stackbottom initialization in main.c, it closes Bug#48549,
+    segmentation fault on sparc architecture.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 30 Oct 1999 00:31:31 +0900
+
+w3m-ssl (0.0.19991028.2-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 29 Oct 1999 01:47:55 +0900
+
+w3m-ssl (0.0.19991027-1) unstable; urgency=low
+
+  * new upstream version
+   - fix check_expired_cookies, closes: Bug#48039
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 28 Oct 1999 00:41:21 +0900
+
+w3m-ssl (0.0.19991015-3) unstable; urgency=low
+
+  * probable bug in use of IS_SPACE() macro. closes: Bug#48211
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 26 Oct 1999 00:20:32 +0900
+
+w3m-ssl (0.0.19991015-1) unstable; urgency=low
+
+  * Initial release with SSL
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 15 Oct 1999 23:36:51 +0900
+
+w3m (0.0.19991015-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 15 Oct 1999 23:36:31 +0900
+
+w3m (0.0.19991008-3) unstable; urgency=low
+
+  * fix segfault for "w3m http:" with http_proxy
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 15 Oct 1999 01:29:36 +0900
+
+w3m (0.0.19991008-2) unstable; urgency=low
+
+  * apply file.c patch to fix Incorrect line breaking by upstream author
+   in w3m-dev ML. closes: Bug#47087
+  * change `#ifdef TIOCGWINSZ' to `#ifndef TIOCGWINSZ'.
+   closes: Bug#47153.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 14 Oct 1999 00:55:46 +0900
+
+w3m (0.0.19991008-1) unstable; urgency=low
+
+  * dont quote %s in debian/mime, closes: Bug#45920
+  * new upstream version. 
+    - Never hangup if a page has when too much links. closes: Bug#46381
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  9 Oct 1999 02:33:27 +0900
+
+w3m (0.0.19991007-1) unstable; urgency=low
+
+  * add copiousoutput type mime hander like lynx, closes: Bug#46416
+  * apply patch to fix some enbug in new upstream (from w3m-dev)
+  * new upstream version
+    add support cookie and SSL.
+    but SSl is not configured by this debian package (todo)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  8 Oct 1999 01:31:00 +0900
+
+w3m (0.0.19990928-2) unstable; urgency=low
+
+  * recompiled with libgc5-dev
+  * w3m is pager alternatives, closes: Bug#46192
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 29 Sep 1999 13:15:57 +0900
+
+w3m (0.0.19990928-1) unstable; urgency=low
+
+  * new upstream release 
+  * apply Hironori Sakamoto <h-saka@lsi.nec.co.jp> patch
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 29 Sep 1999 00:35:14 +0900
+
+w3m (0.0.19990916-1) unstable; urgency=low
+
+  * new upstream release
+  * adapt to FHS
+  * available ~/.w3m/keymap (see /usr/share/doc/w3m/examples/keymap.lynx), closes: Bug#44421
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 21 Sep 1999 02:34:16 +0900
+
+w3m (0.0.19990820-1) unstable; urgency=low
+
+  * new upstream release 
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 21 Aug 1999 02:44:14 +0900
+
+w3m (0.0.19990817-1) unstable; urgency=low
+
+  * new development release 
+  * display ISO-8859-1 characters probably, closes: Bug#41988
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 18 Aug 1999 02:23:15 +0900
+
+w3m (0.0.19990815-2) unstable; urgency=low
+
+  * (url.c, ftp.c) fix INET6 patch; explicit port number in URL is ignored
+  * build both w3m-en and w3m-ja.  These are dispatched in w3m by locale configurations.
+  * (file.c) fix ullevel chars (gt;)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 17 Aug 1999 00:40:53 +0900
+
+w3m (0.0.19990815-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 16 Aug 1999 00:29:16 +0900
+
+w3m (0.0.19990814-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 14 Aug 1999 22:07:34 +0900
+
+w3m (0.0.19990716-3) unstable; urgency=low
+
+  * Applied IPv6 patch (from kitame@debian.gr.jp)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 14 Aug 1999 00:31:23 +0900
+
+w3m (0.0.19990716-2) unstable; urgency=low
+
+  * auto decompress gzip file 
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  5 Aug 1999 18:07:47 +0000
+
+w3m (0.0.19990716-1) unstable; urgency=low
+
+  * new upstream version
+  * link with libgc.so.4 again 
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 18 Jul 1999 17:01:58 +0900
+
+w3m (0.0.19990625-1) unstable; urgency=low
+
+  * Backspace is ^?
+  * build with bundled libgc4 instead of libgc4 package, because
+    with libgc.so.4, w3m hangs up when resizing
+  * apply <hsaka@mth.biglobe.ne.jp>  <19990707102422@ei5nazha> patch
+  * apply aito <19990701100806@ei5nazha> patch fix <P> behavior
+  * apply w3m-990625-30.diff.gz
+  * New upsteam version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 10 Jul 1999 13:51:04 +0900
+
+w3m (0.0.19990609-2) unstable; urgency=low
+
+  * (debian/mime) remove text/plain entry, because netscape navigator
+     will hang up by this entry.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 15 Jun 1999 03:05:46 +0900
+
+w3m (0.0.19990609-1) unstable; urgency=low
+
+  * New upstream version
+    - fix <dl compact> handling, thanks hsaka@mth.biglobe.ne.jp
+    - (new option) -no-mouse
+    - fix bugs about nested <nobr>,<pre>
+    - fix table width calculation when <table> has <nobr> and <br> or <p> in it
+      thanks, okabe@okaibm.hep.okayama-u.ac.jp
+    - fix password handling
+    - (portability) `char == unsigned char' environments
+    - fix bug when unclosed comments in table. 
+       thanks okabe@okaibm.hep.okayama-u.ac.jp
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 11 Jun 1999 03:34:59 +0900
+
+w3m (0.0.19990604-1) unstable; urgency=low
+
+  * New upstream version
+    - page up/down, previous page by mouse
+    - fix handling of '#' in filename
+    - better support for mouse
+    - fix password handling
+    - support mouse drag
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun,  6 Jun 1999 05:03:26 +0900
+
+w3m (0.0.19990526-1) unstable; urgency=low
+
+  * apply patch 
+    http://ei5nazha.yz.yamagata-u.ac.jp/BBS/spool/log.html
+    <19990527130634@ei5nazha>
+  * New upsteam version
+    - fix interpretation of `#' of filename
+    - (new feature) line number display
+    - add new option -no-proxy
+    - mouse support, thanks ytake@phys2.med.osaka-u.ac.jp
+    - fix width calculation when `&...;' thanks okabe@okaibm.hep.okayama-u.ac.jp
+    - (new feature) 1 line horizontal scroll, thanks shim@nw.bs1.fc.nec.co.jp
+    - support <wbr>
+    - fix space handling in table
+    - fix width calculation <nobr>..</nobr> in table
+    - use ARTICLE instead of article to get article via NNTP, thanks patakuti@t3.rim.or.jp
+    - fix openURL() initialization
+    - fix invalid character entity in table, thanks mituharu@math.s.chiba-u.ac.jp
+    - view source if it's not HTML
+    - display character entity as much as possible
+    - fix compile error
+    - add new option +line-number, thanks shim@nw.bs1.fc.nec.co.jp
+    - fix <nobr>..</nobr> handling
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 29 May 1999 01:15:03 +0900
+
+w3m (0.0.19990512-1) unstable; urgency=low
+
+  * New upstream version
+   - save cursor position when scrolling by J or K (by shim@nw.bs1.fc.nec.co.jp)
+   - display reading status at bottom line when text/plain
+   - fix justification by <div><center>
+   - display progress bar when Content-Length available.
+   - display HTTP header information by '='
+   - fix successful empty line when </OL></UL> are continued.
+   - newline by <LI> outside <OL><UL>
+   - print abolute pathname by 'u' (by tnh@aurora.dti.ne.jp)
+   - break C-c
+   - enhance save link destination by yukihiko@yk.rim.or.jp
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 13 May 1999 02:53:13 +0900
+
+w3m (0.0.19990430-1) unstable; urgency=low
+
+  * don't install html2latex, because it will conflicts with html2latex package
+    closes bug#36707.
+  * New upstream version
+  - keep HTTP header information in buffer
+  - "Last Modified" in information screen by `='
+  - don't add "Referer:" if ftp with user or password specified
+  - enhance newline judgement
+  - can specify count for command
+  - new feature: save document of link destination
+  - ftp order
+  - new feature: ftp://username@hostname/file
+  - ftp can be put in bookmark
+  - fix bug: getpwuid() in ftp 
+  - enable align attribute in <Hn>, <P>
+  - fix leading space
+  - fix bug in resizing
+  - edit by ESC e
+  - support ftp://user:password@host/file
+  - default is current URL when `U'
+  - support EUC X0201 Kana
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  1 May 1999 01:45:23 +0900
+
+w3m (0.0.19990421-1) unstable; urgency=low
+
+  * remove reference to info page from w3m.1 because this package
+    does not have info pages, closes Bug#35093.
+  * New upstream version 
+  - fix order of include "config.h" in term.c
+  - fix bug to dump core when URL is ""
+  - fix english message symbol in rc.c
+  - new feature: ftp password
+  - fix <tag attr=> parsing
+  - don't put character at right bottom edge to prevent scrolling on
+    some terminal emulators.
+  - buffer overrun bug fix
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 21 Apr 1999 20:54:56 +0900
+
+w3m (0.0.19990406-1) unstable; urgency=low
+
+  * buffer overrun bug fix
+  * New upstream version
+   - add Bonus scripts (ruby package can be found in Debian JP)
+   - add supports to browse pages with password.
+   - new feature: local CGI
+   - new feature: local directory index
+   - fix imagemap for Kanji map name
+   - fix width calculation for HTML elements
+   - add -halfdump option
+   - fix parseURL2 for "#label" type of URL
+   - deal with stuid Kanji URL
+   - (configure): 'pxvt' -> 'rxvt'
+   - fix for <base href=""> handling
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  9 Apr 1999 23:57:36 +0900
+
+w3m (0.0.19990330-1) unstable; urgency=low
+
+  * New upstream version
+   - ':' commands treats ',' as URL character.
+   - use sigsetjmp()/siglongjmp()
+   - fix color reset problems
+  * close Bug#35093, w3m has no Info pages.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  5 Apr 1999 20:04:34 +0900
+
+w3m (0.0.19990323-1) unstable; urgency=low
+
+  * New upstream version
+   - fix redirected POST method
+   - fix <nobr> in nested table
+   - reorganized option screen
+   - auto URL display mode
+   - send CRLF in POST
+   - `M' invoke external viewer
+   - fix color bugs
+   - fix bug about relative path
+   - fix "&" in <img alt="...">
+   - enable -F (frame rendering) with -dump option
+   - newline surroudings of <ADDRESS>
+   - fix core dump when cursor move in empty buffer
+   - can be used IP address for NO_PROXY
+   - support multiple IP hosts
+   - fix <pre> in frame
+   - fix cbreak return from loadGeneralFile()
+   - fix <caption> bug
+   - fix &hoge;
+   - fix cell width bug when COLSPAN > 2
+   - fix -dump
+   - add support Accept-Language
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 24 Mar 1999 19:46:05 +0900
+
+w3m (0.0.19990313-1) unstable; urgency=low
+
+  * New upstream version
+   - fix external viewer invokation
+   - add "=" command to show information about document
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 14 Mar 1999 01:39:41 +0900
+
+w3m (0.0.19990310-1) unstable; urgency=low
+
+  * New upstream version
+   - support resize
+   - fix setlinescols
+   - Pragma: no-cache
+   - fix table rendering for 2byte chars
+   - <style> parse fix
+   - fix configure
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 11 Mar 1999 00:30:25 +0900
+
+w3m (0.0.19990309-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  9 Mar 1999 19:08:08 +0900
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "ukai@debian.or.jp"
+End:

@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+
+case "$1" in
+    remove|deconfigure)
+        update-alternatives --quiet --remove pager /usr/bin/w3m
+        ;;
+    *)
+esac
+
+#DEBHELPER#

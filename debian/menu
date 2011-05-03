@@ -1,0 +1,2 @@
+?package(w3m):needs=text section=Apps/Net\
+  title="w3m" command="/usr/bin/w3m /usr/share/doc/w3m/MANUAL.html"

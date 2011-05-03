@@ -1,0 +1,14 @@
+#!/bin/sh -e
+# 
+
+case "$1" in
+  configure)
+        update-alternatives --quiet --install /usr/bin/pager pager \
+            /usr/bin/w3m 25 \
+	    --slave /usr/share/man/man1/pager.1.gz pager.1.gz \
+	    /usr/share/man/man1/w3m.1.gz
+	;;
+  *)
+esac
+
+#DEBHELPER#

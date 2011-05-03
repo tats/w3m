@@ -1,0 +1,17 @@
+PATCH: -p0
+
+--- terms.c.orig	Mon Oct 30 12:16:31 2000
++++ terms.c	Thu Nov  2 18:45:58 2000
+@@ -240,7 +240,12 @@
+     TerminalGet(tty, &d_ioval);
+ #ifdef MOUSE
+     term = getenv("TERM");
++#ifdef DEBIAN
++    if (!strncmp(term, "kterm", 5) || !strncmp(term, "xterm", 5)
++	|| !strncmp(term, "rxvt", 4)) {
++#else
+     if (!strncmp(term, "kterm", 5) || !strncmp(term, "xterm", 5)) {
++#endif
+ 	is_xterm = 1;
+     }
+ #endif

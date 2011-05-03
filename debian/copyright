@@ -1,0 +1,49 @@
+This package was debianized by Fumitoshi UKAI ukai@debian.or.jp on
+Tue,  9 Mar 1999 19:08:08 +0900.
+
+It was downloaded from http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/
+development version can be downloaded from
+ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/dev/
+
+Okabe patch can be downloaded from
+http://www4.ocn.ne.jp/~okabek/w3m.html
+
+Upstream Author(s): Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp>
+
+Copyright:
+
+(C) Copyright 1994-1999 by Akinori Ito. All rights reserved.
+ Permission is hereby granted to use or copy this program
+ for any purpose,  provided the above notices are retained on all copies
+ and you accept that there is no warranty for this software.
+ Permission to modify the code and to distribute modified code is granted,
+ provided the above notices are retained, and a notice that the code was
+ modified is included with the above copyright notice and you accept
+ that there is no warranty for this software.
+
+ This software may be redistributed freely for this purpose, in full 
+ or in part, provided that this entire copyright notice is included 
+ on any copies of this software and applications and derivations thereof.
+ 
+ This software is provided on an "as is" basis, without warranty of any
+ kind, either expressed or implied, as to any matter including, but not
+ limited to warranty of fitness of purpose, or merchantability, or
+ results obtained from use of this software.
+
+And source archive includes Boehm GC, which is already debianized
+as libgc5 and libgc5-dev, so this Debian binary package uses it 
+instead of libgc which comes with w3m sources.
+
+Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
+Copyright (c) 1991-1996 by Xerox Corporation.  All rights reserved.
+Copyright (c) 1996-1998 by Silicon Graphics.  All rights reserved.
+
+THIS MATERIAL IS PROVIDED AS IS, WITH ABSOLUTELY NO WARRANTY EXPRESSED
+OR IMPLIED.  ANY USE IS AT YOUR OWN RISK.
+
+Permission is hereby granted to use or copy this program
+for any purpose,  provided the above notices are retained on all copies.
+Permission to modify the code and to distribute modified code is granted,
+provided the above notices are retained, and a notice that the code was
+modified is included with the above copyright notice.

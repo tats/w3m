@@ -1,0 +1,2 @@
+text/html; /usr/bin/w3m -T text/html %s; needsterminal; description=HTML Text; nametemplate=%s.html; priority=4
+text/html; /usr/bin/w3m -dump -T text/html %s; copiousoutput; description=HTML Text; nametemplate=%s.html; priority=3

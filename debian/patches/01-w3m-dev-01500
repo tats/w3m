@@ -1,0 +1,152 @@
+PATCH: -p0
+To: w3m-dev@mi.med.tohoku.ac.jp
+Subject: [w3m-dev 01500] fix risky code in url.c
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Delivered-To: ukai@ukai.org
+Delivered-To: ukai@debian.or.jp
+Date: Wed, 13 Dec 2000 12:02:11 +0900 (JST)
+Reply-To: w3m-dev@mi.med.tohoku.ac.jp
+Message-Id: <200012130302.MAA21605@udlew10.uldev.lsi.nec.co.jp>
+X-ML-Name: w3m-dev
+X-Mail-Count: 01500
+X-MLServer: fml [fml 3.0]; post only (only members can post)
+X-ML-Info: If you have a question, send e-mail with the body	"help" (without quotes) to the address w3m-dev-ctl@mi.med.tohoku.ac.jp;	help=<mailto:w3m-dev-ctl@mi.med.tohoku.ac.jp?body=help>
+X-Sender: w3m-dev-admin@mi.med.tohoku.ac.jp
+
+坂本です。
+
+url.c にあった危険性のあるコードを修正しました。
+local.c はおまけの修正です。
+
+# m18n で URL や file 名の文字コードを真面目にチェックしている過程で
+# 見つけたのですが、かなり大変。本当はオリジナル版でもやらないと
+# いけないけど。
+----------------------------------- 
+坂本 浩則 <hsaka@mth.biglobe.ne.jp> 
+ http://www2u.biglobe.ne.jp/~hsaka/
+
+--- url.c.orig	Wed Dec 13 10:39:47 2000
++++ url.c	Wed Dec 13 10:46:33 2000
+@@ -517,7 +517,7 @@
+ parseURL(char *url, ParsedURL * p_url, ParsedURL * current)
+ {
+     char *p, *q;
+-    char tmp[LINELEN];
++    Str tmp;
+     int i;
+ 
+     p = url;
+@@ -548,10 +548,10 @@
+ 	++url;
+     }
+     if (IS_ALPHA(*url) && (url[1] == ':' || url[1] == '|')) {
+-	if(url[1]=='|')
+-	    url[1]=':';
+ 	p_url->scheme = SCM_LOCAL;
+-	p_url->file = allocStr(url, 0);
++	p_url->file = p = allocStr(url, 0);
++	if(p[1]=='|')
++	    p[1]=':';
+     }
+     if (p_url->scheme == SCM_LOCAL)
+ 	goto analyze_file;
+@@ -626,9 +626,8 @@
+ 	    p_url->host = NULL;
+ 	    goto analyze_url;
+ 	}
+-	strncpy(tmp, q, p - q);
+-	tmp[p - q] = '\0';
+-	p_url->port = atoi(tmp);
++	tmp = Strnew_charp_n(q, p - q);
++	p_url->port = atoi(tmp->ptr);
+ 	if (*p == '\0') {	/* scheme://host:port           */
+ 	    /* scheme://user@host:port      */
+ 	    /* scheme://user:pass@host:port */
+@@ -675,14 +674,14 @@
+ #ifdef USE_GOPHER
+     if (p_url->scheme == SCM_GOPHER && *p == 'R') {
+ 	p++;
+-	q = tmp;
+-	*q++ = *p++;
++	tmp = Strnew();
++	Strcat_char(tmp, *(p++));
+ 	while (*p && *p != '/')
+ 	    p++;
++	Strcat_charp(tmp, p);
+ 	while (*p)
+-	    *q++ = *p++;
+-	*q = '\0';
+-	p_url->file = copyPath(tmp, -1, COPYPATH_SPC_IGNORE);
++	    p++;
++	p_url->file = copyPath(tmp->ptr, -1, COPYPATH_SPC_IGNORE);
+     }
+     else
+ #endif				/* USE_GOPHER */
+--- local.c.orig	Wed Dec 13 10:39:44 2000
++++ local.c	Wed Dec 13 11:55:40 2000
+@@ -19,7 +19,7 @@
+     Directory *dir;
+     struct stat st;
+     char **flist;
+-    char *p, *qdir, *q;
++    char *p, *qdir;
+     Str fbuf = Strnew();
+ #ifdef READLINK
+     struct stat lst;
+@@ -29,10 +29,10 @@
+     int nfile, nfile_max = 100;
+     Str dirname;
+ 
+-    dirname = Strnew_charp(dname);
+-    d = opendir(dirname->ptr);
++    d = opendir(dname);
+     if (d == NULL)
+ 	return NULL;
++    dirname = Strnew_charp(dname);
+     qdir = htmlquote_str(dirname->ptr);
+     tmp = Sprintf("<title>Directory list of %s</title><h1>Directory list of %s</h1>\n", qdir, qdir);
+     flist = New_N(char *, nfile_max);
+@@ -65,7 +65,7 @@
+ 	if (strcmp(p, ".") == 0)
+ 	    continue;
+ 	Strcopy(fbuf, dirname);
+-	if (Strlastchar(dirname) != '/')
++	if (Strlastchar(fbuf) != '/')
+ 	    Strcat_char(fbuf, '/');
+ 	Strcat_charp(fbuf, p);
+ #ifdef READLINK
+@@ -76,7 +76,7 @@
+ 	    continue;
+ 	if (multicolList) {
+ 	    if (n == 1)
+-		Strcat_charp(tmp, "<TD>");
++		Strcat_charp(tmp, "<TD><NOBR>");
+ 	}
+ 	else {
+ 	    if (S_ISDIR(st.st_mode))
+@@ -88,20 +88,16 @@
+ 	    else
+ 		Strcat_charp(tmp, "[FILE] ");
+ 	}
+-	q = htmlquote_str(p);
+-	Strcat_m_charp(tmp, "<A HREF=\"file://", qdir, NULL);
+-	if (dirname->ptr[dirname->length - 1] != '/')
+-	    Strcat_char(tmp, '/');
+-	Strcat_charp(tmp, q);
++	Strcat_m_charp(tmp, "<A HREF=\"", htmlquote_str(fbuf->ptr), NULL);
+ 	if (S_ISDIR(st.st_mode))
+ 	    Strcat_char(tmp, '/');
+-	Strcat_m_charp(tmp, "\">", q, NULL);
++	Strcat_m_charp(tmp, "\">", htmlquote_str(p), NULL);
+ 	if (S_ISDIR(st.st_mode))
+ 	    Strcat_char(tmp, '/');
+ 	Strcat_charp(tmp, "</a>");
+ 	if (multicolList) {
+ 	    if (n++ == nrow) {
+-		Strcat_charp(tmp, "</TD>\n");
++		Strcat_charp(tmp, "</NOBR></TD>\n");
+ 		n = 1;
+ 	    }
+ 	    else {
+
+

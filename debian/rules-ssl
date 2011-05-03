@@ -1,0 +1,95 @@
+#!/usr/bin/make -f
+# MAde with the aid of dh_make, by Craig Small
+# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
+# Some lines taken from debmake, by Cristoph Lameter.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+nossl:
+	@echo change to nossl version...
+	@cd debian && for i in *-nossl; do \
+		f=`echo $$i | sed -e 's/-nossl//'`; \
+		mv $$f $$f-ssl; \
+		mv $$i $$f; \
+		echo -n "$$f "; \
+	done
+	@chmod +x debian/rules
+	@echo done
+
+ssl:
+	@echo already ssl version environments
+
+include debian/rules.mk
+
+build: build-stamp
+build-stamp: setup-ja setup-en
+	dh_testdir
+	sed -f debian/config.ssl.sed < debian/config.h-ja > $(buildjadir)/config.h
+	cd $(buildjadir) && $(MAKE)
+	sed -f debian/config.ssl.sed < debian/config.h-en > $(buildendir)/config.h
+	cd $(buildendir) && $(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -rf $(buildtree)
+	rm -f extract-stamp patch-stamp build-stamp install-stamp
+	rm -f debian/docs debian/examples
+	dh_clean
+
+install: install-stamp
+install-stamp: build-stamp
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	install -m 755 -s $(buildendir)/w3m `pwd`/debian/tmp/usr/bin/w3m-ssl-en
+	install -m 755 -s $(buildjadir)/w3m `pwd`/debian/tmp/usr/bin/w3m-ssl-ja
+	touch install-stamp
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+#	dh_testversion
+	dh_testdir
+	dh_testroot
+	dh_installdocs
+#	dh_installmenu
+#	dh_installmime
+#	dh_installemacsen
+#	dh_installinit
+#	dh_installcron
+#	dh_installmanpages
+	install -m 644 $(builddir)/doc-jp/HISTORY.kokb `pwd`/debian/tmp/usr/share/doc/w3m-ssl/changelog.w3m-kokb
+	dh_installchangelogs $(builddir)/doc/HISTORY
+	dh_strip
+	dh_compress
+	(cd debian/tmp/usr/share/doc/w3m-ssl; ls -1) | while read file; do \
+	   case $$file in changelog*|copyright*|README.Debian) continue;; esac;\
+	   test -d debian/tmp/usr/share/doc/w3m-ssl/$$file && continue; \
+	   rm -f debian/tmp/usr/share/doc/w3m-ssl/$$file; \
+	   dh_link usr/share/doc/w3m/$$file usr/share/doc/w3m-ssl/$$file; \
+	done
+	dh_link usr/share/w3m/examples usr/share/w3m-ssl/examples
+	dh_link usr/share/w3m/ja usr/share/w3m-ssl/ja
+	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-ssl-ja.1.gz
+	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-ssl-en.1.gz
+	dh_fixperms
+	dh_suidregister
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+#	dh_makeshlibs
+	dh_md5sums
+	dh_builddeb
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary

@@ -1,0 +1,28 @@
+Description: Define MAXIMUM_COLS to check COLS
+Origin: upstream, http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev/201008.month/4354.html
+Bug-Debian: http://bugs.debian.org/387751
+
+--- w3m.orig/fm.h	2010-07-26 20:42:45.000000000 +0900
++++ w3m/fm.h	2010-07-30 15:44:22.000000000 +0900
+@@ -101,6 +101,9 @@
+ #define LINELEN	256		/* Initial line length */
+ #define PAGER_MAX_LINE	10000	/* Maximum line kept as pager */
+ 
++#define MAXIMUM_COLS	1024
++#define DEFAULT_COLS	80
++
+ #ifdef USE_IMAGE
+ #define MAX_IMAGE 1000
+ #define MAX_IMAGE_SIZE 2048
+--- w3m.orig/main.c	2010-07-26 09:16:53.000000000 +0900
++++ w3m/main.c	2010-07-30 15:44:45.000000000 +0900
+@@ -634,6 +634,9 @@
+ 		if (++i >= argc)
+ 		    usage();
+ 		COLS = atoi(argv[i]);
++		if (COLS > MAXIMUM_COLS) {
++		    COLS = MAXIMUM_COLS;
++		}
+ 	    }
+ 	    else if (!strcmp("-ppc", argv[i])) {
+ 		double ppc;

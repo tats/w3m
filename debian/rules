@@ -43,19 +43,10 @@ install-stamp: build-stamp
 	dh_prep
 	dh_installdirs
 
-	# Add here commands to install the package into debian/w3m.
-	cd $(builddir) && $(MAKE) install DESTDIR=`pwd`/debian/w3m
-	cd $(builddir)/Bonus && find . -type f -perm 0100 -print | \
-	while read i; \
-	do \
-		sed -e 's:/usr/local/bin/ruby:/usr/bin/ruby:' \
-		    -e 's:/bin/env:/usr/bin/env:' \
-			$$i \
-			> `pwd`/../../../debian/w3m/usr/share/doc/w3m/examples/$$i ; \
-	done
-	install -m 644 debian/w3mconfig `pwd`/debian/w3m/etc/w3m/config
-	install -m 644 debian/mailcap `pwd`/debian/w3m/etc/w3m/mailcap
-	dh_movefiles --sourcedir=debian/w3m
+	cd $(builddir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/w3m INSTALL_W3MIMGDISPLAY="install -g video -m 2755"
+	install -m 644 debian/w3mconfig $(CURDIR)/debian/w3m/etc/w3m/config
+	install -m 644 debian/mailcap $(CURDIR)/debian/w3m/etc/w3m/mailcap
+	mv -f debian/w3m/usr/lib/w3m/w3mimgdisplay debian/w3m-img/usr/lib/w3m/w3mimgdisplay
 	touch install-stamp
 
 binary-indep: build-stamp install-stamp
@@ -65,14 +56,23 @@ binary-arch: build-stamp install-stamp
 	dh_testdir -a
 	dh_testroot -a
 	dh_installdocs -a
-	cp -a $(builddir)/doc-jp/README.img `pwd`/debian/w3m-img/usr/share/doc/w3m-img/README.img.ja
-	cp -a $(builddir)/doc-jp/* `pwd`/debian/w3m/usr/share/doc/w3m/ja/
-	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/w3m.1
-	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.img
-	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.cygwin
-	-rm -rf `pwd`/debian/w3m/usr/share/doc/w3m/ja/CVS
+	cp -a $(builddir)/doc-jp/* debian/w3m/usr/share/doc/w3m/ja/
+	-mv -f debian/w3m/usr/share/doc/w3m/ja/README.img debian/w3m-img/usr/share/doc/w3m-img/README.img.ja
+	-rm -f debian/w3m/usr/share/doc/w3m/ja/w3m.1
+	-rm -f debian/w3m/usr/share/doc/w3m/ja/README.cygwin
+	-rm -rf debian/w3m/usr/share/doc/w3m/ja/CVS
 	dh_installexamples -a
-	cd `pwd`/debian/w3m/usr/share/doc/w3m && \
+	cp -a $(builddir)/Bonus/* debian/w3m/usr/share/doc/w3m/examples/Bonus/
+	-rm -rf debian/w3m/usr/share/doc/w3m/examples/Bonus/CVS
+	cd debian/w3m/usr/share/doc/w3m/examples/Bonus && find . -type f -print | \
+	while read f; do \
+		mv -f $$f $$f.tmp; \
+		LC_ALL=C sed -e 's:/usr/local/bin/:/usr/bin/:' \
+			-e 's:/bin/env:/usr/bin/env:' \
+			$$f.tmp > $$f; \
+		rm -f $$f.tmp; \
+	done
+	cd debian/w3m/usr/share/doc/w3m && \
 		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
 	dh_installmenu
 	dh_installmime
@@ -80,7 +80,8 @@ binary-arch: build-stamp install-stamp
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	dh_strip -a
 	dh_compress -a
-	dh_fixperms -a
+	dh_lintian -a
+	dh_fixperms -a -Xw3mimgdisplay
 	dh_installdeb -a
 	dh_shlibdeps -a
 	dh_gencontrol -a

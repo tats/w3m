@@ -1,3 +1,27 @@
+w3m (0.5.2-9) unstable; urgency=low
+
+  * debian/patches/010_upstream.patch: Sync with the upstream development
+    snapshot on 2010-08-04.
+    - Check width, rows and cols to prevent a large memory allocation.
+      (Closes: #491400, #492290)
+  * debian/patches/040_maximum-cols.patch: Patch from upstream to define
+    MAXIMUM_COLS to check COLS. (Closes: #387751)
+  * debian/patches/030_pager-s-option.patch: Change the -s option from
+    "display charset Shift_JIS" to "squeeze multiple blank lines" to work
+    as /usr/bin/pager. (rejected upstream)
+  * debian/README.Debian: Mention the -s option difference.
+  * debian/rules: Set INSTALL_W3MIMGDISPLAY to not use install -s.
+    (Closes: #438260)
+  * debian/rules, debian/w3m-img.files, debian/w3m-img.postinst,
+    debian/w3m-img.prerm: Don't use dpkg-statoverride. (Closes: #562824)
+  * debian/rules, debian/w3m-img.lintian-overrides: Install lintian override
+    to ignore the setgid-binary warning.
+  * debian/postrm: Removed.
+  * debian/dirs, debian/rules: Install the Bonus directory.
+  * debian/docs: Add doc/README.passwd.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 05 Aug 2010 22:50:25 +0900
+
 w3m (0.5.2-8) unstable; urgency=low
 
   * debian/patches/010_upstream.patch: Upstream development snapshot on

@@ -1,10 +1,57 @@
-Description: Upstream development snapshot on 2010-07-26
+Description: Upstream development snapshot on 2010-08-04
 Origin: upstream, http://w3m.cvs.sourceforge.net/viewvc/w3m/w3m/
 
 diff -urN w3m-0.5.2.orig/ChangeLog w3m/ChangeLog
 --- w3m-0.5.2.orig/ChangeLog	2007-05-31 21:17:05.000000000 +0900
-+++ w3m/ChangeLog	2010-07-26 20:38:53.000000000 +0900
-@@ -1,3 +1,147 @@
++++ w3m/ChangeLog	2010-08-04 23:06:35.000000000 +0900
+@@ -1,3 +1,194 @@
++2010-08-04  Ito Hiroyuki  <ZXB01226@nifty.com>
++
++	* [w3m-dev 04369] Re: w3m's bugs from bugs.debian.org
++	* terms.c (graph_ok): fix condition (UseGraphicChar != GRAPHIC_CHAR_DEC)
++	* symbol.c (get_symbol): fix condition (UseGraphicChar != GRAPHIC_CHAR_ASCII)
++	* rc.c (params1): type of graphic_char option is PI_SEL_C
++	* main.c (main): use GRAPHIC_CHAR_ASCII and GRAPHIC_CHAR_DEC instead of FALSE and TRUE
++	* fm.h (GRAPHIC_CHAR_ASCII, GRAPHIC_CHAR_DEC, GRAPHIC_CHAR_CHARSET): added
++
++2010-08-03  d+w3m@vdr.jp
++
++	* [w3m-dev 04363] Re: w3m's bugs from bugs.debian.org
++	* doc/w3m.1: revert option -S
++	* doc-jp/w3m.1: revert option -S, -e, -j and -s
++	* main.c: remove codes for Debian
++
++2010-08-03  Ito Hiroyuki  <ZXB01226@nifty.com>
++
++	* [w3m-dev 04343]
++	* file.c (loadGeneralFile): register user name and password for proxy authentication.
++	* url.c (HTTPrequest): unused variable seen_proxy_auth was removed
++	* fm.h: global variables proxy_auth_cookie and pauth are removed
++	* main.c (main): remove option -pauth
++	* doc/MANUAL.html: ditto
++	* doc-jp/MANUAL.html: ditto
++	* doc-jp/w3m.1: ditto
++	* doc/w3m.1: ditto
++	* doc/README.passwd: added
++	* doc-jp/README.passwd: added
++
++2010-07-31  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* [w3m-dev 04350] Re: w3m's bugs from bugs.debian.org
++	* file.c (process_img): Revert the change of using ATTR_TITLE if ATTR_ALT is empty.
++
++2010-07-30  Ito Hiroyuki  <ZXB01226@nifty.com>
++
++	* [w3m-dev 04348] Re: "important" bugs from bugs.debian.org
++	* file.c (TEXTAREA_ATTR_COL_MAX, TEXTAREA_ATTR_ROWS_MAX): added.
++	(process_textarea): check cur_textarea_size > TEXTAREA_ATTR_COL_MAX and cur_textarea_rows > TEXTAREA_ATTR_ROWS_MAX
++
++2010-07-30  Ito Hiroyuki  <ZXB01226@nifty.com>
++
++	* [w3m-dev 04345] Re: "important" bugs from bugs.debian.org
++	* file.c (HR_ATTR_WIDTH_MAX): added.
++	(process_hr): check w > HR_ATTR_WIDTH_MAX
++
 +2010-07-26  d+w3m@vdr.jp
 +
 +	* [w3m-dev 04237] [patch] cookie avoid [wrong number of dots]
@@ -13,7 +60,7 @@ diff -urN w3m-0.5.2.orig/ChangeLog w3m/ChangeLog
 +	* cookie.c (check_avoid_wrong_number_of_dots_domain): added.
 +	(add_cookie): use check_avoid_wrong_number_of_dots_domain().
 +
-+2010-07-26  Ito Hiroyuki  <ZXB01226 at nifty.com>
++2010-07-26  Ito Hiroyuki  <ZXB01226@nifty.com>
 +
 +	* acinclude.m4: define AC_W3M_SSL_DIGEST_AUTH
 +
@@ -25,7 +72,7 @@ diff -urN w3m-0.5.2.orig/ChangeLog w3m/ChangeLog
 +	* main.c (sig_chld): use TRUE and FALSE instead of GRAPHIC_CHAR_ALL and GRAPHIC_CHAR_ASCII.
 +	* merge ambiguous width patch ( http://www.j10n.org/files/w3m-cvs-1.914-ambwidth.patch ).
 +
-+2010-07-24  Ito Hiroyuki  <ZXB01226 at nifty.com>
++2010-07-24  Ito Hiroyuki  <ZXB01226@nifty.com>
 +
 +	* [w3m-dev 04326] suppress compile warnings
 +	* file.c (digest_hex): type of the parameter s is "unsigned char *".
@@ -152,12 +199,12 @@ diff -urN w3m-0.5.2.orig/ChangeLog w3m/ChangeLog
  2007-05-31  Dai Sato <satodai@w3m.jp>
  
  	* w3m 0.5.2
-@@ -8917,4 +9061,4 @@
+@@ -8917,4 +9108,4 @@
  	* release-0-2-1
  	* import w3m-0.2.1
  
 -$Id: ChangeLog,v 1.998 2007/05/31 12:17:05 inu Exp $
-+$Id: ChangeLog,v 1.1021 2010/07/26 11:38:53 htrb Exp $
++$Id: ChangeLog,v 1.1027 2010/08/04 14:06:35 htrb Exp $
 diff -urN w3m-0.5.2.orig/acinclude.m4 w3m/acinclude.m4
 --- w3m-0.5.2.orig/acinclude.m4	2006-04-07 22:21:11.000000000 +0900
 +++ w3m/acinclude.m4	2010-07-26 20:24:14.000000000 +0900
@@ -364,19 +411,80 @@ diff -urN w3m-0.5.2.orig/display.c w3m/display.c
  	|| buf->need_reshape) {
  	buf->need_reshape = TRUE;
  	reshapeBuffer(buf);
+diff -urN w3m-0.5.2.orig/doc/MANUAL.html w3m/doc/MANUAL.html
+--- w3m-0.5.2.orig/doc/MANUAL.html	2002-07-09 14:54:46.000000000 +0900
++++ w3m/doc/MANUAL.html	2010-08-04 23:06:36.000000000 +0900
+@@ -103,8 +103,6 @@
+ <dd>Process cookies.
+ <dt>-no-cookie
+ <dd>Don't process cookies.
+-<dt>-pauth username:password
+-<dd>Set username and password for (basic) proxy authentication.
+ <dt>-num
+ <dd>Show linenumber.
+ <dt>-dump
+@@ -131,7 +129,7 @@
+ <dt>-no-proxy
+ <dd>Don't use proxy server.
+ <dt>-no-graph
+-<dd>Don't use graphic character to draw frames.
++<dd>Use ASCII character to draw frames.
+ <dt>-no-mouse
+ <dd>Don't activate mouse.
+ <dt>-config file
+diff -urN w3m-0.5.2.orig/doc/README.m17n w3m/doc/README.m17n
+--- w3m-0.5.2.orig/doc/README.m17n	2003-09-23 06:02:23.000000000 +0900
++++ w3m/doc/README.m17n	2010-08-04 23:06:36.000000000 +0900
+@@ -202,7 +202,7 @@
+        Use alternate expression with ASCII for entities. (Default: ON)
+        If it is OFF, entities are treated as ISO 8859-1
+    graphic_char
+-       Use graphic char for border of table and menu.
++       Use DEC special graphics for border of table and menu.
+        If it is OFF, ruled line is used with CJK charset or UTF-8.
+ 
+ Code conversion
+diff -urN w3m-0.5.2.orig/doc/README.passwd w3m/doc/README.passwd
+--- w3m-0.5.2.orig/doc/README.passwd	1970-01-01 09:00:00.000000000 +0900
++++ w3m/doc/README.passwd	2010-08-03 19:02:16.000000000 +0900
+@@ -0,0 +1,23 @@
++You can save your passwords and usernames for a web page which require
++HTTP certification or a proxy certification.
++
++The configuration file is designated in "passwd_file" parameter. The
++format of the configuration file is as follows
++
++machine hostname
++port port number
++path local part
++realm realm string
++login username
++passwd password
++proxy
++
++Each configuration is began with machine and ended before the next machine.
++You can omit port, path and realm.
++
++proxy means settings for proxy certification.
++
++If passwd_file is readable from other users, w3m shows a warning for
++that.  If you can not set the permission for the passwd_file because
++of the restriction of your OS, you can suppress the warning with the
++setting of disable_secret_security_check.
 diff -urN w3m-0.5.2.orig/doc/w3m.1 w3m/doc/w3m.1
 --- w3m-0.5.2.orig/doc/w3m.1	2002-11-12 21:36:30.000000000 +0900
-+++ w3m/doc/w3m.1	2010-07-18 22:20:32.000000000 +0900
-@@ -123,7 +123,7 @@
- .B -pauth user:pass
- proxy authentication
++++ w3m/doc/w3m.1	2010-08-03 19:25:23.000000000 +0900
+@@ -120,9 +120,6 @@
+ .B -no-cookie
+ don't use cookie
  .TP
--.B -S
-+.B -s
+-.B -pauth user:pass
+-proxy authentication
+-.TP
+ .B -S
  squeeze multiple blank lines
  .TP
- .B -W
-@@ -133,7 +133,7 @@
+@@ -133,7 +130,7 @@
  don't use termcap init/deinit
  .TP
  .B -title [=TERM]
@@ -385,35 +493,70 @@ diff -urN w3m-0.5.2.orig/doc/w3m.1 w3m/doc/w3m.1
  If TERM is specified, use the TERM style title configuration.
  .TP
  .B -o opt=value
+diff -urN w3m-0.5.2.orig/doc-jp/MANUAL.html w3m/doc-jp/MANUAL.html
+--- w3m-0.5.2.orig/doc-jp/MANUAL.html	2006-04-08 20:26:23.000000000 +0900
++++ w3m/doc-jp/MANUAL.html	2010-08-03 19:02:16.000000000 +0900
+@@ -100,8 +100,6 @@
+ •™•◊•∑•Á•Û§ŒÃæ¡∞§‰√Õ§œ°§~/.w3m/config §«ªÿƒÍ§π§Î§‚§Œ§»∆±§∏°•
+ <dt>-no-proxy
+ <dd>•◊•Ì•≠•∑§ÚÕ¯Õ—§∑§ §§°•
+-<dt>-pauth user:pass
+-<dd>•◊•Ì•≠•∑«ßæ⁄Õ—§Œ•Ê°º•∂Ãæ§»•—•π•Ô°º•…§ÚªÿƒÍ§π§Î°•
+ <dt>-no-mouse
+ <dd>•ﬁ•¶•π§ÚÕ¯Õ—§∑§ §§°•
+ <dt>-cookie
+diff -urN w3m-0.5.2.orig/doc-jp/README.m17n w3m/doc-jp/README.m17n
+--- w3m-0.5.2.orig/doc-jp/README.m17n	2003-09-23 06:02:23.000000000 +0900
++++ w3m/doc-jp/README.m17n	2010-08-04 23:06:36.000000000 +0900
+@@ -230,7 +230,7 @@
+        •®•Û•∆•£•∆•£§Ú ASCII §Œ¬Â¬ÿ…Ω∏Ω§«…Ω§π(•«•’•©•Î•» ON)
+        OFF §À§π§Î§» ISO 8859-1 §»§∑§∆∞∑§¶°£
+    graphic_char
+-       •∆°º•÷•Î§‰•·•À•Â°º§Œœ»§À graphic  ∏ª˙§Úª»§¶(•«•’•©•Î•» OFF)
++       •∆°º•÷•Î§‰•·•À•Â°º§Œœ»§À DEC ∆√ºÏ ∏ª˙ ∏ª˙§Úª»§¶(•«•’•©•Î•» OFF)
+        OFF §ŒæÏπÁ CJK §Œ ∏ª˙•≥°º•…°¢UTF-8 §«§œ∑”¿˛§Úª»§¶°£
+ 
+ •≥°º•… —¥π
+diff -urN w3m-0.5.2.orig/doc-jp/README.passwd w3m/doc-jp/README.passwd
+--- w3m-0.5.2.orig/doc-jp/README.passwd	1970-01-01 09:00:00.000000000 +0900
++++ w3m/doc-jp/README.passwd	2010-08-03 19:02:16.000000000 +0900
+@@ -0,0 +1,22 @@
++HTTP $BG'>Z$N$"$k%Z!<%8$dG'>Z$N$"$k(B proxy $B$KBP$7$F!"(B
++$B%f!<%6L>$H%Q%9%o!<%I$r@_Dj$7$F$*$/$3$H$,=PMh$^$9!#(B
++
++passwd_file $B$G;XDj$7$?%U%!%$%k$K<!$N$h$&$K=q$$$F$*$1$P$=$l$r8+$^$9!#(B
++
++machine $B%[%9%HL>(B
++port $B%]!<%HHV9f(B
++path $B%m!<%+%k%Q!<%H(B
++realm realm$B$NJ8;zNs(B
++login $B%f!<%6L>(B
++passwd $B%Q%9%o!<%I(B
++proxy
++
++machine$B$G$O$8$^$C$F<!$N(Bmachine$B$^$G!#(B
++netrc$B$.$_$G$9$,4JC1$K$9$k$?$a$K0l9T$E$D!#(B
++port, path, realm $B$O>JN,2DG=(B
++
++proxy $B$H=q$$$?>l9g$O(B proxy $B$N%Q%9%o!<%I$H$_$J$7$^$9!#(B
++
++passwd_file $B$,B>$N%f!<%6!<$+$iFI$a$k>l9g7Y9p$,=P$^$9$,!"(BOS $B$N@)8B$J$I$G(B
++$B%U%!%$%k$N%Q!<%_%C%7%g%s$rJQ$($i$l$J$$>l9g$O$3$N7Y9p$r(B
++disable_secret_security_check $B$N@_Dj$GL58z$K$G$-$^$9!#(B
 diff -urN w3m-0.5.2.orig/doc-jp/w3m.1 w3m/doc-jp/w3m.1
 --- w3m-0.5.2.orig/doc-jp/w3m.1	2002-11-12 21:36:30.000000000 +0900
-+++ w3m/doc-jp/w3m.1	2010-07-18 22:24:03.000000000 +0900
-@@ -39,15 +39,6 @@
- …∏Ω‡∆˛Œœ§Œ∆‚Õ∆§Ú…Ωº®§π§Î§»§≠§À ›¬∏§µ§Ï§Î∫«¬Áπ‘øÙ§ÚªÿƒÍ§π§Î°•
- •«•’•©•Î•»§œ10000°•
++++ w3m/doc-jp/w3m.1	2010-08-03 19:25:23.000000000 +0900
+@@ -112,9 +112,6 @@
+ .B \-no\-proxy
+ •◊•Ì•≠•∑§ÚÕ¯Õ—§∑§ §§°•
  .TP
--.B \-s
--Shift_JIS•≥°º•…§«…Ωº®§π§Î°•
+-.BI \-pauth\  user:pass
+-•◊•Ì•≠•∑«ßæ⁄Õ—§Œ•Ê°º•∂Ãæ§»•—•π•Ô°º•…§ÚªÿƒÍ§π§Î°•
 -.TP
--.B \-e
--EUC•≥°º•…§«…Ωº®§π§Î°•
--.TP
--.B \-j
--JIS (ISO-2022-JP)•≥°º•…§«…Ωº®§π§Î°•
--.TP
- .BI \-O\  e|s|j|N|m
- …Ωº®§Àª»§¶ ∏ª˙•≥°º•…§ÚªÿƒÍ§π§Î.
+ .B \-no\-mouse
+ •ﬁ•¶•π§ÚÕ¯Õ—§∑§ §§°•
  .TP
-@@ -90,7 +81,7 @@
- .B \-F
- •’•Ï°º•‡§Úº´∆∞…Ωº®§π§Î°•
- .TP
--.B \-S
-+.B \-s
- œ¢¬≥§π§Î∂ıπ‘§Ú1π‘§À§ﬁ§»§·§∆…Ωº®§π§Î°•
- .TP
- .B \-X
-@@ -264,7 +255,7 @@
+@@ -264,7 +261,7 @@
  .B "ESC g"
  ≤ËÃÃ≤º§«π‘»÷πÊ§Ú∆˛Œœ§∑°§§Ω§≥§«ªÿƒÍ§∑§øπ‘§À∞‹∆∞§∑§ﬁ§π°•
  §≥§≥§«
@@ -422,7 +565,7 @@ diff -urN w3m-0.5.2.orig/doc-jp/w3m.1 w3m/doc-jp/w3m.1
  §Ú∆˛Œœ§π§Î§»°§∫«Ω™π‘§À∞‹∆∞§∑§ﬁ§π°•
  .TP
  .B Z
-@@ -337,7 +328,6 @@
+@@ -337,7 +334,6 @@
  ∏Ω∫ﬂ§Œ•Í•Û•Ø¿Ë§Ú°§≥∞…Ù•÷•È•¶•∂§Úª»§√§∆…Ωº®§∑§ﬁ§π°•
  .B "2ESC M", "3ESC M"
  §«2»÷Ã‹§»3»÷Ã‹§Œ•÷•È•¶•∂§Úª»§§§ﬁ§π°•
@@ -430,7 +573,7 @@ diff -urN w3m-0.5.2.orig/doc-jp/w3m.1 w3m/doc-jp/w3m.1
  .SS •’•°•§•Î§»URL¥ÿ∑∏§Œ¡‡∫Ó
  .TP
  .B U
-@@ -377,9 +367,9 @@
+@@ -377,9 +373,9 @@
  .TP
  .B "ESC s"
  HTML§Œ•Ω°º•π§Ú•’•°•§•Î§À ›¬∏§∑§ﬁ§π°•
@@ -442,7 +585,7 @@ diff -urN w3m-0.5.2.orig/doc-jp/w3m.1 w3m/doc-jp/w3m.1
  §« ›¬∏§π§Î§Œ§»§€§‹∆±§∏§«§π§¨°§
  .B "ESC s"
  §« ›¬∏§∑§ø•’•°•§•Î§œ¥¡ª˙•≥°º•…§¨•™•Í•∏• •Î§Œ§ﬁ§ﬁ§«§¢§Î§Œ§À¬–§∑§∆°§
-@@ -403,7 +393,6 @@
+@@ -403,7 +399,6 @@
  .TP
  .B RET
  ∏Ω∫ﬂ¡™¬Ú§∑§∆§§§Î•–•√•’•°§Ú…Ωº®§∑§ﬁ§π°•
@@ -452,10 +595,10 @@ diff -urN w3m-0.5.2.orig/doc-jp/w3m.1 w3m/doc-jp/w3m.1
  .B "ESC b"
 diff -urN w3m-0.5.2.orig/file.c w3m/file.c
 --- w3m-0.5.2.orig/file.c	2007-05-24 00:06:05.000000000 +0900
-+++ w3m/file.c	2010-07-24 13:30:40.000000000 +0900
++++ w3m/file.c	2010-08-03 19:02:16.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: file.c,v 1.254 2007/05/23 15:06:05 inu Exp $ */
-+/* $Id: file.c,v 1.260 2010/07/24 04:30:40 htrb Exp $ */
++/* $Id: file.c,v 1.264 2010/08/03 10:02:16 htrb Exp $ */
  #include "fm.h"
  #include <sys/types.h>
  #include "myctype.h"
@@ -522,7 +665,15 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  /* 
   * loadGeneralFile: load file to buffer
   */
-@@ -2055,6 +2068,10 @@
+@@ -1911,6 +1924,7 @@
+ 		UFclose(&f);
+ 		add_auth_cookie_flag = 1;
+ 		status = HTST_NORMAL;
++		add_auth_user_passwd(auth_pu, qstr_unquote(realm)->ptr, uname, pwd, 1);
+ 		goto load_doc;
+ 	    }
+ 	}
+@@ -2055,6 +2069,10 @@
  	    t = f.guess_type;
      }
  
@@ -533,7 +684,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
    page_loaded:
      if (page) {
  	FILE *src;
-@@ -2166,7 +2183,7 @@
+@@ -2166,7 +2184,7 @@
      }
  #endif
  
@@ -542,7 +693,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	proc = loadHTMLBuffer;
      else if (is_plain_text_type(t))
  	proc = loadBuffer;
-@@ -2230,7 +2247,7 @@
+@@ -2230,7 +2248,7 @@
  	b->real_type = real_type;
  	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
  	    copyParsedURL(&b->currentURL, &pu);
@@ -551,21 +702,16 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	    b->type = "text/html";
  	else if (w3m_backend) {
  	    Str s = Strnew_charp(t);
-@@ -3213,6 +3230,13 @@
+@@ -3211,6 +3229,8 @@
+     p = remove_space(p);
+     q = NULL;
      parsedtag_get_value(tag, ATTR_ALT, &q);
++    if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
++	return tmp;
      t = q;
      parsedtag_get_value(tag, ATTR_TITLE, &t);
-+    if (q == NULL || (*q == '\0' && ignore_null_img_alt)) {
-+	if (!pseudoInlines && (t == NULL ||
-+			       (*t == '\0' && ignore_null_img_alt)))
-+	    return tmp;
-+	q = t;
-+    }
-+  
      w = -1;
-     if (parsedtag_get_value(tag, ATTR_WIDTH, &w)) {
- 	if (w < 0) {
-@@ -3592,9 +3616,13 @@
+@@ -3592,9 +3612,13 @@
      case FORM_INPUT_TEXT:
      case FORM_INPUT_FILE:
      case FORM_INPUT_CHECKBOX:
@@ -579,7 +725,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	Strcat_char(tmp, '(');
      }
      Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
-@@ -3635,6 +3663,8 @@
+@@ -3635,6 +3659,8 @@
  	case FORM_INPUT_SUBMIT:
  	case FORM_INPUT_BUTTON:
  	case FORM_INPUT_RESET:
@@ -588,7 +734,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	    Strcat_charp(tmp, "[");
  	    break;
  	}
-@@ -3721,9 +3751,12 @@
+@@ -3721,9 +3747,12 @@
  
  #ifdef MENU_SELECT
      if (!select_is_multiple) {
@@ -603,7 +749,60 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	Strcat_charp(select_str, ">");
  	if (n_select == max_select) {
  	    max_select *= 2;
-@@ -4771,6 +4804,8 @@
+@@ -3881,6 +3910,8 @@
+ {
+     Str tmp = NULL;
+     char *p;
++#define TEXTAREA_ATTR_COL_MAX 4096
++#define TEXTAREA_ATTR_ROWS_MAX 4096
+ 
+     if (cur_form_id < 0) {
+ 	char *s = "<form_int method=internal action=none>";
+@@ -3895,14 +3926,20 @@
+ 	cur_textarea_size = atoi(p);
+ 	if (p[strlen(p) - 1] == '%')
+ 	    cur_textarea_size = width * cur_textarea_size / 100 - 2;
+-	if (cur_textarea_size <= 0)
++	if (cur_textarea_size <= 0) {
+ 	    cur_textarea_size = 20;
++	} else if (cur_textarea_size > TEXTAREA_ATTR_COL_MAX) {
++	    cur_textarea_size = TEXTAREA_ATTR_COL_MAX;
++	}
+     }
+     cur_textarea_rows = 1;
+     if (parsedtag_get_value(tag, ATTR_ROWS, &p)) {
+ 	cur_textarea_rows = atoi(p);
+-	if (cur_textarea_rows <= 0)
++	if (cur_textarea_rows <= 0) {
+ 	    cur_textarea_rows = 1;
++	} else if (cur_textarea_rows > TEXTAREA_ATTR_ROWS_MAX) {
++	    cur_textarea_rows = TEXTAREA_ATTR_ROWS_MAX;
++	}
+     }
+     cur_textarea_readonly = parsedtag_exists(tag, ATTR_READONLY);
+     if (n_textarea >= max_textarea) {
+@@ -3975,13 +4012,18 @@
+     Str tmp = Strnew_charp("<nobr>");
+     int w = 0;
+     int x = ALIGN_CENTER;
++#define HR_ATTR_WIDTH_MAX 65535
+ 
+     if (width > indent_width)
+ 	width -= indent_width;
+-    if (parsedtag_get_value(tag, ATTR_WIDTH, &w))
++    if (parsedtag_get_value(tag, ATTR_WIDTH, &w)) {
++	if (w > HR_ATTR_WIDTH_MAX) {
++	    w = HR_ATTR_WIDTH_MAX;
++	}
+ 	w = REAL_WIDTH(w, width);
+-    else
++    } else {
+ 	w = width;
++    }
+ 
+     parsedtag_get_value(tag, ATTR_ALIGN, &x);
+     switch (x) {
+@@ -4771,6 +4813,8 @@
  	    obuf->anchor.hseq = cur_hseq;
  	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
  	    push_tag(obuf, tmp->ptr, HTML_A);
@@ -612,7 +811,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	    return 1;
  	}
  	return 0;
-@@ -5229,6 +5264,7 @@
+@@ -5229,6 +5273,7 @@
      return NULL;
  }
  
@@ -620,7 +819,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  ex_efct(int ex)
  {
      int effect = 0;
-@@ -6336,7 +6372,7 @@
+@@ -6336,7 +6381,7 @@
  			is_hangul = wtf_is_hangul((wc_uchar *) str);
  		    else
  			is_hangul = 0;
@@ -629,7 +828,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  			!is_hangul && !prev_is_hangul &&
  			obuf->pos > h_env->envs[h_env->envc].indent &&
  			Strlastchar(obuf->line) == ' ') {
-@@ -6949,6 +6985,8 @@
+@@ -6949,6 +6994,8 @@
      }
      if (content_charset && UseContentCharset)
  	doc_charset = content_charset;
@@ -638,7 +837,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
      meta_charset = 0;
  #endif
  #if	0
-@@ -7383,8 +7421,7 @@
+@@ -7383,8 +7430,7 @@
      wc_ces charset = DisplayCharset ? DisplayCharset : WC_CES_US_ASCII;
  #endif
  
@@ -648,7 +847,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  
    pager_next:
      for (; l != NULL; l = l->next) {
-@@ -7541,7 +7578,7 @@
+@@ -7541,7 +7587,7 @@
  	t = DefaultType;
  	DefaultType = NULL;
      }
@@ -657,7 +856,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	buf = loadHTMLBuffer(&uf, t_buf);
  	buf->type = "text/html";
      }
-@@ -7749,7 +7786,13 @@
+@@ -7749,7 +7795,13 @@
      {
  	Str buf = Strnew_size(SAVE_BUF_SIZE);
  	while (UFread(&uf, buf, SAVE_BUF_SIZE)) {
@@ -672,7 +871,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	    linelen += buf->length;
  	    showProgress(&linelen, &trbyte);
  	}
-@@ -8078,16 +8121,20 @@
+@@ -8078,16 +8130,20 @@
  	flush_tty();
  	pid = fork();
  	if (!pid) {
@@ -694,7 +893,7 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	    exit(0);
  	}
  	addDownloadList(pid, uf.url, p, lock, current_content_length);
-@@ -8351,7 +8398,7 @@
+@@ -8351,7 +8407,7 @@
  	buf->hmarklist->nmark = 0;
      if (buf->imarklist)
  	buf->imarklist->nmark = 0;
@@ -705,10 +904,10 @@ diff -urN w3m-0.5.2.orig/file.c w3m/file.c
  	loadBuffer(&uf, buf);
 diff -urN w3m-0.5.2.orig/fm.h w3m/fm.h
 --- w3m-0.5.2.orig/fm.h	2007-05-30 13:47:24.000000000 +0900
-+++ w3m/fm.h	2010-07-26 20:38:53.000000000 +0900
++++ w3m/fm.h	2010-08-04 23:06:36.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: fm.h,v 1.138 2007/05/30 04:47:24 inu Exp $ */
-+/* $Id: fm.h,v 1.145 2010/07/26 11:38:53 htrb Exp $ */
++/* $Id: fm.h,v 1.147 2010/08/04 14:06:36 htrb Exp $ */
  /* 
   * w3m: WWW wo Miru utility
   * 
@@ -738,7 +937,16 @@ diff -urN w3m-0.5.2.orig/fm.h w3m/fm.h
  global char *Editor init(DEF_EDITOR);
  #ifdef USE_W3MMAILER
  global char *Mailer init(NULL);
-@@ -1038,6 +1041,7 @@
+@@ -976,8 +979,6 @@
+ global int WrapSearch init(FALSE);
+ global int squeezeBlankLine init(FALSE);
+ global char *BookmarkFile init(NULL);
+-global char *pauth init(NULL);
+-global Str proxy_auth_cookie init(NULL);
+ global int UseExternalDirBuffer init(TRUE);
+ global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
+ #ifdef USE_DICT
+@@ -1038,6 +1039,7 @@
  global char FollowLocale init(TRUE);
  global char UseContentCharset init(TRUE);
  global char SearchConv init(TRUE);
@@ -746,7 +954,19 @@ diff -urN w3m-0.5.2.orig/fm.h w3m/fm.h
  #define Str_conv_from_system(x) wc_Str_conv((x), SystemCharset, InnerCharset)
  #define Str_conv_to_system(x) wc_Str_conv_strict((x), InnerCharset, SystemCharset)
  #define Str_conv_to_halfdump(x) (ExtHalfdump ? wc_Str_conv((x), InnerCharset, DisplayCharset) : (x))
-@@ -1108,8 +1112,10 @@
+@@ -1055,7 +1057,10 @@
+ #define wc_Str_conv_strict(x,charset0,charset1) (x)
+ #endif
+ global char UseAltEntity init(TRUE);
+-global char UseGraphicChar init(FALSE);
++#define GRAPHIC_CHAR_ASCII 2
++#define GRAPHIC_CHAR_DEC 1
++#define GRAPHIC_CHAR_CHARSET 0
++global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
+ extern char *graph_symbol[];
+ extern char *graph2_symbol[];
+ extern int symbol_width;
+@@ -1108,8 +1113,10 @@
  global int accept_bad_cookie init(ACCEPT_BAD_COOKIE_DISCARD);
  global char *cookie_reject_domains init(NULL);
  global char *cookie_accept_domains init(NULL);
@@ -23161,34 +23381,67 @@ diff -urN w3m-0.5.2.orig/libwc/wc_types.h w3m/libwc/wc_types.h
  typedef struct {
 diff -urN w3m-0.5.2.orig/main.c w3m/main.c
 --- w3m-0.5.2.orig/main.c	2007-05-31 10:19:50.000000000 +0900
-+++ w3m/main.c	2010-07-25 18:55:05.000000000 +0900
++++ w3m/main.c	2010-08-04 23:06:36.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
-+/* $Id: main.c,v 1.264 2010/07/25 09:55:05 htrb Exp $ */
++/* $Id: main.c,v 1.267 2010/08/04 14:06:36 htrb Exp $ */
  #define MAINPROGRAM
  #include "fm.h"
  #include <signal.h>
-@@ -323,21 +323,26 @@
+@@ -194,12 +194,10 @@
+ #ifdef USE_M17N
+     fprintf(f, "    -I charset       document charset\n");
+     fprintf(f, "    -O charset       display/output charset\n");
+-#ifndef DEBIAN			/* disabled by ukai: -s is used for squeeze multi lines */
+     fprintf(f, "    -e               EUC-JP\n");
+     fprintf(f, "    -s               Shift_JIS\n");
+     fprintf(f, "    -j               JIS\n");
+ #endif
+-#endif
+     fprintf(f, "    -B               load bookmark\n");
+     fprintf(f, "    -bookmark file   specify bookmark file\n");
+     fprintf(f, "    -T type          specify content-type\n");
+@@ -242,14 +240,9 @@
+     fprintf(f,
+ 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
+ #endif				/* USE_COOKIE */
+-    fprintf(f, "    -pauth user:pass proxy authentication\n");
+-    fprintf(f, "    -graph           use graphic character\n");
+-    fprintf(f, "    -no-graph        don't use graphic character\n");
+-#ifdef DEBIAN			/* replaced by ukai: pager requires -s */
+-    fprintf(f, "    -s               squeeze multiple blank lines\n");
+-#else
++    fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
++    fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
+     fprintf(f, "    -S               squeeze multiple blank lines\n");
+-#endif
+     fprintf(f, "    -W               toggle wrap search mode\n");
+     fprintf(f, "    -X               don't use termcap init/deinit\n");
+     fprintf(f,
+@@ -323,21 +316,27 @@
  sig_chld(int signo)
  {
      int p_stat;
 -#ifdef HAVE_WAITPID
      pid_t pid;
  
-+#ifdef HAVE_WAITPID
-     while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0) {
+-    while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0) {
 -	;
 -    }
++#ifdef HAVE_WAITPID
++    while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0)
  #elif HAVE_WAIT3
 -    int pid;
 -
-     while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0) {
+-    while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0) {
 -	;
 -    }
++    while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0)
  #else
 -    wait(&p_stat);
-+    if ((pid = wait(&p_stat)) > 0) {
++    if ((pid = wait(&p_stat)) > 0)
  #endif
++    {
 +	DownloadList *d;
 +
 +	if (WIFEXITED(p_stat)) {
@@ -23203,7 +23456,70 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
      mySignal(SIGCHLD, sig_chld);
      return;
  }
-@@ -1152,18 +1157,11 @@
+@@ -525,14 +524,12 @@
+ 		    PagerMax = atoi(argv[i]);
+ 	    }
+ #ifdef USE_M17N
+-#ifndef DEBIAN			/* XXX: use -o kanjicode={S|J|E} */
+ 	    else if (!strcmp("-s", argv[i]))
+ 		DisplayCharset = WC_CES_SHIFT_JIS;
+ 	    else if (!strcmp("-j", argv[i]))
+ 		DisplayCharset = WC_CES_ISO_2022_JP;
+ 	    else if (!strcmp("-e", argv[i]))
+ 		DisplayCharset = WC_CES_EUC_JP;
+-#endif
+ 	    else if (!strncmp("-I", argv[i], 2)) {
+ 		if (argv[i][2] != '\0')
+ 		    p = argv[i] + 2;
+@@ -557,9 +554,9 @@
+ 	    }
+ #endif
+ 	    else if (!strcmp("-graph", argv[i]))
+-		UseGraphicChar = TRUE;
++		UseGraphicChar = GRAPHIC_CHAR_DEC;
+ 	    else if (!strcmp("-no-graph", argv[i]))
+-		UseGraphicChar = FALSE;
++		UseGraphicChar = GRAPHIC_CHAR_ASCII;
+ 	    else if (!strcmp("-T", argv[i])) {
+ 		if (++i >= argc)
+ 		    usage();
+@@ -697,22 +694,7 @@
+ 		accept_cookie = TRUE;
+ 	    }
+ #endif				/* USE_COOKIE */
+-	    else if (!strcmp("-pauth", argv[i])) {
+-		if (++i >= argc)
+-		    usage();
+-		proxy_auth_cookie = Strnew_m_charp("Basic ",
+-						   encodeB(argv[i])->ptr,
+-						   NULL);
+-		while (argv[i][0]) {
+-		    argv[i][0] = '\0';
+-		    argv[i]++;
+-		}
+-	    }
+-#ifdef DEBIAN
+-	    else if (!strcmp("-s", argv[i]))
+-#else
+ 	    else if (!strcmp("-S", argv[i]))
+-#endif
+ 		squeezeBlankLine = TRUE;
+ 	    else if (!strcmp("-X", argv[i]))
+ 		Do_not_use_ti_te = TRUE;
+@@ -868,12 +850,6 @@
+ 			   w3m_version,
+ 			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
+ 			   NULL);
+-#ifdef DEBIAN
+-	    Strcat_m_charp(s_page,
+-			   "<p>Debian package is maintained by <a href='mailto:ukai@debian.or.jp'>Fumitoshi UKAI</a>.",
+-			   "You can read <a href='file:///usr/share/doc/w3m/'>w3m documents on your local system</a>.",
+-			   NULL);
+-#endif				/* DEBIAN */
+ 	    newbuf = loadHTMLString(s_page);
+ 	    if (newbuf == NULL)
+ 		Strcat_charp(err_msg, "w3m: Can't load string.\n");
+@@ -1152,18 +1128,11 @@
  	    mouse_inactive();
  #endif				/* USE_MOUSE */
  	if (IS_ASCII(c)) {	/* Ascii */
@@ -23227,7 +23543,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	    }
  	    else {
  		set_buffer_environ(Currentbuf);
-@@ -1284,8 +1282,25 @@
+@@ -1284,8 +1253,25 @@
  	dump_head(buf);
      if (w3m_dump & DUMP_SOURCE)
  	dump_source(buf);
@@ -23254,7 +23570,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
      mySignal(SIGINT, prevtrap);
  }
  
-@@ -4623,10 +4638,10 @@
+@@ -4623,10 +4609,10 @@
  
      buf = newBuffer(INIT_BUFFER_WIDTH);
  
@@ -23267,7 +23583,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	    buf->real_type = "text/plain";
  	else
  	    buf->real_type = Currentbuf->real_type;
-@@ -4776,8 +4791,8 @@
+@@ -4776,8 +4762,8 @@
      repBuffer(Currentbuf, buf);
      if ((buf->type != NULL) && (sbuf.type != NULL) &&
  	((!strcasecmp(buf->type, "text/plain") &&
@@ -23278,7 +23594,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	  !strcasecmp(sbuf.type, "text/plain")))) {
  	vwSrc();
  	if (Currentbuf != buf)
-@@ -5099,7 +5114,7 @@
+@@ -5099,7 +5085,7 @@
  	return;
      displayImage = TRUE;
      /*
@@ -23287,7 +23603,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
       * return;
       */
      Currentbuf->image_flag = IMG_FLAG_AUTO;
-@@ -5112,7 +5127,7 @@
+@@ -5112,7 +5098,7 @@
      if (!activeImage)
  	return;
      /*
@@ -23296,7 +23612,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
       * return;
       */
      Currentbuf->image_flag = IMG_FLAG_SKIP;
-@@ -6355,7 +6370,8 @@
+@@ -6355,7 +6341,8 @@
      d->lock = lock;
      d->size = size;
      d->time = time(0);
@@ -23306,7 +23622,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
      d->next = NULL;
      d->prev = LastDL;
      if (LastDL)
-@@ -6375,7 +6391,7 @@
+@@ -6375,7 +6362,7 @@
      if (!FirstDL)
  	return FALSE;
      for (d = FirstDL; d != NULL; d = d->next) {
@@ -23315,7 +23631,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	    return TRUE;
      }
      return FALSE;
-@@ -6415,15 +6431,16 @@
+@@ -6415,15 +6402,16 @@
  		       "<form method=internal action=download><hr>\n");
      for (d = LastDL; d != NULL; d = d->prev) {
  	if (lstat(d->lock, &st))
@@ -23335,7 +23651,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  		duration = st.st_mtime - d->time;
  	    }
  	}
-@@ -6442,7 +6459,7 @@
+@@ -6442,7 +6430,7 @@
  		Strcat_char(src, '_');
  	    Strcat_char(src, '\n');
  	}
@@ -23344,7 +23660,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	    Strcat(src, Sprintf("  %s / %s bytes (%d%%)",
  				convert_size3(size), convert_size3(d->size),
  				(int)(100.0 * size / d->size)));
-@@ -6453,20 +6470,28 @@
+@@ -6453,20 +6441,28 @@
  	    Strcat(src, Sprintf("  %02d:%02d:%02d  rate %s/sec",
  				duration / (60 * 60), (duration / 60) % 60,
  				duration % 60, convert_size(rate, 1)));
@@ -23379,7 +23695,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	}
  	else
  	    Strcat(src, Sprintf("<input type=submit name=stop%d value=STOP>",
-@@ -6520,7 +6545,7 @@
+@@ -6520,7 +6516,7 @@
      if (!FirstDL)
  	return;
      for (d = FirstDL; d != NULL; d = d->next) {
@@ -23390,7 +23706,7 @@ diff -urN w3m-0.5.2.orig/main.c w3m/main.c
  	kill(d->pid, SIGKILL);
 diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
 --- w3m-0.5.2.orig/po/ja.po	2007-05-31 21:17:05.000000000 +0900
-+++ w3m/po/ja.po	2010-07-26 20:38:53.000000000 +0900
++++ w3m/po/ja.po	2010-08-04 23:06:36.000000000 +0900
 @@ -1,5 +1,5 @@
  # Japanese translations for w3m package
 -# w3m •—•√•±°º•∏§À¬–§π§Î±—Ãı.
@@ -23398,16 +23714,17 @@ diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
  # Copyright (C) 2003 THE w3m'S COPYRIGHT HOLDER
  # This file is distributed under the same license as the w3m package.
  # Fumitoshi UKAI <ukai@debian.or.jp>, 2003.
-@@ -8,42 +8,42 @@
+@@ -8,42 +8,43 @@
  msgstr ""
  "Project-Id-Version: w3m 0.5.2\n"
  "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
 -"POT-Creation-Date: 2007-05-07 10:49+0900\n"
 -"PO-Revision-Date: 2007-05-07 10:52+0900\n"
-+"POT-Creation-Date: 2010-07-26 16:12+0900\n"
-+"PO-Revision-Date: 2010-07-26 16:13+0900\n"
++"POT-Creation-Date: 2010-08-04 18:33+0900\n"
++"PO-Revision-Date: 2010-08-04 18:36+0900\n"
  "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
  "Language-Team: Japanese\n"
++"Language: \n"
  "MIME-Version: 1.0\n"
 -"Content-Type: text/plain; charset=EUC-JP\n"
 +"Content-Type: text/plain; charset=UTF-8\n"
@@ -23451,7 +23768,7 @@ diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
  
  #: menu.c:276 menu.c:283 menu.c:287
  msgid " ---------------- "
-@@ -51,781 +51,801 @@
+@@ -51,781 +52,813 @@
  
  #: menu.c:277
  msgid " Go Link      (a) "
@@ -23651,10 +23968,11 @@ diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
 +msgstr "„Ç®„É≥„ÉÜ„Ç£„ÉÜ„Ç£„Çí ASCII „ÅÆ‰ª£ÊõøË°®Áèæ„ÅßË°®„Åô"
  
 -#: rc.c:88
-+#: rc.c:90
- msgid "Use graphic char for border of table and menu"
+-msgid "Use graphic char for border of table and menu"
 -msgstr "•∆°º•÷•Î§‰•·•À•Â°º§Œœ»§À graphic  ∏ª˙§Úª»§¶"
-+msgstr "„ÉÜ„Éº„Éñ„É´„ÇÑ„É°„Éã„É•„Éº„ÅÆÊû†„Å´ graphic ÊñáÂ≠ó„Çí‰Ωø„ÅÜ"
++#: rc.c:90
++msgid "Character type for border of table and menu"
++msgstr "„ÉÜ„Éº„Éñ„É´„ÇÑ„É°„Éã„É•„Éº„ÅÆÊû†„Å´‰Ωø„ÅÜÊñáÂ≠ó"
  
 -#: rc.c:89
 +#: rc.c:91
@@ -24542,63 +24860,75 @@ diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
  msgid "ON"
 -msgstr "Õ≠∏˙"
 +msgstr "ÊúâÂäπ"
++
++#: rc.c:339
++msgid "ASCII"
++msgstr "ASCII"
++
++#: rc.c:340
++msgid "charset specific"
++msgstr "ÊñáÂ≠ó„Ç≥„Éº„Éâ‰æùÂ≠ò"
++
++#: rc.c:341
++msgid "DEC special graphics"
++msgstr "DEC ÁâπÊÆäÊñáÂ≠ó"
  
 -#: rc.c:679
-+#: rc.c:695
++#: rc.c:702
  msgid "Display Settings"
 -msgstr "…Ωº®¥ÿ∑∏"
 +msgstr "Ë°®Á§∫Èñ¢‰øÇ"
  
 -#: rc.c:681
-+#: rc.c:697
++#: rc.c:704
  msgid "Color Settings"
 -msgstr "…Ωº®øß"
 +msgstr "Ë°®Á§∫Ëâ≤"
  
 -#: rc.c:683
-+#: rc.c:699
++#: rc.c:706
  msgid "Miscellaneous Settings"
 -msgstr "ª®¬ø§ ¿ﬂƒÍ"
 +msgstr "ÈõëÂ§ö„Å™Ë®≠ÂÆö"
  
 -#: rc.c:684
-+#: rc.c:700
++#: rc.c:707
  msgid "Directory Settings"
 -msgstr "•«•£•Ï•Ø•»•Í¿ﬂƒÍ"
 +msgstr "„Éá„Ç£„É¨„ÇØ„Éà„É™Ë®≠ÂÆö"
  
 -#: rc.c:685
-+#: rc.c:701
++#: rc.c:708
  msgid "External Program Settings"
 -msgstr "≥∞…Ù•◊•Ì•∞•È•‡"
 +msgstr "Â§ñÈÉ®„Éó„É≠„Ç∞„É©„É†"
  
 -#: rc.c:686
-+#: rc.c:702
++#: rc.c:709
  msgid "Network Settings"
 -msgstr "•Õ•√•»•Ô°º•Ø§Œ¿ﬂƒÍ"
 +msgstr "„Éç„ÉÉ„Éà„ÉØ„Éº„ÇØ„ÅÆË®≠ÂÆö"
  
 -#: rc.c:687
-+#: rc.c:703
++#: rc.c:710
  msgid "Proxy Settings"
 -msgstr "•◊•Ì•≠•∑§Œ¿ﬂƒÍ"
 +msgstr "„Éó„É≠„Ç≠„Ç∑„ÅÆË®≠ÂÆö"
  
 -#: rc.c:689
-+#: rc.c:705
++#: rc.c:712
  msgid "SSL Settings"
 -msgstr "SSL§Œ¿ﬂƒÍ"
 +msgstr "SSL„ÅÆË®≠ÂÆö"
  
 -#: rc.c:692
-+#: rc.c:708
++#: rc.c:715
  msgid "Cookie Settings"
 -msgstr "•Ø•√•≠°º§Œ¿ﬂƒÍ"
 +msgstr "„ÇØ„ÉÉ„Ç≠„Éº„ÅÆË®≠ÂÆö"
  
 -#: rc.c:695
-+#: rc.c:711
++#: rc.c:718
  msgid "Charset Settings"
 -msgstr " ∏ª˙•≥°º•…§Œ¿ﬂƒÍ"
 +msgstr "ÊñáÂ≠ó„Ç≥„Éº„Éâ„ÅÆË®≠ÂÆö"
@@ -24609,22 +24939,26 @@ diff -urN w3m-0.5.2.orig/po/ja.po w3m/po/ja.po
  #. * "ja;q=1.0, en;q=0.5" like that.
  #.
 -#: rc.c:1163
-+#: rc.c:1190
++#: rc.c:1197
  msgid "en;q=1.0"
  msgstr "ja;q=1.0, en;q=0.5"
 diff -urN w3m-0.5.2.orig/po/w3m.pot w3m/po/w3m.pot
 --- w3m-0.5.2.orig/po/w3m.pot	2007-05-31 21:17:05.000000000 +0900
-+++ w3m/po/w3m.pot	2010-07-26 20:38:53.000000000 +0900
-@@ -8,7 +8,7 @@
++++ w3m/po/w3m.pot	2010-08-04 23:06:36.000000000 +0900
+@@ -8,10 +8,11 @@
  msgstr ""
  "Project-Id-Version: PACKAGE VERSION\n"
  "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
 -"POT-Creation-Date: 2007-05-28 19:49+0900\n"
-+"POT-Creation-Date: 2010-07-26 16:12+0900\n"
++"POT-Creation-Date: 2010-08-04 18:33+0900\n"
  "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
  "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
  "Language-Team: LANGUAGE <LL@li.org>\n"
-@@ -149,674 +149,694 @@
++"Language: \n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=CHARSET\n"
+ "Content-Transfer-Encoding: 8bit\n"
+@@ -149,674 +150,706 @@
  msgstr ""
  
  #: rc.c:75
@@ -24689,8 +25023,9 @@ diff -urN w3m-0.5.2.orig/po/w3m.pot w3m/po/w3m.pot
  msgstr ""
  
 -#: rc.c:88
+-msgid "Use graphic char for border of table and menu"
 +#: rc.c:90
- msgid "Use graphic char for border of table and menu"
++msgid "Character type for border of table and menu"
  msgstr ""
  
 -#: rc.c:89
@@ -25436,61 +25771,73 @@ diff -urN w3m-0.5.2.orig/po/w3m.pot w3m/po/w3m.pot
  msgstr ""
  
 -#: rc.c:679
-+#: rc.c:695
++#: rc.c:339
++msgid "ASCII"
++msgstr ""
++
++#: rc.c:340
++msgid "charset specific"
++msgstr ""
++
++#: rc.c:341
++msgid "DEC special graphics"
++msgstr ""
++
++#: rc.c:702
  msgid "Display Settings"
  msgstr ""
  
 -#: rc.c:681
-+#: rc.c:697
++#: rc.c:704
  msgid "Color Settings"
  msgstr ""
  
 -#: rc.c:683
-+#: rc.c:699
++#: rc.c:706
  msgid "Miscellaneous Settings"
  msgstr ""
  
 -#: rc.c:684
-+#: rc.c:700
++#: rc.c:707
  msgid "Directory Settings"
  msgstr ""
  
 -#: rc.c:685
-+#: rc.c:701
++#: rc.c:708
  msgid "External Program Settings"
  msgstr ""
  
 -#: rc.c:686
-+#: rc.c:702
++#: rc.c:709
  msgid "Network Settings"
  msgstr ""
  
 -#: rc.c:687
-+#: rc.c:703
++#: rc.c:710
  msgid "Proxy Settings"
  msgstr ""
  
 -#: rc.c:689
-+#: rc.c:705
++#: rc.c:712
  msgid "SSL Settings"
  msgstr ""
  
 -#: rc.c:692
-+#: rc.c:708
++#: rc.c:715
  msgid "Cookie Settings"
  msgstr ""
  
 -#: rc.c:695
-+#: rc.c:711
++#: rc.c:718
  msgid "Charset Settings"
  msgstr ""
  
-@@ -825,6 +845,6 @@
+@@ -825,6 +858,6 @@
  #. * header. For example, ja.po should translate it as
  #. * "ja;q=1.0, en;q=0.5" like that.
  #.
 -#: rc.c:1169
-+#: rc.c:1190
++#: rc.c:1197
  msgid "en;q=1.0"
  msgstr ""
 diff -urN w3m-0.5.2.orig/proto.h w3m/proto.h
@@ -25531,10 +25878,10 @@ diff -urN w3m-0.5.2.orig/proto.h w3m/proto.h
  #ifdef USE_INCLUDED_SRAND48
 diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
 --- w3m-0.5.2.orig/rc.c	2007-05-24 00:06:06.000000000 +0900
-+++ w3m/rc.c	2010-07-26 20:38:53.000000000 +0900
++++ w3m/rc.c	2010-08-04 23:06:36.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: rc.c,v 1.106 2007/05/23 15:06:06 inu Exp $ */
-+/* $Id: rc.c,v 1.114 2010/07/26 11:38:53 htrb Exp $ */
++/* $Id: rc.c,v 1.115 2010/08/04 14:06:36 htrb Exp $ */
  /* 
   * Initialization file etc.
   */
@@ -25550,6 +25897,15 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  #ifdef USE_IMAGE
  #define CMT_AUTO_IMAGE   N_("Load inline images automatically")
  #define CMT_MAX_LOAD_IMAGE N_("Maximum processes for parallel image loading")
+@@ -85,7 +87,7 @@
+ #endif
+ #define CMT_MULTICOL     N_("Display file names in multi-column format")
+ #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
+-#define CMT_GRAPHIC_CHAR N_("Use graphic char for border of table and menu")
++#define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
+ #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
+ #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
+ #define CMT_COLOR        N_("Display with color")
 @@ -198,6 +200,7 @@
  #define CMT_ACCEPTBADCOOKIE N_("Action to be taken on invalid cookie")
  #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
@@ -25574,7 +25930,21 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  #endif
  
  #define CMT_KEYMAP_FILE N_("keymap file")
-@@ -348,6 +353,8 @@
+@@ -330,6 +335,13 @@
+ };
+ #endif
+ 
++static struct sel_c graphic_char_str[] = {
++    {N_S(GRAPHIC_CHAR_ASCII), N_("ASCII")},
++    {N_S(GRAPHIC_CHAR_CHARSET), N_("charset specific")},
++    {N_S(GRAPHIC_CHAR_DEC), N_("DEC special graphics")},
++    {0, NULL, NULL}
++};
++
+ struct param_ptr params1[] = {
+     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
+     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
+@@ -348,6 +360,8 @@
       CMT_OPEN_TAB_DL_LIST, NULL},
      {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
       NULL},
@@ -25583,7 +25953,18 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
      {"decode_url", P_INT, PI_ONOFF, (void *)&DecodeURL, CMT_DECODE_URL, NULL},
      {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
       CMT_DISPLINEINFO, NULL},
-@@ -377,6 +384,8 @@
+@@ -364,8 +378,8 @@
+     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
+     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
+      NULL},
+-    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
+-     CMT_GRAPHIC_CHAR, NULL},
++    {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
++     CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
+     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
+      CMT_FOLD_TEXTAREA, NULL},
+     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
+@@ -377,6 +391,8 @@
      /* XXX: emacs-w3m force to off display_image even if image options off */
      {"display_image", P_INT, PI_ONOFF, (void *)&displayImage, CMT_DISP_IMAGE,
       NULL},
@@ -25592,7 +25973,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  #ifdef USE_IMAGE
      {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
      {"max_load_image", P_INT, PI_TEXT, (void *)&maxLoadImage,
-@@ -573,6 +582,9 @@
+@@ -573,6 +589,9 @@
       (void *)&cookie_reject_domains, CMT_COOKIE_REJECT_DOMAINS, NULL},
      {"cookie_accept_domains", P_STRING, PI_TEXT,
       (void *)&cookie_accept_domains, CMT_COOKIE_ACCEPT_DOMAINS, NULL},
@@ -25602,7 +25983,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
      {NULL, 0, 0, NULL, NULL, NULL},
  };
  #endif
-@@ -640,6 +652,8 @@
+@@ -640,6 +659,8 @@
      {"use_combining", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_combining,
       CMT_USE_COMBINING, NULL},
  #ifdef USE_UNICODE
@@ -25611,7 +25992,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
      {"use_language_tag", P_CHARINT, PI_ONOFF,
       (void *)&WcOption.use_language_tag, CMT_USE_LANGUAGE_TAG, NULL},
      {"ucs_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.ucs_conv, CMT_UCS_CONV,
-@@ -671,6 +685,8 @@
+@@ -671,6 +692,8 @@
      {"gb18030_as_ucs", P_CHARINT, PI_ONOFF, (void *)&WcOption.gb18030_as_ucs,
       CMT_GB18030_AS_UCS, NULL},
  #endif
@@ -25620,7 +26001,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
      {NULL, 0, 0, NULL, NULL, NULL},
  };
  #endif
-@@ -1061,9 +1077,11 @@
+@@ -1061,9 +1084,11 @@
  
      for (;;) {
  	line = Strfgets(f);
@@ -25634,7 +26015,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  	Strremovefirstspaces(line);
  	if (line->ptr[0] == '#')	/* comment */
  	    continue;
-@@ -1105,6 +1123,9 @@
+@@ -1105,6 +1130,9 @@
  	Cookie_reject_domains = make_domain_list(cookie_reject_domains);
      if (non_null(cookie_accept_domains))
  	Cookie_accept_domains = make_domain_list(cookie_accept_domains);
@@ -25644,7 +26025,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  }
  #endif
  
-@@ -1172,6 +1193,9 @@
+@@ -1172,6 +1200,9 @@
  	AcceptEncoding = acceptableEncoding();
      if (AcceptMedia == NULL || *AcceptMedia == '\0')
  	AcceptMedia = acceptableMimeTypes();
@@ -25654,7 +26035,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
      if (fmInitialized) {
  	initKeymap(FALSE);
  #ifdef USE_MOUSE
-@@ -1246,7 +1270,7 @@
+@@ -1246,7 +1277,7 @@
  	interpret_rc(f);
  	fclose(f);
      }
@@ -25663,7 +26044,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  	interpret_rc(f);
  	fclose(f);
      }
-@@ -1258,6 +1282,8 @@
+@@ -1258,6 +1289,8 @@
  	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
  	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
  	tmp_dir = "/tmp";
@@ -25672,7 +26053,7 @@ diff -urN w3m-0.5.2.orig/rc.c w3m/rc.c
  }
  
  
-@@ -1439,8 +1465,8 @@
+@@ -1439,8 +1472,8 @@
      FILE *f = NULL;
      char *p;
  
@@ -25706,7 +26087,7 @@ diff -urN w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in w3m/scripts/w3mman/w3
  undef $header;
 diff -urN w3m-0.5.2.orig/symbol.c w3m/symbol.c
 --- w3m-0.5.2.orig/symbol.c	2003-09-23 06:02:21.000000000 +0900
-+++ w3m/symbol.c	2010-07-25 18:55:05.000000000 +0900
++++ w3m/symbol.c	2010-08-04 23:06:36.000000000 +0900
 @@ -18,7 +18,7 @@
      wc_ces ces;
      char width;
@@ -25773,7 +26154,7 @@ diff -urN w3m-0.5.2.orig/symbol.c w3m/symbol.c
 -	    (*width == 0 || *width == p->symbol->width)) {
 -	    s = p->symbol;
 -	    break;
-+    if (UseGraphicChar) {
++    if (UseGraphicChar != GRAPHIC_CHAR_ASCII) {
 +	if (charset == save_charset && save_symbol != NULL &&
 +	    *width == save_symbol->width) {
 +	    return save_symbol->conved_item;
@@ -25856,10 +26237,10 @@ diff -urN w3m-0.5.2.orig/table.c w3m/table.c
  	    else
 diff -urN w3m-0.5.2.orig/terms.c w3m/terms.c
 --- w3m-0.5.2.orig/terms.c	2007-05-30 13:44:00.000000000 +0900
-+++ w3m/terms.c	2010-07-25 18:55:05.000000000 +0900
++++ w3m/terms.c	2010-08-04 23:06:36.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
-+/* $Id: terms.c,v 1.61 2010/07/25 09:55:05 htrb Exp $ */
++/* $Id: terms.c,v 1.62 2010/08/04 14:06:36 htrb Exp $ */
  /* 
   * An original curses library for EUC-kanji by Akinori ITO,     December 1989
   * revised by Akinori ITO, January 1995
@@ -25877,7 +26258,7 @@ diff -urN w3m-0.5.2.orig/terms.c w3m/terms.c
  graph_ok(void)
  {
 -    if (!UseGraphicChar)
-+    if (! UseGraphicChar)
++    if (UseGraphicChar != GRAPHIC_CHAR_DEC)
  	return 0;
      return T_as[0] != 0 && T_ae[0] != 0 && T_ac[0] != 0;
  }
@@ -25900,10 +26281,10 @@ diff -urN w3m-0.5.2.orig/terms.c w3m/terms.c
  	/*
 diff -urN w3m-0.5.2.orig/url.c w3m/url.c
 --- w3m-0.5.2.orig/url.c	2007-05-24 00:06:06.000000000 +0900
-+++ w3m/url.c	2010-07-20 09:09:34.000000000 +0900
++++ w3m/url.c	2010-08-03 19:02:16.000000000 +0900
 @@ -1,4 +1,4 @@
 -/* $Id: url.c,v 1.95 2007/05/23 15:06:06 inu Exp $ */
-+/* $Id: url.c,v 1.97 2010/07/20 00:09:34 htrb Exp $ */
++/* $Id: url.c,v 1.98 2010/08/03 10:02:16 htrb Exp $ */
  #include "fm.h"
  #ifndef __MINGW32_VERSION
  #include <sys/types.h>
@@ -25925,6 +26306,22 @@ diff -urN w3m-0.5.2.orig/url.c w3m/url.c
      if (SSL_connect(handle) > 0) {
  	Str serv_cert = ssl_get_certificate(handle, hostname);
  	if (serv_cert) {
+@@ -1375,7 +1379,6 @@
+     Str tmp;
+     TextListItem *i;
+     int seen_www_auth = 0;
+-    int seen_proxy_auth = 0;
+ #ifdef USE_COOKIE
+     Str cookie;
+ #endif				/* USE_COOKIE */
+@@ -1399,7 +1402,6 @@
+ 	    }
+ 	    if (strncasecmp(i->ptr, "Proxy-Authorization:",
+ 			    sizeof("Proxy-Authorization:") - 1) == 0) {
+-		seen_proxy_auth = 1;
+ #ifdef USE_SSL
+ 		if (pu->scheme == SCM_HTTPS
+ 		    && hr->command != HR_COMMAND_CONNECT)
 diff -urN w3m-0.5.2.orig/version.c.in w3m/version.c.in
 --- w3m-0.5.2.orig/version.c.in	2007-05-31 21:17:05.000000000 +0900
 +++ w3m/version.c.in	2007-06-04 22:21:10.000000000 +0900

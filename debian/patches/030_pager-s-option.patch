@@ -1,0 +1,65 @@
+Description: Change the -s option to "squeeze multiple blank lines" for pager
+ Change the -s option from "display charset Shift_JIS" to "squeeze multiple
+ blank lines" to work as /usr/bin/pager.  In addition, the options -j and -e
+ are disabled.  To specify the display charset, use -O{s|j|e} instead.
+ .
+ The patch was committed to the upstream on 2000-10-27.  However, it was
+ rejected because of Debian specific on 2010-08-03.
+Origin: upstream, http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev/200010.month/1275.html
+Bug-Debian: http://bugs.debian.org/75527
+
+diff -urN w3m.orig/main.c w3m/main.c
+--- w3m.orig/main.c	2010-08-04 23:06:36.000000000 +0900
++++ w3m/main.c	2010-08-05 19:28:46.000000000 +0900
+@@ -194,10 +194,12 @@
+ #ifdef USE_M17N
+     fprintf(f, "    -I charset       document charset\n");
+     fprintf(f, "    -O charset       display/output charset\n");
++#if 0				/* use -O{s|j|e} instead */
+     fprintf(f, "    -e               EUC-JP\n");
+     fprintf(f, "    -s               Shift_JIS\n");
+     fprintf(f, "    -j               JIS\n");
+ #endif
++#endif
+     fprintf(f, "    -B               load bookmark\n");
+     fprintf(f, "    -bookmark file   specify bookmark file\n");
+     fprintf(f, "    -T type          specify content-type\n");
+@@ -242,7 +244,11 @@
+ #endif				/* USE_COOKIE */
+     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
+     fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
++#if 1				/* pager requires -s */
++    fprintf(f, "    -s               squeeze multiple blank lines\n");
++#else
+     fprintf(f, "    -S               squeeze multiple blank lines\n");
++#endif
+     fprintf(f, "    -W               toggle wrap search mode\n");
+     fprintf(f, "    -X               don't use termcap init/deinit\n");
+     fprintf(f,
+@@ -524,12 +530,14 @@
+ 		    PagerMax = atoi(argv[i]);
+ 	    }
+ #ifdef USE_M17N
++#if 0				/* use -O{s|j|e} instead */
+ 	    else if (!strcmp("-s", argv[i]))
+ 		DisplayCharset = WC_CES_SHIFT_JIS;
+ 	    else if (!strcmp("-j", argv[i]))
+ 		DisplayCharset = WC_CES_ISO_2022_JP;
+ 	    else if (!strcmp("-e", argv[i]))
+ 		DisplayCharset = WC_CES_EUC_JP;
++#endif
+ 	    else if (!strncmp("-I", argv[i], 2)) {
+ 		if (argv[i][2] != '\0')
+ 		    p = argv[i] + 2;
+@@ -694,7 +702,11 @@
+ 		accept_cookie = TRUE;
+ 	    }
+ #endif				/* USE_COOKIE */
++#if 1				/* pager requires -s */
++	    else if (!strcmp("-s", argv[i]))
++#else
+ 	    else if (!strcmp("-S", argv[i]))
++#endif
+ 		squeezeBlankLine = TRUE;
+ 	    else if (!strcmp("-X", argv[i]))
+ 		Do_not_use_ti_te = TRUE;

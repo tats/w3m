@@ -1,123 +1,215 @@
-This package was debianized by
-  1999-2006 Fumitoshi UKAI <ukai@debian.or.jp>
-  2008-2011 Tatsuya Kinoshita <tats@debian.org>
+Format: http://dep.debian.net/deps/dep5
+Upstream-Name: w3m
+Source: http://sourceforge.net/projects/w3m
 
-The upstream source can be downloaded from
-  http://sourceforge.net/projects/w3m
+Files: *
+Copyright: 1994-2002, Akinori Ito
+           2002-2011, Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
+License:
+ Use, modification and redistribution of this software is hereby granted,
+ provided that this entire copyright notice is included on any copies of
+ this software and applications and derivations thereof.
+ .
+ This software is provided on an "as is" basis, without warranty of any
+ kind, either expressed or implied, as to any matter including, but not
+ limited to warranty of fitness of purpose, or merchantability, or
+ results obtained from use of this software.
 
-(C) Copyright 1994-2002 by Akinori Ito
-(C) Copyright 2002-2011 by Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
+Files: matrix.c
+Copyright: 1999, K.Okabe
+           1993, David E. Steward & Zbigniew Leyk
+License:
+ LUfactor, LUsolve, Usolve and Lsolve, are based on the functions in
+ Meschach Library Version 1.2b.
+ .
+			     Meschach Library
+ .
+ This Meschach Library is provided "as is" without any express 
+ or implied warranty of any kind with respect to this software. 
+ In particular the authors shall not be liable for any direct, 
+ indirect, special, incidental or consequential damages arising 
+ in any way from use of the software.
+ .
+ Everyone is granted permission to copy, modify and redistribute this
+ Meschach Library, provided:
+  1.  All copies contain this copyright notice.
+  2.  All modified copies shall carry a notice stating who
+      made the last modification and the date of such modification.
+  3.  No charge is made for this software or works derived from it.  
+      This clause shall not be construed as constraining other software
+      distributed on the same medium as this software, nor is a
+      distribution fee considered a charge.
 
-Use, modification and redistribution of this software is hereby granted,
-provided that this entire copyright notice is included on any copies of
-this software and applications and derivations thereof.
+Files: matrix.h
+Copyright: 1999, K.Okabe
+License:
+ You can use,copy,modify and distribute this program without any permission.
 
-This software is provided on an "as is" basis, without warranty of any
-kind, either expressed or implied, as to any matter including, but not
-limited to warranty of fitness of purpose, or merchantability, or
-results obtained from use of this software.
+Files: w3mimg/fb/*
+Copyright: 2002, hito
+License:
+ follow w3m license
+Comment:
+ Quoting from ChangeLog, 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>.
 
-The Debian packaging is distributed under the same conditions as the
-upstream.
+Files: scrsize.c
+Copyright: 2000, NBG01720@nifty.ne.jp
+License:
+ follow w3m license
+Comment:
+ Altair <NBG01720@nifty.ne.jp> is a contributor for OS/2 support.
 
-w3mimg/fb/*:
+Files: scrsize.c
+Copyright: 1999, NBG01720@nifty.ne.jp
+           1987, X Consortium
+License: X11
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium shall not
+ be used in advertising or otherwise to promote the sale, use or other
+ dealings in this Software without prior written authorization from the X
+ Consortium.
 
-Copyright (C) 2002, hito
-follow w3m license
-(ChangeLog: 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>)
+Files: libwc/EastAsianWidth.txt
+Copyright: 1991-2009, Unicode, Inc.
+License:
+ UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE
+ .
+ Unicode Data Files include all data files under the directories
+ http://www.unicode.org/Public/, http://www.unicode.org/reports/, and
+ http://www.unicode.org/cldr/data/. Unicode Software includes any
+ source code published in the Unicode Standard or under the directories
+ http://www.unicode.org/Public/, http:// www.unicode.org/reports/, and
+ http://www.unicode.org/cldr/data/.
+ .
+ NOTICE TO USER: Carefully read the following legal agreement. BY
+ DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING UNICODE INC.'S
+ DATA FILES ("DATA FILES"), AND/OR SOFTWARE ("SOFTWARE"), YOU
+ UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE TERMS AND
+ CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT DOWNLOAD,
+ INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+ .
+ COPYRIGHT AND PERMISSION NOTICE
+ .
+ Copyright (c) 1991-2010 Unicode, Inc. All rights reserved. Distributed
+ under the Terms of Use in http://www.unicode.org/copyright.html.
+ .
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of the Unicode data files and any associated documentation (the
+ "Data Files") or Unicode software and any associated documentation
+ (the "Software") to deal in the Data Files or Software without
+ restriction, including without limitation the rights to use, copy,
+ modify, merge, publish, distribute, and/or sell copies of the Data
+ Files or Software, and to permit persons to whom the Data Files or
+ Software are furnished to do so, provided that (a) the above copyright
+ notice(s) and this permission notice appear with all copies of the
+ Data Files or Software, (b) both the above copyright notice(s) and
+ this permission notice appear in associated documentation, and (c)
+ there is clear notice in each modified Data File or in the Software as
+ well as in the documentation associated with the Data File(s) or
+ Software that the data or software has been modified.
+ .
+ THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF
+ ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT
+ HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR
+ ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
+ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR
+ SOFTWARE.
+ .
+ Except as contained in this notice, the name of a copyright holder
+ shall not be used in advertising or otherwise to promote the sale, use
+ or other dealings in these Data Files or Software without prior
+ written authorization of the copyright holder.
+Comment:
+ The license text is quoted from http://www.unicode.org/terms_of_use.html
+ (redirect to http://www.unicode.org/copyright.html).
 
-matrix.h, matrix.c:
+Files: install-sh
+Copyright: 1994, X Consortium
+License: X11
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNEC-
+ TION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium shall not
+ be used in advertising or otherwise to promote the sale, use or other deal-
+ ings in this Software without prior written authorization from the X Consor-
+ tium.
 
-by K.Okabe  Aug. 1999
+Files: config.guess config.sub
+Copyright: 1992-2003, Free Software Foundation, Inc.
+License: GPL-2+ with Autoconf exception
+ This file is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ version 2 can be found in `/usr/share/common-licenses/GPL-2'.
+ .
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program that contains a
+ configuration script generated by Autoconf, you may include it under
+ the same distribution terms that you use for the rest of that program.
 
-You can use,copy,modify and distribute this program without any permission.
+Files: aclocal.m4 config.rpath
+Copyright: 1996-2010, Free Software Foundation, Inc.
+License:
+ This file is free software; the Free Software Foundation gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
 
-LUfactor, LUsolve, Usolve and Lsolve, are based on the functions in
-Meschach Library Version 1.2b.
+Files: configure
+Copyright: 1992-2010, Free Software Foundation, Inc.
+License:
+ This configure script is free software; the Free Software Foundation
+ gives unlimited permission to copy, distribute and modify it.
 
-/**************************************************************************
-**
-** Copyright (C) 1993 David E. Steward & Zbigniew Leyk, all rights reserved.
-**
-**			     Meschach Library
-** 
-** This Meschach Library is provided "as is" without any express 
-** or implied warranty of any kind with respect to this software. 
-** In particular the authors shall not be liable for any direct, 
-** indirect, special, incidental or consequential damages arising 
-** in any way from use of the software.
-** 
-** Everyone is granted permission to copy, modify and redistribute this
-** Meschach Library, provided:
-**  1.  All copies contain this copyright notice.
-**  2.  All modified copies shall carry a notice stating who
-**      made the last modification and the date of such modification.
-**  3.  No charge is made for this software or works derived from it.  
-**      This clause shall not be construed as constraining other software
-**      distributed on the same medium as this software, nor is a
-**      distribution fee considered a charge.
-**
-***************************************************************************/
+Files: po/Makefile.in.in
+Copyright: 1995-2010, Ulrich Drepper <drepper@gnu.ai.mit.edu>
+License:
+ This file can be copied and used freely without restrictions.  It can
+ be used in projects which are not available under the GNU General Public
+ License but which still want to provide support for the GNU gettext
+ functionality.
+ Please note that the actual code of GNU gettext is covered by the GNU
+ General Public License and is *not* in the public domain.
 
-libwc/EastAsianWidth.txt:
-
-Copyright (c) 1991-2009 Unicode, Inc.
-For terms of use, see http://www.unicode.org/terms_of_use.html
-
-The license was downloaded from http://www.unicode.org/terms_of_use.html
-(redirect to http://www.unicode.org/copyright.html) and converted from
-text/html to text/plain, shown as follows:
-
----- Begin of UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE ----
-UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE
-
-Unicode Data Files include all data files under the directories
-http://www.unicode.org/Public/, http://www.unicode.org/reports/, and
-http://www.unicode.org/cldr/data/. Unicode Software includes any
-source code published in the Unicode Standard or under the directories
-http://www.unicode.org/Public/, http:// www.unicode.org/reports/, and
-http://www.unicode.org/cldr/data/.
-
-NOTICE TO USER: Carefully read the following legal agreement. BY
-DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING UNICODE INC.'S
-DATA FILES ("DATA FILES"), AND/OR SOFTWARE ("SOFTWARE"), YOU
-UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE TERMS AND
-CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT DOWNLOAD,
-INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
-
-COPYRIGHT AND PERMISSION NOTICE
-
-Copyright (c) 1991-2010 Unicode, Inc. All rights reserved. Distributed
-under the Terms of Use in http://www.unicode.org/copyright.html.
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Unicode data files and any associated documentation (the
-"Data Files") or Unicode software and any associated documentation
-(the "Software") to deal in the Data Files or Software without
-restriction, including without limitation the rights to use, copy,
-modify, merge, publish, distribute, and/or sell copies of the Data
-Files or Software, and to permit persons to whom the Data Files or
-Software are furnished to do so, provided that (a) the above copyright
-notice(s) and this permission notice appear with all copies of the
-Data Files or Software, (b) both the above copyright notice(s) and
-this permission notice appear in associated documentation, and (c)
-there is clear notice in each modified Data File or in the Software as
-well as in the documentation associated with the Data File(s) or
-Software that the data or software has been modified.
-
-THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF
-ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT
-HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR
-ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
-OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA FILES OR
-SOFTWARE.
-
-Except as contained in this notice, the name of a copyright holder
-shall not be used in advertising or otherwise to promote the sale, use
-or other dealings in these Data Files or Software without prior
-written authorization of the copyright holder.
----- End of UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE ----
+Files: debian/*
+Copyright: 2008-2011, Tatsuya Kinoshita <tats@debian.org>
+           1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
+License:
+ The Debian packaging is distributed under the same conditions as the
+ upstream.

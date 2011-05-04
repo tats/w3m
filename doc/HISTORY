@@ -1,0 +1,1989 @@
+2001/3/23 ==============================================================
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01807] Re: w3m-0.2.0
+* url.c doesn't compile when USE_NNTP or __EMX__ is defined.
+* patch for EWS4800
+* when #define USE_SSL and #undef USE_SSL_VERIFY, rc.c and url.c
+  doesn't compile. (problems about ssl_forbid_method)
+* when saveBufferDelNum and del==TRUE, patterns before ":" are
+  deleted twice.
+* bugfix about saving history.
+
+From: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+Subject: [w3m-dev 01810] deflate (was: w3m-0.2.0)
+deflate patch in 0.2.0 doesn't work on http://cvs.m17n.org/~akr/diary/ .
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01808] Re: w3m-0.2.0
+w3m doesn't compile on GNU/Linux and glibc2.2 because it lacks
+sin.ss_len.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev-en 00399] Re: w3m-0.2.0
+ >> From: Dan Fandrich <dan@coneharvesters.com>
+ >> Version 0.2.0 still contains the following bugs which I fixed two months
+ >> ago and sent patches for to this list, namely:
+ >> - core dumps on startup if given a URL requiring a needsterminal mailcap
+ >>   handler
+ >> - destroys most of an existing ~/.mailcap file without warning when editing
+ >> - mailcap handling is still wrong as MIME type should be case insensitive
+ >> - private mailcap extension has an illegal name
+
+From: SATO Seichi <seichi@as.airnet.ne.jp>
+Subject: w3m regex bugs
+w3m coredumps when passing $* as a search string.
+
+2001/3/22 ==============================================================
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01664] Re: Patch for anonymizer.com
+Don't call cleanupName() when the URL is http://<host>/<scheme>: ...
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01670] Re: w3m-0.1.11-pre-kokb24-test1
+strcpy/strncpy in Str.c are replaced with bcopy.
+
+From: TSUCHIYA Masatoshi <tsuchiya@pine.kuee.kyoto-u.ac.jp>
+Subject: [w3m-dev 01618] backend patch
+Subject: [w3m-dev 01671] backend patch for w3m-0.1.11-pre-kokb24-test1
+A patch for w3m to work as a client. (-backend patch)
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01673] SEGV in append_frame_info()
+Improvement of illegal frame handling.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01674] image map
+w3m doesn't follow anchors from client-side image map when the URLs
+are like "#test".
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01675] goto label
+Changed w3m not to reload the document when following label-only URL 
+like #label.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01676] Re: w3m-0.1.11-pre-kokb24-test1
+Subject: [w3m-dev 01678] Re: w3m-0.1.11-pre-kokb24-test1
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01680] Re: w3m-0.1.11-pre-kokb24-test1
+To remove the compiler warnings
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01684] Re: http://cvs.m17n.org/~akr/diary/
+application/x-deflate support.
+
+From: Moritz Barsnick <barsnick@gmx.net>
+Subject: [w3m-dev-en 00318] Information about current page
+Subject: [w3m-dev-en 00320] Re: Information about current page
+Subject: [w3m-dev-en 00322] Re: Information about current page
+Subject: [w3m-dev-en 00323] Buglet (Was: Re: Information about current page)
+Changes 'URL of the current anchor' on the info page into
+'full' URL. When the cursor is on a form element, 
+`Method/type of current form' will be displayed.
+
+From: c603273@vus069.trl.telstra.com.au (Brian Keck)
+Subject: [w3m-dev-en 00343] patch for proxy user:passwd on command line
+Subject: [w3m-dev-en 00351] Re: patch for proxy user:passwd on command line
+This patch to w3m-0.1.11-pre-kokb23 adds the lynx-like option
+
+        -pauth username:password
+
+so I don't have to retype username & password every time I run w3m,
+which is often.  It's so simple I wonder whether it's against policy,
+but it would be nice for me & some others if it was in the official
+0.1.11.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01772] Re: visited anchor
+Subject: [w3m-dev 01773] Re: visited anchor
+ * visited anhor color support.
+ * textlist based history implementation. 
+ * history URLs are stored in a hash table.
+ * the implementation of rules are changed.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01786] Re: w3m-0.1.11-pre-hsaka24
+Subject: [w3m-dev 01787] Re: w3m-0.1.11-pre-hsaka24
+ * Improvement of illegal frame handling.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01788] Re: w3m-0.1.11-pre-hsaka24
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01792] Re: w3m-0.1.11-pre-hsaka24
+search algorithm in retrieveAnchor() is changed from linear search 
+to binary search.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01793] <li type="..">
+make type attribute of <li> tag effective not only for the <li>
+element but also for all <li> tags that follows the first
+type-specified <li> tag.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01801] some fixes.
+Bugfix of frame 
+
+Subject: IPv6 support for w3m's ftp
+From: Hajimu UMEMOTO <ume@imasy.or.jp>
+IPv6 support for FTP.
+
+2001/3/16 =============================================================
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01711] Authorization
+* http://user:pass@hostname/ support.
+
+From: hsaka@mth.biglobe.ne.jp
+Subject: [w3m-dev 01724] buf->type when mailcap is used.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01726] anchor jump too slow by TAB-key on STDIN.
+* when moving from anchor to anchor by TAB on the document read
+  from stdin, the movement is very slow because currentdir() is invoked
+  on each TAB.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Subject: [w3m-dev 01727] C-z when stdin
+
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+Subject: [w3m-dev 01729] ignore_null_img_alt
+* when ignore_null_img_alt is OFF, no img link is displayed when
+  no ALT attribute is specified.
+
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+Subject: [w3m-dev 01730] Re: <hr> in a table
+Improvement of <hr>.
+
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+Subject: [w3m-dev 01731] completion list
+When completing a filename, the candidates of the completion
+will be displayed like this:
+
+----- Completion list -----
+X11R6/    compat/   include/  libdata/  local/    nfs/      ports/    share/
+bin/      games/    lib/      libexec/  mdec/     obj/      sbin/     src/
+(Load)Filename? /usr/
+
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01733] A patch concerning SSL
+The following two improvements are done about SSL:
+1. a new option ``ssl_forbid_method'' is added.
+2. an error message is displayed when w3m fails to establish an
+   SSL connection.
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01735] Re: A patch concerning SSL
+Subject: [w3m-dev 01737] Re: A patch concerning SSL
+1. the data type of ssl_forbid_method is changed from P_STRING to P_SSLPATH.
+2. Error message log function.
+
+From: kiwamu <kiwamu@debian.or.jp>
+Subject: [w3m-dev 01739] wheel mouse patch
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01742] w3mmee 0.1.11p16-6 segfault
+w3mmee 0.1.11p16-6 segfaults depending on the content of mime.types.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01752] SEGV in search_param()
+ > >> * w3m -o 1 causes SEGV.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01753] empty <select>
+When <select>..</select> have no <option>, for example
+
+<form action=A>
+<select name=B></select>
+<input type=submit>
+</form>
+
+submit causes SEGV.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01754] A search does not stop.
+When reading a large file from stdin and wrap search option is ON,
+a search that doesn't hit will cause an infinite loop.
+
+From: WATANABE Katsuyuki <katsuyuki_1.watanabe@toppan.co.jp>
+Subject: [w3m-dev 01755] relative path with -bookmark option
+* when a bookmark file name is given by -bookmark as relative path,
+  `add to bookmark'doesn't work.
+
+2001/2/7
+From: aito
+Subject: [w3m-dev 01722] <hr> in a table
+* the width of <hr> in a table exceeds the column width.
+
+2001/2/6
+From: aito
+* `Local cookie' mechanism is introduced to authorize local CGI.
+  The behavior of CGI script using the local cookie is as follows:
+  - w3m generates process-dependent `Local cookie'
+  - on the local CGI invocation, w3m passes the script the local 
+    cookie through the environment variable LOCAL_COOKIE.
+  - the sctipt embeds the local cookie into the form for the next
+    local CGI invocation.
+  - on the next CGI invocation, the CGI script compares two local CGIs
+    which are passed through CGI parameter and environment variable.
+    If they are different, the script prohibits dangerous operations,
+    such as file creation and file deletion.
+
+* The local cookie mechanism is implemented on w3mbookmark and 
+  w3mhelperpanel.
+
+* On Linux, gcmain.c doesn't compile when the GC library is already
+  installed in /usr/local/lib.
+
+2001/1/25
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01667] Re: mailer %s
+
+2001/1/24
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01661] Re: <head>
+  security fix.
+
+
+2001/1/23
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * check if ", <, > and &s are quoted within attribute values.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01663] replace addUniqHist with addHist in loadHistory()
+
+  
+2001/1/22
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01617] Re: first body with -m (Re: w3m-m17n-0.7)
+  * terminal resize related fix.
+  * info page ('=' command) fix for multi-layered frame page.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01621] NEXT_LINK and GOTO_LINE problem
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01623] Re: (frame) http://www.securityfocus.com/
+Subject: [w3m-dev 01632] Re: (frame) http://www.securityfocus.com/
+  frame fix.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01624] Re: first body with -m
+From: Hironori Sakamoto <h-saka@udlew10.uldev.lsi.nec.co.jp>
+Subject: [w3m-dev 01625] Re: first body with -m
+  pgFore, pgBack behaviour fix.
+
+From: Hironori Sakamoto <h-saka@udlew10.uldev.lsi.nec.co.jp>
+Subject: [w3m-dev 01635] Directory list
+  local.c directory list fix.
+
+From: Hironori Sakamoto <h-saka@udlew10.uldev.lsi.nec.co.jp>
+Subject: [w3m-dev 01643] buffername
+Subject: [w3m-dev 01650] Re: buffername
+  buffername (title) related improvements.
+  * when displayLink is ON, truncate buffername on showing long URL.
+  * displayBuffer() cleanup.
+  * remove trailing spaces from content of <title>..</title>.
+  * [w3m-dev 01503], [w3m-dev 01504]
+
+From: Hironori Sakamoto <h-saka@udlew10.uldev.lsi.nec.co.jp>
+Subject: [w3m-dev 01646] putAnchor
+  * putAnchor related improvement.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01647] Re: first body with -m
+  * cursor position moves unexpectedly when reloading a URL
+    with #label.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01651] display column position with LINE_INFO
+
+2001/1/5
+
+From: Ryoji Kato <ryoji.kato@nrj.ericsson.se>
+Subject: [w3m-dev 01582] rfc2732 patch
+  literal IPv6 address treatment (bracketed by '[' and ']')
+  according to RFC2732.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01594] first body with -m (Re: w3m-m17n-0.7)
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01602] Re: first body with -m (Re: w3m-m17n-0.7)
+
+2001/1/1
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01584] Re: attribute replacing in frames. (Re: some fixes)
+
+
+2000/12/27
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * remove trailing blank lines in a buffer.
+
+2000/12/26
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01560] Re: long URL
+  Multiple 'u' and 'c' scrolls long URL.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01570] Re: long URL
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01506] compile option of gc.a
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01509] Forward: Bug#79689: No way to view information on SSL certificates
+  Now '=' shows info about SSL certificate.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01556] Re: ANSI color support (was Re:  w3m-m17n-0.4)
+  ANSI color support.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01535] how to check wait3 in configure.
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01537] Re: how to check wait3 in configure.
+  On BSD/OS 3.1, SunOS 4.1.3, configure can't detect wait3().
+ 
+2000/12/25
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  <plaintext> doesn't work.
+
+
+2000/12/22
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01555] Re: some fixes for <select>
+  w3m crashes by <select> without <option>.
+
+2000/12/21
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * table related improvements (<xmp> inside table, etc)
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01536] Re: <P> in <DL>
+Subject: [w3m-dev 01544] Re: <P> in <DL>
+   * w3m crashes by an illegal HTML.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * treat unclosed <a>, <img_alt>, <b>, <u>
+
+2000/12/20
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * bugfix on <dt> tag processing in feed_table_tag().
+   * w3m eventually crashed when a tag is not closed in a table.
+   * ignore <p> just after <dt>.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+Subject: [w3m-dev 01530] returned at a morment.
+   * skip newline within "-enclosed attribute value.
+
+Subject: [w3m-dev 01531] coocie check in header from stdin.
+   * w3m crashes by 'cat mail | w3m -m'
+
+
+2000/12/17
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01513] Re: w3m-0.1.11-pre-kokb23
+  frame.c bugfix
+Subject: [w3m-dev 01515] some fixes for <select>
+Subject: [w3m-dev 01516] Re: some fixes for <select>
+  Several improvements on <select>..<option>
+
+2000/12/14
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01501] Re: w3m-0.1.11-pre-kokb23
+  Compile error for 'no menu' model
+
+
+2000/12/13
+
+From: sekita-n@hera.im.uec.ac.jp (Nobutaka SEKITANI)
+Subject: [w3m-dev 01483] Patch to show image URL includes anchor
+  Peek image URL by 'i'
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01500] fix risky code in url.c
+  Vulnerble code in url.c fixed
+
+2000/12/12
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01491] bug ?
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  Search for a string that contains null character.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01498] Re: null character
+  Infinite loop
+
+
+2000/12/11
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * StrmyISgets doesn't recognize a '\r' as a newline character.
+   * Null character support on pager mode.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01487] A string in <textarea> is broken after editing
+  <textarea> related fix.
+
+Subject: [w3m-dev 01488] buffer overflow bugs
+  * Buffer overflow fixes.
+
+2000/12/9
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * maximum_table_width now considers width attribute in td and th tag.
+
+2000/12/8
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01473] Re: internal tag and attribute check
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * hborder and border attribute handling.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Subject: [w3m-dev 01478] Option Setting Panel
+  * Improvement of the option setting panel view.
+
+2000/12/7
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * parse_tag improvements.
+  * don't parse tag within visible_length().
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01456] linein.c
+  * linein.c is rewritten based on calcPosition().
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01457] cursor position on sumbit form
+  * TAB key behaviour fix.
+
+2000/12/3
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01449] Re: Directory of private header of gc library.
+  * w3m crashes when accessing a list after popping the last element
+    by popText (rpopText).
+
+2000/12/2
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * image map related fix.
+
+2000/12/1
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: Security hole in w3m (<input_alt type=file>)
+  * Prohibit using internal tags in HTML.
+
+Subject: [w3m-dev 01432] Re: w3m-0.1.11-pre-kokb22 patch
+Subject: [w3m-dev 01437] Re: w3m-0.1.11-pre-kokb22 patch
+  * Image map related fix.  
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * a compile option which enables the removal of trailing 
+    blank lines in a burrer. (ENABLE_REMOVE_TRAILINGSPACES)
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev-en 00301] Re: "w3m -h" outputs to stderr
+  * Destination of w3m -h output is changed from stderr
+    to stdout.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Subject: [w3m-dev 01430] Re: w3m-0.1.11-pre-kokb22 patch
+  * EWS4800(/usr/abiccs/bin/cc) support.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * id attribute check in dummy_table tag.
+  * fid attribute check in form_int tag.
+  * table stack overflow check.
+  
+2000/11/29
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01422] bpcmp in anchor.c
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01423] Re: bpcmp in anchor.c
+  * some improvements for speedup.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * CheckType() bugfix and speedup.
+
+2000/11/28
+
+From: Takenobu Sugiyama <sugiyama@ae.advantest.co.jp>
+Subject: patch for cygwin
+  * enables ftp download for cygwin w3m
+
+2000/11/27
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01401] Re: bugfix of display of control chars, merge of easy UTF-8 patch, etc.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * table rendering speed-up.
+
+
+2000/11/25
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * table column width sometimes get narrower than specified width value.
+  
+2000/11/24
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * Progress bar display enhancement.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * command line option about proxy and cookie doesn't work.
+  * 'Save to local file' overwrites the existing file.
+
+2000/11/23
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * get_ctype is now macro.
+  * menu.c type mismatch fix.
+
+
+2000/11/22
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * fixes for speedup.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01372] w3m sometimes uses the wrong mailcap entry
+  http://bugs.debian.org/77679
+    
+2000/11/20
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * an empty table in another table makes the outer table funny.
+
+2000/11/19
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  gc6 support.
+
+2000/11/18
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * space characters in a buffer are mapped into 0x80-0x9f.
+  * unprintable characters (0x80-0xa0) are displayed as \xxx.
+
+From: Tsutomu Okada (岡田 勉) <okada@furuno.co.jp>
+Subject: [w3m-dev 01354] minimize when #undef USE_GOPHER or USE_NNTP
+
+2000/11/16
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  getescapechar() returns abnormal value for illegal entity.
+
+2000/11/15
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * table-related fix.
+  * DEL character is treated as `breakable space.' 
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01338] Re: Lynx patch for character encoding in form
+Subject: [w3m-dev 01342] Re: Lynx patch for character encoding in form
+  * support for accept-charset attribute in form tag.
+
+2000/11/14
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * cleanup_str and htmlquote_str now returns the oritinal string
+    itself when there's no need to (un)quote it.
+
+2000/11/10
+
+From: Katsuyuki Watanabe <katsuyuki_1.watanabe@toppan.co.jp>
+Subject: [w3m-dev 01336] patch for Cygwin 1.1.x
+  Patch for Cygwin 1.1.x (1.1.3 and later)
+
+2000/11/8
+
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Subject: [w3m-dev-en 00189] [PATCH] w3m menu <select> search
+  Enable to search within popup menu.
+
+
+2000/11/7
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01331] Re: form TEXT:
+  * Search string history and form input string history are merged.
+
+2000/11/4
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * When a cell width exceeds the screen width, format contents in
+    the cell to fit into the screen width.
+
+2000/11/2
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01313] Re: SCM_NNTP
+  nntp: for MARL_URL
+
+2000/10/31
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01310] Re: option select (Re:  w3mmee-0.1.11p10)
+  Output error messages from gc library using disp_message_nsec.
+
+2000/10/30
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Subject: [w3m-dev 01294] mouse no effect on blank page.
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01295] Re: mouse no effect on blank page.
+
+From: SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+Subject: [w3m-dev 01297] Re: backword search bug report
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01298] Re: backword search bug report
+  bug fix of backword search 
+Subject: [w3m-dev 01299] Re: backword search bug report
+  bug fix of the handling of multi-byte regexp.
+
+2000/10/29
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * LESSOPEN can be set via the option setting panel. (default: off)
+  * speed-up of gunzip_stream(), save2tmp(), visible_length().
+
+
+2000/10/28
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * Emacs-like completion key support.
+    (by #define EMACS_LIKE_LINEEDIT in config.h)
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01284] Re: improvement of filename input
+  * in 'Goto URL' command, local file name will be completed
+    after 'file:/'.
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01280] Stop to prepend rc_dir to full path.
+
+2000/10/27
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01269] Re: SCM_NNTP
+Subject: [w3m-dev 01273] Re: SCM_NNTP
+  Prohibit gopher:, news: and nntp: scheme when USE_GOPHER and USE_NNTP
+  macros are undefined.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01258] improvement of filename input
+  * Completion lists are displayed by C-d.
+  * in 'Goto URL' command, local file name will be completed
+    after 'file:/', 'file:///' and 'file://localhost/'.
+  * password part of URLs in the history list are removed.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01277] Accept-Encoding: gzip (Re:  some wishlists)
+  Accept-Encoding: gzip, compress
+  is appended in the request header.
+Subject: [w3m-dev 01275] Re: squeeze multiple blank lines option ( http://bugs.debian.org/75527 )
+  when #ifdef DEBIAN, 
+  'squeeze multiple blank line' switch  (default -S) is set to -s
+  character-code specifier (-s/-e/-j) are removed. use '-o kanjicode={S,E,J}'
+  instead.
+Subject: [w3m-dev 01274] Re: SCM_NNTP
+  nntp: support.
+Subject: [w3m-dev 01276] URL in w3m -v
+  when LANG=EN (or #undef JP_CHARSET), the URL displayed at w3m -v  
+  (visual startup mode) is incorrect.
+
+2000/10/26
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  location of mailcap and mime.type can be specified in the Option Setting 
+  Panel.
+
+2000/10/25
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01247] Re: buffer selection menu
+  Menu related patches.
+  ([w3m-dev 01227], [w3m-dev 01228],[w3m-dev 01229], [w3m-dev 01237], 
+   [w3m-dev 01238])
+
+2000/10/24
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * in the cookie-related setting, '.' is regarded as any domain.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01240] Re: w3m-0.1.11-pre-kokb17 patch
+  'incompatible pointer type' fix.
+
+2000/10/23
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * "Domains from which should accept/reject cookies" setting in
+    the option setting panel.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01211] Re: a small change to linein.c
+Subject: [w3m-dev 01214] Re: a small change to linein.c
+  * When editing long string, a part of the string disappear.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01216] error message for invalid keymap
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01220] Re: error message for invalid keymap
+  * w3m will display an error-message against the illegal
+    keymap file specification.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01217] keymap.lynx example could be better.
+  keymap.lynx update.
+
+2000/10/20
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  cookie-related improvements.
+  * version 1 cookie handling is now compliant to 
+       http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt
+     Cookie2 is added in the Netscape-style cookie request header.
+
+2000/10/19
+
+From: "Ambrose Li [EDP]" <acli@mingpaoxpress.com>
+Subject: [w3m-dev-en 00136] version 0 cookies and some odds and ends
+Subject: [w3m-dev-en 00191] sorry, the last patch was not made properly
+Subject: [w3m-dev-en 00190] w3m-0.1.10 patch (mostly version 0 cookie handling)
+  I've hacked up a big mess (patch) against w3m-0.1.9 primarily
+  involving version 0 cookies. To my dismay, it seems that most
+  servers out there still want version 0 cookies and version 0
+  cookie handling behaviour, and w3m's cookie handling is too
+  strict for version 0, causing some sites (notably my.yahoo.co.jp)
+  not to work.
+
+2000/10/18
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * pixel-per-character is now changable.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01208] '#', '?' in ftp:/....
+  * w3m fails to parse URL when ftp:/ URL contains '#'.
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+Subject: [w3m-dev 01209] http_response_code and ``Location:'' header
+  w3m now follows Location: header only when
+  http_response_code is 301 - 303.
+
+
+2000/10/17
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  local CGI makes zombie processes.
+
+
+2000/10/16
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  w3m hangs when <textarea> is not closed in a table.
+
+From: maeda@tokyo.pm.org
+Subject: [w3m-dev 00990] auth password input
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01193] Re: frame bug?
+  w3m eventually crashes when browsing frame pages.
+
+2000/10/13
+
+From: SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+Subject: [w3m-dev 00928] misdetection of IPv6 support on CYGWIN 1.1.2
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01170] Re: cursor position after RELOAD, EDIT
+  * Bugfix: remove cache files
+  * The following functions can take arguments in keymap.
+    LOAD ... a file name
+    EXTERN, EXTERN_LINK ... a name of the external browser
+      (Can't be used from w3m-control: )
+    EXEC_SHELL, READ_SHELL, PIPE_SHELL ... shell command
+      (Can't be used from w3m-control: )
+    SAVE, SAVE_IMAGE, SAVE_LINK, SAVE_SCREEN ... a filename (or command name)
+      (Can't be used from w3m-control: )
+
+
+2000/10/11
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * the buffer name of an input taken from the stdin is now determined
+    from MAN_PN.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01156] Re: w3m-0.1.11-pre-kokb15
+  * mydirname bugfix.
+  * SERVER_NAME can be configured.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01158] some bugs fix when RELOAD, EDIT
+Subject: [w3m-dev 01164] cursor position after RELOAD, EDIT
+  * a file: called as local CGI can be edited.
+
+2000/10/10
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01166] Re: cell width in table
+  table-related bugfix.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01155] history of data for <input type=text>
+  <input type=text> input will be put into history buffer.
+
+2000/10/9
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01150] Some bug fixes
+  Bugfixes of the problems reported in
+    [w3m-dev 00956] unknown scheme in frame
+    [w3m-dev 00975] goto link from frame page
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01145] buffer overflow in linein.c
+  Fix of the buffer overrun problem in  inputLineHist(linein.c)
+
+2000/10/8
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01136] function argument in keymap
+Subject: [w3m-dev 01139] Re: function argument in keymap
+  Some functions specified in ~/.w3m/keymap can take an argument.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 01143] image map with popup menu
+  image map can be treated as popup menu 
+  (#define MENU_MAP in config.h)
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 00971] Re: segmentation fault with http:
+  Specifying 'http:' or  'http:/' as URLs will crash w3m.
+
+2000/10/07
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01134] w3m in xterm horribly confused by Japanese in title (fr
+  w3m-en will crash when browsing a page with Japanese title.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01127] SIGINT signal in ftp session (Re:  my w3m support page)
+  SIGINT will crash w3m when downloading via ftp.
+
+2000/10/06
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * the maximum value of wmin in recalc_width() is changed to 0.05.
+  * when deflating compressed data other than http file and local file,
+    the file will be stored as a temporary file.
+  * mailcap edit= attribute support.
+
+2000/10/05
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * Improvements of -dump, -source_dump options.
+  * Ignore <meta> tags in a frame.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 00930] HTML-quote in w3mbookmark.c
+  * In 'Bookmark registration', URL and Title are not HTML-quoted.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Subject: [w3m-dev 00972] better display of progress bar ?
+  * An improvement of progress bar.
+
+2000/10/05
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+  * Null pointer chech for textlist.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Subject: [w3m-dev 01100] space in URL
+
+  * http://bugs.debian.org/60825 and http://bugs.debian.org/67466
+	when submitting a form, name is not quoted (which should be)
+
+  * http://bugs.debian.org/66887
+	Remove preceding and trailing spaces from URL input through
+	'U' command.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01113] bug fix (content charset)
+  content charset bugfix
+
+
+2000/10/02
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01112] Re: mailcap test= directive
+  improvements of mailcap handling
+  * In addition to %s, %t (content-type name) will be available.
+  * nametemplate option is now valid.
+  * If there is no %s in the entry, 'command < %s' is assumed.
+  * If needsterminal is specified, spawn the command foreground.
+  * If copiousoutput is specified, load the command output into
+    buffer.
+  * `htmloutput' option is added, which indicates that the output
+    of the command is to be read by w3m as text/html. For example,
+
+     application/excel; xlHtml %s | lv -Iu8 -Oej; htmloutput
+
+    enables an Excel book to be displayed as an HTML document.
+  * compressed file browsing support for ftp scheme.
+  * Bug: compressed file isn't displayed properly for http: scheme.
+
+2000/09/28
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01097] gunzip_stream problem
+  * Fix of the behaviour against INT signal while reading compressed
+    file.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01092] CONFIG_FILE
+  * CONFIG_FILE in config.h was hard-coded.
+
+2000/09/17
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01078] treatment of content type
+  Improvements around document type handling.
+  * precedence between lessopen_stream() and gunzip_stream() was changed
+    in examineFile().
+  * lessopen_stream()ed file is treated as a plein text.
+  * lessopen_stream() is applied only if document type is text/* or
+    no external viewer is set.
+  * all text/* data other than text/html are handled inside w3m.
+  * The document type displayed by page_info_panel() is now the one
+    before examineFile() processing.
+  * When invoking an external viewer, ">/dev/null 2>&1 &" is appended
+    to the command line.
+
+2000/09/13
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01053] Re: Location: in local cgi.
+  * Do not interpret Location: header of the local file when invoking
+    with -m flag,
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01065] map key '0'
+  Improvement around keymap.
+  * Now a single '0' can be mapped. Numbers other than 0, for example
+    `10 j' are regarded as prefix arguments.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 01066] 104japan
+  * Code conversion fix for forms in frame.
+
+2000/09/07
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01058] <dt>, <dd>, <blockquote> (Re:  <ol> etc.)
+  * insert blank lines before and after <blockquote>.
+  * Don't ignore <p> tag just after <dt> and <dd>.
+
+2000/09/04
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01052] cellpadding, cellspacing, vspace, etc.
+  Some changes about space character and blank lines:
+  * <a name="..."></a> or <font> outside <tr> or <td> are pushed
+    into the next cell.
+  * cellspacing attribute in <table> tag is now handled correctly.
+  * vspace attribute interpretation.
+  * blank line detection criterion is changed.
+  * </p> tag inserts a blank line.
+
+2000/08/17
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+Subject: [w3m-dev 01018] sqrt DOMAIN error in table.c
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01019] Re: sqrt DOMAIN error in table.c
+  * fix of DOMAIN error of sqrt().
+
+2000/08/15
+
+From: satodai@dog.intcul.tohoku.ac.jp (Dai Sato)
+Subject: [w3m-dev 01017] value of input tag in option panel
+  * Fix of the problem of the option setting panel: when specifying
+    a value including a double quote, the value after " is not displayed
+    on the next invocation of the option setting panel.
+
+2000/08/06
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01016] Table geometry calculation
+  * rounding algorithm of table geometry calculation is changed to
+    minimize the difference of the column width and the `true' width.
+
+2000/07/26
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01006] initialize PRNG of openssl 0.9.5 or later
+  * when using openssl library after 0.9.5, enables SSL on the environment
+    without the random device (/dev/urandom).
+
+2000/07/21
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01004] unused socket is not closed.
+  When interrupting file transfer using C-c, the socket sometimes
+  stay unclosed.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01005] table caption problem
+  Fix of the problem that w3m doesn't stop when there's no closing
+  </caption>.
+
+2000/07/19
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 00966] ssl and proxy authorization
+  Fix of the authorization procedure of SSL tunneling via HTP proxy.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 01003] Some bug fixes for table
+
+2000/07/16
+
+From: SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+Subject: [w3m-dev 00999] Re: bookmark
+  * Sometimes a link can't be appended into the bookmark.
+
+2000/06/18
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+Subject: [w3m-dev 00934] clear_buffer bug
+  Bugfix: when clear_buffer is TRUE, selBuf() clears the screen.
+
+2000/06/17
+
+From: SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+Subject: [w3m-dev 00929] ftp.c patch
+  Return code 230 against USER command is regarded as a successful
+  login.
+
+2000/06/16
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 00923] some bug fixes
+  * when #undef JP_CHARSET, file.c doesn't compile.
+  * buffer.c bugfix ("=" should be "==")
+
+From: Kazuhiko Izawa <izawa@nucef.tokai.jaeri.go.jp>
+Subject: [w3m-dev 00924] Re: w3m-0.1.11pre
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Subject: [w3m-dev 00925] Re: w3m-0.1.11pre
+  Accessing URL like file://localhost/foo causes abnormal termination.
+
+2000.6.6
+From: aito
+* [w3m-dev 00826] 
+  * Bugfix: When a header by CGI POST method gives Location: header,
+    the redirect can't be reloaded.
+  * white spaces in URL are removed.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+* [w3m-dev 00827] Bugfix: onA() doesn't work.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+* [w3m-dev 00835] Improvement of 'Jump to label' behavior within a frame.
+
+2000.6.5
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+* [w3m-dev 00789] Bugfix: width of <li>
+* [w3m-dev 00801] Bugfix: Line break occurs on &nbsp;.
+* [w3m-dev 00813] Bugfix: single > in a document isn't analyzed properly.
+* [w3m-dev 00818][w3m-dev 00819] Bugfix: <xmp>,<listing> in <textarea>
+* [w3m-dev 00820] Screen shift bugfix.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* [w3m-dev 00807] Bugfix: <option> without <select> in table causes core dump.
+* [w3m-dev 00816] Bugfix: CRs in <textarea>..</textarea> are replaced with
+  white spaces.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+* [w3m-dev 00814] Bugfix: After specifying non-text file in 'V' command,
+  w3m dumps core.
+
+2000.6.1
+From: Tsutomu Okada <okada@furuno.co.jp>
+* [w3m-dev 00581] BUFINFO related bugfix.
+* [w3m-dev 00641] Bugfix: extbrowser setting in config desn't work.
+* [w3m-dev 00660] Bugfix: pathname to invoke external viewer becomes like
+  ``/home/okada/.w3m//w3mv6244-0..pdf''.
+* [w3m-dev 00701] enhancement of [w3m-dev 00684].
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* [w3m-dev 00582] Bugfix: kterm mouse, etc.
+* [w3m-dev 00586] Bugfix; when CLEAR_BUF is defined, buffer size is displayed as [0 line].
+* [w3m-dev 00605] 
+  * show_params() improvement.
+  * when CLEAR_BUF is defined and reloading local file, that is overwritten.
+* [w3m-dev 00606] When submitting data in textarea without editing them, CR charcters are
+  sent instead of CRLF.
+* [w3m-dev 00630] Bugfix of mouse-dragging behaviour.
+* [w3m-dev 00654] [w3m-dev 00666] When CLEAR_BUF is defined, content of form disappears.
+* [w3m-dev 00677] [w3m-dev 00704] Improvement of Japanese coding-system decition algorithm.
+* [w3m-dev 00684] Command line analysis enhancement.
+* [w3m-dev 00696] Bugfix of PIPE_SHELL('#'), READ_SHELL('@') and  EXEC_SHELL('!').
+* [w3m-dev 00706] Bugfix: When CLEAR_BUF is defined, anchors created by  : disappears.
+* [w3m-dev 00720] Enhancement of dirlist.cgi.
+* [w3m-dev 00724] when -m option is used, continuation lines in header are not
+  processed properly.
+* [w3m-dev 00728] handling of Japanese character in HTTP header.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+* [w3m-dev 00589] Bugfix: w3m dumps core after like w3m -T a -B and save command.
+* [w3m-dev 00595][w3m-dev 00610] frameset related bugfix.
+* [w3m-dev 00631][w3m-dev 00633] ID_EXT related bugfix.
+* [w3m-dev 00632] Bugfix? handling of character-entity (&quot;) in attribute.
+* [w3m-dev 00646] Enhancement: frame names are embedded as id attribute in
+  the frame-table.
+* [w3m-dev 00680] 
+* [w3m-dev 00683] Bugfix: <STRONG> tags become comments in frame.
+* [w3m-dev 00707] frame related bugfix.
+* [w3m-dev 00774] Bugfix: as some file descriptors are not closed, file descriptors
+  are exhausted on a certain condition.
+
+From: SASAKI Takeshi <sasaki@sysrap.cs.fujitsu.co.jp>
+* [w3m-dev 00598] ID_EXT related bugfix.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+* [w3m-dev 00602] Bugfix: a blank line is inserted when processing <title>...</title>.
+* [w3m-dev 00617] <table> within <blockquote> in <table> corrupts.
+* [w3m-dev 00675] Support of terminals which can't display &nbsp; (0xa0).
+* [w3m-dev 00732] <!--comment --\n> like comment handling fix.	
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+* [w3m-dev 00679] USE_SSL_VERIFY fix.
+* [w3m-dev 00686] w3mhelperpanel.c fix.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+* [w3m-dev 00692] EWS4800 support for /usr/abiccs/bin/cc.
+
+From: Hiroshi Kawashima <kei@arch.sony.co.jp>
+* [w3m-dev 00742] mipsel architecture support.
+
+2000.5.17
+From: Hiroaki Shimotsu <shim@d5.bs1.fc.nec.co.jp>
+* [w3m-dev 00543] Bugfix: personal_document_root doesn't work.
+* [w3m-dev 00544] When opening file:///dir/, if index.html exists in
+  that directory, open the file instead of displaying directory list.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* [w3m-dev 00545] w3m -num fix.
+* [w3m-dev 00557] Bugfix: When using -dump option, temporary files don't be unlinked.
+
+From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+* [w3m-dev 00568] Bugfix: When <blockquote> exists outside of <tr>..</tr> in <table>, 
+  the table corrupts.
+
+2000.5.16
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+* [w3m-dev 00487] Bugfix: supports terminal without sr capability.
+* [w3m-dev 00512][w3m-dev 00514][w3m-dev 00515] Kanji-code decision enhancement.
+* [w3m-dev 00530] Bugfix: w3m can't handle cgi using <ISINDEX>.
+* [w3m-dev 00537] Remove CR/LF within URL.
+* [w3m-dev 00542] Layered frameset support.
+
+From: SASAKI Takeshi <sasaki@ct.sakura.ne.jp>
+* [w3m-dev 00488] id attribute support bugfix.
+* [w3m-dev 00497] configure automatically detects IPv6 environment.
+
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+* [w3m-dev 00489] 
+ *  Bugfix: a page doesn't be displayed which requires SSL client authentication.
+ *  Enhancement: -o option parameter list
+ * [w3m-dev 00519] Security hole fix about I command.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* [w3m-dev 00498] Filename completion bugfix.
+* [w3m-dev 00508] Color display bugfix.
+* [w3m-dev 00518] Security hole fix about I command.
+* [w3m-dev 00535] GPM/SYSMOUSE support bugfix.
+
+From: Kazuhiro Nishiyama <nishiyama@mx1.tiki.ne.jp>
+* [w3m-dev 00503] $extension correction in Cygwin.
+
+From: Hiroaki Shimotsu <shim@nw.bs1.fc.nec.co.jp>
+* [w3m-dev 00516] When transmitting a string to form, it was made not to escape 
+  a safe character.
+
+From: Tsutomu Okada  <okada@furuno.co.jp>
+* [w3m-dev 00471] Bugfix: when displaying the page which has a link in the 
+  beginning of the screen, the first link doesn't get active.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+* [w3m-dev 00539] proxy initialization bugfix.
+
+2000.4.24
+From: aito
+* free memory of hidden buffers. (CLEAR_BUF)
+* when file:// style local file access fails, don't retry
+  as http://file://.
+* Bugfix: mouse doesn't work when both GPM and SYSMOUSE are undefined.
+
+From: rubikitch <rubikitch@ruby-lang.org>
+* Enhancement: Save Buffer URL into file.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+* FTP proxy bugfix.
+* C comment cleanup.
+* Bugfix: After window resize, reshapeBuffer() is called on
+  each keyin.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+* when gc library exists under /usr/local, configure decides
+  found -> dones't seem to work.
+
+2000.4.21
+From: Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+* Enhancement: When FTP login password ends with @, append the FQDN of
+  the host.
+* When environment variable NNTPMODE is defined, send MODE command
+  using the value.
+* Following options are added.
+    ssl_verify_server ON/OFF
+        Do SSL server verification (default OFF)
+    ssl_cert_file filename
+        PEM certification file for SSL client (default NULL)
+    ssl_key_file filename
+        PEM secret key file for SSL client (default NULL)
+    ssl_ca_path directory
+	Path for the directory of PEM certification files (default NULL)
+    ssl_ca_file file
+	Filename of PEM certification files
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+* Bugfix: DEL key causes core dump in line input mode.
+* Comment processing bugfix.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+* Proxy authentication support for FTP proxy.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* Bugfix: <input_alt fid=0> causes core dump.
+
+From: aito
+* Bugfix: When a table is in a cell with more than one colspan,
+  the width of the inner table gets wired.
+* -model=, -lang= options are added to configure.
+
+From: Rogue Metal - Jake Moorman <roguemtl@stampede.org>
+- All T/NILs are replaced with TRUE/FALSE.
+- Messages are added for FTP connection.
+
+2000.4.7
+From: aito
+* Bugfix: <select> without </select> causes core dump.
+* Bugfix: Compilation fails unless MOUSE is defined.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+* Bugfix: Following a link to a local file causes core dump.
+* Bugfix: DEL key in line editing causes core dump.
+
+From: Shin HATTORI <mituzi@he.mirai.ne.jp>
+* Bugfix: bzip2 support.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* Bugfix: -dump, -dump_head, -dump_source option interfares
+  each other.
+* Improvement: -o option added.
+* Bugfix: -dump option causes core dump.
+* Bugfix: mouse operation gets inactive while message is displayed.
+* Bugfix: window size change.
+* Improvement: Default of quit confirmation is now 'n'
+* term.c enhancements
+
+From: Sven Mascheck <mascheck@faw.uni-ulm.de>
+* There are websites using (unprintable) special characters (eg '0x96')
+  to 'feature' microsoft browsers.  At least in the western configuration
+  (the only one i know), w3m doesn't check if characters are printable,
+  thus they confuse particularly the /xfree/ xterm (knowing more special
+  characters than other xterms). 
+  Something like the attached patch could prevent this
+  (also only affects western version).
+  Instead of (superfluously) using isprint() with the locale,
+  it now just checks the range (pointed out by Christian Weisgerber).
+
+From: naddy@mips.rhein-neckar.de (Christian Weisgerber)
+* C++ style comments are changed into C style.
+
+2000.4.6
+From: lars brinkhoff <lars@nocrew.org>
+ARM linux patch.
+
+From: Hiroaki Shimotsu <shim@nw.bs1.fc.nec.co.jp>
+Improvement: 'u' command shows form type and action.
+
+From: patakuti
+* Bugfix: -dump option for other than text/html document doesn't work.
+* Improvement: Association between extension and mime-type can be 
+  specified by ~/.mime.types.
+
+2000.4.5
+From: Sakamoto <hsaka@mth.biglobe.ne.jp>
+* Bugfix: <Hn>...</Hn> in table makes the table width weird.
+* Bugfix: </ol>,</ul>,</dl>,</blockquote> without opening tag
+  make the table ugly.
+
+From: "Shin'ya Kumabuchi" <kumabu@t3.rim.or.jp>
+* Bugfix: w3m eventually sends Pragma: no-cache header inappropriately.
+
+From: Tomoyuki Kosimizu <greentea@fa2.so-net.ne.jp>
+Bugfix around rc.c
+
+2000.3.29
+From: Altair <NBG01720@nifty.ne.jp>
+OS/2 support improvement.
+* Bugfix: w3m fails to open directory.
+* Improvement: arrow keys are effective in non-X environment of OS/2
+* Bugfix: Couldn't invoke external program.
+* Improvement: Enable drive letter.
+
+From: David Leonard <leonard@csee.uq.edu.au>
+after filling in a simple form
+ <form action="https://internal.csee.uq.edu.au/cgi-bin/login.cgi" method=POST>
+a cookie is received and then w3m dumps core.
+
+From: Ken Yap <ken@nlc.net.au>
+I have made w3m work on DJGPP (protected mode 32-bit programs running
+from DOS/Win). The resulting binary after compression is only 220kB,
+which means it's possible to give a floppy for a 386 with 4-8 MB memory
+for browsing the web!
+
+From: "SHIROYAMA Takayuki" <psi@stellar.co.jp>
+From: Jeroen Scheerder <J.Scheerder@cwi.nl>
+MacOS X Server patch.
+
+2000.2.25 
+From: Ambrose Li
+I found a bug in <img alt="">
+handling. If alt="" is not suppressed, the line containing the img
+element is not wrapped. I have verified that the bug exists in w3m
+0.1.6; the bug seems to still exist in w3m 0.1.7, but I have not
+finished compiling it.
+
+From: aito
+Bug fix: <option> without <select> causes core dump.
+Bugfix: The first line in <blockquote> doesn't indented.
+Improvement: application/x-bzip support.
+Bugfix: GC fails in mktable, w3mbookmark, w3mhelperpanel.
+Bugfix: mouse drag.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Bug fix: Illegal tags make w3m's behavior unstable.
+quoteShell() security hole fix.
+Bug fix: w3m dumps core inside set_environ().
+Bug fix: w3m doesn't do <table width="xxx%">
+Improvement: '!' command doesn't make screen dirty.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Bug fix: Temporary file paths contain  //.
+Bug fix: 0.1.7 fails with https.
+
+From: Hiroaki Shimotsu <shim@nw.bs1.fc.nec.co.jp>
+Changes w3m's behavior such that connection failure to the proxy
+server causes an error.
+Bug fix: URLs specified in the command line don't be involved 
+into URL history.
+
+From: sasaki@ct.sakura.ne.jp
+HTML4.0 ID attribute support.
+
+From: Okabe Katsuya <okabe@fphy.hep.okayama-u.ac.jp>
+table get weird when it contains <input type=hidden>.
+修正．
+
+2000.2.12
+From: Rogue Metal - Jake Moorman <roguemtl@stampede.org>
+- added GNU-style comments for all #ifdef/#else/#endif
+  modified: almost all files
+- renamed w3mhelp_en and w3mhelp_ja to w3mhelp-w3m_en and w3mhelp-w3m_ja
+  (to aid in handling of additional keybindings in the future)
+  modified: XMakefile, XMakefile.dist, config.h, configure, help files
+- corrected error in w3mhelp-lynx_en ('Japanese' link was pointing to
+  Japanese language help file for the w3m keybinding, not the lynx
+  keybinding)
+  modified: w3mhelp-lynx_en.html
+- replaced 'Loading {URL}' message with more specific messages about
+  current status ('Performing hostname lookup on {hostname}' and
+  'Connecting to {hostname}')
+  modified: main.c, url.c
+
+2000.2.10
+From: roguemtl@stampede.org (Jacob Moorman of the [MH] Free Software Group)
+- added support for PageUp and PageDown in list boxes
+
+2000.1.21
+From: naddy@mips.rhein-neckar.de (Christian Weisgerber)
+1. conn.eventMask is set to 0 which disables reception of all types
+   of events. Effectively, this disables GPM support altogether.
+   Probably "~0" was intended, to enable reception of all types of
+   events.
+2. conn.maxMod is set to ~0, which means that events with a modifier
+   key (shift, control, etc.) set are also sent to w3m. Since w3m
+   doesn't do anything with these events, they should rather be
+   passed on to other clients. Changing this to "conn.maxMod = 0"
+   will for example allow the use of the mouse in w3m *and* mouse
+   clicks with shift held down for console cut-and-paste.
+
+From: naddy@mips.rhein-neckar.de (Christian Weisgerber)
+I would like to suggest a small change to w3m's GPM support:
+Rather than explicitly drawing the mouse pointer, this could be left to
+the server, i.e.
+- remove GPM_DRAWPOINTER() calls,
+- set conn.defaultMask to GPM_MOVE|GPM_HARD.
+
+From: aito
+When '<' is used as other than start of a tag, let the '<' 
+be displayed.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Bug fix of screen redraw.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+* Accept discard attribute of Set-Cookie2.
+* insert a blank line just after </dl>.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+<table> Geometry calculation bugfix.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Bugfix of inputLineHist().
+
+2000.1.14
+From: ChiDeok Hwang <cdhwang@sr.hei.co.kr>
+When I browse http://i.am/orangeland and press 'v' to see document
+info, w3m got seg. fault.
+Reason was above site had the very strange frameset with only one frame.
+<frameset rows="100%,*" ... >
+Simple following fix was enough for me.
+
+From: aito
+When no scheme is specified in the URL, w3m tries to open local file,
+and when it fails w3m prepends "http://".
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+target="_parent" support
+frame-relatex bugfixes.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Screen redraw bugfix.
+
+2000.1.12
+From: aito
+word fill support. (undocumented)
+add #define FORMAT_NICE in config.h.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+"w3m ." and w3mhelperpanel doesn't work.
+
+2000.1.11
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Bugfix of cookie behavior.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+table geometry calculation improvement.
+
+From: aito
+C-c make the external viewer to exit.
+
+From: <sekita-n@hera.im.uec.ac.jp>
+Added an option to suppress sending Referer: field.
+
+2000.1.4
+From: Sven Oliver Moll <smol0999@rz.uni-hildesheim.de>
+There was one thing that's been anoying me, so I got it fixed: the
+behaviour of mouse dragging. The push of the mousebutton is
+interpreted of dragging the text behind the window. My intuition in
+dragging is that I drag the window over the text. So I added a config
+option called 'reverse mouse'.
+
+From: aito
+'M' command (external browser) added to Lynx-like keymap.
+
+From: SUMIKAWA Munechika <sumikawa@ebina.hitachi.co.jp>
+IPv6 related bugfix.
+
+From: kjm@rins.ryukoku.ac.jp (KOJIMA Hajime)
+NEWS-OS 6.x support.
+
+From: aito
+configure detects IPv6 support automatically.
+(Thanks to sumikawa@ebina.hitachi.co.jp)
+
+1999.12.28
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Bug fix of link coloring/underlining.
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Now w3m has an option not to render <IMG ALT="">.
+
+From: aito
+Even when HTTP server response code is other than 200,
+w3m does user authorization if WWW-Authenticate: header exists.
+
+From: Yamate Keiichirou <yamate@ebina.hitachi.co.jp>
+When following the Location: header, w3m doesn't chop the
+LF character off.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Improvements of table rendering algorithm.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Now w3m allows a comment <!-- .... --   > (spaces between -- and >)
+
+1999.12.27
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Improvement of dirlist.cgi.
+
+1999.12.14
+From: Christian Weisgerber <naddy@unix-ag.uni-kl.de>
+- I have appended a small patch to add support for the Home/End/
+  PgUp/PgDn keys at the FreeBSD "syscons" console.
+  (It would be much preferable if w3m read the key sequences from
+  the termcap entry rather than having them hardcoded, but this
+  would require a substantial rewrite.)
+
+From: aito
+* w3m-control: GOTO url  support.
+* When a document has <meta http-equiv="Refresh" content="0; url=URL"> 
+  tag, the moved document is loaded immediately.
+* When invoking an external browser by 'M' or 'ESC M' and the browser
+  is not defined, w3m prompts to input command to process the URL.
+
+1999.12.8
+From: aito
+Proxy-Authorization support.
+
+1999.12.3
+From:aito
+Now w3m can use an external command (local CGI script) for 
+directory listing. Default is hsaka's dirlist.cgi. 
+(in `scripts' directory)
+
+1999.12.2
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+In menu selection and buffer selection mode, cursor now points
+the selected item. (for blind people's convenience)
+
+From: aito
+Now w3m doesn't use GPM library when using
+xterm.
+
+1999.12.1
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Starting up with environment variable HTTP_HOME
+causes hangup.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+Some kind of form causes segmentation fault.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+align attribute support for <tr> tag.
+Now default alignment of <th> become CENTER.
+
+From: Tsutomu Okada <okada@furuno.co.jp>
+COOKIES in func.c is changed to COOKIE 
+
+From: aito
+Now w3m accepts HTTP headers which have no white space after :.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Serial number of anchors in TABLE gets incorrect.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Bug fix of -v option.
+
+1999.11.26
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+When arguments in an external command in mailcap
+are enclosed by ' ', the command is not executed
+correctly.
+
+1999.11.20
+From: SASAKI Takeshi <sasaki@isoternet.org>
+Turning 'Active link color' on causes core dump.
+
+1999.11.19
+From: aito
+Now w3m uses GPM library if available.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Further enhancement of progress bar.
+
+1999.11.18
+From: Ben Winslow <rain@insane.loonybin.net>
+Enhancement of progress bar.
+
+From: patakuti
+If an <input type=button> tag has no `name' attribute,
+w3m adds it an inappropriate name attribute.
+
+From: やま
+Now w3m can handle a frameset that has both ROWS and COLS.
+
+From: aito
+Now bookmarking is done by a separate command w3mbookmark.
+
+C-s で画面表示が止まっていたバグの修正．
+
+文字入力時に C-g で中止できるようにした．
+
+From: hovav@cs.stanford.edu
+When downloading a file, an attempt to save it to a non-exist
+directory causes core dump.
+
+From: minoura@netbsd.org
+A character entity like &#x1234; (greater than 0xff)
+causes segmentation fault.
+
+From: Christi Alice Scarborough <christi@chiark.greenend.org.uk>
+Active link color patch.
+
+1999.11.17
+From: aito
+Now <OL>,<UL> make blank line before and after the list only if
+the list is in the first level.
+A bookmark file can be specified by -bookmark option.
+
+From: Hiroaki Shimotsu <shim@nw.bs1.fc.nec.co.jp>
+Now 'N' is bound to 'search previous match'.
+
+1999.11.16
+From: Kiyohiro Kobayashi <k-kobaya@mxh.mesh.ne.jp>
+Enhancement of FTP directory listing.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+checkContentType() Bug fix
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Menu behavior is changed.
+* C-f,C-v : display next page
+* C-b,M-v : display previous page
+* ^[[L (console), ^[[E (pocketBSD) are recognized as INS key.
+* DEL : back to parent menu (same as C-h)
+* #define MENU_THIN_FRAME -> use thin rules to draw menus
+  (default is #undef)
+* Now one can move to next/previous menu page by clicking 
+  ':' on the bottom/top of the menu.
+* Clicking outside the menu causes cancellation of sub-menu.
+* <, >, +, - abandoned
+
+From: おかだ <okada@furuno.co.jp>
+Now C-a/C-e are bound to 'jump to the first/last item in menu.'
+
+From: "OMAE, jun" <jun-o@osb.att.ne.jp>
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+w3m doesn't recognize FTP Multiline reply.
+
+From: "OMAE, jun" <jun-o@osb.att.ne.jp>
+Bugfix of buffer selection mode.
+
+1999.11.15
+From: aito
+If a document has <BASE> tag and the base URL is different
+from the current URL, w3m sends incorrect Referer: value.
+A control character written as &#xnnn; (for example, &#x0d;)
+is not be decoded correctly.
+Now local-CGI scripts have to be located in either file:///cgi-bin/
+or file:///usr/local/lib/w3m/. Scripts in any other directory
+are treated as plain texts.
+Most system() calls are replaced with mySystem().
+
+1999.11.11
+From: aito
+Tagname search algorithm is changed from linear search to
+hash table.
+
+1999.11.5
+From: aito
+If a table contains character entities &xxx; which represent
+latin-1 characters, column width gets incorrect.
+
+1999.11.1
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+w3m-991028+patch1 doesn't compile when compiled without menu.
+
+From: ukai@debian.or.jp  
+A bugfix of Strcat_char().
+
+1999.10.28
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+When accessing
+ file?var=value/#label
+#label doesn't be regarded as a label.
+
+From: aito
+991027 version contains debug code.
+
+1999.10.27
+From: OKADA <okada@furuno.co.jp>
+When JP_CHARSET is defined, Latin-1 character like &cent; isn't
+displayed.
+
+From: Yama
+A cookie without path haven't been handled correctly.
+
+From: "OMAE, jun" <jun-o@osb.att.ne.jp>
+When reloadint CGI page with POST method, w3m tries to load it
+with GET method.
+
+From: aito
+When following a link from a page in frame, Referer: value
+is not a URL of the page but the URL of fremeset page.
+
+configure is slightly changed. User can now choose model.
+-yes option added.
+
+FTP failed when a server returns other than 150 as a result code
+of RETR/NLST command.
+
+<select multiple>...</select> doesn't work correctly.
+
+From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp>
+In getshell, getpipe, execdict functions,
+buffer name is changed to include command name.
+
+From: Colin Phipps <cph@crp22.trin.cam.ac.uk>
+When a load of cookies expire w3m SEGVs on startup.
+
+From: pmaydell@chiark.greenend.org.uk
+I was looking through the w3m source, and noticed that it defines the
+following macro:
+#define IS_SPACE(x) (isspace(x) && !(x&0x80))
+Now this won't work as expected if x is an expression with side effects
+(it will be evaluated twice). A quick grep of the sources reveals
+several places where the macro is used like this:
+file.c: if (IS_SPACE(*++p))
+which is almost certainly a bug... (although I haven't tried to actually
+work out what the effects of it would be).
+
+1999.10.21
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Bug fix of buffername of source/HTML display.
+
+1999.10.20
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+When <P> exists between <dt> and <dd> or <h3> and </h3>,
+all text after that point becomd bold.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Now 'B' command backs to previous page when viewing frame page.
+'F','v','=' command toggle.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Inappropriate behaviours with -dump option have been fixed.
+* w3m -dump < file appends \377 before EOF.
+* w3m -dump -s < file doesn't convert character code.
+  -num, -S don't take effect.
+* w3m -dump -T text/plain < file outputs nothing.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* menu.c: graphic char related bugfixes.
+* terms.c: When Cygwin, T_as = T_as = T_ac = ""
+           Added T_ac != '\0' in graph_ok()
+* bookmark.c: KANJI_SYMBOL -> LANG == JA 
+
+1999.10.15
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+  1. Some part does case-sensitive comparison for cookie name.
+  2. When executing sleep_till_anykey(), terminal state doesn't
+     recover.
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+When running configure, it adds multiple -lxxx when
+both libxxx.a and libxxx.so exist. [fixed]
+
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+* When generating HTML within w3m, those source didn't be quoted.
+* Makes it interpret <base href=... target=...> of each source
+  of a frame.
+
+From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp>
+From: hsaka@mth.biglobe.ne.jp (Hironori Sakamoto)
+Enhancements of buffer handling functions.
+
+From: SASAKI Takeshi <sasaki@isoternet.org>
+When multiple cookies are sent whose names are different
+but domains and paths are identical, older one doesn't
+removed.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Cookie comparison must be case insensitive.
+
+From: aito
+* When no ~/.w3m/cookie exists, C-k sometimes cause core dump.
+* ~/.w3m/cookie isn't updated when -dump option is used.
+* Latin-1 character written as &xxx; isn't regarded as a 
+  roman character.
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Improvements:
+  o After executing "w3m http://foo.co.jp/foo.jpg",
+    w3m waits with prompt "Hit any key to quit w3m:".
+  o "w3m http://foo.co.jp/foo.tar.gz" doesn't display
+    usage.
+  o Progress bar is displayed while downloading via ftp.
+  o FTP download can be interrupted.
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Now w3m can access using SSL via proxy server.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+<form enctype="multipart/form-data"> <input type=file> 
+
+From: "OMAE, jun" <jun-o@osb.att.ne.jp>
+w3m-991008 on cygwin causes following problems.
+    1. w3m / doesn't display directory list.
+    2. When referring local directory, URL becomes like
+       file://///foo.
+    3. Can't load file:///windows.
+
+From: Fumitoshi UKAI <ukai@debian.or.jp>
+ % http_proxy=http://foo/bar w3m http:
+causes segmentation fault.
+
+1999.10.8
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Changed to treat documents that contain designation sequences
+to JIS-X0208-1983 and JIS-X0208-1976.
+
+From: aito
+When there is tag sequence like <pre>..<p>..</pre><p> , words
+after the last <p> are not folded. [fixed]
+Type of counters for number of anchor in a document are changed from
+short to int.
+Description like `<b><u>hoge</u></b> moge' makes the space between hoge
+and mode underlined.[fixed]
+
+1999.10.7
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+Cookie support.
+SSL support. Still experimental.
+
+From: aito
+Considering those systems who have no static library, now configure
+searches lib*.so as well as lib*.a.
+
+From: HIROSE Masaaki <hirose31@t3.rim.or.jp>
+From: Anthony Baxter <anthony@ekorp.com>
+`Host:' header lacks port number. [fixed]
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+When moving to a label, URL doesn't change. [fixed]
+
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+Can't handle tags like <ul> nested more than 20 levels.[fixed]
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+Bugfix about Content-Transfer-Encoding: quoted-printable
+
+From:aito
+When <frameset > contains both COLS= and ROWS=, w3m can't render
+that frame correctly. [fixed]
+
+From: sakane@d4.bsd.nes.nec.co.jp (Yoshinobu Sakane)
+Bugfixes of w3m-990928 gziped file support.
+
+From: Hironori Sakamoto <h-saka@lsi.nec.co.jp>
+* Bug fix of decoding B-encoded file.
+
+1999.9.28
+
+From: SASAKI Takeshi <sasaki@isoternet.org>
+wrap search mode is added.
+&#xnnnn; character entity representation support.
+
+From: aito
+Change default character color to 'terminal' (do nothing). 
+
+From: Okabe Katsuya <okabe@okaibm.hep.okayama-u.ac.jp>
+When using BG_COLOR defined w3m on linux console, w3m doesn't refresh
+screen on termination. [fixed]
+
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+Extra newline is inserted after <pre> tag in frame. [fixed]
+
+From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp>
+From: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+When opening popup menu by mouse right click, let cursor move to
+the clicked position.
+
+1999.9.16
+
+From: aito
+Fix a bug that renders &lt;...&gt; in form button as <...> tag.
+
+From: Iimura uirou@din.or.jp
+w3m causes SIGSEGV when DICT is defined in config.h. [fixed]
+Added a function to make a link to the background image.
+
+From: Doug Kaufman <dkaufman@rahul.net>
+I just downloaded and compiled the 19990902 version of w3m with cygwin
+(b20 with 19990115 cygwin1.dll). The following patch takes care of the
+compilation problems.
+
+From: Hayase
+There are undefined variables when compiled on NEXTSTEP 3.3J. [fixed]
+
+From: Oki
+When using <HR> tag in list environment, let horizontal rule begin
+from indented position.
+
+From: Okada
+w3m gets segmentation fault when rendering character entity like &#12450;.
+[fixed]
+
+From: Sakamoto hsaka@mth.biglobe.ne.jp
+Many bugfixes for local CGI.
+
+From: Katsuya Okabe okabe@okaibm.hep.okayama-u.ac.jp
+Graphics characters go bad when using on linux console. [fixed]
+Bug fixes on color display on kterm. [fixed]
+Bug fix on table renderer. [fixed]
+
+From: Sakamoto hsaka@mth.biglobe.ne.jp
+Download from page in frame doesn't work correctly. [fixed]
+
+1999.9.3
+From: Sakamoto hsaka@mth.biglobe.ne.jp
+Bug fixes of URL analyzer.
+
+From: Katsuya Okabe okabe@okaibm.hep.okayama-u.ac.jp
+Bugfix of screen redraw routine.
+--
+Akinori Ito
+tel&fax: 0238-26-3369
+E-mail: aito@fw.ipsj.or.jp
+

@@ -1,0 +1,9 @@
+# List of source files containing translatable strings.
+# Copyright (C) 2003 Fumitoshi UKAI
+#main.c
+menu.c
+rc.c
+#w3mbookmark.c
+#w3mhelperpanel.c
+
+

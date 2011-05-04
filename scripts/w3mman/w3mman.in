@@ -1,0 +1,41 @@
+#!@PERL@
+
+@W3M = split(' ', $ENV{'W3MMAN_W3M'} || '@W3M@');
+$ENV{'W3MMAN_MAN'} ||= '@MAN@';
+$SCRIPT = 'file:///$LIB/w3mman2html.cgi';
+
+sub usage {
+  ($_ = $0) =~ s@.*/@@;
+  print STDERR "$_ [-M <path>] [[<section>] <command>]\n";
+  print STDERR "$_ [-M <path>] [-k <keyword>]\n";
+  exit 1;
+}
+
+$query = "";
+while (@ARGV) {
+  $_ = shift @ARGV;
+  if (/^-M$/) {
+    @ARGV || &usage();
+    $ENV{'MANPATH'} = shift @ARGV;
+  } elsif (/^-k$/) {
+    @ARGV || &usage();
+    $query = "?keyword=" . &form_encode(shift @ARGV);
+  } elsif (/^-/) {
+    &usage();
+  } elsif (/^\d/ || $_ eq 'n') {
+    @ARGV || &usage();
+    $query = "?quit=ok&man=" . &form_encode(shift @ARGV);
+    $query .= "&section=" . &form_encode($_);
+  } else {
+    $query = "?quit=ok&man=" . &form_encode($_);
+  }
+}
+
+exec @W3M, "$SCRIPT$query";
+
+sub form_encode {
+  local($_) = @_;
+  s/[\000-\040\+:#?&%<>"\177-\377]/sprintf('%%%02X', unpack('C', $&))/eg;
+  return $_;
+}
+

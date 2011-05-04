@@ -1,15 +1,18 @@
 Source: w3m
 Section: text
-Priority: optional
+Priority: standard
 Maintainer: Fumitoshi UKAI <ukai@debian.or.jp>
-Build-Depends: libgc6-dev, libncurses5-dev, libgpmg1-dev, zlib1g-dev, debhelper, gawk | awk, imlib-dev
-Standards-Version: 3.5.6
+Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 3.0.0), gawk | awk, libgdk-pixbuf-dev, autotools-dev
+Standards-Version: 3.6.1
 
 Package: w3m
 Architecture: any
 Depends: ${shlibs:Depends}
+Recommends: ca-certificates
 Provides: www-browser
-Suggests: w3m-img, w3m-ssl (>= ${Source-Version}), mime-support, menu (>> 1.5), w3m-el, migemo, man-db
+Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, migemo, man-db
+Conflicts: w3m-ssl
+Replaces: w3m-ssl, w3mmee
 Description: WWW browsable pager with excellent tables/frames support
  w3m is a text-based World Wide Web browser with IPv6 support. 
  It features excellent support for tables and frames. It can be used 
@@ -25,7 +28,9 @@ Description: WWW browsable pager with excellent tables/frames support
 
 Package: w3m-img
 Architecture: any
-Depends: w3m (= ${Source-Version}) | w3m-ssl (= ${Source-Version}), ${shlibs:Depends}
+Priority: optional
+Depends: w3m (= ${Source-Version}), ${shlibs:Depends}
 Description: inline image extension support utilities for w3m
  w3m-img provides some utilities to support inline images for w3m
- on terminal emulator in X Window System environments.
+ on terminal emulator in X Window System environments and linux
+ framebuffer.

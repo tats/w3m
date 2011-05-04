@@ -1,0 +1,96 @@
+@SET_MAKE@
+SHELL=@SHELL@
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+DOMAIN = $(PACKAGE)
+srcidr=@srcdir@
+top_srcdir=@top_srcdir@
+VPATH= $(srcdir):.
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+datadir = @datadir@
+libdir = @libdir@
+includedir = @includedir@
+infodir = @infodir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+srcdir = @srcdir@
+sysconfdir = @sysconfdir@
+top_srcdir = @top_srcdir@
+VPATH = $(top_srcdir):.
+DESTDIR = 
+
+CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
+AUXBIN_DIR = $(libexecdir)/$(PACKAGE)
+HELP_DIR = @HELP_DIR@
+RC_DIR = @RC_DIR@
+ETC_DIR = $(sysconfdir)
+CONF_DIR = $(sysconfdir)/$(PACKAGE)
+BIN_DIR = $(bindir)
+MAN1_DIR = $(mandir)/man1
+
+TARGETS		= w3mman
+CGIBIN_TARGETS	= w3mman2html.cgi
+MAN1_TARGETS	= w3mman.1
+MAN_TARGETS	= $(MAN1_TARGETS)
+
+MKDIR		= mkdir -p
+INSTALL		= @INSTALL@
+INSTALL_SCRIPT	= @INSTALL_SCRIPT@
+INSTALL_MAN	= @INSTALL_DATA@
+
+all: $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
+
+# do nothing
+$(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS):
+
+install: $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
+	-$(MKDIR) $(DESTDIR)$(BIN_DIR)
+	-$(MKDIR) $(DESTDIR)$(CGIBIN_DIR)
+	-$(MKDIR) $(DESTDIR)$(MAN1_DIR)
+	for file in $(TARGETS);     \
+	do      \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(BIN_DIR);	\
+	done
+	for file in $(CGIBIN_TARGETS);     \
+	do      \
+		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);	\
+	done
+	for file in $(MAN1_TARGETS); \
+	do	\
+		$(INSTALL_MAN) $$file $(DESTDIR)$(MAN1_DIR); \
+	done
+
+uninstall:
+	-for file in $(TARGETS);     \
+	do      \
+		rm -f $(BIN_DIR)/$$file;	\
+	done
+	-for file in $(CGIBIN_TARGETS);     \
+	do      \
+		rm -f $(CGIBIN_DIR)/$$file;	\
+	done
+	-for file in $(MAN1_TARGETS); \
+	do \
+		rm -f $(MAN1_DIR)/$$file; \
+	done
+
+clean:
+
+distclean:
+	-rm -f $(TARGETS) $(CGIBIN_TARGETS) $(MAN_TARGETS)
+	-rm -f Makefile
+
+dist: all
+	@-rm -fr $(distdir)/w3mman
+	-$(MKDIR) $(distdir)/w3mman
+	cp Makefile README w3mman.in w3mman2html.cgi.in hlink.cgi w3mman.1.in $(distdir)/w3mman
+	( cd $(distdir); tar -cf - w3mman | GZIP='' gzip ) \
+		> $(distdir)/w3mman.tar.gz
+	-rm -fr $(distdir)/w3mman
+

@@ -1,0 +1,211 @@
+
+Inline image support of w3m
+                                                              2002/02/04
+                                                              H. Sakamoto
+                                                              2002/10/16
+                                                              H. Ito
+
+Introduction
+
+  This is the extension for w3m to support inline image.
+
+Support
+
+  * Display inline image (GIF,PNG,JPEG, etc.) on terminals
+    (xterm,rxvt, etc.) of X11 or Linux framebuffer device.
+  * Support inline image of <img> tag.
+    Support of attributes "width", "height", and "align".
+  * Direct display of image file which header is "Content-type: image/*"
+  * Support of <map> tag.
+    Support of attributes "shape" and "coords" of <area> tag. 
+  * Support of an attribute "ismap" of <img> tag.
+    "w3m" adds coordinate of the cursor as ?<x>,<y> to url, and sends url.
+  * Support of an attribute "type=image" of <input> tag.
+    "w3m" sends coordinate of the cursor as <name>.x=<x>&<name>.y=<y>.
+  * Asynchronous loading of image files.
+  * Using cache of image file as pixmap.
+  * Support of GIF animation when use GdkPixbuf.
+
+
+Key functions
+
+  DISPLAY_IMAGE
+      Restart loading and drawing of images.
+  STOP_IMAGE
+      Stop loading and drawing of images in the current buffer.
+  SET_OPTION  display_image=toggle
+      Toggle loading and drawing of images.
+
+  These functions are not keybinded as default.
+  Specify the following keymaps in ~/.w3m/keymap.
+      keymap  X    DISPLAY_IMAGE
+      keymap  C-c  STOP_IMAGE
+      keyamp  t    SET_OPTION  display_image=toggle
+
+Comandline options
+
+  -ppc <pixel>
+      # of pixels per character. The default value is automatically
+      detected. Must fit the width of font of terminal.
+  -ppl <pixel>
+      # of pixels per character. The default value is automatically
+      detected. Must fit the height of font of terminal.
+
+Option panel
+
+  pixel_per_char
+      # of pixels per character. The default value is automatically
+      detected. Must fit the width of font of terminal.
+  pixel_per_line
+      # of pixels per character. The default value is automatically
+      detected. Must fit the height of font of terminal.
+  display_image
+      Display of inline image. The default is ON.
+  auto_image
+      Automatic loading of inline image. The default is ON.
+      If it is OFF, loading starts with a command DISPLAY_IMAGE.
+  max_load_image
+      Maximum process for downloading of inline image. The default is 4.
+      1 to 8 can be set.
+  ext_image_viewer
+      Use external image viewer, when a command VIEW_IMAGE or
+      view of image file which header is "Content-type: image/*".
+      The default is ON. If it is OFF, the image is directly displaied.
+  image_scale
+      Scale of image (%). The default value is 100(%).
+  imgdisplay
+      External command to display image". The default value is "w3mimgdisplay".
+      See "Setting w3mimgdisplay".
+
+Required programs
+
+  for X11
+    * GdkPixbuf-0.16 or later
+
+    or
+
+    * w3m-0.2.5+cvs-1.287 or later
+      http://w3m.sourceforge.net/
+      http://sourceforge.net/projects/w3m/
+      http://prdownloads.sourceforge.net/w3m/
+    * Imlib-1.9.8 (1.9.10 is recommendable.)
+      libungif-4.1.0b1 is recommendable.
+
+  for Linux framebuffer device
+    * GdkPixbuf-0.16 or later
+
+    or
+
+    * Imlib2-1.0.6 or later
+
+    * Framebuffer device(packed pixels with 8 bpp pseudocolor
+      and 16/24/32 bpp truecolor/directcolor)
+
+
+Setting w3mimgdisplay
+
+  "w3mimgdisplay" has the following options. Set options to fit terminal.
+
+  -x <offset_x>
+      The X origin of display of image on terminal. The default value
+      for X11 is 2.
+      If the terminal is "xterm", the width of scroll bar is added.
+      If the terminal is "Eterm", it may be better to specify 5.
+      The default value for Linux framebuffer device is 0.
+  -y <offset_y>
+      The Y origin of display of image on terminal. The default value
+      for X11 is 2.
+      If the terminal is "Eterm", it may be better to specify 5.
+      The default value for Linux framebuffer device is 0.
+  -bg <background>
+      Background color of terminal. The default value for X11 is
+      automatically detected.
+      The default value for Linux framebuffer device is #000000 (black).
+      When the color is specified as #RRGGBB, escape '#'.
+
+  ex.)
+    w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
+
+Notice
+    If you want to see GIF animation, please hit a suitable key, such
+    as 'h', 'l', etc., repeatedly, because a frame is rewritten
+    according to the re-drawing demand from w3m.
+
+    Some code in w3mimg/fb/fb.c was originally written by Mr. Yamasaki.
+    http://www.sainet.or.jp/~yamasaki/download/fb-sample.tar.gz
+
+Change log
+
+2002/02/04
+ * Revised this document.
+
+2002/02/01	w3m-0.2.5+cvs-1.287
+ * Merged in the CVS repository of the original w3m.
+
+2002/01/31	w3m-0.2.4-img-2.2
+ * Based on w3m-0.2.4+cvs-1.278.
+
+2002/01/29	w3m-0.2.4-img-2.1
+ * Based on w3m-0.2.4+cvs-1.268.
+
+2002/01/28	w3m-0.2.4-img-2.0
+ * Based on w3m-0.2.4+cvs-1.265.
+ * pixel_per_char and pixel_per_line are automatically detected.
+ * The bckground color of terminal is automatically detected.
+ * The source code to display images is moved to image.c
+
+2002/01/08	w3m-0.2.4-img-1.18
+ * Based on w3m-0.2.4
+
+2001/12/29	w3m-0.2.3.2-img-1.17
+ * Based on w3m-0.2.3.2+cvs-1.196.
+
+2001/12/25	w3m-0.2.3.2-img-1.16.1
+ * [w3m-dev 02698] Thanks > Kazuhiko-san
+
+2001/12/22	w3m-0.2.3.2-img-1.16
+ * Based on w3m-0.2.3.2.
+
+2001/12/20	w3m-0.2.3.1-img-1.15
+ * Based on w3m-0.2.3.1.
+ * Support display of image with Content-Transfer-Encoding.
+
+2001/11/29
+ * Start merge against CVS source (ChangeLog 1.71)
+
+2001/11/17	w3m-0.2.2-img-1.14
+ * Based on w3m-0.2.2.
+
+2001/11/14	w3m-0.2.1-inu-1.6-img-1.13
+ * Based on w3m-0.2.1-inu-1.6.
+
+2001/11/05	w3m-0.2.1-inu-1.5-img-1.12
+ * Based on w3m-0.2.1-inu-1.5.
+ * Fixed the bug for <area>, <map>.
+ * Fixed the problem with xwnmo on kterm.
+
+2001/10/03	w3m-0.2.1-inu-1.4-img-1.11
+ * Based on w3m-0.2.1-inu-1.4.
+ * Fixed bug when reading from stdin.
+ * Fixed "configure". Thanks > Fukagawa-san.
+
+2001/08/01	w3m-0.2.1-img-1.10
+ * Adjust image position.
+ * Fixed scaling image.
+
+2001/07/31	w3m-0.2.1-img-1.9
+ * Fixed initImgdisplay(). Thanks > David.
+
+2001/07/29	w3m-0.2.1-img-1.8
+ * Fixed "configure".
+
+2001/07/28	w3m-0.2.1-img-1.7
+ * Sorry, w3m-0.2.1-img-1.6 is not complete.
+ * Added "configure" and "Makefile" to the patch.
+
+2001/07/27	w3m-0.2.1-img-1.6
+ * Created doc/README.img.
+
+-------------------------------------------
+Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+ http://www2u.biglobe.ne.jp/~hsaka/

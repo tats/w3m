@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>FAQ&nbsp;- FAQ -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">FAQ</A></H1>
+<DIV>
+<!-- w3m に関して良く聞かれる(であろう)質問とその答え、および、Tips を記す -->
+</DIV>
+	<UL>
+		<LI><A HREF="#faq">よく聞かれる質問とその答え</A>
+		<LI><A HREF="#tips">Tips</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="faq">よく聞かれる質問とその答え</A></H2>
+<!-- w3m に関して良く聞かれる質問とその答えについて -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="tips">Tips</A></H2>
+<!-- Tips (小技) -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

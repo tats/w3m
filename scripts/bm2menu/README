@@ -1,0 +1,21 @@
+
+bm2menu.pl
+
+  ブックマークファイル ~/.w3m/bookmark.html を変換して w3m の
+  ブックマークメニューとして使える様にする。
+
+使用法
+ 
+  ~/.w3m/bookmark.html を変換して ~/.w3m/menu に追加。 
+
+    perl bm2menu.pl ~/.w3m/bookmark.html >> ~/.w3m/menu
+
+  次に、~/.w3m/keymap に
+
+    keymap  x  MENU  Bookmarks
+
+  の様にキーの割り当てを追加します。
+
+  これで、キー `x' でブックマークメニューが開きます。
+  メニューの操作は doc-jp/README.menu を読んでください。
+    

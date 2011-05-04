@@ -1,0 +1,18 @@
+@code
+sub URL {
+  $_[0]->CHECK(qw(url));
+  $_[0]->{url};
+}
+sub LINK {
+  $_[0]->CHECK(qw(url title));
+  "<A HREF=\"$_[0]->{url}\">$_[0]->{title}</A>";
+}
+sub LINK_SEC {
+  $_[0]->CHECK(qw(url section title));
+  "<A HREF=\"$_[0]->{url}\">$_[0]->{section} $_[0]->{title}</A>";
+}
+sub MAILTO {
+  $_[0]->CHECK(qw(address name));
+  "<A HREF=\"mailto:$_[0]->{address}\">$_[0]->{name}</A>";
+}
+@end

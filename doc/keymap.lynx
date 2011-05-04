@@ -1,0 +1,146 @@
+# A sample of ~/.w3m/keymap (lynx-like)
+#
+# Ctrl  : C-, ^
+# Escape: ESC-, M-, ^[
+# Space : SPC, ' '
+# Tab   : TAB, ^i, ^I
+# Delete: DEL, ^?
+# Up    : UP, ^[[A
+# Down  : DOWN, ^[[B
+# Right : RIGHT, ^[[C
+# Left  : LEFT, ^[[D
+
+keymap	C-@	MARK
+keymap	C-a	BEGIN
+keymap	C-b	BACK
+keymap	C-e	END
+keymap	C-f	GOTO_LINK
+keymap	C-g	LINE_INFO
+keymap	C-h	HISTORY
+keymap	TAB	NEXT_LINK
+keymap	C-j	GOTO_LINK
+keymap	C-k	COOKIE
+keymap	C-l	REDRAW
+keymap	C-m	GOTO_LINK
+keymap	C-n	NEXT_LINK
+keymap	C-p	PREV_LINK
+keymap	C-q	CLOSE_TAB
+keymap	C-r	RELOAD
+keymap	C-s	SEARCH
+keymap	C-t	TAB_LINK
+keymap	C-u	PREV_LINK
+keymap	C-v	NEXT_PAGE
+keymap	C-w	REDRAW
+keymap	C-z	SUSPEND
+
+keymap	SPC	NEXT_PAGE
+keymap	!	SHELL
+keymap	\"	REG_MARK
+keymap	#	PIPE_SHELL
+keymap	$	LINE_END
+keymap	(	UNDO
+keymap	)	REDO
+keymap	+	NEXT_PAGE
+keymap	,	LEFT
+keymap	-	PREV_PAGE
+keymap	.	RIGHT
+keymap	/	SEARCH
+keymap	:	MARK_URL
+keymap	;	MARK_WORD
+keymap	<	SHIFT_LEFT
+keymap	=	INFO
+keymap	>	SHIFT_RIGHT
+keymap	?	HELP
+keymap	@	READ_SHELL
+keymap	B	BACK
+keymap	D	DOWNLOAD_LIST
+keymap	E	EDIT
+keymap	F	FRAME
+keymap	G	GOTO_LINE
+keymap	H	HELP
+keymap	I	VIEW_IMAGE
+keymap	J	UP
+keymap	K	DOWN
+keymap	L	LIST
+keymap	M	EXTERN
+keymap	N	NEXT_MARK
+keymap	P	PREV_MARK
+keymap	Q	EXIT
+keymap	R	RELOAD
+keymap	S	SAVE_SCREEN
+keymap	T	NEW_TAB
+keymap	U	GOTO
+keymap	V	LOAD
+keymap	W	PREV_WORD
+keymap	Z	CENTER_H
+keymap	[	LINK_BEGIN
+keymap	\\	SOURCE
+keymap	]	LINK_END
+keymap	\^	LINE_BEGIN
+keymap	a	ADD_BOOKMARK
+keymap	b	PREV_PAGE
+keymap	c	PEEK
+keymap	d	SAVE_LINK
+keymap	g	GOTO
+keymap	h	MOVE_LEFT
+keymap	i	PEEK_IMG
+keymap	j	MOVE_DOWN
+keymap	k	MOVE_UP
+keymap	l	MOVE_RIGHT
+keymap	m	MOUSE_TOGGLE
+keymap	n	SEARCH_NEXT
+keymap	o	OPTIONS
+keymap	p	SAVE_SCREEN
+keymap	q	QUIT
+keymap	r	VERSION
+keymap	s	SELECT_MENU
+keymap	u	PEEK_LINK
+keymap	v	BOOKMARK
+keymap	w	NEXT_WORD
+keymap	z	CENTER_V
+keymap	{	PREV_TAB
+keymap	|	PIPE_BUF
+keymap	}	NEXT_TAB
+
+keymap	M-TAB	PREV_LINK
+keymap	M-C-j	SAVE_LINK
+keymap	M-C-m	SAVE_LINK
+
+keymap	M-:	MARK_MID
+keymap	M-<	BEGIN
+keymap	M->	END
+keymap	M-I	SAVE_IMAGE
+keymap	M-M	EXTERN_LINK
+keymap	M-W	DICT_WORD_AT
+keymap	M-a	ADD_BOOKMARK
+keymap	M-b	BOOKMARK
+keymap	M-c	COMMAND
+keymap	M-e	EDIT_SCREEN
+keymap	M-g	GOTO_LINE
+keymap	M-k	DEFINE_KEY
+keymap	M-l	LIST_MENU
+keymap	M-m	MOVE_LIST_MENU
+keymap	M-n	NEXT_MARK
+keymap	M-o	SET_OPTION
+keymap	M-p	PREV_MARK
+keymap	M-s	SAVE
+keymap	M-t	TAB_MENU
+keymap	M-u	GOTO_RELATIVE
+keymap	M-v	PREV_PAGE
+keymap	M-w	DICT_WORD
+
+keymap	UP	PREV_LINK
+keymap	DOWN	NEXT_LINK
+keymap	RIGHT	GOTO_LINK
+keymap	LEFT	BACK
+
+keymap	M-[E	MENU
+keymap	M-[L	MENU
+
+keymap	M-[1~	BEGIN
+keymap	M-[2~	MENU
+keymap	M-[4~	END
+keymap	M-[5~	PREV_PAGE
+keymap	M-[6~	NEXT_PAGE
+keymap	M-[28~	MENU
+

@@ -1,24 +1,9 @@
 PATCH: -p1
 
---- w3m/doc/w3m.1	Wed Nov 21 14:56:35 2001
-+++ w3m-2/doc/w3m.1	Sat Dec  1 03:43:55 2001
-@@ -53,15 +53,6 @@
- .B -l line
- # of preserved line (default 10000)
- .TP
--.B -s
--Shift_JIS
--.TP
--.B -j
--JIS
--.TP
--.B -e
--EUC-JP
--.TP
- .B -B
- load bookmark
- .TP
-@@ -126,7 +117,7 @@
+diff -Nru w3m-0.4rc1.orig/doc/w3m.1 w3m-0.4rc1/doc/w3m.1
+--- w3m-0.4rc1.orig/doc/w3m.1	2002-11-12 21:36:30.000000000 +0900
++++ w3m-0.4rc1/doc/w3m.1	2003-02-11 03:42:48.000000000 +0900
+@@ -123,7 +123,7 @@
  .B -pauth user:pass
  proxy authentication
  .TP
@@ -27,8 +12,9 @@ PATCH: -p1
  squeeze multiple blank lines
  .TP
  .B -W
---- w3m/doc-jp/w3m.1	Wed Nov 21 14:56:36 2001
-+++ w3m-2/doc-jp/w3m.1	Sat Dec  1 03:44:14 2001
+diff -Nru w3m-0.4rc1.orig/doc-jp/w3m.1 w3m-0.4rc1/doc-jp/w3m.1
+--- w3m-0.4rc1.orig/doc-jp/w3m.1	2002-11-12 21:36:30.000000000 +0900
++++ w3m-0.4rc1/doc-jp/w3m.1	2003-02-11 03:44:15.000000000 +0900
 @@ -39,15 +39,6 @@
  標準入力の内容を表示するときに保存される最大行数を指定する．
  デフォルトは10000．
@@ -42,10 +28,10 @@ PATCH: -p1
 -.B \-j
 -JIS (ISO-2022-JP)コードで表示する．
 -.TP
- .BI \-I\  e|s
- 入力文書の文字コードを指定する．
+ .BI \-O\  e|s|j|N|m
+ 表示に使う文字コードを指定する.
  .TP
-@@ -87,7 +78,7 @@
+@@ -90,7 +81,7 @@
  .B \-F
  フレームを自動表示する．
  .TP

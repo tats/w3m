@@ -1,0 +1,139 @@
+TODO lists
+
+refactoring
+ backend - ??
+ file - ??
+ local ?
+ func ?
+ indep ?
+ main
+
+utilities
+ Str - string modules
+ myctype
+ entity
+ symbol
+ hash
+ textlist
+ etc - system informations
+ history
+ inflate
+ matrix
+ regex
+
+configuration
+ rc
+
+UI
+ display
+ menu
+ search
+ keybind
+ linein
+ terms
+ mouse
+
+buffer
+ buffer
+
+loader - main controller
+ loader
+  - connection management
+  - protocol backends
+  - media management
+  - media processing
+
+URL
+ url
+  - protocol backends
+
+media management
+ mailcap
+ mimehead
+ mimetyps
+  - media procesings
+
+media processing
+ html
+  parsetag
+  parsetagx
+  anchor
+  form
+  frame
+  map
+  table
+  tagtable
+ plain
+ image
+  
+connection management
+ conn
+  ssl?
+ istream
+
+protocol backend
+ http
+  auth
+  cookie
+ ftp
+ news
+ ...
+
+
+Documentation
+ release notes for w3m-0.4
+	[w3m-dev 03739]
+
+new features
+* Keep alive
+* incremental display, background download
+	[w3m-dev 03389] background download
+* bookmark editor
+	[w3m-dev 03394] bookmark editor
+* w3mimgdisplay without X
+	[w3m-dev 03723] Re: w3mimgdisplayfb (independent of X)
+	http://homepage3.nifty.com/slokar/fb/w3mimgfb-0.6.tar.gz
+	http://homepage3.nifty.com/slokar/stimg/stimg-0.0.0.tar.gz
+* Internationalized Domain Name support
+	[w3m-dev 03727] Re: IDN support (test)
+	requires idnkit (http://www.nic.ad.jp/ja/idn/) and iconv.
+* SMB
+	Bonus/smb.cgi
+* JavaScript
+* gettextize
+
+cleanups
+* autoconfisicate
+* code review, cleanup
+
+bugs
+* fix [w3m-dev 02658] problem when form is reset
+  http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/200112.month/2658.html
+
+* wishlist? [w3m-dev 03507] save space in JP chars
+
+* [w3m-dev-en 00875] USE_RAW_SCROLL
+
+[sf.net] http://sf.net/projects/w3m
+
+[bugs] http://bugs.debian.org/w3m
+
+* support for the <button> tag (HTML 4.01)
+ http://bugs.debian.org/136810
+
+* not working 'Ignore case when search' on non latin pages
+ http://bugs.debian.org/138891
+ => after m17n merge
+
+fixed
+
+wontfix / impossible to fix
+* w3m -dump generates too long lines
+ http://bugs.debian.org/149288 
+
+wishlist?
+* w3mman -l doesn't work
+ http://bugs.debian.org/138805
+
+done
+* merge m17n

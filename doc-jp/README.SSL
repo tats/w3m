@@ -1,0 +1,114 @@
+SSL サポートについて
+
+                                                         (2000/11/07)  岡部克也
+                                                        okabek@guitar.ocn.ne.jp
+                                                         (2001/12/27)  鵜飼文敏
+                                                              ukai@debian.or.jp
+
+ ・ OpenSSL ライブラリを通じて, SSL をサポートしています.
+    あらかじめインストールしておいてください.
+   
+ ・ OpenSSL ライブラリがインストールされていれば configure スクリプト実行時に自
+    動的に検出されて利用可能となります.
+    もしうまく動かないときは, config.h をチェックしてみてください. SSL を利用す
+    るためには, config.h で, USE_SSL マクロが定義されている必要があります.
+    さらに, SSL 認証サポートを利用する場合は, USE_SSL_VERIFY マクロもチェックし
+    てみてください.
+    コンパイルでエラーが出る場合は, リンカフラグに `-lssl -lcrypto', コンパイラ
+    フラグに '-I(SSLeay/OpenSSL のヘッダがあるディレクトリ)' があるか確認してく
+    ださい.
+   
+    SSL サポートが有効になっているかどうかは, Option Setting Panel に「SSLの設
+    定」が含まれているかどうかで確認できます.
+   
+ ・ SSL に関して以下の設定が可能になってます:
+
+    ssl_forbid_method
+        使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1)
+        (デフォルトは<NULL>).
+    ssl_verify_server ON/OFF
+        SSLのサーバ認証を行う(デフォルトはOFF).
+    ssl_cert_file ファイル名
+        SSLのクライアント用PEM形式証明書ファイル(デフォルトは<NULL>).
+    ssl_key_file ファイル名
+        SSLのクライアント用PEM形式秘密鍵ファイル(デフォルトは<NULL>).
+    ssl_ca_path ディレクトリ名
+        SSLの認証局のPEM形式証明書群のあるディレクトリへのパス
+        (デフォルトは<NULL>).
+    ssl_ca_file ファイル名
+        SSLの認証局のPEM形式証明書群のファイル(デフォルトは<NULL>).
+    ただし「SSLEAY_VERSION_NUMBER >= 0x0800」な環境でないと無駄なコードが増
+    えるだけなので, configure時にdisableしておいたほうがよいでしょう.
+
+    また実際に認証を行う場合, ssl_ca_pathまたはssl_ca_fileで, サーバの鍵に
+    署名している認証局の証明書を (ssl_verify_serverのON/OFFに関係無く) 指定
+    しないとサーバ認証は成功しません。
+
+    通常使われている認証局の証明書は以下のところなどから入手できます。
+
+    * mozillaのソースに含まれている 
+       mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+      から添付の ruby script で *.pemファイルとしてとりだしたもの
+
+	% ruby certdata2pem.rb < certdata.txt
+
+      でカレントディレクトリに *.pemファイルをとりだし
+      opensslの c_rehash コマンドで hash symlink を作成します。
+      このディレクトリを ssl_ca_path に設定することができます。
+      もしくは、*.pem をまとめた一つのファイルを作成しておけば
+      それを ssl_ca_file に設定することができます。
+
+   * mod_sslのソースに含まれている pkg.sslcfg/ca-bundle.crt
+      これは PEMなので、このファイルのフルパス名を ssl_ca_file に
+      設定することができます。
+
+ ・ バージョン 0.9.5 以降の OpenSSL ライブラリは, 乱数を初期化するために幾つか
+    のシードを設定する必要があります.
+    デフォルトでは /dev/urandom があればそれを利用しますが, 無ければ w3m 内部
+    で生成します. もし, EGD (Entropy Gathering Daemon) または PRNGD (Pseudo
+    Random Number Generator Daemon) が利用できる環境でこれを使いたい場合は,
+    USE_EGD マクロをチェックしてみてください.
+
+ ・ URL
+
+    OpenSSL - http://www.openssl.org/
+    PRNGD - http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html
+
+----------------------------------------------------------------
+#!/usr/bin/ruby
+# Copyright (c) 2001 Fumitoshi UKAI <ukai@debian.or.jp>
+#     All rights reserved.
+#     This is free software with ABSOLUTELY NO WARRANTY.
+#
+# You can redistribute it and/or modify it under the terms of 
+# the Ruby's licence.
+#
+# certdata2pem.rb
+
+while line = $stdin.gets
+  next if line =~ /^#/
+  next if line =~ /^\s*$/
+  line.chomp!
+  if line =~ /CKA_LABEL/
+    label,type,val = line.split(' ',3)
+    val.sub!(/^"/, "")
+    val.sub!(/"$/, "")
+    fname = val.gsub(/\//,"_").gsub(/\s+/, "_").gsub(/[()]/, "=") + ".pem"
+    next
+  end
+  if line =~ /CKA_VALUE MULTILINE_OCTAL/
+    data=''
+    while line = $stdin.gets
+      break if /^END/
+      line.chomp!
+      line.gsub(/\\([0-3][0-7][0-7])/) { data += $1.oct.chr }
+    end
+    open(fname, "w") do |fp|
+      fp.puts "-----BEGIN CERTIFICATE-----"
+      fp.puts [data].pack("m*")
+      fp.puts "-----END CERTIFICATE-----"
+    end
+    puts "Created #{fname}"
+  end
+end
+system("c_rehash", ".")

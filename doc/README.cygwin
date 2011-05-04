@@ -1,0 +1,151 @@
+Using w3m on Cygwin
+
+                                                                    2003/02/20
+                                                            Katsuyuki Watanabe
+                                                                      Dai Sato
+
+You can use w3m on Windows with a UNIX compatible environment "Cygwin". For
+detailed information of Cygwin, See http://cygwin.com/.
+
+Build
+
+After w3m-0.2, patches for Cygwin have been marged to w3m packages. If you use
+cygwin-1.1.4 or later, w3m shuould be build without any problems.
+ (*) on Cygwin B20.1, you should add -luser32 to LOCAL_LIBRARIES
+
+The newest version of termcap and ncurses package are recomended. Especially,
+older versions of termcap have bugs in the entry for Cygwin which make the
+screen collapsed. The problem was fixed in termcap-20001020-1.
+
+Please make sure to execute ./configure before the make. The macros explained
+in "Macros" are defined by ./configure, and they are nessary to make this
+package. When you have some problem in making w3m, please check the points
+below:
+
+ o  Do make veryclean, then exec ./configure && make.
+ o  Check gcc and binutils are properly installed. setup.exe might have
+    finished without reporting any errors, though the download of package
+    files was end in failure. In this case, you should try to setup again.
+
+Using Cygwin with Win95/98/ME, configure will not run correctly when
+environment variable CYGWIN includes "ntsec" and/or "ntea", because shell
+scripts will not have executable attribute. It is recomended to remove "ntsec"
+and "ntea" from environment variable CYGWIN to load cygwin1.dll for the first
+time.
+
+Macros
+
+The macros below are defined in config.h for Cygwin environment.
+
+USE_BINMODE_STREAM
+    With -dump, -dump_{head,source,both,extra} option, output to stdout are
+    done in binary mode. It might not been needed with cygwin-1.3.11 or later,
+    but remained for safe.
+    In common with Cygwin and EMX.
+SUPPORT_DOS_DRIVE_PREFIX
+    The path names are handled as file names when they includes drive letters
+    like "C:", "C:/", "file://C:/", "file://C|/", and so on.
+    In common with Cygwin and EMX.
+SUPPORT_NETBIOS_SHARE
+    URIs of common resources of NETBIOS in "//NETBIOSHOST/SHARE/PATH",
+    "file://NETBIOSHOST/SHARE/PATH" format are handled as file: schema instead
+    of ftp: schema.
+    Only for Cygwin environments.
+SUPPORT_WIN9X_CONSOLE_MBCS
+    Search and line input to forms are supported. But input through IME is
+    available only with the local console when TERM=cygwin, and environment
+    variable CYGWIN is not include "tty". The restrictions avoid the problems
+    of the DOS prompt of Win9x and tty layer of Cygwin. For WinNT, the macro
+    doesn't change any behavior of w3m, IME is always available with local
+    consoles.
+    Only for Cygwin environments and LANG=JA.
+
+Cooperation with Native Applications
+
+When calling the Win32 Native Abblications, "File not found" errors might be
+raised because of difference in formats of path name between Win32 and UNIX.
+
+Local CGIs
+
+Local CGIs in $LIB (/usr/local/lib/w3m/cgi-bin by default) use /usr/bin/perl.
+If you want to use ActivePerl (a native application) and so on, please modify
+the each scripts in $LIB with wrapper scripts as follows:
+
+------ /usr/local/bin/winperl ------
+#!/bin/sh
+# wrapper script for Win32 Native Perl
+PERL=/cygdrive/c/Perl/bin/perl.exe
+case $1 in
+  -*)
+    ;;
+  *)
+    SCRIPT=`cygpath -w $1`
+    shift
+    ;;
+esac
+exec "$PERL" "$SCRIPT" $@
+------------------------------------
+
+Where the PERL= is the path of Native Perl in Cygwin context. cygpath
+utilities come with Cygwin packages.
+
+For directory listing, when "Use external program for directory listing" is
+set "NO", you can browse the directory list without local CGIs.
+
+Editors
+
+w3m uses external editors to operate texts textareas and so on. You can use
+any native application as the external editor with the script as below:
+
+------ /usr/local/lib/w3m/winedit ------
+#!/bin/sh
+EDITOR='/cygdrive/c/Program Files/sakura/sakura.exe'
+FILE=`cygpath -a -w $1`
+exec "$EDITOR" "$FILE"
+----------------------------------------
+
+Where the EDITOR= is the path of Native editor in Cygwin context.
+
+If you use inetd as a service in WinNT and connect to localhost by telnet,
+the windows will be opened only if "Allow service to interact with the 
+desktop" is ON.
+
+Known Bugs
+
+LF is converted to CR+LF when use -dump or -dump-source options.
+    Make sure USE_BINMODE_STREAM was defined in compilation. Try to
+    re-configure and make, or set binmode to the environment variable CYGWIN.
+Can't input through IME in DOS prompt of Win9x.
+    When "tty" is included in the environment variable CYGWIN, it is not
+    permitted to avoid problems in tty layer of Cygwin. Remove "tty" from
+    CYGWIN.
+Cursor keys doesn't work when IME is ON in DOS prompt of Win9x.
+    This is the problem of DOS prompt of Win9x and tty layer of Cygwin. Use
+    C-f, C-b, C-p, and C-n instead.
+Screen is not controled correctly in command prompt of WinNT.
+    Set the each size of screen buffer and window in a same value.
+Can't use the mouse with DOS prompt or command prompt.
+    When "Quick Edit" is ON, mouse events are not handed to w3m. Set it OFF.
+Mouse buttons behave funny with DOS prompt or command prompt.
+    In cygwin-1.3.15 or earlier, the escape sequence of the right and center
+    button of the mouse are inverted. It is fixed in cygwin-1.3.16-1. Please
+    make w3m in the environment you use, because w3m can't judge the versions
+    of Cygwin perfectly,
+
+Others
+
+In Cygwin environment, it should be confortable to use not DOS prompt or
+command prompt but telnet clients like TeraTerm, PuTTY, and so on with inetd
+in localhost, or other tools as rxvt or cygterm.
+
+ o rxvt with japanese enhancement:
+    rxvt on Cygwin
+        http://hp.vector.co.jp/authors/VA021953/rxvt/
+    compiled package
+        http://matsu-www.is.titech.ac.jp/~sohda/cygwin/dist/
+
+ o cygterm:
+    CygTerm - Yet another Cygwin console
+        http://www.dd.iij4u.or.jp/~nsym/cygwin/cygterm/
+
+

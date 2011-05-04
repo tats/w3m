@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+case "$1" in
+  install|upgrade)
+	# Older versions of this package had the conffile in the wrong
+	# location (the w3m binary didn't use it). Copy it if its there,
+	# so any customisation done there can be preserved. We actually
+	# get rid of the wrong file in our postinst.
+	if dpkg --compare-versions "$2" lt-nl "0.4.2-1.1"; then
+		if test -e /etc/w3m/w3mconfig; then
+			if ! test -e /etc/w3m/config; then
+				cp -a /etc/w3m/w3mconfig /etc/w3m/config
+			fi
+		fi
+	fi
+	;;
+  *)
+esac
+
+#DEBHELPER#
+

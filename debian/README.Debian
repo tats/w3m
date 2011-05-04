@@ -14,10 +14,4 @@ Difference between pure w3m and Debian package:
    In addition, -e and -j option is disabled.  Use
    -o kanjicode=E or -o kanjicode=j respectively.
 
- * /usr/bin/w3m is wrapper script
-	w3m-en	- ASCII or Latin version of w3m (default)
-	w3m-ja	- Japanese version of w3m (if LANG=ja*)
-	w3m-ssl-en - ASCII or Latin version with SSL (if w3m-ssl installed)
-	w3m-ssl-ja - Japanese version with SSL (if w3m-ssl installed)
-
-Fumitoshi UKAI <ukai@debian.or.jp>, Mon Oct 30 11:40:54 2000 +0900
+ -- Fumitoshi UKAI <ukai@debian.or.jp>, Mon Mar 22 00:52:34 2004

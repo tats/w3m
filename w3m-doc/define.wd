@@ -1,0 +1,9 @@
+@define
+W3M.version	w3m-0.2.2
+W3M.author  Akinori ITO
+W3M.home    http://w3m.sourceforge.net/
+AITO.mail   aito@fw.ipsj.or.jp
+W3M.bbs     http://mi.med.tohoku.ac.jp/~satodai/w3m/bbs/spool/log.html
+W3M.note    http://www2u.biglobe.ne.jp/~hsaka/w3mnote.cgi
+README.fm   ../doc/ja/README.fm
+@end

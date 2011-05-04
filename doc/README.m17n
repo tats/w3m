@@ -1,0 +1,451 @@
+
+Muntilingualizaion of w3m 
+                                                              2003/03/08
+                                                              H. Sakamoto
+
+Introduction
+
+  I have tried the muntilingualization of w3m (w3m-m17n).
+  The patch for w3m-0.4.1 is available on the following site.
+
+    http://www2u.biglobe.ne.jp/~hsaka/w3m/index.html#m17n
+                                          patch/w3m-0.4.1-m17n-20030308.tar.gz
+                                          patch/README.m17n
+
+  It is a development version. And enough test is not preformed because
+  I can understand Japanese only. Please use, test, and report bugs.
+
+  Now, w3m-m17n has following functions.
+
+Supported encoding schemes (character set)
+
+  * Japanese
+      EUC-JP           - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212
+      (EUC-JISX0213)     (JIS X 0213)
+      ISO-2022-JP      - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212, etc.
+      ISO-2022-JP-2    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0212,
+                         GB 2312, KS X 1001, ISO 8859-1, ISO 8859-7, etc.
+      ISO-2022-JP-3    - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213, etc.
+      Shift_JIS(CP932) - US_ASCII, JIS X 0208, JIS X 0201, CP932 extension
+      Shift_JISX0213   - US_ASCII, JIS X 0208, JIS X 0201, JIS X 0213
+  * Chinese (simplified)
+      EUC-CN(GB2312) - US_ASCII, GB 2312
+      ISO-2022-CN    - US_ASCII, GB 2312, CNS-11643-1,..7, etc.
+      GBK(CP936)     - US_ASCII, GB 2312, GBK
+      GB18030        - US_ASCII, GB 2312, GBK, GB18030, Unicode,
+      HZ-GB-2312     - US_ASCII, GB 2312
+  * Chinese (Taiwan, tradisional)
+      EUC-TW        - US_ASCII, CNS 11643-1,..16
+      ISO-2022-CN   - US_ASCII, CNS-11643-1,..7, GB 2312, etc.
+      Big5          - Big5
+      HKSCS         - Big5, HKSCS
+  * Korean
+      EUC-KR        - US_ASCII, KS X 1001 Wansung
+      ISO-2022-KR   - US_ASCII, KS X 1001 Wansung, etc.
+      Johab         - US_ASCII, KS X 1001 Johab
+      UHC(CP949)    - US_ASCII, KS X 1001 Wansung, UHC
+  * Vietnamese
+      TCVN-5712 VN-1, VISCII 1.1, VPS, CP1258
+  * Thai
+      TIS-620 (ISO-8859-11), CP874
+  * Other
+      US_ASCII, ISO-8859-1 ¡Á 10, 13 ¡Á 15,
+      KOI8-R, KOI8-U, NeXT, CP437, CP737, CP775, CP850, CP852, CP855, CP856,
+      CP857, CP860, CP861, CP862, CP863, CP864, CP865, CP866, CP869, CP1006,
+      CP1250, CP1251, CP1252, CP1253, CP1254, CP1255, CP1256, CP1257
+  * Unicode (UCS-4)
+      UTF-8, UTF-7
+
+  NOTE:
+    * The left part of JIS X 0201 and GB 1988 (Chinese ASCII) are
+      treated as US_ASCII because they are used in tags of HTML document.
+      Another variant of US_ASCII is treated without change.
+    * JIS C 6226(old JIS) is treated as JIS X 0208.
+    * The sequence '~\n' of HZ is not supported.
+
+Display
+
+  There are two method for multilingual diplay.
+
+  (1) kterm + ISO-2022-JP/CN/KR
+
+    * kterm can handle JIS X 0213, CNS 11643, if the following patch
+      is applied.
+        http://www.st.rim.or.jp/~hanataka/kterm-6.2.0.ext02.patch.gz
+
+    * Specify the fontList for kterm with -fl option or in ~/.Xdefaults.
+    
+        -fl "*--16-*-jisx0213.2000-*,\
+             *--16-*-jisx0212.1990-0,\
+             *--16-*-ksc5601.1987-0,\
+             *--16-*-gb2312.1980-0,\
+             *--16-*-cns11643.1992-*,\
+             *--16-*-iso8859-*"
+
+      Fonts of JIS X 0213 exist in
+        http://www.mars.sphere.ne.jp/imamura/jisx0213.html
+
+    * Set the "display_charset" to ISO-2022-JP(or ISO-2022-JP-2, KR, CN),
+      and "strict_iso2022" to OFF on the option pannel. (see below)
+
+  (2) xterm + UTF-8
+
+    * Use xterm (xterm-140 or later) of XFree86.
+        http://www.clark.net/pub/dickey/xterm/xterm.html
+
+    * Fonts of Unicode exist in
+        http://www.cl.cam.ac.uk/~mgk25/ucs-fonts.html
+        http://openlab.ring.gr.jp/efont/index.html.en
+
+    * Use xterm with -u8 option.
+      The fonts are specified such as
+        -fn "*-medium-*--13-*-iso10646-1" \
+        -fb "*-bold-*--13-*-iso10646-1" \
+        -fw "*-medium-*-ja-13-*-iso10646-1"
+
+    * Set the "display_charset" to UTF-8.
+      And, it is better that "pre_conv" is ON.
+
+  (3) mlterm + ISO-2022-JP/KR/CN
+
+    * Homepage
+        http://mlterm.sourceforge.net/
+
+    * Set encoding of mlterm to ISO-2022-JP/KR/CN or UTF-8.
+
+    * Set the "display_charset" to ISO-2022-JP/KR/CN or UTF-8.
+
+Command line options
+
+   -I <document charset>
+   -O <display/output charset>
+
+        j(p):      ISO-2022-JP
+        j(p)2:     ISO-2022-JP-2
+        j(p)3:     ISO-2022-JP-3
+        cn:        ISO-2022-CN
+        kr:        ISO-2022-KR
+        e(j):      EUC-JP
+        ec,g(b):   EUC-CN(GB2312)
+        et:        EUC-TW
+        ek:        EUC-KR
+        s(jis):    Shift_JIS
+        sjisx0213: Shift_JISX0213
+        gbk:       GBK
+        gb18030:   GB18030
+        h(z):      HZ-GB-2312
+        b(ig5):    Big5
+        hk(scs):   HKSCS
+        jo(hab):   Johab
+        uhc:       UHC
+        l?:        ISO-8859-?
+        t(is):     TIS-620(ISO-8859-11)
+        tc(vn):    TCVN-5712 VN-1
+        v(iscii):  VISCII 1.1
+        vp(s):     VPS
+        ko(i8r):   KOI8-R
+        koi8u:     KOI8-U
+        n(ext):    NeXT
+        cp???:     CP???
+        w12??:     CP12??
+        u(tf8):    UTF-8
+        u(tf)7:    UTF-7
+
+Option pannel
+
+   display_charset
+       Display charset.
+   document_charset
+       Defalut Document charset.
+   auto_detect
+       Automatic charset detect when loading. (Default: ON)
+   system_charset
+       System charset. It is used for configuration files and file name.
+   follow_locale
+       System charset follows locale($LANG). (Default: ON)
+   ext_halfdump
+       Output with display charset when -halfdump.
+   search_conv
+       Adjust search string for document charset. (Default: ON)
+   use_wide
+       Use multi column characters. (Default: ON)
+   use_combining
+       Use combining characters. (Default: ON)
+   use_language_tag
+       Use Unicode language tags. (Default: ON)
+   ucs_conv
+       Charset conversion using Unicode map. (Default: ON)
+   pre_conv
+       Charset conversion when loading. (Default: OFF)
+   fix_width
+       Fix character width when conversion. (Default: ON)
+       If it is OFF, the rendering may collapse.
+   use_gb12345_map
+       Use GB 12345 Unicode map instead of GB 2312's. (Default: OFF)
+       If it is ON, GB2312 can be converted to Big5, EUC-TW, or EUC-JP.
+   use_jisx0201
+       Use JIS X 0201 Roman for ISO-2022-JP. (Default: OFF)
+   use_jisc6226
+       Use JIS C 6226:1978 for ISO-2022-JP. (Default: OFF)
+   use_jisx0201k
+       Use JIS X 0201 Katakana. (Default: OFF)
+   use_jisx0212
+       Use JIS X 0212:1990 (Supplemental Kanji). (Default: OFF)
+   use_jisx0213
+       Use JIS X 0213:2000 (2000JIS). (Default: OFF)
+   strict_iso2022
+       Strict ISO-2022-JP/KR/CN. (Default: ON)
+       If it is OFF, all ISO 2022 base character set can be displayed
+       with ISO-2022-JP/KR/CN.
+
+   alt_entity
+       Use alternate expression with ASCII for entities. (Default: ON)
+       If it is OFF, entities are treated as ISO 8859-1
+   graphic_char
+       Use graphic char for border of table and menu.
+       If it is OFF, ruled line is used with CJK charset or UTF-8.
+
+Code conversion
+
+  The following special code conversions are supported.
+    * EUC-JP <-> ISO-2022-JP <-> Shift-JIS
+    * EUC-CN <-> ISO-2022-CN <-> HZ-GB-2312
+    * EUC-TW <-> ISO-2022-CN
+    * EUC-KR <-> ISO-2022-KR <-> Johab (only Symbol and Hanja)
+
+  Other conversions are based on Unicode.
+
+Change document charset
+
+   Press '=' (show document infomation), and select document charaset.
+
+   If you specify the following keymaps,
+     keymap C CHARSET
+     keymap M-c DEFAULT_CHARSET
+   you can press `C' to change the current document charset,
+   and `M-c' to change the default document charset.
+
+Line Editing 
+
+  Input coding system is followed by display coding system.
+
+  NOTE:
+    * HZ can not be used as input coding system.
+    * Input with ISO-2022-CN or ISO-2022-KR is perhaps failure, because
+      SI(\017) and SO(\016) are already assigned as other command key.
+      (SO is assigned as `next-history'). If you want to use SI and SO,
+      press C-@(^@). After that, SI, SO, SS2, SS3, LS2, and LS3 of
+      7bit ISO-2022 are recognited. When you press C-@ again, the default
+      binding is set.
+
+Regular expression
+
+   Multilingual regular expression is supported.
+
+-----------------------------------
+Change log
+
+2003/03/08      w3m-0.4.1-m17n-20030308
+ * Base on w3m-0.4.1
+
+2003/02/24      w3m-0.4-m17n-20030224
+ * Base on w3m-0.4
+
+2003/02/11      w3m-0.4rc1-m17n-20030211
+ * Base on w3m-0.4rc1
+
+2003/02/07      w3m-0.3.2.2-m17n-20030207
+ * Base on w3m-0.3.2.2+cvs-1.742
+
+2003/02/01      w3m-0.3.2.2-m17n-20030201
+ * Base on w3m-0.3.2.2+cvs-1.734
+
+2003/01/31      w3m-0.3.2.2-m17n-20030131
+ * Base on w3m-0.3.2.2+cvs-1.732
+
+2003/01/23      w3m-0.3.2.2-m17n-20030123
+ * Base on w3m-0.3.2.2+cvs-1.705
+
+2003/01/22      w3m-0.3.2.2-m17n-20030122
+ * Base on w3m-0.3.2.2+cvs-1.699
+
+2003/01/01      w3m-0.3.2.2-m17n-20030101
+ * Base on w3m-0.3.2.2+cvs-1.655
+
+2002/12/22      w3m-0.3.2.2-m17n-20021222
+ * Base on w3m-0.3.2.2+cvs-1.640
+
+2002/12/19      w3m-0.3.2.2-m17n-20021219
+ * Base on w3m-0.3.2.2+cvs-1.635
+
+2002/12/07      w3m-0.3.2.2-m17n-20021207
+ * Base on w3m-0.3.2.2+cvs-1.599
+ * Fixed a problem on int != long system
+
+2002/11/27	w3m-0.3.2.1-m17n-20021127
+ * Base on w3m-0.3.2.1+cvs-1.562
+
+2002/11/20	w3m-0.3.2-m17n-20021120
+ * Base on w3m-0.3.2+cvs-1.538
+
+2002/11/18
+ * Added UTF-7 to auto detection of charset.
+
+2002/11/16	w3m-0.3.2-m17n-20021116
+ * Base on w3m-0.3.2+cvs-1.526
+
+2002/11/13	w3m-0.3.2-m17n-20021113
+ * Base on w3m-0.3.2+cvs-1.506
+
+2002/11/12	w3m-0.3.2-m17n-20021112
+ * Base on w3m-0.3.2+cvs-1.498
+
+2002/11/09	w3m-0.3.2-m17n-20021109
+ * Base on w3m-0.3.2+cvs-1.490
+
+2002/11/07	w3m-0.3.2-m17n-20021107
+ * Base on w3m-0.3.2
+ * Applied [w3m-dev 03371]
+
+2002/10/22	w3m-0.3.1-m17n-20021022
+ * Base on w3m-0.3.1+cvs-1.444
+
+2002/07/17	w3m-0.3.1-m17n-20020717
+ * Base on w3m-0.3.1
+
+2002/05/29	w3m-0.3-m17n-20020529
+ * Base on w3m-0.3+cvs-1.379.
+
+2002/03/16	w3m-0.3-m17n-20020316
+ * Base on w3m-0.3+cvs-1.353.
+
+2002/03/11	w3m-0.3-m17n-20020311
+ * Base on w3m-0.3+cvs-1.342.
+ * Some bug fixes.
+
+2002/02/16	w3m-0.2.5-m17n-20020216
+ * Base on w3m-0.2.5+cvs-1.319.
+ * Added an option "use_wide"
+
+2002/02/05	w3m-0.2.5-m17n-20020205
+ * Base on w3m-0.2.5+cvs-1.302.
+
+2002/02/02	w3m-0.2.5-m17n-20020202
+ * Base on w3m-0.2.5+cvs-1.291.
+
+2002/01/31	w3m-0.2.4-m17n-20020131
+ * Base on w3m-0.2.4+cvs-1.278.
+
+2002/01/29	w3m-0.2.4-m17n-20020129
+ * Base on w3m-0.2.4+cvs-1.268.
+ * Some bug fixes.
+
+2002/01/28	w3m-0.2.4-m17n-20020128
+ * Base on w3m-0.2.4+cvs-1.265.
+
+2002/01/08	w3m-0.2.4-m17n-20020108
+ * Base on w3m-0.2.4.
+
+2002/01/07
+ * Replaced some wc_conv,wc_Str_conv with wc_conv_strict,wc_Str_conv_strict.
+
+2001/12/31
+ * Added the conversion between HKSCS and Unicode.
+ * Changed the conversion table between Big5 and Unicode.
+ * Deleted the special conversion between Big5 and CNS11643.
+ * Fixed HKSCS.
+
+2001/12/30	w3m-0.2.3.2-m17n-20011230
+ * Base on w3m-0.2.3.2+cvs-1.196.
+
+2001/12/22	w3m-0.2.3.2-m17n-20011222
+ * Base on w3m-0.2.3.2.
+ * [w3m-dev-en 00660] can't compile if INET6 is defined
+ * [w3m-dev-en 00663] double meanings for WC_N_??? 
+
+2001/12/21	w3m-0.2.3.1-m17n-20011221
+ * Base on w3m-0.2.3.1.
+ * Support of HKSCS, KOI8-U, UTF-7.
+   The conversion table between HKSCS and Unicode is not yet available.
+ * Add the conversion between ISO 8859-16 and Unicode.
+ * Add option 'ext_halfdump'.
+
+2001/04/14	w3m-(0.2.1)-m17n-0.20
+ * Support of UTF-7.
+ * [w3m-dev 01913] ([w3m-dev-en 00452])
+
+2001/04/12	w3m-(0.2.1)-m17n-0.19
+ * TILDE of JISX0212, JISX0213 -> FULLWIDTH TILDE of Unicode.
+ * MICRO SIGN of Unicode -> GREEK SMALL MU of JISX0208.
+ * [w3m-dev 01892], [w3m-dev 01894], [w3m-dev 01898], [w3m-dev 01902]
+
+2001/03/31
+ * Changed implement of <_SYMBOL> again.
+ * When -dump option, "pre_conv" is false as default.
+
+2001/03/29
+ * Support combining characters of TCVN 5712.
+ * [w3m-dev 01873], [w3m-dev-en 00411].
+
+2001/03/28
+ * Setting -suffix="" can be okay in confiugre. (thanks to naddy!)
+ * Bugfix: when #define USE_SSL and #undef USE_SSL_VERIFY, rc.c
+   doesn't compile. (thanks to naddy!)
+ * [w3m-dev 01859].
+ * Bugfix: 0xA0 is error in Shift-JIS.
+ * Changed implement of <_SYMBOL> ([w3m-dev 01852]).
+
+2001/03/24	w3m-(0.2.1)-m17n-0.18
+ * Base on w3m-0.2.1.
+ * [w3m-dev 01703], [w3m-dev 01814], [w3m-dev 01823]
+ * Separated ISO-2022-JP-3 from ISO-2022-JP.
+ * Improved auto detection.
+
+2001/03/23
+ * Base on w3m-0.2.0.
+
+2001/03/21
+ * Added functions (CHARSET and DEFAULT_CHARSET).
+ * Improved document charset detection of frame HTML.
+
+2001/03/20
+ * Conversion from FULL WIDTH variant except ASCII to normal character.
+
+2001/03/18	w3m-(0.1.11-pre-hsaka24)-m17n-0.17
+ * Based on "[w3m-dev 01779] w3m-0.1.11-pre-hsaka24".
+ * Prefer JIS X 0213 than JIS X 0212.
+
+2001/03/14      w3m-(0.1.11-pre-kokb23)-m17n-0.16
+ * Add the conversion between JIS X 0213 and Unicode Extention B.
+ * Bugfix: conversion between JIS X 0213 and Unicode.
+ * Bugfix: treat UHC as Hangul.
+ * Ignore "search_conv" if "pre_conv" is ON.
+
+2001/03/09	w3m-(0.1.11-pre-kokb23)-m17n-0.15
+ * Improvement of wc_wchar_t (mainly for Unicode).
+ * Some bugfixes for Unicode.
+ * Ignore "use_gb12345_map" option when output with GBK or GB18030.
+ * When -dump option, "prev_conv" is always true.
+ * when -dump or -halfdump option, some proccessing is skiped.
+ * Get system charset from the environment variable LC_CTYPE -> LANG -> LC_ALL.
+ * Bugfixes: [w3m-dev 01724], [w3m-dev 01726], [w3m-dev 01752],
+   [w3m-dev 01753], [w3m-dev 01754]
+
+2001/03/06	w3m-(0.1.11-pre-kokb23)-m17n-0.14
+ * Support of Language tag (UTR#7).
+ * Bugfix: conversion between GB18030, Johab and Unicode.
+
+2001/03/04	w3m-(0.1.11-pre-kokb23)-m17n-0.13
+ * Support of GBK(CP936), GB18030, UHC(CP949) !
+ * Unicode mapping table of GB2312 and GB12345 became compatible with
+   CP936, GB18030. (Code point: 0xA1A4, 0xA1AA)
+ * Allow 0xFFFE and 0xFFFF in Uncide (due to compatibility with GB18030).
+ * Bugfix: code point of NBSP in Unicode.
+
+2001/03/03	w3m-(0.1.11-pre-kokb23)-m17n-0.12
+ * I wrote English README.m17n.
+
+-------------------------------------------
+Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+ http://www2u.biglobe.ne.jp/~hsaka/
+

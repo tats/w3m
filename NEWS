@@ -1,0 +1,186 @@
+w3m 0.5.1 - 2004-04-29
+
+* fix minor bugs
+ - build problem on some platform/some configuration
+ - authentication bug
+ - ipv6 FQDN resolv
+ - SSL verify
+ - search problem on different charset page/display
+ - cleanup LANG==JA
+ - DisplayCharset default
+ - w3mhelp.cgi charset
+
+w3m 0.5	- 2004-03-22
+
+* gettextize
+* m17n patch merged
+
+w3m 0.4.2 - 2003-09-23
+
+* options: -4, -6
+* configuration file in $(sysconfdir)/$(package)/
+* func: NEXT_VISITED, PREV_VISITED
+* autoconfiscate (partially)
+* rc: use_history
+
+w3m 0.4.1 - 2003-03-07
+
+* fix bugs
+  - completion segfault in lineinput
+  - incremental search
+  - URL pattern fix
+  - UFhalfclose bug
+  - allow pipe in shell command
+  - enhance ftp directory support
+  - linenumber in edit
+  - fix Bug#181897
+  - W3M_TTY problem fixed
+
+w3m 0.4 - 2003-02-24
+
+* rc: decode_url
+* func: RESHAPE
+* rc: fold_line
+* local cookie: passed via file named $LOCAL_COOKIE or posted not in url query
+* func: SEARCH can take arg
+* URL data: support
+* URL news:, nntp: newsgroup support
+* rc: nntpserver, nntpmode, max_news
+* rc: graphic_char
+* rc: use_proxy
+* rc: preserve_timestamp
+* func: REDO, UNDO
+* func: LIST, LIST_MENU, MOVE_LIST_MENU
+* func: ACCESSKEY, LINK_MENU
+* rc: display_ins_del
+* 2 stroke keybinding
+* func: MULTIMAP
+* func: CLOSE_TAB_MOUSE, MENU_MOUSE, MOVE_MOUSE, TAB_MOUSE
+* options: -N
+* func: NEXT, PREV
+* rc: image_map_list
+* rc: open_tab_dl_list
+* func: DOWNLOAD_LIST
+* env: https_proxy
+* rc: https_proxy
+* options: -show-option
+* rc: relative_wheel_scroll
+* rc: relative_wheel_scroll_ratio
+* rc: fixed_wheel_scroll_count
+* separate auxbindir and libdir (local-CGI, file:///$LIB/)
+* configure: -auxbindir
+* rc: disable_secret_security_check (for windows?)
+* tab browsing
+* rc: open_tab_blank, close_tab_back
+* func: CLOSE_TAB, NEW_TAB, NEXT_TAB, PREV_TAB, 
+* func:	TAB_GOTO, TAB_GOTO_RELATIVE
+* func: TAB_LEFT, TAB_LINK, TAB_MENU, TAB_RIGHT
+* pre_form: ~/.w3m/pre_form
+* rc: pre_form_file: pre_form configuration file
+
+----------------------------------------------------------------
+
+w3m 0.3.2.2 - 2002-12-06
+
+* security fix: html_quote for img alt attributes
+
+----------------------------------------------------------------
+
+w3m 0.3.2.1 - 2002-11-27
+
+* security fix: html_quote for frame contents
+* backport from w3m 0.3.2+cvs
+ - fix segmentation fault by large complex table.
+	[w3m-dev 03371][w3m-dev 03438]
+
+----------------------------------------------------------------
+w3m 0.3.2 - 2002-11-05
+
+* ~/.netrc: password for ftp
+* rc: display_lineinfo: display current line number
+* rc: passwd_file: passwd file for HTTP auth
+* func: MARK_WORD
+* rc: imgsize: obsoleted
+* w3m-img for framebuffer merged
+
+----------------------------------------------------------------
+w3m 0.3.1 - 2002-07-16
+
+* func: REINIT
+	INIT_MAILCAP deleted, use REINIT MAILCAP instead
+* func: DEFINE_KEY
+* rc: keymap_file
+* rc: use_dictcommand, dictcommand
+* rc: mark_all_pages
+* configure: -mandir
+* func: COMMAND
+* -title option: set buffer name to terminal title
+* X-Face support: USE_XFACE, require uncompface
+
+----------------------------------------------------------------
+w3m 0.3 - 2002-03-06
+
+* rc: mailer
+	if mailer is set, it will be used for simple mailto: URLs
+	otherwise, w3mmail.cgi will be used (when USE_W3MMAILER defined)
+* rc: max_load_image
+* rc: display_image, auto_image, image_scale, imgdisplay, imgsize
+* func: DISPLAY_IMAGE, STOP_IMAGE
+* w3m-img merged: w3m now can display images! see doc/README.img
+
+----------------------------------------------------------------
+w3m 0.2.5.1 - 2002-02-05
+
+* backport from w3m/0.2.5+cvs-1.299
+ - fix inputAnswer() and no "ssl_forbid_method" [w3m-dev 02985]
+ - fix SunOS 4.1.4 build problem [w3m-dev 02972]
+ - fix problem with Netscape-Enterprise WWW-authenticate [w3m-dev 02968]
+
+----------------------------------------------------------------
+w3m 0.2.5 - 2002-01-31
+
+* RFC2617: HTTP Digest authentication
+* rc: default_url=0(empty) 1(current URL) 2(link URL)
+* GOTO_RELATIVE (M-u)
+* highlight for incremental search
+* support migemo (romaji search)
+* use w3mmail.cgi for mailto: URL
+* support external URI loader
+* support -dump_extra ftp://
+* new regex implementation
+
+----------------------------------------------------------------
+w3m 0.2.4 - 2002-01-07
+
+* RFC2818 server identity check
+* incremental search (C-s, C-r)
+
+----------------------------------------------------------------
+w3m 0.2.3.2 - 2001-12-22
+
+* fix security hole in w3m/scripts
+
+----------------------------------------------------------------
+w3m 0.2.3.1 - 2001-12-20
+
+* sync with cvs repository
+* fix bug in configure
+
+----------------------------------------------------------------
+w3m 0.2.3 - 2001-12-20
+
+* command line option: -help, -version
+* new libgc included
+* new runtime option use_mark, nextpage_topline, label_topline, vi_prec_num
+   emacs_like_lineedit, ftppass_hostnamegen
+* RFC2732 support (IPv6)
+* new w3mhelp system
+* several configure changes
+* code cleanups, now gcc -Wall -Werror safe
+
+----------------------------------------------------------------
+w3m 0.2.2 - 2001-11-15
+
+* sync with w3m 0.2.1-inu-1.5
+* w3m maintained in sourceforge.net/projects/w3m
+

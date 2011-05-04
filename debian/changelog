@@ -1,35 +1,260 @@
-w3m (0.3-2.4) stable-security; urgency=high
+w3m (0.5.1-1) unstable; urgency=low
 
-  * Non-maintainer upload by the security team
-  * Rebuilt for security.debian.org
+  * new upstream version
 
- -- Martin Schulze <joey@infodrom.org>  Wed, 29 Jan 2003 19:38:40 +0100
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 29 Apr 2004 03:28:41 +0900
 
-w3m (0.3-2.3) stable; urgency=high
+w3m (0.5-7) unstable; urgency=low
 
-  * security fix upload to stable
-   - fix the code to allow internal tags from remote html pages
-     that would make it possible for remote attacker to get local information
-  * Backport security fixes from w3m-0.3.2.2 for the following issues
-    - html_quote for img alt attribute
-  * Backport security fixes from w3m-0.3.2.1 for the following issues
-    - html_quote for frame contents
+  * fix authentication mechanisms
+   closes: Bug#:244029: w3m: HTTP basic authentication annoyance
 
- -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 26 Dec 2002 15:37:17 +0000
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 18 Apr 2004 00:08:29 +0900
 
-w3m (0.3-2.2) stable-security; urgency=high
+w3m (0.5-6) unstable; urgency=low
 
-  * Backport security fixes from w3m-0.3.2.2 for the following issues
-    - html_quote for img alt attribute
+  * fix IPv6 resolution failure.
+    closes: Bug#241192
+  * debian/w3mconfig: update
+      dont provide document_charset, which will not be overrided by locale.
 
- -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  5 Dec 2002 17:32:38 +0000
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  2 Apr 2004 04:24:27 +0900
 
-w3m (0.3-2.1) stable-security; urgency=high
+w3m (0.5-5) unstable; urgency=low
 
-  * Backport security fixes from w3m-0.3.2.1 for the following issues
-    - html_quote for frame contents
+  * debian/control: add replaces: w3mmee, because old w3mmee provides
+    w3m.mo that conflicts with current w3m.
+    w3mmee (>= 0.3.p24.19-1) uses w3mmee.mo instead of w3m.mo, so
+    no need conflits.
+  * debian/w3mconfig: update
+      follow_locale 1
+      *_charset US-ASCII
+     closes: Bug#240702
 
- -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 27 Nov 2002 06:54:26 +0000
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 31 Mar 2004 01:38:37 +0900
+
+w3m (0.5-4) unstable; urgency=low
+
+  * fix search problem on different charset page than display charset
+    with migemo
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 24 Mar 2004 03:20:04 +0900
+
+w3m (0.5-3) unstable; urgency=low
+
+  * display_charset uses follow_locale
+  * use charset in w3mhelp.cgi
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 23 Mar 2004 02:45:01 +0900
+
+w3m (0.5-2) unstable; urgency=low
+
+  * w3m-img priority back to optional
+  * need update-po
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 22 Mar 2004 03:40:31 +0900
+
+w3m (0.5-1) unstable; urgency=low
+
+  * set priority to standard
+  * New upstream release
+    merge m17n patch.
+    closes: Bug#106840: ITP: w3m-m17n -- multilingualization of w3m
+    closes: Bug#96340 - no w3m-en/w3m-ja any more
+    closes: Bug#217509 - segfault if TERM is not set
+  * w3m-img no longer setuid. setgid to video. 
+    closes: Bug#200028, Bug#181631
+  * fix FTBFS on GNU/Hurd
+    closes: Bug#221890
+  * update config.{guess,sub} using autotools-dev
+    closes: Bug#216785
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 22 Mar 2004 00:53:03 +0900
+
+w3m (0.4.2-2) unstable; urgency=medium
+
+  * install conffiles as /etc/w3m/config. 
+    closes: Bug#214325, Bug#215537, Bug#215537
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 14 Oct 2003 00:40:51 +0900
+
+w3m (0.4.2-1.1) unstable; urgency=medium
+
+  * [debian/rules, debian/preinst, debian/postinst] Older versions of this
+    package had their conffile in the wrong location. Fixed that, and
+    introduced a way to preserve modifications made there. (Closes: #214325)
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sun, 12 Oct 2003 19:40:58 +0200
+
+w3m (0.4.2-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 23 Sep 2003 03:15:22 +0900
+
+w3m (0.4.1-6) unstable; urgency=low
+
+  * rebuild with libgc-dev
+  * build-depends: libgc6-dev => libgc-dev
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 20 Aug 2003 19:15:40 +0900
+
+w3m (0.4.1-5) unstable; urgency=low
+
+  * no need to build-depends: imlib-dev. closes: Bug#199583
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  2 Jul 2003 23:35:37 +0900
+
+w3m (0.4.1-4) unstable; urgency=low
+
+  * backport i-search fix
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 15 Apr 2003 01:24:21 +0900
+
+w3m (0.4.1-3) unstable; urgency=low
+
+  * backport SSL & compressed fix again
+    fix initialization of URLFile
+    check t_buf to avoid segfault when "w3m -B"
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 14 Apr 2003 11:45:31 +0900
+
+w3m (0.4.1-2) unstable; urgency=low
+
+  * backport SSL & compressed fix for https://alioth.debian.org/
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 14 Apr 2003 03:31:32 +0900
+
+w3m (0.4.1-1) unstable; urgency=low
+
+  * new upstream release: w3m 0.4.1
+  * remove tailing '?' from form action URL, closes: Bug#181897
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  7 Mar 2003 02:45:17 +0900
+
+w3m (0.4-2) unstable; urgency=low
+
+  * apply W3M_TTY fix for w3m-img on framebuffer
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 25 Feb 2003 01:31:03 +0900
+
+w3m (0.4-1) unstable; urgency=low
+
+  * New upstream release: w3m 0.4
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 24 Feb 2003 02:00:13 +0900
+
+w3m (0.3.2.2+0.4rc3-1) unstable; urgency=low
+
+  * w3m 0.4 release candidate 3
+  * use sigaction
+  * fix multipart.cgi
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 20 Feb 2003 00:04:12 +0900
+
+w3m (0.3.2.2+0.4rc2-1) unstable; urgency=low
+
+  * w3m 0.4 release candidate 2
+  * don't print missing w3mimgdisplay message at startup, closes: Bug#180814
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 17 Feb 2003 00:50:06 +0900
+
+w3m (0.3.2.2+0.4rc1-1) unstable; urgency=low
+
+  * w3m 0.4 release candidate 1
+  * fix relative URI, closes: Bug#172851
+  * don't say Unknown URI for unresolved URI, closes: Bug#169962
+  * fix tag parsing in <script>, closes: Bug#170506
+  * MOUSE_SCROLL_LINE run-time option, closes: Bug#87472
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 11 Feb 2003 03:22:06 +0900
+
+w3m (0.3.2.2-2) unstable; urgency=low
+
+  * g++3.2 transition
+    rebuilt with libgc6-dev 6.1-1 (libgc6c102)
+  * remove trailing spaces of http message header, closes: Bug#176981
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 19 Jan 2003 01:53:08 +0900
+
+w3m (0.3.2.2-1) unstable; urgency=high
+
+  * new upstream release: w3m 0.3.2.2
+    security fix: html_quote for img alt attribute
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  6 Dec 2002 02:02:24 +0900
+
+w3m (0.3.2.1-1) unstable; urgency=high
+
+  * new upstream release: w3m 0.3.2.1
+    security fix: html_quote for frame contents
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 27 Nov 2002 01:32:44 +0900
+
+w3m (0.3.2-2) unstable; urgency=low
+
+  * Added support for www-browser alternative, to comply with upcoming Debian
+    browser policy. Thanks to Joey Hess. closes: Bug#169965, Bug#161755
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 22 Nov 2002 02:37:01 +0900
+
+w3m (0.3.2-1) unstable; urgency=low
+
+  * new upstream release: w3m 0.3.2
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  5 Nov 2002 02:52:46 +0900
+
+w3m (0.3.1+0.3.2rc4-1) unstable; urgency=low
+
+  * w3m 0.3.2 release candidate 4
+  * support support for http://user:pass@www.url.com (but NOT RECOMMEND
+    because it doesn't seem to be legal as http URL).  closes: Bug#50456
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 31 Oct 2002 02:36:29 +0900
+
+w3m (0.3.1+0.3.2rc2-1) unstable; urgency=low
+
+  * New upstream release
+  * w3m-ssl merged, closes: Bug#166528
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 28 Oct 2002 00:52:52 +0900
+
+w3m (0.3.1+0.3.2rc1-1) unstable; urgency=low
+
+  * w3m 0.3.2 release candidate 1
+  * Fixed builddeps for Debian GNU/Hurd, closes: Bug#164685
+  * fix EXTERN_LINK does not work if href ends with ampersand
+      closes: Bug#139305
+  * fix wrong file presentation on large files, closes: Bug#157098
+  * default external browser changed to mozilla, closes: Bug#157732
+  * <sup><sub> is now properly supported, closes: Bug#164098
+  * MARK_URL does find mailto: URLs and
+    MARK_WORD marks current word as anchor so you can mark bare email
+    addresses, closes: Bug#85900
+  * fd 0 and 1 are not closed, but open /dev/null running some commands,
+    closes: Bug#162104
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 26 Oct 2002 01:37:04 +0900
+
+w3m (0.3.1-3) unstable; urgency=low
+
+  * w3m cvs-current (1.411)
+  - fix build problem on sparc, s390
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 20 Jul 2002 00:30:12 +0900
+
+w3m (0.3.1-2) unstable; urgency=low
+
+  * w3m cvs-current (1.409)
+    - w3m-img support framebuffer as well as x11
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 19 Jul 2002 00:19:41 +0900
+
+w3m (0.3.1-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 16 Jul 2002 02:41:31 +0900
 
 w3m (0.3-2) unstable; urgency=low
 

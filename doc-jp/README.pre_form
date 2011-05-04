@@ -1,0 +1,35 @@
+pre_form: 特定のサイトを開いた時に、form を予め設定する機能です。
+
+良く使う掲示板とかでは便利と思いますが、安全性が犠牲になるかも
+しれません。特に submit は気をつけて使って下さい。
+
+デフォルトの設定ファイルは ~/.w3m/pre_form です。
+設定フォーマットは、
+
+url       <url>|/<re-url>/
+form      [<name>] <action>
+text      <name>  <value>
+file      <name>  <value>
+password  <name>  <value>
+checkbox  <name>  <value>  [<checked>]
+radio     <name>  <value>
+section   <name>  <value>
+submit   [<name> [<value>]] 
+image    [<name> [<value>]] 
+textarea  <name>
+<value>
+   :
+/textarea
+
+です。
+<action> が設定してある時は、一致する action 属性を持つ form のみ
+設定します。
+text, file, password, select, textarea は一致する name 属性を持つ
+input, select または textarea 要素の value 属性を設定します。
+checkbox, radio は name 属性と value 属性が一致する input 要素を
+check します。
+<checked> が 0、no または off の場合は checkbox の check を外します。 
+submit, image の場合、<name> が設定してある時は、一致する name 属性
+(と value 属性)を持つ input 要素を submit します。<name> を設定して
+いない場合は、最後の input type=submit 要素を submit します。
+<name> や <value> は、シェルの様に \,'〜',"〜" でクォート可能です。

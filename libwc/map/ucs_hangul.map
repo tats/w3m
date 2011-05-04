@@ -1,0 +1,14 @@
+/*
+  This hangul table was made from UnicodeData-3.0.0.txt.
+*/
+
+#define N_ucs_hangul_map 6
+
+static wc_map ucs_hangul_map[ N_ucs_hangul_map ] = {
+  { 0x1100, 0x11F9 },	/* HANGUL CHOSEONG, HANGUL JUNGSEONG */
+  { 0x3131, 0x318E },	/* HANGUL LETTER */
+  { 0x3200, 0x321C },	/* PARENTHESIZED HANGUL */
+  { 0x3260, 0x327B },	/* CIRCLED HANGUL */
+  { 0xAC00, 0xD7A3 },	/* HANGUL */
+  { 0xFFA0, 0xFFDC },	/* HALFWIDTH HANGUL LETTER */
+};

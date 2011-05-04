@@ -1,0 +1,266 @@
+#!/usr/local/bin/ruby
+
+#  HTML reference generator
+#  by A.Ito 1999/3/30
+
+require 'kconv'
+
+###########################################################################
+class URL
+  attr 'scheme'
+  attr 'host'
+  attr 'port'
+  attr 'file'
+  attr 'label'
+  def initialize(str)
+    if /([a-zA-Z+\-]+):(.*)/ =~ str then
+      @scheme = $1
+      str = $2
+    else
+      @scheme = 'unknown'
+    end
+    hostpart = ''
+    if %r'//([^/]*)(/.*)' =~ str then
+      hostpart = $1
+      str = $2
+    elsif %r'//([^/]*)$' =~ str then
+      hostpart = str
+      str = ''
+    end
+    if hostpart != '' then
+      if /(.*):(\d+)/ =~ hostpart then
+        @host = $1
+        @port = $2
+      else
+        @host = hostpart
+        @port = ''
+      end
+    else
+      @host = @port = ''
+    end
+    if /(.*)#(.*)/ =~ str then
+      @file = $1
+      @label = $2
+    else
+      @file = str
+      @label = ''
+    end
+  end
+  def to_s
+    s = "#{@scheme}:"
+    if s == 'news' or s == 'mailto' then
+      return s+@file
+    end
+    s += "//"+@host
+    s += ":"+@port if @port.size > 0
+    s += @file
+    s += "#"+@label if @label.size > 0
+    s
+  end
+  def complete(current)
+    @scheme = current.scheme  if @scheme == 'unknown'
+    @port = current.port if @host == '' and @port == ''
+    @host = current.host if @host == ''
+    unless @file =~ %r'^/' then
+      @file = File.expand_path(File.dirname(current.file)+'/'+@file)
+    end
+    self
+  end
+end
+
+class Tag
+  def initialize(str)
+    if str =~ /<(.+)>/ then
+      str = $1
+    end
+    tags = str.split
+    @tagname = tags.shift.downcase
+    @vals = {}
+    tags.each do |t|
+      if t =~ /=/ then
+	tn,tv = t.split(/\s*=\s*/,2)
+	tv.sub!(/^"/,"")
+	tv.sub!(/"$/,"")
+	@vals[tn.downcase] = tv
+      else
+	@vals[t.downcase] = TRUE
+      end
+    end
+  end
+  def tagname
+    return @tagname
+  end
+  def each
+    @vals.each do |k,v|
+      yield k,v
+    end
+  end
+  def switch(k)
+    return @vals[k]
+  end
+  def to_s
+    if tagname =~ /!--/ then
+      return ''
+    end
+    t = "<"+tagname
+    if @vals.size == 0 then
+      return t+">"
+    end
+    each do |a,v|
+      if v == true then
+        t += " #{a}"
+      else
+        t += " #{a}=\"#{v}\""
+      end
+    end
+    t+">"
+  end
+end
+
+class TokenStream
+  TAG_START = ?<
+  TAG_END = ?>
+  AMP_START = ?&
+  AMP_END = ?;
+  
+  def initialize(file)
+    if file.kind_of?(IO) then
+      @f = file
+    else
+      @f = File.new(file)
+    end
+    @buf = nil
+    @bpos = 0
+  end
+  
+  def read_until(endsym)
+    complete = FALSE
+    tag = []
+    begin
+      while @bpos < @buf.size
+	c = @buf[@bpos]
+	if c == endsym then
+	  tag.push(c.chr)
+	  complete = TRUE
+	  @bpos += 1
+	  break
+	end
+	if c == 10 || c == 13 then
+	  tag.push(' ')
+	else
+	  tag.push(c.chr)
+	end
+	@bpos += 1
+      end
+      unless complete
+	@buf = @f.gets
+	@bpos = 0
+	break if @f.eof?
+      end
+    end until complete
+    return tag.join('')
+  end
+    
+  def get
+    while TRUE
+      if @buf.nil? then
+	@buf = @f.gets
+	if @f.eof? then
+	  return nil
+	end
+        @buf = Kconv.toeuc(@buf)
+	@bpos = 0
+      end
+      if @buf[@bpos] == TAG_START then
+	return Tag.new(read_until(TAG_END))
+      elsif @buf[@bpos] == AMP_START then
+	return read_until(AMP_END)
+      else
+	i = @bpos
+	while i < @buf.size && @buf[i] != TAG_START && @buf[i] != AMP_START
+	  i += 1
+	end
+	r = @buf[@bpos,i-@bpos]
+	if i == @buf.size then
+	  @buf = nil
+	else
+	  @bpos = i
+	end
+	redo if r =~ /^\s+$/
+	return r
+      end
+    end
+  end
+  public :eof?
+  def eof?
+    @f.eof?
+  end
+end
+
+################################ MAIN ####################################
+
+refs = []
+refnum = 0
+body_finished = false
+html_finished = false
+currentURL = nil
+immediate_ref = false
+
+while ARGV[0] =~ /^-/
+  case ARGV.shift
+  when '-url'
+    currentURL = URL.new(ARGV.shift)
+  when '-u'
+    immediate_ref = true
+  end
+end
+
+if ARGV.size > 0 then
+  f = TokenStream.new(ARGV[0])
+else
+  f = TokenStream.new(STDIN)
+end
+
+until f.eof?
+  tok = f.get
+  if tok.kind_of?(Tag) then
+    if tok.tagname == 'a' and !tok.switch('href').nil? then
+      refs[refnum] = tok.switch('href')
+      refnum += 1
+    elsif tok.tagname == '/a' then
+      if immediate_ref then
+        r = refs[refnum-1]
+        if !currentURL.nil? then
+          r = URL.new(r).complete(currentURL).to_s
+        end
+        print "[#{r}]"
+      else
+        print "[#{refnum}]"
+      end
+    elsif tok.tagname == '/body' then
+      body_finished = true
+      break
+    elsif tok.tagname == '/html' then
+      html_finished = true
+      break
+    end
+    print tok.to_s
+  elsif !tok.nil? then
+    print tok
+  end
+end
+if !immediate_ref and refs.size > 0 then
+  print "<hr><h2>References</h2>\n"
+  for i in 0..refs.size-1
+    if currentURL.nil? then
+      r = refs[i]
+    else
+      r = URL.new(refs[i])
+      r.complete(currentURL)
+      r = r.to_s
+    end
+    print "[#{i+1}] #{r}<br>\n"
+  end
+end
+print "</body>\n" unless body_finished
+print "</html>\n" unless html_finished

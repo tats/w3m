@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>THE DOCUMENTS FOR W3M</TITLE>
+</HEAD>
+
+<BODY>
+
+<!-- このあたりに w3m のロゴ(ってないか？) とか -->
+<!-- w3m: WWW wo Miru Tool  version @W3M.version@ とか -->
+<!-- (C) Copyright by @W3M.author@ March 23, 1999 とか -->
+<!-- を入れておくべきかな？ -->
+
+<H1><A NAME="index">索引</A></H1>
+<OL>
+	<LI><A HREF="@DOC.prologue@" NAME="prologue">はじめに</A> <!-- README の“1. はじめに”の部分 -->
+		<UL>
+			<LI><A HREF="@DOC.prologue@#summary">w3m とは</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.prologue@#glossary">用語の説明</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.prologue@#disclaimer">注意事項</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.copyright@">著作権、ライセンス</A>
+			<LI><A HREF="@DOC.prologue@#confirmation">動作確認 OS</A><IMG SRC=dummy ALT="[済]">
+		</UL>
+	<LI><A HREF="@DOC.outline@" NAME="outline">概要編</A>
+		<UL>
+			<LI><A HREF="@DOC.outline@#install">インストールの概要</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.outline@#operation">操作方法の概要</A><IMG SRC=dummy ALT="[済]">
+				<UL>
+					<LI><A HREF="@DOC.outline@#display">表示内容の説明</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.outline@#basic">基本的な使い方</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.outline@#help">ヘルプの参照</A><IMG SRC=dummy ALT="[済]">
+				</UL>
+		</UL>
+	<LI><A HREF="@DOC.detail@" NAME="detail">詳細編</A>
+		<UL>
+			<LI><A HREF="@DOC.install@" NAME="install">インストールの詳細</A>
+				<UL>
+					<LI><A HREF="@DOC.install@#get_w3m">w3m 入手方法</A><IMG SRC=dummy ALT="[済]">
+						<UL>
+							<LI><A HREF="@DOC.install@#w3m_home">w3m Homepage</A><IMG SRC=dummy ALT="[済]">
+							<LI><A HREF="@DOC.install@#BBS">w3m に関する掲示板</A><IMG SRC=dummy ALT="[済]">
+						</UL>
+					<LI><A HREF="@DOC.install@#require">必要な物</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#configure">configure について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#config_h">config.h について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#make">make について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#tips">他の OS でインストールする際の Tips</A><IMG SRC=dummy ALT="[済]">
+				</UL>
+			<LI><A HREF="@DOC.operation@" NAME="operation">w3m 操作法</A> <!-- キー操作説明 -->
+				<UL>
+					<LI><A HREF="@DOC.operation@#buffer">バッファ操作</A>
+					<LI><A HREF="@DOC.operation@#mouse">マウス操作</A>
+					<LI><A HREF="@DOC.operation@#line_edit">最下行入力</A>
+					<LI><A HREF="@DOC.operation@#menu">メニュー操作</A>
+				</UL>
+			<LI><A HREF="@DOC.configuration@" NAME="configuration">各種設定</A>
+				<UL>
+					<LI><A HREF="@DOC.configuration@#option">起動オプション</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.configuration@#environment">環境変数</A>
+					<LI><A HREF="@DOC.configuration@#bookmark">bookmark ファイル</A>
+					<LI><A HREF="@DOC.configuration@#option_panel">オプションパネル</A>
+						<UL>
+							<LI><A HREF="@DOC.configuration@#external_viewer">外部ビューアの編集</A>
+						</UL>
+					<LI><A HREF="@DOC.configuration@#other_customize">その他カスタマイズ</A>
+						<UL>
+							<LI><A HREF="@DOC.configuration@#keymap">keymap</A>
+							<LI><A HREF="@DOC.configuration@#menu">menu</A>
+						</UL>
+				</UL>
+			<LI><A HREF="@DOC.function@" NAME="function">機能詳細</A>
+				<UL>
+					<LI><A HREF="@DOC.function@#url">対応している URL</A>
+					<LI><A HREF="@DOC.function@#html">対応している HTML</A>
+					<LI><A HREF="@DOC.function@#ssl">SSL</A>
+					<LI><A HREF="@DOC.function@#cookie">cookie</A>
+					<LI><A HREF="@DOC.function@#local_CGI">ローカル CGI 機能</A>
+				</UL>
+			<LI><A HREF="@DOC.FAQ@" NAME="faq">FAQ</A>
+				<UL>
+					<LI><A HREF="@DOC.FAQ@#faq">よく聞かれる質問とその答え</A>
+					<LI><A HREF="@DOC.FAQ@#tips">Tips</A>
+				</UL>
+			<LI><A HREF="@DOC.developement@" NAME="developement">開発ドキュメント</A>
+				<UL>
+                    <LI><A HREF="@DOC.developement@#story">w3m の開発について</A>
+					<LI><A HREF="@DOC.developement@#known_bugs">現在判明しているバグ</A>
+					<LI><A HREF="@DOC.developement@#ToDo">ToDo</A>
+					<LI><A HREF="@DOC.developement@#history">履歴</A>
+					<LI><A HREF="@DOC.developement@#policy">開発ポリシー</A>
+					<LI><A HREF="@DOC.developement@#tips">開発者向けTips</A>
+				</UL>
+			<LI><A HREF="@DOC.community@" NAME="community">w3m コミュニティ</A>
+				<UL>
+					<LI><A HREF="@DOC.community@#ML">メーリングリスト</A>
+					<LI><A HREF="@DOC.community@#links">関連 Web</A>
+				</UL>
+			<LI><A HREF="@DOC.copyright@" NAME="copyright">Copyright</A>
+				<UL>
+					<LI><A HREF="@DOC.copyright@#copyright">著作権、ライセンス</A>
+					<LI><A HREF="@DOC.copyright@#thanks">謝辞</A>
+				</UL>
+		</UL>
+</OL>
+
+</BODY>
+
+</HTML>

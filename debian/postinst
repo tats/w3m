@@ -7,6 +7,15 @@ case "$1" in
             /usr/bin/w3m 25 \
 	    --slave /usr/share/man/man1/pager.1.gz pager.1.gz \
 	    /usr/share/man/man1/w3m.1.gz
+       update-alternatives --quiet --install /usr/bin/www-browser www-browser \
+           /usr/bin/w3m 25 \
+	   --slave /usr/share/man/man1/www-browser.1.gz www-browser.1.gz \
+	   /usr/share/man/man1/w3m.1.gz
+	# Remove the conffile with the wrong location (the binary never used
+	# it) that may be present from an older version.
+	# (In our preinst, we've already ensured the sysadmin had a chance
+	# of preserving any configuration made in it)
+	rm -f /etc/w3m/w3mconfig
 	;;
   *)
 esac

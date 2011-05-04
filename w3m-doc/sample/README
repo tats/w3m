@@ -1,0 +1,41 @@
+
+使い方
+  perl w3mdoc.pl sample.wd > sample.html
+
+展開されるもの
+
+* @xxx.yyy@
+
+  @define 〜 @end 内で定義された値に展開される。
+
+* @YYY(xxx)@
+
+  @code 〜 @end 内で定義された関数を呼び出して展開される。
+
+  例)
+     URL(xxx)     xxx.url
+     LINK(xxx)    <A HREF="xxx.url">xxx.title</A>
+     MAILTO(xxx)  <A HREF="mailto:xxx.address">xxx.name</A>
+
+コマンド一覧
+
+* 定義
+  @define
+    xxx.yyy    zzz
+  @end
+
+  xxx.yyy を zzz と定義する。xxx は以下の関数の引数にもなる。
+  例は define.wd を参照。
+
+* コード(関数定義)
+  @code
+    コード
+  @end
+
+  w3mdoc を実装している言語のコードを直接書く。とりあえず perl5。
+  例は html.wd を参照。
+
+* インクルード
+  @include file
+
+  ファイルを include する。

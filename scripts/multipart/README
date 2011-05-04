@@ -1,0 +1,24 @@
+
+Content-Type: multipart/* を扱う local-CGI
+
+  Content-Type: multipart/* なファイルを扱うための local-CGI です。
+  主に mailx などでメールを PAGER="w3m -m" で読む場合を想定しています。
+
+インストール
+
+  * make install
+    必要なら PERL, NKF, LIBDIR を設定してください。
+
+  * mailcap を ~/.w3m/mailcap にマージ
+    multipart.cgi のパスに注意
+
+  * w3m の Option Setting Panel で、
+   『保存時に Content-Transfer-Encoding をデコードする』を ON
+    添付ファイルの保存時に便利です。
+
+必要なもの
+
+  * NKF モジュールまたは nkf
+    文字コード変換や MIME ヘッダのデコードにを使ってます。
+    気にいらなければ変えてください。
+

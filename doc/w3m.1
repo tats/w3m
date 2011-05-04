@@ -1,0 +1,192 @@
+.nr N -1
+.nr D 5
+.TH W3M 1 Local
+.UC 4
+.SH NAME
+w3m \- a text based Web browser and pager
+.SH SYNOPSIS
+.B w3m
+[options] [URL or filename]
+.PP
+Use "w3m -h" to display a complete list of current options.
+.SH DESCRIPTION
+.\" This defines appropriate quote strings for nroff and troff
+.ds lq \&"
+.ds rq \&"
+.if t .ds lq ``
+.if t .ds rq ''
+.\" Just in case these number registers aren't set yet...
+.if \nN==0 .nr N 10
+.if \nD==0 .nr D 5
+.I
+w3m
+is a World Wide Web (WWW) text based client. It has English and
+Japanese help files and an option menu and can be configured to
+use either language. It will display hypertext markup language
+(HTML) documents containing links to files residing on the local
+system, as well as files residing on remote systems. It can
+display HTML tables and frames.
+In addition, it can be used as a "pager" in much the same manner
+as "more" or "less".
+Current versions of
+.I
+w3m
+run on
+Unix (Solaris, SunOS, HP-UX, Linux, FreeBSD, and EWS4800)
+and on
+Microsoft Windows 9x/NT.
+.PP
+.SH OPTIONS
+At start up, \fIw3m\fR will load any local
+file or remote URL specified at the command
+line.  For help with runtime options, press \fB"H"\fR
+while running \fIw3m\fR.
+Command line options are:
+.PP
+.TP
+.B -t tab
+set tab width
+.TP
+.B -r
+ignore backspace effect
+.TP
+.B -l line
+# of preserved line (default 10000)
+.TP
+.B -B
+load bookmark
+.TP
+.B -bookmark file
+specify bookmark file
+.TP
+.B -T type
+specify content-type
+.TP
+.B -m
+internet message mode
+.TP
+.B -v
+visual startup mode
+.TP
+.B -M
+monochrome display
+.TP
+.B -F
+automatically render frame
+.TP
+.B -dump
+dump formatted page into stdout
+.TP
+.B -cols width
+specify column width (used with -dump)
+.TP
+.B -ppc count
+specify the number of pixels per character (default 8.0)
+Larger values will make tables narrower.
+.TP
+.B -dump_source
+dump page source into stdout
+.TP
+.B -dump_head
+dump response of HEAD request into stdout
+.TP
+.B -dump_both
+dump HEAD and source into stdout
+.TP
+.B -dump_extra
+dump HEAD, source, and extra information into stdout
+.TP
+.B -post file
+use POST method with file content
+.TP
+.B -header string
+insert string as a header
+.TP
+.B +<num>
+goto <num> line
+.TP
+.B -num
+show line number
+.TP
+.B -no-proxy
+don't use proxy
+.TP
+.B -no-mouse
+don't use mouse
+.TP
+.B -cookie
+use cookie.
+.TP
+.B -no-cookie
+don't use cookie
+.TP
+.B -pauth user:pass
+proxy authentication
+.TP
+.B -S
+squeeze multiple blank lines
+.TP
+.B -W
+toggle wrap search mode
+.TP
+.B -X
+don't use termcap init/deinit
+.TP
+.B -title [=TERM]
+set buffer name to termianl title string. 
+If TERM is specified, use the TERM style title configuration.
+.TP
+.B -o opt=value
+assign value to config option
+.TP
+.B -show-option
+show all available config option
+.TP
+.B -config file
+specify config file
+.TP
+.B -help
+show usage
+.TP
+.B -version
+show w3m version
+.TP
+.B -debug
+DO NOT USE
+.SH EXAMPLES
+.TP
+To use w3m as a pager:
+.br
+$ ls | w3m
+.br
+.TP
+To use w3m to translate HTML files:
+.br
+$ cat foo.html | w3m -T text/html
+.TP
+or
+.br
+$ cat foo.html | w3m -dump -T text/html >foo.txt
+.SH NOTES
+This is the
+.I
+w3m
+0.2.1 Release.
+.PP
+Additional information about
+.I
+w3m
+may be found on its Japanese language Web site located at:
+  http://w3m.sourceforge.net/index.ja.html
+.br
+or on its English version of the site at:
+  http://w3m.sourceforge.net/index.en.html
+.SH ACKNOWLEDGMENTS
+.I
+w3m
+has incorporated code from several sources.
+Hans J. Boehm, Alan J. Demers, Xerox Corp. and Silicon Graphics
+have the copyright of the GC library comes with w3m package.
+Users have contributed patches and suggestions over time.
+.SH AUTHOR
+Akinori ITO <aito@fw.ipsj.or.jp>

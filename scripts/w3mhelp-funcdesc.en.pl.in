@@ -1,0 +1,48 @@
+# charset
+$charset = 'US-ASCII';
+
+# Buffer selection mode
+
+%buf_funcdesc = (
+ 'BUF:PREV', 'Select previous buffer',
+ 'BUF:NEXT', 'Select next buffer',
+ 'BUF:DELETE', 'Delete current buffer',
+ 'BUF:GO', 'Go to the selected buffer',
+);
+
+%lineedit_funcdesc = (
+ 'LINEEDIT:FORWARD', 'Move cursor forward',
+ 'LINEEDIT:BACK', 'Move cursor backward',
+ 'LINEEDIT:BS',  'Delete previous character',
+ 'LINEEDIT:DEL', 'Delete current character',
+ 'LINEEDIT:KILL_AFTER', 'Kill everything after cursor',
+ 'LINEEDIT:KILL_BEFORE', 'Kill everything before cursor',
+ 'LINEEDIT:TOP', 'Move to the top of line',
+ 'LINEEDIT:BOTTOM', 'Move to the bottom of line',
+ 'LINEEDIT:PREV', 'Fetch the previous string from the history list',
+ 'LINEEDIT:NEXT', 'Fetch the next string from the history list',
+ 'LINEEDIT:EDITOR', 'Edit with external editor',
+ 'LINEEDIT:COMPLETE', 'Complete filename',
+ 'LINEEDIT:ACCEPT', 'Accept',
+);
+
+%menu_funcdesc = (
+ 'MENU:SELECT', 'Select item',
+ 'MENU:CLOSE', 'Close menu',
+ 'MENU:CANCEL', 'Back',
+ 'MENU:DOWN', 'Move to next item',
+ 'MENU:UP', 'Move to previous item',
+ 'MENU:LINE_UP', 'Scroll up one item',
+ 'MENU:LINE_DOWN', 'Scroll down one item',
+ 'MENU:TOP', 'Go to top item',
+ 'MENU:LAST', 'Go to last item',
+ 'MENU:NEXT', 'Go to next page',
+ 'MENU:PREV', 'Go to previous page',
+ 'MENU:SEARCH_FORE', 'Search foreward',
+ 'MENU:SEARCH_BACK', 'Search backward',
+ 'MENU:SEARCH_NEXT', 'Search next regexp',
+ 'MENU:SEARCH_PREV', 'Search previous regexp',
+ 'MENU:SUSPEND', 'Suspend',
+);
+
+1;

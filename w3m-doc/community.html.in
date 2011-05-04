@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>W3M&nbsp;COMMUNITY&nbsp;- w3m コミュニティ -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">w3m コミュニティ</A></H1>
+<DIV>
+<!-- w3mコミュニティに関して -->
+</DIV>
+	<UL>
+        <LI><A HREF="#ML">メーリングリスト</A>
+        <LI><A HREF="#links">関連 Web</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="ML">メーリングリスト</A></H2>
+<!-- w3m-dev, w3m-dev-en MLの紹介 -->
+<DIV>
+<P>w3m 開発者用メーリングリスト
+</DIV>
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="links">関連 Web</A></H2>
+<!-- w3mに関係しているWeb -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

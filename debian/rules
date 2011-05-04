@@ -8,40 +8,41 @@
 
 export DH_COMPAT=3
 
-nossl:
-	@echo already nossl version environments
+ifeq ($(DEB_BUILD_GNU_SYSTEM),linux)
+  DEVS=x11,fb+s
+else
+  DEVS=x11
+endif
 
-ssl:
-	@echo change to ssl version...
-	@cd debian && for i in *-ssl; do \
-		f=`echo $$i | sed -e 's/-ssl//'`; \
-		mv $$f $$f-nossl; \
-		mv $$i $$f; \
-		echo -n "$$f "; \
-	done
-	@chmod +x debian/rules
-	@echo done
+confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
+	--mandir=/usr/share/man \
+	--with-gc --with-ssl \
+	--with-migemo="migemo -t egrep /usr/share/migemo/migemo-dict" \
+	--with-editor=/usr/bin/sensible-editor \
+	--enable-gopher \
+	--enable-image=$(DEVS) \
+	--enable-m17n --enable-unicode --enable-nls
 
-include debian/rules.mk
+builddir := .
 
 build: build-stamp
-build-stamp: configure-stamp
+build-stamp: 
 	dh_testdir
 	# Add here commands to compile the package.
-	(echo "# Configuration at "`hostname`; cat debian/config.param) > $(buildjadir)/config.param
-	cd $(buildjadir) && ./configure -yes -model=cookie -lang=JA -cflags="-O2 -DDEBIAN" -code=E --gc-includedir=/usr/include/gc  --mimetypes=/etc/mime.types
-	cd $(buildjadir) && LC_ALL=C $(MAKE) OPTS="-Wall -g"
-	(echo "# Configuration at "`hostname`; cat debian/config.param) > $(buildendir)/config.param
-	cd $(buildendir) && ./configure -yes -model=cookie -lang=EN -cflags="-O2 -DDEBIAN" --gc-includedir=/usr/include/gc  --mimetypes=/etc/mime.types
-	cd $(buildendir) && LC_ALL=C $(MAKE) OPTS="-Wall -g"
+	-cp /usr/share/misc/config.guess .
+	-cp /usr/share/misc/config.sub .
+	cd $(builddir) && ./configure $(confargs)
+	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
+	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -rf $(buildtree)
+	-test -f $(builddir)/Makefile && cd $(builddir) && $(MAKE) distclean
+	-rm -f $(builddir)/po/*.gmo
+	-rm -f 
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
-	rm -f debian/docs debian/examples
 	dh_clean
 
 install: install-stamp
@@ -52,8 +53,8 @@ install-stamp: build-stamp
 	dh_installdirs
 
 	# Add here commands to install the package into debian/w3m.
-	cd $(buildendir) && $(MAKE) install DESTDIR=`pwd`/../../debian/w3m
-	cd $(buildendir)/Bonus && find . -type f -perm 0100 -print | \
+	cd $(builddir) && $(MAKE) install DESTDIR=`pwd`/debian/w3m
+	cd $(builddir)/Bonus && find . -type f -perm 0100 -print | \
 	while read i; \
 	do \
 		sed -e 's:/usr/local/bin/ruby:/usr/bin/ruby:' \
@@ -61,16 +62,7 @@ install-stamp: build-stamp
 			$$i \
 			> `pwd`/../../../debian/w3m/usr/share/doc/w3m/examples/$$i ; \
 	done
-	cd `pwd`/debian/w3m && mv usr/bin/w3m usr/bin/w3m-en
-	cd `pwd`/debian/w3m && mv usr/lib/w3m/w3mbookmark usr/lib/w3m/w3mbookmark-en
-	cd `pwd`/debian/w3m && mv usr/lib/w3m/w3mhelperpanel usr/lib/w3m/w3mhelperpanel-en
-	install -m 755 debian/w3m.sh `pwd`/debian/w3m/usr/bin/w3m
-	install -m 755 debian/w3mbookmark.sh `pwd`/debian/w3m/usr/lib/w3m/w3mbookmark
-	install -m 755 debian/w3mhelperpanel.sh `pwd`/debian/w3m/usr/lib/w3m/w3mhelperpanel
-	install -m 755 $(buildjadir)/w3m `pwd`/debian/w3m/usr/bin/w3m-ja
-	install -m 755 $(buildjadir)/w3mbookmark `pwd`/debian/w3m/usr/lib/w3m/w3mbookmark-ja
-	install -m 755 $(buildjadir)/w3mhelperpanel `pwd`/debian/w3m/usr/lib/w3m/w3mhelperpanel-ja
-	install -m 644 debian/w3mconfig `pwd`/debian/w3m/etc/w3m/w3mconfig
+	install -m 644 debian/w3mconfig `pwd`/debian/w3m/etc/w3m/config
 	install -m 644 debian/mailcap `pwd`/debian/w3m/etc/w3m/mailcap
 	dh_movefiles --sourcedir=debian/w3m
 	touch install-stamp
@@ -84,12 +76,10 @@ binary-arch: build-stamp install-stamp
 #	dh_testversion
 	dh_testdir -a
 	dh_testroot -a
-	sed -e 's:^:$(builddir)/:' debian/docs.in > debian/docs
 	dh_installdocs -a
 	cp -a $(builddir)/doc-jp/* `pwd`/debian/w3m/usr/share/doc/w3m/ja/
-	rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.kokb
+	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.kokb
 	-rm -rf `pwd`/debian/w3m/usr/share/doc/w3m/ja/CVS
-	sed -e 's:^:$(builddir)/:' debian/examples.in > debian/examples
 	cp debian/README.Debian.w3m-img `pwd`/debian/w3m-img/usr/share/doc/w3m-img/README.Debian
 	dh_installexamples -a
 	cd `pwd`/debian/w3m/usr/share/doc/w3m && \
@@ -106,11 +96,9 @@ binary-arch: build-stamp install-stamp
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	dh_strip -a
 	dh_compress -a
-	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-ja.1.gz
-	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-en.1.gz
-	dh_link usr/share/man/ja/man1/w3m.1.gz usr/share/man/ja/man1/w3m-ja.1.gz
-	dh_link usr/share/man/ja/man1/w3m.1.gz usr/share/man/ja/man1/w3m-en.1.gz
 	dh_fixperms -a
+	chgrp video debian/w3m-img/usr/lib/w3m/w3mimgdisplay
+	chmod g+s debian/w3m-img/usr/lib/w3m/w3mimgdisplay
 	dh_installdeb -a
 	dh_shlibdeps -a
 	dh_gencontrol -a

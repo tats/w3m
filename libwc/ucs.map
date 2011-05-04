@@ -1,0 +1,553 @@
+
+#include "map/jisx0201k_ucs.map"
+#include "map/iso88591_ucs.map"
+#include "map/iso88592_ucs.map"
+#include "map/iso88593_ucs.map"
+#include "map/iso88594_ucs.map"
+#include "map/iso88595_ucs.map"
+#include "map/iso88596_ucs.map"
+#include "map/iso88597_ucs.map"
+#include "map/iso88598_ucs.map"
+#include "map/iso88599_ucs.map"
+#include "map/iso885910_ucs.map"
+#include "map/iso885911_ucs.map"
+#include "map/iso885913_ucs.map"
+#include "map/iso885914_ucs.map"
+#include "map/iso885915_ucs.map"
+#include "map/iso885916_ucs.map"
+
+#include "map/cp437_ucs.map"
+#include "map/cp737_ucs.map"
+#include "map/cp775_ucs.map"
+#include "map/cp850_ucs.map"
+#include "map/cp852_ucs.map"
+#include "map/cp855_ucs.map"
+#include "map/cp856_ucs.map"
+#include "map/cp857_ucs.map"
+#include "map/cp860_ucs.map"
+#include "map/cp861_ucs.map"
+#include "map/cp862_ucs.map"
+#include "map/cp863_ucs.map"
+#include "map/cp864_ucs.map"
+#include "map/cp865_ucs.map"
+#include "map/cp866_ucs.map"
+#include "map/cp869_ucs.map"
+#include "map/cp874_ucs.map"
+#include "map/cp1006_ucs.map"
+#include "map/cp1250_ucs.map"
+#include "map/cp1251_ucs.map"
+#include "map/cp1252_ucs.map"
+#include "map/cp1253_ucs.map"
+#include "map/cp1254_ucs.map"
+#include "map/cp1255_ucs.map"
+#include "map/cp1256_ucs.map"
+#include "map/cp1257_ucs.map"
+#include "map/cp1258_ucs.map"
+#include "map/tcvn5712_ucs.map"
+#include "map/viscii11_ucs.map"
+#include "map/vps_ucs.map"
+#include "map/koi8r_ucs.map"
+#include "map/koi8u_ucs.map"
+#include "map/nextstep_ucs.map"
+
+#include "map/jisx0208x0212x0213_ucs.map"
+#include "map/jisx0213_ucs_p2.map"
+#include "map/gb2312_ucs.map"
+#include "map/cns11643_ucs.map"
+#include "map/ksx1001_ucs.map"
+#include "map/big5_ucs.map"
+#include "map/hkscs_ucs.map"
+#include "map/hkscs_ucs_p2.map"
+#include "map/gb12345_ucs.map"
+#include "map/johab_ucs.map"
+#include "map/sjis_ext_ucs.map"
+#include "map/gbk_ucs.map"
+#include "map/uhc_ucs.map"
+
+static wc_uint16 *cs94_ucs_map[] = {
+  NULL,			/* 40 */
+  NULL,			/* 41 */
+  NULL,			/* 42 (US_ASCII) */
+  NULL,			/* 43 */
+  NULL,			/* 44 */
+  NULL,			/* 45 */
+  NULL,			/* 46 */
+  NULL,			/* 47 */
+  NULL,			/* 48 */
+  jisx0201k_ucs_map,	/* 49 (JIS X 0201 Kana) */
+  NULL,			/* 4A (JIS X 0201) */
+  NULL,			/* 4B */
+  NULL,			/* 4C */
+  NULL,			/* 4D */
+  NULL,			/* 4E */
+  NULL,			/* 4F */
+  NULL,			/* 50 */
+  NULL,			/* 51 */
+  NULL,			/* 52 */
+  NULL,			/* 53 */
+  NULL,			/* 54 (GB 1988) */
+};
+
+static wc_uint16 *cs96_ucs_map[] = {
+  NULL,			/* 40 */
+  iso88591_ucs_map,	/* 41 (ISO 8859-1) */
+  iso88592_ucs_map,	/* 42 (ISO 8859-2) */
+  iso88593_ucs_map,	/* 43 (ISO 8859-3) */
+  iso88594_ucs_map,	/* 44 (ISO 8859-4) */
+  NULL,			/* 45 */
+  iso88597_ucs_map,	/* 46 (ISO 8859-7) */
+  iso88596_ucs_map,	/* 47 (ISO 8859-6) */
+  iso88598_ucs_map,	/* 48 (ISO 8859-8) */
+  NULL,			/* 49 */
+  NULL,			/* 4A */
+  NULL,			/* 4B */
+  iso88595_ucs_map,	/* 4C (ISO 8859-5) */
+  iso88599_ucs_map,	/* 4D (ISO 8859-9) */
+  NULL,			/* 4E */
+  NULL,			/* 4F */
+  NULL,			/* 50 */
+  NULL,			/* 51 */
+  NULL,			/* 52 */
+  NULL,			/* 53 */
+  iso885911_ucs_map,	/* 54 (ISO 8859-11, TIS 620) */
+  NULL,			/* 55 */
+  iso885910_ucs_map,	/* 56 (ISO 8859-10) */
+  NULL,			/* 57 */
+  NULL,			/* 58 */
+  iso885913_ucs_map,	/* 59 (ISO 8859-13) */
+  NULL,			/* 5A */
+  NULL,			/* 5B */
+  NULL,			/* 5C */
+  NULL,			/* 5D */
+  NULL,			/* 5E */
+  iso885914_ucs_map,	/* 5F (ISO 8859-14) */
+  NULL,			/* 60 */
+  NULL,			/* 61 */
+  iso885915_ucs_map,	/* 62 (ISO 8859-15) */
+  NULL,			/* 63 */
+  NULL,			/* 64 */
+  NULL,			/* 65 */
+  iso885916_ucs_map,	/* 66 (ISO 8859-16) */
+};
+
+static wc_uint16 **cs942_ucs_map;
+
+static wc_uint16 *pcs_ucs_map[] = {
+  cp437_ucs_map,
+  cp737_ucs_map,
+  cp775_ucs_map,
+  cp850_ucs_map,
+  cp852_ucs_map,
+  cp855_ucs_map,
+  cp856_ucs_map,
+  cp857_ucs_map,
+  cp860_ucs_map,
+  cp861_ucs_map,
+  cp862_ucs_map,
+  cp863_ucs_map,
+  cp864_ucs_map,
+  cp865_ucs_map,
+  cp866_ucs_map,
+  cp869_ucs_map,
+  cp874_ucs_map,
+  cp1006_ucs_map,
+  cp1250_ucs_map,
+  cp1251_ucs_map,
+  cp1252_ucs_map,
+  cp1253_ucs_map,
+  cp1254_ucs_map,
+  cp1255_ucs_map,
+  cp1256_ucs_map,
+  cp1257_ucs_map,
+  cp1258_ucs_map,
+  NULL,
+  tcvn57121_ucs_map,
+  tcvn57122_ucs_map,
+  NULL,
+  viscii111_ucs_map,
+  viscii112_ucs_map,
+  vps1_ucs_map,
+  vps2_ucs_map,
+  koi8r_ucs_map,
+  koi8u_ucs_map,
+  nextstep_ucs_map,
+  NULL,
+  NULL,			/* (Raw) */
+};
+
+static wc_uint16 *cs94w_ucs_map[] = {
+  jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
+  gb2312_ucs_map,		/* 41 (GB 2312) */
+  jisx0208x02131_ucs_map,	/* 42 (JIS X 0208) */
+  ksx1001_ucs_map,		/* 43 (KS X 1001) */
+  jisx0212x02132_ucs_map,	/* 44 (JIS X 0212) */
+  NULL,				/* 45 (ISO IR 165) */
+  NULL,				/* 46 */
+  cns116431_ucs_map,		/* 47 (CNS 11643-1) */
+  cns116432_ucs_map,		/* 48 (CNS 11643-2) */
+  NULL,				/* 49 (CNS 11643-3) */
+  NULL,				/* 4A (CNS 11643-4) */
+  NULL,				/* 4B (CNS 11643-5) */
+  NULL,				/* 4C (CNS 11643-6) */
+  NULL,				/* 4D (CNS 11643-7) */
+  NULL,				/* 4E (KSP 9566) */
+  jisx0208x02131_ucs_map,	/* 4F (JIS X 0213-1) */
+  jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
+};
+
+static wc_uint16 **cs96w_ucs_map;
+
+static wc_uint16 *pcsw_ucs_map[] = {
+  big5_ucs_map,		/* Big5 */
+  big5_ucs_map,		/* Big5-1 */
+  big5_ucs_map,		/* Big5-2 */
+  NULL,			/* CNS 11643-8 */
+  NULL,			/* CNS 11643-9 */
+  NULL,			/* CNS 11643-10 */
+  NULL,			/* CNS 11643-11 */
+  NULL,			/* CNS 11643-12 */
+  NULL,			/* CNS 11643-13 */
+  NULL,			/* CNS 11643-14 */
+  NULL,			/* CNS 11643-15 */
+  NULL,			/* CNS 11643-16 */
+  NULL,			/* CNS 11643-X */
+  gb12345_ucs_map,	/* GB 12345 */
+  NULL,			/* Johab (special conversion) */
+  NULL,			/* Johab-1 (special conversion) */
+  NULL,			/* Johab-2 (special conversion) */
+  ksx1001_ucs_map,	/* Johab-3 */
+  sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext */
+  sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-1 */
+  sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-2 */
+  gbk_ucs_map,		/* GBK(CP936) */
+  gbk_ucs_map,		/* GBK(CP936)-1 */
+  gbk_ucs_map,		/* GBK(CP936)-2 */
+  NULL,			/* GB18030 GBK-ext (special conversion) */
+  NULL,			/* GB18030 GBK-ext-1 (special conversion) */
+  NULL,			/* GB18030 GBK-ext-2 (special conversion) */
+  uhc_ucs_map,		/* UHC(CP949) */
+  uhc_ucs_map,		/* UHC(CP949)-1 */
+  uhc_ucs_map,		/* UHC(CP949)-2 */
+  hkscs_ucs_map,	/* HKSCS */
+  hkscs_ucs_map,	/* HKSCS-1 */
+  hkscs_ucs_map,	/* HKSCS-2 */
+};
+
+static wc_wchar_t
+ucs_cs94_conv(wc_ccs ccs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = ccs;
+  cc.code = c;
+  return cc;
+}
+
+#define ucs_cs96_conv ucs_cs94_conv
+#define ucs_cs94w_conv ucs_cs94_conv
+#define ucs_cs96w_conv ucs_cs94_conv
+#define ucs_cs128w_conv ucs_cs94_conv
+
+static wc_wchar_t
+ucs_viet_conv(wc_ccs ccs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  if (c & 0x80) {
+    cc.ccs = ccs;
+    switch (ccs) {
+    case WC_CCS_TCVN_5712_2:
+	cc.ccs = WC_CCS_TCVN_5712_1;
+	break;
+    case WC_CCS_VISCII_11_2:
+	cc.ccs = WC_CCS_VISCII_11_1;
+	break;
+    case WC_CCS_VPS_2:
+	cc.ccs = WC_CCS_VPS_1;
+	break;
+    }
+  } else {
+    cc.ccs = ccs;
+    switch (ccs) {
+    case WC_CCS_TCVN_5712_1:
+	cc.ccs = WC_CCS_TCVN_5712_2;
+	break;
+    case WC_CCS_VISCII_11_1:
+	cc.ccs = WC_CCS_VISCII_11_2;
+	break;
+    case WC_CCS_VPS_1:
+	cc.ccs = WC_CCS_VPS_2;
+	break;
+    }
+  }
+  cc.code = c & 0xff;
+  return cc;
+}
+
+static wc_wchar_t
+ucs_cp1258_conv(wc_ccs ccs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = (c < 0x100) ? WC_CCS_CP1258_1 : WC_CCS_CP1258_2;
+  cc.code = c;
+  return cc;
+}
+
+static wc_wchar_t
+ucs_cns11643_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = (c & 0x8000) ? WC_CCS_CNS_11643_2 : WC_CCS_CNS_11643_1;
+  cc.code = c & 0x7f7f;
+  return cc;
+}
+
+static wc_wchar_t
+ucs_big5_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_big5_to_cs94w(cc);
+}
+
+static wc_wchar_t
+ucs_johab2_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_johab_to_cs128w(cc);
+}
+
+static wc_wchar_t
+ucs_johab3_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  if ((c >= 0x2121 && c <  0x2421) ||
+      (c >  0x2453 && c <= 0x2C7E) ||
+      (c >= 0x4A21 && c <= 0x7D7E))
+     cc.ccs = cs;
+  else
+     cc.ccs = WC_CCS_UNKNOWN_W;
+  cc.code = c;
+  return cc;
+}
+
+static wc_wchar_t
+ucs_sjis_ext_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_sjis_ext_to_cs94w(cc);
+}
+
+static wc_wchar_t
+ucs_gbk_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_gbk_to_cs128w(cc);
+}
+
+static wc_wchar_t
+ucs_uhc_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_uhc_to_cs128w(cc);
+}
+
+static wc_wchar_t
+ucs_hkscs_conv(wc_ccs cs, wc_uint16 c)
+{
+  wc_wchar_t cc;
+
+  cc.ccs = cs;
+  cc.code = c;
+  return wc_hkscs_to_cs128w(cc);
+}
+
+#define null_table { 0, 0, NULL, (void *)ucs_cs94_conv }
+
+static wc_table ucs_cs94_table[] = {
+  null_table,		/* 40 */
+  null_table,		/* 41 */
+  null_table,		/* 42 (US_ASCII) */
+  null_table,		/* 43 */
+  null_table,		/* 44 */
+  null_table,		/* 45 */
+  null_table,		/* 46 */
+  null_table,		/* 47 */
+  null_table,		/* 48 */
+  { WC_CCS_JIS_X_0201K, N_ucs_jisx0201k_map, ucs_jisx0201k_map, (void *)ucs_cs94_conv },
+  null_table,		/* 4A (JIS X 0201) */
+  null_table,		/* 4B */
+  null_table,		/* 4C */
+  null_table,		/* 4D */
+  null_table,		/* 4E */
+  null_table,		/* 4F */
+  null_table,		/* 50 */
+  null_table,		/* 51 */
+  null_table,		/* 52 */
+  null_table,		/* 53 */
+  null_table,		/* 54 (GB 1988) */
+};
+
+static wc_table ucs_cs96_table[] = {
+  null_table,		/* 40 */
+  { WC_CCS_ISO_8859_1,  N_ucs_iso88591_map,  ucs_iso88591_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_2,  N_ucs_iso88592_map,  ucs_iso88592_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_3,  N_ucs_iso88593_map,  ucs_iso88593_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_4,  N_ucs_iso88594_map,  ucs_iso88594_map,  (void *)ucs_cs96_conv },
+  null_table,		/* 45 */
+  { WC_CCS_ISO_8859_7,  N_ucs_iso88597_map,  ucs_iso88597_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_6,  N_ucs_iso88596_map,  ucs_iso88596_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_8,  N_ucs_iso88598_map,  ucs_iso88598_map,  (void *)ucs_cs96_conv },
+  null_table,		/* 49 */
+  null_table,		/* 4A */
+  null_table,		/* 4B */
+  { WC_CCS_ISO_8859_5,  N_ucs_iso88595_map,  ucs_iso88595_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_ISO_8859_9,  N_ucs_iso88599_map,  ucs_iso88599_map,  (void *)ucs_cs96_conv },
+  null_table,		/* 4E */
+  null_table,		/* 4F */
+  null_table,		/* 50 */
+  null_table,		/* 51 */
+  null_table,		/* 52 */
+  null_table,		/* 53 */
+  { WC_CCS_ISO_8859_11, N_ucs_iso885911_map, ucs_iso885911_map, (void *)ucs_cs96_conv },
+  null_table,		/* 55 */
+  { WC_CCS_ISO_8859_10, N_ucs_iso885910_map, ucs_iso885910_map, (void *)ucs_cs96_conv },
+  null_table,		/* 57 */
+  null_table,		/* 58 */
+  { WC_CCS_ISO_8859_13, N_ucs_iso885913_map, ucs_iso885913_map, (void *)ucs_cs96_conv },
+  null_table,		/* 5A */
+  null_table,		/* 5B */
+  null_table,		/* 5C */
+  null_table,		/* 5D */
+  null_table,		/* 5E */
+  { WC_CCS_ISO_8859_14, N_ucs_iso885914_map, ucs_iso885914_map, (void *)ucs_cs96_conv },
+  null_table,		/* 60 */
+  null_table,		/* 61 */
+  { WC_CCS_ISO_8859_15, N_ucs_iso885915_map, ucs_iso885915_map, (void *)ucs_cs96_conv },
+  null_table,		/* 63 */
+  null_table,		/* 64 */
+  null_table,		/* 65 */
+  { WC_CCS_ISO_8859_16, N_ucs_iso885916_map, ucs_iso885916_map, (void *)ucs_cs96_conv },
+};
+
+static wc_table *ucs_cs942_table;
+
+static wc_table ucs_pcs_table[] = {
+  { WC_CCS_CP437,  N_ucs_cp437_map,  ucs_cp437_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP737,  N_ucs_cp737_map,  ucs_cp737_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP775,  N_ucs_cp775_map,  ucs_cp775_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP850,  N_ucs_cp850_map,  ucs_cp850_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP852,  N_ucs_cp852_map,  ucs_cp852_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP855,  N_ucs_cp855_map,  ucs_cp855_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP856,  N_ucs_cp856_map,  ucs_cp856_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP857,  N_ucs_cp857_map,  ucs_cp857_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP860,  N_ucs_cp860_map,  ucs_cp860_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP861,  N_ucs_cp861_map,  ucs_cp861_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP862,  N_ucs_cp862_map,  ucs_cp862_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP863,  N_ucs_cp863_map,  ucs_cp863_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP864,  N_ucs_cp864_map,  ucs_cp864_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP865,  N_ucs_cp865_map,  ucs_cp865_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP866,  N_ucs_cp866_map,  ucs_cp866_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP869,  N_ucs_cp869_map,  ucs_cp869_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP874,  N_ucs_cp874_map,  ucs_cp874_map,  (void *)ucs_cs96_conv },
+  { WC_CCS_CP1006, N_ucs_cp1006_map, ucs_cp1006_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1250, N_ucs_cp1250_map, ucs_cp1250_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1251, N_ucs_cp1251_map, ucs_cp1251_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1252, N_ucs_cp1252_map, ucs_cp1252_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1253, N_ucs_cp1253_map, ucs_cp1253_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1254, N_ucs_cp1254_map, ucs_cp1254_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1255, N_ucs_cp1255_map, ucs_cp1255_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1256, N_ucs_cp1256_map, ucs_cp1256_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1257, N_ucs_cp1257_map, ucs_cp1257_map, (void *)ucs_cs96_conv },
+  { WC_CCS_CP1258_1, N_ucs_cp1258_map, ucs_cp1258_map, (void *)ucs_cp1258_conv },
+  { WC_CCS_CP1258_2, N_ucs_cp1258_map, ucs_cp1258_map, (void *)ucs_cp1258_conv },
+  { WC_CCS_TCVN_5712_1, N_ucs_tcvn5712_map, ucs_tcvn5712_map, (void *)ucs_viet_conv },
+  { WC_CCS_TCVN_5712_2, N_ucs_tcvn5712_map, ucs_tcvn5712_map, (void *)ucs_viet_conv },
+  { WC_CCS_TCVN_5712_3, N_ucs_tcvn5712_map, ucs_tcvn5712_map, (void *)ucs_viet_conv },
+  { WC_CCS_VISCII_11_1, N_ucs_viscii11_map, ucs_viscii11_map, (void *)ucs_viet_conv },
+  { WC_CCS_VISCII_11_2, N_ucs_viscii11_map, ucs_viscii11_map, (void *)ucs_viet_conv },
+  { WC_CCS_VPS_1,  N_ucs_vps_map,    ucs_vps_map,    (void *)ucs_viet_conv },
+  { WC_CCS_VPS_2,  N_ucs_vps_map,    ucs_vps_map,    (void *)ucs_viet_conv },
+  { WC_CCS_KOI8_R, N_ucs_koi8r_map,  ucs_koi8r_map, (void *)ucs_cs96_conv },
+  { WC_CCS_KOI8_U, N_ucs_koi8u_map,  ucs_koi8u_map, (void *)ucs_cs96_conv },
+  { WC_CCS_NEXTSTEP, N_ucs_nextstep_map, ucs_nextstep_map, (void *)ucs_cs96_conv },
+  { WC_CCS_GBK_80, N_ucs_gbk_80_map, ucs_gbk_80_map, (void *)ucs_cs96_conv },
+  null_table,		/* (Raw) */
+};
+
+static wc_table ucs_cs94w_table[] = {
+  null_table,		/* 40 (JIS C 6226) */
+  { WC_CCS_GB_2312, N_ucs_gb2312_map, ucs_gb2312_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_JIS_X_0208, N_ucs_jisx0208_map, ucs_jisx0208_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_KS_X_1001, N_ucs_ksx1001_map, ucs_ksx1001_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_JIS_X_0212, N_ucs_jisx0212_map, ucs_jisx0212_map, (void *)ucs_cs94w_conv },
+  null_table,		/* 45 (ISO IR 165) */
+  null_table,		/* 46 */
+  { WC_CCS_CNS_11643_1, N_ucs_cns11643_map, ucs_cns11643_map, (void *)ucs_cns11643_conv },
+  { WC_CCS_CNS_11643_2, N_ucs_cns11643_map, ucs_cns11643_map, (void *)ucs_cns11643_conv },
+  null_table,		/* 49 (CNS 11643-3) */
+  null_table,		/* 4A (CNS 11643-4) */
+  null_table,		/* 4B (CNS 11643-5) */
+  null_table,		/* 4C (CNS 11643-6) */
+  null_table,		/* 4D (CNS 11643-7) */
+  null_table,		/* 4E (KSP 9566) */
+  { WC_CCS_JIS_X_0213_1, N_ucs_jisx02131_map, ucs_jisx02131_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_JIS_X_0213_2, N_ucs_jisx02132_map, ucs_jisx02132_map, (void *)ucs_cs94w_conv },
+};
+
+static wc_table *ucs_cs96w_table;
+
+static wc_table ucs_pcsw_table[] = {
+  { WC_CCS_BIG5,   N_ucs_big5_map, ucs_big5_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_BIG5_1, N_ucs_big5_map, ucs_big5_map, (void *)ucs_big5_conv },
+  { WC_CCS_BIG5_2, N_ucs_big5_map, ucs_big5_map, (void *)ucs_big5_conv },
+  null_table,		/* CNS 11643-8 */
+  null_table,		/* CNS 11643-9 */
+  null_table,		/* CNS 11643-10 */
+  null_table,		/* CNS 11643-11 */
+  null_table,		/* CNS 11643-12 */
+  null_table,		/* CNS 11643-13 */
+  null_table,		/* CNS 11643-14 */
+  null_table,		/* CNS 11643-15 */
+  null_table,		/* CNS 11643-16 */
+  null_table,		/* CNS 11643-X */
+  /* use GB 12345 instead of GB 2312 */ 
+  { WC_CCS_GB_2312, N_ucs_gb12345_map, ucs_gb12345_map, (void *)ucs_cs94w_conv },
+  null_table,		/* Johab (special conversion) */
+  null_table,		/* Johab-1 (special conversion) */
+  { WC_CCS_JOHAB_2, N_ucs_johab2_map, ucs_johab2_map, (void *)ucs_johab2_conv },
+  { WC_CCS_JOHAB_3, N_ucs_ksx1001_map, ucs_ksx1001_map, (void *)ucs_johab3_conv },
+  { WC_CCS_SJIS_EXT,   N_ucs_sjis_ext_map, ucs_sjis_ext_map, (void *)ucs_cs94w_conv },
+  { WC_CCS_SJIS_EXT_1, N_ucs_sjis_ext_map, ucs_sjis_ext_map, (void *)ucs_sjis_ext_conv },
+  { WC_CCS_SJIS_EXT_2, N_ucs_sjis_ext_map, ucs_sjis_ext_map, (void *)ucs_sjis_ext_conv },
+  { WC_CCS_GBK,   N_ucs_gbk_map, ucs_gbk_map, (void *)ucs_cs128w_conv },
+  { WC_CCS_GBK_1, N_ucs_gbk_map, ucs_gbk_map, (void *)ucs_gbk_conv },
+  { WC_CCS_GBK_2, N_ucs_gbk_map, ucs_gbk_map, (void *)ucs_gbk_conv },
+  null_table,		/* GB18030 GBK-ext (special conversion) */
+  null_table,		/* GB18030 GBK-ext-1 (special conversion) */
+  null_table,		/* GB18030 GBK-ext-2 (special conversion) */
+  { WC_CCS_UHC,   N_ucs_uhc_map, ucs_uhc_map, (void *)ucs_cs128w_conv },
+  { WC_CCS_UHC_1, N_ucs_uhc_map, ucs_uhc_map, (void *)ucs_uhc_conv },
+  { WC_CCS_UHC_2, N_ucs_uhc_map, ucs_uhc_map, (void *)ucs_uhc_conv },
+  { WC_CCS_HKSCS,   N_ucs_hkscs_map, ucs_hkscs_map, (void *)ucs_cs128w_conv },
+  { WC_CCS_HKSCS_1, N_ucs_hkscs_map, ucs_hkscs_map, (void *)ucs_hkscs_conv },
+  { WC_CCS_HKSCS_2, N_ucs_hkscs_map, ucs_hkscs_map, (void *)ucs_hkscs_conv },
+};
+

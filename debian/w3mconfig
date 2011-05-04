@@ -57,3 +57,6 @@ tabstop 8
 ftppasswd anonymous@
 ftppass_hostnamegen 0
 display_image 1
+follow_locale 1
+display_charset US-ASCII
+system_charset US-ASCII

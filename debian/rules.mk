@@ -1,16 +1,14 @@
 # -*- Makefile -*-
 # 
 buildtree=build-tree/
-sourcedir=w3m-0.1.11-pre
+sourcedir=w3m-0.3
 builddir=$(buildtree)/$(sourcedir)
 
 extract: extract-stamp
 extract-stamp:
 	-rm -rf $(buildtree)
 	mkdir $(buildtree)
-	tar zxfC upstream/w3m-0.1.11-pre.tar.gz $(buildtree)
-	# gunzip < upstream/w3m-0.1.11-pre+.diff.gz | (cd $(builddir) && patch -p0)
-	gunzip < upstream/w3m-0.1.11-pre-kokb23.patch.gz | (cd $(builddir) && patch -p1)
+	tar zxfC upstream/w3m-0.3.tar.gz $(buildtree)
 	touch extract-stamp
 
 patch: patch-stamp
@@ -39,4 +37,8 @@ $(buildendir)/setup-stamp: extract-stamp patch-stamp
 	-rm -rf $(buildendir)
 	cp -a $(builddir) $(buildendir)
 	touch $(buildendir)/setup-stamp
+
+configure: configure-stamp
+configure-stamp: setup-ja setup-en
+	touch configure-stamp
 

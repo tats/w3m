@@ -1,5 +1,0 @@
-;; w3m-init.el
-(setq load-path (cons "/usr/share/emacs/site-lisp/w3m/" load-path))
-(autoload 'w3m "w3m" "Interface for w3m on Emacs." t)
-(autoload 'w3m-browse-url "w3m" "w3m interface function for browse-url.el." t)
-(autoload 'w3m-find-file "w3m" "w3m Interface function for local file." t)

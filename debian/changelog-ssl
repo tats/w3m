@@ -1,11 +1,328 @@
-w3m-ssl (0.1.10+0.1.11pre+kokb23-4) stable; urgency=high
+w3m-ssl (0.3-2.4) stable-security; urgency=high
 
-  * [SECURITY FIX] backport fix of mime header buffer overflow
-    SNS Advisory No.32
-    w3m malformed MIME header Buffer Overflow Vulnerability
-    http://www.lac.co.jp/security/snsadv/32.html (Japanese)
+  * Non-maintainer upload by the security team
+  * Rebuilt for security.debian.org
 
- -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 20 Jun 2001 11:15:03 +0900
+ -- Martin Schulze <joey@infodrom.org>  Wed, 29 Jan 2003 19:38:40 +0100
+
+w3m-ssl (0.3-2.3) stable; urgency=high
+
+  * security fix upload to stable
+   - fix the code to allow internal tags from remote html pages
+     that would make it possible for remote attacker to get local information
+  * Backport security fixes from w3m-0.3.2.2 for the following issues
+    - html_quote for img alt attribute
+  * Backport security fixes from w3m-0.3.2.1 for the following issues
+    - html_quote for frame contents
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 26 Dec 2002 15:37:17 +0000
+
+w3m-ssl (0.3-2.2) stable-security; urgency=high
+
+  * Backport security fixes from w3m-0.3.2.2 for the following issues
+    - html_quote for img alt attribute
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  5 Dec 2002 17:32:38 +0000
+
+w3m-ssl (0.3-2.1) stable-security; urgency=high
+
+  * Backport security fixes from w3m-0.3.2.1 for the following issues
+    - html_quote for frame contents
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 27 Nov 2002 06:54:26 +0000
+
+w3m (0.3-2) unstable; urgency=low
+
+  * add w3mman.1, closes: Bug#138101
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 10 Apr 2002 23:54:38 +0900
+
+w3m-ssl (0.3-1cia) unstable; urgency=low
+
+  * Moved from non-US to main now that openssl has moved there.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 24 Mar 2002 03:27:05 +0900
+
+w3m-ssl (0.3-1) unstable; urgency=low
+
+  * new upstream release
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  6 Mar 2002 02:34:21 +0900
+
+w3m-ssl (0.2.5.1-1) unstable; urgency=low
+
+  * new stable upstream release
+  * fix -dump https problem, closes: Bug#132043
+    
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  5 Feb 2002 02:04:35 +0900
+
+w3m-ssl (0.2.5-1) unstable; urgency=low
+
+  * new upstream release
+  * debian/w3mconfig: 
+     - add: default_url 1
+     - fix: mailcap, mime_types: use ~/.w3m/ instead of ~/.
+     - add: urimethodmap ~/.w3m//urimethodmap, /etc/w3m/urimethodmap
+     - add: migemo_command, use_migemo
+  * debian/mailcap: add for application/xhtml+xml
+  * check WWW-Authenticate: correctory, closes: Bug#82765
+  * debian/control: add suggests: migemo
+  * retry_http accept URL without leading http:// in GOTO, closes: Bug#114984
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  1 Feb 2002 01:06:50 +0900
+
+w3m-ssl (0.2.4-2) unstable; urgency=low
+
+  * debian/patches/04-configure-ipv6-enabled:
+    force enabled IPv6 support even if build machine doesn't have IPv6 support
+  * debian/config.param: add use_ipv6=y
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 17 Jan 2002 02:14:32 +0900
+    
+w3m-ssl (0.2.4-1) unstable; urgency=high
+
+  * new upstream version
+   - RFC2818 server identity check (for w3m-ssl)
+   - incremental search (C-s, C-r)
+  * add recommends: ca-certificate for https
+  * check port for password auth, closes: Bug#126381
+  * dont ignore SIGWINCH while downloading, closes: Bug#102445
+  * default image viewer is display, closes: Bug#127883
+    but i highly recommend you install mime-support package
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  8 Jan 2002 00:27:31 +0900
+
+w3m-ssl (0.2.3.2-1) unstable; urgency=high
+
+  * new upstream version
+  * security fix in support scripts
+   - Hironori Sakamoto found some vulnerabilities in w3m support scripts,
+     such as multipart.cgi, w3mman2html.cgi and w3mhelp.cgi.  Attacker
+     could run arbitrary commands on user's machine with user's priviledge
+     by using malicious html pages.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 22 Dec 2001 22:25:11 +0900
+
+w3m-ssl (0.2.3-0.1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 20 Dec 2001 15:01:22 +0900
+
+w3m-ssl (0.2.2+20011209-2) unstable; urgency=low
+
+  * fix xterm resize problem, closes: Bug#123938
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 16 Dec 2001 03:15:39 +0900
+
+w3m-ssl (0.2.2+20011209-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 10 Dec 2001 01:05:57 +0900
+
+w3m-ssl (0.2.2+20011130-4) unstable; urgency=low
+
+  * mime.types should be /etc/mime.types
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  5 Dec 2001 03:03:07 +0900
+
+w3m-ssl (0.2.2+20011130-3) unstable; urgency=low
+
+  * config.param was ignored on other hosts. closes: Bug#122213
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  4 Dec 2001 01:01:54 +0900
+
+w3m-ssl (0.2.2+20011130-2) unstable; urgency=low
+
+  * dont create /usr/share/emacs/site-lisp/w3m/, closes: Bug#122043
+  * kanji_symbols should be off when lang is not JA, closes: Bug#122046
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun,  2 Dec 2001 17:32:32 +0900
+
+w3m-ssl (0.2.2+20011130-1) unstable; urgency=low
+
+  * w3m cvs current release
+  * debian/control: URL update
+  * &#60; and &#62; inside table render incorrectly fixed, closes: Bug#93981
+  * VIEW_IMAGE does nothing for <input type=image> fixed, closes: Bug#81554
+  * Goto URL behaves incorrectly and U would accept URL without leading http://
+    already fixed, `retry_http 1', closes: Bug#81775
+  * new configure: closes: Bug#99086, Bug#117631, Bug#117633
+  * w3m.sh: simplified, use option `argv_is_url 1'
+  * /etc/w3m/w3mconfig, closes: Bug#57158, Bug#109288
+  * fails searches at http://www.classifieds200.com that lynx handles 
+    unreproducible, closes: Bug#54650
+  
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  1 Dec 2001 03:39:40 +0900
+
+w3m-ssl (0.2.2-3) unstable; urgency=low
+
+  * debian/patches/06-w3m-dev-02503: (backport from w3m-cvs)
+    accept invalid entity usage in URL, closes: Bug#120540
+  * rebuild with new libgpmg1-dev 1.19.6-1
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 23 Nov 2001 02:15:50 +0900
+
+w3m-ssl (0.2.2-2) unstable; urgency=low
+
+  * debian/patches/05-gpm-close: (backport from w3m-cvs)
+    fix trashes terminal on exit, closes: Bug#120221
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 20 Nov 2001 12:10:18 +0900
+
+w3m-ssl (0.2.2-1) unstable; urgency=low
+
+  * debian/copyright: w3m is now maintained on sourceforge
+  * new upstream version 0.2.2
+  * url.c (openSSLHandle): remove atexit() already, closes: Bug#98087
+  * debian/patches/04-cvs-20011116: 
+    - fix mouse supports closes: Bug#119707
+    - check NULL in search.c closes: Bug#105791
+    - mark anchor on mailto: cloess: Bug#85900
+      mark anchor on bare email address patch was rejected.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 16 Nov 2001 17:23:44 +0900
+
+w3m-ssl (0.2.1-17) unstable; urgency=low
+
+  * apply w3m-0.2.1-inu-1.6  (cummulative patch)
+    http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/200110/w3m-0.2.1-inu-1.6.tar.gz
+    better URL parser, closes: Bug#92470
+    already fixed? textare maxlength attr, closes: Bug#81557
+  * debian/menu: add hints
+    closes: Bug#80037
+  * debian/rules (binary-arch): remove CVS directory usr/share/doc/w3m/ja/CVS
+    closes: Bug#102980
+  * debian/rules (build): LC_ALL=C for make
+    closes: Bug#118809,Bug#118810
+  
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 14 Nov 2001 02:51:36 +0900
+
+w3m-ssl (0.2.1-16) unstable; urgency=low
+
+  * apply w3m-0.2.1-inu-1.5 (cummulative patch)
+    http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/200110/w3m-0.2.1-inu-1.5.tar.gz
+ 
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  6 Nov 2001 04:51:06 +0900
+
+w3m-ssl (0.2.1-15) unstable; urgency=low
+
+  * apply w3m-0.2.1-inu-1.4 (cummulative patch)
+    http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200109/w3m-0.2.1-inu-1.4.tar.gz
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 30 Oct 2001 02:47:20 +0900
+
+w3m-ssl (0.2.1-14) unstable; urgency=low
+
+  * [w3m-dev 02227] w3m-0.2.1-inu-1.4a2-0915.patch
+    cummulative patch
+  * accept: video/*, closes: Bug#112419
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 17 Sep 2001 01:45:32 +0900
+
+w3m-ssl (0.2.1-13) unstable; urgency=high
+
+  * [w3m-dev 02226] fix security hole to allow arbitrary comand can be executed
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 11 Sep 2001 11:51:26 +0900
+
+w3m-ssl (0.2.1-12) unstable; urgency=low
+
+  * [w3m-dev 02219] fix strange behavior of radio button form
+  * [w3m-dev 02221] -cookie enable accept_cookie as well
+  * [w3m-dev 02224] fix Shift_JIS URL handling
+  * [w3m-dev 02225] Auto-detection of charset is not used when `-I' option is used.
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 11 Sep 2001 02:48:51 +0900
+
+w3m-ssl (0.2.1-11) unstable; urgency=low
+
+  * apply w3m-0.2.1-inu-1.4a2-0909.patch (cummulative patch)
+    from [w3m-dev 02213]
+  * add zlib1g-dev to build-depends, since inflate subprogram requires -lz
+  
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 10 Sep 2001 02:13:20 +0900
+
+w3m-ssl (0.2.1-10) unstable; urgency=low
+
+  * fix mailcap quoting
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  4 Sep 2001 14:55:18 +0900
+
+w3m-ssl (0.2.1-9) unstable; urgency=low
+
+  * apply w3m-0.2.1-inu-1.4a2-gc60.tar.gz
+    from http://mi.med.tohoku.ac.jp/~satodai/w3m/inusrc/200108/
+  * install english manpages, closes: Bug#110033, Bug#110507
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 30 Aug 2001 06:22:30 +0900
+    
+w3m-ssl (0.2.1-8) unstable; urgency=low
+
+  * re-enable mouse support on rxvt. closes: Bug#109184
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 19 Aug 2001 17:51:17 +0900
+
+w3m-ssl (0.2.1-7) unstable; urgency=low
+
+  * fix segfault when back to form page
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  7 Aug 2001 00:31:33 +0900
+
+w3m-ssl (0.2.1-6) unstable; urgency=low
+
+  * fix mailcap quoting
+    closes: Bug#107103
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 31 Jul 2001 00:44:38 +0900
+
+w3m-ssl (0.2.1-5) unstable; urgency=low
+
+  * [w3m-dev 02122] inu.1.3 patch (cummulative patch)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 28 Jul 2001 02:40:05 +0900
+
+w3m-ssl (0.2.1-4) unstable; urgency=high
+
+  * [w3m-dev 02066] fix buffer overrun in mime header decoder
+    possibly security fix.
+  * change dependency recommends -> suggests
+    closes: Bug#101057
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 20 Jun 2001 01:37:57 +0900
+
+w3m-ssl (0.2.1-3) unstable; urgency=low
+
+  * fix dangling symlinks, closes: Bug#100733
+  * [w3m-dev 01903] new patch for ftp problem (Bug#92261)
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 10 Apr 2001 00:55:14 +0900
+
+w3m-ssl (0.2.1-2) unstable; urgency=low
+
+  * (debian/control) build-depends libssl-dev
+  * [w3m-dev 01902] fix onA() when search
+  * [w3m-dev 01898] eliminate limit for <select> and <textarea>
+  * [w3m-dev-en 00424] support broken html containing wrong <script> tag
+  * [w3m-dev 01894] fix for term op != me
+  * [w3m-dev 01891] fix ftp problem (for wu-ftpd?) (Bug#92261)
+  * apply patch: w3m-0.2.1-mnc.patch for better w3m-el support
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  7 Apr 2001 01:34:19 +0900
+
+w3m-ssl (0.2.1-1) unstable; urgency=low
+
+  * new upstream version
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 23 Mar 2001 15:39:00 +0900
+
+w3m-ssl (0.2.0-1) unstable; urgency=low
+
+  * new upstream release
+  * separate w3m.el
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 22 Mar 2001 18:42:27 +0900
 
 w3m-ssl (0.1.10+0.1.11pre+kokb23-3) unstable; urgency=low
 
@@ -803,8 +1120,3 @@ w3m (0.0.19990309-1) unstable; urgency=low
   * Initial Release.
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  9 Mar 1999 19:08:08 +0900
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "ukai@debian.or.jp"
-End:

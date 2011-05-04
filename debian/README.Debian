@@ -1,6 +1,9 @@
 w3m for DEBIAN
 ----------------------
 
+If you want to w3m with lynx-style keybinding, 
+copy /usr/share/doc/w3m/examples/keymap.lynx to ~/.w3m/keymap
+
 Difference between pure w3m and Debian package:
 
  * -s option means squeeze multiple blank lines in order to work

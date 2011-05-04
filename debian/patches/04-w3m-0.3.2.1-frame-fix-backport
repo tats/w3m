@@ -1,0 +1,53 @@
+PATCH: -p1
+
+
+--- w3m-0.3.orig/frame.c	Sat Feb  9 15:27:14 2002
++++ w3m-0.3/frame.c	Wed Nov 27 06:46:03 2002
+@@ -535,14 +535,15 @@
+ 		    frame.body->attr = F_UNLOADED;
+ 		    if (frame.body->flags & FB_NO_BUFFER)
+ 			fprintf(f1, "Open %s with other method",
+-				frame.body->url);
++				html_quote(frame.body->url));
+ 		    else if (frame.body->url)
+-			fprintf(f1, "Can't open %s", frame.body->url);
++			fprintf(f1, "Can't open %s", 
++				html_quote(frame.body->url));
+ 		    else
+ 			fprintf(f1,
+ 				"This frame (%s) contains no src attribute",
+-				frame.body->name ? frame.body->
+-				name : "(no name)");
++				frame.body->name ? 
++				html_quote(frame.body->name) : "(no name)");
+ 		    break;
+ 		}
+ 		parseURL2(frame.body->url, &base, currentURL);
+@@ -636,7 +637,7 @@
+ 			    /* prohibit_tags */
+ 			    Strshrinkfirst(tok, 1);
+ 			    Strshrink(tok, 1);
+-			    fprintf(f1, "<!-- %s -->", tok->ptr);
++			    fprintf(f1, "<!-- %s -->", html_quote(tok->ptr));
+ 			    goto token_end;
+ 			case HTML_TABLE:
+ 			    t_stack++;
+@@ -649,7 +650,7 @@
+ 				Strshrink(tok, 1);
+ 				fprintf(f1,
+ 					"<!-- table stack underflow: %s -->",
+-					tok->ptr);
++					html_quote(tok->ptr));
+ 				goto token_end;
+ 			    }
+ 			    break;
+@@ -669,7 +670,8 @@
+ 			    if (!t_stack) {
+ 				Strshrinkfirst(tok, 1);
+ 				Strshrink(tok, 1);
+-				fprintf(f1, "<!-- %s -->", tok->ptr);
++				fprintf(f1, "<!-- %s -->", 
++					html_quote(tok->ptr));
+ 				goto token_end;
+ 
+ 			    }

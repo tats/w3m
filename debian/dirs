@@ -5,4 +5,6 @@ usr/share/w3m
 usr/share/doc/w3m/examples
 usr/share/doc/w3m/ja
 usr/share/doc/w3m/ja/examples
-usr/share/emacs/site-lisp/w3m/
+usr/share/man/ja/man1
+etc/w3m
+

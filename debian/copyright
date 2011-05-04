@@ -1,13 +1,7 @@
 This package was debianized by Fumitoshi UKAI ukai@debian.or.jp on
 Tue,  9 Mar 1999 19:08:08 +0900.
 
-It was downloaded from http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
-ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/
-development version can be downloaded from
-ftp://ei5nazha.yz.yamagata-u.ac.jp/w3m/dev/
-
-Okabe patch can be downloaded from
-http://www4.ocn.ne.jp/~okabek/w3m.html
+It was downloaded from http://sourceforge.net/projects/w3m
 
 Upstream Author(s): Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp>
 

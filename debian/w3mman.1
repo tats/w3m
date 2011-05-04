@@ -1,0 +1,50 @@
+.TH W3MMAN 1
+.SH NAME
+w3mman \- read man pages with hyperlinks in w3m
+.SH SYNOPSIS
+.B w3mman
+.RB [ \-M
+.IR path ]
+.RI [[ section ]
+.IR command ]
+.br
+.B w3mman
+.RB [ \-M
+.IR path ]
+.RB [ \-k
+.IR keyword ]
+.SH DESCRIPTION
+.I w3mman
+displays manual pages using
+.I w3m
+as a pager.
+It understands references to other man pages, C header files (via #include),
+ordinary URLs, and local files, and renders them as hyperlinks.
+.SH OPTIONS
+In ordinary use,
+.I w3mman
+is given the name of a man page to display, optionally preceded by a manual
+section.
+It may also take the following command-line options:
+.TP
+.B \-k keyword
+Perform a keyword search on the short descriptions of installed man pages,
+and display the results with each name in the list of results rendered as a
+hyperlink.
+.TP
+.B \-M path
+Use an alternate manpath.
+The manpath must be the root of a man page hierarchy, such as
+.IR /usr/share/man .
+.SH EXAMPLES
+.TP
+To view the man page for the shell:
+.br
+$ w3mman sh
+.TP
+To view a list of all man pages related to w3m:
+.br
+$ w3mman -k w3m
+.SH AUTHOR
+This manual page was written by Colin Watson <cjwatson@debian.org> for the
+Debian Project, but may be used by others.

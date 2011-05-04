@@ -1,26 +1,27 @@
 Source: w3m-ssl
-Section: non-US/main
+Section: main
 Priority: optional
 Maintainer: Fumitoshi UKAI <ukai@debian.or.jp>
-Build-Depends: libgc5-dev, libncurses5-dev, libgpmg1-dev, libssl09-dev, debhelper, awk
-Standards-Version: 3.1.1
+Build-Depends: libgc6-dev, libncurses5-dev, libgpmg1-dev, zlib1g-dev, libssl-dev, debhelper, gawk | awk, imlib-dev
+Standards-Version: 3.5.6
 
 Package: w3m-ssl
 Architecture: any
 Depends: ${shlibs:Depends}, w3m
-Recommends: w3m (= ${Source-Version})
+Recommends: ca-certificates
 Provides: www-browser
-Suggests: mime-support, menu (>> 1.5)
+Suggests: w3m (= ${Source-Version}), w3m-img, mime-support, menu (>> 1.5), migemo
 Description: WWW browsable pager with SSL support
  w3m is a text-based World Wide Web browser with IPv6 support. 
  It features excellent support for tables and frames. It can be used 
  as a standalone file pager, too.
  .
   * You can follow links and/or view images in HTML.
-  * Internet message prewview mode, you can browse HTML mail.
+  * Internet message preview mode, you can browse HTML mail.
   * You can follow links in plain text if it includes URL forms.
+  * With w3m-img, you can view image inline.
  .
  This package is built with SSL support.
  .
  For more information, 
- see http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/eng/index.html
+ see http://sourceforge.net/projects/w3m

@@ -6,6 +6,8 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DH_COMPAT=3
+
 nossl:
 	@echo already nossl version environments
 
@@ -23,20 +25,22 @@ ssl:
 include debian/rules.mk
 
 build: build-stamp
-build-stamp: setup-ja setup-en
+build-stamp: configure-stamp
 	dh_testdir
 	# Add here commands to compile the package.
-	cp -p debian/config.h-ja $(buildjadir)/config.h
-	cd $(buildjadir) && $(MAKE)
-	cp -p debian/config.h-en $(buildendir)/config.h
-	cd $(buildendir) && $(MAKE)
+	(echo "# Configuration at "`hostname`; cat debian/config.param) > $(buildjadir)/config.param
+	cd $(buildjadir) && ./configure -yes -model=cookie -lang=JA -cflags="-O2 -DDEBIAN" -code=E --gc-includedir=/usr/include/gc  --mimetypes=/etc/mime.types
+	cd $(buildjadir) && LC_ALL=C $(MAKE) OPTS="-Wall -g"
+	(echo "# Configuration at "`hostname`; cat debian/config.param) > $(buildendir)/config.param
+	cd $(buildendir) && ./configure -yes -model=cookie -lang=EN -cflags="-O2 -DDEBIAN" --gc-includedir=/usr/include/gc  --mimetypes=/etc/mime.types
+	cd $(buildendir) && LC_ALL=C $(MAKE) OPTS="-Wall -g"
 	touch build-stamp
 
 clean:
 	dh_testdir
 	dh_testroot
 	rm -rf $(buildtree)
-	rm -f extract-stamp patch-stamp build-stamp install-stamp
+	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
 	rm -f debian/docs debian/examples
 	dh_clean
 
@@ -47,70 +51,72 @@ install-stamp: build-stamp
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/tmp.
-	cd $(buildendir) && $(MAKE) install DESTDIR=`pwd`/../../debian/tmp
+	# Add here commands to install the package into debian/w3m.
+	cd $(buildendir) && $(MAKE) install DESTDIR=`pwd`/../../debian/w3m
 	cd $(buildendir)/Bonus && find . -type f -perm 0100 -print | \
 	while read i; \
 	do \
 		sed -e 's:/usr/local/bin/ruby:/usr/bin/ruby:' \
 		    -e 's:/bin/env:/usr/bin/env:' \
 			$$i \
-			> `pwd`/../../../debian/tmp/usr/share/doc/w3m/examples/$$i ; \
+			> `pwd`/../../../debian/w3m/usr/share/doc/w3m/examples/$$i ; \
 	done
-	cd `pwd`/debian/tmp/usr/lib/w3m && for i in dirlist.cgi; \
-	do \
-	   perl -i -ple 's:^#!/usr/local/bin/perl:#!/usr/bin/perl:' $$i; \
-	done
-	cd `pwd`/debian/tmp && mv usr/bin/w3m usr/bin/w3m-en
-	cd `pwd`/debian/tmp && mv usr/lib/w3m/w3mbookmark usr/lib/w3m/w3mbookmark-en
-	cd `pwd`/debian/tmp && mv usr/lib/w3m/w3mhelperpanel usr/lib/w3m/w3mhelperpanel-en
-	install -m 755 debian/w3m.sh `pwd`/debian/tmp/usr/bin/w3m
-	install -m 755 debian/w3mbookmark.sh `pwd`/debian/tmp/usr/lib/w3m/w3mbookmark
-	install -m 755 debian/w3mhelperpanel.sh `pwd`/debian/tmp/usr/lib/w3m/w3mhelperpanel
-	install -m 755 $(buildjadir)/w3m `pwd`/debian/tmp/usr/bin/w3m-ja
-	install -m 755 $(buildjadir)/w3mbookmark `pwd`/debian/tmp/usr/lib/w3m/w3mbookmark-ja
-	install -m 755 $(buildjadir)/w3mhelperpanel `pwd`/debian/tmp/usr/lib/w3m/w3mhelperpanel-ja
-	# install -m 644 lisp/w3m.el `pwd`/debian/tmp/usr/share/emacs/site-lisp/w3m/
-	install -m 644 lisp/w3m.el `pwd`/debian/tmp/usr/share/doc/w3m/examples/
+	cd `pwd`/debian/w3m && mv usr/bin/w3m usr/bin/w3m-en
+	cd `pwd`/debian/w3m && mv usr/lib/w3m/w3mbookmark usr/lib/w3m/w3mbookmark-en
+	cd `pwd`/debian/w3m && mv usr/lib/w3m/w3mhelperpanel usr/lib/w3m/w3mhelperpanel-en
+	install -m 755 debian/w3m.sh `pwd`/debian/w3m/usr/bin/w3m
+	install -m 755 debian/w3mbookmark.sh `pwd`/debian/w3m/usr/lib/w3m/w3mbookmark
+	install -m 755 debian/w3mhelperpanel.sh `pwd`/debian/w3m/usr/lib/w3m/w3mhelperpanel
+	install -m 755 $(buildjadir)/w3m `pwd`/debian/w3m/usr/bin/w3m-ja
+	install -m 755 $(buildjadir)/w3mbookmark `pwd`/debian/w3m/usr/lib/w3m/w3mbookmark-ja
+	install -m 755 $(buildjadir)/w3mhelperpanel `pwd`/debian/w3m/usr/lib/w3m/w3mhelperpanel-ja
+	install -m 644 debian/w3mconfig `pwd`/debian/w3m/etc/w3m/w3mconfig
+	install -m 644 debian/mailcap `pwd`/debian/w3m/etc/w3m/mailcap
+	dh_movefiles --sourcedir=debian/w3m
 	touch install-stamp
 
 # Build architecture-independent files here.
-binary-indep: build install
+binary-indep: build-stamp install-stamp
 # We have nothing to do by default.
 
 # Build architecture-dependent files here.
-binary-arch: build install
+binary-arch: build-stamp install-stamp
 #	dh_testversion
-	dh_testdir
-	dh_testroot
+	dh_testdir -a
+	dh_testroot -a
 	sed -e 's:^:$(builddir)/:' debian/docs.in > debian/docs
-	dh_installdocs
-	cp -a $(builddir)/doc-jp/* `pwd`/debian/tmp/usr/share/doc/w3m/ja/
+	dh_installdocs -a
+	cp -a $(builddir)/doc-jp/* `pwd`/debian/w3m/usr/share/doc/w3m/ja/
+	rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.kokb
+	-rm -rf `pwd`/debian/w3m/usr/share/doc/w3m/ja/CVS
 	sed -e 's:^:$(builddir)/:' debian/examples.in > debian/examples
-	dh_installexamples
-	cd `pwd`/debian/tmp/usr/share/doc/w3m && \
+	cp debian/README.Debian.w3m-img `pwd`/debian/w3m-img/usr/share/doc/w3m-img/README.Debian
+	dh_installexamples -a
+	cd `pwd`/debian/w3m/usr/share/doc/w3m && \
 		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
 	dh_installmenu
 	dh_installmime
 	dh_installemacsen
 #	dh_installinit
 	dh_installcron
-	dh_installmanpages
-	install -m 644 $(builddir)/doc-jp/HISTORY.kokb `pwd`/debian/tmp/usr/share/doc/w3m/changelog.w3m-kokb
-	dh_installchangelogs $(builddir)/doc/HISTORY
-	install -m 644 lisp/ChangeLog `pwd`/debian/tmp/usr/share/doc/w3m/changelog.w3m.el
-	dh_strip
-	dh_compress
+	dh_installman $(builddir)/doc/w3m.1
+	dh_installman debian/w3mman.1
+	install -m 644 $(builddir)/doc-jp/w3m.1 `pwd`/debian/w3m/usr/share/man/ja/man1/w3m.1
+	# dh_installchangelogs $(builddir)/doc/HISTORY
+	dh_installchangelogs -a $(builddir)/ChangeLog
+	dh_strip -a
+	dh_compress -a
 	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-ja.1.gz
 	dh_link usr/share/man/man1/w3m.1.gz usr/share/man/man1/w3m-en.1.gz
-	dh_fixperms
-	dh_suidregister
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-#	dh_makeshlibs
-	dh_md5sums
-	dh_builddeb
+	dh_link usr/share/man/ja/man1/w3m.1.gz usr/share/man/ja/man1/w3m-ja.1.gz
+	dh_link usr/share/man/ja/man1/w3m.1.gz usr/share/man/ja/man1/w3m-en.1.gz
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+#	dh_makeshlibs -a
+	dh_md5sums -a
+	dh_builddeb -a
 
 source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false

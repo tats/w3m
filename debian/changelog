@@ -1,3 +1,26 @@
+w3m (0.5.2-3) unstable; urgency=low
+
+  * debian/patches/10-w3mman-keep-formatting: Patch from 0.5.2-2.1ubuntu1.
+    Use MAN_KEEP_FORMATTING=1 to fix that w3mman eats underlined characters.
+    (Closes: #325699)
+  * debian/patches/05-config-debian-fix: Update config.guess and config.sub
+    using autotools-dev 20090611.1.
+  * debian/watch: Update with sf redirector. (Closes: #550615)
+  * debian/control:
+    - Remove Fumitoshi Ukai from Maintainer. (Closes: #541020)
+    - Move Tatsuya Kinoshita to Maintainer from Uploaders.
+    - Add ${misc:Depends} to Depends.
+    - Move migemo from Suggests to Recommends.
+    - Use dh_prep instead of `dh_clean -k'.
+    - Set Section to web.
+    - Update Standards-Version to 3.8.4.
+  * debian/prerm: Add -e to not ignore an error.
+  * debian/copyright: Updated.
+  * Update debhelper version to 7.
+  * Switch to dpkg-source 3.0 (quilt) format.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 21 Feb 2010 15:23:06 +0900
+
 w3m (0.5.2-2.1) unstable; urgency=low
 
   * Non-maintainer upload.

@@ -2,8 +2,6 @@
 
 #export DH_VERBOSE=1
 
-include /usr/share/quilt/quilt.make
-
 ifeq ($(DEB_BUILD_GNU_SYSTEM),linux-gnu)
   DEVS=x11,fb+s
 else
@@ -22,16 +20,14 @@ confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 builddir := .
 
 build: build-stamp
-build-stamp: debian/stamp-patched
+build-stamp:
 	dh_testdir
-	-cp /usr/share/misc/config.guess .
-	-cp /usr/share/misc/config.sub .
 	cd $(builddir) && ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
 	if test -f $(builddir)/Makefile; then cd $(builddir) && $(MAKE) distclean; fi
@@ -44,7 +40,7 @@ install: install-stamp
 install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	# Add here commands to install the package into debian/w3m.

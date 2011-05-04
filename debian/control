@@ -1,18 +1,17 @@
 Source: w3m
-Section: text
+Section: web
 Priority: standard
-Maintainer: Fumitoshi UKAI <ukai@debian.or.jp>
-Uploaders: Tatsuya Kinoshita <tats@debian.org>
-Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 4.0.0), gawk | awk, libimlib2-dev, quilt (>= 0.40)
+Maintainer: Tatsuya Kinoshita <tats@debian.org>
+Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev
 Homepage: http://sourceforge.net/projects/w3m
-Standards-Version: 3.7.3
+Standards-Version: 3.8.4
 
 Package: w3m
 Architecture: any
-Depends: ${shlibs:Depends}
-Recommends: ca-certificates
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: ca-certificates, migemo
 Provides: www-browser
-Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, migemo, man-db
+Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, man-db
 Conflicts: w3m-ssl
 Replaces: w3m-ssl, w3mmee
 Description: WWW browsable pager with excellent tables/frames support
@@ -28,7 +27,7 @@ Description: WWW browsable pager with excellent tables/frames support
 Package: w3m-img
 Architecture: any
 Priority: optional
-Depends: w3m (= ${binary:Version}), ${shlibs:Depends}
+Depends: w3m (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: inline image extension support utilities for w3m
  w3m-img provides some utilities to support inline images for w3m
  on terminal emulator in X Window System environments and Linux

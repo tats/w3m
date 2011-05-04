@@ -1,0 +1,22 @@
+HTTP 認証のあるページや認証のある proxy に対して、
+ユーザ名とパスワードを設定しておくことが出来ます。
+
+passwd_file で指定したファイルに次のように書いておけばそれを見ます。
+
+machine ホスト名
+port ポート番号
+path ローカルパート
+realm realmの文字列
+login ユーザ名
+passwd パスワード
+proxy
+
+machineではじまって次のmachineまで。
+netrcぎみですが簡単にするために一行づつ。
+port, path, realm は省略可能
+
+proxy と書いた場合は proxy のパスワードとみなします。
+
+passwd_file が他のユーザーから読める場合警告が出ますが、OS の制限などで
+ファイルのパーミッションを変えられない場合はこの警告を
+disable_secret_security_check の設定で無効にできます。

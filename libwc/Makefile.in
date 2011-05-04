@@ -95,6 +95,8 @@ $(LIBRARY): $(OBJS)
 test: $(LIBRARY) test.o ../Str.o ../myctype.o
 	$(CC) -o wctest test.o ../Str.o ../myctype.o $(LIBRARY) ../gc/gc.a
 
+map/ucs_ambwidth.map: EastAsianWidth.txt
+	awk -f ambwidth_map.awk EastAsianWidth.txt > map/ucs_ambwidth.map
 ###
 big5.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h big5.h search.h wtf.h \
 	ucs.h
@@ -154,7 +156,7 @@ ucs.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h search.h big5.h \
 	map/hkscs_ucs_p2.map map/gb12345_ucs.map map/johab_ucs.map \
 	map/sjis_ext_ucs.map map/gbk_ucs.map map/uhc_ucs.map map/ucs_wide.map \
 	map/ucs_combining.map map/ucs_precompose.map map/ucs_hangul.map \
-	map/ucs_fullwidth.map
+	map/ucs_fullwidth.map map/ucs_ambwidth.map
 uhc.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h uhc.h wtf.h ucs.h
 utf7.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h utf7.h wtf.h
 utf8.o: wc.h wc_types.h ces.h ccs.h iso2022.h priv.h ucs.h utf8.h wtf.h

@@ -69,6 +69,7 @@
 #undef USE_IMAGE
 #undef USE_W3MIMG_X11
 #undef USE_W3MIMG_FB
+#undef USE_W3MIMG_WIN
 #undef W3MIMGDISPLAY_SETUID
 #undef USE_IMLIB
 #undef USE_GDKPIXBUF
@@ -81,6 +82,7 @@
 #define ID_EXT
 #undef CLEAR_BUF
 #undef INET6
+#undef HAVE_SOCKLEN_T
 #undef HAVE_OLD_SS_FAMILY
 #define USE_EGD
 #define ENABLE_REMOVE_TRAILINGSPACES

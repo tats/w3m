@@ -1,5 +1,12 @@
-/* $Id: w3mimg.h,v 1.8 2003/07/13 16:19:10 ukai Exp $ */
+/* $Id: w3mimg.h,v 1.9 2010/12/21 10:13:55 htrb Exp $ */
+#ifndef W3MIMG_W3MIMG_H
+#define W3MIMG_W3MIMG_H
+
 #include "config.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef USE_W3MIMG_FB
 #include "w3mimg/fb/fb.h"
@@ -42,5 +49,13 @@ extern w3mimg_op *w3mimg_x11open();
 #ifdef USE_W3MIMG_FB
 extern w3mimg_op *w3mimg_fbopen();
 #endif
+#ifdef USE_W3MIMG_WIN
+extern w3mimg_op *w3mimg_winopen();
+#endif
 
 extern w3mimg_op *w3mimg_open();
+
+#ifdef __cplusplus
+}
+#endif
+#endif /* W3MIMG_W3MIMG_H */

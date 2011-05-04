@@ -91,6 +91,7 @@ typedef struct {
     wc_bool gb18030_as_ucs;	/* treat 4 bytes char. of GB18030 as Unicode */
     wc_bool no_replace;		/* don't output replace character */
     wc_bool use_wide;		/* use wide characters */
+    wc_bool east_asian_width;	/* East Asian Ambiguous characters are wide */
 } wc_option;
 
 typedef struct {

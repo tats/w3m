@@ -1,4 +1,4 @@
-/* $Id: w3mimg.c,v 1.5 2002/11/06 03:50:49 ukai Exp $ */
+/* $Id: w3mimg.c,v 1.6 2010/12/21 10:13:55 htrb Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +13,10 @@ w3mimg_open()
 #ifdef W3MIMGDISPLAY_SETUID
     uid_t runner_uid = getuid();
     uid_t owner_uid = geteuid();
+#endif
+#ifdef USE_W3MIMG_WIN
+    if (w_op == NULL)
+	w_op = w3mimg_winopen();
 #endif
 #ifdef USE_W3MIMG_X11
 #ifdef W3MIMGDISPLAY_SETUID

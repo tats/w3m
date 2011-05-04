@@ -1,4 +1,4 @@
-/* $Id: entity.h,v 1.3 2001/11/24 02:01:26 ukai Exp $ */
+/* $Id: entity.h,v 1.6 2011/01/04 11:03:20 htrb Exp $ */
 #include "hash.h"
 static HashItem_si MyHashItem[] = {
     /* 0 */ {"otimes", 0x2297, &MyHashItem[1]},

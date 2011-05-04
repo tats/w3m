@@ -1,0 +1,23 @@
+You can save your passwords and usernames for a web page which require
+HTTP certification or a proxy certification.
+
+The configuration file is designated in "passwd_file" parameter. The
+format of the configuration file is as follows
+
+machine hostname
+port port number
+path local part
+realm realm string
+login username
+passwd password
+proxy
+
+Each configuration is began with machine and ended before the next machine.
+You can omit port, path and realm.
+
+proxy means settings for proxy certification.
+
+If passwd_file is readable from other users, w3m shows a warning for
+that.  If you can not set the permission for the passwd_file because
+of the restriction of your OS, you can suppress the warning with the
+setting of disable_secret_security_check.

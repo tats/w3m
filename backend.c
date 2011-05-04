@@ -1,4 +1,4 @@
-/* $Id: backend.c,v 1.13 2003/09/22 21:02:16 ukai Exp $ */
+/* $Id: backend.c,v 1.15 2010/08/08 09:53:42 htrb Exp $ */
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -95,7 +95,7 @@ internal_get(char *url, int flag, FormList *request)
     buf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
     do_download = FALSE;
     if (buf != NULL && buf != NO_BUFFER) {
-	if (!strcasecmp(buf->type, "text/html") && backend_halfdump_buf) {
+	if (is_html_type(buf->type) && backend_halfdump_buf) {
 	    TextLineListItem *p;
 	    Str first, last;
 	    int len = 0;
@@ -294,7 +294,7 @@ backend(void)
 
     w3m_dump = 0;
     if (COLS == 0)
-	COLS = 80;
+	COLS = DEFAULT_COLS;
 #ifdef USE_MOUSE
     use_mouse = FALSE;
 #endif				/* USE_MOUSE */

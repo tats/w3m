@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.106 2007/05/23 15:06:06 inu Exp $ */
+/* $Id: rc.c,v 1.116 2010/08/20 09:47:09 htrb Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -72,9 +72,11 @@ static int OptionEncode = FALSE;
 #define CMT_OPEN_TAB_BLANK N_("Open link on new tab if target is _blank or _new")
 #define CMT_OPEN_TAB_DL_LIST N_("Open download list panel on new tab")
 #define CMT_DISPLINK     N_("Display link URL automatically")
+#define CMT_DISPLINKNUMBER N_("Display link numbers")
 #define CMT_DECODE_URL   N_("Display decoded URL")
 #define CMT_DISPLINEINFO N_("Display current line number")
 #define CMT_DISP_IMAGE   N_("Display inline images")
+#define CMT_PSEUDO_INLINES N_("Display pseudo-ALTs for inline images with no ALT or TITLE string")
 #ifdef USE_IMAGE
 #define CMT_AUTO_IMAGE   N_("Load inline images automatically")
 #define CMT_MAX_LOAD_IMAGE N_("Maximum processes for parallel image loading")
@@ -85,7 +87,7 @@ static int OptionEncode = FALSE;
 #endif
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
-#define CMT_GRAPHIC_CHAR N_("Use graphic char for border of table and menu")
+#define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
@@ -137,6 +139,7 @@ static int OptionEncode = FALSE;
 #define CMT_URIMETHODMAP N_("List of urimethodmap files")
 #define CMT_EDITOR       N_("Editor")
 #define CMT_MAILER       N_("Mailer")
+#define CMT_MAILTO_OPTIONS N_("How to call Mailer for mailto URLs with options")
 #define CMT_EXTBRZ       N_("External Browser")
 #define CMT_EXTBRZ2      N_("Second External Browser")
 #define CMT_EXTBRZ3      N_("Third External Browser")
@@ -198,6 +201,7 @@ static int OptionEncode = FALSE;
 #define CMT_ACCEPTBADCOOKIE N_("Action to be taken on invalid cookie")
 #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
 #define CMT_COOKIE_ACCEPT_DOMAINS N_("Domains to accept cookies from")
+#define CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS N_("Domains to avoid [wrong number of dots]")
 #endif
 #define CMT_FOLLOW_REDIRECTION N_("Number of redirections to follow")
 #define CMT_META_REFRESH N_("Enable processing of meta-refresh tag")
@@ -216,6 +220,7 @@ static int OptionEncode = FALSE;
 #define CMT_EXT_HALFDUMP     N_("Output halfdump with display charset")
 #define CMT_USE_WIDE         N_("Use multi column characters")
 #define CMT_USE_COMBINING    N_("Use combining characters")
+#define CMT_EAST_ASIAN_WIDTH N_("Use double width for some Unicode characters")
 #define CMT_USE_LANGUAGE_TAG N_("Use Unicode language tags")
 #define CMT_UCS_CONV         N_("Charset conversion using Unicode map")
 #define CMT_PRE_CONV         N_("Charset conversion when loading")
@@ -229,6 +234,7 @@ static int OptionEncode = FALSE;
 #define CMT_USE_JISX0213     N_("Use JIS X 0213:2000 (2000JIS)")
 #define CMT_STRICT_ISO2022   N_("Strict ISO-2022-JP/KR/CN")
 #define CMT_GB18030_AS_UCS   N_("Treat 4 bytes char. of GB18030 as Unicode")
+#define CMT_SIMPLE_PRESERVE_SPACE N_("Simple Preserve space")
 #endif
 
 #define CMT_KEYMAP_FILE N_("keymap file")
@@ -318,6 +324,15 @@ static struct sel_c badcookiestr[] = {
 };
 #endif				/* USE_COOKIE */
 
+static struct sel_c mailtooptionsstr[] = {
+#ifdef USE_W3MMAILER
+    {N_S(MAILTO_OPTIONS_USE_W3MMAILER), N_("use internal mailer instead")},
+#endif
+    {N_S(MAILTO_OPTIONS_IGNORE), N_("ignore options and use only the address")},
+    {N_S(MAILTO_OPTIONS_USE_MAILTO_URL), N_("use full mailto URL")},
+    {0, NULL, NULL}
+};
+
 #ifdef USE_M17N
 static wc_ces_list *display_charset_str = NULL;
 static wc_ces_list *document_charset_str = NULL;
@@ -329,6 +344,13 @@ static struct sel_c auto_detect_str[] = {
     {0, NULL, NULL}
 };
 #endif
+
+static struct sel_c graphic_char_str[] = {
+    {N_S(GRAPHIC_CHAR_ASCII), N_("ASCII")},
+    {N_S(GRAPHIC_CHAR_CHARSET), N_("charset specific")},
+    {N_S(GRAPHIC_CHAR_DEC), N_("DEC special graphics")},
+    {0, NULL, NULL}
+};
 
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
@@ -348,6 +370,8 @@ struct param_ptr params1[] = {
      CMT_OPEN_TAB_DL_LIST, NULL},
     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
      NULL},
+    {"display_link_number", P_INT, PI_ONOFF, (void *)&displayLinkNumber,
+     CMT_DISPLINKNUMBER, NULL},
     {"decode_url", P_INT, PI_ONOFF, (void *)&DecodeURL, CMT_DECODE_URL, NULL},
     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
      CMT_DISPLINEINFO, NULL},
@@ -364,8 +388,8 @@ struct param_ptr params1[] = {
     {"multicol", P_INT, PI_ONOFF, (void *)&multicolList, CMT_MULTICOL, NULL},
     {"alt_entity", P_CHARINT, PI_ONOFF, (void *)&UseAltEntity, CMT_ALT_ENTITY,
      NULL},
-    {"graphic_char", P_CHARINT, PI_ONOFF, (void *)&UseGraphicChar,
-     CMT_GRAPHIC_CHAR, NULL},
+    {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
+     CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
@@ -377,6 +401,8 @@ struct param_ptr params1[] = {
     /* XXX: emacs-w3m force to off display_image even if image options off */
     {"display_image", P_INT, PI_ONOFF, (void *)&displayImage, CMT_DISP_IMAGE,
      NULL},
+    {"pseudo_inlines", P_INT, PI_ONOFF, (void *)&pseudoInlines,
+     CMT_PSEUDO_INLINES, NULL},
 #ifdef USE_IMAGE
     {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
     {"max_load_image", P_INT, PI_TEXT, (void *)&maxLoadImage,
@@ -527,6 +553,8 @@ struct param_ptr params6[] = {
      CMT_URIMETHODMAP, NULL},
 #endif
     {"editor", P_STRING, PI_TEXT, (void *)&Editor, CMT_EDITOR, NULL},
+    {"mailto_options", P_INT, PI_SEL_C, (void *)&MailtoOptions,
+     CMT_MAILTO_OPTIONS, (void *)mailtooptionsstr},
     {"mailer", P_STRING, PI_TEXT, (void *)&Mailer, CMT_MAILER, NULL},
     {"extbrowser", P_STRING, PI_TEXT, (void *)&ExtBrowser, CMT_EXTBRZ, NULL},
     {"extbrowser2", P_STRING, PI_TEXT, (void *)&ExtBrowser2, CMT_EXTBRZ2,
@@ -573,6 +601,9 @@ struct param_ptr params8[] = {
      (void *)&cookie_reject_domains, CMT_COOKIE_REJECT_DOMAINS, NULL},
     {"cookie_accept_domains", P_STRING, PI_TEXT,
      (void *)&cookie_accept_domains, CMT_COOKIE_ACCEPT_DOMAINS, NULL},
+    {"cookie_avoid_wrong_number_of_dots", P_STRING, PI_TEXT,
+     (void *)&cookie_avoid_wrong_number_of_dots,
+     CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif
@@ -640,6 +671,8 @@ struct param_ptr params10[] = {
     {"use_combining", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_combining,
      CMT_USE_COMBINING, NULL},
 #ifdef USE_UNICODE
+    {"east_asian_width", P_CHARINT, PI_ONOFF,
+     (void *)&WcOption.east_asian_width, CMT_EAST_ASIAN_WIDTH, NULL},
     {"use_language_tag", P_CHARINT, PI_ONOFF,
      (void *)&WcOption.use_language_tag, CMT_USE_LANGUAGE_TAG, NULL},
     {"ucs_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.ucs_conv, CMT_UCS_CONV,
@@ -671,6 +704,8 @@ struct param_ptr params10[] = {
     {"gb18030_as_ucs", P_CHARINT, PI_ONOFF, (void *)&WcOption.gb18030_as_ucs,
      CMT_GB18030_AS_UCS, NULL},
 #endif
+    {"simple_preserve_space", P_CHARINT, PI_ONOFF, (void *)&SimplePreserveSpace,
+     CMT_SIMPLE_PRESERVE_SPACE, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 #endif
@@ -1061,9 +1096,11 @@ interpret_rc(FILE * f)
 
     for (;;) {
 	line = Strfgets(f);
-	Strchop(line);
-	if (line->length == 0)
+	if (line->length == 0)		/* end of file */
 	    break;
+	Strchop(line);
+	if (line->length == 0)		/* blank line */
+	    continue;
 	Strremovefirstspaces(line);
 	if (line->ptr[0] == '#')	/* comment */
 	    continue;
@@ -1105,6 +1142,9 @@ parse_cookie()
 	Cookie_reject_domains = make_domain_list(cookie_reject_domains);
     if (non_null(cookie_accept_domains))
 	Cookie_accept_domains = make_domain_list(cookie_accept_domains);
+    if (non_null(cookie_avoid_wrong_number_of_dots))
+	Cookie_avoid_wrong_number_of_dots_domains
+	       	= make_domain_list(cookie_avoid_wrong_number_of_dots);
 }
 #endif
 
@@ -1172,6 +1212,9 @@ sync_with_option(void)
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();
+#ifdef USE_UNICODE
+    update_utf8_symbol();
+#endif
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE
@@ -1246,7 +1289,7 @@ init_rc(void)
 	interpret_rc(f);
 	fclose(f);
     }
-    if ((f = fopen(config_file, "rt")) != NULL) {
+    if (config_file && (f = fopen(config_file, "rt")) != NULL) {
 	interpret_rc(f);
 	fclose(f);
     }
@@ -1258,6 +1301,8 @@ init_rc(void)
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
+    create_option_search_table();
+    goto open_rc;
 }
 
 
@@ -1439,8 +1484,8 @@ panel_set_option(struct parsed_tagarg *arg)
     FILE *f = NULL;
     char *p;
 
-    if (no_rc_dir) {
-	disp_message("There's no ~/.w3m directory... config not saved", FALSE);
+    if (config_file == NULL) {
+	disp_message("There's no config file... config not saved", FALSE);
     }
     else {
 	f = fopen(config_file, "wt");

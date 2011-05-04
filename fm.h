@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.138 2007/05/30 04:47:24 inu Exp $ */
+/* $Id: fm.h,v 1.149 2010/08/20 09:47:09 htrb Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -100,6 +100,9 @@ void bzero(void *, int);
  */
 #define LINELEN	256		/* Initial line length */
 #define PAGER_MAX_LINE	10000	/* Maximum line kept as pager */
+
+#define MAXIMUM_COLS 1024
+#define DEFAULT_COLS 80
 
 #ifdef USE_IMAGE
 #define MAX_IMAGE 1000
@@ -517,7 +520,8 @@ typedef struct _DownloadList {
     char *lock;
     clen_t size;
     time_t time;
-    int ok;
+    int running;
+    int err;
     struct _DownloadList *next;
     struct _DownloadList *prev;
 } DownloadList;
@@ -931,6 +935,7 @@ global int label_topline init(FALSE);
 global int nextpage_topline init(FALSE);
 global char *displayTitleTerm init(NULL);
 global int displayLink init(FALSE);
+global int displayLinkNumber init(FALSE);
 global int displayLineInfo init(FALSE);
 global int DecodeURL init(FALSE);
 global int retryAsHttp init(TRUE);
@@ -947,12 +952,19 @@ global int image_map_list init(TRUE);
 #else
 global int displayImage init(FALSE);	/* XXX: emacs-w3m use display_image=off */
 #endif
+global int pseudoInlines init(TRUE);
 global char *Editor init(DEF_EDITOR);
 #ifdef USE_W3MMAILER
 global char *Mailer init(NULL);
 #else
 global char *Mailer init(DEF_MAILER);
 #endif
+#ifdef USE_W3MMAILER
+#define MAILTO_OPTIONS_USE_W3MMAILER 0
+#endif
+#define MAILTO_OPTIONS_IGNORE 1
+#define MAILTO_OPTIONS_USE_MAILTO_URL 2
+global int MailtoOptions init(MAILTO_OPTIONS_IGNORE);
 global char *ExtBrowser init(DEF_EXT_BROWSER);
 global char *ExtBrowser2 init(NULL);
 global char *ExtBrowser3 init(NULL);
@@ -976,8 +988,6 @@ global int IgnoreCase init(TRUE);
 global int WrapSearch init(FALSE);
 global int squeezeBlankLine init(FALSE);
 global char *BookmarkFile init(NULL);
-global char *pauth init(NULL);
-global Str proxy_auth_cookie init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 #ifdef USE_DICT
@@ -1038,6 +1048,7 @@ global char ExtHalfdump init(FALSE);
 global char FollowLocale init(TRUE);
 global char UseContentCharset init(TRUE);
 global char SearchConv init(TRUE);
+global char SimplePreserveSpace init(FALSE);
 #define Str_conv_from_system(x) wc_Str_conv((x), SystemCharset, InnerCharset)
 #define Str_conv_to_system(x) wc_Str_conv_strict((x), InnerCharset, SystemCharset)
 #define Str_conv_to_halfdump(x) (ExtHalfdump ? wc_Str_conv((x), InnerCharset, DisplayCharset) : (x))
@@ -1055,7 +1066,10 @@ global char SearchConv init(TRUE);
 #define wc_Str_conv_strict(x,charset0,charset1) (x)
 #endif
 global char UseAltEntity init(TRUE);
-global char UseGraphicChar init(FALSE);
+#define GRAPHIC_CHAR_ASCII 2
+#define GRAPHIC_CHAR_DEC 1
+#define GRAPHIC_CHAR_CHARSET 0
+global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
 extern char *graph_symbol[];
 extern char *graph2_symbol[];
 extern int symbol_width;
@@ -1108,8 +1122,10 @@ global int accept_cookie init(FALSE);
 global int accept_bad_cookie init(ACCEPT_BAD_COOKIE_DISCARD);
 global char *cookie_reject_domains init(NULL);
 global char *cookie_accept_domains init(NULL);
+global char *cookie_avoid_wrong_number_of_dots init(NULL);
 global TextList *Cookie_reject_domains;
 global TextList *Cookie_accept_domains;
+global TextList *Cookie_avoid_wrong_number_of_dots_domains;
 #endif				/* USE_COOKIE */
 
 #ifdef USE_IMAGE

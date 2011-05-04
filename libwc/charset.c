@@ -32,6 +32,46 @@ static struct {
   { NULL, 0 }
 };
 
+static wc_ces
+wc_codepage(int n)
+{
+	switch (n) {
+	case 437: return WC_CES_CP437;
+	case 737: return WC_CES_CP737;
+	case 775: return WC_CES_CP775;
+	case 850: return WC_CES_CP850;
+	case 852: return WC_CES_CP852;
+	case 855: return WC_CES_CP855;
+	case 856: return WC_CES_CP856;
+	case 857: return WC_CES_CP857;
+	case 860: return WC_CES_CP860;
+	case 861: return WC_CES_CP861;
+	case 862: return WC_CES_CP862;
+	case 863: return WC_CES_CP863;
+	case 864: return WC_CES_CP864;
+	case 865: return WC_CES_CP865;
+	case 866: return WC_CES_CP866;
+	case 869: return WC_CES_CP869;
+	case 874: return WC_CES_CP874;
+	case 932: return WC_CES_CP932;		/* CP932 = Shift_JIS */
+	case 936: return WC_CES_CP936;		/* CP936 = GBK > EUC_CN */
+	case 943: return WC_CES_CP943;		/* CP943 = Shift_JIS */
+	case 949: return WC_CES_CP949;		/* CP949 = UHC > EUC_KR */
+	case 950: return WC_CES_CP950;		/* CP950 = Big5 */
+	case 1006: return WC_CES_CP1006;
+	case 1250: return WC_CES_CP1250;
+	case 1251: return WC_CES_CP1251;
+	case 1252: return WC_CES_CP1252;
+	case 1253: return WC_CES_CP1253;
+	case 1254: return WC_CES_CP1254;
+	case 1255: return WC_CES_CP1255;
+	case 1256: return WC_CES_CP1256;
+	case 1257: return WC_CES_CP1257;
+	case 1258: return WC_CES_CP1258;
+	}
+	return 0;
+}
+
 wc_ces
 wc_guess_charset(char *charset, wc_ces orig)
 {
@@ -119,6 +159,11 @@ wc_charset_to_ces(char *charset)
 	    if (n >= 1 && n <= 16 && n != 12)
 		return (WC_CES_E_ISO_8859 | n);
 	    return WC_CES_ISO_8859_1;
+	} else if (! strncmp(p, "ibm", 3)) {
+	    p += 3;
+	    if (*p >= '1' && *p <= '9')
+	    	return wc_codepage(atoi(p));
+	    return wc_charset_to_ces(p);
 	}
 	break;
     case 'j':
@@ -133,6 +178,10 @@ wc_charset_to_ces(char *charset)
 	    return WC_CES_SHIFT_JISX0213;
 	if (! strncmp(p, "shiftjis", 8) ||
 	    ! strncmp(p, "sjis", 4))
+	    return WC_CES_SHIFT_JIS;
+	break;
+    case 'p':
+	if (! strncmp(p, "pck", 3))
 	    return WC_CES_SHIFT_JIS;
 	break;
     case 'g':
@@ -210,58 +259,18 @@ wc_charset_to_ces(char *charset)
 	    return WC_CES_EUC_CN;
 	if (*(p+1) != 'p')
 	    break;
-	n = atoi(p + 2);
-	switch (n) {
-	case 437: return WC_CES_CP437;
-	case 737: return WC_CES_CP737;
-	case 775: return WC_CES_CP775;
-	case 850: return WC_CES_CP850;
-	case 852: return WC_CES_CP852;
-	case 855: return WC_CES_CP855;
-	case 856: return WC_CES_CP856;
-	case 857: return WC_CES_CP857;
-	case 860: return WC_CES_CP860;
-	case 861: return WC_CES_CP861;
-	case 862: return WC_CES_CP862;
-	case 863: return WC_CES_CP863;
-	case 864: return WC_CES_CP864;
-	case 865: return WC_CES_CP865;
-	case 866: return WC_CES_CP866;
-	case 869: return WC_CES_CP869;
-	case 874: return WC_CES_CP874;
-	case 932: return WC_CES_CP932;		/* CP932 = Shift_JIS */
-	case 936: return WC_CES_CP936;		/* CP936 = GBK > EUC_CN */
-	case 949: return WC_CES_CP949;		/* CP949 = UHC > EUC_KR */
-	case 950: return WC_CES_CP950;		/* CP950 = Big5 */
-	case 1006: return WC_CES_CP1006;
-	case 1250: return WC_CES_CP1250;
-	case 1251: return WC_CES_CP1251;
-	case 1252: return WC_CES_CP1252;
-	case 1253: return WC_CES_CP1253;
-	case 1254: return WC_CES_CP1254;
-	case 1255: return WC_CES_CP1255;
-	case 1256: return WC_CES_CP1256;
-	case 1257: return WC_CES_CP1257;
-	case 1258: return WC_CES_CP1258;
-	}
+	p += 2;
+	if (*p >= '1' &&  *p <= '9')
+	    return wc_codepage(atoi(p));
 	break;
     case 'w':
 	if (strncmp(p, "windows", 7))
 	    break;
+	p += 7;
 	if (! strncmp(p, "31j", 3))
 	    return WC_CES_CP932;
-	n = atoi(p + 7);
-	switch (n) {
-	case 1250: return WC_CES_CP1250;
-	case 1251: return WC_CES_CP1251;
-	case 1252: return WC_CES_CP1252;
-	case 1253: return WC_CES_CP1253;
-	case 1254: return WC_CES_CP1254;
-	case 1255: return WC_CES_CP1255;
-	case 1256: return WC_CES_CP1256;
-	case 1257: return WC_CES_CP1257;
-	case 1258: return WC_CES_CP1258;
-	}
+	if (*p >= '1' &&  *p <= '9')
+	    return wc_codepage(atoi(p));
 	break;
     }
     return 0;
@@ -345,18 +354,9 @@ wc_charset_short_to_ces(char *charset)
     case 'c':
 	return WC_CES_ISO_2022_CN;
     case 'w':
-	n = atoi(p + 1);
-	switch (n) {
-	case 1250: return WC_CES_CP1250;
-	case 1251: return WC_CES_CP1251;
-	case 1252: return WC_CES_CP1252;
-	case 1253: return WC_CES_CP1253;
-	case 1254: return WC_CES_CP1254;
-	case 1255: return WC_CES_CP1255;
-	case 1256: return WC_CES_CP1256;
-	case 1257: return WC_CES_CP1257;
-	case 1258: return WC_CES_CP1258;
-	}
+	p++;
+	if (*p >= '1' &&  *p <= '9')
+	    return wc_codepage(atoi(p));
 	break;
     case 'r':
 	return WC_CES_RAW;
@@ -368,7 +368,7 @@ wc_ces
 wc_locale_to_ces(char *locale)
 {
     char *p = locale;
-    char buf[6];
+    char buf[8];
     int n;
 
     if (*p == 'C' && *(p+1) == '\0')
@@ -380,7 +380,7 @@ wc_locale_to_ces(char *locale)
 	    return wc_charset_to_ces(cs);
     }
 #endif
-    for (n = 0; *p && *p != '.' && n < 5; p++) {
+    for (n = 0; *p && *p != '.' && n < 7; p++) {
 	if ((unsigned char)*p > 0x20)
 	    buf[n++] = tolower(*p);
     }

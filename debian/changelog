@@ -1,3 +1,15 @@
+w3m (0.5.2-5) unstable; urgency=high
+
+  * debian/patches/60_check-null-cn.patch: Patch to check for null bytes
+    in CN/subjAltName, provided by Ludwig Nussel. (Closes: #587445)
+    [CVE-2010-2074]
+  * debian/patches/70_ssl-init.patch: Patch to force ssl_verify_server on
+    and disable SSLv2 support, provided by Ludwig Nussel.
+  * debian/patches/*: Renumbered.
+  * debian/control: Update Standards-Version to 3.9.0.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 03 Jul 2010 19:08:07 +0900
+
 w3m (0.5.2-4) unstable; urgency=low
 
   * debian/control: Move migemo from Recommends to Suggests.

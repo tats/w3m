@@ -1,5 +1,7 @@
-03-w3m.1-debian-fix
-04-ja-w3m.1-debian-fix
-05-config-debian-fix
-06-gnukfreebsd-ftbfs-fix
-10-w3mman-keep-formatting
+10_w3m.1-debian-fix.patch
+20_ja-w3m.1-debian-fix.patch
+30_config-debian-fix.patch
+40_gnukfreebsd-ftbfs-fix.patch
+50_w3mman-keep-formatting.patch
+60_check-null-cn.patch
+70_ssl-init.patch

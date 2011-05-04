@@ -4,7 +4,7 @@ Priority: standard
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev
 Homepage: http://sourceforge.net/projects/w3m
-Standards-Version: 3.8.4
+Standards-Version: 3.9.0
 
 Package: w3m
 Architecture: any

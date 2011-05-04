@@ -1,0 +1,57 @@
+#!/bin/sh
+
+convert()
+{
+    SRC=$1
+    HTML=`echo ${SRC} | ${SED} 's/\.in$//p'`
+    DOC=`echo ${HTML} | ${SED} 's/\.html$//p' | ${TR} '[a-z]' '[A-Z]'`
+    echo "converting ${SRC} to ${HTML_TOP_DIR}/${_JA_DIR}/${HTML} ... \c"
+    ${NKF} -e ${SRC} | ${SED} -e 's/。/．/gp' -e 's/、/，/gp' | ${NKF} -j | ${W3MDOC} > ${HTML_TOP_DIR}/${_JA_DIR}/${HTML}
+    echo "done.\nconverting ${HTML} to ${DOC_TOP_DIR}/${_JA_DIR}/${DOC} ... \c"
+    ${W3M} -dump -e ${HTML_TOP_DIR}/${_JA_DIR}/${HTML} > ${DOC_TOP_DIR}/${_JA_DIR}/${DOC}
+    echo "done."
+}
+
+W3MDOC="./w3mdoc.pl"
+W3M="w3m"
+if [ -x ${HOME}/bin/pre_w3m ]; then
+    W3M=${HOME}/bin/pre_w3m
+fi
+
+NKF="/usr/local/bin/nkf"
+SED="/usr/bin/sed"
+TR="/usr/bin/tr"
+
+HTML_TOP_DIR="html"
+DOC_TOP_DIR="doc"
+_JA_DIR="ja"
+#HTML_DIR="html"
+#DOC_DIR="doc"
+
+if [ ! -d ${HTML_TOP_DIR} ]; then
+    mkdir ${HTML_TOP_DIR}
+    if [ ! -d ${HTML_TOP_DIR}/${_JA_DIR} ]; then
+        mkdir ${HTML_TOP_DIR}/${_JA_DIR}
+    fi
+fi
+if [ ! -d ${DOC_TOP_DIR} ]; then
+    mkdir ${DOC_TOP_DIR}
+    if [ ! -d ${DOC_TOP_DIR}/${_JA_DIR} ]; then
+        mkdir ${DOC_TOP_DIR}/${_JA_DIR}
+    fi
+fi
+
+if [ $# -eq 0 ]; then
+    for _IN in *.in
+    do
+        convert ${_IN}
+    done
+else
+    for _IN in $*
+    do
+        case ${_IN} in
+        *.in)   convert ${_IN};;
+        *)  ;;
+        esac
+    done
+fi

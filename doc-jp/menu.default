@@ -1,0 +1,35 @@
+# A sample of ~/.w3m/menu  (default)
+#
+# menu MENU_ID
+#  func  LABEL FUNCTION KEYS
+#  popup LABEL MENU_ID  KEYS
+#  nop   LABEL
+# end
+#
+# MENU_ID
+#  Main:   メインメニュー
+#  Select: バッファ選択メニュー
+
+menu Main
+ func	"戻る         (b)"	BACK		"b"
+ popup	"バッファ選択 (s)"	Select		"s"
+ popup	"タブ選択     (t)"	SelectTab	"tT"
+ func	"ソースを表示 (v)"	VIEW		"vV"
+ func	"ソースを編集 (e)"	EDIT		"eE"
+ func	"ソースを保存 (S)"	SAVE		"S"
+ func	"再読み込み   (r)"	RELOAD		"rR"
+ nop	"────────"
+ func	"リンクを表示 (a)"	GOTO_LINK	"a"
+ func	"新タブで表示 (n)"	TAB_LINK	"nN"
+ func	"リンクを保存 (A)"	SAVE_LINK	"A"
+ func	"画像を表示   (i)"	VIEW_IMAGE	"i"
+ func	"画像を保存   (I)"	SAVE_IMAGE	"I"
+ func	"フレーム表示 (f)"	FRAME		"fF"
+ nop	"────────"
+ func	"ブックマーク (B)"	BOOKMARK	"B"
+ func	"ヘルプ       (h)"	HELP		"hH"
+ func	"オプション   (o)"	OPTIONS		"oO"
+ nop	"────────"
+ func	"終了         (q)"	QUIT		"qQ"
+end
+

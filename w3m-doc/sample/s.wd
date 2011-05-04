@@ -1,0 +1,8 @@
+@include html.wd
+@include define.wd
+
+これはサンプルです。
+<P>
+\@hsaka.url\@ = @hsaka.url@
+<BR>
+\@LINK(hsaka)\@ = @LINK(hsaka)@

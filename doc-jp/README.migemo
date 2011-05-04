@@ -1,0 +1,39 @@
+w3m で Migemo (ローマ字検索)を行う
+
+                                                         (2002/02/23)  日台健一
+                                                                   hidai@nmn.jp
+
+ ・ Migemo を用いることでローマ字のインクリメンタル検索を行うことができます.
+    あらかじめ Migemo がインストールされている必要があります.
+    http://migemo.namazu.org/
+
+ ・ configure スクリプト実行時に --with-migemo オプションを付けることで利用可
+    能となります.
+
+ ・ オプションパネルにて以下の設定をします. 辞書のパスは適切に書き換えて下さい.
+
+    Migemo を使用する ... ON
+    Migemo コマンド ..... migemo -t egrep /usr/local/share/migemo/migemo-dict
+
+ ・ 正しく設定されていれば、通常の検索においてローマ字検索ができるはずです.
+    ローマ字検索が行われていないようであれば、次の項目を確認して下さい.
+
+ ・ うまく動かないときは、以下のように migemo コマンドの動作確認をして下さい.
+    入力したローマ字に対して、それを展開した正規表現が出力されれば成功です.
+    (コマンドは、オプションパネルの「Migemo コマンド」に設定したもの)
+
+    % migemo -t egrep /usr/local/share/migemo/migemo-dict
+    migemo
+    migemo|ｍｉｇｅｍｏ|みげも|ミゲモ
+    romaji
+    romaji|ｒｏｍａｊｉ|ろまじ|ロ(ーマ字|マジ)
+
+ ・ デフォルトでは、/ ? が通常の検索、C-s C-r がインクリメンタル検索にバインド
+    されています. / ? でインクリメンタル検索を行うには、~/.w3m/keymap に以下の
+    設定をします.
+
+    keymap  /  ISEARCH
+    keymap  ?  ISEARCH_BACK
+
+ ・ Migemo に付属の migemo-server を使用する必要はありません. w3m は migemo コ
+    マンドを直接実行 (popen(3)) します.

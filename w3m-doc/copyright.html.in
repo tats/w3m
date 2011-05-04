@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>COPYRIGHT&nbsp;- Copyright -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">Copyright</A></H1>
+<DIV>
+<!-- w3mのCopyrightに関して -->
+</DIV>
+	<UL>
+        <LI><A HREF="#copyright">著作権、ライセンス</A>
+        <LI><A HREF="#thanks">謝辞</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="copyright">著作権、ライセンス</A></H2>
+<!-- w3m の著作権、ライセンスについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="thanks">謝辞</A></H2>
+<!-- 謝辞 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

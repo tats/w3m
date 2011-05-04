@@ -1,0 +1,12 @@
+#!/bin/sh
+OPT=
+if [ $# -gt 0 -a $1 = "-u" ]; then
+  OPT=-u
+  shift
+fi
+if [ $# = 0 ]; then
+  URL=$WWW_HOME
+else
+  URL=$1
+fi
+w3m -dump_source $URL | makeref $OPT -url $URL | w3m -dump -F -T text/html

@@ -1,0 +1,53 @@
+#!@PERL@
+# gettext message substitute
+#
+$po_dir='po';
+$lang='@POLANG@';
+%msg = ();
+$msgid = '';
+$charset = "UTF-8";
+$charset_code = "WC_CES_UTF_8";
+open(PO, "$po_dir/$lang.po") or die "cannot open $po_dir/$lang.po, $!";
+while (<PO>) {
+    if (/^msgid\s*"(.*)"/) {
+	$msgid = $1;
+	next;
+    }
+    if (/^msgstr\s*"(.*)"/) {
+	$msg{$msgid} = $1;
+	next;
+    }
+    if (/^"Content-Type: text\/plain; charset=(.*)\\n"/) {
+	$charset = $1;
+	next;
+    }
+}
+close(PO);
+open(CL, "charset-list") or die "cannot open charset-list, $!";
+while (<CL>) {
+    @l = split;
+    if ($l[0] eq $charset) {
+	$charset_code = $l[1];
+	last;
+    }
+}
+close(CL);
+
+@src = grep {/\.c$/} @ARGV;
+@tmp = ();
+foreach $src (@src) {
+    open(SRC0, $src) or die "cannot open $src, $!";
+    push(@tmp, ".$src");
+    open(SRC1, ">.$src") or die "cannot create .$src, $!";
+    while (<SRC0>) {
+	s/^static\s*wc_ces\s*(\S+)\s*=\s*(WC_CES_\S+)\s*;\s*\/\*\s*FIXME: charset of source code \*\//static wc_ces $1 = $charset_code; \/* FIXME: charset of source code *\//;
+	s/(N?_\(")([^"]*)("\))/$1 . ($msg{$2} || $2) . $3/ge;
+	print SRC1 $_;
+    }
+    close(SRC0);
+    close(SRC1);
+}
+
+map {s/(.*\.c)$/.$1/} @ARGV;
+system @ARGV;
+unlink @tmp;

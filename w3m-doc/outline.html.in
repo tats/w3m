@@ -1,0 +1,352 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>OUTLINE&nbsp;- 概要編 -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">概要編</A></H1>
+<UL>
+	<LI><A HREF="#install">インストールの概要</A>
+	<LI><A HREF="#operation">操作方法の概要</A>
+	<UL>
+		<LI><A HREF="#display">表示内容の説明</A>
+		<LI><A HREF="#basic">基本的な使い方</A>
+		<LI><A HREF="#help">ヘルプの参照</A>
+        <UL>
+            <LI><A HREF="#w3m_original">w3m オリジナルのキー操作</A>
+            <LI><A HREF="#like_lynx">Lynx 風のキー操作</A>
+        </UL>
+	</UL>
+</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+
+<HR>
+
+<H2><A NAME="install">インストールの概要</A></H2>
+<!-- インストールの概要 -->
+<DIV>
+<P>w3mをインストールするには、次のようにします。なお、ここでは概要を述べるに止めておきます。詳細については<A HREF="@DOC.install@">インストールの詳細</A>を参照してください。
+<P><OL>
+   <LI>configure を実行する。いくつか質問されるので、それに答えます。
+   <LI>make を実行
+   <LI>make install を実行
+   </OL>
+<P>以上でインストールは終わりです。<BR>
+<BR>
+<A HREF="index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="operation">操作方法の概要</A></H2>
+<!-- 操作方法の概要 -->
+<P>
+w3m の起動時の指定は次の通りです。
+<P>
+<PRE>
+	w3m [options] [file | URL]
+</PRE>
+<P>
+引数にローカルファイル名を指定すればそのファイルを表示し、URL を指定すればその URL で示される WWW の内容を表示します。<BR>
+何も指定しなければ、標準入力の内容を表示します。ただし、標準入力が tty である場合には、usageを出力して終了します。
+<P>
+指定できる引数については、<A HREF="@DOC.configuration#option">起動オプション</A> を参照してください。
+
+<HR>
+
+<H3><A NAME="display">表示内容の説明</A></H3>
+<!-- 表示内容の説明 -->
+<P>
+HTML文書を表示しているときには、次のような表示になります。
+<P>
+<DIV ALIGN="center">
+<TABLE BORDER="1">
+<TR><TH>&nbsp;</TH><TH>カラー表示時</TH><TH>モノクロ表示時</TH>
+<TR><TD>リンク</TD><TD ALIGN="center">青色</TD><TD ALIGN="center">下線</TD>
+<TR><TD>インライン画像</TD><TD ALIGN="center">緑色</TD><TD ALIGN="center">反転表示</TD>
+<TR><TD>フォームの入力部分</TD><TD ALIGN="center">赤色</TD><TD ALIGN="center">反転表示</TD>
+</TABLE>
+</DIV>
+<P>
+カラー表示時の色は、オプション設定パネルで変更する事ができます。
+
+<HR>
+
+<H3><A NAME="basic">基本的な使い方</A></H3>
+<!-- 基本的な使い方 -->
+<P>
+w3m を起動した後は、1文字のコマンドをキーボードから入力する事で操作します。基本的な使い方については、w3m を起動した後に``<B>H</B>''を入力して、<A HREF="#help">ヘルプ</A>を参照してください。<BR>
+なお、ヘルプページの記述では、<B>C-x</B> は<U>コントロール&nbsp;+&nbsp;x</U>を表します。また、<B>SPC</B> は<U>スペースバー</U>、<B>RET</B> は<U>リターンキー</U>、<B>ESC</B> は<U>エスケープキー</U>です。
+<P>
+w3m のキー操作は、w3m の make 時に決められるキー操作と個人用に定義するキー操作があります。また、make 時に決められるキー操作には、“w3m オリジナルのキー操作”と“Lynx 風のキー操作”があります。ヘルプで表示する内容は、“w3m オリジナル”、“Lynx 風”のいずれかです。
+<P>
+また、マウス機能を ON にして w3m を make してあれば、マウスを使って w3m を操作することができます。マウスが使えるのは、<B>xterm</B>/<B>kterm</B>/<B>rxvt</B> を使用している場合、または GPM が動いている環境を使っている場合です。<BR>
+マウスの詳しい操作については<A HREF="@DOC.operation@#mouse">『マウス操作』</A>をご覧ください。
+<P>
+<HR>
+
+<H3><A NAME="help">ヘルプの参照</A></H3>
+<!-- ヘルプの参照 -->
+<P>
+w3m のmake時に指定したキー操作によって、ヘルプファイルが異なります。
+<UL>
+    <LI><A HREF="#w3m_original">w3m オリジナルのキー操作</A>
+    <LI><A HREF="#like_lynx">Lynx 風のキー操作</A>
+</UL>
+<P>
+<HR>
+
+<P>
+<H4><A NAME="w3m_original">w3m オリジナルのキー操作</A></H4>
+
+<H5>ページ/カーソル移動</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>SPC,C-v</TD> <TD>次ページ</TD></TR>
+ <TR> <TD>b,ESC v</TD> <TD>前ページ</TD></TR>
+ <TR> <TD>l,C-f</TD> <TD>カーソルを右へ移動</TD></TR>
+ <TR> <TD>h,C-b</TD> <TD>カーソルを左へ移動</TD></TR>
+ <TR> <TD>j,C-n</TD> <TD>カーソルを下へ移動</TD></TR>
+ <TR> <TD>k,C-p</TD> <TD>カーソルを上へ移動</TD></TR>
+ <TR> <TD>J</TD><TD>一行上にスクロール(進む)</TD></TR>
+ <TR> <TD>K</TD><TD>一行下にスクロール(戻る)</TD></TR>
+ <TR> <TD>w</TD><TD>次の単語に移動</TD></TR>
+ <TR> <TD>W</TD><TD>前の単語に移動</TD></TR>
+ <TR> <TD>&gt;</TD> <TD>右に一画面分シフト</TD></TR>
+ <TR> <TD>&lt;</TD> <TD>左に一画面分シフト</TD></TR>
+ <TR> <TD>.</TD> <TD>右に一文字分シフト</TD></TR>
+ <TR> <TD>,</TD> <TD>左に一文字分シフト</TD></TR>
+ <TR> <TD>g</TD> <TD>ページの先頭行に移動</TD></TR>
+ <TR> <TD>G</TD> <TD>ページの最終行に移動</TD></TR>
+ <TR> <TD>ESC g</TD> <TD>指定行に移動</TD></TR>
+ <TR> <TD>TAB</TD> <TD>次のハイパーリンクに移動</TD></TR>
+ <TR> <TD>C-u, ESC TAB</TD> <TD>前のハイパーリンクに移動</TD></TR>
+ <TR> <TD>[</TD> <TD>最初のハイパーリンクに移動</TD></TR>
+ <TR> <TD>]</TD> <TD>最後のハイパーリンクに移動</TD></TR>
+</TABLE>
+
+<H5>ハイパーリンク操作</H5>
+
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>RET</TD> <TD>カーソル下のリンクへ飛ぶ</TD></TR>
+ <TR> <TD>a, ESC RET</TD> <TD>リンク先の文書をファイルに保存</TD></TR>
+ <TR> <TD>ESC I</TD> <TD>リンク先の画像をファイルに保存</TD></TR>
+ <TR> <TD>u</TD> <TD>リンク先 URL の表示</TD></TR>
+ <TR> <TD>I</TD> <TD>インラインイメージの表示</TD></TR>
+ <TR> <TD>:</TD> <TD>URLのような文字をアンカーとしてマーク</TD></TR>
+ <TR> <TD>ESC :</TD> <TD>Message-ID のような文字をアンカーとしてマーク</TD></TR>
+ <TR> <TD>c</TD> <TD>現ページの URL を表示</TD></TR>
+ <TR> <TD>=</TD> <TD>現ドキュメントの情報を表示</TD></TR>
+ <TR> <TD>F</TD> <TD>フレームを表示する</TD></TR>
+ <TR> <TD>M</TD> <TD>現ページを外部ブラウザで表示する(2M,3M で2番目と3番目のブラウザを呼びだす)</TD></TR>
+ <TR> <TD>ESC M</TD> <TD>リンク先を外部ブラウザで表示する(2ESC M,3ESC M で2番目と3番目のブラウザを呼びだす)</TD></TR>
+</TABLE>
+
+<H5>ファイル/ストリーム操作</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>U</TD> <TD>URLを指定</TD></TR>
+ <TR> <TD>V</TD> <TD>ファイルを開く</TD></TR>
+ <TR> <TD>@</TD> <TD>シェルを起動し読み込む</TD></TR>
+ <TR> <TD>#</TD> <TD>シェルを起動し読み込む</TD></TR>
+</TABLE>
+
+<H5>バッファ操作</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>B</TD> <TD>前のバッファに移動</TD></TR>
+ <TR> <TD>v</TD> <TD>HTMLソースを表示</TD></TR>
+ <TR> <TD>s</TD> <TD>バッファを選択</TD></TR>
+ <TR> <TD>E</TD> <TD>バッファのソースを編集</TD></TR>
+ <TR> <TD>R</TD> <TD>バッファを再読み込み</TD></TR>
+ <TR> <TD>S</TD> <TD>バッファを保存</TD></TR>
+ <TR> <TD>ESC s</TD> <TD>HTML ソースを保存</TD></TR>
+ <TR> <TD>ESC e</TD> <TD>バッファの表示イメージを編集</TD></TR>
+</TABLE>
+
+<H5>ブックマーク操作</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>ESC b</TD> <TD>ブックマークを読み込む</TD></TR>
+ <TR> <TD>ESC a</TD> <TD>現ページをブックマークに追加</TD></TR>
+</TABLE>
+
+<H5>検索</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>/,C-s</TD> <TD>前方検索</TD></TR>
+ <TR> <TD>?,C-r</TD> <TD>後方検索</TD></TR>
+ <TR> <TD>n</TD> <TD>次を検索</TD></TR>
+ <TR> <TD>N</TD> <TD>前を検索</TD></TR>
+</TABLE>
+
+<H5>マーク操作</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>C-SPC</TD> <TD>マークの設定/消去</TD></TR>
+ <TR> <TD>ESC p</TD> <TD>前のマークへ移動</TD></TR>
+ <TR> <TD>ESC n</TD> <TD>次のマークへ移動</TD></TR>
+ <TR> <TD>"</TD> <TD>正規表現によるマーク</TD></TR>
+</TABLE>
+
+<H5>その他</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>!</TD> <TD>シェルの実行</TD></TR>
+ <TR> <TD>H</TD> <TD>ヘルプ(このファイルを表示)</TD></TR>
+ <TR> <TD>o</TD> <TD>オプション設定</TD></TR>
+ <TR> <TD>C-k</TD> <TD>クッキー一覧を表示</TD></TR>
+ <TR> <TD>C-c</TD> <TD>文書の読み込みを中断</TD></TR>
+ <TR> <TD>C-z</TD> <TD>サスペンド</TD></TR>
+ <TR> <TD>q</TD> <TD>w3m を終了(確認あり)</TD></TR>
+ <TR> <TD>Q</TD> <TD>w3m を終了(確認なし)</TD></TR>
+</TABLE>
+
+<H5>行編集モード</H5>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>C-f</TD> <TD>カーソルを右へ移動</TD></TR>
+ <TR> <TD>C-b</TD> <TD>カーソルを左へ移動</TD></TR>
+ <TR> <TD>C-h</TD> <TD>前の文字を削除</TD></TR>
+ <TR> <TD>C-d</TD> <TD>カーソル位置の文字を削除</TD></TR>
+ <TR> <TD>C-k</TD> <TD>カーソルの後方を全て削除</TD></TR>
+ <TR> <TD>C-u</TD> <TD>カーソルの前までを全て削除</TD></TR>
+ <TR> <TD>C-a</TD> <TD>行頭に移動</TD></TR>
+ <TR> <TD>C-e</TD> <TD>行末へ移動</TD></TR>
+ <TR> <TD>C-p</TD> <TD>ヒストリから一つ前の文字列を取り出す</TD></TR>
+ <TR> <TD>C-n</TD> <TD>ヒストリから次の文字列を取り出す</TD></TR>
+ <TR> <TD>TAB,SPC</TD> <TD>ファイル名の補完</TD></TR>
+ <TR> <TD>RETURN</TD> <TD>入力終了</TD></TR>
+</TABLE>
+<HR>
+
+<P>
+<H4><A NAME="like_lynx">Lynx 風のキー操作</A></H4>
+
+<H5>ページ/カーソル移動</H5>
+<table cellpadding=0>
+<TR><TD>SPC,C-v<TD>次のページを表示します．
+<TR><TD>b,ESC v<TD>前のページを表示します．
+<TR><TD>l<TD>カーソルを右に移動します．
+<TR><TD>h<TD>カーソルを左に移動します．
+<TR><TD>j<TD>カーソルを下に移動します．
+<TR><TD>k<TD>カーソルを上に移動します．
+<TR><TD>J<TD>画面を1行上にスクロールします．
+<TR><TD>K<TD>画面を1行下にスクロールします．
+<TR><TD>&gt;<TD>画面全体を右にずらします．(表示内容を左にずらす)
+<TR><TD>&lt;<TD>画面全体を左にずらします．(表示内容を右にずらす)
+<TR><TD>C-a<TD>文書のいちばん上の行に移動します．
+<TR><TD>C-e<TD>文書のいちばん下の行に移動します．
+<TR><TD>G<TD>画面下で行番号を入力し，そこで指定した行に移動します．
+ここで $ を入力すると，最終行に移動します．
+<TR><TD>TAB, C-n, 下矢印<TD>次のリンクに移動します．
+<TR><TD>ESC TAB, C-p, 上矢印<TD>前のリンクに移動します．
+</table>
+
+<H5>ハイパーリンク操作</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>RET, C-f, 右矢印<TD>現在カーソルがあるリンクが指す先の文書を読みこみます．
+<TR><TD>d, ESC RET<TD>現在カーソルがあるリンクが指す先の文書をファイルに保存します．
+<TR><TD>u<TD>現在カーソルがあるリンクが指す先のURLを表示します．
+<TR><TD>I<TD>現在カーソルがあるリンクに対応する画像を表示します．
+<TR><TD>ESC I<TD>現在カーソルがあるリンクが指す画像をファイルに保存します．
+<TR><TD>:<TD>URL 風の文字列をリンクにします．この機能は，HTML でない文書を
+読んでいるときにも有効です．
+<TR><TD>ESC :<TD>Message-ID 風の文字列を，news: のリンクにします．この機能は，HTML でない文書を読んでいるときにも有効です．
+<TR><TD>c<TD>現在の文書の URL を表示します．
+<TR><TD>=<TD>現在の文書に関する情報を表示します．
+<TR><TD>F<TD>&lt;FRAMESET&gt; を含む文書を表示しているときに，&lt;FRAME&gt; タグの指す複数の文書を1つの文書に変換して表示します．
+<TR><TD>M<TD>現在見ているページを，外部ブラウザを使って表示します． 2M, 3M で2番目と3番目のブラウザを使います．
+<TR><TD>ESC M<TD>現在のリンク先を，外部ブラウザを使って表示します． 2ESC M, 3ESC M で2番目と3番目のブラウザを使います．
+</table>
+
+<H5>ファイルと URL 関係の操作</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>g, U<TD>URL を指定して開きます．
+<TR><TD>V<TD>ローカルファイルを指定して開きます．
+<TR><TD>@<TD>コマンドを実行し，結果を全部読んでから表示します．
+<TR><TD>#<TD>コマンドを実行し，結果を読みこみながら表示します．
+</table>
+
+<H5>バッファ操作</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>B, C-b, 左矢印<TD>現在見ているバッファを削除し，一つ前のバッファを表示します．
+<TR><TD>\<TD>HTML のソースを表示します．
+<TR><TD>s, C-h<TD>バッファ選択モードに入ります．
+<TR><TD>E<TD>現在見ているバッファがローカルファイルの場合，そのファイルをエディタで編集します．エディタを終了した後，そのファイルを再度読み込みます．
+<TR><TD>R, C-r<TD>バッファを再度読み込みます．
+<TR><TD>S, p<TD>バッファの表示内容をファイルに保存します．
+<TR><TD>ESC s<TD>HTML のソースをファイルに保存します．v でソースを表示して S で保存するのとほぼ同じですが，ESC s で保存したファイルは漢字コードがオリジナルのままであるのに対して，v S で保存すると現在表示に使っている漢字コードに変換されて保存されます．
+<TR><TD>ESC e<TD>現在表示されているバッファを，表示されている形式のままエディタで編集します．
+</table>
+
+<H5>バッファ選択モード</H5>
+"s" でバッファ選択モードに入ったときのキー操作です．
+<table cellpadding=0>
+<TR><TD WIDTH=100>k,C-p<TD>一つ上のバッファを選択します．
+<TR><TD>j,C-n<TD>一つ下のバッファを選択します．
+<TR><TD>D<TD>現在選択しているバッファを削除します．
+<TR><TD>RET<TD>現在選択しているバッファを表示します．
+</table>
+
+<H5>ブックマーク操作</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>v, ESC b<TD>ブックマークを読み込みます．
+<TR><TD>a, ESC a<TD>現在見ているページをブックマークに追加します．
+</table>
+
+<H5>検索</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>/<TD>現在のカーソル位置からファイル末尾に向かって正規表現を検索します．
+<TR><TD>?<TD>現在のカーソル位置からファイルの先頭に向かって正規表現を検索します．
+<TR><TD>n<TD>次を検索します．
+</table>
+
+<H5>マーク操作</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>C-SPC<TD>マークを設定／解除します．マークは反転表示されます．
+<TR><TD>ESC p<TD>一つ前のマークに移動します．
+<TR><TD>ESC n<TD>一つ後のマークに移動します．
+<TR><TD>"<TD>正規表現で指定された文字列を全てマークします．
+</table>
+
+<H5>その他</H5>
+<table cellpadding=0>
+<TR><TD WIDTH=100>!<TD>シェルコマンドを実行します．
+<TR><TD>H, ?<TD>ヘルプファイルを表示します．
+<TR><TD>o<TD>オプション設定パネルを表示します．
+<TR><TD>C-k</TD> <TD>クッキー一覧を表示</TD></TR>
+<TR><TD>C-c<TD>文書の読み込みを中断します．
+<TR><TD>C-z</TD><TD>サスペンドします．</TD></TR>
+<TR><TD>q<TD>w3m を終了します．オプションの設定によって，終了するかどうか確認します．
+<TR><TD>Q<TD>確認せずに w3m を終了します．
+</table>
+
+<H5>行編集モード</H5>
+画面の最下行で文字列を入力する場合に有効なキー操作です．
+<table cellpadding=0>
+<TR><TD WIDTH=100>C-f<TD>カーソルを右に移動します．
+<TR><TD>C-b<TD>カーソルを左に移動します．
+<TR><TD>C-h<TD>カーソルの直前の文字を削除します．
+<TR><TD>C-d<TD>カーソル位置の文字を削除します．
+<TR><TD>C-k<TD>カーソル位置から後を削除します．
+<TR><TD>C-u<TD>カーソル位置から前を削除します．
+<TR><TD>C-a<TD>文字列の先頭に移動します．
+<TR><TD>C-e<TD>文字列の最後に移動します．
+<TR><TD>SPC<TD>ファイル名入力時に，ファイル名を補完します．
+<TR><TD>RETURN<TD>入力を終了します．
+</table>
+
+<DIV>
+<A HREF="index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+
+</BODY>
+</HTML>
+

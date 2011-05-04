@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>PROLOGUE&nbsp;- はじめに -</title>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">はじめに</A></H1>
+
+<UL>
+	<LI><A HREF="#summary">w3m とは</A>
+	<LI><A HREF="#glossary">用語の説明</A>
+	<LI><A HREF="#disclaimer">注意事項</A>
+	<LI><A HREF="@DOC.copyright@">著作権、ライセンス</A>
+	<LI><A HREF="#confirmation">動作確認 OS</A>
+</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="summary">w3m とは</A></H2>
+<!-- w3m とは -->
+<DIV>
+<P>　w3m は、World Wide Web に対応したテキストベースのページャです。kterm などのキャラクタ端末上で、ローカルファイルを見たり、WWW の内容を見たりすることができます。<BR>
+<P>　w3m は、fm というページャをベースとして作られました。fm についての詳細は、<A HREF="@README.fm@">README.fm</A> をお読みください。w3m のページャとしての基本的な特徴は、fm とほとんど同じです。<BR>
+<P>　w3m 独自の特徴としては、次のようなものがあります。<BR>
+<P><UL>
+   <LI>WWW 対応なので、HTML の文章を読んでいる時には、その中のリンクを辿ったり画像を見る事ができる。
+   <LI>Internet message 表示のためのモードがある。この時、Content-Type: が text/html の場合は、自動的に HTML の文書として表示する。また、自力で MIME header のデコードをする。
+   <LI>見ている plain text 文書中に URL 表記があった場合、その部分からリンクをたどる事ができる。
+   </UL>
+<BR>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="glossary">用語の説明</A></H2>
+<!-- 説明の都合上に必要な用語説明 -->
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="disclaimer">注意事項</A></H2>
+<!-- 注意事項 -->
+<DIV>
+<P>このソフトウェアによって利用者または第三者が何らかの被害を受けた場合、作者はその責任を一切おいません。この事を承諾する限りにおいて、このソフトウェアは、誰でも作者に断りなく利用・改変・配布できます。<BR>
+<P>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2>著作権、ライセンス</H2>
+<DIV>
+<P>　<A HREF="@DOC.copyright@">著作権、ライセンス</A>を参照ください。
+</DIV>
+<DIV>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="confirmation">動作確認OS</A></H2>
+<!-- 動作確認OS -->
+<DIV>
+<P>　現在、動作が確認されている OS は以下の通りです。
+<BLOCKQUOTE>
+    <TABLE BORDER="0">
+    <TR><TD ALIGN="left">SunOS4.1.x</TD>
+    <TR><TD ALIGN="left">HP-UX 9.x, 10.x</TD>
+    <TR><TD ALIGN="left">Soraris2.5.x</TD>
+    <TR><TD ALIGN="left">Linux 2.0.30</TD>
+    <TR><TD ALIGN="left">FreeBSD 2.2.8, 3.1, 3.2, 4.6</TD>
+    <TR><TD ALIGN="left">NetBSD/macppc, m68k</TD>
+    <TR><TD ALIGN="left">EWS4800 Release12.2 Rev.A</TD>
+    <TR><TD ALIGN="left">Digital UNIX: v3.2D, v4.0D</TD>
+    <TR><TD ALIGN="left">IRIX 5.3, IRIX 6.5</TD>
+    <TR><TD ALIGN="left">OS/2 with emx</TD>
+    <TR><TD ALIGN="left">Windows 9x/NT with Cygwin32 b20.1</TD>
+    <TR><TD ALIGN="left">MS-DOS with DJGPP and WATT32 packet drive</TD>
+    <TR><TD ALIGN="left">MacOS X Server</TD>
+    <TR><TD ALIGN="left">MacOS X 10.1, 10.2</TD>
+    </TABLE>
+</BLOCKQUOTE>
+<A HREF="#index">このペイジの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

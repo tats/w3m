@@ -1,0 +1,33 @@
+#!/bin/sh
+
+HOMEPAGE=http://ei5nazha.yz.yamagata-u.ac.jp/~aito/w3m/
+OPT=""
+URL=""
+for i in $@
+do
+  case $i in
+  -*) 
+    OPT="$OPT $i"
+    ;;
+  *)
+    URL="$URL $i"
+    ;;
+  esac
+done
+
+if [ -z "$URL" ]; then
+  URL=$HOMEPAGE
+fi
+URLARG=""
+for u in $URL
+do
+  if [ `expr $u : '[a-z][a-z]*://'` -gt 0 ]; then
+    URLARG="$URLARG $u"
+  elif [ -f $u -o -d $u ]; then
+    URLARG="$URLARG $u"
+  else
+    URLARG="$URLARG http://$u"
+  fi
+done
+
+w3m $OPTS $URLARG

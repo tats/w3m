@@ -1,0 +1,389 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>INSTALL&nbsp;- インストールの詳細 -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">インストールの詳細</A></H1>
+<DIV>
+<!-- w3m のインストールの詳細を記す -->
+</DIV>
+	<UL>
+		<LI><A HREF="#get_w3m">w3m 入手方法</A>
+			<UL>
+				<LI><A HREF="#w3m_home">w3m Homepage</A>
+				<LI><A HREF="#BBS">w3m に関する掲示板</A>
+			</UL>
+		<LI><A HREF="#require">必要な物</A>
+		<LI><A HREF="#configure">configure について</A>
+		<LI><A HREF="#config_h">config.h について</A>
+		<LI><A HREF="#make">make について</A>
+		<LI><A HREF="#tips">他の OS でインストールする際の Tips</A>
+	</UL>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="get_w3m">w3m 入手方法</A></H2>
+<!-- w3m 入手方法 -->
+<DIV>
+<P>w3m の最新版は、以下の<A HREF="#w3m_home">w3m home</A> にも示してある、
+<BLOCKQUOTE>
+<A HREF="http://prdownloads.sourceforge.net/w3m/">http://prdownloads.sourceforge.net/w3m/</A>
+</BLOCKQUOTE>
+から手に入ります。
+<P>ちなみに、現在の最新バージョンは、<B>@W3M.version@</B> です。
+<P>なお、w3m に関する情報(最新版やパッチ等々)については、<A HREF="@DOC.community@">w3m コミュニティ</A>を参照し、メーリングリスト、Web BBS 等から入手してください。
+</DIV>
+
+<H3><A NAME="w3m_home">w3m Homepage</A></H3>
+<!-- w3m Homepageについて -->
+<DIV>
+<P>w3m の Homepage は
+<BLOCKQUOTE>
+<TABLE BORDER="0">
+<TR><TD><A HREF="@W3M.home@">W3M Homepage</A></TD>
+	<TD>@W3M.home@</TD>
+</TABLE>
+</BLOCKQUOTE>
+です。
+</DIV>
+
+<H3><A NAME="BBS">w3m に関する掲示板</A></H3>
+<!-- 掲示板 -->
+<DIV>
+<P>w3m に関する掲示板には以下の通りです。
+<BLOCKQUOTE>
+<TABLE BORDER="0">
+<TR><TD><A HREF="@W3M.bbs@">w3m 連絡帳</A></TD>
+    <TD>@W3M.bbs@</TD>
+    <TD>&nbsp;</TD>
+<TR><TD><A HREF="@W3M.note@">w3m おぼえがき</A></TD>
+    <TD>@W3M.note@</TD>
+    <TD>&nbsp;</TD>
+</TABLE>
+</BLOCKQUOTE>
+</DIV>
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="require">必要な物</A></H2>
+<!-- w3m を make するうえで必要な物／あれば良い物 -->
+<DIV>
+<P>w3m を make するうえで、必須なもの、および、あれば良いものは以下の通りです。
+<P>
+<UL><LI>必須なもの
+    <UL><LI>ANSI-C 互換 C コンパイラ
+    </UL>
+    <LI>あれば良いもの
+    <UL><LI>SSLeay/OpenSSL ライブラリ
+        <UL><LI>Secure HTTP(https:〜) を使用する場合
+        </UL>
+		<LI>GNU patchコマンド
+		<UL><LI>w3m に patch を適用する場合
+		</UL>
+		<LI>Perl
+		<UL><LI>w3m で ディレクトリリストを表示する場合のローカル CGI で使用する
+		</UL>
+    </UL>
+</UL>
+
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="configure">configure について</A></H2>
+<!-- configure 実行時の説明 -->
+<DIV>
+<P>w3m のアーカイブファイルを展開したディレクトリにある <B>./configure</B> を実行します。いくつか質問されるので、それに答えてください。
+<P>以下は、<B>./configure</B> 実行時に、実際に聞かれる質問の説明です。なお、<B>./configure</B> は各質問に対する答えの既定値(default)を持っています。文字列を入力せずにリターン・キーだけを押した場合は、この既定値が指定された事になります。
+<P><DL>
+<DT>Which directory do you want to put the binary?
+	<DD>既定値: <U>/usr/local/bin</U><BR>
+		w3m をどこのディレクトリの下にインストールするかを指定します。
+	</DD>
+<DT>Which directory do you want to put the support binary files?
+	<DD>既定値: <U>/usr/local/lib/w3m</U><BR>
+		w3m が参照するライブラリを置く場所を指定します。
+	</DD>
+<DT>Which directory do you want to put the helpfile?
+	<DD>既定値: <U>/usr/local/lib/w3m</U><BR>
+		w3m のヘルプファイルを置く場所を指定します。
+	</DD>
+<DT>Which language do you prefer?
+	<DD>
+		<TABLE BORDER="0">
+		<TR><TD>1</TD><TD>-</TD><TD NOWRAP>Japanese (charset ISO-2022-JP, EUC-JP, Shift_JIS)</TD>
+		<TR><TD>2</TD><TD>-</TD><TD NOWRAP>English (charset US_ASCII, ISO-8859-1, etc.)</TD>
+		</TABLE>
+	    既定値: <U>1</U><BR>
+		w3m で使用する言語を指定します。
+	</DD>
+<DT>Input your display kanji code.
+	<DD>
+		<TABLE BORDER="0">
+		<TR><TD>S</TD><TD>-</TD><TD>Shift JIS</TD>
+		<TR><TD>E</TD><TD>-</TD><TD>EUC-JP</TD>
+		<TR><TD>j</TD><TD>-</TD><TD>JIS: ESC $@ - ESC (J</TD>
+		<TR><TD>N</TD><TD>-</TD><TD>JIS: ESC $B - ESC (J</TD>
+		<TR><TD>n</TD><TD>-</TD><TD>JIS: ESC $B - ESC (B</TD>
+		<TR><TD>m</TD><TD>-</TD><TD>JIS: ESC $@ - ESC (B</TD>
+		</TABLE>
+	    既定値: 無し<BR>
+		あなたのシステムで表示に用いられる漢字コードを指定します。
+	</DD>
+<DT>Do you want to use Lynx-like key binding?
+	<DD>既定値: <U>n</U><BR>
+		w3m を Lynx 風のキーバインディングで使用するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
+	</DD>
+<DT>Do you want to use 2-byte character for table border, item, etc.
+	<DD>既定値: <U>y</U><BR>
+		テーブルの枠に罫線を用いたり、アイテムに漢字シンボルを使用するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
+	</DD>
+<DT>Do you want to automatically generate domain parts of passwords for anonymous FTP logins
+	<DD>既定値: <U>n</U><BR>
+		アノニマス ftp で login する際のパスワードをログイン名とドメイン名から自動生成するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
+	</DD>
+<DT>Do you want listing of options
+	<DD>既定値: <U>n</U><BR>
+		w3m の usage 表示時に、細かなオプションについてもリスト表示するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
+	</DD>
+<DT>Do you want NNTP support
+	<DD>既定値: <U>n</U><BR>
+		w3m で NNTP をサポートするかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。``<B>y</B>''を指定した場合、“<U>news:〜</U>”の URI が使用できるようになる。
+	</DD>
+<DT>Do you want ANSI color escape sequences supprot?
+	<DD>既定値: <U>n</U><BR>
+		HTML文書<U>以外</U>が、ANSI のカラー用エスケープ・シーケンスに対応するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
+	</DD>
+<DT>Let's do some configurations. Choose config option among the list.
+	<DD>
+		<TABLE BORDER="0">
+		<TR><TD>1</TD><TD>-</TD><TD>Baby model</TD><TD>(no color, no menu, no mouse, no cookie, no SSL)</TD>
+		<TR><TD>2</TD><TD>-</TD><TD>Little model</TD><TD>(color, menu, no mouse, no cookie, no SSL)</TD>
+		<TR><TD>3</TD><TD>-</TD><TD>Mouse model</TD><TD>(color, menu, mouse, no cookie, no SSL)</TD>
+		<TR><TD>4</TD><TD>-</TD><TD>Cookie model</TD><TD>(color, menu, mouse, cookie, no SSL)</TD>
+		<TR><TD>5</TD><TD>-</TD><TD>Monster model</TD><TD>(with everything; you need openSSL library)</TD>
+		<TR><TD>6</TD><TD>-</TD><TD>Customize</TD>
+		</TABLE>
+	    既定値: 無し<BR>
+		make する w3m のモデルを指定します。``<B>6</B>''を指定した場合、個別にオプションの使用を選択します。<BR>
+		選択するオプションは以下の通り。<BR>
+		<BLOCKQUOTE>
+			<TABLE BORDER="0">
+			<TR><TD>color</TD><TD>-</TD><TD>カラー表示</TD>
+			<TR><TD>menu</TD><TD>-</TD><TD>メニュー表示</TD>
+			<TR><TD>mouse</TD><TD>-</TD><TD>マウス対応</TD>
+			<TR><TD>cookie</TD><TD>-</TD><TD>cookie 対応</TD>
+			<TR><TD>SSL</TD><TD>-</TD><TD>SSL対応(別途、openSSLが必要)</TD>
+			</TABLE>
+		</BLOCKQUOTE>
+	</DD>
+<DT>Input your favorite editor program.
+	<DD>既定値: <U>/usr/bin/vi</U><BR>
+		エディタ・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます
+	</DD>
+<DT>Input your favorite mailer program.
+	<DD>既定値: <U>/usr/bin/mailx</U>、または、<U>/usr/bin/mail</U><BR>
+		メイラー・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます。
+	</DD>
+<DT>Input your favorite external browser program.
+	<DD>既定値: <U>netscape</U>、または、<U>iexplore</U>、または、<U>lynx</U><BR>
+		代替ブラウザ・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます。
+	</DD>
+<DT>Input your favorite C-compiler.
+    <DD>既定値: <U>gcc</U>、または、<U>cc</U><BR>
+        使用する C コンパイラを指定します。
+    </DD>
+<DT>Input your favorite C flags.
+    <DD>既定値: <U>-O</U><BR>
+        C コンパイラで使用するコンパイルオプションを指定します。
+    </DD>
+<DT>Which terminal library do you want to use? (type "none" if you do not need one)
+    <DD>端末制御用ライブラリを指定します。
+    </DD>
+<DT>Input additional LD flags other than listed above, if any:
+    <DD>リンク時に追加すべきライブラリ、フラグがあればそれを指定します。
+    </DD>
+</DL>
+<P>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="config_h">config.h について</A></H2>
+<!-- config.h で define するもの等について -->
+<DIV>
+<P><A HREF="#configure">configure</A> では設定されないその他の機能を使いたい場合には、<B>config.h</B> を変更する必要があります。
+<P>以下に config.h で指定できる各 define の名称と概要を記します。
+<P><DL>
+<DT>DICT
+    <DD><B>辞書引き機能</B>を有効にします。<BR>
+        調べたい単語にカーソルを合わせ、“<B>ESC&nbsp;W</B>”で <B>w3mdict</B> コマンドを呼び出します。<BR>
+        <B>w3mdict</B> コマンドは w3m のアーカイブには同梱されていないので、自身の環境に合わせて作成してください。<BR>
+        たとえば、もっとも簡単な例として、<B>man</B> コマンドに wrap する場合、以下のようにします。<BR>
+        <BLOCKQUOTE>
+        % cat w3mdict<BR>
+        #!/bin/sh<BR>
+        <BR>
+        man $*<BR>
+        </BLOCKQUOTE>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>USE_MARK
+    <DD><B>マーク操作</B>を有効にします。いわゆる vi のマーク操作と同等のものです。<BR>
+        これを define すると、以下の機能を使えるようになります。
+        <UL>
+            <LI>“<B>CTRL-SPC</B>”: マークの設定／解除(トグル)
+            <LI>“<B>ESC p</B>”: 前のマークへ移動
+            <LI>“<B>ESC n</B>”: 次のマークへ移動
+            <LI>“<B>&quot;</B>”(ダブル・クォーテーション): 正規表現によるマーク
+        </UL>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>USE_HISTORY
+    <DD>URL 履歴の保存、呼び出し(“<B>CTRL-h</B>”)ができるようになります。<BR>
+        既定値は <B>#define</B> です。
+    </DD>
+<DT>BG_COLOR
+    <DD>背景の色の設定が可能となります(カラー表示できる w3m の場合に有効)。<BR>
+        既定値は <B>#define</B> です。
+    </DD>
+<DT>VIEW_UNSEENOBJECTS
+    <DD>背景画像へのリンクなど、通常は見えないオブジェクトへのリンクを見えるようにします。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>VI_PREC_NUM
+    <DD>ペイジ移動機能が vi のように『繰り返し回数＋機能』になるようにします。<BR>
+        たとえば、“<B>2&nbsp;SPC</B>”だと「２ペイジ進む」とか、“<B>2&nbsp;b</B>”だと「２ペイジ戻る」のようになります。<BR>
+        既定値は <B>#undef</B> です。undef の場合は、“<B>2&nbsp;SPC</B>”だと「２<U>行</U>進む」になります。
+    </DD>
+<DT>FORMAT_NICE
+    <DD>英単語を fill します。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>USE_GOPHER
+    <DD>GOPHER プロトコルをサポートします。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>USE_NNTP
+    <DD>NNTP をサポートします。<BR>
+        この define は <A HREF="#configure">configure</A> で設定されます。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>ANSI_COLOR
+    <DD>ページャモードで ANSI color エスケープシーケンスに対応します。<BR>
+        HTML の時や、エスケープシーケンスが無い場合には対応しません。<BR>
+        この define は <A HREF="#configure">configure</A> で設定されます。<BR>
+        既定値は <B>#define</B> です。
+    </DD>
+<DT>ID_EXT
+    <DD>HTML4.0 の ID 属性をリンクで辿れるようにします。<BR>
+        既定値は <B>#define</B> です。
+    </DD>
+<DT>BUFINFO
+    <DD>カレントなバッファの URL を ~/.w3m/bufinfo ファイルに書き出すようにします。<BR>
+        既定値は <B>#define</B> です。
+    </DD>
+<DT>USE_EGD
+    <DD>EGD(Entropy Gathering Daemon)に対応し乱数のシードを得ます。<BR>
+        SSL を組み込んだ w3m の場合に有効です。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>EMACS_LIKE_LINEEDIT
+    <DD>最下行での入力時、Emacs ライクなキー割り当てになります。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>ENABLE_REMOVE_TRAILINGSPACES
+    <DD>行末の空白を取り除きます。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>LABEL_TOPLINE
+    <DD>ラベルに飛んだ際のカーソル位置を画面の先頭にします。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+<DT>NEXTPAGE_TOPLINE
+    <DD>ペイジ移動で、次の画面に移動した際のカーソル位置を必ず画面の先頭にします。<BR>
+        既定値は <B>#undef</B> です。undef の場合、文書の末尾以降に空行が入らないように調整されるため、必ずしもカーソル位置は画面の先頭に来ません。
+    </DD>
+<P><DIV ALIGN="left"><B>###&nbsp;以降の define は @W3M.version@ では unofficial な物です&nbsp;###</B></DIV>
+<P>
+<DT>MENU_THIN_FRAME
+    <DD>メニュー枠に細い罫線を使用します。<BR>
+        既定値は <B>#undef</B> です。
+    </DD>
+</DL>
+
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="make">make について</A></H2>
+<!-- make 時の説明 -->
+<DIV>
+<P><A HREF="#configure">configure</A> を実行して、必要に応じて <A HREF="config_h">config.h の修正</A>を行った後、<B>make</B> を実行します。
+<P>make 時にコンパイルエラーが発生するようであれば、
+<BLOCKQUOTE>
+    % make | &amp; tee MAKE.log
+</BLOCKQUOTE>
+を実行して、ログファイルを元に問題の解決を行ってください。
+<P>また、事前に該当バージョンでの w3m のパッチを入手している場合には、<B>patch</B> を実行してから make を行ってください。
+<P>make が完了し、インストールする場合には、root になって、
+<BLOCKQUOTE>
+    % make install
+</BLOCKQUOTE>
+を実行してください。
+<P>以上でインストールは終了です。
+<P><A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="tips">他の OS でインストールする際の Tips</A></H2>
+<!-- 各種 OS 上で w3m をインストールする際の Tips -->
+<DIV>
+<P><DL>
+<DT>HP-UX
+    <DD>HP の (gcc ではない) C コンパイラでコンパイルする場合、<A HREF="#configure">configure</A> の
+        <BLOCKQUOTE>
+        Input your favorite C-compiler.<BR>
+        (Default: cc)
+        </BLOCKQUOTE>
+        に、<B>cc -Aa -D_HPUX_SOURCE</B> と答えてください。<B>cc</B> だけだとコンパイルが通りません。<B>gcc</B> ならば普通にコンパイルは通りますが、gcc のバージョンが古めの場合には <B>-g</B> を<U>付けない</U>でください。
+    </DD>
+<DT>OS/2
+    <DD><B>emx</B> を使う事で w3m をコンパイルする事ができます。<BR>
+        まず最初に、
+        <BLOCKQUOTE>
+        % cd gc
+        % make -f EMX_MAKEFILE
+        </BLOCKQUOTE>
+        を実行して GC ライブラリをコンパイルしておいてから、w3m 本体をコンパイルします。なお、カラー表示が変になるらしいので、モノクロ用にコンパイルした方が良いでしょう。
+    </DD>
+<DT>Windows
+    <DD><A HREF="README.cygwin">README.cygwin</A> をご覧ください。
+    </DD>
+<DT>MS-DOS
+    <DD><A HREF="README.dj">README.dj</A> をご覧ください。
+    </DD>
+</DL>
+
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

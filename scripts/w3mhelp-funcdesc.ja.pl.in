@@ -1,0 +1,66 @@
+# charset
+$charset = 'EUC-JP';
+
+# Buffer selection mode
+
+%buf_funcdesc = (
+ 'BUF:PREV', '一つ上のバッファを選択',
+ 'BUF:NEXT', '一つ下のバッファを選択',
+ 'BUF:DELETE', '現在選択しているバッファを削除',
+ 'BUF:GO', '現在選択しているバッファを表示',
+);
+
+%lineedit_funcdesc = (
+ 'LINEEDIT:FORWARD', 'カーソルを右へ移動',
+ 'LINEEDIT:BACK', 'カーソルを左へ移動',
+ 'LINEEDIT:BS',  '前の文字を削除',
+ 'LINEEDIT:DEL', 'カーソル位置の文字を削除',
+ 'LINEEDIT:KILL_AFTER', 'カーソルの後方を全て削除',
+ 'LINEEDIT:KILL_BEFORE', 'カーソルの前までを全て削除',
+ 'LINEEDIT:TOP', '行頭に移動',
+ 'LINEEDIT:BOTTOM', '行末へ移動',
+ 'LINEEDIT:PREV', 'ヒストリから一つ前の文字列を取り出す',
+ 'LINEEDIT:NEXT', 'ヒストリから次の文字列を取り出す',
+ 'LINEEDIT:EDITOR', '外部エディタで編集',
+ 'LINEEDIT:COMPLETE', 'ファイル名の補完',
+ 'LINEEDIT:ACCEPT', '入力終了',
+);
+
+%menu_funcdesc = (
+ 'MENU:SELECT', '項目を選択',
+ 'MENU:CLOSE', 'メニューを閉じる',
+ 'MENU:CANCEL', '戻る',
+ 'MENU:DOWN', '一つ下の項目へ',
+ 'MENU:UP', '一つ上の項目へ',
+ 'MENU:LINE_UP', '項目を下にスクロール',
+ 'MENU:LINE_DOWN', '項目を上にスクロール',
+ 'MENU:TOP', '先頭の項目へ',
+ 'MENU:LAST', '最後の項目へ',
+ 'MENU:NEXT', '次ページの項目へ',
+ 'MENU:PREV', '前ページの項目へ',
+ 'MENU:SEARCH_FORE', '項目を下に向かって検索',
+ 'MENU:SEARCH_BACK', '項目を上に向かって検索',
+ 'MENU:SEARCH_NEXT', '次の項目を検索',
+ 'MENU:SEARCH_PREV', '前の項目を検索',
+ 'MENU:SUSPEND', 'サスペンド',
+);
+
+%title = (
+ "Show keymap file", 'keymap ファイルを見る',
+ "Page/Cursor motion", 'ページ/カーソル移動',
+ "Hyperlink operation", 'ハイパーリンク操作',
+ "File/Stream operation", 'ファイル/ストリーム操作',
+ "Buffer operation", 'バッファ操作',
+ "Tab operation", 'タブ操作',
+ "Buffer selection mode", 'バッファ選択モード',
+ "Bookmark operation", 'ブックマーク操作',
+ "Search", '検索',
+ "Dictionary look-up", '辞書検索',
+ "Mark operation", 'マーク操作',
+ "Miscellany", 'その他',
+ "User defined keymaps", 'ユーザ定義',
+ "Line-edit mode", '行編集モード',
+ "Popup menu", 'メニュー',
+);
+
+1;

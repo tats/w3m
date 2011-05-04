@@ -1,0 +1,44 @@
+# A sample of ~/.w3m/menu  (submenu type)
+#
+# menu MENU_ID
+#  func  LABEL FUNCTION KEYS
+#  popup LABEL MENU_ID  KEYS
+#  nop   LABEL
+# end
+#
+# MENU_ID
+#  Main:   メインメニュー
+#  Select: バッファ選択メニュー
+
+menu Main
+ func	"戻る         (b)"	BACK		"b"
+ popup	"バッファ操作>(f)"	Buffer		"fF"
+ popup	"リンク操作  >(l)"	Link		"lL"
+ nop	"────────"
+ popup	"ブックマーク>(B)"	Bookmark	"B"
+ func	"ヘルプ       (h)"	HELP		"hH"
+ func	"オプション   (o)"	OPTIONS		"oO"
+ nop	"────────"
+ func	"終了         (q)"	QUIT		"qQ"
+end
+
+menu Buffer
+ popup	"バッファ選択 (s)"	Select		"s"
+ func	"ソースを表示 (v)"	VIEW		"vV"
+ func	"ソースを編集 (e)"	EDIT		"eE"
+ func	"ソースを保存 (S)"	SAVE		"S"
+ func	"再読み込み   (r)"	RELOAD		"rR"
+end
+
+menu Link
+ func	"リンクを表示 (a)"	GOTO_LINK	"a"
+ func	"リンクを保存 (A)"	SAVE_LINK	"A"
+ func	"画像を表示   (i)"	VIEW_IMAGE	"i"
+ func	"画像を保存   (I)"	SAVE_IMAGE	"I"
+ func	"フレーム表示 (f)"	FRAME		"fF"
+end
+
+menu Bookmark
+ func   "ブックマークを読み込む (b)"	BOOKMARK	"bB"
+ func   "ブックマークに追加     (a)"	ADD_BOOKMARK	"aA"
+end

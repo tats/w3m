@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+@include define.wd
+@include contain.wd
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<TITLE>CONFIGURATION&nbsp;- 各種設定 -</TITLE>
+</HEAD>
+
+<BODY>
+
+<H1><A NAME="index">各種設定</A></H1>
+<DIV>
+<!-- w3mの各種設定の詳細を記す -->
+	<UL>
+		<LI><A HREF="#option">起動オプション</A>
+		<LI><A HREF="#environment">環境変数</A>
+		<LI><A HREF="#bookmark">bookmark ファイル</A>
+		<LI><A HREF="#option_panel">オプションパネル</A>
+			<UL>
+				<LI><A HREF="#external_viewer">外部ビューアの編集</A>
+			</UL>
+		<LI><A HREF="#other_customize">その他カスタマイズ</A>
+			<UL>
+				<LI><A HREF="#keymap">keymap</A>
+				<LI><A HREF="#menu">menu</A>
+			</UL>
+	</UL>
+</DIV>
+
+<DIV>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="option">起動オプション</A></H2>
+<!-- オプションについての説明 -->
+<DIV>
+<P>w3m の起動オプションは以下の通りです。
+<BLOCKQUOTE>
+<DL>
+<DT>-t タブ幅
+    <DD>タブの幅を指定する。デフォルトは<B>8</B>。
+<DT>-r
+    <DD>text/plain の文章を表示する場合、重ね打ちによる強調文字を表示しない。この引数を指定しない場合、``A^H_''は A の<U>アンダーライン</U>として表示され、``A^HA'' は A の<B>ボールド</B>として表示される。
+<DT>-l 行数
+    <DD>標準入力の内容を表示する時に保存される最大行数を指定する。デフォルトは <B>10000</B>。
+<DT>-s
+    <DD>Shift_JIS コードで表示する。
+<DT>-j
+    <DD>JIS(ISO-2022-JP) コードで表示する。
+<DT>-e
+    <DD>EUC-JP コードで表示する。
+<DT>-O e|s|j|N|m|n
+    <DD>表示する漢字コードを指定する。
+<DT>-I e|s
+    <DD>入力ファイルの漢字コードを指定する。
+<DT>-B
+    <DD>Bookmark ファイルをロードする。
+<DT>-bookmark ファイル名
+    <DD>Bookmark ファイルを指定のファイルにする。
+<DT>-T タイプ
+    <DD>表示する文書のタイプを指定する。この指定がない場合、ファイル名の拡張子によって自動判別される。判別できない場合は text/plain とみなされる。
+    <P>
+    例:<BR>
+    <U>標準入力から HTML ファイルを読んで表示する</U>
+<PRE>
+	cat hoge.html | w3m -T text/html
+</PRE><P>
+    <U>HTMLファイルのソースを表示する</U>
+<PRE>
+	w3m -T text/plain hoge.html
+</PRE>
+<DT>-m
+    <DD>Internet message モードで表示する。Internet message モードの場合、ヘッダの内容を見て、Content-Type: があればそれを参考にする。電子メールやネットニュースの記事を読む時に便利。
+<DT>-v
+    <DD>このオプションを指定すると、w3m のスタートアップ・ページを表示する。
+<DT>-M
+    <DD>カラー表示をしない(モノクロ表示する)。
+<DT>-F
+    <DD>フレームを自動表示する。
+<DT>-cols 幅
+    <DD>-dump オプションを使う場合に、文書の幅を指定する。
+<DT>-ppc ピクセル数
+    <DD>文字の幅を指定する。デフォルトは<B>8.0</B>。
+<DT>-dump
+    <DD>URL で指定された WWW の内容を読み込み、整形されたバッファの内容を標準出力に書き出す。文書の幅は 80 桁と仮定される。この幅は -cols オプションで変更可能。
+<DT>-dump_head
+    <DD>URL で指定された WWW の内容を読み込み、そのヘッダ情報のみを標準出力に書き出す。
+<DT>-dump_source
+    <DD>URL で指定された WWW の内容を読み込み、整形せずに標準出力に書き出す。漢字コードの変換も行わない。
+<DT>-dump_both
+    <DD>-dump_head と -dump_souce の両方の効果
+<DT>-dump_extra
+    <DD>-dump_both に加え、拡張情報(extra information)を標準出力に書き出す。
+<DT>-post ファイル名
+    <DD>指定したファイルの内容で POST メソッドを用いる。
+<DT>-header 文字列
+    <DD>insert string as a header  (って何？)
+<DT>+行番号
+    <DD>w3m 起動後に、指定の行番号に移動する。
+<DT>-num
+    <DD>行番号を表示する。
+<DT>-no-proxy
+    <DD>プロキシを利用しない。
+<DT>-no-mouse
+    <DD>マウスを利用しない。
+<DT>-cookie
+    <DD>クッキーを処理する。
+<DT>-no-cookie
+    <DD>クッキーを処理しない。
+<DT>-S
+    <DD>tet/plain の文書を表示する場合、複数の空行を 1つにまとめて表示する。
+<DT>-W
+    <DD>文字列検索時、折り返しサーチを使うかどうかを切り換える。
+<DT>-X
+    <DD>w3m 終了時に、w3m 起動前の画面に戻らない。
+<DT>-o option=value
+    <DD>w3m に関するさまざまな option に対して 値 (value) をセットする。``w3m -o''と実行した場合、usage に続いて、指定可能な option とその説明を表示する。
+<DT>-config ファイル名
+    <DD>w3m の config ファイルを指定する。
+<!--
+<DT>-debug
+    <DD>デバッグ用なので、指定しないこと。
+-->
+</DL>
+</BLOCKQUOTE>
+</DIV>
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="environment">環境変数</A></H2>
+<!-- w3m が参照する環境変数について -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="bookmark">bookmark ファイル</A></H2>
+<!-- bookmark ファイルについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="option_panel">オプションパネル</A></H2>
+<!-- オプションパネルについての説明 -->
+
+<H3><A NAME="external_viewer">外部ビューアの編集</A></H3>
+<!-- 外部ビューアの編集についての説明 -->
+
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H2><A NAME="other_customize">その他カスタマイズ</A></H2>
+<!-- その他のカスタマイズ項目についての説明 -->
+
+<H3><A NAME="keymap">keymap</A></H3>
+<!-- keymap のカスタマイズについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<H3><A NAME="menu">menu</A></H3>
+<!-- menu のカスタマイズについての説明 -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
+
+</BODY>
+</HTML>

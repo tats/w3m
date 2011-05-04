@@ -1,0 +1,209 @@
+<html>
+<head>
+<title>History of w3m</title>
+</head>
+<body>
+<h1>History of w3m</h1>
+<div align=right>
+1999/2/18<br>
+1999/3/8 revised<br>
+1999/6/11 translated into English<br>
+Akinori Ito<br>
+aito@fw.ipsj.or.jp
+</div>
+<h2>Introduction</h2>
+W3m is a text-based pager and WWW browser.
+It is similar application to the famous text-based
+browser <a href="http://www.lynx.browser.org/">Lynx</a>.
+However, w3m has several advantages against Lynx. For example,
+<UL>
+<LI>W3m can render tables.
+<LI>W3m can render frame (by converting frame into table).
+<LI>As w3m is a pager, it can read document from standard input.
+(I heard Lynx also can display standard-input-given document, like this:
+<pre>
+   lynx /dev/fd/0 &gt; file
+</pre>
+Hmm, it works on Linux. )
+<LI>W3m is small. Its stripped binary for Sparc (compiled with
+gcc -O2, version beta-990217) is only 260kbyte, while binary size
+of Lynx is beyond 1.8Mbyte. (Actually, lynx it 800K on my i386 system, w3m is 200K + libgc.)
+</UL>
+It is true that Lynx is an excellent browser, who have many
+features w3m doesn't have. For example,
+<UL>
+<LI>Lynx can handle cookies.
+<LI>Lynx has many options.
+<LI>Lynx is multilingual. (W3m is Japanese-English bilingual)
+</UL>
+etc. It is also a great advantage that Lynx has a lot of
+documentation.
+<P>
+<b>I don't intend w3m to be a substitute of any other browsers,
+including Netscape and Lynx.</b> Why did I wrote w3m?
+Because I felt inconvenient with conventional browsers 
+to `take a look' at web pages.
+I am browsing web pages in LAN environment. When I want to take
+a glance at a web page, I don't want to wait to start up Netscape.
+Lynx also takes a few seconds to start up (you can get lynx startup time to almost zero when you rm /etc/mailcap). On the other hand,
+w3m starts immediately with little load to the host machine.
+After looking at the information using w3m, I use other browser
+if I want to read the the page in detail. As for me, however,
+w3m is enough to read most of web pages.
+
+<h2>The birth of w3m</h2>
+<P>
+w3m was derived from a pager named `fm'. Fm was written before
+1991 (I don't remember the exact date) when WWW was not popular.
+At that time, the word `browser' meant a file browser like
+`more' or `less'.
+<P>
+I wrote fm to debug a program for my research. To trace the status
+of the program, it dumped megabytes of values of variables into a file,
+and I debugged it by checking the dumped file. The program dumped
+information at a certain time in one line, which made the dumped line
+several hundred characters long. When I looked the file using `more' or
+`less', one line was folded into several lines and it was very hard
+to read it. Therefore, I wrote fm, which didn't fold a line. Fm displayed
+one logical line as one physical line. When seeing the hidden
+part of a line, fm shifted entire screen. As I used 80x24 terminal at that
+time, fm was very useful for the debugging.
+<P>
+Several years later, I got to know WWW and began to use it.
+I used XMosaic and Chimera. I liked Chimera because it was light.
+As I was interested in the mechanism of WWW, I learned HTML and
+HTTP, and I felt it simpler than I expected. The earlier version
+of HTTP was very similar to Gopher protocol. HTML 2.0 was
+simple enough to render. All I have to do seemed to be line folding
+and itemized display. Then I made a little modification to fm
+and made a web browser. It was the first version of w3m.
+The name `w3m' was an abbreviation of Japanese phrase `WWW wo miru',
+which means `see WWW'. It was an inheritance from `fm', which
+was an abbreviation of `File wo miru'. The first version of w3m
+was released at the beginning of 1995.
+
+<h2>Death and rebirth of w3m</h2>
+<p>
+I had used w3m as a pager to read files, E-mails and online manuals. 
+It was a substitute of less. Sometimes I used w3m as a web browser,
+but there were many pages w3m couldn't display correctly, most of
+which used table for page layout. Once I tried to implement table
+renderer, but I gave up because it seemed to be too difficult for me.
+<P>
+It was 1998 when I tried to modify w3m again. There were two reasons.
+The first is that I had some time to do it. I stayed Boston University
+as a visiting researcher at that time. The second reason is that
+I wanted to use table in my personal web page.  I had written research
+log using HTML, and I wanted to write a table in it. At first I used 
+&lt;pre&gt;..&lt;/pre&gt; to describe table, but it was not cool at all.
+One day I used &lt;table&gt; tag, which made me to use Netscape to
+read the research log. Then I decided to implement a table renderer
+into w3m.
+<P>
+I didn't intend to write a perfect table renderer because tables
+I used was not very complicated. However, incomplete table rendering
+made the display of table-layout pages horrible. I realized that
+it required almost-perfect table renderer 
+to do well both in `rendering (real) table' and `fine display of
+table-layout page.' It was a thorn path.
+<P>
+After taking several months, I finished `fair' table renderer.
+Then I implemented form into w3m. Finally, w3m was reborn as a
+practical web browser.
+
+<h2>Table rendering algorithm in w3m</h2>
+
+HTML table rendering is difficult. Tabular environment
+of LaTeX is not very difficult, which makes the width of a column
+either a specified value or the maximum width to put items into it.
+On the other hand, HTML table renderer has to decide
+the width of a column so that the entire table can fit into the
+display appropriately, and fold the contents of the table according
+to the column width. Inappropriate column width decision makes
+the table ugly. Moreover, table can be nested, which makes the algorithm
+more complicated.
+
+<OL>
+<LI>First, calculate the maximum and minimum width of each column.
+The maximum width is the width required to display the column
+without folding the contents. Generally, it is the length of 
+paragraph delimited by &lt;BR&gt; or &lt;P&gt;.
+The minimum width is the lower limit to display the contents.
+If the column contains the word `internationalization', the minimum
+width will be 20. If the column contains 
+&lt;pre&gt;..&lt;/pre&gt;, the maximum width of the preformatted
+text will be the minimum width of the column.
+
+<LI>If the width of the column is specified by WIDTH attribute,
+fix the column width using that value. If the specified width is
+smaller than the minimum width of the column, fix the column width
+to the minimum width.
+
+<LI>Calculate the sum of the maximum width (or fixed width) of
+each column and check if the sum exceeds the screen width.
+If it is smaller than screen width, these values are used for
+width of each column.
+
+<LI>If the sum is larger than the screen width, determine the widths
+of each column according to the following steps.
+<OL>
+<LI>Let W be the screen width subtracted by the sum of widths of 
+fixed-width columns.
+<LI>Distribute W into the columns whose width are not decided,
+in proportion to the logarithm of the maximum width of each column.
+<li>If the distributed width of a column is smaller than the minimum width,
+then fix the width of the column to the minimum width, and 
+do the distribution again.
+</OL>
+</OL>
+
+In this process, distributed width is proportion to logarithm of
+maximum width, but I am not sure that this heuristic is the best.
+It can be, for example, square root of the maximum width.
+<P>
+The algorithm above assumes that the screen width is known.
+But it is not true for nested table. According the algorithm above,
+the column width of the outer table have to be known to render
+the inner table, while the total width of the inner table have to
+be known to determine the column width of the outer table.
+If WIDTH attribute exists there are no problems. Otherwise, w3m
+assumes that the inner table is 0.8 times as wide as the outer
+table. It works fine, but if there are two tables side by side in an outer
+table, the width of the outer table always exceeds the screen width.
+To render this kind of table correctly, one have to render the table once,
+check the width of outmost table, and then render the entire table again.
+Netscape might employ this kind of algorithm.
+
+<h2>Libraries</h2>
+
+w3m uses
+<a href="http://reality.sgi.com/boehm/gc.html">Boehm GC</a>
+library. This library was written by H. Boehm and A. Demers.
+I could distribute w3m without this library because one can
+get the library separately, but I decided to contain it in the
+w3m distribution for the convenience of an installer.
+W3m doesn't use libwww.
+<P>
+Boehm GC is a garbage collector for C and C++. I began to use this
+library when I implemented table, and it was great. I couldn't
+implement table and form without this library. 
+<P>
+Older version than beta-990304 used 
+<a href="http://home.cern.ch/~orel/libftp/libftp/libftp.html">LIBFTP</a>
+because I felt tired of writing codes to handle FTP protocol.
+But I rewrote the FTP code by myself to make w3m completely free.
+It made w3m slightly smaller.
+<P>
+By the way, w3m doesn't use UNIX standard regexp library and curses library.
+It is because I want to use Japanese. When I wrote fm, there were
+no free regexp/curses libraries that can treat Japanese. Now both libraries
+are available and they looks faster than w3m code.
+
+<h2>Future work</h2>
+
+...Nothing. As w3m's virtues are its small size and rendering speed,
+adding more features might lose these advantages. On the other hand,
+w3m is still known to have many bugs, and I will continue fixing them.
+
+</body>
+</html>

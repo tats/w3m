@@ -1,0 +1,105 @@
+
+%buf_funcname = (
+ 'BUF:PREV', 'buffer_prev',
+ 'BUF:NEXT', 'buffer_next',
+ 'BUF:DELETE', 'buffer_delete',
+ 'BUF:GO', 'buffer_go',
+);
+
+%lineedit_funcname = (
+ 'LINEEDIT:FORWARD', 'lineedit_forward',
+ 'LINEEDIT:BACK', 'lineedit_back',
+ 'LINEEDIT:BS', 'lineedit_backspace',
+ 'LINEEDIT:DEL', 'lineedit_delete',
+ 'LINEEDIT:KILL_AFTER', 'lineedit_kill_after',
+ 'LINEEDIT:KILL_BEFORE', 'lineedit_kill_before',
+ 'LINEEDIT:TOP', 'lineedit_top',
+ 'LINEEDIT:BOTTOM', 'lineedit_bottom',
+ 'LINEEDIT:PREV', 'lineedit_prev',
+ 'LINEEDIT:NEXT', 'lineedit_next',
+ 'LINEEDIT:EDITOR', 'lineedit_editor',
+ 'LINEEDIT:COMPLETE', 'lineedit_complete',
+ 'LINEEDIT:ACCEPT', 'lineedit_accept',
+);
+
+%menu_funcname = (
+ 'MENU:SELECT', 'menu_select',
+ 'MENU:CLOSE', 'menu_close',
+ 'MENU:CANCEL', 'menu_cancel',
+ 'MENU:DOWN', 'menu_down',
+ 'MENU:UP', 'menu_up',
+ 'MENU:LINE_UP', 'menu_line_up',
+ 'MENU:LINE_DOWN', 'menu_line_down',
+ 'MENU:TOP', 'menu_top',
+ 'MENU:LAST', 'menu_last',
+ 'MENU:NEXT', 'menu_next',
+ 'MENU:PREV', 'menu_prev',
+ 'MENU:SEARCH_FORE', 'menu_search_fore',
+ 'MENU:SEARCH_BACK', 'menu_search_back',
+ 'MENU:SEARCH_NEXT', 'menu_search_next',
+ 'MENU:SEARCH_PREV', 'menu_search_prev',
+ 'MENU:SUSPEND', 'menu_suspend',
+);
+
+%buf_keyfunc = (
+ 'k', 'BUF:PREV',
+ 'C-p', 'BUF:PREV',
+ 'j', 'BUF:NEXT',
+ 'C-n', 'BUF:NEXT',
+ 'D', 'BUF:DELETE',
+ 'RET', 'BUF:GO'
+);
+
+%lineedit_keyfunc = (
+ 'C-f', 'LINEEDIT:FORWARD',
+ 'C-b', 'LINEEDIT:BACK',
+ 'C-h', 'LINEEDIT:BS',
+ 'C-d', 'LINEEDIT:DEL',
+ 'C-k', 'LINEEDIT:KILL_AFTER',
+ 'C-u', 'LINEEDIT:KILL_BEFORE',
+ 'C-a', 'LINEEDIT:TOP',
+ 'C-e', 'LINEEDIT:BOTTOM',
+ 'C-p', 'LINEEDIT:PREV',
+ 'C-n', 'LINEEDIT:NEXT',
+ 'C-o', 'LINEEDIT:EDITOR',
+ 'TAB', 'LINEEDIT:COMPLETE',
+ 'SPC', 'LINEEDIT:COMPLETE',
+ 'RET', 'LINEEDIT:ACCEPT'
+);
+
+%menu_keyfunc = (
+ 'RET', 'MENU:SELECT',
+ 'SPC', 'MENU:SELECT',
+ 'RIGHT', 'MENU:SELECT',
+ '^[[28~', 'MENU:CLOSE',
+ '^[[2~', 'MENU:CLOSE',
+ 'C-c', 'MENU:CLOSE',
+ 'C-h', 'MENU:CANCEL',
+ 'DEL', 'MENU:CANCEL',
+ 'LEFT', 'MENU:CANCEL',
+ 'C-n', 'MENU:DOWN',
+ 'j', 'MENU:DOWN',
+ 'DOWN', 'MENU:DOWN',
+ 'C-p', 'MENU:UP',
+ 'k', 'MENU:UP',
+ 'UP', 'MENU:UP',
+ 'K', 'MENU:LINE_UP',
+ 'J', 'MENU:LINE_DOWN',
+ 'C-a', 'MENU:TOP',
+ 'C-e', 'MENU:LAST',
+ 'C-f', 'MENU:NEXT',
+ 'C-v', 'MENU:NEXT',
+ '^[[6~', 'MENU:NEXT',
+ 'C-b', 'MENU:PREV',
+ 'ESC-v', 'MENU:PREV',
+ '^[[5~', 'MENU:PREV',
+ 'C-s', 'MENU:SEARCH_FORE',
+ '/', 'MENU:SEARCH_FORE',
+ 'C-r', 'MENU:SEARCH_BACK',
+ '?', 'MENU:SEARCH_BACK',
+ 'n', 'MENU:SEARCH_NEXT',
+ 'N', 'MENU:SEARCH_PREV',
+ 'C-z', 'MENU:SUSPEND',
+);
+
+1;

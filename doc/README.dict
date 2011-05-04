@@ -1,0 +1,68 @@
+Dictionary look-up hack for w3m
+
+1. INTRODUCTION
+
+If you have dictionary look-up command (like 'webster'), you can
+look a word in a document using w3m. This dictionary-lookup code
+was contributed by `Rubikitch' (rubikitch@ruby-lang.org), and
+further modifed by Tushar Samant (scribble at pobox.com).
+
+2. INSTALLATION
+
+To make use of dictionary look-up, you currently must change a
+compile option by hand. After running configure, edit config.h
+and change
+
+#undef USE_DICT
+
+to
+
+#define USE_DICT
+
+and recompile w3me (i.e. type "make install").
+Note that w3m/0.3+cvs-1.373 or later, USE_DICT is defined by default.
+
+Then find or install a CGI program which takes a word as a query
+string and prints a response.
+
+Some ways to do this would be:
+
+  * If you have the 'webster' command, put something like this
+    in a script called 'w3mdict':
+
+      #!/bin/sh
+
+      echo Content-type: text/plain
+      echo
+      webster $QUERY_STRING
+
+    Then install w3mdict as a local CGI (see the local CGI section
+    of the w3m manual), and set your dictionary options from the
+    options page of w3m (usually invoked with "o").
+
+  * If you want this function to look a word up on Google instead,
+    write a local CGI script like this:
+
+      #!/bin/sh
+
+      google_q='http://google.com/search?btnG=Google&q'
+
+      cat <<_END_
+      Content-type: text/plain
+      W3m-control: GOTO $google_q=$QUERY_STRING
+      W3m-control: DELETE_PREVBUF
+
+      _END_
+
+    and set its path as your dictionary-lookup URL option.
+
+3. USAGE
+
+You can use the following two commands:
+
+ESC w    Input a word and look it up using w3mdict command.
+
+ESC W    look up the current word in the buffer.
+
+To change these keys, edit ~/.w3m/keymap and edit lines for the
+functions DICT_WORD and DICT_WORD_AT respectively.

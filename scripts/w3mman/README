@@ -1,0 +1,54 @@
+
+w3mman
+
+    他のマニュアルやヘッダファイルにリンクをはることができる
+    man コマンドの代替コマンドです。
+
+使用法
+
+    w3mman
+    w3mman <command>[(<section>)]
+    w3mman [<section>] <command>
+    w3mman -k <keyword>
+
+環境変数
+
+    W3MMAN_W3M
+        使用する w3m コマンドを指定します(デフォルトは w3m)
+    W3MMAN_MAN
+        使用する man コマンドを指定します(デフォルトは man)
+
+インストール
+
+    make install
+    必要なら PERL, MAN, LIBDIR を設定してください。
+    w3mman2html.cgi もインストールされます。
+
+================
+
+w3mman2html.cgi
+
+使用法
+
+    w3m file:///$LIB/w3mman2html.cgi
+    w3m file:///$LIB/w3mman2html.cgi?<command>[(<section>)]
+    w3m file:///$LIB/w3mman2html.cgi?man=<command>[&section=<section>]
+    w3m file:///$LIB/w3mman2html.cgi?keyword=<keyword>
+
+インストール
+
+    make install
+    必要なら PERL, MAN, LIBDIR を設定してください。
+    w3mman もインストールされます。
+
+================
+
+hlink.cgi
+
+    ヘッダファイルなどにリンクを張る
+
+インストール
+
+    /$LIB/ にコピー
+    w3mman2html.cgi で使用するならば $CGI2 に設定してください。
+

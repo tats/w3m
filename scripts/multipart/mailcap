@@ -1,0 +1,1 @@
+multipart/*;	/usr/local/lib/w3m/multipart.cgi %s %{boundary}; htmloutput

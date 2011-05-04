@@ -1,0 +1,517 @@
+#!/usr/local/bin/ruby
+
+#
+#       HTML to LaTeX converter
+#         by A. Ito, 16 June, 1997
+#
+
+require 'kconv'
+
+# configuration
+def gif2eps(giffile,epsfile)
+  cmd = "convert #{giffile} #{epsfile}"
+  STDERR.print cmd,"\n"
+  system cmd
+end
+
+###########################################################################
+class Tag
+  def initialize(str)
+    if str =~ /<(.+)>/ then
+      str = $1
+    end
+    tags = str.split
+    @tagname = tags.shift.downcase
+    @vals = {}
+    tags.each do |t|
+      if t =~ /=/ then
+	tn,tv = t.split(/\s*=\s*/,2)
+	tv.sub!(/^"/,"")
+	tv.sub!(/"$/,"")
+	@vals[tn.downcase] = tv
+      else
+	@vals[t.downcase] = TRUE
+      end
+    end
+  end
+  def tagname
+    return @tagname
+  end
+  def each
+    @vals.each do |k,v|
+      yield k,v
+    end
+  end
+  def switch(k)
+    return @vals[k]
+  end
+end
+
+class TokenStream
+  TAG_START = ?<
+  TAG_END = ?>
+  AMP_START = ?&
+  AMP_END = ?;
+  
+  AMP_REPLACE_TABLE = {
+    '&amp;'   => '\\&',
+    '&gt;'    => '$>$',
+    '&lt;'    => '$<$',
+    '&nbsp;'  => '~',
+    '&quot;'  => '"',
+  }
+  def initialize(file)
+    if file.kind_of?(File) then
+      @f = file
+    else
+      @f = File.new(file)
+    end
+    @buf = nil
+    @bpos = 0
+  end
+  
+  def read_until(endsym)
+    complete = FALSE
+    tag = []
+    begin
+      while @bpos < @buf.size
+	c = @buf[@bpos]
+	if c == endsym then
+	  tag.push(c.chr)
+	  complete = TRUE
+	  @bpos += 1
+	  break
+	end
+	if c == 10 || c == 13 then
+	  tag.push(' ')
+	else
+	  tag.push(c.chr)
+	end
+	@bpos += 1
+      end
+      unless complete
+	@buf = @f.gets
+	@bpos = 0
+	break if @f.eof?
+      end
+    end until complete
+    return tag.join('')
+  end
+    
+  def get
+    while TRUE
+      if @buf.nil? then
+	@buf = Kconv.toeuc(@f.gets)
+	if @f.eof? then
+	  return nil
+	end
+	@bpos = 0
+      end
+      if @buf[@bpos] == TAG_START then
+	return Tag.new(read_until(TAG_END))
+      elsif @buf[@bpos] == AMP_START then
+	return replace_amp(read_until(AMP_END))
+      else
+	i = @bpos
+	while i < @buf.size && @buf[i] != TAG_START && @buf[i] != AMP_START
+	  i += 1
+	end
+	r = @buf[@bpos,i-@bpos]
+	if i == @buf.size then
+	  @buf = nil
+	else
+	  @bpos = i
+	end
+	redo if r =~ /^\s+$/
+	return r
+      end
+    end
+  end
+  public :eof?
+  def eof?
+    @f.eof?
+  end
+  def replace_amp(s)
+    if AMP_REPLACE_TABLE.key?(s) then
+      return AMP_REPLACE_TABLE[s]
+    else
+      return s
+    end
+  end
+end
+
+
+def print_header
+  print '
+\documentstyle[epsf]{jarticle}
+\def\hr{\par\hbox to \textwidth{\hrulefill}}
+\def\pre{\begin{quote}\def\baselinestretch{0.8}\tt\obeylines}
+\def\endpre{\end{quote}}
+\makeatletter
+\@ifundefined{gt}{\let\gt=\dg}{}
+\makeatother
+'
+end
+
+
+class Environ_stack
+  def initialize(*envs)
+    @stack = envs
+  end
+  def action(tag)
+    if tag =~ /^!/ then # comment
+      return ["",nil]
+    end
+    i = @stack.size-1
+    while i >= 0
+      a = @stack[i].action(tag)
+      unless a.nil? then
+	return a
+      end
+      i -= 1
+    end
+    return nil
+  end
+  def pop
+    @stack.pop
+  end
+  def push(env)
+    @stack.push(env)
+  end
+  def top
+    @stack[@stack.size-1]
+  end
+  def dup
+    @stack.push(top.clone)
+  end
+end
+
+
+class Environment
+  def initialize(interp)
+    @silent = FALSE
+    @in_table = FALSE
+    @interp = interp;
+    @align = nil;
+  end
+  def action(tag)
+    return @interp[tag]
+  end
+  
+  def flush(tok)
+    if tok.kind_of?(String) then
+      tok = tok.gsub(/&/,"\\&");
+      tok = tok.gsub(/%/,"\\%");
+      tok = tok.gsub(/#/,"\\#");
+      tok = tok.gsub(/\$/,"\\$");
+      tok = tok.gsub(/_/,"\\verb+_+");
+      tok = tok.gsub(/\^/,"\\verb+^+");
+      tok = tok.gsub(/~/,"\\verb+~+");
+    end
+    if @in_table then
+      @table[@table_rows][@table_cols] += tok
+    elsif !@silent then
+      if !@align.nil? && tok =~ /\n$/ then
+	print tok.chop,"\\\\\n"
+      else
+	print tok
+      end
+    end
+  end
+  
+  def set_interp(interp)
+    @interp = interp
+  end
+  
+  # tag processing methods
+  
+  # <TITLE>
+  def do_silent(tag)
+    @silent = TRUE
+  end
+  
+  # </TITLE>
+  def undo_silent(tag)
+    @silent = FALSE
+  end
+  
+  # <IMG>
+  def img_proc(tag)
+    src = tag.switch('src')
+    newfile = src.sub(/\.GIF/i,".eps")
+    gif2eps(src,newfile)
+    flush "\\epsfile{file=#{newfile}}\n"
+  end
+  
+  # <TABLE>
+  def starttable(tag)
+    @table = []
+    @tablespan = []
+    @table_rows = -1
+    @table_cols_max = 0
+    @in_table = TRUE
+    unless tag.switch('border').nil? then
+      @table_border = TRUE
+    else
+      @table_border = FALSE
+    end
+  end
+  
+  # <TR>
+  def start_row(tag)
+    @table_rows += 1
+    @table[@table_rows] = []
+    @tablespan[@table_rows] = []
+    @table_cols = -1
+    @colspan = 1
+  end
+  
+  # <TD>
+  def start_col(tag)
+    @colspan = tag.switch('colspan')
+    if @colspan.nil? then
+      @colspan = 1
+    else
+      @colspan = @colspan.to_i
+    end
+    @tablespan[@table_rows][@table_cols+1] = @colspan
+    @table_cols += @colspan
+    if @table_cols > @table_cols_max then
+      @table_cols_max = @table_cols
+    end
+  end
+  
+  # </TABLE>
+  def endtable(tag)
+    @in_table = FALSE
+    flush "\\begin{tabular}{*{"
+    flush @table_cols_max+1
+    if @table_border then
+      flush "}{|l}|}\n\\hline\n"
+    else
+      flush "}{l}}\n"
+    end
+    for i in 0..@table_rows
+      j = 0
+      while j <= @table_cols
+	span = @tablespan[i][j]
+	if span == 1 then
+	  flush @table[i][j]
+	elsif @table_border then
+	  form = "|l"
+	  if j+span > @table_cols then
+	    form = "|l|"
+	  end
+	  flush "\\multicolumn{"+span.to_s+"}{"+form+"}{"
+	  flush @table[i][j+span-1]
+	  flush "}"
+	else
+	  flush "\\multicolumn{"+span.to_s+"}{l}{"
+	  flush @table[i][j+span-1]
+	  flush "}"
+	end
+	j += span
+	if j <= @table_cols then
+	  flush "&"
+	end
+      end
+      flush "\\\\\n"
+      flush "\\hline\n" if @table_border
+    end
+    flush "\\end{tabular}\n"
+  end  
+  
+  # <CENTER>
+  def startcenter(tag)
+    if @in_table then
+      flush "\\hfil"
+    else
+      flush "\\begin{center}\n"
+    end
+  end
+  
+  # </CENTER>
+  def endcenter(tag)
+    if @in_table then
+      flush "\\hfil"
+    else
+      flush "\\end{center}\n"
+    end
+  end
+  
+  # <P>
+  def paragraph(tag)
+    align = tag.switch('align')
+    if align.nil? then
+      flush "\\par\n"
+      @endparagraph = ""
+    else
+      align = align.downcase
+      case align
+      when "left" then
+	flush "\\begin{flushleft}\n"
+	@endparagraph = "\\end{flushleft}\n"
+      when "center" then
+	flush "\\begin{center}\n"
+	@endparagraph = "\\end{center}\n"
+      when "right" then
+	flush "\\begin{flushright}\n"
+	@endparagraph = "\\end{flushright}\n"
+      end
+    end
+    @align = align
+  end
+  
+  # </P>
+  def endparagraph(tag)
+    unless @align.nil? then
+      @align = nil
+      flush @endparagraph
+    end
+  end
+end
+
+
+enum_interp = {
+  'li' => ["\\item ",nil]
+}
+
+item_interp = {
+  'li' => ["\\item ",nil]
+}
+
+desc_interp = {
+  'dt' => ["\\item[",nil],
+  'dd' => ["]\n",nil]
+}
+
+table_interp = {
+  'tr' => [:start_row,nil],
+  'td' => [:start_col,nil],
+  '/tr' => ["",nil],
+  '/td' => ["",nil],
+}
+
+para_interp = {
+  '/p'      => [:endparagraph ,"pop",TRUE],
+}
+
+main_interp = {
+  'body'    => ["\\begin{document}\n",nil,FALSE],
+  '/body'   => ["\\end{document}\n",nil,FALSE],
+  'head'    => ["",nil,FALSE],
+  '/head'   => ["",nil,FALSE],
+  'html'    => ["",nil,FALSE],
+  '/html'   => ["",nil,FALSE],
+  'title'   => [:do_silent,nil,FALSE],
+  '/title'  => [:undo_silent,nil,FALSE],
+  '!'       => ["",nil,FALSE],
+  'h1'      => ["\\section{",nil,TRUE],
+  'h2'      => ["\\subsection{",nil,TRUE],
+  'h3'      => ["\\subsubsection{",nil,TRUE],
+  'h4'      => ["\\paragraph{",nil,TRUE],
+  '/h1'     => ["}\n",nil,TRUE],
+  '/h2'     => ["}\n",nil,TRUE],
+  '/h3'     => ["}\n",nil,TRUE],
+  '/h4'     => ["}\n",nil,TRUE],
+  'a'       => ["",nil,TRUE],
+  '/a'      => ["",nil,TRUE],
+  'center'  => [:startcenter,nil,TRUE],
+  '/center' => [:endcenter,nil,TRUE],
+  'ol'      => ["\\begin{enumerate}\n",enum_interp,TRUE],
+  '/ol'     => ["\\end{enumerate}\n","pop",TRUE],
+  'ul'      => ["\\begin{itemize}\n",item_interp,TRUE],
+  '/ul'     => ["\\end{itemize}\n","pop",TRUE],
+  'dl'      => ["\\begin{description}\n",desc_interp,TRUE],
+  '/dl'     => ["\\end{description}\n","pop",TRUE],
+  'pre'     => ["\\begin{pre}\n",nil,TRUE],
+  '/pre'    => ["\\end{pre}\n",nil,TRUE],
+  'p'       => [:paragraph ,para_interp,TRUE],
+  'br'      => ["\\par ",nil,TRUE],
+  'img'     => [:img_proc,nil,TRUE],
+  'hr'      => ["\\hr ",nil,TRUE],
+  'b'       => ["{\\bf\\gt ",nil,TRUE],
+  '/b'      => ["}",nil,TRUE],
+  'strong'  => ["{\\bf\\gt ",nil,TRUE],
+  '/strong' => ["}",nil,TRUE],
+  'dfn'     => ["{\\bf\\gt ",nil,TRUE],
+  '/dfn'    => ["}",nil,TRUE],
+  'i'       => ["{\\it",nil,TRUE],
+  '/i'      => ["}",nil,TRUE],
+  'address' => ["{\\it",nil,TRUE],
+  '/address'=> ["}",nil,TRUE],
+  'cite'    => ["{\\it",nil,TRUE],
+  '/cite'   => ["}",nil,TRUE],
+  'code'    => ["{\\tt",nil,TRUE],
+  '/code'   => ["}",nil,TRUE],
+  'kbd'     => ["{\\tt",nil,TRUE],
+  '/kbd'    => ["}",nil,TRUE],
+  'tt'      => ["{\\tt",nil,TRUE],
+  '/tt'     => ["}",nil,TRUE],
+  'samp'    => ["{\\tt",nil,TRUE],
+  '/samp'   => ["}",nil,TRUE],
+  'em'      => ["{\\em",nil,TRUE],
+  '/em'     => ["}",nil,TRUE],
+  'u'       => ["$\\underline{\\mbox{",nil,TRUE],
+  '/u'      => ["}}$",nil,TRUE],
+  'sub'     => ["${}_\mbox{",nil,TRUE],
+  '/sub'    => ["}$",nil,TRUE],
+  'sup'     => ["${}^\mbox{",nil,TRUE],
+  '/sup'    => ["}$",nil,TRUE],
+  'table'   => [:starttable, table_interp,TRUE],
+  '/table'  => [:endtable, "pop",TRUE],
+  'font'    => ["",nil,TRUE],
+  '/font'   => ["",nil,TRUE],
+}
+
+
+
+
+################################ MAIN ####################################
+
+$in_document = FALSE
+print_header
+intp = Environ_stack.new(Environment.new(main_interp))
+f = TokenStream.new(ARGV[0])
+until f.eof?
+  tok = f.get
+  if tok.kind_of?(Tag) then
+    case tok.tagname
+    when "body"
+      $in_document = TRUE
+    when "/body"
+      $in_document = FALSE
+    end
+    act = intp.action(tok.tagname)
+    if act.nil? then
+      STDERR.print "tag ",tok.tagname," ignored\n"
+    else
+      if act[2] && !$in_document then
+        print "\\begin{document}\n"
+	$in_document = TRUE
+      end
+      # environment push
+      if act[1].kind_of?(Hash) &&
+	  (tok.tagname != "p" || tok.switch('align') != nil) then
+	  intp.dup
+	  intp.top.set_interp(act[1])
+      end
+      
+      if act[0].kind_of?(String) then
+	intp.top.flush act[0]
+      elsif act[0].kind_of?(Fixnum) then # interned symbol
+	intp.top.send(act[0],tok)
+      end
+      
+      # environment pop
+      if act[1] == "pop" then
+	intp.pop
+      end
+    end
+  elsif !tok.nil? then
+    intp.top.flush tok
+  end
+end
+if $in_document then
+  print "\\end{document}\n"
+end

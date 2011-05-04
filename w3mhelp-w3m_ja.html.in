@@ -1,0 +1,156 @@
+<HTML>
+<HEAD>
+<TITLE>w3m ヘルプ ページ</TITLE>
+</HEAD>
+
+<BODY>
+<CENTER>
+ ******* 
+ <A HREF="http://w3m.sourceforge.net/">w3m</A>
+ (WWW-wo-Miru) Version @CURRENT_VERSION@ by
+ <A HREF="mailto:aito@fw.ipsj.or.jp">A.ITO(伊藤彰則)</A>
+ ********
+ <BR>
+ ***** キー割り当て *****
+</CENTER>
+
+<A HREF="w3mhelp-w3m_en.html">English</A>
+
+<H2>ページ/カーソル移動</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>SPC,C-v</TD> <TD>次ページ</TD></TR>
+ <TR> <TD>b,ESC v</TD> <TD>前ページ</TD></TR>
+ <TR> <TD>l,C-f</TD> <TD>カーソルを右へ移動</TD></TR>
+ <TR> <TD>h,C-b</TD> <TD>カーソルを左へ移動</TD></TR>
+ <TR> <TD>j,C-n</TD> <TD>カーソルを下へ移動</TD></TR>
+ <TR> <TD>k,C-p</TD> <TD>カーソルを上へ移動</TD></TR>
+ <TR> <TD>J</TD><TD>一行上にスクロール(進む)</TD></TR>
+ <TR> <TD>K</TD><TD>一行下にスクロール(戻る)</TD></TR>
+ <TR> <TD>^,C-a</TD><TD>行頭に移動</TD></TR>
+ <TR> <TD>$,C-e</TD><TD>行末に移動</TD></TR>
+ <TR> <TD>w</TD><TD>次の単語に移動</TD></TR>
+ <TR> <TD>W</TD><TD>前の単語に移動</TD></TR>
+ <TR> <TD>&gt;</TD> <TD>右に一画面分シフト</TD></TR>
+ <TR> <TD>&lt;</TD> <TD>左に一画面分シフト</TD></TR>
+ <TR> <TD>.</TD> <TD>右に一文字分シフト</TD></TR>
+ <TR> <TD>,</TD> <TD>左に一文字分シフト</TD></TR>
+ <TR> <TD>g,M-&lt;</TD> <TD>ページの先頭行に移動</TD></TR>
+ <TR> <TD>G,M-&gt;</TD> <TD>ページの最終行に移動</TD></TR>
+ <TR> <TD>ESC g</TD> <TD>指定行に移動</TD></TR>
+ <TR> <TD>Z</TD> <TD>カーソルのある位置を行の中央に移動</TD></TR>
+ <TR> <TD>z</TD> <TD>カーソルのある行を画面の中央に移動</TD></TR>
+ <TR> <TD>TAB</TD> <TD>次のハイパーリンクに移動</TD></TR>
+ <TR> <TD>C-u, ESC TAB</TD> <TD>前のハイパーリンクに移動</TD></TR>
+ <TR> <TD>[</TD> <TD>最初のハイパーリンクに移動</TD></TR>
+ <TR> <TD>]</TD> <TD>最後のハイパーリンクに移動</TD></TR>
+</TABLE>
+
+<H2>ハイパーリンク操作</H2>
+
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>RET</TD> <TD>カーソル下のリンクへ飛ぶ</TD></TR>
+ <TR> <TD>a, ESC RET</TD> <TD>リンク先の文書をファイルに保存</TD></TR>
+ <TR> <TD>ESC I</TD> <TD>リンク先の画像をファイルに保存</TD></TR>
+ <TR> <TD>u</TD> <TD>リンク先URLの表示</TD></TR>
+ <TR> <TD>i</TD> <TD>リンクに関連付けられた画像へのURLの表示</TD></TR>
+ <TR> <TD>I</TD> <TD>インラインイメージの表示</TD></TR>
+ <TR> <TD>:</TD> <TD>URLのような文字をアンカーとしてマーク</TD></TR>
+ <TR> <TD>ESC :</TD> <TD>Message-IDのような文字をアンカーとしてマーク</TD></TR>
+ <TR> <TD>c</TD> <TD>現ページのURLを表示</TD></TR>
+ <TR> <TD>=</TD> <TD>現ドキュメントの情報を表示</TD></TR>
+ <TR> <TD>C-g</TD> <TD>ページ中での現在位置を表示</TD></TR>
+ <TR> <TD>C-h</TD> <TD>URL履歴を表示</TD></TR>
+ <TR> <TD>F</TD> <TD>フレームを表示する</TD></TR>
+ <TR> <TD>M</TD> <TD>現ページを外部ブラウザで表示する(2M,3Mで2番目と3番目のブラウザを呼びだす)</TD></TR>
+ <TR> <TD>ESC M</TD> <TD>リンク先を外部ブラウザで表示する(2ESC M,3ESC Mで2番目と3番目のブラウザを呼びだす)</TD></TR>
+</TABLE>
+
+<H2>ファイル/ストリーム操作</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>U</TD> <TD>URLを指定</TD></TR>
+ <TR> <TD>V</TD> <TD>ファイルを開く</TD></TR>
+ <TR> <TD>@</TD> <TD>シェルを起動し読み込む</TD></TR>
+ <TR> <TD>#</TD> <TD>シェルを起動し読み込む</TD></TR>
+</TABLE>
+
+<H2>バッファ操作</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>B</TD> <TD>前のバッファに移動</TD></TR>
+ <TR> <TD>v</TD> <TD>HTMLソースを表示</TD></TR>
+ <TR> <TD>s</TD> <TD>バッファを選択</TD></TR>
+ <TR> <TD>E</TD> <TD>バッファのソースを編集</TD></TR>
+ <TR> <TD>C-l</TD> <TD>画面の再描画</TD></TR>
+ <TR> <TD>R</TD> <TD>バッファを再読み込み</TD></TR>
+ <TR> <TD>S</TD> <TD>バッファを保存</TD></TR>
+ <TR> <TD>ESC s</TD> <TD>HTMLソースを保存</TD></TR>
+ <TR> <TD>ESC e</TD> <TD>バッファの表示イメージを編集</TD></TR>
+</TABLE>
+
+<H2>バッファ選択モード</H2>
+"s" でバッファ選択モードに入ったときのキー操作
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>k,C-p</TD> <TD>一つ上のバッファを選択</TD></TR>
+ <TR> <TD>j,C-n</TD> <TD>一つ下のバッファを選択</TD></TR>
+ <TR> <TD>D</TD> <TD>現在選択しているバッファを削除</TD></TR>
+ <TR> <TD>RET</TD> <TD>現在選択しているバッファを表示</TD></TR>
+</TABLE>
+
+<H2>ブックマーク操作</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>ESC b</TD> <TD>ブックマークを読み込む</TD></TR>
+ <TR> <TD>ESC a</TD> <TD>現ページをブックマークに追加</TD></TR>
+</TABLE>
+
+<H2>検索</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>/,C-s</TD> <TD>前方検索</TD></TR>
+ <TR> <TD>?,C-r</TD> <TD>後方検索</TD></TR>
+ <TR> <TD>n</TD> <TD>次を検索</TD></TR>
+ <TR> <TD>N</TD> <TD>前を検索</TD></TR>
+ <TR> <TD>C-w</TD> <TD>折り返し検索モードの切り換え</TD></TR>
+</TABLE>
+
+<H2>辞書検索</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>M-w</TD> <TD>入力した単語を辞書コマンドで検索</TD></TR>
+ <TR> <TD>M-W</TD> <TD>カーソル位置の単語を辞書コマンドで検索</TD></TR>
+</TABLE>
+
+<H2>マーク操作</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>C-SPC</TD> <TD>マークの設定/消去</TD></TR>
+ <TR> <TD>ESC p</TD> <TD>前のマークへ移動</TD></TR>
+ <TR> <TD>ESC n</TD> <TD>次のマークへ移動</TD></TR>
+ <TR> <TD>"</TD> <TD>正規表現によるマーク</TD></TR>
+</TABLE>
+
+<H2>その他</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>!</TD> <TD>シェルの実行</TD></TR>
+ <TR> <TD>H</TD> <TD>ヘルプ(このファイルを表示)</TD></TR>
+ <TR> <TD>o</TD> <TD>オプション設定</TD></TR>
+ <TR> <TD>C-k</TD> <TD>クッキー一覧を表示</TD></TR>
+ <TR> <TD>C-c</TD> <TD>文書の読み込みを中断</TD></TR>
+ <TR> <TD>C-z</TD> <TD>サスペンド</TD></TR>
+ <TR> <TD>q</TD> <TD>w3mを終了(確認あり)</TD></TR>
+ <TR> <TD>Q</TD> <TD>w3mを終了(確認なし)</TD></TR>
+</TABLE>
+
+<H2>行編集モード</H2>
+<TABLE CELLPADDING=0>
+ <TR> <TD WIDTH=100>C-f</TD> <TD>カーソルを右へ移動</TD></TR>
+ <TR> <TD>C-b</TD> <TD>カーソルを左へ移動</TD></TR>
+ <TR> <TD>C-h</TD> <TD>前の文字を削除</TD></TR>
+ <TR> <TD>C-d</TD> <TD>カーソル位置の文字を削除</TD></TR>
+ <TR> <TD>C-k</TD> <TD>カーソルの後方を全て削除</TD></TR>
+ <TR> <TD>C-u</TD> <TD>カーソルの前までを全て削除</TD></TR>
+ <TR> <TD>C-a</TD> <TD>行頭に移動</TD></TR>
+ <TR> <TD>C-e</TD> <TD>行末へ移動</TD></TR>
+ <TR> <TD>C-p</TD> <TD>ヒストリから一つ前の文字列を取り出す</TD></TR>
+ <TR> <TD>C-n</TD> <TD>ヒストリから次の文字列を取り出す</TD></TR>
+ <TR> <TD>TAB,SPC</TD> <TD>ファイル名の補完</TD></TR>
+ <TR> <TD>RETURN</TD> <TD>入力終了</TD></TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>

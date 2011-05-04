@@ -1,0 +1,291 @@
+/*
+ * Configuration for w3m
+ * This is sample.  ./configure will generate config.h for you.
+ */
+
+#ifndef _CONFIGURED_
+#define _CONFIGURED_
+
+/* User Configuration */
+
+/* 
+   If you define DICT, you can use dictionary look-up function
+   in w3m. See README.dict for detail.
+*/
+#define DICT
+
+/*
+   If you want to load and save URL history.
+ */
+#define USE_HISTORY
+
+/*
+   USE_BG_COLOR enables w3m to set background color.
+ */
+#define USE_BG_COLOR
+
+/*
+ * Do word fill
+ */
+#undef FORMAT_NICE
+
+/*
+ * Enable id attribute
+ */
+#define ID_EXT
+
+/*
+ * Save Current-buffer Information
+ */
+#undef BUFINFO
+
+/*
+ * Support EGD (Entropy Gathering Daemon)
+ */
+#undef USE_EGD
+
+/*
+ * Remove line trailing spaces in html buffer.
+ */
+#undef ENABLE_REMOVE_TRAILINGSPACES
+
+/*
+ * thin chars for menu frame
+ */
+#undef MENU_THIN_FRAME
+
+/*
+ * Use raw scroll
+ */
+#undef USE_RAW_SCROLL
+
+/*
+ */
+#undef TABLE_EXPAND
+#undef TABLE_NO_COMPACT
+#define NOWRAP
+#define MATRIX
+
+/**********************************************************/
+#ifdef makefile_parameter
+
+BIN_DIR = /usr/local/bin
+AUXBIN_DIR = /usr/local/lib/w3m
+CGIBIN_DIR = /usr/local/lib/w3m/cgi-bin
+HELP_DIR = /usr/local/share/w3m
+MAN_DIR = /usr/local/man
+MAN1_DIR = $(MAN_DIR)/man1
+MAN1_JA_DIR = $(MAN_DIR)/ja/man1
+ETC_DIR = /usr/local/etc/w3m
+RC_DIR = ~/.w3m
+HELP_FILE = w3mhelp-w3m_ja.html
+RC_DIR = ~/.w3m/
+SYS_LIBRARIES = -lgpm  -lbsd -lnsl -lncurses  -L/usr/lib -L/usr/lib -L/usr/local/ssl/lib -L/usr/local/ssl/lib -lssl -lcrypto 
+LOCAL_LIBRARIES = 
+CC = gcc
+MYCFLAGS = -O -I./gc/include  -I/usr/local/ssl/include/openssl -I/usr/local/ssl/include
+GCCFLAGS = -O -I./gc/include -I./$(srcdir)/include -DATOMIC_UNCOLLECTABLE -DNO_SIGNALS -DNO_EXECUTE_PERMISSION -DSILENT -DALL_INTERIOR_POINTERS
+KEYBIND_SRC = keybind.c
+KEYBIND_OBJ = keybind.o
+EXT=
+MATHLIB=-lm
+Z_CFLAGS=-I/usr/include
+ZLIB=-L/usr/lib -lz
+AUXBIN_TARGETS=$(INFLATE)
+LIB_TARGETS=$(BOOKMARKER) $(HELPER)
+IMGCFLAGS=
+IMGLDFLAGS=
+IMGX11CFLAGS=
+IMGFBCFLAGS=
+IMGOBJS=
+GC_CFLAGS=
+GCLIB=gc/gc.a
+GCTARGET=gc/gc.a
+RANLIB=ranlib
+MKDIR=mkdir -p
+PERL=/usr/local/bin/perl
+VERSION=0.2.2
+MODEL=Linux.i686-monster-ja
+INSTALL_W3MIMGDISPLAY=$(INSTALL_PROGRAM)
+#else
+
+
+#define DISPLAY_CODE 'E'
+#define SYSTEM_CODE 'E'
+
+#define JA 0
+#define EN 1
+#define LANG JA
+#define KANJI_SYMBOLS
+#define USE_COLOR
+#undef USE_ANSI_COLOR
+#undef USE_MIGEMO
+#undef USE_MARK
+#define USE_MOUSE
+#define USE_GPM
+#undef USE_SYSMOUSE
+#define USE_MENU
+#define USE_COOKIE
+#define USE_DIGEST_AUTH
+#define USE_SSL
+#undef USE_SSL_VERIFY
+#undef USE_NNTP
+#undef USE_GOPHER
+#define USE_EXTERNAL_URI_LOADER
+#undef USE_ALARM
+#undef USE_IMAGE
+#undef USE_W3MIMG_X11
+#undef USE_W3MIMG_FB
+#undef USE_IMLIB
+#undef USE_GDKPIXBUF
+#undef USE_IMLIB2
+#define USE_HELP_CGI
+#undef USE_XFACE
+
+#define DEF_EDITOR "/bin/vi"
+#define DEF_MAILER "/bin/mail"
+#define DEF_EXT_BROWSER "/usr/bin/netscape"
+
+/* fallback viewer. mailcap override these configuration */
+#define DEF_IMAGE_VIEWER	"xv"
+#define DEF_AUDIO_PLAYER	"showaudio"
+
+/* for USE_MIGEMO */
+#define DEF_MIGEMO_COMMAND	"migemo -t egrep /usr/share/migemo/migemo-dict"
+
+#define AUXBIN_DIR   "/usr/local/lib/w3m"
+#define CGIBIN_DIR      "/usr/local/lib/w3m/cgi-bin"
+#define HELP_DIR     "/usr/local/lib/w3m"
+#define ETC_DIR	     "/usr/local/etc/w3m"
+#define HELP_FILE    "w3mhelp.html"
+#define HELP_CGI     "w3mhelp"
+#define W3MCONFIG    "w3mconfig"
+#define IMGDISPLAY   "w3mimgdisplay"
+#define XFACE2XPM    "xface2xpm"
+
+#define RC_DIR       "~/.w3m"
+#define BOOKMARK     "bookmark.html"
+#define CONFIG_FILE  "config"
+#define KEYMAP_FILE  "keymap"
+#define MENU_FILE    "menu"
+#define COOKIE_FILE  "cookie"
+#define HISTORY_FILE "history"
+
+#define PASSWD_FILE RC_DIR "/passwd"
+#define PRE_FORM_FILE RC_DIR "/pre_form"
+#define USER_MAILCAP RC_DIR "/mailcap"
+#define SYS_MAILCAP  "/etc/mailcap"
+#define USER_MIMETYPES "~/.mime.types"
+#define SYS_MIMETYPES "/usr/local/lib/mime.types"
+#define USER_URIMETHODMAP RC_DIR "/urimethodmap"
+#define SYS_URIMETHODMAP  ETC_DIR "/urimethodmap"
+
+#define DEF_SAVE_FILE "index.html"
+
+#undef USE_BINMODE_STREAM
+#define HAVE_TERMIOS_H
+#define HAVE_DIRENT_H
+typedef long clen_t;
+#undef HAVE_STRTOLL
+#undef HAVE_STRTOQ
+#undef HAVE_ATOLL
+#undef HAVE_ATOQ
+#define HAVE_STRCASECMP
+#define HAVE_STRCASESTR
+#define HAVE_STRCHR
+#define HAVE_STRERROR
+#define HAVE_SYS_ERRLIST
+#define HAVE_BCOPY
+#define HAVE_WAITPID
+#define HAVE_WAIT3
+#define HAVE_STRFTIME
+#define HAVE_GETCWD
+#define HAVE_GETWD
+#define HAVE_SYMLINK
+#define HAVE_READLINK
+#define HAVE_LSTAT
+#define HAVE_SETENV
+#define HAVE_PUTENV
+#define HAVE_SRAND48
+#define HAVE_SRANDOM
+#undef HAVE_GETPASSPHRASE
+#define HAVE_CHDIR
+
+
+#define SETJMP(env) sigsetjmp(env,1)
+#define LONGJMP(env,val) siglongjmp(env,val)
+#define JMP_BUF sigjmp_buf
+#define HAVE_FLOAT_H
+#define HAVE_SYS_SELECT_H
+
+typedef void MySignalHandler;
+#define SIGNAL_ARG int _dummy
+#define SIGNAL_ARGLIST 0
+#define SIGNAL_RETURN return
+#define HAVE_SETPGRP
+
+/*
+   If you want to use IPv6, define this symbol.
+ */
+#undef INET6
+
+/** dont edit below **/
+#ifndef HAVE_SRAND48
+#ifdef HAVE_SRANDOM
+#define srand48 srandom
+#define lrand48 random
+#else /* HAVE_SRANDOM */
+#define USE_INCLUDED_SRAND48
+#endif /* HAVE_SRANDOM */
+#endif
+
+#ifndef HAVE_LSTAT
+#define lstat stat
+#endif
+
+#if defined( __CYGWIN32__ ) && !defined( __CYGWIN__ )
+#define __CYGWIN__
+#endif
+
+#if defined( __CYGWIN__ ) || defined( __EMX__ )
+#define SUPPORT_DOS_DRIVE_PREFIX 1
+#endif
+
+#if defined( __CYGWIN__ )
+#define SUPPORT_NETBIOS_SHARE 1
+#endif
+
+#if defined(__DJGPP__)
+#define DEFAULT_TERM	"dosansi"
+#else
+#define DEFAULT_TERM	0	/* XXX */
+#endif
+
+#if defined(__EMX__) /* use $extension? */
+#define GUNZIP_CMDNAME  "gzip"
+#define BUNZIP2_CMDNAME "bzip2"
+#define INFLATE_CMDNAME  "inflate.exe"
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark.exe"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel.exe"
+#define DEV_NULL_PATH	"nul"
+#define DEV_TTY_PATH	"con"
+#define CGI_EXTENSION	".cmd"
+#else
+#define GUNZIP_CMDNAME  "gunzip"
+#define BUNZIP2_CMDNAME "bunzip2"
+#define INFLATE_CMDNAME  "inflate"
+#define W3MBOOKMARK_CMDNAME	"w3mbookmark"
+#define W3MHELPERPANEL_CMDNAME	"w3mhelperpanel"
+#define DEV_NULL_PATH	"/dev/null"
+#define DEV_TTY_PATH	"/dev/tty"
+#define CGI_EXTENSION	".cgi"
+#endif
+
+#define PATH_SEPARATOR	':'
+#define GUNZIP_NAME  "gunzip"
+#define BUNZIP2_NAME "bunzip2"
+#define INFLATE_NAME "inflate"
+
+#endif /* makefile_parameter */
+#endif /* _CONFIGURED_ */
+

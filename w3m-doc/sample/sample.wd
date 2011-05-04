@@ -1,0 +1,11 @@
+@include html.wd
+@define
+hsaka.url	http://www2u.biglobe.ne.jp/~hsaka/
+hsaka.title	坂本浩則のホームページ
+@end
+
+これはサンプルです。
+<P>
+\@hsaka.url\@ = @hsaka.url@
+<BR>
+\@LINK(hsaka)\@ = @LINK(hsaka)@

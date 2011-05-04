@@ -1,4 +1,4 @@
-/* $Id: ftp.c,v 1.35 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: ftp.c,v 1.37 2006/04/07 13:21:11 inu Exp $ */
 #include <stdio.h>
 #include <pwd.h>
 #include <Str.h>

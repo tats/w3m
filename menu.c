@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.41 2004/03/23 16:44:02 ukai Exp $ */
+/* $Id: menu.c,v 1.45 2006/04/07 13:21:12 inu Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1183,7 +1183,7 @@ mMouse(char c)
     int btn, x, y;
 
     btn = (unsigned char)getch() - 32;
-#if defined(__CYGWIN__)
+#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
     if (cygwin_mouse_btn_swapped) {
 	if (btn == MOUSE_BTN2_DOWN)
 	    btn = MOUSE_BTN3_DOWN;
@@ -1717,7 +1717,7 @@ initMenu(void)
 #endif
 	for (item = MainMenuItem; item->type != MENU_END; item++)
 	    item->label =
-		wc_conv(gettext(item->label), MainMenuCharset,
+		wc_conv(_(item->label), MainMenuCharset,
 			InnerCharset)->ptr;
 	MainMenuEncode = TRUE;
     }

@@ -2,7 +2,7 @@ Source: w3m
 Section: text
 Priority: standard
 Maintainer: Fumitoshi UKAI <ukai@debian.or.jp>
-Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 3.0.0), gawk | awk, libgdk-pixbuf-dev (>= 0.22.0-5), autotools-dev
+Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 4.0.0), gawk | awk, libgdk-pixbuf-dev (>= 0.22.0-5), autotools-dev
 Standards-Version: 3.6.1
 
 Package: w3m

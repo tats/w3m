@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.10 2003/09/23 18:42:25 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.11 2004/07/15 16:44:37 ukai Exp $ */
 #include <stdlib.h>
 #include <stdio.h>
 #include "config.h"
@@ -52,18 +52,18 @@ static char end_section[] =
 static char *Local_cookie = NULL;
 
 void
-print_bookmark_panel(char *bmark, char *url, char *title)
+print_bookmark_panel(char *bmark, char *url, char *title, char *charset)
 {
     Str tmp, tmp2;
     FILE *f;
     char *p;
 
-#if LANG == JA
-    /* FIXME: gettextize here */
-    printf("Content-Type: text/html; charset=EUC-JP\n\n");
-#else
-    printf("Content-Type: text/html\n\n");
-#endif
+    if (charset == NULL) {
+	printf("Content-Type: text/html\n\n");
+    }
+    else {
+	printf("Content-Type: text/html; charset=%s\n\n", charset);
+    }
     printf(bkmark_src1, html_quote(bmark), html_quote(Local_cookie));
     if ((f = fopen(bmark, "r")) != NULL) {
 	printf("<tr><td>Section:<td><select name=\"section\">\n");
@@ -188,6 +188,7 @@ main(int argc, char *argv[], char **envp)
     char *bmark;
     char *url;
     char *title;
+    char *charset;
     char *sent_cookie;
 
     p = getenv("REQUEST_METHOD");
@@ -224,12 +225,13 @@ main(int argc, char *argv[], char **envp)
     bmark = expandPath(tag_get_value(cgiarg, "bmark"));
     url = tag_get_value(cgiarg, "url");
     title = tag_get_value(cgiarg, "title");
+    charset = tag_get_value(cgiarg, "charset");
     if (bmark == NULL || url == NULL)
 	goto request_err;
     if (mode && !strcmp(mode, "panel")) {
 	if (title == NULL)
 	    title = "";
-	print_bookmark_panel(bmark, url, title);
+	print_bookmark_panel(bmark, url, title, charset);
     }
     else if (mode && !strcmp(mode, "register")) {
 	printf("Content-Type: text/plain\n");

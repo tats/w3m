@@ -252,7 +252,7 @@ acceptableMimeTypes()
     /* generate acceptable media types */
     l = newTextList();
     mhash = newHash_si(16);	/* XXX */
-    pushText(l, "text");
+    /* pushText(l, "text"); */
     putHash_si(mhash, "text", 1);
     pushText(l, "image");
     putHash_si(mhash, "image", 1);
@@ -272,11 +272,10 @@ acceptableMimeTypes()
 	    }
 	}
     }
+    types = Strnew();
+    Strcat_charp(types, "text/html, text/*;q=0.5");
     while ((p = popText(l)) != NULL) {
-	if (types == NULL)
-	    types = Strnew();
-	else
-	    Strcat_charp(types, ", ");
+	Strcat_charp(types, ", ");
 	Strcat_charp(types, p);
 	Strcat_charp(types, "/*");
     }

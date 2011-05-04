@@ -1,4 +1,4 @@
-/* $Id: etc.c,v 1.78 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: etc.c,v 1.80 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include <pwd.h>
 #include "myctype.h"

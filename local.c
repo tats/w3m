@@ -1,4 +1,4 @@
-/* $Id: local.c,v 1.31 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: local.c,v 1.33 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include <string.h>
 #include <stdio.h>

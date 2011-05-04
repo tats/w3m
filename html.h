@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.25 2003/10/20 16:41:56 ukai Exp $ */
+/* $Id: html.h,v 1.26 2006/05/29 12:54:26 inu Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -69,6 +69,7 @@ typedef struct {
     InputStream stream;
     char *ext;
     int compression;
+    int content_encoding;
     char *guess_type;
 #ifdef USE_SSL
     char *ssl_certificate;

@@ -1,4 +1,4 @@
-/* $Id: Str.h,v 1.5 2003/01/20 15:30:19 ukai Exp $ */
+/* $Id: Str.h,v 1.6 2006/04/07 13:35:35 inu Exp $ */
 /* 
  * String manipulation library for Boehm GC
  *
@@ -28,7 +28,7 @@ typedef struct _Str {
     int area_size;
 } *Str;
 
-Str Strnew();
+Str Strnew(void);
 Str Strnew_size(int);
 Str Strnew_charp(char *);
 Str Strnew_charp_n(char *, int);

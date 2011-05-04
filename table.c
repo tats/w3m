@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.49 2004/01/09 15:46:49 ukai Exp $ */
+/* $Id: table.c,v 1.53 2006/04/08 11:52:02 inu Exp $ */
 /* 
  * HTML table
  */
@@ -1984,7 +1984,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 	break;
     }
     if (t->total_height == 0) {
-	renderbuf = Strnew(" ");
+       renderbuf = Strnew_charp(" ");
 	t->total_height++;
 	t->total_width = 1;
 	push_render_image(renderbuf, 1, t->total_width, h_env);
@@ -2465,11 +2465,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	return TAG_ACTION_PLAIN;
     }
     if (mode->pre_mode & TBLM_INTXTA) {
-	if (mode->end_tag == cmd) {
+	switch (cmd) {
+	CASE_TABLE_TAG:
+	case HTML_N_TEXTAREA:
 	    table_close_textarea(tbl, mode, width);
-	    return TAG_ACTION_NONE;
+	    if (cmd == HTML_N_TEXTAREA)
+		return TAG_ACTION_NONE;
+	    break;
+	default:
+	    return TAG_ACTION_FEED;
 	}
-	return TAG_ACTION_FEED;
     }
     if (mode->pre_mode & TBLM_SCRIPT) {
 	if (mode->end_tag == cmd) {

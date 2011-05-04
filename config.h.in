@@ -72,6 +72,7 @@
 #undef W3MIMGDISPLAY_SETUID
 #undef USE_IMLIB
 #undef USE_GDKPIXBUF
+#undef USE_GTK2
 #undef USE_IMLIB2
 #undef USE_XFACE
 #undef USE_DICT
@@ -141,14 +142,18 @@ typedef long clen_t;
 #undef HAVE_CHDIR
 #undef HAVE_SETPGRP
 #undef HAVE_SETLOCALE
+#undef HAVE_LANGINFO_CODESET
 
 #undef SETPGRP_VOID
+#ifdef HAVE_SETPGRP
 #ifdef SETPGRP_VOID
 #define SETPGRP() setpgrp()
 #else
 #define SETPGRP() setpgrp(0,0)
 #endif
-
+#else /* no HAVE_SETPGRP; OS/2 EMX */
+#define SETPGRP() setpgid(0, 0)
+#endif
 #undef HAVE_FLOAT_H
 #undef HAVE_SYS_SELECT_H
 
@@ -193,9 +198,7 @@ typedef RETSIGTYPE MySignalHandler;
 
 #if defined( __CYGWIN__ )
 #define SUPPORT_NETBIOS_SHARE 1
-#if LANG == JA
 #define SUPPORT_WIN9X_CONSOLE_MBCS 1
-#endif
 #endif
 
 #if defined(__DJGPP__)

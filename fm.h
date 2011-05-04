@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.125 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: fm.h,v 1.131 2006/04/08 11:33:16 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -336,6 +336,7 @@ typedef struct _Line {
 typedef struct {
     int line;
     int pos;
+    int invalid;
 } BufferPoint;
 
 #ifdef USE_IMAGE
@@ -759,11 +760,11 @@ typedef struct http_request {
  */
 
 extern int LINES, COLS;
-#if defined(__CYGWIN__) && LANG == JA
+#if defined(__CYGWIN__)
 extern int LASTLINE;
-#else				/* not defined(__CYGWIN__) || LANG != JA */
+#else				/* not defined(__CYGWIN__) */
 #define LASTLINE (LINES-1)
-#endif				/* not defined(__CYGWIN__) || LANG != JA */
+#endif				/* not defined(__CYGWIN__) */
 
 global int Tabstop init(8);
 global int IndentIncr init(4);
@@ -1009,6 +1010,7 @@ global wc_ces InnerCharset init(WC_CES_WTF);	/* Don't change */
 global wc_ces DisplayCharset init(DISPLAY_CHARSET);
 global wc_ces DocumentCharset init(DOCUMENT_CHARSET);
 global wc_ces SystemCharset init(SYSTEM_CHARSET);
+global wc_ces BookmarkCharset init(SYSTEM_CHARSET);
 global char ExtHalfdump init(FALSE);
 global char FollowLocale init(TRUE);
 global char UseContentCharset init(TRUE);
@@ -1075,6 +1077,7 @@ global MouseAction mouse_action;
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);
 global int use_cookie init(FALSE);
+global int show_cookie init(TRUE);
 global int accept_cookie init(FALSE);
 #define ACCEPT_BAD_COOKIE_DISCARD	0
 #define ACCEPT_BAD_COOKIE_ACCEPT	1

@@ -6,6 +6,10 @@
 
 #include "wc.h"
 
+#ifdef HAVE_LANGINFO_CODESET
+#include <langinfo.h>
+#endif
+
 wc_locale WcLocale = 0;
 
 static struct {
@@ -369,6 +373,12 @@ wc_locale_to_ces(char *locale)
 
     if (*p == 'C' && *(p+1) == '\0')
 	return WC_CES_US_ASCII;
+#ifdef HAVE_LANGINFO_CODESET
+    {
+	char *cs = nl_langinfo(CODESET);
+	return wc_charset_to_ces(cs);
+    }
+#endif
     for (n = 0; *p && *p != '.' && n < 5; p++) {
 	if ((unsigned char)*p > 0x20)
 	    buf[n++] = tolower(*p);

@@ -1,3 +1,15 @@
+w3m (0.5.1-5) unstable; urgency=low
+
+  * fix FTBFS on GNU/kFreeBSD (due to unsatisfied Build-Depends on libgpmg1-dev)
+    closes: Bug#377793
+  * debian/rules: DEB_BUILD_GNU_SYSTEM should be linux-gnu, instead of linux
+        so that w3m-img works on fbdev
+    closes: Bug#376240
+  * change default accept: line
+    closes: Bug#374296
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  7 Aug 2006 11:37:48 +0900
+
 w3m (0.5.1-4) unstable; urgency=low
 
   * GCC 4.0 C++ ABI change.

@@ -6,9 +6,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-export DH_COMPAT=3
-
-ifeq ($(DEB_BUILD_GNU_SYSTEM),linux)
+ifeq ($(DEB_BUILD_GNU_SYSTEM),linux-gnu)
   DEVS=x11,fb+s
 else
   DEVS=x11

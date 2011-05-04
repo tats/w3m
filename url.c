@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.89 2004/04/16 18:47:19 ukai Exp $ */
+/* $Id: url.c,v 1.93 2006/05/29 12:54:26 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -1453,7 +1453,8 @@ init_stream(URLFile *uf, int scheme, InputStream stream)
     uf->scheme = scheme;
     uf->encoding = ENC_7BIT;
     uf->is_cgi = FALSE;
-    uf->compression = 0;
+    uf->compression = CMP_NOCOMPRESS;
+    uf->content_encoding = CMP_NOCOMPRESS;
     uf->guess_type = NULL;
     uf->ext = NULL;
     uf->modtime = -1;
@@ -1526,12 +1527,12 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    /* local CGI: POST */
 	    uf.stream = newFileStream(localcgi_post(pu->real_file, pu->query,
 						    request, option->referer),
-				      (void (*)())pclose);
+				      (void (*)())fclose);
 	else
 	    /* lodal CGI: GET */
 	    uf.stream = newFileStream(localcgi_get(pu->real_file, pu->query,
 						   option->referer),
-				      (void (*)())pclose);
+				      (void (*)())fclose);
 	if (uf.stream) {
 	    uf.is_cgi = TRUE;
 	    uf.scheme = pu->scheme = SCM_LOCAL_CGI;

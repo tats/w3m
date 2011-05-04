@@ -1,6 +1,6 @@
 #!@PERL@
 
-$rcsid = q$Id: w3mmail.cgi.in,v 1.13 2003/09/22 21:02:29 ukai Exp $;
+$rcsid = q$Id: w3mmail.cgi.in,v 1.14 2004/08/30 16:32:24 ukai Exp $;
 ($id = $rcsid) =~ s/^.*,v ([\d\.]*).*/$1/;
 ($prog=$0) =~ s/.*\///;
 
@@ -180,6 +180,7 @@ if ($query =~ s/^\w+://) {
 	    }
 	}
 	($cs,$cte,$body) = &lang_body($body, 1);
+	$body =~ s/\r//g;
 	print MAIL "Mime-Version: 1.0\n";
 	if ($boundary) {
 	    print MAIL "Content-Type: multipart/form-data;\n";

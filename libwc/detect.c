@@ -99,7 +99,7 @@ wc_auto_detect(char *is, size_t len, wc_ces hint)
     for (; p < ep && ! WC_DETECT_MAP[*p]; p++)
 	;
     if (p == ep)
-	return WC_CES_US_ASCII;
+	return hint;
 
     switch (hint) {
     case WC_CES_ISO_2022_JP:

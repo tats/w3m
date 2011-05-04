@@ -1,4 +1,4 @@
-/* $Id: indep.c,v 1.35 2004/04/09 17:18:49 ukai Exp $ */
+/* $Id: indep.c,v 1.37 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include <stdio.h>
 #include <pwd.h>

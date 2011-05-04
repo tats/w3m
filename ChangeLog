@@ -1,3 +1,268 @@
+2006-06-12  Dai Sato  <satodai@w3m.jp>
+
+	* another fix for [w3m-dev-en 01067] Some more patches
+	* file.c (loadBuffer): avoid decoding when dump_extra option is specified.
+
+2006-06-10  Dai Sato  <satodai@w3m.jp>
+
+	* fix for [w3m-dev-en 01067] Some more patches
+	* file.c (loadGeneralFile): avoid decoding when dump_extra option is specified.
+
+2006-06-10  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 03992] Change to display progress status when dump_extra option is specified
+	* file.c (loadHTMLstream): Show progress status when dump_extra option is specified.
+
+2006-06-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04129] handling newlines in form values 
+	* parsetagx.c: don't delete newlines in hidden values.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
+	* file.c, html.h, url.c: decode content-encoding in all situations.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
+	* main.c: delete calls to GC from wrap_GC_warn_proc to avoid deadlocks.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
+	* main.c: fix unsafe usages of SIGWINCH handler.
+
+2006-05-29  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01067] Some more patches
+	* keybind(_lynx).c, doc(-jp)/keymap.default: add SHIFT-TAB as a default binding for PREV_LINK.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04154] Unclosed textarea in table
+	* table.c: close textarea when table related tags found.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04153] NEXT_LINK error
+	* anchor.c, filc.c, fm.h: check A tag in HTMLlineproc2body().
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04152] [PATCH] Add more explanation for the usage of the option setting panel.
+	* doc(-jp)/FAQ.html, doc-jp/MANUAL.html: add explanations for .w3m/config and -o option.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04150] vi-prec_num
+	* main.c: fix vi_prec_num switching.
+
+2006-04-08  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev 04146] disable HAVE_LANGINFO_CODESET on cygwin
+	* configure.ac: avoid AM_LANGINFO_CODESET check for Cygwin.
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* file.c, fm.h, rc.c: Introduce option show_cookie and set it TRUE by default. If set to FALSE received cookies will not be shown.
+	* This fixes Debian bug #253547: w3m: Too slow receiving cookies.
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* parsetagx.c: Replace '\n' (newline) with ' ' (space) in attributes of html tags instead of ignoring them.
+	* Fixes Debian bug #326167: w3m: new lines in hidden form fields are stripped
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* scripts/w3mman/w3mman*.in: Add w3mman -l <file> command line argument for viewing of local man files.
+	* Fixes Debian bug #138805: w3mman -l doesn't work.
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* libwc/detect.c: Use the hint instead of US_ASCII in wc_auto_detect.
+	* Fixes Debian bug #291735: w3m shouldn't "simplify" page's charset
+
+2006-04-07  Dai Sato  <satodai@w3m.jp>
+
+	* [w3m-dev-en 01060] Some patches
+	* Str.h, table.c: Use Strnew_charp() instead of the wrong Strnew().
+	* Fixes SF bug #895351 Strnew called with argument in table.c.
+
+2006-02-10  Dai Sato  <satodai@w3m.jp>
+
+	* http://dog.w3m.jp/bbs/spool/until200602.html#20060210153135@keijiwan
+	* url.c: replace pclose passed to localcgi_post/get() with fclose in openURL()
+
+2006-02-09  Dai Sato  <satodai@w3m.jp>
+
+	* http://vimrc.hp.infoseek.co.jp/w3m-pclose.html
+	* file.c: replace pclose with fclose in the end of uncompress_stream()
+
+2005-02-27  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* configure.ac: rename from configure.in. this is for autoconf2.50
+
+2005-02-27  NOMIYA Masaru <nomiya@ttmy.ne.jp>
+
+	* [w3m-dev 04143] Patch for OS/2
+	* config.h.in: ifdef HAVE_SETPGRP
+	* configure.in: define USE_BINMODE_STREAM for *os2-emx*
+	* islang.c: ULONG -> unsigned long
+	* main.c: ULONG -> unsigned long
+
+2005-02-15  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 01045] From newbie: problem with w3m-0.5.1 installation
+	* acinclude.m4 (AC_W3M_SSL): define USE_SSL after ssl library found
+
+2005-01-19  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 04133] mouse_end() should preced reset_tty()?
+	* terms.c (reset_exit): mouse_end() should precede reset_tty()
+
+2005-01-05  Kiyokazu SUTO <suto@ks-and-ks.ne.jp>
+
+	* [w3m-dev 04130] [w3m-dev 04131] [w3m-dev 04132] Multiple challeges in *-Authenticate header
+	* file.c (skip_auth_token): added
+		(extract_auth_val): ',' is end of token
+		(extract_auth_param): use skip_auth_token
+		(AuthDigestCred): parse qop and calc cnonce correctly
+		(findAuthentication): use skip_auth_token
+
+2004-11-09  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load):
+	  fix unused variable `i'
+	* w3mimg/x11/x11_w3mimg.c (x11_load_image):
+	  ditto
+
+2004-11-09  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04128] Re: w3mimgdisplay
+	* acinclude.m4 (AC_W3M_IMAGE): check not yes
+	* aclocal.m4, configure: regen
+	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load): 
+	   fb_image_fill in case GDK_PIXBUF_FRAME_DISPOSE
+	* w3mimg/x11/x11_w3mimg.c (get_animation_size):
+	   return n
+	  (x11_load_image): 
+	   fill in case GDK_PIXBUF_FRAME_DISPOSE
+
+2004-11-05  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04117] Re: start attribute and value attribute on ordered lists
+	* file.c (HTMLtagproc1): allow negative value for start attr
+
+2004-10-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Bug#276246: w3m's locale parsing should at least see '@euro' modifier
+	* config.h (HAVE_LANGINFO_CODESET): added
+	* configure.in (AM_LANGINFO_CODESET): added
+	* libwc/charset.c: #include <langinfo.h>
+	       (wc_charset_to_ces): use nl_langinfo(CODESET)
+
+2004-09-30  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04108] PIPE_BUF
+	* main.c (pipeBuf): set buf->currentURL.file to prevent
+		segfault by "PIPE_BUF cat;VIEW SOURCE;"
+
+2004-08-31  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+
+	* [w3m-dev 04104] w3mmail.cgi
+	* scripts/w3mmail.cgi.in: strip ^M
+
+2004-08-17  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04099] Re: w3m-img gtk2
+	* w3mimg/fb/fb_gdkpixbuf.c (fb_image_load): fix resize bug
+
+2004-08-06  Hiroyuki Ito <ZXB01226@nifty.com>
+
+	* [w3m-dev 04097] Re: w3m-img gtk2
+	* w3mimg/fb/fb_gdkpixbuf.c (draw): no need bg
+		(get_animation_size): use GTimeVal
+		(fb_image_load): use GTimeVal
+				fix for animation
+	* w3mimg/x11/x11_w3mimg.c (get_animation_size): use GTimeVal
+		(x11_load_image): use GTimeVal
+				fix for animation
+
+2004-08-05  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev 04096] w3m-img gtk2
+	* acinclude.m4 (AC_W3M_IMAGE): add USE_GTK2
+		add --with-imagelib=gtk2
+	* aclocal.m4 config.guess config.sub configure: regen
+	* config.h.in: add USE_GTK2
+	* w3mimg/fb/fb_gdkpixbuf.c: support USE_GTK2
+	* w3mimg/fb/fb_img.h: add fb_image_init()
+	* w3mimg/fb/fb_imlib2.h: fb_image_init() stub
+	* w3mimg/fb/fb_w3mimg.c: call fb_image_init()
+	* w3mimg/x11/x11_w3mimg.c: support USE_GTK2
+
+2004-08-03  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04095] build fix when configure with --enable-messagel10n
+	* main.c (main): locale and textdomain initialization if ENABLE_NLS
+	* menu.c (initMenu): use _() instead of gettext()
+	* rc.c (show_params): use _() instead of gettext()
+
+2004-07-18  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04094] Re: option panel: gettextize select list
+	* rc.c (load_option_panel): don't gettext&wc_conv colorstr 
+					several times
+
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04093] bookmark charset
+	* add global variable: BookmarkCharset.
+	* main.c:adBmark(): remove condition LANG = JA.
+	* main.c: buffername encode by BookmarkCharset when add bookmark.
+	* main.c: BookmarkCharset pass to w3mbookmark.
+	* w3mbookmark.c: ditto.
+
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04092] remove __CYGWIN__ && LANG == JA
+	* remove condition LANG == JA && __CYGWIN__
+	* cygwin_mouse_btn_swapped enabled when before 1.5.x 
+
+2004-07-16  WATANABE Katsuyuki <knabe@sannet.ne.jp>
+
+	* [w3m-dev 04091] option panel: gettextize select list
+	* rc.c: gettextize option select list.
+	* rc.c: add gettextize message.
+	* po/w3m.pot: ditto.
+	* po/ja.po: ditto.
+
+2004-07-14  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* Debian Bug#259053
+	* doc/FAQ.html, doc-jp/FAQ.html: ~/.mailcap -> ~/.w3m/mailcap
+
+2004-05-11  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* based on [w3m-dev 04079]
+	  SAKAI Kiyotaka <ksakai@kso.netwk.ntt-at.co.jp>
+	* Makefile.in: (libwc/libwc.a): always make in libwc subdir
+		(w3mimg/w3mimg.a): always make in w3mimg subdir
+
+2004-05-03  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* [w3m-dev-en 01007]
+	* libwc/Makefile.in (CFLAGS): need @CPPFLAGS@
+
+2004-05-03  Fumitoshi UKAI  <ukai@debian.or.jp>
+
+	* version.c.in: cvs version
+
 2004-04-29  Fumitoshi UKAI  <ukai@debian.or.jp>
 
 	* w3m 0.5.1
@@ -8483,4 +8748,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.924 2004/04/28 18:19:22 ukai Exp $
+$Id: ChangeLog,v 1.968 2006/06/12 11:51:59 inu Exp $

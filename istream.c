@@ -1,4 +1,4 @@
-/* $Id: istream.c,v 1.23 2003/10/20 16:41:56 ukai Exp $ */
+/* $Id: istream.c,v 1.25 2006/04/07 13:21:11 inu Exp $ */
 #include "fm.h"
 #include "myctype.h"
 #include "istream.h"

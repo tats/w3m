@@ -182,7 +182,8 @@ $(INFLATE): inflate.o $(ALIB)
 inflate.o: inflate.c
 	$(CC) $(CFLAGS) -o $@ -c $(srcdir)/inflate.c
 
-libwc/libwc.a:
+libwc/libwc.a: libwc
+libwc:
 	(cd libwc && $(MAKE) CC='$(CC0)' OPTS='$(OPTS)')
  
 dummy.o: entity.c
@@ -194,7 +195,8 @@ $(IMGDISPLAY): w3mimgdisplay.o $(ALIB) w3mimg/w3mimg.a
 w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c
 
-w3mimg/w3mimg.a:
+w3mimg/w3mimg.a: w3mimg
+w3mimg:
 	(cd w3mimg && $(MAKE) CC="$(CC0)" OPTS="$(OPTS)")
 
 po:

@@ -1,4 +1,3 @@
 010_upstream.patch
-020_config-guess.patch
+020_button.patch
 030_pager-s-option.patch
-040_maximum-cols.patch

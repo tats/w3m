@@ -1,3 +1,24 @@
+w3m (0.5.2-10) unstable; urgency=low
+
+  * debian/patches/010_upstream.patch: Sync with the upstream development
+    snapshot on 2010-10-11.
+    - Better non-ascii handling. (closes: #138891, #313365)
+    - Introduce mailto_options. (closes: #473780)
+    - All elements have the id attribute. (closes: #573789)
+    - Define ATTR_ROWSPAN_MAX to check rowspan. (LP: #131993, LP: #619500)
+    - Update the man page. (closes: #595534)
+    - Add a FILES section to the man page. (closes: #403634)
+    - Mention the -I option in the man page. (closes: #398260, #530515)
+  * debian/patches/020_button.patch: Patch from upstream to support the
+    button element.  It is discussed upstream and incomplete, but enough to
+    login Launchpad. (LP: #628755, closes: #136810)
+  * debian/patches/040_maximum-cols.patch: Removed. (merged upstream)
+  * debian/control, debian/rules: Use autotools-dev (>= 20100122) to update
+    config.guess and config.sub.
+  * debian/patches/020_config-guess.patch: Removed.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 16 Oct 2010 00:59:32 +0900
+
 w3m (0.5.2-9) unstable; urgency=low
 
   * debian/patches/010_upstream.patch: Sync with the upstream development

@@ -58,6 +58,8 @@ binary-arch: build-stamp install-stamp
 	dh_testdir -a
 	dh_testroot -a
 	dh_installdocs -a
+	-rm -f debian/w3m/usr/share/doc/w3m/README.cygwin
+	-mv -f debian/w3m/usr/share/doc/w3m/README.img debian/w3m-img/usr/share/doc/w3m-img/README.img
 	cp -a $(builddir)/doc-jp/* debian/w3m/usr/share/doc/w3m/ja/
 	-mv -f debian/w3m/usr/share/doc/w3m/ja/README.img debian/w3m-img/usr/share/doc/w3m-img/README.img.ja
 	-rm -f debian/w3m/usr/share/doc/w3m/ja/w3m.1

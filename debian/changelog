@@ -1,3 +1,12 @@
+w3m (0.5.3-2) unstable; urgency=low
+
+  * debian/control: Add Uploaders and DM-Upload-Allowed for the co-maintainer
+    HIGUCHI Daisuke.
+  * debian/rules, debian/*docs: To add doc/README.cookie, install doc/README*
+    and then remove doc/README.cygwin.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 21 Feb 2011 23:32:21 +0900
+
 w3m (0.5.3-1) unstable; urgency=low
 
   * New upstream release.

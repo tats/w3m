@@ -1,12 +1,5 @@
 doc/FAQ.html
 doc/HISTORY
 doc/MANUAL.html
-doc/README
-doc/README.dict
-doc/README.func
-doc/README.m17n
-doc/README.mouse
-doc/README.passwd
-doc/README.pre_form
-doc/README.tab
+doc/README*
 doc/STORY.html

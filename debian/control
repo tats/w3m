@@ -3,9 +3,9 @@ Section: text
 Priority: standard
 Maintainer: Fumitoshi UKAI <ukai@debian.or.jp>
 Uploaders: Tatsuya Kinoshita <tats@debian.org>
-Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 4.0.0), gawk | awk, libgdk-pixbuf-dev (>= 0.22.0-5), autotools-dev, quilt (>= 0.40)
-Standards-Version: 3.7.3
+Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 4.0.0), gawk | awk, libimlib2-dev, quilt (>= 0.40)
 Homepage: http://sourceforge.net/projects/w3m
+Standards-Version: 3.7.3
 
 Package: w3m
 Architecture: any

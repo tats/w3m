@@ -36,6 +36,7 @@ clean: unpatch
 	dh_testroot
 	if test -f $(builddir)/Makefile; then cd $(builddir) && $(MAKE) distclean; fi
 	rm -f $(builddir)/po/*.gmo
+	rm -f $(builddir)/po/stamp-po
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
 	dh_clean
 
@@ -77,12 +78,8 @@ binary-arch: build-stamp install-stamp
 		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
 	dh_installmenu
 	dh_installmime
-	dh_installemacsen
-	dh_installcron
-	dh_installman $(builddir)/doc/w3m.1
-	dh_installman debian/w3mman.1
-	install -m 644 $(builddir)/doc-jp/w3m.1 `pwd`/debian/w3m/usr/share/man/ja/man1/w3m.1
-	# dh_installchangelogs $(builddir)/doc/HISTORY
+#	dh_installman
+#	dh_installchangelogs $(builddir)/doc/HISTORY
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	dh_strip -a
 	dh_compress -a

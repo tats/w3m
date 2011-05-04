@@ -7973,7 +7973,7 @@ inputAnswer(char *prompt)
 	ans = inputChar(prompt);
     }
     else {
-	printf(prompt);
+	printf("%s", prompt);
 	fflush(stdout);
 	ans = Strfgets(stdin)->ptr;
     }

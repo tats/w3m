@@ -1,3 +1,11 @@
+w3m (0.5.1-5.1) unstable; urgency=high
+
+  * NMU by the Security Team:
+  * Fix format string vulnerability in display of SSL certificates.
+    (No CVE ID yet) (Closes: #404564)
+
+ -- Moritz Muehlenhoff <jmm@debian.org>  Tue, 26 Dec 2006 18:49:26 +0100
+
 w3m (0.5.1-5) unstable; urgency=low
 
   * fix FTBFS on GNU/kFreeBSD (due to unsatisfied Build-Depends on libgpmg1-dev)

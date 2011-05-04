@@ -1,4 +1,4 @@
-/* $Id: url.c,v 1.95 2007/05/23 15:06:06 inu Exp $ */
+/* $Id: url.c,v 1.100 2010/12/15 10:50:24 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
 #include <sys/types.h>
@@ -101,6 +101,7 @@ static struct table2 DefaultGuess[] = {
     {"html", "text/html"},
     {"htm", "text/html"},
     {"shtml", "text/html"},
+    {"xhtml", "application/xhtml+xml"},
     {"gif", "image/gif"},
     {"jpeg", "image/jpeg"},
     {"jpg", "image/jpeg"},
@@ -374,6 +375,9 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #if SSLEAY_VERSION_NUMBER >= 0x00905100
     init_PRNG();
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
+#if (SSLEAY_VERSION_NUMBER >= 0x00908070) && !defined(OPENSSL_NO_TLSEXT)
+    SSL_set_tlsext_host_name(handle,hostname);
+#endif				/* (SSLEAY_VERSION_NUMBER >= 0x00908070) && !defined(OPENSSL_NO_TLSEXT) */
     if (SSL_connect(handle) > 0) {
 	Str serv_cert = ssl_get_certificate(handle, hostname);
 	if (serv_cert) {
@@ -1303,6 +1307,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	Strcat_charp(s, "Cache-control: no-cache\r\n");
     }
     if (!NoSendReferer) {
+#ifdef USE_SSL
+        if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
+	  /* Don't send Referer: if https:// -> http:// */
+	}
+	else
+#endif
 	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
 	    (current->scheme != SCM_FTP ||
 	     (current->user == NULL && current->pass == NULL))) {
@@ -1375,7 +1385,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
     Str tmp;
     TextListItem *i;
     int seen_www_auth = 0;
-    int seen_proxy_auth = 0;
 #ifdef USE_COOKIE
     Str cookie;
 #endif				/* USE_COOKIE */
@@ -1399,7 +1408,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	    }
 	    if (strncasecmp(i->ptr, "Proxy-Authorization:",
 			    sizeof("Proxy-Authorization:") - 1) == 0) {
-		seen_proxy_auth = 1;
 #ifdef USE_SSL
 		if (pu->scheme == SCM_HTTPS
 		    && hr->command != HR_COMMAND_CONNECT)
@@ -1806,20 +1814,26 @@ static void
 add_index_file(ParsedURL *pu, URLFile *uf)
 {
     char *p, *q;
+    TextList *index_file_list = NULL;
+    TextListItem *ti;
 
-    if (index_file == NULL || index_file[0] == '\0') {
+    if (non_null(index_file))
+	index_file_list = make_domain_list(index_file);
+    if (index_file_list == NULL) {
 	uf->stream = NULL;
 	return;
     }
-    p = Strnew_m_charp(pu->file, "/", file_quote(index_file), NULL)->ptr;
-    p = cleanupName(p);
-    q = cleanupName(file_unquote(p));
-    examineFile(q, uf);
-    if (uf->stream == NULL)
-	return;
-    pu->file = p;
-    pu->real_file = q;
-    return;
+    for (ti = index_file_list->first; ti; ti = ti->next) {
+	p = Strnew_m_charp(pu->file, "/", file_quote(ti->ptr), NULL)->ptr;
+	p = cleanupName(p);
+	q = cleanupName(file_unquote(p));
+	examineFile(q, uf);
+	if (uf->stream != NULL) {
+	    pu->file = p;
+	    pu->real_file = q;
+	    return;
+	}
+    }
 }
 
 static char *

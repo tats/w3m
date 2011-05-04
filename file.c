@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.254 2007/05/23 15:06:05 inu Exp $ */
+/* $Id: file.c,v 1.265 2010/12/15 10:50:24 htrb Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -262,6 +262,8 @@ is_text_type(char *type)
 {
     return (type == NULL || type[0] == '\0' ||
 	    strncasecmp(type, "text/", 5) == 0 ||
+	    (strncasecmp(type, "application/", 12) == 0 &&
+		strstr(type, "xhtml") != NULL) ||
 	    strncasecmp(type, "message/", sizeof("message/") - 1) == 0);
 }
 
@@ -270,6 +272,13 @@ is_plain_text_type(char *type)
 {
     return ((type && strcasecmp(type, "text/plain") == 0) ||
 	    (is_text_type(type) && !is_dump_text_type(type)));
+}
+
+int
+is_html_type(char *type)
+{
+    return (type && (strcasecmp(type, "text/html") == 0 ||
+		     strcasecmp(type, "application/xhtml+xml") == 0));
 }
 
 static void
@@ -373,7 +382,7 @@ examineFile(char *path, URLFile *uf)
 	    uf->guess_type = guessContentType(path);
 	    if (uf->guess_type == NULL)
 		uf->guess_type = "text/plain";
-	    if (strcasecmp(uf->guess_type, "text/html") == 0)
+	    if (is_html_type(uf->guess_type))
 		return;
 	    if ((fp = lessopen_stream(path))) {
 		UFclose(uf);
@@ -1209,7 +1218,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
  */
 
 static Str
-digest_hex(char *p)
+digest_hex(unsigned char *p)
 {
     char *h = "0123456789abcdef";
     Str tmp = Strnew_size(MD5_DIGEST_LENGTH * 2 + 1);
@@ -1232,7 +1241,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	       HRequest *hr, FormList *request)
 {
     Str tmp, a1buf, a2buf, rd, s;
-    char md5[MD5_DIGEST_LENGTH + 1];
+    unsigned char md5[MD5_DIGEST_LENGTH + 1];
     Str uri = HTTPrequestURI(pu, hr);
     char nc[] = "00000001";
 
@@ -1244,7 +1253,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 
     static union {
 	int r[4];
-	char s[sizeof(int) * 4];
+	unsigned char s[sizeof(int) * 4];
     } cnonce_seed;
     int qop_i = QOP_NONE;
 
@@ -1679,6 +1688,12 @@ checkRedirection(ParsedURL *pu)
     return TRUE;
 }
 
+Str
+getLinkNumberStr(int correction)
+{
+    return Sprintf("[%d]", cur_hseq + correction);
+}
+
 /* 
  * loadGeneralFile: load file to buffer
  */
@@ -1911,6 +1926,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		UFclose(&f);
 		add_auth_cookie_flag = 1;
 		status = HTST_NORMAL;
+		add_auth_user_passwd(auth_pu, qstr_unquote(realm)->ptr, uname, pwd, 1);
 		goto load_doc;
 	    }
 	}
@@ -2055,6 +2071,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    t = f.guess_type;
     }
 
+    /* XXX: can we use guess_type to give the type to loadHTMLstream
+     *      to support default utf8 encoding for XHTML here? */
+    f.guess_type = t;
+    
   page_loaded:
     if (page) {
 	FILE *src;
@@ -2166,7 +2186,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
 #endif
 
-    if (!strcasecmp(t, "text/html"))
+    if (is_html_type(t))
 	proc = loadHTMLBuffer;
     else if (is_plain_text_type(t))
 	proc = loadBuffer;
@@ -2230,7 +2250,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	b->real_type = real_type;
 	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
 	    copyParsedURL(&b->currentURL, &pu);
-	if (!strcasecmp(t, "text/html"))
+	if (is_html_type(t))
 	    b->type = "text/html";
 	else if (w3m_backend) {
 	    Str s = Strnew_charp(t);
@@ -3211,6 +3231,8 @@ process_img(struct parsed_tag *tag, int width)
     p = remove_space(p);
     q = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &q);
+    if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
+	return tmp;
     t = q;
     parsedtag_get_value(tag, ATTR_TITLE, &t);
     w = -1;
@@ -3592,9 +3614,13 @@ process_input(struct parsed_tag *tag)
     case FORM_INPUT_TEXT:
     case FORM_INPUT_FILE:
     case FORM_INPUT_CHECKBOX:
+	if (displayLinkNumber)
+	    Strcat(tmp, getLinkNumberStr(0));
 	Strcat_char(tmp, '[');
 	break;
     case FORM_INPUT_RADIO:
+	if (displayLinkNumber)
+	    Strcat(tmp, getLinkNumberStr(0));
 	Strcat_char(tmp, '(');
     }
     Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
@@ -3635,6 +3661,8 @@ process_input(struct parsed_tag *tag)
 	case FORM_INPUT_SUBMIT:
 	case FORM_INPUT_BUTTON:
 	case FORM_INPUT_RESET:
+	    if (displayLinkNumber)
+		Strcat(tmp, getLinkNumberStr(-1));
 	    Strcat_charp(tmp, "[");
 	    break;
 	}
@@ -3721,9 +3749,12 @@ process_select(struct parsed_tag *tag)
 
 #ifdef MENU_SELECT
     if (!select_is_multiple) {
-	select_str = Sprintf("<pre_int>[<input_alt hseq=\"%d\" "
+	select_str = Strnew_charp("<pre_int>");
+	if (displayLinkNumber)
+	    Strcat(select_str, getLinkNumberStr(0));
+	Strcat(select_str, Sprintf("[<input_alt hseq=\"%d\" "
 			     "fid=\"%d\" type=select name=\"%s\" selectnumber=%d",
-			     cur_hseq++, cur_form_id, html_quote(p), n_select);
+			     cur_hseq++, cur_form_id, html_quote(p), n_select));
 	Strcat_charp(select_str, ">");
 	if (n_select == max_select) {
 	    max_select *= 2;
@@ -3881,6 +3912,8 @@ process_textarea(struct parsed_tag *tag, int width)
 {
     Str tmp = NULL;
     char *p;
+#define TEXTAREA_ATTR_COL_MAX 4096
+#define TEXTAREA_ATTR_ROWS_MAX 4096
 
     if (cur_form_id < 0) {
 	char *s = "<form_int method=internal action=none>";
@@ -3895,14 +3928,20 @@ process_textarea(struct parsed_tag *tag, int width)
 	cur_textarea_size = atoi(p);
 	if (p[strlen(p) - 1] == '%')
 	    cur_textarea_size = width * cur_textarea_size / 100 - 2;
-	if (cur_textarea_size <= 0)
+	if (cur_textarea_size <= 0) {
 	    cur_textarea_size = 20;
+	} else if (cur_textarea_size > TEXTAREA_ATTR_COL_MAX) {
+	    cur_textarea_size = TEXTAREA_ATTR_COL_MAX;
+	}
     }
     cur_textarea_rows = 1;
     if (parsedtag_get_value(tag, ATTR_ROWS, &p)) {
 	cur_textarea_rows = atoi(p);
-	if (cur_textarea_rows <= 0)
+	if (cur_textarea_rows <= 0) {
 	    cur_textarea_rows = 1;
+	} else if (cur_textarea_rows > TEXTAREA_ATTR_ROWS_MAX) {
+	    cur_textarea_rows = TEXTAREA_ATTR_ROWS_MAX;
+	}
     }
     cur_textarea_readonly = parsedtag_exists(tag, ATTR_READONLY);
     if (n_textarea >= max_textarea) {
@@ -3975,13 +4014,18 @@ process_hr(struct parsed_tag *tag, int width, int indent_width)
     Str tmp = Strnew_charp("<nobr>");
     int w = 0;
     int x = ALIGN_CENTER;
+#define HR_ATTR_WIDTH_MAX 65535
 
     if (width > indent_width)
 	width -= indent_width;
-    if (parsedtag_get_value(tag, ATTR_WIDTH, &w))
+    if (parsedtag_get_value(tag, ATTR_WIDTH, &w)) {
+	if (w > HR_ATTR_WIDTH_MAX) {
+	    w = HR_ATTR_WIDTH_MAX;
+	}
 	w = REAL_WIDTH(w, width);
-    else
+    } else {
 	w = width;
+    }
 
     parsedtag_get_value(tag, ATTR_ALIGN, &x);
     switch (x) {
@@ -4771,6 +4815,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->anchor.hseq = cur_hseq;
 	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
 	    push_tag(obuf, tmp->ptr, HTML_A);
+	    if (displayLinkNumber)
+		HTMLlineproc1(getLinkNumberStr(-1)->ptr, h_env);
 	    return 1;
 	}
 	return 0;
@@ -5229,6 +5275,7 @@ textlist_feed()
     return NULL;
 }
 
+static int
 ex_efct(int ex)
 {
     int effect = 0;
@@ -6336,7 +6383,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 			is_hangul = wtf_is_hangul((wc_uchar *) str);
 		    else
 			is_hangul = 0;
-		    if (mode == PC_KANJI1 &&
+		    if (!SimplePreserveSpace && mode == PC_KANJI1 &&
 			!is_hangul && !prev_is_hangul &&
 			obuf->pos > h_env->envs[h_env->envc].indent &&
 			Strlastchar(obuf->line) == ' ') {
@@ -6949,6 +6996,8 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     }
     if (content_charset && UseContentCharset)
 	doc_charset = content_charset;
+    else if (f->guess_type && !strcasecmp(f->guess_type, "application/xhtml+xml"))
+	doc_charset = WC_CES_UTF_8;
     meta_charset = 0;
 #endif
 #if	0
@@ -7383,8 +7432,7 @@ _saveBuffer(Buffer *buf, Line *l, FILE * f, int cont)
     wc_ces charset = DisplayCharset ? DisplayCharset : WC_CES_US_ASCII;
 #endif
 
-    if (buf->type && !strcasecmp(buf->type, "text/html"))
-	is_html = TRUE;
+    is_html = is_html_type(buf->type);
 
   pager_next:
     for (; l != NULL; l = l->next) {
@@ -7541,7 +7589,7 @@ openGeneralPagerBuffer(InputStream stream)
 	t = DefaultType;
 	DefaultType = NULL;
     }
-    if (!strcasecmp(t, "text/html")) {
+    if (is_html_type(t)) {
 	buf = loadHTMLBuffer(&uf, t_buf);
 	buf->type = "text/html";
     }
@@ -7749,7 +7797,13 @@ save2tmp(URLFile uf, char *tmpf)
     {
 	Str buf = Strnew_size(SAVE_BUF_SIZE);
 	while (UFread(&uf, buf, SAVE_BUF_SIZE)) {
-	    Strfputs(buf, ff);
+	    if (Strfputs(buf, ff) != buf->length) {
+		bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
+		TRAP_OFF;
+		fclose(ff);
+		current_content_length = 0;
+		return -2;
+	    }
 	    linelen += buf->length;
 	    showProgress(&linelen, &trbyte);
 	}
@@ -8078,16 +8132,20 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
+	    int err;
 	    if ((uf.content_encoding != CMP_NOCOMPRESS) && AutoUncompress) {
 		uncompress_stream(&uf, &tmpf);
 		if (tmpf)
 		    unlink(tmpf);
 	    }
 	    setup_child(FALSE, 0, UFfileno(&uf));
-	    if (!save2tmp(uf, p) && PreserveTimestamp && uf.modtime != -1)
+	    err = save2tmp(uf, p);
+	    if (err == 0 && PreserveTimestamp && uf.modtime != -1)
 		setModtime(p, uf.modtime);
 	    UFclose(&uf);
 	    unlink(lock);
+	    if (err != 0)
+		exit(-err);
 	    exit(0);
 	}
 	addDownloadList(pid, uf.url, p, lock, current_content_length);
@@ -8351,7 +8409,7 @@ reloadBuffer(Buffer *buf)
 	buf->hmarklist->nmark = 0;
     if (buf->imarklist)
 	buf->imarklist->nmark = 0;
-    if (!strcasecmp(buf->type, "text/html"))
+    if (is_html_type(buf->type))
 	loadHTMLBuffer(&uf, buf);
     else
 	loadBuffer(&uf, buf);

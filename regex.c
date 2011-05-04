@@ -1,4 +1,4 @@
-/* $Id: regex.c,v 1.22 2003/09/24 18:49:00 ukai Exp $ */
+/* $Id: regex.c,v 1.23 2010/08/24 10:11:51 htrb Exp $ */
 /* 
  * regex: Regular expression pattern match library
  * 
@@ -684,8 +684,18 @@ match_longchar(longchar * a, longchar * b, int ignore)
 #ifdef USE_M17N
     if (a->type != b->type)
 	return 0;
-    if (a->type == RE_TYPE_WCHAR_T)
+    if (a->type == RE_TYPE_WCHAR_T) {
+#ifdef USE_UNICODE
+	if (ignore) {
+	    wc_uint32 ua = wc_any_to_ucs(a->wch), ub = wc_any_to_ucs(b->wch);
+	    return (ua == ub ||
+		    ua == wc_ucs_tolower(ub) ||
+	            ua == wc_ucs_toupper(ub) ||
+		    ua == wc_ucs_totitle(ub));
+	}
+#endif
 	return (a->wch.ccs == b->wch.ccs) && (a->wch.code == b->wch.code);
+    }
 #endif
     if (ignore && IS_ALPHA(b->ch))
 	return (a->ch == TOLOWER(b->ch) || a->ch == TOUPPER(b->ch));
@@ -699,9 +709,28 @@ match_range_longchar(longchar * a, longchar * b, longchar * c, int ignore)
 #ifdef USE_M17N
     if (a->type != b->type || a->type != c->type)
 	return 0;
-    if (a->type == RE_TYPE_WCHAR_T)
-	return ((a->wch.ccs == c->wch.ccs && c->wch.ccs == b->wch.ccs) &&
-		(a->wch.code <= c->wch.code && c->wch.code <= b->wch.code));
+    if (a->type == RE_TYPE_WCHAR_T) {
+	if (a->wch.ccs != c->wch.ccs || c->wch.ccs != b->wch.ccs)
+	    return 0;
+#ifdef USE_UNICODE
+	if (ignore) {
+	    wc_uint32 uc = wc_any_to_ucs(c->wch);
+
+	    if (wc_is_ucs_alpha(uc)) {
+	    	wc_uint32 ua = wc_any_to_ucs(a->wch);
+	    	wc_uint32 ub = wc_any_to_ucs(b->wch);
+		wc_uint32 upper = wc_ucs_toupper(uc);
+		wc_uint32 lower = wc_ucs_tolower(uc);
+		wc_uint32 title = wc_ucs_totitle(uc);
+
+		return ((ua <= upper && upper <= ub) ||
+			(ua <= lower && lower <= ub) ||
+			(ua <= title && title <= ub));
+	    }
+	}
+#endif
+	return (a->wch.code <= c->wch.code && c->wch.code <= b->wch.code);
+    }
 #endif
     if (ignore && IS_ALPHA(c->ch))
 	return ((a->ch <= TOLOWER(c->ch) && TOLOWER(c->ch) <= b->ch) ||

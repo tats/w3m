@@ -1,0 +1,44 @@
+cookie support of w3m
+
+
+                                                         (2000/11/07)  K. Okada
+                                                        okabek@guitar.ocn.ne.jp
+
+ * Support of version 0 (http://www.netscape.com/newsref/std/cookie_spec.html)
+   and version 1 (http://www.ics.uci.edu/pub/ietf/http/rfc2109.txt,
+   http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt)
+   cookie.
+   
+ * If you wont to disable cookie support, run configure script with
+    --disable-cookie option.
+   
+ * You can choose to use cookie or not on the Option Setting Panel or
+   -cookie and -no-cookie option.
+   
+ * You can disable cookie on the Option Setting Panel. In this case
+    all cookies are rejected, however, cookies which accepted before
+    disable cookie are used.
+   
+ * You can see list of accepted cookies with C-k. In this panel, you
+    can choose to use each cookie or not.
+   
+ * You can specify domains accept or not accept cookies on the Option
+    Setting Panel. Domains are specified with following format.
+   
+      domain-list = domains
+                  | ""
+      domains     = domain
+                  | domain + "," + domains
+      domain      = "." + domain-name      ; match with domain name
+                  | host-domain-name       ; match with HDN
+                  | ".local"               ; match with all HDN except which include  "."
+                  | "."                    ; match with all
+
+                              (HDN: host domain name)
+
+
+ ¡¦ If the number of "." in domain name is lesser than 2, it is
+    assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can
+    use cookie_avoid_wrong_number_of_dots to avoid this
+    restriction. You can set this in "Domains to avoid [wrong number
+    of dots]" on the Option Setting Panel.

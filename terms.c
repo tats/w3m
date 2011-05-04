@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
+/* $Id: terms.c,v 1.63 2010/08/20 09:34:47 htrb Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -26,7 +26,7 @@
 #endif				/* USE_GPM */
 #ifdef USE_SYSMOUSE
 #include <osreldate.h>
-#if (__FreeBSD_version >= 400017)
+#if (__FreeBSD_version >= 400017) || (__FreeBSD_kernel_version >= 400017)
 #include <sys/consio.h>
 #include <sys/fbio.h>
 #else
@@ -256,7 +256,7 @@ check_cygwin_console(void)
 #endif				/* __CYGWIN__ */
 
 char *getenv(const char *);
-MySignalHandler reset_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
+MySignalHandler reset_exit(SIGNAL_ARG), reset_error_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
 void setlinescols(void);
 void flush_tty();
 
@@ -564,7 +564,7 @@ ttymode_set(int mode, int imode)
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
 	printf("Error occured while set %x: errno=%d\n", mode, errno);
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif
 }
@@ -585,7 +585,7 @@ ttymode_reset(int mode, int imode)
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
 	printf("Error occured while reset %x: errno=%d\n", mode, errno);
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif /* __MINGW32_VERSION */
 }
@@ -602,7 +602,7 @@ set_cc(int spec, int val)
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
 	printf("Error occured: errno=%d\n", errno);
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
 }
 #endif				/* not HAVE_SGTTY_H */
@@ -637,16 +637,28 @@ reset_tty(void)
     close_tty();
 }
 
-MySignalHandler
-reset_exit(SIGNAL_ARG)
+static MySignalHandler
+reset_exit_with_value(SIGNAL_ARG, int rval)
 {
 #ifdef USE_MOUSE
     if (mouseActive)
 	mouse_end();
 #endif				/* USE_MOUSE */
     reset_tty();
-    w3m_exit(0);
+    w3m_exit(rval);
     SIGNAL_RETURN;
+}
+
+MySignalHandler
+reset_error_exit(SIGNAL_ARG)
+{
+  reset_exit_with_value(SIGNAL_ARGLIST, 1);
+}
+
+MySignalHandler
+reset_exit(SIGNAL_ARG)
+{
+  reset_exit_with_value(SIGNAL_ARGLIST, 0);
 }
 
 MySignalHandler
@@ -708,14 +720,14 @@ getTCstr(void)
     ent = getenv("TERM") ? getenv("TERM") : DEFAULT_TERM;
     if (ent == NULL) {
 	fprintf(stderr, "TERM is not set\n");
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
 
     r = tgetent(bp, ent);
     if (r != 1) {
 	/* Can't find termcap entry */
 	fprintf(stderr, "Can't find termcap entry %s\n", ent);
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
 
     GETSTR(T_ce, "ce");		/* clear to the end of line */
@@ -1201,7 +1213,7 @@ graphend(void)
 int
 graph_ok(void)
 {
-    if (!UseGraphicChar)
+    if (UseGraphicChar != GRAPHIC_CHAR_DEC)
 	return 0;
     return T_as[0] != 0 && T_ae[0] != 0 && T_ac[0] != 0;
 }
@@ -1897,7 +1909,7 @@ wgetch(void *p)
 int
 do_getch()
 {
-    if (is_xterm)
+    if (is_xterm || !gpm_handler)
 	return getch();
     else
 	return Gpm_Getch();
@@ -2008,7 +2020,7 @@ sleep_till_anykey(int sec, int purge)
     er = TerminalSet(tty, &ioval);
     if (er == -1) {
 	printf("Error occured: errno=%d\n", errno);
-	reset_exit(SIGNAL_ARGLIST);
+	reset_error_exit(SIGNAL_ARGLIST);
     }
     return ret;
 }
@@ -2037,6 +2049,7 @@ mouse_init()
     conn.maxMod = 0;
     conn.minMod = 0;
 
+    gpm_handler = NULL;
     r = Gpm_Open(&conn, 0);
     if (r == -2) {
 	/*

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
+/* $Id: main.c,v 1.270 2010/08/24 10:11:51 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -14,6 +14,13 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
+#ifdef USE_M17N
+#include "wc.h"
+#include "wtf.h"
+#ifdef USE_UNICODE
+#include "ucs.h"
+#endif
+#endif
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -85,8 +92,7 @@ static void keyPressEventProc(int c);
 int show_params_p = 0;
 void show_params(FILE * fp);
 
-static char *getCurWord(Buffer *buf, int *spos, int *epos,
-			const char *badchars);
+static char *getCurWord(Buffer *buf, int *spos, int *epos);
 
 static int display_ok = FALSE;
 static void do_dump(Buffer *);
@@ -194,11 +200,9 @@ fusage(FILE * f, int err)
 #ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
-#ifndef DEBIAN			/* disabled by ukai: -s is used for squeeze multi lines */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
-#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -242,14 +246,9 @@ fusage(FILE * f, int err)
     fprintf(f,
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
-    fprintf(f, "    -pauth user:pass proxy authentication\n");
-    fprintf(f, "    -graph           use graphic character\n");
-    fprintf(f, "    -no-graph        don't use graphic character\n");
-#ifdef DEBIAN			/* replaced by ukai: pager requires -s */
-    fprintf(f, "    -s               squeeze multiple blank lines\n");
-#else
+    fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
+    fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
     fprintf(f, "    -S               squeeze multiple blank lines\n");
-#endif
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -323,21 +322,27 @@ static void
 sig_chld(int signo)
 {
     int p_stat;
-#ifdef HAVE_WAITPID
     pid_t pid;
 
-    while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0) {
-	;
-    }
+#ifdef HAVE_WAITPID
+    while ((pid = waitpid(-1, &p_stat, WNOHANG)) > 0)
 #elif HAVE_WAIT3
-    int pid;
-
-    while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0) {
-	;
-    }
+    while ((pid = wait3(&p_stat, WNOHANG, NULL)) > 0)
 #else
-    wait(&p_stat);
+    if ((pid = wait(&p_stat)) > 0)
 #endif
+    {
+	DownloadList *d;
+
+	if (WIFEXITED(p_stat)) {
+	    for (d = FirstDL; d != NULL; d = d->next) {
+		if (d->pid == pid) {
+		    d->err = WEXITSTATUS(p_stat);
+		    break;
+		}
+	    }
+	}
+    }
     mySignal(SIGCHLD, sig_chld);
     return;
 }
@@ -525,14 +530,12 @@ main(int argc, char **argv, char **envp)
 		    PagerMax = atoi(argv[i]);
 	    }
 #ifdef USE_M17N
-#ifndef DEBIAN			/* XXX: use -o kanjicode={S|J|E} */
 	    else if (!strcmp("-s", argv[i]))
 		DisplayCharset = WC_CES_SHIFT_JIS;
 	    else if (!strcmp("-j", argv[i]))
 		DisplayCharset = WC_CES_ISO_2022_JP;
 	    else if (!strcmp("-e", argv[i]))
 		DisplayCharset = WC_CES_EUC_JP;
-#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -557,9 +560,9 @@ main(int argc, char **argv, char **envp)
 	    }
 #endif
 	    else if (!strcmp("-graph", argv[i]))
-		UseGraphicChar = TRUE;
+		UseGraphicChar = GRAPHIC_CHAR_DEC;
 	    else if (!strcmp("-no-graph", argv[i]))
-		UseGraphicChar = FALSE;
+		UseGraphicChar = GRAPHIC_CHAR_ASCII;
 	    else if (!strcmp("-T", argv[i])) {
 		if (++i >= argc)
 		    usage();
@@ -629,6 +632,9 @@ main(int argc, char **argv, char **envp)
 		if (++i >= argc)
 		    usage();
 		COLS = atoi(argv[i]);
+		if (COLS > MAXIMUM_COLS) {
+		    COLS = MAXIMUM_COLS;
+		}
 	    }
 	    else if (!strcmp("-ppc", argv[i])) {
 		double ppc;
@@ -697,22 +703,7 @@ main(int argc, char **argv, char **envp)
 		accept_cookie = TRUE;
 	    }
 #endif				/* USE_COOKIE */
-	    else if (!strcmp("-pauth", argv[i])) {
-		if (++i >= argc)
-		    usage();
-		proxy_auth_cookie = Strnew_m_charp("Basic ",
-						   encodeB(argv[i])->ptr,
-						   NULL);
-		while (argv[i][0]) {
-		    argv[i][0] = '\0';
-		    argv[i]++;
-		}
-	    }
-#ifdef DEBIAN
-	    else if (!strcmp("-s", argv[i]))
-#else
 	    else if (!strcmp("-S", argv[i]))
-#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
@@ -794,7 +785,7 @@ main(int argc, char **argv, char **envp)
     }
     if (w3m_dump) {
 	if (COLS == 0)
-	    COLS = 80;
+	    COLS = DEFAULT_COLS;
     }
 
 #ifdef USE_BINMODE_STREAM
@@ -868,12 +859,6 @@ main(int argc, char **argv, char **envp)
 			   w3m_version,
 			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
 			   NULL);
-#ifdef DEBIAN
-	    Strcat_m_charp(s_page,
-			   "<p>Debian package is maintained by <a href='mailto:ukai@debian.or.jp'>Fumitoshi UKAI</a>.",
-			   "You can read <a href='file:///usr/share/doc/w3m/'>w3m documents on your local system</a>.",
-			   NULL);
-#endif				/* DEBIAN */
 	    newbuf = loadHTMLString(s_page);
 	    if (newbuf == NULL)
 		Strcat_charp(err_msg, "w3m: Can't load string.\n");
@@ -1152,18 +1137,11 @@ main(int argc, char **argv, char **envp)
 	    mouse_inactive();
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
-	    if( vi_prec_num ){
-		if(((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
-		    prec_num = prec_num * 10 + (int)(c - '0');
-		    if (prec_num > PREC_LIMIT)
-			prec_num = PREC_LIMIT;
-		}
-		else {
-		    set_buffer_environ(Currentbuf);
-		    save_buffer_position(Currentbuf);
-		    keyPressEventProc((int)c);
-		    prec_num = 0;
-		}
+	    if (('0' <= c) && (c <= '9') &&
+		(prec_num || (GlobalKeymap[c] == FUNCNAME_nulcmd))) {
+		prec_num = prec_num * 10 + (int)(c - '0');
+		if (prec_num > PREC_LIMIT)
+		   prec_num = PREC_LIMIT;
 	    }
 	    else {
 		set_buffer_environ(Currentbuf);
@@ -1284,8 +1262,25 @@ do_dump(Buffer *buf)
 	dump_head(buf);
     if (w3m_dump & DUMP_SOURCE)
 	dump_source(buf);
-    if (w3m_dump == DUMP_BUFFER)
+    if (w3m_dump == DUMP_BUFFER) {
+	int i;
 	saveBuffer(buf, stdout, FALSE);
+	if (displayLinkNumber && buf->href) {
+	    printf("\nReferences:\n\n");
+	    for (i = 0; i < buf->href->nanchor; i++) {
+	        ParsedURL pu;
+	        static Str s = NULL;
+		if (buf->href->anchors[i].slave)
+		    continue;
+	        parseURL2(buf->href->anchors[i].url, &pu, baseURL(buf));
+	        s = parsedURL2Str(&pu);
+    	        if (DecodeURL)
+		    s = Strnew_charp(url_unquote_conv
+				     (s->ptr, Currentbuf->document_charset));
+	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, s->ptr);
+	    }
+	}
+    }
     mySignal(SIGINT, prevtrap);
 }
 
@@ -2259,7 +2254,32 @@ DEFUN(movR1, MOVE_RIGHT1,
  * From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp> Date: Mon, 14 Jun
  * 1999 09:29:56 +0900 
  */
-#define IS_WORD_CHAR(c,p) (IS_ALNUM(c) && CharType(p) == PC_ASCII)
+#if defined(USE_M17N) && defined(USE_UNICODE)
+#define nextChar(s, l)	do { (s)++; } while ((s) < (l)->len && (l)->propBuf[s] & PC_WCHAR2)
+#define prevChar(s, l)	do { (s)--; } while ((s) > 0 && (l)->propBuf[s] & PC_WCHAR2)
+
+static wc_uint32
+getChar(char *p)
+{
+    return wc_any_to_ucs(wtf_parse1(&p));
+}
+
+static int
+is_wordchar(wc_uint32 c)
+{
+    return wc_is_ucs_alnum(c);
+}
+#else 
+#define nextChar(s, l)	(s)++
+#define prevChar(s, l)	(s)--
+#define getChar(p)	((int)*(p))
+
+static int
+is_wordchar(int c)
+{
+    return IS_ALNUM(c);
+}
+#endif
 
 static int
 prev_nonnull_line(Line *line)
@@ -2279,8 +2299,7 @@ prev_nonnull_line(Line *line)
 DEFUN(movLW, PREV_WORD, "Move to previous word")
 {
     char *lb;
-    Lineprop *pb;
-    Line *pline;
+    Line *pline, *l;
     int ppos;
     int i, n = searchKeyNum();
 
@@ -2295,12 +2314,14 @@ DEFUN(movLW, PREV_WORD, "Move to previous word")
 	    goto end;
 
 	while (1) {
-	    lb = Currentbuf->currentLine->lineBuf;
-	    pb = Currentbuf->currentLine->propBuf;
-	    while (Currentbuf->pos > 0 &&
-		   !IS_WORD_CHAR(lb[Currentbuf->pos - 1],
-				 pb[Currentbuf->pos - 1])) {
-		Currentbuf->pos--;
+	    l = Currentbuf->currentLine;
+	    lb = l->lineBuf;
+	    while (Currentbuf->pos > 0) {
+		int tmp = Currentbuf->pos;
+		prevChar(tmp, l);
+		if (is_wordchar(getChar(&lb[tmp])))
+		    break;
+		Currentbuf->pos = tmp;
 	    }
 	    if (Currentbuf->pos > 0)
 		break;
@@ -2312,12 +2333,14 @@ DEFUN(movLW, PREV_WORD, "Move to previous word")
 	    Currentbuf->pos = Currentbuf->currentLine->len;
 	}
 
-	lb = Currentbuf->currentLine->lineBuf;
-	pb = Currentbuf->currentLine->propBuf;
-	while (Currentbuf->pos > 0 &&
-	       IS_WORD_CHAR(lb[Currentbuf->pos - 1],
-			    pb[Currentbuf->pos - 1])) {
-	    Currentbuf->pos--;
+	l = Currentbuf->currentLine;
+	lb = l->lineBuf;
+	while (Currentbuf->pos > 0) {
+	    int tmp = Currentbuf->pos;
+	    prevChar(tmp, l);
+	    if (!is_wordchar(getChar(&lb[tmp])))
+		break;
+	    Currentbuf->pos = tmp;
 	}
     }
   end:
@@ -2344,8 +2367,7 @@ next_nonnull_line(Line *line)
 DEFUN(movRW, NEXT_WORD, "Move to next word")
 {
     char *lb;
-    Lineprop *pb;
-    Line *pline;
+    Line *pline, *l;
     int ppos;
     int i, n = searchKeyNum();
 
@@ -2359,18 +2381,17 @@ DEFUN(movRW, NEXT_WORD, "Move to next word")
 	if (next_nonnull_line(Currentbuf->currentLine) < 0)
 	    goto end;
 
-	lb = Currentbuf->currentLine->lineBuf;
-	pb = Currentbuf->currentLine->propBuf;
-
-	while (lb[Currentbuf->pos] &&
-	       IS_WORD_CHAR(lb[Currentbuf->pos], pb[Currentbuf->pos]))
-	    Currentbuf->pos++;
+	l = Currentbuf->currentLine;
+	lb = l->lineBuf;
+	while (Currentbuf->pos < l->len &&
+	       is_wordchar(getChar(&lb[Currentbuf->pos])))
+	    nextChar(Currentbuf->pos, l);
 
 	while (1) {
-	    while (lb[Currentbuf->pos] &&
-		   !IS_WORD_CHAR(lb[Currentbuf->pos], pb[Currentbuf->pos]))
-		Currentbuf->pos++;
-	    if (lb[Currentbuf->pos])
+	    while (Currentbuf->pos < l->len &&
+		   !is_wordchar(getChar(&lb[Currentbuf->pos])))
+		nextChar(Currentbuf->pos, l);
+	    if (Currentbuf->pos < l->len)
 		break;
 	    if (next_nonnull_line(Currentbuf->currentLine->next) < 0) {
 		Currentbuf->currentLine = pline;
@@ -2378,8 +2399,8 @@ DEFUN(movRW, NEXT_WORD, "Move to next word")
 		goto end;
 	    }
 	    Currentbuf->pos = 0;
-	    lb = Currentbuf->currentLine->lineBuf;
-	    pb = Currentbuf->currentLine->propBuf;
+	    l = Currentbuf->currentLine;
+	    lb = l->lineBuf;
 	}
     }
   end:
@@ -2901,6 +2922,42 @@ gotoLabel(char *label)
     return;
 }
 
+static int
+handleMailto(char *url)
+{
+    Str to;
+    char *pos;
+
+    if (strncasecmp(url, "mailto:", 7))
+	return 0;
+#ifdef USE_W3MMAILER
+    if (! non_null(Mailer) || MailtoOptions == MAILTO_OPTIONS_USE_W3MMAILER)
+	return 0;
+#else
+    if (!non_null(Mailer)) {
+	/* FIXME: gettextize? */
+	disp_err_message("no mailer is specified", TRUE);
+	return 1;
+    }
+#endif
+	
+    /* invoke external mailer */
+    if (MailtoOptions == MAILTO_OPTIONS_USE_MAILTO_URL) {
+	to = Strnew_charp(html_unquote(url));
+    } else {
+	to = Strnew_charp(url + 7);
+	if ((pos = strchr(to->ptr, '?')) != NULL)
+	    Strtruncate(to, pos - to->ptr);
+    }
+    fmTerm();
+    system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
+			FALSE)->ptr);
+    fmInit();
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    pushHashHist(URLHist, url);
+    return 1;
+}
+
 /* follow HREF link */
 DEFUN(followA, GOTO_LINK, "Go to current link")
 {
@@ -2950,31 +3007,8 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
 	    return;
 	}
     }
-    if (!strncasecmp(a->url, "mailto:", 7)
-#ifdef USE_W3MMAILER
-	&& non_null(Mailer) && strchr(a->url, '?') == NULL
-#endif
-	) {
-	/* invoke external mailer */
-	Str to = Strnew_charp(a->url + 7);
-#ifndef USE_W3MMAILER
-	char *pos;
-	if (!non_null(Mailer)) {
-	    /* FIXME: gettextize? */
-	    disp_err_message("no mailer is specified", TRUE);
-	    return;
-	}
-	if ((pos = strchr(to->ptr, '?')) != NULL)
-	    Strtruncate(to, pos - to->ptr);
-#endif
-	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
-			    FALSE)->ptr);
-	fmInit();
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	pushHashHist(URLHist, a->url);
+    if (handleMailto(a->url))
 	return;
-    }
 #if 0
     else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
 	/* news:newsgroup is not supported */
@@ -3987,31 +4021,8 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 {
     Buffer *buf;
 
-    if (!strncasecmp(url, "mailto:", 7)
-#ifdef USE_W3MMAILER
-	&& non_null(Mailer) && strchr(url, '?') == NULL
-#endif
-	) {
-	/* invoke external mailer */
-	Str to = Strnew_charp(url + 7);
-#ifndef USE_W3MMAILER
-	char *pos;
-	if (!non_null(Mailer)) {
-	    /* FIXME: gettextize? */
-	    disp_err_message("no mailer is specified", TRUE);
-	    return;
-	}
-	if ((pos = strchr(to->ptr, '?')) != NULL)
-	    Strtruncate(to, pos - to->ptr);
-#endif
-	fmTerm();
-	system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
-			    FALSE)->ptr);
-	fmInit();
-	displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	pushHashHist(URLHist, url);
+    if (handleMailto(url))
 	return;
-    }
 #if 0
     if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
 	/* news:newsgroup is not supported */
@@ -4623,10 +4634,10 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
 
     buf = newBuffer(INIT_BUFFER_WIDTH);
 
-    if (!strcasecmp(Currentbuf->type, "text/html")) {
+    if (is_html_type(Currentbuf->type)) {
 	buf->type = "text/plain";
 	if (Currentbuf->real_type &&
-	    !strcasecmp(Currentbuf->real_type, "text/html"))
+	    is_html_type(Currentbuf->real_type))
 	    buf->real_type = "text/plain";
 	else
 	    buf->real_type = Currentbuf->real_type;
@@ -4776,8 +4787,8 @@ DEFUN(reload, RELOAD, "Reload buffer")
     repBuffer(Currentbuf, buf);
     if ((buf->type != NULL) && (sbuf.type != NULL) &&
 	((!strcasecmp(buf->type, "text/plain") &&
-	  !strcasecmp(sbuf.type, "text/html")) ||
-	 (!strcasecmp(buf->type, "text/html") &&
+	  is_html_type(sbuf.type)) ||
+	 (is_html_type(buf->type) &&
 	  !strcasecmp(sbuf.type, "text/plain")))) {
 	vwSrc();
 	if (Currentbuf != buf)
@@ -4914,7 +4925,7 @@ DEFUN(chkWORD, MARK_WORD, "Mark current word as anchor")
 {
     char *p;
     int spos, epos;
-    p = getCurWord(Currentbuf, &spos, &epos, ":\"\'`<>()[]{}&|;*?$");
+    p = getCurWord(Currentbuf, &spos, &epos);
     if (p == NULL)
 	return;
     reAnchorWord(Currentbuf, Currentbuf->currentLine, spos, epos);
@@ -5099,7 +5110,7 @@ DEFUN(dispI, DISPLAY_IMAGE, "Restart loading and drawing of images")
 	return;
     displayImage = TRUE;
     /*
-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
+     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
      * return;
      */
     Currentbuf->image_flag = IMG_FLAG_AUTO;
@@ -5112,7 +5123,7 @@ DEFUN(stopI, STOP_IMAGE, "Stop loading and drawing of images")
     if (!activeImage)
 	return;
     /*
-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
+     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
      * return;
      */
     Currentbuf->image_flag = IMG_FLAG_SKIP;
@@ -5526,17 +5537,8 @@ DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle wrap search mode")
     }
 }
 
-static int
-is_wordchar(int c, const char *badchars)
-{
-    if (badchars)
-	return !(IS_SPACE(c) || strchr(badchars, c));
-    else
-	return IS_ALPHA(c);
-}
-
 static char *
-getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
+getCurWord(Buffer *buf, int *spos, int *epos)
 {
     char *p;
     Line *l = buf->currentLine;
@@ -5548,15 +5550,20 @@ getCurWord(Buffer *buf, int *spos, int *epos, const char *badchars)
 	return NULL;
     p = l->lineBuf;
     e = buf->pos;
-    while (e > 0 && !is_wordchar(p[e], badchars))
-	e--;
-    if (!is_wordchar(p[e], badchars))
+    while (e > 0 && !is_wordchar(getChar(&p[e])))
+	prevChar(e, l);
+    if (!is_wordchar(getChar(&p[e])))
 	return NULL;
     b = e;
-    while (b > 0 && is_wordchar(p[b - 1], badchars))
-	b--;
-    while (e < l->len && is_wordchar(p[e], badchars))
-	e++;
+    while (b > 0) {
+	int tmp = b;
+	prevChar(tmp, l);
+	if (!is_wordchar(getChar(&p[tmp])))
+	    break;
+	b = tmp;
+    }
+    while (e < l->len && is_wordchar(getChar(&p[e])))
+	nextChar(e, l);
     *spos = b;
     *epos = e;
     return &p[b];
@@ -5568,7 +5575,7 @@ GetWord(Buffer *buf)
     int b, e;
     char *p;
 
-    if ((p = getCurWord(buf, &b, &e, 0)) != NULL) {
+    if ((p = getCurWord(buf, &b, &e)) != NULL) {
 	return Strnew_charp_n(p, e - b)->ptr;
     }
     return NULL;
@@ -6355,7 +6362,8 @@ addDownloadList(pid_t pid, char *url, char *save, char *lock, clen_t size)
     d->lock = lock;
     d->size = size;
     d->time = time(0);
-    d->ok = FALSE;
+    d->running = TRUE;
+    d->err = 0;
     d->next = NULL;
     d->prev = LastDL;
     if (LastDL)
@@ -6375,7 +6383,7 @@ checkDownloadList(void)
     if (!FirstDL)
 	return FALSE;
     for (d = FirstDL; d != NULL; d = d->next) {
-	if (!d->ok && !lstat(d->lock, &st))
+	if (d->running && !lstat(d->lock, &st))
 	    return TRUE;
     }
     return FALSE;
@@ -6415,15 +6423,16 @@ DownloadListBuffer(void)
 		       "<form method=internal action=download><hr>\n");
     for (d = LastDL; d != NULL; d = d->prev) {
 	if (lstat(d->lock, &st))
-	    d->ok = TRUE;
+	    d->running = FALSE;
 	Strcat_charp(src, "<pre>\n");
 	Strcat(src, Sprintf("%s\n  --&gt; %s\n  ", html_quote(d->url),
 			    html_quote(conv_from_system(d->save))));
 	duration = cur_time - d->time;
 	if (!stat(d->save, &st)) {
 	    size = st.st_size;
-	    if (d->ok) {
-		d->size = size;
+	    if (!d->running) {
+		if (!d->err)
+		    d->size = size;
 		duration = st.st_mtime - d->time;
 	    }
 	}
@@ -6442,7 +6451,7 @@ DownloadListBuffer(void)
 		Strcat_char(src, '_');
 	    Strcat_char(src, '\n');
 	}
-	if (!d->ok && size < d->size)
+	if ((d->running || d->err) && size < d->size)
 	    Strcat(src, Sprintf("  %s / %s bytes (%d%%)",
 				convert_size3(size), convert_size3(d->size),
 				(int)(100.0 * size / d->size)));
@@ -6453,20 +6462,28 @@ DownloadListBuffer(void)
 	    Strcat(src, Sprintf("  %02d:%02d:%02d  rate %s/sec",
 				duration / (60 * 60), (duration / 60) % 60,
 				duration % 60, convert_size(rate, 1)));
-	    if (!d->ok && size < d->size && rate) {
+	    if (d->running && size < d->size && rate) {
 		eta = (d->size - size) / rate;
 		Strcat(src, Sprintf("  eta %02d:%02d:%02d", eta / (60 * 60),
 				    (eta / 60) % 60, eta % 60));
 	    }
 	}
 	Strcat_char(src, '\n');
-	if (d->ok) {
+	if (!d->running) {
 	    Strcat(src, Sprintf("<input type=submit name=ok%d value=OK>",
 				d->pid));
-	    if (size < d->size)
-		Strcat_charp(src, " Download incompleted");
-	    else
-		Strcat_charp(src, " Download completed");
+	    switch (d->err) {
+	    case 0: if (size < d->size)
+			Strcat_charp(src, " Download ended but probably not complete");
+		    else
+			Strcat_charp(src, " Download complete");
+		    break;
+	    case 1: Strcat_charp(src, " Error: could not open destination file");
+		    break;
+	    case 2: Strcat_charp(src, " Error: could not write to file (disk full)");
+		    break;
+	    default: Strcat_charp(src, " Error: unknown reason");
+	    }
 	}
 	else
 	    Strcat(src, Sprintf("<input type=submit name=stop%d value=STOP>",
@@ -6520,7 +6537,7 @@ stopDownload(void)
     if (!FirstDL)
 	return;
     for (d = FirstDL; d != NULL; d = d->next) {
-	if (d->ok)
+	if (!d->running)
 	    continue;
 #ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);

@@ -1,0 +1,114 @@
+/.cvsignore/1.12/Fri Sep 26 20:45:53 2003//
+/README/1.1.1.1/Thu Nov  8 05:14:08 2001//
+/Str.c/1.8/Tue Dec 24 17:20:46 2002//
+/Str.h/1.6/Fri Apr  7 13:35:35 2006//
+/TODO/1.21/Sun Apr  4 16:47:20 2004//
+/anchor.c/1.33/Sat Apr  8 11:33:16 2006//
+/charset-list/1.1/Mon Sep 22 21:02:16 2003//
+/config.guess/1.2/Wed Aug  4 17:32:27 2004//
+/config.h.dist/1.36/Fri Apr  9 17:18:49 2004//
+/config.sub/1.2/Wed Aug  4 17:32:27 2004//
+/ctrlcode.h/1.3/Mon Sep 22 21:02:17 2003//
+/entity.c/1.7/Wed Sep 24 18:48:59 2003//
+/entity.tab/1.1/Fri Nov  9 04:59:17 2001//
+/form.h/1.6/Mon Sep 22 21:02:18 2003//
+/frame.c/1.34/Fri Sep 26 17:59:51 2003//
+/frame.h/1.6/Sat Jan 25 17:42:17 2003//
+/func.c/1.27/Fri Sep 26 17:59:51 2003//
+/func.h/1.4/Tue Dec  3 16:01:33 2002//
+/funcname0.awk/1.1.1.1/Thu Nov  8 05:14:56 2001//
+/funcname1.awk/1.1.1.1/Thu Nov  8 05:14:56 2001//
+/funcname2.awk/1.1.1.1/Thu Nov  8 05:14:56 2001//
+/functable.awk/1.1/Mon Dec 10 17:02:44 2001//
+/hash.c/1.5/Mon Apr  7 16:27:10 2003//
+/hash.h/1.6/Wed Sep 24 18:48:59 2003//
+/history.c/1.11/Fri Sep 26 17:59:51 2003//
+/history.h/1.5/Sat Jan 26 17:24:01 2002//
+/indep.h/1.16/Mon Sep 22 21:02:19 2003//
+/inflate.c/1.7/Thu Jan 31 18:28:24 2002//
+/islang.c/1.3/Sat Feb 26 17:06:44 2005//
+/istream.h/1.12/Mon Oct 20 16:41:56 2003//
+/local.h/1.3/Tue Nov 20 17:49:23 2001//
+/map.c/1.30/Wed Sep 24 18:49:00 2003//
+/matrix.c/1.8/Mon Apr  7 16:27:10 2003//
+/matrix.h/1.7/Thu Jul 18 14:59:02 2002//
+/menu.h/1.2/Tue Nov 20 17:49:23 2001//
+/mimehead.c/1.10/Sun Oct  5 18:52:51 2003//
+/mkinstalldirs/1.1/Tue Sep 23 18:42:25 2003//
+/myctype.c/1.7/Mon Sep 22 21:02:20 2003//
+/myctype.h/1.6/Mon Sep 22 21:02:20 2003//
+/news.c/1.17/Sun Oct  5 18:52:51 2003//
+/parsetag.c/1.4/Tue Nov 20 17:49:23 2001//
+/parsetag.h/1.2/Tue Nov 20 17:49:23 2001//
+/parsetagx.h/1.4/Sat Nov 24 02:01:26 2001//
+/posubst.in/1.1/Thu Sep 25 18:15:47 2003//
+/regex.h/1.6/Mon Sep 22 21:02:21 2003//
+/scrsize.c/1.2/Sat Nov 24 02:01:26 2001//
+/search.c/1.31/Tue Mar 23 16:44:02 2004//
+/table.h/1.12/Mon Sep 22 21:02:21 2003//
+/terms.h/1.10/Thu Jul 15 16:32:39 2004//
+/textlist.c/1.6/Mon Apr  7 16:27:11 2003//
+/textlist.h/1.6/Mon Jan 20 15:30:22 2003//
+/w3mhelp-lynx_en.html.in/1.1/Fri Dec 21 22:02:39 2001//
+/w3mhelp-lynx_ja.html.in/1.1/Fri Dec 21 22:02:39 2001//
+/w3mhelp-w3m_en.html.in/1.1/Fri Dec 21 22:02:39 2001//
+/w3mhelp-w3m_ja.html.in/1.1/Fri Dec 21 22:02:39 2001//
+D/Bonus////
+D/Patches////
+D/Symbols////
+D/doc////
+D/doc-jp////
+D/gc////
+D/intl////
+D/libwc////
+D/po////
+D/scripts////
+D/w3m-doc////
+D/w3mimg////
+/keybind.c/1.10/Sat Jun 10 09:52:18 2006//
+/keybind_lynx.c/1.8/Sat Jun 10 09:52:18 2006//
+/parsetagx.c/1.18/Sat Jun 10 09:52:18 2006//
+/mailcap.c/1.13/Tue Jan 23 12:24:11 2007//
+/Makefile.in/1.44/Tue Jan  4 09:22:18 2011//
+/acinclude.m4/1.45/Tue Jan  4 09:22:18 2011//
+/aclocal.m4/1.46/Tue Jan  4 09:22:18 2011//
+/backend.c/1.15/Tue Jan  4 09:22:19 2011//
+/buffer.c/1.30/Tue Jan  4 09:22:19 2011//
+/config.h.in/1.21/Tue Jan  4 09:22:19 2011//
+/cookie.c/1.11/Tue Jan  4 09:22:20 2011//
+/display.c/1.71/Tue Jan  4 09:22:20 2011//
+/etc.c/1.81/Tue Jan  4 09:22:20 2011//
+/file.c/1.265/Tue Jan  4 09:22:21 2011//
+/fm.h/1.149/Tue Jan  4 09:22:21 2011//
+/form.c/1.35/Tue Jan  4 09:22:21 2011//
+/ftp.c/1.42/Tue Jan  4 09:22:21 2011//
+/html.c/1.32/Tue Jan  4 09:22:21 2011//
+/html.h/1.31/Tue Jan  4 09:22:21 2011//
+/image.c/1.37/Tue Jan  4 09:22:22 2011//
+/indep.c/1.38/Tue Jan  4 09:22:22 2011//
+/istream.c/1.27/Tue Jan  4 09:22:22 2011//
+/linein.c/1.35/Tue Jan  4 09:22:22 2011//
+/local.c/1.35/Tue Jan  4 09:22:22 2011//
+/menu.c/1.46/Tue Jan  4 09:22:23 2011//
+/mktable.c/1.16/Tue Jan  4 09:22:23 2011//
+/proto.h/1.104/Tue Jan  4 09:22:23 2011//
+/rc.c/1.116/Tue Jan  4 09:22:23 2011//
+/regex.c/1.23/Tue Jan  4 09:22:23 2011//
+/symbol.c/1.4/Tue Jan  4 09:22:23 2011//
+/table.c/1.58/Tue Jan  4 09:22:23 2011//
+/tagtable.tab/1.14/Tue Jan  4 09:22:23 2011//
+/terms.c/1.63/Tue Jan  4 09:22:23 2011//
+/url.c/1.100/Tue Jan  4 09:22:24 2011//
+/w3mbookmark.c/1.12/Tue Jan  4 09:22:24 2011//
+/w3mhelperpanel.c/1.14/Tue Jan  4 09:22:24 2011//
+/w3mimgdisplay.c/1.19/Tue Jan  4 09:22:24 2011//
+/main.c/1.270/Tue Jan  4 09:42:19 2011//
+/ABOUT-NLS/1.2/Tue Jan  4 12:39:27 2011//
+/config.rpath/1.2/Tue Jan  4 12:39:29 2011//
+/entity.h/1.6/Tue Jan  4 12:39:29 2011//
+/install-sh/1.8/Tue Jan  4 12:39:29 2011//
+/ChangeLog/1.1050/Sat Jan 15 07:52:48 2011//
+/NEWS/1.80/Sat Jan 15 03:01:36 2011//
+/configure/1.164/Sat Jan 15 03:04:22 2011//
+/configure.ac/1.12/Sat Jan 15 03:01:55 2011//
+/version.c.in/1.48/Sat Jan 15 07:52:48 2011//

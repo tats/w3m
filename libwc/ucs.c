@@ -17,11 +17,17 @@
 
 #include "ucs.map"
 
+#include "map/ucs_ambwidth.map"
 #include "map/ucs_wide.map"
 #include "map/ucs_combining.map"
 #include "map/ucs_precompose.map"
 #include "map/ucs_hangul.map"
 #include "map/ucs_fullwidth.map"
+#include "map/ucs_isalpha.map"
+#include "map/ucs_isdigit.map"
+#include "map/ucs_islower.map"
+#include "map/ucs_isupper.map"
+#include "map/ucs_case.map"
 
 #define MAX_TAG_MAP 0x100
 static int n_tag_map = 0;
@@ -107,6 +113,8 @@ wc_any_to_ucs(wc_wchar_t cc)
     f = WC_CCS_INDEX(cc.ccs);
     switch (WC_CCS_TYPE(cc.ccs)) {
     case WC_CCS_A_CS94:
+	if (cc.ccs == WC_CCS_US_ASCII)
+	    return cc.code;
 	if (f < WC_F_ISO_BASE || f > WC_F_CS94_END)
 	    return WC_C_UCS4_ERROR;
 	map = cs94_ucs_map[f - WC_F_ISO_BASE];
@@ -511,8 +519,23 @@ wc_ucs_to_ccs(wc_uint32 ucs)
     if (0x80 <= ucs && ucs <= 0x9F)
 	return WC_CCS_C1;
     return ((ucs <= WC_C_UCS2_END) ? WC_CCS_UCS2 : WC_CCS_UCS4)
+	| ((WcOption.east_asian_width && wc_is_ucs_ambiguous_width(ucs))
+		    ? WC_CCS_A_WIDE : 0)
 	| (wc_is_ucs_wide(ucs) ? WC_CCS_A_WIDE : 0)
 	| (wc_is_ucs_combining(ucs) ? WC_CCS_A_COMB : 0);
+}
+
+wc_bool
+wc_is_ucs_ambiguous_width(wc_uint32 ucs)
+{
+    if (0xa1 <= ucs && ucs <= 0xfe && WcOption.use_jisx0213)
+	return 1;
+    else if (ucs <= WC_C_UCS2_END)
+	return (wc_map_range_search((wc_uint16)ucs,
+		    ucs_ambwidth_map, N_ucs_ambwidth_map) != NULL);
+    else
+	return ((0xF0000 <= ucs && ucs <= 0xFFFFD)
+		|| (0x100000 <= ucs && ucs <= 0x10FFFD));
 }
 
 wc_bool
@@ -540,6 +563,74 @@ wc_is_ucs_hangul(wc_uint32 ucs)
     return (ucs <= WC_C_UCS2_END &&
 	wc_map_range_search((wc_uint16)ucs,
 	ucs_hangul_map, N_ucs_hangul_map) != NULL);
+}
+
+wc_bool
+wc_is_ucs_alpha(wc_uint32 ucs)
+{
+    return (ucs <= WC_C_UCS2_END &&
+	wc_map_range_search((wc_uint16)ucs,
+	ucs_isalpha_map, N_ucs_isalpha_map) != NULL);
+}
+
+wc_bool
+wc_is_ucs_digit(wc_uint32 ucs)
+{
+    return (ucs <= WC_C_UCS2_END &&
+	wc_map_range_search((wc_uint16)ucs,
+	ucs_isdigit_map, N_ucs_isdigit_map) != NULL);
+}
+
+wc_bool
+wc_is_ucs_alnum(wc_uint32 ucs)
+{
+    return (wc_is_ucs_alpha(ucs) || wc_is_ucs_digit(ucs));
+}
+
+wc_bool
+wc_is_ucs_lower(wc_uint32 ucs)
+{
+    return (ucs <= WC_C_UCS2_END &&
+	wc_map_range_search((wc_uint16)ucs,
+	ucs_islower_map, N_ucs_islower_map) != NULL);
+}
+
+wc_bool
+wc_is_ucs_upper(wc_uint32 ucs)
+{
+    return (ucs <= WC_C_UCS2_END &&
+	wc_map_range_search((wc_uint16)ucs,
+	ucs_isupper_map, N_ucs_isupper_map) != NULL);
+}
+
+wc_uint32
+wc_ucs_toupper(wc_uint32 ucs)
+{
+    wc_map *conv = NULL;
+    if (ucs <= WC_C_UCS2_END)
+	conv = wc_map_search((wc_uint16)ucs,
+			     ucs_toupper_map, N_ucs_toupper_map);
+    return conv ? (wc_uint32)(conv->code2) : ucs;
+}
+
+wc_uint32
+wc_ucs_tolower(wc_uint32 ucs)
+{
+    wc_map *conv = NULL;
+    if (ucs <= WC_C_UCS2_END)
+	conv = wc_map_search((wc_uint16)ucs,
+			     ucs_tolower_map, N_ucs_tolower_map);
+    return conv ? (wc_uint32)(conv->code2) : ucs;
+}
+
+wc_uint32
+wc_ucs_totitle(wc_uint32 ucs)
+{
+    wc_map *conv = NULL;
+    if (ucs <= WC_C_UCS2_END)
+	conv = wc_map_search((wc_uint16)ucs,
+			     ucs_totitle_map, N_ucs_totitle_map);
+    return conv ? (wc_uint32)(conv->code2) : ucs;
 }
 
 wc_uint32

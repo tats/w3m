@@ -1,4 +1,4 @@
-/* $Id: table.c,v 1.55 2007/05/23 13:07:44 inu Exp $ */
+/* $Id: table.c,v 1.58 2010/08/09 11:59:19 htrb Exp $ */
 /* 
  * HTML table
  */
@@ -2408,6 +2408,8 @@ table_close_anchor0(struct table *tbl, struct table_mode *mode)
 	case HTML_N_COLGROUP:\
 	case HTML_COL
 
+#define ATTR_ROWSPAN_MAX 32766
+
 static int
 feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	       int width, struct parsed_tag *tag)
@@ -2592,6 +2594,9 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	else
 	    valign = HTT_MIDDLE;
 	if (parsedtag_get_value(tag, ATTR_ROWSPAN, &rowspan)) {
+	    if(rowspan > ATTR_ROWSPAN_MAX) {
+		rowspan = ATTR_ROWSPAN_MAX;
+	    }
 	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
 		check_row(tbl, tbl->row + rowspan);
 	}
@@ -2912,6 +2917,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    check_rowcol(tbl, mode);
 	    if (i == 0) {
 		Str tmp = process_anchor(tag, line);
+    		if (displayLinkNumber)
+		{
+			Str t = getLinkNumberStr(-1);
+			feed_table_inline_tag(tbl, NULL, mode, t->length);
+			Strcat(tmp, t);
+		}
 		pushdata(tbl, tbl->row, tbl->col, tmp->ptr);
 	    }
 	    else

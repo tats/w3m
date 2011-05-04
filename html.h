@@ -1,4 +1,4 @@
-/* $Id: html.h,v 1.29 2007/05/23 12:01:43 inu Exp $ */
+/* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
 #ifdef USE_SSL
@@ -202,35 +202,62 @@ typedef struct {
 #define HTML_N_I	110
 #define HTML_STRONG	111
 #define HTML_N_STRONG	112
+#define HTML_SPAN	113
+#define HTML_N_SPAN	114
+#define HTML_ABBR       115
+#define HTML_N_ABBR     116
+#define HTML_ACRONYM    117
+#define HTML_N_ACRONYM  118
+#define HTML_BASEFONT   119
+#define HTML_BDO        120
+#define HTML_N_BDO      121
+#define HTML_BIG        122
+#define HTML_N_BIG      123
+#define HTML_BUTTON     124
+#define HTML_FIELDSET   125
+#define HTML_N_FIELDSET 126
+#define HTML_IFRAME     127
+#define HTML_LABEL      128
+#define HTML_N_LABEL    129
+#define HTML_LEGEND     130
+#define HTML_N_LEGEND   131
+#define HTML_NOSCRIPT   132
+#define HTML_N_NOSCRIPT 133
+#define HTML_OBJECT     134
+#define HTML_OPTGROUP   135
+#define HTML_N_OPTGROUP 136
+#define HTML_PARAM      137
+#define HTML_SMALL      138
+#define HTML_N_SMALL    139
 
    /* pseudo tag */
-#define HTML_SELECT_INT     120
-#define HTML_N_SELECT_INT   121
-#define HTML_OPTION_INT     122
-#define HTML_TEXTAREA_INT   123
-#define HTML_N_TEXTAREA_INT 124
-#define HTML_TABLE_ALT      125
-#define HTML_SYMBOL         126
-#define HTML_N_SYMBOL       127
-#define HTML_PRE_INT        128
-#define HTML_N_PRE_INT      129
-#define HTML_TITLE_ALT      130
-#define HTML_FORM_INT       131
-#define HTML_N_FORM_INT     132
-#define HTML_DL_COMPACT     133
-#define HTML_INPUT_ALT      134
-#define HTML_N_INPUT_ALT    135
-#define HTML_IMG_ALT        136
-#define HTML_N_IMG_ALT      137
-#define HTML_NOP	    138
-#define HTML_PRE_PLAIN	    139
-#define HTML_N_PRE_PLAIN    140
-#define HTML_INTERNAL       141
-#define HTML_N_INTERNAL     142
-#define HTML_DIV_INT        143
-#define HTML_N_DIV_INT      144
+#define HTML_SELECT_INT     160
+#define HTML_N_SELECT_INT   161
+#define HTML_OPTION_INT     162
+#define HTML_TEXTAREA_INT   163
+#define HTML_N_TEXTAREA_INT 164
+#define HTML_TABLE_ALT      165
+#define HTML_SYMBOL         166
+#define HTML_N_SYMBOL       167
+#define HTML_PRE_INT        168
+#define HTML_N_PRE_INT      169
+#define HTML_TITLE_ALT      170
+#define HTML_FORM_INT       171
+#define HTML_N_FORM_INT     172
+#define HTML_DL_COMPACT     173
+#define HTML_INPUT_ALT      174
+#define HTML_N_INPUT_ALT    175
+#define HTML_IMG_ALT        176
+#define HTML_N_IMG_ALT      177
+#define HTML_NOP	    178
+#define HTML_PRE_PLAIN	    179
+#define HTML_N_PRE_PLAIN    180
+#define HTML_INTERNAL       181
+#define HTML_N_INTERNAL     182
+#define HTML_DIV_INT        183
+#define HTML_N_DIV_INT      184
 
-#define MAX_HTMLTAG	    145
+#define MAX_HTMLTAG	    185
 
 /* Tag attribute */
 

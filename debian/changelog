@@ -1,3 +1,17 @@
+w3m (0.5.3-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/010_upstream.patch: Sync with the upstream development
+    snapshot on 2011-01-17, just a typo fix for ChangeLog.
+  * debian/patches/040_link_gcc45.patch: Patch from 0.5.2-10ubuntu1 to
+    explicitly link w3mimgdisplay with -lX11 to build with gcc 4.5,
+    provided by Martin Pitt. (closes: #605761)
+  * debian/patches/050_entity-h-clean.patch: Patch to remove entity.h when
+    `make clean'.
+  * debian/copyright: Updated.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 06 Feb 2011 16:11:06 +0900
+
 w3m (0.5.2-10) unstable; urgency=low
 
   * debian/patches/010_upstream.patch: Sync with the upstream development

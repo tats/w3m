@@ -24,7 +24,6 @@ srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 top_srcdir = @top_srcdir@
 VPATH = $(srcdir):.
-DESTDIR = 
 
 CGIBIN_DIR = $(libexecdir)/$(PACKAGE)/cgi-bin
 AUXBIN_DIR = $(libexecdir)/$(PACKAGE)

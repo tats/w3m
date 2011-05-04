@@ -1,8 +1,8 @@
 dnl w3m autoconf
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(w3m, 0.5.2, satodai@w3m.jp)
+AC_INIT(w3m, 0.5.3, satodai@w3m.jp)
 PACKAGE=w3m
-VERSION=0.5.2
+VERSION=0.5.3
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_SUBST(PACKAGE)
@@ -17,7 +17,7 @@ W3M_LANG=${LC_ALL:-$LANG}
 dnl AM_INIT_AUTOMAKE(w3m, 0.4)
 AC_CONFIG_HEADER(config.h)
 dnl Checks for programs.
-dnl AC_PROG_CXX
+AC_PROG_CXX
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
@@ -107,6 +107,11 @@ AC_W3M_TERMLIB
 AC_W3M_GC
 AC_CHECK_LIB(z, zError, [AUXBIN_TARGETS="$AUXBIN_TARGETS inflate\$(EXT)"])
 
+AC_CHECK_TYPE([socklen_t],
+	 [AC_DEFINE(HAVE_SOCKLEN_T)], ,
+	 [#include <sys/types.h>
+	  #include <sys/socket.h>])
+
 AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
@@ -179,7 +184,7 @@ scripts/multipart/Makefile scripts/multipart/multipart.cgi \
 scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 \
 scripts/w3mman/w3mman2html.cgi \
 libwc/Makefile \
-w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile \
+w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile \
 w3mhelp-w3m_en.html w3mhelp-w3m_ja.html \
 w3mhelp-lynx_en.html w3mhelp-lynx_ja.html])
 

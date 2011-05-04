@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.10 2006/12/10 10:53:22 inu Exp $ */
+/* $Id: cookie.c,v 1.11 2010/07/26 11:38:53 htrb Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -258,6 +258,30 @@ char *special_domain[] = {
 };
 
 int
+check_avoid_wrong_number_of_dots_domain( Str domain )
+{
+   TextListItem *tl;
+    int avoid_wrong_number_of_dots_domain = FALSE;
+
+    if (Cookie_avoid_wrong_number_of_dots_domains && 
+            Cookie_avoid_wrong_number_of_dots_domains->nitem > 0) {
+        for (tl = Cookie_avoid_wrong_number_of_dots_domains->first;
+                tl != NULL; tl = tl->next) {
+            if (domain_match(domain->ptr, tl->ptr)) {
+                avoid_wrong_number_of_dots_domain = TRUE;
+                break;
+            }
+        }
+    }
+
+    if (avoid_wrong_number_of_dots_domain == TRUE) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
+int
 add_cookie(ParsedURL *pu, Str name, Str value,
 	   time_t expires, Str domain, Str path,
 	   int flag, Str comment, int version, Str port, Str commentURL)
@@ -304,7 +328,9 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 				     domain->ptr + domain->length,
 				     3);
 	    if (n < 2) {
-		COOKIE_ERROR(COO_ESPECIAL);
+		if (! check_avoid_wrong_number_of_dots_domain(domain)) {
+		    COOKIE_ERROR(COO_ESPECIAL);
+		}
 	    }
 	    else if (n == 2) {
 		char **sdomain;
@@ -315,8 +341,9 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 			strcasecmp(*sdomain, &domain->ptr[offset]) == 0)
 			ok = 1;
 		}
-		if (!ok)
+		if (!ok && ! check_avoid_wrong_number_of_dots_domain(domain)) {
 		    COOKIE_ERROR(COO_ESPECIAL);
+		}
 	    }
 	}
 	else {

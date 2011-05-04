@@ -1,4 +1,4 @@
-/* $Id: form.c,v 1.34 2004/02/05 17:23:07 ukai Exp $ */
+/* $Id: form.c,v 1.35 2010/07/18 13:48:48 htrb Exp $ */
 /* 
  * HTML forms
  */
@@ -403,6 +403,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
     line->lineBuf = buf;
     line->propBuf = prop;
     line->len = len;
+    line->size = len;
 
     return pos;
 }

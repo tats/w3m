@@ -1,0 +1,32 @@
+Description: Fix segfault on non-xterm
+ * [w3m-dev 04278] Re: segfault on CentOS4.5/libgc6.8
+ * term.c: add handling xterm-incompatible terminals without gpm.
+Origin: upstream, http://w3m.cvs.sourceforge.net/viewvc/w3m/w3m/
+Author: Hironori Sakamoto <hsaka@mth.biglobe.ne.jp>
+
+diff -urN w3m-0.5.2.orig/terms.c w3m/terms.c
+--- w3m-0.5.2.orig/terms.c	2007-05-30 13:44:00.000000000 +0900
++++ w3m/terms.c	2007-06-07 19:54:10.000000000 +0900
+@@ -1,4 +1,4 @@
+-/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
++/* $Id: terms.c,v 1.58 2007/06/07 10:54:10 inu Exp $ */
+ /* 
+  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
+  * revised by Akinori ITO, January 1995
+@@ -1897,7 +1897,7 @@
+ int
+ do_getch()
+ {
+-    if (is_xterm)
++    if (is_xterm || !gpm_handler)
+ 	return getch();
+     else
+ 	return Gpm_Getch();
+@@ -2037,6 +2037,7 @@
+     conn.maxMod = 0;
+     conn.minMod = 0;
+ 
++    gpm_handler = NULL;
+     r = Gpm_Open(&conn, 0);
+     if (r == -2) {
+ 	/*

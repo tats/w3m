@@ -1,0 +1,23 @@
+Description: Fix .w3m/config parser confused by blank lines
+Origin: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=537706#10
+Author: "Trent W. Buck" <twb@cybersource.com.au>
+Bug-Debian: http://bugs.debian.org/537706
+
+Index: w3m-0.5.2/rc.c
+===================================================================
+--- w3m-0.5.2.orig/rc.c 2009-07-20 20:48:47.426565387 +1000
++++ w3m-0.5.2/rc.c      2009-07-20 20:49:24.086565581 +1000
+@@ -1061,9 +1061,11 @@
+ 
+     for (;;) {
+ 	line = Strfgets(f);
+-	Strchop(line);
+-	if (line->length == 0)
++	if (line->length == 0)		/* end of file */
+ 	    break;
++	Strchop(line);
++	if (line->length == 0)		/* blank line */
++	    continue;
+ 	Strremovefirstspaces(line);
+ 	if (line->ptr[0] == '#')	/* comment */
+ 	    continue;

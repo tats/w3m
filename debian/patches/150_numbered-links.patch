@@ -1,0 +1,163 @@
+Description: New option "display_link_number"
+Origin: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=329862#30
+Author: Karsten Schoelzel <kuser@gmx.de>
+Bug-Debian: http://bugs.debian.org/329862
+
+diff --git a/file.c b/file.c
+index d537c8d..ea37647 100644
+--- a/file.c
++++ b/file.c
+@@ -1671,6 +1678,12 @@ checkRedirection(ParsedURL *pu)
+     return TRUE;
+ }
+ 
++Str
++getLinkNumberStr(int correction)
++{
++    return Sprintf("[%d]", cur_hseq + correction);
++}
++
+ /* 
+  * loadGeneralFile: load file to buffer
+  */
+@@ -3530,9 +3554,13 @@ process_input(struct parsed_tag *tag)
+     case FORM_INPUT_TEXT:
+     case FORM_INPUT_FILE:
+     case FORM_INPUT_CHECKBOX:
++	if (displayLinkNumber)
++	    Strcat(tmp, getLinkNumberStr(0));
+ 	Strcat_char(tmp, '[');
+ 	break;
+     case FORM_INPUT_RADIO:
++	if (displayLinkNumber)
++	    Strcat(tmp, getLinkNumberStr(0));
+ 	Strcat_char(tmp, '(');
+     }
+     Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
+@@ -3573,6 +3601,8 @@ process_input(struct parsed_tag *tag)
+ 	case FORM_INPUT_SUBMIT:
+ 	case FORM_INPUT_BUTTON:
+ 	case FORM_INPUT_RESET:
++	    if (displayLinkNumber)
++		Strcat(tmp, getLinkNumberStr(-1));
+ 	    Strcat_charp(tmp, "[");
+ 	    break;
+ 	}
+@@ -3659,9 +3689,12 @@ process_select(struct parsed_tag *tag)
+ 
+ #ifdef MENU_SELECT
+     if (!select_is_multiple) {
+-	select_str = Sprintf("<pre_int>[<input_alt hseq=\"%d\" "
++	select_str = Strnew_charp("<pre_int>");
++	if (displayLinkNumber)
++	    Strcat(select_str, getLinkNumberStr(0));
++	Strcat(select_str, Sprintf("[<input_alt hseq=\"%d\" "
+ 			     "fid=\"%d\" type=select name=\"%s\" selectnumber=%d",
+-			     cur_hseq++, cur_form_id, html_quote(p), n_select);
++			     cur_hseq++, cur_form_id, html_quote(p), n_select));
+ 	Strcat_charp(select_str, ">");
+ 	if (n_select == max_select) {
+ 	    max_select *= 2;
+@@ -4688,6 +4721,8 @@ HTMLtagproc1(struct parsed_tag *tag, str
+ 	    obuf->anchor.hseq = cur_hseq;
+ 	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
+ 	    push_tag(obuf, tmp->ptr, HTML_A);
++	    if (displayLinkNumber)
++		HTMLlineproc1(getLinkNumberStr(-1)->ptr, h_env);
+ 	    return 1;
+ 	}
+ 	return 0;
+diff --git a/proto.h b/proto.h
+index 8929580..6f02b5b 100644
+--- a/proto.h
++++ b/proto.h
+@@ -776,6 +777,8 @@ extern void wrapToggle(void);
+ extern void saveBufferInfo(void);
+ #endif
+ 
++extern Str getLinkNumberStr(int correction);
++
+ extern void dispVer(void);
+ 
+ #ifdef USE_INCLUDED_SRAND48
+diff --git a/rc.c b/rc.c
+index f57b564..17f30d8 100644
+--- a/rc.c
++++ b/rc.c
+@@ -72,6 +72,7 @@ static int OptionEncode = FALSE;
+ #define CMT_OPEN_TAB_BLANK N_("Open link on new tab if target is _blank or _new")
+ #define CMT_OPEN_TAB_DL_LIST N_("Open download list panel on new tab")
+ #define CMT_DISPLINK     N_("Display link URL automatically")
++#define CMT_DISPLINKNUMBER N_("Display link numbers")
+ #define CMT_DECODE_URL   N_("Display decoded URL")
+ #define CMT_DISPLINEINFO N_("Display current line number")
+ #define CMT_DISP_IMAGE   N_("Display inline images")
+@@ -338,6 +357,8 @@ struct param_ptr params1[] = {
+      CMT_OPEN_TAB_DL_LIST, NULL},
+     {"display_link", P_INT, PI_ONOFF, (void *)&displayLink, CMT_DISPLINK,
+      NULL},
++    {"display_link_number", P_INT, PI_ONOFF, (void *)&displayLinkNumber,
++     CMT_DISPLINKNUMBER, NULL},
+     {"decode_url", P_INT, PI_ONOFF, (void *)&DecodeURL, CMT_DECODE_URL, NULL},
+     {"display_lineinfo", P_INT, PI_ONOFF, (void *)&displayLineInfo,
+      CMT_DISPLINEINFO, NULL},
+diff --git a/table.c b/table.c
+index 2024632..94d61d6 100644
+--- a/table.c
++++ b/table.c
+@@ -2937,6 +2937,12 @@ feed_table_tag(struct table *tbl, char *
+ 	    check_rowcol(tbl, mode);
+ 	    if (i == 0) {
+ 		Str tmp = process_anchor(tag, line);
++    		if (displayLinkNumber)
++		{
++			Str t = getLinkNumberStr(-1);
++			feed_table_inline_tag(tbl, NULL, mode, t->length);
++			Strcat(tmp, t);
++		}
+ 		pushdata(tbl, tbl->row, tbl->col, tmp->ptr);
+ 	    }
+ 	    else
+diff --git a/fm.h b/fm.h
+index 8686866..1a1a60c 100644
+--- a/fm.h
++++ b/fm.h
+@@ -909,6 +909,7 @@ global int label_topline init(FALSE);
+ global int nextpage_topline init(FALSE);
+ global char *displayTitleTerm init(NULL);
+ global int displayLink init(FALSE);
++global int displayLinkNumber init(FALSE);
+ global int displayLineInfo init(FALSE);
+ global int DecodeURL init(FALSE);
+ global int retryAsHttp init(TRUE);
+diff --git a/main.c b/main.c
+index 0d709ef..70c8c1d 100644
+--- a/main.c
++++ b/main.c
+@@ -1239,8 +1239,25 @@ do_dump(Buffer *buf)
+ 	dump_head(buf);
+     if (w3m_dump & DUMP_SOURCE)
+ 	dump_source(buf);
+-    if (w3m_dump == DUMP_BUFFER)
++    if (w3m_dump == DUMP_BUFFER) {
++	int i;
+ 	saveBuffer(buf, stdout, FALSE);
++	if (displayLinkNumber && buf->href) {
++	    printf("\nReferences:\n\n");
++	    for (i = 0; i < buf->href->nanchor; i++) {
++	        ParsedURL pu;
++	        static Str s = NULL;
++		if (buf->href->anchors[i].slave)
++		    continue;
++	        parseURL2(buf->href->anchors[i].url, &pu, baseURL(buf));
++	        s = parsedURL2Str(&pu);
++    	        if (DecodeURL)
++		    s = Strnew_charp(url_unquote_conv
++				     (s->ptr, Currentbuf->document_charset));
++	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, s->ptr);
++	    }
++	}
++    }
+     mySignal(SIGINT, prevtrap);
+ }
+ 

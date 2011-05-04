@@ -1,3 +1,34 @@
+w3m (0.5.2-7) unstable; urgency=low
+
+  * debian/patches/100_download-error-short-write.patch: Patch to tell a
+    download failure when full disk, provided by Karsten Schoelzel.
+    (Closes: #185006, #206605)
+  * debian/patches/110_no-graph-restriction.patch: Patch to restrict table
+    and menu borders to ASCII if you use -no-graph, provided by Karsten
+    Schoelzel. (Closes: #261174, #394265)
+  * debian/patches/120_config-file-handling.patch: Patch to fix segfault
+    when changing options if ~/.w3m not accessible, provided by Karsten
+    Schoelzel. (Closes: #366284)
+  * debian/patches/130_rc-blank-line-fix.patch: Patch to fix .w3m/config
+    parser confused by blank lines, provided by Trent W. Buck.
+    (Closes: #537706)
+  * debian/patches/140_pseudo-inlines.patch: Patch to add a new option
+    "pseudo_inlines", provided by Karsten Schoelzel.
+    (Closes: #329863)
+  * debian/patches/150_numbered-links.patch: Patch to add a new option
+    "display_link_number", provided by Karsten Schoelzel.
+    (Closes: #329862)
+  * debian/patches/160_tls-sni.patch: Patch to add support for TLS SNI,
+    provided by Sascha Silbe. (Closes: #523159)
+  * debian/patches/170_number-prefix.patch: Patch to make number prefixes
+    working when vi_prec_num=0, from upstream.
+  * debian/patches/180_non-xterm.patch: Patch to fix segfault on non-xterm,
+    from upstream.
+  * debian/patches/190_codepage.patch: Patch for handling of codepage with
+    wc_codepage, from upstream.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 18 Jul 2010 08:17:08 +0900
+
 w3m (0.5.2-6) unstable; urgency=low
 
   * debian/patches/070_form-update.patch: Patch to fix a problem of

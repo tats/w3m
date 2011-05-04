@@ -7,3 +7,13 @@
 070_form-update.patch
 080_xhtml-support.patch
 090_simple-preserve-space.patch
+100_download-error-short-write.patch
+110_no-graph-restriction.patch
+120_config-file-handling.patch
+130_rc-blank-line-fix.patch
+140_pseudo-inlines.patch
+150_numbered-links.patch
+160_tls-sni.patch
+170_number-prefix.patch
+180_non-xterm.patch
+190_codepage.patch

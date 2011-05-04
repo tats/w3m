@@ -1,3 +1,14 @@
+w3m (0.5.2-2.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * debian/patches/06-gnukfreebsd-ftbfs-fix:
+    - Fix FTBFS on GNU/kFreeBSD by extending the check on the FreeBSD
+      version to __FreeBSD_kernel_version, as exported by the FreeBSD
+      kernel on the GNU/kFreeBSD environments, as suggested by Petr
+      Salinger (Closes: #493486).
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 30 Jun 2009 00:46:59 +0200
+
 w3m (0.5.2-2) unstable; urgency=low
 
   * debian/control:

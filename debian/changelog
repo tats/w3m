@@ -1,3 +1,9 @@
+w3m (0.5.3-3) UNRELEASED; urgency=low
+  
+  * debian/control: Add Vcs-* fields. (closes: #625532)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Wed, 04 May 2011 17:23:14 +0900
+
 w3m (0.5.3-2) unstable; urgency=low
 
   * debian/control: Add Uploaders and DM-Upload-Allowed for the co-maintainer

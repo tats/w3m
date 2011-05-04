@@ -1,3 +1,10 @@
+w3m (0.5.2-4) unstable; urgency=low
+
+  * debian/control: Move migemo from Recommends to Suggests.
+    (Closes: #570906)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Wed, 24 Feb 2010 22:40:53 +0900
+
 w3m (0.5.2-3) unstable; urgency=low
 
   * debian/patches/10-w3mman-keep-formatting: Patch from 0.5.2-2.1ubuntu1.

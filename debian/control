@@ -9,9 +9,9 @@ Standards-Version: 3.8.4
 Package: w3m
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: ca-certificates, migemo
+Recommends: ca-certificates
 Provides: www-browser
-Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, man-db
+Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, man-db, migemo
 Conflicts: w3m-ssl
 Replaces: w3m-ssl, w3mmee
 Description: WWW browsable pager with excellent tables/frames support

@@ -1,3 +1,21 @@
+w3m (0.5.2-6) unstable; urgency=low
+
+  * debian/patches/070_form-update.patch: Patch to fix a problem of
+    formUpdateBuffer(), from [w3m-dev 04286] on 2007-08-04, provided by
+    Hironori SAKAMOTO. (Closes: #409933)
+  * debian/patches/080_xhtml-support.patch: Patch to support for
+    application/xhtml+xml and default UTF-8 encoding, provided by
+    Karsten Schoelzel. (Closes: #223589, #242599, #357817)
+  * debian/patches/090_simple-preserve-space.patch: Patch to add a new
+    option "simple_preserve_space", provided by dai.
+    (Closes: #384982, #426055)
+  * debian/patches/*: Renumbered.
+  * debian/patches/70_ssl-init.patch: Removed.
+  * debian/w3mconfig: Set ssl_forbid_method to 2 to disable SSLv2.
+  * debian/copyright: Updated.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Wed, 07 Jul 2010 00:10:09 +0900
+
 w3m (0.5.2-5) unstable; urgency=high
 
   * debian/patches/60_check-null-cn.patch: Patch to check for null bytes

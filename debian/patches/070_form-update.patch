@@ -1,0 +1,15 @@
+Description: Bug fix for formUpdateBuffer()
+Origin: http://mi.med.tohoku.ac.jp/~satodai/w3m-dev/200708.month/4286.html
+Author: Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
+Bug-Debian: http://bugs.debian.org/409933
+
+--- w3m-0.5.2.orig/form.c	Fri Feb  6 02:23:07 2004
++++ w3m-0.5.2/form.c	Sat Aug  4 00:23:41 2007
+@@ -403,6 +403,7 @@
+     line->lineBuf = buf;
+     line->propBuf = prop;
+     line->len = len;
++    line->size = len;
+ 
+     return pos;
+ }

@@ -1,0 +1,232 @@
+Description: Support for application/xhtml+xml and default UTF-8 encoding
+Origin: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=242599#21
+Author: Karsten Schoelzel <kuser@gmx.de>
+Bug-Debian: http://bugs.debian.org/242599
+
+---
+commit e6f2cebfaf5a026a1dd3901d226cd8dcdbda8b45
+tree 4182106482bf6409ee482bf35495e4daf044ddee
+parent 183d52a10e7ad0115ad6853b8a67a71228d7b0ee
+author Karsten Schoelzel <kuser@asus.karsten.local> Wed, 03 May 2006 17:34:05 +0200
+committer Karsten Schoelzel <kuser@asus.karsten.local> Wed, 03 May 2006 17:34:05 +0200
+
+ backend.c |    2 +-
+ buffer.c  |    4 ++--
+ display.c |    2 +-
+ file.c    |   28 ++++++++++++++++++++--------
+ main.c    |   12 ++++++------
+ proto.h   |    1 +
+ url.c     |    1 +
+ 7 files changed, 32 insertions(+), 18 deletions(-)
+
+diff --git a/backend.c b/backend.c
+index 101e67e..1360091 100644
+--- a/backend.c
++++ b/backend.c
+@@ -95,7 +95,7 @@ internal_get(char *url, int flag, FormLi
+     buf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
+     do_download = FALSE;
+     if (buf != NULL && buf != NO_BUFFER) {
+-	if (!strcasecmp(buf->type, "text/html") && backend_halfdump_buf) {
++	if (is_html_type(buf->type) && backend_halfdump_buf) {
+ 	    TextLineListItem *p;
+ 	    Str first, last;
+ 	    int len = 0;
+diff --git a/buffer.c b/buffer.c
+index f258dd6..ec48942 100644
+--- a/buffer.c
++++ b/buffer.c
+@@ -558,7 +558,7 @@ reshapeBuffer(Buffer *buf)
+     WcOption.auto_detect = WC_OPT_DETECT_OFF;
+     UseContentCharset = FALSE;
+ #endif
+-    if (!strcasecmp(buf->type, "text/html"))
++    if (is_html_type(buf->type))
+ 	loadHTMLBuffer(&f, buf);
+     else
+ 	loadBuffer(&f, buf);
+@@ -590,7 +590,7 @@ reshapeBuffer(Buffer *buf)
+ 		gotoLine(buf, cur->linenumber);
+ 	}
+ 	buf->pos -= buf->currentLine->bpos;
+-	if (FoldLine && strcasecmp(buf->type, "text/html"))
++	if (FoldLine && !is_html_type(buf->type))
+ 	    buf->currentColumn = 0;
+ 	else
+ 	    buf->currentColumn = sbuf.currentColumn;
+diff --git a/display.c b/display.c
+index addcaeb..18b8655 100644
+--- a/display.c
++++ b/display.c
+@@ -383,7 +383,7 @@ displayBuffer(Buffer *buf, int mode)
+     if (buf->height == 0)
+ 	buf->height = LASTLINE + 1;
+     if ((buf->width != INIT_BUFFER_WIDTH &&
+-	 ((buf->type && !strcmp(buf->type, "text/html")) || FoldLine))
++	 (is_html_type(buf->type) || FoldLine))
+ 	|| buf->need_reshape) {
+ 	buf->need_reshape = TRUE;
+ 	reshapeBuffer(buf);
+diff --git a/file.c b/file.c
+index 0c82b93..df03333 100644
+--- a/file.c
++++ b/file.c
+@@ -272,6 +272,13 @@ is_plain_text_type(char *type)
+ 	    (is_text_type(type) && !is_dump_text_type(type)));
+ }
+ 
++int
++is_html_type(char *type)
++{
++    return (type && (strcasecmp(type, "text/html") == 0 ||
++		     strcasecmp(type, "application/xhtml+xml") == 0));
++}
++
+ static void
+ check_compression(char *path, URLFile *uf)
+ {
+@@ -373,7 +380,7 @@ examineFile(char *path, URLFile *uf)
+ 	    uf->guess_type = guessContentType(path);
+ 	    if (uf->guess_type == NULL)
+ 		uf->guess_type = "text/plain";
+-	    if (strcasecmp(uf->guess_type, "text/html") == 0)
++	    if (is_html_type(uf->guess_type))
+ 		return;
+ 	    if ((fp = lessopen_stream(path))) {
+ 		UFclose(uf);
+@@ -2054,6 +2061,10 @@ loadGeneralFile(char *path, ParsedURL *v
+ 	    t = f.guess_type;
+     }
+ 
++    /* XXX: can we use guess_type to give the type to loadHTMLstream
++     *      to support default utf8 encoding for XHTML here? */
++    f.guess_type = t;
++    
+   page_loaded:
+     if (page) {
+ 	FILE *src;
+@@ -2164,7 +2175,7 @@ loadGeneralFile(char *path, ParsedURL *v
+     }
+ #endif
+ 
+-    if (!strcasecmp(t, "text/html"))
++    if (is_html_type(t))
+ 	proc = loadHTMLBuffer;
+     else if (is_plain_text_type(t))
+ 	proc = loadBuffer;
+@@ -2228,7 +2239,7 @@ loadGeneralFile(char *path, ParsedURL *v
+ 	b->real_type = real_type;
+ 	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
+ 	    copyParsedURL(&b->currentURL, &pu);
+-	if (!strcasecmp(t, "text/html"))
++	if (is_html_type(t))
+ 	    b->type = "text/html";
+ 	else if (w3m_backend) {
+ 	    Str s = Strnew_charp(t);
+@@ -6734,6 +6745,8 @@ loadHTMLstream(URLFile *f, Buffer *newBu
+     }
+     if (content_charset && UseContentCharset)
+ 	doc_charset = content_charset;
++    else if (f->guess_type && !strcasecmp(f->guess_type, "application/xhtml+xml"))
++	doc_charset = WC_CES_UTF_8;
+     meta_charset = 0;
+ #endif
+ #if	0
+@@ -7164,8 +7177,7 @@ _saveBuffer(Buffer *buf, Line *l, FILE *
+     wc_ces charset = DisplayCharset ? DisplayCharset : WC_CES_US_ASCII;
+ #endif
+ 
+-    if (buf->type && !strcasecmp(buf->type, "text/html"))
+-	is_html = TRUE;
++    is_html = is_html_type(buf->type);
+ 
+   pager_next:
+     for (; l != NULL; l = l->next) {
+@@ -7322,7 +7334,7 @@ openGeneralPagerBuffer(InputStream strea
+ 	t = DefaultType;
+ 	DefaultType = NULL;
+     }
+-    if (!strcasecmp(t, "text/html")) {
++    if (is_html_type(t)) {
+ 	buf = loadHTMLBuffer(&uf, t_buf);
+ 	buf->type = "text/html";
+     }
+@@ -8126,7 +8138,7 @@ reloadBuffer(Buffer *buf)
+ 	buf->hmarklist->nmark = 0;
+     if (buf->imarklist)
+ 	buf->imarklist->nmark = 0;
+-    if (!strcasecmp(buf->type, "text/html"))
++    if (is_html_type(buf->type))
+ 	loadHTMLBuffer(&uf, buf);
+     else
+ 	loadBuffer(&uf, buf);
+diff --git a/main.c b/main.c
+index 70c8c1d..9026775 100644
+--- a/main.c
++++ b/main.c
+@@ -4588,10 +4588,10 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML sou
+ 
+     buf = newBuffer(INIT_BUFFER_WIDTH);
+ 
+-    if (!strcasecmp(Currentbuf->type, "text/html")) {
++    if (is_html_type(Currentbuf->type)) {
+ 	buf->type = "text/plain";
+ 	if (Currentbuf->real_type &&
+-	    !strcasecmp(Currentbuf->real_type, "text/html"))
++	    is_html_type(Currentbuf->real_type))
+ 	    buf->real_type = "text/plain";
+ 	else
+ 	    buf->real_type = Currentbuf->real_type;
+@@ -4739,8 +4739,8 @@ DEFUN(reload, RELOAD, "Reload buffer")
+     repBuffer(Currentbuf, buf);
+     if ((buf->type != NULL) && (sbuf.type != NULL) &&
+ 	((!strcasecmp(buf->type, "text/plain") &&
+-	  !strcasecmp(sbuf.type, "text/html")) ||
+-	 (!strcasecmp(buf->type, "text/html") &&
++	  is_html_type(sbuf.type)) ||
++	 (is_html_type(buf->type) &&
+ 	  !strcasecmp(sbuf.type, "text/plain")))) {
+ 	vwSrc();
+ 	if (Currentbuf != buf)
+@@ -5059,7 +5059,7 @@ DEFUN(dispI, DISPLAY_IMAGE, "Restart loa
+ 	return;
+     displayImage = TRUE;
+     /*
+-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
++     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
+      * return;
+      */
+     Currentbuf->image_flag = IMG_FLAG_AUTO;
+@@ -5072,7 +5072,7 @@ DEFUN(stopI, STOP_IMAGE, "Stop loading a
+     if (!activeImage)
+ 	return;
+     /*
+-     * if (!(Currentbuf->type && !strcmp(Currentbuf->type, "text/html")))
++     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
+      * return;
+      */
+     Currentbuf->image_flag = IMG_FLAG_SKIP;
+diff --git a/proto.h b/proto.h
+index 8929580..61a04c1 100644
+--- a/proto.h
++++ b/proto.h
+@@ -167,6 +167,7 @@ extern ParsedURL *schemeToProxy(int sche
+ extern void examineFile(char *path, URLFile *uf);
+ extern char *acceptableEncoding();
+ extern int dir_exist(char *path);
++extern int is_html_type(char *type);
+ #ifdef USE_M17N
+ extern char **get_symbol(wc_ces charset, int *width);
+ extern char **set_symbol(int width);
+diff --git a/url.c b/url.c
+index b34d535..507589f 100644
+--- a/url.c
++++ b/url.c
+@@ -92,6 +92,7 @@ static struct table2 DefaultGuess[] = {
+     {"html", "text/html"},
+     {"htm", "text/html"},
+     {"shtml", "text/html"},
++    {"xhtml", "application/xhtml+xml"},
+     {"gif", "image/gif"},
+     {"jpeg", "image/jpeg"},
+     {"jpg", "image/jpeg"},

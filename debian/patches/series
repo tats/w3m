@@ -1,7 +1,9 @@
-10_w3m.1-debian-fix.patch
-20_ja-w3m.1-debian-fix.patch
-30_config-debian-fix.patch
-40_gnukfreebsd-ftbfs-fix.patch
-50_w3mman-keep-formatting.patch
-60_check-null-cn.patch
-70_ssl-init.patch
+010_w3m.1-debian-fix.patch
+020_ja-w3m.1-debian-fix.patch
+030_config-debian-fix.patch
+040_gnukfreebsd-ftbfs-fix.patch
+050_w3mman-keep-formatting.patch
+060_check-null-cn.patch
+070_form-update.patch
+080_xhtml-support.patch
+090_simple-preserve-space.patch

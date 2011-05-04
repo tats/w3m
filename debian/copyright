@@ -5,32 +5,28 @@ This package was debianized by
 The upstream source can be downloaded from
   http://sourceforge.net/projects/w3m
 
-Upstream Authors: 
- Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp>
- Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
- Fumitoshi UKAI <ukai@debian.or.jp> 
+(C) Copyright 1994-2002 by Akinori Ito
+(C) Copyright 2002-2007 by Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
 
-(C) Copyright 1994-1999 by Akinori Ito. All rights reserved.
- Permission is hereby granted to use or copy this program
- for any purpose,  provided the above notices are retained on all copies
- and you accept that there is no warranty for this software.
- Permission to modify the code and to distribute modified code is granted,
- provided the above notices are retained, and a notice that the code was
- modified is included with the above copyright notice and you accept
- that there is no warranty for this software.
+Use, modification and redistribution of this software is hereby granted,
+provided that this entire copyright notice is included on any copies of
+this software and applications and derivations thereof.
 
- This software may be redistributed freely for this purpose, in full 
- or in part, provided that this entire copyright notice is included 
- on any copies of this software and applications and derivations thereof.
- 
- This software is provided on an "as is" basis, without warranty of any
- kind, either expressed or implied, as to any matter including, but not
- limited to warranty of fitness of purpose, or merchantability, or
- results obtained from use of this software.
+This software is provided on an "as is" basis, without warranty of any
+kind, either expressed or implied, as to any matter including, but not
+limited to warranty of fitness of purpose, or merchantability, or
+results obtained from use of this software.
 
-And source archive includes Boehm GC, which is already debianized
-as libgc5 and libgc5-dev, so this Debian binary package uses it 
-instead of libgc which comes with w3m sources.
+The Debian packaging is distributed under the same conditions as the
+upstream.
+
+w3mimg/fb/*:
+
+Copyright (C) 2002, hito
+follow w3m license
+(ChangeLog: 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>)
+
+matrix.c:
 
 Copyright 1988, 1989 Hans-J. Boehm, Alan J. Demers
 Copyright (c) 1991-1996 by Xerox Corporation.  All rights reserved.

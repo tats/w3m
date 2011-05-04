@@ -1,3 +1,10 @@
+w3m (0.5.2-2+lenny1) stable; urgency=high
+
+  * debian/patches/60_check-null-cn.patch: Patch to check for null bytes
+    in CN/subjAltName, provided by Ludwig Nussel. [CVE-2010-2074]
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 03 Jul 2010 20:53:06 +0900
+
 w3m (0.5.2-2) unstable; urgency=low
 
   * debian/control:

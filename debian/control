@@ -4,7 +4,7 @@ Priority: standard
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [!kfreebsd-i386 !kfreebsd-amd64 !hurd-i386], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev
 Homepage: http://sourceforge.net/projects/w3m
-Standards-Version: 3.9.0
+Standards-Version: 3.9.1
 
 Package: w3m
 Architecture: any
@@ -22,7 +22,7 @@ Description: WWW browsable pager with excellent tables/frames support
   * You can follow links and/or view images in HTML.
   * Internet message preview mode, you can browse HTML mail.
   * You can follow links in plain text if it includes URL forms.
-  * With w3m-img, you can view image inline.
+  * With w3m-img, you can view inline images.
 
 Package: w3m-img
 Architecture: any

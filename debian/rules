@@ -65,17 +65,18 @@ binary-arch: build-stamp install-stamp
 	dh_testdir -a
 	dh_testroot -a
 	dh_installdocs -a
+	cp -a $(builddir)/doc-jp/README.img `pwd`/debian/w3m-img/usr/share/doc/w3m-img/README.img.ja
 	cp -a $(builddir)/doc-jp/* `pwd`/debian/w3m/usr/share/doc/w3m/ja/
-	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.kokb
+	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/w3m.1
+	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.img
+	-rm -f `pwd`/debian/w3m/usr/share/doc/w3m/ja/README.cygwin
 	-rm -rf `pwd`/debian/w3m/usr/share/doc/w3m/ja/CVS
-	cp debian/README.Debian.w3m-img `pwd`/debian/w3m-img/usr/share/doc/w3m-img/README.Debian
 	dh_installexamples -a
 	cd `pwd`/debian/w3m/usr/share/doc/w3m && \
 		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
 	dh_installmenu
 	dh_installmime
 #	dh_installman
-#	dh_installchangelogs $(builddir)/doc/HISTORY
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	dh_strip -a
 	dh_compress -a

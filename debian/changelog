@@ -1,3 +1,20 @@
+w3m (0.5.2-8) unstable; urgency=low
+
+  * debian/patches/010_upstream.patch: Upstream development snapshot on
+    2010-07-26. (Debian patches except config.* are merged)
+  * debian/patches/020_config-guess.patch: Update config.guess and
+    config.sub using autotools-dev 20100122.1.
+  * debian/docs, debian/rules, debian/w3m-img.docs: Install some README
+    files, such as README.img. (Closes: #252738, #306201)
+  * debian/control:
+    - Fix description wording. (Closes: #260414)
+    - Update Standards-Version to 3.9.1.
+  * debian/README.Debian, debian/README.Debian.w3m-img, debian/config.param,
+    debian/w3m.1, debian/w3mman.1: Removed.
+  * debian/copyright: Add the license of EastAsianWidth.txt.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 29 Jul 2010 01:51:25 +0900
+
 w3m (0.5.2-7) unstable; urgency=low
 
   * debian/patches/100_download-error-short-write.patch: Patch to tell a

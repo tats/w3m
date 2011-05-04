@@ -1,3 +1,11 @@
+w3m (0.5.1-4) unstable; urgency=low
+
+  * GCC 4.0 C++ ABI change.
+    rebuild with libgc-dev 1:6.5-1 for libgc1c2
+    closes: Bug#318160
+
+ -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu, 14 Jul 2005 15:10:30 +0000
+
 w3m (0.5.1-3) unstable; urgency=low
 
   * fix upgrading /etc/w3m/w3mconfig to /etc/w3m/config

@@ -1,9 +1,6 @@
-/* $Id: display.c,v 1.68 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: display.c,v 1.70 2007/05/29 12:07:02 inu Exp $ */
 #include <signal.h>
 #include "fm.h"
-
-#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 /* *INDENT-OFF* */
 #ifdef USE_COLOR
@@ -433,11 +430,11 @@ displayBuffer(Buffer *buf, int mode)
 		scroll(n);
 	    }
 	    else if (n < 0 && n > -buf->LINES) {
-#if defined(__CYGWIN__) && LANG == JA
+#if 0 /* defined(__CYGWIN__) */
 		move(LASTLINE + n + 1, 0);
 		clrtoeolx();
 		refresh();
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#endif				/* defined(__CYGWIN__) */
 		rscroll(-n);
 	    }
 	    redrawNLine(buf, n);

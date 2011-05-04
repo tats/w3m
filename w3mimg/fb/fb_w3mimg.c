@@ -1,4 +1,4 @@
-/* $Id: fb_w3mimg.c,v 1.13 2003/08/29 15:06:52 ukai Exp $ */
+/* $Id: fb_w3mimg.c,v 1.14 2004/08/04 17:32:28 ukai Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -17,6 +17,7 @@ w3mfb_init(w3mimg_op * self)
 {
     if (self == NULL)
 	return 0;
+    /* XXX */
     return 1;
 }
 
@@ -194,6 +195,9 @@ w3mimg_fbopen()
     wop->show_image = w3mfb_show_image;
     wop->free_image = w3mfb_free_image;
     wop->get_image_size = w3mfb_get_image_size;
+
+    /* XXX */
+    fb_image_init();
 
     return wop;
   error:

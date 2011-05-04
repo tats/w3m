@@ -1,4 +1,4 @@
-/* $Id: terms.c,v 1.51 2003/12/08 16:06:34 ukai Exp $ */
+/* $Id: terms.c,v 1.57 2007/05/30 04:44:00 inu Exp $ */
 /* 
  * An original curses library for EUC-kanji by Akinori ITO,     December 1989
  * revised by Akinori ITO, January 1995
@@ -15,7 +15,11 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+#ifndef __MINGW32_VERSION
 #include <sys/ioctl.h>
+#else
+#include <winsock.h>
+#endif /* __MINGW32_VERSION */
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -56,8 +60,11 @@ static int tty;
 #include <windows.h>
 #include <sys/cygwin.h>
 static int isWinConsole = 0;
+#define TERM_CYGWIN 1
+#define TERM_CYGWIN_RESERVE_IME 2
 static int isLocalConsole = 0;
-#ifdef USE_MOUSE
+
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
 int cygwin_mouse_btn_swapped = 0;
 #endif
 
@@ -79,9 +86,6 @@ check_win9x(void)
     }
     if (winVersionInfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
 	isWin95 = 1;
-	if (ttyslot() != -1) {
-	    isLocalConsole = 0;
-	}
     }
     else {
 	isWin95 = 0;
@@ -200,7 +204,7 @@ GetConsoleHwnd(void)
     return (hwndFound);
 }
 
-#ifdef USE_MOUSE
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
 static unsigned long
 cygwin_version(void)
 {
@@ -223,7 +227,7 @@ check_cygwin_console(void)
     if (term == NULL)
 	term = DEFAULT_TERM;
     if (term && strncmp(term, "cygwin", 6) == 0) {
-	isWinConsole = 1;
+	isWinConsole = TERM_CYGWIN;
     }
     if (isWinConsole) {
 	hWnd = GetConsoleHwnd();
@@ -232,11 +236,17 @@ check_cygwin_console(void)
 		isLocalConsole = 1;
 	    }
 	}
+	if (strncmp(getenv("LANG"), "ja", 2) == 0) {
+	    isWinConsole = TERM_CYGWIN_RESERVE_IME;
+	}
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS
 	check_win9x();
+	if (isWin95 && ttyslot() != -1) {
+	    isLocalConsole = 0;
+	}
 #endif
     }
-#ifdef USE_MOUSE
+#if CYGWIN_VERSION_DLL_MAJOR < 1005 && defined(USE_MOUSE)
     if (cygwin_version() <= 1003015) {
 	/* cygwin DLL 1.3.15 or earler */
 	cygwin_mouse_btn_swapped = 1;
@@ -280,6 +290,42 @@ typedef struct sgttyb TerminalMode;
 #define TerminalGet(fd,x)       ioctl(fd,TIOCGETP,x)
 #define MODEFLAG(d)     ((d).sg_flags)
 #endif				/* HAVE_SGTTY_H */
+
+#ifdef __MINGW32_VERSION
+/* dummy struct */
+typedef unsigned char   cc_t;
+typedef unsigned int    speed_t;
+typedef unsigned int    tcflag_t;
+
+#define NCCS 32
+struct termios
+  {
+    tcflag_t c_iflag;           /* input mode flags */
+    tcflag_t c_oflag;           /* output mode flags */
+    tcflag_t c_cflag;           /* control mode flags */
+    tcflag_t c_lflag;           /* local mode flags */
+    cc_t c_line;                        /* line discipline */
+    cc_t c_cc[NCCS];            /* control characters */
+    speed_t c_ispeed;           /* input speed */
+    speed_t c_ospeed;           /* output speed */
+  };
+typedef struct termios TerminalMode;
+#define TerminalSet(fd,x)       (0)
+#define TerminalGet(fd,x)       (0)
+#define MODEFLAG(d)     (0)
+
+/* dummy defines */
+#define SIGHUP (0)
+#define SIGQUIT (0)
+#define ECHO (0)
+#define ISIG (0)
+#define VEOF (0)
+#define ICANON (0)
+#define IXON (0)
+#define IXOFF (0)
+
+char *ttyname(int);
+#endif /* __MINGW32_VERSION */
 
 #define MAX_LINE        200
 #define MAX_COLUMN      400
@@ -382,9 +428,10 @@ char *T_cd, *T_ce, *T_kr, *T_kl, *T_cr, *T_bt, *T_ta, *T_sc, *T_rc,
     *T_ti, *T_te, *T_nd, *T_as, *T_ae, *T_eA, *T_ac, *T_op;
 
 int LINES, COLS;
-#if defined(__CYGWIN__) && LANG == JA
+#if defined(__CYGWIN__)
 int LASTLINE;
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#endif				/* defined(__CYGWIN__) */
+
 static int max_LINES = 0, max_COLS = 0;
 static int tab_step = 8;
 static int CurLine, CurColumn;
@@ -504,6 +551,7 @@ set_tty(void)
 void
 ttymode_set(int mode, int imode)
 {
+#ifndef __MINGW32_VERSION
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -518,11 +566,13 @@ ttymode_set(int mode, int imode)
 	printf("Error occured while set %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
+#endif
 }
 
 void
 ttymode_reset(int mode, int imode)
 {
+#ifndef __MINGW32_VERSION
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -537,6 +587,7 @@ ttymode_reset(int mode, int imode)
 	printf("Error occured while reset %x: errno=%d\n", mode, errno);
 	reset_exit(SIGNAL_ARGLIST);
     }
+#endif /* __MINGW32_VERSION */
 }
 
 #ifndef HAVE_SGTTY_H
@@ -589,11 +640,11 @@ reset_tty(void)
 MySignalHandler
 reset_exit(SIGNAL_ARG)
 {
-    reset_tty();
 #ifdef USE_MOUSE
     if (mouseActive)
 	mouse_end();
 #endif				/* USE_MOUSE */
+    reset_tty();
     w3m_exit(0);
     SIGNAL_RETURN;
 }
@@ -763,9 +814,9 @@ setlinescols(void)
 	COLS = MAX_COLUMN;
     if (LINES > MAX_LINE)
 	LINES = MAX_LINE;
-#if defined(__CYGWIN__) && LANG == JA
-    LASTLINE = LINES - (isWinConsole ? 2 : 1);
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#if defined(__CYGWIN__)
+    LASTLINE = LINES - (isWinConsole == TERM_CYGWIN_RESERVE_IME ? 2 : 1);
+#endif				/* defined(__CYGWIN__) */
 }
 
 void
@@ -1285,9 +1336,9 @@ refresh(void)
 		 * (COLS-1,LINES-1).
 		 */
 #if !defined(USE_BG_COLOR) || defined(__CYGWIN__)
-#if defined(__CYGWIN__) && LANG == JA
+#ifdef __CYGWIN__
 		if (isWinConsole)
-#endif				/* defined(__CYGWIN__) && LANG == JA */
+#endif
 		    if (line == LINES - 1 && col == COLS - 1)
 			break;
 #endif				/* !defined(USE_BG_COLOR) || defined(__CYGWIN__) */
@@ -2167,3 +2218,40 @@ touch_cursor()
 #endif
 }
 #endif
+
+#ifdef __MINGW32_VERSION
+
+int tgetent(char *bp, char *name)
+{
+  return 0;
+}
+
+int tgetnum(char *id)
+{
+  return -1;
+}
+
+int tgetflag(char *id)
+{
+  return 0;
+}
+
+char *tgetstr(char *id, char **area)
+{
+  id = "";
+}
+
+char *tgoto(char *cap, int col, int row)
+{
+}
+
+int tputs(char *str, int affcnt, int (*putc)(char))
+{
+}
+
+char *ttyname(int tty)
+{
+  return "CON";
+}
+
+#endif /* __MINGW32_VERSION */

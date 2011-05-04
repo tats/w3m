@@ -132,6 +132,7 @@ keymap	LEFT	MOVE_LEFT
 
 keymap	M-[E	MENU
 keymap	M-[L	MENU
+keymap	M-[Z	PREV_LINK
 
 keymap	M-[1~	BEGIN
 keymap	M-[2~	MENU

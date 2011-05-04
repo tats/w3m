@@ -1,8 +1,8 @@
 dnl w3m autoconf
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(w3m, 0.5.1, ukai@debian.or.jp)
+AC_INIT(w3m, 0.5.2, satodai@w3m.jp)
 PACKAGE=w3m
-VERSION=0.5.1
+VERSION=0.5.2
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
 AC_DEFINE_UNQUOTED(VERSION, "$VERSION")
 AC_SUBST(PACKAGE)
@@ -69,7 +69,6 @@ AC_W3M_HISTORY
 AC_W3M_ALARM
 
 AC_W3M_COOKIE
-AC_W3M_DIGEST_AUTH
 AC_W3M_NNTP
 AC_W3M_GOPHER
 
@@ -89,7 +88,7 @@ do
 done
 
 AC_W3M_IPv6
-AC_W3M_SSL
+AC_W3M_SSL_DIGEST_AUTH
 
 dnl Checks for libraries.
 AC_CHECK_FUNC(sqrt,,[AC_CHECK_LIB(m, sqrt)])
@@ -98,8 +97,10 @@ if test x"$enable_mouse" = xyes; then
  AC_CHECK_LIB(gpm, Gpm_Open, [AC_DEFINE(USE_GPM)
    		W3M_LIBS="$W3M_LIBS -lgpm"])
  AC_SUBST(USE_SYSMOUSE)
- AC_TRY_CPP([#include <machine/console.h>
-   MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])
+ AC_TRY_CPP([#include <sys/consio.h>
+   MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)],
+   [AC_TRY_CPP([#include <machine/console.h>
+      MOUSE_GETINFO], [AC_DEFINE(USE_SYSMOUSE)])])
 fi
 AC_SUBST(AUXBIN_TARGETS)
 AC_W3M_TERMLIB
@@ -110,7 +111,7 @@ AC_DEFINE(AUXBIN_TARGETS, "$AUXBIN_TARGETS")
 
 AC_SUBST(USE_BINMODE_STREAM)
 case "$host_os" in
-  *cygwin*)
+  *cygwin*|*os2-emx*|*mingw*)
     AC_DEFINE(USE_BINMODE_STREAM)
     ;;
 esac
@@ -148,6 +149,13 @@ AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir 
 AC_FUNC_STRFTIME
 AC_FUNC_WAIT3
 AC_FUNC_SETPGRP
+case "$host_os" in
+  *cygwin*)
+    ;;
+  *)
+    AM_LANGINFO_CODESET
+    ;;
+esac
 AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL

@@ -22,6 +22,7 @@
 #define WC_C_CANCEL_TAG		0xE007F
 #define WC_C_UCS4_PLANE1	0x10000
 #define WC_C_UCS4_PLANE2	0x20000
+#define WC_C_UCS4_PLANE3	0x30000
 
 #define wc_ucs_tag_to_ucs(c)		((c) & WC_C_UNICODE_MASK)
 #define wc_ucs_tag_to_tag(c)		((c) >> 24)

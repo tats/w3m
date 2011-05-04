@@ -8,6 +8,7 @@ top_srcdir=@top_srcdir@
 VPATH= $(srcdir):.
 prefix = @prefix@
 exec_prefix = @exec_prefix@
+datarootdir = @datarootdir@
 bindir = @bindir@
 datadir = @datadir@
 libdir = @libdir@

@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.242 2004/04/04 16:47:20 ukai Exp $ */
+/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -22,6 +22,12 @@
 extern int do_getch();
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
+#endif
+
+#ifdef __MINGW32_VERSION
+#include <winsock.h>
+
+WSADATA WSAData;
 #endif
 
 #define DSTR_LEN	256
@@ -51,7 +57,6 @@ static MySignalHandler SigAlarm(SIGNAL_ARG);
 #ifdef SIGWINCH
 static int need_resize_screen = FALSE;
 static MySignalHandler resize_hook(SIGNAL_ARG);
-static MySignalHandler resize_handler(SIGNAL_ARG);
 static void resize_screen(void);
 #endif
 
@@ -65,7 +70,11 @@ static char *MarkString = NULL;
 static char *SearchString = NULL;
 int (*searchRoutine) (Buffer *, char *);
 
+#ifndef __MINGW32_VERSION
 JMP_BUF IntReturn;
+#else
+_JBTYPE IntReturn[_JBLEN];
+#endif /* __MINGW32_VERSION */
 
 static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
@@ -250,6 +259,7 @@ fusage(FILE * f, int err)
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -help            print this usage message\n");
     fprintf(f, "    -version         print w3m version\n");
+    fprintf(f, "    -reqlog          write request logfile\n");
     fprintf(f, "    -debug           DO NOT USE\n");
     if (show_params_p)
 	show_params(f);
@@ -294,10 +304,9 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 
 	    for (; n > 0; --n, ++i) {
 		i %= sizeof(msg_ring) / sizeof(msg_ring[0]);
-		disp_message_nsec(Sprintf
-				  (msg_ring[i].msg,
-				   (unsigned long)msg_ring[i].arg)->ptr, FALSE,
-				  1, TRUE, FALSE);
+
+		printf(msg_ring[i].msg,	(unsigned long)msg_ring[i].arg);
+		sleep_till_anykey(1, 1);
 	    }
 
 	    lock = 0;
@@ -383,10 +392,14 @@ main(int argc, char **argv, char **envp)
     wc_ces CodePage;
 #endif
 #endif
-    GC_init();
+    GC_INIT();
+#if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
+#endif
+#ifdef ENABLE_NLS
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
+#endif
 
 #ifndef HAVE_SYS_ERRLIST
     prepare_sys_errlist();
@@ -452,6 +465,7 @@ main(int argc, char **argv, char **envp)
 	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
     }
     auto_detect = WcOption.auto_detect;
+    BookmarkCharset = DocumentCharset;
 #endif
 
     if (!non_null(HTTP_proxy) &&
@@ -724,8 +738,12 @@ main(int argc, char **argv, char **envp)
 	    else if (!strcmp("-dummy", argv[i])) {
 		/* do nothing */
 	    }
-	    else if (!strcmp("-debug", argv[i]))
+	    else if (!strcmp("-debug", argv[i])) {
 		w3m_debug = TRUE;
+	    }
+	    else if (!strcmp("-reqlog",argv[i])) {
+		w3m_reqlog=rcFile("request.log");
+	    }
 	    else {
 		usage();
 	    }
@@ -743,6 +761,23 @@ main(int argc, char **argv, char **envp)
     if (w3m_debug)
 	dbug_init();
     sock_init();
+#endif
+
+#ifdef __MINGW32_VERSION
+    {
+      int err;
+      WORD wVerReq;
+
+      wVerReq = MAKEWORD(1, 1);
+
+      err = WSAStartup(wVerReq, &WSAData);
+      if (err != 0)
+        {
+	  fprintf(stderr, "Can't find winsock\n");
+	  return 1;
+        }
+      _fmode = _O_BINARY;
+    }
 #endif
 
     FirstTab = NULL;
@@ -1081,24 +1116,32 @@ main(int argc, char **argv, char **envp)
 	}
 #endif
 #ifdef SIGWINCH
-	if (need_resize_screen) {
-	    need_resize_screen = FALSE;
-	    resize_screen();
-	}
-	mySignal(SIGWINCH, resize_handler);
+	mySignal(SIGWINCH, resize_hook);
 #endif
 #ifdef USE_IMAGE
 	if (activeImage && displayImage && Currentbuf->img &&
 	    !Currentbuf->image_loaded) {
 	    do {
+#ifdef SIGWINCH
+		if (need_resize_screen)
+		    resize_screen();
+#endif
 		loadImage(Currentbuf, IMG_FLAG_NEXT);
+	    } while (sleep_till_anykey(1, 0) <= 0);
+	}
+#ifdef SIGWINCH
+	else
+#endif
+#endif
+#ifdef SIGWINCH
+	{
+	    do {
+		if (need_resize_screen)
+		    resize_screen();
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 #endif
 	c = getch();
-#ifdef SIGWINCH
-	mySignal(SIGWINCH, resize_hook);
-#endif
 #ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
 	    alarm(0);
@@ -1109,10 +1152,18 @@ main(int argc, char **argv, char **envp)
 	    mouse_inactive();
 #endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
-	    if (((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
-		prec_num = prec_num * 10 + (int)(c - '0');
-		if (prec_num > PREC_LIMIT)
-		    prec_num = PREC_LIMIT;
+	    if( vi_prec_num ){
+		if(((prec_num && c == '0') || '1' <= c) && (c <= '9')) {
+		    prec_num = prec_num * 10 + (int)(c - '0');
+		    if (prec_num > PREC_LIMIT)
+			prec_num = PREC_LIMIT;
+		}
+		else {
+		    set_buffer_environ(Currentbuf);
+		    save_buffer_position(Currentbuf);
+		    keyPressEventProc((int)c);
+		    prec_num = 0;
+		}
 	    }
 	    else {
 		set_buffer_environ(Currentbuf);
@@ -1416,17 +1467,10 @@ resize_hook(SIGNAL_ARG)
     SIGNAL_RETURN;
 }
 
-static MySignalHandler
-resize_handler(SIGNAL_ARG)
-{
-    resize_screen();
-    mySignal(SIGWINCH, resize_handler);
-    SIGNAL_RETURN;
-}
-
 static void
 resize_screen(void)
 {
+    need_resize_screen = FALSE;
     setlinescols();
     setupscreen();
     if (CurrentTab)
@@ -1449,9 +1493,6 @@ SigPipe(SIGNAL_ARG)
 /* 
  * Command functions: These functions are called with a keystroke.
  */
-
-#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 static void
 nscroll(int n, int mode)
@@ -1963,6 +2004,7 @@ DEFUN(pipeBuf, PIPE_BUF, "Send rendered document to pipe")
 	buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
 	if (buf->type == NULL)
 	    buf->type = "text/plain";
+	buf->currentURL.file = "-";
 	pushBuffer(buf);
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -4110,25 +4152,20 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
     Str tmp;
     FormList *request;
 
-    tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s",
+    tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s"
+#ifdef USE_M17N
+		    "&charset=%s"
+#endif
+		    ,
 		  (Str_form_quote(localCookie()))->ptr,
 		  (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
 #ifdef USE_M17N
-#if LANG == JA
-		  /* FIXME: why WC_CES_EUC_JP hardcoded? 
-		   *  backward compatibility.
-		   *  w3mbookmark takes arguments as EUC-JP only?
-		   */
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
 						 InnerCharset,
-						 WC_CES_EUC_JP)))->ptr);
-#else
-		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
-						 InnerCharset,
-						 SystemCharset)))->ptr);
-#endif
+						 BookmarkCharset)))->ptr,
+		  wc_ces_to_charset(BookmarkCharset));
 #else
 		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
 #endif
@@ -4680,8 +4717,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
 	buf->linkBuffer[LB_N_FRAME] = fbuf;
 	pushBuffer(buf);
 	Currentbuf = buf;
-	if (Currentbuf->firstLine)
+	if (Currentbuf->firstLine) {
+	    COPY_BUFROOT(Currentbuf, &sbuf);
 	    restorePosition(Currentbuf, &sbuf);
+	}
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
@@ -4746,8 +4785,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
     }
     Currentbuf->search_header = sbuf.search_header;
     Currentbuf->form_submit = sbuf.form_submit;
-    if (Currentbuf->firstLine)
+    if (Currentbuf->firstLine) {
+	COPY_BUFROOT(Currentbuf, &sbuf);
 	restorePosition(Currentbuf, &sbuf);
+    }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -5178,6 +5219,9 @@ do_mouse_action(int btn, int x, int y)
 	    cursorXY(Currentbuf, cx, cy);
 	}
     }
+    else {
+	return;
+    }
     if (!(map && map->func))
 	map = &mouse_action.default_map[btn];
     if (map && map->func) {
@@ -5323,7 +5367,7 @@ DEFUN(mouse, MOUSE, "mouse operation")
     int btn, x, y;
 
     btn = (unsigned char)getch() - 32;
-#if defined(__CYGWIN__)
+#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
     if (cygwin_mouse_btn_swapped) {
 	if (btn == MOUSE_BTN2_DOWN)
 	    btn = MOUSE_BTN3_DOWN;
@@ -5674,7 +5718,7 @@ searchKeyNum(void)
 static char *
 getCodePage(void)
 {
-    ULONG CpList[8], CpSize;
+    unsigned long CpList[8], CpSize;
 
     if (!getenv("WINDOWID") && !DosQueryCp(sizeof(CpList), CpList, &CpSize))
 	return Sprintf("CP%d", *CpList)->ptr;
@@ -5714,6 +5758,9 @@ w3m_exit(int i)
     disconnectFTP();
 #ifdef USE_NNTP
     disconnectNews();
+#endif
+#ifdef __MINGW32_VERSION
+    WSACleanup();
 #endif
     exit(i);
 }
@@ -6133,7 +6180,7 @@ DEFUN(prevT, PREV_TAB, "Move to previous tab")
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
-void
+static void
 followTab(TabBuffer * tab)
 {
     Buffer *buf;
@@ -6235,7 +6282,7 @@ DEFUN(tabrURL, TAB_GOTO_RELATIVE, "Open relative URL on new tab")
 	    "Goto relative URL on new tab: ", TRUE);
 }
 
-void
+static void
 moveTab(TabBuffer * t, TabBuffer * t2, int right)
 {
     if (t2 == NO_TABBUFFER)
@@ -6439,7 +6486,9 @@ download_action(struct parsed_tagarg *arg)
     for (; arg; arg = arg->next) {
 	if (!strncmp(arg->arg, "stop", 4)) {
 	    pid = (pid_t) atoi(&arg->arg[4]);
+#ifndef __MINGW32_VERSION
 	    kill(pid, SIGKILL);
+#endif
 	}
 	else if (!strncmp(arg->arg, "ok", 2))
 	    pid = (pid_t) atoi(&arg->arg[2]);
@@ -6473,7 +6522,9 @@ stopDownload(void)
     for (d = FirstDL; d != NULL; d = d->next) {
 	if (d->ok)
 	    continue;
+#ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);
+#endif
 	unlink(d->lock);
     }
 }
@@ -6511,8 +6562,10 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display download list panel")
 	return;
     }
     buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
-    if (replace)
+    if (replace) {
+	COPY_BUFROOT(buf, Currentbuf);
 	restorePosition(buf, Currentbuf);
+    }
     if (!replace && open_tab_dl_list) {
 	_newT();
 	new_tab = TRUE;

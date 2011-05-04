@@ -18,7 +18,7 @@ main(int argc, char **argv)
 	return 1;
 
     if (isdigit((int)*argv[1])) {
-	ULONG CpList[8], CpSize;
+	unsigned long CpList[8], CpSize;
 	APIRET rc = DosQueryCp(sizeof(CpList), CpList, &CpSize);
 	if (rc)
 	    return rc;

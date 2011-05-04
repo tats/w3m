@@ -1,4 +1,4 @@
-/* $Id: menu.c,v 1.45 2006/04/07 13:21:12 inu Exp $ */
+/* $Id: menu.c,v 1.46 2007/05/23 12:34:20 inu Exp $ */
 /* 
  * w3m menu.c
  */
@@ -1711,7 +1711,7 @@ initMenu(void)
 #ifdef USE_M17N
     if (!MainMenuEncode) {
 	MenuItem *item;
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
 	/* FIXME: charset that gettext(3) returns */
 	MainMenuCharset = SystemCharset;
 #endif

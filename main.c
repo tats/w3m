@@ -1,4 +1,4 @@
-/* $Id: main.c,v 1.252 2006/05/29 12:42:22 inu Exp $ */
+/* $Id: main.c,v 1.258 2007/05/31 01:19:50 inu Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
 #include <signal.h>
@@ -22,6 +22,12 @@
 extern int do_getch();
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
+#endif
+
+#ifdef __MINGW32_VERSION
+#include <winsock.h>
+
+WSADATA WSAData;
 #endif
 
 #define DSTR_LEN	256
@@ -64,7 +70,11 @@ static char *MarkString = NULL;
 static char *SearchString = NULL;
 int (*searchRoutine) (Buffer *, char *);
 
+#ifndef __MINGW32_VERSION
 JMP_BUF IntReturn;
+#else
+_JBTYPE IntReturn[_JBLEN];
+#endif /* __MINGW32_VERSION */
 
 static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
@@ -249,6 +259,7 @@ fusage(FILE * f, int err)
     fprintf(f, "    -config file     specify config file\n");
     fprintf(f, "    -help            print this usage message\n");
     fprintf(f, "    -version         print w3m version\n");
+    fprintf(f, "    -reqlog          write request logfile\n");
     fprintf(f, "    -debug           DO NOT USE\n");
     if (show_params_p)
 	show_params(f);
@@ -381,9 +392,11 @@ main(int argc, char **argv, char **envp)
     wc_ces CodePage;
 #endif
 #endif
-    GC_init();
-#if ENABLE_NLS
+    GC_INIT();
+#if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
+#endif
+#ifdef ENABLE_NLS
     bindtextdomain(PACKAGE, LOCALEDIR);
     textdomain(PACKAGE);
 #endif
@@ -725,8 +738,12 @@ main(int argc, char **argv, char **envp)
 	    else if (!strcmp("-dummy", argv[i])) {
 		/* do nothing */
 	    }
-	    else if (!strcmp("-debug", argv[i]))
+	    else if (!strcmp("-debug", argv[i])) {
 		w3m_debug = TRUE;
+	    }
+	    else if (!strcmp("-reqlog",argv[i])) {
+		w3m_reqlog=rcFile("request.log");
+	    }
 	    else {
 		usage();
 	    }
@@ -744,6 +761,23 @@ main(int argc, char **argv, char **envp)
     if (w3m_debug)
 	dbug_init();
     sock_init();
+#endif
+
+#ifdef __MINGW32_VERSION
+    {
+      int err;
+      WORD wVerReq;
+
+      wVerReq = MAKEWORD(1, 1);
+
+      err = WSAStartup(wVerReq, &WSAData);
+      if (err != 0)
+        {
+	  fprintf(stderr, "Can't find winsock\n");
+	  return 1;
+        }
+      _fmode = _O_BINARY;
+    }
 #endif
 
     FirstTab = NULL;
@@ -1459,9 +1493,6 @@ SigPipe(SIGNAL_ARG)
 /* 
  * Command functions: These functions are called with a keystroke.
  */
-
-#define MAX(a, b)  ((a) > (b) ? (a) : (b))
-#define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 static void
 nscroll(int n, int mode)
@@ -4686,8 +4717,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
 	buf->linkBuffer[LB_N_FRAME] = fbuf;
 	pushBuffer(buf);
 	Currentbuf = buf;
-	if (Currentbuf->firstLine)
+	if (Currentbuf->firstLine) {
+	    COPY_BUFROOT(Currentbuf, &sbuf);
 	    restorePosition(Currentbuf, &sbuf);
+	}
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
     }
@@ -4752,8 +4785,10 @@ DEFUN(reload, RELOAD, "Reload buffer")
     }
     Currentbuf->search_header = sbuf.search_header;
     Currentbuf->form_submit = sbuf.form_submit;
-    if (Currentbuf->firstLine)
+    if (Currentbuf->firstLine) {
+	COPY_BUFROOT(Currentbuf, &sbuf);
 	restorePosition(Currentbuf, &sbuf);
+    }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
@@ -5183,6 +5218,9 @@ do_mouse_action(int btn, int x, int y)
 		map = &mouse_action.anchor_map[btn];
 	    cursorXY(Currentbuf, cx, cy);
 	}
+    }
+    else {
+	return;
     }
     if (!(map && map->func))
 	map = &mouse_action.default_map[btn];
@@ -5721,6 +5759,9 @@ w3m_exit(int i)
 #ifdef USE_NNTP
     disconnectNews();
 #endif
+#ifdef __MINGW32_VERSION
+    WSACleanup();
+#endif
     exit(i);
 }
 
@@ -6139,7 +6180,7 @@ DEFUN(prevT, PREV_TAB, "Move to previous tab")
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
 
-void
+static void
 followTab(TabBuffer * tab)
 {
     Buffer *buf;
@@ -6241,7 +6282,7 @@ DEFUN(tabrURL, TAB_GOTO_RELATIVE, "Open relative URL on new tab")
 	    "Goto relative URL on new tab: ", TRUE);
 }
 
-void
+static void
 moveTab(TabBuffer * t, TabBuffer * t2, int right)
 {
     if (t2 == NO_TABBUFFER)
@@ -6445,7 +6486,9 @@ download_action(struct parsed_tagarg *arg)
     for (; arg; arg = arg->next) {
 	if (!strncmp(arg->arg, "stop", 4)) {
 	    pid = (pid_t) atoi(&arg->arg[4]);
+#ifndef __MINGW32_VERSION
 	    kill(pid, SIGKILL);
+#endif
 	}
 	else if (!strncmp(arg->arg, "ok", 2))
 	    pid = (pid_t) atoi(&arg->arg[2]);
@@ -6479,7 +6522,9 @@ stopDownload(void)
     for (d = FirstDL; d != NULL; d = d->next) {
 	if (d->ok)
 	    continue;
+#ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);
+#endif
 	unlink(d->lock);
     }
 }
@@ -6517,8 +6562,10 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display download list panel")
 	return;
     }
     buf->bufferprop |= (BP_INTERNAL | BP_NO_URL);
-    if (replace)
+    if (replace) {
+	COPY_BUFROOT(buf, Currentbuf);
 	restorePosition(buf, Currentbuf);
+    }
     if (!replace && open_tab_dl_list) {
 	_newT();
 	new_tab = TRUE;

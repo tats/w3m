@@ -1,0 +1,9 @@
+#! /bin/sh
+set -e
+
+if dpkg-statoverride --list /usr/lib/w3m/w3mimgdisplay >/dev/null ; then
+  dpkg-statoverride --remove /usr/lib/w3m/w3mimgdisplay
+fi
+dpkg-statoverride --update --add root video 2755 /usr/lib/w3m/w3mimgdisplay
+
+#DEBHELPER#

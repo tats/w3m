@@ -1,0 +1,4 @@
+version=3
+opts="downloadurlmangle=s/downloads\.sourceforge\.net/jaist.dl.sourceforge.net\/sourceforge/" \
+ http://sourceforge.net/projects/w3m/files/ \
+ http://downloads.sourceforge.net/w3m/w3m-([0-9]+\..+)\.tar\.gz\?.* debian uupdate

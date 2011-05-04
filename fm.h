@@ -1,4 +1,4 @@
-/* $Id: fm.h,v 1.131 2006/04/08 11:33:16 inu Exp $ */
+/* $Id: fm.h,v 1.138 2007/05/30 04:47:24 inu Exp $ */
 /* 
  * w3m: WWW wo Miru utility
  * 
@@ -53,7 +53,7 @@ typedef int wc_ces;	/* XXX: not used */
 #define setlocale(category, locale)	/* empty */
 #endif
 
-#if ENABLE_NLS
+#ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(String) gettext (String)
 #define N_(String) (String)
@@ -165,6 +165,15 @@ void bzero(void *, int);
 #define PE_FORM         0x40
 #define PE_ACTIVE	0x80
 #define PE_VISITED	0x4000
+
+/* Extra effect */
+#define PE_EX_ITALIC	0x01
+#define PE_EX_INSERT	0x02
+#define PE_EX_STRIKE	0x04
+
+#define PE_EX_ITALIC_E	PE_UNDER
+#define PE_EX_INSERT_E	PE_UNDER
+#define PE_EX_STRIKE_E	PE_STAND
 
 #define CharType(c)	((c)&P_CHARTYPE)
 #define CharEffect(c)	((c)&(P_EFFECT|PC_SYMBOL))
@@ -514,6 +523,13 @@ typedef struct _DownloadList {
 } DownloadList;
 #define DOWNLOAD_LIST_TITLE "Download List Panel"
 
+#define COPY_BUFROOT(dstbuf, srcbuf) {\
+ (dstbuf)->rootX = (srcbuf)->rootX; \
+ (dstbuf)->rootY = (srcbuf)->rootY; \
+ (dstbuf)->COLS = (srcbuf)->COLS; \
+ (dstbuf)->LINES = (srcbuf)->LINES; \
+}
+
 #define COPY_BUFPOSITION(dstbuf, srcbuf) {\
  (dstbuf)->topLine = (srcbuf)->topLine; \
  (dstbuf)->currentLine = (srcbuf)->currentLine; \
@@ -536,7 +552,7 @@ typedef struct _DownloadList {
 
 #define FONT_STACK_SIZE 5
 
-#define FONTSTAT_SIZE 4
+#define FONTSTAT_SIZE 7
 
 #define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
@@ -584,7 +600,10 @@ struct readbuffer {
 
 #define in_bold fontstat[0]
 #define in_under fontstat[1]
-#define in_stand fontstat[2]
+#define in_italic fontstat[2]
+#define in_strike fontstat[3]
+#define in_ins fontstat[4]
+#define in_stand fontstat[5]
 
 #define RB_PRE		0x01
 #define RB_SCRIPT	0x02
@@ -777,6 +796,7 @@ global char RenderFrame init(FALSE);
 global char TargetSelf init(FALSE);
 global char PermitSaveToPipe init(FALSE);
 global char DecodeCTE init(FALSE);
+global char AutoUncompress init(FALSE);
 global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(FALSE);
 global char MetaRefresh init(FALSE);
@@ -870,7 +890,7 @@ global DownloadList *LastDL init(NULL);
 global int CurrentKey;
 global char *CurrentKeyData;
 global char *CurrentCmdData;
-
+global char *w3m_reqlog;
 extern char *w3m_version;
 
 #define DUMP_BUFFER   0x01
@@ -965,7 +985,10 @@ global int UseDictCommand init(FALSE);
 global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
 #endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);
-global int displayInsDel init(TRUE);
+#define DISPLAY_INS_DEL_SIMPLE	0
+#define DISPLAY_INS_DEL_NORMAL	1
+#define DISPLAY_INS_DEL_FONTIFY	2
+global int displayInsDel init(DISPLAY_INS_DEL_NORMAL);
 global int FoldTextarea init(FALSE);
 global int FoldLine init(FALSE);
 #define DEFAULT_URL_EMPTY	0

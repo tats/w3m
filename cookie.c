@@ -1,4 +1,4 @@
-/* $Id: cookie.c,v 1.9 2003/09/26 17:59:51 ukai Exp $ */
+/* $Id: cookie.c,v 1.10 2006/12/10 10:53:22 inu Exp $ */
 
 /*
  * References for version 0 cookie:                                  
@@ -64,6 +64,13 @@ domain_match(char *host, char *domain)
 	    domain_p = &host[offset];
 	    if (domain[1] == '\0' || contain_no_dots(host, domain_p))
 		return domain_p;
+	}
+	/*
+	 * special case for domainName = .hostName
+	 * see nsCookieService.cpp in Firefox.
+	 */
+	else if (domain[0] == '.' && strcasecmp(host, &domain[1]) == 0) {
+	    return host;
 	}
 	/* [RFC 2109] s. 2, cases 2, 3 */
 	else {

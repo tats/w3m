@@ -1,4 +1,4 @@
-/* $Id: mktable.c,v 1.14 2003/09/22 21:02:20 ukai Exp $ */
+/* $Id: mktable.c,v 1.15 2007/05/31 01:19:50 inu Exp $ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "myctype.h"
@@ -36,6 +36,7 @@ main(int argc, char *argv[], char **envp)
     char *p;
     Hash_hss_i *rhash;
 
+    GC_INIT();
     if (argc != 3) {
 	fprintf(stderr, "usage: %s hashsize file.tab > file.c\n", argv[0]);
 	exit(1);

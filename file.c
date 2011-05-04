@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.246 2006/06/12 11:51:59 inu Exp $ */
+/* $Id: file.c,v 1.254 2007/05/23 15:06:05 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -614,14 +614,12 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
 	    Strshrinkfirst(tmp, 1);
 #endif
-#ifdef HTTP_DEBUG
-	{
+	if(w3m_reqlog){
 	    FILE *ff;
-	    ff = fopen("zzrequest", "a");
+	    ff = fopen(w3m_reqlog, "a");
 	    Strfputs(tmp, ff);
 	    fclose(ff);
 	}
-#endif				/* HTTP_DEBUG */
 	if (src)
 	    Strfputs(tmp, src);
 	cleanup_line(tmp, HEADER_MODE);
@@ -1604,9 +1602,17 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
 				getpassphrase(proxy ? "Proxy Password: " :
 					      "Password: "));
 #else
+#ifndef __MINGW32_VERSION
 	    *pwd = Strnew_charp((char *)
 				getpass(proxy ? "Proxy Password: " :
 					"Password: "));
+#else
+	    term_raw();
+	    *pwd = Strnew_charp((char *)
+				inputLine(proxy ? "Proxy Password: " :
+					  "Password: ", NULL, IN_PASSWORD));
+	    term_cbreak();
+#endif /* __MINGW32_VERSION */
 #endif
 	}
     }
@@ -2126,7 +2132,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	return NO_BUFFER;
     }
 
-    if ((f.content_encoding != CMP_NOCOMPRESS) && !(w3m_dump & DUMP_EXTRA)) {
+    if ((f.content_encoding != CMP_NOCOMPRESS) && AutoUncompress
+	&& !(w3m_dump & DUMP_EXTRA)) {
 	uncompress_stream(&f, &pu.real_file);
     }
     else if (f.compression != CMP_NOCOMPRESS) {
@@ -2251,7 +2258,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    }
 	    else {		/* plain text */
 		int l = atoi(pu.label);
-		gotoLine(b, l);
+		gotoRealLine(b, l);
 		b->pos = 0;
 		arrangeCursor(b);
 	    }
@@ -2443,7 +2450,10 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
 	  sizeof(obuf->anchor));
     obuf->bp.img_alt = obuf->img_alt;
     obuf->bp.in_bold = obuf->in_bold;
+    obuf->bp.in_italic = obuf->in_italic;
     obuf->bp.in_under = obuf->in_under;
+    obuf->bp.in_strike = obuf->in_strike;
+    obuf->bp.in_ins = obuf->in_ins;
     obuf->bp.nobr_level = obuf->nobr_level;
     obuf->bp.prev_ctype = obuf->prev_ctype;
     obuf->bp.init_flag = 0;
@@ -2457,7 +2467,10 @@ back_to_breakpoint(struct readbuffer *obuf)
 	  sizeof(obuf->anchor));
     obuf->img_alt = obuf->bp.img_alt;
     obuf->in_bold = obuf->bp.in_bold;
+    obuf->in_italic = obuf->bp.in_italic;
     obuf->in_under = obuf->bp.in_under;
+    obuf->in_strike = obuf->bp.in_strike;
+    obuf->in_ins = obuf->bp.in_ins;
     obuf->prev_ctype = obuf->bp.prev_ctype;
     obuf->pos = obuf->bp.pos;
     obuf->top_margin = obuf->bp.top_margin;
@@ -2479,6 +2492,8 @@ append_tags(struct readbuffer *obuf)
 	case HTML_IMG_ALT:
 	case HTML_B:
 	case HTML_U:
+	case HTML_I:
+	case HTML_S:
 	    push_link(obuf->tag_stack[i]->cmd, obuf->line->length, obuf->pos);
 	    break;
 	}
@@ -2693,7 +2708,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     FILE *f = h_env->f;
     Str line = obuf->line, pass = NULL;
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
-	*hidden_under = NULL, *hidden = NULL;
+	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
+	*hidden_ins = NULL, *hidden = NULL;
 
 #ifdef DEBUG
     if (w3m_debug) {
@@ -2731,10 +2747,28 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 		hidden = hidden_bold;
 	}
     }
+    if (obuf->in_italic) {
+	if ((hidden_italic = has_hidden_link(obuf, HTML_I)) != NULL) {
+	    if (!hidden || hidden_italic < hidden)
+		hidden = hidden_italic;
+	}
+    }
     if (obuf->in_under) {
 	if ((hidden_under = has_hidden_link(obuf, HTML_U)) != NULL) {
 	    if (!hidden || hidden_under < hidden)
 		hidden = hidden_under;
+	}
+    }
+    if (obuf->in_strike) {
+	if ((hidden_strike = has_hidden_link(obuf, HTML_S)) != NULL) {
+	    if (!hidden || hidden_strike < hidden)
+		hidden = hidden_strike;
+	}
+    }
+    if (obuf->in_ins) {
+	if ((hidden_ins = has_hidden_link(obuf, HTML_INS)) != NULL) {
+	    if (!hidden || hidden_ins < hidden)
+		hidden = hidden_ins;
 	}
     }
     if (hidden) {
@@ -2760,8 +2794,14 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(line, "</img_alt>");
     if (obuf->in_bold && !hidden_bold)
 	Strcat_charp(line, "</b>");
+    if (obuf->in_italic && !hidden_italic)
+	Strcat_charp(line, "</i>");
     if (obuf->in_under && !hidden_under)
 	Strcat_charp(line, "</u>");
+    if (obuf->in_strike && !hidden_strike)
+	Strcat_charp(line, "</s>");
+    if (obuf->in_ins && !hidden_ins)
+	Strcat_charp(line, "</ins>");
 
     if (obuf->top_margin > 0) {
 	int i;
@@ -2964,8 +3004,14 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     }
     if (!hidden_bold && obuf->in_bold)
 	push_tag(obuf, "<B>", HTML_B);
+    if (!hidden_italic && obuf->in_italic)
+	push_tag(obuf, "<I>", HTML_I);
     if (!hidden_under && obuf->in_under)
 	push_tag(obuf, "<U>", HTML_U);
+    if (!hidden_strike && obuf->in_strike)
+	push_tag(obuf, "<S>", HTML_S);
+    if (!hidden_ins && obuf->in_ins)
+	push_tag(obuf, "<INS>", HTML_INS);
 }
 
 void
@@ -3076,8 +3122,14 @@ save_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
     obuf->fontstat_sp++;
     if (obuf->in_bold)
 	push_tag(obuf, "</b>", HTML_N_B);
+    if (obuf->in_italic)
+	push_tag(obuf, "</i>", HTML_N_I);
     if (obuf->in_under)
 	push_tag(obuf, "</u>", HTML_N_U);
+    if (obuf->in_strike)
+	push_tag(obuf, "</s>", HTML_N_S);
+    if (obuf->in_ins)
+	push_tag(obuf, "</ins>", HTML_N_INS);
     bzero(obuf->fontstat, FONTSTAT_SIZE);
 }
 
@@ -3091,8 +3143,14 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	      FONTSTAT_SIZE);
     if (obuf->in_bold)
 	push_tag(obuf, "<b>", HTML_B);
+    if (obuf->in_italic)
+	push_tag(obuf, "<i>", HTML_I);
     if (obuf->in_under)
 	push_tag(obuf, "<u>", HTML_U);
+    if (obuf->in_strike)
+	push_tag(obuf, "<s>", HTML_S);
+    if (obuf->in_ins)
+	push_tag(obuf, "<ins>", HTML_INS);
 }
 
 static Str
@@ -3145,7 +3203,7 @@ process_img(struct parsed_tag *tag, int width)
 #else
     int w, i, nw, n;
 #endif
-    int pre_int = FALSE;
+    int pre_int = FALSE, ext_pre_int = FALSE;
     Str tmp = Strnew();
 
     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
@@ -3201,6 +3259,8 @@ process_img(struct parsed_tag *tag, int width)
 	parsedtag_get_value(tag, ATTR_HEIGHT, &i);
     r = NULL;
     parsedtag_get_value(tag, ATTR_USEMAP, &r);
+    if (parsedtag_exists(tag, ATTR_PRE_INT))
+	ext_pre_int = TRUE;
 
     tmp = Strnew_size(128);
 #ifdef USE_IMAGE
@@ -3429,7 +3489,7 @@ process_img(struct parsed_tag *tag, int width)
     }
 #endif
     Strcat_charp(tmp, "</img_alt>");
-    if (pre_int)
+    if (pre_int && !ext_pre_int)
 	Strcat_charp(tmp, "</pre_int>");
     if (r) {
 	Strcat_charp(tmp, "</input_alt>");
@@ -3568,7 +3628,7 @@ process_input(struct parsed_tag *tag)
 		    Strcat(tmp, Sprintf(" width=\"%d\"", iw));
 		if (parsedtag_get_value(tag, ATTR_HEIGHT, &ih))
 		    Strcat(tmp, Sprintf(" height=\"%d\"", ih));
-		Strcat_charp(tmp, ">");
+		Strcat_charp(tmp, " pre_int>");
 		Strcat_charp(tmp, "</input_alt></pre_int>");
 		return tmp;
 	    }
@@ -4246,6 +4306,20 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		return 0;
 	}
 	return 1;
+    case HTML_I:
+	obuf->in_italic++;
+	if (obuf->in_italic > 1)
+	    return 1;
+	return 0;
+    case HTML_N_I:
+	if (obuf->in_italic == 1 && close_effect0(obuf, HTML_I))
+	    obuf->in_italic = 0;
+	if (obuf->in_italic > 0) {
+	    obuf->in_italic--;
+	    if (obuf->in_italic == 0)
+		return 0;
+	}
+	return 1;
     case HTML_U:
 	obuf->in_under++;
 	if (obuf->in_under > 1)
@@ -4261,9 +4335,15 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_EM:
-	HTMLlineproc1("<b>", h_env);
+	HTMLlineproc1("<i>", h_env);
 	return 1;
     case HTML_N_EM:
+	HTMLlineproc1("</i>", h_env);
+	return 1;
+    case HTML_STRONG:
+	HTMLlineproc1("<b>", h_env);
+	return 1;
+    case HTML_N_STRONG:
 	HTMLlineproc1("</b>", h_env);
 	return 1;
     case HTML_Q:
@@ -4568,6 +4648,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			 h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
+	    h_env->blank_lines++;
 	}
 	obuf->flag &= ~RB_PRE;
 	close_anchor(h_env, obuf);
@@ -4946,36 +5027,114 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_AREA:
 	return 0;
     case HTML_DEL:
-	if (displayInsDel)
-	    HTMLlineproc1("<U>[DEL:</U>", h_env);
-	else
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
 	    obuf->flag |= RB_DEL;
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
+	    HTMLlineproc1("<U>[DEL:</U>", h_env);
+	    break;
+	case DISPLAY_INS_DEL_FONTIFY:
+	    obuf->in_strike++;
+	    if (obuf->in_strike == 1) {
+		push_tag(obuf, "<s>", HTML_S);
+	    }
+	    break;
+	}
 	return 1;
     case HTML_N_DEL:
-	if (displayInsDel)
-	    HTMLlineproc1("<U>:DEL]</U>", h_env);
-	else
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
 	    obuf->flag &= ~RB_DEL;
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
+	    HTMLlineproc1("<U>:DEL]</U>", h_env);
+	case DISPLAY_INS_DEL_FONTIFY:
+	    if (obuf->in_strike == 0)
+		return 1;
+	    if (obuf->in_strike == 1 && close_effect0(obuf, HTML_S))
+		obuf->in_strike = 0;
+	    if (obuf->in_strike > 0) {
+		obuf->in_strike--;
+		if (obuf->in_strike == 0) {
+		    push_tag(obuf, "</s>", HTML_N_S);
+		}
+	    }
+	    break;
+	}
 	return 1;
     case HTML_S:
-	if (displayInsDel)
-	    HTMLlineproc1("<U>[S:</U>", h_env);
-	else
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
 	    obuf->flag |= RB_S;
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
+	    HTMLlineproc1("<U>[S:</U>", h_env);
+	    break;
+	case DISPLAY_INS_DEL_FONTIFY:
+	    obuf->in_strike++;
+	    if (obuf->in_strike == 1) {
+		push_tag(obuf, "<s>", HTML_S);
+	    }
+	    break;
+	}
 	return 1;
     case HTML_N_S:
-	if (displayInsDel)
-	    HTMLlineproc1("<U>:S]</U>", h_env);
-	else
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
 	    obuf->flag &= ~RB_S;
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
+	    HTMLlineproc1("<U>:S]</U>", h_env);
+	    break;
+	case DISPLAY_INS_DEL_FONTIFY:
+	    if (obuf->in_strike == 0)
+		return 1;
+	    if (obuf->in_strike == 1 && close_effect0(obuf, HTML_S))
+		obuf->in_strike = 0;
+	    if (obuf->in_strike > 0) {
+		obuf->in_strike--;
+		if (obuf->in_strike == 0) {
+		    push_tag(obuf, "</s>", HTML_N_S);
+		}
+	    }
+	}
 	return 1;
     case HTML_INS:
-	if (displayInsDel)
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
 	    HTMLlineproc1("<U>[INS:</U>", h_env);
+	    break;
+	case DISPLAY_INS_DEL_FONTIFY:
+	    obuf->in_ins++;
+	    if (obuf->in_ins == 1) {
+		push_tag(obuf, "<ins>", HTML_INS);
+	    }
+	    break;
+	}
 	return 1;
     case HTML_N_INS:
-	if (displayInsDel)
+	switch (displayInsDel) {
+	case DISPLAY_INS_DEL_SIMPLE:
+	    break;
+	case DISPLAY_INS_DEL_NORMAL:
 	    HTMLlineproc1("<U>:INS]</U>", h_env);
+	    break;
+	case DISPLAY_INS_DEL_FONTIFY:
+	    if (obuf->in_ins == 0)
+		return 1;
+	    if (obuf->in_ins == 1 && close_effect0(obuf, HTML_INS))
+		obuf->in_ins = 0;
+	    if (obuf->in_ins > 0) {
+		obuf->in_ins--;
+		if (obuf->in_ins == 0) {
+		    push_tag(obuf, "</ins>", HTML_N_INS);
+		}
+	    }
+	    break;
+	}
 	return 1;
     case HTML_SUP:
 	if (!(obuf->flag & (RB_DEL | RB_S)))
@@ -5070,6 +5229,25 @@ textlist_feed()
     return NULL;
 }
 
+ex_efct(int ex)
+{
+    int effect = 0;
+
+    if (! ex)
+	return 0;
+
+    if (ex & PE_EX_ITALIC)
+	effect |= PE_EX_ITALIC_E;
+
+    if (ex & PE_EX_INSERT)
+	effect |= PE_EX_INSERT_E;
+
+    if (ex & PE_EX_STRIKE)
+	effect |= PE_EX_STRIKE_E;
+
+    return effect;
+}
+
 static void
 HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 {
@@ -5078,7 +5256,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     static int out_size = 0;
     Anchor *a_href = NULL, *a_img = NULL, *a_form = NULL;
     char *p, *q, *r, *s, *t, *str;
-    Lineprop mode, effect;
+    Lineprop mode, effect, ex_effect;
     int pos;
     int nlines;
 #ifdef DEBUG
@@ -5125,6 +5303,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #endif
 
     effect = 0;
+    ex_effect = 0;
     nlines = 0;
     while ((line = feed()) != NULL) {
 #ifdef DEBUG
@@ -5149,7 +5328,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	while (str < endp) {
 	    PSIZE;
 	    mode = get_mctype(str);
-	    if (effect & PC_SYMBOL && *str != '<') {
+	    if ((effect | ex_efct(ex_effect)) & PC_SYMBOL && *str != '<') {
 #ifdef USE_M17N
 		char **buf = set_symbol(symbol_width0);
 		int len;
@@ -5157,16 +5336,16 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		p = buf[(int)symbol];
 		len = get_mclen(p);
 		mode = get_mctype(p);
-		PPUSH(mode | effect, *(p++));
+		PPUSH(mode | effect | ex_efct(ex_effect), *(p++));
 		if (--len) {
 		    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 		    while (len--) {
 			PSIZE;
-			PPUSH(mode | effect, *(p++));
+			PPUSH(mode | effect | ex_efct(ex_effect), *(p++));
 		    }
 		}
 #else
-		PPUSH(PC_ASCII | effect, SYMBOL_BASE + symbol);
+		PPUSH(PC_ASCII | effect | ex_efct(ex_effect), SYMBOL_BASE + symbol);
 #endif
 		str += symbol_width;
 	    }
@@ -5175,12 +5354,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #else
 	    else if (mode == PC_CTRL || IS_INTSPACE(*str)) {
 #endif
-		PPUSH(PC_ASCII | effect, ' ');
+		PPUSH(PC_ASCII | effect | ex_efct(ex_effect), ' ');
 		str++;
 	    }
 #ifdef USE_M17N
 	    else if (mode & PC_UNKNOWN) {
-		PPUSH(PC_ASCII | effect, ' ');
+		PPUSH(PC_ASCII | effect | ex_efct(ex_effect), ' ');
 		str += get_mclen(str);
 	    }
 #endif
@@ -5188,13 +5367,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_M17N
 		int len = get_mclen(str);
 #endif
-		PPUSH(mode | effect, *(str++));
+		PPUSH(mode | effect | ex_efct(ex_effect), *(str++));
 #ifdef USE_M17N
 		if (--len) {
 		    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 		    while (len--) {
 			PSIZE;
-			PPUSH(mode | effect, *(str++));
+			PPUSH(mode | effect | ex_efct(ex_effect), *(str++));
 		    }
 		}
 #endif
@@ -5212,12 +5391,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #else
 		    if (mode == PC_CTRL || IS_INTSPACE(*str)) {
 #endif
-			PPUSH(PC_ASCII | effect, ' ');
+			PPUSH(PC_ASCII | effect | ex_efct(ex_effect), ' ');
 			p++;
 		    }
 #ifdef USE_M17N
 		    else if (mode & PC_UNKNOWN) {
-			PPUSH(PC_ASCII | effect, ' ');
+			PPUSH(PC_ASCII | effect | ex_efct(ex_effect), ' ');
 			p += get_mclen(p);
 		    }
 #endif
@@ -5225,13 +5404,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef USE_M17N
 			int len = get_mclen(p);
 #endif
-			PPUSH(mode | effect, *(p++));
+			PPUSH(mode | effect | ex_efct(ex_effect), *(p++));
 #ifdef USE_M17N
 			if (--len) {
 			    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 			    while (len--) {
 				PSIZE;
-				PPUSH(mode | effect, *(p++));
+				PPUSH(mode | effect | ex_efct(ex_effect), *(p++));
 			    }
 			}
 #endif
@@ -5250,11 +5429,29 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		case HTML_N_B:
 		    effect &= ~PE_BOLD;
 		    break;
+		case HTML_I:
+		    ex_effect |= PE_EX_ITALIC;
+		    break;
+		case HTML_N_I:
+		    ex_effect &= ~PE_EX_ITALIC;
+		    break;
+		case HTML_INS:
+		    ex_effect |= PE_EX_INSERT;
+		    break;
+		case HTML_N_INS:
+		    ex_effect &= ~PE_EX_INSERT;
+		    break;
 		case HTML_U:
 		    effect |= PE_UNDER;
 		    break;
 		case HTML_N_U:
 		    effect &= ~PE_UNDER;
+		    break;
+		case HTML_S:
+		    ex_effect |= PE_EX_STRIKE;
+		    break;
+		case HTML_N_S:
+		    ex_effect &= ~PE_EX_STRIKE;
 		    break;
 		case HTML_A:
 		    if (renderFrameSet &&
@@ -6506,7 +6703,10 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
     obuf->in_bold = 0;
+    obuf->in_italic = 0;
     obuf->in_under = 0;
+    obuf->in_strike = 0;
+    obuf->in_ins = 0;
     obuf->prev_ctype = PC_ASCII;
     obuf->tag_sp = 0;
     obuf->fontstat_sp = 0;
@@ -6541,9 +6741,21 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	push_tag(obuf, "</b>", HTML_N_B);
 	obuf->in_bold = 0;
     }
+    if (obuf->in_italic) {
+	push_tag(obuf, "</i>", HTML_N_I);
+	obuf->in_italic = 0;
+    }
     if (obuf->in_under) {
 	push_tag(obuf, "</u>", HTML_N_U);
 	obuf->in_under = 0;
+    }
+    if (obuf->in_strike) {
+	push_tag(obuf, "</s>", HTML_N_S);
+	obuf->in_strike = 0;
+    }
+    if (obuf->in_ins) {
+	push_tag(obuf, "</ins>", HTML_N_INS);
+	obuf->in_ins = 0;
     }
     if (obuf->flag & RB_INTXTA)
 	HTMLlineproc1("</textarea>", h_env);
@@ -7697,6 +7909,7 @@ _MoveFile(char *path1, char *path2)
 int
 _doFileCopy(char *tmpf, char *defstr, int download)
 {
+#ifndef __MINGW32_VERSION
     Str msg;
     Str filen;
     char *p, *q = NULL;
@@ -7803,6 +8016,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	if (PreserveTimestamp && !is_pipe && !stat(tmpf, &st))
 	    setModtime(p, st.st_mtime);
     }
+#endif /* __MINGW32_VERSION */
     return 0;
 }
 
@@ -7817,6 +8031,7 @@ doFileMove(char *tmpf, char *defstr)
 int
 doFileSave(URLFile uf, char *defstr)
 {
+#ifndef __MINGW32_VERSION
     Str msg;
     Str filen;
     char *p, *q;
@@ -7863,7 +8078,7 @@ doFileSave(URLFile uf, char *defstr)
 	flush_tty();
 	pid = fork();
 	if (!pid) {
-	    if (uf.content_encoding != CMP_NOCOMPRESS) {
+	    if ((uf.content_encoding != CMP_NOCOMPRESS) && AutoUncompress) {
 		uncompress_stream(&uf, &tmpf);
 		if (tmpf)
 		    unlink(tmpf);
@@ -7900,7 +8115,7 @@ doFileSave(URLFile uf, char *defstr)
 	    printf("Can't save. Load file and %s are identical.", p);
 	    return -1;
 	}
-	if (uf.content_encoding != CMP_NOCOMPRESS) {
+	if (uf.content_encoding != CMP_NOCOMPRESS && AutoUncompress) {
 	    uncompress_stream(&uf, &tmpf);
 	    if (tmpf)
 		unlink(tmpf);
@@ -7913,6 +8128,7 @@ doFileSave(URLFile uf, char *defstr)
 	if (PreserveTimestamp && uf.modtime != -1)
 	    setModtime(p, uf.modtime);
     }
+#endif /* __MINGW32_VERSION */
     return 0;
 }
 
@@ -7983,6 +8199,7 @@ inputAnswer(char *prompt)
 static void
 uncompress_stream(URLFile *uf, char **src)
 {
+#ifndef __MINGW32_VERSION
     pid_t pid1;
     FILE *f1;
     char *expand_cmd = GUNZIP_CMDNAME;
@@ -8066,6 +8283,7 @@ uncompress_stream(URLFile *uf, char **src)
     }
     UFhalfclose(uf);
     uf->stream = newFileStream(f1, (void (*)())fclose);
+#endif /* __MINGW32_VERSION */
 }
 
 static FILE *

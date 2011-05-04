@@ -1,4 +1,4 @@
-/* $Id: w3mbookmark.c,v 1.11 2004/07/15 16:44:37 ukai Exp $ */
+/* $Id: w3mbookmark.c,v 1.12 2007/05/31 01:19:50 inu Exp $ */
 #include <stdlib.h>
 #include <stdio.h>
 #include "config.h"
@@ -191,6 +191,7 @@ main(int argc, char *argv[], char **envp)
     char *charset;
     char *sent_cookie;
 
+    GC_INIT();
     p = getenv("REQUEST_METHOD");
     if (p == NULL || strcasecmp(p, "post"))
 	goto request_err;

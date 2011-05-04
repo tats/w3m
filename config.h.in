@@ -166,9 +166,15 @@ typedef RETSIGTYPE MySignalHandler;
 #define SIGNAL_RETURN @SIGNAL_RETURN@
 
 #ifdef HAVE_SIGSETJMP
+#ifdef __MINGW32_VERSION
+# define SETJMP(env) setjmp(env)
+# define LONGJMP(env,val) longjmp(env, val)
+# define JMP_BUF jmp_buf
+#else
 # define SETJMP(env) sigsetjmp(env,1)
 # define LONGJMP(env,val) siglongjmp(env,val)
 # define JMP_BUF sigjmp_buf
+#endif /* __MINGW32_VERSION */
 #else
 # define SETJMP(env) setjmp(env)
 # define LONGJMP(env,val) longjmp(env)
@@ -232,5 +238,13 @@ typedef RETSIGTYPE MySignalHandler;
 #define GUNZIP_NAME  "gunzip"
 #define BUNZIP2_NAME "bunzip2"
 #define INFLATE_NAME "inflate"
+
+#ifdef __MINGW32_VERSION
+#define SIGKILL SIGTERM
+#define S_IXGRP 0
+#define S_IXOTH 0
+#define S_IRWXG 0
+#define S_IRWXO 0
+#endif /* __MINGW32_VERSION */
 
 #endif /* CONFIG_H_SEEN */

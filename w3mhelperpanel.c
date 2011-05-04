@@ -1,4 +1,4 @@
-/* $Id: w3mhelperpanel.c,v 1.13 2003/09/23 18:42:25 ukai Exp $ */
+/* $Id: w3mhelperpanel.c,v 1.14 2007/05/31 01:19:50 inu Exp $ */
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -174,6 +174,7 @@ main(int argc, char *argv[], char **envp)
     char *mode;
     char *sent_cookie;
 
+    GC_INIT();
     p = getenv("REQUEST_METHOD");
     if (p == NULL || strcasecmp(p, "post"))
 	goto request_err;

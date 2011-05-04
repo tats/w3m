@@ -1,10 +1,8 @@
 #!/usr/bin/make -f
-# Made with the aid of dh_make, by Craig Small
-# Sample debian/rules that uses debhelper. GNU copyright 1997 by Joey Hess.
-# Some lines taken from debmake, by Cristoph Lameter.
 
-# Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
+
+include /usr/share/quilt/quilt.make
 
 ifeq ($(DEB_BUILD_GNU_SYSTEM),linux-gnu)
   DEVS=x11,fb+s
@@ -24,9 +22,8 @@ confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 builddir := .
 
 build: build-stamp
-build-stamp: 
+build-stamp: debian/stamp-patched
 	dh_testdir
-	# Add here commands to compile the package.
 	-cp /usr/share/misc/config.guess .
 	-cp /usr/share/misc/config.sub .
 	cd $(builddir) && ./configure $(confargs)
@@ -34,12 +31,11 @@ build-stamp:
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp
 
-clean:
+clean: unpatch
 	dh_testdir
 	dh_testroot
-	-test -f $(builddir)/Makefile && cd $(builddir) && $(MAKE) distclean
-	-rm -f $(builddir)/po/*.gmo
-	-rm -f 
+	if test -f $(builddir)/Makefile; then cd $(builddir) && $(MAKE) distclean; fi
+	rm -f $(builddir)/po/*.gmo
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
 	dh_clean
 
@@ -65,13 +61,10 @@ install-stamp: build-stamp
 	dh_movefiles --sourcedir=debian/w3m
 	touch install-stamp
 
-# Build architecture-independent files here.
 binary-indep: build-stamp install-stamp
 # We have nothing to do by default.
 
-# Build architecture-dependent files here.
 binary-arch: build-stamp install-stamp
-#	dh_testversion
 	dh_testdir -a
 	dh_testroot -a
 	dh_installdocs -a
@@ -85,7 +78,6 @@ binary-arch: build-stamp install-stamp
 	dh_installmenu
 	dh_installmime
 	dh_installemacsen
-#	dh_installinit
 	dh_installcron
 	dh_installman $(builddir)/doc/w3m.1
 	dh_installman debian/w3mman.1
@@ -95,8 +87,6 @@ binary-arch: build-stamp install-stamp
 	dh_strip -a
 	dh_compress -a
 	dh_fixperms -a
-	chgrp video debian/w3m-img/usr/lib/w3m/w3mimgdisplay
-	chmod g+s debian/w3m-img/usr/lib/w3m/w3mimgdisplay
 	dh_installdeb -a
 	dh_shlibdeps -a
 	dh_gencontrol -a

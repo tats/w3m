@@ -1,14 +1,14 @@
-This package was debianized by Fumitoshi UKAI ukai@debian.or.jp on
-Tue,  9 Mar 1999 19:08:08 +0900.
+This package was debianized by
+  1999-2006 Fumitoshi UKAI <ukai@debian.or.jp>
+  2008 Tatsuya Kinoshita <tats@debian.org>
 
-It was downloaded from http://sourceforge.net/projects/w3m
+The upstream source can be downloaded from
+  http://sourceforge.net/projects/w3m
 
 Upstream Authors: 
  Akinori ITO <aito@ei5sun.yz.yamagata-u.ac.jp>
  Hironori SAKAMOTO <hsaka@mth.biglobe.ne.jp>
  Fumitoshi UKAI <ukai@debian.or.jp> 
-
-Copyright:
 
 (C) Copyright 1994-1999 by Akinori Ito. All rights reserved.
  Permission is hereby granted to use or copy this program

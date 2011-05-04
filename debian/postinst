@@ -15,7 +15,7 @@ case "$1" in
        if test -e /etc/w3m/w3mconfig; then
 	   mv -f /etc/w3m/w3mconfig /etc/w3m/w3mconfig.dpkg-tmp
 	   tmp=$(tempfile -p w3m.subst.)
-	   trap "rm -f $tmp" 0 1 2 15
+	   trap "rm -f $tmp" 0
 	   while read opt val
 	   do
 	      val0=$(sed -ne 's/^'$opt'[[:space:]]*//p' /etc/w3m/w3mconfig.dpkg-tmp)

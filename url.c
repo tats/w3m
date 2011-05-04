@@ -1,10 +1,14 @@
-/* $Id: url.c,v 1.93 2006/05/29 12:54:26 inu Exp $ */
+/* $Id: url.c,v 1.95 2007/05/23 15:06:06 inu Exp $ */
 #include "fm.h"
+#ifndef __MINGW32_VERSION
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#else
+#include <winsock.h>
+#endif /* __MINGW32_VERSION */
 
 #include <signal.h>
 #include <setjmp.h>
@@ -30,6 +34,11 @@
 #ifdef	__WATT32__
 #define	write(a,b,c)	write_s(a,b,c)
 #endif				/* __WATT32__ */
+
+#ifdef __MINGW32_VERSION
+#define	write(a,b,c)	send(a,b,c, 0)
+#define close(fd)	closesocket(fd)
+#endif
 
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */
@@ -1694,9 +1703,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		SSL_write(sslh, tmp->ptr, tmp->length);
 	    else
 		write(sock, tmp->ptr, tmp->length);
-#ifdef HTTP_DEBUG
-	    {
-		FILE *ff = fopen("zzrequest", "a");
+	    if(w3m_reqlog){
+		FILE *ff = fopen(w3m_reqlog, "a");
 		if (sslh)
 		    fputs("HTTPS: request via SSL\n", ff);
 		else
@@ -1704,7 +1712,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
 		fclose(ff);
 	    }
-#endif				/* HTTP_DEBUG */
 	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART) {
 		if (sslh)
@@ -1718,13 +1725,11 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #endif				/* USE_SSL */
 	{
 	    write(sock, tmp->ptr, tmp->length);
-#ifdef HTTP_DEBUG
-	    {
-		FILE *ff = fopen("zzrequest", "a");
+	    if(w3m_reqlog){
+		FILE *ff = fopen(w3m_reqlog, "a");
 		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
 		fclose(ff);
 	    }
-#endif				/* HTTP_DEBUG */
 	    if (hr->command == HR_COMMAND_POST &&
 		request->enctype == FORM_ENCTYPE_MULTIPART)
 		write_from_file(sock, request->body);

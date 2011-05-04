@@ -1,3 +1,24 @@
+w3m (0.5.2-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #433122)
+  * Acknowledge NMU. (Closes: #404564)
+  * debian/menu: Comply with menu transition. (Closes: #483817, thanks to
+    Hideki Yamane)
+  * debian/watch: New file. (Closes: #462162)
+  * Handling debian/patches with quilt.
+    - Typo fixes for w3m.1. (Closes: #423829, #266854)
+  * Use dpkg-statoverride to set the file mode of /usr/lib/w3m/w3mimgdisplay.
+  * debian/postinst: Remove redundant signal handling.
+  * debian/copyright: Updated.
+  * debian/control:
+    - Use ${binary:Version} instead of ${Source-Version}.
+    - Set Standards-Version to 3.7.3.
+    - Add the Homepage field.
+    - Typo fix in Description.
+    - Add Tatsuya Kinoshita to Uploaders.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 01 Jun 2008 11:31:04 +0900
+
 w3m (0.5.1-5.1) unstable; urgency=high
 
   * NMU by the Security Team:
@@ -1381,5 +1402,3 @@ w3m (0.0.19990309-1) unstable; urgency=low
   * Initial Release.
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  9 Mar 1999 19:08:08 +0900
-
-

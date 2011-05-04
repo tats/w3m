@@ -40,3 +40,15 @@ diff -Nru w3m-0.4rc1.orig/doc-jp/w3m.1 w3m-0.4rc1/doc-jp/w3m.1
  連続する空行を1行にまとめて表示する．
  .TP
  .B \-X
+diff -urN w3m-0.5.2.orig/doc/w3m.1 w3m-0.5.2/doc/w3m.1
+--- w3m-0.5.2.orig/doc/w3m.1	2002-11-12 21:36:30.000000000 +0900
++++ w3m-0.5.2/doc/w3m.1	2008-06-01 08:25:04.000000000 +0900
+@@ -133,7 +133,7 @@
+ don't use termcap init/deinit
+ .TP
+ .B -title [=TERM]
+-set buffer name to termianl title string. 
++set buffer name to terminal title string. 
+ If TERM is specified, use the TERM style title configuration.
+ .TP
+ .B -o opt=value

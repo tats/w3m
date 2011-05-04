@@ -1,4 +1,4 @@
-/* $Id: rc.c,v 1.102 2006/04/07 15:48:56 inu Exp $ */
+/* $Id: rc.c,v 1.106 2007/05/23 15:06:06 inu Exp $ */
 /* 
  * Initialization file etc.
  */
@@ -87,7 +87,7 @@ static int OptionEncode = FALSE;
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Use graphic char for border of table and menu")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
-#define CMT_DISP_INS_DEL N_("Display DEL, S and STRIKE element")
+#define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
 #define CMT_B_COLOR      N_("Color of normal character")
 #define CMT_A_COLOR      N_("Color of anchor")
@@ -152,6 +152,7 @@ static int OptionEncode = FALSE;
 #define CMT_MARK_ALL_PAGES N_("Treat URL-like strings as links in all pages")
 #define CMT_WRAP         N_("Wrap search")
 #define CMT_VIEW_UNSEENOBJECTS N_("Display unseen objects (e.g. bgimage tag)")
+#define CMT_AUTO_UNCOMPRESS	N_("Uncompress compressed data automatically when downloading")
 #ifdef __EMX__
 #define CMT_BGEXTVIEW	 N_("Run external viewer in a separate session")
 #else
@@ -280,6 +281,13 @@ static struct sel_c defaulturls[] = {
     {0, NULL, NULL}
 };
 
+static struct sel_c displayinsdel[] = {
+    {N_S(DISPLAY_INS_DEL_SIMPLE), N_("simple")},
+    {N_S(DISPLAY_INS_DEL_NORMAL), N_("use tag")},
+    {N_S(DISPLAY_INS_DEL_FONTIFY), N_("fontify")},
+    {0, NULL, NULL}
+};
+
 #ifdef USE_MOUSE
 static struct sel_c wheelmode[] = {
     {TRUE, "1", N_("A:relative to screen height")},
@@ -360,8 +368,8 @@ struct param_ptr params1[] = {
      CMT_GRAPHIC_CHAR, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
-    {"display_ins_del", P_INT, PI_ONOFF, (void *)&displayInsDel,
-     CMT_DISP_INS_DEL, NULL},
+    {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
+     CMT_DISP_INS_DEL, displayinsdel},
     {"ignore_null_img_alt", P_INT, PI_ONOFF, (void *)&ignore_null_img_alt,
      CMT_IGNORE_NULL_IMG_ALT, NULL},
     {"view_unseenobject", P_INT, PI_ONOFF, (void *)&view_unseenobject,
@@ -469,6 +477,8 @@ struct param_ptr params3[] = {
      NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *)&DecodeCTE, CMT_DECODE_CTE,
      NULL},
+    {"auto_uncompress", P_CHARINT, PI_ONOFF, (void *)&AutoUncompress,
+     CMT_AUTO_UNCOMPRESS, NULL},
     {"preserve_timestamp", P_CHARINT, PI_ONOFF, (void *)&PreserveTimestamp,
      CMT_PRESERVE_TIMESTAMP, NULL},
     {"keymap_file", P_STRING, PI_TEXT, (void *)&keymap_file, CMT_KEYMAP_FILE,
@@ -787,8 +797,10 @@ show_params(FILE * fp)
     char *t = NULL;
     char *cmt;
 
-#if ENABLE_NLS
+#ifdef USE_M17N
+#ifdef ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
+#endif
 #endif
 
     fputs("\nconfiguration parameters\n", fp);
@@ -1114,7 +1126,11 @@ do_mkdir(const char *dir, long mode)
     return mkdir(abs, mode);
 }
 #else				/* not __EMX__ */
+#ifdef __MINGW32_VERSION
+#define do_mkdir(dir,mode) mkdir(dir)
+#else
 #define do_mkdir(dir,mode) mkdir(dir,mode)
+#endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
 void
@@ -1307,10 +1323,10 @@ load_option_panel(void)
     if (optionpanel_str == NULL)
 	optionpanel_str = Sprintf(optionpanel_src1, w3m_version,
 			      html_quote(localCookie()->ptr), _(CMT_HELPER));
-#if ENABLE_NLS
+#ifdef USE_M17N
+#ifdef ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
 #endif
-#ifdef USE_M17N
     if (!OptionEncode) {
 	optionpanel_str =
 	    wc_Str_conv(optionpanel_str, OptionCharset, InnerCharset);

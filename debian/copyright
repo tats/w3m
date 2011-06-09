@@ -5,7 +5,7 @@ Source: http://sourceforge.net/projects/w3m
 Files: *
 Copyright: 1994-2002, Akinori Ito
            2002-2011, Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
-License:
+License: w3m
  Use, modification and redistribution of this software is hereby granted,
  provided that this entire copyright notice is included on any copies of
  this software and applications and derivations thereof.
@@ -47,17 +47,16 @@ License:
 
 Files: w3mimg/fb/*
 Copyright: 2002, hito
-License:
+License: w3m
  follow w3m license
 Comment:
  Quoting from ChangeLog, 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>.
 
 Files: scrsize.c
 Copyright: 2000, NBG01720@nifty.ne.jp
-License:
- follow w3m license
+License: w3m
 Comment:
- Altair <NBG01720@nifty.ne.jp> is a contributor for OS/2 support.
+ Contributed to w3m by Altair <NBG01720@nifty.ne.jp> for OS/2 support.
 
 Files: scrsize.c
 Copyright: 1999, NBG01720@nifty.ne.jp

@@ -207,6 +207,8 @@ extern int getImageSize(ImageCache * cache);
 extern Str process_img(struct parsed_tag *tag, int width);
 extern Str process_anchor(struct parsed_tag *tag, char *tagbuf);
 extern Str process_input(struct parsed_tag *tag);
+extern Str process_button(struct parsed_tag *tag);
+extern Str process_n_button(void);
 extern Str process_select(struct parsed_tag *tag);
 extern Str process_n_select(void);
 extern void feed_select(char *str);

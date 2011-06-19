@@ -2878,6 +2878,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	tmp = process_input(tag);
 	feed_table1(tbl, tmp, mode, width);
 	break;
+    case HTML_BUTTON:
+       tmp = process_button(tag);
+       feed_table1(tbl, tmp, mode, width);
+       break;
+    case HTML_N_BUTTON:
+       tmp = process_n_button();
+       feed_table1(tbl, tmp, mode, width);
+       break;
     case HTML_SELECT:
 	tmp = process_select(tag);
 	if (tmp)

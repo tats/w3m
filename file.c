@@ -2469,6 +2469,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
     bcopy((void *)&obuf->anchor, (void *)&obuf->bp.anchor,
 	  sizeof(obuf->anchor));
     obuf->bp.img_alt = obuf->img_alt;
+    obuf->bp.input_alt = obuf->input_alt;
     obuf->bp.in_bold = obuf->in_bold;
     obuf->bp.in_italic = obuf->in_italic;
     obuf->bp.in_under = obuf->in_under;
@@ -2486,6 +2487,7 @@ back_to_breakpoint(struct readbuffer *obuf)
     bcopy((void *)&obuf->bp.anchor, (void *)&obuf->anchor,
 	  sizeof(obuf->anchor));
     obuf->img_alt = obuf->bp.img_alt;
+    obuf->input_alt = obuf->bp.input_alt;
     obuf->in_bold = obuf->bp.in_bold;
     obuf->in_italic = obuf->bp.in_italic;
     obuf->in_under = obuf->bp.in_under;
@@ -2729,7 +2731,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     Str line = obuf->line, pass = NULL;
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
 	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
-	*hidden_ins = NULL, *hidden = NULL;
+	*hidden_ins = NULL, *hidden_input, *hidden = NULL;
 
 #ifdef DEBUG
     if (w3m_debug) {
@@ -2759,6 +2761,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	if ((hidden_img = has_hidden_link(obuf, HTML_IMG_ALT)) != NULL) {
 	    if (!hidden || hidden_img < hidden)
 		hidden = hidden_img;
+	}
+    }
+    if (obuf->input_alt.in) {
+	if ((hidden_input = has_hidden_link(obuf, HTML_INPUT_ALT)) != NULL) {
+	    if (!hidden || hidden_input < hidden)
+		hidden = hidden_input;
 	}
     }
     if (obuf->in_bold) {
@@ -2812,6 +2820,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(line, "</a>");
     if (obuf->img_alt && !hidden_img)
 	Strcat_charp(line, "</img_alt>");
+    if (obuf->input_alt.in && !hidden_input)
+	Strcat_charp(line, "</input_alt>");
     if (obuf->in_bold && !hidden_bold)
 	Strcat_charp(line, "</b>");
     if (obuf->in_italic && !hidden_italic)
@@ -3021,6 +3031,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(tmp, html_quote(obuf->img_alt->ptr));
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_IMG_ALT);
+    }
+    if (!hidden_input && obuf->input_alt.in) {
+	Str tmp;
+	if (obuf->input_alt.hseq > 0)
+	    obuf->input_alt.hseq = - obuf->input_alt.hseq;
+	tmp = Sprintf("<INPUT_ALT hseq=\"%d\" fid=\"%d\" name=\"%s\" type=\"%s\" value=\"%s\">",
+		     obuf->input_alt.hseq,
+		     obuf->input_alt.fid,
+		     obuf->input_alt.name->ptr,
+		     obuf->input_alt.type->ptr,
+		     obuf->input_alt.value->ptr);
+	push_tag(obuf, tmp->ptr, HTML_INPUT_ALT);
     }
     if (!hidden_bold && obuf->in_bold)
 	push_tag(obuf, "<B>", HTML_B);
@@ -3728,6 +3750,63 @@ process_input(struct parsed_tag *tag)
 	}
 	Strcat_charp(tmp, "</pre_int>");
     }
+    return tmp;
+}
+
+Str
+process_button(struct parsed_tag *tag)
+{
+    Str tmp = NULL;
+    char *p, *q, *r, *qq = NULL;
+    int qlen, v;
+
+    if (cur_form_id < 0) {
+       char *s = "<form_int method=internal action=none>";
+       tmp = process_form(parse_tag(&s, TRUE));
+    }
+    if (tmp == NULL)
+       tmp = Strnew();
+
+    p = "submit";
+    parsedtag_get_value(tag, ATTR_TYPE, &p);
+    q = NULL;
+    parsedtag_get_value(tag, ATTR_VALUE, &q);
+    r = "";
+    parsedtag_get_value(tag, ATTR_NAME, &r);
+
+    v = formtype(p);
+    if (v == FORM_UNKNOWN)
+       return NULL;
+
+    if (!q) {
+       switch (v) {
+       case FORM_INPUT_SUBMIT:
+       case FORM_INPUT_BUTTON:
+           q = "SUBMIT";
+           break;
+       case FORM_INPUT_RESET:
+           q = "RESET";
+           break;
+       }
+    }
+    if (q) {
+       qq = html_quote(q);
+       qlen = strlen(q);
+    }
+
+    //    Strcat_charp(tmp, "<pre_int>");
+    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
+                       "name=\"%s\" value=\"%s\">",
+                       cur_hseq++, cur_form_id, p, html_quote(r), qq));
+    return tmp;
+}
+
+Str
+process_n_button(void)
+{
+    Str tmp = Strnew();
+    Strcat_charp(tmp, "</input_alt>");
+    //    Strcat_charp(tmp, "</pre_int>");
     return tmp;
 }
 
@@ -4861,7 +4940,35 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    if (i > obuf->bottom_margin)
 		obuf->bottom_margin = i;
 	}
+	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq)) {
+	    obuf->input_alt.hseq = hseq;
+	}
+	if (parsedtag_get_value(tag, ATTR_FID, &i)) {
+	    obuf->input_alt.fid = i;
+	}
+	if (parsedtag_get_value(tag, ATTR_TYPE, &p)) {
+	    obuf->input_alt.type = Strnew_charp(p);
+	}
+	if (parsedtag_get_value(tag, ATTR_VALUE, &p)) {
+	    obuf->input_alt.value = Strnew_charp(p);
+	}
+	if (parsedtag_get_value(tag, ATTR_NAME, &p)) {
+	    obuf->input_alt.name = Strnew_charp(p);
+	}
+	obuf->input_alt.in = 1;
 	return 0;
+    case HTML_N_INPUT_ALT:
+	if (obuf->input_alt.in) {
+	    if (!close_effect0(obuf, HTML_INPUT_ALT))
+		push_tag(obuf, "</input_alt>", HTML_N_INPUT_ALT);
+	    obuf->input_alt.hseq = 0;
+	    obuf->input_alt.fid = -1;
+	    obuf->input_alt.in = 0;
+	    obuf->input_alt.type = NULL;
+	    obuf->input_alt.name = NULL;
+	    obuf->input_alt.value = NULL;
+	}
+	return 1;
     case HTML_TABLE:
 	close_anchor(h_env, obuf);
 	obuf->table_level++;
@@ -4970,6 +5077,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_INPUT:
 	close_anchor(h_env, obuf);
 	tmp = process_input(tag);
+       if (tmp)
+           HTMLlineproc1(tmp->ptr, h_env);
+       return 1;
+    case HTML_BUTTON:
+       tmp = process_button(tag);
+       if (tmp)
+           HTMLlineproc1(tmp->ptr, h_env);
+       return 1;
+    case HTML_N_BUTTON:
+       tmp = process_n_button();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -5682,6 +5799,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				putHmarker(buf->hmarklist, currentLn(buf),
 					   hpos, hseq - 1);
 			}
+			else if (hseq < 0) {
+			    int h = -hseq - 1;
+			    int hpos = pos;
+			    if (*str == '[')
+				hpos++;
+			    if (buf->hmarklist &&
+				h < buf->hmarklist->nmark &&
+				buf->hmarklist->marks[h].invalid) {
+				buf->hmarklist->marks[h].pos = hpos;
+				buf->hmarklist->marks[h].line = currentLn(buf);
+				buf->hmarklist->marks[h].invalid = 0;
+				hseq = -hseq;
+			    }
+			}
+
 			if (!form->target)
 			    form->target = buf->baseTarget;
 			if (a_textarea &&
@@ -6749,6 +6881,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     obuf->nobr_level = 0;
     bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
+    obuf->input_alt.hseq = 0;
+    obuf->input_alt.fid = -1;
+    obuf->input_alt.in = 0;
+    obuf->input_alt.type = NULL;
+    obuf->input_alt.name = NULL;
+    obuf->input_alt.value = NULL;
     obuf->in_bold = 0;
     obuf->in_italic = 0;
     obuf->in_under = 0;
@@ -6783,6 +6921,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     if (obuf->img_alt) {
 	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
 	obuf->img_alt = NULL;
+    }
+    if (obuf->input_alt.in) {
+	push_tag(obuf, "</input_alt>", HTML_N_INPUT_ALT);
+	obuf->input_alt.hseq = 0;
+	obuf->input_alt.fid = -1;
+	obuf->input_alt.in = 0;
+	obuf->input_alt.type = NULL;
+	obuf->input_alt.name = NULL;
+	obuf->input_alt.value = NULL;
     }
     if (obuf->in_bold) {
 	push_tag(obuf, "</b>", HTML_N_B);

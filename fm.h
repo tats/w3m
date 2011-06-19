@@ -562,6 +562,13 @@ typedef struct _DownloadList {
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
 #define FOLD_BUFFER_WIDTH (FoldLine ? (INIT_BUFFER_WIDTH + 1) : -1)
 
+struct input_alt_attr {
+  int hseq;
+  int fid;
+  int in;
+  Str type, name, value;
+};
+
 typedef struct {
     int pos;
     int len;
@@ -569,6 +576,7 @@ typedef struct {
     long flag;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     short nobr_level;
     Lineprop prev_ctype;
@@ -591,6 +599,7 @@ struct readbuffer {
     short nobr_level;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     char fontstat_stack[FONT_STACK_SIZE][FONTSTAT_SIZE];
     int fontstat_sp;

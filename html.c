@@ -56,6 +56,9 @@ unsigned char ALST_INPUT[] =
     ATTR_CORE
 };
 #define MAXA_INPUT      MAXA_CORE + 12
+unsigned char ALST_BUTTON[] =
+    { ATTR_TYPE, ATTR_VALUE, ATTR_NAME, ATTR_CORE };
+#define MAXA_BUTTON	MAXA_CORE + 3
 unsigned char ALST_TEXTAREA[] =
     { ATTR_COLS, ATTR_ROWS, ATTR_NAME, ATTR_READONLY, ATTR_CORE };
 #define MAXA_TEXTAREA   MAXA_CORE + 4
@@ -247,24 +250,24 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/bdo", NULL, 0, TFLG_END},	/* 121 HTML_N_BDO */
     {"big", ALST_NOP, MAXA_NOP, 0},		/* 122 HTML_BIG */
     {"/big", NULL, 0, TFLG_END},	/* 123 HTML_N_BIG */
-    {"button", ALST_NOP, MAXA_NOP, 0},		/* 124 HTML_BUTTON */
-    {"fieldset", ALST_NOP, MAXA_NOP, 0},	        /* 125 HTML_FIELDSET */
-    {"/fieldset", NULL, 0, TFLG_END},	/* 126 HTML_N_FIELDSET */
-    {"iframe", ALST_NOP, MAXA_NOP, 0},		/* 127 HTML_IFRAME */
-    {"label", ALST_NOP, MAXA_NOP, 0}, 		/* 128 HTML_LABEL */
-    {"/label", NULL, 0, TFLG_END},	/* 129 HTML_N_LABEL */
-    {"legend", ALST_NOP, MAXA_NOP, 0},		/* 130 HTML_LEGEND */
-    {"/legend", NULL, 0, TFLG_END},	/* 131 HTML_N_LEGEND */
-    {"noscript", ALST_NOP, MAXA_NOP, 0},	        /* 132 HTML_NOSCRIPT */
-    {"/noscript", NULL, 0, TFLG_END},	/* 133 HTML_N_NOSCRIPT */
-    {"object", ALST_NOP, MAXA_NOP, 0},		/* 134 HTML_OBJECT */
-    {"optgroup", ALST_NOP, MAXA_NOP, 0},	        /* 135 HTML_OPTGROUP */
-    {"/optgroup", NULL, 0, TFLG_END},	/* 136 HTML_N_OPTGROUP */
-    {"param", ALST_NOP, MAXA_NOP, 0},		/* 137 HTML_PARAM */
-    {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 138 HTML_SMALL */
-    {"/small", NULL, 0, TFLG_END},	/* 139 HTML_N_SMALL */
+    {"button", ALST_BUTTON, MAXA_BUTTON, 0},	/* 124 HTML_BUTTON */
+    {"/button", NULL, 0, TFLG_END},	/* 125 HTML_N_BUTTON */
+    {"fieldset", ALST_NOP, MAXA_NOP, 0},	/* 126 HTML_FIELDSET */
+    {"/fieldset", NULL, 0, TFLG_END},	/* 127 HTML_N_FIELDSET */
+    {"iframe", ALST_NOP, MAXA_NOP, 0},		/* 128 HTML_IFRAME */
+    {"label", ALST_NOP, MAXA_NOP, 0}, 		/* 129 HTML_LABEL */
+    {"/label", NULL, 0, TFLG_END},	/* 130 HTML_N_LABEL */
+    {"legend", ALST_NOP, MAXA_NOP, 0},		/* 131 HTML_LEGEND */
+    {"/legend", NULL, 0, TFLG_END},	/* 132 HTML_N_LEGEND */
+    {"noscript", ALST_NOP, MAXA_NOP, 0},	        /* 133 HTML_NOSCRIPT */
+    {"/noscript", NULL, 0, TFLG_END},	/* 134 HTML_N_NOSCRIPT */
+    {"object", ALST_NOP, MAXA_NOP, 0},		/* 135 HTML_OBJECT */
+    {"optgroup", ALST_NOP, MAXA_NOP, 0},	        /* 136 HTML_OPTGROUP */
+    {"/optgroup", NULL, 0, TFLG_END},	/* 137 HTML_N_OPTGROUP */
+    {"param", ALST_NOP, MAXA_NOP, 0},		/* 138 HTML_PARAM */
+    {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 139 HTML_SMALL */
+    {"/small", NULL, 0, TFLG_END},	/* 140 HTML_N_SMALL */
 
-    {NULL, NULL, 0, 0},		/* 140 Undefined */
     {NULL, NULL, 0, 0},		/* 141 Undefined */
     {NULL, NULL, 0, 0},		/* 142 Undefined */
     {NULL, NULL, 0, 0},		/* 143 Undefined */

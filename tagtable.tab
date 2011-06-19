@@ -176,6 +176,7 @@ bdo		HTML_BDO
 big		HTML_BIG
 /big		HTML_N_BIG
 button		HTML_BUTTON
+/button		HTML_N_BUTTON
 fieldset	HTML_FIELDSET
 /fieldset	HTML_N_FIELDSET
 iframe		HTML_IFRAME

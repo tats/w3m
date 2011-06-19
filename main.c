@@ -200,9 +200,11 @@ fusage(FILE * f, int err)
 #ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
+#if 0				/* use -O{s|j|e} instead */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
+#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -248,7 +250,11 @@ fusage(FILE * f, int err)
 #endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
     fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
+#if 1				/* pager requires -s */
+    fprintf(f, "    -s               squeeze multiple blank lines\n");
+#else
     fprintf(f, "    -S               squeeze multiple blank lines\n");
+#endif
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -530,12 +536,14 @@ main(int argc, char **argv, char **envp)
 		    PagerMax = atoi(argv[i]);
 	    }
 #ifdef USE_M17N
+#if 0				/* use -O{s|j|e} instead */
 	    else if (!strcmp("-s", argv[i]))
 		DisplayCharset = WC_CES_SHIFT_JIS;
 	    else if (!strcmp("-j", argv[i]))
 		DisplayCharset = WC_CES_ISO_2022_JP;
 	    else if (!strcmp("-e", argv[i]))
 		DisplayCharset = WC_CES_EUC_JP;
+#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -703,7 +711,11 @@ main(int argc, char **argv, char **envp)
 		accept_cookie = TRUE;
 	    }
 #endif				/* USE_COOKIE */
+#if 1				/* pager requires -s */
+	    else if (!strcmp("-s", argv[i]))
+#else
 	    else if (!strcmp("-S", argv[i]))
+#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;

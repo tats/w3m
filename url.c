@@ -1465,20 +1465,20 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 #endif				/* USE_COOKIE */
     if (hr->command == HR_COMMAND_POST) {
 	if (hr->request->enctype == FORM_ENCTYPE_MULTIPART) {
-	    Strcat_charp(tmp, "Content-type: multipart/form-data; boundary=");
+	    Strcat_charp(tmp, "Content-Type: multipart/form-data; boundary=");
 	    Strcat_charp(tmp, hr->request->boundary);
 	    Strcat_charp(tmp, "\r\n");
 	    Strcat(tmp,
-		   Sprintf("Content-length: %ld\r\n", hr->request->length));
+		   Sprintf("Content-Length: %ld\r\n", hr->request->length));
 	    Strcat_charp(tmp, "\r\n");
 	}
 	else {
 	    if (!override_content_type) {
 		Strcat_charp(tmp,
-			     "Content-type: application/x-www-form-urlencoded\r\n");
+			     "Content-Type: application/x-www-form-urlencoded\r\n");
 	    }
 	    Strcat(tmp,
-		   Sprintf("Content-length: %ld\r\n", hr->request->length));
+		   Sprintf("Content-Length: %ld\r\n", hr->request->length));
 	    if (header_string)
 		Strcat(tmp, header_string);
 	    Strcat_charp(tmp, "\r\n");

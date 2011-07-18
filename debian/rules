@@ -19,7 +19,9 @@ confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 
 builddir := .
 
-build: build-stamp
+build-indep:
+
+build-arch: build-stamp
 build-stamp:
 	dh_testdir
 	cd $(builddir) && dh_autotools-dev_updateconfig
@@ -51,10 +53,9 @@ install-stamp: build-stamp
 	mv -f debian/w3m/usr/lib/w3m/w3mimgdisplay debian/w3m-img/usr/lib/w3m/w3mimgdisplay
 	touch install-stamp
 
-binary-indep: build-stamp install-stamp
-# We have nothing to do by default.
+binary-indep:
 
-binary-arch: build-stamp install-stamp
+binary-arch: install
 	dh_testdir -a
 	dh_testroot -a
 	dh_installdocs -a
@@ -96,5 +97,6 @@ binary-arch: build-stamp install-stamp
 source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
+build: build-indep build-arch
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary
+.PHONY: build-indep build-arch build install clean binary-indep binary-arch binary

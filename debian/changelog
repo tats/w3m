@@ -1,4 +1,4 @@
-w3m (0.5.3-3) UNRELEASED; urgency=low
+w3m (0.5.3-3) unstable; urgency=low
   
   * debian/control:
     - Add Vcs-* fields. (closes: #625532)
@@ -6,7 +6,7 @@ w3m (0.5.3-3) UNRELEASED; urgency=low
   * debian/rules: Add the targets build-arch and build-indep.
   * debian/copyright: Switch to the DEP-5 format.
 
- -- Tatsuya Kinoshita <tats@debian.org>  Mon, 18 Jul 2011 17:18:30 +0900
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 18 Jul 2011 17:19:33 +0900
 
 w3m (0.5.3-2) unstable; urgency=low
 

@@ -1,3 +1,14 @@
+w3m (0.5.3-4) unstable; urgency=low
+
+  * debian/patches/060_format-security.patch: Patch from 0.5.3-3ubuntu1 to
+    appease gcc -Werror=format-security, provided by Colin Watson.
+    (closes: #646321)
+  * debian/control: Use linux-any to depend on a Linux-specific package.
+    (closes: #634340)
+  * debian/copyright: Appease missing-license-paragraph-in-dep5-copyright.
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 30 Oct 2011 15:23:40 +0900
+
 w3m (0.5.3-3) unstable; urgency=low
   
   * debian/control:

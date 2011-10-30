@@ -99,7 +99,7 @@ create_new_bookmark(char *bmark, char *section, char *title, char *url,
 	fprintf(f, "<body>\n<h1>Bookmarks</h1>\n");
 	fprintf(f, "<h2>%s</h2>\n<ul>\n", section);
 	fprintf(f, "<li><a href=\"%s\">%s</a>\n", url, title);
-	fprintf(f, end_section);
+	fprintf(f, "%s", end_section);
 	fprintf(f, "</ul>\n</body>\n</html>\n");
 	fclose(f);
     }

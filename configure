@@ -8986,7 +8986,7 @@ extern char *sys_errlist[];
 int
 main ()
 {
-printf(sys_errlist[0]);
+printf("%s", sys_errlist[0]);
   ;
   return 0;
 }

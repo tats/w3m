@@ -12,6 +12,7 @@ Standards-Version: 3.9.2
 
 Package: w3m
 Architecture: any
+Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: ca-certificates
 Provides: www-browser

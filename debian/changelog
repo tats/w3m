@@ -1,3 +1,18 @@
+w3m (0.5.3-5) unstable; urgency=low
+
+  * debian/control
+    - Mark w3m Multi-Arch: foreign.
+      Patch from 0.5.3-4ubuntu1, provided by Steve Langasek.
+    - update Vcs-* fields to use anonscm.debian.org.
+    - update Uploaders name-addr.
+  * debian/rules: enable hardening options
+    http://wiki.debian.org/ReleaseGoals/SecurityHardeningBuildFlags
+  * debian/patches/050_entity-h-clean.patch
+    do not remove entity.h.  because generated file is a little deferent
+    than original,  so it is unable to unapply.
+
+ -- HIGUCHI Daisuke <debian@vdr.jp>  Tue, 29 Nov 2011 00:36:36 +0900
+
 w3m (0.5.3-4) unstable; urgency=low
 
   * debian/patches/060_format-security.patch: Patch from 0.5.3-3ubuntu1 to

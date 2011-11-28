@@ -6,8 +6,8 @@ Uploaders: HIGUCHI Daisuke <debian@vdr.jp>
 DM-Upload-Allowed: yes
 Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [linux-any], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev, autotools-dev (>= 20100122)
 Homepage: http://sourceforge.net/projects/w3m
-Vcs-Git: git://git.debian.org/git/collab-maint/w3m.git
-Vcs-Browser: http://git.debian.org/?p=collab-maint/w3m.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/w3m.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/w3m.git
 Standards-Version: 3.9.2
 
 Package: w3m

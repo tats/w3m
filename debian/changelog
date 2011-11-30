@@ -8,10 +8,10 @@ w3m (0.5.3-5) unstable; urgency=low
   * debian/rules: enable hardening options
     http://wiki.debian.org/ReleaseGoals/SecurityHardeningBuildFlags
   * debian/patches/050_entity-h-clean.patch
-    do not remove entity.h.  because generated file is a little deferent
+    do not remove entity.h.  because generated file is a little different
     than original,  so it is unable to unapply.
 
- -- HIGUCHI Daisuke <debian@vdr.jp>  Tue, 29 Nov 2011 00:36:36 +0900
+ -- HIGUCHI Daisuke (VDR dai) <debian@vdr.jp>  Tue, 29 Nov 2011 00:36:36 +0900
 
 w3m (0.5.3-4) unstable; urgency=low
 

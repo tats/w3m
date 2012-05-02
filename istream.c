@@ -22,8 +22,8 @@
 static void basic_close(int *handle);
 static int basic_read(int *handle, char *buf, int len);
 
-static void file_close(struct file_handle *handle);
-static int file_read(struct file_handle *handle, char *buf, int len);
+static void file_close(struct io_file_handle *handle);
+static int file_read(struct io_file_handle *handle, char *buf, int len);
 
 static int str_read(Str handle, char *buf, int len);
 
@@ -114,7 +114,7 @@ newFileStream(FILE * f, void (*closep) ())
     stream = New(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->file.type = IST_FILE;
-    stream->file.handle = New(struct file_handle);
+    stream->file.handle = New(struct io_file_handle);
     stream->file.handle->f = f;
     if (closep)
 	stream->file.handle->close = closep;
@@ -658,13 +658,13 @@ basic_read(int *handle, char *buf, int len)
 }
 
 static void
-file_close(struct file_handle *handle)
+file_close(struct io_file_handle *handle)
 {
     handle->close(handle->f);
 }
 
 static int
-file_read(struct file_handle *handle, char *buf, int len)
+file_read(struct io_file_handle *handle, char *buf, int len)
 {
     return fread(buf, 1, len, handle->f);
 }

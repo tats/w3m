@@ -4,3 +4,4 @@
 040_link_gcc45.patch
 050_entity-h-clean.patch
 060_format-security.patch
+070_glibc2.14.patch

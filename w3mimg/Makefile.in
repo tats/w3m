@@ -22,6 +22,8 @@ w3mimg.a: $(IMGOBJS)
 	$(AR) rv $@ $(IMGOBJS)
 	$(RANLIB) $@
 
+$(IMGOBJS): @IMGTARGETS@
+
 w3mimg.o: w3mimg.c
 	$(CC) $(CFLAGS) -c $<
 

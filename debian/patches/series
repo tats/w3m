@@ -6,3 +6,4 @@
 060_format-security.patch
 070_glibc2.14.patch
 080_gc72.patch
+090_parallel-make.patch

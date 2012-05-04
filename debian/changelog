@@ -1,3 +1,21 @@
+w3m (0.5.3-6) UNRELEASED; urgency=low
+
+  [ Tatsuya Kinoshita ]
+  * debian/patches/070_glibc2.14.patch:
+    Patch from Ubuntu to unbreak compilation with eglibc 2.14 (LP: #935540)
+  * debian/patches/080_gc72.patch:
+    Patch from Gentoo to support Boehm GC 7.2
+  * debian/patches/090_parallel-make.patch:
+    Patch from Gentoo to fix parallel make issue
+  * Update copyright-format version to 1.0
+  * Update Standards-Version to 3.9.3
+
+  [ HIGUCHI Daisuke (VDR dai) ]
+  * debian/control: update my email address
+  * debian/changelog: fix typo
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 04 May 2012 21:01:00 +0900
+
 w3m (0.5.3-5) unstable; urgency=low
 
   * debian/control

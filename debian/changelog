@@ -1,4 +1,4 @@
-w3m (0.5.3-6) UNRELEASED; urgency=low
+w3m (0.5.3-6) unstable; urgency=low
 
   [ Tatsuya Kinoshita ]
   * debian/patches/070_glibc2.14.patch:
@@ -14,7 +14,7 @@ w3m (0.5.3-6) UNRELEASED; urgency=low
   * debian/control: update my email address
   * debian/changelog: fix typo
 
- -- Tatsuya Kinoshita <tats@debian.org>  Fri, 04 May 2012 21:01:00 +0900
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 05 May 2012 00:00:15 +0900
 
 w3m (0.5.3-5) unstable; urgency=low
 

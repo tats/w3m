@@ -14,6 +14,7 @@ endif
 confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 	--mandir=/usr/share/man \
 	--with-gc --with-ssl \
+	--with-imagelib=imlib2 \
 	--with-migemo="migemo -t egrep /usr/share/migemo/migemo-dict" \
 	--with-editor=/usr/bin/sensible-editor \
 	--enable-gopher \

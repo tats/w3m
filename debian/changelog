@@ -1,3 +1,9 @@
+w3m (0.5.3-7) UNRELEASED; urgency=low
+
+  * Add the configure option --with-imagelib=imlib2 (closes: #672121)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 10 May 2012 00:20:30 +0900
+
 w3m (0.5.3-6) unstable; urgency=low
 
   [ Tatsuya Kinoshita ]

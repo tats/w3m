@@ -150,7 +150,7 @@ parsetagx.o: html.c
 
 funcname.tab: $(DEFUNS)
 	(echo '#define DEFUN(x,y,z) x y';\
-	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) - | \
+	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) $(CPPFLAGS) - | \
 	 awk '$$1 ~ /^[_A-Za-z]/ { \
 	       for (i=2;i<=NF;i++) { print $$i, $$1} \
 	 }' > $@.tmp

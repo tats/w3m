@@ -7,3 +7,4 @@
 070_glibc2.14.patch
 080_gc72.patch
 090_parallel-make.patch
+100_use-cppflags.patch

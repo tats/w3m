@@ -2,8 +2,11 @@
 
 #export DH_VERBOSE=1
 
-CFLAGS=$(shell dpkg-buildflags --get CFLAGS)
-LDFLAGS=$(shell dpkg-buildflags --get LDFLAGS)
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+dpkg_buildflags = DEB_BUILD_MAINT_OPTIONS=$(DEB_BUILD_MAINT_OPTIONS) dpkg-buildflags
+CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS)
+CPPFLAGS=$(shell $(dpkg_buildflags) --get CPPFLAGS)
+LDFLAGS=$(shell $(dpkg_buildflags) --get LDFLAGS)
 
 ifeq ($(DEB_BUILD_GNU_SYSTEM),linux-gnu)
   DEVS=x11,fb+s
@@ -29,7 +32,7 @@ build-arch: build-stamp
 build-stamp:
 	dh_testdir
 	cd $(builddir) && dh_autotools-dev_updateconfig
-	cd $(builddir) && CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
+	cd $(builddir) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp

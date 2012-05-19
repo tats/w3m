@@ -196,7 +196,7 @@ formtype(char *typestr)
 	if (!strcasecmp(typestr, _formtypetbl[i]))
 	    return i;
     }
-    return FORM_UNKNOWN;
+    return FORM_INPUT_TEXT;
 }
 
 void

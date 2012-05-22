@@ -1,3 +1,7 @@
+2012-05-22  Enu <theme.of.n@gmail.com>
+
+	* file.c, HTML.c: parse META CHARSET.
+
 2011-01-17  Dai Sato <satodai@w3m.jp>
 
 	* correction: ChangeLog of 2011-01-15 (0.5.2 -> 0.5.3)
@@ -9304,4 +9308,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1051 2011/01/17 11:53:57 inu Exp $
+$Id: ChangeLog,v 1.1052 2012/05/22 09:45:56 inu Exp $

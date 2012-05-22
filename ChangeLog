@@ -1,3 +1,7 @@
+2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
+
+	* Makefile.in: add entity.h to "make clean"
+
 2012-05-22  Enu <theme.of.n@gmail.com>
 
 	* file.c, HTML.c: parse META CHARSET.
@@ -9308,4 +9312,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1052 2012/05/22 09:45:56 inu Exp $
+$Id: ChangeLog,v 1.1053 2012/05/22 09:53:21 inu Exp $

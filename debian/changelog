@@ -1,3 +1,18 @@
+w3m (0.5.3-8) UNRELEASED; urgency=low
+
+  * debian/patches/010_upstream.patch: Sync with upstream on 2012-05-22
+    - Support <meta charset>
+  * debian/patches/050_entity-h-clean.patch: Removed (meged upstream)
+  * debian/patches/110_form-input-text.patch:
+    - Assume "text" if an input type is unknown (closes: #615843)
+  * debian/patches/100_use-cppflags.patch: Use $(CPPFLAGS) with $(CPP)
+  * debian/rules:
+    - Fix CPPFLAGS hardening flags missing (closes: #665491)
+    - Accept linux-gnueabi for w3m-img (closes: #673123)
+  * debian/mime: Use charset for mailcap (closes: #282784)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Tue, 22 May 2012 22:48:17 +0900
+
 w3m (0.5.3-7) unstable; urgency=low
 
   * Add the configure option --with-imagelib=imlib2 (closes: #672121)

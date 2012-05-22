@@ -1,4 +1,4 @@
-w3m (0.5.3-8) UNRELEASED; urgency=low
+w3m (0.5.3-8) unstable; urgency=low
 
   * debian/patches/010_upstream.patch: Sync with upstream on 2012-05-22
     - Support <meta charset>
@@ -11,7 +11,7 @@ w3m (0.5.3-8) UNRELEASED; urgency=low
     - Accept linux-gnueabi for w3m-img (closes: #673123)
   * debian/mime: Use charset for mailcap (closes: #282784)
 
- -- Tatsuya Kinoshita <tats@debian.org>  Tue, 22 May 2012 22:48:17 +0900
+ -- Tatsuya Kinoshita <tats@debian.org>  Tue, 22 May 2012 23:16:58 +0900
 
 w3m (0.5.3-7) unstable; urgency=low
 

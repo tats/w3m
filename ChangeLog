@@ -1,3 +1,18 @@
+2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
+
+	* [w3m-dev 04451] w3m/entity.h should be removed when `make clean'
+	* Makefile.in: add entity.h to "make clean" target.
+
+2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
+
+	* [w3m-dev 04452] Re: w3m on macosx 10.6.6
+	* doc/w3m.1, doc/STORY.html, doc-jp/STORY.html: 
+	  delete words about formerly included Boehm GC library.
+
+2012-05-22  Enu <theme.of.n@gmail.com>
+
+	* file.c, HTML.c: parse META CHARSET.
+
 2011-01-17  Dai Sato <satodai@w3m.jp>
 
 	* correction: ChangeLog of 2011-01-15 (0.5.2 -> 0.5.3)
@@ -9304,4 +9319,4 @@ a	* [w3m-dev 03276] compile error on EWS4800
 	* release-0-2-1
 	* import w3m-0.2.1
 
-$Id: ChangeLog,v 1.1051 2011/01/17 11:53:57 inu Exp $
+$Id: ChangeLog,v 1.1055 2012/05/22 10:20:45 inu Exp $

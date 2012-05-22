@@ -1,4 +1,4 @@
-/* $Id: file.c,v 1.265 2010/12/15 10:50:24 htrb Exp $ */
+/* $Id: file.c,v 1.266 2012/05/22 09:45:56 inu Exp $ */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -5137,10 +5137,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_META:
-	p = q = NULL;
+	p = q = r = NULL;
 	parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &p);
 	parsedtag_get_value(tag, ATTR_CONTENT, &q);
 #ifdef USE_M17N
+	parsedtag_get_value(tag, ATTR_CHARSET, &r);
+	if (r) {
+	    /* <meta charset=""> */
+	    SKIP_BLANKS(r);
+	    meta_charset = wc_guess_charset(r, 0);
+	}
+	else
 	if (p && q && !strcasecmp(p, "Content-Type") &&
 	    (q = strcasestr(q, "charset")) != NULL) {
 	    q += 7;

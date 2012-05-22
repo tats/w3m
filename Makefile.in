@@ -288,7 +288,7 @@ uninstall:
 clean: sweep
 	-$(RM) -f *.o *.a $(TARGETS) mktable$(EXT)
 	-$(RM) -f funcname.tab
-	-$(RM) -f entity.h funcname.c funcname1.h funcname2.h tagtable.c functable.c
+	-$(RM) -f funcname.c funcname1.h funcname2.h tagtable.c functable.c
 	-for dir in w3mimg libwc; \
 	do \
 		(cd $$dir && $(MAKE) clean RM="$(RM)"); \

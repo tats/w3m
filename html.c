@@ -1,4 +1,4 @@
-/* $Id: html.c,v 1.32 2010/08/14 01:29:40 htrb Exp $ */
+/* $Id: html.c,v 1.33 2012/05/22 09:45:56 inu Exp $ */
 #include "html.h"
 
 /* Define HTML Tag Infomation Table */
@@ -37,8 +37,8 @@ unsigned char ALST_TABLE[] =
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
 };
 #define MAXA_TABLE	MAXA_CORE + 6
-unsigned char ALST_META[] = { ATTR_HTTP_EQUIV, ATTR_CONTENT, ATTR_CORE };
-#define MAXA_META	MAXA_CORE + 2
+unsigned char ALST_META[] = { ATTR_HTTP_EQUIV, ATTR_CONTENT, ATTR_CHARSET, ATTR_CORE };
+#define MAXA_META	MAXA_CORE + 3
 unsigned char ALST_FRAME[] = { ATTR_SRC, ATTR_NAME, ATTR_CORE };
 #define MAXA_FRAME	MAXA_CORE + 2
 unsigned char ALST_FRAMESET[] = { ATTR_COLS, ATTR_ROWS, ATTR_CORE };

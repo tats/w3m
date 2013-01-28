@@ -487,7 +487,7 @@ displayBuffer(Buffer *buf, int mode)
     term_title(conv_to_system(buf->buffername));
     refresh();
 #ifdef USE_IMAGE
-    if (activeImage && displayImage && buf->img) {
+    if (activeImage && displayImage && buf->img && buf->image_loaded) {
 	drawImage();
     }
 #endif
@@ -521,7 +521,10 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 		break;
 	}
 	if (hseq >= 0 && an->hseq == hseq) {
+	    int hasImage = 0;
 	    for (i = an->start.pos; i < an->end.pos; i++) {
+	        if (l->propBuf[i] & PE_IMAGE)
+		    hasImage = 1 ;
 		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
 		    if (active)
 			l->propBuf[i] |= PE_ACTIVE;
@@ -529,7 +532,8 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 			l->propBuf[i] &= ~PE_ACTIVE;
 		}
 	    }
-	    if (active)
+	    if (active &&
+	        (! support_remote_image || ! hasImage))
 		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
 				 an->start.pos, an->end.pos);
 	}
@@ -855,14 +859,16 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 		y = (int)(i * pixel_per_line);
 		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
 		sy = (int)((l->linenumber - image->y) * pixel_per_line);
-		if (sx == 0 && x + image->xoffset >= 0)
-		    x += image->xoffset;
-		else
-		    sx -= image->xoffset;
-		if (sy == 0 && y + image->yoffset >= 0)
-		    y += image->yoffset;
-		else
-		    sy -= image->yoffset;
+		if (! support_remote_image) {
+		    if (sx == 0 && x + image->xoffset >= 0)
+			x += image->xoffset;
+		    else
+			sx -= image->xoffset;
+		    if (sy == 0 && y + image->yoffset >= 0)
+			y += image->yoffset;
+		    else
+			sy -= image->yoffset;
+		}
 		if (image->width > 0)
 		    w = image->width - sx;
 		else

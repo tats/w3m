@@ -52,6 +52,18 @@ getCharSize()
     int w = 0, h = 0;
 
     set_environ("W3M_TTY", ttyname_tty());
+
+    if (support_remote_image) {
+	int ppc, ppl;
+
+	if (get_pixel_per_cell(&ppc,&ppl)) {
+	    pixel_per_char = (double)ppc;
+	    pixel_per_line = (double)ppl;
+	}
+
+	return  TRUE;
+    }
+
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
 	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
@@ -156,6 +168,10 @@ addImage(ImageCache * cache, int x, int y, int sx, int sy, int w, int h)
 static void
 syncImage(void)
 {
+    if (support_remote_image) {
+	return;
+    }
+
     fputs("3;\n", Imgdisplay_wf);	/* XSync() */
     fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
     while (fflush(Imgdisplay_wf) != 0) {
@@ -177,6 +193,7 @@ drawImage()
     static char buf[64];
     int j, draw = FALSE;
     TerminalImage *i;
+    struct stat st ;
 
     if (!activeImage)
 	return;
@@ -184,6 +201,50 @@ drawImage()
 	return;
     for (j = 0; j < n_terminal_image; j++) {
 	i = &terminal_image[j];
+
+	if (support_remote_image) {
+	#if 0
+	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
+		getenv("WINDOWID") ? i->cache->file : i->cache->url,
+		i->x, i->y,
+		i->cache->width > 0 ? i->cache->width : 0,
+		i->cache->height > 0 ? i->cache->height : 0,
+		i->sx, i->sy, i->width, i->height,
+		(int)pixel_per_char, (int)pixel_per_line);
+	#endif
+	    put_image(
+	    #if 1
+		/* XXX I don't know why but sometimes i->cache->file doesn't exist. */
+		getenv("WINDOWID") && (stat(i->cache->file,&st) == 0) ?
+			/* local */ i->cache->file : /* remote */ i->cache->url,
+	    #else
+		i->cache->url,
+	    #endif
+		(int)(i->x / pixel_per_char),
+		(int)(i->y / pixel_per_line),
+	    #if 1
+		i->cache->a_width > 0 ?
+			(int)((i->cache->width + i->x % (int)pixel_per_char +
+				pixel_per_char - 1) / pixel_per_char) :
+	    #endif
+			0,
+
+	    #if 1
+		i->cache->a_height > 0 ?
+			(int)((i->cache->height + i->y % (int)pixel_per_line +
+				pixel_per_line - 1) / pixel_per_line) :
+	    #endif
+			0,
+		(int)(i->sx / pixel_per_char),
+		(int)(i->sy / pixel_per_line),
+		(int)((i->width + i->sx % (int)pixel_per_char +
+			pixel_per_char - 1) / pixel_per_char),
+		(int)((i->height + i->sy % (int)pixel_per_line +
+			pixel_per_line - 1) / pixel_per_line));
+
+	    continue ;
+	}
+
 	if (!(i->cache->loaded & IMG_FLAG_LOADED &&
 	      i->width > 0 && i->height > 0))
 	    continue;
@@ -207,9 +268,15 @@ drawImage()
 	fputs("\n", Imgdisplay_wf);
 	draw = TRUE;
     }
-    if (!draw)
-	return;
-    syncImage();
+
+    if (!support_remote_image) {
+	if (!draw)
+	    return;
+	syncImage();
+    }
+    else
+	n_terminal_image = 0;
+
     touch_cursor();
     refresh();
 }
@@ -220,6 +287,10 @@ clearImage()
     static char buf[64];
     int j;
     TerminalImage *i;
+
+    if (support_remote_image) {
+	return;
+    }
 
     if (!activeImage)
 	return;
@@ -321,6 +392,8 @@ showImageProgress(Buffer *buf)
 	}
     }
     if (n) {
+        if (support_remote_image && n == l)
+	    drawImage();
 	message(Sprintf("%d/%d images loaded", l, n)->ptr,
 		buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
 	refresh();
@@ -407,7 +480,8 @@ loadImage(Buffer *buf, int flag)
     }
 
     if (draw && image_buffer) {
-	drawImage();
+        if (!support_remote_image)
+	    drawImage();
 	showImageProgress(image_buffer);
     }
 
@@ -521,6 +595,8 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->loaded = IMG_FLAG_UNLOADED;
 	cache->width = image->width;
 	cache->height = image->height;
+	cache->a_width = image->width;
+	cache->a_height = image->height;
 	putHash_sv(image_hash, key->ptr, (void *)cache);
     }
     if (flag != IMG_FLAG_SKIP) {
@@ -581,11 +657,11 @@ getImageSize(ImageCache * cache)
     }
     else if (cache->width < 0) {
 	int tmp = (int)((double)cache->height * w / h + 0.5);
-	cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
+	cache->a_width = cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     else if (cache->height < 0) {
 	int tmp = (int)((double)cache->width * h / w + 0.5);
-	cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
+	cache->a_height = cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     if (cache->width == 0)
 	cache->width = 1;

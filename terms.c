@@ -466,6 +466,56 @@ writestr(char *s)
 
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
+void
+put_image(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+{
+    Str buf;
+    char *size ;
+
+    if (w > 0 && h > 0)
+	size = Sprintf("%dx%d",w,h)->ptr;
+    else
+	size = "";
+
+    MOVE(y,x);
+    buf = Sprintf("\x1b]5379;show_picture %s %s %dx%d+%d+%d\x07",url,size,sw,sh,sx,sy);
+    writestr(buf->ptr);
+    MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+int
+get_pixel_per_cell(int *ppc, int *ppl)
+{
+    fd_set  rfd;
+    struct timeval tval;
+    char buf[100];
+    ssize_t len;
+    int wp,hp,wc,hc;
+
+    fputs("\x1b[14t\x1b[18t",ttyf); flush_tty();
+
+    tval.tv_usec = 10000;	/* 0.1 sec */
+    tval.tv_sec = 0;
+    FD_SET(tty,&rfd);
+    if (select(tty+1,&rfd,NULL,NULL,&tval) < 0 || ! FD_ISSET(tty,&rfd)) {
+	return 0;
+    }
+
+    if ((len = read(tty,buf,sizeof(buf)-1)) <= 0) {
+	return 0;
+    }
+    buf[len] = '\0';
+
+    if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) != 4) {
+	return 0;
+    }
+
+    *ppc = wp / wc;
+    *ppl = hp / hc;
+
+    return 1;
+}
+
 #ifdef USE_MOUSE
 #define W3M_TERM_INFO(name, title, mouse)	name, title, mouse
 #define NEED_XTERM_ON   (1)

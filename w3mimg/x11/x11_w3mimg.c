@@ -121,16 +121,21 @@ x11_init(w3mimg_op * self)
     if (self == NULL)
 	return 0;
     xi = (struct x11_info *)self->priv;
+#if defined(USE_IMLIB)
     if (xi == NULL)
 	return 0;
-#if defined(USE_IMLIB)
     if (!xi->id) {
 	xi->id = Imlib_init(xi->display);
 	if (!xi->id)
 	    return 0;
     }
 #elif defined(USE_GDKPIXBUF)
-    if (!xi->init_flag) {
+    if (!xi) {
+#if defined(USE_GTK2)
+	g_type_init();
+#endif
+    }
+    else if (!xi->init_flag) {
 #if defined(USE_GTK2)
 	g_type_init();
 #endif
@@ -138,7 +143,7 @@ x11_init(w3mimg_op * self)
 	xi->init_flag = TRUE;
     }
 #endif
-    if (!xi->imageGC) {
+    if (xi && !xi->imageGC) {
 	xi->imageGC = XCreateGC(xi->display, xi->parent, 0, NULL);
 	if (!xi->imageGC)
 	    return 0;
@@ -653,9 +658,11 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 
     if (self == NULL)
 	return 0;
+#if defined(USE_IMLIB) && defined(USE_IMLIB2)
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return 0;
+#endif
 
 #if defined(USE_IMLIB)
     im = Imlib_load_image(xi->id, fname);
@@ -755,6 +762,9 @@ w3mimg_x11open()
 	return NULL;
     memset(wop, 0, sizeof(w3mimg_op));
 
+    if (getenv("W3M_USE_REMOTE_IMAGE"))
+	goto  end;
+
     xi = (struct x11_info *)malloc(sizeof(struct x11_info));
     if (xi == NULL)
 	goto error;
@@ -807,6 +817,7 @@ w3mimg_x11open()
 
     wop->priv = xi;
 
+  end:
     wop->init = x11_init;
     wop->finish = x11_finish;
     wop->active = x11_active;

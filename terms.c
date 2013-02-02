@@ -489,31 +489,40 @@ get_pixel_per_cell(int *ppc, int *ppl)
     fd_set  rfd;
     struct timeval tval;
     char buf[100];
+    char *p;
     ssize_t len;
+    ssize_t left;
     int wp,hp,wc,hc;
+    int i;
 
     fputs("\x1b[14t\x1b[18t",ttyf); flush_tty();
 
-    tval.tv_usec = 10000;	/* 0.1 sec */
-    tval.tv_sec = 0;
-    FD_SET(tty,&rfd);
-    if (select(tty+1,&rfd,NULL,NULL,&tval) < 0 || ! FD_ISSET(tty,&rfd)) {
-	return 0;
+    p = buf;
+    left = sizeof(buf) - 1;
+    for (i = 0; i < 5; i++) {
+	tval.tv_usec = 100000;	/* 0.1 sec */
+	tval.tv_sec = 0;
+	FD_SET(tty,&rfd);
+	if (select(tty+1,&rfd,NULL,NULL,&tval) <= 0 || ! FD_ISSET(tty,&rfd)) {
+	    continue;
+	}
+
+	if ((len = read(tty,p,left)) <= 0) {
+	    return 0;
+	}
+	p[len] = '\0';
+
+	if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) == 4) {
+	    *ppc = wp / wc;
+	    *ppl = hp / hc;
+
+	    return 1;
+	}
+	p = buf + len;
+	left -= len;
     }
 
-    if ((len = read(tty,buf,sizeof(buf)-1)) <= 0) {
-	return 0;
-    }
-    buf[len] = '\0';
-
-    if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) != 4) {
-	return 0;
-    }
-
-    *ppc = wp / wc;
-    *ppl = hp / hc;
-
-    return 1;
+    return 0;
 }
 
 #ifdef USE_MOUSE

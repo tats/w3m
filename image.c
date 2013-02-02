@@ -57,6 +57,8 @@ getCharSize()
 	int ppc, ppl;
 
 	if (get_pixel_per_cell(&ppc,&ppl)) {
+	    pixel_per_char_i = ppc ;
+	    pixel_per_line_i = ppl ;
 	    pixel_per_char = (double)ppc;
 	    pixel_per_line = (double)ppl;
 	}
@@ -210,7 +212,7 @@ drawImage()
 		i->cache->width > 0 ? i->cache->width : 0,
 		i->cache->height > 0 ? i->cache->height : 0,
 		i->sx, i->sy, i->width, i->height,
-		(int)pixel_per_char, (int)pixel_per_line);
+		pixel_per_char_i, pixel_per_line_i);
 	#endif
 	    put_image(
 	    #if 1
@@ -220,27 +222,25 @@ drawImage()
 	    #else
 		i->cache->url,
 	    #endif
-		(int)(i->x / pixel_per_char),
-		(int)(i->y / pixel_per_line),
+		i->x / pixel_per_char_i,
+		i->y / pixel_per_line_i,
 	    #if 1
 		i->cache->a_width > 0 ?
-			(int)((i->cache->width + i->x % (int)pixel_per_char +
-				pixel_per_char - 1) / pixel_per_char) :
+			(i->cache->width + i->x % pixel_per_char_i + pixel_per_char_i - 1) /
+				pixel_per_char_i :
 	    #endif
 			0,
 
 	    #if 1
 		i->cache->a_height > 0 ?
-			(int)((i->cache->height + i->y % (int)pixel_per_line +
-				pixel_per_line - 1) / pixel_per_line) :
+			(i->cache->height + i->y % pixel_per_line_i + pixel_per_line_i - 1) /
+				pixel_per_line_i :
 	    #endif
 			0,
-		(int)(i->sx / pixel_per_char),
-		(int)(i->sy / pixel_per_line),
-		(int)((i->width + i->sx % (int)pixel_per_char +
-			pixel_per_char - 1) / pixel_per_char),
-		(int)((i->height + i->sy % (int)pixel_per_line +
-			pixel_per_line - 1) / pixel_per_line));
+		i->sx / pixel_per_char_i,
+		i->sy / pixel_per_line_i,
+		(i->width + i->sx % pixel_per_char_i + pixel_per_char_i - 1) / pixel_per_char_i,
+		(i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) / pixel_per_line_i);
 
 	    continue ;
 	}
@@ -593,8 +593,19 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
-	cache->width = image->width;
-	cache->height = image->height;
+	if (support_remote_image) {
+	    if (image->width > 0 && image->width % pixel_per_char_i > 0)
+		image->width += (pixel_per_char_i - image->width % pixel_per_char_i);
+
+	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
+		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
+
+	    if (image->height > 0 && image->width > 0)
+		cache->loaded = IMG_FLAG_LOADED;
+	}
+
+	cache->width = image->width ;
+	cache->height = image->height ;
 	cache->a_width = image->width;
 	cache->a_height = image->height;
 	putHash_sv(image_hash, key->ptr, (void *)cache);

@@ -288,10 +288,6 @@ clearImage()
     int j;
     TerminalImage *i;
 
-    if (support_remote_image) {
-	return;
-    }
-
     if (!activeImage)
 	return;
     if (!n_terminal_image)
@@ -600,7 +596,7 @@ getImage(Image * image, ParsedURL *current, int flag)
 	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
 		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
 
-	    if (image->height > 0 && image->width > 0)
+	    if (! getenv("WINDOWID") && image->height > 0 && image->width > 0)
 		cache->loaded = IMG_FLAG_LOADED;
 	}
 

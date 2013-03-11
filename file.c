@@ -3377,18 +3377,20 @@ process_img(struct parsed_tag *tag, int width)
 	if (i0 >= 0)
 	    Strcat(tmp, Sprintf(" height=%d", i0));
 	switch (align) {
+	case ALIGN_MIDDLE:
+	    if (!support_remote_image) {
+		top = ni / 2;
+		bottom = top;
+		if (top * 2 == ni)
+		    yoffset = (int)(((ni + 1) * pixel_per_line - i) / 2);
+		else
+		    yoffset = (int)((ni * pixel_per_line - i) / 2);
+		break;
+	    }
 	case ALIGN_TOP:
 	    top = 0;
 	    bottom = ni - 1;
 	    yoffset = 0;
-	    break;
-	case ALIGN_MIDDLE:
-	    top = ni / 2;
-	    bottom = top;
-	    if (top * 2 == ni)
-		yoffset = (int)(((ni + 1) * pixel_per_line - i) / 2);
-	    else
-		yoffset = (int)((ni * pixel_per_line - i) / 2);
 	    break;
 	case ALIGN_BOTTOM:
 	    top = ni - 1;
@@ -3407,7 +3409,12 @@ process_img(struct parsed_tag *tag, int width)
 	    }
 	    break;
 	}
-	xoffset = (int)((nw * pixel_per_char - w) / 2);
+
+	if (support_remote_image)
+	    xoffset = 0;
+	else
+	    xoffset = (int)((nw * pixel_per_char - w) / 2);
+
 	if (xoffset)
 	    Strcat(tmp, Sprintf(" xoffset=%d", xoffset));
 	if (yoffset)

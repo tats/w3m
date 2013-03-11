@@ -500,7 +500,7 @@ get_pixel_per_cell(int *ppc, int *ppl)
     p = buf;
     left = sizeof(buf) - 1;
     for (i = 0; i < 5; i++) {
-	tval.tv_usec = 100000;	/* 0.1 sec */
+	tval.tv_usec = 500000;	/* 0.5 sec */
 	tval.tv_sec = 0;
 	FD_SET(tty,&rfd);
 	if (select(tty+1,&rfd,NULL,NULL,&tval) <= 0 || ! FD_ISSET(tty,&rfd)) {

@@ -3345,8 +3345,14 @@ process_img(struct parsed_tag *tag, int width)
 	    if (i < 0)
 		i = pixel_per_line;
 	}
-	nw = (w > 3) ? (int)((w - 3) / pixel_per_char + 1) : 1;
-	ni = (i > 3) ? (int)((i - 3) / pixel_per_line + 1) : 1;
+	if (support_remote_image) {
+	    nw = (w > 1) ? ((w - 1) / pixel_per_char_i + 1) : 1 ;
+	    ni = (i > 1) ? ((i - 1) / pixel_per_line_i + 1) : 1 ;
+	}
+	else {
+	    nw = (w > 3) ? (int)((w - 3) / pixel_per_char + 1) : 1;
+	    ni = (i > 3) ? (int)((i - 3) / pixel_per_line + 1) : 1;
+	}
 	Strcat(tmp,
 	       Sprintf("<pre_int><img_alt hseq=\"%d\" src=\"", cur_iseq++));
 	pre_int = TRUE;

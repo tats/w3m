@@ -521,10 +521,10 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 		break;
 	}
 	if (hseq >= 0 && an->hseq == hseq) {
-	    int hasImage = 0;
+	    int start_pos = an->start.pos;
 	    for (i = an->start.pos; i < an->end.pos; i++) {
-	        if (l->propBuf[i] & PE_IMAGE)
-		    hasImage = 1 ;
+	        if (support_remote_image && (l->propBuf[i] & PE_IMAGE))
+		    start_pos = i + 1;	/* Lazy check */
 		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
 		    if (active)
 			l->propBuf[i] |= PE_ACTIVE;
@@ -532,10 +532,9 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 			l->propBuf[i] &= ~PE_ACTIVE;
 		}
 	    }
-	    if (active &&
-	        (! support_remote_image || ! hasImage))
+	    if (active && start_pos < an->end.pos)
 		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
-				 an->start.pos, an->end.pos);
+				 start_pos, an->end.pos);
 	}
 	else if (prevhseq >= 0 && an->hseq == prevhseq) {
 	    if (active)

@@ -499,17 +499,16 @@ get_pixel_per_cell(int *ppc, int *ppl)
 
     p = buf;
     left = sizeof(buf) - 1;
-    for (i = 0; i < 5; i++) {
-	tval.tv_usec = 500000;	/* 0.5 sec */
+    for (i = 0; i < 10; i++) {
+	tval.tv_usec = 200000;	/* 0.2 sec * 10 */
 	tval.tv_sec = 0;
+	FD_ZERO(&rfd);
 	FD_SET(tty,&rfd);
-	if (select(tty+1,&rfd,NULL,NULL,&tval) <= 0 || ! FD_ISSET(tty,&rfd)) {
+	if (select(tty+1,&rfd,NULL,NULL,&tval) <= 0 || ! FD_ISSET(tty,&rfd))
 	    continue;
-	}
 
-	if ((len = read(tty,p,left)) <= 0) {
-	    return 0;
-	}
+	if ((len = read(tty,p,left)) <= 0)
+	    continue;
 	p[len] = '\0';
 
 	if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) == 4) {
@@ -518,7 +517,7 @@ get_pixel_per_cell(int *ppc, int *ppl)
 
 	    return 1;
 	}
-	p = buf + len;
+	p += len;
 	left -= len;
     }
 

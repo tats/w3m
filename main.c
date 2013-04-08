@@ -914,12 +914,17 @@ main(int argc, char **argv, char **envp)
 	if (i >= 0) {
 	    SearchHeader = search_header;
 	    DefaultType = default_type;
+	    char *url;
+	    
+	    url = load_argv[i];
+	    if (getURLScheme(&url) == SCM_MISSING && !ArgvIsURL)
+		url = file_to_url(load_argv[i]);
+	    else
+		url = url_encode(conv_from_system(load_argv[i]), NULL, 0);
 	    if (w3m_dump == DUMP_HEAD) {
 		request = New(FormList);
 		request->method = FORM_METHOD_HEAD;
-		newbuf =
-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
-				    request);
+		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
 	    }
 	    else {
 		if (post_file && i == 0) {
@@ -948,9 +953,7 @@ main(int argc, char **argv, char **envp)
 		else {
 		    request = NULL;
 		}
-		newbuf =
-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
-				    request);
+		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
 	    }
 	    if (newbuf == NULL) {
 		/* FIXME: gettextize? */
@@ -965,7 +968,7 @@ main(int argc, char **argv, char **envp)
 		break;
 	    case SCM_LOCAL:
 	    case SCM_LOCAL_CGI:
-		unshiftHist(LoadHist, conv_from_system(load_argv[i]));
+		unshiftHist(LoadHist, url);
 	    default:
 		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
 		break;
@@ -1289,15 +1292,12 @@ do_dump(Buffer *buf)
 	    printf("\nReferences:\n\n");
 	    for (i = 0; i < buf->href->nanchor; i++) {
 	        ParsedURL pu;
-	        static Str s = NULL;
+		char *url;
 		if (buf->href->anchors[i].slave)
 		    continue;
 	        parseURL2(buf->href->anchors[i].url, &pu, baseURL(buf));
-	        s = parsedURL2Str(&pu);
-    	        if (DecodeURL)
-		    s = Strnew_charp(url_unquote_conv
-				     (s->ptr, Currentbuf->document_charset));
-	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, s->ptr);
+		url = url_decode2(parsedURL2Str(&pu)->ptr, Currentbuf);
+	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, url);
 	    }
 	}
     }
@@ -2281,7 +2281,7 @@ DEFUN(movR1, MOVE_RIGHT1,
 static wc_uint32
 getChar(char *p)
 {
-    return wc_any_to_ucs(wtf_parse1(&p));
+    return wc_any_to_ucs(wtf_parse1((wc_uchar **)&p));
 }
 
 static int
@@ -2824,12 +2824,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
     union frameset_element *f_element = NULL;
     int flag = 0;
     ParsedURL *base, pu;
+    const int *no_referer_ptr;
 
     message(Sprintf("loading %s", url)->ptr, 0, 0);
     refresh();
 
+    no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
     base = baseURL(Currentbuf);
-    if (base == NULL ||
+    if ((no_referer_ptr && *no_referer_ptr) ||
+	base == NULL ||
 	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
 	referer = NO_REFERER;
     if (referer == NULL)
@@ -4075,6 +4078,7 @@ goURL0(char *prompt, int relative)
     char *url, *referer;
     ParsedURL p_url, *current;
     Buffer *cur_buf = Currentbuf;
+    const int *no_referer_ptr;
 
     url = searchKeyData();
     if (url == NULL) {
@@ -4084,11 +4088,8 @@ goURL0(char *prompt, int relative)
 	current = baseURL(Currentbuf);
 	if (current) {
 	    char *c_url = parsedURL2Str(current)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_CURRENT) {
-		url = c_url;
-		if (DecodeURL)
-		    url = url_unquote_conv(url, 0);
-	    }
+	    if (DefaultURLString == DEFAULT_URL_CURRENT)
+		url = url_decode2(c_url, NULL);
 	    else
 		pushHist(hist, c_url);
 	}
@@ -4097,11 +4098,8 @@ goURL0(char *prompt, int relative)
 	    char *a_url;
 	    parseURL2(a->url, &p_url, current);
 	    a_url = parsedURL2Str(&p_url)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_LINK) {
-		url = a_url;
-		if (DecodeURL)
-		    url = url_unquote_conv(url, Currentbuf->document_charset);
-	    }
+	    if (DefaultURLString == DEFAULT_URL_LINK)
+		url = url_decode2(a_url, Currentbuf);
 	    else
 		pushHist(hist, a_url);
 	}
@@ -4109,15 +4107,22 @@ goURL0(char *prompt, int relative)
 	if (url != NULL)
 	    SKIP_BLANKS(url);
     }
-#ifdef USE_M17N
-    if (url != NULL) {
-	if ((relative || *url == '#') && Currentbuf->document_charset)
-	    url = wc_conv_strict(url, InnerCharset,
-				 Currentbuf->document_charset)->ptr;
+    if (relative) {
+	no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
+	current = baseURL(Currentbuf);
+	if ((no_referer_ptr && *no_referer_ptr) ||
+	    current == NULL ||
+	    current->scheme == SCM_LOCAL || current->scheme == SCM_LOCAL_CGI)
+	    referer = NO_REFERER;
 	else
-	    url = conv_to_system(url);
+	    referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	url = url_encode(url, current, Currentbuf->document_charset);
     }
-#endif
+    else {
+	current = NULL;
+	referer = NULL;
+	url = url_encode(url, NULL, 0);
+    }
     if (url == NULL || *url == '\0') {
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
@@ -4125,14 +4130,6 @@ goURL0(char *prompt, int relative)
     if (*url == '#') {
 	gotoLabel(url + 1);
 	return;
-    }
-    if (relative) {
-	current = baseURL(Currentbuf);
-	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
-    }
-    else {
-	current = NULL;
-	referer = NULL;
     }
     parseURL2(url, &p_url, current);
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
@@ -4530,8 +4527,7 @@ _peekURL(int only_img)
 	s = parsedURL2Str(&pu);
     }
     if (DecodeURL)
-	s = Strnew_charp(url_unquote_conv
-			 (s->ptr, Currentbuf->document_charset));
+	s = Strnew_charp(url_decode2(s->ptr, Currentbuf));
 #ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
@@ -4590,7 +4586,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
 	offset = 0;
 	s = currentURL();
 	if (DecodeURL)
-	    s = Strnew_charp(url_unquote_conv(s->ptr, 0));
+	    s = Strnew_charp(url_decode2(s->ptr, NULL));
 #ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);

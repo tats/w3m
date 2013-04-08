@@ -357,6 +357,20 @@ strcasemstr(char *str, char *srch[], char **ret_ptr)
     return -1;
 }
 
+int
+strmatchlen(const char *s1, const char *s2, int maxlen)
+{
+    int i;
+
+    /* To allow the maxlen to be negatie (infinity),
+     * compare by "!=" instead of "<=". */
+    for (i = 0; i != maxlen; ++i) {
+	if (!s1[i] || !s2[i] || s1[i] != s2[i])
+	    break;
+    }
+    return i;
+}
+
 char *
 remove_space(char *str)
 {

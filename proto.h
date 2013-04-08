@@ -162,6 +162,24 @@ extern Str searchURIMethods(ParsedURL *pu);
 extern void chkExternalURIBuffer(Buffer *buf);
 #endif
 extern ParsedURL *schemeToProxy(int scheme);
+#ifdef USE_M17N
+extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
+			     wc_ces doc_charset);
+extern char *url_encode(const char *url, const ParsedURL *base,
+			wc_ces doc_charset);
+#if 0
+extern char *url_decode(const char *url, const ParsedURL *base,
+			wc_ces doc_charset);
+#endif
+extern char *url_decode2(const char *url, const Buffer *buf);
+#else /* !defined(USE_M17N) */
+#define url_encode(url, base, cs) url_quote(url)
+extern char *url_decode0(const char *url);
+#if 0
+#define url_decode(url, base, cs) url_decode0(url)
+#endif
+#define url_decode2(url, buf) url_decode0(url)
+#endif /* !defined(USE_M17N) */
 extern void examineFile(char *path, URLFile *uf);
 extern char *acceptableEncoding();
 extern int dir_exist(char *path);
@@ -180,7 +198,6 @@ extern void push_symbol(Str str, char symbol, int width, int n);
 #ifdef USE_UNICODE
 extern void update_utf8_symbol(void);
 #endif
-extern Buffer *loadFile(char *path);
 extern Buffer *loadGeneralFile(char *path, ParsedURL *current, char *referer,
 			       int flag, FormList *request);
 extern int is_boundary(unsigned char *, unsigned char *);
@@ -251,8 +268,7 @@ extern Buffer *openPagerBuffer(InputStream stream, Buffer *buf);
 extern Buffer *openGeneralPagerBuffer(InputStream stream);
 extern Line *getNextPage(Buffer *buf, int plen);
 extern int save2tmp(URLFile uf, char *tmpf);
-extern int doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
-		      Buffer *defaultbuf);
+extern Buffer *doExternal(URLFile uf, char *type, Buffer *defaultbuf);
 extern int _doFileCopy(char *tmpf, char *defstr, int download);
 #define doFileCopy(tmpf, defstr) _doFileCopy(tmpf, defstr, FALSE);
 extern int doFileMove(char *tmpf, char *defstr);
@@ -509,7 +525,7 @@ extern ParsedURL *baseURL(Buffer *buf);
 extern int openSocket(char *hostname, char *remoteport_name,
 		      unsigned short remoteport_num);
 extern void parseURL(char *url, ParsedURL *p_url, ParsedURL *current);
-extern void copyParsedURL(ParsedURL *p, ParsedURL *q);
+extern void copyParsedURL(ParsedURL *p, const ParsedURL *q);
 extern void parseURL2(char *url, ParsedURL *pu, ParsedURL *current);
 extern Str parsedURL2Str(ParsedURL *pu);
 extern int getURLScheme(char **url);
@@ -613,6 +629,7 @@ extern char *confFile(char *base);
 extern char *auxbinFile(char *base);
 extern char *libFile(char *base);
 extern char *helpFile(char *base);
+extern const void *querySiteconf(const ParsedURL *query_pu, int field);
 extern Str localCookie(void);
 extern Str loadLocalDir(char *dirname);
 extern void set_environ(char *var, char *value);
@@ -726,6 +743,8 @@ extern int getKey(char *s);
 extern char *getKeyData(int key);
 extern char *getWord(char **str);
 extern char *getQWord(char **str);
+struct regex;
+extern char *getRegexWord(const char **str, struct regex **regex_ret);
 #ifdef USE_MOUSE
 extern void initMouseAction(void);
 #endif

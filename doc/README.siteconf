@@ -1,0 +1,60 @@
+The siteconf: Site-specific preferences 
+
+The siteconf consists of URL patterns and preferences associated to them.
+You can improve "decode_url" feature by giving charsets of URLs site by site,
+or bypass Google's redirector for performance and your privacy.
+
+The siteconf is read from ~/.w3m/siteconf by default.
+
+===== The syntax =====
+
+url <url>|/<re-url>/|m@<re-url>@i [exact]
+substitute_url "<destination-url>"
+url_charset <charset>
+no_referer_from on|off
+no_referer_to on|off
+
+The last match wins.
+
+===== Examples =====
+
+url "http://twitter.com/#!/"
+substitute_url "http://mobile.twitter.com/"
+
+This forwards the twitter.com to its mobile site.
+
+url "http://your.bookmark.net/"
+no_referer_from on
+
+This prevents HTTP referers from being sent when you follow links
+at the your.bookmark.net.
+
+url "http://www.google.com/url?" exact
+substitute_url "file:///cgi-bin/your-redirector.cgi?"
+
+This forwards the Google's redirector to your local CGI.
+
+url /^http:\/\/[a-z]*\.wikipedia\.org\//
+url_charset utf-8
+
+When combinated with "decode_url" option turned on, links to
+Wikipedia will be human-readable.
+
+===== Regular expressions notes =====
+
+Following expressions are all equivalent:
+
+/http:\/\/www\.example\.com\//
+m/http:\/\/www\.example\.com\//
+m@http://www\.example\.com/@
+m!http://www\.example\.com/!
+
+With a trailing 'i' modifier, you can specify a case-insensitive match.
+For example, m@^http://www\.example\.com/abc/@i matches to:
+
+http://www.example.com/abc/
+http://www.example.com/Abc/
+http://www.example.com/ABC/
+
+Hostnames, however, are always converted to lowercases before compared.
+

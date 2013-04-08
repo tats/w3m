@@ -787,7 +787,7 @@ struct pre_form {
 static struct pre_form *PreForm = NULL;
 
 static struct pre_form *
-add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
+add_pre_form(struct pre_form *prev, char *url, Regex *re_url, char *name, char *action)
 {
     ParsedURL pu;
     struct pre_form *new;
@@ -796,21 +796,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
 	new = prev->next = New(struct pre_form);
     else
 	new = PreForm = New(struct pre_form);
-    if (url && *url == '/') {
-	int l = strlen(url);
-	if (l > 1 && url[l - 1] == '/')
-	    new->url = allocStr(url + 1, l - 2);
-	else
-	    new->url = url + 1;
-	new->re_url = newRegex(new->url, FALSE, NULL, NULL);
-	if (!new->re_url)
-	    new->url = NULL;
-    }
-    else if (url) {
+    if (url && !re_url) {
 	parseURL2(url, &pu, NULL);
 	new->url = parsedURL2Str(&pu)->ptr;
-	new->re_url = NULL;
     }
+    else
+	new->url = url;
+    new->re_url = re_url;
     new->name = (name && *name) ? name : NULL;
     new->action = (action && *action) ? action : NULL;
     new->item = NULL;
@@ -834,7 +826,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
     new->name = name;
     new->value = value;
     if (checked && *checked && (!strcmp(checked, "0") ||
-				strcasecmp(checked, "off")
+				!strcasecmp(checked, "off")
 				|| !strcasecmp(checked, "no")))
 	new->checked = 0;
     else
@@ -875,6 +867,7 @@ loadPreForm(void)
 	return;
     while (1) {
 	char *p, *s, *arg;
+	Regex *re_arg;
 
 	line = Strfgets(fp);
 	if (line->length == 0)
@@ -890,18 +883,20 @@ loadPreForm(void)
 	if (*p == '#' || *p == '\0')
 	    continue;		/* comment or empty line */
 	s = getWord(&p);
-	arg = getWord(&p);
 
 	if (!strcmp(s, "url")) {
+	    arg = getRegexWord((const char **)&p, &re_arg);
 	    if (!arg || !*arg)
 		continue;
 	    p = getQWord(&p);
-	    pf = add_pre_form(pf, arg, NULL, p);
+	    pf = add_pre_form(pf, arg, re_arg, NULL, p);
 	    pi = pf->item;
 	    continue;
 	}
 	if (!pf)
 	    continue;
+
+	arg = getWord(&p);
 	if (!strcmp(s, "form")) {
 	    if (!arg || !*arg)
 		continue;
@@ -913,7 +908,7 @@ loadPreForm(void)
 	    }
 	    if (pf->item) {
 		struct pre_form *prev = pf;
-		pf = add_pre_form(prev, "", s, p);
+		pf = add_pre_form(prev, "", NULL, s, p);
 		/* copy previous URL */
 		pf->url = prev->url;
 		pf->re_url = prev->re_url;

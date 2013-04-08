@@ -91,7 +91,7 @@ unsigned char EscBKeymap[128] = {
     /*  0       1       2       3       4       5       6       7        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  8       9       :       ;       <       =       >       ?        */
-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, nulcmd, nulcmd, sgrmouse, nulcmd, nulcmd, nulcmd,
     /*  @       A       B       C       D       E       F       G        */
     nulcmd, movU, movD, movR, movL, nulcmd, goLineL, pgFore,
     /*  H       I       J       K       L       M       N       O        */

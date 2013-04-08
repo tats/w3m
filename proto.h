@@ -685,6 +685,7 @@ extern void reMark(void);
 
 #ifdef USE_MOUSE
 extern void mouse(void);
+extern void sgrmouse(void);
 extern void mouse_init(void);
 extern void mouse_end(void);
 extern void mouse_active(void);

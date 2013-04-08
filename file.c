@@ -5046,8 +5046,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 #if defined(USE_M17N) || defined(USE_IMAGE)
 	p = NULL;
 	if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
-	    if (!cur_baseURL)
-		cur_baseURL = New(ParsedURL);
+	    cur_baseURL = New(ParsedURL);
 	    parseURL(p, cur_baseURL, NULL);
 	}
 #endif

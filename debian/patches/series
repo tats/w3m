@@ -8,3 +8,4 @@
 090_parallel-make.patch
 100_use-cppflags.patch
 110_form-input-text.patch
+120_sgrmouse.patch

@@ -1,0 +1,111 @@
+Subject: Support SGR 1006
+From: Hayaki Saito <user@zuse.jp>
+Date: Sun, 15 Jul 2012 20:14:16 +0900
+Origin: upstream, http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev/201207.month/4466.html
+
+Patch to support SGR 1006 mouse reporting, from [w3m-dev 04466]
+on 2012-07-15, provided by Hayaki Saito.
+
+diff --git a/keybind.c b/keybind.c
+index a490962..fec0c65 100644
+--- a/keybind.c
++++ b/keybind.c
+@@ -91,7 +91,7 @@ unsigned char EscBKeymap[128] = {
+     /*  0       1       2       3       4       5       6       7        */
+     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+     /*  8       9       :       ;       <       =       >       ?        */
+-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
++    nulcmd, nulcmd, nulcmd, nulcmd, sgrmouse, nulcmd, nulcmd, nulcmd,
+     /*  @       A       B       C       D       E       F       G        */
+     nulcmd, movU, movD, movR, movL, nulcmd, goLineL, pgFore,
+     /*  H       I       J       K       L       M       N       O        */
+diff --git a/main.c b/main.c
+index b421943..35f2f39 100644
+--- a/main.c
++++ b/main.c
+@@ -5398,6 +5398,58 @@ DEFUN(mouse, MOUSE, "mouse operation")
+     process_mouse(btn, x, y);
+ }
+ 
++DEFUN(sgrmouse, SGRMOUSE, "SGR 1006 mouse operation")
++{
++    int btn = 0, x = 0, y = 0;
++    unsigned char c;
++
++    do {
++	c = getch();
++	if (IS_DIGIT(c))
++	    btn = btn * 10 + c - '0';
++	else if (c == ';')
++	    break;
++	else
++	    return;
++    } while (1);
++
++#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
++    if (cygwin_mouse_btn_swapped) {
++	if (btn == MOUSE_BTN2_DOWN)
++	    btn = MOUSE_BTN3_DOWN;
++	else if (btn == MOUSE_BTN3_DOWN)
++	    btn = MOUSE_BTN2_DOWN;
++    };
++#endif
++
++    do {
++	c = getch();
++	if (IS_DIGIT(c))
++	    x = x * 10 + c - '0';
++	else if (c == ';')
++	    break;
++	else
++	  return;
++    } while (1);
++
++    do {
++	c = getch();
++	if (IS_DIGIT(c))
++	    y = y * 10 + c - '0';
++	else if (c == 'M')
++	    break;
++	else if (c == 'm') {
++	    btn |= 3;
++	    break;
++	} else
++    return;
++    } while (1);
++
++    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
++	return;
++    process_mouse(btn, x, y);
++}
++
+ #ifdef USE_GPM
+ int
+ gpm_process_mouse(Gpm_Event * event, void *data)
+diff --git a/proto.h b/proto.h
+index f8a7345..980d522 100644
+--- a/proto.h
++++ b/proto.h
+@@ -683,6 +683,7 @@ extern void reMark(void);
+ 
+ #ifdef USE_MOUSE
+ extern void mouse(void);
++extern void sgrmouse(void);
+ extern void mouse_init(void);
+ extern void mouse_end(void);
+ extern void mouse_active(void);
+diff --git a/terms.c b/terms.c
+index 7a3c987..8d928a2 100644
+--- a/terms.c
++++ b/terms.c
+@@ -2027,8 +2027,8 @@ sleep_till_anykey(int sec, int purge)
+ 
+ #ifdef USE_MOUSE
+ 
+-#define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
+-#define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
++#define XTERM_ON   {fputs("\033[?1001s\033[?1000h\033[?1006h",ttyf); flush_tty();}
++#define XTERM_OFF  {fputs("\033[?1006l\033[?1000l\033[?1001r",ttyf); flush_tty();}
+ #define CYGWIN_ON  {fputs("\033[?1000h",ttyf); flush_tty();}
+ #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
+ 

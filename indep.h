@@ -52,6 +52,7 @@ extern int strncasecmp(const char *s1, const char *s2, size_t n);
 extern char *strcasestr(const char *s1, const char *s2);
 #endif
 extern int strcasemstr(char *str, char *srch[], char **ret_ptr);
+int strmatchlen(const char *s1, const char *s2, int maxlen);
 extern char *remove_space(char *str);
 extern int non_null(char *s);
 extern void cleanup_line(Str s, int mode);

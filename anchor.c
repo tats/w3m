@@ -200,10 +200,11 @@ _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
 	if (*(p2 - 1) == '>')
 	    p2--;
     }
-    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
-			     buf->document_charset);
-    tmp = Sprintf("news:%s", file_quote(tmp->ptr));
-    return registerHref(buf, tmp->ptr, NULL, NO_REFERER, NULL, '\0', line,
+    tmp = Strnew_charp("news:");
+    Strcat_charp_n(tmp, p1, p2 - p1);
+    return registerHref(buf, url_encode(tmp->ptr, baseURL(buf),
+					buf->document_charset),
+			NULL, NO_REFERER, NULL, '\0', line,
 			pos);
 }
 #endif				/* USE_NNTP */
@@ -213,9 +214,10 @@ _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
 {
     Str tmp;
 
-    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
-			     buf->document_charset);
-    return registerHref(buf, url_quote(tmp->ptr), NULL, NO_REFERER, NULL,
+    tmp = Strnew_charp_n(p1, p2 - p1);
+    return registerHref(buf, url_encode(tmp->ptr, baseURL(buf),
+					buf->document_charset),
+			NULL, NO_REFERER, NULL,
 			'\0', line, pos);
 }
 
@@ -756,7 +758,7 @@ link_list_panel(Buffer *buf)
 		p = parsedURL2Str(&pu)->ptr;
 		u = html_quote(p);
 		if (DecodeURL)
-		    p = html_quote(url_unquote_conv(p, buf->document_charset));
+		    p = html_quote(url_decode2(p, buf));
 		else
 		    p = u;
 	    }
@@ -787,7 +789,7 @@ link_list_panel(Buffer *buf)
 	    p = parsedURL2Str(&pu)->ptr;
 	    u = html_quote(p);
 	    if (DecodeURL)
-		p = html_quote(url_unquote_conv(p, buf->document_charset));
+		p = html_quote(url_decode2(p, buf));
 	    else
 		p = u;
 	    t = getAnchorText(buf, al, a);
@@ -809,16 +811,13 @@ link_list_panel(Buffer *buf)
 	    p = parsedURL2Str(&pu)->ptr;
 	    u = html_quote(p);
 	    if (DecodeURL)
-		p = html_quote(url_unquote_conv(p, buf->document_charset));
+		p = html_quote(url_decode2(p, buf));
 	    else
 		p = u;
 	    if (a->title && *a->title)
 		t = html_quote(a->title);
-	    else if (DecodeURL)
-		t = html_quote(url_unquote_conv
-			       (a->url, buf->document_charset));
 	    else
-		t = html_quote(a->url);
+		t = html_quote(url_decode2(a->url, buf));
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
 			   "\n", NULL);
 	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
@@ -842,19 +841,13 @@ link_list_panel(Buffer *buf)
 		    p = parsedURL2Str(&pu)->ptr;
 		    u = html_quote(p);
 		    if (DecodeURL)
-			p = html_quote(url_unquote_conv(p,
-							buf->
-							document_charset));
+			p = html_quote(url_decode2(p, buf));
 		    else
 			p = u;
 		    if (m->alt && *m->alt)
 			t = html_quote(m->alt);
-		    else if (DecodeURL)
-			t = html_quote(url_unquote_conv(m->url,
-							buf->
-							document_charset));
 		    else
-			t = html_quote(m->url);
+			t = html_quote(url_decode2(m->url, buf));
 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,
 				   "</a><br>", p, "\n", NULL);
 		}

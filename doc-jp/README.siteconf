@@ -1,0 +1,60 @@
+siteconf: サイト別カスタマイズ
+
+siteconf は、 URL のパターンと、それに紐付けられた設定から成ります。
+siteconf を使うと、サイト毎に文字コードを指定して "decode_url"
+の出力を改善したり、 Google のリダイレクタを迂回して性能や
+プライバシーを向上させたりすることができます。
+
+デフォルトでは siteconf は ~/.w3m/siteconf から読み込まれます。
+
+===== 構文 =====
+
+url <url>|/<re-url>/|m@<re-url>@i [exact]
+substitute_url "<destination-url>"
+url_charset <charset>
+no_referer_from on|off
+no_referer_to on|off
+
+後ろの方に書かれたものが優先されます。
+
+===== 例 =====
+
+url "http://twitter.com/#!/"
+substitute_url "http://mobile.twitter.com/"
+
+twitter.com をモバイルサイトに転送します。
+
+url "http://your.bookmark.net/"
+no_referer_from on
+
+your.bookmark.net から張ったリンクを辿る際に、 HTTP referer を
+送らないようにします。
+
+url "http://www.google.com/url?" exact
+substitute_url "file:///cgi-bin/your-redirector.cgi?"
+
+Google のリダイレクタを local CGI に転送します。
+
+url /^http:\/\/[a-z]*\.wikipedia\.org\//
+url_charset utf-8
+
+同時に "decode_url" オプションをオンにすると、 Wikipedia への
+リンクを UTF-8 としてデコードして表示します。
+
+===== 正規表現について =====
+
+次の正規表現はいずれも同じ意味を表します。
+
+/http:\/\/www\.example\.com\//
+m/http:\/\/www\.example\.com\//
+m@http://www\.example\.com/@
+m!http://www\.example\.com/!
+
+最後に 'i' 修飾子を付けると、大文字小文字を区別せずに照合を行います。
+例えば、 m@^http://www\.example\.com/abc/@i は以下のいずれとも一致します。
+
+http://www.example.com/abc/
+http://www.example.com/Abc/
+http://www.example.com/ABC/
+
+ただし、ホスト名の部分は常に小文字に変換してから比較します。

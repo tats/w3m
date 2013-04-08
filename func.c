@@ -8,6 +8,7 @@
 #include "fm.h"
 #include "func.h"
 #include "myctype.h"
+#include "regex.h"
 
 #include "funcname.c"
 #include "functable.c"
@@ -432,6 +433,93 @@ getQWord(char **str)
     }
     *str = p;
     return tmp->ptr;
+}
+
+/* This extracts /regex/i or m@regex@i from the given string.
+ * Then advances *str to the end of regex.
+ * If the input does not seems to be a regex, this falls back to getQWord().
+ * 
+ * Returns a word (no matter whether regex or not) in the give string.
+ * If regex_ret is non-NULL, compiles the regex and stores there.
+ *
+ * XXX: Actually this is unrelated to func.c.
+ */
+char *
+getRegexWord(const char **str, Regex **regex_ret)
+{
+    char *word = NULL;
+    const char *p, *headp, *bodyp, *tailp;
+    char delimiter;
+    int esc;
+    int igncase = 0;
+
+    p = *str;
+    SKIP_BLANKS(p);
+    headp = p;
+
+    /* Get the opening delimiter */
+    if (p[0] == 'm' && IS_PRINT(p[1]) && !IS_ALNUM(p[1]) && p[1] != '\\') {
+	delimiter = p[1];
+	p += 2;
+    }
+    else if (p[0] == '/') {
+	delimiter = '/';
+	p += 1;
+    }
+    else {
+	goto not_regex;
+    }
+    bodyp = p;
+
+    /* Scan the end of the expression */
+    for (esc = 0; *p; ++p) {
+	if (esc) {
+	    esc = 0;
+	} else {
+	    if (*p == delimiter)
+		break;
+	    else if (*p == '\\')
+		esc = 1;
+	}
+    }
+    if (!*p && *headp == '/')
+	goto not_regex;
+    tailp = p;
+
+    /* Check the modifiers */
+    if (*p == delimiter) {
+	while (*++p && !IS_SPACE(*p)) {
+	    switch (*p) {
+	    case 'i':
+		igncase = 1;
+		break;
+	    }
+	    /* ignore unknown modifiers */
+	}
+    }
+
+    /* Save the expression */
+    word = allocStr(headp, p - headp);
+
+    /* Compile */
+    if (regex_ret) {
+	if (*tailp == delimiter)
+	    word[tailp - headp] = 0;
+	*regex_ret = newRegex(word + (bodyp - headp), igncase, NULL, NULL);
+	if (*tailp == delimiter)
+	    word[tailp - headp] = delimiter;
+    }
+    goto last;
+
+not_regex:
+    p = headp;
+    word = getQWord((char **)&p);
+    if (regex_ret)
+	*regex_ret = NULL;
+
+last:
+    *str = p;
+    return word;
 }
 
 #ifdef USE_MOUSE

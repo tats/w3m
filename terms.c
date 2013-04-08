@@ -2027,8 +2027,8 @@ sleep_till_anykey(int sec, int purge)
 
 #ifdef USE_MOUSE
 
-#define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
-#define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
+#define XTERM_ON   {fputs("\033[?1001s\033[?1000h\033[?1006h",ttyf); flush_tty();}
+#define XTERM_OFF  {fputs("\033[?1006l\033[?1000l\033[?1001r",ttyf); flush_tty();}
 #define CYGWIN_ON  {fputs("\033[?1000h",ttyf); flush_tty();}
 #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
 

@@ -5398,6 +5398,58 @@ DEFUN(mouse, MOUSE, "mouse operation")
     process_mouse(btn, x, y);
 }
 
+DEFUN(sgrmouse, SGRMOUSE, "SGR 1006 mouse operation")
+{
+    int btn = 0, x = 0, y = 0;
+    unsigned char c;
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    btn = btn * 10 + c - '0';
+	else if (c == ';')
+	    break;
+	else
+	    return;
+    } while (1);
+
+#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
+    if (cygwin_mouse_btn_swapped) {
+	if (btn == MOUSE_BTN2_DOWN)
+	    btn = MOUSE_BTN3_DOWN;
+	else if (btn == MOUSE_BTN3_DOWN)
+	    btn = MOUSE_BTN2_DOWN;
+    };
+#endif
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    x = x * 10 + c - '0';
+	else if (c == ';')
+	    break;
+	else
+	  return;
+    } while (1);
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    y = y * 10 + c - '0';
+	else if (c == 'M')
+	    break;
+	else if (c == 'm') {
+	    btn |= 3;
+	    break;
+	} else
+    return;
+    } while (1);
+
+    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
+	return;
+    process_mouse(btn, x, y);
+}
+
 #ifdef USE_GPM
 int
 gpm_process_mouse(Gpm_Event * event, void *data)

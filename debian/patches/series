@@ -9,3 +9,4 @@
 100_use-cppflags.patch
 110_form-input-text.patch
 120_sgrmouse.patch
+130_siteconf.patch

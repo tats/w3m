@@ -1,0 +1,2051 @@
+Subject: New feature: siteconf
+From: AIDA Shinra <shinra@j10n.org>
+Date: Wed, 27 Jun 2012 20:43:46 +0900
+Origin: upstream, http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev/201206.month/4464.html
+
+Patch to support the siteconf feature, from [w3m-dev 04464]
+on 2012-06-27, provided by AIDA Shinra.
+
+diff --git a/anchor.c b/anchor.c
+index 27bbd56..39f221d 100644
+--- a/anchor.c
++++ b/anchor.c
+@@ -200,10 +200,11 @@ _put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
+ 	if (*(p2 - 1) == '>')
+ 	    p2--;
+     }
+-    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
+-			     buf->document_charset);
+-    tmp = Sprintf("news:%s", file_quote(tmp->ptr));
+-    return registerHref(buf, tmp->ptr, NULL, NO_REFERER, NULL, '\0', line,
++    tmp = Strnew_charp("news:");
++    Strcat_charp_n(tmp, p1, p2 - p1);
++    return registerHref(buf, url_encode(tmp->ptr, baseURL(buf),
++					buf->document_charset),
++			NULL, NO_REFERER, NULL, '\0', line,
+ 			pos);
+ }
+ #endif				/* USE_NNTP */
+@@ -213,9 +214,10 @@ _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
+ {
+     Str tmp;
+ 
+-    tmp = wc_Str_conv_strict(Strnew_charp_n(p1, p2 - p1), InnerCharset,
+-			     buf->document_charset);
+-    return registerHref(buf, url_quote(tmp->ptr), NULL, NO_REFERER, NULL,
++    tmp = Strnew_charp_n(p1, p2 - p1);
++    return registerHref(buf, url_encode(tmp->ptr, baseURL(buf),
++					buf->document_charset),
++			NULL, NO_REFERER, NULL,
+ 			'\0', line, pos);
+ }
+ 
+@@ -756,7 +758,7 @@ link_list_panel(Buffer *buf)
+ 		p = parsedURL2Str(&pu)->ptr;
+ 		u = html_quote(p);
+ 		if (DecodeURL)
+-		    p = html_quote(url_unquote_conv(p, buf->document_charset));
++		    p = html_quote(url_decode2(p, buf));
+ 		else
+ 		    p = u;
+ 	    }
+@@ -787,7 +789,7 @@ link_list_panel(Buffer *buf)
+ 	    p = parsedURL2Str(&pu)->ptr;
+ 	    u = html_quote(p);
+ 	    if (DecodeURL)
+-		p = html_quote(url_unquote_conv(p, buf->document_charset));
++		p = html_quote(url_decode2(p, buf));
+ 	    else
+ 		p = u;
+ 	    t = getAnchorText(buf, al, a);
+@@ -809,16 +811,13 @@ link_list_panel(Buffer *buf)
+ 	    p = parsedURL2Str(&pu)->ptr;
+ 	    u = html_quote(p);
+ 	    if (DecodeURL)
+-		p = html_quote(url_unquote_conv(p, buf->document_charset));
++		p = html_quote(url_decode2(p, buf));
+ 	    else
+ 		p = u;
+ 	    if (a->title && *a->title)
+ 		t = html_quote(a->title);
+-	    else if (DecodeURL)
+-		t = html_quote(url_unquote_conv
+-			       (a->url, buf->document_charset));
+ 	    else
+-		t = html_quote(a->url);
++		t = html_quote(url_decode2(a->url, buf));
+ 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
+ 			   "\n", NULL);
+ 	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
+@@ -842,19 +841,13 @@ link_list_panel(Buffer *buf)
+ 		    p = parsedURL2Str(&pu)->ptr;
+ 		    u = html_quote(p);
+ 		    if (DecodeURL)
+-			p = html_quote(url_unquote_conv(p,
+-							buf->
+-							document_charset));
++			p = html_quote(url_decode2(p, buf));
+ 		    else
+ 			p = u;
+ 		    if (m->alt && *m->alt)
+ 			t = html_quote(m->alt);
+-		    else if (DecodeURL)
+-			t = html_quote(url_unquote_conv(m->url,
+-							buf->
+-							document_charset));
+ 		    else
+-			t = html_quote(m->url);
++			t = html_quote(url_decode2(m->url, buf));
+ 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,
+ 				   "</a><br>", p, "\n", NULL);
+ 		}
+diff --git a/config.h.in b/config.h.in
+index 2f41eed..59997b4 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -25,6 +25,7 @@
+ 
+ #define PASSWD_FILE	RC_DIR "/passwd"
+ #define PRE_FORM_FILE	RC_DIR "/pre_form"
++#define SITECONF_FILE	RC_DIR "/siteconf"
+ #define USER_MAILCAP	RC_DIR "/mailcap"
+ #define SYS_MAILCAP	CONF_DIR "/mailcap"
+ #define USER_MIMETYPES	"~/.mime.types"
+diff --git a/display.c b/display.c
+index e00eb0c..2fe1183 100644
+--- a/display.c
++++ b/display.c
+@@ -257,7 +257,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
+     parseURL2(url, &pu, baseURL(buf));
+     u = parsedURL2Str(&pu);
+     if (DecodeURL)
+-	u = Strnew_charp(url_unquote_conv(u->ptr, buf->document_charset));
++	u = Strnew_charp(url_decode2(u->ptr, buf));
+ #ifdef USE_M17N
+     u = checkType(u, &pr, NULL);
+ #endif
+diff --git a/doc-jp/README.siteconf b/doc-jp/README.siteconf
+new file mode 100644
+index 0000000..58b51c7
+--- /dev/null
++++ b/doc-jp/README.siteconf
+@@ -0,0 +1,60 @@
++siteconf: •µ•§•» Ã•´•π•ø•ﬁ•§•∫
++
++siteconf §œ°¢ URL §Œ•—•ø°º•Û§»°¢§Ω§Ï§À…≥…’§±§È§Ï§ø¿ﬂƒÍ§´§È¿Æ§Í§ﬁ§π°£
++siteconf §Úª»§¶§»°¢•µ•§•»ÀË§À ∏ª˙•≥°º•…§ÚªÿƒÍ§∑§∆ "decode_url"
++§ŒΩ–Œœ§Ú≤˛¡±§∑§ø§Í°¢ Google §Œ•Í•¿•§•Ï•Ø•ø§Ú±™≤Û§∑§∆¿≠«Ω§‰
++•◊•È•§•–•∑°º§Ú∏˛æÂ§µ§ª§ø§Í§π§Î§≥§»§¨§«§≠§ﬁ§π°£
++
++•«•’•©•Î•»§«§œ siteconf §œ ~/.w3m/siteconf §´§È∆…§ﬂπ˛§ﬁ§Ï§ﬁ§π°£
++
++===== πΩ ∏ =====
++
++url <url>|/<re-url>/|m@<re-url>@i [exact]
++substitute_url "<destination-url>"
++url_charset <charset>
++no_referer_from on|off
++no_referer_to on|off
++
++∏Â§Ì§Œ ˝§ÀΩÒ§´§Ï§ø§‚§Œ§¨Õ•¿Ë§µ§Ï§ﬁ§π°£
++
++===== Œ„ =====
++
++url "http://twitter.com/#!/"
++substitute_url "http://mobile.twitter.com/"
++
++twitter.com §Ú•‚•–•§•Î•µ•§•»§À≈æ¡˜§∑§ﬁ§π°£
++
++url "http://your.bookmark.net/"
++no_referer_from on
++
++your.bookmark.net §´§Èƒ•§√§ø•Í•Û•Ø§Ú√©§Î∫›§À°¢ HTTP referer §Ú
++¡˜§È§ §§§Ë§¶§À§∑§ﬁ§π°£
++
++url "http://www.google.com/url?" exact
++substitute_url "file:///cgi-bin/your-redirector.cgi?"
++
++Google §Œ•Í•¿•§•Ï•Ø•ø§Ú local CGI §À≈æ¡˜§∑§ﬁ§π°£
++
++url /^http:\/\/[a-z]*\.wikipedia\.org\//
++url_charset utf-8
++
++∆±ª˛§À "decode_url" •™•◊•∑•Á•Û§Ú•™•Û§À§π§Î§»°¢ Wikipedia §ÿ§Œ
++•Í•Û•Ø§Ú UTF-8 §»§∑§∆•«•≥°º•…§∑§∆…Ωº®§∑§ﬁ§π°£
++
++===== ¿µµ¨…Ω∏Ω§À§ƒ§§§∆ =====
++
++º°§Œ¿µµ¨…Ω∏Ω§œ§§§∫§Ï§‚∆±§∏∞’Ã£§Ú…Ω§∑§ﬁ§π°£
++
++/http:\/\/www\.example\.com\//
++m/http:\/\/www\.example\.com\//
++m@http://www\.example\.com/@
++m!http://www\.example\.com/!
++
++∫«∏Â§À 'i' Ω§æ˛ª“§Ú…’§±§Î§»°¢¬Á ∏ª˙æÆ ∏ª˙§Ú∂Ë Ã§ª§∫§Àæ»πÁ§Úπ‘§§§ﬁ§π°£
++Œ„§®§–°¢ m@^http://www\.example\.com/abc/@i §œ∞ ≤º§Œ§§§∫§Ï§»§‚∞Ï√◊§∑§ﬁ§π°£
++
++http://www.example.com/abc/
++http://www.example.com/Abc/
++http://www.example.com/ABC/
++
++§ø§¿§∑°¢•€•π•»Ãæ§Œ…Ù ¨§œæÔ§ÀæÆ ∏ª˙§À —¥π§∑§∆§´§È»Ê≥”§∑§ﬁ§π°£
+diff --git a/doc/README.siteconf b/doc/README.siteconf
+new file mode 100644
+index 0000000..f173087
+--- /dev/null
++++ b/doc/README.siteconf
+@@ -0,0 +1,60 @@
++The siteconf: Site-specific preferences 
++
++The siteconf consists of URL patterns and preferences associated to them.
++You can improve "decode_url" feature by giving charsets of URLs site by site,
++or bypass Google's redirector for performance and your privacy.
++
++The siteconf is read from ~/.w3m/siteconf by default.
++
++===== The syntax =====
++
++url <url>|/<re-url>/|m@<re-url>@i [exact]
++substitute_url "<destination-url>"
++url_charset <charset>
++no_referer_from on|off
++no_referer_to on|off
++
++The last match wins.
++
++===== Examples =====
++
++url "http://twitter.com/#!/"
++substitute_url "http://mobile.twitter.com/"
++
++This forwards the twitter.com to its mobile site.
++
++url "http://your.bookmark.net/"
++no_referer_from on
++
++This prevents HTTP referers from being sent when you follow links
++at the your.bookmark.net.
++
++url "http://www.google.com/url?" exact
++substitute_url "file:///cgi-bin/your-redirector.cgi?"
++
++This forwards the Google's redirector to your local CGI.
++
++url /^http:\/\/[a-z]*\.wikipedia\.org\//
++url_charset utf-8
++
++When combinated with "decode_url" option turned on, links to
++Wikipedia will be human-readable.
++
++===== Regular expressions notes =====
++
++Following expressions are all equivalent:
++
++/http:\/\/www\.example\.com\//
++m/http:\/\/www\.example\.com\//
++m@http://www\.example\.com/@
++m!http://www\.example\.com/!
++
++With a trailing 'i' modifier, you can specify a case-insensitive match.
++For example, m@^http://www\.example\.com/abc/@i matches to:
++
++http://www.example.com/abc/
++http://www.example.com/Abc/
++http://www.example.com/ABC/
++
++Hostnames, however, are always converted to lowercases before compared.
++
+diff --git a/file.c b/file.c
+index 567d41e..22b76d9 100644
+--- a/file.c
++++ b/file.c
+@@ -47,11 +47,11 @@ static JMP_BUF AbortLoading;
+ static struct table *tables[MAX_TABLE];
+ static struct table_mode table_mode[MAX_TABLE];
+ 
+-#ifdef USE_IMAGE
++#if defined(USE_M17N) || defined(USE_IMAGE)
+ static ParsedURL *cur_baseURL = NULL;
+-#ifdef USE_M17N
+-static char cur_document_charset;
+ #endif
++#ifdef USE_M17N
++static wc_ces cur_document_charset = 0;
+ #endif
+ 
+ static Str cur_title;
+@@ -215,7 +215,6 @@ currentLn(Buffer *buf)
+ 
+ static Buffer *
+ loadSomething(URLFile *f,
+-	      char *path,
+ 	      Buffer *(*loadproc) (URLFile *, Buffer *), Buffer *defaultbuf)
+ {
+     Buffer *buf;
+@@ -223,17 +222,23 @@ loadSomething(URLFile *f,
+     if ((buf = loadproc(f, defaultbuf)) == NULL)
+ 	return NULL;
+ 
+-    buf->filename = path;
+     if (buf->buffername == NULL || buf->buffername[0] == '\0') {
+ 	buf->buffername = checkHeader(buf, "Subject:");
+-	if (buf->buffername == NULL)
+-	    buf->buffername = conv_from_system(lastFileName(path));
++	if (buf->buffername == NULL && buf->filename != NULL)
++	    buf->buffername = conv_from_system(lastFileName(buf->filename));
+     }
+     if (buf->currentURL.scheme == SCM_UNKNOWN)
+ 	buf->currentURL.scheme = f->scheme;
+-    buf->real_scheme = f->scheme;
+     if (f->scheme == SCM_LOCAL && buf->sourcefile == NULL)
+-	buf->sourcefile = path;
++	buf->sourcefile = buf->filename;
++    if (loadproc == loadHTMLBuffer
++#ifdef USE_IMAGE
++	|| loadproc == loadImageBuffer
++#endif
++       )
++	buf->type = "text/html";
++    else
++	buf->type = "text/plain";
+     return buf;
+ }
+ 
+@@ -484,28 +489,6 @@ convertLine0(URLFile *uf, Str line, int mode)
+     return line;
+ }
+ 
+-/* 
+- * loadFile: load file to buffer
+- */
+-Buffer *
+-loadFile(char *path)
+-{
+-    Buffer *buf;
+-    URLFile uf;
+-    init_stream(&uf, SCM_LOCAL, NULL);
+-    examineFile(path, &uf);
+-    if (uf.stream == NULL)
+-	return NULL;
+-    buf = newBuffer(INIT_BUFFER_WIDTH);
+-    current_content_length = 0;
+-#ifdef USE_M17N
+-    content_charset = 0;
+-#endif
+-    buf = loadSomething(&uf, path, loadBuffer, buf);
+-    UFclose(&uf);
+-    return buf;
+-}
+-
+ int
+ matchattr(char *p, char *attr, int len, Str *value)
+ {
+@@ -1697,13 +1680,15 @@ getLinkNumberStr(int correction)
+ /* 
+  * loadGeneralFile: load file to buffer
+  */
++#define DO_EXTERNAL ((Buffer *(*)(URLFile *, Buffer *))doExternal)
+ Buffer *
+ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+ 		int flag, FormList *volatile request)
+ {
+     URLFile f, *volatile of = NULL;
+     ParsedURL pu;
+-    Buffer *b = NULL, *(*volatile proc)() = loadBuffer;
++    Buffer *b = NULL;
++    Buffer *(*volatile proc)(URLFile *, Buffer *) = loadBuffer;
+     char *volatile tpath;
+     char *volatile t = "text/plain", *p, *volatile real_type = NULL;
+     Buffer *volatile t_buf = NULL;
+@@ -1730,7 +1715,22 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+     add_auth_cookie_flag = 0;
+ 
+     checkRedirection(NULL);
++
+   load_doc:
++    {
++	const char *sc_redirect;
++	parseURL2(tpath, &pu, current);
++	sc_redirect = query_SCONF_SUBSTITUTE_URL(&pu);
++	if (sc_redirect && *sc_redirect && checkRedirection(&pu)) {
++	    tpath = (char *)sc_redirect;
++	    request = NULL;
++	    add_auth_cookie_flag = 0;
++	    current = New(ParsedURL);
++	    *current = pu;
++	    status = HTST_NORMAL;
++	    goto load_doc;
++	}
++    }
+     TRAP_OFF;
+     url_option.referer = referer;
+     url_option.flag = flag;
+@@ -1863,7 +1863,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+ 	    /* 302: Found */
+ 	    /* 303: See Other */
+ 	    /* 307: Temporary Redirect (HTTP/1.1) */
+-	    tpath = url_quote_conv(p, DocumentCharset);
++	    tpath = url_encode(p, NULL, 0);
+ 	    request = NULL;
+ 	    UFclose(&f);
+ 	    current = New(ParsedURL);
+@@ -2022,7 +2022,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+ 	if (f.is_cgi && (p = checkHeader(t_buf, "Location:")) != NULL &&
+ 	    checkRedirection(&pu)) {
+ 	    /* document moved */
+-	    tpath = url_quote_conv(remove_space(p), DocumentCharset);
++	    tpath = url_encode(remove_space(p), NULL, 0);
+ 	    request = NULL;
+ 	    UFclose(&f);
+ 	    add_auth_cookie_flag = 0;
+@@ -2123,10 +2123,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+     if (real_type == NULL)
+ 	real_type = t;
+     proc = loadBuffer;
+-#ifdef USE_IMAGE
+-    cur_baseURL = New(ParsedURL);
+-    copyParsedURL(cur_baseURL, &pu);
+-#endif
+ 
+     current_content_length = 0;
+     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
+@@ -2197,18 +2193,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+ #endif
+     else if (w3m_backend) ;
+     else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
+-	if (!do_download && doExternal(f,
+-				       pu.real_file ? pu.real_file : pu.file,
+-				       t, &b, t_buf)) {
+-	    if (b && b != NO_BUFFER) {
+-		b->real_scheme = f.scheme;
+-		b->real_type = real_type;
+-		if (b->currentURL.host == NULL && b->currentURL.file == NULL)
+-		    copyParsedURL(&b->currentURL, &pu);
+-	    }
+-	    UFclose(&f);
+-	    TRAP_OFF;
+-	    return b;
++	if (!do_download && searchExtViewer(t) != NULL) {
++	    proc = DO_EXTERNAL;
+ 	}
+ 	else {
+ 	    TRAP_OFF;
+@@ -2232,36 +2218,30 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+     else if (w3m_dump & DUMP_FRAME)
+ 	return NULL;
+ 
++    if (t_buf == NULL)
++	t_buf = newBuffer(INIT_BUFFER_WIDTH);
++    copyParsedURL(&t_buf->currentURL, &pu);
++    t_buf->filename = pu.real_file ? pu.real_file :
++	pu.file ? conv_to_system(pu.file) : NULL;
+     if (flag & RG_FRAME) {
+-	if (t_buf == NULL)
+-	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
+ 	t_buf->bufferprop |= BP_FRAME;
+     }
+ #ifdef USE_SSL
+-    if (t_buf)
+-	t_buf->ssl_certificate = f.ssl_certificate;
++    t_buf->ssl_certificate = f.ssl_certificate;
+ #endif
+     frame_source = flag & RG_FRAME_SRC;
+-    b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
++    if (proc == DO_EXTERNAL) {
++	b = doExternal(f, t, t_buf);
++    } else {
++	b = loadSomething(&f, proc, t_buf);
++    }
+     UFclose(&f);
+     frame_source = 0;
+-    if (b) {
++    if (b && b != NO_BUFFER) {
+ 	b->real_scheme = f.scheme;
+ 	b->real_type = real_type;
+-	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
+-	    copyParsedURL(&b->currentURL, &pu);
+-	if (is_html_type(t))
+-	    b->type = "text/html";
+-	else if (w3m_backend) {
+-	    Str s = Strnew_charp(t);
+-	    b->type = s->ptr;
+-	}
+-#ifdef USE_IMAGE
+-	else if (proc == loadImageBuffer)
+-	    b->type = "text/html";
+-#endif
+-	else
+-	    b->type = "text/plain";
++	if (w3m_backend)
++	    b->type = allocStr(t, -1);
+ 	if (pu.label) {
+ 	    if (proc == loadHTMLBuffer) {
+ 		Anchor *a;
+@@ -3228,7 +3208,7 @@ process_img(struct parsed_tag *tag, int width)
+ 
+     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
+ 	return tmp;
+-    p = remove_space(p);
++    p = url_encode(remove_space(p), cur_baseURL, cur_document_charset);
+     q = NULL;
+     parsedtag_get_value(tag, ATTR_ALT, &q);
+     if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
+@@ -3322,12 +3302,7 @@ process_img(struct parsed_tag *tag, int width)
+ 	    Image image;
+ 	    ParsedURL u;
+ 
+-#ifdef USE_M17N
+-	    parseURL2(wc_conv(p, InnerCharset, cur_document_charset)->ptr, &u,
+-		      cur_baseURL);
+-#else
+ 	    parseURL2(p, &u, cur_baseURL);
+-#endif
+ 	    image.url = parsedURL2Str(&u)->ptr;
+ 	    if (!uncompressed_file_type(u.file, &image.ext))
+ 		image.ext = filename_extension(u.file, TRUE);
+@@ -4084,6 +4059,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+     parsedtag_get_value(tag, ATTR_METHOD, &p);
+     q = "!CURRENT_URL!";
+     parsedtag_get_value(tag, ATTR_ACTION, &q);
++    q = url_encode(remove_space(q), cur_baseURL, cur_document_charset);
+     r = NULL;
+ #ifdef USE_M17N
+     if (parsedtag_get_value(tag, ATTR_ACCEPT_CHARSET, &r))
+@@ -5067,11 +5043,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+ 	}
+ 	return 1;
+     case HTML_BASE:
+-#ifdef USE_IMAGE
++#if defined(USE_M17N) || defined(USE_IMAGE)
+ 	p = NULL;
+ 	if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+-	    if (!cur_baseURL)
+-		cur_baseURL = New(ParsedURL);
++	    cur_baseURL = New(ParsedURL);
+ 	    parseURL(p, cur_baseURL, NULL);
+ 	}
+ #endif
+@@ -5329,6 +5304,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ #ifdef MENU_SELECT
+     Anchor **a_select = NULL;
+ #endif
++#if defined(USE_M17N) || defined(USE_IMAGE)
++    ParsedURL *base = baseURL(buf);
++#endif
++#ifdef USE_M17N
++    wc_ces name_charset = url_to_charset(NULL, &buf->currentURL,
++					 buf->document_charset);
++#endif
+ 
+     if (out_size == 0) {
+ 	out_size = LINELEN;
+@@ -5523,16 +5505,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 		    hseq = 0;
+ 		    id = NULL;
+ 		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
+-			id = url_quote_conv(id, buf->document_charset);
++			id = url_quote_conv(id, name_charset);
+ 			registerName(buf, id, currentLn(buf), pos);
+ 		    }
+ 		    if (parsedtag_get_value(tag, ATTR_HREF, &p))
+-			p = url_quote_conv(remove_space(p),
+-					   buf->document_charset);
++			p = url_encode(remove_space(p), base,
++				       buf->document_charset);
+ 		    if (parsedtag_get_value(tag, ATTR_TARGET, &q))
+ 			q = url_quote_conv(q, buf->document_charset);
+ 		    if (parsedtag_get_value(tag, ATTR_REFERER, &r))
+-			r = url_quote_conv(r, buf->document_charset);
++			r = url_encode(r, base,
++				       buf->document_charset);
+ 		    parsedtag_get_value(tag, ATTR_TITLE, &s);
+ 		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
+ 		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
+@@ -5618,7 +5601,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			    ParsedURL u;
+ 			    Image *image;
+ 
+-			    parseURL2(a_img->url, &u, cur_baseURL);
++			    parseURL2(a_img->url, &u, base);
+ 			    a_img->image = image = New(Image);
+ 			    image->url = parsedURL2Str(&u)->ptr;
+ 			    if (!uncompressed_file_type(u.file, &image->ext))
+@@ -5639,7 +5622,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			    image->map = q;
+ 			    image->ismap = ismap;
+ 			    image->touch = 0;
+-			    image->cache = getImage(image, cur_baseURL,
++			    image->cache = getImage(image, base,
+ 						    IMG_FLAG_SKIP);
+ 			}
+ 			else if (iseq < 0) {
+@@ -5761,8 +5744,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			break;
+ 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+ 			MapArea *a;
+-			p = url_quote_conv(remove_space(p),
+-					   buf->document_charset);
++			p = url_encode(remove_space(p), base,
++				       buf->document_charset);
+ 			t = NULL;
+ 			parsedtag_get_value(tag, ATTR_TARGET, &t);
+ 			q = "";
+@@ -5811,11 +5794,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 		    break;
+ 		case HTML_BASE:
+ 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
+-			p = url_quote_conv(remove_space(p),
+-					   buf->document_charset);
++			p = url_encode(remove_space(p), NULL,
++				       buf->document_charset);
+ 			if (!buf->baseURL)
+ 			    buf->baseURL = New(ParsedURL);
+ 			parseURL(p, buf->baseURL, NULL);
++#if defined(USE_M17N) || defined(USE_IMAGE)
++			base = buf->baseURL;
++#endif
+ 		    }
+ 		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
+ 			buf->baseTarget =
+@@ -5830,8 +5816,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			int refresh_interval = getMetaRefreshParam(q, &tmp);
+ #ifdef USE_ALARM
+ 			if (tmp) {
+-			    p = url_quote_conv(remove_space(tmp->ptr),
+-					       buf->document_charset);
++			    p = url_encode(remove_space(tmp->ptr), base,
++					   buf->document_charset);
+ 			    buf->event = setAlarmEvent(buf->event,
+ 						       refresh_interval,
+ 						       AL_IMPLICIT_ONCE,
+@@ -5844,8 +5830,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 						       FUNCNAME_reload, NULL);
+ #else
+ 			if (tmp && refresh_interval == 0) {
+-			    p = url_quote_conv(remove_space(tmp->ptr),
+-					       buf->document_charset);
++			    p = url_encode(remove_space(tmp->ptr), base,
++					   buf->document_charset);
+ 			    pushEvent(FUNCNAME_gorURL, p);
+ 			}
+ #endif
+@@ -5929,7 +5915,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ #ifdef	ID_EXT
+ 		id = NULL;
+ 		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
+-		    id = url_quote_conv(id, buf->document_charset);
++		    id = url_quote_conv(id, name_charset);
+ 		    registerName(buf, id, currentLn(buf), pos);
+ 		}
+ 		if (renderFrameSet &&
+@@ -5982,7 +5968,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+ 
+     parsedtag_get_value(tag, ATTR_HREF, &href);
+     if (href)
+-	href = url_quote_conv(remove_space(href), buf->document_charset);
++	href = url_encode(remove_space(href), baseURL(buf),
++			  buf->document_charset);
+     parsedtag_get_value(tag, ATTR_TITLE, &title);
+     parsedtag_get_value(tag, ATTR_TYPE, &ctype);
+     parsedtag_get_value(tag, ATTR_REL, &rel);
+@@ -6963,8 +6950,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+ 	image_flag = IMG_FLAG_AUTO;
+     else
+ 	image_flag = IMG_FLAG_SKIP;
+-    if (newBuf->currentURL.file)
+-	cur_baseURL = baseURL(newBuf);
+ #endif
+ 
+     if (w3m_halfload) {
+@@ -6987,6 +6972,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+ 	htmlenv1.f = stdout;
+     else
+ 	htmlenv1.buf = newTextLineList();
++#if defined(USE_M17N) || defined(USE_IMAGE)
++    cur_baseURL = baseURL(newBuf);
++#endif
+ 
+     if (SETJMP(AbortLoading) != 0) {
+ 	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
+@@ -7048,7 +7036,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+ 	}
+ #endif
+ 	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
+-#if defined(USE_M17N) && defined(USE_IMAGE)
++#ifdef USE_M17N
+ 	cur_document_charset = charset;
+ #endif
+ 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
+@@ -7060,6 +7048,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+     obuf.status = R_ST_NORMAL;
+     completeHTMLstream(&htmlenv1, &obuf);
+     flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
++#if defined(USE_M17N) || defined(USE_IMAGE)
++    cur_baseURL = NULL;
++#endif
++#ifdef USE_M17N
++    cur_document_charset = 0;
++#endif
+     if (htmlenv1.title)
+ 	newBuf->buffername = htmlenv1.title;
+     if (w3m_halfdump) {
+@@ -7207,7 +7201,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+ 	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
+ 			   "/", file->ptr, NULL)->ptr;
+ 	Strcat_m_charp(tmp, "<a href=\"",
+-		       html_quote(url_quote_conv(q, *charset)),
++		       html_quote(url_encode(q, NULL, *charset)),
+ 		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
+     }
+ 
+@@ -7331,6 +7325,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+     URLFile f;
+     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+     struct stat st;
++    const ParsedURL *pu = newBuf ? &newBuf->currentURL : NULL;
+ 
+     loadImage(newBuf, IMG_FLAG_STOP);
+     image.url = uf->url;
+@@ -7338,8 +7333,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+     image.width = -1;
+     image.height = -1;
+     image.cache = NULL;
+-    cache = getImage(&image, cur_baseURL, IMG_FLAG_AUTO);
+-    if (!cur_baseURL->is_nocache && cache->loaded & IMG_FLAG_LOADED &&
++    cache = getImage(&image, (ParsedURL *)pu, IMG_FLAG_AUTO);
++    if (!(pu && pu->is_nocache) && cache->loaded & IMG_FLAG_LOADED &&
+ 	!stat(cache->file, &st))
+ 	goto image_buffer;
+ 
+@@ -7580,8 +7575,11 @@ openGeneralPagerBuffer(InputStream stream)
+ #ifdef USE_M17N
+     content_charset = 0;
+ #endif
++    t_buf = newBuffer(INIT_BUFFER_WIDTH);
++    copyParsedURL(&t_buf->currentURL, NULL);
++    t_buf->currentURL.scheme = SCM_LOCAL;
++    t_buf->currentURL.file = "-";
+     if (SearchHeader) {
+-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+ 	readHeader(&uf, t_buf, TRUE, NULL);
+ 	t = checkContentType(t_buf);
+ 	if (t == NULL)
+@@ -7609,14 +7607,13 @@ openGeneralPagerBuffer(InputStream stream)
+ #ifdef USE_IMAGE
+     else if (activeImage && displayImage && !useExtImageViewer &&
+ 	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
+-	cur_baseURL = New(ParsedURL);
+-	parseURL("-", cur_baseURL, NULL);
+ 	buf = loadImageBuffer(&uf, t_buf);
+ 	buf->type = "text/html";
+     }
+ #endif
+     else {
+-	if (doExternal(uf, "-", t, &buf, t_buf)) {
++	if (searchExtViewer(t)) {
++	    buf = doExternal(uf, t, t_buf);
+ 	    UFclose(&uf);
+ 	    if (buf == NULL || buf == NO_BUFFER)
+ 		return buf;
+@@ -7629,8 +7626,6 @@ openGeneralPagerBuffer(InputStream stream)
+ 	}
+     }
+     buf->real_type = t;
+-    buf->currentURL.scheme = SCM_LOCAL;
+-    buf->currentURL.file = "-";
+     return buf;
+ }
+ 
+@@ -7823,9 +7818,8 @@ save2tmp(URLFile uf, char *tmpf)
+     return 0;
+ }
+ 
+-int
+-doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+-	   Buffer *defaultbuf)
++Buffer *
++doExternal(URLFile uf, char *type, Buffer *defaultbuf)
+ {
+     Str tmpf, command;
+     struct mailcap *mcap;
+@@ -7834,7 +7828,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+     char *header, *src = NULL, *ext = uf.ext;
+ 
+     if (!(mcap = searchExtViewer(type)))
+-	return 0;
++	return NULL;
+ 
+     if (mcap->nametemplate) {
+ 	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
+@@ -7867,15 +7861,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+ 	    UFclose(&uf);
+ 	    myExec(command->ptr);
+ 	}
+-	*bufp = NO_BUFFER;
+-	return 1;
++	return NO_BUFFER;
+     }
+     else
+ #endif
+     {
+ 	if (save2tmp(uf, tmpf->ptr) < 0) {
+-	    *bufp = NULL;
+-	    return 1;
++	    return NULL;
+ 	}
+     }
+     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
+@@ -7918,14 +7910,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+ 	buf = NO_BUFFER;
+     }
+     if (buf && buf != NO_BUFFER) {
+-	buf->filename = path;
+-	if (buf->buffername == NULL || buf->buffername[0] == '\0')
+-	    buf->buffername = conv_from_system(lastFileName(path));
++	if ((buf->buffername == NULL || buf->buffername[0] == '\0') &&
++	    buf->filename)
++	    buf->buffername = conv_from_system(lastFileName(buf->filename));
+ 	buf->edit = mcap->edit;
+ 	buf->mailcap = mcap;
+     }
+-    *bufp = buf;
+-    return 1;
++    return buf;
+ }
+ 
+ static int
+diff --git a/fm.h b/fm.h
+index 8378939..0f56c31 100644
+--- a/fm.h
++++ b/fm.h
+@@ -264,6 +264,18 @@ extern int REV_LB[];
+ #define IMG_FLAG_ERROR		2
+ #define IMG_FLAG_DONT_REMOVE	4
+ 
++#define IS_EMPTY_PARSED_URL(pu) ((pu)->scheme == SCM_UNKNOWN && !(pu)->file)
++#define SCONF_RESERVED		0
++#define SCONF_SUBSTITUTE_URL	1
++#define SCONF_URL_CHARSET	2
++#define SCONF_NO_REFERER_FROM	3
++#define SCONF_NO_REFERER_TO	4
++#define SCONF_N_FIELD		5
++#define query_SCONF_SUBSTITUTE_URL(pu) ((const char *)querySiteconf(pu, SCONF_SUBSTITUTE_URL))
++#define query_SCONF_URL_CHARSET(pu) ((const wc_ces *)querySiteconf(pu, SCONF_URL_CHARSET))
++#define query_SCONF_NO_REFERER_FROM(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_FROM))
++#define query_SCONF_NO_REFERER_TO(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_TO))
++
+ /* 
+  * Macros.
+  */
+@@ -972,6 +984,7 @@ global int BackgroundExtViewer init(TRUE);
+ global int disable_secret_security_check init(FALSE);
+ global char *passwd_file init(PASSWD_FILE);
+ global char *pre_form_file init(PRE_FORM_FILE);
++global char *siteconf_file init(SITECONF_FILE);
+ global char *ftppasswd init(NULL);
+ global int ftppass_hostnamegen init(TRUE);
+ global int do_download init(FALSE);
+diff --git a/form.c b/form.c
+index b7556ca..fa17be4 100644
+--- a/form.c
++++ b/form.c
+@@ -787,7 +787,7 @@ struct pre_form {
+ static struct pre_form *PreForm = NULL;
+ 
+ static struct pre_form *
+-add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
++add_pre_form(struct pre_form *prev, char *url, Regex *re_url, char *name, char *action)
+ {
+     ParsedURL pu;
+     struct pre_form *new;
+@@ -796,21 +796,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
+ 	new = prev->next = New(struct pre_form);
+     else
+ 	new = PreForm = New(struct pre_form);
+-    if (url && *url == '/') {
+-	int l = strlen(url);
+-	if (l > 1 && url[l - 1] == '/')
+-	    new->url = allocStr(url + 1, l - 2);
+-	else
+-	    new->url = url + 1;
+-	new->re_url = newRegex(new->url, FALSE, NULL, NULL);
+-	if (!new->re_url)
+-	    new->url = NULL;
+-    }
+-    else if (url) {
++    if (url && !re_url) {
+ 	parseURL2(url, &pu, NULL);
+ 	new->url = parsedURL2Str(&pu)->ptr;
+-	new->re_url = NULL;
+     }
++    else
++	new->url = url;
++    new->re_url = re_url;
+     new->name = (name && *name) ? name : NULL;
+     new->action = (action && *action) ? action : NULL;
+     new->item = NULL;
+@@ -834,7 +826,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
+     new->name = name;
+     new->value = value;
+     if (checked && *checked && (!strcmp(checked, "0") ||
+-				strcasecmp(checked, "off")
++				!strcasecmp(checked, "off")
+ 				|| !strcasecmp(checked, "no")))
+ 	new->checked = 0;
+     else
+@@ -875,6 +867,7 @@ loadPreForm(void)
+ 	return;
+     while (1) {
+ 	char *p, *s, *arg;
++	Regex *re_arg;
+ 
+ 	line = Strfgets(fp);
+ 	if (line->length == 0)
+@@ -890,18 +883,20 @@ loadPreForm(void)
+ 	if (*p == '#' || *p == '\0')
+ 	    continue;		/* comment or empty line */
+ 	s = getWord(&p);
+-	arg = getWord(&p);
+ 
+ 	if (!strcmp(s, "url")) {
++	    arg = getRegexWord((const char **)&p, &re_arg);
+ 	    if (!arg || !*arg)
+ 		continue;
+ 	    p = getQWord(&p);
+-	    pf = add_pre_form(pf, arg, NULL, p);
++	    pf = add_pre_form(pf, arg, re_arg, NULL, p);
+ 	    pi = pf->item;
+ 	    continue;
+ 	}
+ 	if (!pf)
+ 	    continue;
++
++	arg = getWord(&p);
+ 	if (!strcmp(s, "form")) {
+ 	    if (!arg || !*arg)
+ 		continue;
+@@ -913,7 +908,7 @@ loadPreForm(void)
+ 	    }
+ 	    if (pf->item) {
+ 		struct pre_form *prev = pf;
+-		pf = add_pre_form(prev, "", s, p);
++		pf = add_pre_form(prev, "", NULL, s, p);
+ 		/* copy previous URL */
+ 		pf->url = prev->url;
+ 		pf->re_url = prev->re_url;
+diff --git a/frame.c b/frame.c
+index b431437..48c2d72 100644
+--- a/frame.c
++++ b/frame.c
+@@ -91,7 +91,8 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
+     body->baseURL = baseURL(buf);
+     if (tag) {
+ 	if (parsedtag_get_value(tag, ATTR_SRC, &p))
+-	    body->url = url_quote_conv(remove_space(p), buf->document_charset);
++	    body->url = url_encode(remove_space(p), body->baseURL,
++				   buf->document_charset);
+ 	if (parsedtag_get_value(tag, ATTR_NAME, &p) && *p != '_')
+ 	    body->name = url_quote_conv(p, buf->document_charset);
+     }
+@@ -639,7 +640,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
+ 			case HTML_BASE:
+ 			    /* "BASE" is prohibit tag */
+ 			    if (parsedtag_get_value(tag, ATTR_HREF, &q)) {
+-				q = url_quote_conv(remove_space(q), charset);
++				q = url_encode(remove_space(q), NULL, charset);
+ 				parseURL(q, &base, NULL);
+ 			    }
+ 			    if (parsedtag_get_value(tag, ATTR_TARGET, &q)) {
+@@ -768,8 +769,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
+ 				if (!tag->value[j])
+ 				    break;
+ 				tag->value[j] =
+-				    url_quote_conv(remove_space(tag->value[j]),
+-						   charset);
++				    url_encode(remove_space(tag->value[j]),
++					       &base, charset);
+ 				tag->need_reconstruct = TRUE;
+ 				parseURL2(tag->value[j], &url, &base);
+ 				if (url.scheme == SCM_UNKNOWN ||
+diff --git a/func.c b/func.c
+index f389e00..8b5deac 100644
+--- a/func.c
++++ b/func.c
+@@ -8,6 +8,7 @@
+ #include "fm.h"
+ #include "func.h"
+ #include "myctype.h"
++#include "regex.h"
+ 
+ #include "funcname.c"
+ #include "functable.c"
+@@ -434,6 +435,93 @@ getQWord(char **str)
+     return tmp->ptr;
+ }
+ 
++/* This extracts /regex/i or m@regex@i from the given string.
++ * Then advances *str to the end of regex.
++ * If the input does not seems to be a regex, this falls back to getQWord().
++ * 
++ * Returns a word (no matter whether regex or not) in the give string.
++ * If regex_ret is non-NULL, compiles the regex and stores there.
++ *
++ * XXX: Actually this is unrelated to func.c.
++ */
++char *
++getRegexWord(const char **str, Regex **regex_ret)
++{
++    char *word = NULL;
++    const char *p, *headp, *bodyp, *tailp;
++    char delimiter;
++    int esc;
++    int igncase = 0;
++
++    p = *str;
++    SKIP_BLANKS(p);
++    headp = p;
++
++    /* Get the opening delimiter */
++    if (p[0] == 'm' && IS_PRINT(p[1]) && !IS_ALNUM(p[1]) && p[1] != '\\') {
++	delimiter = p[1];
++	p += 2;
++    }
++    else if (p[0] == '/') {
++	delimiter = '/';
++	p += 1;
++    }
++    else {
++	goto not_regex;
++    }
++    bodyp = p;
++
++    /* Scan the end of the expression */
++    for (esc = 0; *p; ++p) {
++	if (esc) {
++	    esc = 0;
++	} else {
++	    if (*p == delimiter)
++		break;
++	    else if (*p == '\\')
++		esc = 1;
++	}
++    }
++    if (!*p && *headp == '/')
++	goto not_regex;
++    tailp = p;
++
++    /* Check the modifiers */
++    if (*p == delimiter) {
++	while (*++p && !IS_SPACE(*p)) {
++	    switch (*p) {
++	    case 'i':
++		igncase = 1;
++		break;
++	    }
++	    /* ignore unknown modifiers */
++	}
++    }
++
++    /* Save the expression */
++    word = allocStr(headp, p - headp);
++
++    /* Compile */
++    if (regex_ret) {
++	if (*tailp == delimiter)
++	    word[tailp - headp] = 0;
++	*regex_ret = newRegex(word + (bodyp - headp), igncase, NULL, NULL);
++	if (*tailp == delimiter)
++	    word[tailp - headp] = delimiter;
++    }
++    goto last;
++
++not_regex:
++    p = headp;
++    word = getQWord((char **)&p);
++    if (regex_ret)
++	*regex_ret = NULL;
++
++last:
++    *str = p;
++    return word;
++}
++
+ #ifdef USE_MOUSE
+ static MouseAction default_mouse_action = {
+     NULL,
+diff --git a/history.c b/history.c
+index 951ef83..e9be09b 100644
+--- a/history.c
++++ b/history.c
+@@ -17,7 +17,7 @@ historyBuffer(Hist *hist)
+ 	for (item = hist->list->last; item; item = item->prev) {
+ 	    q = html_quote((char *)item->ptr);
+ 	    if (DecodeURL)
+-		p = html_quote(url_unquote_conv((char *)item->ptr, 0));
++		p = html_quote(url_decode2((char *)item->ptr, NULL));
+ 	    else
+ 		p = q;
+ 	    Strcat_charp(src, "<li><a href=\"");
+diff --git a/indep.c b/indep.c
+index 65b04aa..89e86c1 100644
+--- a/indep.c
++++ b/indep.c
+@@ -357,6 +357,20 @@ strcasemstr(char *str, char *srch[], char **ret_ptr)
+     return -1;
+ }
+ 
++int
++strmatchlen(const char *s1, const char *s2, int maxlen)
++{
++    int i;
++
++    /* To allow the maxlen to be negatie (infinity),
++     * compare by "!=" instead of "<=". */
++    for (i = 0; i != maxlen; ++i) {
++	if (!s1[i] || !s2[i] || s1[i] != s2[i])
++	    break;
++    }
++    return i;
++}
++
+ char *
+ remove_space(char *str)
+ {
+diff --git a/indep.h b/indep.h
+index b3819a3..cf566fe 100644
+--- a/indep.h
++++ b/indep.h
+@@ -52,6 +52,7 @@ extern int strncasecmp(const char *s1, const char *s2, size_t n);
+ extern char *strcasestr(const char *s1, const char *s2);
+ #endif
+ extern int strcasemstr(char *str, char *srch[], char **ret_ptr);
++int strmatchlen(const char *s1, const char *s2, int maxlen);
+ extern char *remove_space(char *str);
+ extern int non_null(char *s);
+ extern void cleanup_line(Str s, int mode);
+diff --git a/linein.c b/linein.c
+index b7e81b6..572b015 100644
+--- a/linein.c
++++ b/linein.c
+@@ -1026,7 +1026,7 @@ _prev(void)
+ 	strCurrentBuf = strBuf;
+     }
+     if (DecodeURL && (cm_mode & CPL_URL) )
+-	p = url_unquote_conv(p, 0);
++	p = url_decode2(p, NULL);
+     strBuf = Strnew_charp(p);
+     CLen = CPos = setStrType(strBuf, strProp);
+     offset = 0;
+@@ -1045,7 +1045,7 @@ _next(void)
+     p = nextHist(hist);
+     if (p) {
+ 	if (DecodeURL && (cm_mode & CPL_URL) )
+-	    p = url_unquote_conv(p, 0);
++	    p = url_decode2(p, NULL);
+ 	strBuf = Strnew_charp(p);
+     }
+     else {
+diff --git a/main.c b/main.c
+index b421943..a414391 100644
+--- a/main.c
++++ b/main.c
+@@ -894,12 +894,17 @@ main(int argc, char **argv, char **envp)
+ 	if (i >= 0) {
+ 	    SearchHeader = search_header;
+ 	    DefaultType = default_type;
++	    char *url;
++	    
++	    url = load_argv[i];
++	    if (getURLScheme(&url) == SCM_MISSING && !ArgvIsURL)
++		url = file_to_url(load_argv[i]);
++	    else
++		url = url_encode(conv_from_system(load_argv[i]), NULL, 0);
+ 	    if (w3m_dump == DUMP_HEAD) {
+ 		request = New(FormList);
+ 		request->method = FORM_METHOD_HEAD;
+-		newbuf =
+-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
+-				    request);
++		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    else {
+ 		if (post_file && i == 0) {
+@@ -928,9 +933,7 @@ main(int argc, char **argv, char **envp)
+ 		else {
+ 		    request = NULL;
+ 		}
+-		newbuf =
+-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
+-				    request);
++		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
+ 	    }
+ 	    if (newbuf == NULL) {
+ 		/* FIXME: gettextize? */
+@@ -945,7 +948,7 @@ main(int argc, char **argv, char **envp)
+ 		break;
+ 	    case SCM_LOCAL:
+ 	    case SCM_LOCAL_CGI:
+-		unshiftHist(LoadHist, conv_from_system(load_argv[i]));
++		unshiftHist(LoadHist, url);
+ 	    default:
+ 		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
+ 		break;
+@@ -1269,15 +1272,12 @@ do_dump(Buffer *buf)
+ 	    printf("\nReferences:\n\n");
+ 	    for (i = 0; i < buf->href->nanchor; i++) {
+ 	        ParsedURL pu;
+-	        static Str s = NULL;
++		char *url;
+ 		if (buf->href->anchors[i].slave)
+ 		    continue;
+ 	        parseURL2(buf->href->anchors[i].url, &pu, baseURL(buf));
+-	        s = parsedURL2Str(&pu);
+-    	        if (DecodeURL)
+-		    s = Strnew_charp(url_unquote_conv
+-				     (s->ptr, Currentbuf->document_charset));
+-	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, s->ptr);
++		url = url_decode2(parsedURL2Str(&pu)->ptr, Currentbuf);
++	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, url);
+ 	    }
+ 	}
+     }
+@@ -2261,7 +2261,7 @@ DEFUN(movR1, MOVE_RIGHT1,
+ static wc_uint32
+ getChar(char *p)
+ {
+-    return wc_any_to_ucs(wtf_parse1(&p));
++    return wc_any_to_ucs(wtf_parse1((wc_uchar **)&p));
+ }
+ 
+ static int
+@@ -2804,12 +2804,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+     union frameset_element *f_element = NULL;
+     int flag = 0;
+     ParsedURL *base, pu;
++    const int *no_referer_ptr;
+ 
+     message(Sprintf("loading %s", url)->ptr, 0, 0);
+     refresh();
+ 
++    no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
+     base = baseURL(Currentbuf);
+-    if (base == NULL ||
++    if ((no_referer_ptr && *no_referer_ptr) ||
++	base == NULL ||
+ 	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
+ 	referer = NO_REFERER;
+     if (referer == NULL)
+@@ -4055,6 +4058,7 @@ goURL0(char *prompt, int relative)
+     char *url, *referer;
+     ParsedURL p_url, *current;
+     Buffer *cur_buf = Currentbuf;
++    const int *no_referer_ptr;
+ 
+     url = searchKeyData();
+     if (url == NULL) {
+@@ -4064,11 +4068,8 @@ goURL0(char *prompt, int relative)
+ 	current = baseURL(Currentbuf);
+ 	if (current) {
+ 	    char *c_url = parsedURL2Str(current)->ptr;
+-	    if (DefaultURLString == DEFAULT_URL_CURRENT) {
+-		url = c_url;
+-		if (DecodeURL)
+-		    url = url_unquote_conv(url, 0);
+-	    }
++	    if (DefaultURLString == DEFAULT_URL_CURRENT)
++		url = url_decode2(c_url, NULL);
+ 	    else
+ 		pushHist(hist, c_url);
+ 	}
+@@ -4077,11 +4078,8 @@ goURL0(char *prompt, int relative)
+ 	    char *a_url;
+ 	    parseURL2(a->url, &p_url, current);
+ 	    a_url = parsedURL2Str(&p_url)->ptr;
+-	    if (DefaultURLString == DEFAULT_URL_LINK) {
+-		url = a_url;
+-		if (DecodeURL)
+-		    url = url_unquote_conv(url, Currentbuf->document_charset);
+-	    }
++	    if (DefaultURLString == DEFAULT_URL_LINK)
++		url = url_decode2(a_url, Currentbuf);
+ 	    else
+ 		pushHist(hist, a_url);
+ 	}
+@@ -4089,15 +4087,22 @@ goURL0(char *prompt, int relative)
+ 	if (url != NULL)
+ 	    SKIP_BLANKS(url);
+     }
+-#ifdef USE_M17N
+-    if (url != NULL) {
+-	if ((relative || *url == '#') && Currentbuf->document_charset)
+-	    url = wc_conv_strict(url, InnerCharset,
+-				 Currentbuf->document_charset)->ptr;
++    if (relative) {
++	no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
++	current = baseURL(Currentbuf);
++	if ((no_referer_ptr && *no_referer_ptr) ||
++	    current == NULL ||
++	    current->scheme == SCM_LOCAL || current->scheme == SCM_LOCAL_CGI)
++	    referer = NO_REFERER;
+ 	else
+-	    url = conv_to_system(url);
++	    referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
++	url = url_encode(url, current, Currentbuf->document_charset);
++    }
++    else {
++	current = NULL;
++	referer = NULL;
++	url = url_encode(url, NULL, 0);
+     }
+-#endif
+     if (url == NULL || *url == '\0') {
+ 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ 	return;
+@@ -4106,14 +4111,6 @@ goURL0(char *prompt, int relative)
+ 	gotoLabel(url + 1);
+ 	return;
+     }
+-    if (relative) {
+-	current = baseURL(Currentbuf);
+-	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+-    }
+-    else {
+-	current = NULL;
+-	referer = NULL;
+-    }
+     parseURL2(url, &p_url, current);
+     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
+     cmd_loadURL(url, current, referer, NULL);
+@@ -4510,8 +4507,7 @@ _peekURL(int only_img)
+ 	s = parsedURL2Str(&pu);
+     }
+     if (DecodeURL)
+-	s = Strnew_charp(url_unquote_conv
+-			 (s->ptr, Currentbuf->document_charset));
++	s = Strnew_charp(url_decode2(s->ptr, Currentbuf));
+ #ifdef USE_M17N
+     s = checkType(s, &pp, NULL);
+     p = NewAtom_N(Lineprop, s->length);
+@@ -4570,7 +4566,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+ 	offset = 0;
+ 	s = currentURL();
+ 	if (DecodeURL)
+-	    s = Strnew_charp(url_unquote_conv(s->ptr, 0));
++	    s = Strnew_charp(url_decode2(s->ptr, NULL));
+ #ifdef USE_M17N
+ 	s = checkType(s, &pp, NULL);
+ 	p = NewAtom_N(Lineprop, s->length);
+diff --git a/map.c b/map.c
+index 90aa35a..12701e7 100644
+--- a/map.c
++++ b/map.c
+@@ -279,7 +279,7 @@ follow_map_panel(Buffer *buf, char *name)
+ 	p = parsedURL2Str(&pu)->ptr;
+ 	q = html_quote(p);
+ 	if (DecodeURL)
+-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
++	    p = html_quote(url_decode2(p, buf));
+ 	else
+ 	    p = q;
+ 	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
+@@ -417,10 +417,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
+ 	    continue;
+ 	parseURL2(a->url, &pu, baseURL(buf));
+ 	q = html_quote(parsedURL2Str(&pu)->ptr);
+-	if (DecodeURL)
+-	    p = html_quote(url_unquote_conv(a->url, buf->document_charset));
+-	else
+-	    p = html_quote(a->url);
++	p = html_quote(url_decode2(a->url, buf));
+ 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
+ 		       q, "\">",
+ 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
+@@ -457,10 +454,8 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
+ 	    Strcat_charp(html, "[Rev]");
+ 	if (!l->url)
+ 	    url = "(empty)";
+-	else if (DecodeURL)
+-	    url = html_quote(url_unquote_conv(l->url, buf->document_charset));
+ 	else
+-	    url = html_quote(l->url);
++	    url = html_quote(url_decode2(l->url, buf));
+ 	Strcat_m_charp(html, "<td>", url, NULL);
+ 	if (l->ctype)
+ 	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")", NULL);
+@@ -498,8 +493,7 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
+ 		    Strcat_charp(html, p);
+ 		}
+ 		if (DecodeURL)
+-		    p = html_quote(url_unquote_conv(frame.body->url,
+-						    buf->document_charset));
++		    p = html_quote(url_decode2(frame.body->url, buf));
+ 		else
+ 		    p = q;
+ 		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", NULL);
+@@ -550,9 +544,7 @@ page_info_panel(Buffer *buf)
+ #ifdef USE_M17N
+     Strcat_charp(tmp, "<form method=internal action=charset>");
+ #endif
+-    p = parsedURL2Str(&buf->currentURL)->ptr;
+-    if (DecodeURL)
+-	p = url_unquote_conv(p, 0);
++    p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
+     Strcat_m_charp(tmp, "<table cellpadding=0>",
+ 		   "<tr valign=top><td nowrap>Title<td>",
+ 		   html_quote(buf->buffername),
+@@ -589,7 +581,7 @@ page_info_panel(Buffer *buf)
+ 	p = parsedURL2Str(&pu)->ptr;
+ 	q = html_quote(p);
+ 	if (DecodeURL)
+-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
++	    p = html_quote(url_decode2(p, buf));
+ 	else
+ 	    p = q;
+ 	Strcat_m_charp(tmp,
+@@ -602,7 +594,7 @@ page_info_panel(Buffer *buf)
+ 	p = parsedURL2Str(&pu)->ptr;
+ 	q = html_quote(p);
+ 	if (DecodeURL)
+-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
++	    p = html_quote(url_decode2(p, buf));
+ 	else
+ 	    p = q;
+ 	Strcat_m_charp(tmp,
+@@ -613,10 +605,7 @@ page_info_panel(Buffer *buf)
+     if (a != NULL) {
+ 	FormItemList *fi = (FormItemList *)a->url;
+ 	p = form2str(fi);
+-	if (DecodeURL)
+-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
+-	else
+-	    p = html_quote(p);
++	p = html_quote(url_decode2(p, buf));
+ 	Strcat_m_charp(tmp,
+ 		       "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
+ 		       p, NULL);
+diff --git a/menu.c b/menu.c
+index 774b1bd..0f66583 100644
+--- a/menu.c
++++ b/menu.c
+@@ -1365,9 +1365,7 @@ initSelectMenu(void)
+ 		break;
+ 	    default:
+ 		Strcat_char(str, ' ');
+-		p = parsedURL2Str(&buf->currentURL)->ptr;
+-		if (DecodeURL)
+-		    p = url_unquote_conv(p, 0);
++		p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
+ 		Strcat_charp(str, p);
+ 		break;
+ 	    }
+@@ -1513,9 +1511,7 @@ initSelTabMenu(void)
+ 	    case SCM_MISSING:
+ 		break;
+ 	    default:
+-		p = parsedURL2Str(&buf->currentURL)->ptr;
+-		if (DecodeURL)
+-		    p = url_unquote_conv(p, 0);
++		p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
+ 		Strcat_charp(str, p);
+ 		break;
+ 	    }
+@@ -1845,10 +1841,8 @@ link_menu(Buffer *buf)
+ 	    Strcat_charp(str, " ");
+ 	if (!l->url)
+ 	    p = "";
+-	else if (DecodeURL)
+-	    p = url_unquote_conv(l->url, buf->document_charset);
+ 	else
+-	    p = l->url;
++	    p = url_decode2(l->url, buf);
+ 	Strcat_charp(str, p);
+ 	label[i] = str->ptr;
+ 	if (len < str->length)
+diff --git a/po/ja.po b/po/ja.po
+index d67c695..947191c 100644
+--- a/po/ja.po
++++ b/po/ja.po
+@@ -407,6 +407,10 @@ msgid "File for setting form on loading"
+ msgstr "ÊñáÊõ∏Ë™≠ËæºÊôÇ„ÅÆ„Éï„Ç©„Éº„É†Ë®≠ÂÆöÁî®„Éï„Ç°„Ç§„É´"
+ 
+ #: rc.c:149
++msgid "File for preferences for each site"
++msgstr "„Çµ„Ç§„ÉàÂà•Ë®≠ÂÆö„ÅÆ„Éï„Ç°„Ç§„É´"
++
++#: rc.c:149
+ msgid "Password for anonymous FTP (your mail address)"
+ msgstr "FTP„ÅÆ„Éë„Çπ„ÉØ„Éº„Éâ(ÊôÆÈÄö„ÅØËá™ÂàÜ„ÅÆmail address„Çí‰Ωø„ÅÜ)"
+ 
+diff --git a/proto.h b/proto.h
+index f8a7345..7b1a7a6 100644
+--- a/proto.h
++++ b/proto.h
+@@ -162,6 +162,24 @@ extern Str searchURIMethods(ParsedURL *pu);
+ extern void chkExternalURIBuffer(Buffer *buf);
+ #endif
+ extern ParsedURL *schemeToProxy(int scheme);
++#ifdef USE_M17N
++extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
++			     wc_ces doc_charset);
++extern char *url_encode(const char *url, const ParsedURL *base,
++			wc_ces doc_charset);
++#if 0
++extern char *url_decode(const char *url, const ParsedURL *base,
++			wc_ces doc_charset);
++#endif
++extern char *url_decode2(const char *url, const Buffer *buf);
++#else /* !defined(USE_M17N) */
++#define url_encode(url, base, cs) url_quote(url)
++extern char *url_decode0(const char *url);
++#if 0
++#define url_decode(url, base, cs) url_decode0(url)
++#endif
++#define url_decode2(url, buf) url_decode0(url)
++#endif /* !defined(USE_M17N) */
+ extern void examineFile(char *path, URLFile *uf);
+ extern char *acceptableEncoding();
+ extern int dir_exist(char *path);
+@@ -180,7 +198,6 @@ extern void push_symbol(Str str, char symbol, int width, int n);
+ #ifdef USE_UNICODE
+ extern void update_utf8_symbol(void);
+ #endif
+-extern Buffer *loadFile(char *path);
+ extern Buffer *loadGeneralFile(char *path, ParsedURL *current, char *referer,
+ 			       int flag, FormList *request);
+ extern int is_boundary(unsigned char *, unsigned char *);
+@@ -249,8 +266,7 @@ extern Buffer *openPagerBuffer(InputStream stream, Buffer *buf);
+ extern Buffer *openGeneralPagerBuffer(InputStream stream);
+ extern Line *getNextPage(Buffer *buf, int plen);
+ extern int save2tmp(URLFile uf, char *tmpf);
+-extern int doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+-		      Buffer *defaultbuf);
++extern Buffer *doExternal(URLFile uf, char *type, Buffer *defaultbuf);
+ extern int _doFileCopy(char *tmpf, char *defstr, int download);
+ #define doFileCopy(tmpf, defstr) _doFileCopy(tmpf, defstr, FALSE);
+ extern int doFileMove(char *tmpf, char *defstr);
+@@ -507,7 +523,7 @@ extern ParsedURL *baseURL(Buffer *buf);
+ extern int openSocket(char *hostname, char *remoteport_name,
+ 		      unsigned short remoteport_num);
+ extern void parseURL(char *url, ParsedURL *p_url, ParsedURL *current);
+-extern void copyParsedURL(ParsedURL *p, ParsedURL *q);
++extern void copyParsedURL(ParsedURL *p, const ParsedURL *q);
+ extern void parseURL2(char *url, ParsedURL *pu, ParsedURL *current);
+ extern Str parsedURL2Str(ParsedURL *pu);
+ extern int getURLScheme(char **url);
+@@ -611,6 +627,7 @@ extern char *confFile(char *base);
+ extern char *auxbinFile(char *base);
+ extern char *libFile(char *base);
+ extern char *helpFile(char *base);
++extern const void *querySiteconf(const ParsedURL *query_pu, int field);
+ extern Str localCookie(void);
+ extern Str loadLocalDir(char *dirname);
+ extern void set_environ(char *var, char *value);
+@@ -723,6 +740,8 @@ extern int getKey(char *s);
+ extern char *getKeyData(int key);
+ extern char *getWord(char **str);
+ extern char *getQWord(char **str);
++struct regex;
++extern char *getRegexWord(const char **str, struct regex **regex_ret);
+ #ifdef USE_MOUSE
+ extern void initMouseAction(void);
+ #endif
+diff --git a/rc.c b/rc.c
+index 8441a39..3bf6cea 100644
+--- a/rc.c
++++ b/rc.c
+@@ -9,7 +9,9 @@
+ #include <errno.h>
+ #include "parsetag.h"
+ #include "local.h"
++#include "regex.h"
+ #include <stdlib.h>
++#include <stddef.h>
+ 
+ struct param_ptr {
+     char *name;
+@@ -146,6 +148,7 @@ static int OptionEncode = FALSE;
+ #define CMT_DISABLE_SECRET_SECURITY_CHECK	N_("Disable secret file security check")
+ #define CMT_PASSWDFILE	 N_("Password file")
+ #define CMT_PRE_FORM_FILE	N_("File for setting form on loading")
++#define CMT_SITECONF_FILE	N_("File for preferences for each site")
+ #define CMT_FTPPASS      N_("Password for anonymous FTP (your mail address)")
+ #define CMT_FTPPASS_HOSTNAMEGEN N_("Generate domain part of password for FTP")
+ #define CMT_USERAGENT    N_("User-Agent identification string")
+@@ -619,6 +622,8 @@ struct param_ptr params9[] = {
+      CMT_FTPPASS_HOSTNAMEGEN, NULL},
+     {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
+      CMT_PRE_FORM_FILE, NULL},
++    {"siteconf_file", P_STRING, PI_TEXT, (void *)&siteconf_file,
++     CMT_SITECONF_FILE, NULL},
+     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
+     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
+      NULL},
+@@ -1173,6 +1178,8 @@ do_mkdir(const char *dir, long mode)
+ #endif				/* not __MINW32_VERSION */
+ #endif				/* not __EMX__ */
+ 
++static void loadSiteconf(void);
++
+ void
+ sync_with_option(void)
+ {
+@@ -1199,6 +1206,7 @@ sync_with_option(void)
+ #endif
+     loadPasswd();
+     loadPreForm();
++    loadSiteconf();
+ 
+     if (AcceptLang == NULL || *AcceptLang == '\0') {
+ 	/* TRANSLATORS: 
+@@ -1556,3 +1564,217 @@ helpFile(char *base)
+     return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
+ }
+ #endif
++
++/* siteconf */
++/*
++ * url "<url>"|/<re-url>/|m@<re-url>@i [exact]
++ * substitute_url "<destination-url>"
++ * url_charset <charset>
++ * no_referer_from on|off
++ * no_referer_to on|off
++ * 
++ * The last match wins.
++ */
++
++struct siteconf_rec {
++    struct siteconf_rec *next;
++    char *url;
++    Regex *re_url;
++    int url_exact;
++    unsigned char mask[(SCONF_N_FIELD + 7) >> 3];
++
++    char *substitute_url;
++#ifdef USE_M17N
++    wc_ces url_charset;
++#endif
++    int no_referer_from;
++    int no_referer_to;
++};
++#define SCONF_TEST(ent, f) ((ent)->mask[(f)>>3] & (1U<<((f)&7)))
++#define SCONF_SET(ent, f) ((ent)->mask[(f)>>3] |= (1U<<((f)&7)))
++#define SCONF_CLEAR(ent, f) ((ent)->mask[(f)>>3] &= ~(1U<<((f)&7)))
++
++static struct siteconf_rec *siteconf_head = NULL;
++static struct siteconf_rec *newSiteconfRec(void);
++
++static struct siteconf_rec *
++newSiteconfRec(void)
++{
++    struct siteconf_rec *ent;
++
++    ent = New(struct siteconf_rec);
++    ent->next = NULL;
++    ent->url = NULL;
++    ent->re_url = NULL;
++    ent->url_exact = FALSE;
++    memset(ent->mask, 0, sizeof(ent->mask));
++
++    ent->substitute_url = NULL;
++#ifdef USE_M17N
++    ent->url_charset = 0;
++#endif
++    return ent;
++}
++
++static void
++loadSiteconf(void)
++{
++    char *efname;
++    FILE *fp;
++    Str line;
++    struct siteconf_rec *ent = NULL;
++
++    siteconf_head = NULL;
++    if (!siteconf_file)
++	return;
++    if ((efname = expandPath(siteconf_file)) == NULL)
++	return;
++    fp = fopen(efname, "r");
++    if (fp == NULL)
++	return;
++    while (line = Strfgets(fp), line->length > 0) {
++	char *p, *s;
++
++	Strchop(line);
++	p = line->ptr;
++	SKIP_BLANKS(p);
++	if (*p == '#' || *p == '\0')
++	    continue;
++	s = getWord(&p);
++
++	/* The "url" begins a new record. */
++	if (strcmp(s, "url") == 0) {
++	    char *url, *opt;
++	    struct siteconf_rec *newent;
++
++	    /* First, register the current record. */
++	    if (ent) {
++		ent->next = siteconf_head;
++		siteconf_head = ent;
++		ent = NULL;
++	    }
++
++	    /* Second, create a new record. */
++	    newent = newSiteconfRec();
++	    url = getRegexWord((const char **)&p, &newent->re_url);
++	    opt = getWord(&p);
++	    SKIP_BLANKS(p);
++	    if (!newent->re_url) {
++		ParsedURL pu;
++		if (!url || !*url)
++		    continue;
++		parseURL2(url, &pu, NULL);
++		newent->url = parsedURL2Str(&pu)->ptr;
++	    }
++	    /* If we have an extra or unknown option, ignore this record
++	     * for future extensions. */
++	    if (strcmp(opt, "exact") == 0) {
++		newent->url_exact = TRUE;
++	    }
++	    else if (*opt != 0)
++		    continue;
++	    if (*p)
++		continue;
++	    ent = newent;
++	    continue;
++	}
++
++	/* If the current record is broken, skip to the next "url". */
++	if (!ent)
++	    continue;
++
++	/* Fill the new record. */
++	if (strcmp(s, "substitute_url") == 0) {
++	    ent->substitute_url = getQWord(&p);
++	    SCONF_SET(ent, SCONF_SUBSTITUTE_URL);
++	}
++#ifdef USE_M17N
++	else if (strcmp(s, "url_charset") == 0) {
++	    char *charset = getWord(&p);
++	    ent->url_charset = (charset && *charset) ?
++		wc_charset_to_ces(charset) : 0;
++	    SCONF_SET(ent, SCONF_URL_CHARSET);
++	}
++#endif /* USE_M17N */
++	else if (strcmp(s, "no_referer_from") == 0) {
++	    ent->no_referer_from = str_to_bool(getWord(&p), 0);
++	    SCONF_SET(ent, SCONF_NO_REFERER_FROM);
++	}
++	else if (strcmp(s, "no_referer_to") == 0) {
++	    ent->no_referer_to = str_to_bool(getWord(&p), 0);
++	    SCONF_SET(ent, SCONF_NO_REFERER_TO);
++	}
++    }
++    if (ent) {
++	ent->next = siteconf_head;
++	siteconf_head = ent;
++	ent = NULL;
++    }
++    fclose(fp);
++}
++
++const void *
++querySiteconf(const ParsedURL *query_pu, int field)
++{
++    const struct siteconf_rec *ent;
++    Str u;
++    char *firstp, *lastp;
++
++    if (field < 0 || field >= SCONF_N_FIELD)
++	return NULL;
++    if (!query_pu || IS_EMPTY_PARSED_URL(query_pu))
++	return NULL;
++    u = parsedURL2Str((ParsedURL *)query_pu);
++    if (u->length == 0)
++	return NULL;
++
++    for (ent = siteconf_head; ent; ent = ent->next) {
++	if (!SCONF_TEST(ent, field))
++	    continue;
++	if (ent->re_url) {
++	    if (RegexMatch(ent->re_url, u->ptr, u->length, 1)) {
++		MatchedPosition(ent->re_url, &firstp, &lastp);
++		if (!ent->url_exact)
++		    goto url_found;
++		if (firstp != u->ptr || lastp == firstp)
++		    continue;
++		if (*lastp == 0 || *lastp == '?' || *(lastp - 1) == '?' ||
++		    *lastp == '#' || *(lastp - 1) == '#')
++		    goto url_found;
++	    }
++	} else {
++	    int matchlen = strmatchlen(ent->url, u->ptr, u->length);
++	    if (matchlen == 0 || ent->url[matchlen] != 0)
++		continue;
++	    firstp = u->ptr;
++	    lastp = u->ptr + matchlen;
++	    if (*lastp == 0 || *lastp == '?' || *(lastp - 1) == '?' ||
++		*lastp == '#' || *(lastp - 1) == '#')
++		goto url_found;
++	    if (!ent->url_exact && (*lastp == '/' || *(lastp - 1) == '/'))
++		goto url_found;
++	}
++    }
++    return NULL;
++
++url_found:
++    switch (field) {
++    case SCONF_SUBSTITUTE_URL:
++	if (ent->substitute_url && *ent->substitute_url) {
++	    Str tmp = Strnew_charp_n(u->ptr, firstp - u->ptr);
++	    Strcat_charp(tmp, ent->substitute_url);
++	    Strcat_charp(tmp, lastp);
++	    return tmp->ptr;
++	}
++	return NULL;
++#ifdef USE_M17N
++    case SCONF_URL_CHARSET:
++	return &ent->url_charset;
++#endif
++    case SCONF_NO_REFERER_FROM:
++	return &ent->no_referer_from;
++    case SCONF_NO_REFERER_TO:
++	return &ent->no_referer_to;
++    }
++    return NULL;
++}
+diff --git a/url.c b/url.c
+index ed6062e..cbb4aab 100644
+--- a/url.c
++++ b/url.c
+@@ -444,6 +444,8 @@ baseURL(Buffer *buf)
+ 	/* <BASE> tag is defined in the document */
+ 	return buf->baseURL;
+     }
++    else if (IS_EMPTY_PARSED_URL(&buf->currentURL))
++	return NULL;
+     else
+ 	return &buf->currentURL;
+ }
+@@ -638,16 +640,21 @@ openSocket(char *const hostname,
+ #define COPYPATH_SPC_ALLOW 0
+ #define COPYPATH_SPC_IGNORE 1
+ #define COPYPATH_SPC_REPLACE 2
++#define COPYPATH_SPC_MASK 3
++#define COPYPATH_LOWERCASE 4
+ 
+ static char *
+ copyPath(char *orgpath, int length, int option)
+ {
+     Str tmp = Strnew();
+-    while (*orgpath && length != 0) {
+-	if (IS_SPACE(*orgpath)) {
+-	    switch (option) {
++    char ch;
++    while ((ch = *orgpath) != 0 && length != 0) {
++	if (option & COPYPATH_LOWERCASE)
++	    ch = TOLOWER(ch);
++	if (IS_SPACE(ch)) {
++	    switch (option & COPYPATH_SPC_MASK) {
+ 	    case COPYPATH_SPC_ALLOW:
+-		Strcat_char(tmp, *orgpath);
++		Strcat_char(tmp, ch);
+ 		break;
+ 	    case COPYPATH_SPC_IGNORE:
+ 		/* do nothing */
+@@ -658,7 +665,7 @@ copyPath(char *orgpath, int length, int option)
+ 	    }
+ 	}
+ 	else
+-	    Strcat_char(tmp, *orgpath);
++	    Strcat_char(tmp, ch);
+ 	orgpath++;
+ 	length--;
+     }
+@@ -668,22 +675,14 @@ copyPath(char *orgpath, int length, int option)
+ void
+ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+ {
+-    char *p, *q;
++    char *p, *q, *qq;
+     Str tmp;
+ 
+     url = url_quote(url);	/* quote 0x01-0x20, 0x7F-0xFF */
+ 
+     p = url;
++    copyParsedURL(p_url, NULL);
+     p_url->scheme = SCM_MISSING;
+-    p_url->port = 0;
+-    p_url->user = NULL;
+-    p_url->pass = NULL;
+-    p_url->host = NULL;
+-    p_url->is_nocache = 0;
+-    p_url->file = NULL;
+-    p_url->real_file = NULL;
+-    p_url->query = NULL;
+-    p_url->label = NULL;
+ 
+     /* RFC1808: Relative Uniform Resource Locators
+      * 4.  Resolving Relative URLs
+@@ -694,7 +693,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+ 	goto do_label;
+     }
+ #if defined( __EMX__ ) || defined( __CYGWIN__ )
+-    if (!strncmp(url, "file://localhost/", 17)) {
++    if (!strncasecmp(url, "file://localhost/", 17)) {
+ 	p_url->scheme = SCM_LOCAL;
+ 	p += 17 - 1;
+ 	url += 17 - 1;
+@@ -802,19 +801,20 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+ 	/* scheme://user:pass@host or
+ 	 * scheme://host:port
+ 	 */
+-	p_url->host = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
++	qq = q;
+ 	q = ++p;
+ 	while (*p && strchr("@/?#", *p) == NULL)
+ 	    p++;
+ 	if (*p == '@') {
+ 	    /* scheme://user:pass@...       */
++	    p_url->user = copyPath(qq, q - 1 - qq, COPYPATH_SPC_IGNORE);
+ 	    p_url->pass = copyPath(q, p - q, COPYPATH_SPC_ALLOW);
+ 	    q = ++p;
+-	    p_url->user = p_url->host;
+-	    p_url->host = NULL;
+ 	    goto analyze_url;
+ 	}
+ 	/* scheme://host:port/ */
++	p_url->host = copyPath(qq, q - 1 - qq,
++			       COPYPATH_SPC_IGNORE | COPYPATH_LOWERCASE);
+ 	tmp = Strnew_charp_n(q, p - q);
+ 	p_url->port = atoi(tmp->ptr);
+ 	/* *p is one of ['\0', '/', '?', '#'] */
+@@ -829,7 +829,8 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+     case '/':
+     case '?':
+     case '#':
+-	p_url->host = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
++	p_url->host = copyPath(q, p - q,
++			       COPYPATH_SPC_IGNORE | COPYPATH_LOWERCASE);
+ 	p_url->port = DefaultPort[p_url->scheme];
+ 	break;
+     }
+@@ -956,12 +957,16 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+ 	p_url->label = NULL;
+ }
+ 
+-#define initParsedURL(p) bzero(p,sizeof(ParsedURL))
+ #define ALLOC_STR(s) ((s)==NULL?NULL:allocStr(s,-1))
+ 
+ void
+-copyParsedURL(ParsedURL *p, ParsedURL *q)
++copyParsedURL(ParsedURL *p, const ParsedURL *q)
+ {
++    if (q == NULL) {
++	memset(p, 0, sizeof(ParsedURL));
++	p->scheme = SCM_UNKNOWN;
++	return;
++    }
+     p->scheme = q->scheme;
+     p->port = q->port;
+     p->is_nocache = q->is_nocache;
+@@ -1283,6 +1288,8 @@ static char *
+ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
+ {
+     Str s = Strnew();
++    const int *no_referer_ptr;
++    int no_referer;
+ 
+     Strcat_charp(s, "User-Agent: ");
+     if (UserAgent == NULL || *UserAgent == '\0')
+@@ -1306,7 +1313,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
+ 	Strcat_charp(s, "Pragma: no-cache\r\n");
+ 	Strcat_charp(s, "Cache-control: no-cache\r\n");
+     }
+-    if (!NoSendReferer) {
++    no_referer = NoSendReferer;
++    no_referer_ptr = query_SCONF_NO_REFERER_FROM(current);
++    no_referer = NoSendReferer || (no_referer_ptr && *no_referer_ptr);
++    no_referer_ptr = query_SCONF_NO_REFERER_TO(target);
++    no_referer = no_referer || (no_referer_ptr && *no_referer_ptr);
++    if (!no_referer) {
+ #ifdef USE_SSL
+         if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
+ 	  /* Don't send Referer: if https:// -> http:// */
+@@ -1314,6 +1326,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
+ 	else
+ #endif
+ 	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
++	    current->scheme != SCM_LOCAL_CGI &&
+ 	    (current->scheme != SCM_FTP ||
+ 	     (current->user == NULL && current->pass == NULL))) {
+ 	    char *p = current->label;
+@@ -2234,3 +2247,66 @@ schemeToProxy(int scheme)
+     }
+     return pu;
+ }
++
++#ifdef USE_M17N
++wc_ces
++url_to_charset(const char *url, const ParsedURL *base, wc_ces doc_charset)
++{
++    const ParsedURL *pu;
++    ParsedURL pu_buf;
++    const wc_ces *csptr;
++
++    if (url && *url && *url != '#') {
++	parseURL2((char *)url, &pu_buf, (ParsedURL *)base);
++	pu = &pu_buf;
++    } else {
++	pu = base;
++    }
++    if (pu && (pu->scheme == SCM_LOCAL || pu->scheme == SCM_LOCAL_CGI))
++	return SystemCharset;
++    csptr = query_SCONF_URL_CHARSET(pu);
++    return (csptr && *csptr) ? *csptr :
++	doc_charset ? doc_charset : DocumentCharset;
++}
++
++char *
++url_encode(const char *url, const ParsedURL *base, wc_ces doc_charset)
++{
++    return url_quote_conv((char *)url,
++			  url_to_charset(url, base, doc_charset));
++}
++
++#if 0 /* unused */
++char *
++url_decode(const char *url, const ParsedURL *base, wc_ces doc_charset)
++{
++    if (!DecodeURL)
++	return (char *)url;
++    return url_unquote_conv((char *)url,
++			    url_to_charset(url, base, doc_charset));
++}
++#endif
++
++char *
++url_decode2(const char *url, const Buffer *buf)
++{
++    wc_ces url_charset;
++
++    if (!DecodeURL)
++	return (char *)url;
++    url_charset = buf ?
++	url_to_charset(url, baseURL((Buffer *)buf), buf->document_charset) :
++	url_to_charset(url, NULL, 0);
++    return url_unquote_conv((char *)url, url_charset);
++}
++
++#else /* !defined(USE_M17N) */
++
++char *
++url_decode0(const char *url)
++{
++    if (!DecodeURL)
++	return (char *)url;
++    return url_unquote_conv((char *)url, 0);
++}
++#endif /* !defined(USE_M17N) */

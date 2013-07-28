@@ -1,4 +1,5 @@
 010_upstream.patch
+015_debian-version.patch
 020_button.patch
 030_pager-s-option.patch
 040_link_gcc45.patch

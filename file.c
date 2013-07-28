@@ -3732,7 +3732,7 @@ Str
 process_button(struct parsed_tag *tag)
 {
     Str tmp = NULL;
-    char *p, *q, *r, *qq = NULL;
+    char *p, *q, *r, *qq = "";
     int qlen, v;
 
     if (cur_form_id < 0) {

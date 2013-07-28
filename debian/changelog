@@ -1,3 +1,15 @@
+w3m (0.5.3-9) unstable; urgency=low
+
+  * New patch 130_siteconf.patch to support the siteconf feature
+  * New patch 120_sgrmouse.patch to support SGR 1006 mouse reporting
+  * Update 020_button.patch to fix segfault (closes: #706454)
+  * New patch 015_debian-version.patch to mention debian version
+  * Really remove 050_entity-h-clean.patch
+  * Update Standards-Version to 3.9.4
+  * debian/copyright: Updated
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 29 Jul 2013 00:45:20 +0900
+
 w3m (0.5.3-8) unstable; urgency=low
 
   * debian/patches/010_upstream.patch: Sync with upstream on 2012-05-22

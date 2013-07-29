@@ -25,7 +25,7 @@ mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
 mime_types ~/.w3m/mime.types, /etc/mime.types
 urimethodmap ~/.w3m//urimethodmap, /etc/w3m/urimethodmap
 use_mouse 1
-migemo_command migemo -t egrep /usr/share/migemo/migemo-dict
+migemo_command cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict
 use_migemo 1
 ignorecase_search 1
 wrap_search 0

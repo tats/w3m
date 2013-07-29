@@ -15,7 +15,7 @@ Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: ca-certificates
 Provides: www-browser
-Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, man-db, migemo
+Suggests: w3m-img, mime-support, menu (>> 1.5), w3m-el, man-db, cmigemo
 Conflicts: w3m-ssl
 Replaces: w3m-ssl, w3mmee
 Description: WWW browsable pager with excellent tables/frames support

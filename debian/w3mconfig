@@ -23,7 +23,7 @@ bgextviewer 1
 editor sensible-editor
 mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
 mime_types ~/.w3m/mime.types, /etc/mime.types
-urimethodmap ~/.w3m//urimethodmap, /etc/w3m/urimethodmap
+urimethodmap ~/.w3m/urimethodmap, /etc/w3m/urimethodmap
 use_mouse 1
 migemo_command cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict
 use_migemo 1

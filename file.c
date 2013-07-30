@@ -47,11 +47,11 @@ static JMP_BUF AbortLoading;
 static struct table *tables[MAX_TABLE];
 static struct table_mode table_mode[MAX_TABLE];
 
-#ifdef USE_IMAGE
+#if defined(USE_M17N) || defined(USE_IMAGE)
 static ParsedURL *cur_baseURL = NULL;
-#ifdef USE_M17N
-static char cur_document_charset;
 #endif
+#ifdef USE_M17N
+static wc_ces cur_document_charset = 0;
 #endif
 
 static Str cur_title;
@@ -215,7 +215,6 @@ currentLn(Buffer *buf)
 
 static Buffer *
 loadSomething(URLFile *f,
-	      char *path,
 	      Buffer *(*loadproc) (URLFile *, Buffer *), Buffer *defaultbuf)
 {
     Buffer *buf;
@@ -223,17 +222,23 @@ loadSomething(URLFile *f,
     if ((buf = loadproc(f, defaultbuf)) == NULL)
 	return NULL;
 
-    buf->filename = path;
     if (buf->buffername == NULL || buf->buffername[0] == '\0') {
 	buf->buffername = checkHeader(buf, "Subject:");
-	if (buf->buffername == NULL)
-	    buf->buffername = conv_from_system(lastFileName(path));
+	if (buf->buffername == NULL && buf->filename != NULL)
+	    buf->buffername = conv_from_system(lastFileName(buf->filename));
     }
     if (buf->currentURL.scheme == SCM_UNKNOWN)
 	buf->currentURL.scheme = f->scheme;
-    buf->real_scheme = f->scheme;
     if (f->scheme == SCM_LOCAL && buf->sourcefile == NULL)
-	buf->sourcefile = path;
+	buf->sourcefile = buf->filename;
+    if (loadproc == loadHTMLBuffer
+#ifdef USE_IMAGE
+	|| loadproc == loadImageBuffer
+#endif
+       )
+	buf->type = "text/html";
+    else
+	buf->type = "text/plain";
     return buf;
 }
 
@@ -482,28 +487,6 @@ convertLine0(URLFile *uf, Str line, int mode)
 	Strchop(line);
 #endif				/* USE_NNTP */
     return line;
-}
-
-/* 
- * loadFile: load file to buffer
- */
-Buffer *
-loadFile(char *path)
-{
-    Buffer *buf;
-    URLFile uf;
-    init_stream(&uf, SCM_LOCAL, NULL);
-    examineFile(path, &uf);
-    if (uf.stream == NULL)
-	return NULL;
-    buf = newBuffer(INIT_BUFFER_WIDTH);
-    current_content_length = 0;
-#ifdef USE_M17N
-    content_charset = 0;
-#endif
-    buf = loadSomething(&uf, path, loadBuffer, buf);
-    UFclose(&uf);
-    return buf;
 }
 
 int
@@ -1697,13 +1680,15 @@ getLinkNumberStr(int correction)
 /* 
  * loadGeneralFile: load file to buffer
  */
+#define DO_EXTERNAL ((Buffer *(*)(URLFile *, Buffer *))doExternal)
 Buffer *
 loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		int flag, FormList *volatile request)
 {
     URLFile f, *volatile of = NULL;
     ParsedURL pu;
-    Buffer *b = NULL, *(*volatile proc)() = loadBuffer;
+    Buffer *b = NULL;
+    Buffer *(*volatile proc)(URLFile *, Buffer *) = loadBuffer;
     char *volatile tpath;
     char *volatile t = "text/plain", *p, *volatile real_type = NULL;
     Buffer *volatile t_buf = NULL;
@@ -1730,7 +1715,22 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     add_auth_cookie_flag = 0;
 
     checkRedirection(NULL);
+
   load_doc:
+    {
+	const char *sc_redirect;
+	parseURL2(tpath, &pu, current);
+	sc_redirect = query_SCONF_SUBSTITUTE_URL(&pu);
+	if (sc_redirect && *sc_redirect && checkRedirection(&pu)) {
+	    tpath = (char *)sc_redirect;
+	    request = NULL;
+	    add_auth_cookie_flag = 0;
+	    current = New(ParsedURL);
+	    *current = pu;
+	    status = HTST_NORMAL;
+	    goto load_doc;
+	}
+    }
     TRAP_OFF;
     url_option.referer = referer;
     url_option.flag = flag;
@@ -1863,7 +1863,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    /* 302: Found */
 	    /* 303: See Other */
 	    /* 307: Temporary Redirect (HTTP/1.1) */
-	    tpath = url_quote_conv(p, DocumentCharset);
+	    tpath = url_encode(p, NULL, 0);
 	    request = NULL;
 	    UFclose(&f);
 	    current = New(ParsedURL);
@@ -2022,7 +2022,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	if (f.is_cgi && (p = checkHeader(t_buf, "Location:")) != NULL &&
 	    checkRedirection(&pu)) {
 	    /* document moved */
-	    tpath = url_quote_conv(remove_space(p), DocumentCharset);
+	    tpath = url_encode(remove_space(p), NULL, 0);
 	    request = NULL;
 	    UFclose(&f);
 	    add_auth_cookie_flag = 0;
@@ -2123,10 +2123,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (real_type == NULL)
 	real_type = t;
     proc = loadBuffer;
-#ifdef USE_IMAGE
-    cur_baseURL = New(ParsedURL);
-    copyParsedURL(cur_baseURL, &pu);
-#endif
 
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
@@ -2197,18 +2193,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
     else if (w3m_backend) ;
     else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
-	if (!do_download && doExternal(f,
-				       pu.real_file ? pu.real_file : pu.file,
-				       t, &b, t_buf)) {
-	    if (b && b != NO_BUFFER) {
-		b->real_scheme = f.scheme;
-		b->real_type = real_type;
-		if (b->currentURL.host == NULL && b->currentURL.file == NULL)
-		    copyParsedURL(&b->currentURL, &pu);
-	    }
-	    UFclose(&f);
-	    TRAP_OFF;
-	    return b;
+	if (!do_download && searchExtViewer(t) != NULL) {
+	    proc = DO_EXTERNAL;
 	}
 	else {
 	    TRAP_OFF;
@@ -2232,36 +2218,30 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     else if (w3m_dump & DUMP_FRAME)
 	return NULL;
 
+    if (t_buf == NULL)
+	t_buf = newBuffer(INIT_BUFFER_WIDTH);
+    copyParsedURL(&t_buf->currentURL, &pu);
+    t_buf->filename = pu.real_file ? pu.real_file :
+	pu.file ? conv_to_system(pu.file) : NULL;
     if (flag & RG_FRAME) {
-	if (t_buf == NULL)
-	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	t_buf->bufferprop |= BP_FRAME;
     }
 #ifdef USE_SSL
-    if (t_buf)
-	t_buf->ssl_certificate = f.ssl_certificate;
+    t_buf->ssl_certificate = f.ssl_certificate;
 #endif
     frame_source = flag & RG_FRAME_SRC;
-    b = loadSomething(&f, pu.real_file ? pu.real_file : pu.file, proc, t_buf);
+    if (proc == DO_EXTERNAL) {
+	b = doExternal(f, t, t_buf);
+    } else {
+	b = loadSomething(&f, proc, t_buf);
+    }
     UFclose(&f);
     frame_source = 0;
-    if (b) {
+    if (b && b != NO_BUFFER) {
 	b->real_scheme = f.scheme;
 	b->real_type = real_type;
-	if (b->currentURL.host == NULL && b->currentURL.file == NULL)
-	    copyParsedURL(&b->currentURL, &pu);
-	if (is_html_type(t))
-	    b->type = "text/html";
-	else if (w3m_backend) {
-	    Str s = Strnew_charp(t);
-	    b->type = s->ptr;
-	}
-#ifdef USE_IMAGE
-	else if (proc == loadImageBuffer)
-	    b->type = "text/html";
-#endif
-	else
-	    b->type = "text/plain";
+	if (w3m_backend)
+	    b->type = allocStr(t, -1);
 	if (pu.label) {
 	    if (proc == loadHTMLBuffer) {
 		Anchor *a;
@@ -2469,6 +2449,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
     bcopy((void *)&obuf->anchor, (void *)&obuf->bp.anchor,
 	  sizeof(obuf->anchor));
     obuf->bp.img_alt = obuf->img_alt;
+    obuf->bp.input_alt = obuf->input_alt;
     obuf->bp.in_bold = obuf->in_bold;
     obuf->bp.in_italic = obuf->in_italic;
     obuf->bp.in_under = obuf->in_under;
@@ -2486,6 +2467,7 @@ back_to_breakpoint(struct readbuffer *obuf)
     bcopy((void *)&obuf->bp.anchor, (void *)&obuf->anchor,
 	  sizeof(obuf->anchor));
     obuf->img_alt = obuf->bp.img_alt;
+    obuf->input_alt = obuf->bp.input_alt;
     obuf->in_bold = obuf->bp.in_bold;
     obuf->in_italic = obuf->bp.in_italic;
     obuf->in_under = obuf->bp.in_under;
@@ -2729,7 +2711,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     Str line = obuf->line, pass = NULL;
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
 	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
-	*hidden_ins = NULL, *hidden = NULL;
+	*hidden_ins = NULL, *hidden_input, *hidden = NULL;
 
 #ifdef DEBUG
     if (w3m_debug) {
@@ -2759,6 +2741,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	if ((hidden_img = has_hidden_link(obuf, HTML_IMG_ALT)) != NULL) {
 	    if (!hidden || hidden_img < hidden)
 		hidden = hidden_img;
+	}
+    }
+    if (obuf->input_alt.in) {
+	if ((hidden_input = has_hidden_link(obuf, HTML_INPUT_ALT)) != NULL) {
+	    if (!hidden || hidden_input < hidden)
+		hidden = hidden_input;
 	}
     }
     if (obuf->in_bold) {
@@ -2812,6 +2800,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(line, "</a>");
     if (obuf->img_alt && !hidden_img)
 	Strcat_charp(line, "</img_alt>");
+    if (obuf->input_alt.in && !hidden_input)
+	Strcat_charp(line, "</input_alt>");
     if (obuf->in_bold && !hidden_bold)
 	Strcat_charp(line, "</b>");
     if (obuf->in_italic && !hidden_italic)
@@ -3022,6 +3012,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	Strcat_charp(tmp, "\">");
 	push_tag(obuf, tmp->ptr, HTML_IMG_ALT);
     }
+    if (!hidden_input && obuf->input_alt.in) {
+	Str tmp;
+	if (obuf->input_alt.hseq > 0)
+	    obuf->input_alt.hseq = - obuf->input_alt.hseq;
+	tmp = Sprintf("<INPUT_ALT hseq=\"%d\" fid=\"%d\" name=\"%s\" type=\"%s\" value=\"%s\">",
+		     obuf->input_alt.hseq,
+		     obuf->input_alt.fid,
+		     obuf->input_alt.name->ptr,
+		     obuf->input_alt.type->ptr,
+		     obuf->input_alt.value->ptr);
+	push_tag(obuf, tmp->ptr, HTML_INPUT_ALT);
+    }
     if (!hidden_bold && obuf->in_bold)
 	push_tag(obuf, "<B>", HTML_B);
     if (!hidden_italic && obuf->in_italic)
@@ -3228,7 +3230,7 @@ process_img(struct parsed_tag *tag, int width)
 
     if (!parsedtag_get_value(tag, ATTR_SRC, &p))
 	return tmp;
-    p = remove_space(p);
+    p = url_encode(remove_space(p), cur_baseURL, cur_document_charset);
     q = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &q);
     if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
@@ -3322,12 +3324,7 @@ process_img(struct parsed_tag *tag, int width)
 	    Image image;
 	    ParsedURL u;
 
-#ifdef USE_M17N
-	    parseURL2(wc_conv(p, InnerCharset, cur_document_charset)->ptr, &u,
-		      cur_baseURL);
-#else
 	    parseURL2(p, &u, cur_baseURL);
-#endif
 	    image.url = parsedURL2Str(&u)->ptr;
 	    if (!uncompressed_file_type(u.file, &image.ext))
 		image.ext = filename_extension(u.file, TRUE);
@@ -3732,6 +3729,63 @@ process_input(struct parsed_tag *tag)
 }
 
 Str
+process_button(struct parsed_tag *tag)
+{
+    Str tmp = NULL;
+    char *p, *q, *r, *qq = "";
+    int qlen, v;
+
+    if (cur_form_id < 0) {
+       char *s = "<form_int method=internal action=none>";
+       tmp = process_form(parse_tag(&s, TRUE));
+    }
+    if (tmp == NULL)
+       tmp = Strnew();
+
+    p = "submit";
+    parsedtag_get_value(tag, ATTR_TYPE, &p);
+    q = NULL;
+    parsedtag_get_value(tag, ATTR_VALUE, &q);
+    r = "";
+    parsedtag_get_value(tag, ATTR_NAME, &r);
+
+    v = formtype(p);
+    if (v == FORM_UNKNOWN)
+       return NULL;
+
+    if (!q) {
+       switch (v) {
+       case FORM_INPUT_SUBMIT:
+       case FORM_INPUT_BUTTON:
+           q = "SUBMIT";
+           break;
+       case FORM_INPUT_RESET:
+           q = "RESET";
+           break;
+       }
+    }
+    if (q) {
+       qq = html_quote(q);
+       qlen = strlen(q);
+    }
+
+    //    Strcat_charp(tmp, "<pre_int>");
+    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
+                       "name=\"%s\" value=\"%s\">",
+                       cur_hseq++, cur_form_id, p, html_quote(r), qq));
+    return tmp;
+}
+
+Str
+process_n_button(void)
+{
+    Str tmp = Strnew();
+    Strcat_charp(tmp, "</input_alt>");
+    //    Strcat_charp(tmp, "</pre_int>");
+    return tmp;
+}
+
+Str
 process_select(struct parsed_tag *tag)
 {
     Str tmp = NULL;
@@ -4084,6 +4138,7 @@ process_form_int(struct parsed_tag *tag, int fid)
     parsedtag_get_value(tag, ATTR_METHOD, &p);
     q = "!CURRENT_URL!";
     parsedtag_get_value(tag, ATTR_ACTION, &q);
+    q = url_encode(remove_space(q), cur_baseURL, cur_document_charset);
     r = NULL;
 #ifdef USE_M17N
     if (parsedtag_get_value(tag, ATTR_ACCEPT_CHARSET, &r))
@@ -4861,7 +4916,35 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    if (i > obuf->bottom_margin)
 		obuf->bottom_margin = i;
 	}
+	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq)) {
+	    obuf->input_alt.hseq = hseq;
+	}
+	if (parsedtag_get_value(tag, ATTR_FID, &i)) {
+	    obuf->input_alt.fid = i;
+	}
+	if (parsedtag_get_value(tag, ATTR_TYPE, &p)) {
+	    obuf->input_alt.type = Strnew_charp(p);
+	}
+	if (parsedtag_get_value(tag, ATTR_VALUE, &p)) {
+	    obuf->input_alt.value = Strnew_charp(p);
+	}
+	if (parsedtag_get_value(tag, ATTR_NAME, &p)) {
+	    obuf->input_alt.name = Strnew_charp(p);
+	}
+	obuf->input_alt.in = 1;
 	return 0;
+    case HTML_N_INPUT_ALT:
+	if (obuf->input_alt.in) {
+	    if (!close_effect0(obuf, HTML_INPUT_ALT))
+		push_tag(obuf, "</input_alt>", HTML_N_INPUT_ALT);
+	    obuf->input_alt.hseq = 0;
+	    obuf->input_alt.fid = -1;
+	    obuf->input_alt.in = 0;
+	    obuf->input_alt.type = NULL;
+	    obuf->input_alt.name = NULL;
+	    obuf->input_alt.value = NULL;
+	}
+	return 1;
     case HTML_TABLE:
 	close_anchor(h_env, obuf);
 	obuf->table_level++;
@@ -4970,6 +5053,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_INPUT:
 	close_anchor(h_env, obuf);
 	tmp = process_input(tag);
+       if (tmp)
+           HTMLlineproc1(tmp->ptr, h_env);
+       return 1;
+    case HTML_BUTTON:
+       tmp = process_button(tag);
+       if (tmp)
+           HTMLlineproc1(tmp->ptr, h_env);
+       return 1;
+    case HTML_N_BUTTON:
+       tmp = process_n_button();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -5067,11 +5160,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_BASE:
-#ifdef USE_IMAGE
+#if defined(USE_M17N) || defined(USE_IMAGE)
 	p = NULL;
 	if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
-	    if (!cur_baseURL)
-		cur_baseURL = New(ParsedURL);
+	    cur_baseURL = New(ParsedURL);
 	    parseURL(p, cur_baseURL, NULL);
 	}
 #endif
@@ -5329,6 +5421,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef MENU_SELECT
     Anchor **a_select = NULL;
 #endif
+#if defined(USE_M17N) || defined(USE_IMAGE)
+    ParsedURL *base = baseURL(buf);
+#endif
+#ifdef USE_M17N
+    wc_ces name_charset = url_to_charset(NULL, &buf->currentURL,
+					 buf->document_charset);
+#endif
 
     if (out_size == 0) {
 	out_size = LINELEN;
@@ -5523,16 +5622,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    hseq = 0;
 		    id = NULL;
 		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
-			id = url_quote_conv(id, buf->document_charset);
+			id = url_quote_conv(id, name_charset);
 			registerName(buf, id, currentLn(buf), pos);
 		    }
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p))
-			p = url_quote_conv(remove_space(p),
-					   buf->document_charset);
+			p = url_encode(remove_space(p), base,
+				       buf->document_charset);
 		    if (parsedtag_get_value(tag, ATTR_TARGET, &q))
 			q = url_quote_conv(q, buf->document_charset);
 		    if (parsedtag_get_value(tag, ATTR_REFERER, &r))
-			r = url_quote_conv(r, buf->document_charset);
+			r = url_encode(r, base,
+				       buf->document_charset);
 		    parsedtag_get_value(tag, ATTR_TITLE, &s);
 		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
 		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
@@ -5618,7 +5718,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    ParsedURL u;
 			    Image *image;
 
-			    parseURL2(a_img->url, &u, cur_baseURL);
+			    parseURL2(a_img->url, &u, base);
 			    a_img->image = image = New(Image);
 			    image->url = parsedURL2Str(&u)->ptr;
 			    if (!uncompressed_file_type(u.file, &image->ext))
@@ -5639,7 +5739,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    image->map = q;
 			    image->ismap = ismap;
 			    image->touch = 0;
-			    image->cache = getImage(image, cur_baseURL,
+			    image->cache = getImage(image, base,
 						    IMG_FLAG_SKIP);
 			}
 			else if (iseq < 0) {
@@ -5689,6 +5789,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				putHmarker(buf->hmarklist, currentLn(buf),
 					   hpos, hseq - 1);
 			}
+			else if (hseq < 0) {
+			    int h = -hseq - 1;
+			    int hpos = pos;
+			    if (*str == '[')
+				hpos++;
+			    if (buf->hmarklist &&
+				h < buf->hmarklist->nmark &&
+				buf->hmarklist->marks[h].invalid) {
+				buf->hmarklist->marks[h].pos = hpos;
+				buf->hmarklist->marks[h].line = currentLn(buf);
+				buf->hmarklist->marks[h].invalid = 0;
+				hseq = -hseq;
+			    }
+			}
+
 			if (!form->target)
 			    form->target = buf->baseTarget;
 			if (a_textarea &&
@@ -5761,8 +5876,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			break;
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
 			MapArea *a;
-			p = url_quote_conv(remove_space(p),
-					   buf->document_charset);
+			p = url_encode(remove_space(p), base,
+				       buf->document_charset);
 			t = NULL;
 			parsedtag_get_value(tag, ATTR_TARGET, &t);
 			q = "";
@@ -5811,11 +5926,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 		case HTML_BASE:
 		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
-			p = url_quote_conv(remove_space(p),
-					   buf->document_charset);
+			p = url_encode(remove_space(p), NULL,
+				       buf->document_charset);
 			if (!buf->baseURL)
 			    buf->baseURL = New(ParsedURL);
 			parseURL(p, buf->baseURL, NULL);
+#if defined(USE_M17N) || defined(USE_IMAGE)
+			base = buf->baseURL;
+#endif
 		    }
 		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
 			buf->baseTarget =
@@ -5830,8 +5948,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			int refresh_interval = getMetaRefreshParam(q, &tmp);
 #ifdef USE_ALARM
 			if (tmp) {
-			    p = url_quote_conv(remove_space(tmp->ptr),
-					       buf->document_charset);
+			    p = url_encode(remove_space(tmp->ptr), base,
+					   buf->document_charset);
 			    buf->event = setAlarmEvent(buf->event,
 						       refresh_interval,
 						       AL_IMPLICIT_ONCE,
@@ -5844,8 +5962,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 						       FUNCNAME_reload, NULL);
 #else
 			if (tmp && refresh_interval == 0) {
-			    p = url_quote_conv(remove_space(tmp->ptr),
-					       buf->document_charset);
+			    p = url_encode(remove_space(tmp->ptr), base,
+					   buf->document_charset);
 			    pushEvent(FUNCNAME_gorURL, p);
 			}
 #endif
@@ -5929,7 +6047,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef	ID_EXT
 		id = NULL;
 		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
-		    id = url_quote_conv(id, buf->document_charset);
+		    id = url_quote_conv(id, name_charset);
 		    registerName(buf, id, currentLn(buf), pos);
 		}
 		if (renderFrameSet &&
@@ -5982,7 +6100,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
 
     parsedtag_get_value(tag, ATTR_HREF, &href);
     if (href)
-	href = url_quote_conv(remove_space(href), buf->document_charset);
+	href = url_encode(remove_space(href), baseURL(buf),
+			  buf->document_charset);
     parsedtag_get_value(tag, ATTR_TITLE, &title);
     parsedtag_get_value(tag, ATTR_TYPE, &ctype);
     parsedtag_get_value(tag, ATTR_REL, &rel);
@@ -6756,6 +6875,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     obuf->nobr_level = 0;
     bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
+    obuf->input_alt.hseq = 0;
+    obuf->input_alt.fid = -1;
+    obuf->input_alt.in = 0;
+    obuf->input_alt.type = NULL;
+    obuf->input_alt.name = NULL;
+    obuf->input_alt.value = NULL;
     obuf->in_bold = 0;
     obuf->in_italic = 0;
     obuf->in_under = 0;
@@ -6790,6 +6915,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
     if (obuf->img_alt) {
 	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
 	obuf->img_alt = NULL;
+    }
+    if (obuf->input_alt.in) {
+	push_tag(obuf, "</input_alt>", HTML_N_INPUT_ALT);
+	obuf->input_alt.hseq = 0;
+	obuf->input_alt.fid = -1;
+	obuf->input_alt.in = 0;
+	obuf->input_alt.type = NULL;
+	obuf->input_alt.name = NULL;
+	obuf->input_alt.value = NULL;
     }
     if (obuf->in_bold) {
 	push_tag(obuf, "</b>", HTML_N_B);
@@ -6963,8 +7097,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	image_flag = IMG_FLAG_AUTO;
     else
 	image_flag = IMG_FLAG_SKIP;
-    if (newBuf->currentURL.file)
-	cur_baseURL = baseURL(newBuf);
 #endif
 
     if (w3m_halfload) {
@@ -6987,6 +7119,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	htmlenv1.f = stdout;
     else
 	htmlenv1.buf = newTextLineList();
+#if defined(USE_M17N) || defined(USE_IMAGE)
+    cur_baseURL = baseURL(newBuf);
+#endif
 
     if (SETJMP(AbortLoading) != 0) {
 	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
@@ -7048,7 +7183,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	}
 #endif
 	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
-#if defined(USE_M17N) && defined(USE_IMAGE)
+#ifdef USE_M17N
 	cur_document_charset = charset;
 #endif
 	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
@@ -7060,6 +7195,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     obuf.status = R_ST_NORMAL;
     completeHTMLstream(&htmlenv1, &obuf);
     flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
+#if defined(USE_M17N) || defined(USE_IMAGE)
+    cur_baseURL = NULL;
+#endif
+#ifdef USE_M17N
+    cur_document_charset = 0;
+#endif
     if (htmlenv1.title)
 	newBuf->buffername = htmlenv1.title;
     if (w3m_halfdump) {
@@ -7207,7 +7348,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
 			   "/", file->ptr, NULL)->ptr;
 	Strcat_m_charp(tmp, "<a href=\"",
-		       html_quote(url_quote_conv(q, *charset)),
+		       html_quote(url_encode(q, NULL, *charset)),
 		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
     }
 
@@ -7331,6 +7472,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     URLFile f;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     struct stat st;
+    const ParsedURL *pu = newBuf ? &newBuf->currentURL : NULL;
 
     loadImage(newBuf, IMG_FLAG_STOP);
     image.url = uf->url;
@@ -7338,8 +7480,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     image.width = -1;
     image.height = -1;
     image.cache = NULL;
-    cache = getImage(&image, cur_baseURL, IMG_FLAG_AUTO);
-    if (!cur_baseURL->is_nocache && cache->loaded & IMG_FLAG_LOADED &&
+    cache = getImage(&image, (ParsedURL *)pu, IMG_FLAG_AUTO);
+    if (!(pu && pu->is_nocache) && cache->loaded & IMG_FLAG_LOADED &&
 	!stat(cache->file, &st))
 	goto image_buffer;
 
@@ -7580,8 +7722,11 @@ openGeneralPagerBuffer(InputStream stream)
 #ifdef USE_M17N
     content_charset = 0;
 #endif
+    t_buf = newBuffer(INIT_BUFFER_WIDTH);
+    copyParsedURL(&t_buf->currentURL, NULL);
+    t_buf->currentURL.scheme = SCM_LOCAL;
+    t_buf->currentURL.file = "-";
     if (SearchHeader) {
-	t_buf = newBuffer(INIT_BUFFER_WIDTH);
 	readHeader(&uf, t_buf, TRUE, NULL);
 	t = checkContentType(t_buf);
 	if (t == NULL)
@@ -7609,14 +7754,13 @@ openGeneralPagerBuffer(InputStream stream)
 #ifdef USE_IMAGE
     else if (activeImage && displayImage && !useExtImageViewer &&
 	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
-	cur_baseURL = New(ParsedURL);
-	parseURL("-", cur_baseURL, NULL);
 	buf = loadImageBuffer(&uf, t_buf);
 	buf->type = "text/html";
     }
 #endif
     else {
-	if (doExternal(uf, "-", t, &buf, t_buf)) {
+	if (searchExtViewer(t)) {
+	    buf = doExternal(uf, t, t_buf);
 	    UFclose(&uf);
 	    if (buf == NULL || buf == NO_BUFFER)
 		return buf;
@@ -7629,8 +7773,6 @@ openGeneralPagerBuffer(InputStream stream)
 	}
     }
     buf->real_type = t;
-    buf->currentURL.scheme = SCM_LOCAL;
-    buf->currentURL.file = "-";
     return buf;
 }
 
@@ -7823,9 +7965,8 @@ save2tmp(URLFile uf, char *tmpf)
     return 0;
 }
 
-int
-doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
-	   Buffer *defaultbuf)
+Buffer *
+doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 {
     Str tmpf, command;
     struct mailcap *mcap;
@@ -7834,7 +7975,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
     char *header, *src = NULL, *ext = uf.ext;
 
     if (!(mcap = searchExtViewer(type)))
-	return 0;
+	return NULL;
 
     if (mcap->nametemplate) {
 	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
@@ -7867,15 +8008,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	    UFclose(&uf);
 	    myExec(command->ptr);
 	}
-	*bufp = NO_BUFFER;
-	return 1;
+	return NO_BUFFER;
     }
     else
 #endif
     {
 	if (save2tmp(uf, tmpf->ptr) < 0) {
-	    *bufp = NULL;
-	    return 1;
+	    return NULL;
 	}
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
@@ -7918,14 +8057,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
 	buf = NO_BUFFER;
     }
     if (buf && buf != NO_BUFFER) {
-	buf->filename = path;
-	if (buf->buffername == NULL || buf->buffername[0] == '\0')
-	    buf->buffername = conv_from_system(lastFileName(path));
+	if ((buf->buffername == NULL || buf->buffername[0] == '\0') &&
+	    buf->filename)
+	    buf->buffername = conv_from_system(lastFileName(buf->filename));
 	buf->edit = mcap->edit;
 	buf->mailcap = mcap;
     }
-    *bufp = buf;
-    return 1;
+    return buf;
 }
 
 static int

@@ -407,6 +407,10 @@ msgid "File for setting form on loading"
 msgstr "文書読込時のフォーム設定用ファイル"
 
 #: rc.c:149
+msgid "File for preferences for each site"
+msgstr "サイト別設定のファイル"
+
+#: rc.c:149
 msgid "Password for anonymous FTP (your mail address)"
 msgstr "FTPのパスワード(普通は自分のmail addressを使う)"
 

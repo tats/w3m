@@ -150,7 +150,7 @@ parsetagx.o: html.c
 
 funcname.tab: $(DEFUNS)
 	(echo '#define DEFUN(x,y,z) x y';\
-	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) - | \
+	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) $(CPPFLAGS) - | \
 	 awk '$$1 ~ /^[_A-Za-z]/ { \
 	       for (i=2;i<=NF;i++) { print $$i, $$1} \
 	 }' > $@.tmp
@@ -199,7 +199,7 @@ dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
 $(IMGDISPLAY): w3mimgdisplay.o $(ALIB) w3mimg/w3mimg.a
-	$(IMGLINK) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
+	$(IMGLINK) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) -lX11 $(IMGLDFLAGS)
 
 w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c

@@ -866,7 +866,7 @@ AC_MSG_CHECKING(for sys_errlist)
 AC_TRY_COMPILE(
 changequote(<<,>>)dnl
 <<extern char *sys_errlist[];>>,
-<<printf(sys_errlist[0]);>>,
+<<printf("%s", sys_errlist[0]);>>,
 changequote([,])dnl
 [have_sys_errlist="yes"; AC_DEFINE(HAVE_SYS_ERRLIST)],
 [have_sys_errlist="no"])

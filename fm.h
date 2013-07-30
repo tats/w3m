@@ -264,6 +264,18 @@ extern int REV_LB[];
 #define IMG_FLAG_ERROR		2
 #define IMG_FLAG_DONT_REMOVE	4
 
+#define IS_EMPTY_PARSED_URL(pu) ((pu)->scheme == SCM_UNKNOWN && !(pu)->file)
+#define SCONF_RESERVED		0
+#define SCONF_SUBSTITUTE_URL	1
+#define SCONF_URL_CHARSET	2
+#define SCONF_NO_REFERER_FROM	3
+#define SCONF_NO_REFERER_TO	4
+#define SCONF_N_FIELD		5
+#define query_SCONF_SUBSTITUTE_URL(pu) ((const char *)querySiteconf(pu, SCONF_SUBSTITUTE_URL))
+#define query_SCONF_URL_CHARSET(pu) ((const wc_ces *)querySiteconf(pu, SCONF_URL_CHARSET))
+#define query_SCONF_NO_REFERER_FROM(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_FROM))
+#define query_SCONF_NO_REFERER_TO(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_TO))
+
 /* 
  * Macros.
  */
@@ -562,6 +574,13 @@ typedef struct _DownloadList {
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
 #define FOLD_BUFFER_WIDTH (FoldLine ? (INIT_BUFFER_WIDTH + 1) : -1)
 
+struct input_alt_attr {
+  int hseq;
+  int fid;
+  int in;
+  Str type, name, value;
+};
+
 typedef struct {
     int pos;
     int len;
@@ -569,6 +588,7 @@ typedef struct {
     long flag;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     short nobr_level;
     Lineprop prev_ctype;
@@ -591,6 +611,7 @@ struct readbuffer {
     short nobr_level;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     char fontstat_stack[FONT_STACK_SIZE][FONTSTAT_SIZE];
     int fontstat_sp;
@@ -972,6 +993,7 @@ global int BackgroundExtViewer init(TRUE);
 global int disable_secret_security_check init(FALSE);
 global char *passwd_file init(PASSWD_FILE);
 global char *pre_form_file init(PRE_FORM_FILE);
+global char *siteconf_file init(SITECONF_FILE);
 global char *ftppasswd init(NULL);
 global int ftppass_hostnamegen init(TRUE);
 global int do_download init(FALSE);

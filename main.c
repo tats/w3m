@@ -200,9 +200,11 @@ fusage(FILE * f, int err)
 #ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
+#if 0				/* use -O{s|j|e} instead */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
+#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -248,7 +250,11 @@ fusage(FILE * f, int err)
 #endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
     fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
+#if 1				/* pager requires -s */
+    fprintf(f, "    -s               squeeze multiple blank lines\n");
+#else
     fprintf(f, "    -S               squeeze multiple blank lines\n");
+#endif
     fprintf(f, "    -W               toggle wrap search mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -311,7 +317,11 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 	    lock = 0;
 	}
     }
+#if GC_VERSION_MAJOR >= 7 && GC_VERSION_MINOR >= 2
+    else if (orig_GC_warn_proc = GC_get_warn_proc())
+#else
     else if (orig_GC_warn_proc)
+#endif
 	orig_GC_warn_proc(msg, arg);
     else
 	fprintf(stderr, msg, (unsigned long)arg);
@@ -530,12 +540,14 @@ main(int argc, char **argv, char **envp)
 		    PagerMax = atoi(argv[i]);
 	    }
 #ifdef USE_M17N
+#if 0				/* use -O{s|j|e} instead */
 	    else if (!strcmp("-s", argv[i]))
 		DisplayCharset = WC_CES_SHIFT_JIS;
 	    else if (!strcmp("-j", argv[i]))
 		DisplayCharset = WC_CES_ISO_2022_JP;
 	    else if (!strcmp("-e", argv[i]))
 		DisplayCharset = WC_CES_EUC_JP;
+#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -703,7 +715,11 @@ main(int argc, char **argv, char **envp)
 		accept_cookie = TRUE;
 	    }
 #endif				/* USE_COOKIE */
+#if 1				/* pager requires -s */
+	    else if (!strcmp("-s", argv[i]))
+#else
 	    else if (!strcmp("-S", argv[i]))
+#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
@@ -833,7 +849,11 @@ main(int argc, char **argv, char **envp)
     mySignal(SIGPIPE, SigPipe);
 #endif
 
+#if GC_VERSION_MAJOR >= 7 && GC_VERSION_MINOR >= 2
+    GC_set_warn_proc(wrap_GC_warn_proc);
+#else
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);
+#endif
     err_msg = Strnew();
     if (load_argc == 0) {
 	/* no URL specified */
@@ -894,12 +914,17 @@ main(int argc, char **argv, char **envp)
 	if (i >= 0) {
 	    SearchHeader = search_header;
 	    DefaultType = default_type;
+	    char *url;
+	    
+	    url = load_argv[i];
+	    if (getURLScheme(&url) == SCM_MISSING && !ArgvIsURL)
+		url = file_to_url(load_argv[i]);
+	    else
+		url = url_encode(conv_from_system(load_argv[i]), NULL, 0);
 	    if (w3m_dump == DUMP_HEAD) {
 		request = New(FormList);
 		request->method = FORM_METHOD_HEAD;
-		newbuf =
-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
-				    request);
+		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
 	    }
 	    else {
 		if (post_file && i == 0) {
@@ -928,9 +953,7 @@ main(int argc, char **argv, char **envp)
 		else {
 		    request = NULL;
 		}
-		newbuf =
-		    loadGeneralFile(load_argv[i], NULL, NO_REFERER, 0,
-				    request);
+		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
 	    }
 	    if (newbuf == NULL) {
 		/* FIXME: gettextize? */
@@ -945,7 +968,7 @@ main(int argc, char **argv, char **envp)
 		break;
 	    case SCM_LOCAL:
 	    case SCM_LOCAL_CGI:
-		unshiftHist(LoadHist, conv_from_system(load_argv[i]));
+		unshiftHist(LoadHist, url);
 	    default:
 		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
 		break;
@@ -1280,15 +1303,12 @@ do_dump(Buffer *buf)
 	    qsort(in_order, nanchor, sizeof(Anchor *), cmp_anchor_hseq);
 	    for (i = 0; i < nanchor; i++) {
 		ParsedURL pu;
-		static Str s = NULL;
+		char *url;
 		if (in_order[i]->slave)
 		    continue;
 		parseURL2(in_order[i]->url, &pu, baseURL(buf));
-		s = parsedURL2Str(&pu);
-		if (DecodeURL)
-		    s = Strnew_charp(url_unquote_conv
-				     (s->ptr, Currentbuf->document_charset));
-		printf("[%d] %s\n", in_order[i]->hseq + 1, s->ptr);
+		url = url_decode2(parsedURL2Str(&pu)->ptr, Currentbuf);
+		printf("[%d] %s\n", in_order[i]->hseq + 1, url);
 	    }
 	}
     }
@@ -2272,7 +2292,7 @@ DEFUN(movR1, MOVE_RIGHT1,
 static wc_uint32
 getChar(char *p)
 {
-    return wc_any_to_ucs(wtf_parse1(&p));
+    return wc_any_to_ucs(wtf_parse1((wc_uchar **)&p));
 }
 
 static int
@@ -2815,12 +2835,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
     union frameset_element *f_element = NULL;
     int flag = 0;
     ParsedURL *base, pu;
+    const int *no_referer_ptr;
 
     message(Sprintf("loading %s", url)->ptr, 0, 0);
     refresh();
 
+    no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
     base = baseURL(Currentbuf);
-    if (base == NULL ||
+    if ((no_referer_ptr && *no_referer_ptr) ||
+	base == NULL ||
 	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
 	referer = NO_REFERER;
     if (referer == NULL)
@@ -4066,6 +4089,7 @@ goURL0(char *prompt, int relative)
     char *url, *referer;
     ParsedURL p_url, *current;
     Buffer *cur_buf = Currentbuf;
+    const int *no_referer_ptr;
 
     url = searchKeyData();
     if (url == NULL) {
@@ -4075,11 +4099,8 @@ goURL0(char *prompt, int relative)
 	current = baseURL(Currentbuf);
 	if (current) {
 	    char *c_url = parsedURL2Str(current)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_CURRENT) {
-		url = c_url;
-		if (DecodeURL)
-		    url = url_unquote_conv(url, 0);
-	    }
+	    if (DefaultURLString == DEFAULT_URL_CURRENT)
+		url = url_decode2(c_url, NULL);
 	    else
 		pushHist(hist, c_url);
 	}
@@ -4088,11 +4109,8 @@ goURL0(char *prompt, int relative)
 	    char *a_url;
 	    parseURL2(a->url, &p_url, current);
 	    a_url = parsedURL2Str(&p_url)->ptr;
-	    if (DefaultURLString == DEFAULT_URL_LINK) {
-		url = a_url;
-		if (DecodeURL)
-		    url = url_unquote_conv(url, Currentbuf->document_charset);
-	    }
+	    if (DefaultURLString == DEFAULT_URL_LINK)
+		url = url_decode2(a_url, Currentbuf);
 	    else
 		pushHist(hist, a_url);
 	}
@@ -4100,15 +4118,22 @@ goURL0(char *prompt, int relative)
 	if (url != NULL)
 	    SKIP_BLANKS(url);
     }
-#ifdef USE_M17N
-    if (url != NULL) {
-	if ((relative || *url == '#') && Currentbuf->document_charset)
-	    url = wc_conv_strict(url, InnerCharset,
-				 Currentbuf->document_charset)->ptr;
+    if (relative) {
+	no_referer_ptr = query_SCONF_NO_REFERER_FROM(&Currentbuf->currentURL);
+	current = baseURL(Currentbuf);
+	if ((no_referer_ptr && *no_referer_ptr) ||
+	    current == NULL ||
+	    current->scheme == SCM_LOCAL || current->scheme == SCM_LOCAL_CGI)
+	    referer = NO_REFERER;
 	else
-	    url = conv_to_system(url);
+	    referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	url = url_encode(url, current, Currentbuf->document_charset);
     }
-#endif
+    else {
+	current = NULL;
+	referer = NULL;
+	url = url_encode(url, NULL, 0);
+    }
     if (url == NULL || *url == '\0') {
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	return;
@@ -4116,14 +4141,6 @@ goURL0(char *prompt, int relative)
     if (*url == '#') {
 	gotoLabel(url + 1);
 	return;
-    }
-    if (relative) {
-	current = baseURL(Currentbuf);
-	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
-    }
-    else {
-	current = NULL;
-	referer = NULL;
     }
     parseURL2(url, &p_url, current);
     pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
@@ -4521,8 +4538,7 @@ _peekURL(int only_img)
 	s = parsedURL2Str(&pu);
     }
     if (DecodeURL)
-	s = Strnew_charp(url_unquote_conv
-			 (s->ptr, Currentbuf->document_charset));
+	s = Strnew_charp(url_decode2(s->ptr, Currentbuf));
 #ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
@@ -4581,7 +4597,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
 	offset = 0;
 	s = currentURL();
 	if (DecodeURL)
-	    s = Strnew_charp(url_unquote_conv(s->ptr, 0));
+	    s = Strnew_charp(url_decode2(s->ptr, NULL));
 #ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);
@@ -5403,6 +5419,58 @@ DEFUN(mouse, MOUSE, "mouse operation")
     y = (unsigned char)getch() - 33;
     if (y < 0)
 	y += 0x100;
+
+    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
+	return;
+    process_mouse(btn, x, y);
+}
+
+DEFUN(sgrmouse, SGRMOUSE, "SGR 1006 mouse operation")
+{
+    int btn = 0, x = 0, y = 0;
+    unsigned char c;
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    btn = btn * 10 + c - '0';
+	else if (c == ';')
+	    break;
+	else
+	    return;
+    } while (1);
+
+#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
+    if (cygwin_mouse_btn_swapped) {
+	if (btn == MOUSE_BTN2_DOWN)
+	    btn = MOUSE_BTN3_DOWN;
+	else if (btn == MOUSE_BTN3_DOWN)
+	    btn = MOUSE_BTN2_DOWN;
+    };
+#endif
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    x = x * 10 + c - '0';
+	else if (c == ';')
+	    break;
+	else
+	  return;
+    } while (1);
+
+    do {
+	c = getch();
+	if (IS_DIGIT(c))
+	    y = y * 10 + c - '0';
+	else if (c == 'M')
+	    break;
+	else if (c == 'm') {
+	    btn |= 3;
+	    break;
+	} else
+    return;
+    } while (1);
 
     if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
 	return;

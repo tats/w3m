@@ -25,6 +25,7 @@
 
 #define PASSWD_FILE	RC_DIR "/passwd"
 #define PRE_FORM_FILE	RC_DIR "/pre_form"
+#define SITECONF_FILE	RC_DIR "/siteconf"
 #define USER_MAILCAP	RC_DIR "/mailcap"
 #define SYS_MAILCAP	CONF_DIR "/mailcap"
 #define USER_MIMETYPES	"~/.mime.types"

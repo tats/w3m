@@ -279,7 +279,7 @@ follow_map_panel(Buffer *buf, char *name)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
+	    p = html_quote(url_decode2(p, buf));
 	else
 	    p = q;
 	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
@@ -417,10 +417,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	    continue;
 	parseURL2(a->url, &pu, baseURL(buf));
 	q = html_quote(parsedURL2Str(&pu)->ptr);
-	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(a->url, buf->document_charset));
-	else
-	    p = html_quote(a->url);
+	p = html_quote(url_decode2(a->url, buf));
 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
 		       q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
@@ -457,10 +454,8 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	    Strcat_charp(html, "[Rev]");
 	if (!l->url)
 	    url = "(empty)";
-	else if (DecodeURL)
-	    url = html_quote(url_unquote_conv(l->url, buf->document_charset));
 	else
-	    url = html_quote(l->url);
+	    url = html_quote(url_decode2(l->url, buf));
 	Strcat_m_charp(html, "<td>", url, NULL);
 	if (l->ctype)
 	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")", NULL);
@@ -498,8 +493,7 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		    Strcat_charp(html, p);
 		}
 		if (DecodeURL)
-		    p = html_quote(url_unquote_conv(frame.body->url,
-						    buf->document_charset));
+		    p = html_quote(url_decode2(frame.body->url, buf));
 		else
 		    p = q;
 		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", NULL);
@@ -550,9 +544,7 @@ page_info_panel(Buffer *buf)
 #ifdef USE_M17N
     Strcat_charp(tmp, "<form method=internal action=charset>");
 #endif
-    p = parsedURL2Str(&buf->currentURL)->ptr;
-    if (DecodeURL)
-	p = url_unquote_conv(p, 0);
+    p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
     Strcat_m_charp(tmp, "<table cellpadding=0>",
 		   "<tr valign=top><td nowrap>Title<td>",
 		   html_quote(buf->buffername),
@@ -589,7 +581,7 @@ page_info_panel(Buffer *buf)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
+	    p = html_quote(url_decode2(p, buf));
 	else
 	    p = q;
 	Strcat_m_charp(tmp,
@@ -602,7 +594,7 @@ page_info_panel(Buffer *buf)
 	p = parsedURL2Str(&pu)->ptr;
 	q = html_quote(p);
 	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
+	    p = html_quote(url_decode2(p, buf));
 	else
 	    p = q;
 	Strcat_m_charp(tmp,
@@ -613,10 +605,7 @@ page_info_panel(Buffer *buf)
     if (a != NULL) {
 	FormItemList *fi = (FormItemList *)a->url;
 	p = form2str(fi);
-	if (DecodeURL)
-	    p = html_quote(url_unquote_conv(p, buf->document_charset));
-	else
-	    p = html_quote(p);
+	p = html_quote(url_decode2(p, buf));
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
 		       p, NULL);

@@ -1246,6 +1246,12 @@ dump_extra(Buffer *buf)
 #endif
 }
 
+static int
+cmp_anchor_hseq(const void *a, const void *b)
+{
+    return (*((const Anchor **) a))->hseq - (*((const Anchor **) b))->hseq;
+}
+
 static void
 do_dump(Buffer *buf)
 {
@@ -1266,18 +1272,23 @@ do_dump(Buffer *buf)
 	int i;
 	saveBuffer(buf, stdout, FALSE);
 	if (displayLinkNumber && buf->href) {
+	    int nanchor = buf->href->nanchor;
 	    printf("\nReferences:\n\n");
-	    for (i = 0; i < buf->href->nanchor; i++) {
-	        ParsedURL pu;
-	        static Str s = NULL;
-		if (buf->href->anchors[i].slave)
+	    Anchor **in_order = New_N(Anchor *, buf->href->nanchor);
+	    for (i = 0; i < nanchor; i++)
+		in_order[i] = buf->href->anchors + i;
+	    qsort(in_order, nanchor, sizeof(Anchor *), cmp_anchor_hseq);
+	    for (i = 0; i < nanchor; i++) {
+		ParsedURL pu;
+		static Str s = NULL;
+		if (in_order[i]->slave)
 		    continue;
-	        parseURL2(buf->href->anchors[i].url, &pu, baseURL(buf));
-	        s = parsedURL2Str(&pu);
-    	        if (DecodeURL)
+		parseURL2(in_order[i]->url, &pu, baseURL(buf));
+		s = parsedURL2Str(&pu);
+		if (DecodeURL)
 		    s = Strnew_charp(url_unquote_conv
 				     (s->ptr, Currentbuf->document_charset));
-	        printf("[%d] %s\n", buf->href->anchors[i].hseq + 1, s->ptr);
+		printf("[%d] %s\n", in_order[i]->hseq + 1, s->ptr);
 	    }
 	}
     }

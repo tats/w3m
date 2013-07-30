@@ -31,7 +31,6 @@ build-indep:
 build-arch: build-stamp
 build-stamp:
 	dh_testdir
-	cd $(builddir) && dh_autotools-dev_updateconfig
 	cd $(builddir) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
@@ -41,7 +40,6 @@ clean:
 	dh_testdir
 	dh_testroot
 	if test -f $(builddir)/Makefile; then cd $(builddir) && $(MAKE) distclean; fi
-	cd $(builddir) && dh_autotools-dev_restoreconfig
 	rm -f $(builddir)/po/*.gmo
 	rm -f $(builddir)/po/stamp-po
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp

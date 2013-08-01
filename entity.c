@@ -44,6 +44,8 @@ conv_entity(unsigned int c)
 	return " ";
     if (c == 0xa0)
 	return NBSP;
+    if (c == 0xad)		/* SOFT HYPHEN */
+        return "";
     if (c < 0x100) {		/* Latin1 (ISO 8859-1) */
 	if (UseAltEntity)
 	    return alt_latin1[c - 0xa0];

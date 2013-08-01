@@ -2,6 +2,7 @@ cookie_accept_domains
 cookie_reject_domains 
 accept_bad_cookie 0
 accept_cookie 1
+show_cookie 0
 use_cookie 1
 ssl_ca_file 
 ssl_ca_path /etc/ssl/certs

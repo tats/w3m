@@ -1,0 +1,17 @@
+Subject: Ignore &shy; to prevent drawing hyphens everywhere
+Origin: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=441934
+From: Hilko Bengen <bengen@debian.org>
+
+diff --git a/entity.c b/entity.c
+index fdd8f64..a7c9e99 100644
+--- a/entity.c
++++ b/entity.c
+@@ -44,6 +44,8 @@ conv_entity(unsigned int c)
+ 	return " ";
+     if (c == 0xa0)
+ 	return NBSP;
++    if (c == 0xad)		/* SOFT HYPHEN */
++        return "";
+     if (c < 0x100) {		/* Latin1 (ISO 8859-1) */
+ 	if (UseAltEntity)
+ 	    return alt_latin1[c - 0xa0];

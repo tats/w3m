@@ -14,3 +14,4 @@
 130_siteconf.patch
 140_sort-dump-links.patch
 150_contact-list.patch
+160_ignore-shy.patch

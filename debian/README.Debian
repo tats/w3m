@@ -1,10 +1,21 @@
 w3m for Debian
 --------------
 
-Difference between pure w3m and the Debian package:
+This package is developed in the Git repository:
 
-* Change the -s option from "display charset Shift_JIS" to "squeeze multiple
-  blank lines" to work as /usr/bin/pager.  In addition, the options -j and -e
-  are disabled.  To specify the display charset, use -O{s|j|e} instead.
+  http://anonscm.debian.org/gitweb/?p=collab-maint/w3m.git
 
- -- Tatsuya Kinoshita <tats@debian.org>, Thu,  5 Aug 2010 21:02:47 +0900
+The patch files are managed in the debian branch.  For more
+information, see the Debian Package Tracking System web page:
+
+  http://packages.qa.debian.org/w3m
+
+To contact upstream:
+
+  http://w3m.sourceforge.net/index.en.html
+
+subscribe the mailing list w3m-dev-en@w3m.jp in English or
+w3m-dev@w3m.jp in Japanese. (Note: @sic.med.tohoku.ac.jp is
+replaced with @w3m.jp)
+
+ -- Tatsuya Kinoshita <tats@debian.org>, Thu, 01 Aug 2013 22:53:41 +0900

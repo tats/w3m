@@ -15,3 +15,4 @@
 140_sort-dump-links.patch
 150_contact-list.patch
 160_ignore-shy.patch
+170_w3mman2html-utf8.patch

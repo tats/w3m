@@ -1,0 +1,25 @@
+Subject: Correct underline processing and more UTF-8 support for w3mman2html.cgi
+Origin: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/680202
+Author: Piotr P. Karwasz
+
+diff -ru w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in w3m-0.5.2/scripts/w3mman/w3mman2html.cgi.in
+--- w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in	2010-11-22 14:00:11.000000000 +0100
++++ w3m-0.5.2/scripts/w3mman/w3mman2html.cgi.in	2010-11-22 14:02:48.000000000 +0100
+@@ -126,12 +126,14 @@
+   s/\&/\&amp;/g;
+   s/\</\&lt;/g;
+   s/\>/\&gt;/g;
++  # non ASCII UTF-8 codepoint
++  my $utf8="[\300-\337][\200-\277]|[\340-\357][\200-\277]{2}|[\360-\367][\200-\277]{3}|[\370-\373][\200-\277]{4}|[\374\375][\200-\277]{5}";
+ 
+-  s@([\200-\377].)(\010{1,2}\1)+@<b>$1</b>@g;
++  s@($utf8)(\010\1)+@<b>$1</b>@g;
+   s@(\&\w+;|.)(\010\1)+@<b>$1</b>@g;
+-  s@__\010{1,2}((\<b\>)?[\200-\377].(\</b\>)?)@<u>$1</u>@g;
++  s@_\010((\<b\>)?($utf8)(\</b\>)?)@<u>$1</u>@g;
+   s@_\010((\<b\>)?(\&\w+\;|.)(\</b\>)?)@<u>$1</u>@g;
+-  s@((\<b\>)?[\200-\377].(\</b\>)?)\010{1,2}__@<u>$1</u>@g;
++  s@((\<b\>)?($utf8)(\</b\>)?)\010_@<u>$1</u>@g;
+   s@((\<b\>)?(\&\w+\;|.)(\</b\>)?)\010_@<u>$1</u>@g;
+   s@.\010(.)@$1@g;
+ 

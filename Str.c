@@ -278,8 +278,8 @@ void
 Strchop(Str s)
 {
     STR_LENGTH_CHECK(s);
-    while ((s->ptr[s->length - 1] == '\n' || s->ptr[s->length - 1] == '\r') &&
-	   s->length > 0) {
+    while (s->length > 0 &&
+	   (s->ptr[s->length - 1] == '\n' || s->ptr[s->length - 1] == '\r')) {
 	s->length--;
     }
     s->ptr[s->length] = '\0';

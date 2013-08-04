@@ -5604,7 +5604,7 @@ execdict(char *word)
 	disp_message("Execution failed", TRUE);
 	return;
     }
-    else {
+    else if (buf != NO_BUFFER) {
 	buf->filename = w;
 	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
 	if (buf->type == NULL)

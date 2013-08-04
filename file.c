@@ -2267,10 +2267,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (header_string)
 	header_string = NULL;
 #ifdef USE_NNTP
-    if (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS)
+    if (b && b != NO_BUFFER && (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS))
 	reAnchorNewsheader(b);
 #endif
-    preFormUpdateBuffer(b);
+    if (b && b != NO_BUFFER)
+	preFormUpdateBuffer(b);
     TRAP_OFF;
     return b;
 }

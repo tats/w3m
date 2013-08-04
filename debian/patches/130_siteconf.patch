@@ -1,10 +1,10 @@
 Subject: New feature: siteconf
-From: AIDA Shinra <shinra@j10n.org>
-Date: Wed, 27 Jun 2012 20:43:46 +0900
 Origin: upstream, http://www.sic.med.tohoku.ac.jp/~satodai/w3m-dev/201206.month/4464.html
 
 Patch to support the siteconf feature, from [w3m-dev 04464]
 on 2012-06-27, provided by AIDA Shinra.
+
+Updated to fix segfault of loadGeneralFile() by Tatsuya Kinoshita.
 
 diff --git a/anchor.c b/anchor.c
 index 27bbd56..39f221d 100644
@@ -257,7 +257,7 @@ index 0000000..f173087
 +Hostnames, however, are always converted to lowercases before compared.
 +
 diff --git a/file.c b/file.c
-index 567d41e..22b76d9 100644
+index 567d41e..b342de0 100644
 --- a/file.c
 +++ b/file.c
 @@ -47,11 +47,11 @@ static JMP_BUF AbortLoading;
@@ -482,7 +482,21 @@ index 567d41e..22b76d9 100644
  	if (pu.label) {
  	    if (proc == loadHTMLBuffer) {
  		Anchor *a;
-@@ -3228,7 +3208,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -2287,10 +2267,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+     if (header_string)
+ 	header_string = NULL;
+ #ifdef USE_NNTP
+-    if (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS)
++    if (b && b != NO_BUFFER && (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS))
+ 	reAnchorNewsheader(b);
+ #endif
+-    preFormUpdateBuffer(b);
++    if (b && b != NO_BUFFER)
++	preFormUpdateBuffer(b);
+     TRAP_OFF;
+     return b;
+ }
+@@ -3228,7 +3209,7 @@ process_img(struct parsed_tag *tag, int width)
  
      if (!parsedtag_get_value(tag, ATTR_SRC, &p))
  	return tmp;
@@ -491,7 +505,7 @@ index 567d41e..22b76d9 100644
      q = NULL;
      parsedtag_get_value(tag, ATTR_ALT, &q);
      if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
-@@ -3322,12 +3302,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3322,12 +3303,7 @@ process_img(struct parsed_tag *tag, int width)
  	    Image image;
  	    ParsedURL u;
  
@@ -504,7 +518,7 @@ index 567d41e..22b76d9 100644
  	    image.url = parsedURL2Str(&u)->ptr;
  	    if (!uncompressed_file_type(u.file, &image.ext))
  		image.ext = filename_extension(u.file, TRUE);
-@@ -4084,6 +4059,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+@@ -4084,6 +4060,7 @@ process_form_int(struct parsed_tag *tag, int fid)
      parsedtag_get_value(tag, ATTR_METHOD, &p);
      q = "!CURRENT_URL!";
      parsedtag_get_value(tag, ATTR_ACTION, &q);
@@ -512,7 +526,7 @@ index 567d41e..22b76d9 100644
      r = NULL;
  #ifdef USE_M17N
      if (parsedtag_get_value(tag, ATTR_ACCEPT_CHARSET, &r))
-@@ -5067,11 +5043,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -5067,11 +5044,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	return 1;
      case HTML_BASE:
@@ -526,7 +540,7 @@ index 567d41e..22b76d9 100644
  	    parseURL(p, cur_baseURL, NULL);
  	}
  #endif
-@@ -5329,6 +5304,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5329,6 +5305,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
      Anchor **a_select = NULL;
  #endif
@@ -540,7 +554,7 @@ index 567d41e..22b76d9 100644
  
      if (out_size == 0) {
  	out_size = LINELEN;
-@@ -5523,16 +5505,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5523,16 +5506,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    hseq = 0;
  		    id = NULL;
  		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -562,7 +576,7 @@ index 567d41e..22b76d9 100644
  		    parsedtag_get_value(tag, ATTR_TITLE, &s);
  		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
  		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-@@ -5618,7 +5601,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5618,7 +5602,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    ParsedURL u;
  			    Image *image;
  
@@ -571,7 +585,7 @@ index 567d41e..22b76d9 100644
  			    a_img->image = image = New(Image);
  			    image->url = parsedURL2Str(&u)->ptr;
  			    if (!uncompressed_file_type(u.file, &image->ext))
-@@ -5639,7 +5622,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5639,7 +5623,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    image->map = q;
  			    image->ismap = ismap;
  			    image->touch = 0;
@@ -580,7 +594,7 @@ index 567d41e..22b76d9 100644
  						    IMG_FLAG_SKIP);
  			}
  			else if (iseq < 0) {
-@@ -5761,8 +5744,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5761,8 +5745,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			break;
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
  			MapArea *a;
@@ -591,7 +605,7 @@ index 567d41e..22b76d9 100644
  			t = NULL;
  			parsedtag_get_value(tag, ATTR_TARGET, &t);
  			q = "";
-@@ -5811,11 +5794,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5811,11 +5795,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    break;
  		case HTML_BASE:
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
@@ -608,7 +622,7 @@ index 567d41e..22b76d9 100644
  		    }
  		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
  			buf->baseTarget =
-@@ -5830,8 +5816,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5830,8 +5817,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			int refresh_interval = getMetaRefreshParam(q, &tmp);
  #ifdef USE_ALARM
  			if (tmp) {
@@ -619,7 +633,7 @@ index 567d41e..22b76d9 100644
  			    buf->event = setAlarmEvent(buf->event,
  						       refresh_interval,
  						       AL_IMPLICIT_ONCE,
-@@ -5844,8 +5830,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5844,8 +5831,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  						       FUNCNAME_reload, NULL);
  #else
  			if (tmp && refresh_interval == 0) {
@@ -630,7 +644,7 @@ index 567d41e..22b76d9 100644
  			    pushEvent(FUNCNAME_gorURL, p);
  			}
  #endif
-@@ -5929,7 +5915,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5929,7 +5916,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef	ID_EXT
  		id = NULL;
  		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
@@ -639,7 +653,7 @@ index 567d41e..22b76d9 100644
  		    registerName(buf, id, currentLn(buf), pos);
  		}
  		if (renderFrameSet &&
-@@ -5982,7 +5968,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+@@ -5982,7 +5969,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
  
      parsedtag_get_value(tag, ATTR_HREF, &href);
      if (href)
@@ -649,7 +663,7 @@ index 567d41e..22b76d9 100644
      parsedtag_get_value(tag, ATTR_TITLE, &title);
      parsedtag_get_value(tag, ATTR_TYPE, &ctype);
      parsedtag_get_value(tag, ATTR_REL, &rel);
-@@ -6963,8 +6950,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6963,8 +6951,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	image_flag = IMG_FLAG_AUTO;
      else
  	image_flag = IMG_FLAG_SKIP;
@@ -658,7 +672,7 @@ index 567d41e..22b76d9 100644
  #endif
  
      if (w3m_halfload) {
-@@ -6987,6 +6972,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6987,6 +6973,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	htmlenv1.f = stdout;
      else
  	htmlenv1.buf = newTextLineList();
@@ -668,7 +682,7 @@ index 567d41e..22b76d9 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-@@ -7048,7 +7036,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7048,7 +7037,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	}
  #endif
  	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
@@ -677,7 +691,7 @@ index 567d41e..22b76d9 100644
  	cur_document_charset = charset;
  #endif
  	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
-@@ -7060,6 +7048,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7060,6 +7049,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
      obuf.status = R_ST_NORMAL;
      completeHTMLstream(&htmlenv1, &obuf);
      flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
@@ -690,7 +704,7 @@ index 567d41e..22b76d9 100644
      if (htmlenv1.title)
  	newBuf->buffername = htmlenv1.title;
      if (w3m_halfdump) {
-@@ -7207,7 +7201,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+@@ -7207,7 +7202,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
  	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
  			   "/", file->ptr, NULL)->ptr;
  	Strcat_m_charp(tmp, "<a href=\"",
@@ -699,7 +713,7 @@ index 567d41e..22b76d9 100644
  		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
      }
  
-@@ -7331,6 +7325,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7331,6 +7326,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      URLFile f;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      struct stat st;
@@ -707,7 +721,7 @@ index 567d41e..22b76d9 100644
  
      loadImage(newBuf, IMG_FLAG_STOP);
      image.url = uf->url;
-@@ -7338,8 +7333,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7338,8 +7334,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      image.width = -1;
      image.height = -1;
      image.cache = NULL;
@@ -718,7 +732,7 @@ index 567d41e..22b76d9 100644
  	!stat(cache->file, &st))
  	goto image_buffer;
  
-@@ -7580,8 +7575,11 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7580,8 +7576,11 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_M17N
      content_charset = 0;
  #endif
@@ -731,7 +745,7 @@ index 567d41e..22b76d9 100644
  	readHeader(&uf, t_buf, TRUE, NULL);
  	t = checkContentType(t_buf);
  	if (t == NULL)
-@@ -7609,14 +7607,13 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7609,14 +7608,13 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_IMAGE
      else if (activeImage && displayImage && !useExtImageViewer &&
  	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
@@ -748,7 +762,7 @@ index 567d41e..22b76d9 100644
  	    UFclose(&uf);
  	    if (buf == NULL || buf == NO_BUFFER)
  		return buf;
-@@ -7629,8 +7626,6 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7629,8 +7627,6 @@ openGeneralPagerBuffer(InputStream stream)
  	}
      }
      buf->real_type = t;
@@ -757,7 +771,7 @@ index 567d41e..22b76d9 100644
      return buf;
  }
  
-@@ -7823,9 +7818,8 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7823,9 +7819,8 @@ save2tmp(URLFile uf, char *tmpf)
      return 0;
  }
  
@@ -769,7 +783,7 @@ index 567d41e..22b76d9 100644
  {
      Str tmpf, command;
      struct mailcap *mcap;
-@@ -7834,7 +7828,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7834,7 +7829,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
      char *header, *src = NULL, *ext = uf.ext;
  
      if (!(mcap = searchExtViewer(type)))
@@ -778,7 +792,7 @@ index 567d41e..22b76d9 100644
  
      if (mcap->nametemplate) {
  	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
-@@ -7867,15 +7861,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7867,15 +7862,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	    UFclose(&uf);
  	    myExec(command->ptr);
  	}
@@ -796,7 +810,7 @@ index 567d41e..22b76d9 100644
  	}
      }
      if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
-@@ -7918,14 +7910,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7918,14 +7911,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	buf = NO_BUFFER;
      }
      if (buf && buf != NO_BUFFER) {

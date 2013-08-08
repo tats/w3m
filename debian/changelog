@@ -1,3 +1,13 @@
+w3m (0.5.3-11) unstable; urgency=low
+
+  * Update 130_siteconf.patch to fix segfault (closes: #718612)
+  * New patch 180_execdict.patch to fix potentially segfault
+  * New patch 190_Strchop.patch to fix potentially segfault
+  * New patch 900_ChangeLog.patch to update ChangeLog
+  * Update 015_debian-version.patch to 0.5.3+debian-11
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 08 Aug 2013 19:06:06 +0900
+
 w3m (0.5.3-10) unstable; urgency=low
 
   * New patch 140_sort-dump-links.patch to sort anchors in -dump

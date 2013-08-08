@@ -1,0 +1,137 @@
+Subject: Update ChangeLog
+From: Tatsuya Kinoshita <tats@debian.org>
+
+diff --git a/ChangeLog b/ChangeLog
+index 88358ef..23ee52d 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,129 @@
++2013-08-08  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update to 0.5.3+debian-11
++
++2013-08-04  Tatsuya Kinoshita  <tats@debian.org>
++
++	* Str.c: Check length for Strchop()
++
++	* main.c: Fix potentially segfault of execdict()
++
++	* version.c.in: Update to 0.5.3+debian-10+
++
++	* file.c: Fix segfault of loadGeneralFile()
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=718612
++
++2013-08-02  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update to 0.5.3+debian-10
++
++	* scripts/w3mman/w3mman2html.cgi.in:
++	Correct underline processing and more UTF-8 support for w3mman2html.cgi
++	Patch from <https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/680202>,
++	provided by Piotr P. Karwasz.
++
++2013-08-01  Tatsuya Kinoshita  <tats@debian.org>
++
++	* entity.c: Ignore &shy; to prevent drawing hyphens everywhere
++	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=441934>,
++	to prevent drawing hyphens everywhere with &shy;,
++	provided by Hilko Bengen.
++
++	* doc-jp/README, doc/README: Update contact list in README
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=696209
++
++2013-07-30  Tatsuya Kinoshita  <tats@debian.org>
++
++	* config.guess, config.sub:
++	Update config.guess and config.sub to supprot aarch64
++	Updated with Debian autotools-dev version 20130515.1.
++
++	* main.c: Sort anchors by sequence number in -dump
++	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=657666>,
++	provided by Conrad J.C. Hughes.
++
++	* version.c.in: Update to 0.5.3+debian-9+
++
++2013-07-29  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update version to w3m/0.5.3+debian-9
++
++	* version.c.in: Set CURRENT_VERSION to debian version
++
++2013-07-28  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Fix segfault of process_button()
++
++2013-04-08  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: One more patch for siteconf from [w3m-dev 04464]
++
++	* anchor.c, config.h.in, display.c, doc-jp/README.siteconf:
++	* doc/README.siteconf, file.c, fm.h, form.c, frame.c, func.c:
++	* history.c, indep.c, indep.h, linein.c, main.c, map.c, menu.c:
++	* po/ja.po, proto.h, rc.c, url.c: Support the siteconf feature
++	Patch to support the siteconf feature, from [w3m-dev 04463]
++	on 2012-06-27, provided by AIDA Shinra.
++
++	* keybind.c, main.c, proto.h, terms.c:
++	Support SGR 1006 mouse reporting
++	Patch to support SGR 1006 mouse reporting, from [w3m-dev 04466]
++	on 2012-07-15, provided by Hayaki Saito.
++
++2012-05-19  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* form.c: Assume "text" if an input type is unknown
++	Patch from <http://bugs.debian.org/615843> provided by Hilko Bengen.
++
++	* Makefile.in: Use $(CPPFLAGS) with $(CPP)
++	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=665491>
++	provided by Simon Ruderich.
++
++2012-05-03  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* w3mimg/Makefile.in: Fix parallel make issue
++	Patch from Gentoo <http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-parallel-make.patch?revision=1.1&view=markup>.
++
++	* main.c: Support Boehm GC 7.2
++	Patch from Gentoo <http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.2-gc72.patch?revision=1.1&view=markup>.
++
++2012-05-02  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* istream.c, istream.h:
++	Fix that struct file_handle conflicts with glibc 2.14
++	Patch from Ubuntu to unbreak compilation with eglibc 2.14. (LP: #935540)
++
++2011-10-30  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* acinclude.m4, configure, w3mbookmark.c:
++	Appease gcc -Werror=format-security.
++	Patch from 0.5.3-3ubuntu1 to appease gcc -Werror=format-security,
++	provided by Colin Watson.
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=646321
++
++2011-06-19  Tatsuya Kinoshita  <tats@vega.ocn.ne.jp>
++
++	* Makefile.in:
++	Explicitly link w3mimgdisplay with -lX11 to build with gcc 4.5
++	Patch from 0.5.2-10ubuntu1 to explicitly link w3mimgdisplay with -lX11
++	to build with gcc 4.5, provided by Martin Pitt.
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=605761
++
++	* main.c:
++	Change the -s option to "squeeze multiple blank lines" for pager
++	Change the -s option from "display charset Shift_JIS" to "squeeze
++	multiple blank lines" to work as /usr/bin/pager.  In addition, the
++	options -j and -e are disabled.  To specify the display charset,
++	use -O{s|j|e} instead.
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=75527
++
++	* file.c, fm.h, html.c, html.h, proto.h, table.c, tagtable.tab:
++	Support the button element as defined in HTML 4.01
++	Patch from upstream, [w3m-dev 04411] on 2010-09-17, to support the
++	button element.  It is discussed upstream and incomplete, but enough
++	to login Launchpad.
++	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=136810
++
+ 2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
+ 
+ 	* [w3m-dev 04451] w3m/entity.h should be removed when `make clean'

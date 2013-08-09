@@ -228,3 +228,10 @@ Copyright: 2008-2013, Tatsuya Kinoshita <tats@debian.org>
 License:
  The Debian packaging is distributed under the same conditions as the
  upstream.
+
+Files: debian/gitlog2changelog
+Copyright: 2013, Tatsuya Kinoshita
+License:
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted without restriction, with NO WARRANTY.
+ You may regard this as a work that is placed in the public domain.

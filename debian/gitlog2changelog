@@ -61,7 +61,7 @@ sub print_entry {
 	if ($comment =~ /^([^\n]+)/) {
 	    $short_comment = $1;
 	}
-	if ($short_comment =~ /:[ \t]|[:,\)][ \t]*$/ ||
+	if ($short_comment =~ /:[ \t]|[:,\)\]][ \t]*$/ ||
 	    $files_line_len + length($short_comment) > 78) {
 	    $files_lines =~ s/, $/:\n\t/;
 	} else {

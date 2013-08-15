@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-gitlog2changelog - tiny tool to convert Git commit logs to GNU ChangeLog
+gitlog2changelog - tiny tool to convert Git commit logs to GNU-style ChangeLog
 
 =head1 SYNOPSIS
 

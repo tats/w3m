@@ -37,7 +37,7 @@ my $pre_header = "";
 
 sub print_entry {
     my $header = "$date  $author";
-    $header =~ s/ (<[^@ \t\n]+@[^@ \t\n]+>)[ \t]*$/  $1/;
+    $header =~ s/ </  </;
     if ($header ne $pre_header) {
 	print "$header\n\n";
 	$pre_header = $header;

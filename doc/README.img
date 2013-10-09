@@ -41,7 +41,7 @@ Key functions
   Specify the following keymaps in ~/.w3m/keymap.
       keymap  X    DISPLAY_IMAGE
       keymap  C-c  STOP_IMAGE
-      keyamp  t    SET_OPTION  display_image=toggle
+      keymap  t    SET_OPTION  display_image=toggle
 
 Commandline options
 

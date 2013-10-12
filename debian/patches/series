@@ -19,4 +19,5 @@
 180_execdict.patch
 190_Strchop.patch
 200_readme-img-typo.patch
+210_vim-like.patch
 900_ChangeLog.patch

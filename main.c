@@ -1597,6 +1597,18 @@ DEFUN(pgBack, PREV_PAGE, "Move to previous page")
 		  * (Currentbuf->LINES - 1)), prec_num ? B_SCROLL : B_NORMAL);
 }
 
+/* Move half page forward */
+DEFUN(hpgFore, NEXT_HALF_PAGE, "Scroll down half page")
+{
+	nscroll(searchKeyNum() * (Currentbuf->LINES / 2 - 1), B_NORMAL);
+}
+
+/* Move half page backward */
+DEFUN(hpgBack, PREV_HALF_PAGE, "Scroll up half page")
+{
+	nscroll(-searchKeyNum() * (Currentbuf->LINES / 2 - 1), B_NORMAL);
+}
+
 /* 1 line up */
 DEFUN(lup1, UP, "Scroll up one line")
 {
@@ -3595,6 +3607,33 @@ DEFUN(lastA, LINK_END, "Go to the last link")
 	    an = retrieveAnchor(Currentbuf->formitem, po->line, po->pos);
 	hseq--;
     } while (an == NULL);
+
+    gotoLine(Currentbuf, po->line);
+    Currentbuf->pos = po->pos;
+    arrangeCursor(Currentbuf);
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+
+/* go to the nth anchor */
+DEFUN(nthA, LINK_N, "Go to the nth link")
+{
+    HmarkerList *hl = Currentbuf->hmarklist;
+	BufferPoint *po;
+	Anchor *an;
+
+	int n = searchKeyNum();
+	if (n < 0 || n > hl->nmark) return;
+
+	if (Currentbuf->firstLine == NULL)
+		return;
+    if (!hl || hl->nmark == 0)
+		return;
+
+	po = hl->marks + n-1;
+	an = retrieveAnchor(Currentbuf->href, po->line, po->pos);
+	if (an == NULL)
+		an = retrieveAnchor(Currentbuf->formitem, po->line, po->pos);
+	if (an == NULL) return;
 
     gotoLine(Currentbuf, po->line);
     Currentbuf->pos = po->pos;

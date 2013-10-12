@@ -11,6 +11,8 @@ extern void pushEvent(int cmd, void *data);
 extern MySignalHandler intTrap(SIGNAL_ARG);
 extern void pgFore(void);
 extern void pgBack(void);
+extern void hpgFore(void);
+extern void hpgBack(void);
 extern void lup1(void);
 extern void ldown1(void);
 extern void ctrCsrV(void);
@@ -61,6 +63,7 @@ extern void submitForm(void);
 extern void followForm(void);
 extern void topA(void);
 extern void lastA(void);
+extern void nthA(void);
 extern void onA(void);
 
 extern void nextA(void);

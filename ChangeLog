@@ -1,3 +1,45 @@
+2013-10-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-12
+
+	* doc-jp/MANUAL.html, doc-jp/w3m.1, doc/MANUAL.html, doc/w3m.1:
+	Update document for the -s option change
+	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=75527
+
+	* terms.c: Do not fail when LANG is not set
+	Check whether the value of LC_ALL, LC_CTYPE or LANG is not NULL in
+	check_cygwin_console().
+	Bug: https://sourceforge.net/p/w3m/patches/66/
+
+2013-10-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.h: Bump MAXCOL to 256
+	Bug: https://sourceforge.net/p/w3m/feature-requests/24/
+
+2013-10-12  Laurence Richert  <laurencerichert@yahoo.de>
+
+	* main.c, proto.h: vim/-perator like handling
+	- half page scrolling
+	- jumping to elements numbered by getLinkNumberStr() from Karsten
+	  Schoelzel
+	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=724028
+
+2013-10-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README, doc/README:
+	Mention project page rather than unavailable mailing lists
+
+2013-10-09  Rafael Laboissiere  <rafael@laboissiere.net>
+
+	* doc/README.img: Fix typo
+	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=725892
+
+2013-08-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-11+
+
+	* ChangeLog: Update ChangeLog to use contributor's name
+
 2013-08-08  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-11

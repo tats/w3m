@@ -1,3 +1,20 @@
+w3m (0.5.3-12) unstable; urgency=low
+
+  * New patch 200_readme-img-typo.patch to typo fix (closes: #725892)
+  * New patch 210_vim-like.patch for vim like handling (closes: #724028)
+  * New patch 220_maxcol.patch to bump MAXCOL to 256
+  * New patch 230_cygwin-lang.patch to fix upstream bug
+  * Update 030_pager-s-option.patch to doc fix
+  * Add --with-browser=/usr/bin/sensible-browser to confargs
+  * Add gitlog2changelog to easily generate ChangeLog
+  * Update debian/copyright
+  * Update README.Debian to drop unavailable mailing lists
+  * Update 150_contact-list.patch to drop unavailable mailing lists
+  * Update 900_ChangeLog.patch
+  * Update 015_debian-version.patch to 0.5.3+debian-12
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 13 Oct 2013 16:41:44 +0900
+
 w3m (0.5.3-11) unstable; urgency=low
 
   * Update 130_siteconf.patch to fix segfault (closes: #718612)

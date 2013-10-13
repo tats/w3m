@@ -13,9 +13,6 @@ information, see the Debian Package Tracking System web page:
 To contact upstream:
 
   http://w3m.sourceforge.net/index.en.html
+  https://sourceforge.net/projects/w3m/
 
-subscribe and ask the mailing list w3m-dev-en@w3m.jp (English)
-or w3m-dev@w3m.jp (Japanese). (Note: @sic.med.tohoku.ac.jp is
-replaced with @w3m.jp)
-
- -- Tatsuya Kinoshita <tats@debian.org>, Fri, 02 Aug 2013 21:18:52 +0900
+ -- Tatsuya Kinoshita <tats@debian.org>, Sun, 13 Oct 2013 14:14:08 +0900

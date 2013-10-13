@@ -63,3 +63,119 @@ diff -urN w3m.orig/main.c w3m/main.c
  		squeezeBlankLine = TRUE;
  	    else if (!strcmp("-X", argv[i]))
  		Do_not_use_ti_te = TRUE;
+
+commit 7d4d6cdd31f09b964f436651217dd0e2488e5e7b
+Author: Tatsuya Kinoshita <tats@debian.org>
+Date:   Sun Oct 13 14:06:32 2013 +0900
+
+    Update document for the -s option change
+
+diff --git a/doc-jp/MANUAL.html b/doc-jp/MANUAL.html
+index 41d70f1..f197cfb 100644
+--- a/doc-jp/MANUAL.html
++++ b/doc-jp/MANUAL.html
+@@ -51,15 +51,9 @@ w3m 
+ <dt>-l 行数
+ <dd>標準入力の内容を表示するときに保存される最大行数を指定す
+ る．デフォルトは 10000．
+-<dt>-s
+-<dd>Shift_JIS コードで表示する．
+-<dt>-e
+-<dd>EUC コードで表示する．
+-<dt>-j
+-<dd>JIS(ISO-2022-JP) コードで表示する．
+-<dt>-O e|s|j|N|m|n
++<dt>-O 文字コード
+ <dd>表示に用いる文字コードを指定する．
+-<dt>-I e|s
++<dt>-I 文字コード
+ <dd>入力文書の文字コードを指定する．
+ <dt>-T タイプ
+ <dd>表示する文書のタイプを指定する．この指定がない場合，ファイル
+@@ -89,7 +83,7 @@ HTML
+ <dd>カラー表示をしない．
+ <dt>-F
+ <dd>フレームを自動表示する．
+-<dt>-S
++<dt>-s
+ <dd>連続する空行を1行にまとめて表示する．
+ <dt>-X
+ <dd>w3m終了時に，以前の画面に戻らない．
+diff --git a/doc-jp/w3m.1 b/doc-jp/w3m.1
+index 89aacb6..099a803 100644
+--- a/doc-jp/w3m.1
++++ b/doc-jp/w3m.1
+@@ -39,19 +39,10 @@ text/plain
+ 標準入力の内容を表示するときに保存される最大行数を指定する．
+ デフォルトは10000．
+ .TP
+-.B \-s
+-Shift_JISコードで表示する．
+-.TP
+-.B \-e
+-EUCコードで表示する．
+-.TP
+-.B \-j
+-JIS (ISO-2022-JP)コードで表示する．
+-.TP
+-.BI \-O\  e|s|j|N|m
++.BI \-O\  文字コード
+ 表示に使う文字コードを指定する.
+ .TP
+-.BI \-I\  e|s
++.BI \-I\  文字コード
+ 入力文書の文字コードを指定する．
+ .TP
+ .BI \-T\  タイプ
+@@ -90,7 +81,7 @@ Bookmark 
+ .B \-F
+ フレームを自動表示する．
+ .TP
+-.B \-S
++.B \-s
+ 連続する空行を1行にまとめて表示する．
+ .TP
+ .B \-X
+diff --git a/doc/MANUAL.html b/doc/MANUAL.html
+index aff0189..0a00b59 100644
+--- a/doc/MANUAL.html
++++ b/doc/MANUAL.html
+@@ -55,12 +55,10 @@ If you don't specify this option,
+ <dt>-l number
+ <dd>Specify line number preserved internally when reading text/plain document
+ fron standard input. Default is 10000.
+-<dt>-s
+-<dd>Display documents with Shift_JIS code.
+-<dt>-e
+-<dd>Display documents with EUC_JP code.
+-<dt>-j
+-<dd>Display documents with ISO-2022-JP code.
++<dt>-O charset
++<dd>Specify display/output charset.
++<dt>-I charset
++<dd>Specify document charset.
+ <dt>-T type
+ <dd>Specify document type. Without this option, document type
+ is determined from extension of a file. If the determination
+@@ -90,7 +88,7 @@ It is useful when reading E-mail or NetNews messages.
+ <dd>Monochrome display mode.
+ <dt>-F
+ <dd>Automatically render frame.
+-<dt>-S
++<dt>-s
+ <dd>Squeeze blank lines.
+ <dt>-X
+ <dd>Upon exit, do not display preserved screen.
+diff --git a/doc/w3m.1 b/doc/w3m.1
+index aeb4a60..da4fdbb 100644
+--- a/doc/w3m.1
++++ b/doc/w3m.1
+@@ -143,7 +143,7 @@ use graphic character
+ .B -no-graph
+ don't use graphic character
+ .TP
+-.B -S
++.B -s
+ squeeze multiple blank lines
+ .TP
+ .B -W

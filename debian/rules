@@ -20,6 +20,7 @@ confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 	--with-imagelib=imlib2 \
 	--with-migemo="cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict" \
 	--with-editor=/usr/bin/sensible-editor \
+	--with-browser=/usr/bin/sensible-browser \
 	--enable-gopher \
 	--enable-image=$(DEVS) \
 	--enable-m17n --enable-unicode --enable-nls

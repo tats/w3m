@@ -21,4 +21,5 @@
 200_readme-img-typo.patch
 210_vim-like.patch
 220_maxcol.patch
+230_cygwin-lang.patch
 900_ChangeLog.patch

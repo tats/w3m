@@ -237,9 +237,9 @@ check_cygwin_console(void)
 		isLocalConsole = 1;
 	    }
 	}
-	if ((ctype = getenv("LC_ALL") ||
-	     ctype = getenv("LC_CTYPE") ||
-	     ctype = getenv("LANG")) && strncmp(ctype, "ja", 2) == 0) {
+	if (((ctype = getenv("LC_ALL")) ||
+	     (ctype = getenv("LC_CTYPE")) ||
+	     (ctype = getenv("LANG"))) && strncmp(ctype, "ja", 2) == 0) {
 	    isWinConsole = TERM_CYGWIN_RESERVE_IME;
 	}
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS

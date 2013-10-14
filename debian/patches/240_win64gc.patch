@@ -1,0 +1,1235 @@
+Subject: Workaround of GC crash on Cygwin64
+From: AIDA Shinra <shinra@j10n.org>
+Origin: http://www.j10n.org/files/w3m-cvs-1.1055-win64gc.patch
+    
+    Patch from [w3m-dev:04469] on 2013-10-14.
+
+diff --git a/config.h.in b/config.h.in
+index 59997b4..a4110ea 100644
+--- a/config.h.in
++++ b/config.h.in
+@@ -210,6 +210,10 @@ typedef RETSIGTYPE MySignalHandler;
+ #define SUPPORT_WIN9X_CONSOLE_MBCS 1
+ #endif
+ 
++#if defined(__CYGWIN__) && defined(__x86_64__)
++#define DONT_CALL_GC_AFTER_FORK
++#endif
++
+ #if defined(__DJGPP__)
+ #define DEFAULT_TERM	"dosansi"
+ #else
+diff --git a/file.c b/file.c
+index 89c9152..6f4d5b8 100644
+--- a/file.c
++++ b/file.c
+@@ -677,6 +677,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
+ #endif
+ 		    init_stream(&f, SCM_LOCAL, newStrStream(src));
+ 		    loadHTMLstream(&f, newBuf, NULL, TRUE);
++		    UFclose(&f);
+ 		    for (l = newBuf->lastLine; l && l->real_linenumber;
+ 			 l = l->prev)
+ 			l->real_linenumber = 0;
+@@ -7238,16 +7239,17 @@ loadHTMLString(Str page)
+     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+     Buffer *newBuf;
+ 
++    init_stream(&f, SCM_LOCAL, newStrStream(page));
++
+     newBuf = newBuffer(INIT_BUFFER_WIDTH);
+     if (SETJMP(AbortLoading) != 0) {
+ 	TRAP_OFF;
+ 	discardBuffer(newBuf);
++	UFclose(&f);
+ 	return NULL;
+     }
+     TRAP_ON;
+ 
+-    init_stream(&f, SCM_LOCAL, newStrStream(page));
+-
+ #ifdef USE_M17N
+     newBuf->document_charset = InnerCharset;
+ #endif
+@@ -7257,6 +7259,7 @@ loadHTMLString(Str page)
+ #endif
+ 
+     TRAP_OFF;
++    UFclose(&f);
+     newBuf->topLine = newBuf->firstLine;
+     newBuf->lastLine = newBuf->currentLine;
+     newBuf->currentLine = newBuf->firstLine;
+@@ -7486,15 +7489,13 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+ 	!stat(cache->file, &st))
+ 	goto image_buffer;
+ 
+-    TRAP_ON;
+     if (IStype(uf->stream) != IST_ENCODED)
+ 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
++    TRAP_ON;
+     if (save2tmp(*uf, cache->file) < 0) {
+-	UFclose(uf);
+ 	TRAP_OFF;
+ 	return NULL;
+     }
+-    UFclose(uf);
+     TRAP_OFF;
+ 
+     cache->loaded = IMG_FLAG_LOADED;
+@@ -7514,6 +7515,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+ 
+     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
+     loadHTMLstream(&f, newBuf, src, TRUE);
++    UFclose(&f);
+     if (src)
+ 	fclose(src);
+ 
+@@ -7909,6 +7911,8 @@ save2tmp(URLFile uf, char *tmpf)
+     clen_t linelen = 0, trbyte = 0;
+     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
+     static JMP_BUF env_bak;
++    volatile int retval = 0;
++    char *volatile buf = NULL;
+ 
+     ff = fopen(tmpf, "wb");
+     if (ff == NULL) {
+@@ -7945,25 +7949,25 @@ save2tmp(URLFile uf, char *tmpf)
+     else
+ #endif				/* USE_NNTP */
+     {
+-	Str buf = Strnew_size(SAVE_BUF_SIZE);
+-	while (UFread(&uf, buf, SAVE_BUF_SIZE)) {
+-	    if (Strfputs(buf, ff) != buf->length) {
+-		bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
+-		TRAP_OFF;
+-		fclose(ff);
+-		current_content_length = 0;
+-		return -2;
++	int count;
++
++	buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
++	while ((count = ISread_n(uf.stream, buf, SAVE_BUF_SIZE)) > 0) {
++	    if (fwrite(buf, 1, count, ff) != count) {
++		retval = -2;
++		goto _end;
+ 	    }
+-	    linelen += buf->length;
++	    linelen += count;
+ 	    showProgress(&linelen, &trbyte);
+ 	}
+     }
+   _end:
+     bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
+     TRAP_OFF;
++    xfree(buf);
+     fclose(ff);
+     current_content_length = 0;
+-    return 0;
++    return retval;
+ }
+ 
+ Buffer *
+@@ -8074,7 +8078,8 @@ _MoveFile(char *path1, char *path2)
+     FILE *f2;
+     int is_pipe;
+     clen_t linelen = 0, trbyte = 0;
+-    Str buf;
++    char *buf = NULL;
++    int count;
+ 
+     f1 = openIS(path1);
+     if (f1 == NULL)
+@@ -8092,12 +8097,13 @@ _MoveFile(char *path1, char *path2)
+ 	return -1;
+     }
+     current_content_length = 0;
+-    buf = Strnew_size(SAVE_BUF_SIZE);
+-    while (ISread(f1, buf, SAVE_BUF_SIZE)) {
+-	Strfputs(buf, f2);
+-	linelen += buf->length;
++    buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
++    while ((count = ISread_n(f1, buf, SAVE_BUF_SIZE)) > 0) {
++	fwrite(buf, 1, count, f2);
++	linelen += count;
+ 	showProgress(&linelen, &trbyte);
+     }
++    xfree(buf);
+     ISclose(f1);
+     if (is_pipe)
+ 	pclose(f2);
+@@ -8456,21 +8462,23 @@ uncompress_stream(URLFile *uf, char **src)
+ 	}
+ 	if (pid2 == 0) {
+ 	    /* child2 */
+-	    Str buf = Strnew_size(SAVE_BUF_SIZE);
++	    char *buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
++	    int count;
+ 	    FILE *f = NULL;
+ 
+ 	    setup_child(TRUE, 2, UFfileno(uf));
+ 	    if (tmpf)
+ 		f = fopen(tmpf, "wb");
+-	    while (UFread(uf, buf, SAVE_BUF_SIZE)) {
+-		if (Strfputs(buf, stdout) < 0)
++	    while ((count = ISread_n(uf->stream, buf, SAVE_BUF_SIZE)) > 0) {
++		if (fwrite(buf, 1, count, stdout) != count)
++		    break;
++		if (f && fwrite(buf, 1, count, f) != count)
+ 		    break;
+-		if (f)
+-		    Strfputs(buf, f);
+ 	    }
+ 	    UFclose(uf);
+ 	    if (f)
+ 		fclose(f);
++	    xfree(buf);
+ 	    exit(0);
+ 	}
+ 	/* child1 */
+diff --git a/fm.h b/fm.h
+index acdab46..2216b06 100644
+--- a/fm.h
++++ b/fm.h
+@@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
+ #include "textlist.h"
+ #include "funcname1.h"
+ #include "terms.h"
++#include "istream.h"
+ 
+ #ifndef HAVE_BCOPY
+ void bcopy(const void *, void *, int);
+@@ -288,8 +289,6 @@ extern int REV_LB[];
+ #define inputFilenameHist(p,d,h)	inputLineHist(p,d,IN_FILENAME,h)
+ #define inputChar(p)		inputLine(p,"",IN_CHAR)
+ 
+-#define free(x)  GC_free(x)	/* let GC do it. */
+-
+ #ifdef __EMX__
+ #define HAVE_STRCASECMP
+ #define strcasecmp	stricmp
+@@ -895,6 +894,9 @@ global char *index_file init(NULL);
+ 
+ global char *CurrentDir;
+ global int CurrentPid;
++#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
++global char *MyProgramName init("w3m");
++#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+ /*
+  * global Buffer *Currentbuf;
+  * global Buffer *Firstbuf;
+diff --git a/html.h b/html.h
+index 4a2827b..b4b3df9 100644
+--- a/html.h
++++ b/html.h
+@@ -1,19 +1,17 @@
+ /* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
+ #ifndef _HTML_H
+ #define _HTML_H
++#include "config.h"
+ #ifdef USE_SSL
+ #include <openssl/bio.h>
+ #include <openssl/x509.h>
+ #include <openssl/ssl.h>
+ #endif				/* USE_SSL */
+ 
+-#include "istream.h"
+-
+ #define StrUFgets(f) StrISgets((f)->stream)
+ #define StrmyUFgets(f) StrmyISgets((f)->stream)
+ #define UFgetc(f) ISgetc((f)->stream)
+ #define UFundogetc(f) ISundogetc((f)->stream)
+-#define UFread(f,buf,len) ISread((f)->stream,buf,len)
+ #define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
+ #define UFfileno(f) ISfileno((f)->stream)
+ 
+@@ -62,11 +60,12 @@ typedef struct _ParsedURL {
+     int is_nocache;
+ } ParsedURL;
+ 
++union input_stream;
+ typedef struct {
+     unsigned char scheme;
+     char is_cgi;
+     char encoding;
+-    InputStream stream;
++    union input_stream *stream;
+     char *ext;
+     int compression;
+     int content_encoding;
+diff --git a/image.c b/image.c
+index 5f5991a..9d0e9b5 100644
+--- a/image.c
++++ b/image.c
+@@ -90,17 +90,18 @@ termImage()
+ static int
+ openImgdisplay()
+ {
++    char *cmd;
++
++    if (!strchr(Imgdisplay, '/'))
++	cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
++    else
++	cmd = Imgdisplay;
+     Imgdisplay_pid = open_pipe_rw(&Imgdisplay_rf, &Imgdisplay_wf);
+     if (Imgdisplay_pid < 0)
+ 	goto err0;
+     if (Imgdisplay_pid == 0) {
+ 	/* child */
+-	char *cmd;
+ 	setup_child(FALSE, 2, -1);
+-	if (!strchr(Imgdisplay, '/'))
+-	    cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
+-	else
+-	    cmd = Imgdisplay;
+ 	myExec(cmd);
+ 	/* XXX: ifdef __EMX__, use start /f ? */
+     }
+@@ -333,6 +334,9 @@ loadImage(Buffer *buf, int flag)
+     struct stat st;
+     int i, draw = FALSE;
+     /* int wait_st; */
++#ifdef DONT_CALL_GC_AFTER_FORK
++    char *loadargs[7];
++#endif
+ 
+     if (maxLoadImage > MAX_LOAD_IMAGE)
+ 	maxLoadImage = MAX_LOAD_IMAGE;
+@@ -433,6 +437,24 @@ loadImage(Buffer *buf, int flag)
+ 	image_cache[i] = cache;
+ 
+ 	flush_tty();
++#ifdef DONT_CALL_GC_AFTER_FORK
++	loadargs[0] = MyProgramName;
++	loadargs[1] = "-$$getimage";
++	loadargs[2] = conv_to_system(cache->url);
++	loadargs[3] = conv_to_system(parsedURL2Str(cache->current)->ptr);
++	loadargs[4] = cache->file;
++	loadargs[5] = cache->touch;
++	loadargs[6] = NULL;
++	if ((cache->pid = fork()) == 0) {
++	    setup_child(FALSE, 0, -1);
++	    execvp(MyProgramName, loadargs);
++	    exit(1);
++	}
++	else if (cache->pid < 0) {
++	    cache->pid = 0;
++	    return;
++	}
++#else /* !DONT_CALL_GC_AFTER_FORK */
+ 	if ((cache->pid = fork()) == 0) {
+ 	    Buffer *b;
+ 	    /*
+@@ -458,6 +480,7 @@ loadImage(Buffer *buf, int flag)
+ 	    cache->pid = 0;
+ 	    return;
+ 	}
++#endif /* !DONT_CALL_GC_AFTER_FORK */
+     }
+ }
+ 
+diff --git a/indep.c b/indep.c
+index 89e86c1..5c5de06 100644
+--- a/indep.c
++++ b/indep.c
+@@ -721,6 +721,111 @@ shell_quote(char *str)
+     return str;
+ }
+ 
++void *
++xrealloc(void *ptr, size_t size)
++{
++    void *newptr = realloc(ptr, size);
++    if (newptr == NULL) {
++	fprintf(stderr, "Out of memory\n");
++	exit(-1);
++    }
++    return newptr;
++}
++
++/* Define this as a separate function in case the free() has
++ * an incompatible prototype. */
++void
++xfree(void *ptr)
++{
++    free(ptr);
++}
++
++void *
++w3m_GC_realloc_atomic(void *ptr, size_t size)
++{
++    return ptr ? GC_REALLOC(ptr, size) : GC_MALLOC_ATOMIC(size);
++}
++
++void
++w3m_GC_free(void *ptr)
++{
++    GC_FREE(ptr);
++}
++
++void
++growbuf_init(struct growbuf *gb)
++{
++    gb->ptr = NULL;
++    gb->length = 0;
++    gb->area_size = 0;
++    gb->realloc_proc = &w3m_GC_realloc_atomic;
++    gb->free_proc = &w3m_GC_free;
++}
++
++void
++growbuf_init_without_GC(struct growbuf *gb)
++{
++    gb->ptr = NULL;
++    gb->length = 0;
++    gb->area_size = 0;
++    gb->realloc_proc = &xrealloc;
++    gb->free_proc = &xfree;
++}
++
++void
++growbuf_clear(struct growbuf *gb)
++{
++    (*gb->free_proc) (gb->ptr);
++    gb->ptr = NULL;
++    gb->length = 0;
++    gb->area_size = 0;
++}
++
++Str
++growbuf_to_Str(struct growbuf *gb)
++{
++    Str s;
++
++    if (gb->free_proc == &w3m_GC_free) {
++	growbuf_reserve(gb, gb->length + 1);
++	gb->ptr[gb->length] = '\0';
++	s = New(struct _Str);
++	s->ptr = gb->ptr;
++	s->length = gb->length;
++	s->area_size = gb->area_size;
++    } else {
++	s = Strnew_charp_n(gb->ptr, gb->length);
++	(*gb->free_proc) (gb->ptr);
++    }
++    gb->ptr = NULL;
++    gb->length = 0;
++    gb->area_size = 0;
++    return s;
++}
++
++void
++growbuf_reserve(struct growbuf *gb, int leastarea)
++{
++    int newarea;
++
++    if (gb->area_size < leastarea) {
++	newarea = gb->area_size * 3 / 2;
++	if (newarea < leastarea)
++	    newarea = leastarea;
++	newarea += 16;
++	gb->ptr = (*gb->realloc_proc) (gb->ptr, newarea);
++	gb->area_size = newarea;
++    }
++}
++
++void
++growbuf_append(struct growbuf *gb, const char *src, int len)
++{
++    growbuf_reserve(gb, gb->length + len);
++    memcpy(&gb->ptr[gb->length], src, len);
++    gb->length += len;
++}
++
+ static char *
+ w3m_dir(const char *name, char *dft)
+ {
+diff --git a/indep.h b/indep.h
+index cf566fe..84416ed 100644
+--- a/indep.h
++++ b/indep.h
+@@ -12,6 +12,14 @@
+ #define FALSE 0
+ #endif				/* FALSE */
+ 
++struct growbuf {
++    char *ptr;
++    int length;
++    int area_size;
++    void *(*realloc_proc) (void *, size_t);
++    void (*free_proc) (void *);
++};
++
+ #define RAW_MODE	0
+ #define PAGER_MODE	1
+ #define HTML_MODE	2
+@@ -65,6 +73,18 @@ extern Str Str_url_unquote(Str x, int is_form, int safe);
+ extern Str Str_form_quote(Str x);
+ #define Str_form_unquote(x) Str_url_unquote((x), TRUE, FALSE)
+ extern char *shell_quote(char *str);
++#define xmalloc(s) xrealloc(NULL, s)
++extern void *xrealloc(void *ptr, size_t size);
++extern void xfree(void *ptr);
++extern void *w3m_GC_realloc_atomic(void *ptr, size_t size);
++extern void w3m_GC_free(void *ptr);
++extern void growbuf_init(struct growbuf *gb);
++extern void growbuf_init_without_GC(struct growbuf *gb);
++extern void growbuf_clear(struct growbuf *gb);
++extern Str growbuf_to_Str(struct growbuf *gb);
++extern void growbuf_reserve(struct growbuf *gb, int leastarea);
++extern void growbuf_append(struct growbuf *gb, const char *src, int len);
++#define GROWBUF_ADD_CHAR(gb,ch) ((((gb)->length>=(gb)->area_size)?growbuf_reserve(gb,(gb)->length+1):(void)0),(void)((gb)->ptr[(gb)->length++] = (ch)))
+ 
+ extern char *w3m_auxbin_dir();
+ extern char *w3m_lib_dir();
+@@ -77,5 +97,8 @@ extern char *w3m_help_dir();
+ #define New_N(type,n)	((type*)GC_MALLOC((n)*sizeof(type)))
+ #define NewAtom_N(type,n)	((type*)GC_MALLOC_ATOMIC((n)*sizeof(type)))
+ #define New_Reuse(type,ptr,n)   ((type*)GC_REALLOC((ptr),(n)*sizeof(type)))
++#define NewWithoutGC(type)	((type*)xmalloc(sizeof(type)))
++#define NewWithoutGC_N(type,n)	((type*)xmalloc((n)*sizeof(type)))
++#define NewWithoutGC_Reuse(type,ptr,n)	((type*)xrealloc(ptr,(n)*sizeof(type)))
+ 
+ #endif				/* INDEP_H */
+diff --git a/istream.c b/istream.c
+index d8c8e45..3126142 100644
+--- a/istream.c
++++ b/istream.c
+@@ -35,12 +35,14 @@ static int ssl_read(struct ssl_handle *handle, char *buf, int len);
+ static int ens_read(struct ens_handle *handle, char *buf, int len);
+ static void ens_close(struct ens_handle *handle);
+ 
++static void memchop(char *p, int *len);
++
+ static void
+ do_update(BaseStream base)
+ {
+     int len;
+     base->stream.cur = base->stream.next = 0;
+-    len = base->read(base->handle, base->stream.buf, base->stream.size);
++    len = (*base->read) (base->handle, base->stream.buf, base->stream.size);
+     if (len <= 0)
+ 	base->iseos = TRUE;
+     else
+@@ -66,12 +68,12 @@ init_buffer(BaseStream base, char *buf, int bufsize)
+     StreamBuffer sb = &base->stream;
+     sb->size = bufsize;
+     sb->cur = 0;
++    sb->buf = NewWithoutGC_N(uchar, bufsize);
+     if (buf) {
+-	sb->buf = (uchar *) buf;
++	memcpy(sb->buf, buf, bufsize);
+ 	sb->next = bufsize;
+     }
+     else {
+-	sb->buf = NewAtom_N(uchar, bufsize);
+ 	sb->next = 0;
+     }
+     base->iseos = FALSE;
+@@ -95,10 +97,10 @@ newInputStream(int des)
+     InputStream stream;
+     if (des < 0)
+ 	return NULL;
+-    stream = New(union input_stream);
++    stream = NewWithoutGC(union input_stream);
+     init_base_stream(&stream->base, STREAM_BUF_SIZE);
+     stream->base.type = IST_BASIC;
+-    stream->base.handle = New(int);
++    stream->base.handle = NewWithoutGC(int);
+     *(int *)stream->base.handle = des;
+     stream->base.read = (int (*)())basic_read;
+     stream->base.close = (void (*)())basic_close;
+@@ -111,10 +113,10 @@ newFileStream(FILE * f, void (*closep) ())
+     InputStream stream;
+     if (f == NULL)
+ 	return NULL;
+-    stream = New(union input_stream);
++    stream = NewWithoutGC(union input_stream);
+     init_base_stream(&stream->base, STREAM_BUF_SIZE);
+     stream->file.type = IST_FILE;
+-    stream->file.handle = New(struct io_file_handle);
++    stream->file.handle = NewWithoutGC(struct io_file_handle);
+     stream->file.handle->f = f;
+     if (closep)
+ 	stream->file.handle->close = closep;
+@@ -131,10 +133,10 @@ newStrStream(Str s)
+     InputStream stream;
+     if (s == NULL)
+ 	return NULL;
+-    stream = New(union input_stream);
++    stream = NewWithoutGC(union input_stream);
+     init_str_stream(&stream->base, s);
+     stream->str.type = IST_STR;
+-    stream->str.handle = s;
++    stream->str.handle = NULL;
+     stream->str.read = (int (*)())str_read;
+     stream->str.close = NULL;
+     return stream;
+@@ -147,10 +149,10 @@ newSSLStream(SSL * ssl, int sock)
+     InputStream stream;
+     if (sock < 0)
+ 	return NULL;
+-    stream = New(union input_stream);
++    stream = NewWithoutGC(union input_stream);
+     init_base_stream(&stream->base, SSL_BUF_SIZE);
+     stream->ssl.type = IST_SSL;
+-    stream->ssl.handle = New(struct ssl_handle);
++    stream->ssl.handle = NewWithoutGC(struct ssl_handle);
+     stream->ssl.handle->ssl = ssl;
+     stream->ssl.handle->sock = sock;
+     stream->ssl.read = (int (*)())ssl_read;
+@@ -166,14 +168,14 @@ newEncodedStream(InputStream is, char encoding)
+     if (is == NULL || (encoding != ENC_QUOTE && encoding != ENC_BASE64 &&
+ 		       encoding != ENC_UUENCODE))
+ 	return is;
+-    stream = New(union input_stream);
++    stream = NewWithoutGC(union input_stream);
+     init_base_stream(&stream->base, STREAM_BUF_SIZE);
+     stream->ens.type = IST_ENCODED;
+-    stream->ens.handle = New(struct ens_handle);
++    stream->ens.handle = NewWithoutGC(struct ens_handle);
+     stream->ens.handle->is = is;
+     stream->ens.handle->pos = 0;
+     stream->ens.handle->encoding = encoding;
+-    stream->ens.handle->s = NULL;
++    growbuf_init_without_GC(&stream->ens.handle->gb);
+     stream->ens.read = (int (*)())ens_read;
+     stream->ens.close = (void (*)())ens_close;
+     return stream;
+@@ -187,8 +189,10 @@ ISclose(InputStream stream)
+ 	stream->base.type & IST_UNCLOSE)
+ 	return -1;
+     prevtrap = mySignal(SIGINT, SIG_IGN);
+-    stream->base.close(stream->base.handle);
++    stream->base.close (stream->base.handle);
+     mySignal(SIGINT, prevtrap);
++    xfree(stream->base.stream.buf);
++    xfree(stream);
+     return 0;
+ }
+ 
+@@ -218,122 +222,97 @@ ISundogetc(InputStream stream)
+     return -1;
+ }
+ 
+-#define MARGIN_STR_SIZE 10
+ Str
+-StrISgets(InputStream stream)
++StrISgets2(InputStream stream, char crnl)
+ {
+-    BaseStream base;
+-    StreamBuffer sb;
+-    Str s = NULL;
+-    uchar *p;
+-    int len;
++    struct growbuf gb;
+ 
+     if (stream == NULL)
+-	return '\0';
+-    base = &stream->base;
+-    sb = &base->stream;
+-
+-    while (!base->iseos) {
+-	if (MUST_BE_UPDATED(base)) {
+-	    do_update(base);
+-	}
+-	else {
+-	    if ((p = memchr(&sb->buf[sb->cur], '\n', sb->next - sb->cur))) {
+-		len = p - &sb->buf[sb->cur] + 1;
+-		if (s == NULL)
+-		    s = Strnew_size(len);
+-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], len);
+-		sb->cur += len;
+-		return s;
+-	    }
+-	    else {
+-		if (s == NULL)
+-		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
+-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
+-			       sb->next - sb->cur);
+-		sb->cur = sb->next;
+-	    }
+-	}
+-    }
+-
+-    if (s == NULL)
+-	return Strnew();
+-    return s;
++	return NULL;
++    growbuf_init(&gb);
++    ISgets_to_growbuf(stream, &gb, crnl);
++    return growbuf_to_Str(&gb);
+ }
+ 
+-Str
+-StrmyISgets(InputStream stream)
++void
++ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl)
+ {
+-    BaseStream base;
+-    StreamBuffer sb;
+-    Str s = NULL;
+-    int i, len;
++    BaseStream base = &stream->base;
++    StreamBuffer sb = &base->stream;
++    int i;
+ 
+-    if (stream == NULL)
+-	return '\0';
+-    base = &stream->base;
+-    sb = &base->stream;
++    gb->length = 0;
+ 
+     while (!base->iseos) {
+ 	if (MUST_BE_UPDATED(base)) {
+ 	    do_update(base);
++	    continue;
+ 	}
+-	else {
+-	    if (s && Strlastchar(s) == '\r') {
+-		if (sb->buf[sb->cur] == '\n')
+-		    Strcat_char(s, (char)sb->buf[sb->cur++]);
+-		return s;
++	if (crnl && gb->length > 0  && gb->ptr[gb->length - 1] == '\r') {
++	    if (sb->buf[sb->cur] == '\n') {
++		GROWBUF_ADD_CHAR(gb, '\n');
++		++sb->cur;
+ 	    }
+-	    for (i = sb->cur;
+-		 i < sb->next && sb->buf[i] != '\n' && sb->buf[i] != '\r';
+-		 i++) ;
+-	    if (i < sb->next) {
+-		len = i - sb->cur + 1;
+-		if (s == NULL)
+-		    s = Strnew_size(len + MARGIN_STR_SIZE);
+-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], len);
+-		sb->cur = i + 1;
+-		if (sb->buf[i] == '\n')
+-		    return s;
+-	    }
+-	    else {
+-		if (s == NULL)
+-		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
+-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
+-			       sb->next - sb->cur);
+-		sb->cur = sb->next;
++	    break;
++	}
++	for (i = sb->cur; i < sb->next; ++i) {
++	    if (sb->buf[i] == '\n' || (crnl && sb->buf[i] == '\r')) {
++		++i;
++		break;
+ 	    }
+ 	}
++	growbuf_append(gb, &sb->buf[sb->cur], i - sb->cur);
++	sb->cur = i;
++	if (gb->length > 0 && gb->ptr[gb->length - 1] == '\n')
++	    break;
+     }
+ 
+-    if (s == NULL)
+-	return Strnew();
+-    return s;
++    growbuf_reserve(gb, gb->length + 1);
++    gb->ptr[gb->length] = '\0';
++    return;
+ }
+ 
++#ifdef unused
+ int
+ ISread(InputStream stream, Str buf, int count)
+ {
+-    int rest, len;
++    int len;
++
++    if (count + 1 > buf->area_size) {
++	char *newptr = GC_MALLOC_ATOMIC(count + 1);
++	memcpy(newptr, buf->ptr, buf->length);
++	newptr[buf->length] = '\0';
++	buf->ptr = newptr;
++	buf->area_size = count + 1;
++    }
++    len = ISread_n(stream, buf->ptr, count);
++    buf->length = (len > 0) ? len : 0;
++    buf->ptr[buf->length] = '\0';
++    return (len > 0) ? 1 : 0;
++}
++#endif
++
++int
++ISread_n(InputStream stream, char *dst, int count)
++{
++    int len, l;
+     BaseStream base;
+ 
+-    if (stream == NULL || (base = &stream->base)->iseos)
++    if (stream == NULL || count <= 0)
++	return -1;
++    if ((base = &stream->base)->iseos)
+ 	return 0;
+ 
+-    len = buffer_read(&base->stream, buf->ptr, count);
+-    rest = count - len;
++    len = buffer_read(&base->stream, dst, count);
+     if (MUST_BE_UPDATED(base)) {
+-	len = base->read(base->handle, &buf->ptr[len], rest);
+-	if (len <= 0) {
++	l = (*base->read) (base->handle, &dst[len], count - len);
++	if (l <= 0) {
+ 	    base->iseos = TRUE;
+-	    len = 0;
++	} else {
++	    len += l;
+ 	}
+-	rest -= len;
+     }
+-    Strtruncate(buf, count - rest);
+-    if (buf->length > 0)
+-	return 1;
+-    return 0;
++    return len;
+ }
+ 
+ int
+@@ -645,6 +624,7 @@ basic_close(int *handle)
+ #else
+     close(*(int *)handle);
+ #endif
++    xfree(handle);
+ }
+ 
+ static int
+@@ -661,6 +641,7 @@ static void
+ file_close(struct io_file_handle *handle)
+ {
+     handle->close(handle->f);
++    xfree(handle);
+ }
+ 
+ static int
+@@ -682,6 +663,7 @@ ssl_close(struct ssl_handle *handle)
+     close(handle->sock);
+     if (handle->ssl)
+ 	SSL_free(handle->ssl);
++    xfree(handle);
+ }
+ 
+ static int
+@@ -717,38 +699,60 @@ static void
+ ens_close(struct ens_handle *handle)
+ {
+     ISclose(handle->is);
++    growbuf_clear(&handle->gb);
++    xfree(handle);
+ }
+ 
+ static int
+ ens_read(struct ens_handle *handle, char *buf, int len)
+ {
+-    if (handle->s == NULL || handle->pos == handle->s->length) {
++    if (handle->pos == handle->gb.length) {
+ 	char *p;
+-	handle->s = StrmyISgets(handle->is);
+-	if (handle->s->length == 0)
++	struct growbuf gbtmp;
++
++	ISgets_to_growbuf(handle->is, &handle->gb, TRUE);
++	if (handle->gb.length == 0)
+ 	    return 0;
+-	cleanup_line(handle->s, PAGER_MODE);
+ 	if (handle->encoding == ENC_BASE64)
+-	    Strchop(handle->s);
++	    memchop(handle->gb.ptr, &handle->gb.length);
+ 	else if (handle->encoding == ENC_UUENCODE) {
+-	    if (!strncmp(handle->s->ptr, "begin", 5))
+-		handle->s = StrmyISgets(handle->is);
+-	    Strchop(handle->s);
++	    if (handle->gb.length >= 5 &&
++		!strncmp(handle->gb.ptr, "begin", 5))
++		ISgets_to_growbuf(handle->is, &handle->gb, TRUE);
++	    memchop(handle->gb.ptr, &handle->gb.length);
+ 	}
+-	p = handle->s->ptr;
++	growbuf_init_without_GC(&gbtmp);
++	p = handle->gb.ptr;
+ 	if (handle->encoding == ENC_QUOTE)
+-	    handle->s = decodeQP(&p);
++	    decodeQP_to_growbuf(&gbtmp, &p);
+ 	else if (handle->encoding == ENC_BASE64)
+-	    handle->s = decodeB(&p);
++	    decodeB_to_growbuf(&gbtmp, &p);
+ 	else if (handle->encoding == ENC_UUENCODE)
+-	    handle->s = decodeU(&p);
++	    decodeU_to_growbuf(&gbtmp, &p);
++	growbuf_clear(&handle->gb);
++	handle->gb = gbtmp;
+ 	handle->pos = 0;
+     }
+ 
+-    if (len > handle->s->length - handle->pos)
+-	len = handle->s->length - handle->pos;
++    if (len > handle->gb.length - handle->pos)
++	len = handle->gb.length - handle->pos;
+ 
+-    bcopy(&handle->s->ptr[handle->pos], buf, len);
++    memcpy(buf, &handle->gb.ptr[handle->pos], len);
+     handle->pos += len;
+     return len;
+ }
++
++static void
++memchop(char *p, int *len)
++{
++    char *q;
++
++    for (q = p + *len; q > p; --q) {
++	if (q[-1] != '\n' && q[-1] != '\r')
++	    break;
++    }
++    if (q != p + *len)
++	*q = '\0';
++    *len = q - p;
++    return;
++}
+diff --git a/istream.h b/istream.h
+index e710e78..5a04be0 100644
+--- a/istream.h
++++ b/istream.h
+@@ -2,13 +2,13 @@
+ #ifndef IO_STREAM_H
+ #define IO_STREAM_H
+ 
++#include "indep.h"
+ #include <stdio.h>
+ #ifdef USE_SSL
+ #include <openssl/bio.h>
+ #include <openssl/x509.h>
+ #include <openssl/ssl.h>
+ #endif
+-#include "Str.h"
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
+@@ -36,7 +36,7 @@ union input_stream;
+ 
+ struct ens_handle {
+     union input_stream *is;
+-    Str s;
++    struct growbuf gb;
+     int pos;
+     char encoding;
+ };
+@@ -119,9 +119,14 @@ extern InputStream newEncodedStream(InputStream is, char encoding);
+ extern int ISclose(InputStream stream);
+ extern int ISgetc(InputStream stream);
+ extern int ISundogetc(InputStream stream);
+-extern Str StrISgets(InputStream stream);
+-extern Str StrmyISgets(InputStream stream);
++extern Str StrISgets2(InputStream stream, char crnl);
++#define StrISgets(stream) StrISgets2(stream, FALSE)
++#define StrmyISgets(stream) StrISgets2(stream, TRUE)
++void ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl);
++#ifdef unused
+ extern int ISread(InputStream stream, Str buf, int count);
++#endif
++int ISread_n(InputStream stream, char *dst, int bufsize);
+ extern int ISfileno(InputStream stream);
+ extern int ISeos(InputStream stream);
+ #ifdef USE_SSL
+diff --git a/local.c b/local.c
+index f5a73a2..959bd66 100644
+--- a/local.c
++++ b/local.c
+@@ -359,6 +359,10 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+     int status;
+     pid_t pid;
+     char *file = uri, *name = uri, *path_info = NULL, *tmpf = NULL;
++#ifdef HAVE_CHDIR
++    char *cgi_dir;
++#endif
++    char *cgi_basename;
+ 
+ #ifdef __MINGW32_VERSION
+     return NULL;
+@@ -373,7 +377,14 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+ 	if (!fw)
+ 	    return NULL;
+     }
++    if (qstr)
++	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
++#ifdef HAVE_CHDIR
++    cgi_dir = mydirname(file);
++#endif
++    cgi_basename = mybasename(file);
+     pid = open_pipe_rw(&fr, NULL);
++    /* Don't invoke gc after here, or the program might crash in some platforms */
+     if (pid < 0)
+ 	return NULL;
+     else if (pid) {
+@@ -383,8 +394,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+     }
+     setup_child(TRUE, 2, fw ? fileno(fw) : -1);
+ 
+-    if (qstr)
+-	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
+     set_cgi_environ(name, file, uri);
+     if (path_info)
+ 	set_environ("PATH_INFO", path_info);
+@@ -415,11 +424,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+     }
+ 
+ #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
+-    chdir(mydirname(file));
++    chdir(cgi_dir);
+ #endif
+-    execl(file, mybasename(file), NULL);
++    execl(file, cgi_basename, NULL);
+     fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
+-	    file, mybasename(file), strerror(errno));
++	    file, cgi_basename, strerror(errno));
+     exit(1);
+     return NULL;
+ #endif
+diff --git a/main.c b/main.c
+index c49985d..ec77085 100644
+--- a/main.c
++++ b/main.c
+@@ -11,6 +11,9 @@
+ #include <sys/wait.h>
+ #endif
+ #include <time.h>
++#if defined(__CYGWIN__) && defined(USE_BINMODE_STREAM)
++#include <io.h>
++#endif
+ #include "terms.h"
+ #include "myctype.h"
+ #include "regex.h"
+@@ -407,6 +410,10 @@ main(int argc, char **argv, char **envp)
+     wc_ces CodePage;
+ #endif
+ #endif
++#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
++    char **getimage_args = NULL;
++#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
++
+     GC_INIT();
+ #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
+     setlocale(LC_ALL, "");
+@@ -428,6 +435,10 @@ main(int argc, char **argv, char **envp)
+ 
+     CurrentDir = currentdir();
+     CurrentPid = (int)getpid();
++#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
++    if (argv[0] && *argv[0])
++	MyProgramName = argv[0];
++#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+     BookmarkFile = NULL;
+     config_file = NULL;
+ 
+@@ -751,6 +762,15 @@ main(int argc, char **argv, char **envp)
+ 	    else if (!strcmp("-reqlog",argv[i])) {
+ 		w3m_reqlog=rcFile("request.log");
+ 	    }
++#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
++	    else if (!strcmp("-$$getimage", argv[i])) {
++		++i;
++		getimage_args = argv + i;
++		i += 4;
++		if (i > argc)
++		    usage();
++	    }
++#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+ 	    else {
+ 		usage();
+ 	    }
+@@ -839,6 +859,30 @@ main(int argc, char **argv, char **envp)
+ 
+     if (w3m_backend)
+ 	backend();
++#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
++    if (getimage_args) {
++	char *image_url = conv_from_system(getimage_args[0]);
++	char *base_url = conv_from_system(getimage_args[1]);
++	ParsedURL base_pu;
++	
++	parseURL2(base_url, &base_pu, NULL);
++	image_source = getimage_args[2];
++	newbuf = loadGeneralFile(image_url, &base_pu, NULL, 0, NULL);
++	if (!newbuf || !newbuf->real_type ||
++	    strncasecmp(newbuf->real_type, "image/", 6))
++	    unlink(getimage_args[2]);
++#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
++	symlink(getimage_args[2], getimage_args[3]);
++#else
++	{
++	    FILE *f = fopen(getimage_args[3], "w");
++	    if (f)
++		fclose(f);
++	}
++#endif
++	w3m_exit(0);
++    }
++#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+ 
+     if (w3m_dump)
+ 	mySignal(SIGINT, SIG_IGN);
+diff --git a/mimehead.c b/mimehead.c
+index 78997e0..d16270c 100644
+--- a/mimehead.c
++++ b/mimehead.c
+@@ -64,12 +64,22 @@ ha2d(char x, char y)
+ Str
+ decodeB(char **ww)
+ {
++    struct growbuf gb;
++
++    growbuf_init(&gb);
++    decodeB_to_growbuf(&gb, ww);
++    return growbuf_to_Str(&gb);
++}
++
++void
++decodeB_to_growbuf(struct growbuf *gb, char **ww)
++{
+     unsigned char c[4];
+     char *wp = *ww;
+     char d[3];
+     int i, n_pad;
+-    Str ap = Strnew_size(strlen(wp));
+ 
++    growbuf_reserve(gb, strlen(wp) + 1);
+     n_pad = 0;
+     while (1) {
+ 	for (i = 0; i < 4; i++) {
+@@ -93,39 +103,50 @@ decodeB(char **ww)
+ 	for (i = 0; i < 4; i++) {
+ 	    c[i] = c2e(c[i]);
+ 	    if (c[i] == BAD_BASE64) {
+-		*ww = wp;
+-		return ap;
++		goto last;
+ 	    }
+ 	}
+ 	d[0] = ((c[0] << 2) | (c[1] >> 4));
+ 	d[1] = ((c[1] << 4) | (c[2] >> 2));
+ 	d[2] = ((c[2] << 6) | c[3]);
+ 	for (i = 0; i < 3 - n_pad; i++) {
+-	    Strcat_char(ap, d[i]);
++	    GROWBUF_ADD_CHAR(gb, d[i]);
+ 	}
+ 	if (n_pad || *wp == '\0' || *wp == '?')
+ 	    break;
+     }
++last:
++    growbuf_reserve(gb, gb->length + 1);
++    gb->ptr[gb->length] = '\0';
+     *ww = wp;
+-    return ap;
++    return;
+ }
+ 
+ Str
+ decodeU(char **ww)
+ {
++    struct growbuf gb;
++
++    growbuf_init(&gb);
++    decodeU_to_growbuf(&gb, ww);
++    return growbuf_to_Str(&gb);
++}
++
++void
++decodeU_to_growbuf(struct growbuf *gb, char **ww)
++{
+     unsigned char c1, c2;
+     char *w = *ww;
+     int n, i;
+-    Str a;
+ 
+     if (*w <= 0x20 || *w >= 0x60)
+-	return Strnew_size(0);
++	return;
+     n = *w - 0x20;
+-    a = Strnew_size(n);
++    growbuf_reserve(gb, n + 1);
+     for (w++, i = 2; *w != '\0' && n; n--) {
+ 	c1 = (w[0] - 0x20) % 0x40;
+ 	c2 = (w[1] - 0x20) % 0x40;
+-	Strcat_char(a, (c1 << i) | (c2 >> (6 - i)));
++	gb->ptr[gb->length++] = (c1 << i) | (c2 >> (6 - i));
+ 	if (i == 6) {
+ 	    w += 2;
+ 	    i = 2;
+@@ -135,7 +156,8 @@ decodeU(char **ww)
+ 	    i += 2;
+ 	}
+     }
+-    return a;
++    gb->ptr[gb->length] = '\0';
++    return;
+ }
+ 
+ /* RFC2047 (4.2. The "Q" encoding) */
+@@ -165,9 +187,19 @@ decodeQ(char **ww)
+ Str
+ decodeQP(char **ww)
+ {
++    struct growbuf gb;
++
++    growbuf_init(&gb);
++    decodeQP_to_growbuf(&gb, ww);
++    return growbuf_to_Str(&gb);
++}
++
++void
++decodeQP_to_growbuf(struct growbuf *gb, char **ww)
++{
+     char *w = *ww;
+-    Str a = Strnew_size(strlen(w));
+ 
++    growbuf_reserve(gb, strlen(w) + 1);
+     for (; *w != '\0'; w++) {
+ 	if (*w == '=') {
+ 	    w++;
+@@ -180,15 +212,16 @@ decodeQP(char **ww)
+ 	    else {
+ 		if (*w == '\0' || *(w + 1) == '\0')
+ 		    break;
+-		Strcat_char(a, ha2d(*w, *(w + 1)));
++		gb->ptr[gb->length++] = ha2d(*w, *(w + 1));
+ 		w++;
+ 	    }
+ 	}
+ 	else
+-	    Strcat_char(a, *w);
++	    gb->ptr[gb->length++] = *w;
+     }
++    gb->ptr[gb->length] = '\0';
+     *ww = w;
+-    return a;
++    return;
+ }
+ 
+ #ifdef USE_M17N
+diff --git a/proto.h b/proto.h
+index 7248ee5..0d8beb5 100644
+--- a/proto.h
++++ b/proto.h
+@@ -607,9 +607,12 @@ extern char *getAnchorText(Buffer *buf, AnchorList *al, Anchor *a);
+ extern Buffer *link_list_panel(Buffer *buf);
+ 
+ extern Str decodeB(char **ww);
++extern void decodeB_to_growbuf(struct growbuf *gb, char **ww);
+ extern Str decodeQ(char **ww);
+ extern Str decodeQP(char **ww);
++extern void decodeQP_to_growbuf(struct growbuf *gb, char **ww);
+ extern Str decodeU(char **ww);
++extern void decodeU_to_growbuf(struct growbuf *gb, char **ww);
+ #ifdef USE_M17N
+ extern Str decodeWord(char **ow, wc_ces * charset);
+ extern Str decodeMIME(Str orgstr, wc_ces * charset);
+@@ -811,5 +814,3 @@ extern void dispVer(void);
+ void srand48(long);
+ long lrand48(void);
+ #endif
+-
+-#include "indep.h"

@@ -23,4 +23,5 @@
 220_maxcol.patch
 230_cygwin-lang.patch
 240_win64gc.patch
+250_schemebug.patch
 900_ChangeLog.patch

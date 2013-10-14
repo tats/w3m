@@ -1,12 +1,12 @@
 Subject: Do not fail when LANG is not set on Cygwin
-From: Tatsuya Kinoshita <tats@debian.org>
+From: Tatsuya Kinoshita <tats@debian.org>, Jarek Czekalski <jarekczek@poczta.onet.pl>
 Bug: https://sourceforge.net/p/w3m/patches/66/
     
     Check whether the value of LC_ALL, LC_CTYPE or LANG is not NULL in
     check_cygwin_console().
 
 diff --git a/terms.c b/terms.c
-index 7a3c987..4bb46c0 100644
+index 7a3c987..399d117 100644
 --- a/terms.c
 +++ b/terms.c
 @@ -222,6 +222,7 @@ static void
@@ -22,9 +22,9 @@ index 7a3c987..4bb46c0 100644
  	    }
  	}
 -	if (strncmp(getenv("LANG"), "ja", 2) == 0) {
-+	if ((ctype = getenv("LC_ALL") ||
-+	     ctype = getenv("LC_CTYPE") ||
-+	     ctype = getenv("LANG")) && strncmp(ctype, "ja", 2) == 0) {
++	if (((ctype = getenv("LC_ALL")) ||
++	     (ctype = getenv("LC_CTYPE")) ||
++	     (ctype = getenv("LANG"))) && strncmp(ctype, "ja", 2) == 0) {
  	    isWinConsole = TERM_CYGWIN_RESERVE_IME;
  	}
  #ifdef SUPPORT_WIN9X_CONSOLE_MBCS

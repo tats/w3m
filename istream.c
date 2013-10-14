@@ -35,12 +35,14 @@ static int ssl_read(struct ssl_handle *handle, char *buf, int len);
 static int ens_read(struct ens_handle *handle, char *buf, int len);
 static void ens_close(struct ens_handle *handle);
 
+static void memchop(char *p, int *len);
+
 static void
 do_update(BaseStream base)
 {
     int len;
     base->stream.cur = base->stream.next = 0;
-    len = base->read(base->handle, base->stream.buf, base->stream.size);
+    len = (*base->read) (base->handle, base->stream.buf, base->stream.size);
     if (len <= 0)
 	base->iseos = TRUE;
     else
@@ -66,12 +68,12 @@ init_buffer(BaseStream base, char *buf, int bufsize)
     StreamBuffer sb = &base->stream;
     sb->size = bufsize;
     sb->cur = 0;
+    sb->buf = NewWithoutGC_N(uchar, bufsize);
     if (buf) {
-	sb->buf = (uchar *) buf;
+	memcpy(sb->buf, buf, bufsize);
 	sb->next = bufsize;
     }
     else {
-	sb->buf = NewAtom_N(uchar, bufsize);
 	sb->next = 0;
     }
     base->iseos = FALSE;
@@ -95,10 +97,10 @@ newInputStream(int des)
     InputStream stream;
     if (des < 0)
 	return NULL;
-    stream = New(union input_stream);
+    stream = NewWithoutGC(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->base.type = IST_BASIC;
-    stream->base.handle = New(int);
+    stream->base.handle = NewWithoutGC(int);
     *(int *)stream->base.handle = des;
     stream->base.read = (int (*)())basic_read;
     stream->base.close = (void (*)())basic_close;
@@ -111,10 +113,10 @@ newFileStream(FILE * f, void (*closep) ())
     InputStream stream;
     if (f == NULL)
 	return NULL;
-    stream = New(union input_stream);
+    stream = NewWithoutGC(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->file.type = IST_FILE;
-    stream->file.handle = New(struct file_handle);
+    stream->file.handle = NewWithoutGC(struct file_handle);
     stream->file.handle->f = f;
     if (closep)
 	stream->file.handle->close = closep;
@@ -131,10 +133,10 @@ newStrStream(Str s)
     InputStream stream;
     if (s == NULL)
 	return NULL;
-    stream = New(union input_stream);
+    stream = NewWithoutGC(union input_stream);
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
-    stream->str.handle = s;
+    stream->str.handle = NULL;
     stream->str.read = (int (*)())str_read;
     stream->str.close = NULL;
     return stream;
@@ -147,10 +149,10 @@ newSSLStream(SSL * ssl, int sock)
     InputStream stream;
     if (sock < 0)
 	return NULL;
-    stream = New(union input_stream);
+    stream = NewWithoutGC(union input_stream);
     init_base_stream(&stream->base, SSL_BUF_SIZE);
     stream->ssl.type = IST_SSL;
-    stream->ssl.handle = New(struct ssl_handle);
+    stream->ssl.handle = NewWithoutGC(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
     stream->ssl.read = (int (*)())ssl_read;
@@ -166,14 +168,14 @@ newEncodedStream(InputStream is, char encoding)
     if (is == NULL || (encoding != ENC_QUOTE && encoding != ENC_BASE64 &&
 		       encoding != ENC_UUENCODE))
 	return is;
-    stream = New(union input_stream);
+    stream = NewWithoutGC(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->ens.type = IST_ENCODED;
-    stream->ens.handle = New(struct ens_handle);
+    stream->ens.handle = NewWithoutGC(struct ens_handle);
     stream->ens.handle->is = is;
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
-    stream->ens.handle->s = NULL;
+    growbuf_init_without_GC(&stream->ens.handle->gb);
     stream->ens.read = (int (*)())ens_read;
     stream->ens.close = (void (*)())ens_close;
     return stream;
@@ -187,8 +189,10 @@ ISclose(InputStream stream)
 	stream->base.type & IST_UNCLOSE)
 	return -1;
     prevtrap = mySignal(SIGINT, SIG_IGN);
-    stream->base.close(stream->base.handle);
+    stream->base.close (stream->base.handle);
     mySignal(SIGINT, prevtrap);
+    xfree(stream->base.stream.buf);
+    xfree(stream);
     return 0;
 }
 
@@ -218,122 +222,97 @@ ISundogetc(InputStream stream)
     return -1;
 }
 
-#define MARGIN_STR_SIZE 10
 Str
-StrISgets(InputStream stream)
+StrISgets2(InputStream stream, char crnl)
 {
-    BaseStream base;
-    StreamBuffer sb;
-    Str s = NULL;
-    uchar *p;
-    int len;
+    struct growbuf gb;
 
     if (stream == NULL)
-	return '\0';
-    base = &stream->base;
-    sb = &base->stream;
+	return NULL;
+    growbuf_init(&gb);
+    ISgets_to_growbuf(stream, &gb, crnl);
+    return growbuf_to_Str(&gb);
+}
+
+void
+ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl)
+{
+    BaseStream base = &stream->base;
+    StreamBuffer sb = &base->stream;
+    int i;
+
+    gb->length = 0;
 
     while (!base->iseos) {
 	if (MUST_BE_UPDATED(base)) {
 	    do_update(base);
+	    continue;
 	}
-	else {
-	    if ((p = memchr(&sb->buf[sb->cur], '\n', sb->next - sb->cur))) {
-		len = p - &sb->buf[sb->cur] + 1;
-		if (s == NULL)
-		    s = Strnew_size(len);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], len);
-		sb->cur += len;
-		return s;
+	if (crnl && gb->length > 0  && gb->ptr[gb->length - 1] == '\r') {
+	    if (sb->buf[sb->cur] == '\n') {
+		GROWBUF_ADD_CHAR(gb, '\n');
+		++sb->cur;
 	    }
-	    else {
-		if (s == NULL)
-		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
-			       sb->next - sb->cur);
-		sb->cur = sb->next;
+	    break;
+	}
+	for (i = sb->cur; i < sb->next; ++i) {
+	    if (sb->buf[i] == '\n' || (crnl && sb->buf[i] == '\r')) {
+		++i;
+		break;
 	    }
 	}
+	growbuf_append(gb, &sb->buf[sb->cur], i - sb->cur);
+	sb->cur = i;
+	if (gb->length > 0 && gb->ptr[gb->length - 1] == '\n')
+	    break;
     }
 
-    if (s == NULL)
-	return Strnew();
-    return s;
+    growbuf_reserve(gb, gb->length + 1);
+    gb->ptr[gb->length] = '\0';
+    return;
 }
 
-Str
-StrmyISgets(InputStream stream)
-{
-    BaseStream base;
-    StreamBuffer sb;
-    Str s = NULL;
-    int i, len;
-
-    if (stream == NULL)
-	return '\0';
-    base = &stream->base;
-    sb = &base->stream;
-
-    while (!base->iseos) {
-	if (MUST_BE_UPDATED(base)) {
-	    do_update(base);
-	}
-	else {
-	    if (s && Strlastchar(s) == '\r') {
-		if (sb->buf[sb->cur] == '\n')
-		    Strcat_char(s, (char)sb->buf[sb->cur++]);
-		return s;
-	    }
-	    for (i = sb->cur;
-		 i < sb->next && sb->buf[i] != '\n' && sb->buf[i] != '\r';
-		 i++) ;
-	    if (i < sb->next) {
-		len = i - sb->cur + 1;
-		if (s == NULL)
-		    s = Strnew_size(len + MARGIN_STR_SIZE);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur], len);
-		sb->cur = i + 1;
-		if (sb->buf[i] == '\n')
-		    return s;
-	    }
-	    else {
-		if (s == NULL)
-		    s = Strnew_size(sb->next - sb->cur + MARGIN_STR_SIZE);
-		Strcat_charp_n(s, (char *)&sb->buf[sb->cur],
-			       sb->next - sb->cur);
-		sb->cur = sb->next;
-	    }
-	}
-    }
-
-    if (s == NULL)
-	return Strnew();
-    return s;
-}
-
+#ifdef unused
 int
 ISread(InputStream stream, Str buf, int count)
 {
-    int rest, len;
+    int len;
+
+    if (count + 1 > buf->area_size) {
+	char *newptr = GC_MALLOC_ATOMIC(count + 1);
+	memcpy(newptr, buf->ptr, buf->length);
+	newptr[buf->length] = '\0';
+	buf->ptr = newptr;
+	buf->area_size = count + 1;
+    }
+    len = ISread_n(stream, buf->ptr, count);
+    buf->length = (len > 0) ? len : 0;
+    buf->ptr[buf->length] = '\0';
+    return (len > 0) ? 1 : 0;
+}
+#endif
+
+int
+ISread_n(InputStream stream, char *dst, int count)
+{
+    int len, l;
     BaseStream base;
 
-    if (stream == NULL || (base = &stream->base)->iseos)
+    if (stream == NULL || count <= 0)
+	return -1;
+    if ((base = &stream->base)->iseos)
 	return 0;
 
-    len = buffer_read(&base->stream, buf->ptr, count);
-    rest = count - len;
+    len = buffer_read(&base->stream, dst, count);
     if (MUST_BE_UPDATED(base)) {
-	len = base->read(base->handle, &buf->ptr[len], rest);
-	if (len <= 0) {
+	l = (*base->read) (base->handle, &dst[len], count - len);
+	if (l <= 0) {
 	    base->iseos = TRUE;
-	    len = 0;
+	} else {
+	    len += l;
 	}
-	rest -= len;
     }
-    Strtruncate(buf, count - rest);
-    if (buf->length > 0)
-	return 1;
-    return 0;
+    return len;
 }
 
 int
@@ -645,6 +624,7 @@ basic_close(int *handle)
 #else
     close(*(int *)handle);
 #endif
+    xfree(handle);
 }
 
 static int
@@ -661,6 +641,7 @@ static void
 file_close(struct file_handle *handle)
 {
     handle->close(handle->f);
+    xfree(handle);
 }
 
 static int
@@ -682,6 +663,7 @@ ssl_close(struct ssl_handle *handle)
     close(handle->sock);
     if (handle->ssl)
 	SSL_free(handle->ssl);
+    xfree(handle);
 }
 
 static int
@@ -717,38 +699,60 @@ static void
 ens_close(struct ens_handle *handle)
 {
     ISclose(handle->is);
+    growbuf_clear(&handle->gb);
+    xfree(handle);
 }
 
 static int
 ens_read(struct ens_handle *handle, char *buf, int len)
 {
-    if (handle->s == NULL || handle->pos == handle->s->length) {
+    if (handle->pos == handle->gb.length) {
 	char *p;
-	handle->s = StrmyISgets(handle->is);
-	if (handle->s->length == 0)
+	struct growbuf gbtmp;
+
+	ISgets_to_growbuf(handle->is, &handle->gb, TRUE);
+	if (handle->gb.length == 0)
 	    return 0;
-	cleanup_line(handle->s, PAGER_MODE);
 	if (handle->encoding == ENC_BASE64)
-	    Strchop(handle->s);
+	    memchop(handle->gb.ptr, &handle->gb.length);
 	else if (handle->encoding == ENC_UUENCODE) {
-	    if (!strncmp(handle->s->ptr, "begin", 5))
-		handle->s = StrmyISgets(handle->is);
-	    Strchop(handle->s);
+	    if (handle->gb.length >= 5 &&
+		!strncmp(handle->gb.ptr, "begin", 5))
+		ISgets_to_growbuf(handle->is, &handle->gb, TRUE);
+	    memchop(handle->gb.ptr, &handle->gb.length);
 	}
-	p = handle->s->ptr;
+	growbuf_init_without_GC(&gbtmp);
+	p = handle->gb.ptr;
 	if (handle->encoding == ENC_QUOTE)
-	    handle->s = decodeQP(&p);
+	    decodeQP_to_growbuf(&gbtmp, &p);
 	else if (handle->encoding == ENC_BASE64)
-	    handle->s = decodeB(&p);
+	    decodeB_to_growbuf(&gbtmp, &p);
 	else if (handle->encoding == ENC_UUENCODE)
-	    handle->s = decodeU(&p);
+	    decodeU_to_growbuf(&gbtmp, &p);
+	growbuf_clear(&handle->gb);
+	handle->gb = gbtmp;
 	handle->pos = 0;
     }
 
-    if (len > handle->s->length - handle->pos)
-	len = handle->s->length - handle->pos;
+    if (len > handle->gb.length - handle->pos)
+	len = handle->gb.length - handle->pos;
 
-    bcopy(&handle->s->ptr[handle->pos], buf, len);
+    memcpy(buf, &handle->gb.ptr[handle->pos], len);
     handle->pos += len;
     return len;
+}
+
+static void
+memchop(char *p, int *len)
+{
+    char *q;
+
+    for (q = p + *len; q > p; --q) {
+	if (q[-1] != '\n' && q[-1] != '\r')
+	    break;
+    }
+    if (q != p + *len)
+	*q = '\0';
+    *len = q - p;
+    return;
 }

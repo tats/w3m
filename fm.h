@@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
 #include "textlist.h"
 #include "funcname1.h"
 #include "terms.h"
+#include "istream.h"
 
 #ifndef HAVE_BCOPY
 void bcopy(const void *, void *, int);
@@ -275,8 +276,6 @@ extern int REV_LB[];
 #define inputFilename(p,d)	inputLine(p,d,IN_FILENAME)
 #define inputFilenameHist(p,d,h)	inputLineHist(p,d,IN_FILENAME,h)
 #define inputChar(p)		inputLine(p,"",IN_CHAR)
-
-#define free(x)  GC_free(x)	/* let GC do it. */
 
 #ifdef __EMX__
 #define HAVE_STRCASECMP
@@ -874,6 +873,9 @@ global char *index_file init(NULL);
 
 global char *CurrentDir;
 global int CurrentPid;
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+global char *MyProgramName init("w3m");
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
 /*
  * global Buffer *Currentbuf;
  * global Buffer *Firstbuf;

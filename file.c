@@ -694,6 +694,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 #endif
 		    init_stream(&f, SCM_LOCAL, newStrStream(src));
 		    loadHTMLstream(&f, newBuf, NULL, TRUE);
+		    UFclose(&f);
 		    for (l = newBuf->lastLine; l && l->real_linenumber;
 			 l = l->prev)
 			l->real_linenumber = 0;
@@ -7096,15 +7097,16 @@ loadHTMLString(Str page)
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     Buffer *newBuf;
 
+    init_stream(&f, SCM_LOCAL, newStrStream(page));
+
     newBuf = newBuffer(INIT_BUFFER_WIDTH);
     if (SETJMP(AbortLoading) != 0) {
 	TRAP_OFF;
 	discardBuffer(newBuf);
+	UFclose(&f);
 	return NULL;
     }
     TRAP_ON;
-
-    init_stream(&f, SCM_LOCAL, newStrStream(page));
 
 #ifdef USE_M17N
     newBuf->document_charset = InnerCharset;
@@ -7115,6 +7117,7 @@ loadHTMLString(Str page)
 #endif
 
     TRAP_OFF;
+    UFclose(&f);
     newBuf->topLine = newBuf->firstLine;
     newBuf->lastLine = newBuf->currentLine;
     newBuf->currentLine = newBuf->firstLine;
@@ -7343,15 +7346,13 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 	!stat(cache->file, &st))
 	goto image_buffer;
 
-    TRAP_ON;
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
+    TRAP_ON;
     if (save2tmp(*uf, cache->file) < 0) {
-	UFclose(uf);
 	TRAP_OFF;
 	return NULL;
     }
-    UFclose(uf);
     TRAP_OFF;
 
     cache->loaded = IMG_FLAG_LOADED;
@@ -7371,6 +7372,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
 
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));
     loadHTMLstream(&f, newBuf, src, TRUE);
+    UFclose(&f);
     if (src)
 	fclose(src);
 
@@ -7766,6 +7768,8 @@ save2tmp(URLFile uf, char *tmpf)
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
+    volatile int retval = 0;
+    char *volatile buf = NULL;
 
     ff = fopen(tmpf, "wb");
     if (ff == NULL) {
@@ -7802,25 +7806,25 @@ save2tmp(URLFile uf, char *tmpf)
     else
 #endif				/* USE_NNTP */
     {
-	Str buf = Strnew_size(SAVE_BUF_SIZE);
-	while (UFread(&uf, buf, SAVE_BUF_SIZE)) {
-	    if (Strfputs(buf, ff) != buf->length) {
-		bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
-		TRAP_OFF;
-		fclose(ff);
-		current_content_length = 0;
-		return -2;
+	int count;
+
+	buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+	while ((count = ISread_n(uf.stream, buf, SAVE_BUF_SIZE)) > 0) {
+	    if (fwrite(buf, 1, count, ff) != count) {
+		retval = -2;
+		goto _end;
 	    }
-	    linelen += buf->length;
+	    linelen += count;
 	    showProgress(&linelen, &trbyte);
 	}
     }
   _end:
     bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
     TRAP_OFF;
+    xfree(buf);
     fclose(ff);
     current_content_length = 0;
-    return 0;
+    return retval;
 }
 
 int
@@ -7935,7 +7939,8 @@ _MoveFile(char *path1, char *path2)
     FILE *f2;
     int is_pipe;
     clen_t linelen = 0, trbyte = 0;
-    Str buf;
+    char *buf = NULL;
+    int count;
 
     f1 = openIS(path1);
     if (f1 == NULL)
@@ -7953,12 +7958,13 @@ _MoveFile(char *path1, char *path2)
 	return -1;
     }
     current_content_length = 0;
-    buf = Strnew_size(SAVE_BUF_SIZE);
-    while (ISread(f1, buf, SAVE_BUF_SIZE)) {
-	Strfputs(buf, f2);
-	linelen += buf->length;
+    buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+    while ((count = ISread_n(f1, buf, SAVE_BUF_SIZE)) > 0) {
+	fwrite(buf, 1, count, f2);
+	linelen += count;
 	showProgress(&linelen, &trbyte);
     }
+    xfree(buf);
     ISclose(f1);
     if (is_pipe)
 	pclose(f2);
@@ -8317,21 +8323,23 @@ uncompress_stream(URLFile *uf, char **src)
 	}
 	if (pid2 == 0) {
 	    /* child2 */
-	    Str buf = Strnew_size(SAVE_BUF_SIZE);
+	    char *buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+	    int count;
 	    FILE *f = NULL;
 
 	    setup_child(TRUE, 2, UFfileno(uf));
 	    if (tmpf)
 		f = fopen(tmpf, "wb");
-	    while (UFread(uf, buf, SAVE_BUF_SIZE)) {
-		if (Strfputs(buf, stdout) < 0)
+	    while ((count = ISread_n(uf->stream, buf, SAVE_BUF_SIZE)) > 0) {
+		if (fwrite(buf, 1, count, stdout) != count)
 		    break;
-		if (f)
-		    Strfputs(buf, f);
+		if (f && fwrite(buf, 1, count, f) != count)
+		    break;
 	    }
 	    UFclose(uf);
 	    if (f)
 		fclose(f);
+	    xfree(buf);
 	    exit(0);
 	}
 	/* child1 */

@@ -2,13 +2,13 @@
 #ifndef IO_STREAM_H
 #define IO_STREAM_H
 
+#include "indep.h"
 #include <stdio.h>
 #ifdef USE_SSL
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
 #endif
-#include "Str.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -36,7 +36,7 @@ union input_stream;
 
 struct ens_handle {
     union input_stream *is;
-    Str s;
+    struct growbuf gb;
     int pos;
     char encoding;
 };
@@ -119,9 +119,14 @@ extern InputStream newEncodedStream(InputStream is, char encoding);
 extern int ISclose(InputStream stream);
 extern int ISgetc(InputStream stream);
 extern int ISundogetc(InputStream stream);
-extern Str StrISgets(InputStream stream);
-extern Str StrmyISgets(InputStream stream);
+extern Str StrISgets2(InputStream stream, char crnl);
+#define StrISgets(stream) StrISgets2(stream, FALSE)
+#define StrmyISgets(stream) StrISgets2(stream, TRUE)
+void ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl);
+#ifdef unused
 extern int ISread(InputStream stream, Str buf, int count);
+#endif
+int ISread_n(InputStream stream, char *dst, int bufsize);
 extern int ISfileno(InputStream stream);
 extern int ISeos(InputStream stream);
 #ifdef USE_SSL

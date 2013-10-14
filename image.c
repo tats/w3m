@@ -90,17 +90,18 @@ termImage()
 static int
 openImgdisplay()
 {
+    char *cmd;
+
+    if (!strchr(Imgdisplay, '/'))
+	cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
+    else
+	cmd = Imgdisplay;
     Imgdisplay_pid = open_pipe_rw(&Imgdisplay_rf, &Imgdisplay_wf);
     if (Imgdisplay_pid < 0)
 	goto err0;
     if (Imgdisplay_pid == 0) {
 	/* child */
-	char *cmd;
 	setup_child(FALSE, 2, -1);
-	if (!strchr(Imgdisplay, '/'))
-	    cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
-	else
-	    cmd = Imgdisplay;
 	myExec(cmd);
 	/* XXX: ifdef __EMX__, use start /f ? */
     }
@@ -333,6 +334,9 @@ loadImage(Buffer *buf, int flag)
     struct stat st;
     int i, draw = FALSE;
     /* int wait_st; */
+#ifdef DONT_CALL_GC_AFTER_FORK
+    char *loadargs[7];
+#endif
 
     if (maxLoadImage > MAX_LOAD_IMAGE)
 	maxLoadImage = MAX_LOAD_IMAGE;
@@ -433,6 +437,24 @@ loadImage(Buffer *buf, int flag)
 	image_cache[i] = cache;
 
 	flush_tty();
+#ifdef DONT_CALL_GC_AFTER_FORK
+	loadargs[0] = MyProgramName;
+	loadargs[1] = "-$$getimage";
+	loadargs[2] = conv_to_system(cache->url);
+	loadargs[3] = conv_to_system(parsedURL2Str(cache->current)->ptr);
+	loadargs[4] = cache->file;
+	loadargs[5] = cache->touch;
+	loadargs[6] = NULL;
+	if ((cache->pid = fork()) == 0) {
+	    setup_child(FALSE, 0, -1);
+	    execvp(MyProgramName, loadargs);
+	    exit(1);
+	}
+	else if (cache->pid < 0) {
+	    cache->pid = 0;
+	    return;
+	}
+#else /* !DONT_CALL_GC_AFTER_FORK */
 	if ((cache->pid = fork()) == 0) {
 	    Buffer *b;
 	    /*
@@ -458,6 +480,7 @@ loadImage(Buffer *buf, int flag)
 	    cache->pid = 0;
 	    return;
 	}
+#endif /* !DONT_CALL_GC_AFTER_FORK */
     }
 }
 

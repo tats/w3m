@@ -1,19 +1,17 @@
 /* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
+#include "config.h"
 #ifdef USE_SSL
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
 #endif				/* USE_SSL */
 
-#include "istream.h"
-
 #define StrUFgets(f) StrISgets((f)->stream)
 #define StrmyUFgets(f) StrmyISgets((f)->stream)
 #define UFgetc(f) ISgetc((f)->stream)
 #define UFundogetc(f) ISundogetc((f)->stream)
-#define UFread(f,buf,len) ISread((f)->stream,buf,len)
 #define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
 #define UFfileno(f) ISfileno((f)->stream)
 
@@ -62,11 +60,12 @@ typedef struct _ParsedURL {
     int is_nocache;
 } ParsedURL;
 
+union input_stream;
 typedef struct {
     unsigned char scheme;
     char is_cgi;
     char encoding;
-    InputStream stream;
+    union input_stream *stream;
     char *ext;
     int compression;
     int content_encoding;

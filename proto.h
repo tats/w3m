@@ -607,9 +607,12 @@ extern char *getAnchorText(Buffer *buf, AnchorList *al, Anchor *a);
 extern Buffer *link_list_panel(Buffer *buf);
 
 extern Str decodeB(char **ww);
+extern void decodeB_to_growbuf(struct growbuf *gb, char **ww);
 extern Str decodeQ(char **ww);
 extern Str decodeQP(char **ww);
+extern void decodeQP_to_growbuf(struct growbuf *gb, char **ww);
 extern Str decodeU(char **ww);
+extern void decodeU_to_growbuf(struct growbuf *gb, char **ww);
 #ifdef USE_M17N
 extern Str decodeWord(char **ow, wc_ces * charset);
 extern Str decodeMIME(Str orgstr, wc_ces * charset);
@@ -811,5 +814,3 @@ extern void dispVer(void);
 void srand48(long);
 long lrand48(void);
 #endif
-
-#include "indep.h"

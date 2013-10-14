@@ -11,6 +11,9 @@
 #include <sys/wait.h>
 #endif
 #include <time.h>
+#if defined(__CYGWIN__) && defined(USE_BINMODE_STREAM)
+#include <io.h>
+#endif
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
@@ -407,6 +410,10 @@ main(int argc, char **argv, char **envp)
     wc_ces CodePage;
 #endif
 #endif
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+    char **getimage_args = NULL;
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+
     GC_INIT();
 #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
@@ -428,6 +435,10 @@ main(int argc, char **argv, char **envp)
 
     CurrentDir = currentdir();
     CurrentPid = (int)getpid();
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+    if (argv[0] && *argv[0])
+	MyProgramName = argv[0];
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
     BookmarkFile = NULL;
     config_file = NULL;
 
@@ -751,6 +762,15 @@ main(int argc, char **argv, char **envp)
 	    else if (!strcmp("-reqlog",argv[i])) {
 		w3m_reqlog=rcFile("request.log");
 	    }
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+	    else if (!strcmp("-$$getimage", argv[i])) {
+		++i;
+		getimage_args = argv + i;
+		i += 4;
+		if (i > argc)
+		    usage();
+	    }
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
 	    else {
 		usage();
 	    }
@@ -839,6 +859,30 @@ main(int argc, char **argv, char **envp)
 
     if (w3m_backend)
 	backend();
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+    if (getimage_args) {
+	char *image_url = conv_from_system(getimage_args[0]);
+	char *base_url = conv_from_system(getimage_args[1]);
+	ParsedURL base_pu;
+	
+	parseURL2(base_url, &base_pu, NULL);
+	image_source = getimage_args[2];
+	newbuf = loadGeneralFile(image_url, &base_pu, NULL, 0, NULL);
+	if (!newbuf || !newbuf->real_type ||
+	    strncasecmp(newbuf->real_type, "image/", 6))
+	    unlink(getimage_args[2]);
+#if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
+	symlink(getimage_args[2], getimage_args[3]);
+#else
+	{
+	    FILE *f = fopen(getimage_args[3], "w");
+	    if (f)
+		fclose(f);
+	}
+#endif
+	w3m_exit(0);
+    }
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
 
     if (w3m_dump)
 	mySignal(SIGINT, SIG_IGN);

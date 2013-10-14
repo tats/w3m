@@ -359,6 +359,10 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     int status;
     pid_t pid;
     char *file = uri, *name = uri, *path_info = NULL, *tmpf = NULL;
+#ifdef HAVE_CHDIR
+    char *cgi_dir;
+#endif
+    char *cgi_basename;
 
 #ifdef __MINGW32_VERSION
     return NULL;
@@ -373,7 +377,14 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	if (!fw)
 	    return NULL;
     }
+    if (qstr)
+	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
+#ifdef HAVE_CHDIR
+    cgi_dir = mydirname(file);
+#endif
+    cgi_basename = mybasename(file);
     pid = open_pipe_rw(&fr, NULL);
+    /* Don't invoke gc after here, or the program might crash in some platforms */
     if (pid < 0)
 	return NULL;
     else if (pid) {
@@ -383,8 +394,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     }
     setup_child(TRUE, 2, fw ? fileno(fw) : -1);
 
-    if (qstr)
-	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
     set_cgi_environ(name, file, uri);
     if (path_info)
 	set_environ("PATH_INFO", path_info);
@@ -415,11 +424,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     }
 
 #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
-    chdir(mydirname(file));
+    chdir(cgi_dir);
 #endif
-    execl(file, mybasename(file), NULL);
+    execl(file, cgi_basename, NULL);
     fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
-	    file, mybasename(file), strerror(errno));
+	    file, cgi_basename, strerror(errno));
     exit(1);
     return NULL;
 #endif

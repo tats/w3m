@@ -2,7 +2,7 @@
 015_debian-version.patch
 020_button.patch
 030_pager-s-option.patch
-040_link_gcc45.patch
+040_link-gtk2.patch
 050_autotools-config.patch
 060_format-security.patch
 070_glibc2.14.patch

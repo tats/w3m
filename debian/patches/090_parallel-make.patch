@@ -1,15 +1,37 @@
-Description: Patch from Gentoo to fix parallel make issue
-Origin: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-parallel-make.patch?revision=1.1&view=markup
+Subject: Fix parallel make issue
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug: https://sourceforge.net/p/w3m/patches/64/
 
-diff -Naur w3m-0.5.3.orig/w3mimg/Makefile.in w3m-0.5.3/w3mimg/Makefile.in
---- w3m-0.5.3.orig/w3mimg/Makefile.in	2011-01-04 18:22:28.000000000 +0900
-+++ w3m-0.5.3/w3mimg/Makefile.in	2011-02-02 11:35:47.725076601 +0900
-@@ -22,6 +22,8 @@
+    Depend on funcname.tab to fix parallel make issue of scripts
+
+    Avoid prerequisite $(IMGOBJS) to fix parallel make issue of w3mimg
+
+diff --git a/Makefile.in b/Makefile.in
+index 52a0aae..b283f29 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -250,7 +250,7 @@ install-po:
+ 	 (cd $$subdir && $(MAKE) install); \
+ 	done
+ 
+-all-scripts:
++all-scripts: funcname.tab
+ 	for dir in $(SCRIPTSUBDIRS);	\
+ 	do	\
+ 		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \
+diff --git a/w3mimg/Makefile.in b/w3mimg/Makefile.in
+index dfc550c..8e2ad73 100644
+--- a/w3mimg/Makefile.in
++++ b/w3mimg/Makefile.in
+@@ -16,9 +16,9 @@ IMGCFLAGS=@IMGX11CFLAGS@ @IMGFBCFLAGS@ @IMGWINCFLAGS@
+ IMGOBJS=@IMGOBJS@
+ 
+ .PHONY: $(SUBDIRS)
+-all: @IMGTARGETS@ w3mimg.a
++all: w3mimg.a
+ 
+-w3mimg.a: $(IMGOBJS)
++w3mimg.a: w3mimg.o @IMGTARGETS@
  	$(AR) rv $@ $(IMGOBJS)
  	$(RANLIB) $@
- 
-+$(IMGOBJS): @IMGTARGETS@
-+
- w3mimg.o: w3mimg.c
- 	$(CC) $(CFLAGS) -c $<
  

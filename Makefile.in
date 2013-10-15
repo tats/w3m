@@ -250,7 +250,7 @@ install-po:
 	 (cd $$subdir && $(MAKE) install); \
 	done
 
-all-scripts:
+all-scripts: funcname.tab
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \

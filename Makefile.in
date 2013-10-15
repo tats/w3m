@@ -199,7 +199,7 @@ dummy.o: entity.c
 	$(CC) $(CFLAGS) -DDUMMY -c -o $@ $?
 
 $(IMGDISPLAY): w3mimgdisplay.o $(ALIB) w3mimg/w3mimg.a
-	$(IMGLINK) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) -lX11 $(IMGLDFLAGS)
+	$(IMGLINK) $(CFLAGS) -o $(IMGDISPLAY) w3mimgdisplay.o w3mimg/w3mimg.a $(LDFLAGS) $(LIBS) $(IMGLDFLAGS)
 
 w3mimgdisplay.o: w3mimgdisplay.c w3mimg/w3mimg.h
 	$(CC) $(CFLAGS) $(IMGCFLAGS) -o $@ -c $(srcdir)/w3mimgdisplay.c

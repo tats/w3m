@@ -1,6 +1,8 @@
 Subject: Define schemeNumToName() to fix scheme bug
 From: AIDA Shinra <shinra@j10n.org>
 Origin: http://www.j10n.org/files/w3m-cvs-1.1055-schemebug.patch
+Bug: http://sourceforge.net/p/w3m/patches/60/
+Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=650747
     
     Patch from [w3m-dev:04470] on 2013-10-14.
 

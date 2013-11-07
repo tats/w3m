@@ -337,6 +337,9 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	    if (strchr(ssl_forbid_method, 'T'))
 		option |= SSL_OP_NO_TLSv1;
 	}
+#ifdef SSL_OP_NO_COMPRESSION
+	option |= SSL_OP_NO_COMPRESSION;
+#endif
 	SSL_CTX_set_options(ssl_ctx, option);
 #ifdef USE_SSL_VERIFY
 	/* derived from openssl-0.9.5/apps/s_{client,cb}.c */

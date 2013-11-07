@@ -341,6 +341,11 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	option |= SSL_OP_NO_COMPRESSION;
 #endif
 	SSL_CTX_set_options(ssl_ctx, option);
+
+#ifdef SSL_MODE_RELEASE_BUFFERS
+	SSL_CTX_set_mode (ssl_ctx, SSL_MODE_RELEASE_BUFFERS);
+#endif
+
 #ifdef USE_SSL_VERIFY
 	/* derived from openssl-0.9.5/apps/s_{client,cb}.c */
 #if 1				/* use SSL_get_verify_result() to verify cert */

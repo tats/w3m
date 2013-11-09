@@ -4,7 +4,7 @@
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 dpkg_buildflags = DEB_BUILD_MAINT_OPTIONS=$(DEB_BUILD_MAINT_OPTIONS) dpkg-buildflags
-CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS)
+CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS) $(shell getconf LFS_CFLAGS) 
 CPPFLAGS=$(shell $(dpkg_buildflags) --get CPPFLAGS)
 LDFLAGS=$(shell $(dpkg_buildflags) --get LDFLAGS)
 

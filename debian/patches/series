@@ -25,4 +25,5 @@
 240_win64gc.patch
 250_schemebug.patch
 260_openssl.patch
+270_refresh-url.patch
 900_ChangeLog.patch

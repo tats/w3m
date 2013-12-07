@@ -26,4 +26,5 @@
 250_schemebug.patch
 260_openssl.patch
 270_refresh-url.patch
+280_search-next.patch
 900_ChangeLog.patch

@@ -1931,6 +1931,10 @@ srch_nxtprv(int reverse)
     result = srchcore(SearchString, routine[reverse]);
     if (result & SR_FOUND)
 	clear_mark(Currentbuf->currentLine);
+    else {
+	if (reverse == 0)
+	    Currentbuf->pos -= 1;
+    }
     displayBuffer(Currentbuf, B_NORMAL);
     disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
 		    SearchString);

@@ -1,0 +1,19 @@
+Subject: Fix a directory descriptor leak in loadLocalDir
+Author: Reinhard Max <max@suse.de>
+Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-closedir.patch
+Bug-Novell: https://bugzilla.novell.com/show_bug.cgi?id=531675
+
+  Mon Sep  7 16:49:56 CEST 2009 - max@suse.de
+  - Added w3m-closedir.patch to fix a directory descriptor leak in
+    loadLocalDir (bnc#531675).
+
+--- w3m.orig/local.c
++++ w3m/local.c
+@@ -109,6 +109,7 @@ loadLocalDir(char *dname)
+ 	    n++;
+ 	}
+     }
++    closedir(d);
+ 
+     if (multicolList) {
+ 	l = COLS / (maxlen + 2);

@@ -32,8 +32,8 @@ build-indep:
 build-arch: build-stamp
 build-stamp:
 	dh_testdir
-	dh_autotools-dev_updateconfig
-	test ! -f entity.h || test -f entity.h.debian-bak || cp entity.h entity.h.debian-bak
+	cd $(builddir) && dh_autotools-dev_updateconfig
+	test ! -f $(builddir)/entity.h || test -f $(builddir)/entity.h.debian-bak || cp $(builddir)/entity.h $(builddir)/entity.h.debian-bak
 	cd $(builddir) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
@@ -43,11 +43,11 @@ clean:
 	dh_testdir
 	dh_testroot
 	if test -f $(builddir)/Makefile; then cd $(builddir) && $(MAKE) distclean; fi
-	test ! -f entity.h.debian-bak || mv -f entity.h.debian-bak entity.h
 	rm -f $(builddir)/po/*.gmo
 	rm -f $(builddir)/po/stamp-po
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
-	dh_autotools-dev_restoreconfig
+	test ! -f $(builddir)/entity.h.debian-bak || mv -f $(builddir)/entity.h.debian-bak $(builddir)/entity.h
+	cd $(builddir) && dh_autotools-dev_restoreconfig
 	dh_clean
 
 install: install-stamp

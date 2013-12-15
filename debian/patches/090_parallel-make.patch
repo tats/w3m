@@ -1,6 +1,7 @@
 Subject: Fix parallel make issue
 From: Tatsuya Kinoshita <tats@debian.org>
 Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=726188
+Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=362249
 Bug: https://sourceforge.net/p/w3m/patches/64/
 
     Depend on funcname.tab to fix parallel make issue of scripts

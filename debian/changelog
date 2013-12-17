@@ -1,3 +1,27 @@
+w3m (0.5.3-13) unstable; urgency=low
+
+  * New patch 240_win64gc.patch for GC on Cygwin64
+  * New patch 250_schemebug.patch to fix scheme bug (closes: #650747)
+  * New patch 260_openssl.patch from openSUSE for OpenSSL issues
+  * New patch 270_refresh-url.patch to accept single quoted URL
+  * New patch 280_search-next.patch to fix crash after SEARCH_NEXT
+  * New patch 290_closedir.patch to fix a directory descriptor leak
+  * Update 230_cygwin-lang.patch to really fix
+  * Update 090_parallel-make.patch to fix scripts and w3mimg (closes: #726188)
+  * Update 040_link_gcc45.patch to 040_link-gtk2.patch
+  * Update 050_autotools-config.patch with autotools-dev 20130810.1
+  * Drop 050_autotools-config.patch (comment out)
+  * Update 900_ChangeLog.patch
+  * Update 015_debian-version.patch to 0.5.3+debian-13
+  * Use LFS_CFLAGS to support large file (closes: #493956)
+  * Use autotools-dev dh addon again (closes: #732086)
+  * Update gitlog2changelog to fix paren handling
+  * debian/rules: builddir fixes
+  * Use dpkg-maintscript-helper to remove obsolete conffile
+  * Update Standards-Version to 3.9.5
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Tue, 17 Dec 2013 19:57:42 +0900
+
 w3m (0.5.3-12) unstable; urgency=low
 
   * New patch 200_readme-img-typo.patch to typo fix (closes: #725892)

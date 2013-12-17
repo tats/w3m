@@ -1,3 +1,86 @@
+2013-12-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-13
+
+2013-12-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* config.guess:
+	Update config.guess to 2013-06-10 with autotools-dev 20130810.1
+
+	* config.sub:
+	Update config.sub to 2013-08-10 with autotools-dev 20130810.1
+
+2013-12-07  Reinhard Max  <max@suse.de>
+
+	* local.c: Fix a directory descriptor leak in loadLocalDir
+	Patch from openSUSE on 2009-09-07.
+	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-closedir.patch
+	Bug-Novell: https://bugzilla.novell.com/show_bug.cgi?id=531675
+
+2013-12-07  AIDA Shinra  <shinra@j10n.org>
+
+	* main.c: Fix crash after SEARCH_NEXT
+	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-search-next.patch>,
+	[w3m-dev:04473] on 2013-12-07.
+
+2013-11-11  Paul Boekholt  <p.boekholt@gmail.com>
+
+	* file.c: Add support for single quoted meta refresh URL
+	Bug: https://sourceforge.net/p/w3m/patches/53/
+
+2013-11-07  Cristian Rodriguez  <crrodriguez@opensuse.org>
+
+	* url.c: Use SSL_OP_NO_COMPRESSION if available
+	Due to the "CRIME attack" (CVE-2012-4929) HTTPS clients that
+	negotiate TLS-level compression can be abused for MITM attacks.
+	* url.c: Use SSL_MODE_RELEASE_BUFFERS if available
+	Patch from openSUSE on 2012-11-12:
+	https://build.opensuse.org/request/show/141054
+
+2013-10-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Makefile.in:
+	Depend on funcname.tab to fix parallel make issue of scripts
+	Bug: https://sourceforge.net/p/w3m/patches/64/
+	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=362249
+
+	* w3mimg/Makefile.in:
+	Avoid prerequisite $(IMGOBJS) to fix parallel make issue of w3mimg
+	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=726188
+
+	* acinclude.m4, configure:
+	Explicitly add -lX11 to IMGX11LDFLAGS only when gtk2
+	Bug: https://sourceforge.net/p/w3m/patches/57/
+
+	* w3mimg/Makefile.in: Revert "Fix parallel make issue"
+	This reverts commit aa6f871c6dcc108118142bcc786e4a6ac3d46867.
+
+	* Makefile.in:
+	Revert "Explicitly link w3mimgdisplay with -lX11 to build with gcc 4.5"
+	This reverts commit 7410954066d68ac2ad6aea638801714447321fec.
+
+2013-10-14  AIDA Shinra  <shinra@j10n.org>
+
+	* url.c: Define schemeNumToName() to fix scheme bug
+	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-schemebug.patch>,
+	[w3m-dev:04470] on 2013-10-14.
+	Bug: https://sourceforge.net/p/w3m/patches/60/
+
+	* config.h.in, file.c, fm.h, html.h, image.c, indep.c, indep.h:
+	* istream.c, istream.h, local.c, main.c, mimehead.c, proto.h:
+	Workaround of GC crash on Cygwin64
+	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-win64gc.patch>,
+	[w3m-dev:04469] on 2013-10-14.
+
+2013-10-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-12+
+
+2013-10-14  Jarek Czekalski  <jarekczek@poczta.onet.pl>
+
+	* terms.c: Fix paren in check_cygwin_console()
+	Bug: https://sourceforge.net/p/w3m/patches/66/
+
 2013-10-13  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-12

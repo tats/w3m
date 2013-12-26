@@ -94,7 +94,7 @@ binary-arch: install
 #	dh_installman
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	dh_strip -a
-	dh_compress -a
+	dh_compress -a -XREADME.func
 	dh_lintian -a
 	dh_fixperms -a -Xw3mimgdisplay
 	dh_installdeb -a

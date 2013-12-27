@@ -28,4 +28,5 @@
 270_refresh-url.patch
 280_search-next.patch
 290_closedir.patch
+300_manual-links.patch
 900_ChangeLog.patch

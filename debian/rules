@@ -89,6 +89,10 @@ binary-arch: install
 	done
 	cd debian/w3m/usr/share/doc/w3m && \
 		mv ja/keymap.* ja/examples; mv ja/menu.* ja/examples
+	dh_link usr/share/doc/w3m/examples/keymap.default usr/share/doc/w3m/keymap.default \
+		usr/share/doc/w3m/examples/keymap.lynx usr/share/doc/w3m/keymap.lynx \
+		usr/share/doc/w3m/ja/examples/keymap.default usr/share/doc/w3m/ja/keymap.default \
+		usr/share/doc/w3m/ja/examples/keymap.lynx usr/share/doc/w3m/ja/keymap.lynx
 	dh_installmenu
 	dh_installmime
 #	dh_installman

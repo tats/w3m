@@ -114,6 +114,7 @@ binary-arch: install
 		debian/w3m/usr/share/doc/w3m/ja/README.menu \
 		debian/w3m/usr/share/doc/w3m/ja/README.migemo \
 		debian/w3m/usr/share/doc/w3m/ja/README.mouse \
+		debian/w3m/usr/share/doc/w3m/ja/README.siteconf \
 		debian/w3m/usr/share/doc/w3m/ja/STORY.html \
 		debian/w3m/usr/share/doc/w3m/ja/examples/menu.default \
 		debian/w3m/usr/share/doc/w3m/ja/examples/menu.submenu \

@@ -100,6 +100,7 @@ binary-arch: install
 	for f in \
 		debian/w3m/usr/share/doc/w3m/README.cookie \
 		debian/w3m/usr/share/doc/w3m/README.m17n \
+		debian/w3m/usr/share/doc/w3m/examples/Bonus/README \
 		debian/w3m/usr/share/doc/w3m/ja/FAQ.html \
 		debian/w3m/usr/share/doc/w3m/ja/HISTORY \
 		debian/w3m/usr/share/doc/w3m/ja/MANUAL.html \

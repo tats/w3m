@@ -1,0 +1,79 @@
+Subject: Prefer US-ASCII rathar than Japanese encodings in English documents
+From: Tatsuya Kinoshita <tats@debian.org>
+
+diff --git a/doc/HISTORY b/doc/HISTORY
+index b8f5b94..7f7ae2b 100644
+--- a/doc/HISTORY
++++ b/doc/HISTORY
+@@ -588,7 +588,7 @@ From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
+   * space characters in a buffer are mapped into 0x80-0x9f.
+   * unprintable characters (0x80-0xa0) are displayed as \xxx.
+ 
+-From: Tsutomu Okada ($B2,ED(B $BJY(B) <okada@furuno.co.jp>
++From: Tsutomu Okada <okada@furuno.co.jp>
+ Subject: [w3m-dev 01354] minimize when #undef USE_GOPHER or USE_NNTP
+ 
+ 2000/11/16
+@@ -1422,7 +1422,7 @@ HTML4.0 ID attribute support.
+ 
+ From: Okabe Katsuya <okabe@fphy.hep.okayama-u.ac.jp>
+ table get weird when it contains <input type=hidden>.
+-$B=$@5!%(B
++Fixed.
+ 
+ 2000.2.12
+ From: Rogue Metal - Jake Moorman <roguemtl@stampede.org>
+@@ -1649,15 +1649,15 @@ From: patakuti
+ If an <input type=button> tag has no `name' attribute,
+ w3m adds it an inappropriate name attribute.
+ 
+-From: $B$d$^(B
++From: Yama
+ Now w3m can handle a frameset that has both ROWS and COLS.
+ 
+ From: aito
+ Now bookmarking is done by a separate command w3mbookmark.
+ 
+-C-s $B$G2hLLI=<($,;_$^$C$F$$$?%P%0$N=$@5!%(B
++Bug fix that C-s hangs.
+ 
+-$BJ8;zF~NO;~$K(B C-g $B$GCf;_$G$-$k$h$&$K$7$?!%(B
++Enable C-g to quit for keyboard input.
+ 
+ From: hovav@cs.stanford.edu
+ When downloading a file, an attempt to save it to a non-exist
+@@ -1699,7 +1699,7 @@ Menu behavior is changed.
+ * Clicking outside the menu causes cancellation of sub-menu.
+ * <, >, +, - abandoned
+ 
+-From: $B$*$+$@(B <okada@furuno.co.jp>
++From: Okada <okada@furuno.co.jp>
+ Now C-a/C-e are bound to 'jump to the first/last item in menu.'
+ 
+ From: "OMAE, jun" <jun-o@osb.att.ne.jp>
+diff --git a/doc/README.cookie b/doc/README.cookie
+index 56cca50..da16947 100644
+--- a/doc/README.cookie
++++ b/doc/README.cookie
+@@ -37,7 +37,7 @@ cookie support of w3m
+                               (HDN: host domain name)
+ 
+ 
+- ¡¦ If the number of "." in domain name is lesser than 2, it is
++ * If the number of "." in domain name is lesser than 2, it is
+     assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can
+     use cookie_avoid_wrong_number_of_dots to avoid this
+     restriction. You can set this in "Domains to avoid [wrong number
+diff --git a/doc/README.m17n b/doc/README.m17n
+index c064d76..da5408b 100644
+--- a/doc/README.m17n
++++ b/doc/README.m17n
+@@ -49,7 +49,7 @@ Supported encoding schemes (character set)
+   * Thai
+       TIS-620 (ISO-8859-11), CP874
+   * Other
+-      US_ASCII, ISO-8859-1 ¡Á 10, 13 ¡Á 15,
++      US_ASCII, ISO-8859-1 - 10, 13 - 15,
+       KOI8-R, KOI8-U, NeXT, CP437, CP737, CP775, CP850, CP852, CP855, CP856,
+       CP857, CP860, CP861, CP862, CP863, CP864, CP865, CP866, CP869, CP1006,
+       CP1250, CP1251, CP1252, CP1253, CP1254, CP1255, CP1256, CP1257

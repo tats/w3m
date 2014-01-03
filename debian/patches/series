@@ -29,4 +29,5 @@
 280_search-next.patch
 290_closedir.patch
 300_manual-links.patch
+310_doc-ascii.patch
 900_ChangeLog.patch

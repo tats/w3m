@@ -1,3 +1,20 @@
+2014-01-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-14
+
+	* acinclude.m4, configure: Use pkg-config to build with imlib2 1.4.6
+
+	* doc/HISTORY, doc/README.cookie, doc/README.m17n:
+	Prefer US-ASCII rathar than Japanese encodings in English documents
+
+2013-12-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/MANUAL.html, doc/MANUAL.html:
+	Cleanup unusable links in MANUAL.html
+	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=517315
+
+	* version.c.in: Update to 0.5.3+debian-13+
+
 2013-12-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-13

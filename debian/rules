@@ -78,6 +78,7 @@ binary-arch: install
 	-rm -rf debian/w3m/usr/share/doc/w3m/ja/CVS
 	dh_installexamples -a
 	cp -a $(builddir)/Bonus/* debian/w3m/usr/share/doc/w3m/examples/Bonus/
+	-mv -f debian/w3m/usr/share/doc/w3m/examples/Bonus/README debian/w3m/usr/share/doc/w3m/examples/Bonus/README.ja
 	-rm -rf debian/w3m/usr/share/doc/w3m/examples/Bonus/CVS
 	cd debian/w3m/usr/share/doc/w3m/examples/Bonus && find . -type f -print | \
 	while read f; do \
@@ -98,7 +99,7 @@ binary-arch: install
 #	dh_installman
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	for f in \
-		debian/w3m/usr/share/doc/w3m/examples/Bonus/README \
+		debian/w3m/usr/share/doc/w3m/examples/Bonus/README.ja \
 		debian/w3m/usr/share/doc/w3m/ja/FAQ.html \
 		debian/w3m/usr/share/doc/w3m/ja/HISTORY \
 		debian/w3m/usr/share/doc/w3m/ja/MANUAL.html \

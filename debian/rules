@@ -98,8 +98,6 @@ binary-arch: install
 #	dh_installman
 	dh_installchangelogs -a $(builddir)/ChangeLog
 	for f in \
-		debian/w3m/usr/share/doc/w3m/README.cookie \
-		debian/w3m/usr/share/doc/w3m/README.m17n \
 		debian/w3m/usr/share/doc/w3m/examples/Bonus/README \
 		debian/w3m/usr/share/doc/w3m/ja/FAQ.html \
 		debian/w3m/usr/share/doc/w3m/ja/HISTORY \
@@ -124,7 +122,6 @@ binary-arch: install
 		iconv -f euc-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
 	done
 	for f in \
-		debian/w3m/usr/share/doc/w3m/HISTORY \
 		debian/w3m/usr/share/doc/w3m/ja/README.passwd \
 		debian/w3m/usr/share/doc/w3m/ja/README.pre_form \
 		debian/w3m/usr/share/doc/w3m/ja/README.tab; do \

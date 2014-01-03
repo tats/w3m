@@ -649,6 +649,9 @@ AC_DEFUN([AC_W3M_IMAGE],
      fi;;
    imlib2)
      with_imlib2="yes"
+     if test x"$PKG_CONFIG" = x; then
+       PKG_CONFIG=pkg-config
+     fi
      if test x"$IMLIB2_CONFIG" = x; then
        IMLIB2_CONFIG=imlib2-config
      fi;;
@@ -728,7 +731,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="x11"    
      AC_DEFINE(USE_IMLIB2)
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
@@ -756,7 +759,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi

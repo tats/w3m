@@ -223,7 +223,7 @@ License:
  General Public License and is *not* in the public domain.
 
 Files: debian/*
-Copyright: 2008-2013, Tatsuya Kinoshita <tats@debian.org>
+Copyright: 2008-2014, Tatsuya Kinoshita <tats@debian.org>
            1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
 License:
  The Debian packaging is distributed under the same conditions as the

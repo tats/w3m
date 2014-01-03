@@ -1,3 +1,22 @@
+w3m (0.5.3-14) unstable; urgency=low
+
+  [ Tatsuya Kinoshita ]
+  * New patch 300_manual-links.patch to fix unusable links in MANUAL.html
+  * New patch 310_doc-ascii.patch to prefer US-ASCII in English documents
+  * New patch 320_imlib2-config.patch to build with imlib2 1.4.6
+  * Make keymap.* symlinks for MANUAL.html
+  * Convert document encodings to UTF-8 at build time
+  * Install Bonus/README to Bonus/README.ja
+  * Update debian/copyright
+  * Update 015_debian-version.patch to 0.5.3+debian-14
+  * Update 900_ChangeLog.patch
+
+  [ Rafael Laboissiere ]
+  * Avoid compression of README.func and get the link in MANUAL.html working
+    (closes: #517315)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 03 Jan 2014 17:48:31 +0900
+
 w3m (0.5.3-13) unstable; urgency=low
 
   * New patch 240_win64gc.patch for GC on Cygwin64

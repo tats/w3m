@@ -127,6 +127,10 @@ binary-arch: install
 		debian/w3m/usr/share/doc/w3m/ja/README.tab; do \
 		iconv -f iso-2022-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
 	done
+	for f in \
+		debian/w3m/usr/share/doc/w3m/examples/Bonus/2ch.cgi; do \
+		iconv -f cp932 -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
+	done
 	dh_strip -a
 	dh_compress -a -XREADME.func
 	dh_lintian -a

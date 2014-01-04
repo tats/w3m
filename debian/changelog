@@ -1,3 +1,11 @@
+w3m (0.5.3-15) unstable; urgency=low
+
+  * Explicitly add pkg-config to Build-Depends
+  * Update 015_debian-version.patch to 0.5.3+debian-15
+  * Update 900_ChangeLog.patch
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 04 Jan 2014 11:48:02 +0900
+
 w3m (0.5.3-14) unstable; urgency=low
 
   [ Tatsuya Kinoshita ]

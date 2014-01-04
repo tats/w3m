@@ -1,3 +1,7 @@
+2014-01-04  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-15
+
 2014-01-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-14

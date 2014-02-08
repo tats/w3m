@@ -8,7 +8,10 @@ CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS) $(shell getconf LFS_CFLAGS)
 CPPFLAGS=$(shell $(dpkg_buildflags) --get CPPFLAGS)
 LDFLAGS=$(shell $(dpkg_buildflags) --get LDFLAGS)
 
-ifeq ($(DEB_BUILD_ARCH_OS),linux)
+ifneq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
+  DEVS=no
+  bootstrap_dh_flags=-Nw3m-img
+else ifeq ($(DEB_BUILD_ARCH_OS),linux)
   DEVS=x11,fb+s
 else
   DEVS=x11
@@ -55,12 +58,14 @@ install-stamp: build-stamp
 	dh_testdir
 	dh_testroot
 	dh_prep
-	dh_installdirs
+	dh_installdirs $(bootstrap_dh_flags)
 
 	cd $(builddir) && $(MAKE) install DESTDIR=$(CURDIR)/debian/w3m INSTALL_W3MIMGDISPLAY="install -g video -m 2755"
 	install -m 644 debian/w3mconfig $(CURDIR)/debian/w3m/etc/w3m/config
 	install -m 644 debian/mailcap $(CURDIR)/debian/w3m/etc/w3m/mailcap
+ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
 	mv -f debian/w3m/usr/lib/w3m/w3mimgdisplay debian/w3m-img/usr/lib/w3m/w3mimgdisplay
+endif
 	touch install-stamp
 
 binary-indep:
@@ -68,7 +73,7 @@ binary-indep:
 binary-arch: install
 	dh_testdir -a
 	dh_testroot -a
-	dh_installdocs -a
+	dh_installdocs -a $(bootstrap_dh_flags)
 	-rm -f debian/w3m/usr/share/doc/w3m/README.cygwin
 	-mv -f debian/w3m/usr/share/doc/w3m/README.img debian/w3m-img/usr/share/doc/w3m-img/README.img
 	cp -a $(builddir)/doc-jp/* debian/w3m/usr/share/doc/w3m/ja/
@@ -76,7 +81,7 @@ binary-arch: install
 	-rm -f debian/w3m/usr/share/doc/w3m/ja/w3m.1
 	-rm -f debian/w3m/usr/share/doc/w3m/ja/README.cygwin
 	-rm -rf debian/w3m/usr/share/doc/w3m/ja/CVS
-	dh_installexamples -a
+	dh_installexamples -a $(bootstrap_dh_flags)
 	cp -a $(builddir)/Bonus/* debian/w3m/usr/share/doc/w3m/examples/Bonus/
 	-mv -f debian/w3m/usr/share/doc/w3m/examples/Bonus/README debian/w3m/usr/share/doc/w3m/examples/Bonus/README.ja
 	-rm -rf debian/w3m/usr/share/doc/w3m/examples/Bonus/CVS
@@ -94,10 +99,10 @@ binary-arch: install
 		usr/share/doc/w3m/examples/keymap.lynx usr/share/doc/w3m/keymap.lynx \
 		usr/share/doc/w3m/ja/examples/keymap.default usr/share/doc/w3m/ja/keymap.default \
 		usr/share/doc/w3m/ja/examples/keymap.lynx usr/share/doc/w3m/ja/keymap.lynx
-	dh_installmenu
-	dh_installmime
-#	dh_installman
-	dh_installchangelogs -a $(builddir)/ChangeLog
+	dh_installmenu $(bootstrap_dh_flags)
+	dh_installmime $(bootstrap_dh_flags)
+#	dh_installman $(bootstrap_dh_flags)
+	dh_installchangelogs -a $(bootstrap_dh_flags) $(builddir)/ChangeLog
 	for f in \
 		debian/w3m/usr/share/doc/w3m/examples/Bonus/README.ja \
 		debian/w3m/usr/share/doc/w3m/ja/FAQ.html \
@@ -118,10 +123,15 @@ binary-arch: install
 		debian/w3m/usr/share/doc/w3m/ja/STORY.html \
 		debian/w3m/usr/share/doc/w3m/ja/examples/menu.default \
 		debian/w3m/usr/share/doc/w3m/ja/examples/menu.submenu \
-		debian/w3m/usr/share/man/ja/man1/w3m.1 \
-		debian/w3m-img/usr/share/doc/w3m-img/README.img.ja; do \
+		debian/w3m/usr/share/man/ja/man1/w3m.1; do \
 		iconv -f euc-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
 	done
+ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
+	for f in \
+		debian/w3m/usr/share/doc/w3m-img/README.img.ja; do \
+		iconv -f euc-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
+	done
+endif
 	for f in \
 		debian/w3m/usr/share/doc/w3m/ja/README.passwd \
 		debian/w3m/usr/share/doc/w3m/ja/README.pre_form \
@@ -132,16 +142,16 @@ binary-arch: install
 		debian/w3m/usr/share/doc/w3m/examples/Bonus/2ch.cgi; do \
 		iconv -f cp932 -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
 	done
-	dh_strip -a
-	dh_compress -a -XREADME.func
-	dh_lintian -a
-	dh_fixperms -a -Xw3mimgdisplay
-	dh_installdeb -a
-	dh_shlibdeps -a
-	dh_gencontrol -a
-#	dh_makeshlibs -a
-	dh_md5sums -a
-	dh_builddeb -a
+	dh_strip -a $(bootstrap_dh_flags)
+	dh_compress -a $(bootstrap_dh_flags) -XREADME.func
+	dh_lintian -a $(bootstrap_dh_flags)
+	dh_fixperms -a $(bootstrap_dh_flags) -Xw3mimgdisplay
+	dh_installdeb -a $(bootstrap_dh_flags)
+	dh_shlibdeps -a $(bootstrap_dh_flags)
+	dh_gencontrol -a $(bootstrap_dh_flags)
+#	dh_makeshlibs -a $(bootstrap_dh_flags)
+	dh_md5sums -a $(bootstrap_dh_flags)
+	dh_builddeb -a $(bootstrap_dh_flags)
 
 source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false

@@ -628,86 +628,72 @@ getImage(Image * image, ParsedURL *current, int flag)
 static int
 parseImageHeader(char *path, u_int *width, u_int *height)
 {
-    char *suffix;
+    FILE *fp;
+    u_char buf[8];
 
-    suffix = path + strlen(path);
-    if (strcasecmp(suffix - 5, ".jpeg") == 0 || strcasecmp(suffix - 4 , ".jpg") == 0) {
-	FILE *fp = fopen(path, "r");
-	if (fp) {
-	    u_char buf[2];
-	    if (fread(buf, 1, 2, fp) != 2 || memcmp(buf, "\xff\xd8", 2) != 0 ||
-	        fseek(fp, 2, SEEK_CUR) < 0)	/* 0xffe0 */
-		goto  jpg_error;
+    if (!(fp = fopen(path, "r"))) return FALSE;
 
-	    while (fread(buf, 1, 2, fp) == 2) {
-		size_t len = ((buf[0] << 8) | buf[1]) - 2;
-		if (fseek(fp, len, SEEK_CUR) < 0) goto jpg_error;
-	        if (fread(buf, 1, 2, fp) == 2 && memcmp(buf, "\xff\xc0", 2) == 0) {
-		    fseek(fp, 3, SEEK_CUR);
-		    if (fread(buf, 1, 2, fp) == 2) {
-			*height = (buf[0] << 8) | buf[1];
-			if (fread(buf, 1, 2, fp) == 2) {
-			    *width = (buf[0] << 8) | buf[1];
-			    fclose(fp);
-			    return TRUE;
-			}
-		    }
-		    break;
-		}
-	    }
+    if (fread(buf, 1, 2, fp) != 2) goto error;
 
-	jpg_error:
-	    fclose(fp);
-	    return FALSE;
-	}
-    }
-    else if (strcasecmp(suffix - 4,  ".png") == 0) {
-	FILE *fp = fopen(path, "r");
-	if (fp) {
-	    u_char buf[8];
-	    if (fread(buf, 1, 8, fp) != 8 ||
-	        memcmp(buf, "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a", 8) != 0 ||
-		fseek(fp, 8, SEEK_CUR) < 0)
-		goto  png_error;
-
-	    if (fread(buf, 1, 4, fp) == 4) {
-	        *width = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-		if (fread(buf, 1, 4, fp) == 4) {
-		    *height = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-		    fclose(fp);
-		    return TRUE;
-		}
-	    }
-
-	png_error:
-	    fclose(fp);
-	    return FALSE;
-	}
-    }
-    else if (strcasecmp(suffix - 4, ".gif") == 0) {
-	FILE *fp = fopen(path, "r");
-	if (fp) {
-	    u_char buf[3];
-	    if (fread(buf, 1, 3, fp) != 3 || memcmp(buf, "GIF", 3) != 0 ||
-	        fseek(fp, 3, SEEK_CUR) < 0) {
-		goto  png_error;
-	    }
-	    if (fread(buf, 1, 2, fp) == 2) {
-		*width = (buf[1] << 8) | buf[0];
+    if (memcmp(buf, "\xff\xd8", 2) == 0) {
+        /* JPEG */
+	if (fseek(fp, 2, SEEK_CUR) < 0)	goto error;   /* 0xffe0 */
+	while (fread(buf, 1, 2, fp) == 2) {
+	    size_t len = ((buf[0] << 8) | buf[1]) - 2;
+	    if (fseek(fp, len, SEEK_CUR) < 0) goto error;
+	    if (fread(buf, 1, 2, fp) == 2 &&
+	        /* SOF0 or SOF2 */
+	        (memcmp(buf, "\xff\xc0", 2) == 0 || memcmp(buf, "\xff\xc2", 2) == 0)) {
+		fseek(fp, 3, SEEK_CUR);
 		if (fread(buf, 1, 2, fp) == 2) {
-		    *height = (buf[1] << 8) | buf[0];
-		    fclose(fp);
-		    return TRUE;
+		    *height = (buf[0] << 8) | buf[1];
+		    if (fread(buf, 1, 2, fp) == 2) {
+			*width = (buf[0] << 8) | buf[1];
+			goto success;
+		    }
 		}
+		break;
 	    }
 	}
-
-	gif_error:
-	    fclose(fp);
-	    return FALSE;
+	goto error;
     }
 
+    if (fread(buf + 2, 1, 1, fp) != 1) goto error;
+
+    if (memcmp(buf, "GIF", 3) == 0) {
+        /* GIF */
+	if (fseek(fp, 3, SEEK_CUR) < 0) goto error;
+	if (fread(buf, 1, 2, fp) == 2) {
+	    *width = (buf[1] << 8) | buf[0];
+	    if (fread(buf, 1, 2, fp) == 2) {
+		*height = (buf[1] << 8) | buf[0];
+		goto success;
+	    }
+	}
+    }
+
+    if (fread(buf + 3, 1, 5, fp) != 5) goto error;
+
+    if (memcmp(buf, "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a", 8) == 0) {
+	/* PNG */
+	if (fseek(fp, 8, SEEK_CUR) < 0) goto error;
+	if (fread(buf, 1, 4, fp) == 4) {
+	    *width = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	    if (fread(buf, 1, 4, fp) == 4) {
+		*height = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+		goto success;
+	    }
+	}
+    }
+
+error:
+    fprintf(stderr,"%s\n",path);
+    fclose(fp);
     return FALSE;
+
+success:
+    fclose(fp);
+    return TRUE;
 }
 
 int

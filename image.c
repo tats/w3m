@@ -670,6 +670,7 @@ parseImageHeader(char *path, u_int *width, u_int *height)
 		goto success;
 	    }
 	}
+	goto error;
     }
 
     if (fread(buf + 3, 1, 5, fp) != 5) goto error;
@@ -684,10 +685,10 @@ parseImageHeader(char *path, u_int *width, u_int *height)
 		goto success;
 	    }
 	}
+	goto error;
     }
 
 error:
-    fprintf(stderr,"%s\n",path);
     fclose(fp);
     return FALSE;
 

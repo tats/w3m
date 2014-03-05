@@ -207,7 +207,7 @@ drawImage()
 	if (support_remote_image) {
 	#if 0
 	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		getenv("WINDOWID") ? i->cache->file : i->cache->url,
+		(getenv("WINDOWID") && i->cache->touch) ? i->cache->file : i->cache->url,
 		i->x, i->y,
 		i->cache->width > 0 ? i->cache->width : 0,
 		i->cache->height > 0 ? i->cache->height : 0,
@@ -217,7 +217,7 @@ drawImage()
 	    put_image(
 	    #if 1
 		/* XXX I don't know why but sometimes i->cache->file doesn't exist. */
-		getenv("WINDOWID") && (stat(i->cache->file,&st) == 0) ?
+		(getenv("WINDOWID") && i->cache->touch && stat(i->cache->file,&st) == 0) ?
 			/* local */ i->cache->file : /* remote */ i->cache->url,
 	    #else
 		i->cache->url,
@@ -419,7 +419,7 @@ loadImage(Buffer *buf, int flag)
     }
     for (i = 0; i < n_load_image; i++) {
 	cache = image_cache[i];
-	if (!cache)
+	if (!cache || !cache->touch)
 	    continue;
 	if (lstat(cache->touch, &st))
 	    continue;
@@ -450,7 +450,7 @@ loadImage(Buffer *buf, int flag)
 
     for (i = (buf != image_buffer) ? 0 : maxLoadImage; i < n_load_image; i++) {
 	cache = image_cache[i];
-	if (!cache)
+	if (!cache || !cache->touch)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
@@ -505,6 +505,9 @@ loadImage(Buffer *buf, int flag)
 		break;
 	}
 	image_cache[i] = cache;
+	if (!cache->touch) {
+	    continue;
+	}
 
 	flush_tty();
 #ifdef DONT_CALL_GC_AFTER_FORK
@@ -585,7 +588,6 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->url = image->url;
 	cache->current = current;
 	cache->file = tmpfname(TMPF_DFL, image->ext)->ptr;
-	cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
@@ -595,9 +597,15 @@ getImage(Image * image, ParsedURL *current, int flag)
 
 	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
 		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
-
-	    if (! getenv("WINDOWID") && image->height > 0 && image->width > 0)
+	    if (image->height > 0 && image->width > 0) {
 		cache->loaded = IMG_FLAG_LOADED;
+	    }
+	}
+	if (cache->loaded == IMG_FLAG_UNLOADED) {
+	    cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
+	}
+	else {
+	    cache->touch = NULL;
 	}
 
 	cache->width = image->width ;

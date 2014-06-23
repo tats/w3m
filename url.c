@@ -327,6 +327,7 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	SSL_load_error_strings();
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;
+	SSL_CTX_set_cipher_list(ssl_ctx, "DEFAULT:!LOW:!EXP");
 	option = SSL_OP_ALL;
 	if (ssl_forbid_method) {
 	    if (strchr(ssl_forbid_method, '2'))

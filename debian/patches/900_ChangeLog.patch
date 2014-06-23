@@ -2,10 +2,17 @@ Subject: Update ChangeLog
 From: Tatsuya Kinoshita <tats@debian.org>
 
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..b4093de 100644
+index 88358ef..533443d 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,296 @@
+@@ -1,3 +1,303 @@
++2014-06-23  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update to 0.5.3+debian-16
++
++	* url.c: Disable ciphers that use keys smaller than 128 bits
++	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/1325674
++
 +2014-01-04  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* version.c.in: Update to 0.5.3+debian-15

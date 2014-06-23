@@ -31,4 +31,5 @@
 300_manual-links.patch
 310_doc-ascii.patch
 320_imlib2-config.patch
+330_Disable-weak-ciphers.patch
 900_ChangeLog.patch

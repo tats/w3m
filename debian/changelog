@@ -1,3 +1,15 @@
+w3m (0.5.3-16) unstable; urgency=low
+
+  [ Tatsuya Kinoshita ]
+  * New patch 330_Disable-weak-ciphers.patch (LP: #1325674)
+  * Update 015_debian-version.patch to 0.5.3+debian-16
+  * Update 900_ChangeLog.patch
+
+  [ Daniel Schepler ]
+  * Update debian/rules to bootstrap without libimlib2-dev (closes: #738208)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 23 Jun 2014 23:15:22 +0900
+
 w3m (0.5.3-15) unstable; urgency=low
 
   * Explicitly add pkg-config to Build-Depends

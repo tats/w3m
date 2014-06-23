@@ -1,3 +1,10 @@
+2014-06-23  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-16
+
+	* url.c: Disable ciphers that use keys smaller than 128 bits
+	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/1325674
+
 2014-01-04  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-15

@@ -1,5 +1,10 @@
-Description: Patch from Gentoo to support Boehm GC 7.2
-Origin: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.2-gc72.patch?revision=1.1&view=markup
+Description: Support Boehm GC 7.2
+Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=080_gc72.patch;att=1;bug=758831
+From: Micah Cowan <micah@addictivecode.org>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=758831
+Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=555467
+Bug: http://sourceforge.net/p/w3m/patches/63/
+Bug: http://sourceforge.net/p/w3m/patches/59/
 
 Index: w3m-0.5.3/main.c
 ===================================================================

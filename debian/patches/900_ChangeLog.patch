@@ -2,10 +2,36 @@ Subject: Update ChangeLog
 From: Tatsuya Kinoshita <tats@debian.org>
 
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..533443d 100644
+index 88358ef..98b9d44 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,303 @@
+@@ -1,3 +1,329 @@
++2014-08-22  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update to 0.5.3+debian-17
++
++	* config.guess:
++	Update config.guess to 2014-03-23 with autotools-dev 20140510.1
++
++	* config.sub:
++	Update config.sub to 2014-05-01 with autotools-dev 20140510.1
++
++2014-08-22  Micah Cowan  <micah@addictivecode.org>
++
++	* main.c: Support Boehm GC 7.2
++	Replace Gentoo's patch to prevent segfaults due to infinite recursion.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=080_gc72.patch;att=1;bug=758831
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=758831
++	Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=555467
++	Bug: http://sourceforge.net/p/w3m/patches/63/
++	Bug: http://sourceforge.net/p/w3m/patches/59/
++
++2014-08-22  Tatsuya Kinoshita  <tats@debian.org>
++
++	* main.c:
++	Revert "Support Boehm GC 7.2" (w3m-0.5.2-gc72.patch from Gentoo)
++	This reverts commit 4331db3e3e673ac4dbfe8e9f2b42a8e0478dc98a.
++
 +2014-06-23  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* version.c.in: Update to 0.5.3+debian-16

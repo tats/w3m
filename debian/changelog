@@ -1,3 +1,18 @@
+w3m (0.5.3-17) unstable; urgency=medium
+
+  [ Micah Cowan ]
+  * Update 080_gc72.patch to prevent segfaults (closes: #758831)
+
+  [ Tatsuya Kinoshita ]
+  * Update header of 080_gc72.patch
+  * Update 050_autotools-config.patch with autotools-dev 20140510.1
+    (Note: Debian package uses dh addon instead of this patch)
+  * Update debian/copyright
+  * Update 015_debian-version.patch to 0.5.3+debian-17
+  * Update 900_ChangeLog.patch
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 22 Aug 2014 21:51:51 +0900
+
 w3m (0.5.3-16) unstable; urgency=low
 
   [ Tatsuya Kinoshita ]

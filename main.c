@@ -320,11 +320,7 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 	    lock = 0;
 	}
     }
-#if GC_VERSION_MAJOR >= 7 && GC_VERSION_MINOR >= 2
-    else if (orig_GC_warn_proc = GC_get_warn_proc())
-#else
     else if (orig_GC_warn_proc)
-#endif
 	orig_GC_warn_proc(msg, arg);
     else
 	fprintf(stderr, msg, (unsigned long)arg);
@@ -894,6 +890,7 @@ main(int argc, char **argv, char **envp)
 #endif
 
 #if GC_VERSION_MAJOR >= 7 && GC_VERSION_MINOR >= 2
+    orig_GC_warn_proc = GC_get_warn_proc();
     GC_set_warn_proc(wrap_GC_warn_proc);
 #else
     orig_GC_warn_proc = GC_set_warn_proc(wrap_GC_warn_proc);

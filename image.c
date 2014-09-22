@@ -595,7 +595,7 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
-	if (enable_inline_image) {
+	if (enable_inline_image == 1) {
 	    if (image->width > 0 && image->width % pixel_per_char_i > 0)
 		image->width += (pixel_per_char_i - image->width % pixel_per_char_i);
 

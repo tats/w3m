@@ -62,6 +62,10 @@ getCharSize()
 	    pixel_per_char = (double)ppc;
 	    pixel_per_line = (double)ppl;
 	}
+	else {
+	    pixel_per_char_i = (int)pixel_per_char;
+	    pixel_per_line_i = (int)pixel_per_line;
+	}
 
 	return  TRUE;
     }

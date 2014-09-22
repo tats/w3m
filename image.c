@@ -53,7 +53,7 @@ getCharSize()
 
     set_environ("W3M_TTY", ttyname_tty());
 
-    if (support_remote_image) {
+    if (enable_inline_image) {
 	int ppc, ppl;
 
 	if (get_pixel_per_cell(&ppc,&ppl)) {
@@ -170,7 +170,7 @@ addImage(ImageCache * cache, int x, int y, int sx, int sy, int w, int h)
 static void
 syncImage(void)
 {
-    if (support_remote_image) {
+    if (enable_inline_image) {
 	return;
     }
 
@@ -189,6 +189,9 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
+void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
+void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
+
 void
 drawImage()
 {
@@ -204,7 +207,7 @@ drawImage()
     for (j = 0; j < n_terminal_image; j++) {
 	i = &terminal_image[j];
 
-	if (support_remote_image) {
+	if (enable_inline_image) {
 	#if 0
 	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
 		(getenv("WINDOWID") && i->cache->touch) ? i->cache->file : i->cache->url,
@@ -214,14 +217,11 @@ drawImage()
 		i->sx, i->sy, i->width, i->height,
 		pixel_per_char_i, pixel_per_line_i);
 	#endif
-	    put_image(
-	    #if 1
-		/* XXX I don't know why but sometimes i->cache->file doesn't exist. */
-		(getenv("WINDOWID") && i->cache->touch && stat(i->cache->file,&st) == 0) ?
+	    (enable_inline_image == 2 ? put_image_sixel : put_image_osc5379)(
+		((enable_inline_image == 2 /* sixel */ || getenv("WINDOWID")) &&
+		 /* XXX I don't know why but sometimes i->cache->file doesn't exist. */
+		 i->cache->touch && stat(i->cache->file,&st) == 0) ?
 			/* local */ i->cache->file : /* remote */ i->cache->url,
-	    #else
-		i->cache->url,
-	    #endif
 		i->x / pixel_per_char_i,
 		i->y / pixel_per_line_i,
 	    #if 1
@@ -269,7 +269,7 @@ drawImage()
 	draw = TRUE;
     }
 
-    if (!support_remote_image) {
+    if (!enable_inline_image) {
 	if (!draw)
 	    return;
 	syncImage();
@@ -388,7 +388,7 @@ showImageProgress(Buffer *buf)
 	}
     }
     if (n) {
-        if (support_remote_image && n == l)
+        if (enable_inline_image && n == l)
 	    drawImage();
 	message(Sprintf("%d/%d images loaded", l, n)->ptr,
 		buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
@@ -476,7 +476,7 @@ loadImage(Buffer *buf, int flag)
     }
 
     if (draw && image_buffer) {
-        if (!support_remote_image)
+        if (!enable_inline_image)
 	    drawImage();
 	showImageProgress(image_buffer);
     }
@@ -591,7 +591,7 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
-	if (support_remote_image) {
+	if (enable_inline_image) {
 	    if (image->width > 0 && image->width % pixel_per_char_i > 0)
 		image->width += (pixel_per_char_i - image->width % pixel_per_char_i);
 

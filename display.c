@@ -523,7 +523,7 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 	if (hseq >= 0 && an->hseq == hseq) {
 	    int start_pos = an->start.pos;
 	    for (i = an->start.pos; i < an->end.pos; i++) {
-	        if (support_remote_image && (l->propBuf[i] & PE_IMAGE))
+	        if (enable_inline_image && (l->propBuf[i] & PE_IMAGE))
 		    start_pos = i + 1;	/* Lazy check */
 		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
 		    if (active)
@@ -858,7 +858,7 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 		y = (int)(i * pixel_per_line);
 		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
 		sy = (int)((l->linenumber - image->y) * pixel_per_line);
-		if (! support_remote_image) {
+		if (! enable_inline_image) {
 		    if (sx == 0 && x + image->xoffset >= 0)
 			x += image->xoffset;
 		    else

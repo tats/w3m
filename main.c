@@ -122,41 +122,7 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
-int support_remote_image;
-
-static void
-check_support_remote_image(void)
-{
-    char *env;
-
-    if ((env = getenv("MLTERM"))) {
-	char *p;
-	int major;
-	int minor;
-	int micro;
-
-	if (!(p = strchr(env,'.')))
-	    return;
-	*p = '\0';
-	major = atoi(env);
-	env = p + 1;
-
-	if (!(p = strchr(env,'.')))
-	    return;
-	*p = '\0';
-	minor = atoi(env);
-	env = p + 1;
-	micro = atoi(env) ;
-
-	if (major > 3 ||
-	    (major == 3 && (minor > 1 || (minor == 1 && micro >= 7)))) {
-	    support_remote_image = 1 ;
-	    set_environ( "W3M_USE_REMOTE_IMAGE","1");	/* for w3mimgdisplay */
-	}
-    }
-
-    return;
-}
+int enable_inline_image;	/* 1 == mlterm OSC 5379, 2 == sixel */
 
 static void
 fversion(FILE * f)
@@ -445,7 +411,6 @@ main(int argc, char **argv, char **envp)
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
-    check_support_remote_image();
     GC_INIT();
 #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
@@ -715,9 +680,11 @@ main(int argc, char **argv, char **envp)
 		}
 	    }
 #endif
-	    else if (!strcmp("-ri" , argv[i])) {
-	        support_remote_image = 1;
-		set_environ( "W3M_USE_REMOTE_IMAGE","1");	/* for w3mimgdisplay */
+	    else if (!strcmp("-ri", argv[i])) {
+	        enable_inline_image = 1;
+	    }
+	    else if (!strcmp("-sixel", argv[i])) {
+		enable_inline_image = 2;
 	    }
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;

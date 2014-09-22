@@ -3345,7 +3345,7 @@ process_img(struct parsed_tag *tag, int width)
 	    if (i < 0)
 		i = pixel_per_line;
 	}
-	if (support_remote_image) {
+	if (enable_inline_image) {
 	    nw = (w > 1) ? ((w - 1) / pixel_per_char_i + 1) : 1 ;
 	    ni = (i > 1) ? ((i - 1) / pixel_per_line_i + 1) : 1 ;
 	}
@@ -3384,7 +3384,7 @@ process_img(struct parsed_tag *tag, int width)
 	    Strcat(tmp, Sprintf(" height=%d", i0));
 	switch (align) {
 	case ALIGN_MIDDLE:
-	    if (!support_remote_image) {
+	    if (!enable_inline_image) {
 		top = ni / 2;
 		bottom = top;
 		if (top * 2 == ni)
@@ -3416,7 +3416,7 @@ process_img(struct parsed_tag *tag, int width)
 	    break;
 	}
 
-	if (support_remote_image)
+	if (enable_inline_image)
 	    xoffset = 0;
 	else
 	    xoffset = (int)((nw * pixel_per_char - w) / 2);

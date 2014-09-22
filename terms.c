@@ -467,7 +467,7 @@ writestr(char *s)
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
 void
-put_image(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
     Str buf;
     char *size ;
@@ -480,6 +480,22 @@ put_image(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
     MOVE(y,x);
     buf = Sprintf("\x1b]5379;show_picture %s %s %dx%d+%d+%d\x07",url,size,sw,sh,sx,sy);
     writestr(buf->ptr);
+    MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+void
+put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+{
+    Str buf;
+
+    MOVE(y,x);
+    flush_tty();
+    buf = Sprintf("img2sixel -l disable -c %dx%d+%d+%d -w %d -h %d %s 2>/dev/null",
+	   sw*pixel_per_char_i, sh*pixel_per_line_i,
+	   sx*pixel_per_char_i, sy*pixel_per_line_i,
+	   w*pixel_per_char_i, h*pixel_per_line_i,
+	   url);
+    system(buf->ptr);
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 

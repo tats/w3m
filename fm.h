@@ -921,7 +921,7 @@ global char *CurrentKeyData;
 global char *CurrentCmdData;
 global char *w3m_reqlog;
 extern char *w3m_version;
-extern int support_remote_image;
+extern int enable_inline_image;
 
 #define DUMP_BUFFER   0x01
 #define DUMP_HEAD     0x02

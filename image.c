@@ -214,7 +214,8 @@ drawImage()
 	if (enable_inline_image) {
 	#if 0
 	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		(getenv("WINDOWID") && i->cache->touch) ? i->cache->file : i->cache->url,
+		((enable_inline_image == 2 || getenv("WINDOWID")) &&
+		 i->cache->touch) ? i->cache->file : i->cache->url,
 		i->x, i->y,
 		i->cache->width > 0 ? i->cache->width : 0,
 		i->cache->height > 0 ? i->cache->height : 0,

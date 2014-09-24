@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include "config.h"
 #include <string.h>
+#include <sys/wait.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -486,16 +487,40 @@ put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
-    Str buf;
+    pid_t pid;
 
     MOVE(y,x);
     flush_tty();
-    buf = Sprintf("img2sixel -l disable -c %dx%d+%d+%d -w %d -h %d %s 2>/dev/null",
-	   sw*pixel_per_char_i, sh*pixel_per_line_i,
-	   sx*pixel_per_char_i, sy*pixel_per_line_i,
-	   w*pixel_per_char_i, h*pixel_per_line_i,
-	   url);
-    system(buf->ptr);
+
+    if ((pid = fork()) == 0) {
+	char *argv[11];
+	char digit[2][11+1];
+	char clip[44+3+1];
+
+	close(STDERR_FILENO);
+	argv[0] = "img2sixel";
+	argv[1] = "-l";
+	argv[2] = "disable";
+	argv[3] = "-w";
+	sprintf(digit[0], "%d", w*pixel_per_char_i);
+	argv[4] = digit[0];
+	argv[5] = "-h";
+	sprintf(digit[1], "%d", h*pixel_per_line_i);
+	argv[6] = digit[1];
+	argv[7] = "-c";
+	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
+			sx*pixel_per_char_i, sy*pixel_per_line_i);
+	argv[8] = clip;
+	argv[9] = url;
+	argv[10] = NULL;
+	execvp(argv[0],argv);
+	exit(0);
+    }
+    else if (pid > 0) {
+	int status;
+	waitpid(pid, &status, 0);
+    }
+
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 

@@ -484,6 +484,89 @@ put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 
+static void
+save_gif(const char *path, u_char *header, size_t  header_size, u_char *body, size_t body_size)
+{
+    int	fd;
+
+    if ((fd = open(path, O_WRONLY|O_CREAT, 0600)) >= 0) {
+	write(fd, header, header_size) ;
+	write(fd, body, body_size) ;
+	write(fd, "\x3b" , 1) ;
+	close(fd) ;
+    }
+}
+
+static u_char *
+skip_gif_header(u_char *p)
+{
+    /* Header */
+    p += 10;
+
+    if (*(p) & 0x80) {
+	p += (3 * (2 << ((*p) & 0x7)));
+    }
+    p += 3;
+
+    return p;
+}
+
+static void
+save_first_animation_frame(const char *path)
+{
+    int	fd;
+    struct stat	st;
+    u_char *header;
+    size_t header_size;
+    u_char *body;
+    u_char *p;
+    ssize_t len;
+
+    if ((fd = open( path, O_RDONLY)) < 0) {
+	return	0;
+    }
+
+    if (fstat( fd, &st) != 0 || ! (header = GC_malloc( st.st_size))){
+	close( fd);
+	return	0;
+    }
+
+    len = read(fd, header, st.st_size);
+    close(fd);
+
+    /* Header */
+
+    if (len != st.st_size || strncmp(header, "GIF89a", 6) != 0) {
+	return	0;
+    }
+
+    p = skip_gif_header(header);
+    header_size = p - header;
+
+    /* Application Extension */
+    if (p[0] == 0x21 && p[1] == 0xff) {
+	p += 19;
+    }
+
+    /* Other blocks */
+    body = NULL;
+    while (p + 2 < header + st.st_size) {
+	if (*(p++) == 0x21 && *(p++) == 0xf9 && *(p++) == 0x04) {
+	    if( body) {
+		/* Graphic Control Extension */
+		save_gif(path, header, header_size, body, p - 3 - body);
+		break;
+	    }
+	    else {
+		/* skip the first frame. */
+	    }
+	    body = p - 3;
+	}
+    }
+
+    return  1;
+}
+
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
@@ -491,6 +574,10 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 
     MOVE(y,x);
     flush_tty();
+
+    if (!strstr(url, "://")) {
+	save_first_animation_frame(url);
+    }
 
     if ((pid = fork()) == 0) {
 	char *argv[11];

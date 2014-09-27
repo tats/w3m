@@ -562,7 +562,7 @@ save_first_animation_frame(const char *path)
 	    if( body) {
 		/* Graphic Control Extension */
 		save_gif(new_path->ptr, header, header_size, body, p - 3 - body);
-		break;
+		return new_path;
 	    }
 	    else {
 		/* skip the first frame. */
@@ -571,7 +571,7 @@ save_first_animation_frame(const char *path)
 	}
     }
 
-    return new_path;
+    return NULL;
 }
 
 void ttymode_set(int mode, int imode);

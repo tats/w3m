@@ -5917,8 +5917,14 @@ deleteFiles()
 	    Firstbuf = buf;
 	}
     }
-    while ((f = popText(fileToDelete)) != NULL)
+    while ((f = popText(fileToDelete)) != NULL) {
 	unlink(f);
+	if (enable_inline_image == 2 && strcmp(f+strlen(f)-4, ".gif") == 0) {
+	    Str firstframe = Strnew_charp(f);
+	    Strcat_charp(firstframe, "-1");
+	    unlink(firstframe->ptr);
+        }
+    }
 }
 
 void

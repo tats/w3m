@@ -511,7 +511,7 @@ skip_gif_header(u_char *p)
     return p;
 }
 
-static void
+static Str
 save_first_animation_frame(const char *path)
 {
     int	fd;
@@ -521,14 +521,21 @@ save_first_animation_frame(const char *path)
     u_char *body;
     u_char *p;
     ssize_t len;
+    Str new_path;
+
+    new_path = Strnew_charp(path);
+    Strcat_charp(new_path, "-1");
+    if (stat(new_path->ptr, &st) == 0) {
+	return new_path;
+    }
 
     if ((fd = open( path, O_RDONLY)) < 0) {
-	return	0;
+	return NULL;
     }
 
     if (fstat( fd, &st) != 0 || ! (header = GC_malloc( st.st_size))){
 	close( fd);
-	return	0;
+	return NULL;
     }
 
     len = read(fd, header, st.st_size);
@@ -537,7 +544,7 @@ save_first_animation_frame(const char *path)
     /* Header */
 
     if (len != st.st_size || strncmp(header, "GIF89a", 6) != 0) {
-	return	0;
+	return NULL;
     }
 
     p = skip_gif_header(header);
@@ -554,7 +561,7 @@ save_first_animation_frame(const char *path)
 	if (*(p++) == 0x21 && *(p++) == 0xf9 && *(p++) == 0x04) {
 	    if( body) {
 		/* Graphic Control Extension */
-		save_gif(path, header, header_size, body, p - 3 - body);
+		save_gif(new_path->ptr, header, header_size, body, p - 3 - body);
 		break;
 	    }
 	    else {
@@ -564,30 +571,48 @@ save_first_animation_frame(const char *path)
 	}
     }
 
-    return  1;
+    return new_path;
 }
+
+void ttymode_set(int mode, int imode);
 
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
     pid_t pid;
+    int  do_anim;
+    MySignalHandler(*volatile previntr) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevquit) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevstop) (SIGNAL_ARG);
 
     MOVE(y,x);
     flush_tty();
 
-    if (!strstr(url, "://")) {
-	save_first_animation_frame(url);
-    }
+    do_anim = (x == 0 && y == 0 && sx == 0 && sy == 0) ;
+
+    previntr = mySignal(SIGINT, SIG_IGN);
+    prevquit = mySignal(SIGQUIT, SIG_IGN);
+    prevstop = mySignal(SIGTSTP, SIG_IGN);
 
     if ((pid = fork()) == 0) {
 	char *argv[11];
 	char digit[2][11+1];
 	char clip[44+3+1];
+	Str str_url;
 
-	close(STDERR_FILENO);
+	close(STDERR_FILENO);	/* Don't output error message. */
+	if (do_anim) {
+	    writestr("\x1b[?80h");
+	}
+	else if (!strstr(url, "://") && strcmp(url+strlen(url)-4, ".gif") == 0 &&
+                 (str_url = save_first_animation_frame(url))) {
+	    url = str_url->ptr;
+	}
+	ttymode_set(ISIG, 1);
+
 	argv[0] = "img2sixel";
 	argv[1] = "-l";
-	argv[2] = "disable";
+	argv[2] = do_anim ? "auto" : "disable";
 	argv[3] = "-w";
 	sprintf(digit[0], "%d", w*pixel_per_char_i);
 	argv[4] = digit[0];
@@ -606,6 +631,13 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     else if (pid > 0) {
 	int status;
 	waitpid(pid, &status, 0);
+	ttymode_set(ISIG, 0);
+	mySignal(SIGINT, previntr);
+	mySignal(SIGQUIT, prevquit);
+	mySignal(SIGTSTP, prevstop);
+	if (do_anim) {
+	    writestr("\x1b[?80l");
+	}
     }
 
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);

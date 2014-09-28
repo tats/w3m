@@ -625,7 +625,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 			sx*pixel_per_char_i, sy*pixel_per_line_i);
 	argv[8] = clip;
 	argv[9] = url;
-	if (getenv("TERM") && strcmp(getenv("TERM"), "screen")) {
+	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0) {
 	    argv[10] = "-P";
 	    argv[11] = NULL;
 	}

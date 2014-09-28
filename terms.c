@@ -595,7 +595,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     prevstop = mySignal(SIGTSTP, SIG_IGN);
 
     if ((pid = fork()) == 0) {
-	char *argv[11];
+	char *argv[12];
 	char digit[2][11+1];
 	char clip[44+3+1];
 	Str str_url;
@@ -609,6 +609,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 	    url = str_url->ptr;
 	}
 	ttymode_set(ISIG, 1);
+
 
 	argv[0] = "img2sixel";
 	argv[1] = "-l";
@@ -624,7 +625,13 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 			sx*pixel_per_char_i, sy*pixel_per_line_i);
 	argv[8] = clip;
 	argv[9] = url;
-	argv[10] = NULL;
+	if (getenv("TERM") && strcmp(getenv("TERM"), "screen")) {
+	    argv[10] = "-P";
+	    argv[11] = NULL;
+	}
+	else {
+	    argv[10] = NULL;
+	}
 	execvp(argv[0],argv);
 	exit(0);
     }

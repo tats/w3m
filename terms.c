@@ -575,6 +575,7 @@ save_first_animation_frame(const char *path)
 }
 
 void ttymode_set(int mode, int imode);
+void ttymode_reset(int mode, int imode);
 
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
@@ -608,8 +609,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
                  (str_url = save_first_animation_frame(url))) {
 	    url = str_url->ptr;
 	}
-	ttymode_set(ISIG, 1);
-
+	ttymode_set(ISIG, 0);
 
 	argv[0] = "img2sixel";
 	argv[1] = "-l";
@@ -638,7 +638,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     else if (pid > 0) {
 	int status;
 	waitpid(pid, &status, 0);
-	ttymode_set(ISIG, 0);
+	ttymode_reset(ISIG, 0);
 	mySignal(SIGINT, previntr);
 	mySignal(SIGQUIT, prevquit);
 	mySignal(SIGTSTP, prevstop);
@@ -661,6 +661,20 @@ get_pixel_per_cell(int *ppc, int *ppl)
     ssize_t left;
     int wp,hp,wc,hc;
     int i;
+
+    /* screen replaces ws.ws_col and ws.ws_row alone. */
+#if  0
+#ifdef  TIOCGWINSZ
+    struct winsize ws;
+    if (ioctl(tty, TIOCGWINSZ, &ws) == 0 && ws.ws_ypixel > 0 && ws.ws_row > 0 &&
+        ws.ws_xpixel > 0 && ws.ws_col > 0) {
+	*ppc = ws.ws_xpixel / ws.ws_col;
+	*ppl = ws.ws_ypixel / ws.ws_row;
+
+	return 1;
+    }
+#endif
+#endif
 
     fputs("\x1b[14t\x1b[18t",ttyf); flush_tty();
 

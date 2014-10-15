@@ -1,3 +1,28 @@
+2014-10-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-18
+
+	* doc-jp/README.SSL: Update README.SSL to follow default values
+
+	* config.sub: Update config.sub with autotools-dev 20140911.1
+
+	* fm.h: Disable SSLv3 by default [CVE-2014-3566]
+	cf. https://blog.mozilla.org/security/2014/10/14/the-poodle-attack-and-the-end-of-ssl-3-0/
+
+2014-10-15  Ludwig Nussel  <ludwig.nussel@suse.de>
+
+	* fm.h: Force ssl_verify_server on and disable SSLv2 support
+	Origin: http://www.openwall.com/lists/oss-security/2010/06/14/4
+
+2014-10-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-17+
+
+2014-10-04  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ambwidth_map.awk, libwc/map/ucs_ambwidth.map:
+	Fix incorrect generation of ucs_ambwidth_map
+
 2014-08-22  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-17

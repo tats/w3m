@@ -9,7 +9,7 @@ ssl_ca_path /etc/ssl/certs
 ssl_key_file 
 ssl_cert_file 
 ssl_verify_server 1
-ssl_forbid_method 2
+ssl_forbid_method 2, 3
 no_cache 0
 noproxy_netaddr 0
 no_proxy 

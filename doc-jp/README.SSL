@@ -25,9 +25,9 @@ SSL サポートについて
 
     ssl_forbid_method
         使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1)
-        (デフォルトは<NULL>).
+        (デフォルトは2, 3).
     ssl_verify_server ON/OFF
-        SSLのサーバ認証を行う(デフォルトはOFF).
+        SSLのサーバ認証を行う(デフォルトはON).
     ssl_cert_file ファイル名
         SSLのクライアント用PEM形式証明書ファイル(デフォルトは<NULL>).
     ssl_key_file ファイル名

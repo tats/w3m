@@ -33,4 +33,5 @@
 320_imlib2-config.patch
 330_Disable-weak-ciphers.patch
 340_ssl-init.patch
+350_ambwidth.patch
 900_ChangeLog.patch

@@ -1,3 +1,18 @@
+w3m (0.5.3-18) unstable; urgency=medium
+
+  * New patch 340_ssl-init.patch to disable SSLv3 [CVE-2014-3566]
+  * New patch 350_ambwidth.patch to correct ucs_ambwidth_map
+  * Update 050_autotools-config.patch with autotools-dev 20140911.1
+    (Note: Debian package uses dh addon instead of this patch)
+  * Update debian/copyright
+  * Typo fix for Homepage
+  * Update Standards-Version to 3.9.6
+  * Update w3mconfig to disable SSLv3 in /etc/w3m/config
+  * Update 015_debian-version.patch to 0.5.3+debian-18
+  * Update 900_ChangeLog.patch
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Wed, 15 Oct 2014 21:42:52 +0900
+
 w3m (0.5.3-17) unstable; urgency=medium
 
   [ Micah Cowan ]

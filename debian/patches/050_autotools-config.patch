@@ -1,7 +1,7 @@
 Subject: Update config.guess and config.sub
 From: Tatsuya Kinoshita <tats@debian.org>
 
-Updated with autotools-dev 20140510.1.
+Updated with autotools-dev 20140911.1
 
 Note that Debian package uses autotools-dev dh addon,
 dh_autotools-dev_updateconfig and dh_autotools-dev_restoreconfig,
@@ -1839,7 +1839,7 @@ index 51fab47..1f5c50c 100755
  If the version you run ($0) is already up to date, please
  send the following data and any information you think might be
 diff --git a/config.sub b/config.sub
-index ba33103..d654d03 100755
+index ba33103..bba4efb 100755
 --- a/config.sub
 +++ b/config.sub
 @@ -1,42 +1,40 @@
@@ -1850,7 +1850,7 @@ index ba33103..d654d03 100755
 +#   Copyright 1992-2014 Free Software Foundation, Inc.
  
 -timestamp='2004-03-12'
-+timestamp='2014-05-01'
++timestamp='2014-09-11'
  
 -# This file is (in principle) common to ALL GNU software.
 -# The presence of a machine in this file suggests that SOME GNU software
@@ -2019,7 +2019,7 @@ index ba33103..d654d03 100755
  	-lynx*)
  		os=-lynxos
  		;;
-@@ -227,57 +248,108 @@ case $basic_machine in
+@@ -227,57 +248,109 @@ case $basic_machine in
  	# Some are omitted here because they have special meanings below.
  	1750a | 580 \
  	| a29k \
@@ -2085,6 +2085,7 @@ index ba33103..d654d03 100755
 +	| powerpc | powerpc64 | powerpc64le | powerpcle \
  	| pyramid \
 -	| sh | sh[1234] | sh[23]e | sh[34]eb | shbe | shle | sh[1234]le | sh3ele \
++	| riscv32 | riscv64 \
 +	| rl78 | rx \
 +	| score \
 +	| sh | sh[1234] | sh[24]a | sh[24]aeb | sh[23]e | sh[34]eb | sheb | shbe | shle | sh[1234]le | sh3ele \
@@ -2144,7 +2145,7 @@ index ba33103..d654d03 100755
  
  	# We use `pc' rather than `unknown'
  	# because (1) that's what they normally are, and
-@@ -293,59 +365,86 @@ case $basic_machine in
+@@ -293,59 +366,86 @@ case $basic_machine in
  	# Recognize the basic CPU types with company name.
  	580-* \
  	| a29k-* \
@@ -2251,7 +2252,7 @@ index ba33103..d654d03 100755
  		;;
  	# Recognize the various machine names and aliases which stand
  	# for a CPU type and a company and sometimes even an OS.
-@@ -363,7 +462,7 @@ case $basic_machine in
+@@ -363,7 +463,7 @@ case $basic_machine in
  		basic_machine=a29k-amd
  		os=-udi
  		;;
@@ -2260,7 +2261,7 @@ index ba33103..d654d03 100755
  		basic_machine=abacus-unknown
  		;;
  	adobe68k)
-@@ -409,6 +508,10 @@ case $basic_machine in
+@@ -409,6 +509,10 @@ case $basic_machine in
  		basic_machine=m68k-apollo
  		os=-bsd
  		;;
@@ -2271,7 +2272,7 @@ index ba33103..d654d03 100755
  	aux)
  		basic_machine=m68k-apple
  		os=-aux
-@@ -417,10 +520,35 @@ case $basic_machine in
+@@ -417,10 +521,35 @@ case $basic_machine in
  		basic_machine=ns32k-sequent
  		os=-dynix
  		;;
@@ -2307,7 +2308,7 @@ index ba33103..d654d03 100755
  	convex-c1)
  		basic_machine=c1-convex
  		os=-bsd
-@@ -445,13 +573,20 @@ case $basic_machine in
+@@ -445,13 +574,20 @@ case $basic_machine in
  		basic_machine=j90-cray
  		os=-unicos
  		;;
@@ -2330,7 +2331,7 @@ index ba33103..d654d03 100755
  	cris | cris-* | etrax*)
  		basic_machine=cris-axis
  		;;
-@@ -481,6 +616,14 @@ case $basic_machine in
+@@ -481,6 +617,14 @@ case $basic_machine in
  		basic_machine=m88k-motorola
  		os=-sysv3
  		;;
@@ -2345,7 +2346,7 @@ index ba33103..d654d03 100755
  	dpx20 | dpx20-*)
  		basic_machine=rs6000-bull
  		os=-bosx
-@@ -592,7 +735,6 @@ case $basic_machine in
+@@ -592,7 +736,6 @@ case $basic_machine in
  	i370-ibm* | ibm*)
  		basic_machine=i370-ibm
  		;;
@@ -2353,7 +2354,7 @@ index ba33103..d654d03 100755
  	i*86v32)
  		basic_machine=`echo $1 | sed -e 's/86.*/86-pc/'`
  		os=-sysv32
-@@ -631,6 +773,14 @@ case $basic_machine in
+@@ -631,6 +774,14 @@ case $basic_machine in
  		basic_machine=m68k-isi
  		os=-sysv
  		;;
@@ -2368,7 +2369,7 @@ index ba33103..d654d03 100755
  	m88k-omron*)
  		basic_machine=m88k-omron
  		;;
-@@ -642,10 +792,21 @@ case $basic_machine in
+@@ -642,10 +793,21 @@ case $basic_machine in
  		basic_machine=ns32k-utek
  		os=-sysv
  		;;
@@ -2391,7 +2392,7 @@ index ba33103..d654d03 100755
  	miniframe)
  		basic_machine=m68000-convergent
  		;;
-@@ -659,10 +820,6 @@ case $basic_machine in
+@@ -659,10 +821,6 @@ case $basic_machine in
  	mips3*)
  		basic_machine=`echo $basic_machine | sed -e 's/mips3/mips64/'`-unknown
  		;;
@@ -2402,7 +2403,15 @@ index ba33103..d654d03 100755
  	monitor)
  		basic_machine=m68k-rom68k
  		os=-coff
-@@ -675,10 +832,21 @@ case $basic_machine in
+@@ -671,14 +829,29 @@ case $basic_machine in
+ 		basic_machine=powerpc-unknown
+ 		os=-morphos
+ 		;;
++	moxiebox)
++		basic_machine=moxie-unknown
++		os=-moxiebox
++		;;
+ 	msdos)
  		basic_machine=i386-pc
  		os=-msdos
  		;;
@@ -2424,7 +2433,7 @@ index ba33103..d654d03 100755
  	ncr3000)
  		basic_machine=i486-ncr
  		os=-sysv4
-@@ -743,9 +911,11 @@ case $basic_machine in
+@@ -743,9 +916,11 @@ case $basic_machine in
  	np1)
  		basic_machine=np1-gould
  		;;
@@ -2439,7 +2448,7 @@ index ba33103..d654d03 100755
  		;;
  	nsr-tandem)
  		basic_machine=nsr-tandem
-@@ -754,9 +924,8 @@ case $basic_machine in
+@@ -754,9 +929,8 @@ case $basic_machine in
  		basic_machine=hppa1.1-oki
  		os=-proelf
  		;;
@@ -2450,7 +2459,7 @@ index ba33103..d654d03 100755
  		;;
  	os400)
  		basic_machine=powerpc-ibm
-@@ -778,6 +947,14 @@ case $basic_machine in
+@@ -778,6 +952,14 @@ case $basic_machine in
  		basic_machine=i860-intel
  		os=-osf
  		;;
@@ -2465,7 +2474,7 @@ index ba33103..d654d03 100755
  	pbd)
  		basic_machine=sparc-tti
  		;;
-@@ -787,6 +964,12 @@ case $basic_machine in
+@@ -787,6 +969,12 @@ case $basic_machine in
  	pc532 | pc532-*)
  		basic_machine=ns32k-pc532
  		;;
@@ -2478,7 +2487,7 @@ index ba33103..d654d03 100755
  	pentium | p5 | k5 | k6 | nexgen | viac3)
  		basic_machine=i586-pc
  		;;
-@@ -816,9 +999,10 @@ case $basic_machine in
+@@ -816,9 +1004,10 @@ case $basic_machine in
  		;;
  	power)	basic_machine=power-ibm
  		;;
@@ -2491,7 +2500,7 @@ index ba33103..d654d03 100755
  		;;
  	ppcle | powerpclittle | ppc-le | powerpc-little)
  		basic_machine=powerpcle-unknown
-@@ -843,6 +1027,14 @@ case $basic_machine in
+@@ -843,6 +1032,14 @@ case $basic_machine in
  		basic_machine=i586-unknown
  		os=-pw32
  		;;
@@ -2506,7 +2515,7 @@ index ba33103..d654d03 100755
  	rom68k)
  		basic_machine=m68k-rom68k
  		os=-coff
-@@ -869,6 +1061,10 @@ case $basic_machine in
+@@ -869,6 +1066,10 @@ case $basic_machine in
  	sb1el)
  		basic_machine=mipsisa64sb1el-unknown
  		;;
@@ -2517,7 +2526,7 @@ index ba33103..d654d03 100755
  	sei)
  		basic_machine=mips-sei
  		os=-seiux
-@@ -880,6 +1076,9 @@ case $basic_machine in
+@@ -880,6 +1081,9 @@ case $basic_machine in
  		basic_machine=sh-hitachi
  		os=-hms
  		;;
@@ -2527,7 +2536,7 @@ index ba33103..d654d03 100755
  	sh64)
  		basic_machine=sh64-unknown
  		;;
-@@ -901,6 +1100,9 @@ case $basic_machine in
+@@ -901,6 +1105,9 @@ case $basic_machine in
  		basic_machine=i860-stratus
  		os=-sysv4
  		;;
@@ -2537,7 +2546,7 @@ index ba33103..d654d03 100755
  	sun2)
  		basic_machine=m68000-sun
  		;;
-@@ -957,17 +1159,9 @@ case $basic_machine in
+@@ -957,17 +1164,9 @@ case $basic_machine in
  		basic_machine=t90-cray
  		os=-unicos
  		;;
@@ -2558,7 +2567,7 @@ index ba33103..d654d03 100755
  		;;
  	tx39)
  		basic_machine=mipstx39-unknown
-@@ -1029,9 +1223,16 @@ case $basic_machine in
+@@ -1029,9 +1228,16 @@ case $basic_machine in
  		basic_machine=hppa1.1-winbond
  		os=-proelf
  		;;
@@ -2575,7 +2584,7 @@ index ba33103..d654d03 100755
  	ymp)
  		basic_machine=ymp-cray
  		os=-unicos
-@@ -1040,6 +1241,10 @@ case $basic_machine in
+@@ -1040,6 +1246,10 @@ case $basic_machine in
  		basic_machine=z8k-unknown
  		os=-sim
  		;;
@@ -2586,7 +2595,7 @@ index ba33103..d654d03 100755
  	none)
  		basic_machine=none-none
  		os=-none
-@@ -1059,6 +1264,9 @@ case $basic_machine in
+@@ -1059,6 +1269,9 @@ case $basic_machine in
  	romp)
  		basic_machine=romp-ibm
  		;;
@@ -2596,7 +2605,7 @@ index ba33103..d654d03 100755
  	rs6000)
  		basic_machine=rs6000-ibm
  		;;
-@@ -1075,13 +1283,10 @@ case $basic_machine in
+@@ -1075,13 +1288,10 @@ case $basic_machine in
  	we32k)
  		basic_machine=we32k-att
  		;;
@@ -2612,7 +2621,7 @@ index ba33103..d654d03 100755
  		basic_machine=sparc-sun
  		;;
  	cydra)
-@@ -1125,9 +1330,12 @@ esac
+@@ -1125,9 +1335,12 @@ esac
  if [ x"$os" != x"" ]
  then
  case $os in
@@ -2627,7 +2636,7 @@ index ba33103..d654d03 100755
  	-solaris1 | -solaris1.*)
  		os=`echo $os | sed -e 's|solaris1|sunos4|'`
  		;;
-@@ -1148,26 +1356,31 @@ case $os in
+@@ -1148,26 +1361,31 @@ case $os in
  	# Each alternative MUST END IN A *, to match a version number.
  	# -sysv* is not here because it comes later, after sysvr4.
  	-gnu* | -bsd* | -mach* | -minix* | -genix* | -ultrix* | -irix* \
@@ -2655,7 +2664,7 @@ index ba33103..d654d03 100755
 +	      | -cygwin* | -msys* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
 +	      | -mingw32* | -mingw64* | -linux-gnu* | -linux-android* \
 +	      | -linux-newlib* | -linux-musl* | -linux-uclibc* \
-+	      | -uxpv* | -beos* | -mpeix* | -udk* \
++	      | -uxpv* | -beos* | -mpeix* | -udk* | -moxiebox* \
  	      | -interix* | -uwin* | -mks* | -rhapsody* | -darwin* | -opened* \
  	      | -openstep* | -oskit* | -conix* | -pw32* | -nonstopux* \
  	      | -storm-chaos* | -tops10* | -tenex* | -tops20* | -its* \
@@ -2667,7 +2676,7 @@ index ba33103..d654d03 100755
  	# Remember, each alternative MUST END IN *, to match a version number.
  		;;
  	-qnx*)
-@@ -1185,7 +1398,7 @@ case $os in
+@@ -1185,7 +1403,7 @@ case $os in
  		os=`echo $os | sed -e 's|nto|nto-qnx|'`
  		;;
  	-sim | -es1800* | -hms* | -xray | -os68k* | -none* | -v88r* \
@@ -2676,7 +2685,7 @@ index ba33103..d654d03 100755
  	      | -macos* | -mpw* | -magic* | -mmixware* | -mon960* | -lnews*)
  		;;
  	-mac*)
-@@ -1206,7 +1419,7 @@ case $os in
+@@ -1206,7 +1424,7 @@ case $os in
  	-opened*)
  		os=-openedition
  		;;
@@ -2685,7 +2694,7 @@ index ba33103..d654d03 100755
  		os=-os400
  		;;
  	-wince*)
-@@ -1255,7 +1468,7 @@ case $os in
+@@ -1255,7 +1473,7 @@ case $os in
  	-sinix*)
  		os=-sysv4
  		;;
@@ -2694,7 +2703,7 @@ index ba33103..d654d03 100755
  		os=-tpf
  		;;
  	-triton*)
-@@ -1291,8 +1504,13 @@ case $os in
+@@ -1291,8 +1509,13 @@ case $os in
  	-aros*)
  		os=-aros
  		;;
@@ -2710,7 +2719,7 @@ index ba33103..d654d03 100755
  		;;
  	-none)
  		;;
-@@ -1316,6 +1534,12 @@ else
+@@ -1316,6 +1539,12 @@ else
  # system, and we'll never get to this point.
  
  case $basic_machine in
@@ -2723,7 +2732,7 @@ index ba33103..d654d03 100755
  	*-acorn)
  		os=-riscix1.2
  		;;
-@@ -1325,9 +1549,24 @@ case $basic_machine in
+@@ -1325,9 +1554,24 @@ case $basic_machine in
  	arm*-semi)
  		os=-aout
  		;;
@@ -2751,7 +2760,7 @@ index ba33103..d654d03 100755
  	# This must come before the *-dec entry.
  	pdp10-*)
  		os=-tops20
-@@ -1346,13 +1585,13 @@ case $basic_machine in
+@@ -1346,13 +1590,13 @@ case $basic_machine in
  		;;
  	m68000-sun)
  		os=-sunos3
@@ -2768,7 +2777,7 @@ index ba33103..d654d03 100755
  	mips*-cisco)
  		os=-elf
  		;;
-@@ -1371,9 +1610,15 @@ case $basic_machine in
+@@ -1371,9 +1615,15 @@ case $basic_machine in
  	*-be)
  		os=-beos
  		;;
@@ -2784,7 +2793,7 @@ index ba33103..d654d03 100755
  	*-wec)
  		os=-proelf
  		;;
-@@ -1476,7 +1721,7 @@ case $basic_machine in
+@@ -1476,7 +1726,7 @@ case $basic_machine in
  			-sunos*)
  				vendor=sun
  				;;
@@ -2793,7 +2802,7 @@ index ba33103..d654d03 100755
  				vendor=ibm
  				;;
  			-beos*)
-@@ -1539,7 +1784,7 @@ case $basic_machine in
+@@ -1539,7 +1789,7 @@ case $basic_machine in
  esac
  
  echo $basic_machine$os

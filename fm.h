@@ -1144,7 +1144,7 @@ global int ssl_path_modified init(FALSE);
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
-global char *ssl_forbid_method init("2");
+global char *ssl_forbid_method init("2, 3");
 #endif
 
 global int is_redisplay init(FALSE);

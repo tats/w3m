@@ -195,8 +195,8 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
-void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
-void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
+void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
 
 void
 drawImage()
@@ -247,7 +247,8 @@ drawImage()
 		i->sx / pixel_per_char_i,
 		i->sy / pixel_per_line_i,
 		(i->width + i->sx % pixel_per_char_i + pixel_per_char_i - 1) / pixel_per_char_i,
-		(i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) / pixel_per_line_i);
+		(i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) / pixel_per_line_i,
+		n_terminal_image);
 
 	    continue ;
 	}

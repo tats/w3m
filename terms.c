@@ -468,7 +468,7 @@ writestr(char *s)
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
 void
-put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)
 {
     Str buf;
     char *size ;
@@ -578,10 +578,10 @@ void ttymode_set(int mode, int imode);
 void ttymode_reset(int mode, int imode);
 
 void
-put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
+put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)
 {
     pid_t pid;
-    int  do_anim;
+    int do_anim;
     MySignalHandler(*volatile previntr) (SIGNAL_ARG);
     MySignalHandler(*volatile prevquit) (SIGNAL_ARG);
     MySignalHandler(*volatile prevstop) (SIGNAL_ARG);
@@ -589,7 +589,7 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     MOVE(y,x);
     flush_tty();
 
-    do_anim = (x == 0 && y == 0 && sx == 0 && sy == 0) ;
+    do_anim = (n_terminal_image == 1 && x == 0 && y == 0 && sx == 0 && sy == 0);
 
     previntr = mySignal(SIGINT, SIG_IGN);
     prevquit = mySignal(SIGQUIT, SIG_IGN);
@@ -663,18 +663,14 @@ get_pixel_per_cell(int *ppc, int *ppl)
     int wp,hp,wc,hc;
     int i;
 
-    /* screen replaces ws.ws_col and ws.ws_row alone. */
-#if  0
 #ifdef  TIOCGWINSZ
     struct winsize ws;
     if (ioctl(tty, TIOCGWINSZ, &ws) == 0 && ws.ws_ypixel > 0 && ws.ws_row > 0 &&
         ws.ws_xpixel > 0 && ws.ws_col > 0) {
 	*ppc = ws.ws_xpixel / ws.ws_col;
 	*ppl = ws.ws_ypixel / ws.ws_row;
-
 	return 1;
     }
-#endif
 #endif
 
     fputs("\x1b[14t\x1b[18t",ttyf); flush_tty();
@@ -694,10 +690,14 @@ get_pixel_per_cell(int *ppc, int *ppl)
 	p[len] = '\0';
 
 	if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) == 4) {
-	    *ppc = wp / wc;
-	    *ppl = hp / hc;
-
-	    return 1;
+	    if (wp > 0 && wc > 0 && hp > 0 && hc > 0) {
+		*ppc = wp / wc;
+		*ppl = hp / hc;
+		return 1;
+	    }
+	    else {
+		return 0;
+	    }
 	}
 	p += len;
 	left -= len;

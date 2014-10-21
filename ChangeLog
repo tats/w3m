@@ -1,3 +1,14 @@
+2014-10-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* version.c.in: Update to 0.5.3+debian-19
+
+	* po/LINGUAS: Correct LINGUAS to a whitespace separated list
+
+2014-10-21  Markus Hiereth  <markus.hiereth@freenet.de>
+
+	* po/LINGUAS, po/de.po: Add German translation
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=763964
+
 2014-10-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* version.c.in: Update to 0.5.3+debian-18

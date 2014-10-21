@@ -34,4 +34,5 @@
 330_Disable-weak-ciphers.patch
 340_ssl-init.patch
 350_ambwidth.patch
+360_lang-de.patch
 900_ChangeLog.patch

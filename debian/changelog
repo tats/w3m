@@ -1,3 +1,11 @@
+w3m (0.5.3-19) unstable; urgency=medium
+
+  * New patch 360_lang-de.patch to add German translation (closes: #763964)
+  * Update 015_debian-version.patch to 0.5.3+debian-19
+  * Update 900_ChangeLog.patch
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Tue, 21 Oct 2014 22:50:53 +0900
+
 w3m (0.5.3-18) unstable; urgency=medium
 
   * New patch 340_ssl-init.patch to disable SSLv3 [CVE-2014-3566]

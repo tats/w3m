@@ -3,13 +3,13 @@ Author: Markus Hiereth <markus.hiereth@freenet.de>
 Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=763964
 
 diff --git a/po/LINGUAS b/po/LINGUAS
-index 1489115..ad2e374 100644
+index 1489115..ade7ca2 100644
 --- a/po/LINGUAS
 +++ b/po/LINGUAS
-@@ -1,2 +1,3 @@
+@@ -1,2 +1,2 @@
  # Set of available languages.
- ja
-+de
+-ja
++ja de
 diff --git a/po/de.po b/po/de.po
 new file mode 100644
 index 0000000..5e84022

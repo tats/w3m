@@ -596,7 +596,9 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     prevstop = mySignal(SIGTSTP, SIG_IGN);
 
     if ((pid = fork()) == 0) {
-	char *argv[12];
+	char *env;
+	int n = 0;
+	char *argv[20];
 	char digit[2][11+1];
 	char clip[44+3+1];
 	Str str_url;
@@ -611,28 +613,41 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 	}
 	ttymode_set(ISIG, 0);
 
-	argv[0] = "img2sixel";
-	argv[1] = "-l";
-	argv[2] = do_anim ? "auto" : "disable";
-	argv[3] = "-w";
-	sprintf(digit[0], "%d", w*pixel_per_char_i);
-	argv[4] = digit[0];
-	argv[5] = "-h";
-	sprintf(digit[1], "%d", h*pixel_per_line_i);
-	argv[6] = digit[1];
-	argv[7] = "-c";
-	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
-			sx*pixel_per_char_i, sy*pixel_per_line_i);
-	argv[8] = clip;
-	argv[9] = url;
-	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0 &&
-	    (!getenv("SCREEN_VARIANT") || strcmp(getenv("SCREEN_VARIANT"), "sixel") != 0)) {
-	    argv[10] = "-P";
-	    argv[11] = NULL;
+	if ((env = getenv("W3M_IMG2SIXEL"))) {
+	    char *p;
+	    env = Strnew_charp(env)->ptr;
+	    while (n < 8 && (p = strchr(env, ' '))) {
+		*p = '\0';
+		if (*env != '\0') {
+		    argv[n++] = env;
+		}
+		env = p+1;
+	    }
+	    if (*env != '\0') {
+		argv[n++] = env;
+	    }
 	}
 	else {
-	    argv[10] = NULL;
+		argv[n++] = "img2sixel";
 	}
+	argv[n++] = "-l";
+	argv[n++] = do_anim ? "auto" : "disable";
+	argv[n++] = "-w";
+	sprintf(digit[0], "%d", w*pixel_per_char_i);
+	argv[n++] = digit[0];
+	argv[n++] = "-h";
+	sprintf(digit[1], "%d", h*pixel_per_line_i);
+	argv[n++] = digit[1];
+	argv[n++] = "-c";
+	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
+			sx*pixel_per_char_i, sy*pixel_per_line_i);
+	argv[n++] = clip;
+	argv[n++] = url;
+	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0 &&
+	    (!getenv("SCREEN_VARIANT") || strcmp(getenv("SCREEN_VARIANT"), "sixel") != 0)) {
+	    argv[n++] = "-P";
+	}
+	argv[n++] = NULL;
 	execvp(argv[0],argv);
 	exit(0);
     }

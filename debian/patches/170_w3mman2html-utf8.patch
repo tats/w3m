@@ -1,11 +1,21 @@
-Subject: Correct underline processing and more UTF-8 support for w3mman2html.cgi
+Subject: More UTF-8 support and fixes for w3mman2html.cgi
+Author: Piotr P. Karwasz, Justin B Rye <justin.byam.rye@gmail.com>
 Origin: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/680202
-Author: Piotr P. Karwasz
+Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771004
 
-diff -ru w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in w3m-0.5.2/scripts/w3mman/w3mman2html.cgi.in
---- w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in	2010-11-22 14:00:11.000000000 +0100
-+++ w3m-0.5.2/scripts/w3mman/w3mman2html.cgi.in	2010-11-22 14:02:48.000000000 +0100
-@@ -126,12 +126,14 @@
+diff --git a/scripts/w3mman/w3mman2html.cgi.in b/scripts/w3mman/w3mman2html.cgi.in
+index f430307..2cd00f9 100644
+--- a/scripts/w3mman/w3mman2html.cgi.in
++++ b/scripts/w3mman/w3mman2html.cgi.in
+@@ -34,7 +34,6 @@ Content-Type: text/html
+ EOF
+     $keyword =~ s:([^-\w\200-\377.,])::g;
+     open(F, "$MAN -k $keyword 2> /dev/null |");
+-    @line = ();
+     while(<F>) {
+       chop;
+       $_ = &html_quote($_);
+@@ -126,12 +125,14 @@ while(<F>) {
    s/\&/\&amp;/g;
    s/\</\&lt;/g;
    s/\>/\&gt;/g;
@@ -23,3 +33,21 @@ diff -ru w3m-0.5.2.orig/scripts/w3mman/w3mman2html.cgi.in w3m-0.5.2/scripts/w3mm
    s@((\<b\>)?(\&\w+\;|.)(\</b\>)?)\010_@<u>$1</u>@g;
    s@.\010(.)@$1@g;
  
+@@ -156,7 +157,7 @@ EOF
+   }
+ 
+   s@(http|ftp)://[\w.\-/~]+[\w/]@<a href="$&">$&</a>@g;
+-  s@(\W)(mailto:)?(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@$1<a href="mailto:$3">$2$3</a>@g;
++  s@\b(mailto:|)(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@<a href="mailto:$2">$1$2</a>@g;
+   s@(\W)(\~?/[\w.][\w.\-/~]*)@$1 . &file_ref($2)@ge;
+   s@(include(<\/?[bu]\>|\s)*\&lt;)([\w.\-/]+)@$1 . &include_ref($3)@ge;
+   if ($prev && m@^\s*(\<[bu]\>)*(\w[\w.\-]*)(\</[bu]\>)*(\([\dm]\w*\))@) {
+@@ -220,7 +221,7 @@ sub is_command {
+   local($p);
+ 
+   (! -d && -x) || return 0;
+-  if (! defined(%PATH)) {
++  if (! %PATH) {
+     for $p (split(":", $ENV{'PATH'})) {
+       $p =~ s@/+$@@;
+       $PATH{$p} = 1;

@@ -1,4 +1,4 @@
-.TH W3MMAN 1 "Nov 5, 2005"
+.TH W3MMAN 1 "Nov 23, 2014"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -12,19 +12,19 @@
 .\" .sp <n>    insert n+1 empty lines
 .\" for manpage-specific macros, see man(7)
 .SH NAME
-w3mman \- an interface to the on-line reference manuals by w3m(1)
+w3mman \- an interface to the on-line reference manuals via w3m(1)
 .SH SYNOPSIS
 .B w3mman
-.RI "[-M " path ] " " [ section ] " page"
+.RI "[\-M " path ] " " [ section ] " page"
 .br
 .B w3mman
-.RI "[-M " path "] -k " keyword
+.RI "[\-M " path "] \-k " keyword
 .br
 .B w3mman
-.RI -l " file
+.RI \-l " file
 .SH DESCRIPTION
 .B w3mman
-is the system's manual pager by 
+is a pager for manual pages, using
 .BR w3m (1).
 .SH OPTIONS
 A summary of options is included below.
@@ -51,7 +51,7 @@ If W3MMAN_MAN is set, its value is used instead of @MAN@.
 .SH FILES
 .TP
 .I @libexecdir@/@PACKAGE@/cgi-bin/w3mman2html.cgi
-convert manual page to html.
+manual page to HTML convertor.
 .SH SEE ALSO
 .BR man (1),
 .BR w3m (1).

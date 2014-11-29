@@ -178,19 +178,60 @@ write request logfile
 .B -debug
 DO NOT USE
 .SH EXAMPLES
+.SS Pager-like usage 
 .TP
-To use w3m as a pager:
-.br
-$ ls | w3m
-.br
+Combine snippets of HTML code and preview the page 
+.EX
+$ cat header.html footer.html | w3m -T text/html
+.EE
 .TP
-To use w3m to translate HTML files:
-.br
-$ cat foo.html | w3m -T text/html
+Compare two files using tabs 
+.EX
+$ w3m -N config.old config
+.EE
+.SS Browser-like usage 
 .TP
-or
-.br
-$ cat foo.html | w3m -dump -T text/html >foo.txt
+Display web content in monochrome terminal
+.EX
+$ w3m -M http://w3m.sourceforge.net
+.EE
+.TP
+Display embedded graphics
+.EX
+$ w3m -o auto_image=TRUE http://w3m.sourceforge.net
+.EE
+.TP
+Display content from Usenet  
+.EX
+$ w3m -m nntp://news.aioe.org/comp.os.linux.networking
+.EE
+.TP
+Upload data for a URL using the POST method 
+.EX
+$ w3m -post - http://example.com/form.php <<<'a=0&b=1'
+.EE
+.SS Filter-like usage
+.TP
+Convert an HTML file to plain text with a defined line length
+.EX
+$ w3m -cols 40 foo.html > foo.txt
+.EE
+.TP
+Output the bookmarks page as text with an appended list of links
+.EX
+$ w3m -B -o display_link_number=1 > out.txt
+.EE
+.TP
+Conversion of file format and character encoding
+.EX
+$ w3m -T text/html -I EUC-JP -O UTF-8 < foo.html > foo.txt
+.EE
+.SS Start with no input
+.TP
+Welcome users with a built-in page
+.EX
+$ w3m -v
+.EE
 .SH FILES
 .TP
 .I ${HOME}/.w3m/config

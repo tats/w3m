@@ -77,7 +77,8 @@ visual startup mode
 monochrome display
 .TP
 .B -N
-open URL of command line on each new tab
+distribute multiple command line arguments to tabs. By default, a
+stack of buffers is used
 .TP
 .B -F
 automatically render frame
@@ -85,8 +86,8 @@ automatically render frame
 .B -dump
 dump formatted page into stdout
 .TP
-.B -cols width
-specify column width (used with -dump)
+.B -cols num
+with stdout as destination; HTML is rendered to lines of \fInum\fR characters
 .TP
 .B -ppc count
 specify the number of pixels per character (4.0...32.0).
@@ -156,8 +157,8 @@ don't use termcap init/deinit
 set buffer name to terminal title string. 
 If TERM is specified, use the TERM style title configuration.
 .TP
-.B -o opt=value
-assign value to config option
+.B -o option=value
+modify one configuration item with an explicitly given value; without \fIoption=value\fR, equivalent to -show-option
 .TP
 .B -show-option
 show all available config option
@@ -177,52 +178,96 @@ write request logfile
 .B -debug
 DO NOT USE
 .SH EXAMPLES
+.SS Pager-like usage 
 .TP
-To use w3m as a pager:
-.br
-$ ls | w3m
-.br
+Combine snippets of HTML code and preview the page 
+.EX
+$ cat header.html footer.html | w3m -T text/html
+.EE
 .TP
-To use w3m to translate HTML files:
-.br
-$ cat foo.html | w3m -T text/html
+Compare two files using tabs 
+.EX
+$ w3m -N config.old config
+.EE
+.SS Browser-like usage 
 .TP
-or
-.br
-$ cat foo.html | w3m -dump -T text/html >foo.txt
+Display web content in monochrome terminal
+.EX
+$ w3m -M http://w3m.sourceforge.net
+.EE
+.TP
+Display embedded graphics
+.EX
+$ w3m -o auto_image=TRUE http://w3m.sourceforge.net
+.EE
+.TP
+Display content from Usenet  
+.EX
+$ w3m -m nntp://news.aioe.org/comp.os.linux.networking
+.EE
+.TP
+Upload data for a URL using the POST method 
+.EX
+$ w3m -post - http://example.com/form.php <<<'a=0&b=1'
+.EE
+.SS Filter-like usage
+.TP
+Convert an HTML file to plain text with a defined line length
+.EX
+$ w3m -cols 40 foo.html > foo.txt
+.EE
+.TP
+Output the bookmarks page as text with an appended list of links
+.EX
+$ w3m -B -o display_link_number=1 > out.txt
+.EE
+.TP
+Conversion of file format and character encoding
+.EX
+$ w3m -T text/html -I EUC-JP -O UTF-8 < foo.html > foo.txt
+.EE
+.SS Start with no input
+.TP
+Welcome users with a built-in page
+.EX
+$ w3m -v
+.EE
 .SH FILES
 .TP
-.I ${HOME}/.w3m/config
-configuration file
+\f(CW~/.w3m/bookmark.html\fP
+default bookmark file 
 .TP
-.I ${HOME}/.w3m/keymap
-key binding configuration file
-.\" .TP
-.\" .I ${HOME}/.w3m/menu
-.\" ???
+\f(CW~/.w3m/config\fP
+user defined configuration file; overrides \f(CW/etc/w3m/config\fP
 .TP
-.I ${HOME}/.w3m/mouse
-mouse configuration file
+\f(CW~/.w3m/cookie\fP
+cookie jar; written on exit, read on launch   
 .TP
-.I ${HOME}/.w3m/cookie
-cookie file
+\f(CW~/.w3m/history\fP
+browser history - visited files and URLs
 .TP
-.I ${HOME}/.w3m/history
-history file
+\f(CW~/.w3m/keymap\fP
+user defined key bindings; overrides default key bindings
 .TP
-.I ${HOME}/.w3m/passwd
-passowrd and username file
-.TP
-.I ${HOME}/.w3m/pre_form
-form parameters file
-.TP
-.I ${HOME}/.w3m/mailcap
+\f(CW~/.w3m/mailcap\fP
 external viewer configuration file
 .TP
-.I ${HOME}/.w3m/mime.types
+\f(CW~/.w3m/menu\fP
+user defined menu; overrides default menu
+.TP
+\f(CW~/.w3m/mime.types\fP
 MIME types file
+.TP
+\f(CW~/.w3m/mouse\fP
+user defined mouse settings
+.TP
+\f(CW~/.w3m/passwd\fP
+password and username file
+.TP
+\f(CW~/.w3m/pre_form\fP
+contains predefined values to fill recurrent HTML forms
 .\" .TP
-.\" .I ${HOME}/.w3m/urimethodmap
+.\" .I $~/.w3m/urimethodmap
 .\" ???
 .SH NOTES
 This is the

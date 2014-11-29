@@ -1,13 +1,11 @@
 .nr N -1
 .nr D 5
-.TH W3M 1 Local
+.TH W3M 1 "2014-11-29"
 .UC 4
 .SH NAME
-w3m \- a text based Web browser and pager
+w3m \- a text based web browser and pager
 .SH SYNOPSIS
-.B w3m
-[options] [URL or filename]
-.PP
+w3m [OPTION]...  [ \fIfile\fP | \fIURL\fP ]...
 .SH DESCRIPTION
 .\" This defines appropriate quote strings for nroff and troff
 .ds lq \&"
@@ -17,166 +15,177 @@ w3m \- a text based Web browser and pager
 .\" Just in case these number registers aren't set yet...
 .if \nN==0 .nr N 10
 .if \nD==0 .nr D 5
-.I
-w3m
-is a World Wide Web (WWW) text based client. It has English and
-Japanese help files and an option menu and can be configured to
-use either language. It will display hypertext markup language
-(HTML) documents containing links to files residing on the local
-system, as well as files residing on remote systems. It can
-display HTML tables and frames.
-In addition, it can be used as a "pager" in much the same manner
-as "more" or "less".
-Current versions of
-.I
-w3m
-run on
-Unix (Solaris, SunOS, HP-UX, Linux, FreeBSD, and EWS4800)
-and on
-Microsoft Windows 9x/NT.
-.PP
+
+\fIw3m\fP is a text based browser which can display local or remote
+web pages as well as other documents. It is able to process HTML
+tables and frames but it ignores JavaScript and Cascading Style
+Sheets. \fIw3m\fP can also serve as a pager for text files named as
+arguments or passed on standard input, and as a general purpose
+directory browser.
+
+\fIw3m\fP organizes its content in buffers or tabs, allowing easy
+navigation between them. With the w3m-img extension installed, \fIw3m\fP can
+display inline graphics in web pages. And whenever \fIw3m\fP's HTML
+rendering capabilities do not meet your needs, the target URL can be
+handed over to a graphical browser with a single command.
+
+For help with runtime options, press \(lqH\(rq while running \fIw3m\fP. 
+
+.SH ARGUMENTS
+
+When given one or more command line arguments, \fIw3m\fP will handle
+targets according to content type. For web, \fIw3m\fP gets this
+information from HTTP headers; for relative or absolute file system
+paths, it relies on filenames.
+
+With no argument, \fIw3m\fP expects data from standard input and
+assumes \(lqtext/plain\(rq unless another MIME type is given by the user.
+
+If provided with no target and no fallback target (see for instance
+option \fB\-v\fP below), \fIw3m\fP will exit with usage information.
 .SH OPTIONS
-At start up, \fIw3m\fR will load any local
-file or remote URL specified at the command
-line.  For help with runtime options, press \fB"H"\fR
-while running \fIw3m\fR.
-Command line options are:
-.PP
+Command line options are introduced with a single \(lq\-\(rq character and
+may take an argument.
+.SS General options:
 .TP
-.B -t tab
-set tab width
+\fB\-B\fP
+with no other target defined, use the bookmark page for startup
 .TP
-.B -r
-ignore backspace effect
-.TP
-.B -l line
-# of preserved line (default 10000)
-.TP
-.B -I charset
-document charset
-.TP
-.B -O charset
-display/output charset
-.TP
-.B -B
-load bookmark
-.TP
-.B -bookmark file
-specify bookmark file
-.TP
-.B -T type
-specify content-type
-.TP
-.B -m
-internet message mode
-.TP
-.B -v
-visual startup mode
-.TP
-.B -M
+\fB\-M\fP
 monochrome display
 .TP
-.B -N
+\fB\-no-mouse\fP
+deactivate mouse support
+.TP
+\fB\-num\fP
+display each line's number
+.TP
+\fB\-N\fP
 distribute multiple command line arguments to tabs. By default, a
 stack of buffers is used
+.TP 
+\fB\-ppc \fInum\fR
+width of \fInum\fR pixels per character. Range of 4.0 to 32.0, default 8.0.
+Larger values will make tables narrower. (Implementation not verified)
 .TP
-.B -F
-automatically render frame
+\fB\-ppl \fInum\fR
+height of \fInum\fR pixels per line. Range of 4.0 to 64.0. (Implementation not verified)
 .TP
-.B -dump
-dump formatted page into stdout
+\fB\-title\fP, \fB\-title=TERM\fP
+use the buffer name as terminal title string. With specified TERM,
+this sets the title configuration style accordingly
 .TP
-.B -cols num
+\fB\-v\fP
+with no other target defined, welcome users with a built-in page
+.TP
+\fB\-W\fP
+toggle wrapping in searches
+.TP
+\fB\-X\fP
+do not initialize/deinitialize the terminal
+.TP
+\fB+\fInum\fR
+go to line \fInum\fR; only effective for \fInum\fR larger than the number of lines in the terminal
+.SS Browser options:
+.TP
+\fB\-cols \fInum\fR
 with stdout as destination; HTML is rendered to lines of \fInum\fR characters
 .TP
-.B -ppc count
-specify the number of pixels per character (4.0...32.0).
-Larger values will make tables narrower.  [default 8.0]
+\fB\-cookie\fP, \fB\-no-cookie\fP
+use stored cookies and accept new ones, or do neither
 .TP
-.B -ppl count
-specify the number of pixels per line (4.0...64.0)
+\fB\-F\fP
+render frames
 .TP
-.B -dump_source
-dump page source into stdout
+\fB\-graph\fP, \fB\-no-graph\fP
+use or do not use graphic characters for drawing HTML table and frame borders
 .TP
-.B -dump_head
-dump response of HEAD request into stdout
+\fB\-header \fIstring\fR
+append \fIstring\fR to the HTTP(S) request. Expected to match the header syntax \f(CW Variable: Value\fP
 .TP
-.B -dump_both
-dump HEAD and source into stdout
+\fB\-m\fP
+Render the body of Usenet messages according to the header \(lqContent-type\(rq 
 .TP
-.B -dump_extra
-dump HEAD, source, and extra information into stdout
+\fB\-no-proxy\fP
+do not use proxy
 .TP
-.B -post file
-use POST method with file content
+\fB\-post \fIfile\fR
+use POST method to upload data defined in \fIfile\fR. The syntax to be used
+is \f(CWvar1=value1[&var2=value2]...\fP
 .TP
-.B -header string
-insert string as a header
+\fB\-4\fP
+IPv4 only. Corresponds to dns_order=4 in configuration files
 .TP
-.B +<num>
-goto <num> line
+\fB\-6\fP
+IPv6 only. Corresponds to dns_order=6 in configuration files
+.SS Text pager options:
 .TP
-.B -num
-show line number
+\fB\-l \fInum\fR
+number of lines preserved internally when receiving plain text from
+stdin (default 10,000)
 .TP
-.B -no-proxy
-don't use proxy
+\fB\-r\fP
+use caret notation to display special escape characters (such
+as ANSI escapes or nroff-style backspaces for bold and underlined
+characters) instead of processing them
 .TP
-.B -4
-IPv4 only (-o dns_order=4)
+\fB\-s\fP
+squeeze multiple blank lines into one
 .TP
-.B -6
-IPv6 only (-o dns_order=6)
+\fB\-t\fP \fInum\fP
+set tab width to \fInum\fR columns. No effect on stdout
+.SS Data type/encoding options:
 .TP
-.B -no-mouse
-don't use mouse
+\fB\-I \fIcharset\fR
+user defined character encoding of input data
 .TP
-.B -cookie
-use cookie.
+\fB\-O \fIcharset\fR
+user defined character encoding of output data
 .TP
-.B -no-cookie
-don't use cookie
+\fB\-T \fItype\fR
+explicit characterization of input data by MIME type
+.SS Options for data output, followed by immediate exit:
 .TP
-.B -graph
-use graphic character
+\fB\-dump\fP
+dump rendered page into stdout. Set implicitly when output is directed
+to a file or pipe
 .TP
-.B -no-graph
-don't use graphic character
+\fB\-dump_source\fP
+dump the page's source code into stdout
 .TP
-.B -s
-squeeze multiple blank lines
+\fB\-dump_head\fP
+dump response of a HEAD request for a URL into stdout
 .TP
-.B -W
-toggle wrap search mode
+\fB\-dump_both\fP
+dump HEAD, and source code for a URL into stdout
 .TP
-.B -X
-don't use termcap init/deinit
+\fB\-dump_extra\fP
+dump HEAD, source code, and extra information for a URL into stdout
 .TP
-.B -title [=TERM]
-set buffer name to terminal title string. 
-If TERM is specified, use the TERM style title configuration.
+\fB\-help\fP
+show a summary of compiled-in features and command line options
 .TP
-.B -o option=value
+\fB\-show-option\fP
+show all available config options
+.TP
+\fB\-version\fP
+show the version of \fIw3m\fP
+.SS Options for overriding default settings and resources:
+.TP
+\fB\-bookmark \fIfile\fR
+use \fIfile\fR instead of the default bookmark.html file
+.TP
+\fB\-config \fIfile\fR
+use \fIfile\fR instead of the default config file
+.TP
+\fB\-debug\fP
+DO NOT USE
+.TP
+\fB\-o \fIoption=value\fR
 modify one configuration item with an explicitly given value; without \fIoption=value\fR, equivalent to -show-option
 .TP
-.B -show-option
-show all available config option
-.TP
-.B -config file
-specify config file
-.TP
-.B -help
-show usage
-.TP
-.B -version
-show w3m version
-.TP
-.B -reqlog
-write request logfile
-.TP
-.B -debug
-DO NOT USE
+\fB\-reqlog\fP
+log headers of HTTP communication in file \f(CW~/.w3m/request.log\fP
 .SH EXAMPLES
 .SS Pager-like usage 
 .TP
@@ -232,6 +241,10 @@ Welcome users with a built-in page
 .EX
 $ w3m -v
 .EE
+.\".SH Errors
+.SH ENVIRONMENT
+\fIw3m\fP recognises the environment variable WWW_HOME as defining a
+fallback target for use if it is invoked without one.
 .SH FILES
 .TP
 \f(CW~/.w3m/bookmark.html\fP
@@ -270,26 +283,17 @@ contains predefined values to fill recurrent HTML forms
 .\" .I $~/.w3m/urimethodmap
 .\" ???
 .SH NOTES
-This is the
-.I
-w3m
-0.5.3 Release.
-.PP
-Please see the MANUAL.html file distributed with w3m for
-more detailed documentation.
-
-Additional information about
-.I
-w3m
-may be found on its Japanese language Web site located at:
-  http://w3m.sourceforge.net/index.ja.html
-.br
-or on its English version of the site at:
-  http://w3m.sourceforge.net/index.en.html
+This is the \fIw3m\fP 0.5.3 Release.
+.SH SEE ALSO
+README and example files are to be found in the doc directory of your \fIw3m\fP installation. Recent information about \fIw3m\fP may be found on 
+.UR http://w3m.sourceforge.net
+the project's web pages at
+.UE
 .SH ACKNOWLEDGMENTS
-.I
-w3m
-has incorporated code from several sources.
+\fIw3m\fP has incorporated code from several sources.
 Users have contributed patches and suggestions over time.
 .SH AUTHOR
-Akinori ITO <aito@fw.ipsj.or.jp>
+.UR aito@fw.ipsj.or.jp
+Akinori ITO
+.UE
+

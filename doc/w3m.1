@@ -234,37 +234,40 @@ $ w3m -v
 .EE
 .SH FILES
 .TP
-.I ${HOME}/.w3m/config
-configuration file
+\f(CW~/.w3m/bookmark.html\fP
+default bookmark file 
 .TP
-.I ${HOME}/.w3m/keymap
-key binding configuration file
-.\" .TP
-.\" .I ${HOME}/.w3m/menu
-.\" ???
+\f(CW~/.w3m/config\fP
+user defined configuration file; overrides \f(CW/etc/w3m/config\fP
 .TP
-.I ${HOME}/.w3m/mouse
-mouse configuration file
+\f(CW~/.w3m/cookie\fP
+cookie jar; written on exit, read on launch   
 .TP
-.I ${HOME}/.w3m/cookie
-cookie file
+\f(CW~/.w3m/history\fP
+browser history - visited files and URLs
 .TP
-.I ${HOME}/.w3m/history
-history file
+\f(CW~/.w3m/keymap\fP
+user defined key bindings; overrides default key bindings
 .TP
-.I ${HOME}/.w3m/passwd
-passowrd and username file
-.TP
-.I ${HOME}/.w3m/pre_form
-form parameters file
-.TP
-.I ${HOME}/.w3m/mailcap
+\f(CW~/.w3m/mailcap\fP
 external viewer configuration file
 .TP
-.I ${HOME}/.w3m/mime.types
+\f(CW~/.w3m/menu\fP
+user defined menu; overrides default menu
+.TP
+\f(CW~/.w3m/mime.types\fP
 MIME types file
+.TP
+\f(CW~/.w3m/mouse\fP
+user defined mouse settings
+.TP
+\f(CW~/.w3m/passwd\fP
+password and username file
+.TP
+\f(CW~/.w3m/pre_form\fP
+contains predefined values to fill recurrent HTML forms
 .\" .TP
-.\" .I ${HOME}/.w3m/urimethodmap
+.\" .I $~/.w3m/urimethodmap
 .\" ???
 .SH NOTES
 This is the

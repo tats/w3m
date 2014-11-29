@@ -42,6 +42,7 @@ Specify
 Specify a  
 .I file.
 .SH ENVIRONMENT
+Two variables are available for debugging.
 .TP
 .B W3MMAN_W3M
 If W3MMAN_W3M is set, its value is used instead of @W3M@.

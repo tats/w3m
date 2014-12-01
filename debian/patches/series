@@ -36,4 +36,5 @@
 350_ambwidth.patch
 800_lang-en.patch
 810_lang-de.patch
+820_lang-ja.patch
 900_ChangeLog.patch

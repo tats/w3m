@@ -1,0 +1,82 @@
+Subject: Depend on gdk-pixbuf instead of gtk when gtk2
+Author: Naohiro Aota <naota@gentoo.org>
+Origin: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-gdk-pixbuf.patch?revision=1.1
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index 94fcbb5..ec91797 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -706,8 +706,8 @@ AC_DEFUN([AC_W3M_IMAGE],
+      IMGTARGETS="x11"    
+      AC_DEFINE(USE_GDKPIXBUF)
+      AC_DEFINE(USE_GTK2)
+-     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
++     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
++     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
+    elif test x"$have_gdkpixbuf" = xyes; then
+      AC_DEFINE(USE_W3MIMG_X11)
+      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+@@ -741,8 +741,8 @@ AC_DEFUN([AC_W3M_IMAGE],
+      IMGTARGETS="${IMGTARGETS} fb"
+      AC_DEFINE(USE_GDKPIXBUF)
+      AC_DEFINE(USE_GTK2)
+-     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
+-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
++     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0`"
++     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0`"
+    elif test x"$have_gdkpixbuf" = xyes; then
+      AC_DEFINE(USE_W3MIMG_FB)
+      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+diff --git a/configure b/configure
+index fd916fc..4fdcd8e 100755
+--- a/configure
++++ b/configure
+@@ -6927,8 +6927,8 @@ $as_echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >=
+ 
+      $as_echo "#define USE_GTK2 1" >>confdefs.h
+ 
+-     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
++     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
++     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
+    elif test x"$have_gdkpixbuf" = xyes; then
+      $as_echo "#define USE_W3MIMG_X11 1" >>confdefs.h
+ 
+@@ -6972,8 +6972,8 @@ $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with X11 support" >&2;}
+ 
+      $as_echo "#define USE_GTK2 1" >>confdefs.h
+ 
+-     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
+-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
++     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0`"
++     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0`"
+    elif test x"$have_gdkpixbuf" = xyes; then
+      $as_echo "#define USE_W3MIMG_FB 1" >>confdefs.h
+ 
+diff --git a/w3mimg/fb/fb_gdkpixbuf.c b/w3mimg/fb/fb_gdkpixbuf.c
+index 36e3b62..f1e8d97 100644
+--- a/w3mimg/fb/fb_gdkpixbuf.c
++++ b/w3mimg/fb/fb_gdkpixbuf.c
+@@ -6,7 +6,7 @@
+ #include "config.h"
+ #if defined(USE_GTK2)
+ #include <glib-object.h>
+-#include <gdk/gdk.h>
++#include <gdk-pixbuf/gdk-pixbuf.h>
+ #endif
+ #include <gdk-pixbuf/gdk-pixbuf.h>
+ #include "fb.h"
+diff --git a/w3mimg/x11/x11_w3mimg.c b/w3mimg/x11/x11_w3mimg.c
+index f5be4a8..cef72e2 100644
+--- a/w3mimg/x11/x11_w3mimg.c
++++ b/w3mimg/x11/x11_w3mimg.c
+@@ -14,7 +14,7 @@
+ #elif defined(USE_GDKPIXBUF)
+ #if defined(USE_GTK2)
+ #include <glib-object.h>
+-#include <gdk/gdk.h>
++#include <gdk-pixbuf/gdk-pixbuf.h>
+ #include <gdk-pixbuf-xlib/gdk-pixbuf-xlib.h>
+ #else
+ #include <gdk-pixbuf/gdk-pixbuf-xlib.h>

@@ -1490,7 +1490,7 @@ Optional Packages:
   --with-ssl=PREFIX		support https protocol
   --with-termlib=LIBS		terminal library
 				LIBS is space separated list of:
-				  terminfo mytinfo termcap ncurses curses
+				  terminfo mytinfo termcap tinfo ncurses curses
   --with-gc=PREFIX	  	libgc PREFIX
 
 Some influential environment variables:
@@ -7978,7 +7978,7 @@ fi
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_termlib" >&5
 $as_echo "$with_termlib" >&6; }
- test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
+ test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
  for lib in $with_termlib; do
    as_ac_Lib=`$as_echo "ac_cv_lib_$lib''_tgetent" | $as_tr_sh`
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tgetent in -l$lib" >&5

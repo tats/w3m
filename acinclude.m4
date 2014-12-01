@@ -664,8 +664,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      with_gtk2="yes"
      if test x"$PKG_CONFIG" = x; then
        PKG_CONFIG=pkg-config
-     else
-       PKG_CONFIG=:
      fi;;
    esac
   done

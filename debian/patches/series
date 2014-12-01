@@ -36,6 +36,7 @@
 350_ambwidth.patch
 360_libressl.patch
 370_gtk2-pkg-config.patch
+380_tinfo.patch
 800_lang-en.patch
 810_lang-de.patch
 820_lang-ja.patch

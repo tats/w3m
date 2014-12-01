@@ -1,0 +1,44 @@
+Subject: Add tinfo to with_termlib
+Author: Jeroen Roovers <jer@gentoo.org>
+Origin: https://504588.bugs.gentoo.org/attachment.cgi?id=372650
+Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=504588
+
+diff --git a/acinclude.m4 b/acinclude.m4
+index d768476..94fcbb5 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -400,10 +400,10 @@ AC_DEFUN([AC_W3M_TERMLIB],
+ AC_ARG_WITH(termlib,
+  [  --with-termlib[=LIBS]		terminal library
+ 				LIBS is space separated list of:
+-				  terminfo mytinfo termcap ncurses curses],,
++				  terminfo mytinfo termcap tinfo ncurses curses],,
+  [with_termlib="yes"])
+  AC_MSG_RESULT($with_termlib)
+- test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
++ test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
+  for lib in $with_termlib; do
+    AC_CHECK_LIB($lib, tgetent, [W3M_LIBS="$W3M_LIBS -l$lib"; break])
+  done
+diff --git a/configure b/configure
+index b5adbb5..fd916fc 100755
+--- a/configure
++++ b/configure
+@@ -1490,7 +1490,7 @@ Optional Packages:
+   --with-ssl=PREFIX		support https protocol
+   --with-termlib=LIBS		terminal library
+ 				LIBS is space separated list of:
+-				  terminfo mytinfo termcap ncurses curses
++				  terminfo mytinfo termcap tinfo ncurses curses
+   --with-gc=PREFIX	  	libgc PREFIX
+ 
+ Some influential environment variables:
+@@ -7978,7 +7978,7 @@ fi
+ 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_termlib" >&5
+ $as_echo "$with_termlib" >&6; }
+- test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
++ test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
+  for lib in $with_termlib; do
+    as_ac_Lib=`$as_echo "ac_cv_lib_$lib''_tgetent" | $as_tr_sh`
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tgetent in -l$lib" >&5

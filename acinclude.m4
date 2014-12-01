@@ -706,8 +706,8 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="x11"    
      AC_DEFINE(USE_GDKPIXBUF)
      AC_DEFINE(USE_GTK2)
-     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
@@ -741,8 +741,8 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="${IMGTARGETS} fb"
      AC_DEFINE(USE_GDKPIXBUF)
      AC_DEFINE(USE_GTK2)
-     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"

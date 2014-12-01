@@ -6927,8 +6927,8 @@ $as_echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 
 
      $as_echo "#define USE_GTK2 1" >>confdefs.h
 
-     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      $as_echo "#define USE_W3MIMG_X11 1" >>confdefs.h
 
@@ -6972,8 +6972,8 @@ $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with X11 support" >&2;}
 
      $as_echo "#define USE_GTK2 1" >>confdefs.h
 
-     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      $as_echo "#define USE_W3MIMG_FB 1" >>confdefs.h
 

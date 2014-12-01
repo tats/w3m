@@ -14,7 +14,7 @@
 #elif defined(USE_GDKPIXBUF)
 #if defined(USE_GTK2)
 #include <glib-object.h>
-#include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf-xlib/gdk-pixbuf-xlib.h>
 #else
 #include <gdk-pixbuf/gdk-pixbuf-xlib.h>

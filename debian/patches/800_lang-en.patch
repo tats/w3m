@@ -2,7 +2,6 @@ Subject: Improve English documents
 Author: Markus Hiereth <post@hiereth.de>, Justin B Rye <justin.byam.rye@gmail.com>
 Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550
 Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771003
-Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550
 
 diff --git a/doc/w3m.1 b/doc/w3m.1
 index 58a8965..0762f51 100644

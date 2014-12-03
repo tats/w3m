@@ -38,6 +38,7 @@
 370_gtk2-pkg-config.patch
 380_tinfo.patch
 390_gdk-pixbuf.patch
+400_w3m-img-freebsd.patch
 800_lang-en.patch
 810_lang-de.patch
 820_lang-ja.patch

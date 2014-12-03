@@ -3,6 +3,19 @@ Author: Yusuke Baba <babayaga1@y8.dion.ne.jp>
 Origin: http://www.ac.auone-net.jp/~baba/w3m-img/index.html
 Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=122673
 
+diff --git a/acinclude.m4 b/acinclude.m4
+index ec91797..675cabe 100644
+--- a/acinclude.m4
++++ b/acinclude.m4
+@@ -600,7 +600,7 @@ AC_DEFUN([AC_W3M_IMAGE],
+   if test x"$enable_image" = xyes; then
+     enable_image=x11
+     case "`uname -s`" in
+-    Linux|linux|LINUX) 
++    Linux|linux|LINUX|FreeBSD|freebsd|FREEBSD) 
+ 	if test -c /dev/fb0; then
+ 	  enable_image=x11,fb
+         fi;;
 diff --git a/configure b/configure
 index 4fdcd8e..2ba82d5 100755
 --- a/configure

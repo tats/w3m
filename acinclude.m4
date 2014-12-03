@@ -600,7 +600,7 @@ AC_DEFUN([AC_W3M_IMAGE],
   if test x"$enable_image" = xyes; then
     enable_image=x11
     case "`uname -s`" in
-    Linux|linux|LINUX) 
+    Linux|linux|LINUX|FreeBSD|freebsd|FREEBSD) 
 	if test -c /dev/fb0; then
 	  enable_image=x11,fb
         fi;;

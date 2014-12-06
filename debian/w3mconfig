@@ -22,6 +22,7 @@ no_referer 0
 use_lessopen 0
 bgextviewer 1
 editor sensible-editor
+extbrowser sensible-browser
 mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
 mime_types ~/.w3m/mime.types, /etc/mime.types
 urimethodmap ~/.w3m/urimethodmap, /etc/w3m/urimethodmap

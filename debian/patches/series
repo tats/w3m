@@ -41,6 +41,7 @@
 400_w3m-img-freebsd.patch
 410_textarea-segfault.patch
 420_uninitialized.patch
+430_no-ascii-default.patch
 800_lang-en.patch
 810_lang-de.patch
 820_lang-ja.patch

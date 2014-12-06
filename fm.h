@@ -1089,7 +1089,7 @@ global char SimplePreserveSpace init(FALSE);
 #define wc_Str_conv(x,charset0,charset1) (x)
 #define wc_Str_conv_strict(x,charset0,charset1) (x)
 #endif
-global char UseAltEntity init(TRUE);
+global char UseAltEntity init(FALSE);
 #define GRAPHIC_CHAR_ASCII 2
 #define GRAPHIC_CHAR_DEC 1
 #define GRAPHIC_CHAR_CHARSET 0

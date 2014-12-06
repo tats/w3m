@@ -637,7 +637,8 @@ reset_tty(void)
     writestr(T_se);		/* reset terminal */
     flush_tty();
     TerminalSet(tty, &d_ioval);
-    close_tty();
+    if (tty != 2)
+        close_tty();
 }
 
 static MySignalHandler

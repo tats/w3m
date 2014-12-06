@@ -39,6 +39,7 @@
 380_tinfo.patch
 390_gdk-pixbuf.patch
 400_w3m-img-freebsd.patch
+410_textarea-segfault.patch
 800_lang-en.patch
 810_lang-de.patch
 820_lang-ja.patch

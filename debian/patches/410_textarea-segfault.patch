@@ -1,0 +1,22 @@
+Subject: Prevent segfault when editing a textarea field with vi
+Author: Peter Poeml <poeml@suse.de>
+Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-0.4.1-textarea-segfault.dif?expand=1
+    
+    add fix for segfault that can occur when editing a textarea field
+    with vi, and returning to w3m (it seems to happen if the terminal
+    is not writable, as when using w3m after 'su - some_user')
+
+diff --git a/terms.c b/terms.c
+index ca81d28..672262c 100644
+--- a/terms.c
++++ b/terms.c
+@@ -637,7 +637,8 @@ reset_tty(void)
+     writestr(T_se);		/* reset terminal */
+     flush_tty();
+     TerminalSet(tty, &d_ioval);
+-    close_tty();
++    if (tty != 2)
++        close_tty();
+ }
+ 
+ static MySignalHandler

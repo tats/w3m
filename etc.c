@@ -1365,7 +1365,13 @@ setup_child(int child, int i, int f)
     if (!child)
 	SETPGRP();
 #endif /* __MINGW32_VERSION */
+    /*
+     * I don't know why but close_tty() sometimes interrupts loadGeneralFile() in loadImage()
+     * and corrupt image data can be cached in ~/.w3m.
+     */
+#if 0
     close_tty();
+#endif
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
     fmInitialized = FALSE;

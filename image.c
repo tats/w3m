@@ -44,6 +44,8 @@ initImage()
 	activeImage = TRUE;
 }
 
+int get_pixel_per_cell(int *ppc, int *ppl);
+
 int
 getCharSize()
 {
@@ -52,6 +54,24 @@ getCharSize()
     int w = 0, h = 0;
 
     set_environ("W3M_TTY", ttyname_tty());
+
+    if (enable_inline_image) {
+	int ppc, ppl;
+
+	if (get_pixel_per_cell(&ppc,&ppl)) {
+	    pixel_per_char_i = ppc ;
+	    pixel_per_line_i = ppl ;
+	    pixel_per_char = (double)ppc;
+	    pixel_per_line = (double)ppl;
+	}
+	else {
+	    pixel_per_char_i = (int)pixel_per_char;
+	    pixel_per_line_i = (int)pixel_per_line;
+	}
+
+	return  TRUE;
+    }
+
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
 	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
@@ -156,6 +176,10 @@ addImage(ImageCache * cache, int x, int y, int sx, int sy, int w, int h)
 static void
 syncImage(void)
 {
+    if (enable_inline_image) {
+	return;
+    }
+
     fputs("3;\n", Imgdisplay_wf);	/* XSync() */
     fputs("4;\n", Imgdisplay_wf);	/* put '\n' */
     while (fflush(Imgdisplay_wf) != 0) {
@@ -171,12 +195,16 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
+void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+
 void
 drawImage()
 {
     static char buf[64];
     int j, draw = FALSE;
     TerminalImage *i;
+    struct stat st ;
 
     if (!activeImage)
 	return;
@@ -184,6 +212,47 @@ drawImage()
 	return;
     for (j = 0; j < n_terminal_image; j++) {
 	i = &terminal_image[j];
+
+	if (enable_inline_image) {
+	#if 0
+	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
+		((enable_inline_image == 2 || getenv("WINDOWID")) &&
+		 i->cache->touch) ? i->cache->file : i->cache->url,
+		i->x, i->y,
+		i->cache->width > 0 ? i->cache->width : 0,
+		i->cache->height > 0 ? i->cache->height : 0,
+		i->sx, i->sy, i->width, i->height,
+		pixel_per_char_i, pixel_per_line_i);
+	#endif
+	    (enable_inline_image == 2 ? put_image_sixel : put_image_osc5379)(
+		((enable_inline_image == 2 /* sixel */ || getenv("WINDOWID")) &&
+		 /* XXX I don't know why but sometimes i->cache->file doesn't exist. */
+		 i->cache->touch && stat(i->cache->file,&st) == 0) ?
+			/* local */ i->cache->file : /* remote */ i->cache->url,
+		i->x / pixel_per_char_i,
+		i->y / pixel_per_line_i,
+	    #if 1
+		i->cache->a_width > 0 ?
+			(i->cache->width + i->x % pixel_per_char_i + pixel_per_char_i - 1) /
+				pixel_per_char_i :
+	    #endif
+			0,
+
+	    #if 1
+		i->cache->a_height > 0 ?
+			(i->cache->height + i->y % pixel_per_line_i + pixel_per_line_i - 1) /
+				pixel_per_line_i :
+	    #endif
+			0,
+		i->sx / pixel_per_char_i,
+		i->sy / pixel_per_line_i,
+		(i->width + i->sx % pixel_per_char_i + pixel_per_char_i - 1) / pixel_per_char_i,
+		(i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) / pixel_per_line_i,
+		n_terminal_image);
+
+	    continue ;
+	}
+
 	if (!(i->cache->loaded & IMG_FLAG_LOADED &&
 	      i->width > 0 && i->height > 0))
 	    continue;
@@ -207,9 +276,15 @@ drawImage()
 	fputs("\n", Imgdisplay_wf);
 	draw = TRUE;
     }
-    if (!draw)
-	return;
-    syncImage();
+
+    if (!enable_inline_image) {
+	if (!draw)
+	    return;
+	syncImage();
+    }
+    else
+	n_terminal_image = 0;
+
     touch_cursor();
     refresh();
 }
@@ -321,6 +396,8 @@ showImageProgress(Buffer *buf)
 	}
     }
     if (n) {
+        if (enable_inline_image && n == l)
+	    drawImage();
 	message(Sprintf("%d/%d images loaded", l, n)->ptr,
 		buf->cursorX + buf->rootX, buf->cursorY + buf->rootY);
 	refresh();
@@ -350,7 +427,7 @@ loadImage(Buffer *buf, int flag)
     }
     for (i = 0; i < n_load_image; i++) {
 	cache = image_cache[i];
-	if (!cache)
+	if (!cache || !cache->touch)
 	    continue;
 	if (lstat(cache->touch, &st))
 	    continue;
@@ -381,7 +458,7 @@ loadImage(Buffer *buf, int flag)
 
     for (i = (buf != image_buffer) ? 0 : maxLoadImage; i < n_load_image; i++) {
 	cache = image_cache[i];
-	if (!cache)
+	if (!cache || !cache->touch)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
@@ -407,7 +484,8 @@ loadImage(Buffer *buf, int flag)
     }
 
     if (draw && image_buffer) {
-	drawImage();
+        if (!enable_inline_image)
+	    drawImage();
 	showImageProgress(image_buffer);
     }
 
@@ -435,6 +513,9 @@ loadImage(Buffer *buf, int flag)
 		break;
 	}
 	image_cache[i] = cache;
+	if (!cache->touch) {
+	    continue;
+	}
 
 	flush_tty();
 #ifdef DONT_CALL_GC_AFTER_FORK
@@ -515,12 +596,30 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->url = image->url;
 	cache->current = current;
 	cache->file = tmpfname(TMPF_DFL, image->ext)->ptr;
-	cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
-	cache->width = image->width;
-	cache->height = image->height;
+	if (enable_inline_image == 1) {
+	    if (image->width > 0 && image->width % pixel_per_char_i > 0)
+		image->width += (pixel_per_char_i - image->width % pixel_per_char_i);
+
+	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
+		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
+	    if (image->height > 0 && image->width > 0) {
+		cache->loaded = IMG_FLAG_LOADED;
+	    }
+	}
+	if (cache->loaded == IMG_FLAG_UNLOADED) {
+	    cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
+	}
+	else {
+	    cache->touch = NULL;
+	}
+
+	cache->width = image->width ;
+	cache->height = image->height ;
+	cache->a_width = image->width;
+	cache->a_height = image->height;
 	putHash_sv(image_hash, key->ptr, (void *)cache);
     }
     if (flag != IMG_FLAG_SKIP) {
@@ -542,6 +641,78 @@ getImage(Image * image, ParsedURL *current, int flag)
     return cache;
 }
 
+static int
+parseImageHeader(char *path, u_int *width, u_int *height)
+{
+    FILE *fp;
+    u_char buf[8];
+
+    if (!(fp = fopen(path, "r"))) return FALSE;
+
+    if (fread(buf, 1, 2, fp) != 2) goto error;
+
+    if (memcmp(buf, "\xff\xd8", 2) == 0) {
+        /* JPEG */
+	if (fseek(fp, 2, SEEK_CUR) < 0)	goto error;   /* 0xffe0 */
+	while (fread(buf, 1, 2, fp) == 2) {
+	    size_t len = ((buf[0] << 8) | buf[1]) - 2;
+	    if (fseek(fp, len, SEEK_CUR) < 0) goto error;
+	    if (fread(buf, 1, 2, fp) == 2 &&
+	        /* SOF0 or SOF2 */
+	        (memcmp(buf, "\xff\xc0", 2) == 0 || memcmp(buf, "\xff\xc2", 2) == 0)) {
+		fseek(fp, 3, SEEK_CUR);
+		if (fread(buf, 1, 2, fp) == 2) {
+		    *height = (buf[0] << 8) | buf[1];
+		    if (fread(buf, 1, 2, fp) == 2) {
+			*width = (buf[0] << 8) | buf[1];
+			goto success;
+		    }
+		}
+		break;
+	    }
+	}
+	goto error;
+    }
+
+    if (fread(buf + 2, 1, 1, fp) != 1) goto error;
+
+    if (memcmp(buf, "GIF", 3) == 0) {
+        /* GIF */
+	if (fseek(fp, 3, SEEK_CUR) < 0) goto error;
+	if (fread(buf, 1, 2, fp) == 2) {
+	    *width = (buf[1] << 8) | buf[0];
+	    if (fread(buf, 1, 2, fp) == 2) {
+		*height = (buf[1] << 8) | buf[0];
+		goto success;
+	    }
+	}
+	goto error;
+    }
+
+    if (fread(buf + 3, 1, 5, fp) != 5) goto error;
+
+    if (memcmp(buf, "\x89\x50\x4e\x47\x0d\x0a\x1a\x0a", 8) == 0) {
+	/* PNG */
+	if (fseek(fp, 8, SEEK_CUR) < 0) goto error;
+	if (fread(buf, 1, 4, fp) == 4) {
+	    *width = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+	    if (fread(buf, 1, 4, fp) == 4) {
+		*height = (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+		goto success;
+	    }
+	}
+	goto error;
+    }
+
+error:
+    fclose(fp);
+    return FALSE;
+
+success:
+    fclose(fp);
+    return TRUE;
+}
+
 int
 getImageSize(ImageCache * cache)
 {
@@ -554,6 +725,10 @@ getImageSize(ImageCache * cache)
     if (!cache || !(cache->loaded & IMG_FLAG_LOADED) ||
 	(cache->width > 0 && cache->height > 0))
 	return FALSE;
+
+    if (parseImageHeader(cache->file, &w, &h))
+	goto got_image_size;
+
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
 	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
@@ -569,6 +744,8 @@ getImageSize(ImageCache * cache)
 
     if (!(w > 0 && h > 0))
 	return FALSE;
+
+got_image_size:
     w = (int)(w * image_scale / 100 + 0.5);
     if (w == 0)
 	w = 1;
@@ -581,11 +758,11 @@ getImageSize(ImageCache * cache)
     }
     else if (cache->width < 0) {
 	int tmp = (int)((double)cache->height * w / h + 0.5);
-	cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
+	cache->a_width = cache->width = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     else if (cache->height < 0) {
 	int tmp = (int)((double)cache->width * h / w + 0.5);
-	cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
+	cache->a_height = cache->height = (tmp > MAX_IMAGE_SIZE) ? MAX_IMAGE_SIZE : tmp;
     }
     if (cache->width == 0)
 	cache->width = 1;

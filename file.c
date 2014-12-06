@@ -3345,8 +3345,14 @@ process_img(struct parsed_tag *tag, int width)
 	    if (i < 0)
 		i = pixel_per_line;
 	}
-	nw = (w > 3) ? (int)((w - 3) / pixel_per_char + 1) : 1;
-	ni = (i > 3) ? (int)((i - 3) / pixel_per_line + 1) : 1;
+	if (enable_inline_image) {
+	    nw = (w > 1) ? ((w - 1) / pixel_per_char_i + 1) : 1 ;
+	    ni = (i > 1) ? ((i - 1) / pixel_per_line_i + 1) : 1 ;
+	}
+	else {
+	    nw = (w > 3) ? (int)((w - 3) / pixel_per_char + 1) : 1;
+	    ni = (i > 3) ? (int)((i - 3) / pixel_per_line + 1) : 1;
+	}
 	Strcat(tmp,
 	       Sprintf("<pre_int><img_alt hseq=\"%d\" src=\"", cur_iseq++));
 	pre_int = TRUE;
@@ -3377,18 +3383,20 @@ process_img(struct parsed_tag *tag, int width)
 	if (i0 >= 0)
 	    Strcat(tmp, Sprintf(" height=%d", i0));
 	switch (align) {
+	case ALIGN_MIDDLE:
+	    if (!enable_inline_image) {
+		top = ni / 2;
+		bottom = top;
+		if (top * 2 == ni)
+		    yoffset = (int)(((ni + 1) * pixel_per_line - i) / 2);
+		else
+		    yoffset = (int)((ni * pixel_per_line - i) / 2);
+		break;
+	    }
 	case ALIGN_TOP:
 	    top = 0;
 	    bottom = ni - 1;
 	    yoffset = 0;
-	    break;
-	case ALIGN_MIDDLE:
-	    top = ni / 2;
-	    bottom = top;
-	    if (top * 2 == ni)
-		yoffset = (int)(((ni + 1) * pixel_per_line - i) / 2);
-	    else
-		yoffset = (int)((ni * pixel_per_line - i) / 2);
 	    break;
 	case ALIGN_BOTTOM:
 	    top = ni - 1;
@@ -3407,7 +3415,12 @@ process_img(struct parsed_tag *tag, int width)
 	    }
 	    break;
 	}
-	xoffset = (int)((nw * pixel_per_char - w) / 2);
+
+	if (enable_inline_image)
+	    xoffset = 0;
+	else
+	    xoffset = (int)((nw * pixel_per_char - w) / 2);
+
 	if (xoffset)
 	    Strcat(tmp, Sprintf(" xoffset=%d", xoffset));
 	if (yoffset)

@@ -373,6 +373,8 @@ typedef struct _imageCache {
     int index;
     short width;
     short height;
+    short a_width;
+    short a_height;
 } ImageCache;
 
 typedef struct _image {
@@ -919,6 +921,7 @@ global char *CurrentKeyData;
 global char *CurrentCmdData;
 global char *w3m_reqlog;
 extern char *w3m_version;
+extern int enable_inline_image;
 
 #define DUMP_BUFFER   0x01
 #define DUMP_HEAD     0x02
@@ -1174,9 +1177,11 @@ global char *ssl_forbid_method init("2, 3");
 global int is_redisplay init(FALSE);
 global int clear_buffer init(TRUE);
 global double pixel_per_char init(DEFAULT_PIXEL_PER_CHAR);
+global int pixel_per_char_i init(DEFAULT_PIXEL_PER_CHAR);
 global int set_pixel_per_char init(FALSE);
 #ifdef USE_IMAGE
 global double pixel_per_line init(DEFAULT_PIXEL_PER_LINE);
+global int pixel_per_line_i init(DEFAULT_PIXEL_PER_LINE);
 global int set_pixel_per_line init(FALSE);
 global double image_scale init(100);
 #endif

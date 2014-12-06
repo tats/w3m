@@ -122,6 +122,8 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
+int enable_inline_image;	/* 1 == mlterm OSC 5379, 2 == sixel */
+
 static void
 fversion(FILE * f)
 {
@@ -409,7 +411,6 @@ main(int argc, char **argv, char **envp)
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
-
     GC_INIT();
 #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
@@ -679,6 +680,12 @@ main(int argc, char **argv, char **envp)
 		}
 	    }
 #endif
+	    else if (!strcmp("-ri", argv[i])) {
+	        enable_inline_image = 1;
+	    }
+	    else if (!strcmp("-sixel", argv[i])) {
+		enable_inline_image = 2;
+	    }
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;
 	    else if (!strcmp("-no-proxy", argv[i]))
@@ -5910,8 +5917,14 @@ deleteFiles()
 	    Firstbuf = buf;
 	}
     }
-    while ((f = popText(fileToDelete)) != NULL)
+    while ((f = popText(fileToDelete)) != NULL) {
 	unlink(f);
+	if (enable_inline_image == 2 && strcmp(f+strlen(f)-4, ".gif") == 0) {
+	    Str firstframe = Strnew_charp(f);
+	    Strcat_charp(firstframe, "-1");
+	    unlink(firstframe->ptr);
+        }
+    }
 }
 
 void

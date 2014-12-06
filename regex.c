@@ -77,7 +77,7 @@ static longchar
 set_longchar(char *str)
 {
     unsigned char *p = (unsigned char *)str;
-    longchar r;
+    longchar r = { };
 
 #ifdef USE_M17N
     if (*p & 0x80) {

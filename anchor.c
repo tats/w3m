@@ -11,7 +11,7 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
 {
     int n, i, j;
     Anchor *a;
-    BufferPoint bp;
+    BufferPoint bp = { 0 };
     if (al == NULL) {
 	al = New(AnchorList);
 	al->anchors = NULL;

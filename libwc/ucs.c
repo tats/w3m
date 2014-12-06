@@ -100,6 +100,7 @@ wc_ucs_to_any(wc_uint32 ucs, wc_table *t)
 	    return t->conv(t->ccs, map->code2);
     }
     cc.ccs = WC_CCS_UNKNOWN;
+    cc.code = 0;
     return cc;
 }
 

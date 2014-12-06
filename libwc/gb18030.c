@@ -151,6 +151,7 @@ wc_ucs_to_gb18030(wc_uint32 ucs)
 	return cc;
     }
     cc.ccs = WC_CCS_UNKNOWN;
+    cc.code = 0;
     return cc;
 }
 #endif

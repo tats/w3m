@@ -8,10 +8,11 @@ gitlog2changelog - tiny tool to convert Git commit logs to GNU-style ChangeLog
 
 git log | gitlog2changelog > ChangeLog
 
-git log --no-merges --numstat | gitlog2changelog > ChangeLog
+git log --no-merges --numstat --pretty=fuller | gitlog2changelog > ChangeLog
 
 (Use --no-merges to ignore merge commits.
- Use --numstat to show changed files.)
+ Use --numstat to show changed files.
+ Use --pretty=fuller to show committer date instead of author date.)
 
 =head1 SEE ALSO
 
@@ -82,19 +83,19 @@ sub print_entry {
 while (<>) {
     if (/^Author:[ \t]+([^\n]+)/) {
 	$author = $1;
-    } elsif (/^Date:[ \t]+(Sun|Mon|Tue|Wed|Thu|Fri|Sat) +(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) +(\d+) +\d+:\d+:\d+ +(\d+)/) {  # Assume git log --date=default or --date=local
-	my $mm = $2;
-	my $dd = $3;
-	my $yyyy = $4;
+    } elsif (/^(Commit|)Date:[ \t]+(Sun|Mon|Tue|Wed|Thu|Fri|Sat) +(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) +(\d+) +\d+:\d+:\d+ +(\d+)/) {  # Assume git log --date=default or --date=local
+	my $mm = $3;
+	my $dd = $4;
+	my $yyyy = $5;
 	$mm =~ s/Jan/01/; $mm =~ s/Feb/02/; $mm =~ s/Mar/03/; $mm =~ s/Apr/04/;
 	$mm =~ s/May/05/; $mm =~ s/Jun/06/; $mm =~ s/Jul/07/; $mm =~ s/Aug/08/;
 	$mm =~ s/Sep/09/; $mm =~ s/Oct/10/; $mm =~ s/Nov/11/; $mm =~ s/Dec/12/;
 	$dd =~ s/^(\d)$/0$1/;
 	$date = "$yyyy-$mm-$dd";
-    } elsif (/^Date:[ \t]+(\d+-\d+-\d+)/) {  # Assume git log --date=short or --date=iso
-	$date = $1;
-    } elsif (/^Date:[ \t]+(.+)$/) {
-	$date = $1;
+    } elsif (/^(Commit|)Date:[ \t]+(\d+-\d+-\d+)/) {  # Assume git log --date=short or --date=iso
+	$date = $2;
+    } elsif (/^(Commit|)Date:[ \t]+(.+)$/) {
+	$date = $2;
     } elsif (/^    (.*)$/) {
 	$comment .= "$1\n";
     } elsif (/^[-0-9]+\t[-0-9]+\t(.*)$/) {  # Assume git log --numstat

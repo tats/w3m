@@ -71,6 +71,7 @@ sub print_entry {
 	print "$files_lines";
     }
 
+    $comment =~ s/\.?[ \t]*\n/.\n/;
     $comment =~ s/\n([ \t]*\n)+/\n/g;
     $comment =~ s/\n+$//;
     $comment =~ s/\n/\n\t/g;

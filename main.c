@@ -383,6 +383,13 @@ make_optional_header_string(char *s)
     return hs;
 }
 
+static void *
+die_oom(size_t bytes)
+{
+    fprintf(stderr, "Out of memory: %lu bytes unavailable!\n", (unsigned long)bytes);
+    exit(1);
+}
+
 int
 main(int argc, char **argv, char **envp)
 {
@@ -412,6 +419,7 @@ main(int argc, char **argv, char **envp)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
     GC_INIT();
+    GC_set_oom_fn(die_oom);
 #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
     setlocale(LC_ALL, "");
 #endif

@@ -247,7 +247,7 @@ find_cookie(ParsedURL *pu)
 		Strcat(tmp, Sprintf("; $Domain=\"%s\"", p1->domain->ptr));
 	    if (p1->portl)
 		Strcat(tmp,
-		       Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)));
+		       Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)->ptr));
 	}
     }
     return tmp;
@@ -463,7 +463,7 @@ save_cookies(void)
 	    continue;
 	fprintf(fp, "%s\t%s\t%s\t%ld\t%s\t%s\t%d\t%d\t%s\t%s\t%s\n",
 		parsedURL2Str(&p->url)->ptr,
-		p->name->ptr, p->value->ptr, p->expires,
+		p->name->ptr, p->value->ptr, (long)p->expires,
 		p->domain->ptr, p->path->ptr, p->flag,
 		p->version, str2charp(p->comment),
 		(p->portl) ? portlist2str(p->portl)->ptr : "",

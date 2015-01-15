@@ -5841,7 +5841,7 @@ set_buffer_environ(Buffer *buf)
 	    set_environ("W3M_CURRENT_FORM", form2str((FormItemList *)a->url));
 	else
 	    set_environ("W3M_CURRENT_FORM", "");
-	set_environ("W3M_CURRENT_LINE", Sprintf("%d",
+	set_environ("W3M_CURRENT_LINE", Sprintf("%ld",
 						l->real_linenumber)->ptr);
 	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
 						  buf->currentColumn +

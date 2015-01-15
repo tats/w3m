@@ -1,6 +1,38 @@
+2015-01-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* alloc.h, main.c: Drop C99 features.
+
+2015-01-15  Scarlett  <scarlett@xavin.net>
+
+	Add overflow detection.
+	Origin: http://marc.info/?l=openbsd-ports&m=142090828929750&w=2
+	* main.c: Call exit(1) when out of memory to avoid dereferencing null
+	pointers when gc's malloc fails.
+	* alloc.h: Replacements for w3m's allocation macros which add
+	overflow detection and concentrate the macros in one file.
+	* indep.h, libwc/charset.c, libwc/status.c, matrix.c: Use the
+	overflow-detecting allocation macros from alloc.h.
+
+2015-01-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c, cookie.c, map.c:
+	Do not use C99 printf format specifiers and asprintf.
+
+2015-01-15  Scarlett  <scarlett@xavin.net>
+
+	Correct printf arguments and use asprintf.
+	Origin: http://marc.info/?l=openbsd-ports&m=142090828929750&w=2
+	* Str.c: Use asprintf() instead of rolling our own printf string
+	length detection.
+	* cookie.c: Pass the char pointer in the string struct to printf %s
+	instead of the string struct itself.
+	Print time_t using %lld instead of %ld to allow for 64-bit time_t.
+	* main.c: Print a long int using the correct format specifier.
+	* map.c: Print size_t using the correct format specifier.
+
 2014-12-06  Araki Ken  <arakiken@users.sf.net>
 
-	Support OSC 5379 remote imaging and sixel graphics
+	Support OSC 5379 remote imaging and sixel graphics.
 	Origin: https://bitbucket.org/arakiken/w3m/branch/remoteimg (2014-11-16)
 
 	* doc/README.sixel, terms.c: Add README.sixel.  W3M_IMG2SIXEL
@@ -84,22 +116,22 @@
 
 2014-12-06  Olaf Hering  <olh@suse.de>
 
-	* parsetagx.c: Fix crash in parse_tag() during every start
+	* parsetagx.c: Fix crash in parse_tag() during every start.
 	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-parsetagx-crash.patch?expand=1
 
-	* fm.h: Change the default to alt_entity=0
+	* fm.h: Change the default to alt_entity=0.
 	Change the default for the option "Use ASCII equivalents to
 	display entities" from YES to NO.
 	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-0.5.1-no-ASCII-equivalents-by-default.patch?expand=1
 	Bug-Novell: https://bugzilla.novell.com/show_bug.cgi?id=247397
 
 	* anchor.c, libwc/gb18030.c, libwc/ucs.c, regex.c:
-	Fix a few harmless uninitialized variables
+	Fix a few harmless uninitialized variables.
 	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-uninitialized.patch?expand=1
 
 2014-12-06  Peter Poeml  <poeml@suse.de>
 
-	* terms.c: Prevent segfault when editing a textarea field with vi
+	* terms.c: Prevent segfault when editing a textarea field with vi.
 	Add fix for segfault that can occur when editing a textarea field
 	with vi, and returning to w3m (it seems to happen if the terminal
 	is not writable, as when using w3m after 'su - some_user')
@@ -107,12 +139,12 @@
 
 2014-12-04  Tatsuya Kinoshita  <tats@debian.org>
 
-	* acinclude.m4: Follow updated configure
+	* acinclude.m4: Follow updated configure.
 
 2014-12-03  Yusuke Baba  <babayaga1@y8.dion.ne.jp>
 
 	* configure, w3mimg/fb/fb.c, w3mimg/fb/fb.h, w3mimg/fb/fb_w3mimg.c:
-	Support FreeBSD framebuffer
+	Support FreeBSD framebuffer.
 	Origin: http://www.ac.auone-net.jp/~baba/w3m-img/index.html
 	Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=122673
 
@@ -120,12 +152,12 @@
 
 	* acinclude.m4, configure, w3mimg/fb/fb_gdkpixbuf.c:
 	* w3mimg/x11/x11_w3mimg.c:
-	Depend on gdk-pixbuf instead of gtk when gtk2
+	Depend on gdk-pixbuf instead of gtk when gtk2.
 	Origin: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-gdk-pixbuf.patch?revision=1.1
 
 2014-12-02  Jeroen Roovers  <jer@gentoo.org>
 
-	* acinclude.m4, configure: Add tinfo to with_termlib
+	* acinclude.m4, configure: Add tinfo to with_termlib.
 	Fix building against sys-libs/ncurses[tinfo].
 	Origin: https://504588.bugs.gentoo.org/attachment.cgi?id=372650
 	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=504588
@@ -133,13 +165,13 @@
 2014-12-01  OBATA Akio  <obache@netbsd.org>
 
 	* acinclude.m4, configure:
-	Assume defined PKG_CONFIG points right location when gtk2
+	Assume defined PKG_CONFIG points right location when gtk2.
 	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-aa?rev=1.13&content-type=text/x-cvsweb-markup
 	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-ak?rev=1.1&content-type=text/x-cvsweb-markup
 
 2014-12-01  Vsevolod Stakhov  <vsevolod@FreeBSD.org>
 
-	* config.h.in: Disable USE_EGD for LibreSSL
+	* config.h.in: Disable USE_EGD for LibreSSL.
 	Disable use of RAND_egd as it is absent in FreeBSD.
 	This also fixes build error with LibreSSL.
 	Origin: https://bz-attachments.freebsd.org/attachment.cgi?id=144635
@@ -148,57 +180,57 @@
 
 2014-12-01  zimous  <zimous@matfyz.cz>
 
-	* po/ja.po: Set Language tag properly for Japanese translation
+	* po/ja.po: Set Language tag properly for Japanese translation.
 	Origin: https://512722.bugs.gentoo.org/attachment.cgi?id=378452
 	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=512722
 
 2014-11-30  Tatsuya Kinoshita  <tats@debian.org>
 
-	* doc/w3m.1: Typo fix
+	* doc/w3m.1: Typo fix.
 
 2014-11-30  Markus Hiereth  <post@hiereth.de>
 
-	* doc/w3m.1: Miscellaneous changes to improve English manpage
+	* doc/w3m.1: Miscellaneous changes to improve English manpage.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 
 2014-11-29  Markus Hiereth  <post@hiereth.de>
 
-	* doc/w3m.1: Improve FILES
+	* doc/w3m.1: Improve FILES.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=403634
 
-	* doc/w3m.1: Improve EXAMPLES
+	* doc/w3m.1: Improve EXAMPLES.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=380560
 
-	* doc/w3m.1: Improve explanation about option -N
+	* doc/w3m.1: Improve explanation about option -N.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=345084
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=530468
 
-	* doc/w3m.1: Note that -cols only affects when HTML is rendered
+	* doc/w3m.1: Note that -cols only affects when HTML is rendered.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=285251
 
-	* doc/w3m.1: Add more info on configuration
+	* doc/w3m.1: Add more info on configuration.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=268211
 
 2014-11-29  Justin B Rye  <justin.byam.rye@gmail.com>
 
-	* scripts/w3mman/w3mman.1.in: Tweak for W3MMAN_W3M
+	* scripts/w3mman/w3mman.1.in: Tweak for W3MMAN_W3M.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771003#5
 
-	* scripts/w3mman/w3mman.1.in: English fixes
+	* scripts/w3mman/w3mman.1.in: English fixes.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#25
 
 2014-11-29  Tatsuya Kinoshita  <tats@debian.org>
 
-	* version.c.in: Update to 0.5.3+debian-19+
+	* version.c.in: Update to 0.5.3+debian-19+.
 
 2014-11-29  Justin B Rye  <justin.byam.rye@gmail.com>
 
-	* scripts/w3mman/w3mman2html.cgi.in: Fix Perl warnings
+	* scripts/w3mman/w3mman2html.cgi.in: Fix Perl warnings.
 	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771004
 
 2014-10-21  Tatsuya Kinoshita  <tats@debian.org>

@@ -308,8 +308,13 @@ License: permissive-po
  Please note that the actual code of GNU gettext is covered by the GNU
  General Public License and is *not* in the public domain.
 
+Files: alloc.h
+Copyright: 2015, Scarlett
+License: public-domain
+ by Scarlett. public domain.
+
 Files: debian/*
-Copyright: 2008-2014, Tatsuya Kinoshita <tats@debian.org>
+Copyright: 2008-2015, Tatsuya Kinoshita <tats@debian.org>
            1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
 License: permissive-debian
  There is no restriction, so this package may be distributed under

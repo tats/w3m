@@ -1,0 +1,151 @@
+Subject: Add overflow detection (still support <C99)
+From: Scarlett <scarlett@xavin.net>, Tatsuya Kinoshita <tats@debian.org>
+Origin: http://marc.info/?l=openbsd-ports&m=142090828929750&w=2
+
+diff --git a/alloc.h b/alloc.h
+new file mode 100644
+index 0000000..fa0d391
+--- /dev/null
++++ b/alloc.h
+@@ -0,0 +1,39 @@
++/*
++ * by Scarlett. public domain.
++ * replacements for w3m's allocation macros which add overflow
++ * detection and concentrate the macros in one file
++ */
++#ifndef W3_ALLOC_H
++#define W3_ALLOC_H
++#include <gc.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <limits.h>
++
++static inline size_t
++z_mult_no_oflow_(size_t n, size_t size)
++{
++	if (size != 0 && n > ULONG_MAX / size) {
++		fprintf(stderr,
++		    "w3m: overflow in malloc, %lu*%lu\n", (unsigned long)n, (unsigned long)size);
++		exit(1);
++	}
++	return n * size;
++}
++
++#define New(type) \
++	(GC_MALLOC(sizeof(type)))
++
++#define NewAtom(type) \
++	(GC_MALLOC_ATOMIC(sizeof(type)))
++
++#define New_N(type, n) \
++	(GC_MALLOC(z_mult_no_oflow_((n), sizeof(type))))
++
++#define NewAtom_N(type, n) \
++	(GC_MALLOC_ATOMIC(z_mult_no_oflow_((n), sizeof(type))))
++
++#define New_Reuse(type, ptr, n) \
++	(GC_REALLOC((ptr), z_mult_no_oflow_((n), sizeof(type))))
++
++#endif /* W3_ALLOC_H */
+diff --git a/indep.h b/indep.h
+index 84416ed..2809832 100644
+--- a/indep.h
++++ b/indep.h
+@@ -1,7 +1,7 @@
+ /* $Id: indep.h,v 1.16 2003/09/22 21:02:19 ukai Exp $ */
+ #ifndef INDEP_H
+ #define INDEP_H
+-#include <gc.h>
++#include "alloc.h"
+ #include "Str.h"
+ #include "config.h"
+ 
+@@ -92,11 +92,6 @@ extern char *w3m_etc_dir();
+ extern char *w3m_conf_dir();
+ extern char *w3m_help_dir();
+ 
+-#define New(type)	((type*)GC_MALLOC(sizeof(type)))
+-#define NewAtom(type)	((type*)GC_MALLOC_ATOMIC(sizeof(type)))
+-#define New_N(type,n)	((type*)GC_MALLOC((n)*sizeof(type)))
+-#define NewAtom_N(type,n)	((type*)GC_MALLOC_ATOMIC((n)*sizeof(type)))
+-#define New_Reuse(type,ptr,n)   ((type*)GC_REALLOC((ptr),(n)*sizeof(type)))
+ #define NewWithoutGC(type)	((type*)xmalloc(sizeof(type)))
+ #define NewWithoutGC_N(type,n)	((type*)xmalloc((n)*sizeof(type)))
+ #define NewWithoutGC_Reuse(type,ptr,n)	((type*)xrealloc(ptr,(n)*sizeof(type)))
+diff --git a/libwc/charset.c b/libwc/charset.c
+index 3f0b74d..ea79b1c 100644
+--- a/libwc/charset.c
++++ b/libwc/charset.c
+@@ -1,8 +1,7 @@
+ 
+ #include <stdlib.h>
+ #include <ctype.h>
+-#include <gc.h>
+-#define New_N(type,n) ((type*)GC_MALLOC((n)*sizeof(type)))
++#include "../alloc.h"
+ 
+ #include "wc.h"
+ 
+diff --git a/libwc/status.c b/libwc/status.c
+index d25c924..4a2ebf8 100644
+--- a/libwc/status.c
++++ b/libwc/status.c
+@@ -1,7 +1,6 @@
+ 
+ #include <string.h>
+-#include <gc.h>
+-#define New_N(type,n) ((type*)GC_MALLOC((n)*sizeof(type)))
++#include "../alloc.h"
+ 
+ #include "wc.h"
+ #ifdef USE_UNICODE
+diff --git a/main.c b/main.c
+index 76256d6..d37b243 100644
+--- a/main.c
++++ b/main.c
+@@ -383,6 +383,13 @@ make_optional_header_string(char *s)
+     return hs;
+ }
+ 
++static void *
++die_oom(size_t bytes)
++{
++    fprintf(stderr, "Out of memory: %lu bytes unavailable!\n", (unsigned long)bytes);
++    exit(1);
++}
++
+ int
+ main(int argc, char **argv, char **envp)
+ {
+@@ -412,6 +419,7 @@ main(int argc, char **argv, char **envp)
+     char **getimage_args = NULL;
+ #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+     GC_INIT();
++    GC_set_oom_fn(die_oom);
+ #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
+     setlocale(LC_ALL, "");
+ #endif
+diff --git a/matrix.c b/matrix.c
+index 64fd0ad..bc7a5be 100644
+--- a/matrix.c
++++ b/matrix.c
+@@ -34,18 +34,12 @@
+ 
+ #include "config.h"
+ #include "matrix.h"
+-#include <gc.h>
++#include "alloc.h"
+ 
+ /* 
+  * Macros from "fm.h".
+  */
+ 
+-#define New(type)       ((type*)GC_MALLOC(sizeof(type)))
+-#define NewAtom(type)   ((type*)GC_MALLOC_ATOMIC(sizeof(type)))
+-#define New_N(type,n)   ((type*)GC_MALLOC((n)*sizeof(type)))
+-#define NewAtom_N(type,n)       ((type*)GC_MALLOC_ATOMIC((n)*sizeof(type)))
+-#define Renew_N(type,ptr,n)   ((type*)GC_REALLOC((ptr),(n)*sizeof(type)))
+-
+ #define SWAPD(a,b) { double tmp = a; a = b; b = tmp; }
+ #define SWAPI(a,b) { int tmp = a; a = b; b = tmp; }
+ 

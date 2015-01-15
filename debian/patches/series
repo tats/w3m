@@ -45,6 +45,7 @@
 440_parsetagx-crash.patch
 450_remoteimg.patch
 460_printf.patch
+470_alloc.patch
 800_lang-en.patch
 810_lang-de.patch
 820_lang-ja.patch

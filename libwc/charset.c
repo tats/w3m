@@ -1,8 +1,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
-#include <gc.h>
-#define New_N(type,n) ((type*)GC_MALLOC((n)*sizeof(type)))
+#include "../alloc.h"
 
 #include "wc.h"
 

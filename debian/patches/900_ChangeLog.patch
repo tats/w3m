@@ -2,10 +2,250 @@ Subject: Update ChangeLog
 From: Tatsuya Kinoshita <tats@debian.org>
 
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..d799777 100644
+index 88358ef..7629962 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,365 @@
+@@ -1,3 +1,605 @@
++2015-01-24  Tatsuya Kinoshita  <tats@debian.org>
++
++	* acinclude.m4, configure, version.c.in:
++	Update to 0.5.3+gitYYYYMMDD (generate from ChangeLog).
++
++2015-01-15  Tatsuya Kinoshita  <tats@debian.org>
++
++	* alloc.h, main.c: Drop C99 features.
++
++2015-01-15  Scarlett  <scarlett@xavin.net>
++
++	Add overflow detection.
++	Origin: http://marc.info/?l=openbsd-ports&m=142090828929750&w=2
++	* main.c: Call exit(1) when out of memory to avoid dereferencing null
++	pointers when gc's malloc fails.
++	* alloc.h: Replacements for w3m's allocation macros which add
++	overflow detection and concentrate the macros in one file.
++	* indep.h, libwc/charset.c, libwc/status.c, matrix.c: Use the
++	overflow-detecting allocation macros from alloc.h.
++
++2015-01-15  Tatsuya Kinoshita  <tats@debian.org>
++
++	* Str.c, cookie.c, map.c:
++	Do not use C99 printf format specifiers and asprintf.
++
++2015-01-15  Scarlett  <scarlett@xavin.net>
++
++	Correct printf arguments and use asprintf.
++	Origin: http://marc.info/?l=openbsd-ports&m=142090828929750&w=2
++	* Str.c: Use asprintf() instead of rolling our own printf string
++	length detection.
++	* cookie.c: Pass the char pointer in the string struct to printf %s
++	instead of the string struct itself.
++	Print time_t using %lld instead of %ld to allow for 64-bit time_t.
++	* main.c: Print a long int using the correct format specifier.
++	* map.c: Print size_t using the correct format specifier.
++
++2014-12-06  Araki Ken  <arakiken@users.sf.net>
++
++	Support OSC 5379 remote imaging and sixel graphics.
++	Origin: https://bitbucket.org/arakiken/w3m/branch/remoteimg (2014-11-16)
++
++	* doc/README.sixel, terms.c: Add README.sixel.  W3M_IMG2SIXEL
++	environmental variable enables to specify options of img2sixel.
++
++	* image.c, terms.c:
++	Add n_terminal_image argument to put_image_{sixel|osc5379}().
++	Use struct winsize to calculate ppc and ppl.
++
++	* terms.c: If SCREEN_VARIANT=sixel on GNU screen, exec img2sixel
++	without -P option.
++
++	* terms.c: ttymode_set() -> ttymode_reset().
++
++	* terms.c: Fix.
++
++	* terms.c: Support GNU screen.
++
++	* terms.c: Show GIF (except animation GIF) correctly.
++
++	* main.c, terms.c: img2sixel exits by Ctrl+C. Enable GIF Animation if
++	'I' is pressed to show it.
++
++	* image.c: Add declaration of get_pixel_per_cell().
++
++	* terms.c: Show the first frame of animation gif files.
++
++	* terms.c: system() -> fork()&execvp()
++
++	* display.c: Draw underline on anchor which contains cboth text and
++	images.
++
++	* etc.c: Remove close_tty() from setup_child() because close_tty()
++	sometimes interrupts loadGeneralFile() in loadImage() and corrupt
++	image data can be cached in ~/.w3m.
++
++	* image.c: Minor fix.
++
++	* image.c: Cache image files if at all possible and convert them to
++	sixel when -sixel option is specified.
++
++	* image.c: Init pixel_per_{char|line}_i if get_pixel_per_cell() fails.
++
++	* display.c, file.c, fm.h, image.c, main.c, terms.c:
++	Add -sixel option which supports image processing by img2sixel.
++
++	* image.c: Don't download image files whose size is specified in
++	<img> tag.
++
++	* image.c: Minor fixes of parseImageHeader().
++
++	* image.c: Determine the format of an image file by its header data
++	not by its file name suffix.
++
++	* image.c: Read width and height from jpeg, png and gif files directly
++	instead of executing w3mimgdisplay -size.
++
++	* display.c: display.c: Draw underline on anchor text which is not
++	overlapped with any image.
++
++	* terms.c: Clear fd_set by FD_ZERO() before select().
++
++	* file.c: nw and ni are rounded up instead of rounded off to show
++	every corner of images.
++
++	* terms.c: Change time to wait for the response of "\x1b[14t\x1b[18t"
++	from 0.1 sec to 0.5 sec.
++
++	* image.c:
++	- clearImage() works.
++	- Use cached image files created by w3m in getImage().
++
++	* file.c: Hack for alignment.
++
++	* fm.h, image.c, terms.c:
++	- Adjust the image size to the terminal cell size.
++	- If the image size is specified in html source, skip to load the image.
++
++	* display.c, fm.h, image.c, main.c, terms.c, w3mimg/x11/x11_w3mimg.c:
++	Support remote image by OSC 5379 show_picture sequence.
++
++2014-12-06  Olaf Hering  <olh@suse.de>
++
++	* parsetagx.c: Fix crash in parse_tag() during every start.
++	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-parsetagx-crash.patch?expand=1
++
++	* fm.h: Change the default to alt_entity=0.
++	Change the default for the option "Use ASCII equivalents to
++	display entities" from YES to NO.
++	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-0.5.1-no-ASCII-equivalents-by-default.patch?expand=1
++	Bug-Novell: https://bugzilla.novell.com/show_bug.cgi?id=247397
++
++	* anchor.c, libwc/gb18030.c, libwc/ucs.c, regex.c:
++	Fix a few harmless uninitialized variables.
++	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-uninitialized.patch?expand=1
++
++2014-12-06  Peter Poeml  <poeml@suse.de>
++
++	* terms.c: Prevent segfault when editing a textarea field with vi.
++	Add fix for segfault that can occur when editing a textarea field
++	with vi, and returning to w3m (it seems to happen if the terminal
++	is not writable, as when using w3m after 'su - some_user')
++	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-0.4.1-textarea-segfault.dif?expand=1
++
++2014-12-04  Tatsuya Kinoshita  <tats@debian.org>
++
++	* acinclude.m4: Follow updated configure.
++
++2014-12-03  Yusuke Baba  <babayaga1@y8.dion.ne.jp>
++
++	* configure, w3mimg/fb/fb.c, w3mimg/fb/fb.h, w3mimg/fb/fb_w3mimg.c:
++	Support FreeBSD framebuffer.
++	Origin: http://www.ac.auone-net.jp/~baba/w3m-img/index.html
++	Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=122673
++
++2014-12-02  Naohiro Aota  <naota@gentoo.org>
++
++	* acinclude.m4, configure, w3mimg/fb/fb_gdkpixbuf.c:
++	* w3mimg/x11/x11_w3mimg.c:
++	Depend on gdk-pixbuf instead of gtk when gtk2.
++	Origin: http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-gdk-pixbuf.patch?revision=1.1
++
++2014-12-02  Jeroen Roovers  <jer@gentoo.org>
++
++	* acinclude.m4, configure: Add tinfo to with_termlib.
++	Fix building against sys-libs/ncurses[tinfo].
++	Origin: https://504588.bugs.gentoo.org/attachment.cgi?id=372650
++	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=504588
++
++2014-12-01  OBATA Akio  <obache@netbsd.org>
++
++	* acinclude.m4, configure:
++	Assume defined PKG_CONFIG points right location when gtk2.
++	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-aa?rev=1.13&content-type=text/x-cvsweb-markup
++	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-ak?rev=1.1&content-type=text/x-cvsweb-markup
++
++2014-12-01  Vsevolod Stakhov  <vsevolod@FreeBSD.org>
++
++	* config.h.in: Disable USE_EGD for LibreSSL.
++	Disable use of RAND_egd as it is absent in FreeBSD.
++	This also fixes build error with LibreSSL.
++	Origin: https://bz-attachments.freebsd.org/attachment.cgi?id=144635
++	Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=191852
++	Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=191956
++
++2014-12-01  zimous  <zimous@matfyz.cz>
++
++	* po/ja.po: Set Language tag properly for Japanese translation.
++	Origin: https://512722.bugs.gentoo.org/attachment.cgi?id=378452
++	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=512722
++
++2014-11-30  Tatsuya Kinoshita  <tats@debian.org>
++
++	* doc/w3m.1: Typo fix.
++
++2014-11-30  Markus Hiereth  <post@hiereth.de>
++
++	* doc/w3m.1: Miscellaneous changes to improve English manpage.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++
++2014-11-29  Markus Hiereth  <post@hiereth.de>
++
++	* doc/w3m.1: Improve FILES.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=403634
++
++	* doc/w3m.1: Improve EXAMPLES.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=380560
++
++	* doc/w3m.1: Improve explanation about option -N.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=345084
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=530468
++
++	* doc/w3m.1: Note that -cols only affects when HTML is rendered.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=285251
++
++	* doc/w3m.1: Add more info on configuration.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#30
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=268211
++
++2014-11-29  Justin B Rye  <justin.byam.rye@gmail.com>
++
++	* scripts/w3mman/w3mman.1.in: Tweak for W3MMAN_W3M.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771003#5
++
++	* scripts/w3mman/w3mman.1.in: English fixes.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=766550#25
++
++2014-11-29  Tatsuya Kinoshita  <tats@debian.org>
++
++	* version.c.in: Update to 0.5.3+debian-19+.
++
++2014-11-29  Justin B Rye  <justin.byam.rye@gmail.com>
++
++	* scripts/w3mman/w3mman2html.cgi.in: Fix Perl warnings.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=771004
++
 +2014-10-21  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* version.c.in: Update to 0.5.3+debian-19

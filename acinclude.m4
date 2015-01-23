@@ -6,7 +6,8 @@ dnl w3m autoconf macros
 AC_DEFUN([AC_W3M_VERSION],
 [AC_SUBST(CURRENT_VERSION)
  cvsver=`$AWK '\$[1] ~ /Id:/ { print \$[3]}' $srcdir/ChangeLog`
- sed -e 's/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
+ ymdver=`sed -e 's/ .*//;s/-//g;q' $srcdir/ChangeLog`
+ sed -e 's/define CURRENT_VERSION "\(.*\)YYYYMMDD/define CURRENT_VERSION "\1'$ymdver'/;s/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`])
 #
 # ----------------------------------------------------------------

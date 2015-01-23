@@ -1,3 +1,8 @@
+2015-01-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure, version.c.in:
+	Update to 0.5.3+gitYYYYMMDD (generate from ChangeLog).
+
 2015-01-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* alloc.h, main.c: Drop C99 features.

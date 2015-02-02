@@ -1,3 +1,7 @@
+2015-02-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot: Update PO.
+
 2015-02-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, fm.h, rc.c:

@@ -1,3 +1,9 @@
+2015-02-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, fm.h, rc.c:
+	New option "display_borders" to display 0 pixel table borders.
+	cf. http://d.hatena.ne.jp/rubikitch/20101120
+
 2015-01-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* acinclude.m4, configure, version.c.in:

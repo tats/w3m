@@ -2,10 +2,20 @@ Description: Git master branch of Debian's w3m
 Origin: http://anonscm.debian.org/cgit/collab-maint/w3m.git
 
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..7629962 100644
+index 88358ef..55418f3 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,605 @@
+@@ -1,3 +1,615 @@
++2015-02-03  Tatsuya Kinoshita  <tats@debian.org>
++
++	* po/de.po, po/ja.po, po/w3m.pot: Update PO.
++
++2015-02-02  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c, fm.h, rc.c:
++	New option "display_borders" to display 0 pixel table borders.
++	cf. http://d.hatena.ne.jp/rubikitch/20101120
++
 +2015-01-24  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* acinclude.m4, configure, version.c.in:
@@ -4865,7 +4875,7 @@ index 8fe1215..dcc6edd 100644
      QuietMessage = TRUE;
      fmInitialized = FALSE;
 diff --git a/file.c b/file.c
-index 567d41e..709a0c1 100644
+index 567d41e..605fc78 100644
 --- a/file.c
 +++ b/file.c
 @@ -47,11 +47,11 @@ static JMP_BUF AbortLoading;
@@ -5388,7 +5398,16 @@ index 567d41e..709a0c1 100644
      case HTML_TABLE:
  	close_anchor(h_env, obuf);
  	obuf->table_level++;
-@@ -4970,6 +5068,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4884,6 +4982,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+ 	    else
+ 		w = BORDER_THIN;
+ 	}
++	if (DisplayBorders && w == BORDER_NONE)
++	    w = BORDER_THIN;
+ 	if (parsedtag_get_value(tag, ATTR_WIDTH, &i)) {
+ 	    if (obuf->table_level == 0)
+ 		width = REAL_WIDTH(i, h_env->limit - envs[h_env->envc].indent);
+@@ -4970,6 +5070,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_INPUT:
  	close_anchor(h_env, obuf);
  	tmp = process_input(tag);
@@ -5405,7 +5424,7 @@ index 567d41e..709a0c1 100644
  	if (tmp)
  	    HTMLlineproc1(tmp->ptr, h_env);
  	return 1;
-@@ -5067,11 +5175,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -5067,11 +5177,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	return 1;
      case HTML_BASE:
@@ -5419,7 +5438,7 @@ index 567d41e..709a0c1 100644
  	    parseURL(p, cur_baseURL, NULL);
  	}
  #endif
-@@ -5329,6 +5436,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5329,6 +5438,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
      Anchor **a_select = NULL;
  #endif
@@ -5433,7 +5452,7 @@ index 567d41e..709a0c1 100644
  
      if (out_size == 0) {
  	out_size = LINELEN;
-@@ -5523,16 +5637,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5523,16 +5639,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    hseq = 0;
  		    id = NULL;
  		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -5455,7 +5474,7 @@ index 567d41e..709a0c1 100644
  		    parsedtag_get_value(tag, ATTR_TITLE, &s);
  		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
  		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-@@ -5618,7 +5733,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5618,7 +5735,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    ParsedURL u;
  			    Image *image;
  
@@ -5464,7 +5483,7 @@ index 567d41e..709a0c1 100644
  			    a_img->image = image = New(Image);
  			    image->url = parsedURL2Str(&u)->ptr;
  			    if (!uncompressed_file_type(u.file, &image->ext))
-@@ -5639,7 +5754,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5639,7 +5756,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    image->map = q;
  			    image->ismap = ismap;
  			    image->touch = 0;
@@ -5473,7 +5492,7 @@ index 567d41e..709a0c1 100644
  						    IMG_FLAG_SKIP);
  			}
  			else if (iseq < 0) {
-@@ -5689,6 +5804,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5689,6 +5806,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  				putHmarker(buf->hmarklist, currentLn(buf),
  					   hpos, hseq - 1);
  			}
@@ -5495,7 +5514,7 @@ index 567d41e..709a0c1 100644
  			if (!form->target)
  			    form->target = buf->baseTarget;
  			if (a_textarea &&
-@@ -5761,8 +5891,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5761,8 +5893,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			break;
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
  			MapArea *a;
@@ -5506,7 +5525,7 @@ index 567d41e..709a0c1 100644
  			t = NULL;
  			parsedtag_get_value(tag, ATTR_TARGET, &t);
  			q = "";
-@@ -5811,11 +5941,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5811,11 +5943,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    break;
  		case HTML_BASE:
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
@@ -5523,7 +5542,7 @@ index 567d41e..709a0c1 100644
  		    }
  		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
  			buf->baseTarget =
-@@ -5830,8 +5963,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5830,8 +5965,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			int refresh_interval = getMetaRefreshParam(q, &tmp);
  #ifdef USE_ALARM
  			if (tmp) {
@@ -5534,7 +5553,7 @@ index 567d41e..709a0c1 100644
  			    buf->event = setAlarmEvent(buf->event,
  						       refresh_interval,
  						       AL_IMPLICIT_ONCE,
-@@ -5844,8 +5977,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5844,8 +5979,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  						       FUNCNAME_reload, NULL);
  #else
  			if (tmp && refresh_interval == 0) {
@@ -5545,7 +5564,7 @@ index 567d41e..709a0c1 100644
  			    pushEvent(FUNCNAME_gorURL, p);
  			}
  #endif
-@@ -5929,7 +6062,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5929,7 +6064,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef	ID_EXT
  		id = NULL;
  		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
@@ -5554,7 +5573,7 @@ index 567d41e..709a0c1 100644
  		    registerName(buf, id, currentLn(buf), pos);
  		}
  		if (renderFrameSet &&
-@@ -5982,7 +6115,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+@@ -5982,7 +6117,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
  
      parsedtag_get_value(tag, ATTR_HREF, &href);
      if (href)
@@ -5564,7 +5583,7 @@ index 567d41e..709a0c1 100644
      parsedtag_get_value(tag, ATTR_TITLE, &title);
      parsedtag_get_value(tag, ATTR_TYPE, &ctype);
      parsedtag_get_value(tag, ATTR_REL, &rel);
-@@ -6756,6 +6890,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
+@@ -6756,6 +6892,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
      obuf->nobr_level = 0;
      bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
      obuf->img_alt = 0;
@@ -5577,7 +5596,7 @@ index 567d41e..709a0c1 100644
      obuf->in_bold = 0;
      obuf->in_italic = 0;
      obuf->in_under = 0;
-@@ -6791,6 +6931,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+@@ -6791,6 +6933,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
  	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
  	obuf->img_alt = NULL;
      }
@@ -5593,7 +5612,7 @@ index 567d41e..709a0c1 100644
      if (obuf->in_bold) {
  	push_tag(obuf, "</b>", HTML_N_B);
  	obuf->in_bold = 0;
-@@ -6963,8 +7112,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6963,8 +7114,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	image_flag = IMG_FLAG_AUTO;
      else
  	image_flag = IMG_FLAG_SKIP;
@@ -5602,7 +5621,7 @@ index 567d41e..709a0c1 100644
  #endif
  
      if (w3m_halfload) {
-@@ -6987,6 +7134,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6987,6 +7136,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	htmlenv1.f = stdout;
      else
  	htmlenv1.buf = newTextLineList();
@@ -5612,7 +5631,7 @@ index 567d41e..709a0c1 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-@@ -7048,7 +7198,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7048,7 +7200,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	}
  #endif
  	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
@@ -5621,7 +5640,7 @@ index 567d41e..709a0c1 100644
  	cur_document_charset = charset;
  #endif
  	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
-@@ -7060,6 +7210,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7060,6 +7212,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
      obuf.status = R_ST_NORMAL;
      completeHTMLstream(&htmlenv1, &obuf);
      flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
@@ -5634,7 +5653,7 @@ index 567d41e..709a0c1 100644
      if (htmlenv1.title)
  	newBuf->buffername = htmlenv1.title;
      if (w3m_halfdump) {
-@@ -7096,16 +7252,17 @@ loadHTMLString(Str page)
+@@ -7096,16 +7254,17 @@ loadHTMLString(Str page)
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      Buffer *newBuf;
  
@@ -5654,7 +5673,7 @@ index 567d41e..709a0c1 100644
  #ifdef USE_M17N
      newBuf->document_charset = InnerCharset;
  #endif
-@@ -7115,6 +7272,7 @@ loadHTMLString(Str page)
+@@ -7115,6 +7274,7 @@ loadHTMLString(Str page)
  #endif
  
      TRAP_OFF;
@@ -5662,7 +5681,7 @@ index 567d41e..709a0c1 100644
      newBuf->topLine = newBuf->firstLine;
      newBuf->lastLine = newBuf->currentLine;
      newBuf->currentLine = newBuf->firstLine;
-@@ -7207,7 +7365,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+@@ -7207,7 +7367,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
  	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
  			   "/", file->ptr, NULL)->ptr;
  	Strcat_m_charp(tmp, "<a href=\"",
@@ -5671,7 +5690,7 @@ index 567d41e..709a0c1 100644
  		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
      }
  
-@@ -7331,6 +7489,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7331,6 +7491,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      URLFile f;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      struct stat st;
@@ -5679,7 +5698,7 @@ index 567d41e..709a0c1 100644
  
      loadImage(newBuf, IMG_FLAG_STOP);
      image.url = uf->url;
-@@ -7338,20 +7497,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7338,20 +7499,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      image.width = -1;
      image.height = -1;
      image.cache = NULL;
@@ -5703,7 +5722,7 @@ index 567d41e..709a0c1 100644
      TRAP_OFF;
  
      cache->loaded = IMG_FLAG_LOADED;
-@@ -7371,6 +7528,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7371,6 +7530,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
  
      init_stream(&f, SCM_LOCAL, newStrStream(tmp));
      loadHTMLstream(&f, newBuf, src, TRUE);
@@ -5711,7 +5730,7 @@ index 567d41e..709a0c1 100644
      if (src)
  	fclose(src);
  
-@@ -7580,8 +7738,11 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7580,8 +7740,11 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_M17N
      content_charset = 0;
  #endif
@@ -5724,7 +5743,7 @@ index 567d41e..709a0c1 100644
  	readHeader(&uf, t_buf, TRUE, NULL);
  	t = checkContentType(t_buf);
  	if (t == NULL)
-@@ -7609,14 +7770,13 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7609,14 +7772,13 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_IMAGE
      else if (activeImage && displayImage && !useExtImageViewer &&
  	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
@@ -5741,7 +5760,7 @@ index 567d41e..709a0c1 100644
  	    UFclose(&uf);
  	    if (buf == NULL || buf == NO_BUFFER)
  		return buf;
-@@ -7629,8 +7789,6 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7629,8 +7791,6 @@ openGeneralPagerBuffer(InputStream stream)
  	}
      }
      buf->real_type = t;
@@ -5750,7 +5769,7 @@ index 567d41e..709a0c1 100644
      return buf;
  }
  
-@@ -7766,6 +7924,8 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7766,6 +7926,8 @@ save2tmp(URLFile uf, char *tmpf)
      clen_t linelen = 0, trbyte = 0;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      static JMP_BUF env_bak;
@@ -5759,7 +5778,7 @@ index 567d41e..709a0c1 100644
  
      ff = fopen(tmpf, "wb");
      if (ff == NULL) {
-@@ -7802,30 +7962,29 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7802,30 +7964,29 @@ save2tmp(URLFile uf, char *tmpf)
      else
  #endif				/* USE_NNTP */
      {
@@ -5802,7 +5821,7 @@ index 567d41e..709a0c1 100644
  {
      Str tmpf, command;
      struct mailcap *mcap;
-@@ -7834,7 +7993,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7834,7 +7995,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
      char *header, *src = NULL, *ext = uf.ext;
  
      if (!(mcap = searchExtViewer(type)))
@@ -5811,7 +5830,7 @@ index 567d41e..709a0c1 100644
  
      if (mcap->nametemplate) {
  	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
-@@ -7867,15 +8026,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7867,15 +8028,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	    UFclose(&uf);
  	    myExec(command->ptr);
  	}
@@ -5829,7 +5848,7 @@ index 567d41e..709a0c1 100644
  	}
      }
      if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
-@@ -7918,14 +8075,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7918,14 +8077,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	buf = NO_BUFFER;
      }
      if (buf && buf != NO_BUFFER) {
@@ -5848,7 +5867,7 @@ index 567d41e..709a0c1 100644
  }
  
  static int
-@@ -7935,7 +8091,8 @@ _MoveFile(char *path1, char *path2)
+@@ -7935,7 +8093,8 @@ _MoveFile(char *path1, char *path2)
      FILE *f2;
      int is_pipe;
      clen_t linelen = 0, trbyte = 0;
@@ -5858,7 +5877,7 @@ index 567d41e..709a0c1 100644
  
      f1 = openIS(path1);
      if (f1 == NULL)
-@@ -7953,12 +8110,13 @@ _MoveFile(char *path1, char *path2)
+@@ -7953,12 +8112,13 @@ _MoveFile(char *path1, char *path2)
  	return -1;
      }
      current_content_length = 0;
@@ -5876,7 +5895,7 @@ index 567d41e..709a0c1 100644
      ISclose(f1);
      if (is_pipe)
  	pclose(f2);
-@@ -8317,21 +8475,23 @@ uncompress_stream(URLFile *uf, char **src)
+@@ -8317,21 +8477,23 @@ uncompress_stream(URLFile *uf, char **src)
  	}
  	if (pid2 == 0) {
  	    /* child2 */
@@ -5906,7 +5925,7 @@ index 567d41e..709a0c1 100644
  	}
  	/* child1 */
 diff --git a/fm.h b/fm.h
-index 8378939..8f594dc 100644
+index 8378939..37098a0 100644
 --- a/fm.h
 +++ b/fm.h
 @@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
@@ -6010,7 +6029,7 @@ index 8378939..8f594dc 100644
  global char *ftppasswd init(NULL);
  global int ftppass_hostnamegen init(TRUE);
  global int do_download init(FALSE);
-@@ -1065,7 +1092,7 @@ global char SimplePreserveSpace init(FALSE);
+@@ -1065,11 +1092,12 @@ global char SimplePreserveSpace init(FALSE);
  #define wc_Str_conv(x,charset0,charset1) (x)
  #define wc_Str_conv_strict(x,charset0,charset1) (x)
  #endif
@@ -6019,7 +6038,12 @@ index 8378939..8f594dc 100644
  #define GRAPHIC_CHAR_ASCII 2
  #define GRAPHIC_CHAR_DEC 1
  #define GRAPHIC_CHAR_CHARSET 0
-@@ -1135,7 +1162,7 @@ global int view_unseenobject init(TRUE);
+ global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
++global char DisplayBorders init(FALSE);
+ extern char *graph_symbol[];
+ extern char *graph2_symbol[];
+ extern int symbol_width;
+@@ -1135,7 +1163,7 @@ global int view_unseenobject init(TRUE);
  #endif
  
  #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
@@ -6028,7 +6052,7 @@ index 8378939..8f594dc 100644
  global char *ssl_cert_file init(NULL);
  global char *ssl_key_file init(NULL);
  global char *ssl_ca_path init(NULL);
-@@ -1144,15 +1171,17 @@ global int ssl_path_modified init(FALSE);
+@@ -1144,15 +1172,17 @@ global int ssl_path_modified init(FALSE);
  #endif				/* defined(USE_SSL) &&
  				 * defined(USE_SSL_VERIFY) */
  #ifdef USE_SSL
@@ -8764,19 +8788,19 @@ index 1489115..ade7ca2 100644
 +ja de
 diff --git a/po/de.po b/po/de.po
 new file mode 100644
-index 0000000..5e84022
+index 0000000..eba6658
 --- /dev/null
 +++ b/po/de.po
-@@ -0,0 +1,903 @@
+@@ -0,0 +1,914 @@
 +# German translation of w3m
-+# Copyright (C) 2014 Fumitoshi UKAI
++# Copyright (C) 2014 THE w3m'S COPYRIGHT HOLDER
 +# This file is distributed under the same license as the w3m package.
 +# Markus Hiereth <markus.hiereth@freenet.de>, 2014.
 +msgid ""
 +msgstr ""
 +"Project-Id-Version: w3m 0.5.3\n"
 +"Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-+"POT-Creation-Date: 2010-08-20 18:44+0900\n"
++"POT-Creation-Date: 2015-02-02 23:45+0900\n"
 +"PO-Revision-Date: 2014-10-19 11:15+0200\n"
 +"Last-Translator: Markus Hiereth <markus.hiereth@freenet.de>\n"
 +"Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -8859,807 +8883,818 @@ index 0000000..5e84022
 +msgid " Quit         (q) "
 +msgstr " Programm verlassen (q) "
 +
-+#: rc.c:60
++#: rc.c:62
 +msgid "External Viewer Setup"
 +msgstr "Konfiguration für externe Anzeigeprogramme"
 +
-+#: rc.c:61
++#: rc.c:63
 +msgid "Tab width in characters"
 +msgstr "Tabulatorbreite in Zeichen"
 +
-+#: rc.c:62
++#: rc.c:64
 +msgid "Indent for HTML rendering"
 +msgstr "Einzug bei HTML-Darstellung"
 +
-+#: rc.c:63
++#: rc.c:65
 +msgid "Number of pixels per character (4.0...32.0)"
 +msgstr "Anzahl von Pixeln pro Zeichen (4.0 bis 32.0)"
 +
-+#: rc.c:64
++#: rc.c:66
 +msgid "Number of pixels per line (4.0...64.0)"
 +msgstr "Anzahl von Pixeln pro Zeile (4.0 bis 64.0)"
 +
-+#: rc.c:65
-+#entsprechend Bescheibung aus MANUAL.html, mh 14.10.2014
++# entsprechend Bescheibung aus MANUAL.html, mh 14.10.2014
++#: rc.c:67
 +msgid "Number of remembered lines when used as a pager"
 +msgstr "Anzahl gemerkter, über die Standardeingabe erhaltener Zeilen"
 +
-+#: rc.c:66
++#: rc.c:68
 +msgid "Use URL history"
 +msgstr "URL-Chronik verwenden"
 +
-+#: rc.c:67
++#: rc.c:69
 +msgid "Number of remembered URL"
 +msgstr "Anzahl von URLs in Chronik"
 +
-+#: rc.c:68
++#: rc.c:70
 +msgid "Save URL history"
 +msgstr "URL-Chronik speichern"
 +
-+#: rc.c:69
++#: rc.c:71
 +msgid "Render frames automatically"
 +msgstr "Frames selbstständig darstellen"
 +
-+#: rc.c:70
++#: rc.c:72
 +msgid "Treat argument without scheme as URL"
 +msgstr "Eingabe ohne Protokoll-Präfix als URL auffassen"
 +
-+#: rc.c:71
++#: rc.c:73
 +msgid "Use _self as default target"
 +msgstr "_self als Standard-Zielfenster verwenden"
 +
-+#: rc.c:72
++#: rc.c:74
 +msgid "Open link on new tab if target is _blank or _new"
-+msgstr "Link in neuem Reiter öffnen, falls für Zielfenster _blank oder _new definiert ist"
++msgstr ""
++"Link in neuem Reiter öffnen, falls für Zielfenster _blank oder _new "
++"definiert ist"
 +
-+#: rc.c:73
++#: rc.c:75
 +msgid "Open download list panel on new tab"
 +msgstr "Downloadliste in neuem Reiter öffnen"
 +
-+#: rc.c:74
++#: rc.c:76
 +msgid "Display link URL automatically"
 +msgstr "URL der Links selbstständig anzeigen"
 +
-+#: rc.c:75
++#: rc.c:77
 +msgid "Display link numbers"
 +msgstr "Linknummern anzeigen"
 +
-+#: rc.c:76
++#: rc.c:78
 +msgid "Display decoded URL"
 +msgstr "URL entschlüsselt anzeigen"
 +
-+#: rc.c:77
++#: rc.c:79
 +msgid "Display current line number"
 +msgstr "Aktuelle Zeilennummer anzeigen"
 +
-+#: rc.c:78
++#: rc.c:80
 +msgid "Display inline images"
 +msgstr "Eingebettete Bilder anzeigen"
 +
-+#: rc.c:79
++#: rc.c:81
 +msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
 +msgstr "Pseudo-ALTs zu eingebetteten Bildern ohne ALT oder TITLE anzeigen"
 +
-+#: rc.c:81
++#: rc.c:83
 +msgid "Load inline images automatically"
 +msgstr "Eingebettete Bilder selbstständig laden"
 +
-+#: rc.c:82
++#: rc.c:84
 +msgid "Maximum processes for parallel image loading"
 +msgstr "Anzahl zulässiger Prozesse zum gleichzeitigen Laden von Bildern"
 +
-+#: rc.c:83
++#: rc.c:85
 +msgid "Use external image viewer"
 +msgstr "Externen Bildbetrachter verwenden"
 +
-+#: rc.c:84
++#: rc.c:86
 +msgid "Scale of image (%)"
 +msgstr "Bilder prozentual skalieren"
 +
-+#: rc.c:85
++#: rc.c:87
 +msgid "External command to display image"
 +msgstr "Befehl für externen Bildbetrachter"
 +
-+#: rc.c:86
++#: rc.c:88
 +msgid "Use link list of image map"
 +msgstr "Bei Grafiken mit eingebetteten Links Ziele auflisten"
 +
-+#: rc.c:88
++#: rc.c:90
 +msgid "Display file names in multi-column format"
 +msgstr "Dateinamen auf Spalten verteilt anzeigen"
 +
-+#: rc.c:89
++#: rc.c:91
 +msgid "Use ASCII equivalents to display entities"
 +msgstr "ASCII-Ersatz für in HTML benannte Zeichen verwenden"
 +
-+#: rc.c:90
++#: rc.c:92
 +msgid "Character type for border of table and menu"
 +msgstr "Zeichen zum Einrahmen von Tabellen und Menüs"
 +
-+#: rc.c:91
++#: rc.c:93
++msgid "Display 0 pixel table borders"
++msgstr ""
++
++#: rc.c:94
 +msgid "Fold lines in TEXTAREA"
 +msgstr "In Eingabefeldern vom Typ TEXTAREA Texte umbrechen"
 +
-+#: rc.c:92
++#: rc.c:95
 +msgid "Display INS, DEL, S and STRIKE element"
 +msgstr "Umsetzung der Elemente INS, DEL, S und STRIKE"
 +
-+#: rc.c:93
++#: rc.c:96
 +msgid "Display with color"
 +msgstr "In Farbe anzeigen"
 +
-+#: rc.c:94
++#: rc.c:97
 +msgid "Color of normal character"
 +msgstr "Farbe für normalen Text"
 +
-+#: rc.c:95
++#: rc.c:98
 +msgid "Color of anchor"
 +msgstr "Farbe für Links / Element A"
 +
-+#: rc.c:96
++#: rc.c:99
 +msgid "Color of image link"
 +msgstr "Farbe für Bilder / Element IMG"
 +
-+#: rc.c:97
++#: rc.c:100
 +msgid "Color of form"
 +msgstr "Farbe für Eingaben / Element INPUT"
 +
-+#: rc.c:98
++#: rc.c:101
 +msgid "Enable coloring of active link"
 +msgstr "Aktiven Link farblich hervorheben"
 +
-+#: rc.c:99
++#: rc.c:102
 +msgid "Color of currently active link"
 +msgstr "Farbe des derzeit aktiven Links "
 +
-+#: rc.c:100
++#: rc.c:103
 +msgid "Use visited link color"
 +msgstr "Besuchte Links farblich hervorheben"
 +
-+#: rc.c:101
++#: rc.c:104
 +msgid "Color of visited link"
 +msgstr "Farbe für besuchte Links"
 +
-+#: rc.c:102
++#: rc.c:105
 +msgid "Color of background"
 +msgstr "Hintergrundfarbe"
 +
-+#: rc.c:103
++#: rc.c:106
 +msgid "Color of mark"
 +msgstr "Farbe für Textmarken"
-+#msgstr "Farbe für Textmarkierungen"
 +
-+#: rc.c:104
++# msgstr "Farbe für Textmarkierungen"
++#: rc.c:107
 +msgid "Use proxy"
 +msgstr "Proxy verwenden"
 +
-+#: rc.c:105
++#: rc.c:108
 +msgid "URL of HTTP proxy host"
 +msgstr "URL des HTTP-Proxy-Hosts"
 +
-+#: rc.c:107
++#: rc.c:110
 +msgid "URL of HTTPS proxy host"
 +msgstr "URL des HTTPS-Proxy-Hosts"
 +
-+#: rc.c:110
++#: rc.c:113
 +msgid "URL of GOPHER proxy host"
 +msgstr "URL des GOPHER-Proxy-Hosts"
 +
-+#: rc.c:112
++#: rc.c:115
 +msgid "URL of FTP proxy host"
 +msgstr "URL des FTP-Proxy-Hosts"
 +
-+#: rc.c:113
++#: rc.c:116
 +msgid "Domains to be accessed directly (no proxy)"
 +msgstr "Ohne Proxy, direkt zu kontaktierende Domains"
 +
-+#: rc.c:114
++#: rc.c:117
 +msgid "Check noproxy by network address"
-+msgstr "Direkten Datentransfer ohne Proxy mittels Netzwerkadresse sicherstellen"
++msgstr ""
++"Direkten Datentransfer ohne Proxy mittels Netzwerkadresse sicherstellen"
 +
-+#: rc.c:115
++#: rc.c:118
 +msgid "Disable cache"
 +msgstr "Zwischenspeicherung deaktivieren"
 +
-+#: rc.c:117
++#: rc.c:120
 +msgid "News server"
 +msgstr "News-Server"
 +
-+#: rc.c:118
++#: rc.c:121
 +msgid "Mode of news server"
 +msgstr "Modus des News-Servers"
 +
-+#: rc.c:119
++#: rc.c:122
 +msgid "Number of news messages"
 +msgstr "News-Anzahl"
 +
-+#: rc.c:121
++#: rc.c:124
 +msgid "Order of name resolution"
 +msgstr "Reihenfolge der Namens-Auflösung"
 +
-+#: rc.c:122
++#: rc.c:125
 +msgid "Directory corresponding to / (document root)"
 +msgstr "Wurzelverzeichnis für Dokumente (/)"
 +
-+#: rc.c:123
++#: rc.c:126
 +msgid "Directory corresponding to /~user"
 +msgstr "Pfad zum Benutzerverzeichnis (~)"
 +
-+#: rc.c:124
++#: rc.c:127
 +msgid "Directory corresponding to /cgi-bin"
 +msgstr "Verzeichnis für ausführbare Skripte (cgi-bin)"
 +
-+#: rc.c:125
++#: rc.c:128
 +msgid "Confirm when quitting with q"
 +msgstr "Das Programm erst nach Bestätigung verlassen"
 +
-+#: rc.c:126
++#: rc.c:129
 +msgid "Close tab if buffer is last when back"
 +msgstr "Reiter mit nur einem Puffer auf Zurück-Befehl hin schließen"
 +
-+#: rc.c:128
++#: rc.c:131
 +msgid "Enable mark operations"
 +msgstr "Arbeit mit Textmarken ermöglichen"
-+#msgstr "Arbeit mit Textmarkierungen ermöglichen"
 +
-+#: rc.c:130
++# msgstr "Arbeit mit Textmarkierungen ermöglichen"
++#: rc.c:133
 +msgid "Enable Emacs-style line editing"
 +msgstr "Zeilen wie in Emacs bearbeiten"
 +
-+#: rc.c:131
++#: rc.c:134
 +msgid "Enable vi-like numeric prefix"
 +msgstr "Vorangestellte Zahlen wie in vi aktivieren"
 +
-+#: rc.c:132
++#: rc.c:135
 +msgid "Move cursor to top line when going to label"
 +msgstr "Labels nach Aufsuchen immer oben positionieren"
 +
-+#: rc.c:133
++#: rc.c:136
 +msgid "Move cursor to top line when moving to next page"
 +msgstr "Beim Umblättern Eingabemarke nach oben setzen"
 +
-+#: rc.c:134
++#: rc.c:137
 +msgid "Fold lines of plain text file"
 +msgstr "Zeilen in Textdateien umbrechen"
 +
-+#: rc.c:135
++#: rc.c:138
 +msgid "Show line numbers"
 +msgstr "Zeilennummern anzeigen"
 +
-+#: rc.c:136
++#: rc.c:139
 +msgid "Show search string"
 +msgstr "Suchbegriff anzeigen"
 +
-+#: rc.c:137
++#: rc.c:140
 +msgid "List of mime.types files"
 +msgstr "Liste der mime.types-Dateien"
 +
-+#: rc.c:138
++#: rc.c:141
 +msgid "List of mailcap files"
 +msgstr "Liste der mailcap-Dateien"
 +
-+#: rc.c:139
++#: rc.c:142
 +msgid "List of urimethodmap files"
 +msgstr "Liste von Dateien mit URI-Methode-Zuordnungen"
 +
-+#: rc.c:140
++#: rc.c:143
 +msgid "Editor"
 +msgstr "Editor"
 +
-+#: rc.c:141
++#: rc.c:144
 +msgid "Mailer"
 +msgstr "Mail-Programm"
 +
-+#: rc.c:142
 +# korrespondiert mit Pulldown-Menü, daher verkürzt. mh 09.10.2014
++#: rc.c:145
 +msgid "How to call Mailer for mailto URLs with options"
 +msgstr "Umgang mit mailto-URLs"
 +
-+#: rc.c:143
++#: rc.c:146
 +msgid "External Browser"
 +msgstr "Externer Browser"
 +
-+#: rc.c:144
++#: rc.c:147
 +msgid "Second External Browser"
 +msgstr "Zweiter externer Browser"
 +
-+#: rc.c:145
++#: rc.c:148
 +msgid "Third External Browser"
 +msgstr "Dritter externer Browser"
 +
-+#: rc.c:146
 +# entsprechend file:///usr/share/doc/w3m/README.passwd
 +# Prüfung beanstandete auch passwd_file mit Zugriffbytes 600, mh, 05.10.2014
++#: rc.c:149
 +msgid "Disable secret file security check"
 +msgstr "Keine Prüfung der Sicherheit bei Dateien mit geheimem Inhalt"
 +
-+#: rc.c:147
++#: rc.c:150
 +msgid "Password file"
 +msgstr "Passwort-Datei"
 +
-+#: rc.c:148
++#: rc.c:151
 +msgid "File for setting form on loading"
 +msgstr "Datei mit vordefinierten Eingaben für Formulare"
 +
-+#: rc.c:149
++#: rc.c:152
++msgid "File for preferences for each site"
++msgstr ""
++
++#: rc.c:153
 +msgid "Password for anonymous FTP (your mail address)"
 +msgstr "Passwort für anonyme FTP-Anmeldung (Ihre Mailadresse)"
 +
-+#: rc.c:150
++#: rc.c:154
 +msgid "Generate domain part of password for FTP"
 +msgstr "Domain-Teil des FTP-Passwortes erzeugen"
 +
-+#: rc.c:151
++#: rc.c:155
 +msgid "User-Agent identification string"
 +msgstr "Browserkennung übermitteln"
 +
-+#: rc.c:152
++#: rc.c:156
 +msgid "Accept-Encoding header"
 +msgstr "Accept-Encoding-Kopfzeile"
 +
-+#: rc.c:153
++#: rc.c:157
 +msgid "Accept header"
 +msgstr "Accept-Kopfzeile"
 +
-+#: rc.c:154
++#: rc.c:158
 +msgid "Accept-Language header"
 +msgstr "Accept-Language-Kopfzeile"
 +
-+#: rc.c:155
++#: rc.c:159
 +msgid "Treat URL-like strings as links in all pages"
 +msgstr "URL-artige Zeichenketten auf allen Seiten als Links auffassen"
 +
-+#: rc.c:156
++#: rc.c:160
 +msgid "Wrap search"
 +msgstr "Im Dokument umlaufend suchen"
 +
-+#: rc.c:157
++#: rc.c:161
 +msgid "Display unseen objects (e.g. bgimage tag)"
 +msgstr "Nicht gezeigte Objekte melden (z.B. Hintergrundbild)"
 +
-+#: rc.c:158
++#: rc.c:162
 +msgid "Uncompress compressed data automatically when downloading"
 +msgstr "Komprimierte Daten beim Download selbstständig dekomprimieren"
 +
-+#: rc.c:160
 +# String nicht in Optionen-Menü gefunden. mh, 05.10.2014
++#: rc.c:164
 +msgid "Run external viewer in a separate session"
 +msgstr "Externe Anzeigeprogramme in eigener Sitzung laufen lassen"
 +
-+#: rc.c:162
++#: rc.c:166
 +msgid "Run external viewer in the background"
 +msgstr "Externe Anzeigeprogramme im Hintergrund laufen lassen"
 +
-+#: rc.c:164
++#: rc.c:168
 +msgid "Use external program for directory listing"
 +msgstr "Externes Programm zum Auflisten von Verzeichnissen verwenden"
 +
-+#: rc.c:165
++#: rc.c:169
 +msgid "URL of directory listing command"
 +msgstr "URL des Befehls zum Auflisten von Verzeichnissen"
 +
-+#: rc.c:167
++#: rc.c:171
 +msgid "Enable dictionary lookup through CGI"
 +msgstr "Wörterbuchabfrage mittels CGI aktivieren"
 +
-+#: rc.c:168
++#: rc.c:172
 +msgid "URL of dictionary lookup command"
 +msgstr "URL des Befehls zur Wörterbuch-Abfrage"
 +
-+#: rc.c:170
++#: rc.c:174
 +msgid "Display link name for images lacking ALT"
 +msgstr "Bei Bildern ohne ALT-Angabe Linkziel anzeigen"
 +
-+#: rc.c:171
++#: rc.c:175
 +msgid "Index file for directories"
 +msgstr "Indexdatei für Verzeichnisse"
 +
-+#: rc.c:172
++#: rc.c:176
 +msgid "Prepend http:// to URL automatically"
 +msgstr "Ziel-Eingaben gegebenenfalls http:// voranstellen"
 +
-+#: rc.c:173
++#: rc.c:177
 +msgid "Default value for open-URL command"
 +msgstr "Vorgabewert bei der Adresseneingabe"
 +
-+#: rc.c:174
++#: rc.c:178
 +msgid "Decode Content-Transfer-Encoding when saving"
 +msgstr "Beim Speichern entsprechend Content-Transfer-Encoding entschlüsseln"
 +
-+#: rc.c:175
++#: rc.c:179
 +msgid "Preserve timestamp when saving"
 +msgstr "Zeitstempel beim Speichern erhalten"
 +
-+#: rc.c:177
++#: rc.c:181
 +msgid "Enable mouse"
 +msgstr "Maus aktivieren"
 +
-+#: rc.c:178
++#: rc.c:182
 +msgid "Scroll in reverse direction of mouse drag"
 +msgstr "Mausbewegungen entgegengesetzt scrollen"
 +
-+#: rc.c:179
++#: rc.c:183
 +msgid "Behavior of wheel scroll speed"
 +msgstr "Umsetzung der Mausradbewegung"
 +
-+#: rc.c:180
++#: rc.c:184
 +msgid "(A only)Scroll by # (%) of screen"
 +msgstr "(nur A) Um # % des Fensters scrollen"
 +
-+#: rc.c:181
++#: rc.c:185
 +msgid "(B only)Scroll by # lines"
 +msgstr "(nur B) Um # Zeilen scrollen"
 +
-+#: rc.c:183
++#: rc.c:187
 +msgid "Free memory of undisplayed buffers"
 +msgstr "Speicherplatz nicht angezeigter Puffer freigeben"
 +
-+#: rc.c:184
++#: rc.c:188
 +msgid "Suppress `Referer:' header"
 +msgstr "Referer-Kopfzeile unterdrücken"
 +
-+#: rc.c:185
++#: rc.c:189
 +msgid "Search case-insensitively"
 +msgstr "Groß- und Kleinschreibung beim Suchen ignorieren"
 +
-+#: rc.c:186
++#: rc.c:190
 +msgid "Use LESSOPEN"
 +msgstr "LESSOPEN verwenden"
 +
-+#: rc.c:189
++#: rc.c:193
 +msgid "Perform SSL server verification"
 +msgstr "SSL-Server-Verifizierung durchführen"
 +
-+#: rc.c:190
++#: rc.c:194
 +msgid "PEM encoded certificate file of client"
 +msgstr "PEM-kodierte Zertifikatsdatei des Clients"
 +
-+#: rc.c:191
++#: rc.c:195
 +msgid "PEM encoded private key file of client"
 +msgstr "PEM-kodierte private Schlüsseldatei des Clients"
 +
-+#: rc.c:192
++#: rc.c:196
 +msgid "Path to directory for PEM encoded certificates of CAs"
 +msgstr "Pfad zum Verzeichnis für PEM-kodierte Zertifikate von CAs"
 +
-+#: rc.c:193
++#: rc.c:197
 +msgid "File consisting of PEM encoded certificates of CAs"
 +msgstr "Datei mit PEM-kodierten Zertifikaten von CAs"
 +
-+#: rc.c:195
++#: rc.c:199
 +msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
 +msgstr "Liste unzulässiger SSL-Verfahren (2: SSLv2, 3: SSLv3, t: TLSv1)"
 +
-+#: rc.c:198
++#: rc.c:202
 +msgid "Enable cookie processing"
 +msgstr "Cookie-Verarbeitung aktivieren"
 +
-+#: rc.c:199
++#: rc.c:203
 +msgid "Print a message when receiving a cookie"
 +msgstr "Den Empfang von Cookies melden"
 +
-+#: rc.c:200
++#: rc.c:204
 +msgid "Accept cookies"
 +msgstr "Cookies akzeptieren"
 +
-+#: rc.c:201
++#: rc.c:205
 +msgid "Action to be taken on invalid cookie"
 +msgstr "Reaktion auf ungültiges Cookie"
 +
-+#: rc.c:202
++#: rc.c:206
 +msgid "Domains to reject cookies from"
 +msgstr "Domains, deren Cookies abzulehnen sind"
 +
-+#: rc.c:203
++#: rc.c:207
 +msgid "Domains to accept cookies from"
 +msgstr "Domains, deren Cookies akzeptiert werden"
 +
-+#: rc.c:204
 +# Variable vom Typ String im Abschnitt Cookies-Einstellungen, mh 10.10.2014
++#: rc.c:208
 +#, fuzzy
 +msgid "Domains to avoid [wrong number of dots]"
 +msgstr "Zu meidende Domains (falsche Anzahl von Punkten)"
 +
-+#: rc.c:206
++#: rc.c:210
 +msgid "Number of redirections to follow"
 +msgstr "Anzahl zu akzeptierender Umleitungen"
 +
 +# Konfigurationsvariable vom Typ string, mh, 05.10.2014
-+#: rc.c:207
++#: rc.c:211
 +msgid "Enable processing of meta-refresh tag"
 +msgstr "Meta-Refresh-Element verarbeiten"
 +
-+#: rc.c:210
++#: rc.c:214
 +msgid "Enable Migemo (Roma-ji search)"
 +msgstr "Romaji-Suche mittels Migemo aktivieren"
 +
-+#: rc.c:211
++#: rc.c:215
 +msgid "Migemo command"
 +msgstr "Migemo-Befehl"
 +
-+#: rc.c:215
++#: rc.c:219
 +msgid "Display charset"
 +msgstr "Zeichenkodierung der Anzeige"
 +
-+#: rc.c:216
++#: rc.c:220
 +msgid "Default document charset"
 +msgstr "Zeichenkodierungs-Vorgabe für Dokumente"
 +
-+#: rc.c:217
++#: rc.c:221
 +msgid "Automatic charset detect when loading"
 +msgstr "Selbstständige Erkennung der Zeichenkodierung beim Laden"
 +
-+#: rc.c:218
++#: rc.c:222
 +msgid "System charset"
 +msgstr "Zeichenkodierung des Systems"
 +
-+#: rc.c:219
++#: rc.c:223
 +msgid "System charset follows locale(LC_CTYPE)"
 +msgstr "Zeichenkodierung des Systems entsprechend Locale (LC_CTYPE)"
 +
-+#: rc.c:220
 +# war zuvor
 +# msgstr "Halfdump mit der zur Anzeige benutzten Zeichenkodierung exportieren"
++#: rc.c:224
 +msgid "Output halfdump with display charset"
 +msgstr "Halfdump in der zur Anzeige benutzten Kodierung"
 +
-+#: rc.c:221
 +# Konfigurationsvariable vom Typ boolean, mh, 05.10.2014
++#: rc.c:225
 +#, fuzzy
 +msgid "Use multi column characters"
 +msgstr "Spaltenübergreifende Zeichen verwenden"
 +
-+#: rc.c:222
++#: rc.c:226
 +msgid "Use combining characters"
 +msgstr "Kombinationszeichen verwenden"
 +
-+#: rc.c:223
++#: rc.c:227
 +msgid "Use double width for some Unicode characters"
 +msgstr "Einzelnen Unicode-Zeichen zwei Spalten einräumen"
 +
-+#: rc.c:224
++#: rc.c:228
 +msgid "Use Unicode language tags"
 +msgstr "Unicode-Sprach-Tags verwenden"
 +
-+#: rc.c:225
++#: rc.c:229
 +msgid "Charset conversion using Unicode map"
 +msgstr "Zeichen in Unicode kodieren"
 +
-+#: rc.c:226
++#: rc.c:230
 +msgid "Charset conversion when loading"
 +msgstr "Zeichenkodierung beim Laden anpassen"
 +
-+#: rc.c:227
++#: rc.c:231
 +msgid "Adjust search string for document charset"
 +msgstr "Zu suchende Zeichenkette der Kodierung des Dokumentes anpassen"
 +
-+#: rc.c:228
++#: rc.c:232
 +msgid "Fix character width when conversion"
 +msgstr "Bei Umwandlung an der Breite von Zeichen festhalten"
 +
-+#: rc.c:229
++#: rc.c:233
 +msgid "Use GB 12345 Unicode map instead of GB 2312's"
 +msgstr "GB-12345-Unicode statt GB 2312 verwenden"
 +
-+#: rc.c:230
++#: rc.c:234
 +msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 +msgstr "JIS X 0201 Roman statt ISO-2022-JP verwenden"
 +
-+#: rc.c:231
++#: rc.c:235
 +msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 +msgstr "JIS C 6226:1978 statt ISO-2022-JP verwenden"
 +
-+#: rc.c:232
++#: rc.c:236
 +msgid "Use JIS X 0201 Katakana"
 +msgstr "JIS X 0201 Katakana verwenden"
 +
-+#: rc.c:233
++#: rc.c:237
 +msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 +msgstr "JIS X 0212:1990 verwenden (ergänzendes Kanji)"
 +
-+#: rc.c:234
++#: rc.c:238
 +msgid "Use JIS X 0213:2000 (2000JIS)"
 +msgstr "JIS X 0213:2000 verwenden (2000JIS)"
 +
-+#: rc.c:235
++#: rc.c:239
 +msgid "Strict ISO-2022-JP/KR/CN"
 +msgstr "Striktes ISO-2022-JP/KR/CN"
 +
-+#: rc.c:236
++#: rc.c:240
 +msgid "Treat 4 bytes char. of GB18030 as Unicode"
 +msgstr "4-Byte-Zeichen von GB 18030 als Unicode auffassen"
 +
-+#: rc.c:237
++#: rc.c:241
 +msgid "Simple Preserve space"
 +msgstr "Einfache Platzerhaltung"
 +
-+#: rc.c:240
++#: rc.c:244
 +msgid "keymap file"
 +msgstr "Tastaturbelegungs-Datei"
 +
-+#: rc.c:257
++#: rc.c:261
 +msgid "black"
 +msgstr "schwarz"
 +
-+#: rc.c:258
++#: rc.c:262
 +msgid "red"
 +msgstr "rot"
 +
-+#: rc.c:259
++#: rc.c:263
 +msgid "green"
 +msgstr "grün"
 +
-+#: rc.c:260
++#: rc.c:264
 +msgid "yellow"
 +msgstr "gelb"
 +
-+#: rc.c:261
++#: rc.c:265
 +msgid "blue"
 +msgstr "blau"
 +
-+#: rc.c:262
++#: rc.c:266
 +msgid "magenta"
 +msgstr "magenta"
 +
-+#: rc.c:263
++#: rc.c:267
 +msgid "cyan"
 +msgstr "cyan"
 +
-+#: rc.c:264
++#: rc.c:268
 +msgid "white"
 +msgstr "weiß"
 +
-+#: rc.c:265
++#: rc.c:269
 +msgid "terminal"
 +msgstr "wie Terminal"
 +
-+#: rc.c:284
++#: rc.c:288
 +msgid "none"
 +msgstr "keiner"
 +
-+#: rc.c:285
++#: rc.c:289
 +msgid "current URL"
 +msgstr "aktuelle URL"
 +
-+#: rc.c:286
++#: rc.c:290
 +msgid "link URL"
 +msgstr "Link-URL"
 +
-+#: rc.c:291
++#: rc.c:295
 +msgid "simple"
 +msgstr "einfach"
 +
-+#: rc.c:292
++#: rc.c:296
 +msgid "use tag"
 +msgstr "durch Tags"
 +
-+#: rc.c:293
++#: rc.c:297
 +msgid "fontify"
 +msgstr "hervorgehoben"
 +
-+#: rc.c:299
++#: rc.c:303
 +msgid "A:relative to screen height"
 +msgstr "A: relativ zu Fensterhöhe"
 +
-+#: rc.c:300
++#: rc.c:304
 +msgid "B:fixed speed"
 +msgstr "B: feste Geschwindigkeit"
 +
-+#: rc.c:307
++#: rc.c:311
 +msgid "unspecified"
 +msgstr "nicht spezifiziert"
 +
-+#: rc.c:308
++#: rc.c:312
 +msgid "inet inet6"
 +msgstr "inet inet6"
 +
-+#: rc.c:309
++#: rc.c:313
 +msgid "inet6 inet"
 +msgstr "inet6 inet"
 +
-+#: rc.c:310
++#: rc.c:314
 +msgid "inet only"
 +msgstr "nur inet"
 +
-+#: rc.c:311
++#: rc.c:315
 +msgid "inet6 only"
 +msgstr "nur inet6"
 +
-+#: rc.c:318
++#: rc.c:322
 +msgid "discard"
 +msgstr "verwerfen"
 +
-+#: rc.c:320
++#: rc.c:324
 +msgid "accept"
 +msgstr "annehmen"
 +
-+#: rc.c:322
++#: rc.c:326
 +msgid "ask"
 +msgstr "nachfragen"
 +
-+#: rc.c:329
 +# gehört zu rc.c:142
 +# erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
++#: rc.c:333
 +msgid "use internal mailer instead"
 +msgstr "Mail intern erstellen"
 +
-+#: rc.c:331
 +# gehört zu rc.c:142
 +# erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
++#: rc.c:335
 +msgid "ignore options and use only the address"
 +msgstr "Optionen ignorieren"
 +
-+#: rc.c:332
 +# gehört zu rc.c:142
 +# erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
++#: rc.c:336
 +msgid "use full mailto URL"
 +msgstr "komplett verwenden"
 +
-+#: rc.c:341
++#: rc.c:345
 +msgid "OFF"
 +msgstr "AUS"
 +
-+#: rc.c:342
++#: rc.c:346
 +msgid "Only ISO 2022"
 +msgstr "Nur ISO-2022"
 +
-+#: rc.c:343
++#: rc.c:347
 +msgid "ON"
 +msgstr "AN"
 +
-+#: rc.c:349
 +# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
++#: rc.c:353
 +msgid "ASCII"
 +msgstr "ASCII"
 +
-+#: rc.c:350
 +# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
 +# hier ist "Zeichensatz" akzeptabel mh, 09.10.2014
++#: rc.c:354
 +msgid "charset specific"
 +msgstr "zeichensatzspezifisch"
 +
-+#: rc.c:351
 +# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
++#: rc.c:355
 +msgid "DEC special graphics"
 +msgstr "mit DEC-Grafiken"
 +
-+#: rc.c:714
++#: rc.c:722
 +msgid "Display Settings"
 +msgstr "Einstellungen zur Anzeige"
 +
-+#: rc.c:716
++#: rc.c:724
 +msgid "Color Settings"
 +msgstr "Farbeinstellungen"
 +
-+#: rc.c:718
++#: rc.c:726
 +msgid "Miscellaneous Settings"
 +msgstr "Weitere Einstellungen"
 +
-+#: rc.c:719
++#: rc.c:727
 +msgid "Directory Settings"
 +msgstr "Verzeichnis-Einstellungen"
 +
-+#: rc.c:720
++#: rc.c:728
 +msgid "External Program Settings"
 +msgstr "Einstellungen für externe Programme"
 +
-+#: rc.c:721
++#: rc.c:729
 +msgid "Network Settings"
 +msgstr "Netzwerk-Einstellungen"
 +
-+#: rc.c:722
++#: rc.c:730
 +msgid "Proxy Settings"
 +msgstr "Proxy-Einstellungen"
 +
-+#: rc.c:724
++#: rc.c:732
 +msgid "SSL Settings"
 +msgstr "SSL-Einstellungen"
 +
-+#: rc.c:727
++#: rc.c:735
 +msgid "Cookie Settings"
 +msgstr "Cookie-Einstellungen"
 +
-+#: rc.c:730
++#: rc.c:738
 +msgid "Charset Settings"
 +msgstr "Zeichenkodierungs-Einstellungen"
 +
@@ -9668,14 +9703,27 @@ index 0000000..5e84022
 +#. * header. For example, ja.po should translate it as
 +#. * "ja;q=1.0, en;q=0.5" like that.
 +#.
-+#: rc.c:1209
++#: rc.c:1220
 +msgid "en;q=1.0"
 +msgstr "de;q=1.0, en;q=0.5"
 diff --git a/po/ja.po b/po/ja.po
-index d67c695..c16557a 100644
+index d67c695..f78556d 100644
 --- a/po/ja.po
 +++ b/po/ja.po
-@@ -12,7 +12,7 @@ msgstr ""
+@@ -1,6 +1,6 @@
+ # Japanese translations for w3m package
+ # w3m パッケージに対する英訳.
+-# Copyright (C) 2003 THE w3m'S COPYRIGHT HOLDER
++# Copyright (C) 2015 THE w3m'S COPYRIGHT HOLDER
+ # This file is distributed under the same license as the w3m package.
+ # Fumitoshi UKAI <ukai@debian.or.jp>, 2003.
+ #
+@@ -8,11 +8,11 @@ msgid ""
+ msgstr ""
+ "Project-Id-Version: w3m 0.5.3\n"
+ "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
+-"POT-Creation-Date: 2010-08-20 18:44+0900\n"
++"POT-Creation-Date: 2015-02-02 23:45+0900\n"
  "PO-Revision-Date: 2010-08-20 18:45+0900\n"
  "Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
  "Language-Team: Japanese\n"
@@ -9684,17 +9732,2016 @@ index d67c695..c16557a 100644
  "MIME-Version: 1.0\n"
  "Content-Type: text/plain; charset=UTF-8\n"
  "Content-Transfer-Encoding: 8bit\n"
-@@ -407,6 +407,10 @@ msgid "File for setting form on loading"
+@@ -90,783 +90,791 @@ msgstr "オプション   (o)"
+ msgid " Quit         (q) "
+ msgstr "終了         (q)"
+ 
+-#: rc.c:60
++#: rc.c:62
+ msgid "External Viewer Setup"
+ msgstr "外部ビューアの編集"
+ 
+-#: rc.c:61
++#: rc.c:63
+ msgid "Tab width in characters"
+ msgstr "タブ幅"
+ 
+-#: rc.c:62
++#: rc.c:64
+ msgid "Indent for HTML rendering"
+ msgstr "HTML整形時のインデント幅"
+ 
+-#: rc.c:63
++#: rc.c:65
+ msgid "Number of pixels per character (4.0...32.0)"
+ msgstr "文字幅 (4.0...32.0)"
+ 
+-#: rc.c:64
++#: rc.c:66
+ msgid "Number of pixels per line (4.0...64.0)"
+ msgstr "一行の高さ (4.0...64.0)"
+ 
+-#: rc.c:65
++#: rc.c:67
+ msgid "Number of remembered lines when used as a pager"
+ msgstr "ページャとして利用した時に保存される行数"
+ 
+-#: rc.c:66
++#: rc.c:68
+ msgid "Use URL history"
+ msgstr "履歴を使う"
+ 
+-#: rc.c:67
++#: rc.c:69
+ msgid "Number of remembered URL"
+ msgstr "保持するURL履歴の数"
+ 
+-#: rc.c:68
++#: rc.c:70
+ msgid "Save URL history"
+ msgstr "URL履歴の保存"
+ 
+-#: rc.c:69
++#: rc.c:71
+ msgid "Render frames automatically"
+ msgstr "フレームの自動表示"
+ 
+-#: rc.c:70
++#: rc.c:72
+ msgid "Treat argument without scheme as URL"
+ msgstr "scheme のない引数も URL とみなす"
+ 
+-#: rc.c:71
++#: rc.c:73
+ msgid "Use _self as default target"
+ msgstr "targetが未指定の場合に_selfを使用する"
+ 
+-#: rc.c:72
++#: rc.c:74
+ msgid "Open link on new tab if target is _blank or _new"
+ msgstr "targetが_blankか_newの場合は新しいタブで開く"
+ 
+-#: rc.c:73
++#: rc.c:75
+ msgid "Open download list panel on new tab"
+ msgstr "Download list panel を新しいタブで開く"
+ 
+-#: rc.c:74
++#: rc.c:76
+ msgid "Display link URL automatically"
+ msgstr "リンク先の自動表示"
+ 
+-#: rc.c:75
++#: rc.c:77
+ msgid "Display link numbers"
+ msgstr "リンク番号の表示"
+ 
+-#: rc.c:76
++#: rc.c:78
+ msgid "Display decoded URL"
+ msgstr "URLをデコードして表示"
+ 
+-#: rc.c:77
++#: rc.c:79
+ msgid "Display current line number"
+ msgstr "現在の行番号の表示"
+ 
+-#: rc.c:78
++#: rc.c:80
+ msgid "Display inline images"
+ msgstr "インライン画像を表示"
+ 
+-#: rc.c:79
++#: rc.c:81
+ msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
+ msgstr "ALT または TITLE がない画像の代替テキスト表示"
+ 
+-#: rc.c:81
++#: rc.c:83
+ msgid "Load inline images automatically"
+ msgstr "インライン画像を自動で読み込む"
+ 
+-#: rc.c:82
++#: rc.c:84
+ msgid "Maximum processes for parallel image loading"
+ msgstr "画像読み込み時の最大プロセス数"
+ 
+-#: rc.c:83
++#: rc.c:85
+ msgid "Use external image viewer"
+ msgstr "画像を外部ビューワで表示"
+ 
+-#: rc.c:84
++#: rc.c:86
+ msgid "Scale of image (%)"
+ msgstr "画像のスケール(%)"
+ 
+-#: rc.c:85
++#: rc.c:87
+ msgid "External command to display image"
+ msgstr "画像を表示するためのコマンド"
+ 
+-#: rc.c:86
++#: rc.c:88
+ msgid "Use link list of image map"
+ msgstr "イメージマップのリンク先一覧を表示"
+ 
+-#: rc.c:88
++#: rc.c:90
+ msgid "Display file names in multi-column format"
+ msgstr "ファイル名のマルチカラム表示"
+ 
+-#: rc.c:89
++#: rc.c:91
+ msgid "Use ASCII equivalents to display entities"
+ msgstr "エンティティを ASCII の代替表現で表す"
+ 
+-#: rc.c:90
++#: rc.c:92
+ msgid "Character type for border of table and menu"
+ msgstr "テーブルやメニューの枠に使う文字"
+ 
+-#: rc.c:91
++#: rc.c:93
++msgid "Display 0 pixel table borders"
++msgstr "0ピクセルのテーブル枠の表示"
++
++#: rc.c:94
+ msgid "Fold lines in TEXTAREA"
+ msgstr "TEXTAREA の行を折り返して表示"
+ 
+-#: rc.c:92
++#: rc.c:95
+ msgid "Display INS, DEL, S and STRIKE element"
+ msgstr "INS, DEL, S, STRIKE 要素の表示"
+ 
+-#: rc.c:93
++#: rc.c:96
+ msgid "Display with color"
+ msgstr "カラー表示"
+ 
+-#: rc.c:94
++#: rc.c:97
+ msgid "Color of normal character"
+ msgstr "文字の色"
+ 
+-#: rc.c:95
++#: rc.c:98
+ msgid "Color of anchor"
+ msgstr "アンカーの色"
+ 
+-#: rc.c:96
++#: rc.c:99
+ msgid "Color of image link"
+ msgstr "画像リンクの色"
+ 
+-#: rc.c:97
++#: rc.c:100
+ msgid "Color of form"
+ msgstr "フォームの色"
+ 
+-#: rc.c:98
++#: rc.c:101
+ msgid "Enable coloring of active link"
+ msgstr "現在選択されているリンクの色を指定する"
+ 
+-#: rc.c:99
++#: rc.c:102
+ msgid "Color of currently active link"
+ msgstr "現在選択されているリンクの色"
+ 
+-#: rc.c:100
++#: rc.c:103
+ msgid "Use visited link color"
+ msgstr "訪れたことがあるリンクは色を変える"
+ 
+-#: rc.c:101
++#: rc.c:104
+ msgid "Color of visited link"
+ msgstr "訪れたことがあるリンクの色"
+ 
+-#: rc.c:102
++#: rc.c:105
+ msgid "Color of background"
+ msgstr "背景の色"
+ 
+-#: rc.c:103
++#: rc.c:106
+ msgid "Color of mark"
+ msgstr "マークの色"
+ 
+-#: rc.c:104
++#: rc.c:107
+ msgid "Use proxy"
+ msgstr "プロキシを使用する"
+ 
+-#: rc.c:105
++#: rc.c:108
+ msgid "URL of HTTP proxy host"
+ msgstr "HTTPプロキシ(URLで入力)"
+ 
+-#: rc.c:107
++#: rc.c:110
+ msgid "URL of HTTPS proxy host"
+ msgstr "HTTPSプロキシ(URLで入力)"
+ 
+-#: rc.c:110
++#: rc.c:113
+ msgid "URL of GOPHER proxy host"
+ msgstr "GOPHERプロキシ(URLで入力)"
+ 
+-#: rc.c:112
++#: rc.c:115
+ msgid "URL of FTP proxy host"
+ msgstr "FTPプロキシ(URLで入力)"
+ 
+-#: rc.c:113
++#: rc.c:116
+ msgid "Domains to be accessed directly (no proxy)"
+ msgstr "プロキシから除外するドメイン"
+ 
+-#: rc.c:114
++#: rc.c:117
+ msgid "Check noproxy by network address"
+ msgstr "ネットワークアドレスでプロキシ除外のチェック"
+ 
+-#: rc.c:115
++#: rc.c:118
+ msgid "Disable cache"
+ msgstr "Cache を使わない"
+ 
+-#: rc.c:117
++#: rc.c:120
+ msgid "News server"
+ msgstr "News サーバ"
+ 
+-#: rc.c:118
++#: rc.c:121
+ msgid "Mode of news server"
+ msgstr "News サーバのモード"
+ 
+-#: rc.c:119
++#: rc.c:122
+ msgid "Number of news messages"
+ msgstr "News を一覧表示する時の数"
+ 
+-#: rc.c:121
++#: rc.c:124
+ msgid "Order of name resolution"
+ msgstr "名前解決の順序"
+ 
+-#: rc.c:122
++#: rc.c:125
+ msgid "Directory corresponding to / (document root)"
+ msgstr "/ で表されるディレクトリ(document root)"
+ 
+-#: rc.c:123
++#: rc.c:126
+ msgid "Directory corresponding to /~user"
+ msgstr "/~user で表されるディレクトリ"
+ 
+-#: rc.c:124
++#: rc.c:127
+ msgid "Directory corresponding to /cgi-bin"
+ msgstr "/cgi-bin で表されるディレクトリ"
+ 
+-#: rc.c:125
++#: rc.c:128
+ msgid "Confirm when quitting with q"
+ msgstr "q での終了時に確認する"
+ 
+-#: rc.c:126
++#: rc.c:129
+ msgid "Close tab if buffer is last when back"
+ msgstr "戻る時にバッファが最後ならタブを閉じる"
+ 
+-#: rc.c:128
++#: rc.c:131
+ msgid "Enable mark operations"
+ msgstr "マーク機能を有効にする"
+ 
+-#: rc.c:130
++#: rc.c:133
+ msgid "Enable Emacs-style line editing"
+ msgstr "Emacs風の行編集にする"
+ 
+-#: rc.c:131
++#: rc.c:134
+ msgid "Enable vi-like numeric prefix"
+ msgstr "vi風の数値プレフィクス"
+ 
+-#: rc.c:132
++#: rc.c:135
+ msgid "Move cursor to top line when going to label"
+ msgstr "ラベルに移動する時にカーソルがトップになるようにする"
+ 
+-#: rc.c:133
++#: rc.c:136
+ msgid "Move cursor to top line when moving to next page"
+ msgstr "次のページに移動する時にカーソルがトップになるようにする"
+ 
+-#: rc.c:134
++#: rc.c:137
+ msgid "Fold lines of plain text file"
+ msgstr "plain text ファイルの行を折り返す"
+ 
+-#: rc.c:135
++#: rc.c:138
+ msgid "Show line numbers"
+ msgstr "行番号を表示する"
+ 
+-#: rc.c:136
++#: rc.c:139
+ msgid "Show search string"
+ msgstr "検索文字列を表示する"
+ 
+-#: rc.c:137
++#: rc.c:140
+ msgid "List of mime.types files"
+ msgstr "利用するmime.types"
+ 
+-#: rc.c:138
++#: rc.c:141
+ msgid "List of mailcap files"
+ msgstr "利用するmailcap"
+ 
+-#: rc.c:139
++#: rc.c:142
+ msgid "List of urimethodmap files"
+ msgstr "利用するurimethodmap"
+ 
+-#: rc.c:140
++#: rc.c:143
+ msgid "Editor"
+ msgstr "利用するエディタ"
+ 
+-#: rc.c:141
++#: rc.c:144
+ msgid "Mailer"
+ msgstr "利用するメーラ"
+ 
+-#: rc.c:142
++#: rc.c:145
+ msgid "How to call Mailer for mailto URLs with options"
+ msgstr "mailto タグの取り扱い"
+ 
+-#: rc.c:143
++#: rc.c:146
+ msgid "External Browser"
+ msgstr "外部ブラウザ"
+ 
+-#: rc.c:144
++#: rc.c:147
+ msgid "Second External Browser"
+ msgstr "外部ブラウザその2"
+ 
+-#: rc.c:145
++#: rc.c:148
+ msgid "Third External Browser"
+ msgstr "外部ブラウザその3"
+ 
+-#: rc.c:146
++#: rc.c:149
+ msgid "Disable secret file security check"
+ msgstr "パスワードファイルのパーミッションをチェックしない"
+ 
+-#: rc.c:147
++#: rc.c:150
+ msgid "Password file"
+ msgstr "パスワードファイル"
+ 
+-#: rc.c:148
++#: rc.c:151
+ msgid "File for setting form on loading"
  msgstr "文書読込時のフォーム設定用ファイル"
  
- #: rc.c:149
+-#: rc.c:149
++#: rc.c:152
 +msgid "File for preferences for each site"
 +msgstr "サイト別設定のファイル"
 +
-+#: rc.c:149
++#: rc.c:153
  msgid "Password for anonymous FTP (your mail address)"
  msgstr "FTPのパスワード(普通は自分のmail addressを使う)"
  
+-#: rc.c:150
++#: rc.c:154
+ msgid "Generate domain part of password for FTP"
+ msgstr "FTPのパスワードのドメイン名を自動生成する"
+ 
+-#: rc.c:151
++#: rc.c:155
+ msgid "User-Agent identification string"
+ msgstr "User-Agent"
+ 
+-#: rc.c:152
++#: rc.c:156
+ msgid "Accept-Encoding header"
+ msgstr "圧縮方法(Accept-Encoding:)"
+ 
+-#: rc.c:153
++#: rc.c:157
+ msgid "Accept header"
+ msgstr "受けつけるメディアタイプ(Accept:)"
+ 
+-#: rc.c:154
++#: rc.c:158
+ msgid "Accept-Language header"
+ msgstr "受けつける言語(Accept-Language:)"
+ 
+-#: rc.c:155
++#: rc.c:159
+ msgid "Treat URL-like strings as links in all pages"
+ msgstr "全てのページのURL風の文字列をリンクにする"
+ 
+-#: rc.c:156
++#: rc.c:160
+ msgid "Wrap search"
+ msgstr "折り返し検索"
+ 
+-#: rc.c:157
++#: rc.c:161
+ msgid "Display unseen objects (e.g. bgimage tag)"
+ msgstr "背景画像等へのリンクを作る"
+ 
+-#: rc.c:158
++#: rc.c:162
+ msgid "Uncompress compressed data automatically when downloading"
+ msgstr "ダウンロード時に自動的に圧縮されたデータを解凍する"
+ 
+-#: rc.c:160
++#: rc.c:164
+ msgid "Run external viewer in a separate session"
+ msgstr "外部ビューアを別セッションで動かす"
+ 
+-#: rc.c:162
++#: rc.c:166
+ msgid "Run external viewer in the background"
+ msgstr "外部ビューアをバックグラウンドで動かす"
+ 
+-#: rc.c:164
++#: rc.c:168
+ msgid "Use external program for directory listing"
+ msgstr "ディレクトリリストに外部コマンドを使う"
+ 
+-#: rc.c:165
++#: rc.c:169
+ msgid "URL of directory listing command"
+ msgstr "ディレクトリリスト用コマンド"
+ 
+-#: rc.c:167
++#: rc.c:171
+ msgid "Enable dictionary lookup through CGI"
+ msgstr "辞書引きをCGI経由でおこなう"
+ 
+-#: rc.c:168
++#: rc.c:172
+ msgid "URL of dictionary lookup command"
+ msgstr "辞書引きコマンドのURL"
+ 
+-#: rc.c:170
++#: rc.c:174
+ msgid "Display link name for images lacking ALT"
+ msgstr "空のIMG ALT属性の時にリンク名を表示する"
+ 
+-#: rc.c:171
++#: rc.c:175
+ msgid "Index file for directories"
+ msgstr "各ディレクトリのインデックスファイル"
+ 
+-#: rc.c:172
++#: rc.c:176
+ msgid "Prepend http:// to URL automatically"
+ msgstr "URLに自動的に http:// を補う"
+ 
+-#: rc.c:173
++#: rc.c:177
+ msgid "Default value for open-URL command"
+ msgstr "URLを開く時のデフォルト文字列"
+ 
+-#: rc.c:174
++#: rc.c:178
+ msgid "Decode Content-Transfer-Encoding when saving"
+ msgstr "保存時に Content-Transfer-Encoding をデコードする"
+ 
+-#: rc.c:175
++#: rc.c:179
+ msgid "Preserve timestamp when saving"
+ msgstr "保存時にタイムスタンプを保持する"
+ 
+-#: rc.c:177
++#: rc.c:181
+ msgid "Enable mouse"
+ msgstr "マウスを使う"
+ 
+-#: rc.c:178
++#: rc.c:182
+ msgid "Scroll in reverse direction of mouse drag"
+ msgstr "マウスのドラッグ動作を逆にする"
+ 
+-#: rc.c:179
++#: rc.c:183
+ msgid "Behavior of wheel scroll speed"
+ msgstr "ホイールでのスクロール速度の扱い"
+ 
+-#: rc.c:180
++#: rc.c:184
+ msgid "(A only)Scroll by # (%) of screen"
+ msgstr "(Aのみ)画面の何%スクロールするか"
+ 
+-#: rc.c:181
++#: rc.c:185
+ msgid "(B only)Scroll by # lines"
+ msgstr "(Bのみ)スクロールする行数"
+ 
+-#: rc.c:183
++#: rc.c:187
+ msgid "Free memory of undisplayed buffers"
+ msgstr "表示されていないバッファのメモリを解放する"
+ 
+-#: rc.c:184
++#: rc.c:188
+ msgid "Suppress `Referer:' header"
+ msgstr "Referer: を送らないようにする"
+ 
+-#: rc.c:185
++#: rc.c:189
+ msgid "Search case-insensitively"
+ msgstr "サーチ時に大文字小文字の区別をしない"
+ 
+-#: rc.c:186
++#: rc.c:190
+ msgid "Use LESSOPEN"
+ msgstr "LESSOPENを使用"
+ 
+-#: rc.c:189
++#: rc.c:193
+ msgid "Perform SSL server verification"
+ msgstr "SSLのサーバ認証を行う"
+ 
+-#: rc.c:190
++#: rc.c:194
+ msgid "PEM encoded certificate file of client"
+ msgstr "SSLのクライアント用PEM形式証明書ファイル"
+ 
+-#: rc.c:191
++#: rc.c:195
+ msgid "PEM encoded private key file of client"
+ msgstr "SSLのクライアント用PEM形式秘密鍵ファイル"
+ 
+-#: rc.c:192
++#: rc.c:196
+ msgid "Path to directory for PEM encoded certificates of CAs"
+ msgstr "SSLの認証局のPEM形式証明書群のあるディレクトリへのパス"
+ 
+-#: rc.c:193
++#: rc.c:197
+ msgid "File consisting of PEM encoded certificates of CAs"
+ msgstr "SSLの認証局のPEM形式証明書群のファイル"
+ 
+-#: rc.c:195
++#: rc.c:199
+ msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
+ msgstr "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t:TLSv1)"
+ 
+-#: rc.c:198
++#: rc.c:202
+ msgid "Enable cookie processing"
+ msgstr "クッキーを使用する"
+ 
+-#: rc.c:199
++#: rc.c:203
+ msgid "Print a message when receiving a cookie"
+ msgstr "クッキーを受け付けたときにメッセージを表示する"
+ 
+-#: rc.c:200
++#: rc.c:204
+ msgid "Accept cookies"
+ msgstr "クッキーを受け付ける"
+ 
+-#: rc.c:201
++#: rc.c:205
+ msgid "Action to be taken on invalid cookie"
+ msgstr "問題のあるクッキーでも受け付ける"
+ 
+-#: rc.c:202
++#: rc.c:206
+ msgid "Domains to reject cookies from"
+ msgstr "クッキーを受け付けないドメイン"
+ 
+-#: rc.c:203
++#: rc.c:207
+ msgid "Domains to accept cookies from"
+ msgstr "クッキーを受け付けるドメイン"
+ 
+-#: rc.c:204
++#: rc.c:208
+ msgid "Domains to avoid [wrong number of dots]"
+ msgstr "[wrong number of dots] を無視するドメイン"
+ 
+-#: rc.c:206
++#: rc.c:210
+ msgid "Number of redirections to follow"
+ msgstr "従うリダイレクトの回数"
+ 
+-#: rc.c:207
++#: rc.c:211
+ msgid "Enable processing of meta-refresh tag"
+ msgstr "meta refresh に対応する"
+ 
+-#: rc.c:210
++#: rc.c:214
+ msgid "Enable Migemo (Roma-ji search)"
+ msgstr "Migemo(ローマ字検索)を使用する"
+ 
+-#: rc.c:211
++#: rc.c:215
+ msgid "Migemo command"
+ msgstr "Migemoコマンド"
+ 
+-#: rc.c:215
++#: rc.c:219
+ msgid "Display charset"
+ msgstr "表示用文字コード"
+ 
+-#: rc.c:216
++#: rc.c:220
+ msgid "Default document charset"
+ msgstr "文書の標準の文字コード"
+ 
+-#: rc.c:217
++#: rc.c:221
+ msgid "Automatic charset detect when loading"
+ msgstr "文書の読み込み時に文字コードの自動判定を行う"
+ 
+-#: rc.c:218
++#: rc.c:222
+ msgid "System charset"
+ msgstr "システムの文字コード"
+ 
+-#: rc.c:219
++#: rc.c:223
+ msgid "System charset follows locale(LC_CTYPE)"
+ msgstr "Locale(LC_CTYPE) に従ってシステムの文字コードを設定"
+ 
+-#: rc.c:220
++#: rc.c:224
+ msgid "Output halfdump with display charset"
+ msgstr "表示用文字コードで halfdump の出力を行う"
+ 
+-#: rc.c:221
++#: rc.c:225
+ msgid "Use multi column characters"
+ msgstr "複数カラムの文字を使う"
+ 
+-#: rc.c:222
++#: rc.c:226
+ msgid "Use combining characters"
+ msgstr "結合文字を使う"
+ 
+-#: rc.c:223
++#: rc.c:227
+ msgid "Use double width for some Unicode characters"
+ msgstr "ある種のUnicode文字を全角にする"
+ 
+-#: rc.c:224
++#: rc.c:228
+ msgid "Use Unicode language tags"
+ msgstr "Unicode の言語タグを使う"
+ 
+-#: rc.c:225
++#: rc.c:229
+ msgid "Charset conversion using Unicode map"
+ msgstr "Unicodeを介したコード変換"
+ 
+-#: rc.c:226
++#: rc.c:230
+ msgid "Charset conversion when loading"
+ msgstr "文書の読み込み時に文字コードを変換する"
+ 
+-#: rc.c:227
++#: rc.c:231
+ msgid "Adjust search string for document charset"
+ msgstr "検索文字列を文書の文字コードに変換する"
+ 
+-#: rc.c:228
++#: rc.c:232
+ msgid "Fix character width when conversion"
+ msgstr "文字幅の変わる変換をしない"
+ 
+-#: rc.c:229
++#: rc.c:233
+ msgid "Use GB 12345 Unicode map instead of GB 2312's"
+ msgstr "GB 12345 の Unicode マップを GB 2312 用に使う"
+ 
+-#: rc.c:230
++#: rc.c:234
+ msgid "Use JIS X 0201 Roman for ISO-2022-JP"
+ msgstr "ISO-2022-JP で JIS X 0201-Roman を使う"
+ 
+-#: rc.c:231
++#: rc.c:235
+ msgid "Use JIS C 6226:1978 for ISO-2022-JP"
+ msgstr "ISO-2022-JP で JIS C 6226:1978(旧JIS) を使う"
+ 
+-#: rc.c:232
++#: rc.c:236
+ msgid "Use JIS X 0201 Katakana"
+ msgstr "JIS X 0201-Katakana を使う"
+ 
+-#: rc.c:233
++#: rc.c:237
+ msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
+ msgstr "JIS X 0212:1990(補助漢字) を使う"
+ 
+-#: rc.c:234
++#: rc.c:238
+ msgid "Use JIS X 0213:2000 (2000JIS)"
+ msgstr "JIS X 0213:2000(2000JIS) を使う"
+ 
+-#: rc.c:235
++#: rc.c:239
+ msgid "Strict ISO-2022-JP/KR/CN"
+ msgstr "厳格な ISO-2022-JP/KR/CN を使う"
+ 
+-#: rc.c:236
++#: rc.c:240
+ msgid "Treat 4 bytes char. of GB18030 as Unicode"
+ msgstr "GB18030 の 4バイト文字を Unicode として扱う"
+ 
+-#: rc.c:237
++#: rc.c:241
+ msgid "Simple Preserve space"
+ msgstr "単純な空白の保存"
+ 
+-#: rc.c:240
++#: rc.c:244
+ msgid "keymap file"
+ msgstr "keymapファイル"
+ 
+-#: rc.c:257
++#: rc.c:261
+ msgid "black"
+ msgstr "黒"
+ 
+-#: rc.c:258
++#: rc.c:262
+ msgid "red"
+ msgstr "赤"
+ 
+-#: rc.c:259
++#: rc.c:263
+ msgid "green"
+ msgstr "緑"
+ 
+-#: rc.c:260
++#: rc.c:264
+ msgid "yellow"
+ msgstr "黄"
+ 
+-#: rc.c:261
++#: rc.c:265
+ msgid "blue"
+ msgstr "青"
+ 
+-#: rc.c:262
++#: rc.c:266
+ msgid "magenta"
+ msgstr "紫"
+ 
+-#: rc.c:263
++#: rc.c:267
+ msgid "cyan"
+ msgstr "空色"
+ 
+-#: rc.c:264
++#: rc.c:268
+ msgid "white"
+ msgstr "白"
+ 
+-#: rc.c:265
++#: rc.c:269
+ msgid "terminal"
+ msgstr "端末"
+ 
+-#: rc.c:284
++#: rc.c:288
+ msgid "none"
+ msgstr "無し"
+ 
+-#: rc.c:285
++#: rc.c:289
+ msgid "current URL"
+ msgstr "現在のURL"
+ 
+-#: rc.c:286
++#: rc.c:290
+ msgid "link URL"
+ msgstr "リンク先のURL"
+ 
+-#: rc.c:291
++#: rc.c:295
+ msgid "simple"
+ msgstr "シンプル"
+ 
+-#: rc.c:292
++#: rc.c:296
+ msgid "use tag"
+ msgstr "タグで表示"
+ 
+-#: rc.c:293
++#: rc.c:297
+ msgid "fontify"
+ msgstr "文字装飾"
+ 
+-#: rc.c:299
++#: rc.c:303
+ msgid "A:relative to screen height"
+ msgstr "A:画面サイズに比例"
+ 
+-#: rc.c:300
++#: rc.c:304
+ msgid "B:fixed speed"
+ msgstr "B:一定の行数"
+ 
+-#: rc.c:307
++#: rc.c:311
+ msgid "unspecified"
+ msgstr "指定しない"
+ 
+-#: rc.c:308
++#: rc.c:312
+ msgid "inet inet6"
+ msgstr "IPv4優先"
+ 
+-#: rc.c:309
++#: rc.c:313
+ msgid "inet6 inet"
+ msgstr "IPv6優先"
+ 
+-#: rc.c:310
++#: rc.c:314
+ msgid "inet only"
+ msgstr "IPv4のみ"
+ 
+-#: rc.c:311
++#: rc.c:315
+ msgid "inet6 only"
+ msgstr "IPv6のみ"
+ 
+-#: rc.c:318
++#: rc.c:322
+ msgid "discard"
+ msgstr "破棄する"
+ 
+-#: rc.c:320
++#: rc.c:324
+ msgid "accept"
+ msgstr "受け入れる"
+ 
+-#: rc.c:322
++#: rc.c:326
+ msgid "ask"
+ msgstr "確認する"
+ 
+-#: rc.c:329
++#: rc.c:333
+ msgid "use internal mailer instead"
+ msgstr "内部メーラを使用"
+ 
+-#: rc.c:331
++#: rc.c:335
+ msgid "ignore options and use only the address"
+ msgstr "アドレスのみ使用"
+ 
+-#: rc.c:332
++#: rc.c:336
+ msgid "use full mailto URL"
+ msgstr "URL 全体を使用"
+ 
+-#: rc.c:341
++#: rc.c:345
+ msgid "OFF"
+ msgstr "無効"
+ 
+-#: rc.c:342
++#: rc.c:346
+ msgid "Only ISO 2022"
+ msgstr "ISO 2022 のみ"
+ 
+-#: rc.c:343
++#: rc.c:347
+ msgid "ON"
+ msgstr "有効"
+ 
+-#: rc.c:349
++#: rc.c:353
+ msgid "ASCII"
+ msgstr "ASCII"
+ 
+-#: rc.c:350
++#: rc.c:354
+ msgid "charset specific"
+ msgstr "文字コード依存"
+ 
+-#: rc.c:351
++#: rc.c:355
+ msgid "DEC special graphics"
+ msgstr "DEC 特殊文字"
+ 
+-#: rc.c:714
++#: rc.c:722
+ msgid "Display Settings"
+ msgstr "表示関係"
+ 
+-#: rc.c:716
++#: rc.c:724
+ msgid "Color Settings"
+ msgstr "表示色"
+ 
+-#: rc.c:718
++#: rc.c:726
+ msgid "Miscellaneous Settings"
+ msgstr "雑多な設定"
+ 
+-#: rc.c:719
++#: rc.c:727
+ msgid "Directory Settings"
+ msgstr "ディレクトリ設定"
+ 
+-#: rc.c:720
++#: rc.c:728
+ msgid "External Program Settings"
+ msgstr "外部プログラム"
+ 
+-#: rc.c:721
++#: rc.c:729
+ msgid "Network Settings"
+ msgstr "ネットワークの設定"
+ 
+-#: rc.c:722
++#: rc.c:730
+ msgid "Proxy Settings"
+ msgstr "プロキシの設定"
+ 
+-#: rc.c:724
++#: rc.c:732
+ msgid "SSL Settings"
+ msgstr "SSLの設定"
+ 
+-#: rc.c:727
++#: rc.c:735
+ msgid "Cookie Settings"
+ msgstr "クッキーの設定"
+ 
+-#: rc.c:730
++#: rc.c:738
+ msgid "Charset Settings"
+ msgstr "文字コードの設定"
+ 
+@@ -875,6 +883,6 @@ msgstr "文字コードの設定"
+ #. * header. For example, ja.po should translate it as
+ #. * "ja;q=1.0, en;q=0.5" like that.
+ #.
+-#: rc.c:1209
++#: rc.c:1220
+ msgid "en;q=1.0"
+ msgstr "ja;q=1.0, en;q=0.5"
+diff --git a/po/w3m.pot b/po/w3m.pot
+index e164b1e..d273a41 100644
+--- a/po/w3m.pot
++++ b/po/w3m.pot
+@@ -1,5 +1,5 @@
+ # SOME DESCRIPTIVE TITLE.
+-# Copyright (C) YEAR Fumitoshi UKAI
++# Copyright (C) YEAR THE w3m'S COPYRIGHT HOLDER
+ # This file is distributed under the same license as the PACKAGE package.
+ # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+ #
+@@ -8,7 +8,7 @@ msgid ""
+ msgstr ""
+ "Project-Id-Version: w3m 0.5.3\n"
+ "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
+-"POT-Creation-Date: 2010-08-20 18:44+0900\n"
++"POT-Creation-Date: 2015-02-02 23:45+0900\n"
+ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+ "Language-Team: LANGUAGE <LL@li.org>\n"
+@@ -89,783 +89,791 @@ msgstr ""
+ msgid " Quit         (q) "
+ msgstr ""
+ 
+-#: rc.c:60
++#: rc.c:62
+ msgid "External Viewer Setup"
+ msgstr ""
+ 
+-#: rc.c:61
++#: rc.c:63
+ msgid "Tab width in characters"
+ msgstr ""
+ 
+-#: rc.c:62
++#: rc.c:64
+ msgid "Indent for HTML rendering"
+ msgstr ""
+ 
+-#: rc.c:63
++#: rc.c:65
+ msgid "Number of pixels per character (4.0...32.0)"
+ msgstr ""
+ 
+-#: rc.c:64
++#: rc.c:66
+ msgid "Number of pixels per line (4.0...64.0)"
+ msgstr ""
+ 
+-#: rc.c:65
++#: rc.c:67
+ msgid "Number of remembered lines when used as a pager"
+ msgstr ""
+ 
+-#: rc.c:66
++#: rc.c:68
+ msgid "Use URL history"
+ msgstr ""
+ 
+-#: rc.c:67
++#: rc.c:69
+ msgid "Number of remembered URL"
+ msgstr ""
+ 
+-#: rc.c:68
++#: rc.c:70
+ msgid "Save URL history"
+ msgstr ""
+ 
+-#: rc.c:69
++#: rc.c:71
+ msgid "Render frames automatically"
+ msgstr ""
+ 
+-#: rc.c:70
++#: rc.c:72
+ msgid "Treat argument without scheme as URL"
+ msgstr ""
+ 
+-#: rc.c:71
++#: rc.c:73
+ msgid "Use _self as default target"
+ msgstr ""
+ 
+-#: rc.c:72
++#: rc.c:74
+ msgid "Open link on new tab if target is _blank or _new"
+ msgstr ""
+ 
+-#: rc.c:73
++#: rc.c:75
+ msgid "Open download list panel on new tab"
+ msgstr ""
+ 
+-#: rc.c:74
++#: rc.c:76
+ msgid "Display link URL automatically"
+ msgstr ""
+ 
+-#: rc.c:75
++#: rc.c:77
+ msgid "Display link numbers"
+ msgstr ""
+ 
+-#: rc.c:76
++#: rc.c:78
+ msgid "Display decoded URL"
+ msgstr ""
+ 
+-#: rc.c:77
++#: rc.c:79
+ msgid "Display current line number"
+ msgstr ""
+ 
+-#: rc.c:78
++#: rc.c:80
+ msgid "Display inline images"
+ msgstr ""
+ 
+-#: rc.c:79
++#: rc.c:81
+ msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
+ msgstr ""
+ 
+-#: rc.c:81
++#: rc.c:83
+ msgid "Load inline images automatically"
+ msgstr ""
+ 
+-#: rc.c:82
++#: rc.c:84
+ msgid "Maximum processes for parallel image loading"
+ msgstr ""
+ 
+-#: rc.c:83
++#: rc.c:85
+ msgid "Use external image viewer"
+ msgstr ""
+ 
+-#: rc.c:84
++#: rc.c:86
+ msgid "Scale of image (%)"
+ msgstr ""
+ 
+-#: rc.c:85
++#: rc.c:87
+ msgid "External command to display image"
+ msgstr ""
+ 
+-#: rc.c:86
++#: rc.c:88
+ msgid "Use link list of image map"
+ msgstr ""
+ 
+-#: rc.c:88
++#: rc.c:90
+ msgid "Display file names in multi-column format"
+ msgstr ""
+ 
+-#: rc.c:89
++#: rc.c:91
+ msgid "Use ASCII equivalents to display entities"
+ msgstr ""
+ 
+-#: rc.c:90
++#: rc.c:92
+ msgid "Character type for border of table and menu"
+ msgstr ""
+ 
+-#: rc.c:91
++#: rc.c:93
++msgid "Display 0 pixel table borders"
++msgstr ""
++
++#: rc.c:94
+ msgid "Fold lines in TEXTAREA"
+ msgstr ""
+ 
+-#: rc.c:92
++#: rc.c:95
+ msgid "Display INS, DEL, S and STRIKE element"
+ msgstr ""
+ 
+-#: rc.c:93
++#: rc.c:96
+ msgid "Display with color"
+ msgstr ""
+ 
+-#: rc.c:94
++#: rc.c:97
+ msgid "Color of normal character"
+ msgstr ""
+ 
+-#: rc.c:95
++#: rc.c:98
+ msgid "Color of anchor"
+ msgstr ""
+ 
+-#: rc.c:96
++#: rc.c:99
+ msgid "Color of image link"
+ msgstr ""
+ 
+-#: rc.c:97
++#: rc.c:100
+ msgid "Color of form"
+ msgstr ""
+ 
+-#: rc.c:98
++#: rc.c:101
+ msgid "Enable coloring of active link"
+ msgstr ""
+ 
+-#: rc.c:99
++#: rc.c:102
+ msgid "Color of currently active link"
+ msgstr ""
+ 
+-#: rc.c:100
++#: rc.c:103
+ msgid "Use visited link color"
+ msgstr ""
+ 
+-#: rc.c:101
++#: rc.c:104
+ msgid "Color of visited link"
+ msgstr ""
+ 
+-#: rc.c:102
++#: rc.c:105
+ msgid "Color of background"
+ msgstr ""
+ 
+-#: rc.c:103
++#: rc.c:106
+ msgid "Color of mark"
+ msgstr ""
+ 
+-#: rc.c:104
++#: rc.c:107
+ msgid "Use proxy"
+ msgstr ""
+ 
+-#: rc.c:105
++#: rc.c:108
+ msgid "URL of HTTP proxy host"
+ msgstr ""
+ 
+-#: rc.c:107
++#: rc.c:110
+ msgid "URL of HTTPS proxy host"
+ msgstr ""
+ 
+-#: rc.c:110
++#: rc.c:113
+ msgid "URL of GOPHER proxy host"
+ msgstr ""
+ 
+-#: rc.c:112
++#: rc.c:115
+ msgid "URL of FTP proxy host"
+ msgstr ""
+ 
+-#: rc.c:113
++#: rc.c:116
+ msgid "Domains to be accessed directly (no proxy)"
+ msgstr ""
+ 
+-#: rc.c:114
++#: rc.c:117
+ msgid "Check noproxy by network address"
+ msgstr ""
+ 
+-#: rc.c:115
++#: rc.c:118
+ msgid "Disable cache"
+ msgstr ""
+ 
+-#: rc.c:117
++#: rc.c:120
+ msgid "News server"
+ msgstr ""
+ 
+-#: rc.c:118
++#: rc.c:121
+ msgid "Mode of news server"
+ msgstr ""
+ 
+-#: rc.c:119
++#: rc.c:122
+ msgid "Number of news messages"
+ msgstr ""
+ 
+-#: rc.c:121
++#: rc.c:124
+ msgid "Order of name resolution"
+ msgstr ""
+ 
+-#: rc.c:122
++#: rc.c:125
+ msgid "Directory corresponding to / (document root)"
+ msgstr ""
+ 
+-#: rc.c:123
++#: rc.c:126
+ msgid "Directory corresponding to /~user"
+ msgstr ""
+ 
+-#: rc.c:124
++#: rc.c:127
+ msgid "Directory corresponding to /cgi-bin"
+ msgstr ""
+ 
+-#: rc.c:125
++#: rc.c:128
+ msgid "Confirm when quitting with q"
+ msgstr ""
+ 
+-#: rc.c:126
++#: rc.c:129
+ msgid "Close tab if buffer is last when back"
+ msgstr ""
+ 
+-#: rc.c:128
++#: rc.c:131
+ msgid "Enable mark operations"
+ msgstr ""
+ 
+-#: rc.c:130
++#: rc.c:133
+ msgid "Enable Emacs-style line editing"
+ msgstr ""
+ 
+-#: rc.c:131
++#: rc.c:134
+ msgid "Enable vi-like numeric prefix"
+ msgstr ""
+ 
+-#: rc.c:132
++#: rc.c:135
+ msgid "Move cursor to top line when going to label"
+ msgstr ""
+ 
+-#: rc.c:133
++#: rc.c:136
+ msgid "Move cursor to top line when moving to next page"
+ msgstr ""
+ 
+-#: rc.c:134
++#: rc.c:137
+ msgid "Fold lines of plain text file"
+ msgstr ""
+ 
+-#: rc.c:135
++#: rc.c:138
+ msgid "Show line numbers"
+ msgstr ""
+ 
+-#: rc.c:136
++#: rc.c:139
+ msgid "Show search string"
+ msgstr ""
+ 
+-#: rc.c:137
++#: rc.c:140
+ msgid "List of mime.types files"
+ msgstr ""
+ 
+-#: rc.c:138
++#: rc.c:141
+ msgid "List of mailcap files"
+ msgstr ""
+ 
+-#: rc.c:139
++#: rc.c:142
+ msgid "List of urimethodmap files"
+ msgstr ""
+ 
+-#: rc.c:140
++#: rc.c:143
+ msgid "Editor"
+ msgstr ""
+ 
+-#: rc.c:141
++#: rc.c:144
+ msgid "Mailer"
+ msgstr ""
+ 
+-#: rc.c:142
++#: rc.c:145
+ msgid "How to call Mailer for mailto URLs with options"
+ msgstr ""
+ 
+-#: rc.c:143
++#: rc.c:146
+ msgid "External Browser"
+ msgstr ""
+ 
+-#: rc.c:144
++#: rc.c:147
+ msgid "Second External Browser"
+ msgstr ""
+ 
+-#: rc.c:145
++#: rc.c:148
+ msgid "Third External Browser"
+ msgstr ""
+ 
+-#: rc.c:146
++#: rc.c:149
+ msgid "Disable secret file security check"
+ msgstr ""
+ 
+-#: rc.c:147
++#: rc.c:150
+ msgid "Password file"
+ msgstr ""
+ 
+-#: rc.c:148
++#: rc.c:151
+ msgid "File for setting form on loading"
+ msgstr ""
+ 
+-#: rc.c:149
++#: rc.c:152
++msgid "File for preferences for each site"
++msgstr ""
++
++#: rc.c:153
+ msgid "Password for anonymous FTP (your mail address)"
+ msgstr ""
+ 
+-#: rc.c:150
++#: rc.c:154
+ msgid "Generate domain part of password for FTP"
+ msgstr ""
+ 
+-#: rc.c:151
++#: rc.c:155
+ msgid "User-Agent identification string"
+ msgstr ""
+ 
+-#: rc.c:152
++#: rc.c:156
+ msgid "Accept-Encoding header"
+ msgstr ""
+ 
+-#: rc.c:153
++#: rc.c:157
+ msgid "Accept header"
+ msgstr ""
+ 
+-#: rc.c:154
++#: rc.c:158
+ msgid "Accept-Language header"
+ msgstr ""
+ 
+-#: rc.c:155
++#: rc.c:159
+ msgid "Treat URL-like strings as links in all pages"
+ msgstr ""
+ 
+-#: rc.c:156
++#: rc.c:160
+ msgid "Wrap search"
+ msgstr ""
+ 
+-#: rc.c:157
++#: rc.c:161
+ msgid "Display unseen objects (e.g. bgimage tag)"
+ msgstr ""
+ 
+-#: rc.c:158
++#: rc.c:162
+ msgid "Uncompress compressed data automatically when downloading"
+ msgstr ""
+ 
+-#: rc.c:160
++#: rc.c:164
+ msgid "Run external viewer in a separate session"
+ msgstr ""
+ 
+-#: rc.c:162
++#: rc.c:166
+ msgid "Run external viewer in the background"
+ msgstr ""
+ 
+-#: rc.c:164
++#: rc.c:168
+ msgid "Use external program for directory listing"
+ msgstr ""
+ 
+-#: rc.c:165
++#: rc.c:169
+ msgid "URL of directory listing command"
+ msgstr ""
+ 
+-#: rc.c:167
++#: rc.c:171
+ msgid "Enable dictionary lookup through CGI"
+ msgstr ""
+ 
+-#: rc.c:168
++#: rc.c:172
+ msgid "URL of dictionary lookup command"
+ msgstr ""
+ 
+-#: rc.c:170
++#: rc.c:174
+ msgid "Display link name for images lacking ALT"
+ msgstr ""
+ 
+-#: rc.c:171
++#: rc.c:175
+ msgid "Index file for directories"
+ msgstr ""
+ 
+-#: rc.c:172
++#: rc.c:176
+ msgid "Prepend http:// to URL automatically"
+ msgstr ""
+ 
+-#: rc.c:173
++#: rc.c:177
+ msgid "Default value for open-URL command"
+ msgstr ""
+ 
+-#: rc.c:174
++#: rc.c:178
+ msgid "Decode Content-Transfer-Encoding when saving"
+ msgstr ""
+ 
+-#: rc.c:175
++#: rc.c:179
+ msgid "Preserve timestamp when saving"
+ msgstr ""
+ 
+-#: rc.c:177
++#: rc.c:181
+ msgid "Enable mouse"
+ msgstr ""
+ 
+-#: rc.c:178
++#: rc.c:182
+ msgid "Scroll in reverse direction of mouse drag"
+ msgstr ""
+ 
+-#: rc.c:179
++#: rc.c:183
+ msgid "Behavior of wheel scroll speed"
+ msgstr ""
+ 
+-#: rc.c:180
++#: rc.c:184
+ msgid "(A only)Scroll by # (%) of screen"
+ msgstr ""
+ 
+-#: rc.c:181
++#: rc.c:185
+ msgid "(B only)Scroll by # lines"
+ msgstr ""
+ 
+-#: rc.c:183
++#: rc.c:187
+ msgid "Free memory of undisplayed buffers"
+ msgstr ""
+ 
+-#: rc.c:184
++#: rc.c:188
+ msgid "Suppress `Referer:' header"
+ msgstr ""
+ 
+-#: rc.c:185
++#: rc.c:189
+ msgid "Search case-insensitively"
+ msgstr ""
+ 
+-#: rc.c:186
++#: rc.c:190
+ msgid "Use LESSOPEN"
+ msgstr ""
+ 
+-#: rc.c:189
++#: rc.c:193
+ msgid "Perform SSL server verification"
+ msgstr ""
+ 
+-#: rc.c:190
++#: rc.c:194
+ msgid "PEM encoded certificate file of client"
+ msgstr ""
+ 
+-#: rc.c:191
++#: rc.c:195
+ msgid "PEM encoded private key file of client"
+ msgstr ""
+ 
+-#: rc.c:192
++#: rc.c:196
+ msgid "Path to directory for PEM encoded certificates of CAs"
+ msgstr ""
+ 
+-#: rc.c:193
++#: rc.c:197
+ msgid "File consisting of PEM encoded certificates of CAs"
+ msgstr ""
+ 
+-#: rc.c:195
++#: rc.c:199
+ msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
+ msgstr ""
+ 
+-#: rc.c:198
++#: rc.c:202
+ msgid "Enable cookie processing"
+ msgstr ""
+ 
+-#: rc.c:199
++#: rc.c:203
+ msgid "Print a message when receiving a cookie"
+ msgstr ""
+ 
+-#: rc.c:200
++#: rc.c:204
+ msgid "Accept cookies"
+ msgstr ""
+ 
+-#: rc.c:201
++#: rc.c:205
+ msgid "Action to be taken on invalid cookie"
+ msgstr ""
+ 
+-#: rc.c:202
++#: rc.c:206
+ msgid "Domains to reject cookies from"
+ msgstr ""
+ 
+-#: rc.c:203
++#: rc.c:207
+ msgid "Domains to accept cookies from"
+ msgstr ""
+ 
+-#: rc.c:204
++#: rc.c:208
+ msgid "Domains to avoid [wrong number of dots]"
+ msgstr ""
+ 
+-#: rc.c:206
++#: rc.c:210
+ msgid "Number of redirections to follow"
+ msgstr ""
+ 
+-#: rc.c:207
++#: rc.c:211
+ msgid "Enable processing of meta-refresh tag"
+ msgstr ""
+ 
+-#: rc.c:210
++#: rc.c:214
+ msgid "Enable Migemo (Roma-ji search)"
+ msgstr ""
+ 
+-#: rc.c:211
++#: rc.c:215
+ msgid "Migemo command"
+ msgstr ""
+ 
+-#: rc.c:215
++#: rc.c:219
+ msgid "Display charset"
+ msgstr ""
+ 
+-#: rc.c:216
++#: rc.c:220
+ msgid "Default document charset"
+ msgstr ""
+ 
+-#: rc.c:217
++#: rc.c:221
+ msgid "Automatic charset detect when loading"
+ msgstr ""
+ 
+-#: rc.c:218
++#: rc.c:222
+ msgid "System charset"
+ msgstr ""
+ 
+-#: rc.c:219
++#: rc.c:223
+ msgid "System charset follows locale(LC_CTYPE)"
+ msgstr ""
+ 
+-#: rc.c:220
++#: rc.c:224
+ msgid "Output halfdump with display charset"
+ msgstr ""
+ 
+-#: rc.c:221
++#: rc.c:225
+ msgid "Use multi column characters"
+ msgstr ""
+ 
+-#: rc.c:222
++#: rc.c:226
+ msgid "Use combining characters"
+ msgstr ""
+ 
+-#: rc.c:223
++#: rc.c:227
+ msgid "Use double width for some Unicode characters"
+ msgstr ""
+ 
+-#: rc.c:224
++#: rc.c:228
+ msgid "Use Unicode language tags"
+ msgstr ""
+ 
+-#: rc.c:225
++#: rc.c:229
+ msgid "Charset conversion using Unicode map"
+ msgstr ""
+ 
+-#: rc.c:226
++#: rc.c:230
+ msgid "Charset conversion when loading"
+ msgstr ""
+ 
+-#: rc.c:227
++#: rc.c:231
+ msgid "Adjust search string for document charset"
+ msgstr ""
+ 
+-#: rc.c:228
++#: rc.c:232
+ msgid "Fix character width when conversion"
+ msgstr ""
+ 
+-#: rc.c:229
++#: rc.c:233
+ msgid "Use GB 12345 Unicode map instead of GB 2312's"
+ msgstr ""
+ 
+-#: rc.c:230
++#: rc.c:234
+ msgid "Use JIS X 0201 Roman for ISO-2022-JP"
+ msgstr ""
+ 
+-#: rc.c:231
++#: rc.c:235
+ msgid "Use JIS C 6226:1978 for ISO-2022-JP"
+ msgstr ""
+ 
+-#: rc.c:232
++#: rc.c:236
+ msgid "Use JIS X 0201 Katakana"
+ msgstr ""
+ 
+-#: rc.c:233
++#: rc.c:237
+ msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
+ msgstr ""
+ 
+-#: rc.c:234
++#: rc.c:238
+ msgid "Use JIS X 0213:2000 (2000JIS)"
+ msgstr ""
+ 
+-#: rc.c:235
++#: rc.c:239
+ msgid "Strict ISO-2022-JP/KR/CN"
+ msgstr ""
+ 
+-#: rc.c:236
++#: rc.c:240
+ msgid "Treat 4 bytes char. of GB18030 as Unicode"
+ msgstr ""
+ 
+-#: rc.c:237
++#: rc.c:241
+ msgid "Simple Preserve space"
+ msgstr ""
+ 
+-#: rc.c:240
++#: rc.c:244
+ msgid "keymap file"
+ msgstr ""
+ 
+-#: rc.c:257
++#: rc.c:261
+ msgid "black"
+ msgstr ""
+ 
+-#: rc.c:258
++#: rc.c:262
+ msgid "red"
+ msgstr ""
+ 
+-#: rc.c:259
++#: rc.c:263
+ msgid "green"
+ msgstr ""
+ 
+-#: rc.c:260
++#: rc.c:264
+ msgid "yellow"
+ msgstr ""
+ 
+-#: rc.c:261
++#: rc.c:265
+ msgid "blue"
+ msgstr ""
+ 
+-#: rc.c:262
++#: rc.c:266
+ msgid "magenta"
+ msgstr ""
+ 
+-#: rc.c:263
++#: rc.c:267
+ msgid "cyan"
+ msgstr ""
+ 
+-#: rc.c:264
++#: rc.c:268
+ msgid "white"
+ msgstr ""
+ 
+-#: rc.c:265
++#: rc.c:269
+ msgid "terminal"
+ msgstr ""
+ 
+-#: rc.c:284
++#: rc.c:288
+ msgid "none"
+ msgstr ""
+ 
+-#: rc.c:285
++#: rc.c:289
+ msgid "current URL"
+ msgstr ""
+ 
+-#: rc.c:286
++#: rc.c:290
+ msgid "link URL"
+ msgstr ""
+ 
+-#: rc.c:291
++#: rc.c:295
+ msgid "simple"
+ msgstr ""
+ 
+-#: rc.c:292
++#: rc.c:296
+ msgid "use tag"
+ msgstr ""
+ 
+-#: rc.c:293
++#: rc.c:297
+ msgid "fontify"
+ msgstr ""
+ 
+-#: rc.c:299
++#: rc.c:303
+ msgid "A:relative to screen height"
+ msgstr ""
+ 
+-#: rc.c:300
++#: rc.c:304
+ msgid "B:fixed speed"
+ msgstr ""
+ 
+-#: rc.c:307
++#: rc.c:311
+ msgid "unspecified"
+ msgstr ""
+ 
+-#: rc.c:308
++#: rc.c:312
+ msgid "inet inet6"
+ msgstr ""
+ 
+-#: rc.c:309
++#: rc.c:313
+ msgid "inet6 inet"
+ msgstr ""
+ 
+-#: rc.c:310
++#: rc.c:314
+ msgid "inet only"
+ msgstr ""
+ 
+-#: rc.c:311
++#: rc.c:315
+ msgid "inet6 only"
+ msgstr ""
+ 
+-#: rc.c:318
++#: rc.c:322
+ msgid "discard"
+ msgstr ""
+ 
+-#: rc.c:320
++#: rc.c:324
+ msgid "accept"
+ msgstr ""
+ 
+-#: rc.c:322
++#: rc.c:326
+ msgid "ask"
+ msgstr ""
+ 
+-#: rc.c:329
++#: rc.c:333
+ msgid "use internal mailer instead"
+ msgstr ""
+ 
+-#: rc.c:331
++#: rc.c:335
+ msgid "ignore options and use only the address"
+ msgstr ""
+ 
+-#: rc.c:332
++#: rc.c:336
+ msgid "use full mailto URL"
+ msgstr ""
+ 
+-#: rc.c:341
++#: rc.c:345
+ msgid "OFF"
+ msgstr ""
+ 
+-#: rc.c:342
++#: rc.c:346
+ msgid "Only ISO 2022"
+ msgstr ""
+ 
+-#: rc.c:343
++#: rc.c:347
+ msgid "ON"
+ msgstr ""
+ 
+-#: rc.c:349
++#: rc.c:353
+ msgid "ASCII"
+ msgstr ""
+ 
+-#: rc.c:350
++#: rc.c:354
+ msgid "charset specific"
+ msgstr ""
+ 
+-#: rc.c:351
++#: rc.c:355
+ msgid "DEC special graphics"
+ msgstr ""
+ 
+-#: rc.c:714
++#: rc.c:722
+ msgid "Display Settings"
+ msgstr ""
+ 
+-#: rc.c:716
++#: rc.c:724
+ msgid "Color Settings"
+ msgstr ""
+ 
+-#: rc.c:718
++#: rc.c:726
+ msgid "Miscellaneous Settings"
+ msgstr ""
+ 
+-#: rc.c:719
++#: rc.c:727
+ msgid "Directory Settings"
+ msgstr ""
+ 
+-#: rc.c:720
++#: rc.c:728
+ msgid "External Program Settings"
+ msgstr ""
+ 
+-#: rc.c:721
++#: rc.c:729
+ msgid "Network Settings"
+ msgstr ""
+ 
+-#: rc.c:722
++#: rc.c:730
+ msgid "Proxy Settings"
+ msgstr ""
+ 
+-#: rc.c:724
++#: rc.c:732
+ msgid "SSL Settings"
+ msgstr ""
+ 
+-#: rc.c:727
++#: rc.c:735
+ msgid "Cookie Settings"
+ msgstr ""
+ 
+-#: rc.c:730
++#: rc.c:738
+ msgid "Charset Settings"
+ msgstr ""
+ 
+@@ -874,6 +882,6 @@ msgstr ""
+ #. * header. For example, ja.po should translate it as
+ #. * "ja;q=1.0, en;q=0.5" like that.
+ #.
+-#: rc.c:1209
++#: rc.c:1220
+ msgid "en;q=1.0"
+ msgstr ""
 diff --git a/proto.h b/proto.h
 index f8a7345..0d8beb5 100644
 --- a/proto.h
@@ -9822,7 +11869,7 @@ index f8a7345..0d8beb5 100644
 -
 -#include "indep.h"
 diff --git a/rc.c b/rc.c
-index 8441a39..3bf6cea 100644
+index 8441a39..7b88368 100644
 --- a/rc.c
 +++ b/rc.c
 @@ -9,7 +9,9 @@
@@ -9835,7 +11882,15 @@ index 8441a39..3bf6cea 100644
  
  struct param_ptr {
      char *name;
-@@ -146,6 +148,7 @@ static int OptionEncode = FALSE;
+@@ -88,6 +90,7 @@ static int OptionEncode = FALSE;
+ #define CMT_MULTICOL     N_("Display file names in multi-column format")
+ #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
+ #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
++#define CMT_DISP_BORDERS N_("Display 0 pixel table borders")
+ #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
+ #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
+ #define CMT_COLOR        N_("Display with color")
+@@ -146,6 +149,7 @@ static int OptionEncode = FALSE;
  #define CMT_DISABLE_SECRET_SECURITY_CHECK	N_("Disable secret file security check")
  #define CMT_PASSWDFILE	 N_("Password file")
  #define CMT_PRE_FORM_FILE	N_("File for setting form on loading")
@@ -9843,7 +11898,16 @@ index 8441a39..3bf6cea 100644
  #define CMT_FTPPASS      N_("Password for anonymous FTP (your mail address)")
  #define CMT_FTPPASS_HOSTNAMEGEN N_("Generate domain part of password for FTP")
  #define CMT_USERAGENT    N_("User-Agent identification string")
-@@ -619,6 +622,8 @@ struct param_ptr params9[] = {
+@@ -390,6 +394,8 @@ struct param_ptr params1[] = {
+      NULL},
+     {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
+      CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
++    {"display_borders", P_CHARINT, PI_ONOFF, (void *)&DisplayBorders,
++     CMT_DISP_BORDERS, NULL},
+     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
+      CMT_FOLD_TEXTAREA, NULL},
+     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
+@@ -619,6 +625,8 @@ struct param_ptr params9[] = {
       CMT_FTPPASS_HOSTNAMEGEN, NULL},
      {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
       CMT_PRE_FORM_FILE, NULL},
@@ -9852,7 +11916,7 @@ index 8441a39..3bf6cea 100644
      {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
      {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
       NULL},
-@@ -1173,6 +1178,8 @@ do_mkdir(const char *dir, long mode)
+@@ -1173,6 +1181,8 @@ do_mkdir(const char *dir, long mode)
  #endif				/* not __MINW32_VERSION */
  #endif				/* not __EMX__ */
  
@@ -9861,7 +11925,7 @@ index 8441a39..3bf6cea 100644
  void
  sync_with_option(void)
  {
-@@ -1199,6 +1206,7 @@ sync_with_option(void)
+@@ -1199,6 +1209,7 @@ sync_with_option(void)
  #endif
      loadPasswd();
      loadPreForm();
@@ -9869,7 +11933,7 @@ index 8441a39..3bf6cea 100644
  
      if (AcceptLang == NULL || *AcceptLang == '\0') {
  	/* TRANSLATORS: 
-@@ -1556,3 +1564,217 @@ helpFile(char *base)
+@@ -1556,3 +1567,217 @@ helpFile(char *base)
      return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
  }
  #endif

@@ -4982,6 +4982,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    else
 		w = BORDER_THIN;
 	}
+	if (DisplayBorders && w == BORDER_NONE)
+	    w = BORDER_THIN;
 	if (parsedtag_get_value(tag, ATTR_WIDTH, &i)) {
 	    if (obuf->table_level == 0)
 		width = REAL_WIDTH(i, h_env->limit - envs[h_env->envc].indent);

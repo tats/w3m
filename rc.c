@@ -90,6 +90,7 @@ static int OptionEncode = FALSE;
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
+#define CMT_DISP_BORDERS N_("Display 0 pixel table borders")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
@@ -393,6 +394,8 @@ struct param_ptr params1[] = {
      NULL},
     {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
      CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
+    {"display_borders", P_CHARINT, PI_ONOFF, (void *)&DisplayBorders,
+     CMT_DISP_BORDERS, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,

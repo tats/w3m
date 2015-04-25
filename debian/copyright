@@ -62,9 +62,8 @@ License: permissive-matrix-h
 Files: w3mimg/fb/*
 Copyright: 2002, hito
 License: w3m
- follow w3m license
 Comment:
- Quoting from ChangeLog, 2002-10-11  Hiroyuki Ito <hito@crl.go.jp>.
+ "follow w3m license", mentioned in ChangeLog on 2002-10-11 by Hiroyuki Ito.
 
 Files: islang.c
 Copyright: 2000, NBG01720@nifty.ne.jp
@@ -311,7 +310,6 @@ License: permissive-po
 Files: po/*.po*
 Copyright: 2003-2015, THE w3m'S COPYRIGHT HOLDER
 License: w3m
- This file is distributed under the same license as the w3m package.
 
 Files: alloc.h
 Copyright: 2015, Scarlett

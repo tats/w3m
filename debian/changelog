@@ -1,3 +1,22 @@
+w3m (0.5.3-20) unstable; urgency=medium
+
+  * Integrate Debian changes into 020_debian.patch (closes: #776112)
+    (debian/patches/*.patch except 010_upstream.patch are merged)
+    - Improve English manpages
+      (closes: #771003, #766550, #403634, #380560, #345084, #285251, #268211)
+    - Fix Perl warnings (closes: #771004)
+    - Update to 2015-02-03
+  * Add libsixel-bin to Suggests for img2sixel
+  * Set extbrowser to sensible-browser in w3mconfig
+  * Set mailer to use xdg-open in w3mconfig
+  * Add xdg-utils to Suggests for xdg-open
+  * Support committer date for gitlog2changelog
+  * Add dot to end of message for gitlog2changelog
+  * Update Vcs-Browser
+  * Update debian/copyright
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 25 Apr 2015 19:33:35 +0900
+
 w3m (0.5.3-19) unstable; urgency=medium
 
   * New patch 360_lang-de.patch to add German translation (closes: #763964)

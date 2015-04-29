@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
 "POT-Creation-Date: 2015-04-29 16:18+0900\n"
-"PO-Revision-Date: 2014-10-19 11:15+0200\n"
-"Last-Translator: Markus Hiereth <markus.hiereth@freenet.de>\n"
+"PO-Revision-Date: 2015-04-29 09:45+0200\n"
+"Last-Translator: Markus Hiereth <post@hiereth.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -210,7 +210,7 @@ msgstr "Zeichen zum Einrahmen von Tabellen und Menüs"
 
 #: rc.c:93
 msgid "Display table borders, ignore value of BORDER"
-msgstr ""
+msgstr "Zeige Tabellen gerahmt, BORDER-Wert ignorieren"
 
 #: rc.c:94
 msgid "Fold lines in TEXTAREA"
@@ -420,7 +420,7 @@ msgstr "Datei mit vordefinierten Eingaben für Formulare"
 
 #: rc.c:152
 msgid "File for preferences for each site"
-msgstr ""
+msgstr "Datei mit adress-spezifischen Voreinstellungen"
 
 #: rc.c:153
 msgid "Password for anonymous FTP (your mail address)"

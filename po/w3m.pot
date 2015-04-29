@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2015-02-02 23:45+0900\n"
+"POT-Creation-Date: 2015-04-29 16:18+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -206,7 +206,7 @@ msgid "Character type for border of table and menu"
 msgstr ""
 
 #: rc.c:93
-msgid "Display 0 pixel table borders"
+msgid "Display table borders, ignore value of BORDER"
 msgstr ""
 
 #: rc.c:94

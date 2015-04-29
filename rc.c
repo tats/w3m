@@ -90,7 +90,7 @@ static int OptionEncode = FALSE;
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
-#define CMT_DISP_BORDERS N_("Display 0 pixel table borders")
+#define CMT_DISP_BORDERS N_("Display table borders, ignore value of BORDER")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")

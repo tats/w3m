@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2015-02-02 23:45+0900\n"
+"POT-Creation-Date: 2015-04-29 16:18+0900\n"
 "PO-Revision-Date: 2014-10-19 11:15+0200\n"
 "Last-Translator: Markus Hiereth <markus.hiereth@freenet.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -209,7 +209,7 @@ msgid "Character type for border of table and menu"
 msgstr "Zeichen zum Einrahmen von Tabellen und Menüs"
 
 #: rc.c:93
-msgid "Display 0 pixel table borders"
+msgid "Display table borders, ignore value of BORDER"
 msgstr ""
 
 #: rc.c:94

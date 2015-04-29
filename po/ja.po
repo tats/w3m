@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2015-02-02 23:45+0900\n"
-"PO-Revision-Date: 2010-08-20 18:45+0900\n"
-"Last-Translator: Fumitoshi UKAI <ukai@debian.or.jp>\n"
+"POT-Creation-Date: 2015-04-29 16:18+0900\n"
+"PO-Revision-Date: 2015-04-29 16:38+0900\n"
+"Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
 "Language-Team: Japanese\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -207,8 +207,8 @@ msgid "Character type for border of table and menu"
 msgstr "テーブルやメニューの枠に使う文字"
 
 #: rc.c:93
-msgid "Display 0 pixel table borders"
-msgstr "0ピクセルのテーブル枠の表示"
+msgid "Display table borders, ignore value of BORDER"
+msgstr "BORDER の値は無視してテーブル枠を表示"
 
 #: rc.c:94
 msgid "Fold lines in TEXTAREA"

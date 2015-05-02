@@ -419,7 +419,7 @@ main(int argc, char **argv, char **envp)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
     GC_INIT();
-#if (GC_VERSION_MAJOR>=7) && (GC_VERSION_MINOR>=2)
+#if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
     GC_set_oom_fn(die_oom);
 #else
     GC_oom_fn = die_oom;

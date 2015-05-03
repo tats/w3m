@@ -1,3 +1,11 @@
+2015-05-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Correct GC version confirmation.
+
+2015-05-02  yshl  <yshl@takechiyo.net>
+
+	* main.c: Correct GC version confirmation.
+
 2015-04-29  Markus Hiereth  <post@hiereth.de>
 
 	* po/de.po: Update German translation.

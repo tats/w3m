@@ -19,8 +19,8 @@ no_referer_to on|off
 
 ===== 例 =====
 
-url "http://twitter.com/#!/"
-substitute_url "http://mobile.twitter.com/"
+url "https://twitter.com/"
+substitute_url "https://mobile.twitter.com/"
 
 twitter.com をモバイルサイトに転送します。
 

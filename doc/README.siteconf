@@ -18,8 +18,8 @@ The last match wins.
 
 ===== Examples =====
 
-url "http://twitter.com/#!/"
-substitute_url "http://mobile.twitter.com/"
+url "https://twitter.com/"
+substitute_url "https://mobile.twitter.com/"
 
 This forwards the twitter.com to its mobile site.
 

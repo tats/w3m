@@ -13,7 +13,7 @@ ssl_forbid_method 2, 3
 no_cache 0
 noproxy_netaddr 0
 no_proxy 
-meta_refresh 1
+meta_refresh 0
 follow_redirection 10
 default_url 1
 retry_http 1

@@ -186,8 +186,6 @@ License: X11-install-sh
 Files: doc-jp/README.SSL
 Copyright: 2001, Fumitoshi UKAI
 License: Ruby and w3m
- You can redistribute it and/or modify it under the terms of
- the Ruby's licence.
 Comment:
  The Ruby's licence is applied to the included script certdata2pem.rb,
  and the document is considered under the w3m license.

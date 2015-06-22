@@ -1,3 +1,10 @@
+w3m (0.5.3-22) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20150623
+    - Fix broken stage1 bootstrap build (closes: #789539)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Tue, 23 Jun 2015 07:06:18 +0900
+
 w3m (0.5.3-21) unstable; urgency=medium
 
   * Update 020_debian.patch to 2015-05-09

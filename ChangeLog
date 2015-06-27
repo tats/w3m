@@ -1,3 +1,9 @@
+2015-06-27  yshl  <yshl@takechiyo.net>
+
+	* doc-jp/README.SSL: Modify certdata2pem.rb to assume the encoding
+	of the certdata.txt to be UTF-8.
+	Origin: https://github.com/tats/w3m/pull/3
+
 2015-06-23  Daniel Schepler  <dschepler@gmail.com>
 
 	* terms.c: Wrap the functions used by image.c in USE_IMAGE.
@@ -15,6 +21,7 @@
 2015-05-02  yshl  <yshl@takechiyo.net>
 
 	* main.c: Correct GC version confirmation.
+	Origin: https://github.com/tats/w3m/pull/2
 
 2015-04-29  Markus Hiereth  <post@hiereth.de>
 
@@ -29,6 +36,7 @@
 2015-04-26  yshl  <yshl@takechiyo.net>
 
 	* main.c: Use GC_oom_fn instead of GC_set_oom_fn for gc-7.1.
+	Origin: https://github.com/tats/w3m/pull/1
 
 2015-02-03  Tatsuya Kinoshita  <tats@debian.org>
 

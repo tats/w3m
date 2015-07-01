@@ -22,10 +22,10 @@ static int is_saved = 1;
 
 #define contain_no_dots(p, ep) (total_dot_number((p),(ep),1)==0)
 
-static int
+static unsigned int
 total_dot_number(char *p, char *ep, int max_count)
 {
-    int count = 0;
+    unsigned int count = 0;
     if (!ep)
 	ep = p + strlen(p);
 
@@ -325,7 +325,7 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 
 	if (version == 0) {
 	    /* [NETSCAPE] rule */
-	    int n = total_dot_number(domain->ptr,
+	    unsigned int n = total_dot_number(domain->ptr,
 				     domain->ptr + domain->length,
 				     3);
 	    if (n < 2) {

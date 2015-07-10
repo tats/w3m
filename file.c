@@ -1228,6 +1228,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     unsigned char md5[MD5_DIGEST_LENGTH + 1];
     Str uri = HTTPrequestURI(pu, hr);
     char nc[] = "00000001";
+    FILE *fp;
 
     Str algorithm = qstr_unquote(get_auth_param(ha->param, "algorithm"));
     Str nonce = qstr_unquote(get_auth_param(ha->param, "nonce"));
@@ -1310,10 +1311,11 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	/*  A2 = Method ":" digest-uri-value ":" H(entity-body) */
 	if (request && request->body) {
 	    if (request->method == FORM_METHOD_POST && request->enctype == FORM_ENCTYPE_MULTIPART) {
-		FILE *fp = fopen(request->body, "r");
+		fp = fopen(request->body, "r");
 		if (fp != NULL) {
 		    Str ebody;
 		    ebody = Strfgetall(fp);
+		    fclose(fp);
 		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
 		}
 		else {

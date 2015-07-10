@@ -79,9 +79,9 @@ print_bookmark_panel(char *bmark, char *url, char *title, char *charset)
 	    }
 	}
 	printf("</select>\n");
+	fclose(f);
     }
     printf(bkmark_src2, html_quote(url), html_quote(title));
-    fclose(f);
 }
 
 /* create new bookmark */

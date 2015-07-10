@@ -714,7 +714,8 @@ _rdcompl(void)
 static void
 next_dcompl(int next)
 {
-    static int col, row, len;
+    static int col, row;
+    static unsigned int len;
     static Str d;
     int i, j, n, y;
     Str f;
@@ -780,9 +781,10 @@ next_dcompl(int next)
 	if (len < n)
 	    len = n;
     }
-    col = COLS / len;
-    if (col == 0)
-	col = 1;
+    if (len > 0 && COLS > len)
+        col = COLS / len;
+    else
+        col = 1;
     row = (NCFileBuf + col - 1) / col;
 
   disp_next:

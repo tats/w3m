@@ -518,36 +518,36 @@ load_cookies(void)
 	cookie->commentURL = NULL;
 	parseURL(readcol(&str)->ptr, &cookie->url, NULL);
 	if (!*str)
-	    return;
+	    break;
 	cookie->name = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->value = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->expires = (time_t) atol(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->domain = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->path = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->flag = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->version = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->comment = readcol(&str);
 	if (cookie->comment->length == 0)
 	    cookie->comment = NULL;
 	if (!*str)
-	    return;
+	    break;
 	cookie->portl = make_portlist(readcol(&str));
 	if (!*str)
-	    return;
+	    break;
 	cookie->commentURL = readcol(&str);
 	if (cookie->commentURL->length == 0)
 	    cookie->commentURL = NULL;

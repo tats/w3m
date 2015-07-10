@@ -115,6 +115,7 @@ printMailcapPanel(char *mailcap)
     printf("</table>\n<input type=submit name=submit value=\"%s\">\n</form>\n\
 </body>\n</html>\n",
 	   MSG_DOIT);
+    fclose(f);
 }
 
 void

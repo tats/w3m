@@ -895,8 +895,10 @@ renderFrame(Buffer *Cbuf, int force_reload)
     /* 
      * if (Cbuf->frameQ != NULL) fset = Cbuf->frameQ->frameset; else */
     fset = Cbuf->frameset;
-    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0)
+    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0) {
+	fclose(f);
 	return NULL;
+    }
     fclose(f);
     flag = RG_FRAME;
     if ((Cbuf->currentURL).is_nocache)

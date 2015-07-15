@@ -475,8 +475,6 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	    /* FIXME: gettextize? */
 	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
 	}
-	else
-	    match_ident = TRUE;
     }
     return ret;
 }

@@ -429,7 +429,6 @@ visible_length(char *str)
     char *t, *r2;
     int amp_len = 0;
 
-    t = str;
     while (*str) {
 	prev_status = status;
 	if (next_status(*str, &status)) {
@@ -3018,7 +3017,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	break;
     case HTML_TABLE_ALT:
 	id = -1;
-	w = 0;
 	parsedtag_get_value(tag, ATTR_TID, &id);
 	if (id >= 0 && id < tbl->ntable) {
 	    struct table *tbl1 = tbl->tables[id].ptr;

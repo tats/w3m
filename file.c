@@ -7405,7 +7405,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
 
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
-    lineBuf2 = Strnew();
 
     if (SETJMP(AbortLoading) != 0) {
 	goto _end;

@@ -3071,7 +3071,6 @@ handleMailto(char *url)
 /* follow HREF link */
 DEFUN(followA, GOTO_LINK, "Go to current link")
 {
-    Line *l;
     Anchor *a;
     ParsedURL u;
 #ifdef USE_IMAGE
@@ -3081,7 +3080,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
 #ifdef USE_IMAGE
     a = retrieveCurrentImg(Currentbuf);
@@ -3163,13 +3161,11 @@ bufferA(void)
 /* view inline image */
 DEFUN(followI, VIEW_IMAGE, "View image")
 {
-    Line *l;
     Anchor *a;
     Buffer *buf;
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
     a = retrieveCurrentImg(Currentbuf);
     if (a == NULL)
@@ -3419,7 +3415,6 @@ followForm(void)
 static void
 _followForm(int submit)
 {
-    Line *l;
     Anchor *a, *a2;
     char *p;
     FormItemList *fi, *f2;
@@ -3428,7 +3423,6 @@ _followForm(int submit)
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
     a = retrieveCurrentForm(Currentbuf);
     if (a == NULL)
@@ -3533,7 +3527,6 @@ _followForm(int submit)
     case FORM_INPUT_BUTTON:
       do_submit:
 	tmp = Strnew();
-	tmp2 = Strnew();
 	multipart = (fi->parent->method == FORM_METHOD_POST &&
 		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
 	query_from_followform(&tmp, fi, multipart);

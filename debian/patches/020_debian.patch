@@ -2,10 +2,27 @@ Description: Git master branch of Debian's w3m
 Origin: http://anonscm.debian.org/cgit/collab-maint/w3m.git
 
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..69f7395 100644
+index 88358ef..d355188 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,647 @@
+@@ -1,3 +1,667 @@
++2015-07-20  Tatsuya Kinoshita  <tats@debian.org>
++
++	* README: Add short description.
++
++	* doc-jp/FAQ.html, doc/FAQ.html: Mention GOPHER_PROXY and FTP_PROXY.
++
++2015-07-05  Tatsuya Kinoshita  <tats@debian.org>
++
++	* doc-jp/FAQ.html, doc/FAQ.html: Mention HTTPS_PROXY.
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=791425
++
++2015-06-27  yshl  <yshl@takechiyo.net>
++
++	* doc-jp/README.SSL: Modify certdata2pem.rb to assume the encoding
++	of the certdata.txt to be UTF-8.
++	Origin: https://github.com/tats/w3m/pull/3
++
 +2015-06-23  Daniel Schepler  <dschepler@gmail.com>
 +
 +	* terms.c: Wrap the functions used by image.c in USE_IMAGE.
@@ -23,6 +40,7 @@ index 88358ef..69f7395 100644
 +2015-05-02  yshl  <yshl@takechiyo.net>
 +
 +	* main.c: Correct GC version confirmation.
++	Origin: https://github.com/tats/w3m/pull/2
 +
 +2015-04-29  Markus Hiereth  <post@hiereth.de>
 +
@@ -37,6 +55,7 @@ index 88358ef..69f7395 100644
 +2015-04-26  yshl  <yshl@takechiyo.net>
 +
 +	* main.c: Use GC_oom_fn instead of GC_set_oom_fn for gc-7.1.
++	Origin: https://github.com/tats/w3m/pull/1
 +
 +2015-02-03  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -336,7 +355,7 @@ index 88358ef..69f7395 100644
 +
 +2014-08-22  Micah Cowan  <micah@addictivecode.org>
 +
-+	* main.c: Support Boehm GC 7.2
++	* main.c: Support Boehm GC 7.2.
 +	Replace Gentoo's patch to prevent segfaults due to infinite recursion.
 +	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?msg=5;filename=080_gc72.patch;att=1;bug=758831
 +	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=758831
@@ -392,14 +411,14 @@ index 88358ef..69f7395 100644
 +
 +2013-12-07  Reinhard Max  <max@suse.de>
 +
-+	* local.c: Fix a directory descriptor leak in loadLocalDir
++	* local.c: Fix a directory descriptor leak in loadLocalDir.
 +	Patch from openSUSE on 2009-09-07.
 +	Origin: https://build.opensuse.org/package/view_file/openSUSE:Factory/w3m/w3m-closedir.patch
 +	Bug-Novell: https://bugzilla.novell.com/show_bug.cgi?id=531675
 +
 +2013-12-07  AIDA Shinra  <shinra@j10n.org>
 +
-+	* main.c: Fix crash after SEARCH_NEXT
++	* main.c: Fix crash after SEARCH_NEXT.
 +	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-search-next.patch>,
 +	[w3m-dev:04473] on 2013-12-07.
 +
@@ -407,13 +426,14 @@ index 88358ef..69f7395 100644
 +
 +	* file.c: Add support for single quoted meta refresh URL
 +	Bug: https://sourceforge.net/p/w3m/patches/53/
++	Bug-NetBSD: http://gnats.netbsd.org/42400
 +
 +2013-11-07  Cristian Rodriguez  <crrodriguez@opensuse.org>
 +
-+	* url.c: Use SSL_OP_NO_COMPRESSION if available
++	* url.c: Use SSL_OP_NO_COMPRESSION if available.
 +	Due to the "CRIME attack" (CVE-2012-4929) HTTPS clients that
 +	negotiate TLS-level compression can be abused for MITM attacks.
-+	* url.c: Use SSL_MODE_RELEASE_BUFFERS if available
++	* url.c: Use SSL_MODE_RELEASE_BUFFERS if available.
 +	Patch from openSUSE on 2012-11-12:
 +	https://build.opensuse.org/request/show/141054
 +
@@ -441,14 +461,14 @@ index 88358ef..69f7395 100644
 +
 +2013-10-14  AIDA Shinra  <shinra@j10n.org>
 +
-+	* url.c: Define schemeNumToName() to fix scheme bug
++	* url.c: Define schemeNumToName() to fix scheme bug.
 +	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-schemebug.patch>,
 +	[w3m-dev:04470] on 2013-10-14.
 +	Bug: https://sourceforge.net/p/w3m/patches/60/
 +
 +	* config.h.in, file.c, fm.h, html.h, image.c, indep.c, indep.h:
 +	* istream.c, istream.h, local.c, main.c, mimehead.c, proto.h:
-+	Workaround of GC crash on Cygwin64
++	Workaround of GC crash on Cygwin64.
 +	Patch from <http://www.j10n.org/files/w3m-cvs-1.1055-win64gc.patch>,
 +	[w3m-dev:04469] on 2013-10-14.
 +
@@ -469,7 +489,7 @@ index 88358ef..69f7395 100644
 +	Update document for the -s option change
 +	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=75527
 +
-+	* terms.c: Do not fail when LANG is not set
++	* terms.c: Do not fail when LANG is not set.
 +	Check whether the value of LC_ALL, LC_CTYPE or LANG is not NULL in
 +	check_cygwin_console().
 +	Bug: https://sourceforge.net/p/w3m/patches/66/
@@ -525,13 +545,13 @@ index 88358ef..69f7395 100644
 +2013-08-02  Piotr P. Karwasz <piotr.p@karwasz.org>
 +
 +	* scripts/w3mman/w3mman2html.cgi.in:
-+	Correct underline processing and more UTF-8 support for w3mman2html.cgi
++	Correct underline processing and more UTF-8 support for w3mman2html.cgi.
 +	Patch from <https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/680202>
 +	on 2010-11-23.
 +
 +2013-08-01  Hilko Bengen  <bengen@debian.org>
 +
-+	* entity.c: Ignore SOFT HYPHEN to prevent drawing hyphens everywhere
++	* entity.c: Ignore SOFT HYPHEN to prevent drawing hyphens everywhere.
 +	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=441934>
 +	on 2011-03-01.
 +
@@ -543,12 +563,12 @@ index 88358ef..69f7395 100644
 +2013-07-30  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* config.guess, config.sub:
-+	Update config.guess and config.sub to supprot aarch64
++	Update config.guess and config.sub to supprot aarch64.
 +	Updated with Debian autotools-dev version 20130515.1.
 +
 +2013-07-30  Conrad J.C. Hughes  <debbugs@xrad.org>
 +
-+	* main.c: Sort anchors by sequence number in -dump
++	* main.c: Sort anchors by sequence number in -dump.
 +	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=657666>
 +	on 2012-01-27.
 +
@@ -573,38 +593,38 @@ index 88358ef..69f7395 100644
 +	* anchor.c, config.h.in, display.c, doc-jp/README.siteconf:
 +	* doc/README.siteconf, file.c, fm.h, form.c, frame.c, func.c:
 +	* history.c, indep.c, indep.h, linein.c, main.c, map.c, menu.c:
-+	* po/ja.po, proto.h, rc.c, url.c: Support the siteconf feature
++	* po/ja.po, proto.h, rc.c, url.c: Support the siteconf feature.
 +	Patch to support the siteconf feature, from [w3m-dev 04463]
 +	on 2012-06-27.
 +
 +2013-04-08  Hayaki Saito  <user@zuse.jp>
 +
 +	* keybind.c, main.c, proto.h, terms.c:
-+	Support SGR 1006 mouse reporting
++	Support SGR 1006 mouse reporting.
 +	Patch to support SGR 1006 mouse reporting, from [w3m-dev 04466]
 +	on 2012-07-15.
 +
 +2012-05-19  Hilko Bengen  <bengen@debian.org>
 +
-+	* form.c: Assume "text" if an input type is unknown
++	* form.c: Assume "text" if an input type is unknown.
 +	Patch from <http://bugs.debian.org/615843> on 2011-03-01.
 +
 +2012-05-19  Simon Ruderich  <simon@ruderich.org>
 +
-+	* Makefile.in: Use $(CPPFLAGS) with $(CPP)
++	* Makefile.in: Use $(CPPFLAGS) with $(CPP).
 +	Patch from <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=665491>
 +	on 2012-03-24.
 +
 +2012-05-03  Miroslav Å ulc  <fordfrog@gentoo.org>
 +
-+	* w3mimg/Makefile.in: Fix parallel make issue
++	* w3mimg/Makefile.in: Fix parallel make issue.
 +	Patch from Gentoo
 +	<http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.3-parallel-make.patch?revision=1.1&view=markup>
 +	<https://bugs.gentoo.org/show_bug.cgi?id=353390> on 2011-02-01.
 +
 +2012-05-03  MATSUU Takuto  <matsuu@gentoo.org>
 +
-+	* main.c: Support Boehm GC 7.2
++	* main.c: Support Boehm GC 7.2.
 +	Patch from Gentoo
 +	<http://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/www-client/w3m/files/w3m-0.5.2-gc72.patch?revision=1.1&view=markup>
 +	on 2009-12-13.
@@ -612,7 +632,7 @@ index 88358ef..69f7395 100644
 +2012-05-02  Reinhard Tartler  <siretart@tauware.de>
 +
 +	* istream.c, istream.h:
-+	Fix that struct file_handle conflicts with glibc 2.14
++	Fix that struct file_handle conflicts with glibc 2.14.
 +	Patch from <https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/935540>
 +	on 2012-02-19.
 +
@@ -626,14 +646,13 @@ index 88358ef..69f7395 100644
 +2011-06-19  Martin Pitt  <martin.pitt@ubuntu.com>
 +
 +	* Makefile.in:
-+	Explicitly link w3mimgdisplay with -lX11 to build with gcc 4.5
++	Explicitly link w3mimgdisplay with -lX11 to build with gcc 4.5.
 +	Patch from 0.5.2-10ubuntu1 on 2010-12-03.
 +	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=605761
 +
 +2011-06-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 +
-+	* main.c:
-+	Change the -s option to "squeeze multiple blank lines" for pager
++	* main.c: Change the -s option to "squeeze multiple blank lines".
 +	Change the -s option from "display charset Shift_JIS" to "squeeze
 +	multiple blank lines" to work as /usr/bin/pager.  In addition, the
 +	options -j and -e are disabled.  To specify the display charset,
@@ -644,11 +663,12 @@ index 88358ef..69f7395 100644
 +2011-06-19  Hiroyuki Ito  <ZXB01226@nifty.com>
 +
 +	* file.c, fm.h, html.c, html.h, proto.h, table.c, tagtable.tab:
-+	Support the button element as defined in HTML 4.01
++	Support the button element as defined in HTML 4.01.
 +	Patch from upstream, [w3m-dev 04411] on 2010-09-17, to support the
 +	button element.  It is discussed upstream and incomplete, but enough
 +	to login Launchpad.
 +	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=136810
++	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/628755
 +
  2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
  
@@ -675,6 +695,20 @@ index 7d692f9..8fa799e 100644
  	for dir in $(SCRIPTSUBDIRS);	\
  	do	\
  		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \
+diff --git a/README b/README
+index 8778d80..765c996 100644
+--- a/README
++++ b/README
+@@ -1,3 +1,9 @@
++w3m: WWW wo Miru Tool
++=====================
++
++w3m is a pager with WWW capability.  It IS a pager, but it can be used
++as a text-mode WWW browser.
++
+ If you can read English, see doc/*.
+ If you can read Japanese, see doc-jp/*.
+ If you can read both, read both and correct English. :-)
 diff --git a/Str.c b/Str.c
 index e5a0982..eff82a4 100644
 --- a/Str.c
@@ -3983,6 +4017,19 @@ index e00eb0c..d4f336a 100644
  		if (image->width > 0)
  		    w = image->width - sx;
  		else
+diff --git a/doc-jp/FAQ.html b/doc-jp/FAQ.html
+index e16a986..86ef05a 100644
+--- a/doc-jp/FAQ.html
++++ b/doc-jp/FAQ.html
+@@ -176,7 +176,7 @@ w3m
+ ÊÝÂ¸¤·¤Þ¤¹¡¥²èÁü¤òÊÝÂ¸¤¹¤ë¾ì¹ç¤Ï ESC I ¤Ç¤¹¡¥
+ <p>
+ <dt>¥×¥í¥­¥·¤ÎÀßÄê¤Ï¤É¤¦¤¹¤ë¤Î¡©
+-<dd>´Ä¶­ÊÑ¿ô HTTP_proxy ¤òÀßÄê¤¹¤ë¤«¡¤"o" ¥³¥Þ¥ó¥É¤Î¥ª¥×¥·¥ç¥óÀßÄê¥Ñ¥Í¥ë
++<dd>´Ä¶­ÊÑ¿ô HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY, FTP_PROXY ¤òÀßÄê¤¹¤ë¤«¡¤"o" ¥³¥Þ¥ó¥É¤Î¥ª¥×¥·¥ç¥óÀßÄê¥Ñ¥Í¥ë
+ ¤ÇÀßÄê¤·¤Þ¤¹¡¥Îã¤¨¤Ð proxy.hogege.com ¤È¤¤¤¦¥Û¥¹¥È¤Î 8000ÈÖ¥Ý¡¼¥È¤ò
+ ÍøÍÑ¤¹¤ë¾ì¹ç¡¤
+ <p>
 diff --git a/doc-jp/MANUAL.html b/doc-jp/MANUAL.html
 index 41d70f1..a8623e2 100644
 --- a/doc-jp/MANUAL.html
@@ -4039,7 +4086,7 @@ index 074766f..e5e59b1 100644
  	http://w3m.sourceforge.net/
 +	https://sourceforge.net/projects/w3m/
 diff --git a/doc-jp/README.SSL b/doc-jp/README.SSL
-index 4aedfde..670ed5f 100644
+index 4aedfde..47d5fd6 100644
 --- a/doc-jp/README.SSL
 +++ b/doc-jp/README.SSL
 @@ -25,9 +25,9 @@ SSL 
@@ -4054,6 +4101,16 @@ index 4aedfde..670ed5f 100644
      ssl_cert_file ¥Õ¥¡¥¤¥ëÌ¾
          SSL¤Î¥¯¥é¥¤¥¢¥ó¥ÈÍÑPEM·Á¼°¾ÚÌÀ½ñ¥Õ¥¡¥¤¥ë(¥Ç¥Õ¥©¥ë¥È¤Ï<NULL>).
      ssl_key_file ¥Õ¥¡¥¤¥ëÌ¾
+@@ -85,6 +85,9 @@ SSL 
+ #
+ # certdata2pem.rb
+ 
++if RUBY_VERSION>="1.9"
++  Encoding.default_external="UTF-8"
++end
+ while line = $stdin.gets
+   next if line =~ /^#/
+   next if line =~ /^\s*$/
 diff --git a/doc-jp/README.siteconf b/doc-jp/README.siteconf
 new file mode 100644
 index 0000000..90066f7
@@ -4155,6 +4212,19 @@ index 89aacb6..099a803 100644
  Ï¢Â³¤¹¤ë¶õ¹Ô¤ò1¹Ô¤Ë¤Þ¤È¤á¤ÆÉ½¼¨¤¹¤ë¡¥
  .TP
  .B \-X
+diff --git a/doc/FAQ.html b/doc/FAQ.html
+index ed2a704..4d82790 100644
+--- a/doc/FAQ.html
++++ b/doc/FAQ.html
+@@ -222,7 +222,7 @@ from the server each time it accesses it. If possible, use a cache server.
+ <dd>Use 'a' (or 'd' with Lynx-like keybindings) or ESC RET. If you want to download an inline image, use ESC 'I'.
+ <p>
+ <dt><h3>How do I specify a proxy server?</h3>
+-<dd>Set the environment variable HTTP_PROXY or use the option setting panel
++<dd>Set the environment variables HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY and FTP_PROXY, or use the option setting panel
+ ("o" key). For example, if you want to use port 8000 of proxy.hogege.com, specify
+ <p>
+ <pre>
 diff --git a/doc/HISTORY b/doc/HISTORY
 index b8f5b94..7f7ae2b 100644
 --- a/doc/HISTORY

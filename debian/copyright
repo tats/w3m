@@ -32,7 +32,7 @@ License: permissive-Str
 Files: matrix.c
 Copyright: 1999, K.Okabe
            1993, David E. Steward & Zbigniew Leyk
-License: permissive-matrix-c
+License: copyleft-matrix-c
  LUfactor, LUsolve, Usolve and Lsolve, are based on the functions in
  Meschach Library Version 1.2b.
  .
@@ -53,6 +53,11 @@ License: permissive-matrix-c
       This clause shall not be construed as constraining other software
       distributed on the same medium as this software, nor is a
       distribution fee considered a charge.
+Comment:
+ This license is almost permissive but partially copyleft.  The "No charge"
+ clause prohibits a fee for the right to use this software or works derived
+ from it, that conflicts with merging into a proprietary software for a fee,
+ but a distribution fee and a commercial use are okay, compliant to DFSG.
 
 Files: matrix.h
 Copyright: 1999, K.Okabe

@@ -1,3 +1,11 @@
+w3m (0.5.3-23) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20150720
+    - Mention HTTPS_PROXY in the FAQ documents (closes: #791425)
+  * Update debian/copyright for matrix.c
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 20 Jul 2015 17:47:36 +0900
+
 w3m (0.5.3-22) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20150623

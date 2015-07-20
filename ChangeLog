@@ -1,3 +1,9 @@
+2015-07-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* README: Add short description.
+
+	* doc-jp/FAQ.html, doc/FAQ.html: Mention GOPHER_PROXY and FTP_PROXY.
+
 2015-07-05  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/FAQ.html, doc/FAQ.html: Mention HTTPS_PROXY.
@@ -412,6 +418,7 @@
 
 	* file.c: Add support for single quoted meta refresh URL
 	Bug: https://sourceforge.net/p/w3m/patches/53/
+	Bug-NetBSD: http://gnats.netbsd.org/42400
 
 2013-11-07  Cristian Rodriguez  <crrodriguez@opensuse.org>
 
@@ -637,8 +644,7 @@
 
 2011-06-19  Fumitoshi UKAI  <ukai@debian.or.jp>
 
-	* main.c:
-	Change the -s option to "squeeze multiple blank lines" for pager.
+	* main.c: Change the -s option to "squeeze multiple blank lines".
 	Change the -s option from "display charset Shift_JIS" to "squeeze
 	multiple blank lines" to work as /usr/bin/pager.  In addition, the
 	options -j and -e are disabled.  To specify the display charset,
@@ -654,6 +660,7 @@
 	button element.  It is discussed upstream and incomplete, but enough
 	to login Launchpad.
 	Bug-Debian: http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=136810
+	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/628755
 
 2012-05-22  Tatsuya Kinoshita <tats@vega.ocn.ne.jp>
 

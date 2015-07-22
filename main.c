@@ -1266,7 +1266,7 @@ static void
 dump_source(Buffer *buf)
 {
     FILE *f;
-    char c;
+    int c;
     if (buf->sourcefile == NULL)
 	return;
     f = fopen(buf->sourcefile, "r");

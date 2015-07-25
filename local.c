@@ -386,9 +386,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     cgi_basename = mybasename(file);
     pid = open_pipe_rw(&fr, NULL);
     /* Don't invoke gc after here, or the program might crash in some platforms */
-    if (pid < 0)
+    if (pid < 0) {
+	if (fw)
+	    fclose(fw);
 	return NULL;
-    else if (pid) {
+    } else if (pid) {
 	if (fw)
 	    fclose(fw);
 	return fr;

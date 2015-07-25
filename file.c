@@ -8540,7 +8540,7 @@ lessopen_stream(char *path)
 	}
 	c = getc(fp);
 	if (c == EOF) {
-	    fclose(fp);
+	    pclose(fp);
 	    return NULL;
 	}
 	ungetc(c, fp);

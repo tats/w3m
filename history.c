@@ -60,6 +60,7 @@ saveHistory(Hist *hist, size_t size)
     FILE *f;
     HistItem *item;
     char *tmpf;
+    int rename_ret;
 
     if (hist == NULL || hist->list == NULL)
 	return;
@@ -79,7 +80,11 @@ saveHistory(Hist *hist, size_t size)
 	disp_err_message("Can't save history", FALSE);
 	return;
     }
-    rename(tmpf, rcFile(HISTORY_FILE));
+    rename_ret = rename(tmpf, rcFile(HISTORY_FILE));
+    if (rename_ret != 0) {
+	disp_err_message("Can't save history", FALSE);
+	return;
+    }
 }
 #endif				/* USE_HISTORY */
 

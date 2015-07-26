@@ -140,7 +140,6 @@ ftp_login(FTP ftp)
 	    socklen_t socknamelen = sizeof(sockname);
 
 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
-		struct hostent *sockent;
 		Str tmp = Strnew_charp(ftp->pass);
 #ifdef INET6
 		char hostbuf[NI_MAXHOST];
@@ -157,6 +156,7 @@ ftp_login(FTP ftp)
 		    Strcat_charp(tmp, "unknown");
 #else
 
+		struct hostent *sockent;
 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
 					     sizeof(sockname.sin_addr),
 					     sockname.sin_family)))

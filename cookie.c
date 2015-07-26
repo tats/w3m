@@ -23,7 +23,7 @@ static int is_saved = 1;
 #define contain_no_dots(p, ep) (total_dot_number((p),(ep),1)==0)
 
 static unsigned int
-total_dot_number(char *p, char *ep, int max_count)
+total_dot_number(char *p, char *ep, unsigned int max_count)
 {
     unsigned int count = 0;
     if (!ep)

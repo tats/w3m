@@ -1,6 +1,7 @@
 /* $Id: main.c,v 1.270 2010/08/24 10:11:51 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
+#include <stdio.h>
 #include <signal.h>
 #include <setjmp.h>
 #include <sys/stat.h>
@@ -1272,7 +1273,7 @@ dump_source(Buffer *buf)
     f = fopen(buf->sourcefile, "r");
     if (f == NULL)
 	return;
-    while (c = fgetc(f), !feof(f)) {
+    while ((c = fgetc(f)) != EOF) {
 	putchar(c);
     }
     fclose(f);

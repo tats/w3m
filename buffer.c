@@ -761,8 +761,10 @@ readBufferCache(Buffer *buf)
 	}
 #endif
     }
-    buf->lastLine = prevl;
-    buf->lastLine->next = NULL;
+    if (prevl) {
+	    buf->lastLine = prevl;
+	    buf->lastLine->next = NULL;
+    }
     fclose(cache);
     unlink(buf->savecache);
     buf->savecache = NULL;

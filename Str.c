@@ -530,11 +530,8 @@ Str
 Strfgets(FILE * f)
 {
     Str s = Strnew();
-    char c;
-    while (1) {
-	c = fgetc(f);
-	if (feof(f) || ferror(f))
-	    break;
+    int c;
+    while ((c = fgetc(f)) != EOF) {
 	Strcat_char(s, c);
 	if (c == '\n')
 	    break;
@@ -546,11 +543,8 @@ Str
 Strfgetall(FILE * f)
 {
     Str s = Strnew();
-    char c;
-    while (1) {
-	c = fgetc(f);
-	if (feof(f) || ferror(f))
-	    break;
+    int c;
+    while ((c = fgetc(f)) != EOF) {
 	Strcat_char(s, c);
     }
     return s;

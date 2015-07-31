@@ -1,3 +1,9 @@
+2015-07-28  yshl  <yshl@takechiyo.net>
+
+	* Bonus/goodict.cgi: Update to the current URL.
+
+	* Bonus/goodict.cgi: Use Encode.pm instead of NKF.
+
 2015-07-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* README: Add short description.

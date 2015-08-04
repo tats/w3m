@@ -1,3 +1,10 @@
+2015-08-05  IWAMOTO Kouichi  <sue@iwmt.org>
+
+	* main.c: Fix that SGR style mouse handler has off-by-one problem.
+	cf. https://github.com/tats/w3m/issues/5
+	Origin: https://gist.github.com/ttdoda/30c189a63d483beeb207
+	Bug: https://sourceforge.net/p/w3m/patches/65/
+
 2015-07-31  yshl  <yshl@takechiyo.net>
 
 	* Bonus/goodict.cgi: Enable to select search mode.
@@ -600,8 +607,9 @@
 
 	* keybind.c, main.c, proto.h, terms.c:
 	Support SGR 1006 mouse reporting.
-	Patch to support SGR 1006 mouse reporting, from [w3m-dev 04466]
-	on 2012-07-15.
+	cf. [w3m-dev 04466] on 2012-07-15
+	Origin: https://gist.github.com/3114255
+	Bug: https://sourceforge.net/p/w3m/patches/65/
 
 2012-05-19  Hilko Bengen  <bengen@debian.org>
 

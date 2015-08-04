@@ -5561,6 +5561,7 @@ DEFUN(sgrmouse, SGRMOUSE, "SGR 1006 mouse operation")
 	else
 	  return;
     } while (1);
+    if (x>0) x--;
 
     do {
 	c = getch();
@@ -5574,6 +5575,7 @@ DEFUN(sgrmouse, SGRMOUSE, "SGR 1006 mouse operation")
 	} else
     return;
     } while (1);
+    if (y>0) y--;
 
     if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
 	return;

@@ -7,9 +7,10 @@
 
 2015-07-31  yshl  <yshl@takechiyo.net>
 
-	* Bonus/goodict.cgi: Enable to select search mode.
-	* Bonus/goodict.cgi: Update to the current URL.
-	* Bonus/goodict.cgi: Use Encode.pm instead of NKF.
+	* Bonus/goodict.cgi:
+	- Use Encode.pm instead of NKF.
+	- Update to the current URL.
+	- Enable to select search mode.
 	Origin: https://github.com/tats/w3m/pull/4
 
 2015-07-20  Tatsuya Kinoshita  <tats@debian.org>

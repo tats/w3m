@@ -1,3 +1,19 @@
+2015-08-06  Richard Quirk  <richard@quirk.es>
+
+	Fix problems reported by cppcheck, clang --analyze and gcc warnings.
+	Origin: https://github.com/tats/w3m/pull/6
+
+	* Str.c, Str.h: Strnew_charp and co do not modify the char* input.
+
+	* local.c: Close temp file if pipe open fails.
+
+	* rc.c: Avoid passing null to strlen.
+
+	* file.c: Initialise hidden_input to NULL.
+	This prevents a possible use of garbage value on line 3017.
+
+	* file.c: Use pclose for pipe.
+
 2015-08-05  IWAMOTO Kouichi  <sue@iwmt.org>
 
 	* main.c: Fix that SGR style mouse handler has off-by-one problem.

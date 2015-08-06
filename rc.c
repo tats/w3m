@@ -837,7 +837,7 @@ void
 show_params(FILE * fp)
 {
     int i, j, l;
-    char *t = NULL;
+    const char *t = "";
     char *cmt;
 
 #ifdef USE_M17N

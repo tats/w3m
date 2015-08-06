@@ -56,7 +56,7 @@ Strnew_size(int n)
 }
 
 Str
-Strnew_charp(char *p)
+Strnew_charp(const char *p)
 {
     Str x;
     int n;
@@ -73,7 +73,7 @@ Strnew_charp(char *p)
 }
 
 Str
-Strnew_m_charp(char *p, ...)
+Strnew_m_charp(const char *p, ...)
 {
     va_list ap;
     Str r = Strnew();
@@ -87,7 +87,7 @@ Strnew_m_charp(char *p, ...)
 }
 
 Str
-Strnew_charp_n(char *p, int n)
+Strnew_charp_n(const char *p, int n)
 {
     Str x;
 
@@ -140,7 +140,7 @@ Strcopy(Str x, Str y)
 }
 
 void
-Strcopy_charp(Str x, char *y)
+Strcopy_charp(Str x, const char *y)
 {
     int len;
 
@@ -160,7 +160,7 @@ Strcopy_charp(Str x, char *y)
 }
 
 void
-Strcopy_charp_n(Str x, char *y, int n)
+Strcopy_charp_n(Str x, const char *y, int n)
 {
     int len = n;
 
@@ -180,7 +180,7 @@ Strcopy_charp_n(Str x, char *y, int n)
 }
 
 void
-Strcat_charp_n(Str x, char *y, int n)
+Strcat_charp_n(Str x, const char *y, int n)
 {
     int newlen;
 
@@ -209,7 +209,7 @@ Strcat(Str x, Str y)
 }
 
 void
-Strcat_charp(Str x, char *y)
+Strcat_charp(Str x, const char *y)
 {
     if (y == NULL)
 	return;
@@ -301,7 +301,7 @@ Strinsert_char(Str s, int pos, char c)
 }
 
 void
-Strinsert_charp(Str s, int pos, char *p)
+Strinsert_charp(Str s, int pos, const char *p)
 {
     STR_LENGTH_CHECK(s);
     while (*p)

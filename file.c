@@ -2713,7 +2713,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
     Str line = obuf->line, pass = NULL;
     char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
 	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
-	*hidden_ins = NULL, *hidden_input, *hidden = NULL;
+	*hidden_ins = NULL, *hidden_input = NULL, *hidden = NULL;
 
 #ifdef DEBUG
     if (w3m_debug) {
@@ -8540,7 +8540,7 @@ lessopen_stream(char *path)
 	}
 	c = getc(fp);
 	if (c == EOF) {
-	    fclose(fp);
+	    pclose(fp);
 	    return NULL;
 	}
 	ungetc(c, fp);

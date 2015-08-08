@@ -1,3 +1,23 @@
+2015-08-09  Egmont Koblinger  <egmont@users.sourceforge.net>
+
+	* terms.c: Support sgrmouse for skip_escseq.
+	Origin: https://sourceforge.net/p/w3m/patches/65/#e2aa
+
+	* menu.c: Adjust comments for keymaps.
+	Origin: https://sourceforge.net/p/w3m/patches/65/#e2aa
+
+2015-08-09  Tatsuya Kinoshita  <tats@debian.org>
+
+	* keybind_lynx.c: Support sgrmouse for Lynx-like key binding.
+	cf. https://sourceforge.net/p/w3m/patches/65/
+
+2015-08-09  IWAMOTO Kouichi  <sue@iwmt.org>
+
+	* menu.c: Support SGR style mouse handler for menu.
+	cf. https://github.com/tats/w3m/issues/5
+	Origin: https://gist.github.com/ttdoda/83fbcf676a21da28432b
+	Bug: https://sourceforge.net/p/w3m/patches/65/
+
 2015-08-06  Richard Quirk  <richard@quirk.es>
 
 	Fix problems reported by cppcheck, clang --analyze and gcc warnings.

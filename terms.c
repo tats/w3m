@@ -2247,6 +2247,10 @@ skip_escseq(void)
 	    getch();
 	    getch();
 	    getch();
+	} else if (is_xterm && c == '<') {
+	    c = getch();
+	    while (IS_DIGIT(c) || c == ';')
+		c = getch();
 	}
 	else
 #endif

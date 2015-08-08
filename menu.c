@@ -117,15 +117,15 @@ static int (*MenuEscKeymap[128]) (char c) = {
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  O     */
+/*                                                          O     */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mEscB,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  [                                     */
+/*                          [                                     */
     mNull,  mNull,  mNull,  mEscB,  mNull,  mNull,  mNull,  mNull,
 
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  v             */
+/*                                                  v             */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mPrev,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 };
@@ -140,9 +140,9 @@ static int (*MenuEscBKeymap[128]) (char c) = {
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 /*  8       9       :       ;       <       =       >       ?     */
     mNull,  mNull,  mNull,  mNull,  mSgrMouse,mNull,mNull,  mNull,
-/*  A       B       C       D       E                     */
+/*          A       B       C       D       E                     */
     mNull,  mUp,    mDown,  mOk,    mCancel,mClose, mNull, mNull,
-/*  L       M                     */
+/*                                  L       M                     */
     mNull,  mNull,  mNull,  mNull,  mClose, mMouse, mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,

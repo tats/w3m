@@ -1,3 +1,64 @@
+2015-08-11  David Crosby  <dave@dafyddcrosby.com>
+
+	Fix resource leaks, dead assignments, divide-by-zero, and so on.
+	Origin: https://github.com/dafyddcrosby/sw3m
+
+	* buffer.c: Check for presence of prevl before using.
+
+	* html.h: Adjust UFclose to remove false positive of CWE-481.
+
+	* ftp.c: Move sockent for splint.
+
+	* cookie.c: Use unsigned int for max_count.
+
+	* libwc/iso2022.c: Add missing comparision that made if always true.
+
+	* Str.c: Use fgetc in while loops, use int instead of char.
+
+	* mailcap.c: Adjust len to size_t.
+
+	* history.c: Check return value of rename.
+
+	* main.c: Adjust while loop.
+
+	* news.c: Check dup call for errors.
+
+	* file.c: Remove unused value.
+
+	* ftp.c: dup can give a negative value.
+
+	* main.c: Use int for c.
+
+	* table.c: Initialize new_tabwidth at declaration.
+
+	* local.c: Remove overflow on readlink.
+
+	* anchor.c, file.c, istream.c, main.c, menu.c, rc.c, table.c, terms.c:
+	* url.c: Remove dead assignments flagged by Clang static analysis.
+
+	* w3mbookmark.c:
+	Move fclose to fix dereference after null check (Coverity).
+
+	* file.c: Fix resource leak in AuthDigestCred.
+
+	* buffer.c: Fix resource leak in readBufferCache.
+
+	* cookie.c: Fix resource leak in load_cookies.
+
+	* frame.c: Fix resource leak.
+
+	* w3mhelperpanel.c: Fix resource leak.
+
+	* w3mbookmark.c: Fix resource leak and a null return value dereference.
+
+	* linein.c: Fix a divide-by-zero.
+
+	* cookie.c: Change total_dot_number to unsigned int.
+
+	* cookie.c: Free tmp.
+
+	* local.c: Remove unreachable return.
+
 2015-08-10  Alan Grow  <alangrow@gmail.com>
 
 	* url.c (HTTPrequest):

@@ -37,7 +37,7 @@ build-stamp:
 	dh_testdir
 	cd $(builddir) && dh_autotools-dev_updateconfig
 	test ! -f $(builddir)/entity.h || test -f $(builddir)/entity.h.debian-bak || cp $(builddir)/entity.h $(builddir)/entity.h.debian-bak
-	cd $(builddir) && CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
+	cd $(builddir) && LC_ALL=C CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp

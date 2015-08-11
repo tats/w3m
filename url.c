@@ -819,7 +819,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    /* scheme://user:pass@...       */
 	    p_url->user = copyPath(qq, q - 1 - qq, COPYPATH_SPC_IGNORE);
 	    p_url->pass = copyPath(q, p - q, COPYPATH_SPC_ALLOW);
-	    q = ++p;
+	    p++;
 	    goto analyze_url;
 	}
 	/* scheme://host:port/ */
@@ -832,7 +832,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     case '@':
 	/* scheme://user@...            */
 	p_url->user = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
-	q = ++p;
+	p++;
 	goto analyze_url;
     case '\0':
 	/* scheme://host                */
@@ -1419,7 +1419,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 {
     Str tmp;
     TextListItem *i;
-    int seen_www_auth = 0;
 #ifdef USE_COOKIE
     Str cookie;
 #endif				/* USE_COOKIE */
@@ -1435,7 +1434,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	for (i = extra->first; i != NULL; i = i->next) {
 	    if (strncasecmp(i->ptr, "Authorization:",
 			    sizeof("Authorization:") - 1) == 0) {
-		seen_www_auth = 1;
 #ifdef USE_SSL
 		if (hr->command == HR_COMMAND_CONNECT)
 		    continue;

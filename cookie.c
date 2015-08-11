@@ -22,10 +22,10 @@ static int is_saved = 1;
 
 #define contain_no_dots(p, ep) (total_dot_number((p),(ep),1)==0)
 
-static int
-total_dot_number(char *p, char *ep, int max_count)
+static unsigned int
+total_dot_number(char *p, char *ep, unsigned int max_count)
 {
-    int count = 0;
+    unsigned int count = 0;
     if (!ep)
 	ep = p + strlen(p);
 
@@ -105,6 +105,7 @@ make_portlist(Str port)
 	pl->next = first;
 	first = pl;
     }
+    Strfree(tmp);
     return first;
 }
 
@@ -324,7 +325,7 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 
 	if (version == 0) {
 	    /* [NETSCAPE] rule */
-	    int n = total_dot_number(domain->ptr,
+	    unsigned int n = total_dot_number(domain->ptr,
 				     domain->ptr + domain->length,
 				     3);
 	    if (n < 2) {
@@ -517,36 +518,36 @@ load_cookies(void)
 	cookie->commentURL = NULL;
 	parseURL(readcol(&str)->ptr, &cookie->url, NULL);
 	if (!*str)
-	    return;
+	    break;
 	cookie->name = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->value = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->expires = (time_t) atol(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->domain = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->path = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->flag = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->version = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->comment = readcol(&str);
 	if (cookie->comment->length == 0)
 	    cookie->comment = NULL;
 	if (!*str)
-	    return;
+	    break;
 	cookie->portl = make_portlist(readcol(&str));
 	if (!*str)
-	    return;
+	    break;
 	cookie->commentURL = readcol(&str);
 	if (cookie->commentURL->length == 0)
 	    cookie->commentURL = NULL;

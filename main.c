@@ -1,6 +1,7 @@
 /* $Id: main.c,v 1.270 2010/08/24 10:11:51 htrb Exp $ */
 #define MAINPROGRAM
 #include "fm.h"
+#include <stdio.h>
 #include <signal.h>
 #include <setjmp.h>
 #include <sys/stat.h>
@@ -1266,13 +1267,13 @@ static void
 dump_source(Buffer *buf)
 {
     FILE *f;
-    char c;
+    int c;
     if (buf->sourcefile == NULL)
 	return;
     f = fopen(buf->sourcefile, "r");
     if (f == NULL)
 	return;
-    while (c = fgetc(f), !feof(f)) {
+    while ((c = fgetc(f)) != EOF) {
 	putchar(c);
     }
     fclose(f);
@@ -3071,7 +3072,6 @@ handleMailto(char *url)
 /* follow HREF link */
 DEFUN(followA, GOTO_LINK, "Go to current link")
 {
-    Line *l;
     Anchor *a;
     ParsedURL u;
 #ifdef USE_IMAGE
@@ -3081,7 +3081,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
 #ifdef USE_IMAGE
     a = retrieveCurrentImg(Currentbuf);
@@ -3163,13 +3162,11 @@ bufferA(void)
 /* view inline image */
 DEFUN(followI, VIEW_IMAGE, "View image")
 {
-    Line *l;
     Anchor *a;
     Buffer *buf;
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
     a = retrieveCurrentImg(Currentbuf);
     if (a == NULL)
@@ -3419,7 +3416,6 @@ followForm(void)
 static void
 _followForm(int submit)
 {
-    Line *l;
     Anchor *a, *a2;
     char *p;
     FormItemList *fi, *f2;
@@ -3428,7 +3424,6 @@ _followForm(int submit)
 
     if (Currentbuf->firstLine == NULL)
 	return;
-    l = Currentbuf->currentLine;
 
     a = retrieveCurrentForm(Currentbuf);
     if (a == NULL)
@@ -3533,7 +3528,6 @@ _followForm(int submit)
     case FORM_INPUT_BUTTON:
       do_submit:
 	tmp = Strnew();
-	tmp2 = Strnew();
 	multipart = (fi->parent->method == FORM_METHOD_POST &&
 		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
 	query_from_followform(&tmp, fi, multipart);

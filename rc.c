@@ -779,7 +779,7 @@ create_option_search_table()
     qsort(RC_search_table, RC_table_size, sizeof(struct rc_search_table),
 	  (int (*)(const void *, const void *))compare_table);
 
-    diff1 = diff2 = 0;
+    diff2 = 0;
     for (i = 0; i < RC_table_size - 1; i++) {
 	p = RC_search_table[i].param->name;
 	q = RC_search_table[i + 1].param->name;

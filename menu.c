@@ -361,7 +361,6 @@ geom_menu(Menu *menu, int x, int y, int mselect)
 	if (win_w > COLS) {
 	    menu->width = COLS - 2 * FRAME_WIDTH;
 	    menu->width -= menu->width % FRAME_WIDTH;
-	    win_w = menu->width + 2 * FRAME_WIDTH;
 	}
     }
     menu->x = win_x + FRAME_WIDTH;

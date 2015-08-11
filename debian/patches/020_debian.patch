@@ -1,11 +1,186 @@
 Description: Git master branch of Debian's w3m
 Origin: http://anonscm.debian.org/cgit/collab-maint/w3m.git
 
+diff --git a/Bonus/goodict.cgi b/Bonus/goodict.cgi
+index 8f443c1..5fb6581 100755
+--- a/Bonus/goodict.cgi
++++ b/Bonus/goodict.cgi
+@@ -1,14 +1,20 @@
+ #!/usr/bin/perl
+ 
+ # ~/.w3m/urimethodmap
+-# e:      file:/cgi-bin/goodict.cgi?%s
+-# w:      file:/cgi-bin/goodict.cgi?%s
+-# j:      file:/cgi-bin/goodict.cgi?%s
++# e:      file:/cgi-bin/goodict.cgi?%s    Englich-Japanese
++# w:      file:/cgi-bin/goodict.cgi?%s    Japanese-English
++# j:      file:/cgi-bin/goodict.cgi?%s    Japanese
++# a:      file:/cgi-bin/goodict.cgi?%s    All
++#
++# e:0:word  start with word
++# e:1:word  perfect match
++# e:2:word  end with word
++# e:3:word  search body text
++# e:6:word  search title
++# e:word    perfect match
+ 
+-use NKF;
+-#$mode = 0; # substring
+-$mode = 1;  # perfect match
+-#$mode = 3; # search body text
++use Encode;
++use Encode::Guess qw/euc-jp utf8/;
+ $url = "http://dictionary.goo.ne.jp";
+ $_ = $ENV{"QUERY_STRING"};
+ if (/^e:/) {
+@@ -17,14 +23,22 @@ if (/^e:/) {
+     $kind = 'je';
+ } elsif (/^j:/) {
+     $kind = 'jn';
++} elsif (/^a:/) {
++    $kind = 'all'
++}
++s@^[ewja]:@@ && s@^//@@ && s@/$@@;
++if (/^([01236]):/) {
++    $mode=$1;
++    s/^[01236]://;
++}else{
++    $mode="1";
+ }
+-s@^[ewjs]:@@ && s@^//@@ && s@/$@@;
+ if ($_) {
+ 	s/\+/ /g;
+ 	s/%([\da-f][\da-f])/pack('C', hex($1))/egi;
+-	$_ = nkf("-e", $_);
++	$_ = encode("utf8", decode("Guess", $_));
+ 	s/[\000-\040\+:#?&%<>"\177-\377]/sprintf('%%%02X', unpack('C', $&))/eg;
+-	$url .= "/search.php?MT=$_&kind=$kind&mode=$mode";
++	$url .= "/srch/$kind/$_/m$mode"."u/";
+ } else {
+ 	$input = "w3m-control: GOTO_LINK";
+ }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..d355188 100644
+index 88358ef..ba22b4c 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,667 @@
+@@ -1,3 +1,785 @@
++2015-08-11  David Crosby  <dave@dafyddcrosby.com>
++
++	Fix resource leaks, dead assignments, divide-by-zero, and so on.
++	Origin: https://github.com/dafyddcrosby/sw3m
++
++	* buffer.c: Check for presence of prevl before using.
++
++	* html.h: Adjust UFclose to remove false positive of CWE-481.
++
++	* ftp.c: Move sockent for splint.
++
++	* cookie.c: Use unsigned int for max_count.
++
++	* libwc/iso2022.c: Add missing comparision that made if always true.
++
++	* Str.c: Use fgetc in while loops, use int instead of char.
++
++	* mailcap.c: Adjust len to size_t.
++
++	* history.c: Check return value of rename.
++
++	* main.c: Adjust while loop.
++
++	* news.c: Check dup call for errors.
++
++	* file.c: Remove unused value.
++
++	* ftp.c: dup can give a negative value.
++
++	* main.c: Use int for c.
++
++	* table.c: Initialize new_tabwidth at declaration.
++
++	* local.c: Remove overflow on readlink.
++
++	* anchor.c, file.c, istream.c, main.c, menu.c, rc.c, table.c, terms.c:
++	* url.c: Remove dead assignments flagged by Clang static analysis.
++
++	* w3mbookmark.c:
++	Move fclose to fix dereference after null check (Coverity).
++
++	* file.c: Fix resource leak in AuthDigestCred.
++
++	* buffer.c: Fix resource leak in readBufferCache.
++
++	* cookie.c: Fix resource leak in load_cookies.
++
++	* frame.c: Fix resource leak.
++
++	* w3mhelperpanel.c: Fix resource leak.
++
++	* w3mbookmark.c: Fix resource leak and a null return value dereference.
++
++	* linein.c: Fix a divide-by-zero.
++
++	* cookie.c: Change total_dot_number to unsigned int.
++
++	* cookie.c: Free tmp.
++
++	* local.c: Remove unreachable return.
++
++2015-08-10  Alan Grow  <alangrow@gmail.com>
++
++	* url.c (HTTPrequest):
++	- Use Content-Type instead of Content-type.
++	- Use Content-Length instead of Content-length.
++	Origin: https://github.com/acg/w3m/commit/5946c2784d4eae46ec06e52390e43a874b3395fc
++
++2015-08-09  Egmont Koblinger  <egmont@users.sourceforge.net>
++
++	* terms.c: Support sgrmouse for skip_escseq.
++	* menu.c: Adjust comments for keymaps.
++	Origin: https://sourceforge.net/p/w3m/patches/65/#e2aa
++
++2015-08-09  Tatsuya Kinoshita  <tats@debian.org>
++
++	* keybind_lynx.c: Support sgrmouse for Lynx-like key binding.
++	cf. https://sourceforge.net/p/w3m/patches/65/
++
++2015-08-09  IWAMOTO Kouichi  <sue@iwmt.org>
++
++	* menu.c: Support SGR style mouse handler for menu.
++	cf. https://github.com/tats/w3m/issues/5
++	Origin: https://gist.github.com/ttdoda/83fbcf676a21da28432b
++	Bug: https://sourceforge.net/p/w3m/patches/65/
++
++2015-08-06  Richard Quirk  <richard@quirk.es>
++
++	Fix problems reported by cppcheck, clang --analyze and gcc warnings.
++	Origin: https://github.com/tats/w3m/pull/6
++
++	* Str.c, Str.h: Strnew_charp and co do not modify the char* input.
++
++	* local.c: Close temp file if pipe open fails.
++
++	* rc.c: Avoid passing null to strlen.
++
++	* file.c: Initialise hidden_input to NULL.
++	This prevents a possible use of garbage value on line 3017.
++
++	* file.c: Use pclose for pipe.
++
++2015-08-05  IWAMOTO Kouichi  <sue@iwmt.org>
++
++	* main.c: Fix that SGR style mouse handler has off-by-one problem.
++	cf. https://github.com/tats/w3m/issues/5
++	Origin: https://gist.github.com/ttdoda/30c189a63d483beeb207
++	Bug: https://sourceforge.net/p/w3m/patches/65/
++
++2015-07-31  yshl  <yshl@takechiyo.net>
++
++	* Bonus/goodict.cgi:
++	- Use Encode.pm instead of NKF.
++	- Update to the current URL.
++	- Enable to select search mode.
++	Origin: https://github.com/tats/w3m/pull/4
++
 +2015-07-20  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* README: Add short description.
@@ -601,8 +776,9 @@ index 88358ef..d355188 100644
 +
 +	* keybind.c, main.c, proto.h, terms.c:
 +	Support SGR 1006 mouse reporting.
-+	Patch to support SGR 1006 mouse reporting, from [w3m-dev 04466]
-+	on 2012-07-15.
++	cf. [w3m-dev 04466] on 2012-07-15
++	Origin: https://gist.github.com/3114255
++	Bug: https://sourceforge.net/p/w3m/patches/65/
 +
 +2012-05-19  Hilko Bengen  <bengen@debian.org>
 +
@@ -710,9 +886,72 @@ index 8778d80..765c996 100644
  If you can read Japanese, see doc-jp/*.
  If you can read both, read both and correct English. :-)
 diff --git a/Str.c b/Str.c
-index e5a0982..eff82a4 100644
+index e5a0982..70e9957 100644
 --- a/Str.c
 +++ b/Str.c
+@@ -56,7 +56,7 @@ Strnew_size(int n)
+ }
+ 
+ Str
+-Strnew_charp(char *p)
++Strnew_charp(const char *p)
+ {
+     Str x;
+     int n;
+@@ -73,7 +73,7 @@ Strnew_charp(char *p)
+ }
+ 
+ Str
+-Strnew_m_charp(char *p, ...)
++Strnew_m_charp(const char *p, ...)
+ {
+     va_list ap;
+     Str r = Strnew();
+@@ -87,7 +87,7 @@ Strnew_m_charp(char *p, ...)
+ }
+ 
+ Str
+-Strnew_charp_n(char *p, int n)
++Strnew_charp_n(const char *p, int n)
+ {
+     Str x;
+ 
+@@ -140,7 +140,7 @@ Strcopy(Str x, Str y)
+ }
+ 
+ void
+-Strcopy_charp(Str x, char *y)
++Strcopy_charp(Str x, const char *y)
+ {
+     int len;
+ 
+@@ -160,7 +160,7 @@ Strcopy_charp(Str x, char *y)
+ }
+ 
+ void
+-Strcopy_charp_n(Str x, char *y, int n)
++Strcopy_charp_n(Str x, const char *y, int n)
+ {
+     int len = n;
+ 
+@@ -180,7 +180,7 @@ Strcopy_charp_n(Str x, char *y, int n)
+ }
+ 
+ void
+-Strcat_charp_n(Str x, char *y, int n)
++Strcat_charp_n(Str x, const char *y, int n)
+ {
+     int newlen;
+ 
+@@ -209,7 +209,7 @@ Strcat(Str x, Str y)
+ }
+ 
+ void
+-Strcat_charp(Str x, char *y)
++Strcat_charp(Str x, const char *y)
+ {
+     if (y == NULL)
+ 	return;
 @@ -278,8 +278,8 @@ void
  Strchop(Str s)
  {
@@ -724,6 +963,78 @@ index e5a0982..eff82a4 100644
  	s->length--;
      }
      s->ptr[s->length] = '\0';
+@@ -301,7 +301,7 @@ Strinsert_char(Str s, int pos, char c)
+ }
+ 
+ void
+-Strinsert_charp(Str s, int pos, char *p)
++Strinsert_charp(Str s, int pos, const char *p)
+ {
+     STR_LENGTH_CHECK(s);
+     while (*p)
+@@ -530,11 +530,8 @@ Str
+ Strfgets(FILE * f)
+ {
+     Str s = Strnew();
+-    char c;
+-    while (1) {
+-	c = fgetc(f);
+-	if (feof(f) || ferror(f))
+-	    break;
++    int c;
++    while ((c = fgetc(f)) != EOF) {
+ 	Strcat_char(s, c);
+ 	if (c == '\n')
+ 	    break;
+@@ -546,11 +543,8 @@ Str
+ Strfgetall(FILE * f)
+ {
+     Str s = Strnew();
+-    char c;
+-    while (1) {
+-	c = fgetc(f);
+-	if (feof(f) || ferror(f))
+-	    break;
++    int c;
++    while ((c = fgetc(f)) != EOF) {
+ 	Strcat_char(s, c);
+     }
+     return s;
+diff --git a/Str.h b/Str.h
+index f345c74..248815d 100644
+--- a/Str.h
++++ b/Str.h
+@@ -30,22 +30,22 @@ typedef struct _Str {
+ 
+ Str Strnew(void);
+ Str Strnew_size(int);
+-Str Strnew_charp(char *);
+-Str Strnew_charp_n(char *, int);
+-Str Strnew_m_charp(char *, ...);
++Str Strnew_charp(const char *);
++Str Strnew_charp_n(const char *, int);
++Str Strnew_m_charp(const char *, ...);
+ Str Strdup(Str);
+ void Strclear(Str);
+ void Strfree(Str);
+ void Strcopy(Str, Str);
+-void Strcopy_charp(Str, char *);
+-void Strcopy_charp_n(Str, char *, int);
+-void Strcat_charp_n(Str, char *, int);
++void Strcopy_charp(Str, const char *);
++void Strcopy_charp_n(Str, const char *, int);
++void Strcat_charp_n(Str, const char *, int);
+ void Strcat(Str, Str);
+-void Strcat_charp(Str, char *);
++void Strcat_charp(Str, const char *);
+ void Strcat_m_charp(Str, ...);
+ Str Strsubstr(Str, int, int);
+ void Strinsert_char(Str, int, char);
+-void Strinsert_charp(Str, int, char *);
++void Strinsert_charp(Str, int, const char *);
+ void Strdelete(Str, int, int);
+ void Strtruncate(Str, int);
+ void Strlower(Str);
 diff --git a/acinclude.m4 b/acinclude.m4
 index e4ccc3d..60705f4 100644
 --- a/acinclude.m4
@@ -874,7 +1185,7 @@ index 0000000..fa0d391
 +
 +#endif /* W3_ALLOC_H */
 diff --git a/anchor.c b/anchor.c
-index 27bbd56..a353bb9 100644
+index 27bbd56..2d21bfa 100644
 --- a/anchor.c
 +++ b/anchor.c
 @@ -11,7 +11,7 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
@@ -916,7 +1227,23 @@ index 27bbd56..a353bb9 100644
  			'\0', line, pos);
  }
  
-@@ -756,7 +758,7 @@ link_list_panel(Buffer *buf)
+@@ -641,7 +643,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+ {
+     int i, j, k, col, ecol, pos;
+     Anchor a_form, *a;
+-    FormItemList *fi;
+     Line *l, *ls;
+ 
+     if (al == NULL || al->nanchor == 0)
+@@ -668,7 +669,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+ 	    if (!ls)
+ 		continue;
+ 	}
+-	fi = (FormItemList *)a_form.url;
+ 	col = COLPOS(ls, a_form.start.pos);
+ 	ecol = COLPOS(ls, a_form.end.pos);
+ 	for (j = 0; l && j < a_form.rows; l = l->next, j++) {
+@@ -756,7 +756,7 @@ link_list_panel(Buffer *buf)
  		p = parsedURL2Str(&pu)->ptr;
  		u = html_quote(p);
  		if (DecodeURL)
@@ -925,7 +1252,7 @@ index 27bbd56..a353bb9 100644
  		else
  		    p = u;
  	    }
-@@ -787,7 +789,7 @@ link_list_panel(Buffer *buf)
+@@ -787,7 +787,7 @@ link_list_panel(Buffer *buf)
  	    p = parsedURL2Str(&pu)->ptr;
  	    u = html_quote(p);
  	    if (DecodeURL)
@@ -934,7 +1261,7 @@ index 27bbd56..a353bb9 100644
  	    else
  		p = u;
  	    t = getAnchorText(buf, al, a);
-@@ -809,16 +811,13 @@ link_list_panel(Buffer *buf)
+@@ -809,16 +809,13 @@ link_list_panel(Buffer *buf)
  	    p = parsedURL2Str(&pu)->ptr;
  	    u = html_quote(p);
  	    if (DecodeURL)
@@ -953,7 +1280,7 @@ index 27bbd56..a353bb9 100644
  	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
  			   "\n", NULL);
  	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
-@@ -842,19 +841,13 @@ link_list_panel(Buffer *buf)
+@@ -842,19 +839,13 @@ link_list_panel(Buffer *buf)
  		    p = parsedURL2Str(&pu)->ptr;
  		    u = html_quote(p);
  		    if (DecodeURL)
@@ -975,6 +1302,31 @@ index 27bbd56..a353bb9 100644
  		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,
  				   "</a><br>", p, "\n", NULL);
  		}
+diff --git a/buffer.c b/buffer.c
+index 5afc26a..3b2352a 100644
+--- a/buffer.c
++++ b/buffer.c
+@@ -705,6 +705,7 @@ readBufferCache(Buffer *buf)
+ 
+     cache = fopen(buf->savecache, "r");
+     if (cache == NULL || fread1(clnum, cache) || fread1(tlnum, cache)) {
++	fclose(cache);
+ 	buf->savecache = NULL;
+ 	return -1;
+     }
+@@ -760,8 +761,10 @@ readBufferCache(Buffer *buf)
+ 	}
+ #endif
+     }
+-    buf->lastLine = prevl;
+-    buf->lastLine->next = NULL;
++    if (prevl) {
++	    buf->lastLine = prevl;
++	    buf->lastLine->next = NULL;
++    }
+     fclose(cache);
+     unlink(buf->savecache);
+     buf->savecache = NULL;
 diff --git a/config.guess b/config.guess
 index 51fab47..1f5c50c 100755
 --- a/config.guess
@@ -3921,10 +4273,32 @@ index 4c1bc06..c721825 100755
  ac_config_files="$ac_config_files Makefile posubst po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
  
 diff --git a/cookie.c b/cookie.c
-index 8020f6d..c11649c 100644
+index 8020f6d..8a6f447 100644
 --- a/cookie.c
 +++ b/cookie.c
-@@ -247,7 +247,7 @@ find_cookie(ParsedURL *pu)
+@@ -22,10 +22,10 @@ static int is_saved = 1;
+ 
+ #define contain_no_dots(p, ep) (total_dot_number((p),(ep),1)==0)
+ 
+-static int
+-total_dot_number(char *p, char *ep, int max_count)
++static unsigned int
++total_dot_number(char *p, char *ep, unsigned int max_count)
+ {
+-    int count = 0;
++    unsigned int count = 0;
+     if (!ep)
+ 	ep = p + strlen(p);
+ 
+@@ -105,6 +105,7 @@ make_portlist(Str port)
+ 	pl->next = first;
+ 	first = pl;
+     }
++    Strfree(tmp);
+     return first;
+ }
+ 
+@@ -247,7 +248,7 @@ find_cookie(ParsedURL *pu)
  		Strcat(tmp, Sprintf("; $Domain=\"%s\"", p1->domain->ptr));
  	    if (p1->portl)
  		Strcat(tmp,
@@ -3933,7 +4307,16 @@ index 8020f6d..c11649c 100644
  	}
      }
      return tmp;
-@@ -463,7 +463,7 @@ save_cookies(void)
+@@ -324,7 +325,7 @@ add_cookie(ParsedURL *pu, Str name, Str value,
+ 
+ 	if (version == 0) {
+ 	    /* [NETSCAPE] rule */
+-	    int n = total_dot_number(domain->ptr,
++	    unsigned int n = total_dot_number(domain->ptr,
+ 				     domain->ptr + domain->length,
+ 				     3);
+ 	    if (n < 2) {
+@@ -463,7 +464,7 @@ save_cookies(void)
  	    continue;
  	fprintf(fp, "%s\t%s\t%s\t%ld\t%s\t%s\t%d\t%d\t%s\t%s\t%s\n",
  		parsedURL2Str(&p->url)->ptr,
@@ -3942,6 +4325,53 @@ index 8020f6d..c11649c 100644
  		p->domain->ptr, p->path->ptr, p->flag,
  		p->version, str2charp(p->comment),
  		(p->portl) ? portlist2str(p->portl)->ptr : "",
+@@ -517,36 +518,36 @@ load_cookies(void)
+ 	cookie->commentURL = NULL;
+ 	parseURL(readcol(&str)->ptr, &cookie->url, NULL);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->name = readcol(&str);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->value = readcol(&str);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->expires = (time_t) atol(readcol(&str)->ptr);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->domain = readcol(&str);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->path = readcol(&str);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->flag = atoi(readcol(&str)->ptr);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->version = atoi(readcol(&str)->ptr);
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->comment = readcol(&str);
+ 	if (cookie->comment->length == 0)
+ 	    cookie->comment = NULL;
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->portl = make_portlist(readcol(&str));
+ 	if (!*str)
+-	    return;
++	    break;
+ 	cookie->commentURL = readcol(&str);
+ 	if (cookie->commentURL->length == 0)
+ 	    cookie->commentURL = NULL;
 diff --git a/display.c b/display.c
 index e00eb0c..d4f336a 100644
 --- a/display.c
@@ -4977,7 +5407,7 @@ index 8fe1215..dcc6edd 100644
      QuietMessage = TRUE;
      fmInitialized = FALSE;
 diff --git a/file.c b/file.c
-index 567d41e..605fc78 100644
+index 567d41e..4e8e4d3 100644
 --- a/file.c
 +++ b/file.c
 @@ -47,11 +47,11 @@ static JMP_BUF AbortLoading;
@@ -5069,7 +5499,28 @@ index 567d41e..605fc78 100644
  		    for (l = newBuf->lastLine; l && l->real_linenumber;
  			 l = l->prev)
  			l->real_linenumber = 0;
-@@ -1697,13 +1681,15 @@ getLinkNumberStr(int correction)
+@@ -1244,6 +1228,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
+     unsigned char md5[MD5_DIGEST_LENGTH + 1];
+     Str uri = HTTPrequestURI(pu, hr);
+     char nc[] = "00000001";
++    FILE *fp;
+ 
+     Str algorithm = qstr_unquote(get_auth_param(ha->param, "algorithm"));
+     Str nonce = qstr_unquote(get_auth_param(ha->param, "nonce"));
+@@ -1326,10 +1311,11 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
+ 	/*  A2 = Method ":" digest-uri-value ":" H(entity-body) */
+ 	if (request && request->body) {
+ 	    if (request->method == FORM_METHOD_POST && request->enctype == FORM_ENCTYPE_MULTIPART) {
+-		FILE *fp = fopen(request->body, "r");
++		fp = fopen(request->body, "r");
+ 		if (fp != NULL) {
+ 		    Str ebody;
+ 		    ebody = Strfgetall(fp);
++		    fclose(fp);
+ 		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
+ 		}
+ 		else {
+@@ -1697,13 +1683,15 @@ getLinkNumberStr(int correction)
  /* 
   * loadGeneralFile: load file to buffer
   */
@@ -5086,7 +5537,7 @@ index 567d41e..605fc78 100644
      char *volatile tpath;
      char *volatile t = "text/plain", *p, *volatile real_type = NULL;
      Buffer *volatile t_buf = NULL;
-@@ -1730,7 +1716,22 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -1730,7 +1718,22 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
      add_auth_cookie_flag = 0;
  
      checkRedirection(NULL);
@@ -5109,7 +5560,7 @@ index 567d41e..605fc78 100644
      TRAP_OFF;
      url_option.referer = referer;
      url_option.flag = flag;
-@@ -1863,7 +1864,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -1863,7 +1866,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
  	    /* 302: Found */
  	    /* 303: See Other */
  	    /* 307: Temporary Redirect (HTTP/1.1) */
@@ -5118,7 +5569,7 @@ index 567d41e..605fc78 100644
  	    request = NULL;
  	    UFclose(&f);
  	    current = New(ParsedURL);
-@@ -2022,7 +2023,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -2022,7 +2025,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
  	if (f.is_cgi && (p = checkHeader(t_buf, "Location:")) != NULL &&
  	    checkRedirection(&pu)) {
  	    /* document moved */
@@ -5127,7 +5578,7 @@ index 567d41e..605fc78 100644
  	    request = NULL;
  	    UFclose(&f);
  	    add_auth_cookie_flag = 0;
-@@ -2123,10 +2124,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -2123,10 +2126,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
      if (real_type == NULL)
  	real_type = t;
      proc = loadBuffer;
@@ -5138,7 +5589,7 @@ index 567d41e..605fc78 100644
  
      current_content_length = 0;
      if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
-@@ -2197,18 +2194,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -2197,18 +2196,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
  #endif
      else if (w3m_backend) ;
      else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
@@ -5159,7 +5610,7 @@ index 567d41e..605fc78 100644
  	}
  	else {
  	    TRAP_OFF;
-@@ -2232,36 +2219,30 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -2232,36 +2221,30 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
      else if (w3m_dump & DUMP_FRAME)
  	return NULL;
  
@@ -5210,7 +5661,7 @@ index 567d41e..605fc78 100644
  	if (pu.label) {
  	    if (proc == loadHTMLBuffer) {
  		Anchor *a;
-@@ -2287,10 +2268,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
+@@ -2287,10 +2270,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
      if (header_string)
  	header_string = NULL;
  #ifdef USE_NNTP
@@ -5224,7 +5675,7 @@ index 567d41e..605fc78 100644
      TRAP_OFF;
      return b;
  }
-@@ -2469,6 +2451,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
+@@ -2469,6 +2453,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
      bcopy((void *)&obuf->anchor, (void *)&obuf->bp.anchor,
  	  sizeof(obuf->anchor));
      obuf->bp.img_alt = obuf->img_alt;
@@ -5232,7 +5683,7 @@ index 567d41e..605fc78 100644
      obuf->bp.in_bold = obuf->in_bold;
      obuf->bp.in_italic = obuf->in_italic;
      obuf->bp.in_under = obuf->in_under;
-@@ -2486,6 +2469,7 @@ back_to_breakpoint(struct readbuffer *obuf)
+@@ -2486,6 +2471,7 @@ back_to_breakpoint(struct readbuffer *obuf)
      bcopy((void *)&obuf->bp.anchor, (void *)&obuf->anchor,
  	  sizeof(obuf->anchor));
      obuf->img_alt = obuf->bp.img_alt;
@@ -5240,16 +5691,16 @@ index 567d41e..605fc78 100644
      obuf->in_bold = obuf->bp.in_bold;
      obuf->in_italic = obuf->bp.in_italic;
      obuf->in_under = obuf->bp.in_under;
-@@ -2729,7 +2713,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2729,7 +2715,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
      Str line = obuf->line, pass = NULL;
      char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
  	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
 -	*hidden_ins = NULL, *hidden = NULL;
-+	*hidden_ins = NULL, *hidden_input, *hidden = NULL;
++	*hidden_ins = NULL, *hidden_input = NULL, *hidden = NULL;
  
  #ifdef DEBUG
      if (w3m_debug) {
-@@ -2761,6 +2745,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2761,6 +2747,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  		hidden = hidden_img;
  	}
      }
@@ -5262,7 +5713,7 @@ index 567d41e..605fc78 100644
      if (obuf->in_bold) {
  	if ((hidden_bold = has_hidden_link(obuf, HTML_B)) != NULL) {
  	    if (!hidden || hidden_bold < hidden)
-@@ -2812,6 +2802,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2812,6 +2804,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  	Strcat_charp(line, "</a>");
      if (obuf->img_alt && !hidden_img)
  	Strcat_charp(line, "</img_alt>");
@@ -5271,7 +5722,7 @@ index 567d41e..605fc78 100644
      if (obuf->in_bold && !hidden_bold)
  	Strcat_charp(line, "</b>");
      if (obuf->in_italic && !hidden_italic)
-@@ -3022,6 +3014,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -3022,6 +3016,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  	Strcat_charp(tmp, "\">");
  	push_tag(obuf, tmp->ptr, HTML_IMG_ALT);
      }
@@ -5290,7 +5741,7 @@ index 567d41e..605fc78 100644
      if (!hidden_bold && obuf->in_bold)
  	push_tag(obuf, "<B>", HTML_B);
      if (!hidden_italic && obuf->in_italic)
-@@ -3228,7 +3232,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3228,7 +3234,7 @@ process_img(struct parsed_tag *tag, int width)
  
      if (!parsedtag_get_value(tag, ATTR_SRC, &p))
  	return tmp;
@@ -5299,7 +5750,7 @@ index 567d41e..605fc78 100644
      q = NULL;
      parsedtag_get_value(tag, ATTR_ALT, &q);
      if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
-@@ -3322,12 +3326,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3322,12 +3328,7 @@ process_img(struct parsed_tag *tag, int width)
  	    Image image;
  	    ParsedURL u;
  
@@ -5312,7 +5763,7 @@ index 567d41e..605fc78 100644
  	    image.url = parsedURL2Str(&u)->ptr;
  	    if (!uncompressed_file_type(u.file, &image.ext))
  		image.ext = filename_extension(u.file, TRUE);
-@@ -3346,8 +3345,14 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3346,8 +3347,14 @@ process_img(struct parsed_tag *tag, int width)
  	    if (i < 0)
  		i = pixel_per_line;
  	}
@@ -5329,7 +5780,7 @@ index 567d41e..605fc78 100644
  	Strcat(tmp,
  	       Sprintf("<pre_int><img_alt hseq=\"%d\" src=\"", cur_iseq++));
  	pre_int = TRUE;
-@@ -3378,19 +3383,21 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3378,19 +3385,21 @@ process_img(struct parsed_tag *tag, int width)
  	if (i0 >= 0)
  	    Strcat(tmp, Sprintf(" height=%d", i0));
  	switch (align) {
@@ -5359,7 +5810,7 @@ index 567d41e..605fc78 100644
  	case ALIGN_BOTTOM:
  	    top = ni - 1;
  	    bottom = 0;
-@@ -3408,7 +3415,12 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3408,7 +3417,12 @@ process_img(struct parsed_tag *tag, int width)
  	    }
  	    break;
  	}
@@ -5373,7 +5824,7 @@ index 567d41e..605fc78 100644
  	if (xoffset)
  	    Strcat(tmp, Sprintf(" xoffset=%d", xoffset));
  	if (yoffset)
-@@ -3732,6 +3744,63 @@ process_input(struct parsed_tag *tag)
+@@ -3732,6 +3746,63 @@ process_input(struct parsed_tag *tag)
  }
  
  Str
@@ -5437,7 +5888,7 @@ index 567d41e..605fc78 100644
  process_select(struct parsed_tag *tag)
  {
      Str tmp = NULL;
-@@ -4084,6 +4153,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+@@ -4084,6 +4155,7 @@ process_form_int(struct parsed_tag *tag, int fid)
      parsedtag_get_value(tag, ATTR_METHOD, &p);
      q = "!CURRENT_URL!";
      parsedtag_get_value(tag, ATTR_ACTION, &q);
@@ -5445,7 +5896,7 @@ index 567d41e..605fc78 100644
      r = NULL;
  #ifdef USE_M17N
      if (parsedtag_get_value(tag, ATTR_ACCEPT_CHARSET, &r))
-@@ -4284,15 +4354,15 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
+@@ -4284,15 +4356,15 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
      while (*q) {
  	if (!strncasecmp(q, "url=", 4)) {
  	    q += 4;
@@ -5464,7 +5915,7 @@ index 567d41e..605fc78 100644
  		s_tmp->length--;
  		s_tmp->ptr[s_tmp->length] = '\0';
  	    }
-@@ -4861,7 +4931,35 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4861,7 +4933,35 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	    if (i > obuf->bottom_margin)
  		obuf->bottom_margin = i;
  	}
@@ -5500,7 +5951,7 @@ index 567d41e..605fc78 100644
      case HTML_TABLE:
  	close_anchor(h_env, obuf);
  	obuf->table_level++;
-@@ -4884,6 +4982,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4884,6 +4984,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	    else
  		w = BORDER_THIN;
  	}
@@ -5509,7 +5960,7 @@ index 567d41e..605fc78 100644
  	if (parsedtag_get_value(tag, ATTR_WIDTH, &i)) {
  	    if (obuf->table_level == 0)
  		width = REAL_WIDTH(i, h_env->limit - envs[h_env->envc].indent);
-@@ -4970,6 +5070,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4970,6 +5072,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_INPUT:
  	close_anchor(h_env, obuf);
  	tmp = process_input(tag);
@@ -5526,7 +5977,7 @@ index 567d41e..605fc78 100644
  	if (tmp)
  	    HTMLlineproc1(tmp->ptr, h_env);
  	return 1;
-@@ -5067,11 +5177,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -5067,11 +5179,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	return 1;
      case HTML_BASE:
@@ -5540,7 +5991,7 @@ index 567d41e..605fc78 100644
  	    parseURL(p, cur_baseURL, NULL);
  	}
  #endif
-@@ -5329,6 +5438,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5329,6 +5440,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
      Anchor **a_select = NULL;
  #endif
@@ -5554,7 +6005,7 @@ index 567d41e..605fc78 100644
  
      if (out_size == 0) {
  	out_size = LINELEN;
-@@ -5523,16 +5639,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5523,16 +5641,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    hseq = 0;
  		    id = NULL;
  		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -5576,7 +6027,7 @@ index 567d41e..605fc78 100644
  		    parsedtag_get_value(tag, ATTR_TITLE, &s);
  		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
  		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-@@ -5618,7 +5735,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5618,7 +5737,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    ParsedURL u;
  			    Image *image;
  
@@ -5585,7 +6036,7 @@ index 567d41e..605fc78 100644
  			    a_img->image = image = New(Image);
  			    image->url = parsedURL2Str(&u)->ptr;
  			    if (!uncompressed_file_type(u.file, &image->ext))
-@@ -5639,7 +5756,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5639,7 +5758,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    image->map = q;
  			    image->ismap = ismap;
  			    image->touch = 0;
@@ -5594,7 +6045,7 @@ index 567d41e..605fc78 100644
  						    IMG_FLAG_SKIP);
  			}
  			else if (iseq < 0) {
-@@ -5689,6 +5806,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5689,6 +5808,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  				putHmarker(buf->hmarklist, currentLn(buf),
  					   hpos, hseq - 1);
  			}
@@ -5616,7 +6067,7 @@ index 567d41e..605fc78 100644
  			if (!form->target)
  			    form->target = buf->baseTarget;
  			if (a_textarea &&
-@@ -5761,8 +5893,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5761,8 +5895,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			break;
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
  			MapArea *a;
@@ -5627,7 +6078,7 @@ index 567d41e..605fc78 100644
  			t = NULL;
  			parsedtag_get_value(tag, ATTR_TARGET, &t);
  			q = "";
-@@ -5811,11 +5943,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5811,11 +5945,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    break;
  		case HTML_BASE:
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
@@ -5644,7 +6095,7 @@ index 567d41e..605fc78 100644
  		    }
  		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
  			buf->baseTarget =
-@@ -5830,8 +5965,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5830,8 +5967,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			int refresh_interval = getMetaRefreshParam(q, &tmp);
  #ifdef USE_ALARM
  			if (tmp) {
@@ -5655,7 +6106,7 @@ index 567d41e..605fc78 100644
  			    buf->event = setAlarmEvent(buf->event,
  						       refresh_interval,
  						       AL_IMPLICIT_ONCE,
-@@ -5844,8 +5979,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5844,8 +5981,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  						       FUNCNAME_reload, NULL);
  #else
  			if (tmp && refresh_interval == 0) {
@@ -5666,7 +6117,7 @@ index 567d41e..605fc78 100644
  			    pushEvent(FUNCNAME_gorURL, p);
  			}
  #endif
-@@ -5929,7 +6064,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5929,7 +6066,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef	ID_EXT
  		id = NULL;
  		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
@@ -5675,7 +6126,7 @@ index 567d41e..605fc78 100644
  		    registerName(buf, id, currentLn(buf), pos);
  		}
  		if (renderFrameSet &&
-@@ -5982,7 +6117,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+@@ -5982,7 +6119,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
  
      parsedtag_get_value(tag, ATTR_HREF, &href);
      if (href)
@@ -5685,7 +6136,7 @@ index 567d41e..605fc78 100644
      parsedtag_get_value(tag, ATTR_TITLE, &title);
      parsedtag_get_value(tag, ATTR_TYPE, &ctype);
      parsedtag_get_value(tag, ATTR_REL, &rel);
-@@ -6756,6 +6892,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
+@@ -6756,6 +6894,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
      obuf->nobr_level = 0;
      bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
      obuf->img_alt = 0;
@@ -5698,7 +6149,7 @@ index 567d41e..605fc78 100644
      obuf->in_bold = 0;
      obuf->in_italic = 0;
      obuf->in_under = 0;
-@@ -6791,6 +6933,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+@@ -6791,6 +6935,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
  	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
  	obuf->img_alt = NULL;
      }
@@ -5714,7 +6165,7 @@ index 567d41e..605fc78 100644
      if (obuf->in_bold) {
  	push_tag(obuf, "</b>", HTML_N_B);
  	obuf->in_bold = 0;
-@@ -6963,8 +7114,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6963,8 +7116,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	image_flag = IMG_FLAG_AUTO;
      else
  	image_flag = IMG_FLAG_SKIP;
@@ -5723,7 +6174,7 @@ index 567d41e..605fc78 100644
  #endif
  
      if (w3m_halfload) {
-@@ -6987,6 +7136,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6987,6 +7138,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	htmlenv1.f = stdout;
      else
  	htmlenv1.buf = newTextLineList();
@@ -5733,7 +6184,7 @@ index 567d41e..605fc78 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-@@ -7048,7 +7200,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7048,18 +7202,23 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	}
  #endif
  	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
@@ -5742,7 +6193,11 @@ index 567d41e..605fc78 100644
  	cur_document_charset = charset;
  #endif
  	HTMLlineproc0(lineBuf2->ptr, &htmlenv1, internal);
-@@ -7060,6 +7212,12 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+     }
+     if (obuf.status != R_ST_NORMAL) {
+-	obuf.status = R_ST_EOL;
+ 	HTMLlineproc0("\n", &htmlenv1, internal);
+     }
      obuf.status = R_ST_NORMAL;
      completeHTMLstream(&htmlenv1, &obuf);
      flushline(&htmlenv1, &obuf, 0, 2, htmlenv1.limit);
@@ -5755,7 +6210,7 @@ index 567d41e..605fc78 100644
      if (htmlenv1.title)
  	newBuf->buffername = htmlenv1.title;
      if (w3m_halfdump) {
-@@ -7096,16 +7254,17 @@ loadHTMLString(Str page)
+@@ -7096,16 +7255,17 @@ loadHTMLString(Str page)
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      Buffer *newBuf;
  
@@ -5775,7 +6230,7 @@ index 567d41e..605fc78 100644
  #ifdef USE_M17N
      newBuf->document_charset = InnerCharset;
  #endif
-@@ -7115,6 +7274,7 @@ loadHTMLString(Str page)
+@@ -7115,6 +7275,7 @@ loadHTMLString(Str page)
  #endif
  
      TRAP_OFF;
@@ -5783,7 +6238,7 @@ index 567d41e..605fc78 100644
      newBuf->topLine = newBuf->firstLine;
      newBuf->lastLine = newBuf->currentLine;
      newBuf->currentLine = newBuf->firstLine;
-@@ -7207,7 +7367,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+@@ -7207,7 +7368,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
  	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
  			   "/", file->ptr, NULL)->ptr;
  	Strcat_m_charp(tmp, "<a href=\"",
@@ -5792,6 +6247,14 @@ index 567d41e..605fc78 100644
  		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
      }
  
+@@ -7243,7 +7404,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
+ 
+     if (newBuf == NULL)
+ 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+-    lineBuf2 = Strnew();
+ 
+     if (SETJMP(AbortLoading) != 0) {
+ 	goto _end;
 @@ -7331,6 +7491,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      URLFile f;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
@@ -6026,6 +6489,15 @@ index 567d41e..605fc78 100644
  	    exit(0);
  	}
  	/* child1 */
+@@ -8378,7 +8540,7 @@ lessopen_stream(char *path)
+ 	}
+ 	c = getc(fp);
+ 	if (c == EOF) {
+-	    fclose(fp);
++	    pclose(fp);
+ 	    return NULL;
+ 	}
+ 	ungetc(c, fp);
 diff --git a/fm.h b/fm.h
 index 8378939..37098a0 100644
 --- a/fm.h
@@ -6271,7 +6743,7 @@ index b7556ca..62b568e 100644
  		pf->url = prev->url;
  		pf->re_url = prev->re_url;
 diff --git a/frame.c b/frame.c
-index b431437..48c2d72 100644
+index b431437..c595c40 100644
 --- a/frame.c
 +++ b/frame.c
 @@ -91,7 +91,8 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
@@ -6304,6 +6776,58 @@ index b431437..48c2d72 100644
  				tag->need_reconstruct = TRUE;
  				parseURL2(tag->value[j], &url, &base);
  				if (url.scheme == SCM_UNKNOWN ||
+@@ -894,8 +895,10 @@ renderFrame(Buffer *Cbuf, int force_reload)
+     /* 
+      * if (Cbuf->frameQ != NULL) fset = Cbuf->frameQ->frameset; else */
+     fset = Cbuf->frameset;
+-    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0)
++    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0) {
++	fclose(f);
+ 	return NULL;
++    }
+     fclose(f);
+     flag = RG_FRAME;
+     if ((Cbuf->currentURL).is_nocache)
+diff --git a/ftp.c b/ftp.c
+index 0002abd..2ca0247 100644
+--- a/ftp.c
++++ b/ftp.c
+@@ -123,6 +123,7 @@ static int
+ ftp_login(FTP ftp)
+ {
+     int sock, status;
++    int sock_wf;
+ 
+     sock = openSocket(ftp->host, "ftp", 21);
+     if (sock < 0)
+@@ -139,7 +140,6 @@ ftp_login(FTP ftp)
+ 	    socklen_t socknamelen = sizeof(sockname);
+ 
+ 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
+-		struct hostent *sockent;
+ 		Str tmp = Strnew_charp(ftp->pass);
+ #ifdef INET6
+ 		char hostbuf[NI_MAXHOST];
+@@ -156,6 +156,7 @@ ftp_login(FTP ftp)
+ 		    Strcat_charp(tmp, "unknown");
+ #else
+ 
++		struct hostent *sockent;
+ 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
+ 					     sizeof(sockname.sin_addr),
+ 					     sockname.sin_family)))
+@@ -169,7 +170,10 @@ ftp_login(FTP ftp)
+ 	}
+     }
+     ftp->rf = newInputStream(sock);
+-    ftp->wf = fdopen(dup(sock), "wb");
++    if ((sock_wf = dup(sock)) >= 0 )
++	    ftp->wf = fdopen(sock_wf, "wb");
++    else
++	    goto open_err;
+     if (!ftp->rf || !ftp->wf)
+ 	goto open_err;
+     IStype(ftp->rf) |= IST_UNCLOSE;
 diff --git a/func.c b/func.c
 index f389e00..8b5deac 100644
 --- a/func.c
@@ -6411,7 +6935,7 @@ index f389e00..8b5deac 100644
  static MouseAction default_mouse_action = {
      NULL,
 diff --git a/history.c b/history.c
-index 951ef83..e9be09b 100644
+index 951ef83..f2a00b4 100644
 --- a/history.c
 +++ b/history.c
 @@ -17,7 +17,7 @@ historyBuffer(Hist *hist)
@@ -6423,6 +6947,27 @@ index 951ef83..e9be09b 100644
  	    else
  		p = q;
  	    Strcat_charp(src, "<li><a href=\"");
+@@ -60,6 +60,7 @@ saveHistory(Hist *hist, size_t size)
+     FILE *f;
+     HistItem *item;
+     char *tmpf;
++    int rename_ret;
+ 
+     if (hist == NULL || hist->list == NULL)
+ 	return;
+@@ -79,7 +80,11 @@ saveHistory(Hist *hist, size_t size)
+ 	disp_err_message("Can't save history", FALSE);
+ 	return;
+     }
+-    rename(tmpf, rcFile(HISTORY_FILE));
++    rename_ret = rename(tmpf, rcFile(HISTORY_FILE));
++    if (rename_ret != 0) {
++	disp_err_message("Can't save history", FALSE);
++	return;
++    }
+ }
+ #endif				/* USE_HISTORY */
+ 
 diff --git a/html.c b/html.c
 index bca227e..d9f08e9 100644
 --- a/html.c
@@ -6480,10 +7025,10 @@ index bca227e..d9f08e9 100644
      {NULL, NULL, 0, 0},		/* 142 Undefined */
      {NULL, NULL, 0, 0},		/* 143 Undefined */
 diff --git a/html.h b/html.h
-index 7abbd3b..b4b3df9 100644
+index 7abbd3b..c490655 100644
 --- a/html.h
 +++ b/html.h
-@@ -1,19 +1,17 @@
+@@ -1,20 +1,18 @@
  /* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
  #ifndef _HTML_H
  #define _HTML_H
@@ -6501,9 +7046,11 @@ index 7abbd3b..b4b3df9 100644
  #define UFgetc(f) ISgetc((f)->stream)
  #define UFundogetc(f) ISundogetc((f)->stream)
 -#define UFread(f,buf,len) ISread((f)->stream,buf,len)
- #define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
+-#define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
++#define UFclose(f) if (ISclose((f)->stream) == 0) {(f)->stream = NULL ;}
  #define UFfileno(f) ISfileno((f)->stream)
  
+ struct cmdtable {
 @@ -62,11 +60,12 @@ typedef struct _ParsedURL {
      int is_nocache;
  } ParsedURL;
@@ -7152,7 +7699,7 @@ index b3819a3..2809832 100644
  
  #endif				/* INDEP_H */
 diff --git a/istream.c b/istream.c
-index 8967280..3126142 100644
+index 8967280..1387307 100644
 --- a/istream.c
 +++ b/istream.c
 @@ -22,8 +22,8 @@
@@ -7462,7 +8009,16 @@ index 8967280..3126142 100644
  }
  
  int
-@@ -645,6 +624,7 @@ basic_close(int *handle)
+@@ -496,8 +475,6 @@ ssl_check_cert_ident(X509 * x, char *hostname)
+ 	    /* FIXME: gettextize? */
+ 	    ret = Sprintf("Bad cert ident %s from %s", buf, hostname);
+ 	}
+-	else
+-	    match_ident = TRUE;
+     }
+     return ret;
+ }
+@@ -645,6 +622,7 @@ basic_close(int *handle)
  #else
      close(*(int *)handle);
  #endif
@@ -7470,7 +8026,7 @@ index 8967280..3126142 100644
  }
  
  static int
-@@ -658,13 +638,14 @@ basic_read(int *handle, char *buf, int len)
+@@ -658,13 +636,14 @@ basic_read(int *handle, char *buf, int len)
  }
  
  static void
@@ -7487,7 +8043,7 @@ index 8967280..3126142 100644
  {
      return fread(buf, 1, len, handle->f);
  }
-@@ -682,6 +663,7 @@ ssl_close(struct ssl_handle *handle)
+@@ -682,6 +661,7 @@ ssl_close(struct ssl_handle *handle)
      close(handle->sock);
      if (handle->ssl)
  	SSL_free(handle->ssl);
@@ -7495,7 +8051,7 @@ index 8967280..3126142 100644
  }
  
  static int
-@@ -717,38 +699,60 @@ static void
+@@ -717,38 +697,60 @@ static void
  ens_close(struct ens_handle *handle)
  {
      ISclose(handle->is);
@@ -7647,6 +8203,19 @@ index a490962..fec0c65 100644
      /*  @       A       B       C       D       E       F       G        */
      nulcmd, movU, movD, movR, movL, nulcmd, goLineL, pgFore,
      /*  H       I       J       K       L       M       N       O        */
+diff --git a/keybind_lynx.c b/keybind_lynx.c
+index 163f6b2..42267ec 100644
+--- a/keybind_lynx.c
++++ b/keybind_lynx.c
+@@ -99,7 +99,7 @@ unsigned char EscBKeymap[128] = {
+     /*  0       1       2       3       4       5       6       7        */
+     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+     /*  8       9       :       ;       <       =       >       ?        */
+-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
++    nulcmd, nulcmd, nulcmd, nulcmd, sgrmouse, nulcmd, nulcmd, nulcmd,
+     /*  @       A       B       C       D       E       F       G        */
+     nulcmd, prevA, nextA, followA, backBf, nulcmd, goLineL, pgFore,
+     /*  H       I       J       K       L       M       N       O        */
 diff --git a/libwc/ambwidth_map.awk b/libwc/ambwidth_map.awk
 index 8544f58..1d9d25f 100644
 --- a/libwc/ambwidth_map.awk
@@ -7728,6 +8297,19 @@ index c195d49..d5c9018 100644
      return cc;
  }
  #endif
+diff --git a/libwc/iso2022.c b/libwc/iso2022.c
+index 33d9a19..385adde 100644
+--- a/libwc/iso2022.c
++++ b/libwc/iso2022.c
+@@ -463,7 +463,7 @@ wc_push_to_iso2022(Str os, wc_wchar_t cc, wc_status *st)
+ 	cc.code = (wc_uint32)WC_REPLACE[0];
+ 	break;
+     default:
+-	if ((cc.ccs == WC_CCS_JOHAB || WC_CCS_JOHAB_1 ||
++	if ((cc.ccs == WC_CCS_JOHAB || cc.ccs == WC_CCS_JOHAB_1 ||
+ 		cc.ccs == WC_CCS_JOHAB_2 || cc.ccs == WC_CCS_JOHAB_3) &&
+ 		cs94w_gmap[WC_F_KS_X_1001 - WC_F_ISO_BASE]) {
+ 	    wc_wchar_t cc2 = wc_johab_to_ksx1001(cc);
 diff --git a/libwc/map/ucs_ambwidth.map b/libwc/map/ucs_ambwidth.map
 index 6f03ba8..35ceedb 100644
 --- a/libwc/map/ucs_ambwidth.map
@@ -7935,10 +8517,34 @@ index d7b6948..5e78b4e 100644
  }
  
 diff --git a/linein.c b/linein.c
-index b7e81b6..572b015 100644
+index b7e81b6..d8f9023 100644
 --- a/linein.c
 +++ b/linein.c
-@@ -1026,7 +1026,7 @@ _prev(void)
+@@ -714,7 +714,8 @@ _rdcompl(void)
+ static void
+ next_dcompl(int next)
+ {
+-    static int col, row, len;
++    static int col, row;
++    static unsigned int len;
+     static Str d;
+     int i, j, n, y;
+     Str f;
+@@ -780,9 +781,10 @@ next_dcompl(int next)
+ 	if (len < n)
+ 	    len = n;
+     }
+-    col = COLS / len;
+-    if (col == 0)
+-	col = 1;
++    if (len > 0 && COLS > len)
++        col = COLS / len;
++    else
++        col = 1;
+     row = (NCFileBuf + col - 1) / col;
+ 
+   disp_next:
+@@ -1026,7 +1028,7 @@ _prev(void)
  	strCurrentBuf = strBuf;
      }
      if (DecodeURL && (cm_mode & CPL_URL) )
@@ -7947,7 +8553,7 @@ index b7e81b6..572b015 100644
      strBuf = Strnew_charp(p);
      CLen = CPos = setStrType(strBuf, strProp);
      offset = 0;
-@@ -1045,7 +1045,7 @@ _next(void)
+@@ -1045,7 +1047,7 @@ _next(void)
      p = nextHist(hist);
      if (p) {
  	if (DecodeURL && (cm_mode & CPL_URL) )
@@ -7957,7 +8563,7 @@ index b7e81b6..572b015 100644
      }
      else {
 diff --git a/local.c b/local.c
-index f5a73a2..9428319 100644
+index f5a73a2..202e9c4 100644
 --- a/local.c
 +++ b/local.c
 @@ -109,6 +109,7 @@ loadLocalDir(char *dname)
@@ -7968,6 +8574,15 @@ index f5a73a2..9428319 100644
  
      if (multicolList) {
  	l = COLS / (maxlen + 2);
+@@ -167,7 +168,7 @@ loadLocalDir(char *dname)
+ 	else {
+ #if defined(HAVE_LSTAT) && defined(HAVE_READLINK)
+ 	    if (S_ISLNK(lst.st_mode)) {
+-		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf))) > 0) {
++		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf) - 1)) > 0) {
+ 		    lbuf[l] = '\0';
+ 		    Strcat_m_charp(tmp, " -> ",
+ 				   html_quote(conv_from_system(lbuf)), NULL);
 @@ -359,6 +360,10 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
      int status;
      pid_t pid;
@@ -7979,7 +8594,7 @@ index f5a73a2..9428319 100644
  
  #ifdef __MINGW32_VERSION
      return NULL;
-@@ -373,7 +378,14 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+@@ -373,18 +378,25 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
  	if (!fw)
  	    return NULL;
      }
@@ -7990,11 +8605,17 @@ index f5a73a2..9428319 100644
 +#endif
 +    cgi_basename = mybasename(file);
      pid = open_pipe_rw(&fr, NULL);
+-    if (pid < 0)
 +    /* Don't invoke gc after here, or the program might crash in some platforms */
-     if (pid < 0)
++    if (pid < 0) {
++	if (fw)
++	    fclose(fw);
  	return NULL;
-     else if (pid) {
-@@ -383,8 +395,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+-    else if (pid) {
++    } else if (pid) {
+ 	if (fw)
+ 	    fclose(fw);
+ 	return fr;
      }
      setup_child(TRUE, 2, fw ? fileno(fw) : -1);
  
@@ -8003,7 +8624,7 @@ index f5a73a2..9428319 100644
      set_cgi_environ(name, file, uri);
      if (path_info)
  	set_environ("PATH_INFO", path_info);
-@@ -415,11 +425,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
+@@ -415,12 +427,11 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
      }
  
  #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
@@ -8016,13 +8637,35 @@ index f5a73a2..9428319 100644
 -	    file, mybasename(file), strerror(errno));
 +	    file, cgi_basename, strerror(errno));
      exit(1);
-     return NULL;
+-    return NULL;
  #endif
+ }
+diff --git a/mailcap.c b/mailcap.c
+index c0461df..f0c6242 100644
+--- a/mailcap.c
++++ b/mailcap.c
+@@ -72,7 +72,7 @@ searchMailcap(struct mailcap *table, char *type)
+ }
+ 
+ static int
+-matchMailcapAttr(char *p, char *attr, int len, Str *value)
++matchMailcapAttr(char *p, char *attr, size_t len, Str *value)
+ {
+     int quoted;
+     char *q = NULL;
 diff --git a/main.c b/main.c
-index b421943..9cac333 100644
+index b421943..6609b49 100644
 --- a/main.c
 +++ b/main.c
-@@ -11,6 +11,9 @@
+@@ -1,6 +1,7 @@
+ /* $Id: main.c,v 1.270 2010/08/24 10:11:51 htrb Exp $ */
+ #define MAINPROGRAM
+ #include "fm.h"
++#include <stdio.h>
+ #include <signal.h>
+ #include <setjmp.h>
+ #include <sys/stat.h>
+@@ -11,6 +12,9 @@
  #include <sys/wait.h>
  #endif
  #include <time.h>
@@ -8032,7 +8675,7 @@ index b421943..9cac333 100644
  #include "terms.h"
  #include "myctype.h"
  #include "regex.h"
-@@ -119,6 +122,8 @@ static int searchKeyNum(void);
+@@ -119,6 +123,8 @@ static int searchKeyNum(void);
  #define help() fusage(stdout, 0)
  #define usage() fusage(stderr, 1)
  
@@ -8041,7 +8684,7 @@ index b421943..9cac333 100644
  static void
  fversion(FILE * f)
  {
-@@ -200,10 +205,12 @@ fusage(FILE * f, int err)
+@@ -200,10 +206,12 @@ fusage(FILE * f, int err)
  #ifdef USE_M17N
      fprintf(f, "    -I charset       document charset\n");
      fprintf(f, "    -O charset       display/output charset\n");
@@ -8054,7 +8697,7 @@ index b421943..9cac333 100644
      fprintf(f, "    -B               load bookmark\n");
      fprintf(f, "    -bookmark file   specify bookmark file\n");
      fprintf(f, "    -T type          specify content-type\n");
-@@ -248,7 +255,11 @@ fusage(FILE * f, int err)
+@@ -248,7 +256,11 @@ fusage(FILE * f, int err)
  #endif				/* USE_COOKIE */
      fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
      fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
@@ -8066,7 +8709,7 @@ index b421943..9cac333 100644
      fprintf(f, "    -W               toggle wrap search mode\n");
      fprintf(f, "    -X               don't use termcap init/deinit\n");
      fprintf(f,
-@@ -372,6 +383,13 @@ make_optional_header_string(char *s)
+@@ -372,6 +384,13 @@ make_optional_header_string(char *s)
      return hs;
  }
  
@@ -8080,7 +8723,7 @@ index b421943..9cac333 100644
  int
  main(int argc, char **argv, char **envp)
  {
-@@ -397,7 +415,15 @@ main(int argc, char **argv, char **envp)
+@@ -397,7 +416,15 @@ main(int argc, char **argv, char **envp)
      wc_ces CodePage;
  #endif
  #endif
@@ -8096,7 +8739,7 @@ index b421943..9cac333 100644
  #if defined(ENABLE_NLS) || (defined(USE_M17N) && defined(HAVE_LANGINFO_CODESET))
      setlocale(LC_ALL, "");
  #endif
-@@ -418,6 +444,10 @@ main(int argc, char **argv, char **envp)
+@@ -418,6 +445,10 @@ main(int argc, char **argv, char **envp)
  
      CurrentDir = currentdir();
      CurrentPid = (int)getpid();
@@ -8107,7 +8750,7 @@ index b421943..9cac333 100644
      BookmarkFile = NULL;
      config_file = NULL;
  
-@@ -530,12 +560,14 @@ main(int argc, char **argv, char **envp)
+@@ -530,12 +561,14 @@ main(int argc, char **argv, char **envp)
  		    PagerMax = atoi(argv[i]);
  	    }
  #ifdef USE_M17N
@@ -8122,7 +8765,7 @@ index b421943..9cac333 100644
  	    else if (!strncmp("-I", argv[i], 2)) {
  		if (argv[i][2] != '\0')
  		    p = argv[i] + 2;
-@@ -660,6 +692,12 @@ main(int argc, char **argv, char **envp)
+@@ -660,6 +693,12 @@ main(int argc, char **argv, char **envp)
  		}
  	    }
  #endif
@@ -8135,7 +8778,7 @@ index b421943..9cac333 100644
  	    else if (!strcmp("-num", argv[i]))
  		showLineNum = TRUE;
  	    else if (!strcmp("-no-proxy", argv[i]))
-@@ -703,7 +741,11 @@ main(int argc, char **argv, char **envp)
+@@ -703,7 +742,11 @@ main(int argc, char **argv, char **envp)
  		accept_cookie = TRUE;
  	    }
  #endif				/* USE_COOKIE */
@@ -8147,7 +8790,7 @@ index b421943..9cac333 100644
  		squeezeBlankLine = TRUE;
  	    else if (!strcmp("-X", argv[i]))
  		Do_not_use_ti_te = TRUE;
-@@ -735,6 +777,15 @@ main(int argc, char **argv, char **envp)
+@@ -735,6 +778,15 @@ main(int argc, char **argv, char **envp)
  	    else if (!strcmp("-reqlog",argv[i])) {
  		w3m_reqlog=rcFile("request.log");
  	    }
@@ -8163,7 +8806,7 @@ index b421943..9cac333 100644
  	    else {
  		usage();
  	    }
-@@ -823,6 +874,30 @@ main(int argc, char **argv, char **envp)
+@@ -823,6 +875,30 @@ main(int argc, char **argv, char **envp)
  
      if (w3m_backend)
  	backend();
@@ -8194,7 +8837,7 @@ index b421943..9cac333 100644
  
      if (w3m_dump)
  	mySignal(SIGINT, SIG_IGN);
-@@ -833,7 +908,12 @@ main(int argc, char **argv, char **envp)
+@@ -833,7 +909,12 @@ main(int argc, char **argv, char **envp)
      mySignal(SIGPIPE, SigPipe);
  #endif
  
@@ -8207,7 +8850,7 @@ index b421943..9cac333 100644
      err_msg = Strnew();
      if (load_argc == 0) {
  	/* no URL specified */
-@@ -894,12 +974,17 @@ main(int argc, char **argv, char **envp)
+@@ -894,12 +975,17 @@ main(int argc, char **argv, char **envp)
  	if (i >= 0) {
  	    SearchHeader = search_header;
  	    DefaultType = default_type;
@@ -8228,7 +8871,7 @@ index b421943..9cac333 100644
  	    }
  	    else {
  		if (post_file && i == 0) {
-@@ -928,9 +1013,7 @@ main(int argc, char **argv, char **envp)
+@@ -928,9 +1014,7 @@ main(int argc, char **argv, char **envp)
  		else {
  		    request = NULL;
  		}
@@ -8239,7 +8882,7 @@ index b421943..9cac333 100644
  	    }
  	    if (newbuf == NULL) {
  		/* FIXME: gettextize? */
-@@ -945,7 +1028,7 @@ main(int argc, char **argv, char **envp)
+@@ -945,7 +1029,7 @@ main(int argc, char **argv, char **envp)
  		break;
  	    case SCM_LOCAL:
  	    case SCM_LOCAL_CGI:
@@ -8248,7 +8891,23 @@ index b421943..9cac333 100644
  	    default:
  		pushHashHist(URLHist, parsedURL2Str(&newbuf->currentURL)->ptr);
  		break;
-@@ -1246,6 +1329,12 @@ dump_extra(Buffer *buf)
+@@ -1183,13 +1267,13 @@ static void
+ dump_source(Buffer *buf)
+ {
+     FILE *f;
+-    char c;
++    int c;
+     if (buf->sourcefile == NULL)
+ 	return;
+     f = fopen(buf->sourcefile, "r");
+     if (f == NULL)
+ 	return;
+-    while (c = fgetc(f), !feof(f)) {
++    while ((c = fgetc(f)) != EOF) {
+ 	putchar(c);
+     }
+     fclose(f);
+@@ -1246,6 +1330,12 @@ dump_extra(Buffer *buf)
  #endif
  }
  
@@ -8261,7 +8920,7 @@ index b421943..9cac333 100644
  static void
  do_dump(Buffer *buf)
  {
-@@ -1266,18 +1355,20 @@ do_dump(Buffer *buf)
+@@ -1266,18 +1356,20 @@ do_dump(Buffer *buf)
  	int i;
  	saveBuffer(buf, stdout, FALSE);
  	if (displayLinkNumber && buf->href) {
@@ -8292,7 +8951,7 @@ index b421943..9cac333 100644
  	    }
  	}
      }
-@@ -1566,6 +1657,18 @@ DEFUN(pgBack, PREV_PAGE, "Move to previous page")
+@@ -1566,6 +1658,18 @@ DEFUN(pgBack, PREV_PAGE, "Move to previous page")
  		  * (Currentbuf->LINES - 1)), prec_num ? B_SCROLL : B_NORMAL);
  }
  
@@ -8311,7 +8970,7 @@ index b421943..9cac333 100644
  /* 1 line up */
  DEFUN(lup1, UP, "Scroll up one line")
  {
-@@ -1844,6 +1947,10 @@ srch_nxtprv(int reverse)
+@@ -1844,6 +1948,10 @@ srch_nxtprv(int reverse)
      result = srchcore(SearchString, routine[reverse]);
      if (result & SR_FOUND)
  	clear_mark(Currentbuf->currentLine);
@@ -8322,7 +8981,7 @@ index b421943..9cac333 100644
      displayBuffer(Currentbuf, B_NORMAL);
      disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
  		    SearchString);
-@@ -2261,7 +2368,7 @@ DEFUN(movR1, MOVE_RIGHT1,
+@@ -2261,7 +2369,7 @@ DEFUN(movR1, MOVE_RIGHT1,
  static wc_uint32
  getChar(char *p)
  {
@@ -8331,7 +8990,7 @@ index b421943..9cac333 100644
  }
  
  static int
-@@ -2804,12 +2911,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+@@ -2804,12 +2912,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
      union frameset_element *f_element = NULL;
      int flag = 0;
      ParsedURL *base, pu;
@@ -8348,7 +9007,61 @@ index b421943..9cac333 100644
  	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
  	referer = NO_REFERER;
      if (referer == NULL)
-@@ -3568,6 +3678,33 @@ DEFUN(lastA, LINK_END, "Go to the last link")
+@@ -2961,7 +3072,6 @@ handleMailto(char *url)
+ /* follow HREF link */
+ DEFUN(followA, GOTO_LINK, "Go to current link")
+ {
+-    Line *l;
+     Anchor *a;
+     ParsedURL u;
+ #ifdef USE_IMAGE
+@@ -2971,7 +3081,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
+ 
+     if (Currentbuf->firstLine == NULL)
+ 	return;
+-    l = Currentbuf->currentLine;
+ 
+ #ifdef USE_IMAGE
+     a = retrieveCurrentImg(Currentbuf);
+@@ -3053,13 +3162,11 @@ bufferA(void)
+ /* view inline image */
+ DEFUN(followI, VIEW_IMAGE, "View image")
+ {
+-    Line *l;
+     Anchor *a;
+     Buffer *buf;
+ 
+     if (Currentbuf->firstLine == NULL)
+ 	return;
+-    l = Currentbuf->currentLine;
+ 
+     a = retrieveCurrentImg(Currentbuf);
+     if (a == NULL)
+@@ -3309,7 +3416,6 @@ followForm(void)
+ static void
+ _followForm(int submit)
+ {
+-    Line *l;
+     Anchor *a, *a2;
+     char *p;
+     FormItemList *fi, *f2;
+@@ -3318,7 +3424,6 @@ _followForm(int submit)
+ 
+     if (Currentbuf->firstLine == NULL)
+ 	return;
+-    l = Currentbuf->currentLine;
+ 
+     a = retrieveCurrentForm(Currentbuf);
+     if (a == NULL)
+@@ -3423,7 +3528,6 @@ _followForm(int submit)
+     case FORM_INPUT_BUTTON:
+       do_submit:
+ 	tmp = Strnew();
+-	tmp2 = Strnew();
+ 	multipart = (fi->parent->method == FORM_METHOD_POST &&
+ 		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
+ 	query_from_followform(&tmp, fi, multipart);
+@@ -3568,6 +3672,33 @@ DEFUN(lastA, LINK_END, "Go to the last link")
      displayBuffer(Currentbuf, B_NORMAL);
  }
  
@@ -8382,7 +9095,7 @@ index b421943..9cac333 100644
  /* go to the next anchor */
  DEFUN(nextA, NEXT_LINK, "Move to next link")
  {
-@@ -4055,6 +4192,7 @@ goURL0(char *prompt, int relative)
+@@ -4055,6 +4186,7 @@ goURL0(char *prompt, int relative)
      char *url, *referer;
      ParsedURL p_url, *current;
      Buffer *cur_buf = Currentbuf;
@@ -8390,7 +9103,7 @@ index b421943..9cac333 100644
  
      url = searchKeyData();
      if (url == NULL) {
-@@ -4064,11 +4202,8 @@ goURL0(char *prompt, int relative)
+@@ -4064,11 +4196,8 @@ goURL0(char *prompt, int relative)
  	current = baseURL(Currentbuf);
  	if (current) {
  	    char *c_url = parsedURL2Str(current)->ptr;
@@ -8404,7 +9117,7 @@ index b421943..9cac333 100644
  	    else
  		pushHist(hist, c_url);
  	}
-@@ -4077,11 +4212,8 @@ goURL0(char *prompt, int relative)
+@@ -4077,11 +4206,8 @@ goURL0(char *prompt, int relative)
  	    char *a_url;
  	    parseURL2(a->url, &p_url, current);
  	    a_url = parsedURL2Str(&p_url)->ptr;
@@ -8418,7 +9131,7 @@ index b421943..9cac333 100644
  	    else
  		pushHist(hist, a_url);
  	}
-@@ -4089,15 +4221,22 @@ goURL0(char *prompt, int relative)
+@@ -4089,15 +4215,22 @@ goURL0(char *prompt, int relative)
  	if (url != NULL)
  	    SKIP_BLANKS(url);
      }
@@ -8448,7 +9161,7 @@ index b421943..9cac333 100644
      if (url == NULL || *url == '\0') {
  	displayBuffer(Currentbuf, B_FORCE_REDRAW);
  	return;
-@@ -4106,14 +4245,6 @@ goURL0(char *prompt, int relative)
+@@ -4106,14 +4239,6 @@ goURL0(char *prompt, int relative)
  	gotoLabel(url + 1);
  	return;
      }
@@ -8463,7 +9176,7 @@ index b421943..9cac333 100644
      parseURL2(url, &p_url, current);
      pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
      cmd_loadURL(url, current, referer, NULL);
-@@ -4510,8 +4641,7 @@ _peekURL(int only_img)
+@@ -4510,8 +4635,7 @@ _peekURL(int only_img)
  	s = parsedURL2Str(&pu);
      }
      if (DecodeURL)
@@ -8473,7 +9186,7 @@ index b421943..9cac333 100644
  #ifdef USE_M17N
      s = checkType(s, &pp, NULL);
      p = NewAtom_N(Lineprop, s->length);
-@@ -4570,7 +4700,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+@@ -4570,7 +4694,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
  	offset = 0;
  	s = currentURL();
  	if (DecodeURL)
@@ -8482,7 +9195,7 @@ index b421943..9cac333 100644
  #ifdef USE_M17N
  	s = checkType(s, &pp, NULL);
  	p = NewAtom_N(Lineprop, s->length);
-@@ -5398,6 +5528,58 @@ DEFUN(mouse, MOUSE, "mouse operation")
+@@ -5398,6 +5522,60 @@ DEFUN(mouse, MOUSE, "mouse operation")
      process_mouse(btn, x, y);
  }
  
@@ -8519,6 +9232,7 @@ index b421943..9cac333 100644
 +	else
 +	  return;
 +    } while (1);
++    if (x>0) x--;
 +
 +    do {
 +	c = getch();
@@ -8532,6 +9246,7 @@ index b421943..9cac333 100644
 +	} else
 +    return;
 +    } while (1);
++    if (y>0) y--;
 +
 +    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
 +	return;
@@ -8541,7 +9256,7 @@ index b421943..9cac333 100644
  #ifdef USE_GPM
  int
  gpm_process_mouse(Gpm_Event * event, void *data)
-@@ -5604,7 +5786,7 @@ execdict(char *word)
+@@ -5604,7 +5782,7 @@ execdict(char *word)
  	disp_message("Execution failed", TRUE);
  	return;
      }
@@ -8550,7 +9265,7 @@ index b421943..9cac333 100644
  	buf->filename = w;
  	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
  	if (buf->type == NULL)
-@@ -5671,7 +5853,7 @@ set_buffer_environ(Buffer *buf)
+@@ -5671,7 +5849,7 @@ set_buffer_environ(Buffer *buf)
  	    set_environ("W3M_CURRENT_FORM", form2str((FormItemList *)a->url));
  	else
  	    set_environ("W3M_CURRENT_FORM", "");
@@ -8559,7 +9274,7 @@ index b421943..9cac333 100644
  						l->real_linenumber)->ptr);
  	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
  						  buf->currentColumn +
-@@ -5747,8 +5929,14 @@ deleteFiles()
+@@ -5747,8 +5925,14 @@ deleteFiles()
  	    Firstbuf = buf;
  	}
      }
@@ -8697,10 +9412,109 @@ index 64fd0ad..bc7a5be 100644
  #define SWAPI(a,b) { int tmp = a; a = b; b = tmp; }
  
 diff --git a/menu.c b/menu.c
-index 774b1bd..0f66583 100644
+index 774b1bd..e968034 100644
 --- a/menu.c
 +++ b/menu.c
-@@ -1365,9 +1365,7 @@ initSelectMenu(void)
+@@ -57,6 +57,7 @@ static int mCancel(char c);
+ static int mClose(char c);
+ static int mSusp(char c);
+ static int mMouse(char c);
++static int mSgrMouse(char c);
+ static int mSrchF(char c);
+ static int mSrchB(char c);
+ static int mSrchN(char c);
+@@ -116,15 +117,15 @@ static int (*MenuEscKeymap[128]) (char c) = {
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+ 
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+-/*  O     */
++/*                                                          O     */
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mEscB,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+-/*  [                                     */
++/*                          [                                     */
+     mNull,  mNull,  mNull,  mEscB,  mNull,  mNull,  mNull,  mNull,
+ 
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+-/*  v             */
++/*                                                  v             */
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mPrev,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+ };
+@@ -137,10 +138,11 @@ static int (*MenuEscBKeymap[128]) (char c) = {
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+-    mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+-/*  A       B       C       D       E                     */
++/*  8       9       :       ;       <       =       >       ?     */
++    mNull,  mNull,  mNull,  mNull,  mSgrMouse,mNull,mNull,  mNull,
++/*          A       B       C       D       E                     */
+     mNull,  mUp,    mDown,  mOk,    mCancel,mClose, mNull, mNull,
+-/*  L       M                     */
++/*                                  L       M                     */
+     mNull,  mNull,  mNull,  mNull,  mClose, mMouse, mNull,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
+@@ -359,7 +361,6 @@ geom_menu(Menu *menu, int x, int y, int mselect)
+ 	if (win_w > COLS) {
+ 	    menu->width = COLS - 2 * FRAME_WIDTH;
+ 	    menu->width -= menu->width % FRAME_WIDTH;
+-	    win_w = menu->width + 2 * FRAME_WIDTH;
+ 	}
+     }
+     menu->x = win_x + FRAME_WIDTH;
+@@ -1203,6 +1204,48 @@ mMouse(char c)
+     return process_mMouse(btn, x, y);
+ }
+ 
++static int
++mSgrMouse(char c)
++{
++    int btn = 0, x = 0, y = 0;
++    unsigned char ch;
++
++    for (ch = getch(); IS_DIGIT(ch); ch = getch())
++	btn = btn * 10 + ch - '0';
++    if (ch != ';')
++	return MENU_NOTHING;
++
++#if defined (__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
++    if (cygwin_mouse_btn_swapped) {
++	if (btn == MOUSE_BTN2_DOWN)
++	    btn = MOUSE_BTN3_DOWN;
++	else if (btn == MOUSE_BTN3_DOWN)
++	    btn = MOUSE_BTN2_DOWN;
++    }
++#endif
++
++    for (ch = getch(); IS_DIGIT(ch); ch = getch())
++	x = x * 10 + ch - '0';
++    if (ch != ';')
++	return MENU_NOTHING;
++    if (x > 0)
++	x--;
++
++    for (ch = getch(); IS_DIGIT(ch); ch = getch())
++	y = y * 10 + ch - '0';
++    if (ch == 'm')
++	btn |= 3;
++    else if (ch != 'M' && ch != ';')
++	return MENU_NOTHING;
++    if (y > 0)
++	y--;
++
++    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
++	return MENU_NOTHING;
++
++    return process_mMouse(btn, x, y);
++}
++
+ #ifdef USE_GPM
+ static int
+ gpm_process_menu_mouse(Gpm_Event * event, void *data)
+@@ -1365,9 +1408,7 @@ initSelectMenu(void)
  		break;
  	    default:
  		Strcat_char(str, ' ');
@@ -8711,7 +9525,7 @@ index 774b1bd..0f66583 100644
  		Strcat_charp(str, p);
  		break;
  	    }
-@@ -1513,9 +1511,7 @@ initSelTabMenu(void)
+@@ -1513,9 +1554,7 @@ initSelTabMenu(void)
  	    case SCM_MISSING:
  		break;
  	    default:
@@ -8722,7 +9536,7 @@ index 774b1bd..0f66583 100644
  		Strcat_charp(str, p);
  		break;
  	    }
-@@ -1845,10 +1841,8 @@ link_menu(Buffer *buf)
+@@ -1845,10 +1884,8 @@ link_menu(Buffer *buf)
  	    Strcat_charp(str, " ");
  	if (!l->url)
  	    p = "";
@@ -8872,6 +9686,28 @@ index 78997e0..d16270c 100644
  }
  
  #ifdef USE_M17N
+diff --git a/news.c b/news.c
+index 8a1f0e8..c0494b7 100644
+--- a/news.c
++++ b/news.c
+@@ -76,13 +76,15 @@ news_close(News * news)
+ static int
+ news_open(News * news)
+ {
+-    int sock, status;
++    int sock, status, fd;
+ 
+     sock = openSocket(news->host, "nntp", news->port);
+     if (sock < 0)
+ 	goto open_err;
+     news->rf = newInputStream(sock);
+-    news->wf = fdopen(dup(sock), "wb");
++    if ((fd = dup(sock)) < 0)
++	    goto open_err;
++    news->wf = fdopen(fd, "wb");
+     if (!news->rf || !news->wf)
+ 	goto open_err;
+     IStype(news->rf) |= IST_UNCLOSE;
 diff --git a/parsetagx.c b/parsetagx.c
 index 6b627d2..3435f9f 100644
 --- a/parsetagx.c
@@ -11990,7 +12826,7 @@ index f8a7345..0d8beb5 100644
 -
 -#include "indep.h"
 diff --git a/rc.c b/rc.c
-index 8441a39..a839bb3 100644
+index 8441a39..0cd7634 100644
 --- a/rc.c
 +++ b/rc.c
 @@ -9,7 +9,9 @@
@@ -12037,6 +12873,24 @@ index 8441a39..a839bb3 100644
      {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
      {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
       NULL},
+@@ -771,7 +779,7 @@ create_option_search_table()
+     qsort(RC_search_table, RC_table_size, sizeof(struct rc_search_table),
+ 	  (int (*)(const void *, const void *))compare_table);
+ 
+-    diff1 = diff2 = 0;
++    diff2 = 0;
+     for (i = 0; i < RC_table_size - 1; i++) {
+ 	p = RC_search_table[i].param->name;
+ 	q = RC_search_table[i + 1].param->name;
+@@ -829,7 +837,7 @@ void
+ show_params(FILE * fp)
+ {
+     int i, j, l;
+-    char *t = NULL;
++    const char *t = "";
+     char *cmt;
+ 
+ #ifdef USE_M17N
 @@ -1173,6 +1181,8 @@ do_mkdir(const char *dir, long mode)
  #endif				/* not __MINW32_VERSION */
  #endif				/* not __EMX__ */
@@ -12386,10 +13240,27 @@ index f430307..2cd00f9 100644
        $p =~ s@/+$@@;
        $PATH{$p} = 1;
 diff --git a/table.c b/table.c
-index e1243ff..d376284 100644
+index e1243ff..b77f0f8 100644
 --- a/table.c
 +++ b/table.c
-@@ -2878,6 +2878,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -429,7 +429,6 @@ visible_length(char *str)
+     char *t, *r2;
+     int amp_len = 0;
+ 
+-    t = str;
+     while (*str) {
+ 	prev_status = status;
+ 	if (next_status(*str, &status)) {
+@@ -1691,7 +1690,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
+ {
+     int i, j, w, r, h;
+     Str renderbuf;
+-    short new_tabwidth[MAXCOL];
++    short new_tabwidth[MAXCOL] = { 0 };
+ #ifdef MATRIX
+     int itr;
+     VEC *newwidth;
+@@ -2878,6 +2877,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	tmp = process_input(tag);
  	feed_table1(tbl, tmp, mode, width);
  	break;
@@ -12404,6 +13275,14 @@ index e1243ff..d376284 100644
      case HTML_SELECT:
  	tmp = process_select(tag);
  	if (tmp)
+@@ -3010,7 +3017,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	break;
+     case HTML_TABLE_ALT:
+ 	id = -1;
+-	w = 0;
+ 	parsedtag_get_value(tag, ATTR_TID, &id);
+ 	if (id >= 0 && id < tbl->ntable) {
+ 	    struct table *tbl1 = tbl->tables[id].ptr;
 diff --git a/table.h b/table.h
 index 83b661f..fdcdef3 100644
 --- a/table.h
@@ -12430,7 +13309,7 @@ index f9b7b76..f5a2c30 100644
  /fieldset	HTML_N_FIELDSET
  iframe		HTML_IFRAME
 diff --git a/terms.c b/terms.c
-index 7a3c987..339b645 100644
+index 7a3c987..3d2ffd7 100644
 --- a/terms.c
 +++ b/terms.c
 @@ -12,6 +12,7 @@
@@ -12733,7 +13612,34 @@ index 7a3c987..339b645 100644
  }
  
  static MySignalHandler
-@@ -2027,8 +2288,8 @@ sleep_till_anykey(int sec, int purge)
+@@ -953,7 +1214,6 @@ addch(char pc)
+ {
+     l_prop *pr;
+     int dest, i;
+-    short *dirty;
+ #ifdef USE_M17N
+     static Str tmp = NULL;
+     char **p;
+@@ -975,7 +1235,6 @@ addch(char pc)
+ 	return;
+     p = ScreenImage[CurLine]->lineimage;
+     pr = ScreenImage[CurLine]->lineprop;
+-    dirty = &ScreenImage[CurLine]->isdirty;
+ 
+ #ifndef USE_M17N
+     /* Eliminate unprintables according to * iso-8859-*.
+@@ -1986,6 +2245,10 @@ skip_escseq(void)
+ 	    getch();
+ 	    getch();
+ 	    getch();
++	} else if (is_xterm && c == '<') {
++	    c = getch();
++	    while (IS_DIGIT(c) || c == ';')
++		c = getch();
+ 	}
+ 	else
+ #endif
+@@ -2027,8 +2290,8 @@ sleep_till_anykey(int sec, int purge)
  
  #ifdef USE_MOUSE
  
@@ -12745,7 +13651,7 @@ index 7a3c987..339b645 100644
  #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
  
 diff --git a/url.c b/url.c
-index ed6062e..10089ca 100644
+index ed6062e..d346312 100644
 --- a/url.c
 +++ b/url.c
 @@ -121,6 +121,7 @@ static struct table2 DefaultGuess[] = {
@@ -12871,9 +13777,10 @@ index ed6062e..10089ca 100644
  	    /* scheme://user:pass@...       */
 +	    p_url->user = copyPath(qq, q - 1 - qq, COPYPATH_SPC_IGNORE);
  	    p_url->pass = copyPath(q, p - q, COPYPATH_SPC_ALLOW);
- 	    q = ++p;
+-	    q = ++p;
 -	    p_url->user = p_url->host;
 -	    p_url->host = NULL;
++	    p++;
  	    goto analyze_url;
  	}
  	/* scheme://host:port/ */
@@ -12882,7 +13789,15 @@ index ed6062e..10089ca 100644
  	tmp = Strnew_charp_n(q, p - q);
  	p_url->port = atoi(tmp->ptr);
  	/* *p is one of ['\0', '/', '?', '#'] */
-@@ -829,7 +839,8 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+@@ -822,14 +832,15 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+     case '@':
+ 	/* scheme://user@...            */
+ 	p_url->user = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
+-	q = ++p;
++	p++;
+ 	goto analyze_url;
+     case '\0':
+ 	/* scheme://host                */
      case '/':
      case '?':
      case '#':
@@ -12957,7 +13872,48 @@ index ed6062e..10089ca 100644
  	    (current->scheme != SCM_FTP ||
  	     (current->user == NULL && current->pass == NULL))) {
  	    char *p = current->label;
-@@ -1603,7 +1638,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1384,7 +1419,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+ {
+     Str tmp;
+     TextListItem *i;
+-    int seen_www_auth = 0;
+ #ifdef USE_COOKIE
+     Str cookie;
+ #endif				/* USE_COOKIE */
+@@ -1400,7 +1434,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+ 	for (i = extra->first; i != NULL; i = i->next) {
+ 	    if (strncasecmp(i->ptr, "Authorization:",
+ 			    sizeof("Authorization:") - 1) == 0) {
+-		seen_www_auth = 1;
+ #ifdef USE_SSL
+ 		if (hr->command == HR_COMMAND_CONNECT)
+ 		    continue;
+@@ -1430,20 +1463,20 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+ #endif				/* USE_COOKIE */
+     if (hr->command == HR_COMMAND_POST) {
+ 	if (hr->request->enctype == FORM_ENCTYPE_MULTIPART) {
+-	    Strcat_charp(tmp, "Content-type: multipart/form-data; boundary=");
++	    Strcat_charp(tmp, "Content-Type: multipart/form-data; boundary=");
+ 	    Strcat_charp(tmp, hr->request->boundary);
+ 	    Strcat_charp(tmp, "\r\n");
+ 	    Strcat(tmp,
+-		   Sprintf("Content-length: %ld\r\n", hr->request->length));
++		   Sprintf("Content-Length: %ld\r\n", hr->request->length));
+ 	    Strcat_charp(tmp, "\r\n");
+ 	}
+ 	else {
+ 	    if (!override_content_type) {
+ 		Strcat_charp(tmp,
+-			     "Content-type: application/x-www-form-urlencoded\r\n");
++			     "Content-Type: application/x-www-form-urlencoded\r\n");
+ 	    }
+ 	    Strcat(tmp,
+-		   Sprintf("Content-length: %ld\r\n", hr->request->length));
++		   Sprintf("Content-Length: %ld\r\n", hr->request->length));
+ 	    if (header_string)
+ 		Strcat(tmp, header_string);
+ 	    Strcat_charp(tmp, "\r\n");
+@@ -1603,7 +1636,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    pu->host != NULL && !check_no_proxy(pu->host)) {
  	    hr->flag |= HR_FLAG_PROXY;
  	    sock = openSocket(FTP_proxy_parsed.host,
@@ -12966,7 +13922,7 @@ index ed6062e..10089ca 100644
  			      FTP_proxy_parsed.port);
  	    if (sock < 0)
  		return uf;
-@@ -1645,15 +1680,15 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1645,15 +1678,15 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    }
  	    else if (pu->scheme == SCM_HTTPS) {
  		sock = openSocket(HTTPS_proxy_parsed.host,
@@ -12986,7 +13942,7 @@ index ed6062e..10089ca 100644
  #ifdef USE_SSL
  		sslh = NULL;
  	    }
-@@ -1685,8 +1720,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1685,8 +1718,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    }
  	}
  	else {
@@ -12996,7 +13952,7 @@ index ed6062e..10089ca 100644
  	    if (sock < 0) {
  		*status = HTST_MISSING;
  		return uf;
-@@ -1750,7 +1784,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1750,7 +1782,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    pu->host != NULL && !check_no_proxy(pu->host)) {
  	    hr->flag |= HR_FLAG_PROXY;
  	    sock = openSocket(GOPHER_proxy_parsed.host,
@@ -13005,7 +13961,7 @@ index ed6062e..10089ca 100644
  			      GOPHER_proxy_parsed.port);
  	    if (sock < 0)
  		return uf;
-@@ -1758,8 +1792,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1758,8 +1790,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    tmp = HTTPrequest(pu, current, hr, extra_header);
  	}
  	else {
@@ -13015,7 +13971,7 @@ index ed6062e..10089ca 100644
  	    if (sock < 0)
  		return uf;
  	    if (pu->file == NULL)
-@@ -2234,3 +2267,66 @@ schemeToProxy(int scheme)
+@@ -2234,3 +2265,66 @@ schemeToProxy(int scheme)
      }
      return pu;
  }
@@ -13094,10 +14050,18 @@ index 31d30e4..ab25163 100644
  #ifndef FM_H
  char *w3m_version = CURRENT_VERSION;
 diff --git a/w3mbookmark.c b/w3mbookmark.c
-index 4355536..fcbad11 100644
+index 4355536..a306f26 100644
 --- a/w3mbookmark.c
 +++ b/w3mbookmark.c
-@@ -99,7 +99,7 @@ create_new_bookmark(char *bmark, char *section, char *title, char *url,
+@@ -79,6 +79,7 @@ print_bookmark_panel(char *bmark, char *url, char *title, char *charset)
+ 	    }
+ 	}
+ 	printf("</select>\n");
++	fclose(f);
+     }
+     printf(bkmark_src2, html_quote(url), html_quote(title));
+ }
+@@ -99,7 +100,7 @@ create_new_bookmark(char *bmark, char *section, char *title, char *url,
  	fprintf(f, "<body>\n<h1>Bookmarks</h1>\n");
  	fprintf(f, "<h2>%s</h2>\n<ul>\n", section);
  	fprintf(f, "<li><a href=\"%s\">%s</a>\n", url, title);
@@ -13106,6 +14070,30 @@ index 4355536..fcbad11 100644
  	fprintf(f, "</ul>\n</body>\n</html>\n");
  	fclose(f);
      }
+@@ -168,7 +169,10 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
+ 	/* In this case, a new bookmark is appeneded after the bookmark file */
+ 	return create_new_bookmark(bmark, section, title, url, "a");
+     }
+-    f = fopen(bmark, "w");
++    if ((f = fopen(bmark, "w")) == NULL) {
++	printf("\nCannot open bookmark %s\n", bmark);
++	return FALSE;
++    }
+     while (tl->nitem) {
+ 	fputs(popText(tl), f);
+     }
+diff --git a/w3mhelperpanel.c b/w3mhelperpanel.c
+index 110794b..96b60a0 100644
+--- a/w3mhelperpanel.c
++++ b/w3mhelperpanel.c
+@@ -115,6 +115,7 @@ printMailcapPanel(char *mailcap)
+     printf("</table>\n<input type=submit name=submit value=\"%s\">\n</form>\n\
+ </body>\n</html>\n",
+ 	   MSG_DOIT);
++    fclose(f);
+ }
+ 
+ void
 diff --git a/w3mimg/Makefile.in b/w3mimg/Makefile.in
 index dfc550c..8e2ad73 100644
 --- a/w3mimg/Makefile.in

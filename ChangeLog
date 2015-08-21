@@ -1,3 +1,9 @@
+2015-08-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/keymap.lynx, doc/keymap.lynx: Fix unknown key.
+	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/265144
+	Bug: https://sourceforge.net/p/w3m/bugs/48/
+
 2015-08-11  David Crosby  <dave@dafyddcrosby.com>
 
 	Fix resource leaks, dead assignments, divide-by-zero, and so on.
@@ -105,6 +111,7 @@
 	* main.c: Fix that SGR style mouse handler has off-by-one problem.
 	cf. https://github.com/tats/w3m/issues/5
 	Origin: https://gist.github.com/ttdoda/30c189a63d483beeb207
+	Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/1390768
 	Bug: https://sourceforge.net/p/w3m/patches/65/
 
 2015-07-31  yshl  <yshl@takechiyo.net>

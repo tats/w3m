@@ -26,6 +26,8 @@
 #define min(a,b)        ((a) > (b) ? (b) : (a))
 #endif				/* not min */
 
+#define MAX_INPUT_SIZE 80 // TODO - max should be screen line length
+
 static int frame_source = 0;
 
 static char *guess_filename(char *file);
@@ -3562,7 +3564,7 @@ process_anchor(struct parsed_tag *tag, char *tagbuf)
 Str
 process_input(struct parsed_tag *tag)
 {
-    int i, w, v, x, y, z, iw, ih;
+    int i = 20, v, x, y, z, iw, ih, size = 20;
     char *q, *p, *r, *p2, *s;
     Str tmp = NULL;
     char *qq = "";
@@ -3581,9 +3583,9 @@ process_input(struct parsed_tag *tag)
     parsedtag_get_value(tag, ATTR_VALUE, &q);
     r = "";
     parsedtag_get_value(tag, ATTR_NAME, &r);
-    w = 20;
-    parsedtag_get_value(tag, ATTR_SIZE, &w);
-    i = 20;
+    parsedtag_get_value(tag, ATTR_SIZE, &size);
+    if (size > MAX_INPUT_SIZE)
+	    size = MAX_INPUT_SIZE;
     parsedtag_get_value(tag, ATTR_MAXLENGTH, &i);
     p2 = NULL;
     parsedtag_get_value(tag, ATTR_ALT, &p2);
@@ -3639,7 +3641,7 @@ process_input(struct parsed_tag *tag)
     }
     Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
 			"name=\"%s\" width=%d maxlength=%d value=\"%s\"",
-			cur_hseq++, cur_form_id, p, html_quote(r), w, i, qq));
+			cur_hseq++, cur_form_id, p, html_quote(r), size, i, qq));
     if (x)
 	Strcat_charp(tmp, " checked");
     if (y)
@@ -3684,18 +3686,18 @@ process_input(struct parsed_tag *tag)
 	case FORM_INPUT_PASSWORD:
 	    i = 0;
 	    if (q) {
-		for (; i < qlen && i < w; i++)
+		for (; i < qlen && i < size; i++)
 		    Strcat_char(tmp, '*');
 	    }
-	    for (; i < w; i++)
+	    for (; i < size; i++)
 		Strcat_char(tmp, ' ');
 	    break;
 	case FORM_INPUT_TEXT:
 	case FORM_INPUT_FILE:
 	    if (q)
-		Strcat(tmp, textfieldrep(Strnew_charp(q), w));
+		Strcat(tmp, textfieldrep(Strnew_charp(q), size));
 	    else {
-		for (i = 0; i < w; i++)
+		for (i = 0; i < size; i++)
 		    Strcat_char(tmp, ' ');
 	    }
 	    break;

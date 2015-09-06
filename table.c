@@ -188,7 +188,7 @@ dv2sv(double *dv, short *iv, int size)
     indexarray = NewAtom_N(short, size);
     edv = NewAtom_N(double, size);
     for (i = 0; i < size; i++) {
-	iv[i] = ceil(dv[i]);
+	iv[i] = (short) ceil(dv[i]);
 	edv[i] = (double)iv[i] - dv[i];
     }
 
@@ -205,7 +205,7 @@ dv2sv(double *dv, short *iv, int size)
 	indexarray[i] = k;
     }
     iw = min((int)(w + 0.5), size);
-    if (iw == 0)
+    if (iw <= 1)
 	return;
     x = edv[(int)indexarray[iw - 1]];
     for (i = 0; i < size; i++) {

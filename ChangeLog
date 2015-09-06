@@ -1,3 +1,14 @@
+2015-09-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Do not use C99-style comments.
+
+2015-09-06  David Crosby  <dave@dafyddcrosby.com>
+
+	* file.c: Mitigate issue #16 found by @kcwu.
+	* table.c: Fix stack overflow found by @kcwu.
+	Origin: https://github.com/dafyddcrosby/sw3m
+	Bug-sw3m: https://github.com/dafyddcrosby/sw3m/issues/16
+
 2015-08-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/keymap.lynx, doc/keymap.lynx: Fix unknown key.

@@ -26,7 +26,7 @@
 #define min(a,b)        ((a) > (b) ? (b) : (a))
 #endif				/* not min */
 
-#define MAX_INPUT_SIZE 80 // TODO - max should be screen line length
+#define MAX_INPUT_SIZE 80 /* TODO - max should be screen line length */
 
 static int frame_source = 0;
 
@@ -3788,7 +3788,7 @@ process_button(struct parsed_tag *tag)
        qlen = strlen(q);
     }
 
-    //    Strcat_charp(tmp, "<pre_int>");
+    /*    Strcat_charp(tmp, "<pre_int>"); */
     Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
                        "name=\"%s\" value=\"%s\">",
                        cur_hseq++, cur_form_id, p, html_quote(r), qq));
@@ -3800,7 +3800,7 @@ process_n_button(void)
 {
     Str tmp = Strnew();
     Strcat_charp(tmp, "</input_alt>");
-    //    Strcat_charp(tmp, "</pre_int>");
+    /*    Strcat_charp(tmp, "</pre_int>"); */
     return tmp;
 }
 

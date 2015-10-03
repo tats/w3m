@@ -48,7 +48,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 	}
 	# print "tlang=$tlang\n";
 	eval {require "w3mhelp-funcdesc.$tlang.pl";};
-	if (defined(%funcdesc)) {
+	if (%funcdesc) {
 	    $lang = $tlang;
 	}
     }

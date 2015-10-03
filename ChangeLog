@@ -1,3 +1,9 @@
+2015-10-04  Gaetan Bisson  <bisson@archlinux.org>
+
+	* scripts/w3mhelp.cgi.in: Do not use defined(%hash).
+	Origin: https://projects.archlinux.org/svntogit/packages.git/commit/trunk?h=packages/w3m&id=d9e0a4f0b461c9e2177cd9e64a10581386650503
+	Bug-Arch: https://bugs.archlinux.org/task/45608
+
 2015-09-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Do not use C99-style comments.

@@ -1,6 +1,6 @@
 Source: w3m
 Section: web
-Priority: standard
+Priority: optional
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Uploaders: HIGUCHI Daisuke (VDR dai) <dai@debian.org>
 Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [linux-any], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev, pkg-config, autotools-dev (>= 20100122)
@@ -30,7 +30,6 @@ Description: WWW browsable pager with excellent tables/frames support
 
 Package: w3m-img
 Architecture: any
-Priority: optional
 Depends: w3m (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: inline image extension support utilities for w3m
  w3m-img provides some utilities to support inline images for w3m

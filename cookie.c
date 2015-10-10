@@ -254,10 +254,6 @@ find_cookie(ParsedURL *pu)
     return tmp;
 }
 
-char *special_domain[] = {
-    ".com", ".edu", ".gov", ".mil", ".net", ".org", ".int", NULL
-};
-
 int
 check_avoid_wrong_number_of_dots_domain( Str domain )
 {
@@ -330,19 +326,6 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 				     3);
 	    if (n < 2) {
 		if (! check_avoid_wrong_number_of_dots_domain(domain)) {
-		    COOKIE_ERROR(COO_ESPECIAL);
-		}
-	    }
-	    else if (n == 2) {
-		char **sdomain;
-		int ok = 0;
-		for (sdomain = special_domain; !ok && *sdomain; sdomain++) {
-		    int offset = domain->length - strlen(*sdomain);
-		    if (offset >= 0 &&
-			strcasecmp(*sdomain, &domain->ptr[offset]) == 0)
-			ok = 1;
-		}
-		if (!ok && ! check_avoid_wrong_number_of_dots_domain(domain)) {
 		    COOKIE_ERROR(COO_ESPECIAL);
 		}
 	    }

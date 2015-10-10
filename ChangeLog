@@ -1,3 +1,8 @@
+2015-10-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* cookie.c: Remove incomplete special_domain tests.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=385702
+
 2015-10-04  Gaetan Bisson  <bisson@archlinux.org>
 
 	* scripts/w3mhelp.cgi.in: Do not use defined(%hash).

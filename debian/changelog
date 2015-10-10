@@ -1,3 +1,12 @@
+w3m (0.5.3-25) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20151010
+    - Remove incomplete special_domain tests (closes: #385702)
+    - Fix unknown key in keymap.lynx (LP: #265144)
+  * Set Priority to optional
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 10 Oct 2015 19:44:12 +0900
+
 w3m (0.5.3-24) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20150811

@@ -1,3 +1,12 @@
+2015-10-24  BwackNinja  <BwackNinja@gmail.com>
+
+	* w3mimg/x11/x11_w3mimg.c:
+	Fix handling visuals and colormaps incorrectly.
+	cf. https://github.com/hut/ranger/issues/86
+	Origin: https://gist.github.com/BwackNinja/60a344730170f9ce2163
+	Bug-Arch: https://bugs.archlinux.org/task/46836
+	Bug: https://sourceforge.net/p/w3m/patches/72/
+
 2015-10-10  Tatsuya Kinoshita  <tats@debian.org>
 
 	* cookie.c: Remove incomplete special_domain tests.

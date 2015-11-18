@@ -1,7 +1,12 @@
+2015-11-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20150820.1.
+
 2015-11-11  Mingye Wang (Arthur2e5)  <arthur200126@gmail.com>
 
 	* po/LINGUAS, po/zh_CN.po, po/zh_TW.po:
-	Add zh_CN and zh_TW Translations.
+	Add zh_CN and zh_TW translations.
 	Please note that the zh_TW translation is machine-converted using
 	OpenCC from zh_CN, and needs to be further polished by actual zh_TW
 	speakers.

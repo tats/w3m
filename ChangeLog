@@ -1,3 +1,10 @@
+2015-11-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fm.h: Accept cookies by default.
+
+	* fm.h: Set argv_is_url to 1 by default.
+	Bug-Arch: https://bugs.archlinux.org/task/47102
+
 2015-11-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* config.guess, config.sub:

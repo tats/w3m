@@ -262,7 +262,7 @@ Comment:
  version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 Files: config.guess config.sub
-Copyright: 1992-2014, Free Software Foundation, Inc.
+Copyright: 1992-2015, Free Software Foundation, Inc.
 License: GPL-3+ with Autoconf exception
  This file is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by

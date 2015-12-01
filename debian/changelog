@@ -1,3 +1,12 @@
+w3m (0.5.3-26) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20151119
+    - Add zh_CN and zh_TW translations (closes: #804732)
+  * Update debian/copyright
+  * Update Vcs-Browser to https
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Wed, 02 Dec 2015 00:36:30 +0900
+
 w3m (0.5.3-25) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20151010

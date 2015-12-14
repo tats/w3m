@@ -136,10 +136,13 @@ x11_init(w3mimg_op * self)
 #endif
     }
     else if (!xi->init_flag) {
+	XWindowAttributes attr;
 #if defined(USE_GTK2)
 	g_type_init();
 #endif
-	gdk_pixbuf_xlib_init(xi->display, 0);
+	XGetWindowAttributes(xi->display, xi->parent, &attr);
+	/* gdk_pixbuf_xlib_init_with_depth() ignores depth, sigh... */
+	gdk_pixbuf_xlib_init_with_depth(xi->display, 0, attr.depth);
 	xi->init_flag = TRUE;
     }
 #endif
@@ -205,14 +208,16 @@ x11_set_background(w3mimg_op * self, char *background)
 {
     XColor screen_def, exact_def;
     struct x11_info *xi;
+    XWindowAttributes attr;
     if (self == NULL)
 	return;
     xi = (struct x11_info *)self->priv;
     if (xi == NULL)
 	return;
 
+    XGetWindowAttributes(xi->display, xi->window, &attr);
     if (background &&
-	XAllocNamedColor(xi->display, DefaultColormap(xi->display, 0),
+	XAllocNamedColor(xi->display, attr.colormap,
 			 background, &screen_def, &exact_def))
 	xi->background_pixel = screen_def.pixel;
     else {
@@ -221,7 +226,7 @@ x11_set_background(w3mimg_op * self, char *background)
 	XImage *i;
 
 	p = XCreatePixmap(xi->display, xi->window, 1, 1,
-			  DefaultDepth(xi->display, 0));
+			  attr.depth);
 	gc = XCreateGC(xi->display, xi->window, 0, NULL);
 	if (!p || !gc)
 	    exit(1);		/* XXX */
@@ -263,6 +268,7 @@ x11_img_new(struct x11_info *xi, int w, int h, int n)
 {
     struct x11_image *img = NULL;
     int i;
+    XWindowAttributes attr;
 
     img = malloc(sizeof(*img));
     if (!img)
@@ -272,9 +278,10 @@ x11_img_new(struct x11_info *xi, int w, int h, int n)
     if (!img->pixmap)
 	goto ERROR;
 
+    XGetWindowAttributes(xi->display, xi->window, &attr);
     for (i = 0; i < n; i++) {
 	img->pixmap[i] = XCreatePixmap(xi->display, xi->parent, w, h,
-				       DefaultDepth(xi->display, 0));
+				       attr.depth);
 	if (!img->pixmap[i])
 	    goto ERROR;
 
@@ -325,6 +332,39 @@ resize_image(GdkPixbuf * pixbuf, int width, int height)
 }
 #endif
 
+static void
+render_pixbuf_to_pixmap_32(Display *display, GC gc, Pixmap pixmap, GdkPixbuf *  pixbuf)
+{
+    unsigned int x, y, width, height, rowstride, bytes_per_pixel;
+    unsigned char *line;
+    XImage *image;
+
+    width = gdk_pixbuf_get_width(pixbuf) ;
+    height = gdk_pixbuf_get_height(pixbuf) ;
+
+    if (!(image = XGetImage(display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap)))
+	return ;
+
+    bytes_per_pixel = (gdk_pixbuf_get_has_alpha(pixbuf)) ? 4 : 3;
+    rowstride = gdk_pixbuf_get_rowstride(pixbuf);
+    line = gdk_pixbuf_get_pixels(pixbuf);
+
+    for (y = 0; y < height; y++) {
+	u_char *pixel;
+
+	pixel = line;
+	for (x = 0; x < width; x++) {
+	    XPutPixel(image, x, y,
+		(pixel[0] <<16) | (pixel[1] <<8) | pixel[2] | 0xff000000);
+	    pixel += bytes_per_pixel;
+	}
+	line += rowstride;
+    }
+
+    XPutImage(display, pixmap, gc, image, 0, 0, 0, 0, width, height);
+    XDestroyImage(image);
+}
+
 static int
 x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 {
@@ -347,6 +387,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     GList *frames;
 #endif
 #endif
+    XWindowAttributes attr;
 
     if (self == NULL)
 	return 0;
@@ -354,6 +395,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     if (xi == NULL)
 	return 0;
 
+    XGetWindowAttributes(xi->display, xi->window, &attr);
 #if defined(USE_IMLIB)
     im = Imlib_load_image(xi->id, fname);
     if (!im)
@@ -363,7 +405,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     if (h <= 0)
 	h = im->rgb_height;
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
-					DefaultDepth(xi->display, 0));
+					attr.depth);
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
@@ -380,14 +422,14 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     if (h <= 0)
 	h = imlib_image_get_height();
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
-					DefaultDepth(xi->display, 0));
+					attr.depth);
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
     imlib_context_set_display(xi->display);
-    imlib_context_set_visual(DefaultVisual(xi->display, 0));
-    imlib_context_set_colormap(DefaultColormap(xi->display, 0));
+    imlib_context_set_visual(attr.visual);
+    imlib_context_set_colormap(attr.colormap);
     imlib_context_set_drawable((Drawable) img->pixmap);
     imlib_render_image_on_drawable_at_size(0, 0, w, h);
     imlib_free_image();
@@ -421,7 +463,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	ratio_h = 1.0 * h / ih;
     }
     tmp_pixmap = XCreatePixmap(xi->display, xi->parent, w, h,
-			       DefaultDepth(xi->display, 0));
+			       attr.depth);
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) tmp_pixmap, xi->imageGC, 0, 0, w, h);
     if (!tmp_pixmap) {
@@ -464,7 +506,10 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	if (delay > ximg->delay)
 	    ximg->delay = delay;
 
-	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
+	if (attr.depth == 32)
+	    render_pixbuf_to_pixmap_32(xi->display, xi->imageGC, ximg->pixmap[j], pixbuf);
+	else
+	    gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
 						 (Drawable) ximg->pixmap[j], 0,
 						 0, 0, 0, w, h,
 						 GDK_PIXBUF_ALPHA_BILEVEL, 1,

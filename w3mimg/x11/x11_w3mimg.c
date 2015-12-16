@@ -219,12 +219,9 @@ x11_set_background(w3mimg_op * self, char *background)
 	Pixmap p;
 	GC gc;
 	XImage *i;
-	XWindowAttributes attr;
-
-	XGetWindowAttributes(xi->display, xi->window, &attr);
 
 	p = XCreatePixmap(xi->display, xi->window, 1, 1,
-			  attr.depth);
+			  DefaultDepth(xi->display, 0));
 	gc = XCreateGC(xi->display, xi->window, 0, NULL);
 	if (!p || !gc)
 	    exit(1);		/* XXX */
@@ -336,7 +333,6 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     ImlibImage *im;
 #elif defined(USE_IMLIB2)
     Imlib_Image im;
-    XWindowAttributes attr;
 #elif defined(USE_GDKPIXBUF)
     GdkPixbufAnimation *animation;
     int j, iw, ih, n, frame_num, delay = -1, max_anim;
@@ -383,16 +379,15 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	w = imlib_image_get_width();
     if (h <= 0)
 	h = imlib_image_get_height();
-    XGetWindowAttributes(xi->display, xi->window, &attr);
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
-					attr.depth);
+					DefaultDepth(xi->display, 0));
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
     XFillRectangle(xi->display, (Pixmap) img->pixmap, xi->imageGC, 0, 0, w, h);
     imlib_context_set_display(xi->display);
-    imlib_context_set_visual(attr.visual);
-    imlib_context_set_colormap(attr.colormap);
+    imlib_context_set_visual(DefaultVisual(xi->display, 0));
+    imlib_context_set_colormap(DefaultColormap(xi->display, 0));
     imlib_context_set_drawable((Drawable) img->pixmap);
     imlib_render_image_on_drawable_at_size(0, 0, w, h);
     imlib_free_image();

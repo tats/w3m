@@ -3,10 +3,10 @@
 	* w3mimg/x11/x11_w3mimg.c:
 	Wrap render_pixbuf_to_pixmap_32() in USE_GTK2.
 
-2015-12-17  arakiken  <arakiken@users.sf.net>
+2015-12-17  Araki Ken  <arakiken@users.sf.net>
 
 	* w3mimg/x11/x11_w3mimg.c:
-	w3mimgdisplay supports 32 bit depth screen. (e.g. gnome-terminal).
+	w3mimgdisplay supports 32 bit depth screen. (e.g. gnome-terminal)
 	Origin: https://bitbucket.org/arakiken/w3m/commits/f9c22db8cfd1aaba9bb7301ef9ba51ed88d8bb40
 
 2015-12-17  Tatsuya Kinoshita  <tats@debian.org>

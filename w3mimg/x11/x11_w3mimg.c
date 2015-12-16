@@ -330,8 +330,8 @@ resize_image(GdkPixbuf * pixbuf, int width, int height)
 	return NULL;
     return resized_pixbuf;
 }
-#endif
 
+#if defined(USE_GTK2)
 static void
 render_pixbuf_to_pixmap_32(Display *display, GC gc, Pixmap pixmap, GdkPixbuf *  pixbuf)
 {
@@ -364,6 +364,8 @@ render_pixbuf_to_pixmap_32(Display *display, GC gc, Pixmap pixmap, GdkPixbuf *  
     XPutImage(display, pixmap, gc, image, 0, 0, 0, 0, width, height);
     XDestroyImage(image);
 }
+#endif
+#endif
 
 static int
 x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)

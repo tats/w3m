@@ -1,3 +1,16 @@
+2015-12-20  Franz Thoma  <franz.thoma@tngtech.com>
+
+	* w3mimg/x11/x11_w3mimg.c: Fix semi-transparent artifacts in w3m-img
+	when used with 32-bit color (e.g. urxvt).
+	imlib_render_image_on_drawable_at_size() tended to leave nasty
+	semi-transparent artifacts in 32-bit mode.  Apparently, resizing an
+	image in 32-bit mode affects the alpha channel even if there is no
+	transparency in the image.  With this patch, resizing is done in
+	24-bit mode (or whatever depth the original image has) before
+	converting the image to 32-bit and rendering it on the display.
+	Origin: https://gist.github.com/fmthoma/f76a1b44e00d5ca972bb
+	cf. https://github.com/hut/ranger/issues/86#issuecomment-166027119
+
 2015-12-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* w3mimg/x11/x11_w3mimg.c:

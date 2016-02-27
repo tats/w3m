@@ -1,3 +1,11 @@
+2016-02-28  Tatsuya Kinoshita  <tats@debian.org>
+
+	* menu.c: Fix SIGFPE for ACCESSKEY.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779092
+
+	* doc/README.func, main.c: Typo fix for ACCESSKEY.
+	cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779092#5
+
 2015-12-20  Franz Thoma  <franz.thoma@tngtech.com>
 
 	* w3mimg/x11/x11_w3mimg.c: Fix semi-transparent artifacts in w3m-img

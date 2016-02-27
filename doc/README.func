@@ -1,5 +1,5 @@
 ABORT		Quit w3m without confirmation
-ACCESSSKEY	Popup acceskey menu
+ACCESSKEY	Popup accesskey menu
 ADD_BOOKMARK	Add current page to bookmark
 ALARM		Set alarm
 BACK		Back to previous buffer

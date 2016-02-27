@@ -4454,7 +4454,7 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
 }
 
 /* accesskey */
-DEFUN(accessKey, ACCESSKEY, "Popup acceskey menu")
+DEFUN(accessKey, ACCESSKEY, "Popup accesskey menu")
 {
     anchorMn(accesskey_menu, TRUE);
 }

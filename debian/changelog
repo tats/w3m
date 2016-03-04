@@ -1,3 +1,12 @@
+w3m (0.5.3-27) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20160228
+    - Fix broken ACCESSKEY (closes: #779092)
+  * Update debian/copyright
+  * Update Standards-Version to 3.9.7
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 04 Mar 2016 19:52:23 +0900
+
 w3m (0.5.3-26) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20151119

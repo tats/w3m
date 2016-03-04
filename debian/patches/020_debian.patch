@@ -60,10 +60,48 @@ index 8f443c1..5fb6581 100755
  	$input = "w3m-control: GOTO_LINK";
  }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..9a7447e 100644
+index 88358ef..a95580f 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,844 @@
+@@ -1,3 +1,882 @@
++2016-02-28  Tatsuya Kinoshita  <tats@debian.org>
++
++	* menu.c: Fix SIGFPE for ACCESSKEY.
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779092
++
++	* doc/README.func, main.c: Typo fix for ACCESSKEY.
++	cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=779092#5
++
++2015-12-20  Franz Thoma  <franz.thoma@tngtech.com>
++
++	* w3mimg/x11/x11_w3mimg.c: Fix semi-transparent artifacts in w3m-img
++	when used with 32-bit color (e.g. urxvt).
++	imlib_render_image_on_drawable_at_size() tended to leave nasty
++	semi-transparent artifacts in 32-bit mode.  Apparently, resizing an
++	image in 32-bit mode affects the alpha channel even if there is no
++	transparency in the image.  With this patch, resizing is done in
++	24-bit mode (or whatever depth the original image has) before
++	converting the image to 32-bit and rendering it on the display.
++	Origin: https://gist.github.com/fmthoma/f76a1b44e00d5ca972bb
++	cf. https://github.com/hut/ranger/issues/86#issuecomment-166027119
++
++2015-12-17  Tatsuya Kinoshita  <tats@debian.org>
++
++	* w3mimg/x11/x11_w3mimg.c:
++	Wrap render_pixbuf_to_pixmap_32() in USE_GTK2.
++
++2015-12-17  Araki Ken  <arakiken@users.sf.net>
++
++	* w3mimg/x11/x11_w3mimg.c:
++	w3mimgdisplay supports 32 bit depth screen. (e.g. gnome-terminal)
++	Origin: https://bitbucket.org/arakiken/w3m/commits/f9c22db8cfd1aaba9bb7301ef9ba51ed88d8bb40
++
++2015-12-17  Tatsuya Kinoshita  <tats@debian.org>
++
++	* w3mimg/x11/x11_w3mimg.c:
++	Revert "Fix handling visuals and colormaps incorrectly".
++	This reverts commit e24b4064daf3e022e370788a8c7267db40c37dda.
++
 +2015-11-19  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* fm.h: Accept cookies by default.
@@ -4936,6 +4974,17 @@ index 56cca50..da16947 100644
      assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can
      use cookie_avoid_wrong_number_of_dots to avoid this
      restriction. You can set this in "Domains to avoid [wrong number
+diff --git a/doc/README.func b/doc/README.func
+index 0b2c034..26de39d 100644
+--- a/doc/README.func
++++ b/doc/README.func
+@@ -1,5 +1,5 @@
+ ABORT		Quit w3m without confirmation
+-ACCESSSKEY	Popup acceskey menu
++ACCESSKEY	Popup accesskey menu
+ ADD_BOOKMARK	Add current page to bookmark
+ ALARM		Set alarm
+ BACK		Back to previous buffer
 diff --git a/doc/README.img b/doc/README.img
 index 0c10114..f11362f 100644
 --- a/doc/README.img
@@ -8916,7 +8965,7 @@ index c0461df..f0c6242 100644
      int quoted;
      char *q = NULL;
 diff --git a/main.c b/main.c
-index b421943..6609b49 100644
+index b421943..d4f6b21 100644
 --- a/main.c
 +++ b/main.c
 @@ -1,6 +1,7 @@
@@ -9438,6 +9487,15 @@ index b421943..6609b49 100644
      parseURL2(url, &p_url, current);
      pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
      cmd_loadURL(url, current, referer, NULL);
+@@ -4329,7 +4454,7 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
+ }
+ 
+ /* accesskey */
+-DEFUN(accessKey, ACCESSKEY, "Popup acceskey menu")
++DEFUN(accessKey, ACCESSKEY, "Popup accesskey menu")
+ {
+     anchorMn(accesskey_menu, TRUE);
+ }
 @@ -4510,8 +4635,7 @@ _peekURL(int only_img)
  	s = parsedURL2Str(&pu);
      }
@@ -9674,7 +9732,7 @@ index 64fd0ad..bc7a5be 100644
  #define SWAPI(a,b) { int tmp = a; a = b; b = tmp; }
  
 diff --git a/menu.c b/menu.c
-index 774b1bd..e968034 100644
+index 774b1bd..11a5369 100644
 --- a/menu.c
 +++ b/menu.c
 @@ -57,6 +57,7 @@ static int mCancel(char c);
@@ -9810,6 +9868,22 @@ index 774b1bd..e968034 100644
  	Strcat_charp(str, p);
  	label[i] = str->ptr;
  	if (len < str->length)
+@@ -1913,6 +1950,7 @@ accesskey_menu(Buffer *buf)
+     }
+     label[nitem] = NULL;
+ 
++    set_menu_frame();
+     new_option_menu(&menu, label, &key, NULL);
+ 
+     menu.initial = 0;
+@@ -2025,7 +2063,6 @@ list_menu(Buffer *buf)
+     label[nitem] = NULL;
+ 
+     set_menu_frame();
+-    set_menu_frame();
+     new_option_menu(&menu, label, &key, NULL);
+ 
+     menu.initial = 0;
 diff --git a/mimehead.c b/mimehead.c
 index 78997e0..d16270c 100644
 --- a/mimehead.c
@@ -17013,7 +17087,7 @@ index d3ae5a9..fb323f5 100644
  	goto error;
      }
 diff --git a/w3mimg/x11/x11_w3mimg.c b/w3mimg/x11/x11_w3mimg.c
-index f5be4a8..7eafa76 100644
+index f5be4a8..9a539de 100644
 --- a/w3mimg/x11/x11_w3mimg.c
 +++ b/w3mimg/x11/x11_w3mimg.c
 @@ -14,7 +14,7 @@
@@ -17025,7 +17099,7 @@ index f5be4a8..7eafa76 100644
  #include <gdk-pixbuf-xlib/gdk-pixbuf-xlib.h>
  #else
  #include <gdk-pixbuf/gdk-pixbuf-xlib.h>
-@@ -121,16 +121,21 @@ x11_init(w3mimg_op * self)
+@@ -121,24 +121,32 @@ x11_init(w3mimg_op * self)
      if (self == NULL)
  	return 0;
      xi = (struct x11_info *)self->priv;
@@ -17046,10 +17120,14 @@ index f5be4a8..7eafa76 100644
 +#endif
 +    }
 +    else if (!xi->init_flag) {
++	XWindowAttributes attr;
  #if defined(USE_GTK2)
  	g_type_init();
  #endif
-@@ -138,7 +143,7 @@ x11_init(w3mimg_op * self)
+-	gdk_pixbuf_xlib_init(xi->display, 0);
++	XGetWindowAttributes(xi->display, xi->parent, &attr);
++	/* gdk_pixbuf_xlib_init_with_depth() ignores depth, sigh... */
++	gdk_pixbuf_xlib_init_with_depth(xi->display, 0, attr.depth);
  	xi->init_flag = TRUE;
      }
  #endif
@@ -17058,13 +17136,26 @@ index f5be4a8..7eafa76 100644
  	xi->imageGC = XCreateGC(xi->display, xi->parent, 0, NULL);
  	if (!xi->imageGC)
  	    return 0;
-@@ -214,9 +219,12 @@ x11_set_background(w3mimg_op * self, char *background)
- 	Pixmap p;
- 	GC gc;
+@@ -200,14 +208,16 @@ x11_set_background(w3mimg_op * self, char *background)
+ {
+     XColor screen_def, exact_def;
+     struct x11_info *xi;
++    XWindowAttributes attr;
+     if (self == NULL)
+ 	return;
+     xi = (struct x11_info *)self->priv;
+     if (xi == NULL)
+ 	return;
+ 
++    XGetWindowAttributes(xi->display, xi->window, &attr);
+     if (background &&
+-	XAllocNamedColor(xi->display, DefaultColormap(xi->display, 0),
++	XAllocNamedColor(xi->display, attr.colormap,
+ 			 background, &screen_def, &exact_def))
+ 	xi->background_pixel = screen_def.pixel;
+     else {
+@@ -216,7 +226,7 @@ x11_set_background(w3mimg_op * self, char *background)
  	XImage *i;
-+	XWindowAttributes attr;
-+
-+	XGetWindowAttributes(xi->display, xi->window, &attr);
  
  	p = XCreatePixmap(xi->display, xi->window, 1, 1,
 -			  DefaultDepth(xi->display, 0));
@@ -17072,19 +17163,101 @@ index f5be4a8..7eafa76 100644
  	gc = XCreateGC(xi->display, xi->window, 0, NULL);
  	if (!p || !gc)
  	    exit(1);		/* XXX */
-@@ -328,6 +336,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
-     ImlibImage *im;
- #elif defined(USE_IMLIB2)
-     Imlib_Image im;
+@@ -258,6 +268,7 @@ x11_img_new(struct x11_info *xi, int w, int h, int n)
+ {
+     struct x11_image *img = NULL;
+     int i;
 +    XWindowAttributes attr;
- #elif defined(USE_GDKPIXBUF)
-     GdkPixbufAnimation *animation;
-     int j, iw, ih, n, frame_num, delay = -1, max_anim;
-@@ -374,15 +383,16 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+ 
+     img = malloc(sizeof(*img));
+     if (!img)
+@@ -267,9 +278,10 @@ x11_img_new(struct x11_info *xi, int w, int h, int n)
+     if (!img->pixmap)
+ 	goto ERROR;
+ 
++    XGetWindowAttributes(xi->display, xi->window, &attr);
+     for (i = 0; i < n; i++) {
+ 	img->pixmap[i] = XCreatePixmap(xi->display, xi->parent, w, h,
+-				       DefaultDepth(xi->display, 0));
++				       attr.depth);
+ 	if (!img->pixmap[i])
+ 	    goto ERROR;
+ 
+@@ -318,6 +330,41 @@ resize_image(GdkPixbuf * pixbuf, int width, int height)
+ 	return NULL;
+     return resized_pixbuf;
+ }
++
++#if defined(USE_GTK2)
++static void
++render_pixbuf_to_pixmap_32(Display *display, GC gc, Pixmap pixmap, GdkPixbuf *  pixbuf)
++{
++    unsigned int x, y, width, height, rowstride, bytes_per_pixel;
++    unsigned char *line;
++    XImage *image;
++
++    width = gdk_pixbuf_get_width(pixbuf) ;
++    height = gdk_pixbuf_get_height(pixbuf) ;
++
++    if (!(image = XGetImage(display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap)))
++	return ;
++
++    bytes_per_pixel = (gdk_pixbuf_get_has_alpha(pixbuf)) ? 4 : 3;
++    rowstride = gdk_pixbuf_get_rowstride(pixbuf);
++    line = gdk_pixbuf_get_pixels(pixbuf);
++
++    for (y = 0; y < height; y++) {
++	u_char *pixel;
++
++	pixel = line;
++	for (x = 0; x < width; x++) {
++	    XPutPixel(image, x, y,
++		(pixel[0] <<16) | (pixel[1] <<8) | pixel[2] | 0xff000000);
++	    pixel += bytes_per_pixel;
++	}
++	line += rowstride;
++    }
++
++    XPutImage(display, pixmap, gc, image, 0, 0, 0, 0, width, height);
++    XDestroyImage(image);
++}
++#endif
+ #endif
+ 
+ static int
+@@ -342,6 +389,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+     GList *frames;
+ #endif
+ #endif
++    XWindowAttributes attr;
+ 
+     if (self == NULL)
+ 	return 0;
+@@ -349,6 +397,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+     if (xi == NULL)
+ 	return 0;
+ 
++    XGetWindowAttributes(xi->display, xi->window, &attr);
+ #if defined(USE_IMLIB)
+     im = Imlib_load_image(xi->id, fname);
+     if (!im)
+@@ -358,7 +407,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+     if (h <= 0)
+ 	h = im->rgb_height;
+     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
+-					DefaultDepth(xi->display, 0));
++					attr.depth);
+     if (!img->pixmap)
+ 	return 0;
+     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
+@@ -374,17 +423,21 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
  	w = imlib_image_get_width();
      if (h <= 0)
  	h = imlib_image_get_height();
-+    XGetWindowAttributes(xi->display, xi->window, &attr);
++
++    im = imlib_create_cropped_scaled_image(0, 0, imlib_image_get_width(), imlib_image_get_height(), w, h);
++    imlib_context_set_image(im);
++
      img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 -					DefaultDepth(xi->display, 0));
 +					attr.depth);
@@ -17098,9 +17271,33 @@ index f5be4a8..7eafa76 100644
 +    imlib_context_set_visual(attr.visual);
 +    imlib_context_set_colormap(attr.colormap);
      imlib_context_set_drawable((Drawable) img->pixmap);
-     imlib_render_image_on_drawable_at_size(0, 0, w, h);
+-    imlib_render_image_on_drawable_at_size(0, 0, w, h);
++    imlib_render_image_on_drawable(0, 0);
      imlib_free_image();
-@@ -653,9 +663,11 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
+ #elif defined(USE_GDKPIXBUF)
+     max_anim = self->max_anim;
+@@ -416,7 +469,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+ 	ratio_h = 1.0 * h / ih;
+     }
+     tmp_pixmap = XCreatePixmap(xi->display, xi->parent, w, h,
+-			       DefaultDepth(xi->display, 0));
++			       attr.depth);
+     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
+     XFillRectangle(xi->display, (Pixmap) tmp_pixmap, xi->imageGC, 0, 0, w, h);
+     if (!tmp_pixmap) {
+@@ -459,7 +512,10 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
+ 	if (delay > ximg->delay)
+ 	    ximg->delay = delay;
+ 
+-	gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
++	if (attr.depth == 32)
++	    render_pixbuf_to_pixmap_32(xi->display, xi->imageGC, ximg->pixmap[j], pixbuf);
++	else
++	    gdk_pixbuf_xlib_render_to_drawable_alpha(pixbuf,
+ 						 (Drawable) ximg->pixmap[j], 0,
+ 						 0, 0, 0, w, h,
+ 						 GDK_PIXBUF_ALPHA_BILEVEL, 1,
+@@ -653,9 +709,11 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
  
      if (self == NULL)
  	return 0;
@@ -17112,7 +17309,7 @@ index f5be4a8..7eafa76 100644
  
  #if defined(USE_IMLIB)
      im = Imlib_load_image(xi->id, fname);
-@@ -755,6 +767,9 @@ w3mimg_x11open()
+@@ -755,6 +813,9 @@ w3mimg_x11open()
  	return NULL;
      memset(wop, 0, sizeof(w3mimg_op));
  
@@ -17122,7 +17319,7 @@ index f5be4a8..7eafa76 100644
      xi = (struct x11_info *)malloc(sizeof(struct x11_info));
      if (xi == NULL)
  	goto error;
-@@ -807,6 +822,7 @@ w3mimg_x11open()
+@@ -807,6 +868,7 @@ w3mimg_x11open()
  
      wop->priv = xi;
  

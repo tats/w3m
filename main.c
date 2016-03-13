@@ -5134,6 +5134,24 @@ invoke_browser(char *url)
 	case 3:
 	    browser = ExtBrowser3;
 	    break;
+	case 4:
+	    browser = ExtBrowser4;
+	    break;
+	case 5:
+	    browser = ExtBrowser5;
+	    break;
+	case 6:
+	    browser = ExtBrowser6;
+	    break;
+	case 7:
+	    browser = ExtBrowser7;
+	    break;
+	case 8:
+	    browser = ExtBrowser8;
+	    break;
+	case 9:
+	    browser = ExtBrowser9;
+	    break;
 	}
 	if (browser == NULL || *browser == '\0') {
 	    browser = inputStr("Browse command: ", NULL);

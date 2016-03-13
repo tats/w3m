@@ -143,9 +143,15 @@ static int OptionEncode = FALSE;
 #define CMT_EDITOR       N_("Editor")
 #define CMT_MAILER       N_("Mailer")
 #define CMT_MAILTO_OPTIONS N_("How to call Mailer for mailto URLs with options")
-#define CMT_EXTBRZ       N_("External Browser")
-#define CMT_EXTBRZ2      N_("Second External Browser")
-#define CMT_EXTBRZ3      N_("Third External Browser")
+#define CMT_EXTBRZ       N_("External browser")
+#define CMT_EXTBRZ2      N_("Second external browser")
+#define CMT_EXTBRZ3      N_("Third external browser")
+#define CMT_EXTBRZ4      N_("Fourth external browser")
+#define CMT_EXTBRZ5      N_("Fifth external browser")
+#define CMT_EXTBRZ6      N_("Sixth external browser")
+#define CMT_EXTBRZ7      N_("Seventh external browser")
+#define CMT_EXTBRZ8      N_("Eighth external browser")
+#define CMT_EXTBRZ9      N_("Ninth external browser")
 #define CMT_DISABLE_SECRET_SECURITY_CHECK	N_("Disable secret file security check")
 #define CMT_PASSWDFILE	 N_("Password file")
 #define CMT_PRE_FORM_FILE	N_("File for setting form on loading")
@@ -566,6 +572,18 @@ struct param_ptr params6[] = {
     {"extbrowser2", P_STRING, PI_TEXT, (void *)&ExtBrowser2, CMT_EXTBRZ2,
      NULL},
     {"extbrowser3", P_STRING, PI_TEXT, (void *)&ExtBrowser3, CMT_EXTBRZ3,
+     NULL},
+    {"extbrowser4", P_STRING, PI_TEXT, (void *)&ExtBrowser4, CMT_EXTBRZ4,
+     NULL},
+    {"extbrowser5", P_STRING, PI_TEXT, (void *)&ExtBrowser5, CMT_EXTBRZ5,
+     NULL},
+    {"extbrowser6", P_STRING, PI_TEXT, (void *)&ExtBrowser6, CMT_EXTBRZ6,
+     NULL},
+    {"extbrowser7", P_STRING, PI_TEXT, (void *)&ExtBrowser7, CMT_EXTBRZ7,
+     NULL},
+    {"extbrowser8", P_STRING, PI_TEXT, (void *)&ExtBrowser8, CMT_EXTBRZ8,
+     NULL},
+    {"extbrowser9", P_STRING, PI_TEXT, (void *)&ExtBrowser9, CMT_EXTBRZ9,
      NULL},
     {"bgextviewer", P_INT, PI_ONOFF, (void *)&BackgroundExtViewer,
      CMT_BGEXTVIEW, NULL},

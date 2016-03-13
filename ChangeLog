@@ -1,3 +1,18 @@
+2016-03-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure:
+	Set firefox instead of mozilla to default browser.
+
+	* po/Makefile.in.in, po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po:
+	* po/zh_TW.po: Update PO strings for extbrowser4..9.
+
+	* doc-jp/MANUAL.html, doc/MANUAL.html, fm.h, main.c, rc.c:
+	Add extbrowser4, extbrowser5, ..., and extbrowser9.
+	e.g.
+	- extbrowser8 sh -c 'printf %s "$0" | xsel -b'
+	- extbrowser9 mpv
+	cf. https://github.com/spcmd/w3m
+
 2016-02-28  Tatsuya Kinoshita  <tats@debian.org>
 
 	* menu.c: Fix SIGFPE for ACCESSKEY.

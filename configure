@@ -1486,7 +1486,7 @@ Optional Packages:
   --with-migemo=MIGEMO_COMMAND	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
-  --with-browser=BROWSER	default browser (/usr/bin/mozilla)
+  --with-browser=BROWSER	default browser (/usr/bin/firefox)
   --with-ssl=PREFIX		support https protocol
   --with-termlib=LIBS		terminal library
 				LIBS is space separated list of:
@@ -7345,7 +7345,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-w3m_browser="/usr/bin/mozilla"
+w3m_browser="/usr/bin/firefox"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking which external browser is used by default" >&5
 $as_echo_n "checking which external browser is used by default... " >&6; }
 

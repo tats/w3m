@@ -331,10 +331,10 @@ AC_DEFINE_UNQUOTED(DEF_MAILER, "$w3m_mailer")])
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_EXT_BROWSER],
 [AC_SUBST(DEF_EXT_BROWSER)
-w3m_browser="/usr/bin/mozilla"
+w3m_browser="/usr/bin/firefox"
 AC_MSG_CHECKING(which external browser is used by default)
 AC_ARG_WITH(browser,
- [  --with-browser=BROWSER	default browser (/usr/bin/mozilla)],
+ [  --with-browser=BROWSER	default browser (/usr/bin/firefox)],
  [w3m_browser="$with_browser"])
 AC_MSG_RESULT($w3m_browser)
 AC_DEFINE_UNQUOTED(DEF_EXT_BROWSER, "$w3m_browser")])

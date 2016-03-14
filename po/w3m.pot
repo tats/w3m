@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: satodai@w3m.jp\n"
-"POT-Creation-Date: 2016-03-13 19:27+0900\n"
+"POT-Creation-Date: 2016-03-14 19:47+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -390,35 +390,35 @@ msgid "External browser"
 msgstr ""
 
 #: rc.c:147
-msgid "Second external browser"
+msgid "2nd external browser"
 msgstr ""
 
 #: rc.c:148
-msgid "Third external browser"
+msgid "3rd external browser"
 msgstr ""
 
 #: rc.c:149
-msgid "Fourth external browser"
+msgid "4th external browser"
 msgstr ""
 
 #: rc.c:150
-msgid "Fifth external browser"
+msgid "5th external browser"
 msgstr ""
 
 #: rc.c:151
-msgid "Sixth external browser"
+msgid "6th external browser"
 msgstr ""
 
 #: rc.c:152
-msgid "Seventh external browser"
+msgid "7th external browser"
 msgstr ""
 
 #: rc.c:153
-msgid "Eighth external browser"
+msgid "8th external browser"
 msgstr ""
 
 #: rc.c:154
-msgid "Ninth external browser"
+msgid "9th external browser"
 msgstr ""
 
 #: rc.c:155

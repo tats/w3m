@@ -1,3 +1,7 @@
+2016-03-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc/FAQ.html: Update FAQ for extbrowser.
+
 2016-03-14  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po, rc.c:
@@ -14,8 +18,8 @@
 	* doc-jp/MANUAL.html, doc/MANUAL.html, fm.h, main.c, rc.c:
 	Add extbrowser4, extbrowser5, ..., and extbrowser9.
 	e.g.
-	- extbrowser8 sh -c 'printf %s "$0" | xsel -b'
-	- extbrowser9 mpv
+	- extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b
+	- extbrowser9 mpv %s &
 	cf. https://github.com/spcmd/w3m
 
 2016-02-28  Tatsuya Kinoshita  <tats@debian.org>

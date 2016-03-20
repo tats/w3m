@@ -1,3 +1,7 @@
+2016-03-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* rc.c: Fix reverse ordered config parameters.
+
 2016-03-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc/FAQ.html: Update FAQ for extbrowser.

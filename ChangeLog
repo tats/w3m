@@ -1,3 +1,8 @@
+2016-03-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* menu.c, proto.h: Fix build failure when not USE_MOUSE for sgrmouse.
+	cf. https://twitter.com/naota344/status/711541592167854081
+
 2016-03-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* rc.c: Fix reverse ordered config parameters.

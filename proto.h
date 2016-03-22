@@ -724,6 +724,7 @@ extern void tabMs(void);
 extern void closeTMs(void);
 #else				/* not USE_MOUSE */
 #define mouse nulcmd
+#define sgrmouse nulcmd
 #define msToggle nulcmd
 #define movMs nulcmd
 #define menuMs nulcmd

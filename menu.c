@@ -1304,6 +1304,12 @@ mMouse(char c)
 {
     return (MENU_NOTHING);
 }
+
+static int
+mSgrMouse(char c)
+{
+    return (MENU_NOTHING);
+}
 #endif				/* not USE_MOUSE */
 
 /* --- MenuFunctions (END) --- */

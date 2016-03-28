@@ -8160,7 +8160,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
 	else {
 	    if (q) {
 		p = unescape_spaces(Strnew_charp(q))->ptr;
-		p = conv_to_system(q);
+		p = conv_to_system(p);
 	    }
 	    p = expandPath(p);
 	    if (checkOverWrite(p) < 0)

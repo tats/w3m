@@ -2080,7 +2080,7 @@ filename_extension(char *path, int is_url)
 	    break;
     }
     if (*last_dot == '.') {
-	for (i = 1; last_dot[i] && i < 8; i++) {
+	for (i = 1; i < 8 && last_dot[i]; i++) {
 	    if (is_url && !IS_ALNUM(last_dot[i]))
 		break;
 	}

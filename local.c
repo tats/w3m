@@ -213,18 +213,17 @@ set_environ(char *var, char *value)
     if (var != NULL && value != NULL)
 	setenv(var, value, 1);
 #else				/* not HAVE_SETENV */
-#ifdef HAVE_PUTENV
     static Hash_sv *env_hash = NULL;
     Str tmp = Strnew_m_charp(var, "=", value, NULL);
 
     if (env_hash == NULL)
 	env_hash = newHash_sv(20);
     putHash_sv(env_hash, var, (void *)tmp->ptr);
+#ifdef HAVE_PUTENV
     putenv(tmp->ptr);
 #else				/* not HAVE_PUTENV */
     extern char **environ;
     char **ne;
-    char *p;
     int i, l, el;
     char **e, **newenv;
 
@@ -251,7 +250,7 @@ set_environ(char *var, char *value)
     if (newenv == NULL)
 	return;
     for (e = environ, ne = newenv; *e != NULL; *(ne++) = *(e++)) ;
-    *(ne++) = p;
+    *(ne++) = tmp->ptr;
     *ne = NULL;
     environ = newenv;
 #endif				/* not HAVE_PUTENV */

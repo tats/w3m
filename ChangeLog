@@ -1,3 +1,22 @@
+2016-03-29  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Fix variable is reassigned a value before the old one has
+	been used.
+
+	* regex.c: Fix printf format specifier mismatch when REGEX_DEBUG.
+
+	* w3mimg/fb/fb.c: Fix invalid braces when not Linux or FreeBSD.
+
+	* local.c: Fix uninitialized variable when not HAVE_PUTENV.
+
+	* w3mimgdisplay.c: Fix realloc mistake for DrawImage.
+
+	* file.c: Fix mistake of unescape spaces for _doFileCopy.
+	cf. [w3m-dev-en 00751], [w3m-dev-en 00752] on 2002-06-09
+
+	* url.c: Fix style of array index is used before limits check.
+	Bug: https://sourceforge.net/p/w3m/feature-requests/25/
+
 2016-03-22  Tatsuya Kinoshita  <tats@debian.org>
 
 	* menu.c, proto.h: Fix build failure when not USE_MOUSE for sgrmouse.

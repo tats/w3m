@@ -202,6 +202,8 @@ fb_open(void)
     if (video_adapter_info.va_flags & V_ADP_PALETTE &&
 	video_info.vi_mem_model == V_INFO_MM_PACKED &&
 	video_info.vi_depth == 8) {
+#else
+    if (0) {
 #endif
 	if (fb_cmap_get(fbfp, cmap)) {
 	    fprintf(stderr, "Can't get color map.\n");
@@ -222,14 +224,15 @@ fb_open(void)
 	      vscinfo.bits_per_pixel == 16 ||
 	      vscinfo.bits_per_pixel == 24 || vscinfo.bits_per_pixel == 32)) {
 	pixel_size = (vscinfo.bits_per_pixel + 7) / CHAR_BIT;
+    }
 #elif defined(__FreeBSD__)
     else if (video_info.vi_mem_model == V_INFO_MM_DIRECT &&
 	     (video_info.vi_depth == 15 ||
 	      video_info.vi_depth == 16 ||
 	      video_info.vi_depth == 24 || video_info.vi_depth == 32)) {
 	pixel_size = (video_info.vi_depth + 7) / CHAR_BIT;
-#endif
     }
+#endif
     else {
 	fprintf(stderr, "This type of framebuffer is not supported.\n");
 	goto ERR_END;
@@ -767,6 +770,8 @@ fb_cmap_create(video_info_t *video_info,
 #elif defined(__FreeBSD__)
     if (video_info->vi_pixel_fsizes[0]) {
 	cmap->red = (u_char *) malloc(sizeof(u_char) * cmaplen);
+#else
+    if (0) {
 #endif
 	if (!cmap->red) {
 	    perror("red lut malloc error\n");
@@ -783,6 +788,8 @@ fb_cmap_create(video_info_t *video_info,
 #elif defined(__FreeBSD__)
     if (video_info->vi_pixel_fsizes[1]) {
 	cmap->green = (u_char *) malloc(sizeof(u_char) * cmaplen);
+#else
+    if (0) {
 #endif
 	if (!cmap->green) {
 #if defined(__linux__)
@@ -806,6 +813,8 @@ fb_cmap_create(video_info_t *video_info,
 #elif defined(__FreeBSD__)
     if (video_info->vi_pixel_fsizes[2]) {
 	cmap->blue = (u_char *) malloc(sizeof(u_char) * cmaplen);
+#else
+    if (0) {
 #endif
 	if (!cmap->blue) {
 #if defined(__linux__)
@@ -836,11 +845,15 @@ fb_cmap_create(video_info_t *video_info,
 #elif defined(__FreeBSD__)
     if (video_info->vi_pixel_fsizes[3]) {
 	cmap->transparent = (u_char *) malloc(sizeof(u_char) * cmaplen);
+#else
+    if (0) {
 #endif
 #if defined(__linux__)
 	if (!cmap->transp) {
 #elif defined(__FreeBSD__)
 	if (!cmap->transparent) {
+#else
+	if (0) {
 #endif
 #if defined(__linux__)
 	    if (vscinfo->red.length)

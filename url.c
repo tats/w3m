@@ -1337,7 +1337,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     }
     no_referer = NoSendReferer;
     no_referer_ptr = query_SCONF_NO_REFERER_FROM(current);
-    no_referer = NoSendReferer || (no_referer_ptr && *no_referer_ptr);
+    no_referer = no_referer || (no_referer_ptr && *no_referer_ptr);
     no_referer_ptr = query_SCONF_NO_REFERER_TO(target);
     no_referer = no_referer || (no_referer_ptr && *no_referer_ptr);
     if (!no_referer) {

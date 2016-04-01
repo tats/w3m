@@ -1,3 +1,32 @@
+2016-04-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* configure, configure.ac, doc-de/README.func, scripts/Makefile.in:
+	* scripts/w3mhelp-funcdesc.de.pl.in, scripts/w3mhelp.cgi.in:
+	Support German translated help messages (translation is in progress).
+	Bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682
+
+	* doc-jp/w3m.1, doc/w3m.1: Update manpage footers to w3m 0.5.3.
+
+	* doc-jp/MANUAL.html, doc-jp/w3m.1, w3m-doc/outline.html.in:
+	* w3mhelp-lynx_ja.html.in, w3mhelp-w3m_ja.html.in:
+	Update Japanese documents for extbrowser4..9.
+
+2016-04-02  Justin B Rye  <justin.byam.rye@gmail.com>
+
+	* doc/FAQ.html, doc/MANUAL.html, doc/README.func, doc/menu.submenu:
+	* main.c, menu.c, scripts/w3mhelp-funcdesc.ja.pl.in:
+	* scripts/w3mhelp.cgi.in, w3mhelp-lynx_en.html.in:
+	* w3mhelp-w3m_en.html.in: English fixes.
+	cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#15
+	Origin: https://lists.debian.org/debian-l10n-english/2014/12/msg00002.html
+	Origin: https://lists.debian.org/debian-l10n-english/2014/12/msg00030.html
+	Origin: https://lists.debian.org/debian-l10n-english/2015/02/msg00011.html
+
+2016-03-30  Leo Famulari  <leo@famulari.name>
+
+	* url.c: Disable RC4.
+	Origin: http://git.savannah.gnu.org/cgit/guix.git/commit/?id=62339e2d493bf87a3aabe12e45458581e9705d83
+
 2016-03-29  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Fix variable is reassigned a value before the old one has

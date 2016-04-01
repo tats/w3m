@@ -102,8 +102,7 @@ Content-Type: text/html; charset=$charset
 ******* 
 <A HREF="http://w3m.sourceforge.net/">w3m</A>
  (WWW-wo-Miru)  Version $version by 
-<A HREF="mailto:aito\@fw.ipsj.or.jp">A.ITO</A> ********<BR>
-             ***** Key assign table *****
+<A HREF="mailto:aito\@fw.ipsj.or.jp">A.ITO</A> ********
 </CENTER>
 
 HEADING
@@ -112,13 +111,13 @@ $q_version = $version;
 $q_version =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
 $script = "<A HREF=\"$ENV{'SCRIPT_NAME'}?version=$q_version&amp;lang=";
 
-# doc:en_English doc-jp:ja_Japanese
+# doc:en_English doc-jp:ja_Japanese doc-de:de_German
 for $otherlang (@docdirs) {
     local(@d) = split(/[:_]/, $otherlang);
     
     if ($d[1] ne $lang) {
 	$d[1] =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
-	print $script, $d[1], "\">$d[2] version</A>\n";
+	print $script, $d[1], "\">[$d[2]]</A>\n";
     }
 }
 

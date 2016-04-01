@@ -172,7 +172,7 @@ AC_SUBST(RC_DIR)
 RC_DIR="~/.$PACKAGE"
 AC_DEFINE(RC_DIR, "$RC_DIR")
 AC_SUBST(DOCDIRS)
-DOCDIRS="doc:en_English doc-jp:ja_Japanese"
+DOCDIRS="doc:en_English doc-jp:ja_Japanese doc-de:de_German"
 AC_DEFINE_UNQUOTED(DOCDIRS, "$DOCDIRS")
 
 AC_W3M_VERSION

@@ -9077,7 +9077,7 @@ RC_DIR="~/.$PACKAGE"
 $as_echo "#define RC_DIR \"\$RC_DIR\"" >>confdefs.h
 
 
-DOCDIRS="doc:en_English doc-jp:ja_Japanese"
+DOCDIRS="doc:en_English doc-jp:ja_Japanese doc-de:de_German"
 cat >>confdefs.h <<_ACEOF
 #define DOCDIRS "$DOCDIRS"
 _ACEOF

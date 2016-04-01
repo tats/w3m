@@ -222,7 +222,7 @@ fusage(FILE * f, int err)
 #endif				/* USE_COLOR */
     fprintf(f,
 	    "    -N               open URL of command line on each new tab\n");
-    fprintf(f, "    -F               automatically render frame\n");
+    fprintf(f, "    -F               automatically render frames\n");
     fprintf(f,
 	    "    -cols width      specify column width (used with -dump)\n");
     fprintf(f,
@@ -261,7 +261,7 @@ fusage(FILE * f, int err)
 #else
     fprintf(f, "    -S               squeeze multiple blank lines\n");
 #endif
-    fprintf(f, "    -W               toggle wrap search mode\n");
+    fprintf(f, "    -W               toggle search wrap mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
 	    "    -title[=TERM]    set buffer name to terminal title string\n");
@@ -2610,7 +2610,7 @@ DEFUN(selBuf, SELECT, "Go to buffer selection panel")
 }
 
 /* Suspend (on BSD), or run interactive shell (on SysV) */
-DEFUN(susp, INTERRUPT SUSPEND, "Stop loading document")
+DEFUN(susp, INTERRUPT SUSPEND, "Suspend w3m")
 {
 #ifndef SIGSTOP
     char *shell;
@@ -2941,7 +2941,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
     if (!on_target)		/* open link as an indivisual page */
 	return loadNormalBuf(buf, TRUE);
 
-    if (do_download)		/* download (thus no need to render frame) */
+    if (do_download)		/* download (thus no need to render frames) */
 	return loadNormalBuf(buf, FALSE);
 
     if (target == NULL ||	/* no target specified (that means this page is not a frame page) */
@@ -3070,7 +3070,7 @@ handleMailto(char *url)
 }
 
 /* follow HREF link */
-DEFUN(followA, GOTO_LINK, "Go to current link")
+DEFUN(followA, GOTO_LINK, "Follow current link")
 {
     Anchor *a;
     ParsedURL u;
@@ -3994,37 +3994,37 @@ nextY(int d)
 }
 
 /* go to the next left anchor */
-DEFUN(nextL, NEXT_LEFT, "Move to next left link")
+DEFUN(nextL, NEXT_LEFT, "Move left to next link")
 {
     nextX(-1, 0);
 }
 
 /* go to the next left-up anchor */
-DEFUN(nextLU, NEXT_LEFT_UP, "Move to next left (or upward) link")
+DEFUN(nextLU, NEXT_LEFT_UP, "Move left (or upward) to next link")
 {
     nextX(-1, -1);
 }
 
 /* go to the next right anchor */
-DEFUN(nextR, NEXT_RIGHT, "Move to next right link")
+DEFUN(nextR, NEXT_RIGHT, "Move right to next link")
 {
     nextX(1, 0);
 }
 
 /* go to the next right-down anchor */
-DEFUN(nextRD, NEXT_RIGHT_DOWN, "Move to next right (or downward) link")
+DEFUN(nextRD, NEXT_RIGHT_DOWN, "Move right (or downward) to next link")
 {
     nextX(1, 1);
 }
 
 /* go to the next downward anchor */
-DEFUN(nextD, NEXT_DOWN, "Move to next downward link")
+DEFUN(nextD, NEXT_DOWN, "Move downward to next link")
 {
     nextY(1);
 }
 
 /* go to the next upward anchor */
-DEFUN(nextU, NEXT_UP, "Move to next upward link")
+DEFUN(nextU, NEXT_UP, "Move upward to next link")
 {
     nextY(-1);
 }
@@ -4276,14 +4276,14 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
 }
 
 /* load bookmark */
-DEFUN(ldBmark, BOOKMARK VIEW_BOOKMARK, "Read bookmark")
+DEFUN(ldBmark, BOOKMARK VIEW_BOOKMARK, "View bookmarks")
 {
     cmd_loadURL(BookmarkFile, NULL, NO_REFERER, NULL);
 }
 
 
 /* Add current to bookmark */
-DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
+DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmarks")
 {
     Str tmp;
     FormList *request;
@@ -4313,7 +4313,7 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
 }
 
 /* option setting */
-DEFUN(ldOpt, OPTIONS, "Option setting panel")
+DEFUN(ldOpt, OPTIONS, "Display option setting panel")
 {
     cmd_loadBuffer(load_option_panel(), BP_NO_URL, LB_NOLINK);
 }
@@ -4416,7 +4416,7 @@ follow_map(struct parsed_tagarg *arg)
 
 #ifdef USE_MENU
 /* link menu */
-DEFUN(linkMn, LINK_MENU, "Popup link element menu")
+DEFUN(linkMn, LINK_MENU, "Pop up link element menu")
 {
     LinkList *l = link_menu(Currentbuf);
     ParsedURL p_url;
@@ -4454,19 +4454,19 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
 }
 
 /* accesskey */
-DEFUN(accessKey, ACCESSKEY, "Popup accesskey menu")
+DEFUN(accessKey, ACCESSKEY, "Pop up accesskey menu")
 {
     anchorMn(accesskey_menu, TRUE);
 }
 
 /* list menu */
-DEFUN(listMn, LIST_MENU, "Popup link list menu and go to selected link")
+DEFUN(listMn, LIST_MENU, "Pop up link list menu and go to selected link")
 {
     anchorMn(list_menu, TRUE);
 }
 
 DEFUN(movlistMn, MOVE_LIST_MENU,
-      "Popup link list menu and move cursor to selected link")
+      "Pop up link list menu and move cursor to selected link")
 {
     anchorMn(list_menu, FALSE);
 }
@@ -4500,7 +4500,7 @@ DEFUN(cooLst, COOKIE, "View cookie list")
 
 #ifdef USE_HISTORY
 /* History page */
-DEFUN(ldHist, HISTORY, "View history of URL")
+DEFUN(ldHist, HISTORY, "View browser history")
 {
     cmd_loadBuffer(historyBuffer(URLHist), BP_NO_URL, LB_NOLINK);
 }
@@ -4574,7 +4574,7 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
 }
 
 /* save source */
-DEFUN(svSrc, DOWNLOAD SAVE, "Save document source to file")
+DEFUN(svSrc, DOWNLOAD SAVE, "Save document (source) to file")
 {
     char *file;
 
@@ -4653,13 +4653,13 @@ _peekURL(int only_img)
 }
 
 /* peek URL */
-DEFUN(peekURL, PEEK_LINK, "Peek link URL")
+DEFUN(peekURL, PEEK_LINK, "Peek at link URL")
 {
     _peekURL(0);
 }
 
 /* peek URL of image */
-DEFUN(peekIMG, PEEK_IMG, "Peek image URL")
+DEFUN(peekIMG, PEEK_IMG, "Peek at image URL")
 {
     _peekURL(1);
 }
@@ -4673,7 +4673,7 @@ currentURL(void)
     return parsedURL2Str(&Currentbuf->currentURL);
 }
 
-DEFUN(curURL, PEEK, "Peek current URL")
+DEFUN(curURL, PEEK, "Peek at current URL")
 {
     static Str s = NULL;
 #ifdef USE_M17N
@@ -5039,13 +5039,13 @@ chkURLBuffer(Buffer *buf)
     buf->check_url |= CHK_URL;
 }
 
-DEFUN(chkURL, MARK_URL, "Mark URL-like strings as anchors")
+DEFUN(chkURL, MARK_URL, "Mark URL-like strings as links")
 {
     chkURLBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-DEFUN(chkWORD, MARK_WORD, "Mark current word as anchor")
+DEFUN(chkWORD, MARK_WORD, "Mark current word as link")
 {
     char *p;
     int spos, epos;
@@ -5072,15 +5072,15 @@ chkNMIDBuffer(Buffer *buf)
     buf->check_url |= CHK_NMID;
 }
 
-DEFUN(chkNMID, MARK_MID, "Mark Message-ID-like strings as anchors")
+DEFUN(chkNMID, MARK_MID, "Mark Message-ID-like strings as links")
 {
     chkNMIDBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 #endif				/* USE_NNTP */
 
-/* render frame */
-DEFUN(rFrame, FRAME, "Render frame")
+/* render frames */
+DEFUN(rFrame, FRAME, "Render frames")
 {
     Buffer *buf;
 
@@ -5504,7 +5504,7 @@ process_mouse(int btn, int x, int y)
     }
 }
 
-DEFUN(msToggle, MOUSE_TOGGLE, "Toggle activity of mouse")
+DEFUN(msToggle, MOUSE_TOGGLE, "Toggle mouse support")
 {
     if (use_mouse) {
 	use_mouse = FALSE;
@@ -5669,7 +5669,7 @@ DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
 #define FRAME_WIDTH 1
 #endif
 
-DEFUN(menuMs, MENU_MOUSE, "Popup menu at mouse cursor (for mouse action)")
+DEFUN(menuMs, MENU_MOUSE, "Pop up menu at mouse cursor (for mouse action)")
 {
     if (!mouse_action.in_action)
 	return;
@@ -5719,7 +5719,7 @@ DEFUN(dispVer, VERSION, "Display version of w3m")
     disp_message(Sprintf("w3m version %s", w3m_version)->ptr, TRUE);
 }
 
-DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle wrap search mode")
+DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle search wrap mode")
 {
     if (WrapSearch) {
 	WrapSearch = FALSE;
@@ -6172,7 +6172,7 @@ DEFUN(reinit, REINIT, "Reload configuration files")
 }
 
 DEFUN(defKey, DEFINE_KEY,
-      "Define a binding between a key stroke and a user command")
+      "Define a binding between a keystroke and a user command")
 {
     char *data;
 

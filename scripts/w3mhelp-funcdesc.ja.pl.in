@@ -59,8 +59,8 @@ $charset = 'EUC-JP';
  "Mark operation", 'マーク操作',
  "Miscellany", 'その他',
  "User defined keymaps", 'ユーザ定義',
- "Line-edit mode", '行編集モード',
- "Popup menu", 'メニュー',
+ "Line-editing mode", '行編集モード',
+ "Pop up menu", 'メニュー',
 );
 
 1;

@@ -43,20 +43,20 @@ w3m</A>
 <table cellpadding=0>
 <TR><TD WIDTH=100>RET, C-f, Right arrow<TD>Follow hyperlink
 <TR><TD>d, ESC RET<TD>Save link to file
-<TR><TD>u<TD>Peek link URL
-<TR><TD>i<TD>Peek image URL
+<TR><TD>u<TD>Peek at link URL
+<TR><TD>i<TD>Peek at image URL
 <TR><TD>I<TD>View inline image
 <TR><TD>ESC I<TD>Save inline image to file
-<TR><TD>:<TD>Mark URL-like strings as anchors
-<TR><TD>ESC :<TD>Mark Message-ID-like strings as news anchors
-<TR><TD>c<TD>Peek current URL
+<TR><TD>:<TD>Mark URL-like strings as links
+<TR><TD>ESC :<TD>Mark Message-ID-like strings as links
+<TR><TD>c<TD>Peek at current URL
 <TR><TD>=<TD>Display information about current document
-<TR><TD>C-h<TD>View history of URL
-<TR><TD>F<TD>Render frame
+<TR><TD>C-h<TD>View browser history
+<TR><TD>F<TD>Render frames
 <TR><TD>M<TD>Browse current document using external browser
-(use 2M and 3M to invoke second and third browser)
+(prefix 2, 3, ..., or 9 to invoke alternate configured browsers, e.g. 3 M)
 <TR><TD>ESC M<TD>Browse link using external browser
-(use 2ESC M and 3ESC M to invoke second and third browser)
+(prefixed as above, e.g. 3ESC M)
 </table>
 
 <H2>File/Stream operation</H2>
@@ -98,7 +98,7 @@ w3m</A>
 <table cellpadding=0>
 <TR><TD WIDTH=100>/, C-s<TD>Search forward
 <TR><TD>n<TD>Search next
-<TR><TD>w<TD>Toggle wrap search mode
+<TR><TD>w<TD>Toggle search wrap mode
 </table>
 
 <H2>Mark operation</H2>
@@ -121,7 +121,7 @@ w3m</A>
 <TR><TD>Q<TD>Quit without confirmation
 </table>
 
-<H2>Line-edit mode</H2>
+<H2>Line-editing mode</H2>
 <table cellpadding=0>
 <TR><TD WIDTH=100>C-f<TD>Move cursor forward
 <TR><TD>C-b<TD>Move cursor backward

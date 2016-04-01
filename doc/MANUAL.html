@@ -1,505 +1,2109 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title>w3m manual</title>
-</head>
-<body>
-<h1>w3m MANUAL</h1>
-<div align=right>
-Akinori Ito<br>
-aito@fw.ipsj.or.jp 
-</div>
-<h2>Index</h2>
-<menu>
-<li><a href="#Introduction">Introduction</a>
-<li><a href="#Options">Options</a>
-<li><a href="#Color">Document color</a>
-<li><a href="#Key:orig">Key binding</a>
-<li><a href="#Key:lynx">Lynx-like key binding</a>
-<li><a href="#Mouse">Mouse operation</a>
-<li><a href="#Key:custom">Key customization</a>
-<li><a href="#LocalCGI">Local CGI</a>
-</menu>
-
-<hr>
-<a name="Introduction"></a>
-<h2>Introduction</h2>
-w3m is a pager/text-based WWW browser. You can browse local documents and/or 
-documents on the WWW using a terminal emulator.
-
-<hr>
-<a name="Options"></a>
-<h2>Options</h2>
-
-Command line usage is
-<p>
+ <head>
+  <meta http-equiv=content-type content="text/html;charset=US-ASCII">
+  <title>
+   w3m manual
+  </title>
+ </head>
+ <body>
+  <h1>w3m MANUAL</h1>
+  <div align="right">
+   Akinori Ito<br>
+   aito@fw.ipsj.or.jp
+  </div>
+  <h2>Index</h2>
+  <ul>
+   <li>
+    <a href="#Introduction">
+     Introduction
+    </a>
+   </li>
+   <li>
+    <a href="#Options">
+     Options
+    </a>
+   </li>
+   <li>
+    <a href="#Color">
+     Document colors
+    </a>
+   </li>
+   <li>
+    <a href="#Key:orig">
+     Key bindings
+    </a>
+   </li>
+   <li>
+    <a href="#Key:lynx">
+     Lynx-like key bindings
+    </a>
+   </li>
+   <li>
+    <a href="#Mouse">
+     Mouse operation
+    </a>
+   </li>
+   <li>
+    <a href="#Key:custom">
+     Key customization
+    </a>
+   </li>
+   <li>
+    <a href="#LocalCGI">
+     Local CGI
+    </a>
+   </li>
+  </ul>
+  <hr>
+  <h2 id="Introduction">
+   Introduction
+  </h2>
+<!--
+ TODO: import improved phrasings from manpage
+!-->
+  <p>
+   w3m is a pager/text-based WWW browser. You can browse local
+   documents and/or documents on the WWW using a terminal emulator.
+  </p>
+  <hr>
+  <h2 id="Options">
+   Options
+  </h2>
+  <p>
+   Command line usage is
+  </p>
 <pre>
     w3m [options] [file|URL]
 </pre>
-<P>
-If you specify filenames/URLs on command line, these documents are displayed. 
-If you specify nothing, w3m reads a document from standard input and display it.
-If no filename and/or URLs are specified and standard input is tty, w3m terminates
-without displaying anything.
-
-<p>
-Options are as follows:
-<dl>
-<dt>+&lt;line number&gt;
-<dd>Move to the specified line.
-<dt>-t width
-<dd>Specify tab width. Default is 8.
-<dt>-r
-<dd>When displaying text/plain document, prohibit emphasis using backspace.
-If you don't specify this option, 
-``A^H_'' is interpreted as underlined character and ``A^HA'' as a bold character.
-<dt>-l number
-<dd>Specify line number preserved internally when reading text/plain document
-fron standard input. Default is 10000.
-<dt>-O charset
-<dd>Specify display/output charset.
-<dt>-I charset
-<dd>Specify document charset.
-<dt>-T type
-<dd>Specify document type. Without this option, document type
-is determined from extension of a file. If the determination
-fails, the document is regarded as text/plain.
-<p>
-Example:<br>
-Read HTML document from standard input and display it
+  <p>
+   If you specify filenames/URLs on the command line, these documents
+   are displayed. If you specify nothing, w3m will read a document
+   from standard input and display it. If it doesn't find a document
+   there either then normally w3m will terminate.
+  </p>
+  <p>
+   Options include:
+  <p>
+  <dl>
+   <dt>
+    +<i>number</i>
+   </dt>
+   <dd>
+    <p>
+     Move to the specified line-number.
+    </p>
+   </dd>
+   <dt>
+    -t <i>width</i>
+   </dt>
+   <dd>
+    <p>
+     Specify tab width. Default is 8.
+    </p>
+   </dd>
+   <dt>
+    -r
+   </dt>
+   <dd>
+    <p>
+     When displaying text/plain documents, prohibit emphasis using
+     backspace. If you don't specify this option, <q>A^H_</q> is
+     interpreted as an underlined <q>A</q> and <q>A^HA</q> as a bold
+     <q>A</q>.
+    </p>
+   </dd>
+   <dt>
+    -l <i>number</i>
+   </dt>
+   <dd>
+    <p>
+     Specify the number of lines that should be cached while reading a
+     text/plain document from standard input. Default is 10,000.
+    </p>
+   </dd>
+   <dt>
+    -O <i>charset</i>
+   </dt>
+   <dd>
+    <p>
+     Specify display/output charset.
+    </p>
+   </dd>
+   <dt>
+    -I <i>charset</i>
+   <dt>
+   <dd>
+    <p>
+     Specify document charset.
+    </p>
+   </dd>
+   <dt>
+    -T <i>type</i>
+   </dt>
+   <dd>
+    <p>
+     Specify document type. Without this option, document type is
+     determined from the extension of a file. If the determination
+     fails, the document is regarded as text/plain. For example:
+    </p>
+    <p>
+     Read HTML document from standard input and display it
+    </p>
 <pre>
-   cat hoge.html | w3m -T text/html
+   cat example.html | w3m -T text/html
 </pre>
-<p>
-Display HTML source
+   <p>
+    Display HTML source
+   </p>
 <pre>
-   w3m -T text/plain hoge.html
+   w3m -T text/plain example.html
 </pre>
-<dt>-m
-<dd>Display document with Internet message mode.
-With this option, w3m determines document type from header information.
-It is useful when reading E-mail or NetNews messages.
-<dt>-v
-<dd>visual startup mode.
-<dt>-B
-<dd>Show the bookmark.
-<dt>-bookmark file
-<dd>Specify bookmark file.
-<dt>-M
-<dd>Monochrome display mode.
-<dt>-F
-<dd>Automatically render frame.
-<dt>-s
-<dd>Squeeze blank lines.
-<dt>-X
-<dd>Upon exit, do not display preserved screen.
-<dt>-W
-<dd>Toggle wrap search mode.
-<dt>-o option=value
-<dd>Specify option. The option names and values are
-same as that appears in ~/.w3m/config.
-<dt>-cookie
-<dd>Process cookies.
-<dt>-no-cookie
-<dd>Don't process cookies.
-<dt>-num
-<dd>Show linenumber.
-<dt>-dump
-<dd>Read document specified by URL and dump formatted text into standard
-output. The width of the document become 80. This width can be overridden
-with -cols option.
-<dt>-cols width
-<dd>Specify document width. Used with -dump option.
-<dt>-ppc count
-<dd> Specify the number of pixels per character (default 8.0). Larger
- values will make tables narrower.
-<dt>-dump_source
-<dd>Read document specified by URL and dump the source.
-<dt>-dump_head
-<dd>Read document specified by URL and dump headers.
-<dt>-dump_both
-<dd>Read document specified by URL and dump headers and the source.
-<dt>-dump_extra
-<dd>Read document specified by URL and dump extra informations, headers and the source.
-<dt>-post file
-<dd>use POST method with file content.
-<dt>-header string
-<dd>insert string as a header.
-<dt>-no-proxy
-<dd>Don't use proxy server.
-<dt>-no-graph
-<dd>Use ASCII character to draw frames.
-<dt>-no-mouse
-<dd>Don't activate mouse.
-<dt>-config file
-<dd>specify config file.
-</dl>
-
-<hr>
-<a name="Color"></a>
-<h2>Document color</h2>
-
-Links and images are displayed as follows.
-<div align="center">
-<table border="1">
-<tr><th>&nbsp;</th><th>Color mode</th><th>Monochrome mode</th></tr>
-<tr><td>links</td><td>blue</td><td>underline</td></tr>
-<tr><td>inline images</td><td>green</td><td>reverse</td></tr>
-<tr><td>form input</td><td>red</td><td>reverse</td></tr>
-</table>
-</div>
-These colors can be customized using option setting command "o".
-
-<hr>
-<a name="Key:orig"></a>
-<h2>Key binding</h2>
-
-After invocation, you can operate w3m by one-character commands from
-the keyboard.
-<P>
-Here's the original key-binding table. If you are using Lynx-like key
-bindings, see <a href="#Key:lynx">the Lynx-like key binding</a>.
-
-<H3>Page/Cursor motion</H3>
-<table>
-<TR><TD WIDTH=100>SPC,C-v<TD>Forward page
-<TR><TD>b,ESC v<TD>Backward page
-<TR><TD>l,C-f<TD>Cursor right
-<TR><TD>h,C-b<TD>Cursor left
-<TR><TD>j,C-n<TD>Cursor down
-<TR><TD>k,C-p<TD>Cursor up
-<TR><TD>J<TD>Roll up one line
-<TR><TD>K<TD>Roll down one line
-<TR><TD>^,C-a<TD>Go to the beginning of line
-<TR><TD>$,C-e<TD>Go to the end of line
-<TR><TD>w<TD>Go to next word
-<TR><TD>W<TD>Go to previous word
-<TR><TD>&gt;<TD>Shift screen right
-<TR><TD>&lt;<TD>Shift screen left
-<TR><TD>.<TD>Shift screen one column right
-<TR><TD>,<TD>Shift screen one column left
-<TR><TD>g,M-&lt;<TD>Go to the first line
-<TR><TD>G,M-&gt;<TD>Go to the last line
-<TR><TD>ESC g<TD>Go to specified line
-<TR><TD>Z<TD>Move to the center line
-<TR><TD>z<TD>Move to the center column
-<TR><TD>TAB<TD>Move to next hyperlink
-<TR><TD>C-u,ESC TAB<TD>Move to previous hyperlink
-<TR><TD>[<TD>Move to the first hyperlink
-<TR><TD>]<TD>Move to the last hyperlink
-</table>
-
-<H3>Hyperlink operation</H3>
-<table>
-<TR><TD WIDTH=100>RET<TD>Follow hyperlink
-<TR><TD>a, ESC RET<TD>Save link to file
-<TR><TD>u<TD>Peek link URL
-<TR><TD>i<TD>Peek image URL
-<TR><TD>I<TD>View inline image
-<TR><TD>ESC I<TD>Save inline image to file
-<TR><TD>:<TD>Mark URL-like strings as anchors
-<TR><TD>ESC :<TD>Mark Message-ID-like strings as news anchors
-<TR><TD>c<TD>Peek current URL
-<TR><TD>=<TD>Display information about current document
-<TR><TD>C-g<TD>Show current line number
-<TR><TD>C-h<TD>View history of URL
-<TR><TD>F<TD>Render frame
-<TR><TD>M<TD>Browse current document using external browser
-(use 2M, 3M, ..., and 9M to invoke second, third, ..., and ninth browser)
-<TR><TD>ESC M<TD>Browse link using external browser
-(use 2ESC M, 3ESC M, ..., and 9ESC M to invoke second, third, ..., and ninth browser)
-</table>
-
-<H3>File/Stream operation</H3>
-<table>
-<TR><TD WIDTH=100>U<TD>Open URL
-<TR><TD>V<TD>View new file
-<TR><TD>@<TD>Execute shell command and load
-<TR><TD>#<TD>Execute shell command and browse
-</table>
-
-<H3>Buffer operation</H3>
-<table>
-<TR><TD WIDTH=100>B<TD>Back to the previous buffer
-<TR><TD>v<TD>View HTML source
-<TR><TD>s<TD>Select buffer
-<TR><TD>E<TD>Edit buffer source
-<TR><TD>C-l<TD>Redraw screen
-<TR><TD>R<TD>Reload buffer
-<TR><TD>S<TD>Save buffer
-<TR><TD>ESC s<TD>Save source
-<TR><TD>ESC e<TD>Edit buffer image
-</table>
-
-<H3>Buffer selection mode</H3>
-<table>
-<TR><TD WIDTH=100>k, C-p<TD>Select previous buffer
-<TR><TD>j, C-n<TD>Select next buffer
-<TR><TD>D<TD>Delect current buffer
-<TR><TD>RET<TD>Go to the selected buffer
-</table>
-
-<H3>Bookmark operation</H3>
-<table>
-<TR><TD WIDTH=100>ESC b<TD>Load bookmark
-<TR><TD>ESC a<TD>Add current to bookmark
-</table>
-
-<H3>Search</H3>
-<table>
-<TR><TD WIDTH=100>/,C-s<TD>Search forward
-<TR><TD>?,C-r<TD>Search backward
-<TR><TD>n<TD>Search next
-<TR><TD>N<TD>Search previous
-<TR><TD>C-w<TD>Toggle wrap search mode
-</table>
-
-<H3>Mark operation</H3>
-<table>
-<TR><TD WIDTH=100>C-SPC<TD>Set/unset mark
-<TR><TD>ESC p<TD>Go to previous mark
-<TR><TD>ESC n<TD>Go to next mark
-<TR><TD>"<TD>Mark by regular expression
-</table>
-
-<H3>Miscellany</H3>
-<table>
-<TR><TD WIDTH=100>!<TD>Execute shell command
-<TR><TD>H<TD>Help (load this file)
-<TR><TD>o<TD>Set option
-<TR><TD>C-k<TD>Show cookie jar
-<TR><TD>C-c<TD>Stop
-<TR><TD>C-z<TD>Suspend
-<TR><TD>q<TD>Quit (with confirmation, if you like)
-<TR><TD>Q<TD>Quit without confirmation
-</table>
-
-<H3>Line-edit mode</H3>
-<table>
-<TR><TD WIDTH=100>C-f<TD>Move cursor forward
-<TR><TD>C-b<TD>Move cursor backward
-<TR><TD>C-h<TD>Delete previous character
-<TR><TD>C-d<TD>Delete current character
-<TR><TD>C-k<TD>Kill everything after cursor
-<TR><TD>C-u<TD>Kill everything before cursor
-<TR><TD>C-a<TD>Move to the top of line
-<TR><TD>C-e<TD>Move to the bottom of line
-<TR><TD>C-p<TD>Fetch the previous string from the history list
-<TR><TD>C-n<TD>Fetch the next string from the history list
-<TR><TD>TAB,SPC<TD>Complete filename
-<TR><TD>RETURN<TD>Accept
-</table>
-
-<hr>
-<a name="Key:lynx"></a>
-<h2>Lynx-like key binding</h2>
-
-If you have chosen `Lynx-like key binding' at the compile time,
-you can use the following key binding.
-
-<H3>Page/Cursor motion</H3>
-<table>
-<TR><TD WIDTH=100>SPC,C-v,+<TD>Forward page
-<TR><TD>b,ESC v,-<TD>Previous page
-<TR><TD>l<TD>Cursor right
-<TR><TD>h<TD>Cursor left
-<TR><TD>j<TD>Cursor down
-<TR><TD>k<TD>Cursor up
-<TR><TD>J<TD>Roll up one line
-<TR><TD>K<TD>Roll down one line
-<TR><TD>^<TD>Go to the beginning of line
-<TR><TD>$<TD>Go to the end of line
-<TR><TD>&gt;<TD>Shift screen right
-<TR><TD>&lt;<TD>Shift screen left
-<TR><TD>C-a<TD>Go to the first line
-<TR><TD>C-e<TD>Go to the last line
-<TR><TD>G<TD>Go to the specified line
-<TR><TD>Z<TD>Move to the center line
-<TR><TD>z<TD>Move to the center column
-<TR><TD>TAB,C-n,Down arrow<TD>Move to next hyperlink
-<TR><TD>ESC TAB,C-p,Up arrow<TD>Move to previous link
-<TR><TD>C-g<TD>Show current page position
-</table>
-
-
-<H2>Hyperlink operation</H2>
-<table>
-<TR><TD WIDTH=100>RET, C-f, Right arrow<TD>Follow hyperlink
-<TR><TD>d, ESC RET<TD>Save link to file
-<TR><TD>u<TD>Peek link URL
-<TR><TD>i<TD>Peek image URL
-<TR><TD>I<TD>View inline image
-<TR><TD>ESC I<TD>Save inline image to file
-<TR><TD>:<TD>Mark URL-like strings as anchors
-<TR><TD>ESC :<TD>Mark Message-ID-like strings as news anchors
-<TR><TD>c<TD>Peek current URL
-<TR><TD>=<TD>Display information about current document
-<TR><TD>C-h<TD>View history of URL
-<TR><TD>F<TD>Render frame
-<TR><TD>M<TD>Browse current document using external browser
-(use 2M and 3M to invoke second and third browser)
-<TR><TD>ESC M<TD>Browse link using external browser
-(use 2ESC M and 3ESC M to invoke second and third browser)
-</table>
-
-<H2>File/Stream operation</H2>
-<table>
-<TR><TD WIDTH=100>g,U<TD>Open URL
-<TR><TD>V<TD>View new file
-<TR><TD>@<TD>Execute shell command and load
-<TR><TD>#<TD>Execute shell command and browse
-</table>
-
-<H2>Buffer operation</H2>
-<table>
-<TR><TD WIDTH=100>B, C-b, Left arrow<TD>Back to the previous buffer
-<TR><TD>\<TD>View HTML source
-<TR><TD>s, C-h<TD>Select buffer
-<TR><TD>E<TD>Edit buffer source
-<TR><TD>C-l, C-w<TD>Redraw screen
-<TR><TD>R, C-r<TD>Reload buffer
-<TR><TD>S, p<TD>Save buffer
-<TR><TD>ESC s<TD>Save source
-<TR><TD>ESC e<TD>Edit buffer image
-</table>
-
-<H2>Buffer selection mode</H2>
-<table>
-<TR><TD WIDTH=100>k, C-p<TD>Select previous buffer
-<TR><TD>j, C-n<TD>Select next buffer
-<TR><TD>D<TD>Delect current buffer
-<TR><TD>RET<TD>Go to the selected buffer
-</table>
-
-<H2>Bookmark operation</H2>
-<table>
-<TR><TD WIDTH=100>v, ESC b<TD>Load bookmark
-<TR><TD>a, ESC a<TD>Add current to bookmark
-</table>
-
-<H2>Search</H2>
-<table>
-<TR><TD WIDTH=100>/, C-s<TD>Search forward
-<TR><TD>n<TD>Search next
-<TR><TD>w<TD>Toggle wrap search mode
-</table>
-
-<H2>Mark operation</H2>
-<table>
-<TR><TD WIDTH=100>C-SPC<TD>Set/unset mark
-<TR><TD>P<TD>Go to previous mark
-<TR><TD>N<TD>Go to next mark
-<TR><TD>"<TD>Mark by regular expression
-</table>
-
-<H2>Miscellany</H2>
-<table>
-<TR><TD WIDTH=100>!<TD>Execute shell command
-<TR><TD>H, ?<TD>Help (load this file)
-<TR><TD>o<TD>Set option
-<TR><TD>C-k<TD>Show cookie jar
-<TR><TD>C-c<TD>Stop
-<TR><TD>C-z<TD>Suspend
-<TR><TD>q<TD>Quit (with confirmation, if you like)
-<TR><TD>Q<TD>Quit without confirmation
-</table>
-
-<H2>Line-edit mode</H2>
-<table>
-<TR><TD WIDTH=100>C-f<TD>Move cursor forward
-<TR><TD>C-b<TD>Move cursor backward
-<TR><TD>C-h<TD>Delete previous character
-<TR><TD>C-d<TD>Delete current character
-<TR><TD>C-k<TD>Kill everything after cursor
-<TR><TD>C-u<TD>Kill everything before cursor
-<TR><TD>C-a<TD>Move to the top of line
-<TR><TD>C-e<TD>Move to the bottom of line
-<TR><TD>C-p<TD>Fetch the previous string from the history list
-<TR><TD>C-n<TD>Fetch the next string from the history list
-<TR><TD>TAB,SPC<TD>Complete filename
-<TR><TD>RETURN<TD>Accept
-</table>
-
-<hr>
-<a name="Mouse"></a>
-<h2>Mouse operation</h2>
-If w3m is compiled with mouse option and you are using
-xterm/kterm/rxvt (in this case, you have to set the TERM
-environment variable to `xterm' or `kterm'.) or GPM 
-environment, you can use mouse
-for the navigation. 
-<p>
-<table border=0>
-<tr><td>left click
-<td>Move the cursor to the place pointed by the mouse cursor.
-If you click the cursor and it is on an anchor, follow the anchor.
-<tr><td>middle click
-<td>Back to the previous buffer.
-<tr><td>right click
-<td>Open pop-up menu. You can choose an item by clicking it.
-<tr><td>left drag
-<td>Scroll document. The default behavior is to grab the document
-and drag it. You can reverse the behavior (grab the window and drag it)
-with the option setting panel.
-</table>
-<p>
-
-
-<hr>
-<a name="Key:custom"></a>
-<h2>Key customization</h2>
-You can customize the key binding (except line-editing keymap)
-by describing ~/.w3m/keymap. For example,
+   </dd>
+   <dt>
+    -m
+   </dt>
+   <dd>
+    <p>
+     Display document using <q>Internet message mode</q>. With this
+     option, w3m determines document type from header information.
+     This is useful when reading e-mail or Usenet news posts.
+    </p>
+   </dd>
+   <dt>
+    -v
+   </dt>
+   <dd>
+    <p>
+     Show w3m's startup page.
+    </p>
+   </dd>
+   <dt>
+    -B
+   </dt>
+   <dd>
+    <p>
+     Show w3m's bookmarks page.
+    </p>
+   </dd>
+   <dt>
+    -bookmark <i>file</i>
+   </dt>
+   <dd>
+    <p>
+     Specify a custom bookmarks file.
+    </p>
+   </dd>
+   <dt>
+    -M
+   </dt>
+   <dd>
+    <p>
+     Monochrome display mode.
+    </p>
+   </dd>
+   <dt>
+    -F
+   </dt>
+   <dd>
+    <p>
+     Automatically render HTML frames.
+    </p>
+   </dd>
+   <dt>
+    -s
+   </dt>
+   <dd>
+    <p>
+     Squeeze blank lines.
+    </p>
+   </dd>
+   <dt>
+    -X
+   </dt>
+   <dd>
+    <p>
+     Upon exit, do not reinitialize the terminal.
+    <p>
+   </dd>
+   <dt>
+    -W
+   </dt>
+   <dd>
+    <p>
+     Toggle wrapping mode in searches.
+    </p>
+   </dd>
+   <dt>
+    -o <i>option</i>=<i>value</i>
+   </dt>
+   <dd>
+    <p>
+     Specify option. The available option names and values are the
+     same as in ~/.w3m/config.
+    </p>
+   </dd>
+   <dt>
+    -cookie
+   </dt>
+   <dd>
+    <p>
+     Process cookies.
+    </p>
+   </dd>
+   <dt>
+    -no-cookie
+   </dt>
+   <dd>
+    <p>
+     Don't process cookies.
+    </p>
+   </dd>
+   <dt>
+    -num
+   </dt>
+   <dd>
+    <p>
+     Show line-numbers.
+    </p>
+   </dd>
+   <dt>
+    -dump
+   </dt>
+   <dd>
+    <p>
+     Read document specified by URL and dump page rendered as text
+     into standard output. An 80 column width is used unless set with
+     the -cols option.
+    </p>
+   </dd>
+   <dt>
+    -cols <i>width</i>
+   </dt>
+   <dd>
+    <p>
+     Specify document width. Used with -dump option.
+    </p>
+   </dd>
+   <dt>
+    -ppc <i>count</i>
+   </dt>
+   <dd>
+    <p>
+     Specify the number of pixels per character (default 8.0). Larger
+     values will make tables narrower.
+    </p>
+   </dd>
+   <dt>
+    -dump_source
+   </dt>
+   <dd>
+    <p>
+     Read document specified by URL and dump the source.
+    </p>
+   </dd>
+   <dt>
+    -dump_head
+   </dt>
+   <dd>
+    <p>
+     Read document specified by URL and dump headers.
+    </p>
+   </dd>
+   <dt>
+    -dump_both
+   </dt>
+   <dd>
+    <p>
+     Read document specified by URL and dump headers and the source.
+    </p>
+   </dd>
+   <dt>
+    -dump_extra
+   </dt>
+   <dd>
+    <p>
+     Read document specified by URL and dump extra informations,
+     headers, and the source.
+    </p>
+   </dd>
+   <dt>
+    -post <i>file</i>
+   </dt>
+   <dd>
+    <p>
+     Use POST method with file content.
+    </p>
+   </dd>
+   <dt>
+    -header <i>string</i>
+   </dt>
+   <dd>
+    <p>
+     Insert string as a header.
+    </p>
+   </dd>
+   <dt>
+    -no-proxy
+   </dt>
+   <dd>
+    <p>
+     Don't use proxy server.
+    </p>
+   </dd>
+   <dt>
+    -no-graph
+   </dt>
+   <dd>
+    <p>
+     Use ASCII characters to draw frames rather than graphical ones.
+    </p>
+   </dd>
+   <dt>
+    -no-mouse
+   </dt>
+   <dd>
+    <p>
+     Deactivate mouse support.
+    </p>
+   </dd>
+   <dt>
+    -config <i>file</i>
+   </dt>
+   <dd>
+    <p>
+     Specify config file.
+    </p>
+   </dd>
+  </dl>
+  <hr>
+  <h2 id="Color">
+   Document colors
+  </h2>
+  <p>
+   Links and images are displayed as follows.
+  </p>
+  <div align="center">
+   <table border="1">
+    <tr>
+     <th>
+      &nbsp;
+     </th>
+     <th>
+      Color mode
+     </th>
+     <th>
+      Monochrome mode
+     </th>
+    </tr>
+    <tr>
+     <td>
+      links
+     </td>
+     <td>
+      blue
+     </td>
+     <td>
+      underline
+     </td>
+    </tr>
+    <tr>
+     <td>
+      inline images
+     </td>
+     <td>
+      green
+     </td>
+     <td>
+      reverse
+     </td>
+    </tr>
+    <tr>
+     <td>
+      form input
+     </td>
+     <td>
+      red
+     </td>
+     <td>
+      reverse
+     </td>
+    </tr>
+   </table>
+  </div>
+  <p>
+   These colors can be customized using the option setting command
+   <q>o</q>.
+  </p>
+  <hr>
+  <h2 id="Key:orig">
+   Key bindings
+  </h2>
+<!--
+ TODO: reorganise this whole thing into one big table of
+    FUNCTIONNAME | description | default-binding | Lynxlike-binding
+!-->
+  <p>
+   After invoking w3m, you can control it with keyboard commands.
+  </p>
+  <p>
+   Here's the original key-binding table. If you are using Lynx-like
+   key bindings, see <a href="#Key:lynx">the Lynx-like key
+   bindings</a>. Throughout, the <q>C-</q> and <q>M-</q> notations
+   indicate the modifiers <q>control</q> and <q>meta</q> (which can be
+   replaced with <q>alt</q> or ESC); on the other hand <q>2&nbsp;M</q>
+   simply means <q>2</q> followed by <q>M</q>.
+  </p>
+  <h3>
+   In-page navigation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     SPC, C-v, +, PGDN
+    </td>
+    <td>
+     Forward page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     b, M-v, -, PGUP
+    </td>
+    <td>
+     Backward page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     l, C-f, RIGHT
+    </td>
+    <td>
+     Cursor right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     h, C-b, LEFT
+    </td>
+    <td>
+     Cursor left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     j, C-n, DOWN
+    </td>
+    <td>
+     Cursor down
+    </td>
+   </tr>
+   <tr>
+    <td>
+     k, C-p, UP
+    </td>
+    <td>
+     Cursor up
+    </td>
+   </tr>
+   <tr>
+    <td>
+     J
+    </td>
+    <td>
+     Scroll screen up one line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     K
+    </td>
+    <td>
+     Scroll screen down one line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ^, C-a
+    </td>
+    <td>
+     Go to the beginning of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     $, C-e
+    </td>
+    <td>
+     Go to the end of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     w
+    </td>
+    <td>
+     Go to next word
+    </td>
+   </tr>
+   <tr>
+    <td>
+     W
+    </td>
+    <td>
+     Go to previous word
+    </td>
+   </tr>
+   <tr>
+    <td>
+     &gt;
+    </td>
+    <td>
+     Shift screen right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     &lt;
+    </td>
+    <td>
+     Shift screen left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     .
+    </td>
+    <td>
+     Shift screen one column right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ,
+    </td>
+    <td>
+     Shift screen one column left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     g, M-&lt;, HOME
+    </td>
+    <td>
+     Go to the first line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     G, M-&gt;, END
+    </td>
+    <td>
+     Go to the last line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-g
+    </td>
+    <td>
+     Go to specified line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Z
+    </td>
+    <td>
+     Center on cursor column
+    </td>
+   </tr>
+   <tr>
+    <td>
+     z
+    </td>
+    <td>
+     Center on cursor line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     TAB
+    </td>
+    <td>
+     Move to next hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-u, M-TAB
+    </td>
+    <td>
+     Move to previous hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     [
+    </td>
+    <td>
+     Move to the first hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ]
+    </td>
+    <td>
+     Move to the last hyperlink
+    </td>
+   </tr>
+  </table>
+  <h3>Hyperlink operation</h3>
+  <table>
+   <tr>
+    <td width="100">
+     C-j, C-m, RET
+    </td>
+    <td>
+     Follow hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     a, M-RET
+    </td>
+    <td>
+     Save link to file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     u
+    </td>
+    <td>
+     Show link URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     i
+    </td>
+    <td>
+     Show image URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     I
+    </td>
+    <td>
+     View inline image
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-I
+    </td>
+    <td>
+     Save inline image to file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     :
+    </td>
+    <td>
+     Mark URL-like strings as hyperlinks
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-:
+    </td>
+    <td>
+     Mark Message-ID-like strings as links
+    </td>
+   </tr>
+   <tr>
+    <td>
+     c
+    </td>
+    <td>
+     Show current URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     =
+    </td>
+    <td>
+     Show information about current document
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-g
+    </td>
+    <td>
+     Show current position in page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-h
+    </td>
+    <td>
+     Show browsing history
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M
+    </td>
+    <td>
+     Browse current document using external browser (prefix 2, 3, ...,
+     or 9 to invoke alternate configured browsers, e.g. 3&nbsp;M)
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-M
+    </td>
+    <td>
+     Browse link using external browser (prefixed as above, e.g.
+     3&nbsp;M-M)
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Bookmark management
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     M-b
+    </td>
+    <td>
+     Go to bookmarks page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-a
+    </td>
+    <td>
+     Bookmark current page
+    </td>
+   </tr>
+  </table>
+  <h3>
+   File/stream operation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     U
+    </td>
+    <td>
+     Open new URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     V
+    </td>
+    <td>
+     Open new file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     @
+    </td>
+    <td>
+     Execute shell command and view output
+    </td>
+   </tr>
+   <tr>
+    <td>
+     #
+    </td>
+    <td>
+     Execute shell command and browse output
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Content operations
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     v
+    </td>
+    <td>
+     Toggle viewing as text or rendered HTML
+    </td>
+   </tr>
+   <tr>
+    <td>
+     F
+    </td>
+    <td>
+     Toggle rendering HTML frames
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-l
+    </td>
+    <td>
+     Redraw screen
+    </td>
+   </tr>
+   <tr>
+    <td>
+     R
+    </td>
+    <td>
+     Reload 
+    </td>
+   </tr>
+   <tr>
+    <td>
+     E
+    </td>
+    <td>
+     Edit local source
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-e
+    </td>
+    <td>
+     Edit rendered copy of page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-s
+    </td>
+    <td>
+     Save source
+    </td>
+   </tr>
+   <tr>
+    <td>
+     S
+    </td>
+    <td>
+     Save rendered copy of page
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Buffer/tab navigation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     B
+    </td>
+    <td>
+     Go back, <q>popping</q> the buffer stack
+    </td>
+   </tr>
+   <tr>
+    <td>
+     s
+    </td>
+    <td>
+     Show buffer-stack menu
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-t
+    </td>
+    <td>
+     Show tab menu
+    </td>
+   </tr>
+   <tr>
+    <td>
+     T
+    </td>
+    <td>
+     Open current page as new tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-t
+    </td>
+    <td>
+     Open link as new tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     }
+    </td>
+    <td>
+     Switch to next tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     {
+    </td>
+    <td>
+     Switch to previous tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-q
+    </td>
+    <td>
+     Close current tab
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Search
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     /
+    </td>
+    <td>
+     Search forward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ?
+    </td>
+    <td>
+     Search backward
+    </td>
+   </tr>
+   <tr>
+    <td width="100">
+     C-s
+    </td>
+    <td>
+     Incremental search forward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-r
+    </td>
+    <td>
+     Incremental search backward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     n
+    </td>
+    <td>
+     Next match
+    </td>
+   </tr>
+   <tr>
+    <td>
+     N
+    </td>
+    <td>
+     Previous match
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-w
+    </td>
+    <td>
+     Toggle wrapping mode in searches
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Mark management
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     C-SPC
+    </td>
+    <td>
+     Set/unset mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-p
+    </td>
+    <td>
+     Go to previous mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-n
+    </td>
+    <td>
+     Go to next mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     "
+    </td>
+    <td>
+     Mark all occurrences of a regular expression
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Miscellany
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     !
+    </td>
+    <td>
+     Execute shell command
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-c
+    </td>
+    <td>
+     Invoke w3m function
+    </td>
+   </tr>
+   <tr>
+    <td>
+     H
+    </td>
+    <td>
+     Show help panel
+    </td>
+   </tr>
+   <tr>
+    <td>
+     o
+    </td>
+    <td>
+     Show options panel
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-k
+    </td>
+    <td>
+     Show cookie jar
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-c
+    </td>
+    <td>
+     Interrupt
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-z
+    </td>
+    <td>
+     Suspend w3m
+    </td>
+   </tr>
+   <tr>
+    <td>
+     q
+    </td>
+    <td>
+     Quit (with confirmation dialog)
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Q
+    </td>
+    <td>
+     Quit without confirmation
+    </td>
+   </tr>
+  </table>
+<!--
+ TODO: import leftovers from current keymap (same in both):
+ (    UNDO
+ )    REDO
+ ;    MARK_WORD
+ D    DOWNLOAD_LIST
+ L    LIST
+ m    MOUSE_TOGGLE
+ r    VERSION
+ |    PIPE_BUF
+ M-W  DICT_WORD_AT
+ M-c  COMMAND
+ M-k  DEFINE_KEY
+ M-l  LIST_MENU
+ M-m  MOVE_LIST_MENU
+ M-o  SET_OPTION
+ M-u  GOTO_RELATIVE
+ M-w  DICT_WORD
+ M-Fn MENU
+!-->
+  <p>
+   Two special operational modes exist which have built-in (not
+   redefinable) keymappings:
+  </p>
+  <h3>
+   Menu selection mode
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     k, C-p, UP
+    </td>
+    <td>
+     Select previous item
+    </td>
+   </tr>
+   <tr>
+    <td>
+     j, C-n, DOWN
+    </td>
+    <td>
+     Select next item
+    </td>
+   </tr>
+   <tr>
+    <td>
+     D
+    </td>
+    <td>
+     Delete current item
+    </td>
+   </tr>
+   <tr>
+    <td>
+     SPC, RET
+    </td>
+    <td>
+     Go to the selected item
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Line-editing mode
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     C-f, RIGHT
+    </td>
+    <td>
+     Move cursor forward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-b, LEFT
+    </td>
+    <td>
+     Move cursor backward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-h, BKSPC
+    </td>
+    <td>
+     Delete previous character
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-d
+    </td>
+    <td>
+     Delete current character
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-k
+    </td>
+    <td>
+     Kill everything after cursor
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-u
+    </td>
+    <td>
+     Kill everything before cursor
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-a
+    </td>
+    <td>
+     Move to the beginning of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-e
+    </td>
+    <td>
+     Move to the end of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-p, UP
+    </td>
+    <td>
+     Fetch the previous string from the history list
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-n, DOWN
+    </td>
+    <td>
+     Fetch the next string from the history list
+    </td>
+   </tr>
+   <tr>
+    <td>
+     TAB, SPC
+    </td>
+    <td>
+     Try to complete filename
+    </td>
+   </tr>
+   <tr>
+    <td>
+     RET
+    </td>
+    <td>
+     Accept
+    </td>
+   </tr>
+  </table>
+  <hr>
+  <h2 id="Key:lynx">
+   Lynx-like key bindings
+  </h2>
+  <p>
+   If w3m was compiled with <q>Lynx-like key bindings</q>, you can use
+   the following key bindings.
+  </p>
+  <h3>
+   In-page navigation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     SPC, C-v, +
+    </td>
+    <td>
+     Forward page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     b, M-v, -
+    </td>
+    <td>
+     Backward page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     l
+    </td>
+    <td>
+     Cursor right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     h
+    </td>
+    <td>
+     Cursor left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     j
+    </td>
+    <td>
+     Cursor down
+    </td>
+   </tr>
+   <tr>
+    <td>
+     k
+    </td>
+    <td>
+     Cursor up
+    </td>
+   </tr>
+   <tr>
+    <td>
+     J
+    </td>
+    <td>
+     Scroll screen up one line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     K
+    </td>
+    <td>
+     Scroll screen down one line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ^
+    </td>
+    <td>
+     Go to the beginning of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     $
+    </td>
+    <td>
+     Go to the end of line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     &gt;
+    </td>
+    <td>
+     Shift screen right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     &lt;
+    </td>
+    <td>
+     Shift screen left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     .
+    </td>
+    <td>
+     Shift screen one column right
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ,
+    </td>
+    <td>
+     Shift screen one column left
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-a, M-&lt;
+    </td>
+    <td>
+     Go to the first line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-e, M-&gt;
+    </td>
+    <td>
+     Go to the last line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     G
+    </td>
+    <td>
+     Go to the specified line
+    </td>
+   </tr>
+   <tr>
+    <td>
+     w
+    </td>
+    <td>
+     Go to next word
+    </td>
+   </tr>
+   <tr>
+    <td>
+     W
+    </td>
+    <td>
+     Go to previous word
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Z
+    </td>
+    <td>
+     Center on cursor line
+   </td>
+   </tr>
+   <tr>
+    <td>
+     z
+    </td>
+    <td>
+     Center on cursor column
+    </td>
+   </tr>
+   <tr>
+    <td>
+     TAB, C-n, DOWN
+    </td>
+    <td>
+     Move to next hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-TAB, C-p, C-u, UP
+    </td>
+    <td>
+     Move to previous link
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-g
+    </td>
+    <td>
+     Show current position in page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     [
+    </td>
+    <td>
+     Move to the first hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     ]
+    </td>
+    <td>
+     Move to the last hyperlink
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Hyperlink operation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     C-f, C-j, C-m, RET, RIGHT
+    </td>
+    <td>
+     Follow hyperlink
+    </td>
+   </tr>
+   <tr>
+    <td>
+     d, M-RET
+    </td>
+    <td>
+     Save link to file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     u
+    </td>
+    <td>
+     Show link URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     i
+    </td>
+    <td>
+     Show image URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     I
+    </td>
+    <td>
+     View inline image
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-I
+    </td>
+    <td>
+     Save inline image to file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     :
+    </td>
+    <td>
+     Mark URL-like strings as hyperlinks
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-:
+    </td>
+    <td>
+     Mark Message-ID-like strings as links
+    </td>
+   </tr>
+   <tr>
+    <td>
+     c
+    </td>
+    <td>
+     Show current URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     =
+    </td>
+    <td>
+     Show information about current document
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-h
+    </td>
+    <td>
+     Show browsing history
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M
+    </td>
+    <td>
+     Browse current document using external browser (prefix 2, 3, ...,
+     or 9 to invoke alternate configured browsers, e.g. 3&nbsp;M)
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-M
+    </td>
+    <td>
+     Browse link using external browser (prefixed as above, e.g.
+     3&nbsp;M-M)
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Bookmark management
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     v, M-b
+    </td>
+    <td>
+     Go to bookmarks page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     a, M-a
+    </td>
+    <td>
+     Bookmark current page
+    </td>
+   </tr>
+  </table>
+  <h3>
+   File/stream operation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     g, U
+    </td>
+    <td>
+     Open new URL
+    </td>
+   </tr>
+   <tr>
+    <td>
+     V
+    </td>
+    <td>
+     Open new file
+    </td>
+   </tr>
+   <tr>
+    <td>
+     @
+    </td>
+    <td>
+     Execute shell command and view output
+    </td>
+   </tr>
+   <tr>
+    <td>
+     #
+    </td>
+    <td>
+     Execute shell command and browse output
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Content operations
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     \
+    </td>
+    <td>
+     Toggle viewing as text or rendered HTML
+    </td>
+   </tr>
+   <tr>
+    <td>
+     F
+    </td>
+    <td>
+     Toggle rendering HTML frames
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-l, C-w
+    </td>
+    <td>
+     Redraw screen
+    </td>
+   </tr>
+   <tr>
+    <td>
+     R, C-r
+    </td>
+    <td>
+     Reload
+    </td>
+   </tr>
+   <tr>
+    <td>
+     E
+    </td>
+    <td>
+     Edit local source
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-e
+    </td>
+    <td>
+     Edit rendered copy of page
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-s
+    </td>
+    <td>
+     Save source
+    </td>
+   </tr>
+   <tr>
+    <td>
+     S, p
+    </td>
+    <td>
+     Save rendered copy of page
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Buffer/tab navigation
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     B, C-b, LEFT
+    </td>
+    <td>
+     Go back, <q>popping</q> the buffer stack
+    </td>
+   </tr>
+   <tr>
+    <td>
+     s, C-h
+    </td>
+    <td>
+     Show buffer-stack menu
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-t
+    </td>
+    <td>
+     Show tab menu
+    </td>
+   </tr>
+   <tr>
+    <td>
+     T
+    </td>
+    <td>
+     Open current page as new tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-t
+    </td>
+    <td>
+     Open link as new tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     }
+    </td>
+    <td>
+     Switch to next tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     {
+    </td>
+    <td>
+     Switch to previous tab
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-q
+    </td>
+    <td>
+     Close current tab
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Search
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     /, C-s
+    </td>
+    <td>
+     Search forward
+    </td>
+   </tr>
+   <tr>
+    <td>
+     n
+    </td>
+    <td>
+     Next match
+    </td>
+   </tr>
+   <tr>
+    <td>
+     w
+    </td>
+    <td>
+     Toggle wrapping mode in searches
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Mark management
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     C-SPC
+    </td>
+    <td>
+     Set/unset mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     P
+    </td>
+    <td>
+     Go to previous mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     N
+    </td>
+    <td>
+     Go to next mark
+    </td>
+   </tr>
+   <tr>
+    <td>
+     "
+    </td>
+    <td>
+     Mark all occurrences of a regular expression
+    </td>
+   </tr>
+  </table>
+  <h3>
+   Miscellany
+  </h3>
+  <table>
+   <tr>
+    <td width="100">
+     !
+    </td>
+    <td>
+     Execute shell command
+    </td>
+   </tr>
+   <tr>
+    <td>
+     M-c
+    </td>
+    <td>
+     Invoke w3m function
+    </td>
+   </tr>
+   <tr>
+    <td>
+     H, ?
+    </td>
+    <td>
+     Show help panel
+    </td>
+   </tr>
+   <tr>
+    <td>
+     o
+    </td>
+    <td>
+     Show options panel
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-k
+    </td>
+    <td>
+     Show cookie jar
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-c
+    </td>
+    <td>
+     Interrupt
+    </td>
+   </tr>
+   <tr>
+    <td>
+     C-z
+    </td>
+    <td>
+     Suspend w3m
+    </td>
+   </tr>
+   <tr>
+    <td>
+     q
+    </td>
+    <td>
+     Quit (with confirmation dialog)
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Q
+    </td>
+    <td>
+     Quit without confirmation
+    </td>
+   </tr>
+  </table>
+  <p>
+   The Lynx-like configuration leaves keymappings unchanged in the
+   menu-selection and line-editing modes.
+  </p>
+  <hr>
+  <h2 id="Mouse">
+   Mouse operation
+  </h2>
+  <p>
+   If w3m is compiled with mouse support and you are invoking w3m
+   either from a console with GPM or from an X terminal emulator, you
+   can use the mouse for navigation (in the case of rxvt, you need to
+   set the TERM environment variable to <q>xterm</q> or <q>kterm</q>).
+  <p>
+  <table border="0">
+   <tr>
+    <td>
+     left click
+    </td>
+    <td>
+     Move the cursor to the place indicated by the mouse cursor.
+     If you click the cursor and it is on a hyperlink, follow the
+     link.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     middle click
+    </td>
+    <td>
+     Back to the previous buffer.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     right click
+    </td>
+    <td>
+     Open pop-up menu. You can choose an item by clicking it.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     left drag
+    </td>
+    <td>
+     Scroll document. The default behavior is to grab the document
+     and drag it. You can reverse the behavior (grab the window and
+     drag it) with the option setting panel.
+    </td>
+   </tr>
+  </table>
+  <hr>
+  <h2 id="Key:custom">
+   Key customization
+  </h2>
+  <p>
+   You can customize the key bindings (except the line-editing keymap)
+   in a ~/.w3m/keymap file. For example,
+  </p>
 <pre>
 
    keymap C-o NEXT_PAGE
 
 </pre>
-binds `NEXT_PAGE' function (normally bound to SPC and C-v)
-to control-o. See <a href="README.func">README.func</a> for
-list of available functions. Original and Lynx-like keymap
-definitions are provided (<a href="keymap.default">keymap.default</a>
-and <a href="keymap.lynx">keymap.lynx</a>) as examples.
-
-<hr>
-<a name="LocalCGI"></a>
-<h2>Local CGI</h2>
-You can run CGI scripts using w3m, without any HTTP server.
-It means that w3m behaves like an HTTP server and activates CGI script,
-then w3m reads the output of the script and display it. The 
-bookmark registration and helper-app editor
-are realized as local CGI scripts.
-Using local CGI, w3m can be used as a general purpose form interface.
-<P>
-For security reason, CGI scripts invoked by w3m must be in one of
-these directories.
-<ul>
-<li>The directory where w3m-related files are stored 
-(typically /usr/local/lib/w3m). This directory can be referred
-as $LIB.
-<li>/cgi-bin/ directory. You can map /cgi-bin/ to any directory you like
-with option setting panel (``Directory corresponds to /cgi-bin'' field).
-You can specify multiple paths separated by `:', like
-/usr/local/cgi-bin:/home/aito/cgi-bin. To use /cgi-bin/ directory,
-you must use file:/cgi-bin URL as follows:
+  <p>
+   binds the <q>NEXT_PAGE</q> function (normally bound to SPC and C-v)
+   to control-o. See <a href="README.func">README.func</a> for a
+   list of available functions. Original and Lynx-like keymap
+   definitions are provided (<a href="keymap.default">keymap.default</a>
+   and <a href="keymap.lynx">keymap.lynx</a>) as examples.
+  </p>
+  <hr>
+  <h2 id="LocalCGI">
+   Local CGI
+  </h2>
+  <p>
+   You can run CGI scripts using w3m, without any HTTP server.
+   This means that w3m behaves like an HTTP server and runs the CGI
+   script, then reads the output of the script and displays it. For
+   example, the bookmark registration system and default directory
+   browser are realized as local CGI scripts. Moreover, such scripts
+   allow w3m to be used as a form interface to acquire all kinds of
+   data.
+  </p>
+  <p>
+   For security reason, CGI scripts invoked by w3m must be in one of
+   the following directories:
+  </p>
+  <ul>
+   <li>
+    The directory where w3m-related files are stored (typically
+    /usr/local/lib/w3m). This directory can be referenced as $LIB.
+   </li>
+   <li>
+    The /cgi-bin/ directory. You can map /cgi-bin/ to any directory you
+    like in the option setting panel (the <q>Directory corresponds to
+    /cgi-bin</q> field). You can specify multiple paths separated by
+    <q>:</q>, like /usr/local/cgi-bin:/home/aito/cgi-bin. To use a
+    /cgi-bin/ directory, you must use a file:/cgi-bin URL as follows:
 <pre>
  w3m -o cgi_bin=/path/to/cgi-bin file:/cgi-bin/script.cgi
 </pre>
-It is not recommended to include current directory to this path.
-</ul>
-<p>
-The CGI script can use special header `w3m-control:' to control w3m.
-This field can take any function (see <a href="README.func">README.func</a>),
-and the specified function is invoked after the document is displayed.
-For example, The CGI output
+    It is not recommended to include the current directory to this path.
+   </li>
+  </ul>
+  <p>
+   The CGI script can use the special header <q>w3m-control:</q> to
+   control w3m. This field can take any function (see
+   <a href="README.func">README.func</a>), and the specified function
+   is invoked after the document is displayed. For example, the CGI
+   output
+  </p>
 <pre>
 
 Content-Type: text/plain
 W3m-control: BACK
 
 </pre>
-will display blank page and delete that buffer immediately.
-This is useful when you don't want to display any page after
-the script is invoked. The next example
+  <p>
+   will display a blank page and delete that buffer immediately.
+   This is useful when you don't want to display any page after
+   the script is invoked. The next example
+  </p>
 <pre>
 
 Content-Type: text/plain
@@ -507,26 +2111,32 @@ W3m-control: DELETE_PREVBUF
 
 contents.....
 </pre>
-will override the current buffer.
-<p>
-One w3m-control: header have to contain only one function, but you can
-include more than one w3m-control: lines in the HTTP header.
-In addition, you can specify an argument to GOTO function:
+  <p>
+   will override the current buffer.
+  </p>
+  <p>
+   Each w3m-control: header can contain only one function, but you can
+   include more than one w3m-control: line in the HTTP header.
+   In addition, you can specify an argument to the GOTO function:
+  </p>
 <pre>
 
 Content-Type: text/plain
-W3m-control: GOTO http://www.yahoo.com/
+W3m-control: GOTO http://www.example.org/
 
 </pre>
-This example works exactly the same way to the Location header: 
+   <p>
+    This example works exactly the same way as the Location header:
+   </p>
 <pre>
 
 Content-Type: text/plain
-Location: http://www.yahoo.com/
+Location: http://www.example.org/
 
 </pre>
-Note that this header has no effect when the CGI script is invoked
-through HTTP server.
-
-</body>
+  <p>
+   Note that this header has no effect when the CGI script is invoked
+   through an HTTP server.
+  </p>
+ </body>
 </html>

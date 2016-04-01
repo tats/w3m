@@ -1,151 +1,423 @@
-<HTML>
-<HEAD>
-<TITLE>W3M FAQ</TITLE>
-</HEAD>
-<BODY>
-<p>&nbsp;
-<center><h1>Frequently Asked Questions and Answers about w3m</h1></center>
-<div align=right>
-Akinori Ito<br>
-aito@fw.ipsj.or.jp<br>
-Corrected by Tom Berger &lt;tom.be@gmx.net&gt;
-</div>
-<p>
-<b><center><font size=+1><u><a name="index">Index</a></u></font></center></b>
-<p>
-<br>
-<ul>
-<li><h2><a href="#general">General Questions, How to Get It, Required Environment</a></h2></li>
-<ul>
-<li><h3>How do I pronounce &quot;w3m&quot;?</h3>
-<li><h3>Why is it called &quot;w3m&quot;?</h3>
-<li><h3>On which platforms does w3m work?</h3>
-<li><h3>Where can I get more information about w3m?</h3>
-<li><h3>Is there a mailing list for w3m?</h3>
-<li><h3>Are there any binary distributions?</h3>
-</ul>
-<br>
-<li><a href="#install"><h2>Compile and Install</h2></a>
-<br>
-<li><a href="#command"><h2>Options, Commands, Usage</h2></a>
-<ul>
-<li><h3>w3m quits if started without parameters. What's wrong?</h3>
-<li><h3>w3m starts with black characters on a black screen. How do I change this?</h3>
-<li><h3>Does w3m support colours?</h3>
-<li><h3>Does w3m support monochrome display?</h3>
-<li><h3>How do I shift the display?</h3>
-<li><h3>How do I move from anchor to anchor?</h3>
-<li><h3>Netscape displays a word red, but w3m doesn't. Why?</h3>
-<li><h3>How do I change the colour of anchor-/image-/form links?</h3>
-<li><h3>w3m doesn't seem to use the variable EDITOR. Why? </h3>
-<li><h3>How do I quit a search or URL text input?</h3>
-</ul>
-<br>
-<li><a href="#www"><h2>Questions about WWW usage</h2></a>
-<ul>
-<li><h3>How do I fill in forms with w3m?</h3>
-<li><h3>Seems like w3m is slower than Netscape or Lynx. Why?</h3>
-<li><h3>Loading time doesn't decrease when loading a previously seen page</h3>
-<li><h3>How do I download a linked file?</h3>
-<li><h3>How do I specify a proxy server?</h3>
-<li><h3>w3m freezes when I invoke an external browser.</h3>
-<li><h3>How do I change the default image viewer?</h3>
-<li><h3>How do I enter a URL?</h3>
-<li><h3>w3m appends a URL to the former one despite of having cleared the line with Ctrl-u. What to do?</h3>
-</ul>
-<br>
-<li><a href="#other"><h2>Misc</a></h2>
-<ul>
-<li><h3>What is w3m's configuration file?</h3>
-<li><h3>What are these w3mxxxx files in my ~/.w3m directory for?</h3>
-</ul>
-<br>&nbsp;
-<br>
-<u><h2><a name="general">General Questions, How to Get It, Required Environment</a></h2></u>
-<br>
-<dl>
-<dt><h3>How do I pronounce &quot;w3m&quot;?</h3>
-<dd>It's &quot;W-three-M&quot;. It doesn't rhyme with &quot;pteranodon&quot;.
-<p>
-<dt><h3>Why is it called &quot;w3m&quot;?</h3>
-<dd>It's an abbreviation of &quot;WWW-wo-Miru&quot;, which is Japanese for
-&quot;See the WWW&quot;. So in English the name of this browser would be
-something like &quot;stw3&quot;.
-<p>
-<dt><h3>On which platforms does w3m work?</h3>
-<dd>It runs on various versions of Unix, since version 990226 on OS/2 and since
-version 990303 also on MS-Windows with Cygwin32.
-<br>
-Current versions have been confirmed to run on:
-<ul>
-<li>SunOS 4.1.x
-<li>HP-UX 9.x, 10.x
-<li>Solaris 2.5.x, 2.6, 8
-<li>Linux 2.0.30
-<li>FreeBSD 2.2.8, 3.1, 3.2, 4.6
-<li>NetBSD/macppc, m68k
-<li>EWS4800 Rel.12.2 Rev.A
-<li>Digital UNIX: v3.2D, v4.0D
-<li>IRIX 5.3, IRIX 6.5
-<li>OS/2 with emx
-<li>Windows 9x/NT with Cygwin32 b20.1
-<li>MS-DOS with DJGPP and WATT32 packet driver
-<li>MacOS X Server
-<li>MacOS X 10.1, 10.2
-</ul>
-<dt><h3>Where can I get more information about w3m?</h3>
-<dd>At the <a href="http://w3m.sourceforge.net/index.en.html">English w3m home page</a>.
-<dt><h3>Is there a mailing list for w3m?</h3>
-<dd>There is a mailing list for developpers (w3m-dev-en). Please see
-<a href="http://w3m.sourceforge.net/index.en.html">w3m page</a>
-for details. You may also mail your comments to <a href="mailto:aito@fw.ipsj.or.jp">the author</a>.
-<dt><h3>Are there any binary distributions?</h3>
-<dd>So far there are only binaries for the win/cygnus32 version. You can get
-them from <a href="http://prdownloads.sourceforge.net/w3m/">here</a>.
-Contact <a href="mailto:aito@fw.ipsj.or.jp">the author</a> if you want to contribute binaries for other platforms.
-</dd>
-</dl>
-<br>
-<div align=right>
-<i>Up to <a href="#index">index</a></i>
-</div>
-<br>
-<u><h2><a name="install">Compile and Install</a></h2></u>
-No problem :-)
-<u><h2><a name="command">Options, Commands, Usage</a></h2></u>
-<br>
-<dl>
-<dt><h3>w3m quits if started without parameters. What's wrong?</h3>
-<dd>w3m is a <b>pager</b>. Therefore it just quits when invoked without any
-arguments. Possible arguments are:
-<ol>
-<li>A filename or an URL
-<li>Pipe from standard input
-<li>The -B option (Show bookmark file)
-<li>The -v option (visual startup)
-<li>From a specified HTTP_HOME or WWW_HOME variable
-</ol>
-<p>
-<dt><h3>w3m starts with black characters on black background. How do I change
-this?</h3>
-<dd>
-When compiled with colour support, w3m assumes a white background and therefore
-displays black characters. 
-<br>
-You may either change the background colour of your terminal (e.g. with the -bg
-option in a xterm) or take these steps:
-<ul>
-<li>invoke w3m with 'w3m -M' (for monochrome),
-<li>type 'o' for getting to the options screen
-<li><b>Mark 'Display with colour' as ON</b> and choose an arbitrary colour.
-Click on [OK].
-</ul>
-<p>
-<dt><h3>Does w3m support colours?</h3>
-<dd>Yes. When you run './configure', answer the question
-<p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <meta http-equiv=content-type content="text/html;charset=US-ASCII">
+  <title>W3M FAQ</title>
+ </head>
+ <body>
+  <h1 align="center">
+   Frequently Asked Questions and Answers about w3m
+  </h1>
+  <p align="right">
+   Akinori Ito<br>
+   aito@fw.ipsj.or.jp<br>
+   Corrected by Tom Berger &lt;tom.be@gmx.net&gt;
+  </p>
+  <h2 id="index">
+   <u>
+    Index
+   </u>
+  </h2>
+  <ul>
+   <li>
+    <a href="#general">
+     <b>
+      General Questions, How to Get It, Required Environment
+     </b>
+    </a>
+    <ul>
+     <li>
+      <b>
+       How do I pronounce <q>w3m</q>?
+      </b>
+     </li>
+     <li>
+      <b>
+       Why is it called <q>w3m</q>?
+      </b>
+     </li>
+     <li>
+      <b>
+       On which platforms does w3m work?
+      </b>
+     </li>
+     <li>
+      <b>
+       Where can I get more information about w3m?
+      </b>
+     </li>
+     <li>
+      <b>
+       Is there a mailing list for w3m?
+      </b>
+     </li>
+     <li>
+      <b>
+       Are there any binary distributions?
+      </b>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <a href="#install">
+     <b>
+      Compile and Install
+     </b>
+    </a>
+   </li>
+   <li>
+    <a href="#command">
+     <b>
+      Options, Commands, Usage
+     </b>
+    </a>
+    <ul>
+     <li>
+      <b>
+       w3m quits if started without parameters. What's wrong?
+      </b>
+     </li>
+     <li>
+      <b>
+       w3m starts with black characters on a black background. How do
+       I change this?
+      </b>
+     </li>
+     <li>
+      <b>
+       Does w3m support colors?
+      </b>
+     </li>
+     <li>
+      <b>
+       Does w3m support monochrome displays?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I shift the display?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I move from anchor to anchor?
+      </b>
+     </li>
+     <li>
+      <b>
+       Graphical browsers display a word red, but w3m doesn't. Why?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I change the color of anchor/image/form links?
+      </b>
+     </li>
+     <li>
+      <b>
+       w3m doesn't seem to use the variable EDITOR. Why?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I quit a search or URL text input?
+      </b>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <a href="#www">
+     <b>
+      Questions about WWW usage
+     </b>
+    </a>
+    <ul>
+     <li>
+      <b>
+       How do I fill in forms with w3m?
+      </b>
+     </li>
+     <li>
+      <b>
+       Seems like w3m is slower than some other browsers. Why?
+      </b>
+     </li>
+     <li>
+      <b>
+       Loading time doesn't decrease when loading a previously seen
+       page.
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I download a linked file?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I specify a proxy server?
+      </b>
+     </li>
+     <li>
+      <b>
+       w3m freezes when I invoke an external browser.
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I change the default image viewer?
+      </b>
+     </li>
+     <li>
+      <b>
+       How do I enter a URL?
+      </b>
+     </li>
+     <li>
+      <b>
+       w3m appends a URL to the former one despite of having cleared
+       the line with Ctrl-u. What to do?
+      </b>
+     </li>
+    </ul>
+   </li>
+   <li>
+    <a href="#other">
+     <b>
+      Misc
+     </b>
+    </a>
+    <ul>
+     <li>
+      <b>
+       What is w3m's configuration file?
+      </b>
+     </li>
+     <li>
+      <b>
+       What are these w3mxxxx files in my ~/.w3m directory for?
+      </b>
+     </li>
+    </ul>
+   </li>
+  </ul>
+  <h2 id="general">
+   <u>
+    General Questions, How to Get It, Required Environment
+   </u>
+  </h2>
+  <dl>
+   <dt>
+    <b>
+     How do I pronounce <q>w3m</q>?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     It's <q>W-three-M</q>. It doesn't rhyme with <q>pteranodon</q>.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Why is it called <q>w3m</q>?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     It's an abbreviation of <q>WWW-wo-Miru</q>, which is Japanese
+     for <q>See the WWW</q>. So in English the name of this browser
+     would be something like <q>stw3</q>.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     On which platforms does w3m work?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     It runs on various versions of Unix, since version 990226 on OS/2
+     and since version 990303 also on MS-Windows with Cygwin32.
+    </p>
+    <p>
+     More recent versions have been confirmed to run on:
+    </p>
+    <ul>
+     <li>
+      SunOS 4.1.x
+     </li>
+     <li>
+      HP-UX 9.x, 10.x
+     </li>
+     <li>
+      Solaris 2.5.x, 2.6, 8
+     </li>
+     <li>
+      Linux 2.0.1 to 3.17
+     </li>
+     <li>
+      FreeBSD 2.2.8, 3.1, 3.2, 4.6
+     </li>
+     <li>
+      NetBSD/macppc, m68k
+     </li>
+     <li>
+      EWS4800 Rel.12.2 Rev.A
+     </li>
+     <li>
+      Digital UNIX: v3.2D, v4.0D
+     </li>
+     <li>
+      IRIX 5.3, IRIX 6.5
+     </li>
+     <li>
+      OS/2 with emx
+      </li>
+     <li>
+      Windows 9x/NT with Cygwin32 b20.1
+     </li>
+     <li>
+      MS-DOS with DJGPP and WATT32 packet driver
+     </li>
+     <li>
+      MacOS X Server
+     </li>
+     <li>
+      MacOS X 10.1, 10.2
+     </li>
+    </ul>
+   </dd>
+   <dt>
+    <b>
+     Where can I get more information about w3m?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     At the
+     <a href="http://w3m.sourceforge.net/index.en.html">English w3m
+     home page</a>.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Is there a mailing list for w3m?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     There is a mailing list for developers (w3m-dev-en). Please see
+     the <a href="http://w3m.sourceforge.net/index.en.html">w3m home
+     page</a> for details. You may also mail your comments to
+     <a href="mailto:aito@fw.ipsj.or.jp">the author</a>.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Are there any binary distributions?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     So far there are only binaries for the win/cygnus32 version.
+<!--
+     You can get them from
+     <a href="http://prdownloads.sourceforge.net/w3m/">here</a>.
+!-->
+     Contact <a href="mailto:aito@fw.ipsj.or.jp">the author</a> if you
+     want to contribute binaries for other platforms.
+    </p>
+   </dd>
+  </dl>
+  <p align="right">
+   <i>
+    Up to <a href="#index">index</a>
+   </i>
+  </p>
+  <h2 id="install">
+   <u>
+    Compile and Install
+   </u>
+  </h2>
+  <p>
+   No problem :-)
+  </p>
+  <h2 id="command">
+   <u>
+    Options, Commands, Usage
+   </u>
+  </h2>
+  <dl>
+   <dt>
+    <b>
+     w3m quits if started without parameters. What's wrong?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     w3m is a <b>pager</b>. Therefore it just quits when invoked
+     without any arguments. Possible arguments are:
+    </p>
+    <ol>
+     <li>
+      A filename or URL
+     </li>
+     <li>
+      Pipe from standard input
+     </li>
+     <li>
+      The -B option (show bookmark file)
+     </li>
+     <li>
+      The -v option (visual startup)
+     </li>
+     <li>
+      A specified HTTP_HOME or WWW_HOME variable
+     </li>
+    </ol>
+   </dd>
+   <dt>
+    <b>
+     w3m starts with black characters on a black background. How do I
+     change this?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     When compiled with color support, w3m assumes a white background
+     and therefore displays black characters.
+    </p>
+    <p>
+     You may either change the background color of your terminal
+     (e.g. with the -bg option in a xterm) or take these steps:
+    </p>
+    <ul>
+     <li>
+      invoke w3m with <q>w3m -M</q> (for monochrome),
+     </li>
+     <li>
+      type <q>o</q> to get to the options screen
+     </li>
+     <li>
+      <b>Mark <q>Display with color</q> as ON</b> and choose an
+      arbitrary color.
+     </li>
+     <li>
+      Click on [OK].
+     </li>
+    </ul>
+   </dd>
+   <dt>
+    <b>
+     Does w3m support colors?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Yes. When you run <q>./configure</q>, answer the question
+    </p>
 <pre>
-Let's do some configurations. Choose config option among the list."
+Let's do some configurations. Choose config option among the list.
 
 1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
 2 - Little model  (color, menu, no mouse, no cookie, no SSL)
@@ -153,139 +425,310 @@ Let's do some configurations. Choose config option among the list."
 4 - Cookie model  (color, menu, mouse, cookie, no SSL)
 5 - Monster model (with everything; you need openSSL library)
 6 - Customize
-Which? 
+Which?
 </pre>
-<p>
-with 2,3,4 or 5.
-<p>
-<dt><h3>Does w3m support monochrome display?</h3>
-<dd>Yes. You may either
-<ol>
-<li>Answer the above mentioned 'configure' question with 1, or
-<li>Invoke w3m with the -M option, or
-<li>Type 'o' within w3m to enter the options screen and turn off colour display
-mode.
-</ol>
-<dt><h3>How do I shift the display?</h3>
-<dd>You can shift the display by moving the cursor to the edge of the screen. You
-may also use the "&gt;"/"&lt;" or "."/"," keys.
-<br>
-Another idea would be adjusting the xterm with the -geometry option (e.g.
-something like 'xterm -geometry 110x45 -bg white -name w3m -e w3m -B').
-<dt><h3>How do I move from anchor to anchor?</h3>
-<dd>You can move to the next anchor using TAB. ESC TAB moves cursor to the previous anchor.
-<p>
-<dt><h3>Netscape displays a word red, but w3m doesn't. Why?</h3>
-<dd>w3m doesn't support &lt;FONT COLOR=".."&gt; tags. It won't be impossible to implement this, but I think it would make the document more difficult to read.
-<p>
-<dt><h3>How do I change the colour of anchor-/image-/form links?</h3>
-<dd>Type 'o' within w3m to get the 'options' screen. You can change these
-settings there.
-<dt>
-<dt><h3>w3m doesn't seem to use the variable EDITOR. Why? </h3>
-<dd><dd>Go to the 'options' screen using the "o" key. Any entry in the 'Editor' field will override the environment variable.
-<br>
-If you want to use the editor specified by EDITOR blank the field and push [OK].
-<p>
-<dt><h3>How do I quit a search or URL text input?</h3>
-<dd>Clear input text using Ctrl-u and hit RETURN.
-</dd>
-</dl>
-<br>
-<div align=right>
-<i>Up to <a href="#index">index</a></i>
-</div>
-<br>
-<u><h2><a name="www">Questions about WWW usage</a></h2></u>
-<br>
-<dl>
-<dt><h3>How do I fill in forms with w3m?</h3>
-<dd>Form input fields are displayed in red (or reverse). Move the cursor to
-them and hit RETURN. Then,
-<ul>
-<li>if it is a text input field, put in your text on the bottom line,
-<li>if it is a radiobutton or checkbox, that item is selected,
-<li>if it is a textarea, an editor is spawned,
-<li>if it is 'submit' or 'reset', well, just do it.
-</ul>
-<dt><h3>Seems like w3m is slower than Netscape or Lynx. Why?</h3>
-<dd>w3m renders a HTML document in two passes. Therefore it displays the documentnot before having read the entire document.
-<br>
-Netscape or Lynx display the document before having read the whole page,
-and therefore seem faster.
-<p>
-<dt><h3>Loading time doesn't decrease when loading a previously seen page</h3>
-<dd>w3m doesn't have its own cache. Therefore, it reads the document
-from the server each time it accesses it. If possible, use a cache server. 
-<p>
-<dt><h3>How do I download a linked file?</h3>
-<dd>Use 'a' (or 'd' with Lynx-like keybindings) or ESC RET. If you want to download an inline image, use ESC 'I'.
-<p>
-<dt><h3>How do I specify a proxy server?</h3>
-<dd>Set the environment variables HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY and FTP_PROXY, or use the option setting panel
-("o" key). For example, if you want to use port 8000 of proxy.hogege.com, specify
-<p>
+    <p>
+     with 2, 3, 4, or 5.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Does w3m support monochrome displays?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Yes. You may either
+    </p>
+    <ol>
+     <li>
+      Answer the above-mentioned <q>configure</q> question with 1,
+      or
+     </li>
+     <li>
+      Invoke w3m with the -M option, or
+     </li>
+     <li>
+      Type <q>o</q> within w3m to enter the options screen and turn
+      off color display mode.
+     </li>
+    </ol>
+   </dd>
+   <dt>
+    <b>
+     How do I shift the display?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     You can shift the display by moving the cursor to the edge of
+     the screen. You may also use the <q>&gt;</q>/<q>&lt;</q> or
+     <q>.</q>/<q>,</q> keys.
+    </p>
+    <p>
+     Another idea would be adjusting the xterm with the -geometry
+     option (e.g. something like <q>xterm -geometry 110x45 -bg white
+     -name w3m -e w3m -B</q>).
+    </p>
+   </dd>
+   <dt>
+    <b>
+     How do I move from anchor to anchor?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     You can move to the next anchor using TAB. ESC TAB moves the
+     cursor to the previous anchor.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Graphical browsers display a word red, but w3m doesn't. Why?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     w3m doesn't support the HTML COLOR="..." attribute. It wouldn't
+     be impossible to implement this, but I think it would make
+     documents more difficult to read.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     How do I change the color of anchor/image/form links?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Type <q>o</q> within w3m to get the <q>options</q> screen. You
+     can change these settings there.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     w3m doesn't seem to use the variable EDITOR. Why?
+    </b>
+   </dt>
+    <dd>
+     <p>
+     Go to the <q>options</q> screen using the <q>o</q> key. Any
+     entry in the <q>Editor</q> field will override the environment
+     variable.
+    </p>
+    <p>
+     If you want to use the editor specified by EDITOR, blank the
+     field and press [OK].
+     </p>
+   </dd>
+   <dt>
+    <b>
+     How do I quit a search or URL text input?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Clear input text using Ctrl-u and hit RETURN.
+    </p>
+   </dd>
+  </dl>
+  <p align="right">
+   <i>
+    Up to <a href="#index">index</a>
+   </i>
+  </p>
+  <h2 id="www">
+   <u>
+    Questions about WWW usage
+   </u>
+  </h2>
+  <dl>
+   <dt>
+    <b>
+     How do I fill in forms with w3m?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Form input fields are displayed in red (or reverse). Move the
+     cursor to them and hit RETURN. Then,
+    </p>
+    <ul>
+     <li>
+      if it is a text input field, put in your text on the bottom
+      line,
+     </li>
+     <li>
+      if it is a radiobutton or checkbox, that item is selected,
+     </li>
+     <li>
+      if it is a textarea, an editor is spawned,
+     </li>
+     <li>
+      if it is <q>submit</q> or <q>reset</q>, well, just do it.
+     </li>
+    </ul>
+   </dd>
+   <dt>
+    <b>
+     Seems like w3m is slower than some other browsers. Why?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     w3m renders a HTML document in two passes. Therefore it doesn't
+     start to display the document until it has finished reading it.
+    </p>
+    <p>
+     Most other browsers display the document before having read the
+     whole page, and therefore seem faster.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     Loading time doesn't decrease when loading a previously seen
+     page.
+    </b>
+   </dt>
+   <dd>
+    <p>
+     w3m doesn't have its own cache. Therefore, it reads the document
+     from the server each time it accesses it. If possible, use a
+     cache server.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     How do I download a linked file?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Use <q>a</q> (or <q>d</q> with Lynx-like keybindings) or ESC RET.
+     If you want to download an inline image, use ESC <q>I</q>.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     How do I specify a proxy server?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Set the environment variables HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY and FTP_PROXY, or use the option
+     setting panel (<q>o</q> key). For example, if you want to use
+     port 8000 of proxy.example.org, specify
+    </p>
 <pre>
-    http://proxy.hogege.com:8000/
+    http://proxy.example.org:8000/
 </pre>
-<p>
-<dt><h3>w3m freezes when I invoke an external browser.</h3>
-<dd>Enter w3m's option screen using the 'o' key and specify
-<p>
+   </dd>
+   <dt>
+    <b>
+     w3m freezes when I invoke an external browser.
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Enter w3m's option screen using the <q>o</q> key and specify
+    </p>
 <pre>
-    netscape %s &
+    firefox %s &
 </pre>
-<p>
-(%s is replaced with the URL when invoking).
-<p>
-<dt><h3>How do I change the default image viewer?</h3>
-<dd>By default w3m uses xv to view images. If you want to change it into, let's say, 'display', add the following line to ~/.w3m/mailcap or /etc/mailcap.
-<p>
+    <p>
+     (if you are using Firefox). Note that %s is replaced with the URL when invoking.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     How do I change the default image viewer?
+    </b>
+    </dt>
+    <dd>
+     <p>
+      By default w3m uses xv to view images. If you want to change it
+      into, let's say, <q>display</q>, add the following line to
+      ~/.w3m/mailcap or /etc/mailcap.
+     </p>
 <pre>
 image/*; display %s
 </pre>
-<p>
-You can specify external viewers of other file types as well:
-<p>
+     <p>
+      You can specify external viewers of other file types as well:
+     </p>
 <pre>
 image/*;                     display %s
 application/postscript;      ghostview %s
 application/x-dvi;           xdvi %s
 </pre>
-<dt><h3>How do I enter a URL?</h3>
-<dd>Type SHIFT-U
-<p>
-<dt><h3>w3m appends a URL to the former one despite of having cleared the line
-with Ctrl-u. What to do?</h3>
-<dd>Enter the <i>complete</i> adress, e.g. http://www.slashdot.org.
-</dd>
-</dl>
-<br>
-<div align=right>
-<i>Up to <a href="#index">index</a></i>
-</div>
-<br>
-<u><h2><a name="other">Miscellaneous</a></h2></u>
-<br>
-<dl>
-<dt><h3>What is w3m's configuration file?</h3>
-<dd>It is ~/.w3m/config.
-With this file, you can adjust w3m's behavior by changing values of options
-that are described to be varied with the option setting panel.
-Each line contains setting for one option, which is a pair of an option name
-and its value with a space as a separator.
-<p>
-<dt><h3>What are these w3mxxxx files in my ~/.w3m directory for?</h3>
-<dd>These are temporary files used by w3m when reading documents from a
-WWW server. They are not cache files and are usually deleted when w3m is 
-terminated. If there remain any temp files, please remove them by yourself.
-<p>
-</dd>
-</dl>
-<br>
-<div align=right>
-<i>Up to <a href="#index">index</a></i>
-</div>
-<br>
-</BODY>
-</HTML>
+    </dd>
+    <dt>
+     <b>
+      How do I enter a URL?
+     </b>
+   </dt>
+   <dd>
+    <p>
+     Type SHIFT-U
+    </p>
+   </dd>
+   <dt>
+    <b>
+     w3m appends a URL to the former one even when I clear the line
+     with Ctrl-u. What should I do?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     Enter the <i>complete</i> adress, e.g. http://www.slashdot.org.
+    </p>
+   </dd>
+  </dl>
+  <p align="right">
+   <i>
+    Up to <a href="#index">index</a>
+   </i>
+  </p>
+  <h2 id="other">
+   <u>
+    Miscellaneous
+   </u>
+  </h2>
+  <dl>
+   <dt>
+    <b>
+     What is w3m's configuration file?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     It is ~/.w3m/config.
+    </p>
+    <p>
+     With this file, you can adjust w3m's behavior by changing the
+     values of options whose effects are described in the option
+     setting panel. Each line contains one option setting, consisting
+     of an option name and its value with a space as a separator.
+    </p>
+   </dd>
+   <dt>
+    <b>
+     What are these w3mxxxx files in my ~/.w3m directory for?
+    </b>
+   </dt>
+   <dd>
+    <p>
+     These are temporary files used by w3m when reading documents
+     from a WWW server. They are not cache files and are usually
+     deleted when w3m is terminated. If any temp files are left
+     behind, please remove them yourself.
+    </p>
+   </dd>
+  </dl>
+  <p align="right">
+   <i>
+    Up to <a href="#index">index</a>
+   </i>
+  </p>
+ </body>
+</html>

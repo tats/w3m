@@ -182,7 +182,7 @@ print "<BR>\n<HR WIDTH=80%>\n";
 
 print "<BR>\n<HR WIDTH=80%>\n";
 
-&show_keymap("Line-edit mode",
+&show_keymap("Line-editing mode",
 	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
 		lineedit_delete lineedit_kill_after lineedit_kill_before
 		lineedit_top lineedit_bottom lineedit_prev lineedit_next
@@ -190,7 +190,7 @@ print "<BR>\n<HR WIDTH=80%>\n";
 
 print "<BR>\n<HR WIDTH=80%>\n";
 
-&show_keymap("Popup menu",
+&show_keymap("Pop up menu",
 	     split(" ", "menu_select menu_close menu_cancel menu_down menu_up
 		menu_line_up menu_line_down menu_top menu_last menu_next
 		menu_prev menu_search_fore menu_search_back menu_search_next

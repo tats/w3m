@@ -1,9 +1,18 @@
+2016-04-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc/FAQ.html, doc/MANUAL.html: Update English documents.
+
+2016-04-03  Markus Hiereth  <markus.hiereth@freenet.de>
+
+	* doc/FAQ.html, doc/MANUAL.html: Update English documents.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#25
+
 2016-04-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* configure, configure.ac, doc-de/README.func, scripts/Makefile.in:
 	* scripts/w3mhelp-funcdesc.de.pl.in, scripts/w3mhelp.cgi.in:
 	Support German translated help messages (translation is in progress).
-	Bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682
 
 	* doc-jp/w3m.1, doc/w3m.1: Update manpage footers to w3m 0.5.3.
 

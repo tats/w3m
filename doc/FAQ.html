@@ -615,9 +615,9 @@ Which?
    </dt>
    <dd>
     <p>
-     Set the environment variable HTTP_PROXY or use the option
-     setting panel (<q>o</q> key). For example, if you want to use
-     port 8000 of proxy.example.org, specify
+     Set the environment variables HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY
+     and FTP_PROXY, or use the option setting panel (<q>o</q> key). For
+     example, if you want to use port 8000 of proxy.example.org, specify
     </p>
 <pre>
     http://proxy.example.org:8000/
@@ -636,7 +636,8 @@ Which?
     firefox %s &
 </pre>
     <p>
-     (if you are using Firefox).
+     (if you are using Firefox). Note that %s is replaced with the URL
+     when invoking.
     </p>
    </dd>
    <dt>

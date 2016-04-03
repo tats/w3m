@@ -7,7 +7,18 @@
   </title>
  </head>
  <body>
-  <h1>w3m MANUAL</h1>
+   <!--
+Todo:
+words anchor, link, hyperlink are used with the meaning link. Decide which one shall be prefered and used throughout the documentation
+-->
+   <!--
+Todo:
+Keybindigs: Check whether there are keybindings that contain SHIFT-Letter which shall be replaced with the majuscule. Having this notation all over the documentation, this shall be noted in the introduction paragraph of section "Key bindings"
+-->
+   <!--
+insertions tagged with "mh 2016-03-29" come from the latest version of manual page w3m (1) 
+-->
+   <h1>w3m MANUAL</h1>
   <div align="right">
    Akinori Ito<br>
    aito@fw.ipsj.or.jp
@@ -59,9 +70,6 @@
   <h2 id="Introduction">
    Introduction
   </h2>
-<!--
- TODO: import improved phrasings from manpage
-!-->
   <p>
    w3m is a pager/text-based WWW browser. You can browse local
    documents and/or documents on the WWW using a terminal emulator.
@@ -84,7 +92,7 @@
   </p>
   <p>
    Options include:
-  <p>
+  </p>
   <dl>
    <dt>
     +<i>number</i>
@@ -94,12 +102,14 @@
      Move to the specified line-number.
     </p>
    </dd>
-   <dt>
+  <dt>
     -t <i>width</i>
+    <!--mh 2016-03-29 -t <i>num</i>-->
    </dt>
    <dd>
     <p>
-     Specify tab width. Default is 8.
+      Specify tab width. Default is 8.
+      <!--mh 2016-03-29 set tab width to num columns. No effect on stdout-->
     </p>
    </dd>
    <dt>
@@ -111,6 +121,9 @@
      backspace. If you don't specify this option, <q>A^H_</q> is
      interpreted as an underlined <q>A</q> and <q>A^HA</q> as a bold
      <q>A</q>.
+<!-- mh 2016-03-29 
+use caret notation to display special escape characters (such as ANSI escapes or nroff-style backspaces for bold  and  underlined characters) instead of processing them
+-->
     </p>
    </dd>
    <dt>
@@ -128,14 +141,20 @@
    <dd>
     <p>
      Specify display/output charset.
+<!-- mh 2016-03-29
+user defined character encoding of output data
+-->
     </p>
    </dd>
    <dt>
     -I <i>charset</i>
-   <dt>
+   </dt>
    <dd>
     <p>
      Specify document charset.
+<!-- mh 2016-03-29
+user defined character encoding of input data
+-->
     </p>
    </dd>
    <dt>
@@ -168,6 +187,9 @@
      Display document using <q>Internet message mode</q>. With this
      option, w3m determines document type from header information.
      This is useful when reading e-mail or Usenet news posts.
+<!-- mh 2016-03-29
+Render the body of Usenet messages according to the header <q>Content-type</q>
+-->
     </p>
    </dd>
    <dt>
@@ -176,6 +198,9 @@
    <dd>
     <p>
      Show w3m's startup page.
+<!-- mh 2016-03-29
+with no other target defined, welcome users with a built-in page
+-->
     </p>
    </dd>
    <dt>
@@ -184,6 +209,9 @@
    <dd>
     <p>
      Show w3m's bookmarks page.
+<!-- mh 2016-03-29
+with no other target defined, use the bookmark page for startup
+-->
     </p>
    </dd>
    <dt>
@@ -200,6 +228,9 @@
    <dd>
     <p>
      Monochrome display mode.
+<!-- mh 2016-03-29
+monochrome display
+-->
     </p>
    </dd>
    <dt>
@@ -208,6 +239,9 @@
    <dd>
     <p>
      Automatically render HTML frames.
+<!-- mh 2016-03-29
+render frames
+-->
     </p>
    </dd>
    <dt>
@@ -216,6 +250,9 @@
    <dd>
     <p>
      Squeeze blank lines.
+<!-- mh 2016-03-29
+squeeze multiple blank lines into one
+-->
     </p>
    </dd>
    <dt>
@@ -224,7 +261,7 @@
    <dd>
     <p>
      Upon exit, do not reinitialize the terminal.
-    <p>
+    </p>
    </dd>
    <dt>
     -W
@@ -232,6 +269,10 @@
    <dd>
     <p>
      Toggle wrapping mode in searches.
+<!-- mh 2016-03-29
+toggle wrapping in searches
+-->
+
     </p>
    </dd>
    <dt>
@@ -241,6 +282,9 @@
     <p>
      Specify option. The available option names and values are the
      same as in ~/.w3m/config.
+<!-- mh 2016-03-29
+modify one configuration item with an explicitly given value; without option=value, equivalent to -show-option
+-->
     </p>
    </dd>
    <dt>
@@ -249,6 +293,10 @@
    <dd>
     <p>
      Process cookies.
+<!-- mh 2016-03-29
+use stored cookies and accept new ones
+-->
+
     </p>
    </dd>
    <dt>
@@ -257,6 +305,10 @@
    <dd>
     <p>
      Don't process cookies.
+<!-- mh 2016-03-29
+neither use stored cookies nor accept new ones
+-->
+
     </p>
    </dd>
    <dt>
@@ -265,6 +317,9 @@
    <dd>
     <p>
      Show line-numbers.
+<!-- mh 2016-03-29
+display each line's number
+-->
     </p>
    </dd>
    <dt>
@@ -272,9 +327,14 @@
    </dt>
    <dd>
     <p>
-     Read document specified by URL and dump page rendered as text
-     into standard output. An 80 column width is used unless set with
-     the -cols option.
+      Read document specified by URL and dump page rendered as text
+      into standard output. A width of 80 columns is used unless option
+      -cols sets another value.
+      
+<!-- mh 2016-03-29
+dump  rendered  page  into stdout. Set implicitly when output is directed to a file or pipe
+-->
+
     </p>
    </dd>
    <dt>
@@ -292,6 +352,10 @@
     <p>
      Specify the number of pixels per character (default 8.0). Larger
      values will make tables narrower.
+<!-- mh 2016-03-29
+width of num pixels per character. Range of 4.0 to 32.0, default 8.0. Larger 
+values will make tables narrower. (Implementation not verified)
+-->
     </p>
    </dd>
    <dt>
@@ -300,6 +364,9 @@
    <dd>
     <p>
      Read document specified by URL and dump the source.
+<!-- mh 2016-03-29
+dump the page's source code into stdout
+-->
     </p>
    </dd>
    <dt>
@@ -308,6 +375,9 @@
    <dd>
     <p>
      Read document specified by URL and dump headers.
+<!-- mh 2016-03-29
+dump response of a HEAD request for a URL into stdout
+-->
     </p>
    </dd>
    <dt>
@@ -316,6 +386,10 @@
    <dd>
     <p>
      Read document specified by URL and dump headers and the source.
+<!-- mh 2016-03-29
+dump HEAD, and source code for a URL into stdout
+-->
+
     </p>
    </dd>
    <dt>
@@ -325,6 +399,11 @@
     <p>
      Read document specified by URL and dump extra informations,
      headers, and the source.
+<!-- mh 2016-03-29
+dump HEAD, source code, and extra information  for  a  URL  into
+stdout
+-->
+
     </p>
    </dd>
    <dt>
@@ -333,6 +412,11 @@
    <dd>
     <p>
      Use POST method with file content.
+<!-- mh 2016-03-29
+use POST method to upload data defined in <q>file</q>. The syntax to be
+ used is var1=value1[&amp;var2=value2]...
+-->
+
     </p>
    </dd>
    <dt>
@@ -341,6 +425,11 @@
    <dd>
     <p>
      Insert string as a header.
+<!-- mh 2016-03-29
+append  <q>string</q>  to  the  HTTP(S)  request. Expected to match the 
+header syntax  Variable: Value
+-->
+
     </p>
    </dd>
    <dt>
@@ -357,6 +446,11 @@
    <dd>
     <p>
      Use ASCII characters to draw frames rather than graphical ones.
+<!-- mh 2016-03-29
+do not use graphic characters for drawing HTML table and 
+frame borders
+-->
+
     </p>
    </dd>
    <dt>
@@ -451,9 +545,13 @@
    key bindings, see <a href="#Key:lynx">the Lynx-like key
    bindings</a>. Throughout, the <q>C-</q> and <q>M-</q> notations
    indicate the modifiers <q>control</q> and <q>meta</q> (which can be
-   replaced with <q>alt</q> or ESC); on the other hand <q>2&nbsp;M</q>
+   replaced with <q>alt</q> or ESC); on the other hand <q>2 M</q>
    simply means <q>2</q> followed by <q>M</q>.
   </p>
+<!--
+Correction:
+The two equivalents to the meta-key are pressing simultaneously the ALT-key or pressing the ESC-key first and then other mentioned keys.
+-->  
   <h3>
    In-page navigation
   </h3>
@@ -543,7 +641,7 @@
      w
     </td>
     <td>
-     Go to next word
+     Go to the next word
     </td>
    </tr>
    <tr>
@@ -551,7 +649,7 @@
      W
     </td>
     <td>
-     Go to previous word
+     Go to the previous word
     </td>
    </tr>
    <tr>
@@ -607,7 +705,7 @@
      M-g
     </td>
     <td>
-     Go to specified line
+     Go to the specified line
     </td>
    </tr>
    <tr>
@@ -631,7 +729,7 @@
      TAB
     </td>
     <td>
-     Move to next hyperlink
+     Move to the next hyperlink
     </td>
    </tr>
    <tr>
@@ -639,7 +737,7 @@
      C-u, M-TAB
     </td>
     <td>
-     Move to previous hyperlink
+     Move to the previous hyperlink
     </td>
    </tr>
    <tr>
@@ -762,8 +860,8 @@
      M
     </td>
     <td>
-     Browse current document using external browser (prefix 2, 3, ...,
-     or 9 to invoke alternate configured browsers, e.g. 3&nbsp;M)
+     Browse current document using external browser (prefix 2 or 3 to
+     invoke alternate configured browsers, e.g. 3 M)
     </td>
    </tr>
    <tr>
@@ -772,7 +870,7 @@
     </td>
     <td>
      Browse link using external browser (prefixed as above, e.g.
-     3&nbsp;M-M)
+     3 M-M)
     </td>
    </tr>
   </table>
@@ -785,7 +883,7 @@
      M-b
     </td>
     <td>
-     Go to bookmarks page
+     Go to the bookmarks page
     </td>
    </tr>
    <tr>
@@ -1050,7 +1148,7 @@
      M-p
     </td>
     <td>
-     Go to previous mark
+     Go to the previous mark
     </td>
    </tr>
    <tr>
@@ -1058,7 +1156,7 @@
      M-n
     </td>
     <td>
-     Go to next mark
+     Go to the next mark
     </td>
    </tr>
    <tr>
@@ -1462,7 +1560,7 @@
      w
     </td>
     <td>
-     Go to next word
+     Go to the next word
     </td>
    </tr>
    <tr>
@@ -1470,7 +1568,7 @@
      W
     </td>
     <td>
-     Go to previous word
+     Go to the previous word
     </td>
    </tr>
    <tr>
@@ -1494,7 +1592,7 @@
      TAB, C-n, DOWN
     </td>
     <td>
-     Move to next hyperlink
+     Move to the next hyperlink
     </td>
    </tr>
    <tr>
@@ -1502,7 +1600,7 @@
      M-TAB, C-p, C-u, UP
     </td>
     <td>
-     Move to previous link
+     Move to the previous link
     </td>
    </tr>
    <tr>
@@ -1595,7 +1693,7 @@
      M-:
     </td>
     <td>
-     Mark Message-ID-like strings as links
+     Mark Message-ID-like strings as news anchors
     </td>
    </tr>
    <tr>
@@ -1627,8 +1725,8 @@
      M
     </td>
     <td>
-     Browse current document using external browser (prefix 2, 3, ...,
-     or 9 to invoke alternate configured browsers, e.g. 3&nbsp;M)
+     Browse current document using external browser (prefix 2 or 3 to
+     invoke alternate configured browsers, e.g. 3 M)
     </td>
    </tr>
    <tr>
@@ -1637,7 +1735,7 @@
     </td>
     <td>
      Browse link using external browser (prefixed as above, e.g.
-     3&nbsp;M-M)
+     3 M-M)
     </td>
    </tr>
   </table>
@@ -1650,7 +1748,7 @@
      v, M-b
     </td>
     <td>
-     Go to bookmarks page
+     Go to the bookmarks page
     </td>
    </tr>
    <tr>
@@ -1883,7 +1981,7 @@
      P
     </td>
     <td>
-     Go to previous mark
+     Go to the previous mark
     </td>
    </tr>
    <tr>
@@ -1891,7 +1989,7 @@
      N
     </td>
     <td>
-     Go to next mark
+     Go to the next mark
     </td>
    </tr>
    <tr>
@@ -1993,7 +2091,7 @@
    either from a console with GPM or from an X terminal emulator, you
    can use the mouse for navigation (in the case of rxvt, you need to
    set the TERM environment variable to <q>xterm</q> or <q>kterm</q>).
-  <p>
+  </p>
   <table border="0">
    <tr>
     <td>

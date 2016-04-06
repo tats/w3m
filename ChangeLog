@@ -1,3 +1,13 @@
+2016-04-07  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/map/big5_ucs.map, libwc/map/cns11643_ucs.map:
+	* libwc/map/gb12345_ucs.map, libwc/map/gb2312_ucs.map:
+	* libwc/map/gbk_ucs.map, libwc/map/hkscs_ucs.map:
+	* libwc/map/jisx0208x0212x0213_ucs.map, libwc/map/ksx1001_ucs.map:
+	* libwc/map/sjis_ext_ucs.map, libwc/map/uhc_ucs.map, libwc/ucs.c:
+	* libwc/ucs.map: Fix segfault on bogus text.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=820162
+
 2016-04-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc/FAQ.html, doc/MANUAL.html: Update English documents.

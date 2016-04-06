@@ -1,6 +1,8 @@
 /* GB 12345 (Chinese) */
 
-static wc_uint16 gb12345_ucs_map[ 0x5E * 0x5E ] = {
+#define N_gb12345_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 gb12345_ucs_map[ N_gb12345_ucs_map ] = {
  0x3000,	/* 0x2121 */
  0x3001,	/* 0x2122 */
  0x3002,	/* 0x2123 */

@@ -195,7 +195,28 @@ static wc_uint16 *cs94w_ucs_map[] = {
   jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
 };
 
+static wc_uint32 cs94w_ucs_map_size[] = {
+  N_jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
+  N_gb2312_ucs_map,		/* 41 (GB 2312) */
+  N_jisx0208x02131_ucs_map,	/* 42 (JIS X 0208) */
+  N_ksx1001_ucs_map,		/* 43 (KS X 1001) */
+  N_jisx0212x02132_ucs_map,	/* 44 (JIS X 0212) */
+  0,				/* 45 (ISO IR 165) */
+  0,				/* 46 */
+  N_cns116431_ucs_map,		/* 47 (CNS 11643-1) */
+  N_cns116432_ucs_map,		/* 48 (CNS 11643-2) */
+  0,				/* 49 (CNS 11643-3) */
+  0,				/* 4A (CNS 11643-4) */
+  0,				/* 4B (CNS 11643-5) */
+  0,				/* 4C (CNS 11643-6) */
+  0,				/* 4D (CNS 11643-7) */
+  0,				/* 4E (KSP 9566) */
+  N_jisx0208x02131_ucs_map,	/* 4F (JIS X 0213-1) */
+  N_jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
+};
+
 static wc_uint16 **cs96w_ucs_map;
+static wc_uint32 *cs96w_ucs_map_size;
 
 static wc_uint16 *pcsw_ucs_map[] = {
   big5_ucs_map,		/* Big5 */
@@ -231,6 +252,42 @@ static wc_uint16 *pcsw_ucs_map[] = {
   hkscs_ucs_map,	/* HKSCS */
   hkscs_ucs_map,	/* HKSCS-1 */
   hkscs_ucs_map,	/* HKSCS-2 */
+};
+
+static wc_uint32 pcsw_ucs_map_size[] = {
+  N_big5_ucs_map,	/* Big5 */
+  N_big5_ucs_map,	/* Big5-1 */
+  N_big5_ucs_map,	/* Big5-2 */
+  0,			/* CNS 11643-8 */
+  0,			/* CNS 11643-9 */
+  0,			/* CNS 11643-10 */
+  0,			/* CNS 11643-11 */
+  0,			/* CNS 11643-12 */
+  0,			/* CNS 11643-13 */
+  0,			/* CNS 11643-14 */
+  0,			/* CNS 11643-15 */
+  0,			/* CNS 11643-16 */
+  0,			/* CNS 11643-X */
+  N_gb12345_ucs_map,	/* GB 12345 */
+  0,			/* Johab (special conversion) */
+  0,			/* Johab-1 (special conversion) */
+  0,			/* Johab-2 (special conversion) */
+  N_ksx1001_ucs_map,	/* Johab-3 */
+  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext */
+  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-1 */
+  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-2 */
+  N_gbk_ucs_map,	/* GBK(CP936) */
+  N_gbk_ucs_map,	/* GBK(CP936)-1 */
+  N_gbk_ucs_map,	/* GBK(CP936)-2 */
+  0,			/* GB18030 GBK-ext (special conversion) */
+  0,			/* GB18030 GBK-ext-1 (special conversion) */
+  0,			/* GB18030 GBK-ext-2 (special conversion) */
+  N_uhc_ucs_map,	/* UHC(CP949) */
+  N_uhc_ucs_map,	/* UHC(CP949)-1 */
+  N_uhc_ucs_map,	/* UHC(CP949)-2 */
+  N_hkscs_ucs_map,	/* HKSCS */
+  N_hkscs_ucs_map,	/* HKSCS-1 */
+  N_hkscs_ucs_map,	/* HKSCS-2 */
 };
 
 static wc_wchar_t

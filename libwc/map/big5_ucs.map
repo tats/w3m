@@ -1,6 +1,8 @@
 /* Big5 (Chinese Taiwan) */
 
-static wc_uint16 big5_ucs_map[ 0x59 * 0x9D ] = {
+#define N_big5_ucs_map (0x59 * 0x9D)
+
+static wc_uint16 big5_ucs_map[ N_big5_ucs_map ] = {
  0x3000,	/* 0xA140 */
  0xFF0C,	/* 0xA141 */
  0x3001,	/* 0xA142 */

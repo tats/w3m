@@ -1,6 +1,8 @@
 /* JIS X 0208, JIS X 0212, JIS X 0213 (Japanese) */
 
-static wc_uint16 jisx0208x02131_ucs_map[ 0x5E * 0x5E ] = {
+#define N_jisx0208x02131_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 jisx0208x02131_ucs_map[ N_jisx0208x02131_ucs_map ] = {
  0x3000,	/* JIS X 0208 0x2121 */
  0x3001,	/* JIS X 0208 0x2122 */
  0x3002,	/* JIS X 0208 0x2123 */
@@ -8839,7 +8841,9 @@ static wc_uint16 jisx0208x02131_ucs_map[ 0x5E * 0x5E ] = {
  0,		/* JIS X 0213-1 0x7E7E */
 };
 
-static wc_uint16 jisx0212x02132_ucs_map[ 0x5E * 0x5E ] = {
+#define N_jisx0212x02132_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 jisx0212x02132_ucs_map[ N_jisx0212x02132_ucs_map ] = {
  0,		/* JIS X 0213-2 0x2121 */
  0x4E02,	/* JIS X 0213-2 0x2122 */
  0x4E0F,	/* JIS X 0213-2 0x2123 */

@@ -1,6 +1,8 @@
 /* KS X 1001 (Korean) */
 
-static wc_uint16 ksx1001_ucs_map[ 0x5E * 0x5E ] = {
+#define N_ksx1001_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 ksx1001_ucs_map[ N_ksx1001_ucs_map ] = {
  0x3000,	/* 0x2121 */
  0x3001,	/* 0x2122 */
  0x3002,	/* 0x2123 */

@@ -160,9 +160,9 @@ wc_N_to_johab1(wc_uint32 code)
 {
     wc_uint32 a, b, c;
 
-    a = N_johab1_map[0][(code / 28) / 21];
-    b = N_johab1_map[1][(code / 28) % 21];
-    c = N_johab1_map[2][ code % 28      ];
+    a = N_johab1_map[0][(code / 28) / 21 & 0x1F];
+    b = N_johab1_map[1][(code / 28) % 21 & 0x1F];
+    c = N_johab1_map[2][ code % 28       & 0x1F];
     return 0x8000 | (a << 10) | (b << 5) | c;
 }
 

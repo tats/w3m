@@ -37,7 +37,6 @@ HELP		View help
 HISTORY 	View browser history
 INFO		View info of current document
 INTERRUPT	Suspend w3m
-INIT_MAILCAP	Reread mailcap (mainly for local-CGI)
 ISEARCH 	Incremental search forward
 ISEARCH_BACK	Incremental search backward
 LEFT		Shift screen one column

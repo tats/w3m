@@ -1,3 +1,11 @@
+2016-04-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-de/README.func, doc-jp/README.func, doc/README.func:
+	* w3m-doc/sample/keymap.cgi: Cleanup obsoleted INIT_MAILCAP.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=820902
+
+	* NEWS: Update NEWS.
+
 2016-04-08  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/johab.c: Fix segfault on bogus text for wc_N_to_johab1.

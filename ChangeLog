@@ -1,7 +1,12 @@
+2016-05-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20160430.1.
+
 2016-04-14  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-de/README.func, doc-jp/README.func, doc/README.func:
-	* w3m-doc/sample/keymap.cgi: Cleanup obsoleted INIT_MAILCAP.
+	* w3m-doc/sample/keymap.cgi: Cleanup obsolete INIT_MAILCAP.
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=820902
 
 	* NEWS: Update NEWS.

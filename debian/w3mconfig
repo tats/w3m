@@ -23,6 +23,14 @@ use_lessopen 0
 bgextviewer 1
 editor sensible-editor
 extbrowser sensible-browser
+extbrowser2 
+extbrowser3 chromium %s &
+extbrowser4 epiphany %s &
+extbrowser5 konqueror %s &
+extbrowser6 curl -L -O -C - %s &
+extbrowser7 wget -c
+extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b
+extbrowser9 mpv %s &
 mailer xdg-open mailto:%s
 mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
 mime_types ~/.w3m/mime.types, /etc/mime.types

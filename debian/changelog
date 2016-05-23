@@ -1,3 +1,16 @@
+w3m (0.5.3-28) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20160511
+    - Fix crash with crafted html files (closes: #820162, #820373)
+    - Cleanup obsolete INIT_MAILCAP (closes: #820902)
+  * Add extbrowser2..9 configurations
+  * Supplement config parameters
+  * Add firefox | www-browser, wget | curl, xsel, mpv to Suggests
+  * Depend on libgpm-dev instead of libgpmg1-dev
+  * Update Standards-Version to 3.9.8
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 23 May 2016 21:23:41 +0900
+
 w3m (0.5.3-27) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20160228

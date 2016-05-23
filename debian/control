@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Uploaders: HIGUCHI Daisuke (VDR dai) <dai@debian.org>
-Build-Depends: libgc-dev, libncurses5-dev, libgpmg1-dev [linux-any], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev, pkg-config, autotools-dev (>= 20100122)
+Build-Depends: libgc-dev, libncurses5-dev, libgpm-dev [linux-any], zlib1g-dev, libssl-dev, debhelper (>= 7), gawk | awk, libimlib2-dev, pkg-config, autotools-dev (>= 20100122)
 Homepage: http://sourceforge.net/projects/w3m/
 Vcs-Git: git://anonscm.debian.org/collab-maint/w3m.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/w3m.git

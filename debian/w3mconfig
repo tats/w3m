@@ -1,27 +1,63 @@
-cookie_accept_domains 
-cookie_reject_domains 
-accept_bad_cookie 0
-accept_cookie 1
-show_cookie 0
-use_cookie 1
-ssl_ca_file 
-ssl_ca_path /etc/ssl/certs
-ssl_key_file 
-ssl_cert_file 
-ssl_verify_server 1
-ssl_forbid_method 2, 3
-no_cache 0
-noproxy_netaddr 0
-no_proxy 
-meta_refresh 0
-follow_redirection 10
-default_url 1
-retry_http 1
-argv_is_url 1
-no_referer 0
-use_lessopen 0
-bgextviewer 1
+tabstop 8
+frame 0
+target_self 0
+display_link 0
+display_link_number 0
+decode_url 0
+display_lineinfo 0
+ext_dirlist 1
+dirlist_cmd file:///$LIB/dirlist.cgi
+multicol 0
+alt_entity 0
+graphic_char 0
+display_borders 0
+fold_textarea 0
+display_ins_del 1
+ignore_null_img_alt 1
+view_unseenobject 1
+display_image 1
+fold_line 0
+show_lnum 0
+show_srch_str 1
+label_topline 0
+nextpage_topline 0
+color 1
+basic_color terminal
+anchor_color blue
+image_color green
+form_color red
+mark_color cyan
+bg_color terminal
+active_style 0
+active_color cyan
+visited_anchor 0
+visited_color magenta
+pagerline 10000
+use_history 1
+history 100
+save_hist 1
+confirm_qq 1
+close_tab_back 0
+mark 0
+emacs_like_lineedit 0
+vi_prec_num 0
+mark_all_pages 0
+wrap_search 0
+ignorecase_search 1
+use_migemo 1
+migemo_command cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict
+use_mouse 1
+clear_buffer 1
+decode_cte 0
+auto_uncompress 0
+preserve_timestamp 1
+keymap_file keymap
+mime_types ~/.w3m/mime.types, /etc/mime.types
+mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
+urimethodmap ~/.w3m/urimethodmap, /etc/w3m/urimethodmap
 editor sensible-editor
+mailto_options 1
+mailer xdg-open mailto:%s
 extbrowser sensible-browser
 extbrowser2 
 extbrowser3 chromium %s &
@@ -31,43 +67,62 @@ extbrowser6 curl -L -O -C - %s &
 extbrowser7 wget -c
 extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b
 extbrowser9 mpv %s &
-mailer xdg-open mailto:%s
-mailcap ~/.w3m/mailcap, /etc/w3m/mailcap, /etc/mailcap
-mime_types ~/.w3m/mime.types, /etc/mime.types
-urimethodmap ~/.w3m/urimethodmap, /etc/w3m/urimethodmap
-use_mouse 1
-migemo_command cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict
-use_migemo 1
-ignorecase_search 1
-wrap_search 0
-confirm_qq 1
-save_hist 1
-history 100
-pagerline 10000
-visited_color magenta
-visited_anchor 0
-active_color cyan
-active_style 0
-bg_color terminal
-form_color red
-image_color green
-anchor_color blue
-basic_color terminal
-color 1
-show_lnum 0
-view_unseenobject 1
-ignore_null_img_alt 1
-alt_entity 0
-multicol 0
-dirlist_cmd file:///$LIB/dirlist.cgi
-ext_dirlist 1
-display_link 0
-target_self 0
-frame 0
-tabstop 8
+bgextviewer 1
+use_lessopen 0
+passwd_file ~/.w3m/passwd
+disable_secret_security_check 0
 ftppasswd anonymous@
 ftppass_hostnamegen 0
-display_image 1
-follow_locale 1
+pre_form_file ~/.w3m/pre_form
+siteconf_file ~/.w3m/siteconf
+user_agent 
+no_referer 0
+argv_is_url 1
+retry_http 1
+default_url 1
+follow_redirection 10
+meta_refresh 0
+dns_order 0
+use_proxy 1
+http_proxy 
+https_proxy 
+gopher_proxy 
+ftp_proxy 
+no_proxy 
+noproxy_netaddr 0
+no_cache 0
+ssl_forbid_method 2, 3
+ssl_verify_server 1
+ssl_cert_file 
+ssl_key_file 
+ssl_ca_path /etc/ssl/certs
+ssl_ca_file 
+use_cookie 1
+show_cookie 0
+accept_cookie 1
+accept_bad_cookie 0
+cookie_reject_domains 
+cookie_accept_domains 
 display_charset US-ASCII
+document_charset UTF-8
+auto_detect 2
 system_charset US-ASCII
+follow_locale 1
+ext_halfdump 0
+use_wide 1
+use_combining 1
+east_asian_width 1
+use_language_tag 1
+ucs_conv 1
+pre_conv 0
+search_conv 1
+fix_width_conv 1
+use_gb12345_map 0
+use_jisx0201 0
+use_jisc6226 0
+use_jisx0201k 0
+use_jisx0212 0
+use_jisx0213 0
+strict_iso2022 1
+gb18030_as_ucs 0
+simple_preserve_space 0

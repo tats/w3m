@@ -1,7 +1,7 @@
 ABORT		確認せずにw3mを終了します
 ACCESSKEY	Accesskey メニューを立ち上げます
-ALARM		アラームを設定します
 ADD_BOOKMARK	現在見ているページをブックマークに追加します
+ALARM		アラームを設定します
 BACK		一つ前のバッファを表示します
 BEGIN		文書のいちばん上の行に移動します
 BOOKMARK	ブックマークを読み込みます
@@ -71,6 +71,7 @@ MSGS        エラーメッセージの一覧の表示
 NEW_TAB		新しいタブを開きます
 NEXT		次のバッファを表示します
 NEXT_DOWN      カーソルの下側にあるリンクに移動します
+NEXT_HALF_PAGE	半ページ下にスクロールします
 NEXT_LEFT      カーソルの左側にあるリンクに移動します
 NEXT_LEFT_UP   カーソルの左側(無ければ前の行以前)にあるリンクに移動します
 NEXT_LINK	次のリンクに移動します
@@ -91,6 +92,7 @@ PEEK_LINK      リンクが指す先のURLを表示します
 PIPE_BUF       バッファの内容をパイプに渡します
 PIPE_SHELL	コマンドを実行し，結果を読みこみながら表示します
 PREV		前のバッファを表示します
+PREV_HALF_PAGE	半ページ上にスクロールします
 PREV_LINK	前のリンクに移動します
 PREV_MARK	一つ前のマークに移動します
 PREV_PAGE	前のページを表示します

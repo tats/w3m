@@ -46,21 +46,21 @@ $charset = 'EUC-JP';
 );
 
 %title = (
- "Show keymap file", 'keymap ファイルを見る',
- "Page/Cursor motion", 'ページ/カーソル移動',
- "Hyperlink operation", 'ハイパーリンク操作',
- "File/Stream operation", 'ファイル/ストリーム操作',
- "Buffer operation", 'バッファ操作',
- "Tab operation", 'タブ操作',
- "Buffer selection mode", 'バッファ選択モード',
- "Bookmark operation", 'ブックマーク操作',
- "Search", '検索',
- "Dictionary look-up", '辞書検索',
- "Mark operation", 'マーク操作',
- "Miscellany", 'その他',
- "User defined keymaps", 'ユーザ定義',
- "Line-editing mode", '行編集モード',
- "Pop up menu", 'メニュー',
+ "Current keymap file", 'keymap ファイルを見る',
+ "In-page Navigation", 'ページ/カーソル移動',
+ "Hyperlink Operations", 'ハイパーリンク操作',
+ "File/Stream Operations", 'ファイル/ストリーム操作',
+ "Buffer Operations", 'バッファ操作',
+ "Tab Operations", 'タブ操作',
+ "Buffer and Tab Selection Mode", 'バッファ選択モード',
+ "Bookmark Management", 'ブックマーク操作',
+ "Searches", '検索',
+ "Dictionary Lookup", '辞書検索',
+ "Mark Operations", 'マーク操作',
+ "Miscellaneous", 'その他',
+ "User-defined key bindings", 'ユーザ定義',
+ "Input Line Editing Mode", '行編集モード',
+ "Popup Menu Mode", 'メニュー',
 );
 
 1;

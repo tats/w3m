@@ -1,144 +1,146 @@
-ABORT		Quit w3m without confirmation
-ACCESSKEY	Pop up accesskey menu
-ADD_BOOKMARK	Add current page to bookmarks
-ALARM		Set alarm
-BACK		Back to previous buffer
-BEGIN		Go to the first line
-BOOKMARK	View bookmarks
-CENTER_H	Move to the center line
-CENTER_V	Move to the center column
-CHARSET 	Change the current document charset
-CLOSE_TAB	Close current tab
-CLOSE_TAB_MOUSE Close tab on mouse cursor (for mouse action)
-COMMAND 	Execute w3m command(s)
-COOKIE		View cookie list
-DEFAULT_CHARSET Change the default document charset
-DEFINE_KEY	Define a binding between a keystroke and a user command
-DELETE_PREVBUF	Delete previous buffer (mainly for local-CGI)
-DICT_WORD	Execute dictionary command (see README.dict)
-DICT_WORD_AT	Execute dictionary command for word at cursor
-DISPLAY_IMAGE	Restart loading and drawing of images
-DOWN		Scroll down one line
-DOWNLOAD	Save document (source) to file
-DOWNLOAD_LIST	Display download list panel
-EDIT		Edit current document
-EDIT_SCREEN	Edit currently rendered document
-END		Go to the last line
-EXEC_SHELL	Execute shell command
-EXIT		Quit w3m without confirmation
-EXTERN		Execute external browser
-EXTERN_LINK	View current link using external browser
-FRAME		Render frames
-GOTO		Go to URL
-GOTO_LINE	Go to specified line
-GOTO_LINK	Follow current link
-GOTO_RELATIVE	Go to relative URL
-HELP		View help
-HISTORY 	View browser history
-INFO		View info of current document
-INTERRUPT	Suspend w3m
-ISEARCH 	Incremental search forward
-ISEARCH_BACK	Incremental search backward
-LEFT		Shift screen one column
-LINE_BEGIN	Go to the beginning of line
-LINE_END	Go to the end of line
-LINE_INFO	Show current line number
-LINK_BEGIN	Go to the first link
-LINK_END	Go to the last link
-LINK_MENU	Pop up link element menu
-LIST		Show all links and images
-LIST_MENU	Pop up link list menu and go to selected link
-LOAD		Load local file
-MAIN_MENU	Pop up menu
-MARK		Set/unset mark
-MARK_MID	Mark Message-ID-like strings as links
-MARK_URL	Mark URL-like strings as links
-MARK_WORD	Mark current word as link
-MENU		Pop up menu
-MENU_MOUSE	Pop up menu at mouse cursor (for mouse action)
-MOUSE_TOGGLE	Toggle mouse support
-MOVE_DOWN	Move cursor down (a half screen scroll at the end of screen)
-MOVE_DOWN1	Move cursor down (1 line scroll at the end of screen)
-MOVE_LEFT	Move cursor left (a half screen shift at the left edge)
-MOVE_LEFT1	Move cursor left (1 column shift at the left edge)
-MOVE_LIST_MENU	Pop up link list menu and move cursor to selected link
-MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
-MOVE_RIGHT	Move cursor right (a half screen shift at the right edge)
-MOVE_RIGHT1	Move cursor right (1 column shift at the right edge)
-MOVE_UP		Move cursor up (a half screen scroll at the top of screen)
-MOVE_UP1	Move cursor up (1 line scroll at the top of screen)
-MSGS		Display error messages
-NEW_TAB 	Open new tab
-NEXT		Move to next buffer
-NEXT_DOWN	Move downward to next link
-NEXT_LEFT	Move left to next link
-NEXT_LEFT_UP	Move left (or upward) to next link
-NEXT_LINK	Move to next link
-NEXT_MARK	Move to next word
-NEXT_PAGE	Move to next page
-NEXT_RIGHT	Move right to next link
-NEXT_RIGHT_DOWN	Move right (or downward) to next link
-NEXT_TAB	Move to next tab
-NEXT_UP		Move upward to next link
-NEXT_VISITED	Move to next visited link
-NEXT_WORD	Move to next word
-NOTHING 	Do nothing
-NULL		Do nothing
-OPTIONS 	Display option setting panel
-PEEK		Peek at current URL
-PEEK_IMG	Peek at image URL
-PEEK_LINK	Peek at link URL
-PIPE_BUF	Send rendered document to pipe
-PIPE_SHELL	Execute shell command and browse
-PREV		Move to previous buffer
-PREV_LINK	Move to previous link
-PREV_MARK	Move to previous mark
-PREV_PAGE	Move to previous page
-PREV_TAB	Move to previous tab
-PREV_VISITED	Move to previous visited link
-PREV_WORD	Move to previous word
-PRINT		Save buffer to file
-QUIT		Quit w3m
-READ_SHELL	Execute shell command and load
-REDO		Cancel the last undo
-REDRAW		Redraw screen
-REG_MARK	Set mark using regexp
-REINIT		Reload configuration files
-RELOAD		Reload buffer
-RESHAPE 	Re-render buffer
-RIGHT		Shift screen one column right
-SAVE		Save document (source) to file
-SAVE_IMAGE	Save image to file
-SAVE_LINK	Save link to file
-SAVE_SCREEN	Save buffer to file
-SEARCH		Search forward
-SEARCH_BACK	Search backward
-SEARCH_FORE	Search forward
-SEARCH_NEXT	Search next regexp
-SEARCH_PREV	Search previous regexp
-SELECT		Go to buffer selection panel
-SELECT_MENU	Pop up buffer selection menu
-SETENV		Set environment variable
-SET_OPTION	Set option
-SHELL		Execute shell command
-SHIFT_LEFT	Shift screen left
-SHIFT_RIGHT	Shift screen right
-SOURCE		View HTML source
-STOP_IMAGE	Stop loading and drawing of images
-SUBMIT		Submit form
-SUSPEND 	Suspend w3m
-TAB_GOTO	Open URL on new tab
-TAB_GOTO_RELATIVE	Open relative URL on new tab
-TAB_LEFT	Move current tab left
-TAB_LINK	Open current link on new tab
-TAB_MENU	Pop up tab selection menu
-TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
-TAB_RIGHT	Move current tab right
-UNDO		Cancel the last cursor movement
-UP		Scroll up one line
-VERSION		Display version of w3m
-VIEW		View HTML source
-VIEW_BOOKMARK	View bookmarks
-VIEW_IMAGE	Bild anzeigen
-WHEREIS 	Search forward
-WRAP_TOGGLE	Toggle search wrap mode
+ABORT		w3m sofort beenden
+ACCESSKEY	Öffne Zugangstasten-Menü
+ADD_BOOKMARK	Lege für aktuelle Seite Lesezeichen an
+ALARM		Alarm einrichten
+BACK		Schließe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zurück
+BEGIN		Gehe zur ersten Zeile
+BOOKMARK	Lesezeichen ansehen
+CENTER_H	Um Cursor herum horizontal zentrieren
+CENTER_V	Um Cursor herum vertikal zentrieren
+CHARSET 	Ändere die Zeichenkodierung für das aktuelle Dokument
+CLOSE_TAB	Schließe Reiter
+CLOSE_TAB_MOUSE Schließe Reiter bei Mauszeiger
+COMMAND 	Rufe w3m Funktion(en) auf
+COOKIE		Cookie-Liste ansehen
+DEFAULT_CHARSET Ändere die Voreinstellung für die Zeichenkodierung
+DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
+DELETE_PREVBUF	Lösche vorherigen Puffer (hauptsächlich für lokale CGI-Skripte)
+DICT_WORD	Führe eine Wörterbuch-Funktion aus (siehe README.dict)
+DICT_WORD_AT	Benutze Wörterbuch für Wort unter Curser
+DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
+DOWN		Scrolle den Anzeigebereich eine Zeile abwärts
+DOWNLOAD	Dokument-Quellcode speichern 
+DOWNLOAD_LIST	Die Übersicht heruntergeladener Dateien zeigen
+EDIT		Bearbeite lokales Quelldokument
+EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
+END		Gehe zur letzten Zeile
+EXEC_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+EXIT		Sofort beenden
+EXTERN		Verwende externen Browser zur Anzeige
+EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
+FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
+GOTO		Öffne angegebenes Dokument in neuem Puffer
+GOTO_LINE	Gehe zur angebenen Zeile
+GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
+GOTO_RELATIVE	Gehe zu relativer Adresse 
+HELP		Zeige Hilfe-Übersicht
+HISTORY 	Chronik aufgesuchter Dokumente
+INFO		Zeige Informationen über dieses Dokument
+INTERRUPT	w3m zum Hintergrundprozess machen
+ISEARCH 	Inkrementelle Suche vorwärts
+ISEARCH_BACK	Inkrementelle Suche rückwärts
+LEFT		Anzeigebereich um eine Spalte nach links verschieben
+LINE_BEGIN	Gehe zum Zeilenanfang
+LINE_END	Gehe zum Zeilenende
+LINE_INFO	Zeige aktuelle Position im Dokument an
+LINK_BEGIN	Gehe zum ersten Hyperlink
+LINK_END	Gehe zum letzten Hyperlink
+LINK_MENU	Öffne Menü mit den Link-Elementen
+LIST		Zeige alle referenzierten URLs
+LIST_MENU	Öffne Menü mit aufsuchbaren Hyperlinks
+LOAD		Öffne lokale Datei in einem neuen Puffer
+MAIN_MENU	Öffne Menü
+MARK		Setze/Lösche Markierung
+MARK_MID	Wandle Nachrichten-ID-artige Zeichenketten um in Hyperlinks
+MARK_URL	Wandle URL-artige Zeichenketten um in Hyperlinks
+MARK_WORD	Wandle aktuelles Wort in Hyperlink um
+MENU		Öffne Menü
+MENU_MOUSE	Öffne Menü beim Mauszeiger
+MOUSE_TOGGLE	Schalte Mausbedienung an oder ab
+MOVE_DOWN	Cursor abwärts
+MOVE_DOWN1	Cursor abwärts; am Rand gleitend bewegen
+MOVE_LEFT	Cursor nach links
+MOVE_LEFT1	Cursor nach links; am Rand gleitend bewegen
+MOVE_LIST_MENU	Öffne Menü mit vorhandenen Hyperlinks
+MOVE_MOUSE	Curser auf Mauszeigerposition setzen
+MOVE_RIGHT	Cursor nach rechts
+MOVE_RIGHT1	Cursor nach rechts; am Rand gleitend bewegen
+MOVE_UP		Cursor aufwärts
+MOVE_UP1	Cursor aufwärts; am Rand gleitend bewegen
+MSGS		Zeige Fehlermeldungen an
+NEW_TAB 	Öffne neuen Reiter (mit aktuellem Dokument) 
+NEXT		Schalte zum nächsten Puffer
+NEXT_DOWN	Gehe abwärts zum nächsten Hyperlink
+NEXT_HALF_PAGE	Scrolle eine halbe Seite abwärts
+NEXT_LEFT	Gehe zum nächsten Hyperlink links
+NEXT_LEFT_UP	Gehe zum nächsten Hyperlink links oder oberhalb
+NEXT_LINK	Gehe zum nächsten Hyperlink
+NEXT_MARK	Gehe zur nächsten Markierung
+NEXT_PAGE	Eine Seite abwärts
+NEXT_RIGHT	Gehe zum nächsten Hyperlink rechts
+NEXT_RIGHT_DOWN	Gehe zum nächsten Hyperlink rechts oder unterhalb
+NEXT_TAB	Schalte zum nächsten Reiter
+NEXT_UP		Gehe zum nächsten Hyperlink oberhalb
+NEXT_VISITED	Gehe zum nächsten besuchten Hyperlink
+NEXT_WORD	Gehe zum nächsten Wort
+NOTHING 	Tue nichts
+NULL		Tue nichts
+OPTIONS 	Zeige Einstellungen für Änderungen
+PEEK		Zeige aktuelle Adresse an
+PEEK_IMG	Zeige Adresse des Bildes
+PEEK_LINK	Zeige Zieladresse
+PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Kommando zu und zeige Ausgabe an
+PIPE_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+PREV		Schalte zum vorherigen Puffer
+PREV_HALF_PAGE	Scrolle eine halbe Seite aufwärts
+PREV_LINK	Gehe zum vorangegangen Hyperlink
+PREV_MARK	Gehe zur vorherigen Markierung
+PREV_PAGE	Eine Seite aufwärts
+PREV_TAB	Schalte zum vorherigen Reiter
+PREV_VISITED	Gehe zum vorherigen besuchten Hyperlink
+PREV_WORD	Gehe zum vorherigen Wort
+PRINT		Speichere verarbeitetes Dokument
+QUIT		Mit Bestätigungsfrage beenden
+READ_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+REDO		Den letzten Rücknahmebefehl zurücknehmen
+REDRAW		Bildschirmnzeige neu aufbauen
+REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren 
+REINIT		Konfigurationsdatei erneut laden
+RELOAD		Aktuelles Dokument erneut laden
+RESHAPE 	Dokument nochmals verarbeiten
+RIGHT		Anzeigebereich um eine Spalte nach rechts verschieben
+SAVE		Dokument-Quellcode speichern 
+SAVE_IMAGE	Speichere Bild
+SAVE_LINK	Speichere Ziel des Hyperlinks
+SAVE_SCREEN	Speichere verarbeitetes Dokument
+SEARCH		Suche vorwärts
+SEARCH_BACK	Suche rückwärts
+SEARCH_FORE	Suche vorwärts
+SEARCH_NEXT	Setze Suche vorwärts fort
+SEARCH_PREV	Setze Suche rückwärts fort
+SELECT		Zeige Puffferstapel-Übersicht
+SELECT_MENU	Öffne Puffferstapel-Menü
+SETENV		Setze Umgebungsvariable
+SET_OPTION	Setze Option
+SHELL		Führe Shell-Kommando aus und zeige Ausgabe an
+SHIFT_LEFT	Anzeigebereich nach links versetzen
+SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
+SOURCE		Display HTML source
+STOP_IMAGE	Bilder nicht mehr laden und anzeigen
+SUBMIT		Formular übermitteln
+SUSPEND 	w3m zum Hintergrundprozess machen
+TAB_GOTO	Öffne das angegebene Dokument in einem neuen Reiter
+TAB_GOTO_RELATIVE	Öffne relative Addresse in einem neuen Reiter
+TAB_LEFT	Einen Reiter weiter nach links gehen
+TAB_LINK	Folge dem aktuellen Hyperlink in einem neuen Reiter
+TAB_MENU	Öffne das Reiter-Auswahl-Menü
+TAB_MOUSE	Wähle per Maus Reiter aus
+TAB_RIGHT	Einen Reiter weiter nach rechts gehen
+UNDO		Nimm die letzte Curserbewegung zurück
+UP		Scrolle den Anzeigebereich eine Zeile aufwärts
+VERSION		Zeige die Version von w3m an
+VIEW		Display HTML source
+VIEW_BOOKMARK	Lesezeichen ansehen
+VIEW_IMAGE	Zeige Bild in Betrachter
+WHEREIS 	Suche vorwärts
+WRAP_TOGGLE	Wechsle zwischen umlaufendem und nicht-umlaufendem Suchen

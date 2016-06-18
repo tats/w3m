@@ -1,144 +1,146 @@
-ABORT		Quit w3m without confirmation
+ABORT		Quit w3m at once
 ACCESSKEY	Pop up accesskey menu
 ADD_BOOKMARK	Add current page to bookmarks
 ALARM		Set alarm
-BACK		Back to previous buffer
+BACK		Close current buffer and return to the one below in stack
 BEGIN		Go to the first line
 BOOKMARK	View bookmarks
-CENTER_H	Move to the center line
-CENTER_V	Move to the center column
-CHARSET 	Change the current document charset
-CLOSE_TAB	Close current tab
-CLOSE_TAB_MOUSE Close tab on mouse cursor (for mouse action)
-COMMAND 	Execute w3m command(s)
+CENTER_H	Center on cursor column
+CENTER_V	Center on cursor line
+CHARSET 	Change the character encoding for the current document
+CLOSE_TAB	Close tab
+CLOSE_TAB_MOUSE Close tab at mouse pointer
+COMMAND 	Invoke w3m function(s)
 COOKIE		View cookie list
-DEFAULT_CHARSET Change the default document charset
-DEFINE_KEY	Define a binding between a keystroke and a user command
-DELETE_PREVBUF	Delete previous buffer (mainly for local-CGI)
+DEFAULT_CHARSET Change the default character encoding
+DEFINE_KEY	Define a binding between a key stroke combination and a command
+DELETE_PREVBUF	Delete previous buffer (mainly for local CGI-scripts)
 DICT_WORD	Execute dictionary command (see README.dict)
 DICT_WORD_AT	Execute dictionary command for word at cursor
 DISPLAY_IMAGE	Restart loading and drawing of images
-DOWN		Scroll down one line
-DOWNLOAD	Save document (source) to file
-DOWNLOAD_LIST	Display download list panel
-EDIT		Edit current document
-EDIT_SCREEN	Edit currently rendered document
+DOWN		Scroll the screen down one line
+DOWNLOAD	Save document source
+DOWNLOAD_LIST	Display downloads panel
+EDIT		Edit local source
+EDIT_SCREEN	Edit rendered copy of document
 END		Go to the last line
-EXEC_SHELL	Execute shell command
-EXIT		Quit w3m without confirmation
-EXTERN		Execute external browser
-EXTERN_LINK	View current link using external browser
-FRAME		Render frames
-GOTO		Go to URL
-GOTO_LINE	Go to specified line
-GOTO_LINK	Follow current link
-GOTO_RELATIVE	Go to relative URL
-HELP		View help
-HISTORY 	View browser history
-INFO		View info of current document
-INTERRUPT	Suspend w3m
+EXEC_SHELL	Execute shell command and display output
+EXIT		Quit at once
+EXTERN		Display using an external browser
+EXTERN_LINK	Display target using an external browser
+FRAME		Toggle rendering HTML frames
+GOTO		Open specified document in a new buffer
+GOTO_LINE	Go to the specified line
+GOTO_LINK	Follow current hyperlink in a new buffer
+GOTO_RELATIVE	Go to relative address
+HELP		Show help panel
+HISTORY 	Show browsing history
+INFO		Display information about the current document
+INTERRUPT	Suspend w3m to background
 ISEARCH 	Incremental search forward
 ISEARCH_BACK	Incremental search backward
-LEFT		Shift screen one column
-LINE_BEGIN	Go to the beginning of line
-LINE_END	Go to the end of line
-LINE_INFO	Show current line number
-LINK_BEGIN	Go to the first link
-LINK_END	Go to the last link
+LEFT		Shift screen one column left
+LINE_BEGIN	Go to the beginning of the line
+LINE_END	Go to the end of the line
+LINE_INFO	Display current position in document
+LINK_BEGIN	Move to the first hyperlink
+LINK_END	Move to the last hyperlink
 LINK_MENU	Pop up link element menu
-LIST		Show all links and images
-LIST_MENU	Pop up link list menu and go to selected link
-LOAD		Load local file
+LIST		Show all URLs referenced
+LIST_MENU	Pop up menu for hyperlinks to browse to
+LOAD		Open local file in a new buffer
 MAIN_MENU	Pop up menu
 MARK		Set/unset mark
-MARK_MID	Mark Message-ID-like strings as links
-MARK_URL	Mark URL-like strings as links
-MARK_WORD	Mark current word as link
+MARK_MID	Turn Message-ID-like strings into hyperlinks
+MARK_URL	Turn URL-like strings into hyperlinks
+MARK_WORD	Turn current word into hyperlink
 MENU		Pop up menu
-MENU_MOUSE	Pop up menu at mouse cursor (for mouse action)
+MENU_MOUSE	Pop up menu at mouse pointer
 MOUSE_TOGGLE	Toggle mouse support
-MOVE_DOWN	Move cursor down (a half screen scroll at the end of screen)
-MOVE_DOWN1	Move cursor down (1 line scroll at the end of screen)
-MOVE_LEFT	Move cursor left (a half screen shift at the left edge)
-MOVE_LEFT1	Move cursor left (1 column shift at the left edge)
-MOVE_LIST_MENU	Pop up link list menu and move cursor to selected link
-MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
-MOVE_RIGHT	Move cursor right (a half screen shift at the right edge)
-MOVE_RIGHT1	Move cursor right (1 column shift at the right edge)
-MOVE_UP		Move cursor up (a half screen scroll at the top of screen)
-MOVE_UP1	Move cursor up (1 line scroll at the top of screen)
+MOVE_DOWN	Cursor down
+MOVE_DOWN1	Cursor down. With edge touched, slide
+MOVE_LEFT	Cursor left
+MOVE_LEFT1	Cursor left. With edge touched, slide
+MOVE_LIST_MENU	Pop up menu to navigate between hyperlinks
+MOVE_MOUSE	Move cursor to mouse pointer
+MOVE_RIGHT	Cursor right
+MOVE_RIGHT1	Cursor right. With edge touched, slide
+MOVE_UP		Cursor up
+MOVE_UP1	Cursor up. With edge touched, slide
 MSGS		Display error messages
-NEW_TAB 	Open new tab
-NEXT		Move to next buffer
-NEXT_DOWN	Move downward to next link
-NEXT_LEFT	Move left to next link
-NEXT_LEFT_UP	Move left (or upward) to next link
-NEXT_LINK	Move to next link
-NEXT_MARK	Move to next word
-NEXT_PAGE	Move to next page
-NEXT_RIGHT	Move right to next link
-NEXT_RIGHT_DOWN	Move right (or downward) to next link
-NEXT_TAB	Move to next tab
-NEXT_UP		Move upward to next link
-NEXT_VISITED	Move to next visited link
-NEXT_WORD	Move to next word
+NEW_TAB 	Open a new tab (with current document) 
+NEXT		Switch to the next buffer
+NEXT_DOWN	Move downward to the next hyperlink
+NEXT_HALF_PAGE	Scroll down half a page
+NEXT_LEFT	Move left to the next hyperlink
+NEXT_LEFT_UP	Move left or upward to the next hyperlink
+NEXT_LINK	Move to the next hyperlink
+NEXT_MARK	Go to the next mark
+NEXT_PAGE	Scroll down one page
+NEXT_RIGHT	Move right to the next hyperlink
+NEXT_RIGHT_DOWN	Move right or downward to the next hyperlink
+NEXT_TAB	Switch to the next tab
+NEXT_UP		Move upward to the next hyperlink
+NEXT_VISITED	Move to the next visited hyperlink
+NEXT_WORD	Move to the next word
 NOTHING 	Do nothing
 NULL		Do nothing
-OPTIONS 	Display option setting panel
-PEEK		Peek at current URL
-PEEK_IMG	Peek at image URL
-PEEK_LINK	Peek at link URL
-PIPE_BUF	Send rendered document to pipe
-PIPE_SHELL	Execute shell command and browse
-PREV		Move to previous buffer
-PREV_LINK	Move to previous link
-PREV_MARK	Move to previous mark
-PREV_PAGE	Move to previous page
-PREV_TAB	Move to previous tab
-PREV_VISITED	Move to previous visited link
-PREV_WORD	Move to previous word
-PRINT		Save buffer to file
-QUIT		Quit w3m
-READ_SHELL	Execute shell command and load
+OPTIONS 	Display options setting panel
+PEEK		Show current address
+PEEK_IMG	Show image address
+PEEK_LINK	Show target address
+PIPE_BUF	Pipe current buffer through a shell command and display output
+PIPE_SHELL	Execute shell command and display output
+PREV		Switch to the previous buffer
+PREV_HALF_PAGE	Scroll up half a page
+PREV_LINK	Move to the previous hyperlink
+PREV_MARK	Go to the previous mark
+PREV_PAGE	Scroll up one page
+PREV_TAB	Switch to the previous tab
+PREV_VISITED	Move to the previous visited hyperlink
+PREV_WORD	Move to the previous word
+PRINT		Save rendered document
+QUIT		Quit with confirmation request
+READ_SHELL	Execute shell command and display output
 REDO		Cancel the last undo
-REDRAW		Redraw screen
-REG_MARK	Set mark using regexp
-REINIT		Reload configuration files
-RELOAD		Reload buffer
-RESHAPE 	Re-render buffer
+REDRAW		Draw the screen anew
+REG_MARK	Mark all occurences of a pattern
+REINIT		Reload configuration file
+RELOAD		Load current document anew
+RESHAPE 	Re-render document
 RIGHT		Shift screen one column right
-SAVE		Save document (source) to file
-SAVE_IMAGE	Save image to file
-SAVE_LINK	Save link to file
-SAVE_SCREEN	Save buffer to file
+SAVE		Save document source
+SAVE_IMAGE	Save inline image
+SAVE_LINK	Save hyperlink target
+SAVE_SCREEN	Save rendered document
 SEARCH		Search forward
 SEARCH_BACK	Search backward
 SEARCH_FORE	Search forward
-SEARCH_NEXT	Search next regexp
-SEARCH_PREV	Search previous regexp
-SELECT		Go to buffer selection panel
-SELECT_MENU	Pop up buffer selection menu
+SEARCH_NEXT	Continue search forward
+SEARCH_PREV	Continue search backward
+SELECT		Display buffer-stack panel
+SELECT_MENU	Pop up buffer-stack menu
 SETENV		Set environment variable
 SET_OPTION	Set option
-SHELL		Execute shell command
+SHELL		Execute shell command and display output
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
-SOURCE		View HTML source
+SOURCE		Display HTML source
 STOP_IMAGE	Stop loading and drawing of images
 SUBMIT		Submit form
-SUSPEND 	Suspend w3m
-TAB_GOTO	Open URL on new tab
-TAB_GOTO_RELATIVE	Open relative URL on new tab
-TAB_LEFT	Move current tab left
-TAB_LINK	Open current link on new tab
+SUSPEND 	Suspend w3m to background
+TAB_GOTO	Open specified document in a new tab
+TAB_GOTO_RELATIVE	Open relative address in a new tab
+TAB_LEFT	Move left along the tab bar
+TAB_LINK	Follow current hyperlink in a new tab
 TAB_MENU	Pop up tab selection menu
-TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
-TAB_RIGHT	Move current tab right
+TAB_MOUSE	Select tab by mouse action
+TAB_RIGHT	Move right along the tab bar
 UNDO		Cancel the last cursor movement
-UP		Scroll up one line
-VERSION		Display version of w3m
-VIEW		View HTML source
+UP		Scroll the screen up one line
+VERSION		Display the version of w3m
+VIEW		Display HTML source
 VIEW_BOOKMARK	View bookmarks
-VIEW_IMAGE	View image
+VIEW_IMAGE	Display image in viewer
 WHEREIS 	Search forward
-WRAP_TOGGLE	Toggle search wrap mode
+WRAP_TOGGLE	Toggle wrapping mode in searches

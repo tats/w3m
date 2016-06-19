@@ -1366,7 +1366,7 @@ DEFUN(mainMn, MAIN_MENU MENU, "Pop up menu")
 
 /* --- SelectMenu --- */
 
-DEFUN(selMn, SELECT_MENU, "Pop up buffer selection menu")
+DEFUN(selMn, SELECT_MENU, "Pop up buffer-stack menu")
 {
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;

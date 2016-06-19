@@ -1,4 +1,4 @@
-ABORT		Quit w3m at once
+ABORT		Quit at once
 ACCESSKEY	Pop up accesskey menu
 ADD_BOOKMARK	Add current page to bookmarks
 ALARM		Set alarm
@@ -68,7 +68,7 @@ MOVE_RIGHT1	Cursor right. With edge touched, slide
 MOVE_UP		Cursor up
 MOVE_UP1	Cursor up. With edge touched, slide
 MSGS		Display error messages
-NEW_TAB 	Open a new tab (with current document) 
+NEW_TAB 	Open a new tab (with current document)
 NEXT		Switch to the next buffer
 NEXT_DOWN	Move downward to the next hyperlink
 NEXT_HALF_PAGE	Scroll down half a page

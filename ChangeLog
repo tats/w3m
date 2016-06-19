@@ -1,3 +1,36 @@
+2016-06-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
+	Convert German help messages to UTF-8.
+
+	* main.c: Update description of SOURCE and VIEW.
+
+2016-06-19  Markus Hiereth  <post@hiereth.de>
+
+	* doc-de/README.func, doc/README.func:
+	Update description of SOURCE and VIEW.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682#37
+
+2016-06-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
+	* doc-de/README.func: Update German messages.
+
+	* doc/README.func, main.c, menu.c: Update English messages.
+
+	* doc-jp/README.func, scripts/w3mhelp-funcdesc.ja.pl.in:
+	Update Japanese help messages.
+
+2016-06-19  Markus Hiereth  <post@hiereth.de>
+
+	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
+	Update German help messages.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682
+
+	* doc/README.func, scripts/w3mhelp-funcdesc.en.pl.in:
+	* scripts/w3mhelp.cgi.in: Update English help messages.
+
 2016-05-11  Tatsuya Kinoshita  <tats@debian.org>
 
 	* config.guess, config.sub:

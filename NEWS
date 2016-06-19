@@ -10,8 +10,10 @@ w3m X.X.X - YYYY-MM-DD
  - add extbrowser4..9
  - add display_borders to display 0 pixel table borders
  - add siteconf feature
+ - add German translation for options setting panel
  - add translations for de, zh_CN and zh_TW
 * bug fixes
+ - fix segfaults with malformed text
  - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
  - set ssl_verify_server to 1 by default
  - disable RC4, export ciphers, and keys < 128 bits
@@ -19,7 +21,6 @@ w3m X.X.X - YYYY-MM-DD
  - use SSL_MODE_RELEASE_BUFFERS
  - disable USE_EGD for LibreSSL
  - appease gcc -Werror=format-security
- - fix segfaults
  - option -s is now "squeeze multiple blank lines" to work as pager, and
    -j and -e are obsolete, so use -O{s|j|e} to specify display charset
  - accept single quoted meta refresh URL

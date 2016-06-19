@@ -1,110 +1,110 @@
 ABORT		Sofort beenden
-ACCESSKEY	Öffne Zugangstasten-Menü
-ADD_BOOKMARK	Lege für aktuelle Seite Lesezeichen an
+ACCESSKEY	Ã–ffne Zugangstasten-MenÃ¼
+ADD_BOOKMARK	Lege fÃ¼r aktuelle Seite Lesezeichen an
 ALARM		Alarm einrichten
-BACK		Schließe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zurück
+BACK		SchlieÃŸe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zurÃ¼ck
 BEGIN		Gehe zur ersten Zeile
 BOOKMARK	Lesezeichen ansehen
 CENTER_H	Um Cursor herum horizontal zentrieren
 CENTER_V	Um Cursor herum vertikal zentrieren
-CHARSET 	Ändere die Zeichenkodierung für das aktuelle Dokument
-CLOSE_TAB	Schließe Reiter
-CLOSE_TAB_MOUSE Schließe Reiter bei Mauszeiger
+CHARSET 	Ã„ndere die Zeichenkodierung fÃ¼r das aktuelle Dokument
+CLOSE_TAB	SchlieÃŸe Reiter
+CLOSE_TAB_MOUSE SchlieÃŸe Reiter bei Mauszeiger
 COMMAND 	Rufe w3m Funktion(en) auf
 COOKIE		Cookie-Liste ansehen
-DEFAULT_CHARSET Ändere die Voreinstellung für die Zeichenkodierung
+DEFAULT_CHARSET Ã„ndere die Voreinstellung fÃ¼r die Zeichenkodierung
 DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
-DELETE_PREVBUF	Lösche vorherigen Puffer (hauptsächlich für lokale CGI-Skripte)
-DICT_WORD	Führe eine Wörterbuch-Funktion aus (siehe README.dict)
-DICT_WORD_AT	Benutze Wörterbuch für Wort unter Curser
+DELETE_PREVBUF	LÃ¶sche vorherigen Puffer (hauptsÃ¤chlich fÃ¼r lokale CGI-Skripte)
+DICT_WORD	FÃ¼hre eine WÃ¶rterbuch-Funktion aus (siehe README.dict)
+DICT_WORD_AT	Benutze WÃ¶rterbuch fÃ¼r Wort unter Curser
 DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
-DOWN		Scrolle den Anzeigebereich eine Zeile abwärts
+DOWN		Scrolle den Anzeigebereich eine Zeile abwÃ¤rts
 DOWNLOAD	Dokument-Quellcode speichern
-DOWNLOAD_LIST	Die Übersicht heruntergeladener Dateien zeigen
+DOWNLOAD_LIST	Die Ãœbersicht heruntergeladener Dateien zeigen
 EDIT		Bearbeite lokales Quelldokument
 EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
 END		Gehe zur letzten Zeile
-EXEC_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+EXEC_SHELL	FÃ¼hre Shell-Kommando aus und zeige Ausgabe an
 EXIT		Sofort beenden
 EXTERN		Verwende externen Browser zur Anzeige
 EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
 FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
-GOTO		Öffne angegebenes Dokument in neuem Puffer
+GOTO		Ã–ffne angegebenes Dokument in neuem Puffer
 GOTO_LINE	Gehe zur angebenen Zeile
 GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
 GOTO_RELATIVE	Gehe zu relativer Adresse
-HELP		Zeige Hilfe-Übersicht
+HELP		Zeige Hilfe-Ãœbersicht
 HISTORY 	Chronik aufgesuchter Dokumente
-INFO		Zeige Informationen über dieses Dokument
+INFO		Zeige Informationen Ã¼ber dieses Dokument
 INTERRUPT	w3m zum Hintergrundprozess machen
-ISEARCH 	Inkrementelle Suche vorwärts
-ISEARCH_BACK	Inkrementelle Suche rückwärts
+ISEARCH 	Inkrementelle Suche vorwÃ¤rts
+ISEARCH_BACK	Inkrementelle Suche rÃ¼ckwÃ¤rts
 LEFT		Anzeigebereich um eine Spalte nach links verschieben
 LINE_BEGIN	Gehe zum Zeilenanfang
 LINE_END	Gehe zum Zeilenende
 LINE_INFO	Zeige aktuelle Position im Dokument an
 LINK_BEGIN	Gehe zum ersten Hyperlink
 LINK_END	Gehe zum letzten Hyperlink
-LINK_MENU	Öffne Menü mit den Link-Elementen
+LINK_MENU	Ã–ffne MenÃ¼ mit den Link-Elementen
 LIST		Zeige alle referenzierten URLs
-LIST_MENU	Öffne Menü mit aufsuchbaren Hyperlinks
-LOAD		Öffne lokale Datei in einem neuen Puffer
-MAIN_MENU	Öffne Menü
-MARK		Setze/Lösche Markierung
+LIST_MENU	Ã–ffne MenÃ¼ mit aufsuchbaren Hyperlinks
+LOAD		Ã–ffne lokale Datei in einem neuen Puffer
+MAIN_MENU	Ã–ffne MenÃ¼
+MARK		Setze/LÃ¶sche Markierung
 MARK_MID	Wandle Nachrichten-ID-artige Zeichenketten um in Hyperlinks
 MARK_URL	Wandle URL-artige Zeichenketten um in Hyperlinks
 MARK_WORD	Wandle aktuelles Wort in Hyperlink um
-MENU		Öffne Menü
-MENU_MOUSE	Öffne Menü beim Mauszeiger
+MENU		Ã–ffne MenÃ¼
+MENU_MOUSE	Ã–ffne MenÃ¼ beim Mauszeiger
 MOUSE_TOGGLE	Schalte Mausbedienung an oder ab
-MOVE_DOWN	Cursor abwärts
-MOVE_DOWN1	Cursor abwärts; am Rand gleitend bewegen
+MOVE_DOWN	Cursor abwÃ¤rts
+MOVE_DOWN1	Cursor abwÃ¤rts; am Rand gleitend bewegen
 MOVE_LEFT	Cursor nach links
 MOVE_LEFT1	Cursor nach links; am Rand gleitend bewegen
-MOVE_LIST_MENU	Öffne Menü mit vorhandenen Hyperlinks
+MOVE_LIST_MENU	Ã–ffne MenÃ¼ mit vorhandenen Hyperlinks
 MOVE_MOUSE	Curser auf Mauszeigerposition setzen
 MOVE_RIGHT	Cursor nach rechts
 MOVE_RIGHT1	Cursor nach rechts; am Rand gleitend bewegen
-MOVE_UP		Cursor aufwärts
-MOVE_UP1	Cursor aufwärts; am Rand gleitend bewegen
+MOVE_UP		Cursor aufwÃ¤rts
+MOVE_UP1	Cursor aufwÃ¤rts; am Rand gleitend bewegen
 MSGS		Zeige Fehlermeldungen an
-NEW_TAB 	Öffne neuen Reiter (mit aktuellem Dokument)
-NEXT		Schalte zum nächsten Puffer
-NEXT_DOWN	Gehe abwärts zum nächsten Hyperlink
-NEXT_HALF_PAGE	Scrolle eine halbe Seite abwärts
-NEXT_LEFT	Gehe zum nächsten Hyperlink links
-NEXT_LEFT_UP	Gehe zum nächsten Hyperlink links oder oberhalb
-NEXT_LINK	Gehe zum nächsten Hyperlink
-NEXT_MARK	Gehe zur nächsten Markierung
-NEXT_PAGE	Eine Seite abwärts
-NEXT_RIGHT	Gehe zum nächsten Hyperlink rechts
-NEXT_RIGHT_DOWN	Gehe zum nächsten Hyperlink rechts oder unterhalb
-NEXT_TAB	Schalte zum nächsten Reiter
-NEXT_UP		Gehe zum nächsten Hyperlink oberhalb
-NEXT_VISITED	Gehe zum nächsten besuchten Hyperlink
-NEXT_WORD	Gehe zum nächsten Wort
+NEW_TAB 	Ã–ffne neuen Reiter (mit aktuellem Dokument)
+NEXT		Schalte zum nÃ¤chsten Puffer
+NEXT_DOWN	Gehe abwÃ¤rts zum nÃ¤chsten Hyperlink
+NEXT_HALF_PAGE	Scrolle eine halbe Seite abwÃ¤rts
+NEXT_LEFT	Gehe zum nÃ¤chsten Hyperlink links
+NEXT_LEFT_UP	Gehe zum nÃ¤chsten Hyperlink links oder oberhalb
+NEXT_LINK	Gehe zum nÃ¤chsten Hyperlink
+NEXT_MARK	Gehe zur nÃ¤chsten Markierung
+NEXT_PAGE	Eine Seite abwÃ¤rts
+NEXT_RIGHT	Gehe zum nÃ¤chsten Hyperlink rechts
+NEXT_RIGHT_DOWN	Gehe zum nÃ¤chsten Hyperlink rechts oder unterhalb
+NEXT_TAB	Schalte zum nÃ¤chsten Reiter
+NEXT_UP		Gehe zum nÃ¤chsten Hyperlink oberhalb
+NEXT_VISITED	Gehe zum nÃ¤chsten besuchten Hyperlink
+NEXT_WORD	Gehe zum nÃ¤chsten Wort
 NOTHING 	Tue nichts
 NULL		Tue nichts
-OPTIONS 	Zeige Einstellungen für Änderungen
+OPTIONS 	Zeige Einstellungen fÃ¼r Ã„nderungen
 PEEK		Zeige aktuelle Adresse an
 PEEK_IMG	Zeige Adresse des Bildes
 PEEK_LINK	Zeige Zieladresse
 PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Kommando zu und zeige Ausgabe an
-PIPE_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+PIPE_SHELL	FÃ¼hre Shell-Kommando aus und zeige Ausgabe an
 PREV		Schalte zum vorherigen Puffer
-PREV_HALF_PAGE	Scrolle eine halbe Seite aufwärts
+PREV_HALF_PAGE	Scrolle eine halbe Seite aufwÃ¤rts
 PREV_LINK	Gehe zum vorangegangen Hyperlink
 PREV_MARK	Gehe zur vorherigen Markierung
-PREV_PAGE	Eine Seite aufwärts
+PREV_PAGE	Eine Seite aufwÃ¤rts
 PREV_TAB	Schalte zum vorherigen Reiter
 PREV_VISITED	Gehe zum vorherigen besuchten Hyperlink
 PREV_WORD	Gehe zum vorherigen Wort
 PRINT		Speichere verarbeitetes Dokument
-QUIT		Mit Bestätigungsfrage beenden
-READ_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
-REDO		Den letzten Rücknahmebefehl zurücknehmen
+QUIT		Mit BestÃ¤tigungsfrage beenden
+READ_SHELL	FÃ¼hre Shell-Kommando aus und zeige Ausgabe an
+REDO		Den letzten RÃ¼cknahmebefehl zurÃ¼cknehmen
 REDRAW		Bildschirmnzeige neu aufbauen
-REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren
+REG_MARK	Zu einem Muster passenden Zeichenfolgen Ã¼berall markieren
 REINIT		Konfigurationsdatei erneut laden
 RELOAD		Aktuelles Dokument erneut laden
 RESHAPE 	Dokument nochmals verarbeiten
@@ -113,34 +113,34 @@ SAVE		Dokument-Quellcode speichern
 SAVE_IMAGE	Speichere Bild
 SAVE_LINK	Speichere Ziel des Hyperlinks
 SAVE_SCREEN	Speichere verarbeitetes Dokument
-SEARCH		Suche vorwärts
-SEARCH_BACK	Suche rückwärts
-SEARCH_FORE	Suche vorwärts
-SEARCH_NEXT	Setze Suche vorwärts fort
-SEARCH_PREV	Setze Suche rückwärts fort
-SELECT		Zeige Puffferstapel-Übersicht
-SELECT_MENU	Öffne Puffferstapel-Menü
+SEARCH		Suche vorwÃ¤rts
+SEARCH_BACK	Suche rÃ¼ckwÃ¤rts
+SEARCH_FORE	Suche vorwÃ¤rts
+SEARCH_NEXT	Setze Suche vorwÃ¤rts fort
+SEARCH_PREV	Setze Suche rÃ¼ckwÃ¤rts fort
+SELECT		Zeige Puffferstapel-Ãœbersicht
+SELECT_MENU	Ã–ffne Puffferstapel-MenÃ¼
 SETENV		Setze Umgebungsvariable
 SET_OPTION	Setze Option
-SHELL		Führe Shell-Kommando aus und zeige Ausgabe an
+SHELL		FÃ¼hre Shell-Kommando aus und zeige Ausgabe an
 SHIFT_LEFT	Anzeigebereich nach links versetzen
 SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
 SOURCE		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
 STOP_IMAGE	Bilder nicht mehr laden und anzeigen
-SUBMIT		Formular übermitteln
+SUBMIT		Formular Ã¼bermitteln
 SUSPEND 	w3m zum Hintergrundprozess machen
-TAB_GOTO	Öffne das angegebene Dokument in einem neuen Reiter
-TAB_GOTO_RELATIVE	Öffne relative Addresse in einem neuen Reiter
+TAB_GOTO	Ã–ffne das angegebene Dokument in einem neuen Reiter
+TAB_GOTO_RELATIVE	Ã–ffne relative Addresse in einem neuen Reiter
 TAB_LEFT	Einen Reiter weiter nach links gehen
 TAB_LINK	Folge dem aktuellen Hyperlink in einem neuen Reiter
-TAB_MENU	Öffne das Reiter-Auswahl-Menü
-TAB_MOUSE	Wähle per Maus Reiter aus
+TAB_MENU	Ã–ffne das Reiter-Auswahl-MenÃ¼
+TAB_MOUSE	WÃ¤hle per Maus Reiter aus
 TAB_RIGHT	Einen Reiter weiter nach rechts gehen
-UNDO		Nimm die letzte Curserbewegung zurück
-UP		Scrolle den Anzeigebereich eine Zeile aufwärts
+UNDO		Nimm die letzte Curserbewegung zurÃ¼ck
+UP		Scrolle den Anzeigebereich eine Zeile aufwÃ¤rts
 VERSION		Zeige die Version von w3m an
 VIEW		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
 VIEW_BOOKMARK	Lesezeichen ansehen
 VIEW_IMAGE	Zeige Bild in Betrachter
-WHEREIS 	Suche vorwärts
+WHEREIS 	Suche vorwÃ¤rts
 WRAP_TOGGLE	Wechsle zwischen umlaufendem und nicht-umlaufendem Suchen

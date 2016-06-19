@@ -5,44 +5,44 @@ $charset = 'UTF-8';
 
 %buf_funcdesc = (
  'BUF:PREV', 'Gehe zum vorherigen Punkt',
- 'BUF:NEXT', 'Gehe zum nächsten Punkt',
- 'BUF:DELETE', 'Lösche den ausgewählten Eintrag',
- 'BUF:GO', 'Gehe zum ausgewählten Eintrag',
+ 'BUF:NEXT', 'Gehe zum nÃ¤chsten Punkt',
+ 'BUF:DELETE', 'LÃ¶sche den ausgewÃ¤hlten Eintrag',
+ 'BUF:GO', 'Gehe zum ausgewÃ¤hlten Eintrag',
 );
 
 %lineedit_funcdesc = (
- 'LINEEDIT:FORWARD', 'Bewege Cursor vorwärts',
- 'LINEEDIT:BACK', 'Bewege Cursor rückwärts',
- 'LINEEDIT:BS',  'Vorheriges Zeichen löschen',
- 'LINEEDIT:DEL', 'Aktuelles Zeichen löschen',
- 'LINEEDIT:KILL_AFTER', 'Lösche alles nach dem Cursor',
- 'LINEEDIT:KILL_BEFORE', 'Lösche alles vor dem Cursor',
+ 'LINEEDIT:FORWARD', 'Bewege Cursor vorwÃ¤rts',
+ 'LINEEDIT:BACK', 'Bewege Cursor rÃ¼ckwÃ¤rts',
+ 'LINEEDIT:BS',  'Vorheriges Zeichen lÃ¶schen',
+ 'LINEEDIT:DEL', 'Aktuelles Zeichen lÃ¶schen',
+ 'LINEEDIT:KILL_AFTER', 'LÃ¶sche alles nach dem Cursor',
+ 'LINEEDIT:KILL_BEFORE', 'LÃ¶sche alles vor dem Cursor',
  'LINEEDIT:TOP', 'Gehe zum Zeilenanfang',
  'LINEEDIT:BOTTOM', 'Gehe zum Zeilenende',
  'LINEEDIT:PREV', 'Hole den vorherigen Chronik-Eintrag',
- 'LINEEDIT:NEXT', 'Hole den nächsten Chronik-Eintrag',
+ 'LINEEDIT:NEXT', 'Hole den nÃ¤chsten Chronik-Eintrag',
  'LINEEDIT:EDITOR', 'Bearbeite mit externem Editor',
  'LINEEDIT:COMPLETE', '"Versuche, den Dateinamen zu kompettieren"',
  'LINEEDIT:ACCEPT', 'Eingabezeile annehmen',
 );
 
 %menu_funcdesc = (
- 'MENU:SELECT', 'Wähle Eintrag aus',
- 'MENU:CLOSE', 'Schließe Menü',
- 'MENU:CANCEL', 'Einen Auswahlschritt zurück',
- 'MENU:DOWN', 'Gehe zum nächsten Punkt',
+ 'MENU:SELECT', 'WÃ¤hle Eintrag aus',
+ 'MENU:CLOSE', 'SchlieÃŸe MenÃ¼',
+ 'MENU:CANCEL', 'Einen Auswahlschritt zurÃ¼ck',
+ 'MENU:DOWN', 'Gehe zum nÃ¤chsten Punkt',
  'MENU:UP', 'Gehe zum vorherigen Punkt',
- 'MENU:LINE_UP', 'Scrolle einen Punkt aufwärts',
- 'MENU:LINE_DOWN', 'Scrolle einen Punkt abwärts',
+ 'MENU:LINE_UP', 'Scrolle einen Punkt aufwÃ¤rts',
+ 'MENU:LINE_DOWN', 'Scrolle einen Punkt abwÃ¤rts',
  'MENU:TOP', 'Gehe zum ersten Punkt',
  'MENU:LAST', 'Gehe zum letzten Punkt',
- 'MENU:NEXT', 'Gehe zur nächsten Seite',
+ 'MENU:NEXT', 'Gehe zur nÃ¤chsten Seite',
  'MENU:PREV', 'Gehe zur vorherigen Seite',
- 'MENU:SEARCH_FORE', 'Suche vorwärts',
- 'MENU:SEARCH_BACK', 'Suche rückwärts',
- 'MENU:SEARCH_NEXT', 'Suche weitere Übereinstimmung',
- 'MENU:SEARCH_PREV', 'Suche frühere Übereinstimmung',
- 'MENU:SUSPEND', 'Zurückstellen',
+ 'MENU:SEARCH_FORE', 'Suche vorwÃ¤rts',
+ 'MENU:SEARCH_BACK', 'Suche rÃ¼ckwÃ¤rts',
+ 'MENU:SEARCH_NEXT', 'Suche weitere Ãœbereinstimmung',
+ 'MENU:SEARCH_PREV', 'Suche frÃ¼here Ãœbereinstimmung',
+ 'MENU:SUSPEND', 'ZurÃ¼ckstellen',
 );
 
 %title = (
@@ -55,12 +55,12 @@ $charset = 'UTF-8';
  "Buffer and Tab Selection Mode", 'Puffer/Reiter-Auswahl-Modus',
  "Bookmark Management", 'Lesezeichenverwaltung',
  "Searches", 'Suchen',
- "Dictionary Lookup", 'Abgleich mit Wörterbuch',
+ "Dictionary Lookup", 'Abgleich mit WÃ¶rterbuch',
  "Mark Operations", 'Umgang mit Textmarken',
  "Miscellaneous", 'Verschiedenes',
  "User-defined key bindings", 'Benutzerdefinierte Tastatur-Befehle',
  "Input Line Editing Mode", 'Bearbeitung der Eingabezeile',
- "Popup Menu Mode", 'Navigation in Menüs',
+ "Popup Menu Mode", 'Navigation in MenÃ¼s',
 );
 
 1;

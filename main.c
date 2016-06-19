@@ -4704,7 +4704,7 @@ DEFUN(curURL, PEEK, "Show current address")
 }
 /* view HTML source */
 
-DEFUN(vwSrc, SOURCE VIEW, "Display HTML source")
+DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
 {
     Buffer *buf;
 

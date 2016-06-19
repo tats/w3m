@@ -125,7 +125,7 @@ SET_OPTION	Set option
 SHELL		Execute shell command and display output
 SHIFT_LEFT	Shift screen left
 SHIFT_RIGHT	Shift screen right
-SOURCE		Display HTML source
+SOURCE		Toggle between HTML shown or processed
 STOP_IMAGE	Stop loading and drawing of images
 SUBMIT		Submit form
 SUSPEND 	Suspend w3m to background
@@ -139,7 +139,7 @@ TAB_RIGHT	Move right along the tab bar
 UNDO		Cancel the last cursor movement
 UP		Scroll the screen up one line
 VERSION		Display the version of w3m
-VIEW		Display HTML source
+VIEW		Toggle between HTML shown or processed
 VIEW_BOOKMARK	View bookmarks
 VIEW_IMAGE	Display image in viewer
 WHEREIS 	Search forward

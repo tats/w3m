@@ -125,7 +125,7 @@ SET_OPTION	Setze Option
 SHELL		Führe Shell-Kommando aus und zeige Ausgabe an
 SHIFT_LEFT	Anzeigebereich nach links versetzen
 SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
-SOURCE		Codeansicht
+SOURCE		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
 STOP_IMAGE	Bilder nicht mehr laden und anzeigen
 SUBMIT		Formular übermitteln
 SUSPEND 	w3m zum Hintergrundprozess machen
@@ -139,7 +139,7 @@ TAB_RIGHT	Einen Reiter weiter nach rechts gehen
 UNDO		Nimm die letzte Curserbewegung zurück
 UP		Scrolle den Anzeigebereich eine Zeile aufwärts
 VERSION		Zeige die Version von w3m an
-VIEW		Codeansicht
+VIEW		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
 VIEW_BOOKMARK	Lesezeichen ansehen
 VIEW_IMAGE	Zeige Bild in Betrachter
 WHEREIS 	Suche vorwärts

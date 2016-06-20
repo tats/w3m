@@ -16,15 +16,15 @@ DEFAULT_CHARSET Ändere die Voreinstellung für die Zeichenkodierung
 DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
 DELETE_PREVBUF	Lösche vorherigen Puffer (hauptsächlich für lokale CGI-Skripte)
 DICT_WORD	Führe eine Wörterbuch-Funktion aus (siehe README.dict)
-DICT_WORD_AT	Benutze Wörterbuch für Wort unter Curser
+DICT_WORD_AT	Benutze Wörterbuch für Wort unter Cursor
 DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
 DOWN		Scrolle den Anzeigebereich eine Zeile abwärts
-DOWNLOAD	Dokument-Quellcode speichern
+DOWNLOAD	Dokument-Quellcode speichern 
 DOWNLOAD_LIST	Die Übersicht heruntergeladener Dateien zeigen
 EDIT		Bearbeite lokales Quelldokument
 EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
 END		Gehe zur letzten Zeile
-EXEC_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+EXEC_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
 EXIT		Sofort beenden
 EXTERN		Verwende externen Browser zur Anzeige
 EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
@@ -32,7 +32,7 @@ FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
 GOTO		Öffne angegebenes Dokument in neuem Puffer
 GOTO_LINE	Gehe zur angebenen Zeile
 GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
-GOTO_RELATIVE	Gehe zu relativer Adresse
+GOTO_RELATIVE	Gehe zu relativer Adresse 
 HELP		Zeige Hilfe-Übersicht
 HISTORY 	Chronik aufgesuchter Dokumente
 INFO		Zeige Informationen über dieses Dokument
@@ -62,7 +62,7 @@ MOVE_DOWN1	Cursor abwärts; am Rand gleitend bewegen
 MOVE_LEFT	Cursor nach links
 MOVE_LEFT1	Cursor nach links; am Rand gleitend bewegen
 MOVE_LIST_MENU	Öffne Menü mit vorhandenen Hyperlinks
-MOVE_MOUSE	Curser auf Mauszeigerposition setzen
+MOVE_MOUSE	Cursor auf Mauszeigerposition setzen
 MOVE_RIGHT	Cursor nach rechts
 MOVE_RIGHT1	Cursor nach rechts; am Rand gleitend bewegen
 MOVE_UP		Cursor aufwärts
@@ -89,8 +89,8 @@ OPTIONS 	Zeige Einstellungen für Änderungen
 PEEK		Zeige aktuelle Adresse an
 PEEK_IMG	Zeige Adresse des Bildes
 PEEK_LINK	Zeige Zieladresse
-PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Kommando zu und zeige Ausgabe an
-PIPE_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Befehl zu und zeige Ausgabe an
+PIPE_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
 PREV		Schalte zum vorherigen Puffer
 PREV_HALF_PAGE	Scrolle eine halbe Seite aufwärts
 PREV_LINK	Gehe zum vorangegangen Hyperlink
@@ -101,15 +101,15 @@ PREV_VISITED	Gehe zum vorherigen besuchten Hyperlink
 PREV_WORD	Gehe zum vorherigen Wort
 PRINT		Speichere verarbeitetes Dokument
 QUIT		Mit Bestätigungsfrage beenden
-READ_SHELL	Führe Shell-Kommando aus und zeige Ausgabe an
+READ_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
 REDO		Den letzten Rücknahmebefehl zurücknehmen
-REDRAW		Bildschirmnzeige neu aufbauen
-REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren
+REDRAW		Bildschirmanzeige neu aufbauen
+REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren 
 REINIT		Konfigurationsdatei erneut laden
 RELOAD		Aktuelles Dokument erneut laden
 RESHAPE 	Dokument nochmals verarbeiten
 RIGHT		Anzeigebereich um eine Spalte nach rechts verschieben
-SAVE		Dokument-Quellcode speichern
+SAVE		Dokument-Quellcode speichern 
 SAVE_IMAGE	Speichere Bild
 SAVE_LINK	Speichere Ziel des Hyperlinks
 SAVE_SCREEN	Speichere verarbeitetes Dokument
@@ -122,7 +122,7 @@ SELECT		Zeige Puffferstapel-Übersicht
 SELECT_MENU	Öffne Puffferstapel-Menü
 SETENV		Setze Umgebungsvariable
 SET_OPTION	Setze Option
-SHELL		Führe Shell-Kommando aus und zeige Ausgabe an
+SHELL		Führe Shell-Befehl aus und zeige Ausgabe an
 SHIFT_LEFT	Anzeigebereich nach links versetzen
 SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
 SOURCE		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
@@ -130,13 +130,13 @@ STOP_IMAGE	Bilder nicht mehr laden und anzeigen
 SUBMIT		Formular übermitteln
 SUSPEND 	w3m zum Hintergrundprozess machen
 TAB_GOTO	Öffne das angegebene Dokument in einem neuen Reiter
-TAB_GOTO_RELATIVE	Öffne relative Addresse in einem neuen Reiter
+TAB_GOTO_RELATIVE	Öffne relative Adresse in einem neuen Reiter
 TAB_LEFT	Einen Reiter weiter nach links gehen
 TAB_LINK	Folge dem aktuellen Hyperlink in einem neuen Reiter
 TAB_MENU	Öffne das Reiter-Auswahl-Menü
 TAB_MOUSE	Wähle per Maus Reiter aus
 TAB_RIGHT	Einen Reiter weiter nach rechts gehen
-UNDO		Nimm die letzte Curserbewegung zurück
+UNDO		Nimm die letzte Cursorbewegung zurück
 UP		Scrolle den Anzeigebereich eine Zeile aufwärts
 VERSION		Zeige die Version von w3m an
 VIEW		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung

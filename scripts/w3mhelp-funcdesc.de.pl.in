@@ -22,7 +22,7 @@ $charset = 'UTF-8';
  'LINEEDIT:PREV', 'Hole den vorherigen Chronik-Eintrag',
  'LINEEDIT:NEXT', 'Hole den nächsten Chronik-Eintrag',
  'LINEEDIT:EDITOR', 'Bearbeite mit externem Editor',
- 'LINEEDIT:COMPLETE', '"Versuche, den Dateinamen zu kompettieren"',
+ 'LINEEDIT:COMPLETE', 'Versuche, den Dateinamen zu komplettieren',
  'LINEEDIT:ACCEPT', 'Eingabezeile annehmen',
 );
 
@@ -46,10 +46,10 @@ $charset = 'UTF-8';
 );
 
 %title = (
- "Current keymap file", 'Aktuelle Datei mit Tastatur-Befehls-Zuordnung',
+ "Current keymap file", 'Aktuelle Datei mit Tastaturbefehlszuordnung',
  "In-page Navigation", 'Navigation auf der Seite',
  "Hyperlink Operations", 'Umgang mit Hyperlinks',
- "File/Stream Operations", 'Umgang mit Dateien- und Streams',
+ "File/Stream Operations", 'Umgang mit Dateien und Datenströmen',
  "Buffer Operations", 'Umgang mit Puffern',
  "Tab Operations", 'Umgang mit Reitern',
  "Buffer and Tab Selection Mode", 'Puffer/Reiter-Auswahl-Modus',
@@ -58,7 +58,7 @@ $charset = 'UTF-8';
  "Dictionary Lookup", 'Abgleich mit Wörterbuch',
  "Mark Operations", 'Umgang mit Textmarken',
  "Miscellaneous", 'Verschiedenes',
- "User-defined key bindings", 'Benutzerdefinierte Tastatur-Befehle',
+ "User-defined key bindings", 'Benutzerdefinierte Tastaturbefehle',
  "Input Line Editing Mode", 'Bearbeitung der Eingabezeile',
  "Popup Menu Mode", 'Navigation in Menüs',
 );

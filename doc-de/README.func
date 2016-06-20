@@ -19,7 +19,7 @@ DICT_WORD	Führe eine Wörterbuch-Funktion aus (siehe README.dict)
 DICT_WORD_AT	Benutze Wörterbuch für Wort unter Cursor
 DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
 DOWN		Scrolle den Anzeigebereich eine Zeile abwärts
-DOWNLOAD	Dokument-Quellcode speichern 
+DOWNLOAD	Dokument-Quellcode speichern
 DOWNLOAD_LIST	Die Übersicht heruntergeladener Dateien zeigen
 EDIT		Bearbeite lokales Quelldokument
 EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
@@ -32,7 +32,7 @@ FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
 GOTO		Öffne angegebenes Dokument in neuem Puffer
 GOTO_LINE	Gehe zur angebenen Zeile
 GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
-GOTO_RELATIVE	Gehe zu relativer Adresse 
+GOTO_RELATIVE	Gehe zu relativer Adresse
 HELP		Zeige Hilfe-Übersicht
 HISTORY 	Chronik aufgesuchter Dokumente
 INFO		Zeige Informationen über dieses Dokument
@@ -104,12 +104,12 @@ QUIT		Mit Bestätigungsfrage beenden
 READ_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
 REDO		Den letzten Rücknahmebefehl zurücknehmen
 REDRAW		Bildschirmanzeige neu aufbauen
-REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren 
+REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren
 REINIT		Konfigurationsdatei erneut laden
 RELOAD		Aktuelles Dokument erneut laden
 RESHAPE 	Dokument nochmals verarbeiten
 RIGHT		Anzeigebereich um eine Spalte nach rechts verschieben
-SAVE		Dokument-Quellcode speichern 
+SAVE		Dokument-Quellcode speichern
 SAVE_IMAGE	Speichere Bild
 SAVE_LINK	Speichere Ziel des Hyperlinks
 SAVE_SCREEN	Speichere verarbeitetes Dokument

@@ -111,7 +111,7 @@ follow_locale 1
 ext_halfdump 0
 use_wide 1
 use_combining 1
-east_asian_width 1
+east_asian_width 0
 use_language_tag 1
 ucs_conv 1
 pre_conv 0

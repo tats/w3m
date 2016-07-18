@@ -60,10 +60,60 @@ index 8f443c1..5fb6581 100755
  	$input = "w3m-control: GOTO_LINK";
  }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..e166aa5 100644
+index 88358ef..f7f9a06 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,1000 @@
+@@ -1,3 +1,1050 @@
++2016-07-18  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++	* fm.h: Set default_url to 1 by default.
++
++2016-06-20  Tatsuya Kinoshita  <tats@debian.org>
++
++	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
++	Trim trailing spaces.
++
++2016-06-20  Markus Hiereth  <post@hiereth.de>
++
++	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
++	Update German help messages.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682#47
++
++2016-06-19  Tatsuya Kinoshita  <tats@debian.org>
++
++	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
++	Convert German help messages to UTF-8.
++
++	* main.c: Update description of SOURCE and VIEW.
++
++2016-06-19  Markus Hiereth  <post@hiereth.de>
++
++	* doc-de/README.func, doc/README.func:
++	Update description of SOURCE and VIEW.
++	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682#37
++
++2016-06-19  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++	* doc-de/README.func: Update German messages.
++
++	* doc/README.func, main.c, menu.c: Update English messages.
++
++	* doc-jp/README.func, scripts/w3mhelp-funcdesc.ja.pl.in:
++	Update Japanese help messages.
++
++2016-06-19  Markus Hiereth  <post@hiereth.de>
++
++	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
++	Update German help messages.
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682
++
++	* doc/README.func, scripts/w3mhelp-funcdesc.en.pl.in:
++	* scripts/w3mhelp.cgi.in: Update English help messages.
++
 +2016-05-11  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* config.guess, config.sub:
@@ -1087,10 +1137,10 @@ index 7d692f9..8fa799e 100644
  	do	\
  		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \
 diff --git a/NEWS b/NEWS
-index 66e309d..b876c20 100644
+index 66e309d..c55e929 100644
 --- a/NEWS
 +++ b/NEWS
-@@ -1,3 +1,37 @@
+@@ -1,3 +1,39 @@
 +w3m X.X.X - YYYY-MM-DD
 +
 +* new features
@@ -1103,8 +1153,10 @@ index 66e309d..b876c20 100644
 + - add extbrowser4..9
 + - add display_borders to display 0 pixel table borders
 + - add siteconf feature
++ - add German translation for options setting panel
 + - add translations for de, zh_CN and zh_TW
 +* bug fixes
++ - fix segfaults with malformed text
 + - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
 + - set ssl_verify_server to 1 by default
 + - disable RC4, export ciphers, and keys < 128 bits
@@ -1112,12 +1164,12 @@ index 66e309d..b876c20 100644
 + - use SSL_MODE_RELEASE_BUFFERS
 + - disable USE_EGD for LibreSSL
 + - appease gcc -Werror=format-security
-+ - fix segfaults
 + - option -s is now "squeeze multiple blank lines" to work as pager, and
 +   -j and -e are obsolete, so use -O{s|j|e} to specify display charset
 + - accept single quoted meta refresh URL
 + - assume "text" if a form input type is unknown
 + - accept cookies by default
++ - set default_url to 1 by default
 + - set argv_is_url to 1 by default
 + - set alt_entity to 0 by default
 + - fix build problems with Boehm GC 7.2, imlib2 1.4.6 and glibc 2.14
@@ -4940,154 +4992,156 @@ index e00eb0c..d4f336a 100644
  		else
 diff --git a/doc-de/README.func b/doc-de/README.func
 new file mode 100644
-index 0000000..9d062be
+index 0000000..72d7d45
 --- /dev/null
 +++ b/doc-de/README.func
-@@ -0,0 +1,144 @@
-+ABORT		Quit w3m without confirmation
-+ACCESSKEY	Pop up accesskey menu
-+ADD_BOOKMARK	Add current page to bookmarks
-+ALARM		Set alarm
-+BACK		Back to previous buffer
-+BEGIN		Go to the first line
-+BOOKMARK	View bookmarks
-+CENTER_H	Move to the center line
-+CENTER_V	Move to the center column
-+CHARSET 	Change the current document charset
-+CLOSE_TAB	Close current tab
-+CLOSE_TAB_MOUSE Close tab on mouse cursor (for mouse action)
-+COMMAND 	Execute w3m command(s)
-+COOKIE		View cookie list
-+DEFAULT_CHARSET Change the default document charset
-+DEFINE_KEY	Define a binding between a keystroke and a user command
-+DELETE_PREVBUF	Delete previous buffer (mainly for local-CGI)
-+DICT_WORD	Execute dictionary command (see README.dict)
-+DICT_WORD_AT	Execute dictionary command for word at cursor
-+DISPLAY_IMAGE	Restart loading and drawing of images
-+DOWN		Scroll down one line
-+DOWNLOAD	Save document (source) to file
-+DOWNLOAD_LIST	Display download list panel
-+EDIT		Edit current document
-+EDIT_SCREEN	Edit currently rendered document
-+END		Go to the last line
-+EXEC_SHELL	Execute shell command
-+EXIT		Quit w3m without confirmation
-+EXTERN		Execute external browser
-+EXTERN_LINK	View current link using external browser
-+FRAME		Render frames
-+GOTO		Go to URL
-+GOTO_LINE	Go to specified line
-+GOTO_LINK	Follow current link
-+GOTO_RELATIVE	Go to relative URL
-+HELP		View help
-+HISTORY 	View browser history
-+INFO		View info of current document
-+INTERRUPT	Suspend w3m
-+ISEARCH 	Incremental search forward
-+ISEARCH_BACK	Incremental search backward
-+LEFT		Shift screen one column
-+LINE_BEGIN	Go to the beginning of line
-+LINE_END	Go to the end of line
-+LINE_INFO	Show current line number
-+LINK_BEGIN	Go to the first link
-+LINK_END	Go to the last link
-+LINK_MENU	Pop up link element menu
-+LIST		Show all links and images
-+LIST_MENU	Pop up link list menu and go to selected link
-+LOAD		Load local file
-+MAIN_MENU	Pop up menu
-+MARK		Set/unset mark
-+MARK_MID	Mark Message-ID-like strings as links
-+MARK_URL	Mark URL-like strings as links
-+MARK_WORD	Mark current word as link
-+MENU		Pop up menu
-+MENU_MOUSE	Pop up menu at mouse cursor (for mouse action)
-+MOUSE_TOGGLE	Toggle mouse support
-+MOVE_DOWN	Move cursor down (a half screen scroll at the end of screen)
-+MOVE_DOWN1	Move cursor down (1 line scroll at the end of screen)
-+MOVE_LEFT	Move cursor left (a half screen shift at the left edge)
-+MOVE_LEFT1	Move cursor left (1 column shift at the left edge)
-+MOVE_LIST_MENU	Pop up link list menu and move cursor to selected link
-+MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
-+MOVE_RIGHT	Move cursor right (a half screen shift at the right edge)
-+MOVE_RIGHT1	Move cursor right (1 column shift at the right edge)
-+MOVE_UP		Move cursor up (a half screen scroll at the top of screen)
-+MOVE_UP1	Move cursor up (1 line scroll at the top of screen)
-+MSGS		Display error messages
-+NEW_TAB 	Open new tab
-+NEXT		Move to next buffer
-+NEXT_DOWN	Move downward to next link
-+NEXT_LEFT	Move left to next link
-+NEXT_LEFT_UP	Move left (or upward) to next link
-+NEXT_LINK	Move to next link
-+NEXT_MARK	Move to next word
-+NEXT_PAGE	Move to next page
-+NEXT_RIGHT	Move right to next link
-+NEXT_RIGHT_DOWN	Move right (or downward) to next link
-+NEXT_TAB	Move to next tab
-+NEXT_UP		Move upward to next link
-+NEXT_VISITED	Move to next visited link
-+NEXT_WORD	Move to next word
-+NOTHING 	Do nothing
-+NULL		Do nothing
-+OPTIONS 	Display option setting panel
-+PEEK		Peek at current URL
-+PEEK_IMG	Peek at image URL
-+PEEK_LINK	Peek at link URL
-+PIPE_BUF	Send rendered document to pipe
-+PIPE_SHELL	Execute shell command and browse
-+PREV		Move to previous buffer
-+PREV_LINK	Move to previous link
-+PREV_MARK	Move to previous mark
-+PREV_PAGE	Move to previous page
-+PREV_TAB	Move to previous tab
-+PREV_VISITED	Move to previous visited link
-+PREV_WORD	Move to previous word
-+PRINT		Save buffer to file
-+QUIT		Quit w3m
-+READ_SHELL	Execute shell command and load
-+REDO		Cancel the last undo
-+REDRAW		Redraw screen
-+REG_MARK	Set mark using regexp
-+REINIT		Reload configuration files
-+RELOAD		Reload buffer
-+RESHAPE 	Re-render buffer
-+RIGHT		Shift screen one column right
-+SAVE		Save document (source) to file
-+SAVE_IMAGE	Save image to file
-+SAVE_LINK	Save link to file
-+SAVE_SCREEN	Save buffer to file
-+SEARCH		Search forward
-+SEARCH_BACK	Search backward
-+SEARCH_FORE	Search forward
-+SEARCH_NEXT	Search next regexp
-+SEARCH_PREV	Search previous regexp
-+SELECT		Go to buffer selection panel
-+SELECT_MENU	Pop up buffer selection menu
-+SETENV		Set environment variable
-+SET_OPTION	Set option
-+SHELL		Execute shell command
-+SHIFT_LEFT	Shift screen left
-+SHIFT_RIGHT	Shift screen right
-+SOURCE		View HTML source
-+STOP_IMAGE	Stop loading and drawing of images
-+SUBMIT		Submit form
-+SUSPEND 	Suspend w3m
-+TAB_GOTO	Open URL on new tab
-+TAB_GOTO_RELATIVE	Open relative URL on new tab
-+TAB_LEFT	Move current tab left
-+TAB_LINK	Open current link on new tab
-+TAB_MENU	Pop up tab selection menu
-+TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
-+TAB_RIGHT	Move current tab right
-+UNDO		Cancel the last cursor movement
-+UP		Scroll up one line
-+VERSION		Display version of w3m
-+VIEW		View HTML source
-+VIEW_BOOKMARK	View bookmarks
-+VIEW_IMAGE	Bild anzeigen
-+WHEREIS 	Search forward
-+WRAP_TOGGLE	Toggle search wrap mode
+@@ -0,0 +1,146 @@
++ABORT		Sofort beenden
++ACCESSKEY	√ñffne Zugangstasten-Men√º
++ADD_BOOKMARK	Lege f√ºr aktuelle Seite Lesezeichen an
++ALARM		Alarm einrichten
++BACK		Schlie√üe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zur√ºck
++BEGIN		Gehe zur ersten Zeile
++BOOKMARK	Lesezeichen ansehen
++CENTER_H	Um Cursor herum horizontal zentrieren
++CENTER_V	Um Cursor herum vertikal zentrieren
++CHARSET 	√Ñndere die Zeichenkodierung f√ºr das aktuelle Dokument
++CLOSE_TAB	Schlie√üe Reiter
++CLOSE_TAB_MOUSE Schlie√üe Reiter bei Mauszeiger
++COMMAND 	Rufe w3m Funktion(en) auf
++COOKIE		Cookie-Liste ansehen
++DEFAULT_CHARSET √Ñndere die Voreinstellung f√ºr die Zeichenkodierung
++DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
++DELETE_PREVBUF	L√∂sche vorherigen Puffer (haupts√§chlich f√ºr lokale CGI-Skripte)
++DICT_WORD	F√ºhre eine W√∂rterbuch-Funktion aus (siehe README.dict)
++DICT_WORD_AT	Benutze W√∂rterbuch f√ºr Wort unter Cursor
++DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
++DOWN		Scrolle den Anzeigebereich eine Zeile abw√§rts
++DOWNLOAD	Dokument-Quellcode speichern
++DOWNLOAD_LIST	Die √úbersicht heruntergeladener Dateien zeigen
++EDIT		Bearbeite lokales Quelldokument
++EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
++END		Gehe zur letzten Zeile
++EXEC_SHELL	F√ºhre Shell-Befehl aus und zeige Ausgabe an
++EXIT		Sofort beenden
++EXTERN		Verwende externen Browser zur Anzeige
++EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
++FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
++GOTO		√ñffne angegebenes Dokument in neuem Puffer
++GOTO_LINE	Gehe zur angebenen Zeile
++GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
++GOTO_RELATIVE	Gehe zu relativer Adresse
++HELP		Zeige Hilfe-√úbersicht
++HISTORY 	Chronik aufgesuchter Dokumente
++INFO		Zeige Informationen √ºber dieses Dokument
++INTERRUPT	w3m zum Hintergrundprozess machen
++ISEARCH 	Inkrementelle Suche vorw√§rts
++ISEARCH_BACK	Inkrementelle Suche r√ºckw√§rts
++LEFT		Anzeigebereich um eine Spalte nach links verschieben
++LINE_BEGIN	Gehe zum Zeilenanfang
++LINE_END	Gehe zum Zeilenende
++LINE_INFO	Zeige aktuelle Position im Dokument an
++LINK_BEGIN	Gehe zum ersten Hyperlink
++LINK_END	Gehe zum letzten Hyperlink
++LINK_MENU	√ñffne Men√º mit den Link-Elementen
++LIST		Zeige alle referenzierten URLs
++LIST_MENU	√ñffne Men√º mit aufsuchbaren Hyperlinks
++LOAD		√ñffne lokale Datei in einem neuen Puffer
++MAIN_MENU	√ñffne Men√º
++MARK		Setze/L√∂sche Markierung
++MARK_MID	Wandle Nachrichten-ID-artige Zeichenketten um in Hyperlinks
++MARK_URL	Wandle URL-artige Zeichenketten um in Hyperlinks
++MARK_WORD	Wandle aktuelles Wort in Hyperlink um
++MENU		√ñffne Men√º
++MENU_MOUSE	√ñffne Men√º beim Mauszeiger
++MOUSE_TOGGLE	Schalte Mausbedienung an oder ab
++MOVE_DOWN	Cursor abw√§rts
++MOVE_DOWN1	Cursor abw√§rts; am Rand gleitend bewegen
++MOVE_LEFT	Cursor nach links
++MOVE_LEFT1	Cursor nach links; am Rand gleitend bewegen
++MOVE_LIST_MENU	√ñffne Men√º mit vorhandenen Hyperlinks
++MOVE_MOUSE	Cursor auf Mauszeigerposition setzen
++MOVE_RIGHT	Cursor nach rechts
++MOVE_RIGHT1	Cursor nach rechts; am Rand gleitend bewegen
++MOVE_UP		Cursor aufw√§rts
++MOVE_UP1	Cursor aufw√§rts; am Rand gleitend bewegen
++MSGS		Zeige Fehlermeldungen an
++NEW_TAB 	√ñffne neuen Reiter (mit aktuellem Dokument)
++NEXT		Schalte zum n√§chsten Puffer
++NEXT_DOWN	Gehe abw√§rts zum n√§chsten Hyperlink
++NEXT_HALF_PAGE	Scrolle eine halbe Seite abw√§rts
++NEXT_LEFT	Gehe zum n√§chsten Hyperlink links
++NEXT_LEFT_UP	Gehe zum n√§chsten Hyperlink links oder oberhalb
++NEXT_LINK	Gehe zum n√§chsten Hyperlink
++NEXT_MARK	Gehe zur n√§chsten Markierung
++NEXT_PAGE	Eine Seite abw√§rts
++NEXT_RIGHT	Gehe zum n√§chsten Hyperlink rechts
++NEXT_RIGHT_DOWN	Gehe zum n√§chsten Hyperlink rechts oder unterhalb
++NEXT_TAB	Schalte zum n√§chsten Reiter
++NEXT_UP		Gehe zum n√§chsten Hyperlink oberhalb
++NEXT_VISITED	Gehe zum n√§chsten besuchten Hyperlink
++NEXT_WORD	Gehe zum n√§chsten Wort
++NOTHING 	Tue nichts
++NULL		Tue nichts
++OPTIONS 	Zeige Einstellungen f√ºr √Ñnderungen
++PEEK		Zeige aktuelle Adresse an
++PEEK_IMG	Zeige Adresse des Bildes
++PEEK_LINK	Zeige Zieladresse
++PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Befehl zu und zeige Ausgabe an
++PIPE_SHELL	F√ºhre Shell-Befehl aus und zeige Ausgabe an
++PREV		Schalte zum vorherigen Puffer
++PREV_HALF_PAGE	Scrolle eine halbe Seite aufw√§rts
++PREV_LINK	Gehe zum vorangegangen Hyperlink
++PREV_MARK	Gehe zur vorherigen Markierung
++PREV_PAGE	Eine Seite aufw√§rts
++PREV_TAB	Schalte zum vorherigen Reiter
++PREV_VISITED	Gehe zum vorherigen besuchten Hyperlink
++PREV_WORD	Gehe zum vorherigen Wort
++PRINT		Speichere verarbeitetes Dokument
++QUIT		Mit Best√§tigungsfrage beenden
++READ_SHELL	F√ºhre Shell-Befehl aus und zeige Ausgabe an
++REDO		Den letzten R√ºcknahmebefehl zur√ºcknehmen
++REDRAW		Bildschirmanzeige neu aufbauen
++REG_MARK	Zu einem Muster passenden Zeichenfolgen √ºberall markieren
++REINIT		Konfigurationsdatei erneut laden
++RELOAD		Aktuelles Dokument erneut laden
++RESHAPE 	Dokument nochmals verarbeiten
++RIGHT		Anzeigebereich um eine Spalte nach rechts verschieben
++SAVE		Dokument-Quellcode speichern
++SAVE_IMAGE	Speichere Bild
++SAVE_LINK	Speichere Ziel des Hyperlinks
++SAVE_SCREEN	Speichere verarbeitetes Dokument
++SEARCH		Suche vorw√§rts
++SEARCH_BACK	Suche r√ºckw√§rts
++SEARCH_FORE	Suche vorw√§rts
++SEARCH_NEXT	Setze Suche vorw√§rts fort
++SEARCH_PREV	Setze Suche r√ºckw√§rts fort
++SELECT		Zeige Puffferstapel-√úbersicht
++SELECT_MENU	√ñffne Puffferstapel-Men√º
++SETENV		Setze Umgebungsvariable
++SET_OPTION	Setze Option
++SHELL		F√ºhre Shell-Befehl aus und zeige Ausgabe an
++SHIFT_LEFT	Anzeigebereich nach links versetzen
++SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
++SOURCE		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
++STOP_IMAGE	Bilder nicht mehr laden und anzeigen
++SUBMIT		Formular √ºbermitteln
++SUSPEND 	w3m zum Hintergrundprozess machen
++TAB_GOTO	√ñffne das angegebene Dokument in einem neuen Reiter
++TAB_GOTO_RELATIVE	√ñffne relative Adresse in einem neuen Reiter
++TAB_LEFT	Einen Reiter weiter nach links gehen
++TAB_LINK	Folge dem aktuellen Hyperlink in einem neuen Reiter
++TAB_MENU	√ñffne das Reiter-Auswahl-Men√º
++TAB_MOUSE	W√§hle per Maus Reiter aus
++TAB_RIGHT	Einen Reiter weiter nach rechts gehen
++UNDO		Nimm die letzte Cursorbewegung zur√ºck
++UP		Scrolle den Anzeigebereich eine Zeile aufw√§rts
++VERSION		Zeige die Version von w3m an
++VIEW		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
++VIEW_BOOKMARK	Lesezeichen ansehen
++VIEW_IMAGE	Zeige Bild in Betrachter
++WHEREIS 	Suche vorw√§rts
++WRAP_TOGGLE	Wechsle zwischen umlaufendem und nicht-umlaufendem Suchen
 diff --git a/doc-jp/FAQ.html b/doc-jp/FAQ.html
 index e16a986..86ef05a 100644
 --- a/doc-jp/FAQ.html
@@ -5207,9 +5261,18 @@ index 4aedfde..47d5fd6 100644
    next if line =~ /^#/
    next if line =~ /^\s*$/
 diff --git a/doc-jp/README.func b/doc-jp/README.func
-index 542aaa9..1b2a060 100644
+index 542aaa9..8a5f821 100644
 --- a/doc-jp/README.func
 +++ b/doc-jp/README.func
+@@ -1,7 +1,7 @@
+ ABORT		≥Œ«ß§ª§∫§Àw3m§ÚΩ™Œª§∑§ﬁ§π
+ ACCESSKEY	Accesskey •·•À•Â°º§ÚŒ©§¡æÂ§≤§ﬁ§π
+-ALARM		•¢•È°º•‡§Ú¿ﬂƒÍ§∑§ﬁ§π
+ ADD_BOOKMARK	∏Ω∫ﬂ∏´§∆§§§Î•⁄°º•∏§Ú•÷•√•Ø•ﬁ°º•Ø§Àƒ…≤√§∑§ﬁ§π
++ALARM		•¢•È°º•‡§Ú¿ﬂƒÍ§∑§ﬁ§π
+ BACK		∞Ï§ƒ¡∞§Œ•–•√•’•°§Ú…Ωº®§∑§ﬁ§π
+ BEGIN		 ∏ΩÒ§Œ§§§¡§–§ÛæÂ§Œπ‘§À∞‹∆∞§∑§ﬁ§π
+ BOOKMARK	•÷•√•Ø•ﬁ°º•Ø§Ú∆…§ﬂπ˛§ﬂ§ﬁ§π
 @@ -36,7 +36,6 @@ GOTO_RELATIVE	
  HELP		•ÿ•Î•◊•’•°•§•Î§Ú…Ωº®§∑§ﬁ§π
  HISTORY                URLÕ˙ŒÚ§Ú…Ωº®§∑§ﬁ§π
@@ -5218,6 +5281,22 @@ index 542aaa9..1b2a060 100644
  INTERRUPT	 ∏ΩÒ§Œ∆…§ﬂπ˛§ﬂ§Ú√Ê√«§∑§ﬁ§π
  ISEARCH		•’•°•§•Î§ŒÀˆ»¯§À§‡§´§√§∆•§•Û•Ø•Í•·•Û•ø•Î•µ°º•¡§∑§ﬁ§π
  ISEARCH_BACK	•’•°•§•Î§Œ¿Ë∆¨§À§‡§´§√§∆•§•Û•Ø•Í•·•Û•ø•Î•µ°º•¡§∑§ﬁ§π
+@@ -72,6 +71,7 @@ MSGS        
+ NEW_TAB		ø∑§∑§§•ø•÷§Ú≥´§≠§ﬁ§π
+ NEXT		º°§Œ•–•√•’•°§Ú…Ωº®§∑§ﬁ§π
+ NEXT_DOWN      •´°º•Ω•Î§Œ≤º¬¶§À§¢§Î•Í•Û•Ø§À∞‹∆∞§∑§ﬁ§π
++NEXT_HALF_PAGE	»æ•⁄°º•∏≤º§À•π•Ø•Ì°º•Î§∑§ﬁ§π
+ NEXT_LEFT      •´°º•Ω•Î§Œ∫∏¬¶§À§¢§Î•Í•Û•Ø§À∞‹∆∞§∑§ﬁ§π
+ NEXT_LEFT_UP   •´°º•Ω•Î§Œ∫∏¬¶(Ãµ§±§Ï§–¡∞§Œπ‘∞ ¡∞)§À§¢§Î•Í•Û•Ø§À∞‹∆∞§∑§ﬁ§π
+ NEXT_LINK	º°§Œ•Í•Û•Ø§À∞‹∆∞§∑§ﬁ§π
+@@ -92,6 +92,7 @@ PEEK_LINK      
+ PIPE_BUF       •–•√•’•°§Œ∆‚Õ∆§Ú•—•§•◊§À≈œ§∑§ﬁ§π
+ PIPE_SHELL	•≥•ﬁ•Û•…§Úº¬π‘§∑°§∑Î≤Ã§Ú∆…§ﬂ§≥§ﬂ§ §¨§È…Ωº®§∑§ﬁ§π
+ PREV		¡∞§Œ•–•√•’•°§Ú…Ωº®§∑§ﬁ§π
++PREV_HALF_PAGE	»æ•⁄°º•∏æÂ§À•π•Ø•Ì°º•Î§∑§ﬁ§π
+ PREV_LINK	¡∞§Œ•Í•Û•Ø§À∞‹∆∞§∑§ﬁ§π
+ PREV_MARK	∞Ï§ƒ¡∞§Œ•ﬁ°º•Ø§À∞‹∆∞§∑§ﬁ§π
+ PREV_PAGE	¡∞§Œ•⁄°º•∏§Ú…Ωº®§∑§ﬁ§π
 diff --git a/doc-jp/README.siteconf b/doc-jp/README.siteconf
 new file mode 100644
 index 0000000..90066f7
@@ -9176,82 +9255,107 @@ index 56cca50..da16947 100644
      use cookie_avoid_wrong_number_of_dots to avoid this
      restriction. You can set this in "Domains to avoid [wrong number
 diff --git a/doc/README.func b/doc/README.func
-index 0b2c034..12d49db 100644
+index 0b2c034..a3ef3ac 100644
 --- a/doc/README.func
 +++ b/doc/README.func
-@@ -1,25 +1,25 @@
- ABORT		Quit w3m without confirmation
+@@ -1,145 +1,146 @@
+-ABORT		Quit w3m without confirmation
 -ACCESSSKEY	Popup acceskey menu
 -ADD_BOOKMARK	Add current page to bookmark
++ABORT		Quit at once
 +ACCESSKEY	Pop up accesskey menu
 +ADD_BOOKMARK	Add current page to bookmarks
  ALARM		Set alarm
- BACK		Back to previous buffer
+-BACK		Back to previous buffer
++BACK		Close current buffer and return to the one below in stack
  BEGIN		Go to the first line
 -BOOKMARK	Read bookmark
-+BOOKMARK	View bookmarks
- CENTER_H	Move to the center line
- CENTER_V	Move to the center column
+-CENTER_H	Move to the center line
+-CENTER_V	Move to the center column
 -CHARSET		Change the current document charset
-+CHARSET 	Change the current document charset
- CLOSE_TAB	Close current tab
+-CLOSE_TAB	Close current tab
 -CLOSE_TAB_MOUSE	Close tab on mouse cursor (for mouse action)
 -COMMAND		Execute w3m command(s)
-+CLOSE_TAB_MOUSE Close tab on mouse cursor (for mouse action)
-+COMMAND 	Execute w3m command(s)
++BOOKMARK	View bookmarks
++CENTER_H	Center on cursor column
++CENTER_V	Center on cursor line
++CHARSET 	Change the character encoding for the current document
++CLOSE_TAB	Close tab
++CLOSE_TAB_MOUSE Close tab at mouse pointer
++COMMAND 	Invoke w3m function(s)
  COOKIE		View cookie list
 -DEFAULT_CHARSET	Change the default document charset
 -DEFINE_KEY	Define a binding between a key stroke and a user command
 -DELETE_PREVBUF  Delete previous buffer (mainly for local-CGI)
-+DEFAULT_CHARSET Change the default document charset
-+DEFINE_KEY	Define a binding between a keystroke and a user command
-+DELETE_PREVBUF	Delete previous buffer (mainly for local-CGI)
++DEFAULT_CHARSET Change the default character encoding
++DEFINE_KEY	Define a binding between a key stroke combination and a command
++DELETE_PREVBUF	Delete previous buffer (mainly for local CGI-scripts)
  DICT_WORD	Execute dictionary command (see README.dict)
 -DICT_WORD_AT   Execute dictionary command for word at cursor
 +DICT_WORD_AT	Execute dictionary command for word at cursor
  DISPLAY_IMAGE	Restart loading and drawing of images
- DOWN		Scroll down one line
+-DOWN		Scroll down one line
 -DOWNLOAD	Save document source to file
-+DOWNLOAD	Save document (source) to file
- DOWNLOAD_LIST	Display download list panel
- EDIT		Edit current document
- EDIT_SCREEN	Edit currently rendered document
-@@ -28,75 +28,74 @@ EXEC_SHELL	Execute shell command
- EXIT		Quit w3m without confirmation
- EXTERN		Execute external browser
- EXTERN_LINK	View current link using external browser
+-DOWNLOAD_LIST	Display download list panel
+-EDIT		Edit current document
+-EDIT_SCREEN	Edit currently rendered document
++DOWN		Scroll the screen down one line
++DOWNLOAD	Save document source
++DOWNLOAD_LIST	Display downloads panel
++EDIT		Edit local source
++EDIT_SCREEN	Edit rendered copy of document
+ END		Go to the last line
+-EXEC_SHELL	Execute shell command
+-EXIT		Quit w3m without confirmation
+-EXTERN		Execute external browser
+-EXTERN_LINK	View current link using external browser
 -FRAME		Render frame
-+FRAME		Render frames
- GOTO		Go to URL
- GOTO_LINE	Go to specified line
+-GOTO		Go to URL
+-GOTO_LINE	Go to specified line
 -GOTO_LINK	Go to current link
-+GOTO_LINK	Follow current link
- GOTO_RELATIVE	Go to relative URL
- HELP		View help
+-GOTO_RELATIVE	Go to relative URL
+-HELP		View help
 -HISTORY		View history of URL
-+HISTORY 	View browser history
- INFO		View info of current document
+-INFO		View info of current document
 -INTERRUPT	Stop loading document
 -INIT_MAILCAP    Reread mailcap (mainly for local-CGI)
 -ISEARCH		Incremental search forward
-+INTERRUPT	Suspend w3m
++EXEC_SHELL	Execute shell command and display output
++EXIT		Quit at once
++EXTERN		Display using an external browser
++EXTERN_LINK	Display target using an external browser
++FRAME		Toggle rendering HTML frames
++GOTO		Open specified document in a new buffer
++GOTO_LINE	Go to the specified line
++GOTO_LINK	Follow current hyperlink in a new buffer
++GOTO_RELATIVE	Go to relative address
++HELP		Show help panel
++HISTORY 	Show browsing history
++INFO		Display information about the current document
++INTERRUPT	Suspend w3m to background
 +ISEARCH 	Incremental search forward
  ISEARCH_BACK	Incremental search backward
- LEFT		Shift screen one column
- LINE_BEGIN	Go to the beginning of line
- LINE_END	Go to the end of line
- LINE_INFO	Show current line number
+-LEFT		Shift screen one column
+-LINE_BEGIN	Go to the beginning of line
+-LINE_END	Go to the end of line
+-LINE_INFO	Show current line number
 -LINK_BEGIN     Go to the first link
 -LINK_END       Go to the last link
 -LINK_MENU	Popup link element menu
-+LINK_BEGIN	Go to the first link
-+LINK_END	Go to the last link
-+LINK_MENU	Pop up link element menu
- LIST		Show all links and images
+-LIST		Show all links and images
 -LIST_MENU	Popup link list menu and go to selected link
-+LIST_MENU	Pop up link list menu and go to selected link
- LOAD		Load local file
+-LOAD		Load local file
 -MAIN_MENU	Popup menu
++LEFT		Shift screen one column left
++LINE_BEGIN	Go to the beginning of the line
++LINE_END	Go to the end of the line
++LINE_INFO	Display current position in document
++LINK_BEGIN	Move to the first hyperlink
++LINK_END	Move to the last hyperlink
++LINK_MENU	Pop up link element menu
++LIST		Show all URLs referenced
++LIST_MENU	Pop up menu for hyperlinks to browse to
++LOAD		Open local file in a new buffer
 +MAIN_MENU	Pop up menu
  MARK		Set/unset mark
 -MARK_MID	Mark Message-ID-like strings as anchors
@@ -9265,51 +9369,59 @@ index 0b2c034..12d49db 100644
 -MOVE_LEFT      Move cursor left (a half screen shift at the left edge)
 -MOVE_LEFT1     Move cursor left (1 columns shift at the left edge)
 -MOVE_LIST_MENU	Popup link list menu and move cursor to selected link
-+MARK_MID	Mark Message-ID-like strings as links
-+MARK_URL	Mark URL-like strings as links
-+MARK_WORD	Mark current word as link
-+MENU		Pop up menu
-+MENU_MOUSE	Pop up menu at mouse cursor (for mouse action)
-+MOUSE_TOGGLE	Toggle mouse support
-+MOVE_DOWN	Move cursor down (a half screen scroll at the end of screen)
-+MOVE_DOWN1	Move cursor down (1 line scroll at the end of screen)
-+MOVE_LEFT	Move cursor left (a half screen shift at the left edge)
-+MOVE_LEFT1	Move cursor left (1 column shift at the left edge)
-+MOVE_LIST_MENU	Pop up link list menu and move cursor to selected link
- MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
+-MOVE_MOUSE	Move cursor to mouse cursor (for mouse action)
 -MOVE_RIGHT     Move cursor right (a half screen shift at the right edge)
 -MOVE_RIGHT1    Move cursor right (1 columns shift at the right edge)
 -MOVE_UP                Move cursor up (a half screen scroll at the top of screen)
 -MOVE_UP1       Move cursor up (1 line scrol at the top of screen)
 -MSGS        Display error messages
 -NEW_TAB		Open new tab
-+MOVE_RIGHT	Move cursor right (a half screen shift at the right edge)
-+MOVE_RIGHT1	Move cursor right (1 column shift at the right edge)
-+MOVE_UP		Move cursor up (a half screen scroll at the top of screen)
-+MOVE_UP1	Move cursor up (1 line scroll at the top of screen)
-+MSGS		Display error messages
-+NEW_TAB 	Open new tab
- NEXT		Move to next buffer
+-NEXT		Move to next buffer
 -NEXT_DOWN      Move to next downward link 
 -NEXT_LEFT      Move to next left link 
 -NEXT_LEFT_UP   Move to next left (or upward) link 
-+NEXT_DOWN	Move downward to next link
-+NEXT_LEFT	Move left to next link
-+NEXT_LEFT_UP	Move left (or upward) to next link
- NEXT_LINK	Move to next link
- NEXT_MARK	Move to next word
- NEXT_PAGE	Move to next page
+-NEXT_LINK	Move to next link
+-NEXT_MARK	Move to next word
+-NEXT_PAGE	Move to next page
 -NEXT_RIGHT     Move to next right link 
 -NEXT_RIGHT_DOWN        Move to next right (or downward) link 
-+NEXT_RIGHT	Move right to next link
-+NEXT_RIGHT_DOWN	Move right (or downward) to next link
- NEXT_TAB	Move to next tab
+-NEXT_TAB	Move to next tab
 -NEXT_UP                Move to next upward link 
 -NEXT_VISITED    Move to next visited link
-+NEXT_UP		Move upward to next link
-+NEXT_VISITED	Move to next visited link
- NEXT_WORD	Move to next word
+-NEXT_WORD	Move to next word
 -NOTHING		Do nothing
++MARK_MID	Turn Message-ID-like strings into hyperlinks
++MARK_URL	Turn URL-like strings into hyperlinks
++MARK_WORD	Turn current word into hyperlink
++MENU		Pop up menu
++MENU_MOUSE	Pop up menu at mouse pointer
++MOUSE_TOGGLE	Toggle mouse support
++MOVE_DOWN	Cursor down
++MOVE_DOWN1	Cursor down. With edge touched, slide
++MOVE_LEFT	Cursor left
++MOVE_LEFT1	Cursor left. With edge touched, slide
++MOVE_LIST_MENU	Pop up menu to navigate between hyperlinks
++MOVE_MOUSE	Move cursor to mouse pointer
++MOVE_RIGHT	Cursor right
++MOVE_RIGHT1	Cursor right. With edge touched, slide
++MOVE_UP		Cursor up
++MOVE_UP1	Cursor up. With edge touched, slide
++MSGS		Display error messages
++NEW_TAB 	Open a new tab (with current document)
++NEXT		Switch to the next buffer
++NEXT_DOWN	Move downward to the next hyperlink
++NEXT_HALF_PAGE	Scroll down half a page
++NEXT_LEFT	Move left to the next hyperlink
++NEXT_LEFT_UP	Move left or upward to the next hyperlink
++NEXT_LINK	Move to the next hyperlink
++NEXT_MARK	Go to the next mark
++NEXT_PAGE	Scroll down one page
++NEXT_RIGHT	Move right to the next hyperlink
++NEXT_RIGHT_DOWN	Move right or downward to the next hyperlink
++NEXT_TAB	Switch to the next tab
++NEXT_UP		Move upward to the next hyperlink
++NEXT_VISITED	Move to the next visited hyperlink
++NEXT_WORD	Move to the next word
 +NOTHING 	Do nothing
  NULL		Do nothing
 -OPTIONS		Option setting panel
@@ -9317,75 +9429,108 @@ index 0b2c034..12d49db 100644
 -PEEK_IMG	Peek image URL 
 -PEEK_LINK      Peek link URL
 -PIPE_BUF       Send rendered document to pipe
-+OPTIONS 	Display option setting panel
-+PEEK		Peek at current URL
-+PEEK_IMG	Peek at image URL
-+PEEK_LINK	Peek at link URL
-+PIPE_BUF	Send rendered document to pipe
- PIPE_SHELL	Execute shell command and browse
- PREV		Move to previous buffer
- PREV_LINK	Move to previous link
- PREV_MARK	Move to previous mark
- PREV_PAGE	Move to previous page
- PREV_TAB	Move to previous tab
+-PIPE_SHELL	Execute shell command and browse
+-PREV		Move to previous buffer
+-PREV_LINK	Move to previous link
+-PREV_MARK	Move to previous mark
+-PREV_PAGE	Move to previous page
+-PREV_TAB	Move to previous tab
 -PREV_VISITED    Move to previous visited link
-+PREV_VISITED	Move to previous visited link
- PREV_WORD	Move to previous word
- PRINT		Save buffer to file
- QUIT		Quit w3m
-@@ -106,40 +105,40 @@ REDRAW		Redraw screen
- REG_MARK	Set mark using regexp
- REINIT		Reload configuration files
- RELOAD		Reload buffer
+-PREV_WORD	Move to previous word
+-PRINT		Save buffer to file
+-QUIT		Quit w3m
+-READ_SHELL	Execute shell command and load
++OPTIONS 	Display options setting panel
++PEEK		Show current address
++PEEK_IMG	Show image address
++PEEK_LINK	Show target address
++PIPE_BUF	Pipe current buffer through a shell command and display output
++PIPE_SHELL	Execute shell command and display output
++PREV		Switch to the previous buffer
++PREV_HALF_PAGE	Scroll up half a page
++PREV_LINK	Move to the previous hyperlink
++PREV_MARK	Go to the previous mark
++PREV_PAGE	Scroll up one page
++PREV_TAB	Switch to the previous tab
++PREV_VISITED	Move to the previous visited hyperlink
++PREV_WORD	Move to the previous word
++PRINT		Save rendered document
++QUIT		Quit with confirmation request
++READ_SHELL	Execute shell command and display output
+ REDO		Cancel the last undo
+-REDRAW		Redraw screen
+-REG_MARK	Set mark using regexp
+-REINIT		Reload configuration files
+-RELOAD		Reload buffer
 -RESHAPE		Re-render buffer
-+RESHAPE 	Re-render buffer
++REDRAW		Draw the screen anew
++REG_MARK	Mark all occurences of a pattern
++REINIT		Reload configuration file
++RELOAD		Load current document anew
++RESHAPE 	Re-render document
  RIGHT		Shift screen one column right
 -SAVE		Save document source to file
-+SAVE		Save document (source) to file
- SAVE_IMAGE	Save image to file
- SAVE_LINK	Save link to file
+-SAVE_IMAGE	Save image to file
+-SAVE_LINK	Save link to file
 -SAVE_SCREEN	Save rendered document to file
-+SAVE_SCREEN	Save buffer to file
++SAVE		Save document source
++SAVE_IMAGE	Save inline image
++SAVE_LINK	Save hyperlink target
++SAVE_SCREEN	Save rendered document
  SEARCH		Search forward
  SEARCH_BACK	Search backward
  SEARCH_FORE	Search forward
- SEARCH_NEXT	Search next regexp
- SEARCH_PREV	Search previous regexp
- SELECT		Go to buffer selection panel
+-SEARCH_NEXT	Search next regexp
+-SEARCH_PREV	Search previous regexp
+-SELECT		Go to buffer selection panel
 -SELECT_MENU    Popup buffer selection menu
 -SETENV        Set environment variable
 -SET_OPTION     Set option
-+SELECT_MENU	Pop up buffer selection menu
+-SHELL		Execute shell command
++SEARCH_NEXT	Continue search forward
++SEARCH_PREV	Continue search backward
++SELECT		Display buffer-stack panel
++SELECT_MENU	Pop up buffer-stack menu
 +SETENV		Set environment variable
 +SET_OPTION	Set option
- SHELL		Execute shell command
++SHELL		Execute shell command and display output
  SHIFT_LEFT	Shift screen left
  SHIFT_RIGHT	Shift screen right
- SOURCE		View HTML source
+-SOURCE		View HTML source
++SOURCE		Toggle between HTML shown or processed
  STOP_IMAGE	Stop loading and drawing of images
  SUBMIT		Submit form
 -SUSPEND		Stop loading document
-+SUSPEND 	Suspend w3m
- TAB_GOTO	Open URL on new tab
- TAB_GOTO_RELATIVE	Open relative URL on new tab
- TAB_LEFT	Move current tab left
- TAB_LINK	Open current link on new tab
+-TAB_GOTO	Open URL on new tab
+-TAB_GOTO_RELATIVE	Open relative URL on new tab
+-TAB_LEFT	Move current tab left
+-TAB_LINK	Open current link on new tab
 -TAB_MENU	Popup tab selection menu
+-TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
+-TAB_RIGHT	Move current tab right
++SUSPEND 	Suspend w3m to background
++TAB_GOTO	Open specified document in a new tab
++TAB_GOTO_RELATIVE	Open relative address in a new tab
++TAB_LEFT	Move left along the tab bar
++TAB_LINK	Follow current hyperlink in a new tab
 +TAB_MENU	Pop up tab selection menu
- TAB_MOUSE	Move to tab on mouse cursor (for mouse action)
- TAB_RIGHT	Move current tab right
++TAB_MOUSE	Select tab by mouse action
++TAB_RIGHT	Move right along the tab bar
  UNDO		Cancel the last cursor movement
- UP		Scroll up one line
+-UP		Scroll up one line
 -VERSION                Display version of w3m
-+VERSION		Display version of w3m
- VIEW		View HTML source
+-VIEW		View HTML source
 -VIEW_BOOKMARK	View bookmark
-+VIEW_BOOKMARK	View bookmarks
- VIEW_IMAGE	View image
+-VIEW_IMAGE	View image
 -WHEREIS		Search forward
 -WRAP_TOGGLE    Toggle wrap search mode
++UP		Scroll the screen up one line
++VERSION		Display the version of w3m
++VIEW		Toggle between HTML shown or processed
++VIEW_BOOKMARK	View bookmarks
++VIEW_IMAGE	Display image in viewer
 +WHEREIS 	Search forward
-+WRAP_TOGGLE	Toggle search wrap mode
++WRAP_TOGGLE	Toggle wrapping mode in searches
 diff --git a/doc/README.img b/doc/README.img
 index 0c10114..f11362f 100644
 --- a/doc/README.img
@@ -11209,7 +11354,7 @@ index 567d41e..e26f383 100644
  	}
  	ungetc(c, fp);
 diff --git a/fm.h b/fm.h
-index 8378939..4bd83bc 100644
+index 8378939..4b99a9d 100644
 --- a/fm.h
 +++ b/fm.h
 @@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
@@ -11332,6 +11477,15 @@ index 8378939..4bd83bc 100644
  global char *ftppasswd init(NULL);
  global int ftppass_hostnamegen init(TRUE);
  global int do_download init(FALSE);
+@@ -1004,7 +1037,7 @@ global int FoldLine init(FALSE);
+ #define DEFAULT_URL_EMPTY	0
+ #define DEFAULT_URL_CURRENT	1
+ #define DEFAULT_URL_LINK	2
+-global int DefaultURLString init(DEFAULT_URL_EMPTY);
++global int DefaultURLString init(DEFAULT_URL_CURRENT);
+ global int MarkAllPages init(FALSE);
+ 
+ #ifdef USE_MIGEMO
 @@ -1065,11 +1098,12 @@ global char SimplePreserveSpace init(FALSE);
  #define wc_Str_conv(x,charset0,charset1) (x)
  #define wc_Str_conv_strict(x,charset0,charset1) (x)
@@ -13722,7 +13876,7 @@ index c0461df..f0c6242 100644
      int quoted;
      char *q = NULL;
 diff --git a/main.c b/main.c
-index b421943..56301cc 100644
+index b421943..bd424de 100644
 --- a/main.c
 +++ b/main.c
 @@ -1,6 +1,7 @@
@@ -14030,26 +14184,79 @@ index b421943..56301cc 100644
  	    }
  	}
      }
-@@ -1566,6 +1658,18 @@ DEFUN(pgBack, PREV_PAGE, "Move to previous page")
+@@ -1547,7 +1639,7 @@ nscroll(int n, int mode)
+ }
+ 
+ /* Move page forward */
+-DEFUN(pgFore, NEXT_PAGE, "Move to next page")
++DEFUN(pgFore, NEXT_PAGE, "Scroll down one page")
+ {
+     if (vi_prec_num)
+ 	nscroll(searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
+@@ -1557,7 +1649,7 @@ DEFUN(pgFore, NEXT_PAGE, "Move to next page")
+ }
+ 
+ /* Move page backward */
+-DEFUN(pgBack, PREV_PAGE, "Move to previous page")
++DEFUN(pgBack, PREV_PAGE, "Scroll up one page")
+ {
+     if (vi_prec_num)
+ 	nscroll(-searchKeyNum() * (Currentbuf->LINES - 1), B_NORMAL);
+@@ -1566,20 +1658,32 @@ DEFUN(pgBack, PREV_PAGE, "Move to previous page")
  		  * (Currentbuf->LINES - 1)), prec_num ? B_SCROLL : B_NORMAL);
  }
  
 +/* Move half page forward */
-+DEFUN(hpgFore, NEXT_HALF_PAGE, "Scroll down half page")
++DEFUN(hpgFore, NEXT_HALF_PAGE, "Scroll down half a page")
 +{
 +	nscroll(searchKeyNum() * (Currentbuf->LINES / 2 - 1), B_NORMAL);
 +}
 +
 +/* Move half page backward */
-+DEFUN(hpgBack, PREV_HALF_PAGE, "Scroll up half page")
++DEFUN(hpgBack, PREV_HALF_PAGE, "Scroll up half a page")
 +{
 +	nscroll(-searchKeyNum() * (Currentbuf->LINES / 2 - 1), B_NORMAL);
 +}
 +
  /* 1 line up */
- DEFUN(lup1, UP, "Scroll up one line")
+-DEFUN(lup1, UP, "Scroll up one line")
++DEFUN(lup1, UP, "Scroll the screen up one line")
  {
-@@ -1844,6 +1948,10 @@ srch_nxtprv(int reverse)
+     nscroll(searchKeyNum(), B_SCROLL);
+ }
+ 
+ /* 1 line down */
+-DEFUN(ldown1, DOWN, "Scroll down one line")
++DEFUN(ldown1, DOWN, "Scroll the screen down one line")
+ {
+     nscroll(-searchKeyNum(), B_SCROLL);
+ }
+ 
+ /* move cursor position to the center of screen */
+-DEFUN(ctrCsrV, CENTER_V, "Move to the center column")
++DEFUN(ctrCsrV, CENTER_V, "Center on cursor line")
+ {
+     int offsety;
+     if (Currentbuf->firstLine == NULL)
+@@ -1598,7 +1702,7 @@ DEFUN(ctrCsrV, CENTER_V, "Move to the center column")
+     }
+ }
+ 
+-DEFUN(ctrCsrH, CENTER_H, "Move to the center line")
++DEFUN(ctrCsrH, CENTER_H, "Center on cursor column")
+ {
+     int offsetx;
+     if (Currentbuf->firstLine == NULL)
+@@ -1612,7 +1716,7 @@ DEFUN(ctrCsrH, CENTER_H, "Move to the center line")
+ }
+ 
+ /* Redraw screen */
+-DEFUN(rdrwSc, REDRAW, "Redraw screen")
++DEFUN(rdrwSc, REDRAW, "Draw the screen anew")
+ {
+     clear();
+     arrangeCursor(Currentbuf);
+@@ -1844,19 +1948,23 @@ srch_nxtprv(int reverse)
      result = srchcore(SearchString, routine[reverse]);
      if (result & SR_FOUND)
  	clear_mark(Currentbuf->currentLine);
@@ -14060,7 +14267,151 @@ index b421943..56301cc 100644
      displayBuffer(Currentbuf, B_NORMAL);
      disp_srchresult(result, (reverse ? "Backward: " : "Forward: "),
  		    SearchString);
-@@ -2261,7 +2369,7 @@ DEFUN(movR1, MOVE_RIGHT1,
+ }
+ 
+ /* Search next matching */
+-DEFUN(srchnxt, SEARCH_NEXT, "Search next regexp")
++DEFUN(srchnxt, SEARCH_NEXT, "Continue search forward")
+ {
+     srch_nxtprv(0);
+ }
+ 
+ /* Search previous matching */
+-DEFUN(srchprv, SEARCH_PREV, "Search previous regexp")
++DEFUN(srchprv, SEARCH_PREV, "Continue search backward")
+ {
+     srch_nxtprv(1);
+ }
+@@ -1919,7 +2027,7 @@ DEFUN(col1R, RIGHT, "Shift screen one column right")
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(col1L, LEFT, "Shift screen one column")
++DEFUN(col1L, LEFT, "Shift screen one column left")
+ {
+     Buffer *buf = Currentbuf;
+     Line *l = buf->currentLine;
+@@ -1960,7 +2068,7 @@ DEFUN(setEnv, SETENV, "Set environment variable")
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(pipeBuf, PIPE_BUF, "Send rendered document to pipe")
++DEFUN(pipeBuf, PIPE_BUF, "Pipe current buffer through a shell command and display output")
+ {
+     Buffer *buf;
+     char *cmd, *tmpf;
+@@ -2006,7 +2114,7 @@ DEFUN(pipeBuf, PIPE_BUF, "Send rendered document to pipe")
+ }
+ 
+ /* Execute shell command and read output ac pipe. */
+-DEFUN(pipesh, PIPE_SHELL, "Execute shell command and browse")
++DEFUN(pipesh, PIPE_SHELL, "Execute shell command and display output")
+ {
+     Buffer *buf;
+     char *cmd;
+@@ -2037,7 +2145,7 @@ DEFUN(pipesh, PIPE_SHELL, "Execute shell command and browse")
+ }
+ 
+ /* Execute shell command and load entire output to buffer */
+-DEFUN(readsh, READ_SHELL, "Execute shell command and load")
++DEFUN(readsh, READ_SHELL, "Execute shell command and display output")
+ {
+     Buffer *buf;
+     MySignalHandler(*prevtrap) ();
+@@ -2074,7 +2182,7 @@ DEFUN(readsh, READ_SHELL, "Execute shell command and load")
+ }
+ 
+ /* Execute shell command */
+-DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command")
++DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command and display output")
+ {
+     char *cmd;
+ 
+@@ -2099,7 +2207,7 @@ DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command")
+ }
+ 
+ /* Load file */
+-DEFUN(ldfile, LOAD, "Load local file")
++DEFUN(ldfile, LOAD, "Open local file in a new buffer")
+ {
+     char *fn;
+ 
+@@ -2118,7 +2226,7 @@ DEFUN(ldfile, LOAD, "Load local file")
+ }
+ 
+ /* Load help file */
+-DEFUN(ldhelp, HELP, "View help")
++DEFUN(ldhelp, HELP, "Show help panel")
+ {
+ #ifdef USE_HELP_CGI
+     char *lang;
+@@ -2167,13 +2275,12 @@ _movL(int n)
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(movL, MOVE_LEFT,
+-      "Move cursor left (a half screen shift at the left edge)")
++DEFUN(movL, MOVE_LEFT, "Cursor left")
+ {
+     _movL(Currentbuf->COLS / 2);
+ }
+ 
+-DEFUN(movL1, MOVE_LEFT1, "Move cursor left (1 columns shift at the left edge)")
++DEFUN(movL1, MOVE_LEFT1, "Cursor left. With edge touched, slide")
+ {
+     _movL(1);
+ }
+@@ -2190,14 +2297,12 @@ _movD(int n)
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(movD, MOVE_DOWN,
+-      "Move cursor down (a half screen scroll at the end of screen)")
++DEFUN(movD, MOVE_DOWN, "Cursor down")
+ {
+     _movD((Currentbuf->LINES + 1) / 2);
+ }
+ 
+-DEFUN(movD1, MOVE_DOWN1,
+-      "Move cursor down (1 line scroll at the end of screen)")
++DEFUN(movD1, MOVE_DOWN1, "Cursor down. With edge touched, slide")
+ {
+     _movD(1);
+ }
+@@ -2214,13 +2319,12 @@ _movU(int n)
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(movU, MOVE_UP,
+-      "Move cursor up (a half screen scroll at the top of screen)")
++DEFUN(movU, MOVE_UP, "Cursor up")
+ {
+     _movU((Currentbuf->LINES + 1) / 2);
+ }
+ 
+-DEFUN(movU1, MOVE_UP1, "Move cursor up (1 line scrol at the top of screen)")
++DEFUN(movU1, MOVE_UP1, "Cursor up. With edge touched, slide")
+ {
+     _movU(1);
+ }
+@@ -2237,14 +2341,12 @@ _movR(int n)
+     displayBuffer(Currentbuf, B_NORMAL);
+ }
+ 
+-DEFUN(movR, MOVE_RIGHT,
+-      "Move cursor right (a half screen shift at the right edge)")
++DEFUN(movR, MOVE_RIGHT, "Cursor right")
+ {
+     _movR(Currentbuf->COLS / 2);
+ }
+ 
+-DEFUN(movR1, MOVE_RIGHT1,
+-      "Move cursor right (1 columns shift at the right edge)")
++DEFUN(movR1, MOVE_RIGHT1, "Cursor right. With edge touched, slide")
+ {
+     _movR(1);
+ }
+@@ -2261,7 +2363,7 @@ DEFUN(movR1, MOVE_RIGHT1,
  static wc_uint32
  getChar(char *p)
  {
@@ -14069,16 +14420,129 @@ index b421943..56301cc 100644
  }
  
  static int
-@@ -2502,7 +2610,7 @@ DEFUN(selBuf, SELECT, "Go to buffer selection panel")
+@@ -2296,7 +2398,7 @@ prev_nonnull_line(Line *line)
+     return 0;
+ }
+ 
+-DEFUN(movLW, PREV_WORD, "Move to previous word")
++DEFUN(movLW, PREV_WORD, "Move to the previous word")
+ {
+     char *lb;
+     Line *pline, *l;
+@@ -2364,7 +2466,7 @@ next_nonnull_line(Line *line)
+     return 0;
+ }
+ 
+-DEFUN(movRW, NEXT_WORD, "Move to next word")
++DEFUN(movRW, NEXT_WORD, "Move to the next word")
+ {
+     char *lb;
+     Line *pline, *l;
+@@ -2442,19 +2544,19 @@ _quitfm(int confirm)
+ }
+ 
+ /* Quit */
+-DEFUN(quitfm, ABORT EXIT, "Quit w3m without confirmation")
++DEFUN(quitfm, ABORT EXIT, "Quit at once")
+ {
+     _quitfm(FALSE);
+ }
+ 
+ /* Question and Quit */
+-DEFUN(qquitfm, QUIT, "Quit w3m")
++DEFUN(qquitfm, QUIT, "Quit with confirmation request")
+ {
+     _quitfm(confirm_on_quit);
+ }
+ 
+ /* Select buffer */
+-DEFUN(selBuf, SELECT, "Go to buffer selection panel")
++DEFUN(selBuf, SELECT, "Display buffer-stack panel")
+ {
+     Buffer *buf;
+     int ok;
+@@ -2502,7 +2604,7 @@ DEFUN(selBuf, SELECT, "Go to buffer selection panel")
  }
  
  /* Suspend (on BSD), or run interactive shell (on SysV) */
 -DEFUN(susp, INTERRUPT SUSPEND, "Stop loading document")
-+DEFUN(susp, INTERRUPT SUSPEND, "Suspend w3m")
++DEFUN(susp, INTERRUPT SUSPEND, "Suspend w3m to background")
  {
  #ifndef SIGSTOP
      char *shell;
-@@ -2804,12 +2912,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+@@ -2550,7 +2652,7 @@ _goLine(char *l)
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(goLine, GOTO_LINE, "Go to specified line")
++DEFUN(goLine, GOTO_LINE, "Go to the specified line")
+ {
+ 
+     char *str = searchKeyData();
+@@ -2575,7 +2677,7 @@ DEFUN(goLineL, END, "Go to the last line")
+ }
+ 
+ /* Go to the beginning of the line */
+-DEFUN(linbeg, LINE_BEGIN, "Go to the beginning of line")
++DEFUN(linbeg, LINE_BEGIN, "Go to the beginning of the line")
+ {
+     if (Currentbuf->firstLine == NULL)
+ 	return;
+@@ -2587,7 +2689,7 @@ DEFUN(linbeg, LINE_BEGIN, "Go to the beginning of line")
+ }
+ 
+ /* Go to the bottom of the line */
+-DEFUN(linend, LINE_END, "Go to the end of line")
++DEFUN(linend, LINE_END, "Go to the end of the line")
+ {
+     if (Currentbuf->firstLine == NULL)
+ 	return;
+@@ -2616,7 +2718,7 @@ cur_real_linenumber(Buffer *buf)
+ }
+ 
+ /* Run editor on the current buffer */
+-DEFUN(editBf, EDIT, "Edit current document")
++DEFUN(editBf, EDIT, "Edit local source")
+ {
+     char *fn = Currentbuf->filename;
+     Str cmd;
+@@ -2643,7 +2745,7 @@ DEFUN(editBf, EDIT, "Edit current document")
+ }
+ 
+ /* Run editor on the current screen */
+-DEFUN(editScr, EDIT_SCREEN, "Edit currently rendered document")
++DEFUN(editScr, EDIT_SCREEN, "Edit rendered copy of document")
+ {
+     char *tmpf;
+     FILE *f;
+@@ -2681,7 +2783,7 @@ DEFUN(_mark, MARK, "Set/unset mark")
+ }
+ 
+ /* Go to next mark */
+-DEFUN(nextMk, NEXT_MARK, "Move to next word")
++DEFUN(nextMk, NEXT_MARK, "Go to the next mark")
+ {
+     Line *l;
+     int i;
+@@ -2714,7 +2816,7 @@ DEFUN(nextMk, NEXT_MARK, "Move to next word")
+ }
+ 
+ /* Go to previous mark */
+-DEFUN(prevMk, PREV_MARK, "Move to previous mark")
++DEFUN(prevMk, PREV_MARK, "Go to the previous mark")
+ {
+     Line *l;
+     int i;
+@@ -2749,7 +2851,7 @@ DEFUN(prevMk, PREV_MARK, "Move to previous mark")
+ }
+ 
+ /* Mark place to which the regular expression matches */
+-DEFUN(reMark, REG_MARK, "Set mark using regexp")
++DEFUN(reMark, REG_MARK, "Mark all occurences of a pattern")
+ {
+     Line *l;
+     char *str;
+@@ -2804,12 +2906,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
      union frameset_element *f_element = NULL;
      int flag = 0;
      ParsedURL *base, pu;
@@ -14095,7 +14559,7 @@ index b421943..56301cc 100644
  	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
  	referer = NO_REFERER;
      if (referer == NULL)
-@@ -2830,7 +2941,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+@@ -2830,7 +2935,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
      if (!on_target)		/* open link as an indivisual page */
  	return loadNormalBuf(buf, TRUE);
  
@@ -14104,18 +14568,18 @@ index b421943..56301cc 100644
  	return loadNormalBuf(buf, FALSE);
  
      if (target == NULL ||	/* no target specified (that means this page is not a frame page) */
-@@ -2959,9 +3070,8 @@ handleMailto(char *url)
+@@ -2959,9 +3064,8 @@ handleMailto(char *url)
  }
  
  /* follow HREF link */
 -DEFUN(followA, GOTO_LINK, "Go to current link")
-+DEFUN(followA, GOTO_LINK, "Follow current link")
++DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
  {
 -    Line *l;
      Anchor *a;
      ParsedURL u;
  #ifdef USE_IMAGE
-@@ -2971,7 +3081,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
+@@ -2971,7 +3075,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
  
      if (Currentbuf->firstLine == NULL)
  	return;
@@ -14123,9 +14587,12 @@ index b421943..56301cc 100644
  
  #ifdef USE_IMAGE
      a = retrieveCurrentImg(Currentbuf);
-@@ -3053,13 +3162,11 @@ bufferA(void)
+@@ -3051,15 +3154,13 @@ bufferA(void)
+ }
+ 
  /* view inline image */
- DEFUN(followI, VIEW_IMAGE, "View image")
+-DEFUN(followI, VIEW_IMAGE, "View image")
++DEFUN(followI, VIEW_IMAGE, "Display image in viewer")
  {
 -    Line *l;
      Anchor *a;
@@ -14137,7 +14604,7 @@ index b421943..56301cc 100644
  
      a = retrieveCurrentImg(Currentbuf);
      if (a == NULL)
-@@ -3309,7 +3416,6 @@ followForm(void)
+@@ -3309,7 +3410,6 @@ followForm(void)
  static void
  _followForm(int submit)
  {
@@ -14145,7 +14612,7 @@ index b421943..56301cc 100644
      Anchor *a, *a2;
      char *p;
      FormItemList *fi, *f2;
-@@ -3318,7 +3424,6 @@ _followForm(int submit)
+@@ -3318,7 +3418,6 @@ _followForm(int submit)
  
      if (Currentbuf->firstLine == NULL)
  	return;
@@ -14153,7 +14620,7 @@ index b421943..56301cc 100644
  
      a = retrieveCurrentForm(Currentbuf);
      if (a == NULL)
-@@ -3423,7 +3528,6 @@ _followForm(int submit)
+@@ -3423,7 +3522,6 @@ _followForm(int submit)
      case FORM_INPUT_BUTTON:
        do_submit:
  	tmp = Strnew();
@@ -14161,7 +14628,25 @@ index b421943..56301cc 100644
  	multipart = (fi->parent->method == FORM_METHOD_POST &&
  		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
  	query_from_followform(&tmp, fi, multipart);
-@@ -3568,6 +3672,33 @@ DEFUN(lastA, LINK_END, "Go to the last link")
+@@ -3501,7 +3599,7 @@ _followForm(int submit)
+ }
+ 
+ /* go to the top anchor */
+-DEFUN(topA, LINK_BEGIN, "Go to the first link")
++DEFUN(topA, LINK_BEGIN, "Move to the first hyperlink")
+ {
+     HmarkerList *hl = Currentbuf->hmarklist;
+     BufferPoint *po;
+@@ -3534,7 +3632,7 @@ DEFUN(topA, LINK_BEGIN, "Go to the first link")
+ }
+ 
+ /* go to the last anchor */
+-DEFUN(lastA, LINK_END, "Go to the last link")
++DEFUN(lastA, LINK_END, "Move to the last hyperlink")
+ {
+     HmarkerList *hl = Currentbuf->hmarklist;
+     BufferPoint *po;
+@@ -3568,26 +3666,53 @@ DEFUN(lastA, LINK_END, "Go to the last link")
      displayBuffer(Currentbuf, B_NORMAL);
  }
  
@@ -14193,53 +14678,112 @@ index b421943..56301cc 100644
 +}
 +
  /* go to the next anchor */
- DEFUN(nextA, NEXT_LINK, "Move to next link")
+-DEFUN(nextA, NEXT_LINK, "Move to next link")
++DEFUN(nextA, NEXT_LINK, "Move to the next hyperlink")
  {
-@@ -3863,37 +3994,37 @@ nextY(int d)
+     _nextA(FALSE);
+ }
+ 
+ /* go to the previous anchor */
+-DEFUN(prevA, PREV_LINK, "Move to previous link")
++DEFUN(prevA, PREV_LINK, "Move to the previous hyperlink")
+ {
+     _prevA(FALSE);
+ }
+ 
+ /* go to the next visited anchor */
+-DEFUN(nextVA, NEXT_VISITED, "Move to next visited link")
++DEFUN(nextVA, NEXT_VISITED, "Move to the next visited hyperlink")
+ {
+     _nextA(TRUE);
+ }
+ 
+ /* go to the previous visited anchor */
+-DEFUN(prevVA, PREV_VISITED, "Move to previous visited link")
++DEFUN(prevVA, PREV_VISITED, "Move to the previous visited hyperlink")
+ {
+     _prevA(TRUE);
+ }
+@@ -3863,43 +3988,43 @@ nextY(int d)
  }
  
  /* go to the next left anchor */
 -DEFUN(nextL, NEXT_LEFT, "Move to next left link")
-+DEFUN(nextL, NEXT_LEFT, "Move left to next link")
++DEFUN(nextL, NEXT_LEFT, "Move left to the next hyperlink")
  {
      nextX(-1, 0);
  }
  
  /* go to the next left-up anchor */
 -DEFUN(nextLU, NEXT_LEFT_UP, "Move to next left (or upward) link")
-+DEFUN(nextLU, NEXT_LEFT_UP, "Move left (or upward) to next link")
++DEFUN(nextLU, NEXT_LEFT_UP, "Move left or upward to the next hyperlink")
  {
      nextX(-1, -1);
  }
  
  /* go to the next right anchor */
 -DEFUN(nextR, NEXT_RIGHT, "Move to next right link")
-+DEFUN(nextR, NEXT_RIGHT, "Move right to next link")
++DEFUN(nextR, NEXT_RIGHT, "Move right to the next hyperlink")
  {
      nextX(1, 0);
  }
  
  /* go to the next right-down anchor */
 -DEFUN(nextRD, NEXT_RIGHT_DOWN, "Move to next right (or downward) link")
-+DEFUN(nextRD, NEXT_RIGHT_DOWN, "Move right (or downward) to next link")
++DEFUN(nextRD, NEXT_RIGHT_DOWN, "Move right or downward to the next hyperlink")
  {
      nextX(1, 1);
  }
  
  /* go to the next downward anchor */
 -DEFUN(nextD, NEXT_DOWN, "Move to next downward link")
-+DEFUN(nextD, NEXT_DOWN, "Move downward to next link")
++DEFUN(nextD, NEXT_DOWN, "Move downward to the next hyperlink")
  {
      nextY(1);
  }
  
  /* go to the next upward anchor */
 -DEFUN(nextU, NEXT_UP, "Move to next upward link")
-+DEFUN(nextU, NEXT_UP, "Move upward to next link")
++DEFUN(nextU, NEXT_UP, "Move upward to the next hyperlink")
  {
      nextY(-1);
  }
-@@ -4055,6 +4186,7 @@ goURL0(char *prompt, int relative)
+ 
+ /* go to the next bufferr */
+-DEFUN(nextBf, NEXT, "Move to next buffer")
++DEFUN(nextBf, NEXT, "Switch to the next buffer")
+ {
+     Buffer *buf;
+     int i;
+@@ -3917,7 +4042,7 @@ DEFUN(nextBf, NEXT, "Move to next buffer")
+ }
+ 
+ /* go to the previous bufferr */
+-DEFUN(prevBf, PREV, "Move to previous buffer")
++DEFUN(prevBf, PREV, "Switch to the previous buffer")
+ {
+     Buffer *buf;
+     int i;
+@@ -3959,7 +4084,7 @@ checkBackBuffer(Buffer *buf)
+ }
+ 
+ /* delete current buffer and back to the previous buffer */
+-DEFUN(backBf, BACK, "Back to previous buffer")
++DEFUN(backBf, BACK, "Close current buffer and return to the one below in stack")
+ {
+     Buffer *buf = Currentbuf->linkBuffer[LB_N_FRAME];
+ 
+@@ -4008,8 +4133,7 @@ DEFUN(backBf, BACK, "Back to previous buffer")
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(deletePrevBuf, DELETE_PREVBUF,
+-      "Delete previous buffer (mainly for local-CGI)")
++DEFUN(deletePrevBuf, DELETE_PREVBUF, "Delete previous buffer (mainly for local CGI-scripts)")
+ {
+     Buffer *buf = Currentbuf->nextBuffer;
+     if (buf)
+@@ -4055,6 +4179,7 @@ goURL0(char *prompt, int relative)
      char *url, *referer;
      ParsedURL p_url, *current;
      Buffer *cur_buf = Currentbuf;
@@ -14247,7 +14791,7 @@ index b421943..56301cc 100644
  
      url = searchKeyData();
      if (url == NULL) {
-@@ -4064,11 +4196,8 @@ goURL0(char *prompt, int relative)
+@@ -4064,11 +4189,8 @@ goURL0(char *prompt, int relative)
  	current = baseURL(Currentbuf);
  	if (current) {
  	    char *c_url = parsedURL2Str(current)->ptr;
@@ -14261,7 +14805,7 @@ index b421943..56301cc 100644
  	    else
  		pushHist(hist, c_url);
  	}
-@@ -4077,11 +4206,8 @@ goURL0(char *prompt, int relative)
+@@ -4077,11 +4199,8 @@ goURL0(char *prompt, int relative)
  	    char *a_url;
  	    parseURL2(a->url, &p_url, current);
  	    a_url = parsedURL2Str(&p_url)->ptr;
@@ -14275,7 +14819,7 @@ index b421943..56301cc 100644
  	    else
  		pushHist(hist, a_url);
  	}
-@@ -4089,15 +4215,22 @@ goURL0(char *prompt, int relative)
+@@ -4089,15 +4208,22 @@ goURL0(char *prompt, int relative)
  	if (url != NULL)
  	    SKIP_BLANKS(url);
      }
@@ -14305,7 +14849,7 @@ index b421943..56301cc 100644
      if (url == NULL || *url == '\0') {
  	displayBuffer(Currentbuf, B_FORCE_REDRAW);
  	return;
-@@ -4106,14 +4239,6 @@ goURL0(char *prompt, int relative)
+@@ -4106,14 +4232,6 @@ goURL0(char *prompt, int relative)
  	gotoLabel(url + 1);
  	return;
      }
@@ -14320,7 +14864,22 @@ index b421943..56301cc 100644
      parseURL2(url, &p_url, current);
      pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
      cmd_loadURL(url, current, referer, NULL);
-@@ -4151,14 +4276,14 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
+@@ -4121,12 +4239,12 @@ goURL0(char *prompt, int relative)
+ 	pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
+ }
+ 
+-DEFUN(goURL, GOTO, "Go to URL")
++DEFUN(goURL, GOTO, "Open specified document in a new buffer")
+ {
+     goURL0("Goto URL: ", FALSE);
+ }
+ 
+-DEFUN(gorURL, GOTO_RELATIVE, "Go to relative URL")
++DEFUN(gorURL, GOTO_RELATIVE, "Go to relative address")
+ {
+     goURL0("Goto relative URL: ", TRUE);
+ }
+@@ -4151,14 +4269,14 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
  }
  
  /* load bookmark */
@@ -14337,16 +14896,25 @@ index b421943..56301cc 100644
  {
      Str tmp;
      FormList *request;
-@@ -4188,7 +4313,7 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
+@@ -4188,7 +4306,7 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
  }
  
  /* option setting */
 -DEFUN(ldOpt, OPTIONS, "Option setting panel")
-+DEFUN(ldOpt, OPTIONS, "Display option setting panel")
++DEFUN(ldOpt, OPTIONS, "Display options setting panel")
  {
      cmd_loadBuffer(load_option_panel(), BP_NO_URL, LB_NOLINK);
  }
-@@ -4291,7 +4416,7 @@ follow_map(struct parsed_tagarg *arg)
+@@ -4223,7 +4341,7 @@ DEFUN(msgs, MSGS, "Display error messages")
+ }
+ 
+ /* page info */
+-DEFUN(pginfo, INFO, "View info of current document")
++DEFUN(pginfo, INFO, "Display information about the current document")
+ {
+     Buffer *buf;
+ 
+@@ -4291,7 +4409,7 @@ follow_map(struct parsed_tagarg *arg)
  
  #ifdef USE_MENU
  /* link menu */
@@ -14355,7 +14923,7 @@ index b421943..56301cc 100644
  {
      LinkList *l = link_menu(Currentbuf);
      ParsedURL p_url;
-@@ -4329,19 +4454,19 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
+@@ -4329,26 +4447,25 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
  }
  
  /* accesskey */
@@ -14367,36 +14935,70 @@ index b421943..56301cc 100644
  
  /* list menu */
 -DEFUN(listMn, LIST_MENU, "Popup link list menu and go to selected link")
-+DEFUN(listMn, LIST_MENU, "Pop up link list menu and go to selected link")
++DEFUN(listMn, LIST_MENU, "Pop up menu for hyperlinks to browse to")
  {
      anchorMn(list_menu, TRUE);
  }
  
- DEFUN(movlistMn, MOVE_LIST_MENU,
+-DEFUN(movlistMn, MOVE_LIST_MENU,
 -      "Popup link list menu and move cursor to selected link")
-+      "Pop up link list menu and move cursor to selected link")
++DEFUN(movlistMn, MOVE_LIST_MENU, "Pop up menu to navigate between hyperlinks")
  {
      anchorMn(list_menu, FALSE);
  }
-@@ -4375,7 +4500,7 @@ DEFUN(cooLst, COOKIE, "View cookie list")
+ #endif
+ 
+ /* link,anchor,image list */
+-DEFUN(linkLst, LIST, "Show all links and images")
++DEFUN(linkLst, LIST, "Show all URLs referenced")
+ {
+     Buffer *buf;
+ 
+@@ -4375,14 +4492,14 @@ DEFUN(cooLst, COOKIE, "View cookie list")
  
  #ifdef USE_HISTORY
  /* History page */
 -DEFUN(ldHist, HISTORY, "View history of URL")
-+DEFUN(ldHist, HISTORY, "View browser history")
++DEFUN(ldHist, HISTORY, "Show browsing history")
  {
      cmd_loadBuffer(historyBuffer(URLHist), BP_NO_URL, LB_NOLINK);
  }
-@@ -4449,7 +4574,7 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
+ #endif				/* USE_HISTORY */
+ 
+ /* download HREF link */
+-DEFUN(svA, SAVE_LINK, "Save link to file")
++DEFUN(svA, SAVE_LINK, "Save hyperlink target")
+ {
+     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
+     do_download = TRUE;
+@@ -4391,7 +4508,7 @@ DEFUN(svA, SAVE_LINK, "Save link to file")
+ }
+ 
+ /* download IMG link */
+-DEFUN(svI, SAVE_IMAGE, "Save image to file")
++DEFUN(svI, SAVE_IMAGE, "Save inline image")
+ {
+     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
+     do_download = TRUE;
+@@ -4400,7 +4517,7 @@ DEFUN(svI, SAVE_IMAGE, "Save image to file")
+ }
+ 
+ /* save buffer */
+-DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
++DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document")
+ {
+     char *qfile = NULL, *file;
+     FILE *f;
+@@ -4449,7 +4566,7 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
  }
  
  /* save source */
 -DEFUN(svSrc, DOWNLOAD SAVE, "Save document source to file")
-+DEFUN(svSrc, DOWNLOAD SAVE, "Save document (source) to file")
++DEFUN(svSrc, DOWNLOAD SAVE, "Save document source")
  {
      char *file;
  
-@@ -4510,8 +4635,7 @@ _peekURL(int only_img)
+@@ -4510,8 +4627,7 @@ _peekURL(int only_img)
  	s = parsedURL2Str(&pu);
      }
      if (DecodeURL)
@@ -14406,32 +15008,32 @@ index b421943..56301cc 100644
  #ifdef USE_M17N
      s = checkType(s, &pp, NULL);
      p = NewAtom_N(Lineprop, s->length);
-@@ -4529,13 +4653,13 @@ _peekURL(int only_img)
+@@ -4529,13 +4645,13 @@ _peekURL(int only_img)
  }
  
  /* peek URL */
 -DEFUN(peekURL, PEEK_LINK, "Peek link URL")
-+DEFUN(peekURL, PEEK_LINK, "Peek at link URL")
++DEFUN(peekURL, PEEK_LINK, "Show target address")
  {
      _peekURL(0);
  }
  
  /* peek URL of image */
 -DEFUN(peekIMG, PEEK_IMG, "Peek image URL")
-+DEFUN(peekIMG, PEEK_IMG, "Peek at image URL")
++DEFUN(peekIMG, PEEK_IMG, "Show image address")
  {
      _peekURL(1);
  }
-@@ -4549,7 +4673,7 @@ currentURL(void)
+@@ -4549,7 +4665,7 @@ currentURL(void)
      return parsedURL2Str(&Currentbuf->currentURL);
  }
  
 -DEFUN(curURL, PEEK, "Peek current URL")
-+DEFUN(curURL, PEEK, "Peek at current URL")
++DEFUN(curURL, PEEK, "Show current address")
  {
      static Str s = NULL;
  #ifdef USE_M17N
-@@ -4570,7 +4694,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+@@ -4570,7 +4686,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
  	offset = 0;
  	s = currentURL();
  	if (DecodeURL)
@@ -14440,28 +15042,73 @@ index b421943..56301cc 100644
  #ifdef USE_M17N
  	s = checkType(s, &pp, NULL);
  	p = NewAtom_N(Lineprop, s->length);
-@@ -4915,13 +5039,13 @@ chkURLBuffer(Buffer *buf)
+@@ -4588,7 +4704,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+ }
+ /* view HTML source */
+ 
+-DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
++DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
+ {
+     Buffer *buf;
+ 
+@@ -4679,7 +4795,7 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
+ }
+ 
+ /* reload */
+-DEFUN(reload, RELOAD, "Reload buffer")
++DEFUN(reload, RELOAD, "Load current document anew")
+ {
+     Buffer *buf, *fbuf = NULL, sbuf;
+ #ifdef USE_M17N
+@@ -4804,7 +4920,7 @@ DEFUN(reload, RELOAD, "Reload buffer")
+ }
+ 
+ /* reshape */
+-DEFUN(reshape, RESHAPE, "Re-render buffer")
++DEFUN(reshape, RESHAPE, "Re-render document")
+ {
+     Currentbuf->need_reshape = TRUE;
+     reshapeBuffer(Currentbuf);
+@@ -4846,7 +4962,7 @@ change_charset(struct parsed_tagarg *arg)
+     _docCSet(charset);
+ }
+ 
+-DEFUN(docCSet, CHARSET, "Change the current document charset")
++DEFUN(docCSet, CHARSET, "Change the character encoding for the current document")
+ {
+     char *cs;
+     wc_ces charset;
+@@ -4864,7 +4980,7 @@ DEFUN(docCSet, CHARSET, "Change the current document charset")
+     _docCSet(charset);
+ }
+ 
+-DEFUN(defCSet, DEFAULT_CHARSET, "Change the default document charset")
++DEFUN(defCSet, DEFAULT_CHARSET, "Change the default character encoding")
+ {
+     char *cs;
+     wc_ces charset;
+@@ -4915,13 +5031,13 @@ chkURLBuffer(Buffer *buf)
      buf->check_url |= CHK_URL;
  }
  
 -DEFUN(chkURL, MARK_URL, "Mark URL-like strings as anchors")
-+DEFUN(chkURL, MARK_URL, "Mark URL-like strings as links")
++DEFUN(chkURL, MARK_URL, "Turn URL-like strings into hyperlinks")
  {
      chkURLBuffer(Currentbuf);
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
 -DEFUN(chkWORD, MARK_WORD, "Mark current word as anchor")
-+DEFUN(chkWORD, MARK_WORD, "Mark current word as link")
++DEFUN(chkWORD, MARK_WORD, "Turn current word into hyperlink")
  {
      char *p;
      int spos, epos;
-@@ -4948,15 +5072,15 @@ chkNMIDBuffer(Buffer *buf)
+@@ -4948,15 +5064,15 @@ chkNMIDBuffer(Buffer *buf)
      buf->check_url |= CHK_NMID;
  }
  
 -DEFUN(chkNMID, MARK_MID, "Mark Message-ID-like strings as anchors")
-+DEFUN(chkNMID, MARK_MID, "Mark Message-ID-like strings as links")
++DEFUN(chkNMID, MARK_MID, "Turn Message-ID-like strings into hyperlinks")
  {
      chkNMIDBuffer(Currentbuf);
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -14471,11 +15118,11 @@ index b421943..56301cc 100644
 -/* render frame */
 -DEFUN(rFrame, FRAME, "Render frame")
 +/* render frames */
-+DEFUN(rFrame, FRAME, "Render frames")
++DEFUN(rFrame, FRAME, "Toggle rendering HTML frames")
  {
      Buffer *buf;
  
-@@ -5010,6 +5134,24 @@ invoke_browser(char *url)
+@@ -5010,6 +5126,24 @@ invoke_browser(char *url)
  	case 3:
  	    browser = ExtBrowser3;
  	    break;
@@ -14500,7 +15147,34 @@ index b421943..56301cc 100644
  	}
  	if (browser == NULL || *browser == '\0') {
  	    browser = inputStr("Browse command: ", NULL);
-@@ -5362,7 +5504,7 @@ process_mouse(int btn, int x, int y)
+@@ -5038,7 +5172,7 @@ invoke_browser(char *url)
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(extbrz, EXTERN, "Execute external browser")
++DEFUN(extbrz, EXTERN, "Display using an external browser")
+ {
+     if (Currentbuf->bufferprop & BP_INTERNAL) {
+ 	/* FIXME: gettextize? */
+@@ -5055,7 +5189,7 @@ DEFUN(extbrz, EXTERN, "Execute external browser")
+     invoke_browser(parsedURL2Str(&Currentbuf->currentURL)->ptr);
+ }
+ 
+-DEFUN(linkbrz, EXTERN_LINK, "View current link using external browser")
++DEFUN(linkbrz, EXTERN_LINK, "Display target using an external browser")
+ {
+     Anchor *a;
+     ParsedURL pu;
+@@ -5070,7 +5204,7 @@ DEFUN(linkbrz, EXTERN_LINK, "View current link using external browser")
+ }
+ 
+ /* show current line number and number of lines in the entire document */
+-DEFUN(curlno, LINE_INFO, "Show current line number")
++DEFUN(curlno, LINE_INFO, "Display current position in document")
+ {
+     Line *l = Currentbuf->currentLine;
+     Str tmp;
+@@ -5362,7 +5496,7 @@ process_mouse(int btn, int x, int y)
      }
  }
  
@@ -14509,7 +15183,7 @@ index b421943..56301cc 100644
  {
      if (use_mouse) {
  	use_mouse = FALSE;
-@@ -5398,6 +5540,60 @@ DEFUN(mouse, MOUSE, "mouse operation")
+@@ -5398,6 +5532,60 @@ DEFUN(mouse, MOUSE, "mouse operation")
      process_mouse(btn, x, y);
  }
  
@@ -14570,25 +15244,59 @@ index b421943..56301cc 100644
  #ifdef USE_GPM
  int
  gpm_process_mouse(Gpm_Event * event, void *data)
-@@ -5473,7 +5669,7 @@ DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
+@@ -5451,7 +5639,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
+ }
+ #endif				/* USE_SYSMOUSE */
+ 
+-DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
++DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse pointer")
+ {
+     if (!mouse_action.in_action)
+ 	return;
+@@ -5473,7 +5661,7 @@ DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
  #define FRAME_WIDTH 1
  #endif
  
 -DEFUN(menuMs, MENU_MOUSE, "Popup menu at mouse cursor (for mouse action)")
-+DEFUN(menuMs, MENU_MOUSE, "Pop up menu at mouse cursor (for mouse action)")
++DEFUN(menuMs, MENU_MOUSE, "Pop up menu at mouse pointer")
  {
      if (!mouse_action.in_action)
  	return;
-@@ -5523,7 +5719,7 @@ DEFUN(dispVer, VERSION, "Display version of w3m")
+@@ -5490,7 +5678,7 @@ DEFUN(menuMs, MENU_MOUSE, "Popup menu at mouse cursor (for mouse action)")
+ }
+ #endif
+ 
+-DEFUN(tabMs, TAB_MOUSE, "Move to tab on mouse cursor (for mouse action)")
++DEFUN(tabMs, TAB_MOUSE, "Select tab by mouse action")
+ {
+     TabBuffer *tab;
+ 
+@@ -5503,8 +5691,7 @@ DEFUN(tabMs, TAB_MOUSE, "Move to tab on mouse cursor (for mouse action)")
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(closeTMs, CLOSE_TAB_MOUSE,
+-      "Close tab on mouse cursor (for mouse action)")
++DEFUN(closeTMs, CLOSE_TAB_MOUSE, "Close tab at mouse pointer")
+ {
+     TabBuffer *tab;
+ 
+@@ -5518,12 +5705,12 @@ DEFUN(closeTMs, CLOSE_TAB_MOUSE,
+ }
+ #endif				/* USE_MOUSE */
+ 
+-DEFUN(dispVer, VERSION, "Display version of w3m")
++DEFUN(dispVer, VERSION, "Display the version of w3m")
+ {
      disp_message(Sprintf("w3m version %s", w3m_version)->ptr, TRUE);
  }
  
 -DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle wrap search mode")
-+DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle search wrap mode")
++DEFUN(wrapToggle, WRAP_TOGGLE, "Toggle wrapping mode in searches")
  {
      if (WrapSearch) {
  	WrapSearch = FALSE;
-@@ -5604,7 +5800,7 @@ execdict(char *word)
+@@ -5604,7 +5791,7 @@ execdict(char *word)
  	disp_message("Execution failed", TRUE);
  	return;
      }
@@ -14597,7 +15305,7 @@ index b421943..56301cc 100644
  	buf->filename = w;
  	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
  	if (buf->type == NULL)
-@@ -5671,7 +5867,7 @@ set_buffer_environ(Buffer *buf)
+@@ -5671,7 +5858,7 @@ set_buffer_environ(Buffer *buf)
  	    set_environ("W3M_CURRENT_FORM", form2str((FormItemList *)a->url));
  	else
  	    set_environ("W3M_CURRENT_FORM", "");
@@ -14606,7 +15314,7 @@ index b421943..56301cc 100644
  						l->real_linenumber)->ptr);
  	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
  						  buf->currentColumn +
-@@ -5747,8 +5943,14 @@ deleteFiles()
+@@ -5747,8 +5934,14 @@ deleteFiles()
  	    Firstbuf = buf;
  	}
      }
@@ -14622,15 +15330,122 @@ index b421943..56301cc 100644
  }
  
  void
-@@ -5970,7 +6172,7 @@ DEFUN(reinit, REINIT, "Reload configuration files")
+@@ -5772,7 +5965,7 @@ w3m_exit(int i)
+     exit(i);
  }
  
- DEFUN(defKey, DEFINE_KEY,
+-DEFUN(execCmd, COMMAND, "Execute w3m command(s)")
++DEFUN(execCmd, COMMAND, "Invoke w3m function(s)")
+ {
+     char *data, *p;
+     int cmd;
+@@ -5900,7 +6093,7 @@ setAlarmEvent(AlarmEvent * event, int sec, short status, int cmd, void *data)
+ }
+ #endif
+ 
+-DEFUN(reinit, REINIT, "Reload configuration files")
++DEFUN(reinit, REINIT, "Reload configuration file")
+ {
+     char *resource = searchKeyData();
+ 
+@@ -5969,8 +6162,7 @@ DEFUN(reinit, REINIT, "Reload configuration files")
+ 		     ptr, FALSE);
+ }
+ 
+-DEFUN(defKey, DEFINE_KEY,
 -      "Define a binding between a key stroke and a user command")
-+      "Define a binding between a keystroke and a user command")
++DEFUN(defKey, DEFINE_KEY, "Define a binding between a key stroke combination and a command")
  {
      char *data;
  
+@@ -6031,7 +6223,7 @@ _newT(void)
+     nTab++;
+ }
+ 
+-DEFUN(newT, NEW_TAB, "Open new tab")
++DEFUN(newT, NEW_TAB, "Open a new tab (with current document)")
+ {
+     _newT();
+     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+@@ -6142,7 +6334,7 @@ deleteTab(TabBuffer * tab)
+     return FirstTab;
+ }
+ 
+-DEFUN(closeT, CLOSE_TAB, "Close current tab")
++DEFUN(closeT, CLOSE_TAB, "Close tab")
+ {
+     TabBuffer *tab;
+ 
+@@ -6157,7 +6349,7 @@ DEFUN(closeT, CLOSE_TAB, "Close current tab")
+     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+ }
+ 
+-DEFUN(nextT, NEXT_TAB, "Move to next tab")
++DEFUN(nextT, NEXT_TAB, "Switch to the next tab")
+ {
+     int i;
+ 
+@@ -6172,7 +6364,7 @@ DEFUN(nextT, NEXT_TAB, "Move to next tab")
+     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
+ }
+ 
+-DEFUN(prevT, PREV_TAB, "Move to previous tab")
++DEFUN(prevT, PREV_TAB, "Switch to the previous tab")
+ {
+     int i;
+ 
+@@ -6236,7 +6428,7 @@ followTab(TabBuffer * tab)
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(tabA, TAB_LINK, "Open current link on new tab")
++DEFUN(tabA, TAB_LINK, "Follow current hyperlink in a new tab")
+ {
+     followTab(prec_num ? numTab(PREC_NUM) : NULL);
+ }
+@@ -6277,13 +6469,13 @@ tabURL0(TabBuffer * tab, char *prompt, int relative)
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(tabURL, TAB_GOTO, "Open URL on new tab")
++DEFUN(tabURL, TAB_GOTO, "Open specified document in a new tab")
+ {
+     tabURL0(prec_num ? numTab(PREC_NUM) : NULL,
+ 	    "Goto URL on new tab: ", FALSE);
+ }
+ 
+-DEFUN(tabrURL, TAB_GOTO_RELATIVE, "Open relative URL on new tab")
++DEFUN(tabrURL, TAB_GOTO_RELATIVE, "Open relative address in a new tab")
+ {
+     tabURL0(prec_num ? numTab(PREC_NUM) : NULL,
+ 	    "Goto relative URL on new tab: ", TRUE);
+@@ -6328,7 +6520,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+ }
+ 
+-DEFUN(tabR, TAB_RIGHT, "Move current tab right")
++DEFUN(tabR, TAB_RIGHT, "Move right along the tab bar")
+ {
+     TabBuffer *tab;
+     int i;
+@@ -6338,7 +6530,7 @@ DEFUN(tabR, TAB_RIGHT, "Move current tab right")
+     moveTab(CurrentTab, tab ? tab : LastTab, TRUE);
+ }
+ 
+-DEFUN(tabL, TAB_LEFT, "Move current tab left")
++DEFUN(tabL, TAB_LEFT, "Move left along the tab bar")
+ {
+     TabBuffer *tab;
+     int i;
+@@ -6547,7 +6739,7 @@ stopDownload(void)
+ }
+ 
+ /* download panel */
+-DEFUN(ldDL, DOWNLOAD_LIST, "Display download list panel")
++DEFUN(ldDL, DOWNLOAD_LIST, "Display downloads panel")
+ {
+     Buffer *buf;
+     int replace = FALSE, new_tab = FALSE;
 diff --git a/map.c b/map.c
 index 90aa35a..bb240ea 100644
 --- a/map.c
@@ -14753,7 +15568,7 @@ index 64fd0ad..bc7a5be 100644
  #define SWAPI(a,b) { int tmp = a; a = b; b = tmp; }
  
 diff --git a/menu.c b/menu.c
-index 774b1bd..dfbeabe 100644
+index 774b1bd..01acc31 100644
 --- a/menu.c
 +++ b/menu.c
 @@ -57,6 +57,7 @@ static int mCancel(char c);
@@ -14882,7 +15697,7 @@ index 774b1bd..dfbeabe 100644
  /* --- SelectMenu --- */
  
 -DEFUN(selMn, SELECT_MENU, "Popup buffer selection menu")
-+DEFUN(selMn, SELECT_MENU, "Pop up buffer selection menu")
++DEFUN(selMn, SELECT_MENU, "Pop up buffer-stack menu")
  {
      int x = Currentbuf->cursorX + Currentbuf->rootX,
  	y = Currentbuf->cursorY + Currentbuf->rootY;
@@ -20752,7 +21567,7 @@ index 4da9ce5..a37d792 100644
  	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
 diff --git a/scripts/w3mhelp-funcdesc.de.pl.in b/scripts/w3mhelp-funcdesc.de.pl.in
 new file mode 100644
-index 0000000..1fe37b4
+index 0000000..11539d1
 --- /dev/null
 +++ b/scripts/w3mhelp-funcdesc.de.pl.in
 @@ -0,0 +1,66 @@
@@ -20762,83 +21577,181 @@ index 0000000..1fe37b4
 +# Buffer selection mode
 +
 +%buf_funcdesc = (
-+ 'BUF:PREV', 'Select previous buffer',
-+ 'BUF:NEXT', 'Select next buffer',
-+ 'BUF:DELETE', 'Delete current buffer',
-+ 'BUF:GO', 'Go to the selected buffer',
++ 'BUF:PREV', 'Gehe zum vorherigen Punkt',
++ 'BUF:NEXT', 'Gehe zum n√§chsten Punkt',
++ 'BUF:DELETE', 'L√∂sche den ausgew√§hlten Eintrag',
++ 'BUF:GO', 'Gehe zum ausgew√§hlten Eintrag',
 +);
 +
 +%lineedit_funcdesc = (
-+ 'LINEEDIT:FORWARD', 'Move cursor forward',
-+ 'LINEEDIT:BACK', 'Move cursor backward',
-+ 'LINEEDIT:BS',  'Delete previous character',
-+ 'LINEEDIT:DEL', 'Delete current character',
-+ 'LINEEDIT:KILL_AFTER', 'Kill everything after cursor',
-+ 'LINEEDIT:KILL_BEFORE', 'Kill everything before cursor',
-+ 'LINEEDIT:TOP', 'Move to the top of line',
-+ 'LINEEDIT:BOTTOM', 'Move to the bottom of line',
-+ 'LINEEDIT:PREV', 'Fetch the previous string from the history list',
-+ 'LINEEDIT:NEXT', 'Fetch the next string from the history list',
-+ 'LINEEDIT:EDITOR', 'Edit with external editor',
-+ 'LINEEDIT:COMPLETE', 'Complete filename',
-+ 'LINEEDIT:ACCEPT', 'Accept',
++ 'LINEEDIT:FORWARD', 'Bewege Cursor vorw√§rts',
++ 'LINEEDIT:BACK', 'Bewege Cursor r√ºckw√§rts',
++ 'LINEEDIT:BS',  'Vorheriges Zeichen l√∂schen',
++ 'LINEEDIT:DEL', 'Aktuelles Zeichen l√∂schen',
++ 'LINEEDIT:KILL_AFTER', 'L√∂sche alles nach dem Cursor',
++ 'LINEEDIT:KILL_BEFORE', 'L√∂sche alles vor dem Cursor',
++ 'LINEEDIT:TOP', 'Gehe zum Zeilenanfang',
++ 'LINEEDIT:BOTTOM', 'Gehe zum Zeilenende',
++ 'LINEEDIT:PREV', 'Hole den vorherigen Chronik-Eintrag',
++ 'LINEEDIT:NEXT', 'Hole den n√§chsten Chronik-Eintrag',
++ 'LINEEDIT:EDITOR', 'Bearbeite mit externem Editor',
++ 'LINEEDIT:COMPLETE', 'Versuche, den Dateinamen zu komplettieren',
++ 'LINEEDIT:ACCEPT', 'Eingabezeile annehmen',
 +);
 +
 +%menu_funcdesc = (
-+ 'MENU:SELECT', 'Select item',
-+ 'MENU:CLOSE', 'Close menu',
-+ 'MENU:CANCEL', 'Back',
-+ 'MENU:DOWN', 'Move to next item',
-+ 'MENU:UP', 'Move to previous item',
-+ 'MENU:LINE_UP', 'Scroll up one item',
-+ 'MENU:LINE_DOWN', 'Scroll down one item',
-+ 'MENU:TOP', 'Go to top item',
-+ 'MENU:LAST', 'Go to last item',
-+ 'MENU:NEXT', 'Go to next page',
-+ 'MENU:PREV', 'Go to previous page',
-+ 'MENU:SEARCH_FORE', 'Search foreward',
-+ 'MENU:SEARCH_BACK', 'Search backward',
-+ 'MENU:SEARCH_NEXT', 'Search next regexp',
-+ 'MENU:SEARCH_PREV', 'Search previous regexp',
-+ 'MENU:SUSPEND', 'Suspend',
++ 'MENU:SELECT', 'W√§hle Eintrag aus',
++ 'MENU:CLOSE', 'Schlie√üe Men√º',
++ 'MENU:CANCEL', 'Einen Auswahlschritt zur√ºck',
++ 'MENU:DOWN', 'Gehe zum n√§chsten Punkt',
++ 'MENU:UP', 'Gehe zum vorherigen Punkt',
++ 'MENU:LINE_UP', 'Scrolle einen Punkt aufw√§rts',
++ 'MENU:LINE_DOWN', 'Scrolle einen Punkt abw√§rts',
++ 'MENU:TOP', 'Gehe zum ersten Punkt',
++ 'MENU:LAST', 'Gehe zum letzten Punkt',
++ 'MENU:NEXT', 'Gehe zur n√§chsten Seite',
++ 'MENU:PREV', 'Gehe zur vorherigen Seite',
++ 'MENU:SEARCH_FORE', 'Suche vorw√§rts',
++ 'MENU:SEARCH_BACK', 'Suche r√ºckw√§rts',
++ 'MENU:SEARCH_NEXT', 'Suche weitere √úbereinstimmung',
++ 'MENU:SEARCH_PREV', 'Suche fr√ºhere √úbereinstimmung',
++ 'MENU:SUSPEND', 'Zur√ºckstellen',
 +);
 +
 +%title = (
-+ "Show keymap file", 'Show keymap file',
-+ "Page/Cursor motion", 'Page/Cursor motion',
-+ "Hyperlink operation", 'Hyperlink operation',
-+ "File/Stream operation", 'File/Stream operation',
-+ "Buffer operation", 'Buffer operation',
-+ "Tab operation", 'Tab operation',
-+ "Buffer selection mode", 'Buffer selection mode',
-+ "Bookmark operation", 'Bookmark operation',
-+ "Search", 'Search',
-+ "Dictionary look-up", 'Dictionary look-up',
-+ "Mark operation", 'Mark operation',
-+ "Miscellany", 'Miscellany',
-+ "User defined keymaps", 'User defined keymaps',
-+ "Line-editing mode", 'Line-editing mode',
-+ "Pop up menu", 'Pop up menu',
++ "Current keymap file", 'Aktuelle Datei mit Tastaturbefehlszuordnung',
++ "In-page Navigation", 'Navigation auf der Seite',
++ "Hyperlink Operations", 'Umgang mit Hyperlinks',
++ "File/Stream Operations", 'Umgang mit Dateien und Datenstr√∂men',
++ "Buffer Operations", 'Umgang mit Puffern',
++ "Tab Operations", 'Umgang mit Reitern',
++ "Buffer and Tab Selection Mode", 'Puffer/Reiter-Auswahl-Modus',
++ "Bookmark Management", 'Lesezeichenverwaltung',
++ "Searches", 'Suchen',
++ "Dictionary Lookup", 'Abgleich mit W√∂rterbuch',
++ "Mark Operations", 'Umgang mit Textmarken',
++ "Miscellaneous", 'Verschiedenes',
++ "User-defined key bindings", 'Benutzerdefinierte Tastaturbefehle',
++ "Input Line Editing Mode", 'Bearbeitung der Eingabezeile',
++ "Popup Menu Mode", 'Navigation in Men√ºs',
 +);
 +
 +1;
+diff --git a/scripts/w3mhelp-funcdesc.en.pl.in b/scripts/w3mhelp-funcdesc.en.pl.in
+index d854b59..b9f4ed8 100644
+--- a/scripts/w3mhelp-funcdesc.en.pl.in
++++ b/scripts/w3mhelp-funcdesc.en.pl.in
+@@ -4,44 +4,44 @@ $charset = 'US-ASCII';
+ # Buffer selection mode
+ 
+ %buf_funcdesc = (
+- 'BUF:PREV', 'Select previous buffer',
+- 'BUF:NEXT', 'Select next buffer',
+- 'BUF:DELETE', 'Delete current buffer',
+- 'BUF:GO', 'Go to the selected buffer',
++ 'BUF:PREV', 'Previous item',
++ 'BUF:NEXT', 'Next item',
++ 'BUF:DELETE', 'Delete item',
++ 'BUF:GO', 'Select item',
+ );
+ 
+ %lineedit_funcdesc = (
+- 'LINEEDIT:FORWARD', 'Move cursor forward',
+- 'LINEEDIT:BACK', 'Move cursor backward',
++ 'LINEEDIT:FORWARD', 'Cursor forward',
++ 'LINEEDIT:BACK', 'Cursor backward',
+  'LINEEDIT:BS',  'Delete previous character',
+- 'LINEEDIT:DEL', 'Delete current character',
+- 'LINEEDIT:KILL_AFTER', 'Kill everything after cursor',
+- 'LINEEDIT:KILL_BEFORE', 'Kill everything before cursor',
+- 'LINEEDIT:TOP', 'Move to the top of line',
+- 'LINEEDIT:BOTTOM', 'Move to the bottom of line',
++ 'LINEEDIT:DEL', 'Delete character',
++ 'LINEEDIT:KILL_AFTER', 'Delete everything after cursor',
++ 'LINEEDIT:KILL_BEFORE', 'Delete everything before cursor',
++ 'LINEEDIT:TOP', 'Cursor to the beginning of the line',
++ 'LINEEDIT:BOTTOM', 'Cursor to the end of the line',
+  'LINEEDIT:PREV', 'Fetch the previous string from the history list',
+  'LINEEDIT:NEXT', 'Fetch the next string from the history list',
+  'LINEEDIT:EDITOR', 'Edit with external editor',
+- 'LINEEDIT:COMPLETE', 'Complete filename',
+- 'LINEEDIT:ACCEPT', 'Accept',
++ 'LINEEDIT:COMPLETE', 'Try to complete filename',
++ 'LINEEDIT:ACCEPT', 'Accept input line',
+ );
+ 
+ %menu_funcdesc = (
+  'MENU:SELECT', 'Select item',
+  'MENU:CLOSE', 'Close menu',
+- 'MENU:CANCEL', 'Back',
+- 'MENU:DOWN', 'Move to next item',
+- 'MENU:UP', 'Move to previous item',
++ 'MENU:CANCEL', 'One selection step backward',
++ 'MENU:DOWN', 'Move to the next item',
++ 'MENU:UP', 'Move to the previous item',
+  'MENU:LINE_UP', 'Scroll up one item',
+  'MENU:LINE_DOWN', 'Scroll down one item',
+- 'MENU:TOP', 'Go to top item',
+- 'MENU:LAST', 'Go to last item',
+- 'MENU:NEXT', 'Go to next page',
+- 'MENU:PREV', 'Go to previous page',
+- 'MENU:SEARCH_FORE', 'Search foreward',
++ 'MENU:TOP', 'Move to the first item',
++ 'MENU:LAST', 'Move to the final item',
++ 'MENU:NEXT', 'Go to the next page',
++ 'MENU:PREV', 'Go to the previous page',
++ 'MENU:SEARCH_FORE', 'Search forward',
+  'MENU:SEARCH_BACK', 'Search backward',
+- 'MENU:SEARCH_NEXT', 'Search next regexp',
+- 'MENU:SEARCH_PREV', 'Search previous regexp',
++ 'MENU:SEARCH_NEXT', 'Search for the next match',
++ 'MENU:SEARCH_PREV', 'Search for the previous match',
+  'MENU:SUSPEND', 'Suspend',
+ );
+ 
 diff --git a/scripts/w3mhelp-funcdesc.ja.pl.in b/scripts/w3mhelp-funcdesc.ja.pl.in
-index 051c888..b0f529e 100644
+index 051c888..4ef476e 100644
 --- a/scripts/w3mhelp-funcdesc.ja.pl.in
 +++ b/scripts/w3mhelp-funcdesc.ja.pl.in
-@@ -59,8 +59,8 @@ $charset = 'EUC-JP';
-  "Mark operation", '•ﬁ°º•Ø¡‡∫Ó',
-  "Miscellany", '§Ω§Œ¬æ',
-  "User defined keymaps", '•Ê°º•∂ƒÍµ¡',
+@@ -46,21 +46,21 @@ $charset = 'EUC-JP';
+ );
+ 
+ %title = (
+- "Show keymap file", 'keymap •’•°•§•Î§Ú∏´§Î',
+- "Page/Cursor motion", '•⁄°º•∏/•´°º•Ω•Î∞‹∆∞',
+- "Hyperlink operation", '•œ•§•—°º•Í•Û•Ø¡‡∫Ó',
+- "File/Stream operation", '•’•°•§•Î/•π•»•Í°º•‡¡‡∫Ó',
+- "Buffer operation", '•–•√•’•°¡‡∫Ó',
+- "Tab operation", '•ø•÷¡‡∫Ó',
+- "Buffer selection mode", '•–•√•’•°¡™¬Ú•‚°º•…',
+- "Bookmark operation", '•÷•√•Ø•ﬁ°º•Ø¡‡∫Ó',
+- "Search", '∏°∫˜',
+- "Dictionary look-up", 'º≠ΩÒ∏°∫˜',
+- "Mark operation", '•ﬁ°º•Ø¡‡∫Ó',
+- "Miscellany", '§Ω§Œ¬æ',
+- "User defined keymaps", '•Ê°º•∂ƒÍµ¡',
 - "Line-edit mode", 'π‘ ‘Ω∏•‚°º•…',
 - "Popup menu", '•·•À•Â°º',
-+ "Line-editing mode", 'π‘ ‘Ω∏•‚°º•…',
-+ "Pop up menu", '•·•À•Â°º',
++ "Current keymap file", 'keymap •’•°•§•Î§Ú∏´§Î',
++ "In-page Navigation", '•⁄°º•∏/•´°º•Ω•Î∞‹∆∞',
++ "Hyperlink Operations", '•œ•§•—°º•Í•Û•Ø¡‡∫Ó',
++ "File/Stream Operations", '•’•°•§•Î/•π•»•Í°º•‡¡‡∫Ó',
++ "Buffer Operations", '•–•√•’•°¡‡∫Ó',
++ "Tab Operations", '•ø•÷¡‡∫Ó',
++ "Buffer and Tab Selection Mode", '•–•√•’•°¡™¬Ú•‚°º•…',
++ "Bookmark Management", '•÷•√•Ø•ﬁ°º•Ø¡‡∫Ó',
++ "Searches", '∏°∫˜',
++ "Dictionary Lookup", 'º≠ΩÒ∏°∫˜',
++ "Mark Operations", '•ﬁ°º•Ø¡‡∫Ó',
++ "Miscellaneous", '§Ω§Œ¬æ',
++ "User-defined key bindings", '•Ê°º•∂ƒÍµ¡',
++ "Input Line Editing Mode", 'π‘ ‘Ω∏•‚°º•…',
++ "Popup Menu Mode", '•·•À•Â°º',
  );
  
  1;
 diff --git a/scripts/w3mhelp.cgi.in b/scripts/w3mhelp.cgi.in
-index b2fca8f..2c3f4d5 100644
+index b2fca8f..503dddc 100644
 --- a/scripts/w3mhelp.cgi.in
 +++ b/scripts/w3mhelp.cgi.in
 @@ -48,7 +48,7 @@ if (defined($ENV{'QUERY_STRING'})) {
@@ -20860,7 +21773,7 @@ index b2fca8f..2c3f4d5 100644
  </CENTER>
  
  HEADING
-@@ -112,13 +111,13 @@ $q_version = $version;
+@@ -112,25 +111,25 @@ $q_version = $version;
  $q_version =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
  $script = "<A HREF=\"$ENV{'SCRIPT_NAME'}?version=$q_version&amp;lang=";
  
@@ -20876,12 +21789,80 @@ index b2fca8f..2c3f4d5 100644
      }
  }
  
-@@ -182,7 +181,7 @@ print "<BR>\n<HR WIDTH=80%>\n";
+ $keymap =~ s/[<>&]/$htmlesc{$&}/ge;
+-$head = "Show keymap file";
++$head = 'Current keymap file';
+ if (defined($title{$head})) {
+ 	$head = $title{$head};
+ 	$head =~ s/[<>&]/$htmlesc{$&}/ge;
+ }
+ print "<P><A HREF=\"$keymap\">$head</A>\n";
+ 
+-&show_keymap("Page/Cursor motion", 
++&show_keymap('In-page Navigation', 
+ 	     split(" ", "pgFore pgBack movR movL movD movU
+ 		movR1 movL1 movD1 movU1 ldown1 lup1
+ 		shiftl shiftr col1L col1R linbeg linend ctrCsrH ctrCsrV
+@@ -139,50 +138,50 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
+ 		nextR nextL nextD nextU nextRD nextLU
+ 		undoPos redoPos"));
+ 
+-&show_keymap("Hyperlink operation",
++&show_keymap('Hyperlink Operations',
+ 	     split(" ", "followA tabA svA followI svI submitForm
+ 		curURL peekURL peekIMG pginfo curlno chkURL chkWORD chkNMID
+ 		rFrame extbrz linkbrz linkLst listMn linkMn accessKey"));
+ 
+-&show_keymap("File/Stream operation",
++&show_keymap('File/Stream Operations',
+ 	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh
+ 		pipeBuf"));
+ 
+-&show_keymap("Buffer operation",
++&show_keymap('Buffer Operations',
+ 	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
+ 		editBf editScr reload reshape rdrwSc dispI stopI"));
+ 
+-&show_keymap("Tab operation",
++&show_keymap('Tab Operations',
+ 	     split(" ", "newT closeT nextT prevT tabMn tabR tabL"));
+ 
+-&show_keymap("Bookmark operation",
++&show_keymap('Bookmark Management',
+ 	     split(" ", "ldBmark adBmark"));
+ 
+-&show_keymap("Search",
++&show_keymap('Searches',
+ 	     split(" ", "srchfor srchbak srchnxt srchprv isrchfor isrchbak"));
+ 
+-&show_keymap("Dictionary look-up",
++&show_keymap('Dictionary Lookup',
+ 	     split(" ", "dictword dictwordat"));
+ 
+-&show_keymap("Mark operation",
++&show_keymap('Mark Operations',
+ 	     split(" ", "_mark nextMk prevMk reMark"));
+ 
+-&show_keymap("Miscellany",
++&show_keymap('Miscellaneous',
+ 	     split(" ", "mainMn ldhelp ldOpt dispVer cooLst ldHist ldDL
+ 		docCSet defCSet
+ 		msgs msToggle wrapToggle execCmd setAlarm setOpt setEnv defKey
+ 		reinit execsh susp qquitfm quitfm"));
+ 
+-&show_keymap_data("User defined keymaps");
++&show_keymap_data('User-defined key bindings');
+ 
+ print "<BR>\n<HR WIDTH=80%>\n";
+ 
+-&show_keymap("Buffer selection mode",
++&show_keymap('Buffer and Tab Selection Mode',
+ 	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
  
  print "<BR>\n<HR WIDTH=80%>\n";
  
 -&show_keymap("Line-edit mode",
-+&show_keymap("Line-editing mode",
++&show_keymap('Input Line Editing Mode',
  	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
  		lineedit_delete lineedit_kill_after lineedit_kill_before
  		lineedit_top lineedit_bottom lineedit_prev lineedit_next
@@ -20890,7 +21871,7 @@ index b2fca8f..2c3f4d5 100644
  print "<BR>\n<HR WIDTH=80%>\n";
  
 -&show_keymap("Popup menu",
-+&show_keymap("Pop up menu",
++&show_keymap('Popup Menu Mode',
  	     split(" ", "menu_select menu_close menu_cancel menu_down menu_up
  		menu_line_up menu_line_down menu_top menu_last menu_next
  		menu_prev menu_search_fore menu_search_back menu_search_next

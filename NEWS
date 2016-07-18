@@ -26,6 +26,7 @@ w3m X.X.X - YYYY-MM-DD
  - accept single quoted meta refresh URL
  - assume "text" if a form input type is unknown
  - accept cookies by default
+ - set default_url to 1 by default
  - set argv_is_url to 1 by default
  - set alt_entity to 0 by default
  - fix build problems with Boehm GC 7.2, imlib2 1.4.6 and glibc 2.14

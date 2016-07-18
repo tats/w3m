@@ -1,3 +1,9 @@
+2016-07-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
+	* fm.h: Set default_url to 1 by default.
+
 2016-06-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
@@ -7,7 +13,7 @@
 
 	* doc-de/README.func, scripts/w3mhelp-funcdesc.de.pl.in:
 	Update German help messages.
-	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682#47
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=765682#47
 
 2016-06-19  Tatsuya Kinoshita  <tats@debian.org>
 

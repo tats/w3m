@@ -9088,7 +9088,7 @@ _ACEOF
  ymdver=`sed -e 's/ .*//;s/-//g;q' $srcdir/ChangeLog`
  sed -e 's/define CURRENT_VERSION "\(.*\)YYYYMMDD/define CURRENT_VERSION "\1'$ymdver'/;s/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`
-ac_config_files="$ac_config_files Makefile posubst po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
+ac_config_files="$ac_config_files Makefile posubst po/Makefile.in scripts/Makefile scripts/dirlist.cgi scripts/w3mhelp.cgi scripts/w3mmail.cgi scripts/xface2xpm scripts/multipart/Makefile scripts/multipart/multipart.cgi scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 scripts/w3mman/w3mman.de.1 scripts/w3mman/w3mman2html.cgi libwc/Makefile w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile w3mhelp-w3m_en.html w3mhelp-w3m_ja.html w3mhelp-lynx_en.html w3mhelp-lynx_ja.html"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -9812,6 +9812,7 @@ do
     "scripts/w3mman/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/w3mman/Makefile" ;;
     "scripts/w3mman/w3mman") CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman" ;;
     "scripts/w3mman/w3mman.1") CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman.1" ;;
+    "scripts/w3mman/w3mman.de.1") CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman.de.1" ;;
     "scripts/w3mman/w3mman2html.cgi") CONFIG_FILES="$CONFIG_FILES scripts/w3mman/w3mman2html.cgi" ;;
     "libwc/Makefile") CONFIG_FILES="$CONFIG_FILES libwc/Makefile" ;;
     "w3mimg/Makefile") CONFIG_FILES="$CONFIG_FILES w3mimg/Makefile" ;;

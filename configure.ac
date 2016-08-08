@@ -181,7 +181,8 @@ scripts/Makefile scripts/dirlist.cgi \
 scripts/w3mhelp.cgi \
 scripts/w3mmail.cgi scripts/xface2xpm \
 scripts/multipart/Makefile scripts/multipart/multipart.cgi \
-scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 \
+scripts/w3mman/Makefile scripts/w3mman/w3mman \
+scripts/w3mman/w3mman.1 scripts/w3mman/w3mman.de.1 \
 scripts/w3mman/w3mman2html.cgi \
 libwc/Makefile \
 w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile \

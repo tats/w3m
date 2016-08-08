@@ -111,6 +111,7 @@ IMGDISPLAY=w3mimgdisplay$(EXT)
 MAN1_TARGET=$(PACKAGE).1
 MAN1=$(top_srcdir)/doc/w3m.1
 MAN1_JA=$(top_srcdir)/doc-jp/w3m.1
+MAN1_DE=$(top_srcdir)/doc-de/w3m.1
 
 LIB_TARGETS=$(BOOKMARKER) $(HELPER)
 AUXBIN_TARGETS=@AUXBIN_TARGETS@
@@ -220,10 +221,12 @@ install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(mandir)/man1
 	-$(MKDIR) $(DESTDIR)$(mandir)/ja/man1
+	-$(MKDIR) $(DESTDIR)$(mandir)/de/man1
 	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
 	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/$(HELP_TARGET)
 	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(mandir)/man1/$(MAN1_TARGET)
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(mandir)/ja/man1/$(MAN1_TARGET)
+	$(INSTALL_DATA) $(MAN1_DE) $(DESTDIR)$(mandir)/de/man1/$(MAN1_TARGET)
 	targets="$(AUXBIN_TARGETS)"; for file in $$targets; \
 	do \
 		case $$file in \
@@ -280,6 +283,7 @@ uninstall:
 	-$(RM) -f $(HELP_DIR)/$(HELP_TARGET)
 	-$(RM) -f $(mandir)/man1/$(MAN1_TARGET)
 	-$(RM) -f $(mandir)/ja/man1/$(MAN1_TARGET)
+	-$(RM) -f $(mandir)/de/man1/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \

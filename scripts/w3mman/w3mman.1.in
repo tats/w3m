@@ -1,4 +1,4 @@
-.TH W3MMAN 1 "Nov 23, 2014"
+.TH W3MMAN 1 "2016-07-13"
 .\" Please adjust this date whenever revising the manpage.
 .\"
 .\" Some roff macros, for reference:
@@ -14,33 +14,48 @@
 .SH NAME
 w3mman \- an interface to the on-line reference manuals via w3m(1)
 .SH SYNOPSIS
+.\" mh 2016-07-04: "page" is an optional argument.
+.\" Started without it, w3mman displays a form that allows selection
+.\" of a manual page according to section, name and keyword.
+.\" Therefore square brackets introduced
 .B w3mman
-.RI "[\-M " path ] " " [ section ] " page"
+[
+.BI \-M " path"
+] [
+.I section
+] [
+.I page
+]
 .br
 .B w3mman
-.RI "[\-M " path "] \-k " keyword
+[
+.BI \-M " path"
+]
+.BI \-k " keyword"
 .br
 .B w3mman
-.RI \-l " file
+.BI \-l " file"
+.br
 .SH DESCRIPTION
+.\" mh 2016-07-04 text edited. This section shall deliver
+.\" more information than section NAME 
 .B w3mman
-is a pager for manual pages, using
-.BR w3m (1).
+is a Perl script that uses 
+.BR w3m (1)
+to serve as a pager for on-line reference manuals.
 .SH OPTIONS
 A summary of options is included below.
 .TP
 .BI \-M " path"
-Specify 
+Specify  
 .I path
-as MANPATH.
+as alternative MANPATH to use.
 .TP
 .BI \-k " keyword"
-Specify 
-.I keyword.
+Specify \fIkeyword\fP.
 .TP
 .BI \-l " file"
-Specify a  
-.I file.
+Specify a \fIfile\fP.
 .SH ENVIRONMENT
 Two variables are available for debugging.
 .TP

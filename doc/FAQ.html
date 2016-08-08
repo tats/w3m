@@ -1,7 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
  <head>
-  <meta http-equiv=content-type content="text/html;charset=US-ASCII">
+   <style>
+      span.mono {
+        font-family:mono;
+      }
+    </style>
+   <meta http-equiv=content-type content="text/html;charset=US-ASCII">
   <title>W3M FAQ</title>
  </head>
  <body>
@@ -9,8 +14,7 @@
    Frequently Asked Questions and Answers about w3m
   </h1>
   <p align="right">
-   Akinori Ito<br>
-   aito@fw.ipsj.or.jp<br>
+   Akinori Ito  &lt;aito@fw.ipsj.or.jp&gt;<br>
    Corrected by Tom Berger &lt;tom.be@gmx.net&gt;
   </p>
   <h2 id="index">
@@ -101,7 +105,7 @@
      </li>
      <li>
       <b>
-       How do I move from anchor to anchor?
+       How do I move between hyperlinks?
       </b>
      </li>
      <li>
@@ -111,7 +115,7 @@
      </li>
      <li>
       <b>
-       How do I change the color of anchor/image/form links?
+        How do I change the colors for hyperlinks, images and form fields?
       </b>
      </li>
      <li>
@@ -159,11 +163,14 @@
        How do I specify a proxy server?
       </b>
      </li>
+<!-- deleted, see mail dated Mon, 04 Apr 2016 20:50:27 +0900 (JST)
+from Tatsuya Kinoshita <tats@debian.org>
      <li>
       <b>
        w3m freezes when I invoke an external browser.
       </b>
      </li>
+-->
      <li>
       <b>
        How do I change the default image viewer?
@@ -175,9 +182,9 @@
       </b>
      </li>
      <li>
-      <b>
-       w3m appends a URL to the former one even when I clear the line
-       with Ctrl-u. What should I do?
+       <b>
+	 w3m appends a URL to the former one even when I clear the line
+     with <span class="mono">CTRL-u</span>. What should I do?
       </b>
      </li>
     </ul>
@@ -356,25 +363,25 @@
    <dd>
     <p>
      w3m is a <b>pager</b>. Therefore it just quits when invoked
-     without any arguments. Possible arguments are:
+     without any arguments. It keeps running 
     </p>
-    <ol>
+    <ul>
      <li>
-      A filename or URL
+      with a filename or URL as argument
      </li>
      <li>
-      Pipe from standard input
+      with data piped from standard input
      </li>
      <li>
-      The -B option (show bookmark file)
+      when invoked with option -B to show the bookmark file
      </li>
      <li>
-      The -v option (visual startup)
+      when invoked with option -v to welcome users with a built-in page
      </li>
      <li>
-      A specified HTTP_HOME or WWW_HOME variable
+      with specified HTTP_HOME or WWW_HOME variable
      </li>
-    </ol>
+    </ul>
    </dd>
    <dt>
     <b>
@@ -389,23 +396,23 @@
     </p>
     <p>
      You may either change the background color of your terminal
-     (e.g. with the -bg option in a xterm) or take these steps:
+     (e.g. with the -bg option in a xterm) or take these steps
     </p>
-    <ul>
+    <ol>
      <li>
-      invoke w3m with <q>w3m -M</q> (for monochrome),
+      invoke monochrome mode of w3m with <span class="mono">w3m -M</span>
      </li>
      <li>
-      type <q>o</q> to get to the options screen
+      type <q>o</q> to get to the options setting panel
      </li>
      <li>
-      Mark <q>Display with color</q> as <q>YES</q> and choose an
-      arbitrary color.
+      mark <q>Display with color</q> as <q>YES</q> and choose an
+      arbitrary color
      </li>
      <li>
-      Click on [OK].
+      click on [OK].
      </li>
-    </ul>
+    </ol>
    </dd>
    <dt>
     <b>
@@ -417,15 +424,15 @@
      Yes. When you run <q>./configure</q>, answer the question
     </p>
 <pre>
-Let's do some configurations. Choose config option among the list.
+  Let's do some configurations. Choose config option among the list.
 
-1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
-2 - Little model  (color, menu, no mouse, no cookie, no SSL)
-3 - Mouse model   (color, menu, mouse, no cookie, no SSL)
-4 - Cookie model  (color, menu, mouse, cookie, no SSL)
-5 - Monster model (with everything; you need openSSL library)
-6 - Customize
-Which?
+  1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
+  2 - Little model  (color, menu, no mouse, no cookie, no SSL)
+  3 - Mouse model   (color, menu, mouse, no cookie, no SSL)
+  4 - Cookie model  (color, menu, mouse, cookie, no SSL)
+  5 - Monster model (with everything; you need openSSL library)
+  6 - Customize
+  Which?
 </pre>
     <p>
      with 2, 3, 4, or 5.
@@ -440,7 +447,7 @@ Which?
     <p>
      Yes. You may either
     </p>
-    <ol>
+    <ul>
      <li>
       Answer the above-mentioned <q>configure</q> question with 1,
       or
@@ -449,10 +456,10 @@ Which?
       Invoke w3m with the -M option, or
      </li>
      <li>
-      Type <q>o</q> within w3m to enter the options screen and turn
+      Type <q>o</q> within w3m to enter the options setting panel and turn
       off color display mode.
      </li>
-    </ol>
+    </ul>
    </dd>
    <dt>
     <b>
@@ -462,24 +469,32 @@ Which?
    <dd>
     <p>
      You can shift the display by moving the cursor to the edge of
-     the screen. You may also use the <q>&gt;</q>/<q>&lt;</q> or
-     <q>.</q>/<q>,</q> keys.
+     the screen. You may also use the following commands
     </p>
+     <ul>
+       <li>SHIFT_LEFT and SHIFT_RIGHT, bound to the keys <span class="mono">&gt;</span> and <span class="mono">&lt;</span></li>
+       <li>SHIFT_LEFT1 and SHIFT_RIGHT1, bound to the keys <span class="mono">.</span> and <span class="mono">,</span></li>
+     </ul>
     <p>
      Another idea would be adjusting the xterm with the -geometry
-     option (e.g. something like <q>xterm -geometry 110x45 -bg white
-     -name w3m -e w3m -B</q>).
+     option e.g. something like
     </p>
+     <pre>  xterm -geometry 110x45 -bg white -name w3m -e w3m -B</pre>
    </dd>
    <dt>
     <b>
-     How do I move from anchor to anchor?
+     How do I move between hyperlinks?
     </b>
    </dt>
    <dd>
     <p>
-     You can move to the next anchor using TAB. ESC TAB moves the
-     cursor to the previous anchor.
+
+      You can move to the next hyperlink
+     using <span class="mono">TAB</span>. <span class="mono">ESC
+     TAB</span> moves the cursor to the previous hyperlink. (see
+     Section <a href="MANUAL.html#Functions" target="_blank">
+     Functions and Key bindings</a> of w3m's manual)
+
     </p>
    </dd>
    <dt>
@@ -489,19 +504,19 @@ Which?
    </dt>
    <dd>
     <p>
-     w3m doesn't support the HTML COLOR="..." attribute. It wouldn't
+     w3m doesn't support the attribute COLOR="..." of HTML. It wouldn't
      be impossible to implement this, but I think it would make
      documents more difficult to read.
     </p>
    </dd>
    <dt>
     <b>
-     How do I change the color of anchor/image/form links?
+     How do I change the colors for hyperlinks, images and form fields?
     </b>
    </dt>
    <dd>
     <p>
-     Type <q>o</q> within w3m to get the <q>options</q> screen. You
+     Type <q>o</q> within w3m to get the options panel. You
      can change these settings there.
     </p>
    </dd>
@@ -512,13 +527,13 @@ Which?
    </dt>
     <dd>
      <p>
-     Go to the <q>options</q> screen using the <q>o</q> key. Any
-     entry in the <q>Editor</q> field will override the environment
+     Go to the options setting panel using the <q>o</q> key. Any
+     entry in the <q>Editor</q> field overrides the environment
      variable.
     </p>
     <p>
      If you want to use the editor specified by EDITOR, blank the
-     field and press [OK].
+     field and save the settings using the button [OK].
      </p>
    </dd>
    <dt>
@@ -528,7 +543,7 @@ Which?
    </dt>
    <dd>
     <p>
-     Clear input text using CTRL-u and hit RETURN.
+     Clear input text using <span class="mono">CTRL-u</span> and hit <span class="mono">RETURN</span>.
     </p>
    </dd>
   </dl>
@@ -551,21 +566,25 @@ Which?
    <dd>
     <p>
      Form input fields are displayed in red (or reverse). Move the
-     cursor to them and hit RETURN. Then,
+     cursor to them. Then, if it is
     </p>
     <ul>
      <li>
-      if it is a text input field, put in your text on the bottom
-      line,
+       a text input field, hit <span class="mono">RETURN</span>
+       put in your text on the bottom line. Press
+       <span class="mono">RETURN</span> again
      </li>
      <li>
-      if it is a radiobutton or checkbox, that item is selected,
+       a radiobutton or checkbox, pressing
+       <span class="mono">RETURN</span> changes or toggles the selection
      </li>
      <li>
-      if it is a textarea, an editor is spawned,
+       a textarea, pressing
+       <span class="mono">RETURN</span> spawns an editor 
      </li>
      <li>
-      if it is <q>submit</q> or <q>reset</q>, well, just do it.
+       a <q>submit</q> or <q>reset</q> field,
+       the respective action is performed.
      </li>
     </ul>
    </dd>
@@ -604,8 +623,12 @@ Which?
    </dt>
    <dd>
     <p>
-     Use <q>a</q> (or <q>d</q> with Lynx-like keybindings) or ESC RET.
-     If you want to download an inline image, use ESC <q>I</q>.
+      Use <q>a</q> (or <q>d</q> with Lynx-like keybindings) or
+      <span class="mono">ESC RET</span>.
+      If you want to download an inline image, use
+      <span class="mono">ESC I</span>. (see
+     Section <a href="MANUAL.html#Functions" target="_blank">
+     Functions and Key bindings</a> of w3m's manual)
     </p>
    </dd>
    <dt>
@@ -616,13 +639,13 @@ Which?
    <dd>
     <p>
      Set the environment variables HTTP_PROXY, HTTPS_PROXY, GOPHER_PROXY
-     and FTP_PROXY, or use the option setting panel (<q>o</q> key). For
+     and FTP_PROXY, or use the options setting panel (<q>o</q> key). For
      example, if you want to use port 8000 of proxy.example.org, specify
     </p>
-<pre>
-    http://proxy.example.org:8000/
-</pre>
+    <pre>  http://proxy.example.org:8000/</pre>
    </dd>
+<!-- deleted, see mail dated Mon, 04 Apr 2016 20:50:27 +0900 (JST)
+from Tatsuya Kinoshita <tats@debian.org>
    <dt>
     <b>
      w3m freezes when I invoke an external browser.
@@ -632,14 +655,13 @@ Which?
     <p>
      Enter w3m's option screen using the <q>o</q> key and specify
     </p>
-<pre>
-    firefox %s &
-</pre>
+    <pre>  firefox %s &</pre>
     <p>
      (if you are using Firefox). Note that %s is replaced with the URL
      when invoking.
     </p>
    </dd>
+   -->
    <dt>
     <b>
      How do I change the default image viewer?
@@ -649,18 +671,18 @@ Which?
      <p>
       By default w3m uses xv to view images. If you want to change it
       into, let's say, <q>display</q>, add the following line to
-      ~/.w3m/mailcap or /etc/mailcap.
+      ~/.w3m/mailcap or /etc/mailcap:
      </p>
 <pre>
-image/*; display %s
+  image/*; display %s
 </pre>
      <p>
       You can specify external viewers of other file types as well:
      </p>
 <pre>
-image/*;                     display %s
-application/postscript;      ghostview %s
-application/x-dvi;           xdvi %s
+  image/*;                     display %s
+  application/postscript;      ghostview %s
+  application/x-dvi;           xdvi %s
 </pre>
     </dd>
     <dt>
@@ -670,13 +692,13 @@ application/x-dvi;           xdvi %s
    </dt>
    <dd>
     <p>
-     Type SHIFT-u
+     Type <span class="mono">U</span>
     </p>
    </dd>
    <dt>
     <b>
      w3m appends a URL to the former one even when I clear the line
-     with CTRL-u. What should I do?
+     with <span class="mono">CTRL-u</span>. What should I do?
     </b>
    </dt>
    <dd>
@@ -705,12 +727,18 @@ application/x-dvi;           xdvi %s
     <p>
      It is ~/.w3m/config.
     </p>
+
     <p>
-     With this file, you can adjust w3m's behavior by changing the
-     values of options whose effects are described in the option
+     With this file, each user can adjust w3m's behavior by changing
+     the values of options whose effects are described in the options
      setting panel. Each line contains one option setting, consisting
      of an option name and its value with a space as a separator.
     </p>
+    
+    <p>Without a user-specific configuration file, w3m honours
+    the system wide configuration file /etc/w3m/config.
+    </p>
+    
    </dd>
    <dt>
     <b>

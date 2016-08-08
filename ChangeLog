@@ -1,3 +1,8 @@
+2016-08-09  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent segfault with malformed input type.
+	Bug-Debian: https://github.com/tats/w3m/issues/7
+
 2016-08-08  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Makefile.in, configure, configure.ac, scripts/w3mman/Makefile.in:

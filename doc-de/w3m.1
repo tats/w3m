@@ -1,0 +1,334 @@
+.nr N -1
+.nr D 5
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.TH W3M 1 2016\-08\-06 "w3m 0.5.3" 
+.SH NAME
+w3m \- Ein auf Texte ausgerichtetes Programme zur Anzeige von Dateien und
+Datenströmen sowie zum Browsen im Internet
+.SH SYNOPSIS
+w3m [OPTION]... [ \fIDatei\fP | \fIURL\fP ]...
+.SH BESCHREIBUNG
+.\" This defines appropriate quote strings for nroff and troff
+.ds lq "
+.ds rq "
+.if  t .ds lq ``
+.if  t .ds rq ''
+.if  \nN==0 .nr N 10
+.\" Just in case these number registers aren't set yet...
+.if  \nD==0 .nr D 5
+
+\fIw3m\fP ist ein textorientierter Browser, der lokale oder im Internet
+liegende Seiten sowie andere Dokumente anzeigen kann. Er verarbeitet
+HTML\-Tabellen und Frames, nicht jedoch JavaScript und Cascading Style
+Sheets. \fIw3m\fP kann auch als Textbetrachter (Pager) dienen. Entsprechende
+Dateien werden beim Aufruf als Argument angegeben oder an der
+Standardeingabe als Datenstrom übernommen. Mit \fIw3m\fP kann sich der Benutzer
+überdies durch Verzeichnisbäume bewegen.
+
+\fIw3m\fP arbeitet mit Reitern (Registerkarten, Tabs) und Puffern, was einen
+einfachen Wechsel zwischen geladenen Inhalten erlaubt. Wenn die Erweiterung
+w3m\-img installiert ist, zeigt \fIw3m\fP auch in die Seiten eingebundene
+Grafiken an. Wann immer die Umsetzung von HTML\-Inhalten durch \fIw3m\fP Ihren
+Ansprüchen nicht genügt, reicht ein einzelnes Kommando, um die Ziel\-URL
+einem grafischen Browser zu übergeben.
+
+Um nach Start des Programms Hilfe zu den Optionen zu erhalten, drücken Sie
+\(lqH\(rq.
+
+.SH ARGUMENTE
+
+Wenn das Programm mit einem oder mehreren Argumenten aufgerufen wird,
+behandelt \fIw3m\fP diese Ziele je nach Typ des Inhalts. Bei Daten aus dem
+Internet verwertet \fIw3m\fP die Angabe in den HTTP\-Kopfzeilen. Bei relativen
+oder absoluten Pfaden in Dateisystemen richtet sich \fIw3m\fP nach dem
+Dateinamen.
+
+Ohne Argument aufgerufen, erwartet \fIw3m\fP unformatierte Daten aus der
+Standardeingabe, es sei denn, der Benutzer hat einen anderen MIME\-Typ
+angegeben.
+
+Sollte \fIw3m\fP weder ein Zielobjekt vorliegen noch ein Ausweichen vorgesehen
+sein (beispielsweise durch die Option \fB\-v\fP, siehe unten), gibt das Programm
+nur Benutzungshinweise aus.
+.SH OPTIONEN
+Vor Befehlszeilen\-Optionen steht das \(lq\-\(rq Zeichen einzeln, ihnen kann
+ein Argument folgen.
+.SS "Allgemeine Optionen"
+.TP 
+\fB\-B\fP
+starte mit einer Ansicht aller Lesezeichen (wenn kein anderes Zielobjekt
+angegeben ist)
+.TP 
+\fB\-M\fP
+monochrome Anzeige
+.TP 
+\fB\-no\-mouse\fP
+Mausfunktion aus
+.TP 
+\fB\-num\fP
+zeige Zeilennummern an
+.TP 
+\fB\-N\fP
+verteile die übergebenen Argumente unter Reitern. Standardmäßig würde ein
+Stapel von Puffern benutzt
+.TP  
+\fB\-ppc \fP\fInum\fP
+Weite von \fInum\fP Bildpunkten pro Zeichen, einstellbar von 4.0 bis 32.0,
+standardmäßig 8.0. Größere Werte machen Tabellen enger. (Implementierung
+unklar)
+.TP 
+\fB\-ppl \fP\fInum\fP
+Höhe von \fInum\fP Bildpunkten pro Linie, einstellbar von 4.0 bis
+64.0. (Implementierung unklar)
+.TP 
+\fB\-title\fP, \fB\-title=TERM\fP
+verwende den Puffernamen auch als Titel des Terminalfensters. Soweit TERM
+eingegeben wurde, konfiguriert dieser Wert den Stil des Titels
+.TP 
+\fB\-v\fP
+begrüße den Benutzer mit einer eingebauten Seite (wenn kein anderes
+Zielobjekt angegeben ist)
+.TP 
+\fB\-W\fP
+wechsle zwischen umlaufendem und nicht umlaufendem Suchen
+.TP 
+\fB\-X\fP
+initialisiere nach Verlassen des Programms das Terminal nicht neu
+.TP 
+\fB+\fP\fIZahl\fP
+gehe zu Zeile \fIZahl\fP; wirkt nur, wenn \fIZahl\fP größer ist als die im
+Terminal verfügbare Zeilenzahl
+.SS Browser\-Optionen
+.TP 
+\fB\-cols \fP\fInum\fP
+bei für die Standardausgabe bestimmten Inhalten, nimm bei der Umsetzung von
+HTML eine Länge von \fInum\fP Zeichen pro Zeile
+.TP 
+\fB\-cookie\fP, \fB\-no\-cookie\fP
+verwende gespeicherte Cookies und akzeptiere neue. Oder tue weder das eine
+noch das andere
+.TP 
+\fB\-F\fP
+verarbeite Frames
+.TP 
+\fB\-graph\fP, \fB\-no\-graph\fP
+bei der Umsetzung von Tabellen und Frames grafische Zeichen verwenden oder
+nicht verwenden
+.TP 
+\fB\-header \fP\fIZeichenkette\fP
+füge \fIZeichenkette\fP der HTTP(S)\-Anfrage an. Diese muss der Kopfdaten\-Syntax
+\f(CWVariable: Wert\fP entsprechen
+.TP 
+\fB\-m\fP
+stelle eine Usenet\-Nachricht entsprechend \(lqContent\-type\(rq in den
+Kopfdaten dar
+.TP 
+\fB\-no\-proxy\fP
+verwende keinen Proxy
+.TP 
+\fB\-post \fP\fIDatei\fP
+verwende die Methode POST, um in \fIDatei\fP hinterlegte Daten
+hochzuladen. Hierbei wird die Syntax \f(CWvar1=wert1[&var2=wert2]…\fP erwartet
+.TP 
+\fB\-4\fP
+nur IPv4. Entspricht dns_order=4 in der Konfigurationsdatei
+.TP 
+\fB\-6\fP
+nur IPv6. Entspricht dns_order=6 in der Konfigurationsdatei
+.SS Textbetrachter\-Optionen
+.TP 
+\fB\-l \fP\fInum\fP
+Anzahl der Zeilen, die zwischengespeichert werden, wenn Text per
+Standardeingabe übergeben wurde. (Voreinstellung ist 10000)
+.TP 
+\fB\-r\fP
+verarbeite spezielle Escape\-Zeichen (beispielsweise ANSI\-Escape\-Zeichen oder
+nroff\-Rückwärtsschritte für fette und unterstrichene Zeichen) nicht, sondern
+zeige sie stattdessen mittels Caret\-Notation.
+.TP 
+\fB\-s\fP
+mehrere leere Zeilen werden bis auf eine gelöscht
+.TP 
+\fB\-t\fP \fInum\fP
+berücksichtige Tab\-Zeichen so, dass Spalten mit einer Weite von \fInum\fP
+Zeichen entstehen
+.SS "Datenart\- und Datenkodierungs\-Optionen"
+.TP 
+\fB\-I \fP\fIcharset\fP
+zu benutzende Zeichenkodierung für erhaltene Daten
+.TP 
+\fB\-O \fP\fIcharset\fP
+zu benutzende Zeichenkodierung für auszugebende Daten
+.TP 
+\fB\-T \fP\fITyp\fP
+zu benutzender MIME\-Typ für erhaltenen Daten
+.SS "Optionen zur Datenausgabe, mit sofortigem Verlassen des Programms"
+.TP 
+\fB\-dump\fP
+leite die verarbeitete Seite der Standardausgabe zu. Die Option gilt als
+gesetzt, wenn der Aufruf beinhaltet, dass die Ausgabe in eine Datei
+umgeleitet oder einem weiteren Programm übergeben wird.
+.TP 
+\fB\-dump_source\fP
+leite den Seitenquelltext der Standardausgabe zu
+.TP 
+\fB\-dump_head\fP
+leite die Antwort einer HEAD\-Anfrage für eine URL der Standardausgabe zu
+.TP 
+\fB\-dump_both\fP
+leite Antwort auf HEAD\-Anfrage und Seitenquelltext der Standardausgabe zu
+.TP 
+\fB\-dump_extra\fP
+leite Antwort auf HEAD\-Anfrage, Seitenquelltext und Extrainformation der
+Standardausgabe zu
+.TP 
+\fB\-help\fP
+zeige eine Zusammenfassung verfügbarer Funktionen und Befehlszeilen\-Optionen
+.TP 
+\fB\-show\-option\fP
+zeige alle zur Konfiguration verfügbaren Optionen
+.TP 
+\fB\-version\fP
+gibt die Version von \fIw3m\fP aus
+.SS "Optionen, die Standards für Einstellungen und Datenquellen außer Kraft setzen"
+.TP 
+\fB\-bookmark \fP\fIDatei\fP
+benutze anstelle der Standarddatei bookmark.html für Lesezeichen die Datei
+\fIDatei\fP
+.TP 
+\fB\-config \fP\fIDatei\fP
+benutze \fIDatei\fP anstelle der Standardkonfigurationsdatei
+.TP 
+\fB\-debug\fP
+BITTE NICHT BENUTZEN
+.TP 
+\fB\-o \fP\fIOption=Wert\fP
+arbeite mit einer Konfiguration, bei der die Einstellung \fIOption\fP mit
+\fIWert\fP belegt ist. Ohne \fIOption=Wert\fP gleichwertig mit \fB\-show\-option\fP
+.TP 
+\fB\-reqlog\fP
+Protokolliere Header der HTTP\-Kommunikation in Datei \f(CW~/.w3m/request.log\fP
+.SH BEISPIELE	
+.SS "Verwendung als Textbetrachter"
+.TP 
+zwei HTML\-Fragmente zusammengefügt anzeigen
+.EX
+$ cat header.html footer.html | w3m \-T text/html
+.EE
+.TP 
+zwei Dateien unter Reitern einander gegenüberstellen
+.EX
+$ w3m \-N config.old config
+.EE
+.SS "browser\-artige Verwendung"
+.TP 
+zeige Internet\-Inhalt in monochromem Terminal
+.EX
+$ w3m \-M http://w3m.sourceforge.net
+.EE
+.TP 
+zeige eingebettete Grafiken an
+.EX
+$ w3m \-o auto_image=TRUE http://w3m.sourceforge.net
+.EE
+.TP 
+zeige Inhalt aus dem Usenet
+.EX
+$ w3m \-m nntp://news.aioe.org/comp.os.linux.networking
+.EE
+.TP 
+mit der POST\-Methode Daten für eine URL hochladen 
+.EX
+$ w3m \-post \- http://example.com/form.php <<<'a=0&b=1'
+.EE
+.SS "filterartige Verwendung"
+.TP 
+konvertiere eine HTML\-Datei in reinen Text von bestimmter Zeilenlänge
+.EX
+$ w3m \-cols 40 foo.html > foo.txt
+.EE
+.TP 
+übergib den Bestand an Lesezeichen mit zugehörigen Links als reinen Text einer Datei.
+.EX
+$ w3m \-B \-o display_link_number=1 > out.txt
+.EE
+.TP 
+Konvertierung in ein anderes Dateiformat und eine andere Zeichenkodierung
+.EX
+$ w3m \-T text/html \-I EUC\-JP \-O UTF\-8 < foo.html > foo.txt
+.EE
+.SS "starte ohne Eingabedaten"
+.TP 
+begrüße den Benutzer mit einer eingebauten Seite
+.EX
+$ w3m \-v
+.EE
+.\".SH Errors
+.SH UMGEBUNGSVARIABLEN
+\fIw3m\fP weicht auf den Wert der Umgebungsvariablen WWW_HOME aus, wenn das
+Programm ohne Zielobjekt aufgerufen wurde.
+.SH DATEIEN
+.TP 
+\f(CW~/.w3m/bookmark.html\fP
+voreingestellte Datei für Lesezeichen
+.TP 
+\f(CW~/.w3m/config\fP
+benutzerdefinierte Konfigurationsdatei; gegenüber \f(CW/etc/w3m/config\fP
+vorrangig
+.TP 
+\f(CW~/.w3m/cookie\fP
+Ablageort für Cookies; wird beim Verlassen des Programms geschrieben und
+beim Aufruf gelesen
+.TP 
+\f(CW~/.w3m/history\fP
+Chronik besuchter Seiten und URLs
+.TP 
+\f(CW~/.w3m/keymap\fP
+benutzerdefinierte Tastaturbelegung, setzt standardmäßige Belegung außer
+Kraft
+.TP 
+\f(CW~/.w3m/mailcap\fP
+Konfigurationsdatei für Programme zur externen Anzeige
+.TP 
+\f(CW~/.w3m/menu\fP
+benutzerdefiniertes Menü; vorrangig gegenüber Standardmenü
+.TP 
+\f(CW~/.w3m/mime.types\fP
+Datei mit MIME\-Typen
+.TP 
+\f(CW~/.w3m/mouse\fP
+benutzerdefinierte Mauseinstellungen
+.TP 
+\f(CW~/.w3m/passwd\fP
+Datei mit Nutzerkonto\-Passwort\-Liste
+.TP 
+\f(CW~/.w3m/pre_form\fP
+.\" .TP
+.\" .I $~/.w3m/urimethodmap
+.\" ???
+enthält vordefinierte Werte für wiederkehrende HTML\-Formulare
+.SH "SIEHE AUCH"
+README und Beispieldateien finden Sie im Dokumentationsverzeichnis Ihrer
+\fIw3m\fP\-Installation. Aktuelle Informationen zu \fIw3m\fP finden Sie auf der
+Projektseite
+.UR http://w3m.sourceforge.net
+unter
+.UE
+.SH DANKSAGUNGEN
+In \fIw3m\fP ist Programmcode verschiedener Quellen eingeflossen. Benutzer
+haben mit Korrekturen (Patch\-Dateien) und Vorschlägen zur Verbesserung des
+Programms beigetragen.
+.SH AUTOR
+.UR aito@fw.ipsj.or.jp
+Akinori ITO
+.UE
+Die deutsche Übersetzung wurde 2016 von
+.UR markus.hiereth@freenet.de
+Markus Hiereth
+.UE
+erstellt.
+

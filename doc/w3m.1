@@ -1,10 +1,10 @@
 .nr N -1
 .nr D 5
-.TH W3M 1 "2016-04-02" "w3m 0.5.3"
+.TH W3M 1 "2016-08-06" "w3m 0.5.3"
 .SH NAME
 w3m \- a text based web browser and pager
 .SH SYNOPSIS
-w3m [OPTION]...  [ \fIfile\fP | \fIURL\fP ]...
+w3m [OPTION]... [ \fIfile\fP | \fIURL\fP ]...
 .SH DESCRIPTION
 .\" This defines appropriate quote strings for nroff and troff
 .ds lq \&"
@@ -45,7 +45,7 @@ option \fB\-v\fP below), \fIw3m\fP will exit with usage information.
 .SH OPTIONS
 Command line options are introduced with a single \(lq\-\(rq character and
 may take an argument.
-.SS General options:
+.SS General options
 .TP
 \fB\-B\fP
 with no other target defined, use the bookmark page for startup
@@ -78,14 +78,14 @@ this sets the title configuration style accordingly
 with no other target defined, welcome users with a built-in page
 .TP
 \fB\-W\fP
-toggle wrapping in searches
+toggle wrapping mode in searches
 .TP
 \fB\-X\fP
 do not initialize/deinitialize the terminal
 .TP
 \fB+\fInum\fR
 go to line \fInum\fR; only effective for \fInum\fR larger than the number of lines in the terminal
-.SS Browser options:
+.SS Browser options
 .TP
 \fB\-cols \fInum\fR
 with stdout as destination; HTML is rendered to lines of \fInum\fR characters
@@ -100,7 +100,7 @@ render frames
 use or do not use graphic characters for drawing HTML table and frame borders
 .TP
 \fB\-header \fIstring\fR
-append \fIstring\fR to the HTTP(S) request. Expected to match the header syntax \f(CW Variable: Value\fP
+append \fIstring\fR to the HTTP(S) request. Expected to match the header syntax \f(CWVariable: Value\fP
 .TP
 \fB\-m\fP
 Render the body of Usenet messages according to the header \(lqContent-type\(rq 
@@ -117,7 +117,7 @@ IPv4 only. Corresponds to dns_order=4 in configuration files
 .TP
 \fB\-6\fP
 IPv6 only. Corresponds to dns_order=6 in configuration files
-.SS Text pager options:
+.SS Text pager options
 .TP
 \fB\-l \fInum\fR
 number of lines preserved internally when receiving plain text from
@@ -133,7 +133,7 @@ squeeze multiple blank lines into one
 .TP
 \fB\-t\fP \fInum\fP
 set tab width to \fInum\fR columns. No effect on stdout
-.SS Data type/encoding options:
+.SS Data type/encoding options
 .TP
 \fB\-I \fIcharset\fR
 user defined character encoding of input data
@@ -143,7 +143,7 @@ user defined character encoding of output data
 .TP
 \fB\-T \fItype\fR
 explicit characterization of input data by MIME type
-.SS Options for data output, followed by immediate exit:
+.SS Options for data output, followed by immediate exit
 .TP
 \fB\-dump\fP
 dump rendered page into stdout. Set implicitly when output is directed
@@ -165,23 +165,23 @@ dump HEAD, source code, and extra information for a URL into stdout
 show a summary of compiled-in features and command line options
 .TP
 \fB\-show-option\fP
-show all available config options
+show all available configuration options
 .TP
 \fB\-version\fP
 show the version of \fIw3m\fP
-.SS Options for overriding default settings and resources:
+.SS Options for overriding default settings and resources
 .TP
 \fB\-bookmark \fIfile\fR
 use \fIfile\fR instead of the default bookmark.html file
 .TP
 \fB\-config \fIfile\fR
-use \fIfile\fR instead of the default config file
+use \fIfile\fR instead of the default configuration file
 .TP
 \fB\-debug\fP
 DO NOT USE
 .TP
 \fB\-o \fIoption=value\fR
-modify one configuration item with an explicitly given value; without \fIoption=value\fR, equivalent to -show-option
+modify one configuration item with an explicitly given value; without \fIoption=value\fR, equivalent to \fB-show-option\fR
 .TP
 \fB\-reqlog\fP
 log headers of HTTP communication in file \f(CW~/.w3m/request.log\fP
@@ -209,7 +209,7 @@ Display embedded graphics
 $ w3m -o auto_image=TRUE http://w3m.sourceforge.net
 .EE
 .TP
-Display content from Usenet  
+Display content from Usenet
 .EX
 $ w3m -m nntp://news.aioe.org/comp.os.linux.networking
 .EE

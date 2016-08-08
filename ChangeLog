@@ -1,3 +1,25 @@
+2016-08-08  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Makefile.in, configure, configure.ac, scripts/w3mman/Makefile.in:
+	Install German manpages.
+
+2016-08-08  Markus Hiereth  <post@hiereth.de>
+
+	* doc-de/MANUAL.html, doc/MANUAL.html:
+	Update MANUAL.html in English and German.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#90
+
+	* doc-de/FAQ.html, doc/FAQ.html: Update FAQ.html in English and German.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#85
+
+	* scripts/w3mman/w3mman.1.in, scripts/w3mman/w3mman.de.1.in:
+	Update manpage for w3mman in English and German.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#80
+
+	* doc-de/w3m.1, doc/w3m.1:
+	Update manpage for w3m in English and German.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772341#75
+
 2016-07-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

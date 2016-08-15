@@ -1,3 +1,9 @@
+2016-08-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c: Prevent segfault for formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/9
+	Bug-Debian: https://github.com/tats/w3m/issues/10
+
 2016-08-09  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent segfault with malformed input type.

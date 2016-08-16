@@ -4998,9 +4998,18 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	if (parsedtag_exists(tag, ATTR_HBORDER))
 	    w = BORDER_NOWIN;
+#define MAX_CELLSPACING 1000
+#define MAX_CELLPADDING 1000
+#define MAX_VSPACE 1000
 	parsedtag_get_value(tag, ATTR_CELLSPACING, &x);
 	parsedtag_get_value(tag, ATTR_CELLPADDING, &y);
 	parsedtag_get_value(tag, ATTR_VSPACE, &z);
+	if (x > MAX_CELLSPACING)
+	    x = MAX_CELLSPACING;
+	if (y > MAX_CELLPADDING)
+	    y = MAX_CELLPADDING;
+	if (z > MAX_VSPACE)
+	    z = MAX_VSPACE;
 #ifdef ID_EXT
 	parsedtag_get_value(tag, ATTR_ID, &id);
 #endif				/* ID_EXT */

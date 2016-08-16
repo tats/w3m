@@ -1,3 +1,8 @@
+2016-08-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Truncate large values of table attributes.
+	Bug-Debian: https://github.com/tats/w3m/issues/11
+
 2016-08-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c: Prevent segfault for formUpdateBuffer.

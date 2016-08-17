@@ -10,8 +10,10 @@
 #include "regex.h"
 
 extern Str *textarea_str;
+extern int max_textarea;
 #ifdef MENU_SELECT
 extern FormSelectOption *select_option;
+extern int max_select;
 #include "menu.h"
 #endif				/* MENU_SELECT */
 
@@ -122,10 +124,12 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
     parsedtag_get_value(tag, ATTR_SIZE, &item->size);
     parsedtag_get_value(tag, ATTR_MAXLENGTH, &item->maxlength);
     item->readonly = parsedtag_exists(tag, ATTR_READONLY);
-    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i))
+    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i)
+	&& i >= 0 && i < max_textarea)
 	item->value = item->init_value = textarea_str[i];
 #ifdef MENU_SELECT
-    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i))
+    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i)
+	&& i >= 0 && i < max_select)
 	item->select_option = select_option[i].first;
 #endif				/* MENU_SELECT */
     if (parsedtag_get_value(tag, ATTR_ROWS, &p))

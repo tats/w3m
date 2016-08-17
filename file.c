@@ -69,7 +69,7 @@ static int cur_status;
 #ifdef MENU_SELECT
 /* menu based <select>  */
 FormSelectOption *select_option;
-static int max_select = MAX_SELECT;
+int max_select = MAX_SELECT;
 static int n_select;
 static int cur_option_maxwidth;
 #endif				/* MENU_SELECT */
@@ -81,7 +81,7 @@ static int cur_textarea_rows;
 static int cur_textarea_readonly;
 static int n_textarea;
 static int ignore_nl_textarea;
-static int max_textarea = MAX_TEXTAREA;
+int max_textarea = MAX_TEXTAREA;
 
 static int http_response_code;
 
@@ -6014,7 +6014,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		case HTML_TEXTAREA_INT:
 		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
 					    &n_textarea)
-			&& n_textarea < max_textarea) {
+			&& n_textarea >= 0 && n_textarea < max_textarea) {
 			textarea_str[n_textarea] = Strnew();
 		    }
 		    else
@@ -6031,7 +6031,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 #ifdef MENU_SELECT
 		case HTML_SELECT_INT:
 		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
-			&& n_select < max_select) {
+			&& n_select >= 0 && n_select < max_select) {
 			select_option[n_select].first = NULL;
 			select_option[n_select].last = NULL;
 		    }

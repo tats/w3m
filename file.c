@@ -3773,6 +3773,17 @@ process_button(struct parsed_tag *tag)
     if (v == FORM_UNKNOWN)
        return NULL;
 
+    switch (v) {
+    case FORM_INPUT_SUBMIT:
+    case FORM_INPUT_BUTTON:
+    case FORM_INPUT_RESET:
+	break;
+    default:
+	p = "submit";
+	v = FORM_INPUT_SUBMIT;
+	break;
+    }
+
     if (!q) {
        switch (v) {
        case FORM_INPUT_SUBMIT:

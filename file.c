@@ -4172,7 +4172,7 @@ process_form_int(struct parsed_tag *tag, int fid)
 	forms = New_N(FormList *, forms_size);
 	form_stack = NewAtom_N(int, forms_size);
     }
-    else if (forms_size <= form_max) {
+    if (forms_size <= form_max) {
 	forms_size += form_max;
 	forms = New_Reuse(FormList *, forms, forms_size);
 	form_stack = New_Reuse(int, form_stack, forms_size);
@@ -6086,7 +6086,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	fclose(debug);
 #endif
     for (form_id = 1; form_id <= form_max; form_id++)
-	forms[form_id]->next = forms[form_id - 1];
+	if (forms[form_id])
+	    forms[form_id]->next = forms[form_id - 1];
     buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
     if (n_textarea)
 	addMultirowsForm(buf, buf->formitem);

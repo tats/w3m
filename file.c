@@ -3025,9 +3025,9 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	tmp = Sprintf("<INPUT_ALT hseq=\"%d\" fid=\"%d\" name=\"%s\" type=\"%s\" value=\"%s\">",
 		     obuf->input_alt.hseq,
 		     obuf->input_alt.fid,
-		     obuf->input_alt.name->ptr,
-		     obuf->input_alt.type->ptr,
-		     obuf->input_alt.value->ptr);
+		     obuf->input_alt.name ? obuf->input_alt.name->ptr : "",
+		     obuf->input_alt.type ? obuf->input_alt.type->ptr : "",
+		     obuf->input_alt.value ? obuf->input_alt.value->ptr : "");
 	push_tag(obuf, tmp->ptr, HTML_INPUT_ALT);
     }
     if (!hidden_bold && obuf->in_bold)

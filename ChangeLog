@@ -1,3 +1,32 @@
+2016-08-18  Kuang-che Wu  <kcwu@google.com>
+
+	* table.c: Fix table rowspan and colspan.
+	Origin: https://github.com/tats/w3m/pull/19
+	Bug-Debian: https://github.com/tats/w3m/issues/8
+
+2016-08-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent segfault with malformed input_alt.
+	Bug-Debian: https://github.com/tats/w3m/issues/18
+
+	* file.c: Prevent segfault with incorrect button type.
+	Bug-Debian: https://github.com/tats/w3m/issues/17
+
+2016-08-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent segfault with incorrect form_int fid.
+	Bug-Debian: https://github.com/tats/w3m/issues/15
+
+	* libwc/iso2022.c: Prevent segfault when iso2022 parsing.
+	Bug-Debian: https://github.com/tats/w3m/issues/14
+
+	* form.c: Prevent segfault for formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/13
+
+	* file.c, form.c:
+	Prevent negative array index for selectnumber and textareanumber.
+	Bug-Debian: https://github.com/tats/w3m/issues/12
+
 2016-08-16  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Truncate large values of table attributes.

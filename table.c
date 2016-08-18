@@ -2599,12 +2599,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
 		check_row(tbl, tbl->row + rowspan);
 	}
+	if (rowspan < 1)
+	    rowspan = 1;
 	if (parsedtag_get_value(tag, ATTR_COLSPAN, &colspan)) {
 	    if ((tbl->col + colspan) >= MAXCOL) {
 		/* Can't expand column */
 		colspan = MAXCOL - tbl->col;
 	    }
 	}
+	if (colspan < 1)
+	    colspan = 1;
 	if (parsedtag_get_value(tag, ATTR_ALIGN, &i)) {
 	    switch (i) {
 	    case ALIGN_LEFT:

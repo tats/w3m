@@ -1,3 +1,8 @@
+2016-08-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.
+	Bug-Debian: https://github.com/tats/w3m/issues/16
+
 2016-08-18  Kuang-che Wu  <kcwu@google.com>
 
 	* table.c: Fix table rowspan and colspan.

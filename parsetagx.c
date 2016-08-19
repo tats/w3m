@@ -120,6 +120,7 @@ parse_tag(char **s, int internal)
     int i, attr_id = 0, nattr;
 
     /* Parse tag name */
+    tagname[0] = '\0';
     q = (*s) + 1;
     p = tagname;
     if (*q == '/') {

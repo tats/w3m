@@ -1,3 +1,13 @@
+2016-08-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.
+	Bug-Debian: https://github.com/tats/w3m/issues/16
+
+	* file.c, parsetagx.c:
+	Revert "Fix uninitialised values for <i> and <dd>".
+	This reverts commit 0fba2f1a6eb6861206ad120a02af2643938082cd.
+	cf. https://github.com/tats/w3m/commit/0fba2f1a6eb6861206ad120a02af2643938082cd#commitcomment-18703355
+
 2016-08-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.

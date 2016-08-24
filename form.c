@@ -461,6 +461,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 #endif				/* MENU_SELECT */
 	    p = form->value->ptr;
 	l = buf->currentLine;
+	if (!l)
+	    break;
 	if (form->type == FORM_TEXTAREA) {
 	    int n = a->y - buf->currentLine->linenumber;
 	    if (n > 0)

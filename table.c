@@ -761,7 +761,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 	    struct parsed_tag *tag;
 	    if ((tag = parse_tag(&p, TRUE)) != NULL)
 		parsedtag_get_value(tag, ATTR_TID, &id);
-	    if (id >= 0 && id < tbl->ntable) {
+	    if (id >= 0 && id < tbl->ntable && tbl->tables[id].ptr) {
 		int alignment;
 		TextLineListItem *ti;
 		struct table *t = tbl->tables[id].ptr;

@@ -1,3 +1,14 @@
+2016-08-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c: Prevent segfault with malformed table_alt.
+	Bug-Debian: https://github.com/tats/w3m/issues/24
+
+	* form.c: Prevent segfault for formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/22
+
+	* table.c: Truncate max_width for renderTable.
+	Bug-Debian: https://github.com/tats/w3m/issues/25
+
 2016-08-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.

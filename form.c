@@ -483,8 +483,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 		spos = a->start.pos;
 		epos = a->end.pos;
 	    }
-	    if (a->start.line != a->end.line || spos > epos || epos > l->len)
-		epos = spos;
+	    if (a->start.line != a->end.line || spos > epos || epos >= l->len)
+		break;
 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
 				   rows > 1,
 				   form->type == FORM_INPUT_PASSWORD);

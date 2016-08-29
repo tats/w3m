@@ -685,6 +685,8 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
 	    a->hseq = a_form.hseq;
 	    a->y = a_form.y;
 	    a->end.pos = pos + ecol - col;
+	    if (pos < 1 || a->end.pos >= l->size)
+		continue;
 	    l->lineBuf[pos - 1] = '[';
 	    l->lineBuf[a->end.pos] = ']';
 	    for (k = pos; k < a->end.pos; k++)

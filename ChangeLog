@@ -1,3 +1,8 @@
+2016-08-30  Kuang-che Wu  <kcwu@google.com>
+
+	* Str.c: Fix potential heap buffer corruption due to Strgrow.
+	Origin: https://github.com/tats/w3m/pull/27
+
 2016-08-29  Tatsuya Kinoshita  <tats@debian.org>
 
 	* anchor.c:

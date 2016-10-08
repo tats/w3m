@@ -1,3 +1,15 @@
+2016-10-08  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c, table.h, textlist.h:
+	Treat table height as int instead of short.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
+
+	* form.c: Prevent global-buffer-overflow write in formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/29
+
+	* form.c: Fix null pointer dereference in formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/28
+
 2016-08-30  Kuang-che Wu  <kcwu@google.com>
 
 	* Str.c: Fix potential heap buffer corruption due to Strgrow.

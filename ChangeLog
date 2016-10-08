@@ -1,3 +1,9 @@
+2016-10-09  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c:
+	Fix incorrect dereference in formUpdateBuffer when MENU_SELECT.
+	cf. https://github.com/tats/w3m/commit/ec9eb22e008a69ea9dc21fdca4b9b836679965ee
+
 2016-10-08  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c, table.h, textlist.h:

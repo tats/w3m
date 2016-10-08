@@ -100,7 +100,7 @@ struct table {
     short minimum_width[MAXCOL];
     short fixed_width[MAXCOL];
     struct table_cell cell;
-    short *tabheight;
+    int *tabheight;
     struct table_in *tables;
     short ntable;
     short tables_size;

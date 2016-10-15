@@ -81,7 +81,7 @@ binary-arch: install
 	-rm -f debian/w3m/usr/share/doc/w3m/ja/w3m.1
 	-rm -f debian/w3m/usr/share/doc/w3m/ja/README.cygwin
 	-rm -rf debian/w3m/usr/share/doc/w3m/ja/CVS
-	cp -a $(builddir)/doc-jp/* debian/w3m/usr/share/doc/w3m/de/
+	cp -a $(builddir)/doc-de/* debian/w3m/usr/share/doc/w3m/de/
 	-rm -f debian/w3m/usr/share/doc/w3m/de/w3m.1
 	dh_installexamples -a $(bootstrap_dh_flags)
 	cp -a $(builddir)/Bonus/* debian/w3m/usr/share/doc/w3m/examples/Bonus/

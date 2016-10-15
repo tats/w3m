@@ -1,3 +1,9 @@
+w3m (0.5.3-31) unstable; urgency=medium
+
+  * Really install German documents
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 15 Oct 2016 20:25:33 +0900
+
 w3m (0.5.3-30) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20161009

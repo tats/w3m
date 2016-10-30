@@ -1,3 +1,18 @@
+2016-10-30  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
+	* fm.h: Set use_dictcommand to 1 by default.
+
+	* scripts/Makefile.in: Add w3mdict.cgi to LIB_TARGETS.
+
+	* config.h.dist: Typo fix for USE_DICT.
+
+2016-10-30  Boruch Baum  <boruch-baum@gmx.com>
+
+	* scripts/w3mdict.cgi: Add w3mdict.cgi to use a dictd dictionary query.
+	Bug-Debian: https://github.com/tats/w3m/issues/30
+
 2016-10-09  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c:

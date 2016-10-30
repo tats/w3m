@@ -34,7 +34,7 @@ CONF_DIR = $(sysconfdir)/$(PACKAGE)
 DOCDIRS = @DOCDIRS@
 
 AUXBIN_TARGETS	= xface2xpm
-LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
+LIB_TARGETS	= dirlist.cgi w3mdict.cgi w3mhelp.cgi w3mmail.cgi
 HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
 SUBDIRS = multipart w3mman
 .PHONY: $(SUBDIRS)

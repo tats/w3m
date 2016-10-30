@@ -9,10 +9,10 @@
 /* User Configuration */
 
 /* 
-   If you define DICT, you can use dictionary look-up function
+   If you define USE_DICT, you can use dictionary look-up function
    in w3m. See README.dict for detail.
 */
-#define DICT
+#define USE_DICT
 
 /*
    If you want to load and save URL history.

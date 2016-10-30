@@ -1024,7 +1024,7 @@ global char *BookmarkFile init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 #ifdef USE_DICT
-global int UseDictCommand init(FALSE);
+global int UseDictCommand init(TRUE);
 global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
 #endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);

@@ -60,10 +60,32 @@ index 8f443c1..5fb6581 100755
  	$input = "w3m-control: GOTO_LINK";
  }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..f9e988e 100644
+index 88358ef..f9cc112 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,1176 @@
+@@ -1,3 +1,1198 @@
++2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
++
++	* table.c, table.h, textlist.h:
++	Revert "Treat table height as int instead of short".
++	This reverts commit 0c9aebb26a16ad3acc69b2e87ffd216d43879cb6.
++	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=842623
++
++2016-10-30  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++	* fm.h: Set use_dictcommand to 1 by default.
++
++	* scripts/Makefile.in: Add w3mdict.cgi to LIB_TARGETS.
++
++	* config.h.dist: Typo fix for USE_DICT.
++
++2016-10-30  Boruch Baum  <boruch-baum@gmx.com>
++
++	* scripts/w3mdict.cgi: Add w3mdict.cgi to use a dictd dictionary query.
++	Bug-Debian: https://github.com/tats/w3m/issues/30
++
 +2016-10-09  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* form.c:
@@ -1292,10 +1314,10 @@ index 7d692f9..453072d 100644
  	do	\
  		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
 diff --git a/NEWS b/NEWS
-index 66e309d..c55e929 100644
+index 66e309d..5fb5f24 100644
 --- a/NEWS
 +++ b/NEWS
-@@ -1,3 +1,39 @@
+@@ -1,3 +1,40 @@
 +w3m X.X.X - YYYY-MM-DD
 +
 +* new features
@@ -1324,6 +1346,7 @@ index 66e309d..c55e929 100644
 + - accept single quoted meta refresh URL
 + - assume "text" if a form input type is unknown
 + - accept cookies by default
++ - set use_dictcommand to 1 by default
 + - set default_url to 1 by default
 + - set argv_is_url to 1 by default
 + - set alt_entity to 0 by default
@@ -3783,6 +3806,23 @@ index 51fab47..0967f2a 100755
  
  If the version you run ($0) is already up to date, please
  send the following data and any information you think might be
+diff --git a/config.h.dist b/config.h.dist
+index 844a555..0440927 100644
+--- a/config.h.dist
++++ b/config.h.dist
+@@ -9,10 +9,10 @@
+ /* User Configuration */
+ 
+ /* 
+-   If you define DICT, you can use dictionary look-up function
++   If you define USE_DICT, you can use dictionary look-up function
+    in w3m. See README.dict for detail.
+ */
+-#define DICT
++#define USE_DICT
+ 
+ /*
+    If you want to load and save URL history.
 diff --git a/config.h.in b/config.h.in
 index 2f41eed..3b575e4 100644
 --- a/config.h.in
@@ -15276,7 +15316,7 @@ index 567d41e..b66f8c8 100644
  	}
  	ungetc(c, fp);
 diff --git a/fm.h b/fm.h
-index 8378939..4b99a9d 100644
+index 8378939..ede537b 100644
 --- a/fm.h
 +++ b/fm.h
 @@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
@@ -15399,6 +15439,15 @@ index 8378939..4b99a9d 100644
  global char *ftppasswd init(NULL);
  global int ftppass_hostnamegen init(TRUE);
  global int do_download init(FALSE);
+@@ -991,7 +1024,7 @@ global char *BookmarkFile init(NULL);
+ global int UseExternalDirBuffer init(TRUE);
+ global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
+ #ifdef USE_DICT
+-global int UseDictCommand init(FALSE);
++global int UseDictCommand init(TRUE);
+ global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
+ #endif				/* USE_DICT */
+ global int ignore_null_img_alt init(TRUE);
 @@ -1004,7 +1037,7 @@ global int FoldLine init(FALSE);
  #define DEFAULT_URL_EMPTY	0
  #define DEFAULT_URL_CURRENT	1
@@ -25592,9 +25641,18 @@ index 5bee4b2..93406e8 100644
      YIELD(1, c, 7);
      return 0;
 diff --git a/scripts/Makefile.in b/scripts/Makefile.in
-index 4da9ce5..a37d792 100644
+index 4da9ce5..3384813 100644
 --- a/scripts/Makefile.in
 +++ b/scripts/Makefile.in
+@@ -34,7 +34,7 @@ CONF_DIR = $(sysconfdir)/$(PACKAGE)
+ DOCDIRS = @DOCDIRS@
+ 
+ AUXBIN_TARGETS	= xface2xpm
+-LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
++LIB_TARGETS	= dirlist.cgi w3mdict.cgi w3mhelp.cgi w3mmail.cgi
+ HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
+ SUBDIRS = multipart w3mman
+ .PHONY: $(SUBDIRS)
 @@ -60,7 +60,7 @@ w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab $(top_srcdir)/doc/ke
  	@cat $(srcdir)/w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
  	@echo "done"
@@ -25604,6 +25662,68 @@ index 4da9ce5..a37d792 100644
  	@echo "generating w3mhelp-funcdesc*.pl..."
  	@for dirlang in $(DOCDIRS); do \
  	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
+diff --git a/scripts/w3mdict.cgi b/scripts/w3mdict.cgi
+new file mode 100755
+index 0000000..6b0e62e
+--- /dev/null
++++ b/scripts/w3mdict.cgi
+@@ -0,0 +1,56 @@
++#!/bin/sh
++# w3mdict.cgi - A dictd dictionary query cgi for w3m
++#
++# REQUIREMENTS:
++# + dict client software
++# + an address of a dict server, for variable ${DICT_SERVER}
++# + a name of a favorite database on that server, for variable
++#   ${FAVORITE_DATABASE}
++# OPTIONALLY:
++# + locally install a dict server (eg. dictd) and a collection
++#   of dict databases (eg. wordnet, aka "wn")
++
++DICT_SERVER="localhost"
++FAVORITE_DATABASE="wn"
++RETURN_MESSAGE="\n\nPress 'B' to return to the previous page."
++printf "Content-type: text/plain\n"
++type dict \
++|| {
++  # Originally, we inconsiderately failed silently ...
++  #     printf "W3m-control: BACK\n\n"
++  printf "\n\nERROR: dict client software not found${RETURN_MESSAGE}"
++  exit
++  }
++# First, we check only our best and favorite database. This is most
++# likely to give us a best defintion, and avoids displaying a long and
++# cluttered page with entries from many databases.
++dict --host "${DICT_SERVER}" \
++     --database "${FAVORITE_DATABASE}" \
++     "${QUERY_STRING}" 2>&1 \
++&& {
++  printf "${RETURN_MESSAGE}"
++  } \
++|| {
++  # The initial attempt failed, so let's search ALL databases
++  # available on the server.
++  dict --host "${DICT_SERVER}" \
++       "${QUERY_STRING}" 2>&1 \
++  && {
++    printf "${RETURN_MESSAGE}"
++    } \
++  || {
++    # No defintions were found in any of the server's databases, so
++    # let's return to the favorite database in order to retrieve its
++    # guess of what we meant to type. Originally, for this case, we
++    # pushed the user's default action to be entering another word for
++    # a dict defintion, so the print command was:
++    #     printf "W3m-control: DICT_WORD\n\n"
++    # Now, we need only print a blank line to separate the cgi header
++    # from the page content.
++    printf "\n"
++    dict --host "${DICT_SERVER}" \
++         --database "${FAVORITE_DATABASE}" \
++         "${QUERY_STRING}" 2>&1
++    printf "${RETURN_MESSAGE}"
++    }
++  }
 diff --git a/scripts/w3mhelp-funcdesc.de.pl.in b/scripts/w3mhelp-funcdesc.de.pl.in
 new file mode 100644
 index 0000000..11539d1
@@ -26185,7 +26305,7 @@ index f430307..2cd00f9 100644
        $p =~ s@/+$@@;
        $PATH{$p} = 1;
 diff --git a/table.c b/table.c
-index e1243ff..e906e9f 100644
+index e1243ff..d88e983 100644
 --- a/table.c
 +++ b/table.c
 @@ -188,7 +188,7 @@ dv2sv(double *dv, short *iv, int size)
@@ -26206,33 +26326,6 @@ index e1243ff..e906e9f 100644
  	return;
      x = edv[(int)indexarray[iw - 1]];
      for (i = 0; i < size; i++) {
-@@ -278,7 +278,7 @@ newTable()
-     t->max_rowsize = MAXROW;
-     t->tabdata = New_N(GeneralList **, MAXROW);
-     t->tabattr = New_N(table_attr *, MAXROW);
--    t->tabheight = NewAtom_N(short, MAXROW);
-+    t->tabheight = NewAtom_N(int, MAXROW);
- #ifdef ID_EXT
-     t->tabidvalue = New_N(Str *, MAXROW);
-     t->tridvalue = New_N(Str, MAXROW);
-@@ -331,7 +331,7 @@ check_row(struct table *t, int row)
-     int i, r;
-     GeneralList ***tabdata;
-     table_attr **tabattr;
--    short *tabheight;
-+    int *tabheight;
- #ifdef ID_EXT
-     Str **tabidvalue;
-     Str *tridvalue;
-@@ -341,7 +341,7 @@ check_row(struct table *t, int row)
- 	r = max(t->max_rowsize * 2, row + 1);
- 	tabdata = New_N(GeneralList **, r);
- 	tabattr = New_N(table_attr *, r);
--	tabheight = NewAtom_N(short, r);
-+	tabheight = NewAtom_N(int, r);
- #ifdef ID_EXT
- 	tabidvalue = New_N(Str *, r);
- 	tridvalue = New_N(Str, r);
 @@ -429,7 +429,6 @@ visible_length(char *str)
      char *t, *r2;
      int amp_len = 0;
@@ -26250,42 +26343,6 @@ index e1243ff..e906e9f 100644
  		int alignment;
  		TextLineListItem *ti;
  		struct table *t = tbl->tables[id].ptr;
-@@ -847,7 +846,7 @@ table_rule_width(struct table *t)
- }
- 
- static void
--check_cell_width(short *tabwidth, short *cellwidth,
-+check_cell_width(int *tabwidth, int *cellwidth,
- 		 short *col, short *colspan, short maxcell,
- 		 short *indexarray, int space, int dir)
- {
-@@ -1479,7 +1478,7 @@ check_table_height(struct table *t)
- 	short *indexarray;
- 	short maxcell;
- 	short size;
--	short *height;
-+	int *height;
-     } cell;
-     int space = 0;
- 
-@@ -1518,7 +1517,7 @@ check_table_height(struct table *t)
- 			cell.row = NewAtom_N(short, cell.size);
- 			cell.rowspan = NewAtom_N(short, cell.size);
- 			cell.indexarray = NewAtom_N(short, cell.size);
--			cell.height = NewAtom_N(short, cell.size);
-+			cell.height = NewAtom_N(int, cell.size);
- 		    }
- 		    else {
- 			cell.size = max(cell.size + MAXCELL, c + 1);
-@@ -1527,7 +1526,7 @@ check_table_height(struct table *t)
- 						 cell.size);
- 			cell.indexarray = New_Reuse(short, cell.indexarray,
- 						    cell.size);
--			cell.height = New_Reuse(short, cell.height, cell.size);
-+			cell.height = New_Reuse(int, cell.height, cell.size);
- 		    }
- 		}
- 		if (c > cell.maxcell) {
 @@ -1691,7 +1690,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
  {
      int i, j, w, r, h;
@@ -26347,7 +26404,7 @@ index e1243ff..e906e9f 100644
  	if (id >= 0 && id < tbl->ntable) {
  	    struct table *tbl1 = tbl->tables[id].ptr;
 diff --git a/table.h b/table.h
-index 83b661f..df03143 100644
+index 83b661f..fdcdef3 100644
 --- a/table.h
 +++ b/table.h
 @@ -17,7 +17,7 @@
@@ -26359,15 +26416,6 @@ index 83b661f..df03143 100644
  
  #define MAX_WIDTH 80
  
-@@ -100,7 +100,7 @@ struct table {
-     short minimum_width[MAXCOL];
-     short fixed_width[MAXCOL];
-     struct table_cell cell;
--    short *tabheight;
-+    int *tabheight;
-     struct table_in *tables;
-     short ntable;
-     short tables_size;
 diff --git a/tagtable.tab b/tagtable.tab
 index f9b7b76..f5a2c30 100644
 --- a/tagtable.tab
@@ -26722,37 +26770,6 @@ index 7a3c987..3d2ffd7 100644
  #define CYGWIN_ON  {fputs("\033[?1000h",ttyf); flush_tty();}
  #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
  
-diff --git a/textlist.h b/textlist.h
-index f28b199..385eee4 100644
---- a/textlist.h
-+++ b/textlist.h
-@@ -14,7 +14,7 @@ typedef struct _listitem {
- typedef struct _generallist {
-     ListItem *first;
-     ListItem *last;
--    short nitem;
-+    int nitem;
- } GeneralList;
- 
- extern ListItem *newListItem(void *s, ListItem *n, ListItem *p);
-@@ -36,7 +36,7 @@ typedef struct _textlistitem {
- typedef struct _textlist {
-     TextListItem *first;
-     TextListItem *last;
--    short nitem;
-+    int nitem;
- } TextList;
- 
- #define newTextList() ((TextList *)newGeneralList())
-@@ -62,7 +62,7 @@ typedef struct _textlinelistitem {
- typedef struct _textlinelist {
-     TextLineListItem *first;
-     TextLineListItem *last;
--    short nitem;
-+    int nitem;
- } TextLineList;
- 
- extern TextLine *newTextLine(Str line, int pos);
 diff --git a/url.c b/url.c
 index ed6062e..c90cd9f 100644
 --- a/url.c

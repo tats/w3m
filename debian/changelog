@@ -1,3 +1,12 @@
+w3m (0.5.3-32) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20161031
+    - Prevent stack smashing (closes: #842623, reopen: #838952)
+  * Add "dict, dictd, dict-wn" to Suggests for w3mdict.cgi
+  * Update debhelper compat version to 9
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 31 Oct 2016 20:34:23 +0900
+
 w3m (0.5.3-31) unstable; urgency=medium
 
   * Really install German documents

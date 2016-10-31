@@ -1,3 +1,10 @@
+2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c, table.h, textlist.h:
+	Revert "Treat table height as int instead of short".
+	This reverts commit 0c9aebb26a16ad3acc69b2e87ffd216d43879cb6.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=842623
+
 2016-10-30  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

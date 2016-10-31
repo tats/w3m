@@ -278,7 +278,7 @@ newTable()
     t->max_rowsize = MAXROW;
     t->tabdata = New_N(GeneralList **, MAXROW);
     t->tabattr = New_N(table_attr *, MAXROW);
-    t->tabheight = NewAtom_N(int, MAXROW);
+    t->tabheight = NewAtom_N(short, MAXROW);
 #ifdef ID_EXT
     t->tabidvalue = New_N(Str *, MAXROW);
     t->tridvalue = New_N(Str, MAXROW);
@@ -331,7 +331,7 @@ check_row(struct table *t, int row)
     int i, r;
     GeneralList ***tabdata;
     table_attr **tabattr;
-    int *tabheight;
+    short *tabheight;
 #ifdef ID_EXT
     Str **tabidvalue;
     Str *tridvalue;
@@ -341,7 +341,7 @@ check_row(struct table *t, int row)
 	r = max(t->max_rowsize * 2, row + 1);
 	tabdata = New_N(GeneralList **, r);
 	tabattr = New_N(table_attr *, r);
-	tabheight = NewAtom_N(int, r);
+	tabheight = NewAtom_N(short, r);
 #ifdef ID_EXT
 	tabidvalue = New_N(Str *, r);
 	tridvalue = New_N(Str, r);
@@ -846,7 +846,7 @@ table_rule_width(struct table *t)
 }
 
 static void
-check_cell_width(int *tabwidth, int *cellwidth,
+check_cell_width(short *tabwidth, short *cellwidth,
 		 short *col, short *colspan, short maxcell,
 		 short *indexarray, int space, int dir)
 {
@@ -1478,7 +1478,7 @@ check_table_height(struct table *t)
 	short *indexarray;
 	short maxcell;
 	short size;
-	int *height;
+	short *height;
     } cell;
     int space = 0;
 
@@ -1517,7 +1517,7 @@ check_table_height(struct table *t)
 			cell.row = NewAtom_N(short, cell.size);
 			cell.rowspan = NewAtom_N(short, cell.size);
 			cell.indexarray = NewAtom_N(short, cell.size);
-			cell.height = NewAtom_N(int, cell.size);
+			cell.height = NewAtom_N(short, cell.size);
 		    }
 		    else {
 			cell.size = max(cell.size + MAXCELL, c + 1);
@@ -1526,7 +1526,7 @@ check_table_height(struct table *t)
 						 cell.size);
 			cell.indexarray = New_Reuse(short, cell.indexarray,
 						    cell.size);
-			cell.height = New_Reuse(int, cell.height, cell.size);
+			cell.height = New_Reuse(short, cell.height, cell.size);
 		    }
 		}
 		if (c > cell.maxcell) {

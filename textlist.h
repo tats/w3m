@@ -14,7 +14,7 @@ typedef struct _listitem {
 typedef struct _generallist {
     ListItem *first;
     ListItem *last;
-    int nitem;
+    short nitem;
 } GeneralList;
 
 extern ListItem *newListItem(void *s, ListItem *n, ListItem *p);
@@ -36,7 +36,7 @@ typedef struct _textlistitem {
 typedef struct _textlist {
     TextListItem *first;
     TextListItem *last;
-    int nitem;
+    short nitem;
 } TextList;
 
 #define newTextList() ((TextList *)newGeneralList())
@@ -62,7 +62,7 @@ typedef struct _textlinelistitem {
 typedef struct _textlinelist {
     TextLineListItem *first;
     TextLineListItem *last;
-    int nitem;
+    short nitem;
 } TextLineList;
 
 extern TextLine *newTextLine(Str line, int pos);

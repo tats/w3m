@@ -7008,9 +7008,12 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
 	obuf->table_level = MAX_TABLE - 1;
 
     while (obuf->table_level >= 0) {
+	int tmp = obuf->table_level;
 	table_mode[obuf->table_level].pre_mode
 	    &= ~(TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN);
 	HTMLlineproc1("</table>", h_env);
+	if (obuf->table_level >= tmp)
+	    break;
     }
 }
 

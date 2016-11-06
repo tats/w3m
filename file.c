@@ -6056,7 +6056,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			n_select = -1;
 		    break;
 		case HTML_N_SELECT_INT:
-		    if (n_select >= 0) {
+		    if (a_select && n_select >= 0) {
 			FormItemList *item =
 			    (FormItemList *)a_select[n_select]->url;
 			item->select_option = select_option[n_select].first;

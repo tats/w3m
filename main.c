@@ -2619,7 +2619,17 @@ DEFUN(susp, INTERRUPT SUSPEND, "Suspend w3m to background")
 	shell = "/bin/sh";
     system(shell);
 #else				/* SIGSTOP */
+#ifdef SIGTSTP
+    signal(SIGTSTP, SIG_DFL);  /* just in case */
+    /*
+     * Note: If susp() was called from SIGTSTP handler,
+     * unblocking SIGTSTP would be required here.
+     * Currently not.
+     */
+    kill(0, SIGTSTP);  /* stop whole job, not a single process */
+#else
     kill((pid_t) 0, SIGSTOP);
+#endif
 #endif				/* SIGSTOP */
     fmInit();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);

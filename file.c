@@ -5021,6 +5021,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	parsedtag_get_value(tag, ATTR_CELLSPACING, &x);
 	parsedtag_get_value(tag, ATTR_CELLPADDING, &y);
 	parsedtag_get_value(tag, ATTR_VSPACE, &z);
+	if (x < 0)
+	    x = 0;
+	if (y < 0)
+	    y = 0;
+	if (z < 0)
+	    z = 0;
 	if (x > MAX_CELLSPACING)
 	    x = MAX_CELLSPACING;
 	if (y > MAX_CELLPADDING)

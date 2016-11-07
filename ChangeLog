@@ -1,5 +1,8 @@
 2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 
+	* file.c: Prevent infinite recursion in HTMLlineproc0.
+	Bug-Debian: https://github.com/tats/w3m/issues/36
+
 	* NEWS, w3m-doc/install.html.in:
 	Update documents for included w3mdict.cgi.
 

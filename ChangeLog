@@ -1,3 +1,25 @@
+2016-11-07  ITOH Yasufumi  <itohy@NetBSD.org>
+
+	* main.c: Fix suspend (^Z) behavior.
+	Suspend the job w3m belongs to, not w3m only.
+	Signed-off-by: Thomas Klausner <wiz@NetBSD.org>
+	Bug-Debian: https://github.com/tats/w3m/pull/34
+	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-ab?rev=1.4&content-type=text/x-cvsweb-markup
+
+2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c: Prevent dereference near-null pointer in formUpdateBuffer.
+	Bug-Debian: https://github.com/tats/w3m/issues/35
+
+	* file.c: Prevent crash after allocate string of negative size.
+	Bug-Debian: https://github.com/tats/w3m/issues/33
+
+	* file.c: Prevent memory exhausted due to repeat appending "</table>".
+	Bug-Debian: https://github.com/tats/w3m/issues/23
+
+	* file.c: Prevent null pointer dereference in HTMLlineproc2body.
+	Bug-Debian: https://github.com/tats/w3m/issues/32
+
 2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c, table.h, textlist.h:

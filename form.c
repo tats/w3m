@@ -442,7 +442,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
     switch (form->type) {
     case FORM_INPUT_CHECKBOX:
     case FORM_INPUT_RADIO:
-	if (spos >= buf->currentLine->len || spos < 0)
+	if (buf->currentLine == NULL ||
+	    spos >= buf->currentLine->len || spos < 0)
 	    break;
 	if (form->checked)
 	    buf->currentLine->lineBuf[spos] = '*';

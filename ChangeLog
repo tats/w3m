@@ -1,3 +1,8 @@
+2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS, w3m-doc/install.html.in:
+	Update documents for included w3mdict.cgi.
+
 2016-11-07  ITOH Yasufumi  <itohy@NetBSD.org>
 
 	* main.c: Fix suspend (^Z) behavior.

@@ -2326,6 +2326,8 @@ feed_table_block_tag(struct table *tbl,
     int offset;
     if (mode->indent_level <= 0 && indent == -1)
 	return;
+    if (mode->indent_level >= CHAR_MAX && indent == 1)
+	return;
     setwidth(tbl, mode);
     feed_table_inline_tag(tbl, line, mode, -1);
     clearcontentssize(tbl, mode);

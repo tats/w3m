@@ -1,3 +1,8 @@
+2016-11-09  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c: Check indent_level to prevent infinite recursion.
+	Bug-Debian: https://github.com/tats/w3m/issues/37
+
 2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent infinite recursion in HTMLlineproc0.

@@ -1632,6 +1632,19 @@ renderCoTable(struct table *tbl, int maxlimit)
     struct table *t;
     int i, col, row;
     int indent, maxwidth;
+    static struct table *tbl_prev = NULL;
+    static int cotbl_count;
+#define MAX_COTABLE 100
+
+    if (tbl == NULL)
+	return;
+    if (tbl != tbl_prev) {
+	tbl_prev = tbl;
+	cotbl_count = 0;
+    }
+    if (cotbl_count >= MAX_COTABLE)
+	return;	/* workaround to prevent infinite recursion */
+    cotbl_count++;
 
     for (i = 0; i < tbl->ntable; i++) {
 	t = tbl->tables[i].ptr;

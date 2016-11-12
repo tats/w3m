@@ -1,5 +1,7 @@
 2016-11-12  Tatsuya Kinoshita  <tats@debian.org>
 
+	* NEWS: Update NEWS.
+
 	* table.c: Prevent infinite recursion with nested table and textarea.
 	Bug-Debian: https://github.com/tats/w3m/issues/20
 

@@ -7,13 +7,14 @@ w3m X.X.X - YYYY-MM-DD
  - support FreeBSD framebuffer
  - support button element
  - support meta charset
+ - include w3mdict.cgi to use a dictd dictionary query
  - add extbrowser4..9
  - add display_borders to display 0 pixel table borders
  - add siteconf feature
  - add German translation for options setting panel
  - add translations for de, zh_CN and zh_TW
 * bug fixes
- - fix segfaults with malformed text
+ - fix multiple flaws with malformed text
  - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
  - set ssl_verify_server to 1 by default
  - disable RC4, export ciphers, and keys < 128 bits
@@ -26,7 +27,6 @@ w3m X.X.X - YYYY-MM-DD
  - accept single quoted meta refresh URL
  - assume "text" if a form input type is unknown
  - accept cookies by default
- - include w3mdict.cgi to use a dictd dictionary query
  - set use_dictcommand to 1 by default
  - set default_url to 1 by default
  - set argv_is_url to 1 by default
@@ -34,6 +34,7 @@ w3m X.X.X - YYYY-MM-DD
  - fix build problems with Boehm GC 7.2, imlib2 1.4.6 and glibc 2.14
  - fix parallel make failure
  - fix incorrect ucs_ambwidth_map
+ - fix suspend (^Z) behavior
  - and many fixes
 
 w3m 0.5.3 - 2011-01-15

@@ -1,3 +1,9 @@
+2016-11-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c:
+	Prevent null pointer dereference in HTMLlineproc2body for textarea_int.
+	Bug-Debian: https://github.com/tats/w3m/issues/32#issuecomment-260170163
+
 2016-11-12  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

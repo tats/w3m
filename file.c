@@ -6044,7 +6044,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			n_textarea = -1;
 		    break;
 		case HTML_N_TEXTAREA_INT:
-		    if (n_textarea >= 0) {
+		    if (a_textarea && n_textarea >= 0) {
 			FormItemList *item =
 			    (FormItemList *)a_textarea[n_textarea]->url;
 			item->init_value = item->value =

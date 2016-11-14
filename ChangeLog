@@ -1,3 +1,12 @@
+2016-11-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent null pointer deref due to bad form id.
+	Bug-Debian: https://github.com/tats/w3m/issues/39
+
+	* display.c, file.c, fm.h, symbol.c:
+	Prevent array index out of bounds for symbol.
+	Bug-Debian: https://github.com/tats/w3m/issues/38
+
 2016-11-13  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c:

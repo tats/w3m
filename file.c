@@ -5805,7 +5805,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			parsedtag_get_value(tag, ATTR_FID, &form_id);
 			parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);
 			parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &bottom);
-			if (form_id < 0 || form_id > form_max || forms == NULL)
+			if (form_id < 0 || form_id > form_max ||
+			    forms == NULL || forms[form_id] == NULL)
 			    break;	/* outside of <form>..</form> */
 			form = forms[form_id];
 			if (hseq > 0) {
@@ -7011,6 +7012,8 @@ print_internal_information(struct html_feed_environ *henv)
     if (form_max >= 0) {
 	FormList *fp;
 	for (i = 0; i <= form_max; i++) {
+	    if (forms[i] == NULL)
+		continue;
 	    fp = forms[i];
 	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
 			i, html_quote(fp->action->ptr),

@@ -1129,18 +1129,18 @@ addChar(char c, Lineprop mode)
 	    }
 #ifdef USE_M17N
 	    if (w == 2 && WcOption.use_wide)
-		addstr(graph2_symbol[(int)c]);
+		addstr(graph2_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	    else
 #endif
-		addch(*graph_symbol[(int)c]);
+		addch(*graph_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	}
 	else {
 #ifdef USE_M17N
 	    symbol = get_symbol(DisplayCharset, &w);
-	    addstr(symbol[(int)c]);
+	    addstr(symbol[(unsigned char)c % N_SYMBOL]);
 #else
 	    symbol = get_symbol();
-	    addch(*symbol[(int)c]);
+	    addch(*symbol[(unsigned char)c % N_SYMBOL]);
 #endif
 	}
     }

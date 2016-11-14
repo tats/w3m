@@ -176,10 +176,10 @@ push_symbol(Str str, char symbol, int width, int n)
 
 #ifdef USE_M17N
     if (width == 2)
-	p = alt2_symbol[(int)symbol];
+	p = alt2_symbol[(unsigned char)symbol % N_SYMBOL];
     else
 #endif
-	p = alt_symbol[(int)symbol];
+	p = alt_symbol[(unsigned char)symbol % N_SYMBOL];
     for (i = 0; i < 2 && *p; i++, p++)
 	buf[i] = (*p == ' ') ? NBSP_CODE : *p;
 

@@ -7583,7 +7583,7 @@ conv_symbol(Line *l)
 		symbol = get_symbol(DisplayCharset, &w);
 #endif
 	    }
-	    Strcat_charp(tmp, symbol[(int)c]);
+	    Strcat_charp(tmp, symbol[(unsigned char)c % N_SYMBOL]);
 #ifdef USE_M17N
 	    p += len - 1;
 	    pr += len - 1;

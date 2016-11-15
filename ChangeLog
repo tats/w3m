@@ -1,3 +1,16 @@
+2016-11-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, proto.h, table.c:
+	Prevent infinite recursion with nested table and textarea.
+	Bug-Debian: https://github.com/tats/w3m/issues/20#issuecomment-260590257
+
+	* table.c:
+	Revert "Prevent infinite recursion with nested table and textarea".
+	This reverts commit f393faf55975a94217df479e1bd06ee4403c6958.
+
+	* anchor.c: Prevent deref null pointer in shiftAnchorPosition().
+	Bug-Debian: https://github.com/tats/w3m/issues/40
+
 2016-11-14  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent null pointer deref due to bad form id.

@@ -1624,6 +1624,15 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 #define fixed_table_width(t)\
   (get_table_width(t,t->fixed_width,t->cell.fixed_width,CHECK_MINIMUM))
 
+#define MAX_COTABLE_LEVEL 100
+static int cotable_level;
+
+void
+initRenderTable(void)
+{
+    cotable_level = 0;
+}
+
 void
 renderCoTable(struct table *tbl, int maxlimit)
 {
@@ -1633,6 +1642,10 @@ renderCoTable(struct table *tbl, int maxlimit)
     struct table *t;
     int i, col, row;
     int indent, maxwidth;
+
+    if (cotable_level >= MAX_COTABLE_LEVEL)
+	return;	/* workaround to prevent infinite recursion */
+    cotable_level++;
 
     for (i = 0; i < tbl->ntable; i++) {
 	t = tbl->tables[i].ptr;

@@ -393,6 +393,7 @@ extern void align(TextLine *lbuf, int width, int mode);
 extern void print_item(struct table *t, int row, int col, int width, Str buf);
 extern void print_sep(struct table *t, int row, int type, int maxcol, Str buf);
 extern void do_refill(struct table *tbl, int row, int col, int maxlimit);
+extern void initRenderTable(void);
 extern void renderTable(struct table *t, int max_width,
 			struct html_feed_environ *h_env);
 extern struct table *begin_table(int border, int spacing, int padding,

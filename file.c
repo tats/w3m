@@ -6413,6 +6413,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
 		}
 		save_fonteffect(h_env, obuf);
+		initRenderTable();
 		renderTable(tbl, tbl_width, h_env);
 		restore_fonteffect(h_env, obuf);
 		obuf->flag &= ~RB_IGNORE_P;

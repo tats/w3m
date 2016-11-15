@@ -1648,6 +1648,8 @@ renderCoTable(struct table *tbl, int maxlimit)
 
     for (i = 0; i < tbl->ntable; i++) {
 	t = tbl->tables[i].ptr;
+	if (t == NULL)
+	    continue;
 	col = tbl->tables[i].col;
 	row = tbl->tables[i].row;
 	indent = tbl->tables[i].indent;

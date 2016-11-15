@@ -551,7 +551,7 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
 	    break;
 	if (a->start.pos > pos) {
 	    a->start.pos += shift;
-	    if (hl->marks[a->hseq].line == line)
+	    if (hl && hl->marks && hl->marks[a->hseq].line == line)
 		hl->marks[a->hseq].pos = a->start.pos;
 	}
 	if (a->end.pos >= pos)

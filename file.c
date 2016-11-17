@@ -6330,10 +6330,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
     while (*line != '\0') {
 	char *str, *p;
 	int is_tag = FALSE;
-	int pre_mode = (obuf->table_level >= 0) ? tbl_mode->pre_mode :
-	    obuf->flag;
-	int end_tag = (obuf->table_level >= 0) ? tbl_mode->end_tag :
-	    obuf->end_tag;
+	int pre_mode = (obuf->table_level >= 0 && tbl_mode) ?
+	    tbl_mode->pre_mode : obuf->flag;
+	int end_tag = (obuf->table_level >= 0 && tbl_mode) ?
+	    tbl_mode->end_tag : obuf->end_tag;
 
 	if (*line == '<' || obuf->status != R_ST_NORMAL) {
 	    /* 
@@ -6415,7 +6415,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	}
 
       proc_normal:
-	if (obuf->table_level >= 0) {
+	if (obuf->table_level >= 0 && tbl && tbl_mode) {
 	    /* 
 	     * within table: in <table>..</table>, all input tokens
 	     * are fed to the table renderer, and then the renderer

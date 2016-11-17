@@ -841,7 +841,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     case '#':
 	p_url->host = copyPath(q, p - q,
 			       COPYPATH_SPC_IGNORE | COPYPATH_LOWERCASE);
-	p_url->port = DefaultPort[p_url->scheme];
+	if (p_url->scheme != SCM_UNKNOWN)
+	    p_url->port = DefaultPort[p_url->scheme];
+	else
+	    p_url->port = 0;
 	break;
     }
   analyze_file:

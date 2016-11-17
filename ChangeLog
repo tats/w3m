@@ -1,3 +1,11 @@
+2016-11-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Prevent global-buffer-overflow in parseURL().
+	Bug-Debian: https://github.com/tats/w3m/issues/41
+
+	* file.c: Prevent deref null pointer in HTMLlineproc0().
+	Bug-Debian: https://github.com/tats/w3m/issues/42
+
 2016-11-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c: Prevent deref null pointer in renderCoTable().

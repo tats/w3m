@@ -175,6 +175,49 @@ static wc_uint16 *pcs_ucs_map[] = {
   NULL,			/* (Raw) */
 };
 
+static wc_uint32 pcs_ucs_map_size[] = {
+  0x80,			/* cp437_ucs_map */
+  0x80,			/* cp737_ucs_map */
+  0x80,			/* cp775_ucs_map */
+  0x80,			/* cp850_ucs_map */
+  0x80,			/* cp852_ucs_map */
+  0x80,			/* cp855_ucs_map */
+  0x80,			/* cp856_ucs_map */
+  0x80,			/* cp857_ucs_map */
+  0x80,			/* cp860_ucs_map */
+  0x80,			/* cp861_ucs_map */
+  0x80,			/* cp862_ucs_map */
+  0x80,			/* cp863_ucs_map */
+  0x80,			/* cp864_ucs_map */
+  0x80,			/* cp865_ucs_map */
+  0x80,			/* cp866_ucs_map */
+  0x80,			/* cp869_ucs_map */
+  0x80,			/* cp874_ucs_map */
+  0x80,			/* cp1006_ucs_map */
+  0x80,			/* cp1250_ucs_map */
+  0x80,			/* cp1251_ucs_map */
+  0x80,			/* cp1252_ucs_map */
+  0x80,			/* cp1253_ucs_map */
+  0x80,			/* cp1254_ucs_map */
+  0x80,			/* cp1255_ucs_map */
+  0x80,			/* cp1256_ucs_map */
+  0x80,			/* cp1257_ucs_map */
+  0x80,			/* cp1258_ucs_map */
+  0,			/* NULL */
+  0x80,			/* tcvn57121_ucs_map */
+  0x20,			/* tcvn57122_ucs_map */
+  0,			/* NULL */
+  0x80,			/* viscii111_ucs_map */
+  0x20,			/* viscii112_ucs_map */
+  0x80,			/* vps1_ucs_map */
+  0x20,			/* vps2_ucs_map */
+  0x80,			/* koi8r_ucs_map */
+  0x80,			/* koi8u_ucs_map */
+  0x80,			/* nextstep_ucs_map */
+  0,			/* NULL */
+  0,			/* NULL (Raw) */
+};
+
 static wc_uint16 *cs94w_ucs_map[] = {
   jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
   gb2312_ucs_map,		/* 41 (GB 2312) */

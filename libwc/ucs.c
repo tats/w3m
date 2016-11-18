@@ -178,6 +178,7 @@ wc_any_to_ucs(wc_wchar_t cc)
 	    return WC_C_UCS2_EURO;
 	}
 	map = pcs_ucs_map[f - WC_F_PCS_BASE];
+	map_size = pcs_ucs_map_size[f - WC_F_PCS_BASE];
 	cc.code &= 0x7f;
 	break;
     case WC_CCS_A_PCSW:

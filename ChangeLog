@@ -1,5 +1,12 @@
 2016-11-18  Tatsuya Kinoshita  <tats@debian.org>
 
+	* ChangeLog, NEWS: Add CVE IDs.
+	cf. https://security-tracker.debian.org/tracker/source-package/w3m
+	    http://seclists.org/oss-sec/2016/q4/452
+
+	* libwc/ucs.map: Fix type mismatch for pcsw_ucs_map_size.
+	cf. https://github.com/tats/w3m/issues/43
+
 	* libwc/ucs.c, libwc/ucs.map:
 	Prevent global-buffer-overflow in wc_any_to_ucs().
 	Bug-Debian: https://github.com/tats/w3m/issues/43

@@ -175,7 +175,7 @@ static wc_uint16 *pcs_ucs_map[] = {
   NULL,			/* (Raw) */
 };
 
-static wc_uint32 *pcs_ucs_map_size[] = {
+static wc_uint32 pcs_ucs_map_size[] = {
   0x80,			/* cp437_ucs_map */
   0x80,			/* cp737_ucs_map */
   0x80,			/* cp775_ucs_map */

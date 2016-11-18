@@ -1,3 +1,9 @@
+2016-11-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ucs.c, libwc/ucs.map:
+	Prevent global-buffer-overflow in wc_any_to_ucs().
+	Bug-Debian: https://github.com/tats/w3m/issues/43
+
 2016-11-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Prevent global-buffer-overflow in parseURL().

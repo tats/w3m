@@ -15,6 +15,12 @@ w3m X.X.X - YYYY-MM-DD
  - add translations for de, zh_CN and zh_TW
 * bug fixes
  - fix multiple flaws with malformed text
+   [CVE-2016-9422], [CVE-2016-9423], [CVE-2016-9424], [CVE-2016-9425],
+   [CVE-2016-9426], [CVE-2016-9428], [CVE-2016-9429], [CVE-2016-9430],
+   [CVE-2016-9431], [CVE-2016-9432], [CVE-2016-9433], [CVE-2016-9434],
+   [CVE-2016-9435], [CVE-2016-9436], [CVE-2016-9437], [CVE-2016-9438],
+   [CVE-2016-9439], [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9442],
+   [CVE-2016-9443]
  - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
  - set ssl_verify_server to 1 by default
  - disable RC4, export ciphers, and keys < 128 bits

@@ -20,6 +20,7 @@
 	* file.c, proto.h, table.c:
 	Prevent infinite recursion with nested table and textarea.
 	Bug-Debian: https://github.com/tats/w3m/issues/20#issuecomment-260590257
+	[CVE-2016-9439]
 
 	* table.c:
 	Revert "Prevent infinite recursion with nested table and textarea".
@@ -120,22 +121,22 @@
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
 
 	* form.c: Prevent global-buffer-overflow write in formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/29
+	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
 
 	* form.c: Fix null pointer dereference in formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/28
+	Bug-Debian: https://github.com/tats/w3m/issues/28 [CVE-2016-9443]
 
 2016-08-30  Kuang-che Wu  <kcwu@google.com>
 
 	* Str.c: Fix potential heap buffer corruption due to Strgrow.
-	Origin: https://github.com/tats/w3m/pull/27
+	Origin: https://github.com/tats/w3m/pull/27 [CVE-2016-9442]
 
 2016-08-29  Tatsuya Kinoshita  <tats@debian.org>
 
 	* anchor.c:
 	Prevent segfault due to buffer overflows in addMultirowsForm.
-	Bug-Debian: https://github.com/tats/w3m/issues/21
-	Bug-Debian: https://github.com/tats/w3m/issues/26
+	Bug-Debian: https://github.com/tats/w3m/issues/21 [CVE-2016-9425]
+	Bug-Debian: https://github.com/tats/w3m/issues/26 [CVE-2016-9428]
 
 	* form.c: Prevent segfault for formUpdateBuffer.
 	Bug-Debian: https://github.com/tats/w3m/issues/13#issuecomment-242981906
@@ -143,18 +144,19 @@
 2016-08-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c: Prevent segfault with malformed table_alt.
-	Bug-Debian: https://github.com/tats/w3m/issues/24
+	Bug-Debian: https://github.com/tats/w3m/issues/24 [CVE-2016-9441]
 
 	* form.c: Prevent segfault for formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/22
+	Bug-Debian: https://github.com/tats/w3m/issues/22 [CVE-2016-9440]
 
 	* table.c: Truncate max_width for renderTable.
-	Bug-Debian: https://github.com/tats/w3m/issues/25
+	Bug-Debian: https://github.com/tats/w3m/issues/25 [CVE-2016-9426]
 
 2016-08-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.
 	Bug-Debian: https://github.com/tats/w3m/issues/16
+	[CVE-2016-9435] [CVE-2016-9436]
 
 	* file.c, parsetagx.c:
 	Revert "Fix uninitialised values for <i> and <dd>".
@@ -170,30 +172,30 @@
 
 	* table.c: Fix table rowspan and colspan.
 	Origin: https://github.com/tats/w3m/pull/19
-	Bug-Debian: https://github.com/tats/w3m/issues/8
+	Bug-Debian: https://github.com/tats/w3m/issues/8 [CVE-2016-9422]
 
 2016-08-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent segfault with malformed input_alt.
-	Bug-Debian: https://github.com/tats/w3m/issues/18
+	Bug-Debian: https://github.com/tats/w3m/issues/18 [CVE-2016-9438]
 
 	* file.c: Prevent segfault with incorrect button type.
-	Bug-Debian: https://github.com/tats/w3m/issues/17
+	Bug-Debian: https://github.com/tats/w3m/issues/17 [CVE-2016-9437]
 
 2016-08-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent segfault with incorrect form_int fid.
-	Bug-Debian: https://github.com/tats/w3m/issues/15
+	Bug-Debian: https://github.com/tats/w3m/issues/15 [CVE-2016-9434]
 
 	* libwc/iso2022.c: Prevent segfault when iso2022 parsing.
-	Bug-Debian: https://github.com/tats/w3m/issues/14
+	Bug-Debian: https://github.com/tats/w3m/issues/14 [CVE-2016-9433]
 
 	* form.c: Prevent segfault for formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/13
+	Bug-Debian: https://github.com/tats/w3m/issues/13 [CVE-2016-9432]
 
 	* file.c, form.c:
 	Prevent negative array index for selectnumber and textareanumber.
-	Bug-Debian: https://github.com/tats/w3m/issues/12
+	Bug-Debian: https://github.com/tats/w3m/issues/12 [CVE-2016-9424]
 
 2016-08-16  Tatsuya Kinoshita  <tats@debian.org>
 
@@ -203,13 +205,13 @@
 2016-08-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c: Prevent segfault for formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/9
-	Bug-Debian: https://github.com/tats/w3m/issues/10
+	Bug-Debian: https://github.com/tats/w3m/issues/9 [CVE-2016-9423]
+	Bug-Debian: https://github.com/tats/w3m/issues/10 [CVE-2016-9431]
 
 2016-08-09  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent segfault with malformed input type.
-	Bug-Debian: https://github.com/tats/w3m/issues/7
+	Bug-Debian: https://github.com/tats/w3m/issues/7 [CVE-2016-9430]
 
 2016-08-08  Tatsuya Kinoshita  <tats@debian.org>
 

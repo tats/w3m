@@ -1,8 +1,12 @@
+2016-11-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
 2016-11-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* ChangeLog, NEWS: Add CVE IDs.
 	cf. https://security-tracker.debian.org/tracker/source-package/w3m
-	    http://seclists.org/oss-sec/2016/q4/452
+	    http://www.openwall.com/lists/oss-security/2016/11/18/3
 
 	* libwc/ucs.map: Fix type mismatch for pcsw_ucs_map_size.
 	cf. https://github.com/tats/w3m/issues/43
@@ -120,6 +124,7 @@
 	* form.c:
 	Fix incorrect dereference in formUpdateBuffer when MENU_SELECT.
 	cf. https://github.com/tats/w3m/commit/ec9eb22e008a69ea9dc21fdca4b9b836679965ee
+	    https://github.com/tats/w3m/issues/28
 
 2016-10-08  Tatsuya Kinoshita  <tats@debian.org>
 

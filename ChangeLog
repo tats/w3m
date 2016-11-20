@@ -1,3 +1,7 @@
+2016-11-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
 2016-11-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.
@@ -411,7 +415,7 @@
 	* doc-jp/MANUAL.html, doc/MANUAL.html, fm.h, main.c, rc.c:
 	Add extbrowser4, extbrowser5, ..., and extbrowser9.
 	e.g.
-	- extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b
+	- extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b &
 	- extbrowser9 mpv %s &
 	cf. https://github.com/spcmd/w3m
 

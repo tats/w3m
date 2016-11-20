@@ -1,4 +1,12 @@
-w3m X.X.X - YYYY-MM-DD
+Debian's w3m 0.5.3+git20161120
+
+* bug fixes
+ - fix multiple flaws with malformed text
+   (stack overflow, buffer overflow, null deref, out of memory)
+ - fix stack overflow with nested table and textarea [CVE-2016-9439]
+ - fix suspend (^Z) behavior
+
+Debian's w3m 0.5.3+git20161031
 
 * new features
  - support OSC 5379 remote imaging and sixel graphics
@@ -19,7 +27,7 @@ w3m X.X.X - YYYY-MM-DD
    [CVE-2016-9426], [CVE-2016-9428], [CVE-2016-9429], [CVE-2016-9430],
    [CVE-2016-9431], [CVE-2016-9432], [CVE-2016-9433], [CVE-2016-9434],
    [CVE-2016-9435], [CVE-2016-9436], [CVE-2016-9437], [CVE-2016-9438],
-   [CVE-2016-9439], [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9443]
+   [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9443]
  - fix potential heap buffer corruption due to Strgrow [CVE-2016-9442]
  - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
  - set ssl_verify_server to 1 by default
@@ -40,7 +48,6 @@ w3m X.X.X - YYYY-MM-DD
  - fix build problems with Boehm GC 7.2, imlib2 1.4.6 and glibc 2.14
  - fix parallel make failure
  - fix incorrect ucs_ambwidth_map
- - fix suspend (^Z) behavior
  - and many fixes
 
 w3m 0.5.3 - 2011-01-15

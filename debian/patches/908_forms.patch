@@ -1,0 +1,28 @@
+Subject: Prevent segfault with incorrect form_int fid
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/15 [CVE-2016-9434]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=3d4eeda9ec0cb91e23bab7dc260d4c515119eb4b
+
+diff --git a/file.c b/file.c
+index 4056393..b30aa6b 100644
+--- a/file.c
++++ b/file.c
+@@ -4172,7 +4172,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+ 	forms = New_N(FormList *, forms_size);
+ 	form_stack = NewAtom_N(int, forms_size);
+     }
+-    else if (forms_size <= form_max) {
++    if (forms_size <= form_max) {
+ 	forms_size += form_max;
+ 	forms = New_Reuse(FormList *, forms, forms_size);
+ 	form_stack = New_Reuse(int, form_stack, forms_size);
+@@ -6086,7 +6086,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 	fclose(debug);
+ #endif
+     for (form_id = 1; form_id <= form_max; form_id++)
+-	forms[form_id]->next = forms[form_id - 1];
++	if (forms[form_id])
++	    forms[form_id]->next = forms[form_id - 1];
+     buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
+     if (n_textarea)
+ 	addMultirowsForm(buf, buf->formitem);

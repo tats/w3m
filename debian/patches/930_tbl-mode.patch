@@ -1,0 +1,33 @@
+Subject: Prevent deref null pointer in HTMLlineproc0()
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/42
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ecfdcbe1131591502c5e7f9ff4f34b24c5a2db97
+
+diff --git a/file.c b/file.c
+index 834071d..660b10e 100644
+--- a/file.c
++++ b/file.c
+@@ -6302,10 +6302,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+     while (*line != '\0') {
+ 	char *str, *p;
+ 	int is_tag = FALSE;
+-	int pre_mode = (obuf->table_level >= 0) ? tbl_mode->pre_mode :
+-	    obuf->flag;
+-	int end_tag = (obuf->table_level >= 0) ? tbl_mode->end_tag :
+-	    obuf->end_tag;
++	int pre_mode = (obuf->table_level >= 0 && tbl_mode) ?
++	    tbl_mode->pre_mode : obuf->flag;
++	int end_tag = (obuf->table_level >= 0 && tbl_mode) ?
++	    tbl_mode->end_tag : obuf->end_tag;
+ 
+ 	if (*line == '<' || obuf->status != R_ST_NORMAL) {
+ 	    /* 
+@@ -6387,7 +6387,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 	}
+ 
+       proc_normal:
+-	if (obuf->table_level >= 0) {
++	if (obuf->table_level >= 0 && tbl && tbl_mode) {
+ 	    /* 
+ 	     * within table: in <table>..</table>, all input tokens
+ 	     * are fed to the table renderer, and then the renderer

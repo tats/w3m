@@ -1,0 +1,27 @@
+Subject: Prevent segfault with incorrect button type
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/17 [CVE-2016-9437]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=67be73b03a5ad581e331ec97cb275cd8a52719ed
+
+diff --git a/file.c b/file.c
+index b30aa6b..3b7befe 100644
+--- a/file.c
++++ b/file.c
+@@ -3756,6 +3756,17 @@ process_button(struct parsed_tag *tag)
+     if (v == FORM_UNKNOWN)
+        return NULL;
+ 
++    switch (v) {
++    case FORM_INPUT_SUBMIT:
++    case FORM_INPUT_BUTTON:
++    case FORM_INPUT_RESET:
++	break;
++    default:
++	p = "submit";
++	v = FORM_INPUT_SUBMIT;
++	break;
++    }
++
+     if (!q) {
+        switch (v) {
+        case FORM_INPUT_SUBMIT:

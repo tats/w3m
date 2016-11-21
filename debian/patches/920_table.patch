@@ -1,0 +1,60 @@
+Subject: Prevent infinite recursion with nested table and textarea
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/20 [CVE-2016-9439]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=2a4a2fb9f116b50e7c80d573db06c0fdc6c69272
+
+diff --git a/file.c b/file.c
+index ac5247f..5be29e7 100644
+--- a/file.c
++++ b/file.c
+@@ -6413,6 +6413,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
+ 		}
+ 		save_fonteffect(h_env, obuf);
++		initRenderTable();
+ 		renderTable(tbl, tbl_width, h_env);
+ 		restore_fonteffect(h_env, obuf);
+ 		obuf->flag &= ~RB_IGNORE_P;
+diff --git a/proto.h b/proto.h
+index 0d8beb5..d629e0d 100644
+--- a/proto.h
++++ b/proto.h
+@@ -393,6 +393,7 @@ extern void align(TextLine *lbuf, int width, int mode);
+ extern void print_item(struct table *t, int row, int col, int width, Str buf);
+ extern void print_sep(struct table *t, int row, int type, int maxcol, Str buf);
+ extern void do_refill(struct table *tbl, int row, int col, int maxlimit);
++extern void initRenderTable(void);
+ extern void renderTable(struct table *t, int max_width,
+ 			struct html_feed_environ *h_env);
+ extern struct table *begin_table(int border, int spacing, int padding,
+diff --git a/table.c b/table.c
+index 022effe..8cd79e3 100644
+--- a/table.c
++++ b/table.c
+@@ -1624,6 +1624,15 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
+ #define fixed_table_width(t)\
+   (get_table_width(t,t->fixed_width,t->cell.fixed_width,CHECK_MINIMUM))
+ 
++#define MAX_COTABLE_LEVEL 100
++static int cotable_level;
++
++void
++initRenderTable(void)
++{
++    cotable_level = 0;
++}
++
+ void
+ renderCoTable(struct table *tbl, int maxlimit)
+ {
+@@ -1634,6 +1643,10 @@ renderCoTable(struct table *tbl, int maxlimit)
+     int i, col, row;
+     int indent, maxwidth;
+ 
++    if (cotable_level >= MAX_COTABLE_LEVEL)
++	return;	/* workaround to prevent infinite recursion */
++    cotable_level++;
++
+     for (i = 0; i < tbl->ntable; i++) {
+ 	t = tbl->tables[i].ptr;
+ 	col = tbl->tables[i].col;

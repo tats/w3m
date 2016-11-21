@@ -1,0 +1,22 @@
+Subject: Prevent crash after allocate string of negative size
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/33
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=af592aa5f154f1b0366513ddc2f545032a7b8721
+
+diff --git a/file.c b/file.c
+index 32ad98a..ecc1e2f 100644
+--- a/file.c
++++ b/file.c
+@@ -4999,6 +4999,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+ 	parsedtag_get_value(tag, ATTR_CELLSPACING, &x);
+ 	parsedtag_get_value(tag, ATTR_CELLPADDING, &y);
+ 	parsedtag_get_value(tag, ATTR_VSPACE, &z);
++	if (x < 0)
++	    x = 0;
++	if (y < 0)
++	    y = 0;
++	if (z < 0)
++	    z = 0;
+ #ifdef ID_EXT
+ 	parsedtag_get_value(tag, ATTR_ID, &id);
+ #endif				/* ID_EXT */

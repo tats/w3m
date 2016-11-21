@@ -1,0 +1,27 @@
+Subject: Prevent global-buffer-overflow write in formUpdateBuffer
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=d01de738f599441740437c6600dd5b1ae7155d27
+
+diff --git a/form.c b/form.c
+index e891df1..de7a4d9 100644
+--- a/form.c
++++ b/form.c
+@@ -442,6 +442,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+     switch (form->type) {
+     case FORM_INPUT_CHECKBOX:
+     case FORM_INPUT_RADIO:
++	if (spos >= buf->currentLine->len || spos < 0)
++	    break;
+ 	if (form->checked)
+ 	    buf->currentLine->lineBuf[spos] = '*';
+ 	else
+@@ -487,7 +489,7 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ 		spos = a->start.pos;
+ 		epos = a->end.pos;
+ 	    }
+-	    if (a->start.line != a->end.line || spos > epos || epos >= l->len)
++	    if (a->start.line != a->end.line || spos > epos || epos >= l->len || spos < 0 || epos < 0)
+ 		break;
+ 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
+ 				   rows > 1,

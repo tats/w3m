@@ -1,0 +1,72 @@
+Subject: Prevent global-buffer-overflow in wc_any_to_ucs()
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/43
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=716bc126638393c733399d11d3228edb82877faa
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=88110c2658ad9badd292430c75ebb0444c3312eb
+
+diff --git a/libwc/ucs.c b/libwc/ucs.c
+index 061e1ce..05e5e85 100644
+--- a/libwc/ucs.c
++++ b/libwc/ucs.c
+@@ -177,6 +177,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+ 	    return WC_C_UCS2_EURO;
+ 	}
+ 	map = pcs_ucs_map[f - WC_F_PCS_BASE];
++	map_size = pcs_ucs_map_size[f - WC_F_PCS_BASE];
+ 	cc.code &= 0x7f;
+ 	break;
+     case WC_CCS_A_PCSW:
+diff --git a/libwc/ucs.map b/libwc/ucs.map
+index 5d6f688..bed5dff 100644
+--- a/libwc/ucs.map
++++ b/libwc/ucs.map
+@@ -175,6 +175,49 @@ static wc_uint16 *pcs_ucs_map[] = {
+   NULL,			/* (Raw) */
+ };
+ 
++static wc_uint32 pcs_ucs_map_size[] = {
++  0x80,			/* cp437_ucs_map */
++  0x80,			/* cp737_ucs_map */
++  0x80,			/* cp775_ucs_map */
++  0x80,			/* cp850_ucs_map */
++  0x80,			/* cp852_ucs_map */
++  0x80,			/* cp855_ucs_map */
++  0x80,			/* cp856_ucs_map */
++  0x80,			/* cp857_ucs_map */
++  0x80,			/* cp860_ucs_map */
++  0x80,			/* cp861_ucs_map */
++  0x80,			/* cp862_ucs_map */
++  0x80,			/* cp863_ucs_map */
++  0x80,			/* cp864_ucs_map */
++  0x80,			/* cp865_ucs_map */
++  0x80,			/* cp866_ucs_map */
++  0x80,			/* cp869_ucs_map */
++  0x80,			/* cp874_ucs_map */
++  0x80,			/* cp1006_ucs_map */
++  0x80,			/* cp1250_ucs_map */
++  0x80,			/* cp1251_ucs_map */
++  0x80,			/* cp1252_ucs_map */
++  0x80,			/* cp1253_ucs_map */
++  0x80,			/* cp1254_ucs_map */
++  0x80,			/* cp1255_ucs_map */
++  0x80,			/* cp1256_ucs_map */
++  0x80,			/* cp1257_ucs_map */
++  0x80,			/* cp1258_ucs_map */
++  0,			/* NULL */
++  0x80,			/* tcvn57121_ucs_map */
++  0x20,			/* tcvn57122_ucs_map */
++  0,			/* NULL */
++  0x80,			/* viscii111_ucs_map */
++  0x20,			/* viscii112_ucs_map */
++  0x80,			/* vps1_ucs_map */
++  0x20,			/* vps2_ucs_map */
++  0x80,			/* koi8r_ucs_map */
++  0x80,			/* koi8u_ucs_map */
++  0x80,			/* nextstep_ucs_map */
++  0,			/* NULL */
++  0,			/* NULL (Raw) */
++};
++
+ static wc_uint16 *cs94w_ucs_map[] = {
+   jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
+   gb2312_ucs_map,		/* 41 (GB 2312) */

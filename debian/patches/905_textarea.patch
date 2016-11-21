@@ -1,0 +1,75 @@
+Subject: Prevent negative array index for selectnumber and textareanumber
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/12 [CVE-2016-9424]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a25fd09f74fb83499396935a96d63bb7cb8e2c58
+
+diff --git a/file.c b/file.c
+index d06b2cf..4056393 100644
+--- a/file.c
++++ b/file.c
+@@ -67,7 +67,7 @@ static int cur_status;
+ #ifdef MENU_SELECT
+ /* menu based <select>  */
+ FormSelectOption *select_option;
+-static int max_select = MAX_SELECT;
++int max_select = MAX_SELECT;
+ static int n_select;
+ static int cur_option_maxwidth;
+ #endif				/* MENU_SELECT */
+@@ -79,7 +79,7 @@ static int cur_textarea_rows;
+ static int cur_textarea_readonly;
+ static int n_textarea;
+ static int ignore_nl_textarea;
+-static int max_textarea = MAX_TEXTAREA;
++int max_textarea = MAX_TEXTAREA;
+ 
+ static int http_response_code;
+ 
+@@ -5986,7 +5986,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 		case HTML_TEXTAREA_INT:
+ 		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
+ 					    &n_textarea)
+-			&& n_textarea < max_textarea) {
++			&& n_textarea >= 0 && n_textarea < max_textarea) {
+ 			textarea_str[n_textarea] = Strnew();
+ 		    }
+ 		    else
+@@ -6003,7 +6003,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ #ifdef MENU_SELECT
+ 		case HTML_SELECT_INT:
+ 		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
+-			&& n_select < max_select) {
++			&& n_select >= 0 && n_select < max_select) {
+ 			select_option[n_select].first = NULL;
+ 			select_option[n_select].last = NULL;
+ 		    }
+diff --git a/form.c b/form.c
+index 87a5d49..da115fa 100644
+--- a/form.c
++++ b/form.c
+@@ -10,8 +10,10 @@
+ #include "regex.h"
+ 
+ extern Str *textarea_str;
++extern int max_textarea;
+ #ifdef MENU_SELECT
+ extern FormSelectOption *select_option;
++extern int max_select;
+ #include "menu.h"
+ #endif				/* MENU_SELECT */
+ 
+@@ -122,10 +124,12 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
+     parsedtag_get_value(tag, ATTR_SIZE, &item->size);
+     parsedtag_get_value(tag, ATTR_MAXLENGTH, &item->maxlength);
+     item->readonly = parsedtag_exists(tag, ATTR_READONLY);
+-    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i))
++    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i)
++	&& i >= 0 && i < max_textarea)
+ 	item->value = item->init_value = textarea_str[i];
+ #ifdef MENU_SELECT
+-    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i))
++    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i)
++	&& i >= 0 && i < max_select)
+ 	item->select_option = select_option[i].first;
+ #endif				/* MENU_SELECT */
+     if (parsedtag_get_value(tag, ATTR_ROWS, &p))

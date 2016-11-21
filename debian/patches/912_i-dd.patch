@@ -1,0 +1,34 @@
+Subject: Fix uninitialised values for <i> and <dd>
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/16 [CVE-2016-9435] [CVE-2016-9436]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=33509cc81ec5f2ba44eb6fd98bd5c1b5873e46bd
+
+diff --git a/file.c b/file.c
+index 68d625c..ac5247f 100644
+--- a/file.c
++++ b/file.c
+@@ -4669,6 +4669,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+     case HTML_DD:
+ 	CLOSE_A;
+ 	CLOSE_DT;
++	if (h_env->envc == 0 ||
++	    (h_env->envc_real < h_env->nenv &&
++	     envs[h_env->envc].env != HTML_DL &&
++	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
++	    PUSH_ENV(HTML_DL);
++	}
+ 	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
+ 	    if (obuf->pos > envs[h_env->envc].indent)
+ 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
+diff --git a/parsetagx.c b/parsetagx.c
+index 6b627d2..e8486ba 100644
+--- a/parsetagx.c
++++ b/parsetagx.c
+@@ -120,6 +120,7 @@ parse_tag(char **s, int internal)
+     int i, attr_id = 0, nattr;
+ 
+     /* Parse tag name */
++    tagname[0] = '\0';
+     q = (*s) + 1;
+     p = tagname;
+     if (*q == '/') {

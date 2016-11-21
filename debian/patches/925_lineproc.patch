@@ -1,0 +1,45 @@
+Subject: Prevent infinite recursion in HTMLlineproc0
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/36
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ff8510ab954ac5db478964351f6a78891c34f1d8
+
+diff --git a/file.c b/file.c
+index ecc1e2f..0cef9ff 100644
+--- a/file.c
++++ b/file.c
+@@ -4909,13 +4909,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+ #ifdef USE_IMAGE
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
+-	    if (i > obuf->top_margin)
+-		obuf->top_margin = i;
++	    if ((short)i > obuf->top_margin)
++		obuf->top_margin = (short)i;
+ 	}
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &i)) {
+-	    if (i > obuf->bottom_margin)
+-		obuf->bottom_margin = i;
++	    if ((short)i > obuf->bottom_margin)
++		obuf->bottom_margin = (short)i;
+ 	}
+ #endif
+ 	return 0;
+@@ -4929,13 +4929,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+     case HTML_INPUT_ALT:
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
+-	    if (i > obuf->top_margin)
+-		obuf->top_margin = i;
++	    if ((short)i > obuf->top_margin)
++		obuf->top_margin = (short)i;
+ 	}
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &i)) {
+-	    if (i > obuf->bottom_margin)
+-		obuf->bottom_margin = i;
++	    if ((short)i > obuf->bottom_margin)
++		obuf->bottom_margin = (short)i;
+ 	}
+ 	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq)) {
+ 	    obuf->input_alt.hseq = hseq;

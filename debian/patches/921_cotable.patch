@@ -1,0 +1,18 @@
+Subject: Prevent deref null pointer in renderCoTable()
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/20#issuecomment-260649537
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ec99f186380d26ebf791569fdbc56dae60632365
+
+diff --git a/table.c b/table.c
+index 8cd79e3..1b425db 100644
+--- a/table.c
++++ b/table.c
+@@ -1649,6 +1649,8 @@ renderCoTable(struct table *tbl, int maxlimit)
+ 
+     for (i = 0; i < tbl->ntable; i++) {
+ 	t = tbl->tables[i].ptr;
++	if (t == NULL)
++	    continue;
+ 	col = tbl->tables[i].col;
+ 	row = tbl->tables[i].row;
+ 	indent = tbl->tables[i].indent;

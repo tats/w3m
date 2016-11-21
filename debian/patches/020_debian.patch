@@ -60,10 +60,113 @@ index 8f443c1..5fb6581 100755
  	$input = "w3m-control: GOTO_LINK";
  }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..f9cc112 100644
+index 88358ef..90443aa 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,1198 @@
+@@ -1,3 +1,1303 @@
++2016-11-20  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++2016-11-19  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++2016-11-18  Tatsuya Kinoshita  <tats@debian.org>
++
++	* ChangeLog, NEWS: Add CVE IDs.
++	cf. https://security-tracker.debian.org/tracker/source-package/w3m
++	    http://www.openwall.com/lists/oss-security/2016/11/18/3
++
++	* libwc/ucs.map: Fix type mismatch for pcsw_ucs_map_size.
++	cf. https://github.com/tats/w3m/issues/43
++
++	* libwc/ucs.c, libwc/ucs.map:
++	Prevent global-buffer-overflow in wc_any_to_ucs().
++	Bug-Debian: https://github.com/tats/w3m/issues/43
++
++2016-11-17  Tatsuya Kinoshita  <tats@debian.org>
++
++	* url.c: Prevent global-buffer-overflow in parseURL().
++	Bug-Debian: https://github.com/tats/w3m/issues/41
++
++	* file.c: Prevent deref null pointer in HTMLlineproc0().
++	Bug-Debian: https://github.com/tats/w3m/issues/42
++
++2016-11-15  Tatsuya Kinoshita  <tats@debian.org>
++
++	* table.c: Prevent deref null pointer in renderCoTable().
++	Bug-Debian: https://github.com/tats/w3m/issues/20#issuecomment-260649537
++
++	* file.c, proto.h, table.c:
++	Prevent infinite recursion with nested table and textarea.
++	Bug-Debian: https://github.com/tats/w3m/issues/20#issuecomment-260590257
++	[CVE-2016-9439]
++
++	* table.c:
++	Revert "Prevent infinite recursion with nested table and textarea".
++	This reverts commit f393faf55975a94217df479e1bd06ee4403c6958.
++
++	* anchor.c: Prevent deref null pointer in shiftAnchorPosition().
++	Bug-Debian: https://github.com/tats/w3m/issues/40
++
++2016-11-14  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Prevent null pointer deref due to bad form id.
++	Bug-Debian: https://github.com/tats/w3m/issues/39
++
++	* display.c, file.c, fm.h, symbol.c:
++	Prevent array index out of bounds for symbol.
++	Bug-Debian: https://github.com/tats/w3m/issues/38
++
++2016-11-13  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c:
++	Prevent null pointer dereference in HTMLlineproc2body for textarea_int.
++	Bug-Debian: https://github.com/tats/w3m/issues/32#issuecomment-260170163
++
++2016-11-12  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++	* table.c: Prevent infinite recursion with nested table and textarea.
++	Bug-Debian: https://github.com/tats/w3m/issues/20
++
++2016-11-09  Tatsuya Kinoshita  <tats@debian.org>
++
++	* table.c: Check indent_level to prevent infinite recursion.
++	Bug-Debian: https://github.com/tats/w3m/issues/37
++
++2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Prevent infinite recursion in HTMLlineproc0.
++	Bug-Debian: https://github.com/tats/w3m/issues/36
++
++	* NEWS, w3m-doc/install.html.in:
++	Update documents for included w3mdict.cgi.
++
++2016-11-07  ITOH Yasufumi  <itohy@NetBSD.org>
++
++	* main.c: Fix suspend (^Z) behavior.
++	Suspend the job w3m belongs to, not w3m only.
++	Signed-off-by: Thomas Klausner <wiz@NetBSD.org>
++	Bug-Debian: https://github.com/tats/w3m/pull/34
++	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/pkgsrc/www/w3m/patches/patch-ab?rev=1.4&content-type=text/x-cvsweb-markup
++
++2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
++
++	* form.c: Prevent dereference near-null pointer in formUpdateBuffer.
++	Bug-Debian: https://github.com/tats/w3m/issues/35
++
++	* file.c: Prevent crash after allocate string of negative size.
++	Bug-Debian: https://github.com/tats/w3m/issues/33
++
++	* file.c: Prevent memory exhausted due to repeat appending "</table>".
++	Bug-Debian: https://github.com/tats/w3m/issues/23
++
++	* file.c: Prevent null pointer dereference in HTMLlineproc2body.
++	Bug-Debian: https://github.com/tats/w3m/issues/32
++
 +2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* table.c, table.h, textlist.h:
@@ -91,6 +194,7 @@ index 88358ef..f9cc112 100644
 +	* form.c:
 +	Fix incorrect dereference in formUpdateBuffer when MENU_SELECT.
 +	cf. https://github.com/tats/w3m/commit/ec9eb22e008a69ea9dc21fdca4b9b836679965ee
++	    https://github.com/tats/w3m/issues/28
 +
 +2016-10-08  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -99,22 +203,22 @@ index 88358ef..f9cc112 100644
 +	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
 +
 +	* form.c: Prevent global-buffer-overflow write in formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/29
++	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
 +
 +	* form.c: Fix null pointer dereference in formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/28
++	Bug-Debian: https://github.com/tats/w3m/issues/28 [CVE-2016-9443]
 +
 +2016-08-30  Kuang-che Wu  <kcwu@google.com>
 +
 +	* Str.c: Fix potential heap buffer corruption due to Strgrow.
-+	Origin: https://github.com/tats/w3m/pull/27
++	Origin: https://github.com/tats/w3m/pull/27 [CVE-2016-9442]
 +
 +2016-08-29  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* anchor.c:
 +	Prevent segfault due to buffer overflows in addMultirowsForm.
-+	Bug-Debian: https://github.com/tats/w3m/issues/21
-+	Bug-Debian: https://github.com/tats/w3m/issues/26
++	Bug-Debian: https://github.com/tats/w3m/issues/21 [CVE-2016-9425]
++	Bug-Debian: https://github.com/tats/w3m/issues/26 [CVE-2016-9428]
 +
 +	* form.c: Prevent segfault for formUpdateBuffer.
 +	Bug-Debian: https://github.com/tats/w3m/issues/13#issuecomment-242981906
@@ -122,18 +226,19 @@ index 88358ef..f9cc112 100644
 +2016-08-24  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* table.c: Prevent segfault with malformed table_alt.
-+	Bug-Debian: https://github.com/tats/w3m/issues/24
++	Bug-Debian: https://github.com/tats/w3m/issues/24 [CVE-2016-9441]
 +
 +	* form.c: Prevent segfault for formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/22
++	Bug-Debian: https://github.com/tats/w3m/issues/22 [CVE-2016-9440]
 +
 +	* table.c: Truncate max_width for renderTable.
-+	Bug-Debian: https://github.com/tats/w3m/issues/25
++	Bug-Debian: https://github.com/tats/w3m/issues/25 [CVE-2016-9426]
 +
 +2016-08-20  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c, parsetagx.c: Fix uninitialised values for <i> and <dd>.
 +	Bug-Debian: https://github.com/tats/w3m/issues/16
++	[CVE-2016-9435] [CVE-2016-9436]
 +
 +	* file.c, parsetagx.c:
 +	Revert "Fix uninitialised values for <i> and <dd>".
@@ -149,30 +254,30 @@ index 88358ef..f9cc112 100644
 +
 +	* table.c: Fix table rowspan and colspan.
 +	Origin: https://github.com/tats/w3m/pull/19
-+	Bug-Debian: https://github.com/tats/w3m/issues/8
++	Bug-Debian: https://github.com/tats/w3m/issues/8 [CVE-2016-9422]
 +
 +2016-08-18  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c: Prevent segfault with malformed input_alt.
-+	Bug-Debian: https://github.com/tats/w3m/issues/18
++	Bug-Debian: https://github.com/tats/w3m/issues/18 [CVE-2016-9438]
 +
 +	* file.c: Prevent segfault with incorrect button type.
-+	Bug-Debian: https://github.com/tats/w3m/issues/17
++	Bug-Debian: https://github.com/tats/w3m/issues/17 [CVE-2016-9437]
 +
 +2016-08-17  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c: Prevent segfault with incorrect form_int fid.
-+	Bug-Debian: https://github.com/tats/w3m/issues/15
++	Bug-Debian: https://github.com/tats/w3m/issues/15 [CVE-2016-9434]
 +
 +	* libwc/iso2022.c: Prevent segfault when iso2022 parsing.
-+	Bug-Debian: https://github.com/tats/w3m/issues/14
++	Bug-Debian: https://github.com/tats/w3m/issues/14 [CVE-2016-9433]
 +
 +	* form.c: Prevent segfault for formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/13
++	Bug-Debian: https://github.com/tats/w3m/issues/13 [CVE-2016-9432]
 +
 +	* file.c, form.c:
 +	Prevent negative array index for selectnumber and textareanumber.
-+	Bug-Debian: https://github.com/tats/w3m/issues/12
++	Bug-Debian: https://github.com/tats/w3m/issues/12 [CVE-2016-9424]
 +
 +2016-08-16  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -182,13 +287,13 @@ index 88358ef..f9cc112 100644
 +2016-08-15  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* form.c: Prevent segfault for formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/9
-+	Bug-Debian: https://github.com/tats/w3m/issues/10
++	Bug-Debian: https://github.com/tats/w3m/issues/9 [CVE-2016-9423]
++	Bug-Debian: https://github.com/tats/w3m/issues/10 [CVE-2016-9431]
 +
 +2016-08-09  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c: Prevent segfault with malformed input type.
-+	Bug-Debian: https://github.com/tats/w3m/issues/7
++	Bug-Debian: https://github.com/tats/w3m/issues/7 [CVE-2016-9430]
 +
 +2016-08-08  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -376,7 +481,7 @@ index 88358ef..f9cc112 100644
 +	* doc-jp/MANUAL.html, doc/MANUAL.html, fm.h, main.c, rc.c:
 +	Add extbrowser4, extbrowser5, ..., and extbrowser9.
 +	e.g.
-+	- extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b
++	- extbrowser8 url=%s && printf %s "$url" | xsel && printf %s "$url" | xsel -b &
 +	- extbrowser9 mpv %s &
 +	cf. https://github.com/spcmd/w3m
 +
@@ -1314,11 +1419,19 @@ index 7d692f9..453072d 100644
  	do	\
  		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
 diff --git a/NEWS b/NEWS
-index 66e309d..5fb5f24 100644
+index 66e309d..b80e8ed 100644
 --- a/NEWS
 +++ b/NEWS
-@@ -1,3 +1,40 @@
-+w3m X.X.X - YYYY-MM-DD
+@@ -1,3 +1,55 @@
++Debian's w3m 0.5.3+git20161120
++
++* bug fixes
++ - fix multiple flaws with malformed text
++   (stack overflow, buffer overflow, null deref, out of memory)
++ - fix stack overflow with nested table and textarea [CVE-2016-9439]
++ - fix suspend (^Z) behavior
++
++Debian's w3m 0.5.3+git20161031
 +
 +* new features
 + - support OSC 5379 remote imaging and sixel graphics
@@ -1327,13 +1440,20 @@ index 66e309d..5fb5f24 100644
 + - support FreeBSD framebuffer
 + - support button element
 + - support meta charset
++ - include w3mdict.cgi to use a dictd dictionary query
 + - add extbrowser4..9
 + - add display_borders to display 0 pixel table borders
 + - add siteconf feature
 + - add German translation for options setting panel
 + - add translations for de, zh_CN and zh_TW
 +* bug fixes
-+ - fix segfaults with malformed text
++ - fix multiple flaws with malformed text
++   [CVE-2016-9422], [CVE-2016-9423], [CVE-2016-9424], [CVE-2016-9425],
++   [CVE-2016-9426], [CVE-2016-9428], [CVE-2016-9429], [CVE-2016-9430],
++   [CVE-2016-9431], [CVE-2016-9432], [CVE-2016-9433], [CVE-2016-9434],
++   [CVE-2016-9435], [CVE-2016-9436], [CVE-2016-9437], [CVE-2016-9438],
++   [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9443]
++ - fix potential heap buffer corruption due to Strgrow [CVE-2016-9442]
 + - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
 + - set ssl_verify_server to 1 by default
 + - disable RC4, export ciphers, and keys < 128 bits
@@ -1696,7 +1816,7 @@ index 0000000..fa0d391
 +
 +#endif /* W3_ALLOC_H */
 diff --git a/anchor.c b/anchor.c
-index 27bbd56..fa8d3eb 100644
+index 27bbd56..10d6c1c 100644
 --- a/anchor.c
 +++ b/anchor.c
 @@ -11,7 +11,7 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
@@ -1738,6 +1858,15 @@ index 27bbd56..fa8d3eb 100644
  			'\0', line, pos);
  }
  
+@@ -549,7 +551,7 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
+ 	    break;
+ 	if (a->start.pos > pos) {
+ 	    a->start.pos += shift;
+-	    if (hl->marks[a->hseq].line == line)
++	    if (hl && hl->marks && hl->marks[a->hseq].line == line)
+ 		hl->marks[a->hseq].pos = a->start.pos;
+ 	}
+ 	if (a->end.pos >= pos)
 @@ -641,7 +643,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
  {
      int i, j, k, col, ecol, pos;
@@ -5152,7 +5281,7 @@ index 8020f6d..705e277 100644
  	if (cookie->commentURL->length == 0)
  	    cookie->commentURL = NULL;
 diff --git a/display.c b/display.c
-index e00eb0c..d4f336a 100644
+index e00eb0c..f1d6f99 100644
 --- a/display.c
 +++ b/display.c
 @@ -257,7 +257,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
@@ -5226,6 +5355,29 @@ index e00eb0c..d4f336a 100644
  		if (image->width > 0)
  		    w = image->width - sx;
  		else
+@@ -1119,18 +1129,18 @@ addChar(char c, Lineprop mode)
+ 	    }
+ #ifdef USE_M17N
+ 	    if (w == 2 && WcOption.use_wide)
+-		addstr(graph2_symbol[(int)c]);
++		addstr(graph2_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
+ 	    else
+ #endif
+-		addch(*graph_symbol[(int)c]);
++		addch(*graph_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
+ 	}
+ 	else {
+ #ifdef USE_M17N
+ 	    symbol = get_symbol(DisplayCharset, &w);
+-	    addstr(symbol[(int)c]);
++	    addstr(symbol[(unsigned char)c % N_SYMBOL]);
+ #else
+ 	    symbol = get_symbol();
+-	    addch(*symbol[(int)c]);
++	    addch(*symbol[(unsigned char)c % N_SYMBOL]);
+ #endif
+ 	}
+     }
 diff --git a/doc-de/FAQ.html b/doc-de/FAQ.html
 new file mode 100644
 index 0000000..d88ba64
@@ -14049,7 +14201,7 @@ index 8fe1215..dcc6edd 100644
      QuietMessage = TRUE;
      fmInitialized = FALSE;
 diff --git a/file.c b/file.c
-index 567d41e..b66f8c8 100644
+index 567d41e..86af3a9 100644
 --- a/file.c
 +++ b/file.c
 @@ -26,6 +26,8 @@
@@ -14676,13 +14828,43 @@ index 567d41e..b66f8c8 100644
  	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
  	    if (obuf->pos > envs[h_env->envc].indent)
  		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
-@@ -4861,7 +4954,35 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
- 	    if (i > obuf->bottom_margin)
- 		obuf->bottom_margin = i;
+@@ -4833,13 +4926,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+ #ifdef USE_IMAGE
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
+-	    if (i > obuf->top_margin)
+-		obuf->top_margin = i;
++	    if ((short)i > obuf->top_margin)
++		obuf->top_margin = (short)i;
  	}
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &i)) {
+-	    if (i > obuf->bottom_margin)
+-		obuf->bottom_margin = i;
++	    if ((short)i > obuf->bottom_margin)
++		obuf->bottom_margin = (short)i;
+ 	}
+ #endif
+ 	return 0;
+@@ -4853,15 +4946,43 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+     case HTML_INPUT_ALT:
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
+-	    if (i > obuf->top_margin)
+-		obuf->top_margin = i;
++	    if ((short)i > obuf->top_margin)
++		obuf->top_margin = (short)i;
+ 	}
+ 	i = 0;
+ 	if (parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &i)) {
+-	    if (i > obuf->bottom_margin)
+-		obuf->bottom_margin = i;
++	    if ((short)i > obuf->bottom_margin)
++		obuf->bottom_margin = (short)i;
++	}
 +	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq)) {
 +	    obuf->input_alt.hseq = hseq;
-+	}
+ 	}
 +	if (parsedtag_get_value(tag, ATTR_FID, &i)) {
 +	    obuf->input_alt.fid = i;
 +	}
@@ -14721,7 +14903,7 @@ index 567d41e..b66f8c8 100644
  	if (parsedtag_get_value(tag, ATTR_WIDTH, &i)) {
  	    if (obuf->table_level == 0)
  		width = REAL_WIDTH(i, h_env->limit - envs[h_env->envc].indent);
-@@ -4892,9 +5015,18 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4892,9 +5015,24 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	if (parsedtag_exists(tag, ATTR_HBORDER))
  	    w = BORDER_NOWIN;
@@ -14731,6 +14913,12 @@ index 567d41e..b66f8c8 100644
  	parsedtag_get_value(tag, ATTR_CELLSPACING, &x);
  	parsedtag_get_value(tag, ATTR_CELLPADDING, &y);
  	parsedtag_get_value(tag, ATTR_VSPACE, &z);
++	if (x < 0)
++	    x = 0;
++	if (y < 0)
++	    y = 0;
++	if (z < 0)
++	    z = 0;
 +	if (x > MAX_CELLSPACING)
 +	    x = MAX_CELLSPACING;
 +	if (y > MAX_CELLPADDING)
@@ -14740,7 +14928,7 @@ index 567d41e..b66f8c8 100644
  #ifdef ID_EXT
  	parsedtag_get_value(tag, ATTR_ID, &id);
  #endif				/* ID_EXT */
-@@ -4970,6 +5102,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4970,6 +5108,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_INPUT:
  	close_anchor(h_env, obuf);
  	tmp = process_input(tag);
@@ -14757,7 +14945,7 @@ index 567d41e..b66f8c8 100644
  	if (tmp)
  	    HTMLlineproc1(tmp->ptr, h_env);
  	return 1;
-@@ -5067,11 +5209,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -5067,11 +5215,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	return 1;
      case HTML_BASE:
@@ -14771,7 +14959,7 @@ index 567d41e..b66f8c8 100644
  	    parseURL(p, cur_baseURL, NULL);
  	}
  #endif
-@@ -5329,6 +5470,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5329,6 +5476,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
      Anchor **a_select = NULL;
  #endif
@@ -14785,7 +14973,7 @@ index 567d41e..b66f8c8 100644
  
      if (out_size == 0) {
  	out_size = LINELEN;
-@@ -5523,16 +5671,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5523,16 +5677,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    hseq = 0;
  		    id = NULL;
  		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -14807,7 +14995,7 @@ index 567d41e..b66f8c8 100644
  		    parsedtag_get_value(tag, ATTR_TITLE, &s);
  		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
  		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-@@ -5618,7 +5767,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5618,7 +5773,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    ParsedURL u;
  			    Image *image;
  
@@ -14816,7 +15004,7 @@ index 567d41e..b66f8c8 100644
  			    a_img->image = image = New(Image);
  			    image->url = parsedURL2Str(&u)->ptr;
  			    if (!uncompressed_file_type(u.file, &image->ext))
-@@ -5639,7 +5788,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5639,7 +5794,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    image->map = q;
  			    image->ismap = ismap;
  			    image->touch = 0;
@@ -14825,7 +15013,17 @@ index 567d41e..b66f8c8 100644
  						    IMG_FLAG_SKIP);
  			}
  			else if (iseq < 0) {
-@@ -5689,6 +5838,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5678,7 +5833,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			parsedtag_get_value(tag, ATTR_FID, &form_id);
+ 			parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);
+ 			parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &bottom);
+-			if (form_id < 0 || form_id > form_max || forms == NULL)
++			if (form_id < 0 || form_id > form_max ||
++			    forms == NULL || forms[form_id] == NULL)
+ 			    break;	/* outside of <form>..</form> */
+ 			form = forms[form_id];
+ 			if (hseq > 0) {
+@@ -5689,6 +5845,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  				putHmarker(buf->hmarklist, currentLn(buf),
  					   hpos, hseq - 1);
  			}
@@ -14847,7 +15045,7 @@ index 567d41e..b66f8c8 100644
  			if (!form->target)
  			    form->target = buf->baseTarget;
  			if (a_textarea &&
-@@ -5761,8 +5925,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5761,8 +5932,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			break;
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
  			MapArea *a;
@@ -14858,7 +15056,7 @@ index 567d41e..b66f8c8 100644
  			t = NULL;
  			parsedtag_get_value(tag, ATTR_TARGET, &t);
  			q = "";
-@@ -5811,11 +5975,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5811,11 +5982,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    break;
  		case HTML_BASE:
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
@@ -14875,7 +15073,7 @@ index 567d41e..b66f8c8 100644
  		    }
  		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
  			buf->baseTarget =
-@@ -5830,8 +5997,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5830,8 +6004,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			int refresh_interval = getMetaRefreshParam(q, &tmp);
  #ifdef USE_ALARM
  			if (tmp) {
@@ -14886,7 +15084,7 @@ index 567d41e..b66f8c8 100644
  			    buf->event = setAlarmEvent(buf->event,
  						       refresh_interval,
  						       AL_IMPLICIT_ONCE,
-@@ -5844,8 +6011,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5844,8 +6018,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  						       FUNCNAME_reload, NULL);
  #else
  			if (tmp && refresh_interval == 0) {
@@ -14897,7 +15095,7 @@ index 567d41e..b66f8c8 100644
  			    pushEvent(FUNCNAME_gorURL, p);
  			}
  #endif
-@@ -5864,7 +6031,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5864,14 +6038,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		case HTML_TEXTAREA_INT:
  		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
  					    &n_textarea)
@@ -14906,7 +15104,15 @@ index 567d41e..b66f8c8 100644
  			textarea_str[n_textarea] = Strnew();
  		    }
  		    else
-@@ -5881,7 +6048,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			n_textarea = -1;
+ 		    break;
+ 		case HTML_N_TEXTAREA_INT:
+-		    if (n_textarea >= 0) {
++		    if (a_textarea && n_textarea >= 0) {
+ 			FormItemList *item =
+ 			    (FormItemList *)a_textarea[n_textarea]->url;
+ 			item->init_value = item->value =
+@@ -5881,7 +6055,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
  		case HTML_SELECT_INT:
  		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
@@ -14915,7 +15121,16 @@ index 567d41e..b66f8c8 100644
  			select_option[n_select].first = NULL;
  			select_option[n_select].last = NULL;
  		    }
-@@ -5929,7 +6096,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5889,7 +6063,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			n_select = -1;
+ 		    break;
+ 		case HTML_N_SELECT_INT:
+-		    if (n_select >= 0) {
++		    if (a_select && n_select >= 0) {
+ 			FormItemList *item =
+ 			    (FormItemList *)a_select[n_select]->url;
+ 			item->select_option = select_option[n_select].first;
+@@ -5929,7 +6103,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef	ID_EXT
  		id = NULL;
  		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
@@ -14924,7 +15139,7 @@ index 567d41e..b66f8c8 100644
  		    registerName(buf, id, currentLn(buf), pos);
  		}
  		if (renderFrameSet &&
-@@ -5964,7 +6131,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5964,7 +6138,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  	fclose(debug);
  #endif
      for (form_id = 1; form_id <= form_max; form_id++)
@@ -14934,7 +15149,7 @@ index 567d41e..b66f8c8 100644
      buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
      if (n_textarea)
  	addMultirowsForm(buf, buf->formitem);
-@@ -5982,7 +6150,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+@@ -5982,7 +6157,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
  
      parsedtag_get_value(tag, ATTR_HREF, &href);
      if (href)
@@ -14944,7 +15159,39 @@ index 567d41e..b66f8c8 100644
      parsedtag_get_value(tag, ATTR_TITLE, &title);
      parsedtag_get_value(tag, ATTR_TYPE, &ctype);
      parsedtag_get_value(tag, ATTR_REL, &rel);
-@@ -6756,6 +6925,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
+@@ -6154,10 +6330,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+     while (*line != '\0') {
+ 	char *str, *p;
+ 	int is_tag = FALSE;
+-	int pre_mode = (obuf->table_level >= 0) ? tbl_mode->pre_mode :
+-	    obuf->flag;
+-	int end_tag = (obuf->table_level >= 0) ? tbl_mode->end_tag :
+-	    obuf->end_tag;
++	int pre_mode = (obuf->table_level >= 0 && tbl_mode) ?
++	    tbl_mode->pre_mode : obuf->flag;
++	int end_tag = (obuf->table_level >= 0 && tbl_mode) ?
++	    tbl_mode->end_tag : obuf->end_tag;
+ 
+ 	if (*line == '<' || obuf->status != R_ST_NORMAL) {
+ 	    /* 
+@@ -6239,7 +6415,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 	}
+ 
+       proc_normal:
+-	if (obuf->table_level >= 0) {
++	if (obuf->table_level >= 0 && tbl && tbl_mode) {
+ 	    /* 
+ 	     * within table: in <table>..</table>, all input tokens
+ 	     * are fed to the table renderer, and then the renderer
+@@ -6272,6 +6448,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
+ 		}
+ 		save_fonteffect(h_env, obuf);
++		initRenderTable();
+ 		renderTable(tbl, tbl_width, h_env);
+ 		restore_fonteffect(h_env, obuf);
+ 		obuf->flag &= ~RB_IGNORE_P;
+@@ -6756,6 +6933,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
      obuf->nobr_level = 0;
      bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
      obuf->img_alt = 0;
@@ -14957,7 +15204,7 @@ index 567d41e..b66f8c8 100644
      obuf->in_bold = 0;
      obuf->in_italic = 0;
      obuf->in_under = 0;
-@@ -6791,6 +6966,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+@@ -6791,6 +6974,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
  	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
  	obuf->img_alt = NULL;
      }
@@ -14973,7 +15220,29 @@ index 567d41e..b66f8c8 100644
      if (obuf->in_bold) {
  	push_tag(obuf, "</b>", HTML_N_B);
  	obuf->in_bold = 0;
-@@ -6963,8 +7147,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6824,9 +7016,12 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+ 	obuf->table_level = MAX_TABLE - 1;
+ 
+     while (obuf->table_level >= 0) {
++	int tmp = obuf->table_level;
+ 	table_mode[obuf->table_level].pre_mode
+ 	    &= ~(TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN);
+ 	HTMLlineproc1("</table>", h_env);
++	if (obuf->table_level >= tmp)
++	    break;
+     }
+ }
+ 
+@@ -6848,6 +7043,8 @@ print_internal_information(struct html_feed_environ *henv)
+     if (form_max >= 0) {
+ 	FormList *fp;
+ 	for (i = 0; i <= form_max; i++) {
++	    if (forms[i] == NULL)
++		continue;
+ 	    fp = forms[i];
+ 	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
+ 			i, html_quote(fp->action->ptr),
+@@ -6963,8 +7160,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	image_flag = IMG_FLAG_AUTO;
      else
  	image_flag = IMG_FLAG_SKIP;
@@ -14982,7 +15251,7 @@ index 567d41e..b66f8c8 100644
  #endif
  
      if (w3m_halfload) {
-@@ -6987,6 +7169,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6987,6 +7182,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	htmlenv1.f = stdout;
      else
  	htmlenv1.buf = newTextLineList();
@@ -14992,7 +15261,7 @@ index 567d41e..b66f8c8 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-@@ -7048,18 +7233,23 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7048,18 +7246,23 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	}
  #endif
  	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
@@ -15018,7 +15287,7 @@ index 567d41e..b66f8c8 100644
      if (htmlenv1.title)
  	newBuf->buffername = htmlenv1.title;
      if (w3m_halfdump) {
-@@ -7096,16 +7286,17 @@ loadHTMLString(Str page)
+@@ -7096,16 +7299,17 @@ loadHTMLString(Str page)
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      Buffer *newBuf;
  
@@ -15038,7 +15307,7 @@ index 567d41e..b66f8c8 100644
  #ifdef USE_M17N
      newBuf->document_charset = InnerCharset;
  #endif
-@@ -7115,6 +7306,7 @@ loadHTMLString(Str page)
+@@ -7115,6 +7319,7 @@ loadHTMLString(Str page)
  #endif
  
      TRAP_OFF;
@@ -15046,7 +15315,7 @@ index 567d41e..b66f8c8 100644
      newBuf->topLine = newBuf->firstLine;
      newBuf->lastLine = newBuf->currentLine;
      newBuf->currentLine = newBuf->firstLine;
-@@ -7207,7 +7399,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+@@ -7207,7 +7412,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
  	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
  			   "/", file->ptr, NULL)->ptr;
  	Strcat_m_charp(tmp, "<a href=\"",
@@ -15055,7 +15324,7 @@ index 567d41e..b66f8c8 100644
  		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
      }
  
-@@ -7243,7 +7435,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
+@@ -7243,7 +7448,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
  
      if (newBuf == NULL)
  	newBuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -15063,7 +15332,7 @@ index 567d41e..b66f8c8 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	goto _end;
-@@ -7331,6 +7522,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7331,6 +7535,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      URLFile f;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      struct stat st;
@@ -15071,7 +15340,7 @@ index 567d41e..b66f8c8 100644
  
      loadImage(newBuf, IMG_FLAG_STOP);
      image.url = uf->url;
-@@ -7338,20 +7530,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7338,20 +7543,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      image.width = -1;
      image.height = -1;
      image.cache = NULL;
@@ -15095,7 +15364,7 @@ index 567d41e..b66f8c8 100644
      TRAP_OFF;
  
      cache->loaded = IMG_FLAG_LOADED;
-@@ -7371,6 +7561,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7371,6 +7574,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
  
      init_stream(&f, SCM_LOCAL, newStrStream(tmp));
      loadHTMLstream(&f, newBuf, src, TRUE);
@@ -15103,7 +15372,16 @@ index 567d41e..b66f8c8 100644
      if (src)
  	fclose(src);
  
-@@ -7580,8 +7771,11 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7411,7 +7615,7 @@ conv_symbol(Line *l)
+ 		symbol = get_symbol(DisplayCharset, &w);
+ #endif
+ 	    }
+-	    Strcat_charp(tmp, symbol[(int)c]);
++	    Strcat_charp(tmp, symbol[(unsigned char)c % N_SYMBOL]);
+ #ifdef USE_M17N
+ 	    p += len - 1;
+ 	    pr += len - 1;
+@@ -7580,8 +7784,11 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_M17N
      content_charset = 0;
  #endif
@@ -15116,7 +15394,7 @@ index 567d41e..b66f8c8 100644
  	readHeader(&uf, t_buf, TRUE, NULL);
  	t = checkContentType(t_buf);
  	if (t == NULL)
-@@ -7609,14 +7803,13 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7609,14 +7816,13 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_IMAGE
      else if (activeImage && displayImage && !useExtImageViewer &&
  	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
@@ -15133,7 +15411,7 @@ index 567d41e..b66f8c8 100644
  	    UFclose(&uf);
  	    if (buf == NULL || buf == NO_BUFFER)
  		return buf;
-@@ -7629,8 +7822,6 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7629,8 +7835,6 @@ openGeneralPagerBuffer(InputStream stream)
  	}
      }
      buf->real_type = t;
@@ -15142,7 +15420,7 @@ index 567d41e..b66f8c8 100644
      return buf;
  }
  
-@@ -7766,6 +7957,8 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7766,6 +7970,8 @@ save2tmp(URLFile uf, char *tmpf)
      clen_t linelen = 0, trbyte = 0;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      static JMP_BUF env_bak;
@@ -15151,7 +15429,7 @@ index 567d41e..b66f8c8 100644
  
      ff = fopen(tmpf, "wb");
      if (ff == NULL) {
-@@ -7802,30 +7995,29 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7802,30 +8008,29 @@ save2tmp(URLFile uf, char *tmpf)
      else
  #endif				/* USE_NNTP */
      {
@@ -15194,7 +15472,7 @@ index 567d41e..b66f8c8 100644
  {
      Str tmpf, command;
      struct mailcap *mcap;
-@@ -7834,7 +8026,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7834,7 +8039,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
      char *header, *src = NULL, *ext = uf.ext;
  
      if (!(mcap = searchExtViewer(type)))
@@ -15203,7 +15481,7 @@ index 567d41e..b66f8c8 100644
  
      if (mcap->nametemplate) {
  	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
-@@ -7867,15 +8059,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7867,15 +8072,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	    UFclose(&uf);
  	    myExec(command->ptr);
  	}
@@ -15221,7 +15499,7 @@ index 567d41e..b66f8c8 100644
  	}
      }
      if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
-@@ -7918,14 +8108,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7918,14 +8121,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	buf = NO_BUFFER;
      }
      if (buf && buf != NO_BUFFER) {
@@ -15240,7 +15518,7 @@ index 567d41e..b66f8c8 100644
  }
  
  static int
-@@ -7935,7 +8124,8 @@ _MoveFile(char *path1, char *path2)
+@@ -7935,7 +8137,8 @@ _MoveFile(char *path1, char *path2)
      FILE *f2;
      int is_pipe;
      clen_t linelen = 0, trbyte = 0;
@@ -15250,7 +15528,7 @@ index 567d41e..b66f8c8 100644
  
      f1 = openIS(path1);
      if (f1 == NULL)
-@@ -7953,12 +8143,13 @@ _MoveFile(char *path1, char *path2)
+@@ -7953,12 +8156,13 @@ _MoveFile(char *path1, char *path2)
  	return -1;
      }
      current_content_length = 0;
@@ -15268,7 +15546,7 @@ index 567d41e..b66f8c8 100644
      ISclose(f1);
      if (is_pipe)
  	pclose(f2);
-@@ -7998,7 +8189,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
+@@ -7998,7 +8202,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
  	else {
  	    if (q) {
  		p = unescape_spaces(Strnew_charp(q))->ptr;
@@ -15277,7 +15555,7 @@ index 567d41e..b66f8c8 100644
  	    }
  	    p = expandPath(p);
  	    if (checkOverWrite(p) < 0)
-@@ -8317,21 +8508,23 @@ uncompress_stream(URLFile *uf, char **src)
+@@ -8317,21 +8521,23 @@ uncompress_stream(URLFile *uf, char **src)
  	}
  	if (pid2 == 0) {
  	    /* child2 */
@@ -15306,7 +15584,7 @@ index 567d41e..b66f8c8 100644
  	    exit(0);
  	}
  	/* child1 */
-@@ -8378,7 +8571,7 @@ lessopen_stream(char *path)
+@@ -8378,7 +8584,7 @@ lessopen_stream(char *path)
  	}
  	c = getc(fp);
  	if (c == EOF) {
@@ -15316,7 +15594,7 @@ index 567d41e..b66f8c8 100644
  	}
  	ungetc(c, fp);
 diff --git a/fm.h b/fm.h
-index 8378939..ede537b 100644
+index 8378939..96d3ab3 100644
 --- a/fm.h
 +++ b/fm.h
 @@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
@@ -15457,7 +15735,7 @@ index 8378939..ede537b 100644
  global int MarkAllPages init(FALSE);
  
  #ifdef USE_MIGEMO
-@@ -1065,11 +1098,12 @@ global char SimplePreserveSpace init(FALSE);
+@@ -1065,16 +1098,18 @@ global char SimplePreserveSpace init(FALSE);
  #define wc_Str_conv(x,charset0,charset1) (x)
  #define wc_Str_conv_strict(x,charset0,charset1) (x)
  #endif
@@ -15471,7 +15749,13 @@ index 8378939..ede537b 100644
  extern char *graph_symbol[];
  extern char *graph2_symbol[];
  extern int symbol_width;
-@@ -1113,9 +1147,9 @@ global MouseAction mouse_action;
+ extern int symbol_width0;
+ #define N_GRAPH_SYMBOL 32
++#define N_SYMBOL (N_GRAPH_SYMBOL + 14)
+ #define SYMBOL_BASE 0x20
+ global int no_rc_dir init(FALSE);
+ global char *rc_dir init(NULL);
+@@ -1113,9 +1148,9 @@ global MouseAction mouse_action;
  
  #ifdef USE_COOKIE
  global int default_use_cookie init(TRUE);
@@ -15484,7 +15768,7 @@ index 8378939..ede537b 100644
  #define ACCEPT_BAD_COOKIE_DISCARD	0
  #define ACCEPT_BAD_COOKIE_ACCEPT	1
  #define ACCEPT_BAD_COOKIE_ASK		2
-@@ -1135,7 +1169,7 @@ global int view_unseenobject init(TRUE);
+@@ -1135,7 +1170,7 @@ global int view_unseenobject init(TRUE);
  #endif
  
  #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
@@ -15493,7 +15777,7 @@ index 8378939..ede537b 100644
  global char *ssl_cert_file init(NULL);
  global char *ssl_key_file init(NULL);
  global char *ssl_ca_path init(NULL);
-@@ -1144,15 +1178,17 @@ global int ssl_path_modified init(FALSE);
+@@ -1144,15 +1179,17 @@ global int ssl_path_modified init(FALSE);
  #endif				/* defined(USE_SSL) &&
  				 * defined(USE_SSL_VERIFY) */
  #ifdef USE_SSL
@@ -15513,7 +15797,7 @@ index 8378939..ede537b 100644
  global double image_scale init(100);
  #endif
 diff --git a/form.c b/form.c
-index b7556ca..de7a4d9 100644
+index b7556ca..1aaaf19 100644
 --- a/form.c
 +++ b/form.c
 @@ -10,8 +10,10 @@
@@ -15551,16 +15835,17 @@ index b7556ca..de7a4d9 100644
  }
  
  void
-@@ -438,6 +442,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -438,6 +442,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
      switch (form->type) {
      case FORM_INPUT_CHECKBOX:
      case FORM_INPUT_RADIO:
-+	if (spos >= buf->currentLine->len || spos < 0)
++	if (buf->currentLine == NULL ||
++	    spos >= buf->currentLine->len || spos < 0)
 +	    break;
  	if (form->checked)
  	    buf->currentLine->lineBuf[spos] = '*';
  	else
-@@ -455,8 +461,14 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -455,8 +462,14 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
  	}
  	else
  #endif				/* MENU_SELECT */
@@ -15575,7 +15860,7 @@ index b7556ca..de7a4d9 100644
  	if (form->type == FORM_TEXTAREA) {
  	    int n = a->y - buf->currentLine->linenumber;
  	    if (n > 0)
-@@ -477,6 +489,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -477,6 +490,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
  		spos = a->start.pos;
  		epos = a->end.pos;
  	    }
@@ -15584,7 +15869,7 @@ index b7556ca..de7a4d9 100644
  	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
  				   rows > 1,
  				   form->type == FORM_INPUT_PASSWORD);
-@@ -787,7 +801,7 @@ struct pre_form {
+@@ -787,7 +802,7 @@ struct pre_form {
  static struct pre_form *PreForm = NULL;
  
  static struct pre_form *
@@ -15593,7 +15878,7 @@ index b7556ca..de7a4d9 100644
  {
      ParsedURL pu;
      struct pre_form *new;
-@@ -796,21 +810,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
+@@ -796,21 +811,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
  	new = prev->next = New(struct pre_form);
      else
  	new = PreForm = New(struct pre_form);
@@ -15619,7 +15904,7 @@ index b7556ca..de7a4d9 100644
      new->name = (name && *name) ? name : NULL;
      new->action = (action && *action) ? action : NULL;
      new->item = NULL;
-@@ -834,7 +840,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
+@@ -834,7 +841,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
      new->name = name;
      new->value = value;
      if (checked && *checked && (!strcmp(checked, "0") ||
@@ -15628,7 +15913,7 @@ index b7556ca..de7a4d9 100644
  				|| !strcasecmp(checked, "no")))
  	new->checked = 0;
      else
-@@ -875,6 +881,7 @@ loadPreForm(void)
+@@ -875,6 +882,7 @@ loadPreForm(void)
  	return;
      while (1) {
  	char *p, *s, *arg;
@@ -15636,7 +15921,7 @@ index b7556ca..de7a4d9 100644
  
  	line = Strfgets(fp);
  	if (line->length == 0)
-@@ -890,18 +897,20 @@ loadPreForm(void)
+@@ -890,18 +898,20 @@ loadPreForm(void)
  	if (*p == '#' || *p == '\0')
  	    continue;		/* comment or empty line */
  	s = getWord(&p);
@@ -15659,7 +15944,7 @@ index b7556ca..de7a4d9 100644
  	if (!strcmp(s, "form")) {
  	    if (!arg || !*arg)
  		continue;
-@@ -913,7 +922,7 @@ loadPreForm(void)
+@@ -913,7 +923,7 @@ loadPreForm(void)
  	    }
  	    if (pf->item) {
  		struct pre_form *prev = pf;
@@ -17661,7 +17946,7 @@ index d25c924..4a2ebf8 100644
  #include "wc.h"
  #ifdef USE_UNICODE
 diff --git a/libwc/ucs.c b/libwc/ucs.c
-index d7b6948..727e574 100644
+index d7b6948..18c3a67 100644
 --- a/libwc/ucs.c
 +++ b/libwc/ucs.c
 @@ -100,6 +100,7 @@ wc_ucs_to_any(wc_uint32 ucs, wc_table *t)
@@ -17696,7 +17981,14 @@ index d7b6948..727e574 100644
  	cc.code = WC_CS96W_N(cc.code);
  	break;
      case WC_CCS_A_CS942:
-@@ -180,6 +184,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+@@ -174,12 +178,14 @@ wc_any_to_ucs(wc_wchar_t cc)
+ 	    return WC_C_UCS2_EURO;
+ 	}
+ 	map = pcs_ucs_map[f - WC_F_PCS_BASE];
++	map_size = pcs_ucs_map_size[f - WC_F_PCS_BASE];
+ 	cc.code &= 0x7f;
+ 	break;
+     case WC_CCS_A_PCSW:
  	if (f < WC_F_PCS_BASE || f > WC_F_PCSW_END)
  	    return WC_C_UCS4_ERROR;
  	map = pcsw_ucs_map[f - WC_F_PCS_BASE];
@@ -17704,7 +17996,7 @@ index d7b6948..727e574 100644
  	switch (cc.ccs) {
  	case WC_CCS_BIG5:
  	    cc.code = WC_BIG5_N(cc.code);
-@@ -271,6 +276,8 @@ wc_any_to_ucs(wc_wchar_t cc)
+@@ -271,6 +277,8 @@ wc_any_to_ucs(wc_wchar_t cc)
      }
      if (map == NULL)
  	return WC_C_UCS4_ERROR;
@@ -17714,10 +18006,60 @@ index d7b6948..727e574 100644
      return cc.code ? cc.code : WC_C_UCS4_ERROR;
  }
 diff --git a/libwc/ucs.map b/libwc/ucs.map
-index dfac6d9..5d6f688 100644
+index dfac6d9..bed5dff 100644
 --- a/libwc/ucs.map
 +++ b/libwc/ucs.map
-@@ -195,7 +195,28 @@ static wc_uint16 *cs94w_ucs_map[] = {
+@@ -175,6 +175,49 @@ static wc_uint16 *pcs_ucs_map[] = {
+   NULL,			/* (Raw) */
+ };
+ 
++static wc_uint32 pcs_ucs_map_size[] = {
++  0x80,			/* cp437_ucs_map */
++  0x80,			/* cp737_ucs_map */
++  0x80,			/* cp775_ucs_map */
++  0x80,			/* cp850_ucs_map */
++  0x80,			/* cp852_ucs_map */
++  0x80,			/* cp855_ucs_map */
++  0x80,			/* cp856_ucs_map */
++  0x80,			/* cp857_ucs_map */
++  0x80,			/* cp860_ucs_map */
++  0x80,			/* cp861_ucs_map */
++  0x80,			/* cp862_ucs_map */
++  0x80,			/* cp863_ucs_map */
++  0x80,			/* cp864_ucs_map */
++  0x80,			/* cp865_ucs_map */
++  0x80,			/* cp866_ucs_map */
++  0x80,			/* cp869_ucs_map */
++  0x80,			/* cp874_ucs_map */
++  0x80,			/* cp1006_ucs_map */
++  0x80,			/* cp1250_ucs_map */
++  0x80,			/* cp1251_ucs_map */
++  0x80,			/* cp1252_ucs_map */
++  0x80,			/* cp1253_ucs_map */
++  0x80,			/* cp1254_ucs_map */
++  0x80,			/* cp1255_ucs_map */
++  0x80,			/* cp1256_ucs_map */
++  0x80,			/* cp1257_ucs_map */
++  0x80,			/* cp1258_ucs_map */
++  0,			/* NULL */
++  0x80,			/* tcvn57121_ucs_map */
++  0x20,			/* tcvn57122_ucs_map */
++  0,			/* NULL */
++  0x80,			/* viscii111_ucs_map */
++  0x20,			/* viscii112_ucs_map */
++  0x80,			/* vps1_ucs_map */
++  0x20,			/* vps2_ucs_map */
++  0x80,			/* koi8r_ucs_map */
++  0x80,			/* koi8u_ucs_map */
++  0x80,			/* nextstep_ucs_map */
++  0,			/* NULL */
++  0,			/* NULL (Raw) */
++};
++
+ static wc_uint16 *cs94w_ucs_map[] = {
+   jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
+   gb2312_ucs_map,		/* 41 (GB 2312) */
+@@ -195,7 +238,28 @@ static wc_uint16 *cs94w_ucs_map[] = {
    jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
  };
  
@@ -17746,7 +18088,7 @@ index dfac6d9..5d6f688 100644
  
  static wc_uint16 *pcsw_ucs_map[] = {
    big5_ucs_map,		/* Big5 */
-@@ -233,6 +254,42 @@ static wc_uint16 *pcsw_ucs_map[] = {
+@@ -233,6 +297,42 @@ static wc_uint16 *pcsw_ucs_map[] = {
    hkscs_ucs_map,	/* HKSCS-2 */
  };
  
@@ -17956,7 +18298,7 @@ index c0461df..f0c6242 100644
      int quoted;
      char *q = NULL;
 diff --git a/main.c b/main.c
-index b421943..bd424de 100644
+index b421943..85b0003 100644
 --- a/main.c
 +++ b/main.c
 @@ -1,6 +1,7 @@
@@ -18550,7 +18892,25 @@ index b421943..bd424de 100644
  {
  #ifndef SIGSTOP
      char *shell;
-@@ -2550,7 +2652,7 @@ _goLine(char *l)
+@@ -2517,7 +2619,17 @@ DEFUN(susp, INTERRUPT SUSPEND, "Stop loading document")
+ 	shell = "/bin/sh";
+     system(shell);
+ #else				/* SIGSTOP */
++#ifdef SIGTSTP
++    signal(SIGTSTP, SIG_DFL);  /* just in case */
++    /*
++     * Note: If susp() was called from SIGTSTP handler,
++     * unblocking SIGTSTP would be required here.
++     * Currently not.
++     */
++    kill(0, SIGTSTP);  /* stop whole job, not a single process */
++#else
+     kill((pid_t) 0, SIGSTOP);
++#endif
+ #endif				/* SIGSTOP */
+     fmInit();
+     displayBuffer(Currentbuf, B_FORCE_REDRAW);
+@@ -2550,7 +2662,7 @@ _goLine(char *l)
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -18559,7 +18919,7 @@ index b421943..bd424de 100644
  {
  
      char *str = searchKeyData();
-@@ -2575,7 +2677,7 @@ DEFUN(goLineL, END, "Go to the last line")
+@@ -2575,7 +2687,7 @@ DEFUN(goLineL, END, "Go to the last line")
  }
  
  /* Go to the beginning of the line */
@@ -18568,7 +18928,7 @@ index b421943..bd424de 100644
  {
      if (Currentbuf->firstLine == NULL)
  	return;
-@@ -2587,7 +2689,7 @@ DEFUN(linbeg, LINE_BEGIN, "Go to the beginning of line")
+@@ -2587,7 +2699,7 @@ DEFUN(linbeg, LINE_BEGIN, "Go to the beginning of line")
  }
  
  /* Go to the bottom of the line */
@@ -18577,7 +18937,7 @@ index b421943..bd424de 100644
  {
      if (Currentbuf->firstLine == NULL)
  	return;
-@@ -2616,7 +2718,7 @@ cur_real_linenumber(Buffer *buf)
+@@ -2616,7 +2728,7 @@ cur_real_linenumber(Buffer *buf)
  }
  
  /* Run editor on the current buffer */
@@ -18586,7 +18946,7 @@ index b421943..bd424de 100644
  {
      char *fn = Currentbuf->filename;
      Str cmd;
-@@ -2643,7 +2745,7 @@ DEFUN(editBf, EDIT, "Edit current document")
+@@ -2643,7 +2755,7 @@ DEFUN(editBf, EDIT, "Edit current document")
  }
  
  /* Run editor on the current screen */
@@ -18595,7 +18955,7 @@ index b421943..bd424de 100644
  {
      char *tmpf;
      FILE *f;
-@@ -2681,7 +2783,7 @@ DEFUN(_mark, MARK, "Set/unset mark")
+@@ -2681,7 +2793,7 @@ DEFUN(_mark, MARK, "Set/unset mark")
  }
  
  /* Go to next mark */
@@ -18604,7 +18964,7 @@ index b421943..bd424de 100644
  {
      Line *l;
      int i;
-@@ -2714,7 +2816,7 @@ DEFUN(nextMk, NEXT_MARK, "Move to next word")
+@@ -2714,7 +2826,7 @@ DEFUN(nextMk, NEXT_MARK, "Move to next word")
  }
  
  /* Go to previous mark */
@@ -18613,7 +18973,7 @@ index b421943..bd424de 100644
  {
      Line *l;
      int i;
-@@ -2749,7 +2851,7 @@ DEFUN(prevMk, PREV_MARK, "Move to previous mark")
+@@ -2749,7 +2861,7 @@ DEFUN(prevMk, PREV_MARK, "Move to previous mark")
  }
  
  /* Mark place to which the regular expression matches */
@@ -18622,7 +18982,7 @@ index b421943..bd424de 100644
  {
      Line *l;
      char *str;
-@@ -2804,12 +2906,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+@@ -2804,12 +2916,15 @@ loadLink(char *url, char *target, char *referer, FormList *request)
      union frameset_element *f_element = NULL;
      int flag = 0;
      ParsedURL *base, pu;
@@ -18639,7 +18999,7 @@ index b421943..bd424de 100644
  	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
  	referer = NO_REFERER;
      if (referer == NULL)
-@@ -2830,7 +2935,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
+@@ -2830,7 +2945,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
      if (!on_target)		/* open link as an indivisual page */
  	return loadNormalBuf(buf, TRUE);
  
@@ -18648,7 +19008,7 @@ index b421943..bd424de 100644
  	return loadNormalBuf(buf, FALSE);
  
      if (target == NULL ||	/* no target specified (that means this page is not a frame page) */
-@@ -2959,9 +3064,8 @@ handleMailto(char *url)
+@@ -2959,9 +3074,8 @@ handleMailto(char *url)
  }
  
  /* follow HREF link */
@@ -18659,7 +19019,7 @@ index b421943..bd424de 100644
      Anchor *a;
      ParsedURL u;
  #ifdef USE_IMAGE
-@@ -2971,7 +3075,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
+@@ -2971,7 +3085,6 @@ DEFUN(followA, GOTO_LINK, "Go to current link")
  
      if (Currentbuf->firstLine == NULL)
  	return;
@@ -18667,7 +19027,7 @@ index b421943..bd424de 100644
  
  #ifdef USE_IMAGE
      a = retrieveCurrentImg(Currentbuf);
-@@ -3051,15 +3154,13 @@ bufferA(void)
+@@ -3051,15 +3164,13 @@ bufferA(void)
  }
  
  /* view inline image */
@@ -18684,7 +19044,7 @@ index b421943..bd424de 100644
  
      a = retrieveCurrentImg(Currentbuf);
      if (a == NULL)
-@@ -3309,7 +3410,6 @@ followForm(void)
+@@ -3309,7 +3420,6 @@ followForm(void)
  static void
  _followForm(int submit)
  {
@@ -18692,7 +19052,7 @@ index b421943..bd424de 100644
      Anchor *a, *a2;
      char *p;
      FormItemList *fi, *f2;
-@@ -3318,7 +3418,6 @@ _followForm(int submit)
+@@ -3318,7 +3428,6 @@ _followForm(int submit)
  
      if (Currentbuf->firstLine == NULL)
  	return;
@@ -18700,7 +19060,7 @@ index b421943..bd424de 100644
  
      a = retrieveCurrentForm(Currentbuf);
      if (a == NULL)
-@@ -3423,7 +3522,6 @@ _followForm(int submit)
+@@ -3423,7 +3532,6 @@ _followForm(int submit)
      case FORM_INPUT_BUTTON:
        do_submit:
  	tmp = Strnew();
@@ -18708,7 +19068,7 @@ index b421943..bd424de 100644
  	multipart = (fi->parent->method == FORM_METHOD_POST &&
  		     fi->parent->enctype == FORM_ENCTYPE_MULTIPART);
  	query_from_followform(&tmp, fi, multipart);
-@@ -3501,7 +3599,7 @@ _followForm(int submit)
+@@ -3501,7 +3609,7 @@ _followForm(int submit)
  }
  
  /* go to the top anchor */
@@ -18717,7 +19077,7 @@ index b421943..bd424de 100644
  {
      HmarkerList *hl = Currentbuf->hmarklist;
      BufferPoint *po;
-@@ -3534,7 +3632,7 @@ DEFUN(topA, LINK_BEGIN, "Go to the first link")
+@@ -3534,7 +3642,7 @@ DEFUN(topA, LINK_BEGIN, "Go to the first link")
  }
  
  /* go to the last anchor */
@@ -18726,7 +19086,7 @@ index b421943..bd424de 100644
  {
      HmarkerList *hl = Currentbuf->hmarklist;
      BufferPoint *po;
-@@ -3568,26 +3666,53 @@ DEFUN(lastA, LINK_END, "Go to the last link")
+@@ -3568,26 +3676,53 @@ DEFUN(lastA, LINK_END, "Go to the last link")
      displayBuffer(Currentbuf, B_NORMAL);
  }
  
@@ -18784,7 +19144,7 @@ index b421943..bd424de 100644
  {
      _prevA(TRUE);
  }
-@@ -3863,43 +3988,43 @@ nextY(int d)
+@@ -3863,43 +3998,43 @@ nextY(int d)
  }
  
  /* go to the next left anchor */
@@ -18835,7 +19195,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
      int i;
-@@ -3917,7 +4042,7 @@ DEFUN(nextBf, NEXT, "Move to next buffer")
+@@ -3917,7 +4052,7 @@ DEFUN(nextBf, NEXT, "Move to next buffer")
  }
  
  /* go to the previous bufferr */
@@ -18844,7 +19204,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
      int i;
-@@ -3959,7 +4084,7 @@ checkBackBuffer(Buffer *buf)
+@@ -3959,7 +4094,7 @@ checkBackBuffer(Buffer *buf)
  }
  
  /* delete current buffer and back to the previous buffer */
@@ -18853,7 +19213,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf = Currentbuf->linkBuffer[LB_N_FRAME];
  
-@@ -4008,8 +4133,7 @@ DEFUN(backBf, BACK, "Back to previous buffer")
+@@ -4008,8 +4143,7 @@ DEFUN(backBf, BACK, "Back to previous buffer")
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -18863,7 +19223,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf = Currentbuf->nextBuffer;
      if (buf)
-@@ -4055,6 +4179,7 @@ goURL0(char *prompt, int relative)
+@@ -4055,6 +4189,7 @@ goURL0(char *prompt, int relative)
      char *url, *referer;
      ParsedURL p_url, *current;
      Buffer *cur_buf = Currentbuf;
@@ -18871,7 +19231,7 @@ index b421943..bd424de 100644
  
      url = searchKeyData();
      if (url == NULL) {
-@@ -4064,11 +4189,8 @@ goURL0(char *prompt, int relative)
+@@ -4064,11 +4199,8 @@ goURL0(char *prompt, int relative)
  	current = baseURL(Currentbuf);
  	if (current) {
  	    char *c_url = parsedURL2Str(current)->ptr;
@@ -18885,7 +19245,7 @@ index b421943..bd424de 100644
  	    else
  		pushHist(hist, c_url);
  	}
-@@ -4077,11 +4199,8 @@ goURL0(char *prompt, int relative)
+@@ -4077,11 +4209,8 @@ goURL0(char *prompt, int relative)
  	    char *a_url;
  	    parseURL2(a->url, &p_url, current);
  	    a_url = parsedURL2Str(&p_url)->ptr;
@@ -18899,7 +19259,7 @@ index b421943..bd424de 100644
  	    else
  		pushHist(hist, a_url);
  	}
-@@ -4089,15 +4208,22 @@ goURL0(char *prompt, int relative)
+@@ -4089,15 +4218,22 @@ goURL0(char *prompt, int relative)
  	if (url != NULL)
  	    SKIP_BLANKS(url);
      }
@@ -18929,7 +19289,7 @@ index b421943..bd424de 100644
      if (url == NULL || *url == '\0') {
  	displayBuffer(Currentbuf, B_FORCE_REDRAW);
  	return;
-@@ -4106,14 +4232,6 @@ goURL0(char *prompt, int relative)
+@@ -4106,14 +4242,6 @@ goURL0(char *prompt, int relative)
  	gotoLabel(url + 1);
  	return;
      }
@@ -18944,7 +19304,7 @@ index b421943..bd424de 100644
      parseURL2(url, &p_url, current);
      pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
      cmd_loadURL(url, current, referer, NULL);
-@@ -4121,12 +4239,12 @@ goURL0(char *prompt, int relative)
+@@ -4121,12 +4249,12 @@ goURL0(char *prompt, int relative)
  	pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
  }
  
@@ -18959,7 +19319,7 @@ index b421943..bd424de 100644
  {
      goURL0("Goto relative URL: ", TRUE);
  }
-@@ -4151,14 +4269,14 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
+@@ -4151,14 +4279,14 @@ cmd_loadBuffer(Buffer *buf, int prop, int linkid)
  }
  
  /* load bookmark */
@@ -18976,7 +19336,7 @@ index b421943..bd424de 100644
  {
      Str tmp;
      FormList *request;
-@@ -4188,7 +4306,7 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
+@@ -4188,7 +4316,7 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmark")
  }
  
  /* option setting */
@@ -18985,7 +19345,7 @@ index b421943..bd424de 100644
  {
      cmd_loadBuffer(load_option_panel(), BP_NO_URL, LB_NOLINK);
  }
-@@ -4223,7 +4341,7 @@ DEFUN(msgs, MSGS, "Display error messages")
+@@ -4223,7 +4351,7 @@ DEFUN(msgs, MSGS, "Display error messages")
  }
  
  /* page info */
@@ -18994,7 +19354,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
  
-@@ -4291,7 +4409,7 @@ follow_map(struct parsed_tagarg *arg)
+@@ -4291,7 +4419,7 @@ follow_map(struct parsed_tagarg *arg)
  
  #ifdef USE_MENU
  /* link menu */
@@ -19003,7 +19363,7 @@ index b421943..bd424de 100644
  {
      LinkList *l = link_menu(Currentbuf);
      ParsedURL p_url;
-@@ -4329,26 +4447,25 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
+@@ -4329,26 +4457,25 @@ anchorMn(Anchor *(*menu_func) (Buffer *), int go)
  }
  
  /* accesskey */
@@ -19034,7 +19394,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
  
-@@ -4375,14 +4492,14 @@ DEFUN(cooLst, COOKIE, "View cookie list")
+@@ -4375,14 +4502,14 @@ DEFUN(cooLst, COOKIE, "View cookie list")
  
  #ifdef USE_HISTORY
  /* History page */
@@ -19051,7 +19411,7 @@ index b421943..bd424de 100644
  {
      CurrentKeyData = NULL;	/* not allowed in w3m-control: */
      do_download = TRUE;
-@@ -4391,7 +4508,7 @@ DEFUN(svA, SAVE_LINK, "Save link to file")
+@@ -4391,7 +4518,7 @@ DEFUN(svA, SAVE_LINK, "Save link to file")
  }
  
  /* download IMG link */
@@ -19060,7 +19420,7 @@ index b421943..bd424de 100644
  {
      CurrentKeyData = NULL;	/* not allowed in w3m-control: */
      do_download = TRUE;
-@@ -4400,7 +4517,7 @@ DEFUN(svI, SAVE_IMAGE, "Save image to file")
+@@ -4400,7 +4527,7 @@ DEFUN(svI, SAVE_IMAGE, "Save image to file")
  }
  
  /* save buffer */
@@ -19069,7 +19429,7 @@ index b421943..bd424de 100644
  {
      char *qfile = NULL, *file;
      FILE *f;
-@@ -4449,7 +4566,7 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
+@@ -4449,7 +4576,7 @@ DEFUN(svBuf, PRINT SAVE_SCREEN, "Save rendered document to file")
  }
  
  /* save source */
@@ -19078,7 +19438,7 @@ index b421943..bd424de 100644
  {
      char *file;
  
-@@ -4510,8 +4627,7 @@ _peekURL(int only_img)
+@@ -4510,8 +4637,7 @@ _peekURL(int only_img)
  	s = parsedURL2Str(&pu);
      }
      if (DecodeURL)
@@ -19088,7 +19448,7 @@ index b421943..bd424de 100644
  #ifdef USE_M17N
      s = checkType(s, &pp, NULL);
      p = NewAtom_N(Lineprop, s->length);
-@@ -4529,13 +4645,13 @@ _peekURL(int only_img)
+@@ -4529,13 +4655,13 @@ _peekURL(int only_img)
  }
  
  /* peek URL */
@@ -19104,7 +19464,7 @@ index b421943..bd424de 100644
  {
      _peekURL(1);
  }
-@@ -4549,7 +4665,7 @@ currentURL(void)
+@@ -4549,7 +4675,7 @@ currentURL(void)
      return parsedURL2Str(&Currentbuf->currentURL);
  }
  
@@ -19113,7 +19473,7 @@ index b421943..bd424de 100644
  {
      static Str s = NULL;
  #ifdef USE_M17N
-@@ -4570,7 +4686,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+@@ -4570,7 +4696,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
  	offset = 0;
  	s = currentURL();
  	if (DecodeURL)
@@ -19122,7 +19482,7 @@ index b421943..bd424de 100644
  #ifdef USE_M17N
  	s = checkType(s, &pp, NULL);
  	p = NewAtom_N(Lineprop, s->length);
-@@ -4588,7 +4704,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
+@@ -4588,7 +4714,7 @@ DEFUN(curURL, PEEK, "Peek current URL")
  }
  /* view HTML source */
  
@@ -19131,7 +19491,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
  
-@@ -4679,7 +4795,7 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
+@@ -4679,7 +4805,7 @@ DEFUN(vwSrc, SOURCE VIEW, "View HTML source")
  }
  
  /* reload */
@@ -19140,7 +19500,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf, *fbuf = NULL, sbuf;
  #ifdef USE_M17N
-@@ -4804,7 +4920,7 @@ DEFUN(reload, RELOAD, "Reload buffer")
+@@ -4804,7 +4930,7 @@ DEFUN(reload, RELOAD, "Reload buffer")
  }
  
  /* reshape */
@@ -19149,7 +19509,7 @@ index b421943..bd424de 100644
  {
      Currentbuf->need_reshape = TRUE;
      reshapeBuffer(Currentbuf);
-@@ -4846,7 +4962,7 @@ change_charset(struct parsed_tagarg *arg)
+@@ -4846,7 +4972,7 @@ change_charset(struct parsed_tagarg *arg)
      _docCSet(charset);
  }
  
@@ -19158,7 +19518,7 @@ index b421943..bd424de 100644
  {
      char *cs;
      wc_ces charset;
-@@ -4864,7 +4980,7 @@ DEFUN(docCSet, CHARSET, "Change the current document charset")
+@@ -4864,7 +4990,7 @@ DEFUN(docCSet, CHARSET, "Change the current document charset")
      _docCSet(charset);
  }
  
@@ -19167,7 +19527,7 @@ index b421943..bd424de 100644
  {
      char *cs;
      wc_ces charset;
-@@ -4915,13 +5031,13 @@ chkURLBuffer(Buffer *buf)
+@@ -4915,13 +5041,13 @@ chkURLBuffer(Buffer *buf)
      buf->check_url |= CHK_URL;
  }
  
@@ -19183,7 +19543,7 @@ index b421943..bd424de 100644
  {
      char *p;
      int spos, epos;
-@@ -4948,15 +5064,15 @@ chkNMIDBuffer(Buffer *buf)
+@@ -4948,15 +5074,15 @@ chkNMIDBuffer(Buffer *buf)
      buf->check_url |= CHK_NMID;
  }
  
@@ -19202,7 +19562,7 @@ index b421943..bd424de 100644
  {
      Buffer *buf;
  
-@@ -5010,6 +5126,24 @@ invoke_browser(char *url)
+@@ -5010,6 +5136,24 @@ invoke_browser(char *url)
  	case 3:
  	    browser = ExtBrowser3;
  	    break;
@@ -19227,7 +19587,7 @@ index b421943..bd424de 100644
  	}
  	if (browser == NULL || *browser == '\0') {
  	    browser = inputStr("Browse command: ", NULL);
-@@ -5038,7 +5172,7 @@ invoke_browser(char *url)
+@@ -5038,7 +5182,7 @@ invoke_browser(char *url)
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -19236,7 +19596,7 @@ index b421943..bd424de 100644
  {
      if (Currentbuf->bufferprop & BP_INTERNAL) {
  	/* FIXME: gettextize? */
-@@ -5055,7 +5189,7 @@ DEFUN(extbrz, EXTERN, "Execute external browser")
+@@ -5055,7 +5199,7 @@ DEFUN(extbrz, EXTERN, "Execute external browser")
      invoke_browser(parsedURL2Str(&Currentbuf->currentURL)->ptr);
  }
  
@@ -19245,7 +19605,7 @@ index b421943..bd424de 100644
  {
      Anchor *a;
      ParsedURL pu;
-@@ -5070,7 +5204,7 @@ DEFUN(linkbrz, EXTERN_LINK, "View current link using external browser")
+@@ -5070,7 +5214,7 @@ DEFUN(linkbrz, EXTERN_LINK, "View current link using external browser")
  }
  
  /* show current line number and number of lines in the entire document */
@@ -19254,7 +19614,7 @@ index b421943..bd424de 100644
  {
      Line *l = Currentbuf->currentLine;
      Str tmp;
-@@ -5362,7 +5496,7 @@ process_mouse(int btn, int x, int y)
+@@ -5362,7 +5506,7 @@ process_mouse(int btn, int x, int y)
      }
  }
  
@@ -19263,7 +19623,7 @@ index b421943..bd424de 100644
  {
      if (use_mouse) {
  	use_mouse = FALSE;
-@@ -5398,6 +5532,60 @@ DEFUN(mouse, MOUSE, "mouse operation")
+@@ -5398,6 +5542,60 @@ DEFUN(mouse, MOUSE, "mouse operation")
      process_mouse(btn, x, y);
  }
  
@@ -19324,7 +19684,7 @@ index b421943..bd424de 100644
  #ifdef USE_GPM
  int
  gpm_process_mouse(Gpm_Event * event, void *data)
-@@ -5451,7 +5639,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
+@@ -5451,7 +5649,7 @@ sysm_process_mouse(int x, int y, int nbs, int obs)
  }
  #endif				/* USE_SYSMOUSE */
  
@@ -19333,7 +19693,7 @@ index b421943..bd424de 100644
  {
      if (!mouse_action.in_action)
  	return;
-@@ -5473,7 +5661,7 @@ DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
+@@ -5473,7 +5671,7 @@ DEFUN(movMs, MOVE_MOUSE, "Move cursor to mouse cursor (for mouse action)")
  #define FRAME_WIDTH 1
  #endif
  
@@ -19342,7 +19702,7 @@ index b421943..bd424de 100644
  {
      if (!mouse_action.in_action)
  	return;
-@@ -5490,7 +5678,7 @@ DEFUN(menuMs, MENU_MOUSE, "Popup menu at mouse cursor (for mouse action)")
+@@ -5490,7 +5688,7 @@ DEFUN(menuMs, MENU_MOUSE, "Popup menu at mouse cursor (for mouse action)")
  }
  #endif
  
@@ -19351,7 +19711,7 @@ index b421943..bd424de 100644
  {
      TabBuffer *tab;
  
-@@ -5503,8 +5691,7 @@ DEFUN(tabMs, TAB_MOUSE, "Move to tab on mouse cursor (for mouse action)")
+@@ -5503,8 +5701,7 @@ DEFUN(tabMs, TAB_MOUSE, "Move to tab on mouse cursor (for mouse action)")
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -19361,7 +19721,7 @@ index b421943..bd424de 100644
  {
      TabBuffer *tab;
  
-@@ -5518,12 +5705,12 @@ DEFUN(closeTMs, CLOSE_TAB_MOUSE,
+@@ -5518,12 +5715,12 @@ DEFUN(closeTMs, CLOSE_TAB_MOUSE,
  }
  #endif				/* USE_MOUSE */
  
@@ -19376,7 +19736,7 @@ index b421943..bd424de 100644
  {
      if (WrapSearch) {
  	WrapSearch = FALSE;
-@@ -5604,7 +5791,7 @@ execdict(char *word)
+@@ -5604,7 +5801,7 @@ execdict(char *word)
  	disp_message("Execution failed", TRUE);
  	return;
      }
@@ -19385,7 +19745,7 @@ index b421943..bd424de 100644
  	buf->filename = w;
  	buf->buffername = Sprintf("%s %s", DICTBUFFERNAME, word)->ptr;
  	if (buf->type == NULL)
-@@ -5671,7 +5858,7 @@ set_buffer_environ(Buffer *buf)
+@@ -5671,7 +5868,7 @@ set_buffer_environ(Buffer *buf)
  	    set_environ("W3M_CURRENT_FORM", form2str((FormItemList *)a->url));
  	else
  	    set_environ("W3M_CURRENT_FORM", "");
@@ -19394,7 +19754,7 @@ index b421943..bd424de 100644
  						l->real_linenumber)->ptr);
  	set_environ("W3M_CURRENT_COLUMN", Sprintf("%d",
  						  buf->currentColumn +
-@@ -5747,8 +5934,14 @@ deleteFiles()
+@@ -5747,8 +5944,14 @@ deleteFiles()
  	    Firstbuf = buf;
  	}
      }
@@ -19410,7 +19770,7 @@ index b421943..bd424de 100644
  }
  
  void
-@@ -5772,7 +5965,7 @@ w3m_exit(int i)
+@@ -5772,7 +5975,7 @@ w3m_exit(int i)
      exit(i);
  }
  
@@ -19419,7 +19779,7 @@ index b421943..bd424de 100644
  {
      char *data, *p;
      int cmd;
-@@ -5900,7 +6093,7 @@ setAlarmEvent(AlarmEvent * event, int sec, short status, int cmd, void *data)
+@@ -5900,7 +6103,7 @@ setAlarmEvent(AlarmEvent * event, int sec, short status, int cmd, void *data)
  }
  #endif
  
@@ -19428,7 +19788,7 @@ index b421943..bd424de 100644
  {
      char *resource = searchKeyData();
  
-@@ -5969,8 +6162,7 @@ DEFUN(reinit, REINIT, "Reload configuration files")
+@@ -5969,8 +6172,7 @@ DEFUN(reinit, REINIT, "Reload configuration files")
  		     ptr, FALSE);
  }
  
@@ -19438,7 +19798,7 @@ index b421943..bd424de 100644
  {
      char *data;
  
-@@ -6031,7 +6223,7 @@ _newT(void)
+@@ -6031,7 +6233,7 @@ _newT(void)
      nTab++;
  }
  
@@ -19447,7 +19807,7 @@ index b421943..bd424de 100644
  {
      _newT();
      displayBuffer(Currentbuf, B_REDRAW_IMAGE);
-@@ -6142,7 +6334,7 @@ deleteTab(TabBuffer * tab)
+@@ -6142,7 +6344,7 @@ deleteTab(TabBuffer * tab)
      return FirstTab;
  }
  
@@ -19456,7 +19816,7 @@ index b421943..bd424de 100644
  {
      TabBuffer *tab;
  
-@@ -6157,7 +6349,7 @@ DEFUN(closeT, CLOSE_TAB, "Close current tab")
+@@ -6157,7 +6359,7 @@ DEFUN(closeT, CLOSE_TAB, "Close current tab")
      displayBuffer(Currentbuf, B_REDRAW_IMAGE);
  }
  
@@ -19465,7 +19825,7 @@ index b421943..bd424de 100644
  {
      int i;
  
-@@ -6172,7 +6364,7 @@ DEFUN(nextT, NEXT_TAB, "Move to next tab")
+@@ -6172,7 +6374,7 @@ DEFUN(nextT, NEXT_TAB, "Move to next tab")
      displayBuffer(Currentbuf, B_REDRAW_IMAGE);
  }
  
@@ -19474,7 +19834,7 @@ index b421943..bd424de 100644
  {
      int i;
  
-@@ -6236,7 +6428,7 @@ followTab(TabBuffer * tab)
+@@ -6236,7 +6438,7 @@ followTab(TabBuffer * tab)
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -19483,7 +19843,7 @@ index b421943..bd424de 100644
  {
      followTab(prec_num ? numTab(PREC_NUM) : NULL);
  }
-@@ -6277,13 +6469,13 @@ tabURL0(TabBuffer * tab, char *prompt, int relative)
+@@ -6277,13 +6479,13 @@ tabURL0(TabBuffer * tab, char *prompt, int relative)
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -19499,7 +19859,7 @@ index b421943..bd424de 100644
  {
      tabURL0(prec_num ? numTab(PREC_NUM) : NULL,
  	    "Goto relative URL on new tab: ", TRUE);
-@@ -6328,7 +6520,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
+@@ -6328,7 +6530,7 @@ moveTab(TabBuffer * t, TabBuffer * t2, int right)
      displayBuffer(Currentbuf, B_FORCE_REDRAW);
  }
  
@@ -19508,7 +19868,7 @@ index b421943..bd424de 100644
  {
      TabBuffer *tab;
      int i;
-@@ -6338,7 +6530,7 @@ DEFUN(tabR, TAB_RIGHT, "Move current tab right")
+@@ -6338,7 +6540,7 @@ DEFUN(tabR, TAB_RIGHT, "Move current tab right")
      moveTab(CurrentTab, tab ? tab : LastTab, TRUE);
  }
  
@@ -19517,7 +19877,7 @@ index b421943..bd424de 100644
  {
      TabBuffer *tab;
      int i;
-@@ -6547,7 +6739,7 @@ stopDownload(void)
+@@ -6547,7 +6749,7 @@ stopDownload(void)
  }
  
  /* download panel */
@@ -25121,7 +25481,7 @@ index 0000000..954a4d2
 +msgid "en;q=1.0"
 +msgstr "zh-TW;q=1.0, zh-Hants;q=0.9, zh;q=0.8, en;q=0.6"
 diff --git a/proto.h b/proto.h
-index f8a7345..d744e14 100644
+index f8a7345..ed8f890 100644
 --- a/proto.h
 +++ b/proto.h
 @@ -11,6 +11,8 @@ extern void pushEvent(int cmd, void *data);
@@ -25193,7 +25553,15 @@ index f8a7345..d744e14 100644
  extern int _doFileCopy(char *tmpf, char *defstr, int download);
  #define doFileCopy(tmpf, defstr) _doFileCopy(tmpf, defstr, FALSE);
  extern int doFileMove(char *tmpf, char *defstr);
-@@ -507,7 +528,7 @@ extern ParsedURL *baseURL(Buffer *buf);
+@@ -372,6 +393,7 @@ extern void align(TextLine *lbuf, int width, int mode);
+ extern void print_item(struct table *t, int row, int col, int width, Str buf);
+ extern void print_sep(struct table *t, int row, int type, int maxcol, Str buf);
+ extern void do_refill(struct table *tbl, int row, int col, int maxlimit);
++extern void initRenderTable(void);
+ extern void renderTable(struct table *t, int max_width,
+ 			struct html_feed_environ *h_env);
+ extern struct table *begin_table(int border, int spacing, int padding,
+@@ -507,7 +529,7 @@ extern ParsedURL *baseURL(Buffer *buf);
  extern int openSocket(char *hostname, char *remoteport_name,
  		      unsigned short remoteport_num);
  extern void parseURL(char *url, ParsedURL *p_url, ParsedURL *current);
@@ -25202,7 +25570,7 @@ index f8a7345..d744e14 100644
  extern void parseURL2(char *url, ParsedURL *pu, ParsedURL *current);
  extern Str parsedURL2Str(ParsedURL *pu);
  extern int getURLScheme(char **url);
-@@ -586,9 +607,12 @@ extern char *getAnchorText(Buffer *buf, AnchorList *al, Anchor *a);
+@@ -586,9 +608,12 @@ extern char *getAnchorText(Buffer *buf, AnchorList *al, Anchor *a);
  extern Buffer *link_list_panel(Buffer *buf);
  
  extern Str decodeB(char **ww);
@@ -25215,7 +25583,7 @@ index f8a7345..d744e14 100644
  #ifdef USE_M17N
  extern Str decodeWord(char **ow, wc_ces * charset);
  extern Str decodeMIME(Str orgstr, wc_ces * charset);
-@@ -611,6 +635,7 @@ extern char *confFile(char *base);
+@@ -611,6 +636,7 @@ extern char *confFile(char *base);
  extern char *auxbinFile(char *base);
  extern char *libFile(char *base);
  extern char *helpFile(char *base);
@@ -25223,7 +25591,7 @@ index f8a7345..d744e14 100644
  extern Str localCookie(void);
  extern Str loadLocalDir(char *dirname);
  extern void set_environ(char *var, char *value);
-@@ -683,6 +708,7 @@ extern void reMark(void);
+@@ -683,6 +709,7 @@ extern void reMark(void);
  
  #ifdef USE_MOUSE
  extern void mouse(void);
@@ -25231,7 +25599,7 @@ index f8a7345..d744e14 100644
  extern void mouse_init(void);
  extern void mouse_end(void);
  extern void mouse_active(void);
-@@ -698,6 +724,7 @@ extern void tabMs(void);
+@@ -698,6 +725,7 @@ extern void tabMs(void);
  extern void closeTMs(void);
  #else				/* not USE_MOUSE */
  #define mouse nulcmd
@@ -25239,7 +25607,7 @@ index f8a7345..d744e14 100644
  #define msToggle nulcmd
  #define movMs nulcmd
  #define menuMs nulcmd
-@@ -723,6 +750,8 @@ extern int getKey(char *s);
+@@ -723,6 +751,8 @@ extern int getKey(char *s);
  extern char *getKeyData(int key);
  extern char *getWord(char **str);
  extern char *getQWord(char **str);
@@ -25248,7 +25616,7 @@ index f8a7345..d744e14 100644
  #ifdef USE_MOUSE
  extern void initMouseAction(void);
  #endif
-@@ -786,5 +815,3 @@ extern void dispVer(void);
+@@ -786,5 +816,3 @@ extern void dispVer(void);
  void srand48(long);
  long lrand48(void);
  #endif
@@ -26304,8 +26672,25 @@ index f430307..2cd00f9 100644
      for $p (split(":", $ENV{'PATH'})) {
        $p =~ s@/+$@@;
        $PATH{$p} = 1;
+diff --git a/symbol.c b/symbol.c
+index 50475ae..c047c56 100644
+--- a/symbol.c
++++ b/symbol.c
+@@ -176,10 +176,10 @@ push_symbol(Str str, char symbol, int width, int n)
+ 
+ #ifdef USE_M17N
+     if (width == 2)
+-	p = alt2_symbol[(int)symbol];
++	p = alt2_symbol[(unsigned char)symbol % N_SYMBOL];
+     else
+ #endif
+-	p = alt_symbol[(int)symbol];
++	p = alt_symbol[(unsigned char)symbol % N_SYMBOL];
+     for (i = 0; i < 2 && *p; i++, p++)
+ 	buf[i] = (*p == ' ') ? NBSP_CODE : *p;
+ 
 diff --git a/table.c b/table.c
-index e1243ff..d88e983 100644
+index e1243ff..572ebd6 100644
 --- a/table.c
 +++ b/table.c
 @@ -188,7 +188,7 @@ dv2sv(double *dv, short *iv, int size)
@@ -26343,7 +26728,38 @@ index e1243ff..d88e983 100644
  		int alignment;
  		TextLineListItem *ti;
  		struct table *t = tbl->tables[id].ptr;
-@@ -1691,7 +1690,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
+@@ -1624,6 +1623,15 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
+ #define fixed_table_width(t)\
+   (get_table_width(t,t->fixed_width,t->cell.fixed_width,CHECK_MINIMUM))
+ 
++#define MAX_COTABLE_LEVEL 100
++static int cotable_level;
++
++void
++initRenderTable(void)
++{
++    cotable_level = 0;
++}
++
+ void
+ renderCoTable(struct table *tbl, int maxlimit)
+ {
+@@ -1634,8 +1642,14 @@ renderCoTable(struct table *tbl, int maxlimit)
+     int i, col, row;
+     int indent, maxwidth;
+ 
++    if (cotable_level >= MAX_COTABLE_LEVEL)
++	return;	/* workaround to prevent infinite recursion */
++    cotable_level++;
++
+     for (i = 0; i < tbl->ntable; i++) {
+ 	t = tbl->tables[i].ptr;
++	if (t == NULL)
++	    continue;
+ 	col = tbl->tables[i].col;
+ 	row = tbl->tables[i].row;
+ 	indent = tbl->tables[i].indent;
+@@ -1691,7 +1705,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
  {
      int i, j, w, r, h;
      Str renderbuf;
@@ -26352,7 +26768,7 @@ index e1243ff..d88e983 100644
  #ifdef MATRIX
      int itr;
      VEC *newwidth;
-@@ -1724,6 +1723,10 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
+@@ -1724,6 +1738,10 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
      if (max_width < rulewidth)
  	max_width = rulewidth;
  
@@ -26363,7 +26779,16 @@ index e1243ff..d88e983 100644
      check_maximum_width(t);
  
  #ifdef MATRIX
-@@ -2600,12 +2603,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -2323,6 +2341,8 @@ feed_table_block_tag(struct table *tbl,
+     int offset;
+     if (mode->indent_level <= 0 && indent == -1)
+ 	return;
++    if (mode->indent_level >= CHAR_MAX && indent == 1)
++	return;
+     setwidth(tbl, mode);
+     feed_table_inline_tag(tbl, line, mode, -1);
+     clearcontentssize(tbl, mode);
+@@ -2600,12 +2620,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
  		check_row(tbl, tbl->row + rowspan);
  	}
@@ -26380,7 +26805,7 @@ index e1243ff..d88e983 100644
  	if (parsedtag_get_value(tag, ATTR_ALIGN, &i)) {
  	    switch (i) {
  	    case ALIGN_LEFT:
-@@ -2878,6 +2885,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -2878,6 +2902,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	tmp = process_input(tag);
  	feed_table1(tbl, tmp, mode, width);
  	break;
@@ -26395,7 +26820,7 @@ index e1243ff..d88e983 100644
      case HTML_SELECT:
  	tmp = process_select(tag);
  	if (tmp)
-@@ -3010,7 +3025,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -3010,7 +3042,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	break;
      case HTML_TABLE_ALT:
  	id = -1;
@@ -26771,7 +27196,7 @@ index 7a3c987..3d2ffd7 100644
  #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
  
 diff --git a/url.c b/url.c
-index ed6062e..c90cd9f 100644
+index ed6062e..0378913 100644
 --- a/url.c
 +++ b/url.c
 @@ -121,6 +121,7 @@ static struct table2 DefaultGuess[] = {
@@ -26909,7 +27334,7 @@ index ed6062e..c90cd9f 100644
  	tmp = Strnew_charp_n(q, p - q);
  	p_url->port = atoi(tmp->ptr);
  	/* *p is one of ['\0', '/', '?', '#'] */
-@@ -822,14 +832,15 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+@@ -822,15 +832,19 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
      case '@':
  	/* scheme://user@...            */
  	p_url->user = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
@@ -26922,12 +27347,17 @@ index ed6062e..c90cd9f 100644
      case '?':
      case '#':
 -	p_url->host = copyPath(q, p - q, COPYPATH_SPC_IGNORE);
+-	p_url->port = DefaultPort[p_url->scheme];
 +	p_url->host = copyPath(q, p - q,
 +			       COPYPATH_SPC_IGNORE | COPYPATH_LOWERCASE);
- 	p_url->port = DefaultPort[p_url->scheme];
++	if (p_url->scheme != SCM_UNKNOWN)
++	    p_url->port = DefaultPort[p_url->scheme];
++	else
++	    p_url->port = 0;
  	break;
      }
-@@ -956,12 +967,16 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+   analyze_file:
+@@ -956,12 +970,16 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
  	p_url->label = NULL;
  }
  
@@ -26946,7 +27376,7 @@ index ed6062e..c90cd9f 100644
      p->scheme = q->scheme;
      p->port = q->port;
      p->is_nocache = q->is_nocache;
-@@ -1280,9 +1295,23 @@ getURLScheme(char **url)
+@@ -1280,9 +1298,23 @@ getURLScheme(char **url)
  }
  
  static char *
@@ -26970,7 +27400,7 @@ index ed6062e..c90cd9f 100644
  
      Strcat_charp(s, "User-Agent: ");
      if (UserAgent == NULL || *UserAgent == '\0')
-@@ -1306,7 +1335,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
+@@ -1306,7 +1338,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
  	Strcat_charp(s, "Pragma: no-cache\r\n");
  	Strcat_charp(s, "Cache-control: no-cache\r\n");
      }
@@ -26984,7 +27414,7 @@ index ed6062e..c90cd9f 100644
  #ifdef USE_SSL
          if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
  	  /* Don't send Referer: if https:// -> http:// */
-@@ -1314,6 +1348,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
+@@ -1314,6 +1351,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
  	else
  #endif
  	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
@@ -26992,7 +27422,7 @@ index ed6062e..c90cd9f 100644
  	    (current->scheme != SCM_FTP ||
  	     (current->user == NULL && current->pass == NULL))) {
  	    char *p = current->label;
-@@ -1384,7 +1419,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+@@ -1384,7 +1422,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
  {
      Str tmp;
      TextListItem *i;
@@ -27000,7 +27430,7 @@ index ed6062e..c90cd9f 100644
  #ifdef USE_COOKIE
      Str cookie;
  #endif				/* USE_COOKIE */
-@@ -1400,7 +1434,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+@@ -1400,7 +1437,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
  	for (i = extra->first; i != NULL; i = i->next) {
  	    if (strncasecmp(i->ptr, "Authorization:",
  			    sizeof("Authorization:") - 1) == 0) {
@@ -27008,7 +27438,7 @@ index ed6062e..c90cd9f 100644
  #ifdef USE_SSL
  		if (hr->command == HR_COMMAND_CONNECT)
  		    continue;
-@@ -1430,20 +1463,20 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
+@@ -1430,20 +1466,20 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
  #endif				/* USE_COOKIE */
      if (hr->command == HR_COMMAND_POST) {
  	if (hr->request->enctype == FORM_ENCTYPE_MULTIPART) {
@@ -27033,7 +27463,7 @@ index ed6062e..c90cd9f 100644
  	    if (header_string)
  		Strcat(tmp, header_string);
  	    Strcat_charp(tmp, "\r\n");
-@@ -1603,7 +1636,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1603,7 +1639,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    pu->host != NULL && !check_no_proxy(pu->host)) {
  	    hr->flag |= HR_FLAG_PROXY;
  	    sock = openSocket(FTP_proxy_parsed.host,
@@ -27042,7 +27472,7 @@ index ed6062e..c90cd9f 100644
  			      FTP_proxy_parsed.port);
  	    if (sock < 0)
  		return uf;
-@@ -1645,15 +1678,15 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1645,15 +1681,15 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    }
  	    else if (pu->scheme == SCM_HTTPS) {
  		sock = openSocket(HTTPS_proxy_parsed.host,
@@ -27062,7 +27492,7 @@ index ed6062e..c90cd9f 100644
  #ifdef USE_SSL
  		sslh = NULL;
  	    }
-@@ -1685,8 +1718,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1685,8 +1721,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    }
  	}
  	else {
@@ -27072,7 +27502,7 @@ index ed6062e..c90cd9f 100644
  	    if (sock < 0) {
  		*status = HTST_MISSING;
  		return uf;
-@@ -1750,7 +1782,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1750,7 +1785,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    pu->host != NULL && !check_no_proxy(pu->host)) {
  	    hr->flag |= HR_FLAG_PROXY;
  	    sock = openSocket(GOPHER_proxy_parsed.host,
@@ -27081,7 +27511,7 @@ index ed6062e..c90cd9f 100644
  			      GOPHER_proxy_parsed.port);
  	    if (sock < 0)
  		return uf;
-@@ -1758,8 +1790,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
+@@ -1758,8 +1793,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
  	    tmp = HTTPrequest(pu, current, hr, extra_header);
  	}
  	else {
@@ -27091,7 +27521,7 @@ index ed6062e..c90cd9f 100644
  	    if (sock < 0)
  		return uf;
  	    if (pu->file == NULL)
-@@ -2049,7 +2080,7 @@ filename_extension(char *path, int is_url)
+@@ -2049,7 +2083,7 @@ filename_extension(char *path, int is_url)
  	    break;
      }
      if (*last_dot == '.') {
@@ -27100,7 +27530,7 @@ index ed6062e..c90cd9f 100644
  	    if (is_url && !IS_ALNUM(last_dot[i]))
  		break;
  	}
-@@ -2234,3 +2265,66 @@ schemeToProxy(int scheme)
+@@ -2234,3 +2268,66 @@ schemeToProxy(int scheme)
      }
      return pu;
  }
@@ -27178,6 +27608,19 @@ index 31d30e4..ab25163 100644
  
  #ifndef FM_H
  char *w3m_version = CURRENT_VERSION;
+diff --git a/w3m-doc/install.html.in b/w3m-doc/install.html.in
+index 8e27f03..610e4be 100644
+--- a/w3m-doc/install.html.in
++++ b/w3m-doc/install.html.in
+@@ -232,7 +232,7 @@
+ <DT>DICT
+     <DD><B>辞書引き機能</B>を有効にします。<BR>
+         調べたい単語にカーソルを合わせ、“<B>ESC&nbsp;W</B>”で <B>w3mdict</B> コマンドを呼び出します。<BR>
+-        <B>w3mdict</B> コマンドは w3m のアーカイブには同梱されていないので、自身の環境に合わせて作成してください。<BR>
++        <B>w3mdict</B> コマンドは自身の環境に合わせて作成できます。<BR>
+         たとえば、もっとも簡単な例として、<B>man</B> コマンドに wrap する場合、以下のようにします。<BR>
+         <BLOCKQUOTE>
+         % cat w3mdict<BR>
 diff --git a/w3m-doc/outline.html.in b/w3m-doc/outline.html.in
 index 60bda47..4ed2a59 100644
 --- a/w3m-doc/outline.html.in

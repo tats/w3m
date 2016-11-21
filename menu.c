@@ -1692,7 +1692,7 @@ initMenu(void)
     FILE *mf;
     MenuList *list;
 
-    w3mMenuList = New_N(MenuList, 3);
+    w3mMenuList = New_N(MenuList, 4);
     w3mMenuList[0].id = "Main";
     w3mMenuList[0].menu = &MainMenu;
     w3mMenuList[0].item = MainMenuItem;

@@ -1,0 +1,28 @@
+Subject: Prevent null pointer deref due to bad form id
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/39
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=9db438094e5f0d84842bcbd248f282594ccb3c89
+
+diff --git a/file.c b/file.c
+index e3f0544..834071d 100644
+--- a/file.c
++++ b/file.c
+@@ -5805,7 +5805,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			parsedtag_get_value(tag, ATTR_FID, &form_id);
+ 			parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);
+ 			parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &bottom);
+-			if (form_id < 0 || form_id > form_max || forms == NULL)
++			if (form_id < 0 || form_id > form_max ||
++			    forms == NULL || forms[form_id] == NULL)
+ 			    break;	/* outside of <form>..</form> */
+ 			form = forms[form_id];
+ 			if (hseq > 0) {
+@@ -7011,6 +7012,8 @@ print_internal_information(struct html_feed_environ *henv)
+     if (form_max >= 0) {
+ 	FormList *fp;
+ 	for (i = 0; i <= form_max; i++) {
++	    if (forms[i] == NULL)
++		continue;
+ 	    fp = forms[i];
+ 	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
+ 			i, html_quote(fp->action->ptr),

@@ -1,0 +1,28 @@
+Subject: Prevent null pointer dereference in HTMLlineproc2body
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/32
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=c6c39973e7d336854e9a2d43119d1220b36e2035
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a59a35211c63f12951b6266646081b08488b10ea
+
+diff --git a/file.c b/file.c
+index 5be29e7..32ad98a 100644
+--- a/file.c
++++ b/file.c
+@@ -6010,7 +6010,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			n_textarea = -1;
+ 		    break;
+ 		case HTML_N_TEXTAREA_INT:
+-		    if (n_textarea >= 0) {
++		    if (a_textarea && n_textarea >= 0) {
+ 			FormItemList *item =
+ 			    (FormItemList *)a_textarea[n_textarea]->url;
+ 			item->init_value = item->value =
+@@ -6028,7 +6028,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			n_select = -1;
+ 		    break;
+ 		case HTML_N_SELECT_INT:
+-		    if (n_select >= 0) {
++		    if (a_select && n_select >= 0) {
+ 			FormItemList *item =
+ 			    (FormItemList *)a_select[n_select]->url;
+ 			item->select_option = select_option[n_select].first;

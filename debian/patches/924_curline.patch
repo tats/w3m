@@ -1,0 +1,19 @@
+Subject: Prevent dereference near-null pointer in formUpdateBuffer
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/35
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=e2c7ecec6f9b730ad3c9bf8c8df9212970f183d7
+
+diff --git a/form.c b/form.c
+index de7a4d9..1aaaf19 100644
+--- a/form.c
++++ b/form.c
+@@ -442,7 +442,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+     switch (form->type) {
+     case FORM_INPUT_CHECKBOX:
+     case FORM_INPUT_RADIO:
+-	if (spos >= buf->currentLine->len || spos < 0)
++	if (buf->currentLine == NULL ||
++	    spos >= buf->currentLine->len || spos < 0)
+ 	    break;
+ 	if (form->checked)
+ 	    buf->currentLine->lineBuf[spos] = '*';

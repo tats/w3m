@@ -1,0 +1,26 @@
+Subject: Fix table rowspan and colspan
+Author: Kuang-che Wu <kcwu@google.com>
+Origin: https://github.com/tats/w3m/pull/19
+Bug-Debian: https://github.com/tats/w3m/issues/8 [CVE-2016-9422]
+
+diff --git a/table.c b/table.c
+index d376284..deeab0a 100644
+--- a/table.c
++++ b/table.c
+@@ -2600,12 +2600,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
+ 		check_row(tbl, tbl->row + rowspan);
+ 	}
++	if (rowspan < 1)
++	    rowspan = 1;
+ 	if (parsedtag_get_value(tag, ATTR_COLSPAN, &colspan)) {
+ 	    if ((tbl->col + colspan) >= MAXCOL) {
+ 		/* Can't expand column */
+ 		colspan = MAXCOL - tbl->col;
+ 	    }
+ 	}
++	if (colspan < 1)
++	    colspan = 1;
+ 	if (parsedtag_get_value(tag, ATTR_ALIGN, &i)) {
+ 	    switch (i) {
+ 	    case ALIGN_LEFT:

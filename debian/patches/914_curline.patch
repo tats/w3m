@@ -1,0 +1,18 @@
+Subject: Prevent segfault for formUpdateBuffer
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/22 [CVE-2016-9440]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=4a8d16fc8d08206dd7142435054ee38ff41805b7
+
+diff --git a/form.c b/form.c
+index 779ba2f..20b7310 100644
+--- a/form.c
++++ b/form.c
+@@ -461,6 +461,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ #endif				/* MENU_SELECT */
+ 	    p = form->value->ptr;
+ 	l = buf->currentLine;
++	if (!l)
++	    break;
+ 	if (form->type == FORM_TEXTAREA) {
+ 	    int n = a->y - buf->currentLine->linenumber;
+ 	    if (n > 0)

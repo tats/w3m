@@ -1,0 +1,292 @@
+Subject: Fix segfault on bogus text
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=820162
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=7bb2a4671503c41d63989dcef9ef54dea0c73b43
+Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1324348
+
+cf. https://lists.fedoraproject.org/pipermail/package-announce/2016-April/182697.html
+
+diff --git a/libwc/map/big5_ucs.map b/libwc/map/big5_ucs.map
+index 0c6fd12..ac817a9 100644
+--- a/libwc/map/big5_ucs.map
++++ b/libwc/map/big5_ucs.map
+@@ -1,6 +1,8 @@
+ /* Big5 (Chinese Taiwan) */
+ 
+-static wc_uint16 big5_ucs_map[ 0x59 * 0x9D ] = {
++#define N_big5_ucs_map (0x59 * 0x9D)
++
++static wc_uint16 big5_ucs_map[ N_big5_ucs_map ] = {
+  0x3000,	/* 0xA140 */
+  0xFF0C,	/* 0xA141 */
+  0x3001,	/* 0xA142 */
+diff --git a/libwc/map/cns11643_ucs.map b/libwc/map/cns11643_ucs.map
+index b426dd3..fcba334 100644
+--- a/libwc/map/cns11643_ucs.map
++++ b/libwc/map/cns11643_ucs.map
+@@ -1,6 +1,8 @@
+ /* CNS 11643 (Chinese Taiwan) */
+ 
+-static wc_uint16 cns116431_ucs_map[ 0x5E * 0x5E ] = {
++#define N_cns116431_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 cns116431_ucs_map[ N_cns116431_ucs_map ] = {
+  0x3000,	/* 0x2121 */
+  0xFF0C,	/* 0x2122 */
+  0x3001,	/* 0x2123 */
+@@ -8839,7 +8841,9 @@ static wc_uint16 cns116431_ucs_map[ 0x5E * 0x5E ] = {
+  0,		/* 0x7E7E */
+ };
+ 
+-static wc_uint16 cns116432_ucs_map[ 0x5E * 0x5E ] = {
++#define N_cns116432_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 cns116432_ucs_map[ N_cns116432_ucs_map ] = {
+  0x4E42,	/* 0x2121 */
+  0x4E5C,	/* 0x2122 */
+  0x51F5,	/* 0x2123 */
+diff --git a/libwc/map/gb12345_ucs.map b/libwc/map/gb12345_ucs.map
+index 55558c7..3fb338d 100644
+--- a/libwc/map/gb12345_ucs.map
++++ b/libwc/map/gb12345_ucs.map
+@@ -1,6 +1,8 @@
+ /* GB 12345 (Chinese) */
+ 
+-static wc_uint16 gb12345_ucs_map[ 0x5E * 0x5E ] = {
++#define N_gb12345_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 gb12345_ucs_map[ N_gb12345_ucs_map ] = {
+  0x3000,	/* 0x2121 */
+  0x3001,	/* 0x2122 */
+  0x3002,	/* 0x2123 */
+diff --git a/libwc/map/gb2312_ucs.map b/libwc/map/gb2312_ucs.map
+index 38fb88f..3d37465 100644
+--- a/libwc/map/gb2312_ucs.map
++++ b/libwc/map/gb2312_ucs.map
+@@ -1,6 +1,8 @@
+ /* GB 2312 (Chinese) */
+ 
+-static wc_uint16 gb2312_ucs_map[ 0x5E * 0x5E ] = {
++#define N_gb2312_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 gb2312_ucs_map[ N_gb2312_ucs_map ] = {
+  0x3000,	/* 0x2121 */
+  0x3001,	/* 0x2122 */
+  0x3002,	/* 0x2123 */
+diff --git a/libwc/map/gbk_ucs.map b/libwc/map/gbk_ucs.map
+index 5a0d5ba..d092fd7 100644
+--- a/libwc/map/gbk_ucs.map
++++ b/libwc/map/gbk_ucs.map
+@@ -6,7 +6,9 @@ static wc_map ucs_gbk_80_map[ N_ucs_gbk_80_map ] = {
+   { 0x20AC, 0x0080 },
+ };
+ 
+-static wc_uint16 gbk_ucs_map[ 0x7E * 0xBE - 0x5E * 0x5E + 0x0A + 0x16 + 0x06 ] = {
++#define N_gbk_ucs_map (0x7E * 0xBE - 0x5E * 0x5E + 0x0A + 0x16 + 0x06)
++
++static wc_uint16 gbk_ucs_map[ N_gbk_ucs_map ] = {
+   0x4E02,	/* 0x8140 */
+   0x4E04,	/* 0x8141 */
+   0x4E05,	/* 0x8142 */
+diff --git a/libwc/map/hkscs_ucs.map b/libwc/map/hkscs_ucs.map
+index 96d1566..2fbe6b4 100644
+--- a/libwc/map/hkscs_ucs.map
++++ b/libwc/map/hkscs_ucs.map
+@@ -1,6 +1,8 @@
+ /* HKSCS (Chinese Hong Kong) */
+ 
+-static wc_uint16 hkscs_ucs_map[ 0x1E * 0x9D ] = {
++#define N_hkscs_ucs_map (0x1E * 0x9D)
++
++static wc_uint16 hkscs_ucs_map[ N_hkscs_ucs_map ] = {
+  0,		/* 0x8840 */
+  0,		/* 0x8841 */
+  0,		/* 0x8842 */
+diff --git a/libwc/map/jisx0208x0212x0213_ucs.map b/libwc/map/jisx0208x0212x0213_ucs.map
+index 1a1d706..28c2a6c 100644
+--- a/libwc/map/jisx0208x0212x0213_ucs.map
++++ b/libwc/map/jisx0208x0212x0213_ucs.map
+@@ -1,6 +1,8 @@
+ /* JIS X 0208, JIS X 0212, JIS X 0213 (Japanese) */
+ 
+-static wc_uint16 jisx0208x02131_ucs_map[ 0x5E * 0x5E ] = {
++#define N_jisx0208x02131_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 jisx0208x02131_ucs_map[ N_jisx0208x02131_ucs_map ] = {
+  0x3000,	/* JIS X 0208 0x2121 */
+  0x3001,	/* JIS X 0208 0x2122 */
+  0x3002,	/* JIS X 0208 0x2123 */
+@@ -8839,7 +8841,9 @@ static wc_uint16 jisx0208x02131_ucs_map[ 0x5E * 0x5E ] = {
+  0,		/* JIS X 0213-1 0x7E7E */
+ };
+ 
+-static wc_uint16 jisx0212x02132_ucs_map[ 0x5E * 0x5E ] = {
++#define N_jisx0212x02132_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 jisx0212x02132_ucs_map[ N_jisx0212x02132_ucs_map ] = {
+  0,		/* JIS X 0213-2 0x2121 */
+  0x4E02,	/* JIS X 0213-2 0x2122 */
+  0x4E0F,	/* JIS X 0213-2 0x2123 */
+diff --git a/libwc/map/ksx1001_ucs.map b/libwc/map/ksx1001_ucs.map
+index 9a17d61..cb62f98 100644
+--- a/libwc/map/ksx1001_ucs.map
++++ b/libwc/map/ksx1001_ucs.map
+@@ -1,6 +1,8 @@
+ /* KS X 1001 (Korean) */
+ 
+-static wc_uint16 ksx1001_ucs_map[ 0x5E * 0x5E ] = {
++#define N_ksx1001_ucs_map (0x5E * 0x5E)
++
++static wc_uint16 ksx1001_ucs_map[ N_ksx1001_ucs_map ] = {
+  0x3000,	/* 0x2121 */
+  0x3001,	/* 0x2122 */
+  0x3002,	/* 0x2123 */
+diff --git a/libwc/map/sjis_ext_ucs.map b/libwc/map/sjis_ext_ucs.map
+index a82995c..cc748ba 100644
+--- a/libwc/map/sjis_ext_ucs.map
++++ b/libwc/map/sjis_ext_ucs.map
+@@ -1,6 +1,8 @@
+ /* Shift_JIS/CP932 (Japanese) */
+ 
+-static wc_uint16 sjis_ext_ucs_map[ 0x5E * 10 ] = {
++#define N_sjis_ext_ucs_map (0x5E * 10)
++
++static wc_uint16 sjis_ext_ucs_map[ N_sjis_ext_ucs_map ] = {
+   0x2460,	/* 0x8740 */
+   0x2461,	/* 0x8741 */
+   0x2462,	/* 0x8742 */
+diff --git a/libwc/map/uhc_ucs.map b/libwc/map/uhc_ucs.map
+index b6b43ca..55efc09 100644
+--- a/libwc/map/uhc_ucs.map
++++ b/libwc/map/uhc_ucs.map
+@@ -1,6 +1,8 @@
+ /* UHC/CP949 (Korean) */
+ 
+-static wc_uint16 uhc_ucs_map[ 0x20 * 0xB2 + 0x27 * 0x54 + 2 ] = {
++#define N_uhc_ucs_map (0x20 * 0xB2 + 0x27 * 0x54 + 2)
++
++static wc_uint16 uhc_ucs_map[ N_uhc_ucs_map ] = {
+   0xAC02,	/* 0x8141 */
+   0xAC03,	/* 0x8142 */
+   0xAC05,	/* 0x8143 */
+diff --git a/libwc/ucs.c b/libwc/ucs.c
+index d7b6948..061e1ce 100644
+--- a/libwc/ucs.c
++++ b/libwc/ucs.c
+@@ -108,6 +108,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+ {
+     int f;
+     wc_uint16 *map = NULL;
++    wc_uint32 map_size = 0x80;
+     wc_map *map2;
+ 
+     f = WC_CCS_INDEX(cc.ccs);
+@@ -138,6 +139,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+ 	if (f < WC_F_ISO_BASE || f > WC_F_CS94W_END)
+ 	    return 0;
+ 	map = cs94w_ucs_map[f - WC_F_ISO_BASE];
++	map_size = cs94w_ucs_map_size[f - WC_F_ISO_BASE];
+ 	cc.code = WC_CS94W_N(cc.code);
+ 	break;
+     case WC_CCS_A_CS96:
+@@ -150,6 +152,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+ 	if (f < WC_F_ISO_BASE || f > WC_F_CS96W_END)
+ 	    return WC_C_UCS4_ERROR;
+ 	map = cs96w_ucs_map[f - WC_F_ISO_BASE];
++	map_size = cs96w_ucs_map_size[f - WC_F_ISO_BASE];
+ 	cc.code = WC_CS96W_N(cc.code);
+ 	break;
+     case WC_CCS_A_CS942:
+@@ -180,6 +183,7 @@ wc_any_to_ucs(wc_wchar_t cc)
+ 	if (f < WC_F_PCS_BASE || f > WC_F_PCSW_END)
+ 	    return WC_C_UCS4_ERROR;
+ 	map = pcsw_ucs_map[f - WC_F_PCS_BASE];
++	map_size = pcsw_ucs_map_size[f - WC_F_PCS_BASE];
+ 	switch (cc.ccs) {
+ 	case WC_CCS_BIG5:
+ 	    cc.code = WC_BIG5_N(cc.code);
+@@ -271,6 +275,8 @@ wc_any_to_ucs(wc_wchar_t cc)
+     }
+     if (map == NULL)
+ 	return WC_C_UCS4_ERROR;
++    if (map_size == 0 || cc.code > map_size - 1)
++	return WC_C_UCS4_ERROR;
+     cc.code = map[cc.code];
+     return cc.code ? cc.code : WC_C_UCS4_ERROR;
+ }
+diff --git a/libwc/ucs.map b/libwc/ucs.map
+index dfac6d9..5d6f688 100644
+--- a/libwc/ucs.map
++++ b/libwc/ucs.map
+@@ -195,7 +195,28 @@ static wc_uint16 *cs94w_ucs_map[] = {
+   jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
+ };
+ 
++static wc_uint32 cs94w_ucs_map_size[] = {
++  N_jisx0208x02131_ucs_map,	/* 40 (JIS C 6226) */
++  N_gb2312_ucs_map,		/* 41 (GB 2312) */
++  N_jisx0208x02131_ucs_map,	/* 42 (JIS X 0208) */
++  N_ksx1001_ucs_map,		/* 43 (KS X 1001) */
++  N_jisx0212x02132_ucs_map,	/* 44 (JIS X 0212) */
++  0,				/* 45 (ISO IR 165) */
++  0,				/* 46 */
++  N_cns116431_ucs_map,		/* 47 (CNS 11643-1) */
++  N_cns116432_ucs_map,		/* 48 (CNS 11643-2) */
++  0,				/* 49 (CNS 11643-3) */
++  0,				/* 4A (CNS 11643-4) */
++  0,				/* 4B (CNS 11643-5) */
++  0,				/* 4C (CNS 11643-6) */
++  0,				/* 4D (CNS 11643-7) */
++  0,				/* 4E (KSP 9566) */
++  N_jisx0208x02131_ucs_map,	/* 4F (JIS X 0213-1) */
++  N_jisx0212x02132_ucs_map,	/* 50 (JIS X 0213-2) */
++};
++
+ static wc_uint16 **cs96w_ucs_map;
++static wc_uint32 *cs96w_ucs_map_size;
+ 
+ static wc_uint16 *pcsw_ucs_map[] = {
+   big5_ucs_map,		/* Big5 */
+@@ -233,6 +254,42 @@ static wc_uint16 *pcsw_ucs_map[] = {
+   hkscs_ucs_map,	/* HKSCS-2 */
+ };
+ 
++static wc_uint32 pcsw_ucs_map_size[] = {
++  N_big5_ucs_map,	/* Big5 */
++  N_big5_ucs_map,	/* Big5-1 */
++  N_big5_ucs_map,	/* Big5-2 */
++  0,			/* CNS 11643-8 */
++  0,			/* CNS 11643-9 */
++  0,			/* CNS 11643-10 */
++  0,			/* CNS 11643-11 */
++  0,			/* CNS 11643-12 */
++  0,			/* CNS 11643-13 */
++  0,			/* CNS 11643-14 */
++  0,			/* CNS 11643-15 */
++  0,			/* CNS 11643-16 */
++  0,			/* CNS 11643-X */
++  N_gb12345_ucs_map,	/* GB 12345 */
++  0,			/* Johab (special conversion) */
++  0,			/* Johab-1 (special conversion) */
++  0,			/* Johab-2 (special conversion) */
++  N_ksx1001_ucs_map,	/* Johab-3 */
++  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext */
++  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-1 */
++  N_sjis_ext_ucs_map,	/* Shift_JIS(CP932) ext-2 */
++  N_gbk_ucs_map,	/* GBK(CP936) */
++  N_gbk_ucs_map,	/* GBK(CP936)-1 */
++  N_gbk_ucs_map,	/* GBK(CP936)-2 */
++  0,			/* GB18030 GBK-ext (special conversion) */
++  0,			/* GB18030 GBK-ext-1 (special conversion) */
++  0,			/* GB18030 GBK-ext-2 (special conversion) */
++  N_uhc_ucs_map,	/* UHC(CP949) */
++  N_uhc_ucs_map,	/* UHC(CP949)-1 */
++  N_uhc_ucs_map,	/* UHC(CP949)-2 */
++  N_hkscs_ucs_map,	/* HKSCS */
++  N_hkscs_ucs_map,	/* HKSCS-1 */
++  N_hkscs_ucs_map,	/* HKSCS-2 */
++};
++
+ static wc_wchar_t
+ ucs_cs94_conv(wc_ccs ccs, wc_uint16 c)
+ {

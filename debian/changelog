@@ -1,3 +1,11 @@
+w3m (0.5.3-33) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20161120
+    - Prevent stack overflow (closes: #844726) [CVE-2016-9439]
+  * Update w3mconfig to use xsel as background
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 21 Nov 2016 21:08:37 +0900
+
 w3m (0.5.3-32) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20161031

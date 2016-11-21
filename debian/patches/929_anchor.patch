@@ -1,0 +1,18 @@
+Subject: Prevent deref null pointer in shiftAnchorPosition()
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/40
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a088e0263c48ba406a7ae0932a1ae64a25be7acd
+
+diff --git a/anchor.c b/anchor.c
+index e006aea..ecb211d 100644
+--- a/anchor.c
++++ b/anchor.c
+@@ -551,7 +551,7 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
+ 	    break;
+ 	if (a->start.pos > pos) {
+ 	    a->start.pos += shift;
+-	    if (hl->marks[a->hseq].line == line)
++	    if (hl && hl->marks && hl->marks[a->hseq].line == line)
+ 		hl->marks[a->hseq].pos = a->start.pos;
+ 	}
+ 	if (a->end.pos >= pos)

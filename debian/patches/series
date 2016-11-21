@@ -61,3 +61,4 @@
 923_tagproc.patch
 924_curline.patch
 925_lineproc.patch
+926_indent-level.patch

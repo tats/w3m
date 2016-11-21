@@ -1,0 +1,21 @@
+Subject: Prevent global-buffer-overflow in parseURL()
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/41
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ba9d78faeba9024c3e8840579c3b0e959ae2cb0f
+
+diff --git a/url.c b/url.c
+index 10089ca..fc213da 100644
+--- a/url.c
++++ b/url.c
+@@ -841,7 +841,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
+     case '#':
+ 	p_url->host = copyPath(q, p - q,
+ 			       COPYPATH_SPC_IGNORE | COPYPATH_LOWERCASE);
+-	p_url->port = DefaultPort[p_url->scheme];
++	if (p_url->scheme != SCM_UNKNOWN)
++	    p_url->port = DefaultPort[p_url->scheme];
++	else
++	    p_url->port = 0;
+ 	break;
+     }
+   analyze_file:

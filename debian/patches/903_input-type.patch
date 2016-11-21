@@ -1,0 +1,35 @@
+Subject: Prevent segfault with malformed input type
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/7 [CVE-2016-9430]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=59b91cd8e30c86f23476fa81ae005cabff49ebb6
+
+diff --git a/file.c b/file.c
+index 1e363d0..d06b2cf 100644
+--- a/file.c
++++ b/file.c
+@@ -3622,9 +3622,10 @@ process_input(struct parsed_tag *tag)
+ 	    Strcat(tmp, getLinkNumberStr(0));
+ 	Strcat_char(tmp, '(');
+     }
+-    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
++    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=\"%s\" "
+ 			"name=\"%s\" width=%d maxlength=%d value=\"%s\"",
+-			cur_hseq++, cur_form_id, p, html_quote(r), w, i, qq));
++			cur_hseq++, cur_form_id, html_quote(p),
++			html_quote(r), w, i, qq));
+     if (x)
+ 	Strcat_charp(tmp, " checked");
+     if (y)
+@@ -3772,9 +3773,10 @@ process_button(struct parsed_tag *tag)
+     }
+ 
+     //    Strcat_charp(tmp, "<pre_int>");
+-    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=%s "
++    Strcat(tmp, Sprintf("<input_alt hseq=\"%d\" fid=\"%d\" type=\"%s\" "
+                        "name=\"%s\" value=\"%s\">",
+-                       cur_hseq++, cur_form_id, p, html_quote(r), qq));
++                       cur_hseq++, cur_form_id, html_quote(p),
++                       html_quote(r), qq));
+     return tmp;
+ }
+ 

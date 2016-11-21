@@ -1,0 +1,20 @@
+Subject: Truncate max_width for renderTable
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/25 [CVE-2016-9426]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=b910f0966d9efea93ea8cef491000a83ffb49c5e
+
+diff --git a/table.c b/table.c
+index deeab0a..a54ea01 100644
+--- a/table.c
++++ b/table.c
+@@ -1724,6 +1724,10 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
+     if (max_width < rulewidth)
+ 	max_width = rulewidth;
+ 
++#define MAX_TABWIDTH 10000
++    if (max_width > MAX_TABWIDTH)
++	max_width = MAX_TABWIDTH;
++
+     check_maximum_width(t);
+ 
+ #ifdef MATRIX

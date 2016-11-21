@@ -1,0 +1,74 @@
+Subject: Prevent array index out of bounds for symbol
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/38
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=0c3f5d0e0d9269ad47b8f4b061d7818993913189
+
+diff --git a/display.c b/display.c
+index 2fe1183..e505eb7 100644
+--- a/display.c
++++ b/display.c
+@@ -1119,18 +1119,18 @@ addChar(char c, Lineprop mode)
+ 	    }
+ #ifdef USE_M17N
+ 	    if (w == 2 && WcOption.use_wide)
+-		addstr(graph2_symbol[(int)c]);
++		addstr(graph2_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
+ 	    else
+ #endif
+-		addch(*graph_symbol[(int)c]);
++		addch(*graph_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
+ 	}
+ 	else {
+ #ifdef USE_M17N
+ 	    symbol = get_symbol(DisplayCharset, &w);
+-	    addstr(symbol[(int)c]);
++	    addstr(symbol[(unsigned char)c % N_SYMBOL]);
+ #else
+ 	    symbol = get_symbol();
+-	    addch(*symbol[(int)c]);
++	    addch(*symbol[(unsigned char)c % N_SYMBOL]);
+ #endif
+ 	}
+     }
+diff --git a/file.c b/file.c
+index 0cef9ff..e3f0544 100644
+--- a/file.c
++++ b/file.c
+@@ -7583,7 +7583,7 @@ conv_symbol(Line *l)
+ 		symbol = get_symbol(DisplayCharset, &w);
+ #endif
+ 	    }
+-	    Strcat_charp(tmp, symbol[(int)c]);
++	    Strcat_charp(tmp, symbol[(unsigned char)c % N_SYMBOL]);
+ #ifdef USE_M17N
+ 	    p += len - 1;
+ 	    pr += len - 1;
+diff --git a/fm.h b/fm.h
+index 149a02f..4d02f37 100644
+--- a/fm.h
++++ b/fm.h
+@@ -1099,6 +1099,7 @@ extern char *graph2_symbol[];
+ extern int symbol_width;
+ extern int symbol_width0;
+ #define N_GRAPH_SYMBOL 32
++#define N_SYMBOL (N_GRAPH_SYMBOL + 14)
+ #define SYMBOL_BASE 0x20
+ global int no_rc_dir init(FALSE);
+ global char *rc_dir init(NULL);
+diff --git a/symbol.c b/symbol.c
+index 50475ae..c047c56 100644
+--- a/symbol.c
++++ b/symbol.c
+@@ -176,10 +176,10 @@ push_symbol(Str str, char symbol, int width, int n)
+ 
+ #ifdef USE_M17N
+     if (width == 2)
+-	p = alt2_symbol[(int)symbol];
++	p = alt2_symbol[(unsigned char)symbol % N_SYMBOL];
+     else
+ #endif
+-	p = alt_symbol[(int)symbol];
++	p = alt_symbol[(unsigned char)symbol % N_SYMBOL];
+     for (i = 0; i < 2 && *p; i++, p++)
+ 	buf[i] = (*p == ' ') ? NBSP_CODE : *p;
+ 

@@ -1,0 +1,19 @@
+Subject: Prevent segfault due to buffer overflows in addMultirowsForm
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/21 [CVE-2016-9425]
+Bug-Debian: https://github.com/tats/w3m/issues/26 [CVE-2016-9428]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=4e464819dd360ffd3d58fa2a89216fe413cfcc74
+
+diff --git a/anchor.c b/anchor.c
+index 39f221d..e006aea 100644
+--- a/anchor.c
++++ b/anchor.c
+@@ -687,6 +687,8 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+ 	    a->hseq = a_form.hseq;
+ 	    a->y = a_form.y;
+ 	    a->end.pos = pos + ecol - col;
++	    if (pos < 1 || a->end.pos >= l->size)
++		continue;
+ 	    l->lineBuf[pos - 1] = '[';
+ 	    l->lineBuf[a->end.pos] = ']';
+ 	    for (k = pos; k < a->end.pos; k++)

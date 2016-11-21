@@ -1,0 +1,22 @@
+Subject: Fix null pointer dereference in formUpdateBuffer
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/28 [CVE-2016-9443]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ec9eb22e008a69ea9dc21fdca4b9b836679965ee
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=22d29c3d11bdfec80164789a99c36cc674340914
+
+diff --git a/form.c b/form.c
+index 20b7310..e891df1 100644
+--- a/form.c
++++ b/form.c
+@@ -459,7 +459,11 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ 	}
+ 	else
+ #endif				/* MENU_SELECT */
++	{
++	    if (!form->value)
++		break;
+ 	    p = form->value->ptr;
++	}
+ 	l = buf->currentLine;
+ 	if (!l)
+ 	    break;

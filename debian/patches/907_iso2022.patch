@@ -1,0 +1,63 @@
+Subject: Prevent segfault when iso2022 parsing
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/14 [CVE-2016-9433]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=9cf6926c5d947371dc9e44f32bc7a2fbfca5d469
+
+diff --git a/libwc/iso2022.c b/libwc/iso2022.c
+index 33d9a19..59f35de 100644
+--- a/libwc/iso2022.c
++++ b/libwc/iso2022.c
+@@ -405,7 +405,8 @@ wc_push_to_iso2022(Str os, wc_wchar_t cc, wc_status *st)
+     case WC_CCS_A_CS94:
+ 	if (cc.ccs == WC_CCS_US_ASCII)
+ 	    cc.ccs = st->g0_ccs;
+-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	break;
+     case WC_CCS_A_CS94W:
+ 	is_wide = 1;
+@@ -435,31 +436,37 @@ wc_push_to_iso2022(Str os, wc_wchar_t cc, wc_status *st)
+ 	    break;
+ #endif
+ 	}
+-	g = cs94w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs94w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	break;
+     case WC_CCS_A_CS96:
+-	g = cs96_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs96_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	break;
+     case WC_CCS_A_CS96W:
+ 	is_wide = 1;
+-	g = cs96w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs96w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	break;
+     case WC_CCS_A_CS942:
+-	g = cs942_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs942_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	break;
+     case WC_CCS_A_UNKNOWN_W:
+ 	if (WcOption.no_replace)
+ 	    return;
+ 	is_wide = 1;
+ 	cc.ccs = WC_CCS_US_ASCII;
+-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	cc.code = ((wc_uint32)WC_REPLACE_W[0] << 8) | WC_REPLACE_W[1];
+ 	break;
+     case WC_CCS_A_UNKNOWN:
+ 	if (WcOption.no_replace)
+ 	    return;
+ 	cc.ccs = WC_CCS_US_ASCII;
+-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
++	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
++	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+ 	cc.code = (wc_uint32)WC_REPLACE[0];
+ 	break;
+     default:

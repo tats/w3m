@@ -1,0 +1,22 @@
+Author: Tatsuya Kinoshita <tats@debian.org>
+Subject: Prevent segfault with malformed input_alt
+Bug-Debian: https://github.com/tats/w3m/issues/18 [CVE-2016-9438]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=010b68580dc50ce183df11cc79721936ab5c4f25
+
+diff --git a/file.c b/file.c
+index 3b7befe..68d625c 100644
+--- a/file.c
++++ b/file.c
+@@ -3021,9 +3021,9 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+ 	tmp = Sprintf("<INPUT_ALT hseq=\"%d\" fid=\"%d\" name=\"%s\" type=\"%s\" value=\"%s\">",
+ 		     obuf->input_alt.hseq,
+ 		     obuf->input_alt.fid,
+-		     obuf->input_alt.name->ptr,
+-		     obuf->input_alt.type->ptr,
+-		     obuf->input_alt.value->ptr);
++		     obuf->input_alt.name ? obuf->input_alt.name->ptr : "",
++		     obuf->input_alt.type ? obuf->input_alt.type->ptr : "",
++		     obuf->input_alt.value ? obuf->input_alt.value->ptr : "");
+ 	push_tag(obuf, tmp->ptr, HTML_INPUT_ALT);
+     }
+     if (!hidden_bold && obuf->in_bold)

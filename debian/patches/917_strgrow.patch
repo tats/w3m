@@ -1,0 +1,20 @@
+Subject: Fix potential heap buffer corruption due to Strgrow
+Author: Kuang-che Wu <kcwu@google.com>
+Bug-Debian: https://github.com/tats/w3m/pull/27 [CVE-2016-9442]
+Origin: https://github.com/tats/w3m/pull/27/commits/c95a43dc92695464be11c8a51811aaa9761546e6
+
+diff --git a/Str.c b/Str.c
+index eff82a4..5287c0f 100644
+--- a/Str.c
++++ b/Str.c
+@@ -232,8 +232,8 @@ Strgrow(Str x)
+ {
+     char *old = x->ptr;
+     int newlen;
+-    newlen = x->length * 6 / 5;
+-    if (newlen == x->length)
++    newlen = x->area_size * 6 / 5;
++    if (newlen == x->area_size)
+ 	newlen += 2;
+     x->ptr = GC_MALLOC_ATOMIC(newlen);
+     x->area_size = newlen;

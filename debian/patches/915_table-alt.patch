@@ -1,0 +1,18 @@
+Subject: Prevent segfault with malformed table_alt
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/24 [CVE-2016-9441]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a6257663824c63abb3c62c4dd62455fe6f63d958
+
+diff --git a/table.c b/table.c
+index a54ea01..022effe 100644
+--- a/table.c
++++ b/table.c
+@@ -761,7 +761,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
+ 	    struct parsed_tag *tag;
+ 	    if ((tag = parse_tag(&p, TRUE)) != NULL)
+ 		parsedtag_get_value(tag, ATTR_TID, &id);
+-	    if (id >= 0 && id < tbl->ntable) {
++	    if (id >= 0 && id < tbl->ntable && tbl->tables[id].ptr) {
+ 		int alignment;
+ 		TextLineListItem *ti;
+ 		struct table *t = tbl->tables[id].ptr;

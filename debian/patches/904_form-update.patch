@@ -1,0 +1,19 @@
+Subject: Prevent segfault for formUpdateBuffer
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/9 [CVE-2016-9423]
+Bug-Debian: https://github.com/tats/w3m/issues/10 [CVE-2016-9431]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=9f0bdcfdf061db3520bd1f112bdc5e83acdec4be
+
+diff --git a/form.c b/form.c
+index 62b568e..87a5d49 100644
+--- a/form.c
++++ b/form.c
+@@ -477,6 +477,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ 		spos = a->start.pos;
+ 		epos = a->end.pos;
+ 	    }
++	    if (a->start.line != a->end.line || spos > epos)
++		epos = spos;
+ 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
+ 				   rows > 1,
+ 				   form->type == FORM_INPUT_PASSWORD);

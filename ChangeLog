@@ -17,15 +17,15 @@
 
 	* libwc/ucs.c, libwc/ucs.map:
 	Prevent global-buffer-overflow in wc_any_to_ucs().
-	Bug-Debian: https://github.com/tats/w3m/issues/43
+	Bug-Debian: https://github.com/tats/w3m/issues/43 [CVE-2016-9632]
 
 2016-11-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Prevent global-buffer-overflow in parseURL().
-	Bug-Debian: https://github.com/tats/w3m/issues/41
+	Bug-Debian: https://github.com/tats/w3m/issues/41 [CVE-2016-9630]
 
 	* file.c: Prevent deref null pointer in HTMLlineproc0().
-	Bug-Debian: https://github.com/tats/w3m/issues/42
+	Bug-Debian: https://github.com/tats/w3m/issues/42 [CVE-2016-9631]
 
 2016-11-15  Tatsuya Kinoshita  <tats@debian.org>
 
@@ -42,16 +42,16 @@
 	This reverts commit f393faf55975a94217df479e1bd06ee4403c6958.
 
 	* anchor.c: Prevent deref null pointer in shiftAnchorPosition().
-	Bug-Debian: https://github.com/tats/w3m/issues/40
+	Bug-Debian: https://github.com/tats/w3m/issues/40 [CVE-2016-9629]
 
 2016-11-14  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent null pointer deref due to bad form id.
-	Bug-Debian: https://github.com/tats/w3m/issues/39
+	Bug-Debian: https://github.com/tats/w3m/issues/39 [CVE-2016-9628]
 
 	* display.c, file.c, fm.h, symbol.c:
 	Prevent array index out of bounds for symbol.
-	Bug-Debian: https://github.com/tats/w3m/issues/38
+	Bug-Debian: https://github.com/tats/w3m/issues/38 [CVE-2016-9627]
 
 2016-11-13  Tatsuya Kinoshita  <tats@debian.org>
 
@@ -69,12 +69,12 @@
 2016-11-09  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c: Check indent_level to prevent infinite recursion.
-	Bug-Debian: https://github.com/tats/w3m/issues/37
+	Bug-Debian: https://github.com/tats/w3m/issues/37 [CVE-2016-9626]
 
 2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent infinite recursion in HTMLlineproc0.
-	Bug-Debian: https://github.com/tats/w3m/issues/36
+	Bug-Debian: https://github.com/tats/w3m/issues/36 [CVE-2016-9625]
 
 	* NEWS, w3m-doc/install.html.in:
 	Update documents for included w3mdict.cgi.
@@ -90,16 +90,16 @@
 2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c: Prevent dereference near-null pointer in formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/35
+	Bug-Debian: https://github.com/tats/w3m/issues/35 [CVE-2016-9624]
 
 	* file.c: Prevent crash after allocate string of negative size.
-	Bug-Debian: https://github.com/tats/w3m/issues/33
+	Bug-Debian: https://github.com/tats/w3m/issues/33 [CVE-2016-9623]
 
 	* file.c: Prevent memory exhausted due to repeat appending "</table>".
-	Bug-Debian: https://github.com/tats/w3m/issues/23
+	Bug-Debian: https://github.com/tats/w3m/issues/23 [CVE-2016-9633]
 
 	* file.c: Prevent null pointer dereference in HTMLlineproc2body.
-	Bug-Debian: https://github.com/tats/w3m/issues/32
+	Bug-Debian: https://github.com/tats/w3m/issues/32 [CVE-2016-9622]
 
 2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
 
@@ -137,7 +137,7 @@
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
 
 	* form.c: Prevent global-buffer-overflow write in formUpdateBuffer.
-	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
+	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429] [CVE-2016-9621]
 
 	* form.c: Fix null pointer dereference in formUpdateBuffer.
 	Bug-Debian: https://github.com/tats/w3m/issues/28 [CVE-2016-9443]

@@ -1,0 +1,22 @@
+Subject: Prevent memory exhausted due to repeat appending "</table>"
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/23 [CVE-2016-9633]
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=216722ed7282cec4338b177ea9ffdd39ad1b8c8c
+
+diff --git a/file.c b/file.c
+index 660b10e..e82eaf1 100644
+--- a/file.c
++++ b/file.c
+@@ -6988,9 +6988,12 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+ 	obuf->table_level = MAX_TABLE - 1;
+ 
+     while (obuf->table_level >= 0) {
++	int tmp = obuf->table_level;
+ 	table_mode[obuf->table_level].pre_mode
+ 	    &= ~(TBLM_SCRIPT | TBLM_STYLE | TBLM_PLAIN);
+ 	HTMLlineproc1("</table>", h_env);
++	if (obuf->table_level >= tmp)
++	    break;
+     }
+ }
+ 

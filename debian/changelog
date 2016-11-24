@@ -1,3 +1,48 @@
+w3m (0.5.3-19+deb8u1) jessie; urgency=medium
+
+  * New patch 901_ucsmap.patch to fix array index (closes: #820162)
+  * New patch 902_johab1.patch to fix array index (closes: #820373)
+  * New patch 903_input-type.patch to fix null deref [CVE-2016-9430]
+  * New patch 904_form-update.patch to fix overflow
+    [CVE-2016-9423] [CVE-2016-9431]
+  * New patch 905_textarea.patch to fix heap write [CVE-2016-9424]
+  * New patch 906_form-update.patch to fix bcopy size [CVE-2016-9432]
+  * New patch 907_iso2022.patch to fix array index [CVE-2016-9433]
+  * New patch 908_forms.patch to fix null deref [CVE-2016-9434]
+  * New patch 909_button-type.patch to fix rodata write [CVE-2016-9437]
+  * New patch 910_input-alt.patch to fix null deref [CVE-2016-9438]
+  * New patch 911_rowcolspan.patch to fix stack smashing [CVE-2016-9422]
+  * New patch 912_i-dd.patch to fix uninit values
+    [CVE-2016-9435] [CVE-2016-9436]
+  * New patch 913_tabwidth.patch to fix heap corruption [CVE-2016-9426]
+  * New patch 914_curline.patch to fix near-null deref [CVE-2016-9440]
+  * New patch 915_table-alt.patch to fix near-null deref [CVE-2016-9441]
+  * New patch 916_anchor.patch to fix heap write
+    [CVE-2016-9425] [CVE-2016-9428]
+  * New patch 917_strgrow.patch to fix potential heap buffer corruption
+    [CVE-2016-9442]
+  * New patch 918_form-value.patch to fix null deref [CVE-2016-9443]
+  * New patch 919_form-update.patch to fix buffer overflow
+    [CVE-2016-9429] [CVE-2016-9621]
+  * New patch 920_table.patch to fix stack overflow [CVE-2016-9439]
+    (closes: #844726)
+  * New patch 921_cotable.patch to fix null deref
+    (additional fix for #844726)
+  * New patch 922_lineproc.patch to fix null deref [CVE-2016-9622]
+  * New patch 923_tagproc.patch to fix null deref [CVE-2016-9623]
+  * New patch 924_curline.patch to fix near-null deref [CVE-2016-9624]
+  * New patch 925_lineproc.patch to fix stack overflow [CVE-2016-9625]
+  * New patch 926_indent-level.patch to fix stack overflow [CVE-2016-9626]
+  * New patch 927_symbol.patch to fix array index [CVE-2016-9627]
+  * New patch 928_form-id.patch to fix null deref [CVE-2016-9628]
+  * New patch 929_anchor.patch to fix null deref [CVE-2016-9629]
+  * New patch 930_tbl-mode.patch to fix null deref [CVE-2016-9631]
+  * New patch 931_parse-url.patch to fix buffer overflow [CVE-2016-9630]
+  * New patch 932_ucsmap.patch to fix buffer overflow [CVE-2016-9632]
+  * New patch 933_table-level.patch to fix out of memory [CVE-2016-9633]
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 24 Nov 2016 19:49:18 +0900
+
 w3m (0.5.3-19) unstable; urgency=medium
 
   * New patch 360_lang-de.patch to add German translation (closes: #763964)

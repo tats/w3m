@@ -1,6 +1,6 @@
 Subject: Prevent infinite recursion in HTMLlineproc0
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/36
+Bug-Debian: https://github.com/tats/w3m/issues/36 [CVE-2016-9625]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ff8510ab954ac5db478964351f6a78891c34f1d8
 
 diff --git a/file.c b/file.c

@@ -1,6 +1,6 @@
 Subject: Prevent deref null pointer in HTMLlineproc0()
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/42
+Bug-Debian: https://github.com/tats/w3m/issues/42 [CVE-2016-9631]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ecfdcbe1131591502c5e7f9ff4f34b24c5a2db97
 
 diff --git a/file.c b/file.c

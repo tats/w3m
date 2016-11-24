@@ -1,6 +1,6 @@
 Subject: Check indent_level to prevent infinite recursion
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/37
+Bug-Debian: https://github.com/tats/w3m/issues/37 [CVE-2016-9626]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=e458def067859615ce4bc7170733d368f49d63c2
 
 diff --git a/table.c b/table.c

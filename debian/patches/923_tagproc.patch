@@ -1,6 +1,6 @@
 Subject: Prevent crash after allocate string of negative size
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/33
+Bug-Debian: https://github.com/tats/w3m/issues/33 [CVE-2016-9623]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=af592aa5f154f1b0366513ddc2f545032a7b8721
 
 diff --git a/file.c b/file.c

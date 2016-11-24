@@ -1,6 +1,6 @@
 Subject: Prevent global-buffer-overflow write in formUpdateBuffer
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
+Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429] [CVE-2016-9621]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=d01de738f599441740437c6600dd5b1ae7155d27
 
 diff --git a/form.c b/form.c

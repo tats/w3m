@@ -1,6 +1,6 @@
 Subject: Prevent dereference near-null pointer in formUpdateBuffer
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/35
+Bug-Debian: https://github.com/tats/w3m/issues/35 [CVE-2016-9624]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=e2c7ecec6f9b730ad3c9bf8c8df9212970f183d7
 
 diff --git a/form.c b/form.c

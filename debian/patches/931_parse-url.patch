@@ -1,6 +1,6 @@
 Subject: Prevent global-buffer-overflow in parseURL()
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/41
+Bug-Debian: https://github.com/tats/w3m/issues/41 [CVE-2016-9630]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ba9d78faeba9024c3e8840579c3b0e959ae2cb0f
 
 diff --git a/url.c b/url.c

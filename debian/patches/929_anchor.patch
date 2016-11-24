@@ -1,6 +1,6 @@
 Subject: Prevent deref null pointer in shiftAnchorPosition()
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/40
+Bug-Debian: https://github.com/tats/w3m/issues/40 [CVE-2016-9629]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a088e0263c48ba406a7ae0932a1ae64a25be7acd
 
 diff --git a/anchor.c b/anchor.c

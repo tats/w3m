@@ -1,6 +1,6 @@
 Subject: Prevent array index out of bounds for symbol
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/38
+Bug-Debian: https://github.com/tats/w3m/issues/38 [CVE-2016-9627]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=0c3f5d0e0d9269ad47b8f4b061d7818993913189
 
 diff --git a/display.c b/display.c

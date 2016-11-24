@@ -1,6 +1,6 @@
 Subject: Prevent null pointer deref due to bad form id
 Author: Tatsuya Kinoshita <tats@debian.org>
-Bug-Debian: https://github.com/tats/w3m/issues/39
+Bug-Debian: https://github.com/tats/w3m/issues/39 [CVE-2016-9628]
 Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=9db438094e5f0d84842bcbd248f282594ccb3c89
 
 diff --git a/file.c b/file.c

@@ -3263,9 +3263,9 @@ process_img(struct parsed_tag *tag, int width)
 	}
 #endif
     }
+    i = -1;
 #ifdef USE_IMAGE
     if (use_image) {
-	i = -1;
 	if (parsedtag_get_value(tag, ATTR_HEIGHT, &i)) {
 	    if (i > 0) {
 		i = (int)(i * image_scale / 100 + 0.5);

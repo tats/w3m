@@ -1,3 +1,18 @@
+2016-11-27  Kuang-che Wu  <kcwu@google.com>
+
+	* file.c: Fix uninitialized variable in process_img(). fix #44.
+	Bug-Debian: https://github.com/tats/w3m/issues/44
+	Origin: https://github.com/tats/w3m/pull/50/commits/41a607b06e4475101de59e5c623b9e5f76594a21
+
+	* menu.c: Fix menu buffer-overflow.
+	Origin: https://github.com/tats/w3m/pull/49/commits/7e1c05dd90cf42a308e854881ea3813aed000d2e
+
+2016-11-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* ChangeLog, NEWS: Add CVE IDs.
+	cf. https://security-tracker.debian.org/tracker/source-package/w3m
+	    http://www.openwall.com/lists/oss-security/2016/11/24/1
+
 2016-11-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

@@ -6404,6 +6404,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		if (obuf->table_level >= 0) {
 		    struct table *tbl0 = tables[obuf->table_level];
 		    str = Sprintf("<table_alt tid=%d>", tbl0->ntable)->ptr;
+		    if (tbl0->row < 0)
+			continue;
 		    pushTable(tbl0, tbl);
 		    tbl = tbl0;
 		    tbl_mode = &table_mode[obuf->table_level];

@@ -3995,7 +3995,7 @@ process_textarea(struct parsed_tag *tag, int width)
     cur_textarea_size = 20;
     if (parsedtag_get_value(tag, ATTR_COLS, &p)) {
 	cur_textarea_size = atoi(p);
-	if (p[strlen(p) - 1] == '%')
+	if (strlen(p) > 0 && p[strlen(p) - 1] == '%')
 	    cur_textarea_size = width * cur_textarea_size / 100 - 2;
 	if (cur_textarea_size <= 0) {
 	    cur_textarea_size = 20;

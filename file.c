@@ -5699,7 +5699,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			a_href->end.pos = pos;
 			if (a_href->start.line == a_href->end.line &&
 			    a_href->start.pos == a_href->end.pos) {
-			    if (buf->hmarklist &&
+			    if (buf->hmarklist && a_href->hseq >= 0 &&
 				a_href->hseq < buf->hmarklist->nmark)
 				buf->hmarklist->marks[a_href->hseq].invalid = 1;
 			    a_href->hseq = -1;

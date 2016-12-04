@@ -4378,8 +4378,9 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
 		r++;
 	    s_tmp = Strnew_charp_n(q, r - q);
 
-	    if (s_tmp->ptr[s_tmp->length - 1] == '\"'          /* " */
-	       || s_tmp->ptr[s_tmp->length - 1] == '\'') {     /* ' */
+	    if (s_tmp->length > 0 &&
+	        (s_tmp->ptr[s_tmp->length - 1] == '\"' ||	/* " */
+		 s_tmp->ptr[s_tmp->length - 1] == '\'')) {	/* ' */
 		s_tmp->length--;
 		s_tmp->ptr[s_tmp->length] = '\0';
 	    }

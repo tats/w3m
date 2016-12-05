@@ -2566,8 +2566,10 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    }
 	}
 #ifdef ID_EXT
-	if (parsedtag_get_value(tag, ATTR_ID, &p))
+	if (parsedtag_get_value(tag, ATTR_ID, &p)) {
+	    check_row(tbl, tbl->row);
 	    tbl->tridvalue[tbl->row] = Strnew_charp(p);
+	}
 #endif				/* ID_EXT */
 	tbl->trattr = align | valign;
 	break;

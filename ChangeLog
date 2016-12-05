@@ -1,3 +1,41 @@
+2016-12-05  Yixun Lan  <dlan@gentoo.org>
+
+	* html.h: Explictily include <time.h> to avoid build err.
+	While disable ssl, we will got a undefine time_t err.
+	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=601498
+	Origin: https://gitweb.gentoo.org/repo/gentoo.git/commit/?id=8ee43ba4e036db70fff258f3edb2f0335385e93f
+
+2016-12-05  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c:
+	Prevent array index out of bounds for tridvalue in feed_table_tag().
+	Bug-Debian: https://github.com/tats/w3m/issues/71
+
+	* table.c: Prevent negative array index in set_integered_width().
+	Bug-Debian: https://github.com/tats/w3m/issues/70
+
+	* table.c:
+	Prevent array index out of bounds for tabattr in feed_table_tag().
+	Bug-Debian: https://github.com/tats/w3m/issues/60
+
+	* file.c: Prevent negative array index in process_textarea().
+	Bug-Debian: https://github.com/tats/w3m/issues/58
+
+	* file.c:
+	Prevent negative array index for marks in HTMLlineproc2body().
+	Bug-Debian: https://github.com/tats/w3m/issues/61
+
+	* file.c:
+	Prevent negative value of row for pushTable() in HTMLlineproc0().
+	Bug-Debian: https://github.com/tats/w3m/issues/67
+
+	* file.c: Prevent negative array index in getMetaRefreshParam().
+	Bug-Debian: https://github.com/tats/w3m/issues/63
+
+	* anchor.c:
+	Prevent negative array index for marks in shiftAnchorPosition().
+	Bug-Debian: https://github.com/tats/w3m/issues/62
+
 2016-11-27  Kuang-che Wu  <kcwu@google.com>
 
 	* file.c: Fix uninitialized variable in process_img(). fix #44.

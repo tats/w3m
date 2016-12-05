@@ -2592,7 +2592,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	tbl->col++;
 	check_row(tbl, tbl->row);
-	while (tbl->tabattr[tbl->row][tbl->col]) {
+	while (tbl->col < MAXCOL && tbl->tabattr[tbl->row][tbl->col]) {
 	    tbl->col++;
 	}
 	if (tbl->col > MAXCOL - 1) {

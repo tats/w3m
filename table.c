@@ -961,7 +961,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
     for (step = 0; step < 2; step++) {
 	for (i = 0; i <= t->maxcol; i += n) {
 	    int nn;
-	    char *idx;
+	    short *idx;
 	    double nsum;
 	    if (sum < 0.5)
 		return;
@@ -982,7 +982,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		    (double)rulewidth - mod[ii] > 0.5)
 		    fixed[ii] = 1;
 	    }
-	    idx = NewAtom_N(char, n);
+	    idx = NewAtom_N(short, n);
 	    for (k = 0; k < cell->maxcell; k++) {
 		int kk, w, width, m;
 		j = cell->index[k];

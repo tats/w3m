@@ -120,10 +120,14 @@ int
 wtf_strwidth(wc_uchar *p)
 {
     int w = 0;
+    size_t len;
 
     while (*p) {
 	w += wtf_width(p);
-	p += WTF_LEN_MAP[*p];
+	len = WTF_LEN_MAP[*p];
+	if (len > strlen(p))
+	    len = strlen(p);
+	p += len;
     }
     return w;
 }

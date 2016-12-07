@@ -2599,6 +2599,8 @@ static void
 proc_mchar(struct readbuffer *obuf, int pre_mode,
 	   int width, char **str, Lineprop mode)
 {
+    size_t len;
+
     check_breakpoint(obuf, pre_mode, *str);
     obuf->pos += width;
     Strcat_charp_n(obuf->line, *str, get_mclen(*str));
@@ -2607,7 +2609,10 @@ proc_mchar(struct readbuffer *obuf, int pre_mode,
 	if (**str != ' ')
 	    obuf->prev_ctype = mode;
     }
-    (*str) += get_mclen(*str);
+    len = get_mclen(*str);
+    if (len > strlen(*str))
+	len = strlen(*str);
+    (*str) += len;
     obuf->flag |= RB_NFLUSHED;
 }
 

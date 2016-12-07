@@ -120,8 +120,9 @@ int
 wtf_strwidth(wc_uchar *p)
 {
     int w = 0;
+    wc_uchar *q = p + strlen(p);
 
-    while (*p) {
+    while (p < q) {
 	w += wtf_width(p);
 	p += WTF_LEN_MAP[*p];
     }
@@ -140,9 +141,10 @@ size_t
 wtf_len(wc_uchar *p)
 {
     wc_uchar *q = p;
+    wc_uchar *strz = p + strlen(p);
 
     q += WTF_LEN_MAP[*q];
-    while (*q && ! WTF_WIDTH_MAP[*q])
+    while (q < strz && ! WTF_WIDTH_MAP[*q])
 	q += WTF_LEN_MAP[*q];
     return q - p;
 }

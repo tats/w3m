@@ -1,3 +1,18 @@
+2016-12-07  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent heap-use-after-free in HTMLlineproc0().
+	Bug-Debian: https://github.com/tats/w3m/issues/65
+
+	* file.c: Prevent negative values for offset and pos in push_link().
+	Bug-Debian: https://github.com/tats/w3m/issues/64
+
+	* file.c: Prevent overflow beyond the end of string in proc_mchar().
+	Bug-Debian: https://github.com/tats/w3m/issues/59
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string in wtf_strwidth().
+	Bug-Debian: https://github.com/tats/w3m/issues/57
+
 2016-12-05  Yixun Lan  <dlan@gentoo.org>
 
 	* html.h: Explictily include <time.h> to avoid build err.

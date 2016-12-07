@@ -6618,7 +6618,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		indent = h_env->envs[h_env->envc].indent;
 		if (obuf->bp.pos - i > indent) {
 		    Str line;
-		    append_tags(obuf);
+		    append_tags(obuf);	/* may reallocate the buffer */
+		    bp = obuf->line->ptr + obuf->bp.len;
 		    line = Strnew_charp(bp);
 		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
 #ifdef FORMAT_NICE

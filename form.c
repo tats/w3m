@@ -278,10 +278,10 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 		 int newline, int password)
 {
     int c_len = 1, c_width = 1, w, i, len, pos;
-    char *p, *buf;
+    char *p, *buf, *q = *str + strlen(*str);
     Lineprop c_type, effect, *prop;
 
-    for (p = *str, w = 0, pos = 0; *p && w < width;) {
+    for (p = *str, w = 0, pos = 0; p < q && w < width;) {
 	c_type = get_mctype((unsigned char *)p);
 #ifdef USE_M17N
 	c_len = get_mclen(p);
@@ -326,7 +326,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
     bcopy((void *)line->propBuf, (void *)prop, spos * sizeof(Lineprop));
 
     effect = CharEffect(line->propBuf[spos]);
-    for (p = *str, w = 0, pos = spos; *p && w < width;) {
+    for (p = *str, w = 0, pos = spos; p < q && w < width;) {
 	c_type = get_mctype((unsigned char *)p);
 #ifdef USE_M17N
 	c_len = get_mclen(p);
@@ -347,7 +347,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	    if (w + c_width > width)
 		break;
 #endif
-	    for (i = 0; i < c_width; i++) {
+	    for (i = 0; pos < len && i < c_width; i++) {
 		buf[pos] = '*';
 		prop[pos] = effect | PC_ASCII;
 		pos++;
@@ -373,7 +373,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	    pos++;
 #ifdef USE_M17N
 	    c_type = (c_type & ~PC_WCHAR1) | PC_WCHAR2;
-	    for (i = 1; i < c_len; i++) {
+	    for (i = 1; pos < len && p + i < q && i < c_len; i++) {
 		buf[pos] = p[i];
 		prop[pos] = effect | c_type;
 		pos++;
@@ -383,7 +383,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	}
 	p += c_len;
     }
-    for (; w < width; w++) {
+    for (; pos < len && w < width; w++) {
 	buf[pos] = ' ';
 	prop[pos] = effect | PC_ASCII;
 	pos++;
@@ -398,6 +398,8 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	if (*p == '\n')
 	    p++;
     }
+    if (p > q)
+	p = q;
     *str = p;
 
     bcopy((void *)&line->lineBuf[epos], (void *)&buf[pos],

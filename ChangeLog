@@ -1,3 +1,24 @@
+2016-12-08  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c:
+	Prevent overflow beyond the end of string in form_update_line().
+	Bug-Debian: https://github.com/tats/w3m/issues/75
+
+	* table.c: Prevent overflow beyond the end of string in skip_space().
+	Bug-Debian: https://github.com/tats/w3m/issues/74
+
+	* table.c:
+	Prevent overflow beyond the end of string in visible_length().
+	Bug-Debian: https://github.com/tats/w3m/issues/73
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string in wtf_strwidth().
+	Bug-Debian: https://github.com/tats/w3m/issues/57
+
+	* libwc/wtf.c:
+	Revert "Prevent overflow beyond the end of string in wtf_strwidth()".
+	This reverts commit d345c0950dfdef065b7377ecad0e4bc1d2601bf8.
+
 2016-12-07  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent heap-use-after-free in HTMLlineproc0().

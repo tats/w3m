@@ -48,6 +48,8 @@ Str
 Strnew_size(int n)
 {
     Str x = GC_MALLOC(sizeof(struct _Str));
+    if (n < 0)
+	n = 0;
     x->ptr = GC_MALLOC_ATOMIC(n + 1);
     x->ptr[0] = '\0';
     x->area_size = n + 1;

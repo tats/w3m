@@ -510,8 +510,9 @@ int
 visible_length_plain(char *str)
 {
     int len = 0, max_len = 0;
+    char *strz = str + strlen(str);
 
-    while (*str) {
+    while (str < strz) {
 	if (*str == '\t') {
 	    do {
 		len++;

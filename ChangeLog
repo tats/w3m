@@ -1,3 +1,30 @@
+2016-12-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/wtf.c: Prevent overflow beyond the end of string in wtf_len().
+	cf. https://github.com/tats/w3m/issues/57
+
+	* etc.c: Prevent negative array index for realColumn in calcPosition().
+	Bug-Debian: https://github.com/tats/w3m/issues/69
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string in wtf_parse1().
+	Bug-Debian: https://github.com/tats/w3m/issues/68
+
+	* Str.c: Prevent heap-buffer-overflow in Strnew_size().
+	Bug-Debian: https://github.com/tats/w3m/issues/72
+
+	* table.c:
+	Prevent overflow beyond the end of string in visible_length_plain().
+	Bug-Debian: https://github.com/tats/w3m/issues/76
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string for wtf to wcs macros.
+	Bug-Debian: https://github.com/tats/w3m/issues/77
+
+	* form.c:
+	Prevent overflow beyond the end of string in form_update_line().
+	Bug-Debian: https://github.com/tats/w3m/issues/78
+
 2016-12-08  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c:

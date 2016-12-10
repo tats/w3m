@@ -498,7 +498,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     static char *prevl = NULL;
     int i, j;
 
-    if (l == NULL || len == 0)
+    if (l == NULL || len == 0 || pos < 0)
 	return bpos;
     if (l == prevl && mode == CP_AUTO) {
 	if (pos <= len)

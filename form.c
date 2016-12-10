@@ -388,7 +388,7 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
 	prop[pos] = effect | PC_ASCII;
 	pos++;
     }
-    if (newline) {
+    if (p < q && newline) {
 	if (!FoldTextarea) {
 	    while (*p && *p != '\r' && *p != '\n')
 		p++;

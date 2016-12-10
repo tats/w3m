@@ -141,9 +141,10 @@ size_t
 wtf_len(wc_uchar *p)
 {
     wc_uchar *q = p;
+    wc_uchar *strz = p + strlen(p);
 
     q += WTF_LEN_MAP[*q];
-    while (*q && ! WTF_WIDTH_MAP[*q])
+    while (q < strz && ! WTF_WIDTH_MAP[*q])
 	q += WTF_LEN_MAP[*q];
     return q - p;
 }

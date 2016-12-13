@@ -1,3 +1,17 @@
+2016-12-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent overflow beyond the end of string in proc_mchar().
+	Bug-Debian: https://github.com/tats/w3m/issues/80
+	cf. https://github.com/tats/w3m/issues/59
+
+	* form.c: Prevent overflow beyond the end of string in textfieldrep().
+	Bug-Debian: https://github.com/tats/w3m/issues/79
+
+	* form.c:
+	Preserve one byte for end of string character in form_update_line().
+	Bug-Debian: https://github.com/tats/w3m/issues/82
+	cf. https://github.com/tats/w3m/issues/68#issuecomment-266214643
+
 2016-12-10  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/wtf.c: Prevent overflow beyond the end of string in wtf_len().

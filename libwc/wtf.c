@@ -173,15 +173,17 @@ wtf_type(wc_uchar *p)
     ((p)[3] = (((c) >>  7) & 0x7f) | 0x80), \
     ((p)[4] = ( (c)        & 0x7f) | 0x80)
 #define wtf_to_wcs16(p) \
+    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 ? 0 : \
       ((wc_uint32)((p)[0] & 0x03) << 14) \
     | ((wc_uint32)((p)[1] & 0x7f) <<  7) \
-    | ((wc_uint32)((p)[2] & 0x7f)      )
+    | ((wc_uint32)((p)[2] & 0x7f)      ))
 #define wtf_to_wcs32(p) \
+    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 || (p)[3] == 0 || (p)[4] == 0 ? 0 : \
       ((wc_uint32)((p)[0] & 0x0f) << 28) \
     | ((wc_uint32)((p)[1] & 0x7f) << 21) \
     | ((wc_uint32)((p)[2] & 0x7f) << 14) \
     | ((wc_uint32)((p)[3] & 0x7f) <<  7) \
-    | ((wc_uint32)((p)[4] & 0x7f)      )
+    | ((wc_uint32)((p)[4] & 0x7f)      ))
 
 void
 wtf_push(Str os, wc_ccs ccs, wc_uint32 code)

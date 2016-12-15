@@ -2251,7 +2251,6 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
     Str prevchar = linfo->prevchar;
     int w = linfo->length;
     int min = 1;
-    char *linez;
 
     if (*line == '<' && line[strlen(line) - 1] == '>') {
 	if (checkminimum)
@@ -2259,8 +2258,7 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 	return 0;
     }
 
-    linez = line + strlen(line);
-    while (line < linez) {
+    while (*line) {
 	char *save = line, *c = line;
 	int ec, len, wlen, plen;
 	ctype = get_mctype(line);

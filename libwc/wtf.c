@@ -129,13 +129,18 @@ wtf_strwidth(wc_uchar *p)
     return w;
 }
 
-/*
 size_t
 wtf_len1(wc_uchar *p)
 {
-    return (size_t)WTF_LEN_MAP[*p];
+    size_t len, len_max = WTF_LEN_MAP[*p];
+
+    for (len = 0; *(p + len); len++)
+	if (len == len_max)
+	    break;
+    if (len == 0)
+	len = 1;
+    return len;
 }
-*/
 
 size_t
 wtf_len(wc_uchar *p)

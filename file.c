@@ -3438,7 +3438,7 @@ process_img(struct parsed_tag *tag, int width)
 	if (use_image) {
 	    if (n > nw) {
 		char *r;
-		for (r = q, n = 0; r; r += get_mclen(r), n += get_mcwidth(r)) {
+		for (r = q, n = 0; *r; r += get_mclen(r), n += get_mcwidth(r)) {
 		    if (n + get_mcwidth(r) > nw)
 			break;
 		}

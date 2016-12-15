@@ -428,9 +428,8 @@ visible_length(char *str)
     Str tagbuf = Strnew();
     char *t, *r2;
     int amp_len = 0;
-    char *strz = str + strlen(str);
 
-    while (str < strz) {
+    while (*str) {
 	prev_status = status;
 	if (next_status(*str, &status)) {
 #ifdef USE_M17N

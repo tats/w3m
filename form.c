@@ -526,8 +526,6 @@ textfieldrep(Str s, int width)
     for (i = 0; i < s->length; i += c_len) {
 	c_type = get_mctype((unsigned char *)&s->ptr[i]);
 	c_len = get_mclen(&s->ptr[i]);
-	if (i + c_len > s->length)
-	    break;
 	if (s->ptr[i] == '\r')
 	    continue;
 	k = j + get_mcwidth(&s->ptr[i]);

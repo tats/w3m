@@ -1,3 +1,48 @@
+2016-12-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string for wtf to wcs macros.
+	Bug-Debian: https://github.com/tats/w3m/issues/77
+
+	* libwc/wtf.c:
+	Revert "Prevent overflow beyond the end of string for wtf to wcs macros".
+	This reverts commit b4d27ba5ccffaa38e968c2bf3a8eeb9cd43928ff.
+
+	* file.c, libwc/wtf.c, libwc/wtf.h:
+	Prevent overflow beyond the end of string in caller of get_mclen().
+	Bug-Debian: https://github.com/tats/w3m/issues/59
+	Bug-Debian: https://github.com/tats/w3m/issues/73
+	Bug-Debian: https://github.com/tats/w3m/issues/74
+	Bug-Debian: https://github.com/tats/w3m/issues/76
+	Bug-Debian: https://github.com/tats/w3m/issues/79
+	Bug-Debian: https://github.com/tats/w3m/issues/80
+	Bug-Debian: https://github.com/tats/w3m/issues/83
+	Bug-Debian: https://github.com/tats/w3m/issues/84
+
+	* file.c:
+	Revert "Prevent overflow beyond the end of string in proc_mchar()".
+	This reverts commit 512ed467d12615f5ef40d0d28272e5662d8438ea.
+
+	* table.c:
+	Revert "Prevent overflow beyond the end of string in visible_length()".
+	This reverts commit a932f78a6d8c105036ffeedf01215c1f6a0e0b71.
+
+	* table.c:
+	Revert "Prevent overflow beyond the end of string in skip_space()".
+	This reverts commit e757b43bcf8c439c167f62b6d3317ee9518cabbf.
+
+	* table.c:
+	Revert "Prevent overflow beyond the end of string in visible_length_plain()".
+	This reverts commit f763b8ebf5441cb44d2c0234565fadd5eb1c87a5.
+
+	* form.c:
+	Revert "Prevent overflow beyond the end of string in textfieldrep()".
+	This reverts commit 77d8d8d6576d8afc0f6b2e09bb88c7ca9dba58bb.
+
+	* file.c:
+	Revert "Prevent overflow beyond the end of string in proc_mchar()".
+	This reverts commit e79d0ec2a00369a6af24007a1f2bb5e876e2c847.
+
 2016-12-13  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent overflow beyond the end of string in proc_mchar().

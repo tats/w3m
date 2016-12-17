@@ -1,3 +1,19 @@
+2016-12-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Prevent heap-use-after-free read in HTMLlineproc0().
+	Bug-Debian: https://github.com/tats/w3m/issues/81
+
+	* file.c: Prevent infinite loop in feed_textarea().
+	Bug-Debian: https://github.com/tats/w3m/issues/85
+
+	* form.c:
+	Revert "Prevent overflow beyond the end of string in form_update_line()".
+	This reverts commit 9ccaa1dd0dac6f9b35a649ae9901c225421500f6.
+
+	* form.c:
+	Revert "Prevent overflow beyond the end of string in form_update_line()".
+	This reverts commit e0efc127ff20cbeb931847af1c9b353056340fbd.
+
 2016-12-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/wtf.c:

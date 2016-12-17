@@ -6356,7 +6356,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    }
 	    if (h_env->tagbuf->length == 0)
 		continue;
-	    str = h_env->tagbuf->ptr;
+	    str = Strdup(h_env->tagbuf)->ptr;
 	    if (*str == '<') {
 		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
 		    is_tag = TRUE;

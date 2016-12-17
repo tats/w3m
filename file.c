@@ -4093,7 +4093,9 @@ feed_textarea(char *str)
 	    Strcat_charp(textarea_str[n_textarea], "\r\n");
 	    str++;
 	}
-	else if (*str != '\r')
+	else if (*str == '\r')
+	    str++;
+	else
 	    Strcat_char(textarea_str[n_textarea], *(str++));
     }
 }

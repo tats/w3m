@@ -1,3 +1,9 @@
+2016-12-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c:
+	Revert "Preserve one byte for end of string character in form_update_line()".
+	This reverts commit a4152aaaea5cb51c9018880a1295e498c38889bf.
+
 2016-12-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Prevent heap-use-after-free read in HTMLlineproc0().

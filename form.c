@@ -490,7 +490,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 		spos = a->start.pos;
 		epos = a->end.pos;
 	    }
-	    if (a->start.line != a->end.line || spos > epos || epos >= l->len || spos < 0 || epos < 0)
+	    if (a->start.line != a->end.line || spos > epos || epos >= l->len ||
+		spos < 0 || epos < 0 || COLPOS(l, epos) < col)
 		break;
 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
 				   rows > 1,

@@ -397,7 +397,7 @@ wtf_parse1(wc_uchar **p)
 	cc.code = *(q++);
     } else if (*q > 0xa0) {
 	cc.ccs = wtf_gr_ccs;
-	if (WC_CCS_IS_WIDE(cc.ccs)) {
+	if (WC_CCS_IS_WIDE(cc.ccs) && *(q+1)) {
 	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
 	    q += 2;
 	} else
@@ -410,27 +410,47 @@ wtf_parse1(wc_uchar **p)
 	case WC_CCS_A_CS942:
 	case WC_CCS_A_PCS:
 	case WC_CCS_A_UNKNOWN:
-	    cc.ccs |= *(q++) & 0x7f;
-	    cc.code = *(q++);
+	    if (*q && *(q+1)) {
+		cc.ccs |= *(q++) & 0x7f;
+		cc.code = *(q++);
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_CS94W:
 	case WC_CCS_A_CS96W:
 	case WC_CCS_A_PCSW:
-	    cc.ccs |= *(q++) & 0x7f;
-	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
-	    q += 2;
+	    if (*q && *(q+1) && *(q+2)) {
+		cc.ccs |= *(q++) & 0x7f;
+		cc.code = ((wc_uint32)*q << 8) | *(q+1);
+		q += 2;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_WCS16:
 	case WC_CCS_A_WCS16W:
-	    cc.ccs |= (*q & 0x7c) >> 2;
-	    cc.code = wtf_to_wcs16(q);
-	    q += 3;
+	    if (*q && *(q+1) && *(q+2)) {
+		cc.ccs |= (*q & 0x7c) >> 2;
+		cc.code = wtf_to_wcs16(q);
+		q += 3;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_WCS32:
 	case WC_CCS_A_WCS32W:
-	    cc.ccs |= (*q & 0x70) >> 4;
-	    cc.code = wtf_to_wcs32(q);
-	    q += 5;
+	    if (*q && *(q+1) && *(q+2) && *(q+3) && *(q+4)) {
+		cc.ccs |= (*q & 0x70) >> 4;
+		cc.code = wtf_to_wcs32(q);
+		q += 5;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	default:
 	/* case 0: */

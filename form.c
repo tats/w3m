@@ -320,7 +320,8 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
     pos += width - w;
 
     len = line->len + pos + spos - epos;
-    buf = New_N(char, len);
+    buf = New_N(char, len + 1);
+    buf[len] = '\0';
     prop = New_N(Lineprop, len);
     bcopy((void *)line->lineBuf, (void *)buf, spos * sizeof(char));
     bcopy((void *)line->propBuf, (void *)prop, spos * sizeof(Lineprop));

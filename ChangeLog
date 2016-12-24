@@ -1,3 +1,23 @@
+2016-12-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/wtf.c:
+	Prevent overflow beyond the end of string in wtf_parse1().
+	Bug-Debian: https://github.com/tats/w3m/issues/68
+
+	* libwc/wtf.c:
+	Revert "Prevent overflow beyond the end of string in wtf_parse1()".
+	This reverts commit 998b6f91d4b02e8bf90b7744dfabc8cccdf9d4f9.
+	Bug-Debian: https://github.com/tats/w3m/issues/86
+	cf. http://emacs-w3m.namazu.org/ml/msg12505.html
+
+	* form.c:
+	Preserve one byte for end of string character in form_update_line().
+	Bug-Debian: https://github.com/tats/w3m/issues/68#issuecomment-266214643
+
+	* form.c:
+	Prevent invalid form_update_line() call in formUpdateBuffer().
+	Bug-Debian: https://github.com/tats/w3m/issues/82
+
 2016-12-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c:

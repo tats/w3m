@@ -1,3 +1,7 @@
+2017-01-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
 2016-12-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/wtf.c:

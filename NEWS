@@ -1,6 +1,9 @@
-Debian's w3m 0.5.3+gitYYYYMMDD
+Debian's w3m 0.5.3+git20170103
 
 * bug fixes
+ - fix multiple flaws with malformed text
+   (buffer overflow, use after free, infinite loop)
+ - fix uninitialized variable when not USE_IMAGE
 
 Debian's w3m 0.5.3+git20161120
 

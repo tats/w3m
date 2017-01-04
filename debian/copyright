@@ -320,7 +320,7 @@ License: public-domain
  by Scarlett. public domain.
 
 Files: debian/*
-Copyright: 2008-2016, Tatsuya Kinoshita <tats@debian.org>
+Copyright: 2008-2017, Tatsuya Kinoshita <tats@debian.org>
            1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
 License: permissive-debian
  There is no restriction, so this package may be distributed under

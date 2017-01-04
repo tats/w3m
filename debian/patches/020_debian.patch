@@ -60,10 +60,233 @@ index 8f443c1..5fb6581 100755
  	$input = "w3m-control: GOTO_LINK";
  }
 diff --git a/ChangeLog b/ChangeLog
-index 88358ef..90443aa 100644
+index 88358ef..5e77a18 100644
 --- a/ChangeLog
 +++ b/ChangeLog
-@@ -1,3 +1,1303 @@
+@@ -1,3 +1,1526 @@
++2017-01-02  Tatsuya Kinoshita  <tats@debian.org>
++
++	* NEWS: Update NEWS.
++
++2016-12-24  Tatsuya Kinoshita  <tats@debian.org>
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string in wtf_parse1().
++	Bug-Debian: https://github.com/tats/w3m/issues/68
++
++	* libwc/wtf.c:
++	Revert "Prevent overflow beyond the end of string in wtf_parse1()".
++	This reverts commit 998b6f91d4b02e8bf90b7744dfabc8cccdf9d4f9.
++	Bug-Debian: https://github.com/tats/w3m/issues/86
++	cf. http://emacs-w3m.namazu.org/ml/msg12505.html
++
++	* form.c:
++	Preserve one byte for end of string character in form_update_line().
++	Bug-Debian: https://github.com/tats/w3m/issues/68#issuecomment-266214643
++
++	* form.c:
++	Prevent invalid form_update_line() call in formUpdateBuffer().
++	Bug-Debian: https://github.com/tats/w3m/issues/82
++
++2016-12-20  Tatsuya Kinoshita  <tats@debian.org>
++
++	* form.c:
++	Revert "Preserve one byte for end of string character in form_update_line()".
++	This reverts commit a4152aaaea5cb51c9018880a1295e498c38889bf.
++
++2016-12-18  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Prevent heap-use-after-free read in HTMLlineproc0().
++	Bug-Debian: https://github.com/tats/w3m/issues/81
++
++	* file.c: Prevent infinite loop in feed_textarea().
++	Bug-Debian: https://github.com/tats/w3m/issues/85
++
++	* form.c:
++	Revert "Prevent overflow beyond the end of string in form_update_line()".
++	This reverts commit 9ccaa1dd0dac6f9b35a649ae9901c225421500f6.
++
++	* form.c:
++	Revert "Prevent overflow beyond the end of string in form_update_line()".
++	This reverts commit e0efc127ff20cbeb931847af1c9b353056340fbd.
++
++2016-12-15  Tatsuya Kinoshita  <tats@debian.org>
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string for wtf to wcs macros.
++	Bug-Debian: https://github.com/tats/w3m/issues/77
++
++	* libwc/wtf.c:
++	Revert "Prevent overflow beyond the end of string for wtf to wcs macros".
++	This reverts commit b4d27ba5ccffaa38e968c2bf3a8eeb9cd43928ff.
++
++	* file.c, libwc/wtf.c, libwc/wtf.h:
++	Prevent overflow beyond the end of string in caller of get_mclen().
++	Bug-Debian: https://github.com/tats/w3m/issues/59
++	Bug-Debian: https://github.com/tats/w3m/issues/73
++	Bug-Debian: https://github.com/tats/w3m/issues/74
++	Bug-Debian: https://github.com/tats/w3m/issues/75
++	Bug-Debian: https://github.com/tats/w3m/issues/76
++	Bug-Debian: https://github.com/tats/w3m/issues/78
++	Bug-Debian: https://github.com/tats/w3m/issues/79
++	Bug-Debian: https://github.com/tats/w3m/issues/80
++	Bug-Debian: https://github.com/tats/w3m/issues/83
++	Bug-Debian: https://github.com/tats/w3m/issues/84
++
++	* file.c:
++	Revert "Prevent overflow beyond the end of string in proc_mchar()".
++	This reverts commit 512ed467d12615f5ef40d0d28272e5662d8438ea.
++
++	* table.c:
++	Revert "Prevent overflow beyond the end of string in visible_length()".
++	This reverts commit a932f78a6d8c105036ffeedf01215c1f6a0e0b71.
++
++	* table.c:
++	Revert "Prevent overflow beyond the end of string in skip_space()".
++	This reverts commit e757b43bcf8c439c167f62b6d3317ee9518cabbf.
++
++	* table.c:
++	Revert "Prevent overflow beyond the end of string in visible_length_plain()".
++	This reverts commit f763b8ebf5441cb44d2c0234565fadd5eb1c87a5.
++
++	* form.c:
++	Revert "Prevent overflow beyond the end of string in textfieldrep()".
++	This reverts commit 77d8d8d6576d8afc0f6b2e09bb88c7ca9dba58bb.
++
++	* file.c:
++	Revert "Prevent overflow beyond the end of string in proc_mchar()".
++	This reverts commit e79d0ec2a00369a6af24007a1f2bb5e876e2c847.
++
++2016-12-13  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Prevent overflow beyond the end of string in proc_mchar().
++	Bug-Debian: https://github.com/tats/w3m/issues/80
++	cf. https://github.com/tats/w3m/issues/59
++
++	* form.c: Prevent overflow beyond the end of string in textfieldrep().
++	Bug-Debian: https://github.com/tats/w3m/issues/79
++
++	* form.c:
++	Preserve one byte for end of string character in form_update_line().
++	Bug-Debian: https://github.com/tats/w3m/issues/82
++	cf. https://github.com/tats/w3m/issues/68#issuecomment-266214643
++
++2016-12-10  Tatsuya Kinoshita  <tats@debian.org>
++
++	* libwc/wtf.c: Prevent overflow beyond the end of string in wtf_len().
++	cf. https://github.com/tats/w3m/issues/57
++
++	* etc.c: Prevent negative array index for realColumn in calcPosition().
++	Bug-Debian: https://github.com/tats/w3m/issues/69
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string in wtf_parse1().
++	Bug-Debian: https://github.com/tats/w3m/issues/68
++
++	* Str.c: Prevent heap-buffer-overflow in Strnew_size().
++	Bug-Debian: https://github.com/tats/w3m/issues/72
++
++	* table.c:
++	Prevent overflow beyond the end of string in visible_length_plain().
++	Bug-Debian: https://github.com/tats/w3m/issues/76
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string for wtf to wcs macros.
++	Bug-Debian: https://github.com/tats/w3m/issues/77
++
++	* form.c:
++	Prevent overflow beyond the end of string in form_update_line().
++	Bug-Debian: https://github.com/tats/w3m/issues/78
++
++2016-12-08  Tatsuya Kinoshita  <tats@debian.org>
++
++	* form.c:
++	Prevent overflow beyond the end of string in form_update_line().
++	Bug-Debian: https://github.com/tats/w3m/issues/75
++
++	* table.c: Prevent overflow beyond the end of string in skip_space().
++	Bug-Debian: https://github.com/tats/w3m/issues/74
++
++	* table.c:
++	Prevent overflow beyond the end of string in visible_length().
++	Bug-Debian: https://github.com/tats/w3m/issues/73
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string in wtf_strwidth().
++	Bug-Debian: https://github.com/tats/w3m/issues/57
++
++	* libwc/wtf.c:
++	Revert "Prevent overflow beyond the end of string in wtf_strwidth()".
++	This reverts commit d345c0950dfdef065b7377ecad0e4bc1d2601bf8.
++
++2016-12-07  Tatsuya Kinoshita  <tats@debian.org>
++
++	* file.c: Prevent heap-use-after-free in HTMLlineproc0().
++	Bug-Debian: https://github.com/tats/w3m/issues/65
++
++	* file.c: Prevent negative values for offset and pos in push_link().
++	Bug-Debian: https://github.com/tats/w3m/issues/64
++
++	* file.c: Prevent overflow beyond the end of string in proc_mchar().
++	Bug-Debian: https://github.com/tats/w3m/issues/59
++
++	* libwc/wtf.c:
++	Prevent overflow beyond the end of string in wtf_strwidth().
++	Bug-Debian: https://github.com/tats/w3m/issues/57
++
++2016-12-05  Yixun Lan  <dlan@gentoo.org>
++
++	* html.h: Explictily include <time.h> to avoid build err.
++	While disable ssl, we will got a undefine time_t err.
++	Bug-Gentoo: https://bugs.gentoo.org/show_bug.cgi?id=601498
++	Origin: https://gitweb.gentoo.org/repo/gentoo.git/commit/?id=8ee43ba4e036db70fff258f3edb2f0335385e93f
++
++2016-12-05  Tatsuya Kinoshita  <tats@debian.org>
++
++	* table.c:
++	Prevent array index out of bounds for tridvalue in feed_table_tag().
++	Bug-Debian: https://github.com/tats/w3m/issues/71
++
++	* table.c: Prevent negative array index in set_integered_width().
++	Bug-Debian: https://github.com/tats/w3m/issues/70
++
++	* table.c:
++	Prevent array index out of bounds for tabattr in feed_table_tag().
++	Bug-Debian: https://github.com/tats/w3m/issues/60
++
++	* file.c: Prevent negative array index in process_textarea().
++	Bug-Debian: https://github.com/tats/w3m/issues/58
++
++	* file.c:
++	Prevent negative array index for marks in HTMLlineproc2body().
++	Bug-Debian: https://github.com/tats/w3m/issues/61
++
++	* file.c:
++	Prevent negative value of row for pushTable() in HTMLlineproc0().
++	Bug-Debian: https://github.com/tats/w3m/issues/67
++
++	* file.c: Prevent negative array index in getMetaRefreshParam().
++	Bug-Debian: https://github.com/tats/w3m/issues/63
++
++	* anchor.c:
++	Prevent negative array index for marks in shiftAnchorPosition().
++	Bug-Debian: https://github.com/tats/w3m/issues/62
++
++2016-11-27  Kuang-che Wu  <kcwu@google.com>
++
++	* file.c: Fix uninitialized variable in process_img(). fix #44.
++	Bug-Debian: https://github.com/tats/w3m/issues/44
++	Origin: https://github.com/tats/w3m/pull/50/commits/41a607b06e4475101de59e5c623b9e5f76594a21
++
++	* menu.c: Fix menu buffer-overflow.
++	Origin: https://github.com/tats/w3m/pull/49/commits/7e1c05dd90cf42a308e854881ea3813aed000d2e
++
++2016-11-27  Tatsuya Kinoshita  <tats@debian.org>
++
++	* ChangeLog, NEWS: Add CVE IDs.
++	cf. https://security-tracker.debian.org/tracker/source-package/w3m
++	    http://www.openwall.com/lists/oss-security/2016/11/24/1
++
 +2016-11-20  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* NEWS: Update NEWS.
@@ -83,15 +306,15 @@ index 88358ef..90443aa 100644
 +
 +	* libwc/ucs.c, libwc/ucs.map:
 +	Prevent global-buffer-overflow in wc_any_to_ucs().
-+	Bug-Debian: https://github.com/tats/w3m/issues/43
++	Bug-Debian: https://github.com/tats/w3m/issues/43 [CVE-2016-9632]
 +
 +2016-11-17  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* url.c: Prevent global-buffer-overflow in parseURL().
-+	Bug-Debian: https://github.com/tats/w3m/issues/41
++	Bug-Debian: https://github.com/tats/w3m/issues/41 [CVE-2016-9630]
 +
 +	* file.c: Prevent deref null pointer in HTMLlineproc0().
-+	Bug-Debian: https://github.com/tats/w3m/issues/42
++	Bug-Debian: https://github.com/tats/w3m/issues/42 [CVE-2016-9631]
 +
 +2016-11-15  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -108,16 +331,16 @@ index 88358ef..90443aa 100644
 +	This reverts commit f393faf55975a94217df479e1bd06ee4403c6958.
 +
 +	* anchor.c: Prevent deref null pointer in shiftAnchorPosition().
-+	Bug-Debian: https://github.com/tats/w3m/issues/40
++	Bug-Debian: https://github.com/tats/w3m/issues/40 [CVE-2016-9629]
 +
 +2016-11-14  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c: Prevent null pointer deref due to bad form id.
-+	Bug-Debian: https://github.com/tats/w3m/issues/39
++	Bug-Debian: https://github.com/tats/w3m/issues/39 [CVE-2016-9628]
 +
 +	* display.c, file.c, fm.h, symbol.c:
 +	Prevent array index out of bounds for symbol.
-+	Bug-Debian: https://github.com/tats/w3m/issues/38
++	Bug-Debian: https://github.com/tats/w3m/issues/38 [CVE-2016-9627]
 +
 +2016-11-13  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -135,12 +358,12 @@ index 88358ef..90443aa 100644
 +2016-11-09  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* table.c: Check indent_level to prevent infinite recursion.
-+	Bug-Debian: https://github.com/tats/w3m/issues/37
++	Bug-Debian: https://github.com/tats/w3m/issues/37 [CVE-2016-9626]
 +
 +2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* file.c: Prevent infinite recursion in HTMLlineproc0.
-+	Bug-Debian: https://github.com/tats/w3m/issues/36
++	Bug-Debian: https://github.com/tats/w3m/issues/36 [CVE-2016-9625]
 +
 +	* NEWS, w3m-doc/install.html.in:
 +	Update documents for included w3mdict.cgi.
@@ -156,16 +379,16 @@ index 88358ef..90443aa 100644
 +2016-11-07  Tatsuya Kinoshita  <tats@debian.org>
 +
 +	* form.c: Prevent dereference near-null pointer in formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/35
++	Bug-Debian: https://github.com/tats/w3m/issues/35 [CVE-2016-9624]
 +
 +	* file.c: Prevent crash after allocate string of negative size.
-+	Bug-Debian: https://github.com/tats/w3m/issues/33
++	Bug-Debian: https://github.com/tats/w3m/issues/33 [CVE-2016-9623]
 +
 +	* file.c: Prevent memory exhausted due to repeat appending "</table>".
-+	Bug-Debian: https://github.com/tats/w3m/issues/23
++	Bug-Debian: https://github.com/tats/w3m/issues/23 [CVE-2016-9633]
 +
 +	* file.c: Prevent null pointer dereference in HTMLlineproc2body.
-+	Bug-Debian: https://github.com/tats/w3m/issues/32
++	Bug-Debian: https://github.com/tats/w3m/issues/32 [CVE-2016-9622]
 +
 +2016-10-31  Tatsuya Kinoshita  <tats@debian.org>
 +
@@ -203,7 +426,7 @@ index 88358ef..90443aa 100644
 +	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
 +
 +	* form.c: Prevent global-buffer-overflow write in formUpdateBuffer.
-+	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429]
++	Bug-Debian: https://github.com/tats/w3m/issues/29 [CVE-2016-9429] [CVE-2016-9621]
 +
 +	* form.c: Fix null pointer dereference in formUpdateBuffer.
 +	Bug-Debian: https://github.com/tats/w3m/issues/28 [CVE-2016-9443]
@@ -1419,15 +1642,25 @@ index 7d692f9..453072d 100644
  	do	\
  		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
 diff --git a/NEWS b/NEWS
-index 66e309d..b80e8ed 100644
+index 66e309d..d8a99d3 100644
 --- a/NEWS
 +++ b/NEWS
-@@ -1,3 +1,55 @@
+@@ -1,3 +1,65 @@
++Debian's w3m 0.5.3+git20170102
++
++* bug fixes
++ - fix multiple flaws with malformed text
++   (buffer overflow, use after free, infinite loop)
++ - fix uninitialized variable when not USE_IMAGE
++
 +Debian's w3m 0.5.3+git20161120
 +
 +* bug fixes
 + - fix multiple flaws with malformed text
 +   (stack overflow, buffer overflow, null deref, out of memory)
++   [CVE-2016-9622], [CVE-2016-9623], [CVE-2016-9624], [CVE-2016-9625],
++   [CVE-2016-9626], [CVE-2016-9627], [CVE-2016-9628], [CVE-2016-9629],
++   [CVE-2016-9630], [CVE-2016-9631], [CVE-2016-9632], [CVE-2016-9633]
 + - fix stack overflow with nested table and textarea [CVE-2016-9439]
 + - fix suspend (^Z) behavior
 +
@@ -1452,7 +1685,7 @@ index 66e309d..b80e8ed 100644
 +   [CVE-2016-9426], [CVE-2016-9428], [CVE-2016-9429], [CVE-2016-9430],
 +   [CVE-2016-9431], [CVE-2016-9432], [CVE-2016-9433], [CVE-2016-9434],
 +   [CVE-2016-9435], [CVE-2016-9436], [CVE-2016-9437], [CVE-2016-9438],
-+   [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9443]
++   [CVE-2016-9440], [CVE-2016-9441], [CVE-2016-9443], [CVE-2016-9621]
 + - fix potential heap buffer corruption due to Strgrow [CVE-2016-9442]
 + - disable SSLv2 and SSLv3 by default [CVE-2014-3566]
 + - set ssl_verify_server to 1 by default
@@ -1493,10 +1726,19 @@ index 8778d80..765c996 100644
  If you can read Japanese, see doc-jp/*.
  If you can read both, read both and correct English. :-)
 diff --git a/Str.c b/Str.c
-index e5a0982..d34129f 100644
+index e5a0982..61fe3ca 100644
 --- a/Str.c
 +++ b/Str.c
-@@ -56,7 +56,7 @@ Strnew_size(int n)
+@@ -48,6 +48,8 @@ Str
+ Strnew_size(int n)
+ {
+     Str x = GC_MALLOC(sizeof(struct _Str));
++    if (n < 0)
++	n = 0;
+     x->ptr = GC_MALLOC_ATOMIC(n + 1);
+     x->ptr[0] = '\0';
+     x->area_size = n + 1;
+@@ -56,7 +58,7 @@ Strnew_size(int n)
  }
  
  Str
@@ -1505,7 +1747,7 @@ index e5a0982..d34129f 100644
  {
      Str x;
      int n;
-@@ -73,7 +73,7 @@ Strnew_charp(char *p)
+@@ -73,7 +75,7 @@ Strnew_charp(char *p)
  }
  
  Str
@@ -1514,7 +1756,7 @@ index e5a0982..d34129f 100644
  {
      va_list ap;
      Str r = Strnew();
-@@ -87,7 +87,7 @@ Strnew_m_charp(char *p, ...)
+@@ -87,7 +89,7 @@ Strnew_m_charp(char *p, ...)
  }
  
  Str
@@ -1523,7 +1765,7 @@ index e5a0982..d34129f 100644
  {
      Str x;
  
-@@ -140,7 +140,7 @@ Strcopy(Str x, Str y)
+@@ -140,7 +142,7 @@ Strcopy(Str x, Str y)
  }
  
  void
@@ -1532,7 +1774,7 @@ index e5a0982..d34129f 100644
  {
      int len;
  
-@@ -160,7 +160,7 @@ Strcopy_charp(Str x, char *y)
+@@ -160,7 +162,7 @@ Strcopy_charp(Str x, char *y)
  }
  
  void
@@ -1541,7 +1783,7 @@ index e5a0982..d34129f 100644
  {
      int len = n;
  
-@@ -180,7 +180,7 @@ Strcopy_charp_n(Str x, char *y, int n)
+@@ -180,7 +182,7 @@ Strcopy_charp_n(Str x, char *y, int n)
  }
  
  void
@@ -1550,7 +1792,7 @@ index e5a0982..d34129f 100644
  {
      int newlen;
  
-@@ -209,7 +209,7 @@ Strcat(Str x, Str y)
+@@ -209,7 +211,7 @@ Strcat(Str x, Str y)
  }
  
  void
@@ -1559,7 +1801,7 @@ index e5a0982..d34129f 100644
  {
      if (y == NULL)
  	return;
-@@ -232,8 +232,8 @@ Strgrow(Str x)
+@@ -232,8 +234,8 @@ Strgrow(Str x)
  {
      char *old = x->ptr;
      int newlen;
@@ -1570,7 +1812,7 @@ index e5a0982..d34129f 100644
  	newlen += 2;
      x->ptr = GC_MALLOC_ATOMIC(newlen);
      x->area_size = newlen;
-@@ -278,8 +278,8 @@ void
+@@ -278,8 +280,8 @@ void
  Strchop(Str s)
  {
      STR_LENGTH_CHECK(s);
@@ -1581,7 +1823,7 @@ index e5a0982..d34129f 100644
  	s->length--;
      }
      s->ptr[s->length] = '\0';
-@@ -301,7 +301,7 @@ Strinsert_char(Str s, int pos, char c)
+@@ -301,7 +303,7 @@ Strinsert_char(Str s, int pos, char c)
  }
  
  void
@@ -1590,7 +1832,7 @@ index e5a0982..d34129f 100644
  {
      STR_LENGTH_CHECK(s);
      while (*p)
-@@ -530,11 +530,8 @@ Str
+@@ -530,11 +532,8 @@ Str
  Strfgets(FILE * f)
  {
      Str s = Strnew();
@@ -1604,7 +1846,7 @@ index e5a0982..d34129f 100644
  	Strcat_char(s, c);
  	if (c == '\n')
  	    break;
-@@ -546,11 +543,8 @@ Str
+@@ -546,11 +545,8 @@ Str
  Strfgetall(FILE * f)
  {
      Str s = Strnew();
@@ -1816,7 +2058,7 @@ index 0000000..fa0d391
 +
 +#endif /* W3_ALLOC_H */
 diff --git a/anchor.c b/anchor.c
-index 27bbd56..10d6c1c 100644
+index 27bbd56..b6d121c 100644
 --- a/anchor.c
 +++ b/anchor.c
 @@ -11,7 +11,7 @@ putAnchor(AnchorList *al, char *url, char *target, Anchor **anchor_return,
@@ -1858,16 +2100,17 @@ index 27bbd56..10d6c1c 100644
  			'\0', line, pos);
  }
  
-@@ -549,7 +551,7 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
+@@ -549,7 +551,8 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
  	    break;
  	if (a->start.pos > pos) {
  	    a->start.pos += shift;
 -	    if (hl->marks[a->hseq].line == line)
-+	    if (hl && hl->marks && hl->marks[a->hseq].line == line)
++	    if (hl && hl->marks &&
++		a->hseq >= 0 && hl->marks[a->hseq].line == line)
  		hl->marks[a->hseq].pos = a->start.pos;
  	}
  	if (a->end.pos >= pos)
-@@ -641,7 +643,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+@@ -641,7 +644,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
  {
      int i, j, k, col, ecol, pos;
      Anchor a_form, *a;
@@ -1875,7 +2118,7 @@ index 27bbd56..10d6c1c 100644
      Line *l, *ls;
  
      if (al == NULL || al->nanchor == 0)
-@@ -668,7 +669,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+@@ -668,7 +670,6 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
  	    if (!ls)
  		continue;
  	}
@@ -1883,7 +2126,7 @@ index 27bbd56..10d6c1c 100644
  	col = COLPOS(ls, a_form.start.pos);
  	ecol = COLPOS(ls, a_form.end.pos);
  	for (j = 0; l && j < a_form.rows; l = l->next, j++) {
-@@ -685,6 +685,8 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
+@@ -685,6 +686,8 @@ addMultirowsForm(Buffer *buf, AnchorList *al)
  	    a->hseq = a_form.hseq;
  	    a->y = a_form.y;
  	    a->end.pos = pos + ecol - col;
@@ -1892,7 +2135,7 @@ index 27bbd56..10d6c1c 100644
  	    l->lineBuf[pos - 1] = '[';
  	    l->lineBuf[a->end.pos] = ']';
  	    for (k = pos; k < a->end.pos; k++)
-@@ -756,7 +758,7 @@ link_list_panel(Buffer *buf)
+@@ -756,7 +759,7 @@ link_list_panel(Buffer *buf)
  		p = parsedURL2Str(&pu)->ptr;
  		u = html_quote(p);
  		if (DecodeURL)
@@ -1901,7 +2144,7 @@ index 27bbd56..10d6c1c 100644
  		else
  		    p = u;
  	    }
-@@ -787,7 +789,7 @@ link_list_panel(Buffer *buf)
+@@ -787,7 +790,7 @@ link_list_panel(Buffer *buf)
  	    p = parsedURL2Str(&pu)->ptr;
  	    u = html_quote(p);
  	    if (DecodeURL)
@@ -1910,7 +2153,7 @@ index 27bbd56..10d6c1c 100644
  	    else
  		p = u;
  	    t = getAnchorText(buf, al, a);
-@@ -809,16 +811,13 @@ link_list_panel(Buffer *buf)
+@@ -809,16 +812,13 @@ link_list_panel(Buffer *buf)
  	    p = parsedURL2Str(&pu)->ptr;
  	    u = html_quote(p);
  	    if (DecodeURL)
@@ -1929,7 +2172,7 @@ index 27bbd56..10d6c1c 100644
  	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
  			   "\n", NULL);
  	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
-@@ -842,19 +841,13 @@ link_list_panel(Buffer *buf)
+@@ -842,19 +842,13 @@ link_list_panel(Buffer *buf)
  		    p = parsedURL2Str(&pu)->ptr;
  		    u = html_quote(p);
  		    if (DecodeURL)
@@ -14183,9 +14426,18 @@ index fdd8f64..45dc95e 100644
  	if (UseAltEntity)
  	    return alt_latin1[c - 0xa0];
 diff --git a/etc.c b/etc.c
-index 8fe1215..dcc6edd 100644
+index 8fe1215..37c4f15 100644
 --- a/etc.c
 +++ b/etc.c
+@@ -498,7 +498,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
+     static char *prevl = NULL;
+     int i, j;
+ 
+-    if (l == NULL || len == 0)
++    if (l == NULL || len == 0 || pos < 0)
+ 	return bpos;
+     if (l == prevl && mode == CP_AUTO) {
+ 	if (pos <= len)
 @@ -1365,7 +1365,13 @@ setup_child(int child, int i, int f)
      if (!child)
  	SETPGRP();
@@ -14201,7 +14453,7 @@ index 8fe1215..dcc6edd 100644
      QuietMessage = TRUE;
      fmInitialized = FALSE;
 diff --git a/file.c b/file.c
-index 567d41e..86af3a9 100644
+index 567d41e..4d15ff1 100644
 --- a/file.c
 +++ b/file.c
 @@ -26,6 +26,8 @@
@@ -14496,7 +14748,22 @@ index 567d41e..86af3a9 100644
      TRAP_OFF;
      return b;
  }
-@@ -2469,6 +2455,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
+@@ -2325,8 +2311,12 @@ push_link(int cmd, int offset, int pos)
+     struct link_stack *p;
+     p = New(struct link_stack);
+     p->cmd = cmd;
+-    p->offset = offset;
+-    p->pos = pos;
++    p->offset = (short)offset;
++    if (p->offset < 0)
++	p->offset = 0;
++    p->pos = (short)pos;
++    if (p->pos < 0)
++	p->pos = 0;
+     p->next = link_stack;
+     link_stack = p;
+ }
+@@ -2469,6 +2459,7 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
      bcopy((void *)&obuf->anchor, (void *)&obuf->bp.anchor,
  	  sizeof(obuf->anchor));
      obuf->bp.img_alt = obuf->img_alt;
@@ -14504,7 +14771,7 @@ index 567d41e..86af3a9 100644
      obuf->bp.in_bold = obuf->in_bold;
      obuf->bp.in_italic = obuf->in_italic;
      obuf->bp.in_under = obuf->in_under;
-@@ -2486,6 +2473,7 @@ back_to_breakpoint(struct readbuffer *obuf)
+@@ -2486,6 +2477,7 @@ back_to_breakpoint(struct readbuffer *obuf)
      bcopy((void *)&obuf->bp.anchor, (void *)&obuf->anchor,
  	  sizeof(obuf->anchor));
      obuf->img_alt = obuf->bp.img_alt;
@@ -14512,7 +14779,7 @@ index 567d41e..86af3a9 100644
      obuf->in_bold = obuf->bp.in_bold;
      obuf->in_italic = obuf->bp.in_italic;
      obuf->in_under = obuf->bp.in_under;
-@@ -2729,7 +2717,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2729,7 +2721,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
      Str line = obuf->line, pass = NULL;
      char *hidden_anchor = NULL, *hidden_img = NULL, *hidden_bold = NULL,
  	*hidden_under = NULL, *hidden_italic = NULL, *hidden_strike = NULL,
@@ -14521,7 +14788,7 @@ index 567d41e..86af3a9 100644
  
  #ifdef DEBUG
      if (w3m_debug) {
-@@ -2761,6 +2749,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2761,6 +2753,12 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  		hidden = hidden_img;
  	}
      }
@@ -14534,7 +14801,7 @@ index 567d41e..86af3a9 100644
      if (obuf->in_bold) {
  	if ((hidden_bold = has_hidden_link(obuf, HTML_B)) != NULL) {
  	    if (!hidden || hidden_bold < hidden)
-@@ -2812,6 +2806,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -2812,6 +2810,8 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  	Strcat_charp(line, "</a>");
      if (obuf->img_alt && !hidden_img)
  	Strcat_charp(line, "</img_alt>");
@@ -14543,7 +14810,7 @@ index 567d41e..86af3a9 100644
      if (obuf->in_bold && !hidden_bold)
  	Strcat_charp(line, "</b>");
      if (obuf->in_italic && !hidden_italic)
-@@ -3022,6 +3018,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
+@@ -3022,6 +3022,18 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
  	Strcat_charp(tmp, "\">");
  	push_tag(obuf, tmp->ptr, HTML_IMG_ALT);
      }
@@ -14562,7 +14829,7 @@ index 567d41e..86af3a9 100644
      if (!hidden_bold && obuf->in_bold)
  	push_tag(obuf, "<B>", HTML_B);
      if (!hidden_italic && obuf->in_italic)
-@@ -3228,7 +3236,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3228,7 +3240,7 @@ process_img(struct parsed_tag *tag, int width)
  
      if (!parsedtag_get_value(tag, ATTR_SRC, &p))
  	return tmp;
@@ -14571,7 +14838,18 @@ index 567d41e..86af3a9 100644
      q = NULL;
      parsedtag_get_value(tag, ATTR_ALT, &q);
      if (!pseudoInlines && (q == NULL || (*q == '\0' && ignore_null_img_alt)))
-@@ -3322,12 +3330,7 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3255,9 +3267,9 @@ process_img(struct parsed_tag *tag, int width)
+ 	}
+ #endif
+     }
++    i = -1;
+ #ifdef USE_IMAGE
+     if (use_image) {
+-	i = -1;
+ 	if (parsedtag_get_value(tag, ATTR_HEIGHT, &i)) {
+ 	    if (i > 0) {
+ 		i = (int)(i * image_scale / 100 + 0.5);
+@@ -3322,12 +3334,7 @@ process_img(struct parsed_tag *tag, int width)
  	    Image image;
  	    ParsedURL u;
  
@@ -14584,7 +14862,7 @@ index 567d41e..86af3a9 100644
  	    image.url = parsedURL2Str(&u)->ptr;
  	    if (!uncompressed_file_type(u.file, &image.ext))
  		image.ext = filename_extension(u.file, TRUE);
-@@ -3346,8 +3349,14 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3346,8 +3353,14 @@ process_img(struct parsed_tag *tag, int width)
  	    if (i < 0)
  		i = pixel_per_line;
  	}
@@ -14601,7 +14879,7 @@ index 567d41e..86af3a9 100644
  	Strcat(tmp,
  	       Sprintf("<pre_int><img_alt hseq=\"%d\" src=\"", cur_iseq++));
  	pre_int = TRUE;
-@@ -3378,19 +3387,21 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3378,19 +3391,21 @@ process_img(struct parsed_tag *tag, int width)
  	if (i0 >= 0)
  	    Strcat(tmp, Sprintf(" height=%d", i0));
  	switch (align) {
@@ -14631,7 +14909,7 @@ index 567d41e..86af3a9 100644
  	case ALIGN_BOTTOM:
  	    top = ni - 1;
  	    bottom = 0;
-@@ -3408,7 +3419,12 @@ process_img(struct parsed_tag *tag, int width)
+@@ -3408,7 +3423,12 @@ process_img(struct parsed_tag *tag, int width)
  	    }
  	    break;
  	}
@@ -14645,7 +14923,16 @@ index 567d41e..86af3a9 100644
  	if (xoffset)
  	    Strcat(tmp, Sprintf(" xoffset=%d", xoffset));
  	if (yoffset)
-@@ -3548,7 +3564,7 @@ process_anchor(struct parsed_tag *tag, char *tagbuf)
+@@ -3435,7 +3455,7 @@ process_img(struct parsed_tag *tag, int width)
+ 	if (use_image) {
+ 	    if (n > nw) {
+ 		char *r;
+-		for (r = q, n = 0; r; r += get_mclen(r), n += get_mcwidth(r)) {
++		for (r = q, n = 0; *r; r += get_mclen(r), n += get_mcwidth(r)) {
+ 		    if (n + get_mcwidth(r) > nw)
+ 			break;
+ 		}
+@@ -3548,7 +3568,7 @@ process_anchor(struct parsed_tag *tag, char *tagbuf)
  Str
  process_input(struct parsed_tag *tag)
  {
@@ -14654,7 +14941,7 @@ index 567d41e..86af3a9 100644
      char *q, *p, *r, *p2, *s;
      Str tmp = NULL;
      char *qq = "";
-@@ -3567,9 +3583,9 @@ process_input(struct parsed_tag *tag)
+@@ -3567,9 +3587,9 @@ process_input(struct parsed_tag *tag)
      parsedtag_get_value(tag, ATTR_VALUE, &q);
      r = "";
      parsedtag_get_value(tag, ATTR_NAME, &r);
@@ -14667,7 +14954,7 @@ index 567d41e..86af3a9 100644
      parsedtag_get_value(tag, ATTR_MAXLENGTH, &i);
      p2 = NULL;
      parsedtag_get_value(tag, ATTR_ALT, &p2);
-@@ -3623,9 +3639,10 @@ process_input(struct parsed_tag *tag)
+@@ -3623,9 +3643,10 @@ process_input(struct parsed_tag *tag)
  	    Strcat(tmp, getLinkNumberStr(0));
  	Strcat_char(tmp, '(');
      }
@@ -14680,7 +14967,7 @@ index 567d41e..86af3a9 100644
      if (x)
  	Strcat_charp(tmp, " checked");
      if (y)
-@@ -3670,18 +3687,18 @@ process_input(struct parsed_tag *tag)
+@@ -3670,18 +3691,18 @@ process_input(struct parsed_tag *tag)
  	case FORM_INPUT_PASSWORD:
  	    i = 0;
  	    if (q) {
@@ -14703,7 +14990,7 @@ index 567d41e..86af3a9 100644
  		    Strcat_char(tmp, ' ');
  	    }
  	    break;
-@@ -3732,6 +3749,75 @@ process_input(struct parsed_tag *tag)
+@@ -3732,6 +3753,75 @@ process_input(struct parsed_tag *tag)
  }
  
  Str
@@ -14779,7 +15066,27 @@ index 567d41e..86af3a9 100644
  process_select(struct parsed_tag *tag)
  {
      Str tmp = NULL;
-@@ -4084,6 +4170,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+@@ -3926,7 +4016,7 @@ process_textarea(struct parsed_tag *tag, int width)
+     cur_textarea_size = 20;
+     if (parsedtag_get_value(tag, ATTR_COLS, &p)) {
+ 	cur_textarea_size = atoi(p);
+-	if (p[strlen(p) - 1] == '%')
++	if (strlen(p) > 0 && p[strlen(p) - 1] == '%')
+ 	    cur_textarea_size = width * cur_textarea_size / 100 - 2;
+ 	if (cur_textarea_size <= 0) {
+ 	    cur_textarea_size = 20;
+@@ -4003,7 +4093,9 @@ feed_textarea(char *str)
+ 	    Strcat_charp(textarea_str[n_textarea], "\r\n");
+ 	    str++;
+ 	}
+-	else if (*str != '\r')
++	else if (*str == '\r')
++	    str++;
++	else
+ 	    Strcat_char(textarea_str[n_textarea], *(str++));
+     }
+ }
+@@ -4084,6 +4176,7 @@ process_form_int(struct parsed_tag *tag, int fid)
      parsedtag_get_value(tag, ATTR_METHOD, &p);
      q = "!CURRENT_URL!";
      parsedtag_get_value(tag, ATTR_ACTION, &q);
@@ -14787,7 +15094,7 @@ index 567d41e..86af3a9 100644
      r = NULL;
  #ifdef USE_M17N
      if (parsedtag_get_value(tag, ATTR_ACCEPT_CHARSET, &r))
-@@ -4113,7 +4200,7 @@ process_form_int(struct parsed_tag *tag, int fid)
+@@ -4113,7 +4206,7 @@ process_form_int(struct parsed_tag *tag, int fid)
  	forms = New_N(FormList *, forms_size);
  	form_stack = NewAtom_N(int, forms_size);
      }
@@ -14796,7 +15103,7 @@ index 567d41e..86af3a9 100644
  	forms_size += form_max;
  	forms = New_Reuse(FormList *, forms, forms_size);
  	form_stack = New_Reuse(int, form_stack, forms_size);
-@@ -4284,15 +4371,15 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
+@@ -4284,15 +4377,16 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
      while (*q) {
  	if (!strncasecmp(q, "url=", 4)) {
  	    q += 4;
@@ -14810,12 +15117,13 @@ index 567d41e..86af3a9 100644
  
 -	    if (s_tmp->ptr[s_tmp->length - 1] == '\"') {	/* " 
 -								 */
-+	    if (s_tmp->ptr[s_tmp->length - 1] == '\"'          /* " */
-+	       || s_tmp->ptr[s_tmp->length - 1] == '\'') {     /* ' */
++	    if (s_tmp->length > 0 &&
++	        (s_tmp->ptr[s_tmp->length - 1] == '\"' ||	/* " */
++		 s_tmp->ptr[s_tmp->length - 1] == '\'')) {	/* ' */
  		s_tmp->length--;
  		s_tmp->ptr[s_tmp->length] = '\0';
  	    }
-@@ -4599,6 +4686,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4599,6 +4693,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_DD:
  	CLOSE_A;
  	CLOSE_DT;
@@ -14828,7 +15136,7 @@ index 567d41e..86af3a9 100644
  	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
  	    if (obuf->pos > envs[h_env->envc].indent)
  		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
-@@ -4833,13 +4926,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4833,13 +4933,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  #ifdef USE_IMAGE
  	i = 0;
  	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
@@ -14846,7 +15154,7 @@ index 567d41e..86af3a9 100644
  	}
  #endif
  	return 0;
-@@ -4853,15 +4946,43 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4853,15 +4953,43 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_INPUT_ALT:
  	i = 0;
  	if (parsedtag_get_value(tag, ATTR_TOP_MARGIN, &i)) {
@@ -14864,10 +15172,10 @@ index 567d41e..86af3a9 100644
 +	}
 +	if (parsedtag_get_value(tag, ATTR_HSEQ, &hseq)) {
 +	    obuf->input_alt.hseq = hseq;
- 	}
++	}
 +	if (parsedtag_get_value(tag, ATTR_FID, &i)) {
 +	    obuf->input_alt.fid = i;
-+	}
+ 	}
 +	if (parsedtag_get_value(tag, ATTR_TYPE, &p)) {
 +	    obuf->input_alt.type = Strnew_charp(p);
 +	}
@@ -14894,7 +15202,7 @@ index 567d41e..86af3a9 100644
      case HTML_TABLE:
  	close_anchor(h_env, obuf);
  	obuf->table_level++;
-@@ -4884,6 +5005,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4884,6 +5012,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	    else
  		w = BORDER_THIN;
  	}
@@ -14903,7 +15211,7 @@ index 567d41e..86af3a9 100644
  	if (parsedtag_get_value(tag, ATTR_WIDTH, &i)) {
  	    if (obuf->table_level == 0)
  		width = REAL_WIDTH(i, h_env->limit - envs[h_env->envc].indent);
-@@ -4892,9 +5015,24 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4892,9 +5022,24 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	if (parsedtag_exists(tag, ATTR_HBORDER))
  	    w = BORDER_NOWIN;
@@ -14928,7 +15236,7 @@ index 567d41e..86af3a9 100644
  #ifdef ID_EXT
  	parsedtag_get_value(tag, ATTR_ID, &id);
  #endif				/* ID_EXT */
-@@ -4970,6 +5108,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -4970,6 +5115,16 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
      case HTML_INPUT:
  	close_anchor(h_env, obuf);
  	tmp = process_input(tag);
@@ -14945,7 +15253,7 @@ index 567d41e..86af3a9 100644
  	if (tmp)
  	    HTMLlineproc1(tmp->ptr, h_env);
  	return 1;
-@@ -5067,11 +5215,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
+@@ -5067,11 +5222,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
  	}
  	return 1;
      case HTML_BASE:
@@ -14959,7 +15267,7 @@ index 567d41e..86af3a9 100644
  	    parseURL(p, cur_baseURL, NULL);
  	}
  #endif
-@@ -5329,6 +5476,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5329,6 +5483,13 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
      Anchor **a_select = NULL;
  #endif
@@ -14973,7 +15281,7 @@ index 567d41e..86af3a9 100644
  
      if (out_size == 0) {
  	out_size = LINELEN;
-@@ -5523,16 +5677,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5523,16 +5684,17 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    hseq = 0;
  		    id = NULL;
  		    if (parsedtag_get_value(tag, ATTR_NAME, &id)) {
@@ -14995,7 +15303,16 @@ index 567d41e..86af3a9 100644
  		    parsedtag_get_value(tag, ATTR_TITLE, &s);
  		    parsedtag_get_value(tag, ATTR_ACCESSKEY, &t);
  		    parsedtag_get_value(tag, ATTR_HSEQ, &hseq);
-@@ -5618,7 +5773,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5571,7 +5733,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			a_href->end.pos = pos;
+ 			if (a_href->start.line == a_href->end.line &&
+ 			    a_href->start.pos == a_href->end.pos) {
+-			    if (buf->hmarklist &&
++			    if (buf->hmarklist && a_href->hseq >= 0 &&
+ 				a_href->hseq < buf->hmarklist->nmark)
+ 				buf->hmarklist->marks[a_href->hseq].invalid = 1;
+ 			    a_href->hseq = -1;
+@@ -5618,7 +5780,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    ParsedURL u;
  			    Image *image;
  
@@ -15004,7 +15321,7 @@ index 567d41e..86af3a9 100644
  			    a_img->image = image = New(Image);
  			    image->url = parsedURL2Str(&u)->ptr;
  			    if (!uncompressed_file_type(u.file, &image->ext))
-@@ -5639,7 +5794,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5639,7 +5801,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			    image->map = q;
  			    image->ismap = ismap;
  			    image->touch = 0;
@@ -15013,7 +15330,7 @@ index 567d41e..86af3a9 100644
  						    IMG_FLAG_SKIP);
  			}
  			else if (iseq < 0) {
-@@ -5678,7 +5833,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5678,7 +5840,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			parsedtag_get_value(tag, ATTR_FID, &form_id);
  			parsedtag_get_value(tag, ATTR_TOP_MARGIN, &top);
  			parsedtag_get_value(tag, ATTR_BOTTOM_MARGIN, &bottom);
@@ -15023,7 +15340,7 @@ index 567d41e..86af3a9 100644
  			    break;	/* outside of <form>..</form> */
  			form = forms[form_id];
  			if (hseq > 0) {
-@@ -5689,6 +5845,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5689,6 +5852,21 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  				putHmarker(buf->hmarklist, currentLn(buf),
  					   hpos, hseq - 1);
  			}
@@ -15045,7 +15362,7 @@ index 567d41e..86af3a9 100644
  			if (!form->target)
  			    form->target = buf->baseTarget;
  			if (a_textarea &&
-@@ -5761,8 +5932,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5761,8 +5939,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			break;
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
  			MapArea *a;
@@ -15056,7 +15373,7 @@ index 567d41e..86af3a9 100644
  			t = NULL;
  			parsedtag_get_value(tag, ATTR_TARGET, &t);
  			q = "";
-@@ -5811,11 +5982,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5811,11 +5989,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		    break;
  		case HTML_BASE:
  		    if (parsedtag_get_value(tag, ATTR_HREF, &p)) {
@@ -15073,7 +15390,7 @@ index 567d41e..86af3a9 100644
  		    }
  		    if (parsedtag_get_value(tag, ATTR_TARGET, &p))
  			buf->baseTarget =
-@@ -5830,8 +6004,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5830,8 +6011,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			int refresh_interval = getMetaRefreshParam(q, &tmp);
  #ifdef USE_ALARM
  			if (tmp) {
@@ -15084,7 +15401,7 @@ index 567d41e..86af3a9 100644
  			    buf->event = setAlarmEvent(buf->event,
  						       refresh_interval,
  						       AL_IMPLICIT_ONCE,
-@@ -5844,8 +6018,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5844,8 +6025,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  						       FUNCNAME_reload, NULL);
  #else
  			if (tmp && refresh_interval == 0) {
@@ -15095,7 +15412,7 @@ index 567d41e..86af3a9 100644
  			    pushEvent(FUNCNAME_gorURL, p);
  			}
  #endif
-@@ -5864,14 +6038,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5864,14 +6045,14 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  		case HTML_TEXTAREA_INT:
  		    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER,
  					    &n_textarea)
@@ -15112,7 +15429,7 @@ index 567d41e..86af3a9 100644
  			FormItemList *item =
  			    (FormItemList *)a_textarea[n_textarea]->url;
  			item->init_value = item->value =
-@@ -5881,7 +6055,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5881,7 +6062,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef MENU_SELECT
  		case HTML_SELECT_INT:
  		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
@@ -15121,7 +15438,7 @@ index 567d41e..86af3a9 100644
  			select_option[n_select].first = NULL;
  			select_option[n_select].last = NULL;
  		    }
-@@ -5889,7 +6063,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5889,7 +6070,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  			n_select = -1;
  		    break;
  		case HTML_N_SELECT_INT:
@@ -15130,7 +15447,7 @@ index 567d41e..86af3a9 100644
  			FormItemList *item =
  			    (FormItemList *)a_select[n_select]->url;
  			item->select_option = select_option[n_select].first;
-@@ -5929,7 +6103,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5929,7 +6110,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  #ifdef	ID_EXT
  		id = NULL;
  		if (parsedtag_get_value(tag, ATTR_ID, &id)) {
@@ -15139,7 +15456,7 @@ index 567d41e..86af3a9 100644
  		    registerName(buf, id, currentLn(buf), pos);
  		}
  		if (renderFrameSet &&
-@@ -5964,7 +6138,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+@@ -5964,7 +6145,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
  	fclose(debug);
  #endif
      for (form_id = 1; form_id <= form_max; form_id++)
@@ -15149,7 +15466,7 @@ index 567d41e..86af3a9 100644
      buf->formlist = (form_max >= 0) ? forms[form_max] : NULL;
      if (n_textarea)
  	addMultirowsForm(buf, buf->formitem);
-@@ -5982,7 +6157,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
+@@ -5982,7 +6164,8 @@ addLink(Buffer *buf, struct parsed_tag *tag)
  
      parsedtag_get_value(tag, ATTR_HREF, &href);
      if (href)
@@ -15159,7 +15476,7 @@ index 567d41e..86af3a9 100644
      parsedtag_get_value(tag, ATTR_TITLE, &title);
      parsedtag_get_value(tag, ATTR_TYPE, &ctype);
      parsedtag_get_value(tag, ATTR_REL, &rel);
-@@ -6154,10 +6330,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+@@ -6154,10 +6337,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
      while (*line != '\0') {
  	char *str, *p;
  	int is_tag = FALSE;
@@ -15174,7 +15491,16 @@ index 567d41e..86af3a9 100644
  
  	if (*line == '<' || obuf->status != R_ST_NORMAL) {
  	    /* 
-@@ -6239,7 +6415,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+@@ -6173,7 +6356,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 	    }
+ 	    if (h_env->tagbuf->length == 0)
+ 		continue;
+-	    str = h_env->tagbuf->ptr;
++	    str = Strdup(h_env->tagbuf)->ptr;
+ 	    if (*str == '<') {
+ 		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
+ 		    is_tag = TRUE;
+@@ -6239,7 +6422,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
  	}
  
        proc_normal:
@@ -15183,7 +15509,16 @@ index 567d41e..86af3a9 100644
  	    /* 
  	     * within table: in <table>..</table>, all input tokens
  	     * are fed to the table renderer, and then the renderer
-@@ -6272,6 +6448,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+@@ -6255,6 +6438,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		if (obuf->table_level >= 0) {
+ 		    struct table *tbl0 = tables[obuf->table_level];
+ 		    str = Sprintf("<table_alt tid=%d>", tbl0->ntable)->ptr;
++		    if (tbl0->row < 0)
++			continue;
+ 		    pushTable(tbl0, tbl);
+ 		    tbl = tbl0;
+ 		    tbl_mode = &table_mode[obuf->table_level];
+@@ -6272,6 +6457,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
  		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
  		}
  		save_fonteffect(h_env, obuf);
@@ -15191,7 +15526,17 @@ index 567d41e..86af3a9 100644
  		renderTable(tbl, tbl_width, h_env);
  		restore_fonteffect(h_env, obuf);
  		obuf->flag &= ~RB_IGNORE_P;
-@@ -6756,6 +6933,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
+@@ -6429,7 +6615,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		indent = h_env->envs[h_env->envc].indent;
+ 		if (obuf->bp.pos - i > indent) {
+ 		    Str line;
+-		    append_tags(obuf);
++		    append_tags(obuf);	/* may reallocate the buffer */
++		    bp = obuf->line->ptr + obuf->bp.len;
+ 		    line = Strnew_charp(bp);
+ 		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
+ #ifdef FORMAT_NICE
+@@ -6756,6 +6943,12 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
      obuf->nobr_level = 0;
      bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
      obuf->img_alt = 0;
@@ -15204,7 +15549,7 @@ index 567d41e..86af3a9 100644
      obuf->in_bold = 0;
      obuf->in_italic = 0;
      obuf->in_under = 0;
-@@ -6791,6 +6974,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+@@ -6791,6 +6984,15 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
  	push_tag(obuf, "</img_alt>", HTML_N_IMG_ALT);
  	obuf->img_alt = NULL;
      }
@@ -15220,7 +15565,7 @@ index 567d41e..86af3a9 100644
      if (obuf->in_bold) {
  	push_tag(obuf, "</b>", HTML_N_B);
  	obuf->in_bold = 0;
-@@ -6824,9 +7016,12 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
+@@ -6824,9 +7026,12 @@ completeHTMLstream(struct html_feed_environ *h_env, struct readbuffer *obuf)
  	obuf->table_level = MAX_TABLE - 1;
  
      while (obuf->table_level >= 0) {
@@ -15233,7 +15578,7 @@ index 567d41e..86af3a9 100644
      }
  }
  
-@@ -6848,6 +7043,8 @@ print_internal_information(struct html_feed_environ *henv)
+@@ -6848,6 +7053,8 @@ print_internal_information(struct html_feed_environ *henv)
      if (form_max >= 0) {
  	FormList *fp;
  	for (i = 0; i <= form_max; i++) {
@@ -15242,7 +15587,7 @@ index 567d41e..86af3a9 100644
  	    fp = forms[i];
  	    s = Sprintf("<form_int fid=\"%d\" action=\"%s\" method=\"%s\"",
  			i, html_quote(fp->action->ptr),
-@@ -6963,8 +7160,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6963,8 +7170,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	image_flag = IMG_FLAG_AUTO;
      else
  	image_flag = IMG_FLAG_SKIP;
@@ -15251,7 +15596,7 @@ index 567d41e..86af3a9 100644
  #endif
  
      if (w3m_halfload) {
-@@ -6987,6 +7182,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -6987,6 +7192,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	htmlenv1.f = stdout;
      else
  	htmlenv1.buf = newTextLineList();
@@ -15261,7 +15606,7 @@ index 567d41e..86af3a9 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	HTMLlineproc1("<br>Transfer Interrupted!<br>", &htmlenv1);
-@@ -7048,18 +7246,23 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
+@@ -7048,18 +7256,23 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
  	}
  #endif
  	lineBuf2 = convertLine(f, lineBuf2, HTML_MODE, &charset, doc_charset);
@@ -15287,7 +15632,7 @@ index 567d41e..86af3a9 100644
      if (htmlenv1.title)
  	newBuf->buffername = htmlenv1.title;
      if (w3m_halfdump) {
-@@ -7096,16 +7299,17 @@ loadHTMLString(Str page)
+@@ -7096,16 +7309,17 @@ loadHTMLString(Str page)
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      Buffer *newBuf;
  
@@ -15307,7 +15652,7 @@ index 567d41e..86af3a9 100644
  #ifdef USE_M17N
      newBuf->document_charset = InnerCharset;
  #endif
-@@ -7115,6 +7319,7 @@ loadHTMLString(Str page)
+@@ -7115,6 +7329,7 @@ loadHTMLString(Str page)
  #endif
  
      TRAP_OFF;
@@ -15315,7 +15660,7 @@ index 567d41e..86af3a9 100644
      newBuf->topLine = newBuf->firstLine;
      newBuf->lastLine = newBuf->currentLine;
      newBuf->currentLine = newBuf->firstLine;
-@@ -7207,7 +7412,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+@@ -7207,7 +7422,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
  	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
  			   "/", file->ptr, NULL)->ptr;
  	Strcat_m_charp(tmp, "<a href=\"",
@@ -15324,7 +15669,7 @@ index 567d41e..86af3a9 100644
  		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
      }
  
-@@ -7243,7 +7448,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
+@@ -7243,7 +7458,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
  
      if (newBuf == NULL)
  	newBuf = newBuffer(INIT_BUFFER_WIDTH);
@@ -15332,7 +15677,7 @@ index 567d41e..86af3a9 100644
  
      if (SETJMP(AbortLoading) != 0) {
  	goto _end;
-@@ -7331,6 +7535,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7331,6 +7545,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      URLFile f;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      struct stat st;
@@ -15340,7 +15685,7 @@ index 567d41e..86af3a9 100644
  
      loadImage(newBuf, IMG_FLAG_STOP);
      image.url = uf->url;
-@@ -7338,20 +7543,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7338,20 +7553,18 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
      image.width = -1;
      image.height = -1;
      image.cache = NULL;
@@ -15364,7 +15709,7 @@ index 567d41e..86af3a9 100644
      TRAP_OFF;
  
      cache->loaded = IMG_FLAG_LOADED;
-@@ -7371,6 +7574,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
+@@ -7371,6 +7584,7 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
  
      init_stream(&f, SCM_LOCAL, newStrStream(tmp));
      loadHTMLstream(&f, newBuf, src, TRUE);
@@ -15372,7 +15717,7 @@ index 567d41e..86af3a9 100644
      if (src)
  	fclose(src);
  
-@@ -7411,7 +7615,7 @@ conv_symbol(Line *l)
+@@ -7411,7 +7625,7 @@ conv_symbol(Line *l)
  		symbol = get_symbol(DisplayCharset, &w);
  #endif
  	    }
@@ -15381,7 +15726,7 @@ index 567d41e..86af3a9 100644
  #ifdef USE_M17N
  	    p += len - 1;
  	    pr += len - 1;
-@@ -7580,8 +7784,11 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7580,8 +7794,11 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_M17N
      content_charset = 0;
  #endif
@@ -15394,7 +15739,7 @@ index 567d41e..86af3a9 100644
  	readHeader(&uf, t_buf, TRUE, NULL);
  	t = checkContentType(t_buf);
  	if (t == NULL)
-@@ -7609,14 +7816,13 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7609,14 +7826,13 @@ openGeneralPagerBuffer(InputStream stream)
  #ifdef USE_IMAGE
      else if (activeImage && displayImage && !useExtImageViewer &&
  	     !(w3m_dump & ~DUMP_FRAME) && !strncasecmp(t, "image/", 6)) {
@@ -15411,7 +15756,7 @@ index 567d41e..86af3a9 100644
  	    UFclose(&uf);
  	    if (buf == NULL || buf == NO_BUFFER)
  		return buf;
-@@ -7629,8 +7835,6 @@ openGeneralPagerBuffer(InputStream stream)
+@@ -7629,8 +7845,6 @@ openGeneralPagerBuffer(InputStream stream)
  	}
      }
      buf->real_type = t;
@@ -15420,7 +15765,7 @@ index 567d41e..86af3a9 100644
      return buf;
  }
  
-@@ -7766,6 +7970,8 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7766,6 +7980,8 @@ save2tmp(URLFile uf, char *tmpf)
      clen_t linelen = 0, trbyte = 0;
      MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
      static JMP_BUF env_bak;
@@ -15429,7 +15774,7 @@ index 567d41e..86af3a9 100644
  
      ff = fopen(tmpf, "wb");
      if (ff == NULL) {
-@@ -7802,30 +8008,29 @@ save2tmp(URLFile uf, char *tmpf)
+@@ -7802,30 +8018,29 @@ save2tmp(URLFile uf, char *tmpf)
      else
  #endif				/* USE_NNTP */
      {
@@ -15472,7 +15817,7 @@ index 567d41e..86af3a9 100644
  {
      Str tmpf, command;
      struct mailcap *mcap;
-@@ -7834,7 +8039,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7834,7 +8049,7 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
      char *header, *src = NULL, *ext = uf.ext;
  
      if (!(mcap = searchExtViewer(type)))
@@ -15481,7 +15826,7 @@ index 567d41e..86af3a9 100644
  
      if (mcap->nametemplate) {
  	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
-@@ -7867,15 +8072,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7867,15 +8082,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	    UFclose(&uf);
  	    myExec(command->ptr);
  	}
@@ -15499,7 +15844,7 @@ index 567d41e..86af3a9 100644
  	}
      }
      if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
-@@ -7918,14 +8121,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
+@@ -7918,14 +8131,13 @@ doExternal(URLFile uf, char *path, char *type, Buffer **bufp,
  	buf = NO_BUFFER;
      }
      if (buf && buf != NO_BUFFER) {
@@ -15518,7 +15863,7 @@ index 567d41e..86af3a9 100644
  }
  
  static int
-@@ -7935,7 +8137,8 @@ _MoveFile(char *path1, char *path2)
+@@ -7935,7 +8147,8 @@ _MoveFile(char *path1, char *path2)
      FILE *f2;
      int is_pipe;
      clen_t linelen = 0, trbyte = 0;
@@ -15528,7 +15873,7 @@ index 567d41e..86af3a9 100644
  
      f1 = openIS(path1);
      if (f1 == NULL)
-@@ -7953,12 +8156,13 @@ _MoveFile(char *path1, char *path2)
+@@ -7953,12 +8166,13 @@ _MoveFile(char *path1, char *path2)
  	return -1;
      }
      current_content_length = 0;
@@ -15546,7 +15891,7 @@ index 567d41e..86af3a9 100644
      ISclose(f1);
      if (is_pipe)
  	pclose(f2);
-@@ -7998,7 +8202,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
+@@ -7998,7 +8212,7 @@ _doFileCopy(char *tmpf, char *defstr, int download)
  	else {
  	    if (q) {
  		p = unescape_spaces(Strnew_charp(q))->ptr;
@@ -15555,7 +15900,7 @@ index 567d41e..86af3a9 100644
  	    }
  	    p = expandPath(p);
  	    if (checkOverWrite(p) < 0)
-@@ -8317,21 +8521,23 @@ uncompress_stream(URLFile *uf, char **src)
+@@ -8317,21 +8531,23 @@ uncompress_stream(URLFile *uf, char **src)
  	}
  	if (pid2 == 0) {
  	    /* child2 */
@@ -15584,7 +15929,7 @@ index 567d41e..86af3a9 100644
  	    exit(0);
  	}
  	/* child1 */
-@@ -8378,7 +8584,7 @@ lessopen_stream(char *path)
+@@ -8378,7 +8594,7 @@ lessopen_stream(char *path)
  	}
  	c = getc(fp);
  	if (c == EOF) {
@@ -15797,7 +16142,7 @@ index 8378939..96d3ab3 100644
  global double image_scale init(100);
  #endif
 diff --git a/form.c b/form.c
-index b7556ca..1aaaf19 100644
+index b7556ca..0605513 100644
 --- a/form.c
 +++ b/form.c
 @@ -10,8 +10,10 @@
@@ -15835,7 +16180,17 @@ index b7556ca..1aaaf19 100644
  }
  
  void
-@@ -438,6 +442,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -316,7 +320,8 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
+     pos += width - w;
+ 
+     len = line->len + pos + spos - epos;
+-    buf = New_N(char, len);
++    buf = New_N(char, len + 1);
++    buf[len] = '\0';
+     prop = New_N(Lineprop, len);
+     bcopy((void *)line->lineBuf, (void *)buf, spos * sizeof(char));
+     bcopy((void *)line->propBuf, (void *)prop, spos * sizeof(Lineprop));
+@@ -438,6 +443,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
      switch (form->type) {
      case FORM_INPUT_CHECKBOX:
      case FORM_INPUT_RADIO:
@@ -15845,7 +16200,7 @@ index b7556ca..1aaaf19 100644
  	if (form->checked)
  	    buf->currentLine->lineBuf[spos] = '*';
  	else
-@@ -455,8 +462,14 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -455,8 +463,14 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
  	}
  	else
  #endif				/* MENU_SELECT */
@@ -15860,16 +16215,17 @@ index b7556ca..1aaaf19 100644
  	if (form->type == FORM_TEXTAREA) {
  	    int n = a->y - buf->currentLine->linenumber;
  	    if (n > 0)
-@@ -477,6 +490,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+@@ -477,6 +491,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
  		spos = a->start.pos;
  		epos = a->end.pos;
  	    }
-+	    if (a->start.line != a->end.line || spos > epos || epos >= l->len || spos < 0 || epos < 0)
++	    if (a->start.line != a->end.line || spos > epos || epos >= l->len ||
++		spos < 0 || epos < 0 || COLPOS(l, epos) < col)
 +		break;
  	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
  				   rows > 1,
  				   form->type == FORM_INPUT_PASSWORD);
-@@ -787,7 +802,7 @@ struct pre_form {
+@@ -787,7 +804,7 @@ struct pre_form {
  static struct pre_form *PreForm = NULL;
  
  static struct pre_form *
@@ -15878,7 +16234,7 @@ index b7556ca..1aaaf19 100644
  {
      ParsedURL pu;
      struct pre_form *new;
-@@ -796,21 +811,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
+@@ -796,21 +813,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
  	new = prev->next = New(struct pre_form);
      else
  	new = PreForm = New(struct pre_form);
@@ -15904,7 +16260,7 @@ index b7556ca..1aaaf19 100644
      new->name = (name && *name) ? name : NULL;
      new->action = (action && *action) ? action : NULL;
      new->item = NULL;
-@@ -834,7 +841,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
+@@ -834,7 +843,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
      new->name = name;
      new->value = value;
      if (checked && *checked && (!strcmp(checked, "0") ||
@@ -15913,7 +16269,7 @@ index b7556ca..1aaaf19 100644
  				|| !strcasecmp(checked, "no")))
  	new->checked = 0;
      else
-@@ -875,6 +882,7 @@ loadPreForm(void)
+@@ -875,6 +884,7 @@ loadPreForm(void)
  	return;
      while (1) {
  	char *p, *s, *arg;
@@ -15921,7 +16277,7 @@ index b7556ca..1aaaf19 100644
  
  	line = Strfgets(fp);
  	if (line->length == 0)
-@@ -890,18 +898,20 @@ loadPreForm(void)
+@@ -890,18 +900,20 @@ loadPreForm(void)
  	if (*p == '#' || *p == '\0')
  	    continue;		/* comment or empty line */
  	s = getWord(&p);
@@ -15944,7 +16300,7 @@ index b7556ca..1aaaf19 100644
  	if (!strcmp(s, "form")) {
  	    if (!arg || !*arg)
  		continue;
-@@ -913,7 +923,7 @@ loadPreForm(void)
+@@ -913,7 +925,7 @@ loadPreForm(void)
  	    }
  	    if (pf->item) {
  		struct pre_form *prev = pf;
@@ -16236,10 +16592,10 @@ index bca227e..d9f08e9 100644
      {NULL, NULL, 0, 0},		/* 142 Undefined */
      {NULL, NULL, 0, 0},		/* 143 Undefined */
 diff --git a/html.h b/html.h
-index 7abbd3b..c490655 100644
+index 7abbd3b..2a9a431 100644
 --- a/html.h
 +++ b/html.h
-@@ -1,20 +1,18 @@
+@@ -1,20 +1,20 @@
  /* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
  #ifndef _HTML_H
  #define _HTML_H
@@ -16251,7 +16607,8 @@ index 7abbd3b..c490655 100644
  #endif				/* USE_SSL */
  
 -#include "istream.h"
--
++#include <time.h>
+ 
  #define StrUFgets(f) StrISgets((f)->stream)
  #define StrmyUFgets(f) StrmyISgets((f)->stream)
  #define UFgetc(f) ISgetc((f)->stream)
@@ -16262,7 +16619,7 @@ index 7abbd3b..c490655 100644
  #define UFfileno(f) ISfileno((f)->stream)
  
  struct cmdtable {
-@@ -62,11 +60,12 @@ typedef struct _ParsedURL {
+@@ -62,11 +62,12 @@ typedef struct _ParsedURL {
      int is_nocache;
  } ParsedURL;
  
@@ -16276,7 +16633,7 @@ index 7abbd3b..c490655 100644
      char *ext;
      int compression;
      int content_encoding;
-@@ -214,21 +213,22 @@ typedef struct {
+@@ -214,21 +215,22 @@ typedef struct {
  #define HTML_BIG        122
  #define HTML_N_BIG      123
  #define HTML_BUTTON     124
@@ -18131,6 +18488,154 @@ index dfac6d9..bed5dff 100644
  static wc_wchar_t
  ucs_cs94_conv(wc_ccs ccs, wc_uint16 c)
  {
+diff --git a/libwc/wtf.c b/libwc/wtf.c
+index b8cfdc7..94d95c1 100644
+--- a/libwc/wtf.c
++++ b/libwc/wtf.c
+@@ -120,29 +120,36 @@ int
+ wtf_strwidth(wc_uchar *p)
+ {
+     int w = 0;
++    wc_uchar *q = p + strlen(p);
+ 
+-    while (*p) {
++    while (p < q) {
+ 	w += wtf_width(p);
+ 	p += WTF_LEN_MAP[*p];
+     }
+     return w;
+ }
+ 
+-/*
+ size_t
+ wtf_len1(wc_uchar *p)
+ {
+-    return (size_t)WTF_LEN_MAP[*p];
++    size_t len, len_max = WTF_LEN_MAP[*p];
++
++    for (len = 0; *(p + len); len++)
++	if (len == len_max)
++	    break;
++    if (len == 0)
++	len = 1;
++    return len;
+ }
+-*/
+ 
+ size_t
+ wtf_len(wc_uchar *p)
+ {
+     wc_uchar *q = p;
++    wc_uchar *strz = p + strlen(p);
+ 
+     q += WTF_LEN_MAP[*q];
+-    while (*q && ! WTF_WIDTH_MAP[*q])
++    while (q < strz && ! WTF_WIDTH_MAP[*q])
+ 	q += WTF_LEN_MAP[*q];
+     return q - p;
+ }
+@@ -166,15 +173,17 @@ wtf_type(wc_uchar *p)
+     ((p)[3] = (((c) >>  7) & 0x7f) | 0x80), \
+     ((p)[4] = ( (c)        & 0x7f) | 0x80)
+ #define wtf_to_wcs16(p) \
++    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 ? 0 : \
+       ((wc_uint32)((p)[0] & 0x03) << 14) \
+     | ((wc_uint32)((p)[1] & 0x7f) <<  7) \
+-    | ((wc_uint32)((p)[2] & 0x7f)      )
++    | ((wc_uint32)((p)[2] & 0x7f)      ))
+ #define wtf_to_wcs32(p) \
++    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 || (p)[3] == 0 || (p)[4] == 0 ? 0 : \
+       ((wc_uint32)((p)[0] & 0x0f) << 28) \
+     | ((wc_uint32)((p)[1] & 0x7f) << 21) \
+     | ((wc_uint32)((p)[2] & 0x7f) << 14) \
+     | ((wc_uint32)((p)[3] & 0x7f) <<  7) \
+-    | ((wc_uint32)((p)[4] & 0x7f)      )
++    | ((wc_uint32)((p)[4] & 0x7f)      ))
+ 
+ void
+ wtf_push(Str os, wc_ccs ccs, wc_uint32 code)
+@@ -388,7 +397,7 @@ wtf_parse1(wc_uchar **p)
+ 	cc.code = *(q++);
+     } else if (*q > 0xa0) {
+ 	cc.ccs = wtf_gr_ccs;
+-	if (WC_CCS_IS_WIDE(cc.ccs)) {
++	if (WC_CCS_IS_WIDE(cc.ccs) && *(q+1)) {
+ 	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
+ 	    q += 2;
+ 	} else
+@@ -401,27 +410,47 @@ wtf_parse1(wc_uchar **p)
+ 	case WC_CCS_A_CS942:
+ 	case WC_CCS_A_PCS:
+ 	case WC_CCS_A_UNKNOWN:
+-	    cc.ccs |= *(q++) & 0x7f;
+-	    cc.code = *(q++);
++	    if (*q && *(q+1)) {
++		cc.ccs |= *(q++) & 0x7f;
++		cc.code = *(q++);
++	    } else {
++		cc.ccs = WC_CCS_US_ASCII;
++		cc.code = (wc_uint32)' ';
++	    }
+ 	    break;
+ 	case WC_CCS_A_CS94W:
+ 	case WC_CCS_A_CS96W:
+ 	case WC_CCS_A_PCSW:
+-	    cc.ccs |= *(q++) & 0x7f;
+-	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
+-	    q += 2;
++	    if (*q && *(q+1) && *(q+2)) {
++		cc.ccs |= *(q++) & 0x7f;
++		cc.code = ((wc_uint32)*q << 8) | *(q+1);
++		q += 2;
++	    } else {
++		cc.ccs = WC_CCS_US_ASCII;
++		cc.code = (wc_uint32)' ';
++	    }
+ 	    break;
+ 	case WC_CCS_A_WCS16:
+ 	case WC_CCS_A_WCS16W:
+-	    cc.ccs |= (*q & 0x7c) >> 2;
+-	    cc.code = wtf_to_wcs16(q);
+-	    q += 3;
++	    if (*q && *(q+1) && *(q+2)) {
++		cc.ccs |= (*q & 0x7c) >> 2;
++		cc.code = wtf_to_wcs16(q);
++		q += 3;
++	    } else {
++		cc.ccs = WC_CCS_US_ASCII;
++		cc.code = (wc_uint32)' ';
++	    }
+ 	    break;
+ 	case WC_CCS_A_WCS32:
+ 	case WC_CCS_A_WCS32W:
+-	    cc.ccs |= (*q & 0x70) >> 4;
+-	    cc.code = wtf_to_wcs32(q);
+-	    q += 5;
++	    if (*q && *(q+1) && *(q+2) && *(q+3) && *(q+4)) {
++		cc.ccs |= (*q & 0x70) >> 4;
++		cc.code = wtf_to_wcs32(q);
++		q += 5;
++	    } else {
++		cc.ccs = WC_CCS_US_ASCII;
++		cc.code = (wc_uint32)' ';
++	    }
+ 	    break;
+ 	default:
+ 	/* case 0: */
+diff --git a/libwc/wtf.h b/libwc/wtf.h
+index ad47973..435526f 100644
+--- a/libwc/wtf.h
++++ b/libwc/wtf.h
+@@ -59,8 +59,7 @@ extern void       wtf_init(wc_ces ces1, wc_ces ces2);
+ #define wtf_width(p) (WcOption.use_wide ? (int)WTF_WIDTH_MAP[(wc_uchar)*(p)] \
+ 		      : ((int)WTF_WIDTH_MAP[(wc_uchar)*(p)] ? 1 : 0))
+ extern int        wtf_strwidth(wc_uchar *p);
+-/* extern size_t  wtf_len1(wc_uchar *p); */
+-#define wtf_len1(p) ((int)WTF_LEN_MAP[(wc_uchar)*(p)])
++extern size_t     wtf_len1(wc_uchar *p);
+ extern size_t     wtf_len(wc_uchar *p);
+ /* extern int     wtf_type(wc_uchar *p); */
+ #define wtf_type(p) WTF_TYPE_MAP[(wc_uchar)*(p)]
 diff --git a/linein.c b/linein.c
 index b7e81b6..d8f9023 100644
 --- a/linein.c
@@ -20008,7 +20513,7 @@ index 64fd0ad..bc7a5be 100644
  #define SWAPI(a,b) { int tmp = a; a = b; b = tmp; }
  
 diff --git a/menu.c b/menu.c
-index 774b1bd..01acc31 100644
+index 774b1bd..b0c890d 100644
 --- a/menu.c
 +++ b/menu.c
 @@ -57,6 +57,7 @@ static int mCancel(char c);
@@ -20172,6 +20677,15 @@ index 774b1bd..01acc31 100644
  		Strcat_charp(str, p);
  		break;
  	    }
+@@ -1696,7 +1741,7 @@ initMenu(void)
+     FILE *mf;
+     MenuList *list;
+ 
+-    w3mMenuList = New_N(MenuList, 3);
++    w3mMenuList = New_N(MenuList, 4);
+     w3mMenuList[0].id = "Main";
+     w3mMenuList[0].menu = &MainMenu;
+     w3mMenuList[0].item = MainMenuItem;
 @@ -1845,10 +1890,8 @@ link_menu(Buffer *buf)
  	    Strcat_charp(str, " ");
  	if (!l->url)
@@ -26690,7 +27204,7 @@ index 50475ae..c047c56 100644
  	buf[i] = (*p == ' ') ? NBSP_CODE : *p;
  
 diff --git a/table.c b/table.c
-index e1243ff..572ebd6 100644
+index e1243ff..221db92 100644
 --- a/table.c
 +++ b/table.c
 @@ -188,7 +188,7 @@ dv2sv(double *dv, short *iv, int size)
@@ -26728,6 +27242,24 @@ index e1243ff..572ebd6 100644
  		int alignment;
  		TextLineListItem *ti;
  		struct table *t = tbl->tables[id].ptr;
+@@ -961,7 +960,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
+     for (step = 0; step < 2; step++) {
+ 	for (i = 0; i <= t->maxcol; i += n) {
+ 	    int nn;
+-	    char *idx;
++	    short *idx;
+ 	    double nsum;
+ 	    if (sum < 0.5)
+ 		return;
+@@ -982,7 +981,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
+ 		    (double)rulewidth - mod[ii] > 0.5)
+ 		    fixed[ii] = 1;
+ 	    }
+-	    idx = NewAtom_N(char, n);
++	    idx = NewAtom_N(short, n);
+ 	    for (k = 0; k < cell->maxcell; k++) {
+ 		int kk, w, width, m;
+ 		j = cell->index[k];
 @@ -1624,6 +1623,15 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
  #define fixed_table_width(t)\
    (get_table_width(t,t->fixed_width,t->cell.fixed_width,CHECK_MINIMUM))
@@ -26788,7 +27320,28 @@ index e1243ff..572ebd6 100644
      setwidth(tbl, mode);
      feed_table_inline_tag(tbl, line, mode, -1);
      clearcontentssize(tbl, mode);
-@@ -2600,12 +2620,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -2546,8 +2566,10 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	    }
+ 	}
+ #ifdef ID_EXT
+-	if (parsedtag_get_value(tag, ATTR_ID, &p))
++	if (parsedtag_get_value(tag, ATTR_ID, &p)) {
++	    check_row(tbl, tbl->row);
+ 	    tbl->tridvalue[tbl->row] = Strnew_charp(p);
++	}
+ #endif				/* ID_EXT */
+ 	tbl->trattr = align | valign;
+ 	break;
+@@ -2572,7 +2594,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	}
+ 	tbl->col++;
+ 	check_row(tbl, tbl->row);
+-	while (tbl->tabattr[tbl->row][tbl->col]) {
++	while (tbl->col < MAXCOL && tbl->tabattr[tbl->row][tbl->col]) {
+ 	    tbl->col++;
+ 	}
+ 	if (tbl->col > MAXCOL - 1) {
+@@ -2600,12 +2622,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
  		check_row(tbl, tbl->row + rowspan);
  	}
@@ -26805,7 +27358,7 @@ index e1243ff..572ebd6 100644
  	if (parsedtag_get_value(tag, ATTR_ALIGN, &i)) {
  	    switch (i) {
  	    case ALIGN_LEFT:
-@@ -2878,6 +2902,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -2878,6 +2904,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	tmp = process_input(tag);
  	feed_table1(tbl, tmp, mode, width);
  	break;
@@ -26820,7 +27373,7 @@ index e1243ff..572ebd6 100644
      case HTML_SELECT:
  	tmp = process_select(tag);
  	if (tmp)
-@@ -3010,7 +3042,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+@@ -3010,7 +3044,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
  	break;
      case HTML_TABLE_ALT:
  	id = -1;

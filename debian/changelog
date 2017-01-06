@@ -1,3 +1,32 @@
+w3m (0.5.3-19+deb8u2) jessie; urgency=medium
+
+  * Fix multiple vulnerabilities (closes: #850432)
+    - New patch 934_menu.patch to fix buffer overflow (tats/w3m#49)
+    - New patch 935_shiftanchor.patch to fix buffer overflow (tats/w3m#62)
+    - New patch 936_metarefresh.patch to fix buffer overflow (tats/w3m#63)
+    - New patch 937_lineproc0.patch to fix buffer overflow (tats/w3m#67)
+    - New patch 938_lineproc2body.patch to fix buffer overflow (tats/w3m#61)
+    - New patch 939_textarea.patch to fix buffer overflow (tats/w3m#58)
+    - New patch 940_tabattr.patch to fix buffer overflow (tats/w3m#60)
+    - New patch 941_integeredwidth.patch to fix buffer overflow (tats/w3m#70)
+    - New patch 942_tridvalue.patch to fix buffer overflow (tats/w3m#71)
+    - New patch 943_pushlink.patch to fix buffer overflow (tats/w3m#64, #66)
+    - New patch 944_lineproc0.patch to fix use after free (tats/w3m#65)
+    - New patch 945_wtfstrwidth.patch to fix buffer overflow (tats/w3m#57)
+    - New patch 946_strnewsize.patch to fix buffer overflow (tats/w3m#72)
+    - New patch 947_realcolumn.patch to fix buffer overflow (tats/w3m#69)
+    - New patch 948_getmclen.patch to fix buffer overflow
+      (tats/w3m#59, #73, #74, #75, #76, #78, #79, #80, #83, #84)
+    - New patch 949_wtftowcs.patch to fix buffer overflow (tats/w3m#77)
+    - New patch 950_textarea.patch to fix infinite loop (tats/w3m#85)
+    - New patch 951_lineproc0.patch to fix use after free (tats/w3m#81)
+    - New patch 952_formupdatebuffer.patch to fix buffer overflow (tats/w3m#82)
+    - New patch 953_formupdateline.patch to fix buffer overflow
+      (tats/w3m#68#issuecomment-266214643)
+    - New patch 954_wtfparse1.patch to fix buffer overflow (tats/w3m#68)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 06 Jan 2017 23:21:55 +0900
+
 w3m (0.5.3-19+deb8u1) jessie; urgency=medium
 
   * New patch 901_ucsmap.patch to fix array index (closes: #820162)

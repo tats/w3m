@@ -1,0 +1,25 @@
+Subject: Prevent negative array index for marks in HTMLlineproc2body()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/61
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=f34c37f3156d1578a53dccc582c83c88fff76f87
+
+---
+ file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/file.c b/file.c
+index 6850db1..c5aeb88 100644
+--- a/file.c
++++ b/file.c
+@@ -5699,7 +5699,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+ 			a_href->end.pos = pos;
+ 			if (a_href->start.line == a_href->end.line &&
+ 			    a_href->start.pos == a_href->end.pos) {
+-			    if (buf->hmarklist &&
++			    if (buf->hmarklist && a_href->hseq >= 0 &&
+ 				a_href->hseq < buf->hmarklist->nmark)
+ 				buf->hmarklist->marks[a_href->hseq].invalid = 1;
+ 			    a_href->hseq = -1;
+-- 
+2.10.2
+

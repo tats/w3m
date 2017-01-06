@@ -1,0 +1,26 @@
+Subject: Prevent heap-use-after-free in HTMLlineproc0()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/65
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=26484fc1381e5ec758db950f2bd17f1496220c92
+
+---
+ file.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/file.c b/file.c
+index 483180a..f5ca8d2 100644
+--- a/file.c
++++ b/file.c
+@@ -6585,7 +6585,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		indent = h_env->envs[h_env->envc].indent;
+ 		if (obuf->bp.pos - i > indent) {
+ 		    Str line;
+-		    append_tags(obuf);
++		    append_tags(obuf);	/* may reallocate the buffer */
++		    bp = obuf->line->ptr + obuf->bp.len;
+ 		    line = Strnew_charp(bp);
+ 		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
+ #ifdef FORMAT_NICE
+-- 
+2.10.2
+

@@ -1,0 +1,28 @@
+Subject: Prevent array index out of bounds for tridvalue in feed_table_tag()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/71
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=30b0c971676e229dabd2715c200f76bcfe27a714
+
+---
+ table.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/table.c b/table.c
+index 84e4bf6..1313533 100644
+--- a/table.c
++++ b/table.c
+@@ -2567,8 +2567,10 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	    }
+ 	}
+ #ifdef ID_EXT
+-	if (parsedtag_get_value(tag, ATTR_ID, &p))
++	if (parsedtag_get_value(tag, ATTR_ID, &p)) {
++	    check_row(tbl, tbl->row);
+ 	    tbl->tridvalue[tbl->row] = Strnew_charp(p);
++	}
+ #endif				/* ID_EXT */
+ 	tbl->trattr = align | valign;
+ 	break;
+-- 
+2.10.2
+

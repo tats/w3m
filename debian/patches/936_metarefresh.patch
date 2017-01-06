@@ -1,0 +1,28 @@
+Subject: Prevent negative array index in getMetaRefreshParam()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/63
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=6c6a2cbced21ceec2fac08fba1ad271a77f9dbc2
+
+---
+ file.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/file.c b/file.c
+index e82eaf1..18b350a 100644
+--- a/file.c
++++ b/file.c
+@@ -4361,8 +4361,9 @@ getMetaRefreshParam(char *q, Str *refresh_uri)
+ 		r++;
+ 	    s_tmp = Strnew_charp_n(q, r - q);
+ 
+-	    if (s_tmp->ptr[s_tmp->length - 1] == '\"'          /* " */
+-	       || s_tmp->ptr[s_tmp->length - 1] == '\'') {     /* ' */
++	    if (s_tmp->length > 0 &&
++	        (s_tmp->ptr[s_tmp->length - 1] == '\"' ||	/* " */
++		 s_tmp->ptr[s_tmp->length - 1] == '\'')) {	/* ' */
+ 		s_tmp->length--;
+ 		s_tmp->ptr[s_tmp->length] = '\0';
+ 	    }
+-- 
+2.10.2
+

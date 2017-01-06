@@ -1,0 +1,25 @@
+Subject: Fix menu buffer-overflow
+From: Kuang-che Wu <kcwu@google.com>
+Bug-Debian: https://github.com/tats/w3m/pull/49
+Origin: https://github.com/tats/w3m/pull/49/commits/7e1c05dd90cf42a308e854881ea3813aed000d2e
+
+---
+ menu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/menu.c b/menu.c
+index 0f66583..6c5fee0 100644
+--- a/menu.c
++++ b/menu.c
+@@ -1692,7 +1692,7 @@ initMenu(void)
+     FILE *mf;
+     MenuList *list;
+ 
+-    w3mMenuList = New_N(MenuList, 3);
++    w3mMenuList = New_N(MenuList, 4);
+     w3mMenuList[0].id = "Main";
+     w3mMenuList[0].menu = &MainMenu;
+     w3mMenuList[0].item = MainMenuItem;
+-- 
+2.10.2
+

@@ -1,0 +1,32 @@
+Subject: Prevent negative values for offset and pos in push_link()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/64
+Bug-Debian: https://github.com/tats/w3m/issues/66
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=ecf57714191b77142da74035b748262cdc80dfb7
+
+---
+ file.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/file.c b/file.c
+index 330ae3a..483180a 100644
+--- a/file.c
++++ b/file.c
+@@ -2307,8 +2307,12 @@ push_link(int cmd, int offset, int pos)
+     struct link_stack *p;
+     p = New(struct link_stack);
+     p->cmd = cmd;
+-    p->offset = offset;
+-    p->pos = pos;
++    p->offset = (short)offset;
++    if (p->offset < 0)
++	p->offset = 0;
++    p->pos = (short)pos;
++    if (p->pos < 0)
++	p->pos = 0;
+     p->next = link_stack;
+     link_stack = p;
+ }
+-- 
+2.10.2
+

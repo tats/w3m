@@ -1,0 +1,76 @@
+Subject: Prevent overflow beyond the end of string in caller of get_mclen()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/59
+Bug-Debian: https://github.com/tats/w3m/issues/73
+Bug-Debian: https://github.com/tats/w3m/issues/74
+Bug-Debian: https://github.com/tats/w3m/issues/75
+Bug-Debian: https://github.com/tats/w3m/issues/76
+Bug-Debian: https://github.com/tats/w3m/issues/78
+Bug-Debian: https://github.com/tats/w3m/issues/79
+Bug-Debian: https://github.com/tats/w3m/issues/80
+Bug-Debian: https://github.com/tats/w3m/issues/83
+Bug-Debian: https://github.com/tats/w3m/issues/84
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=6eea841d3a0f8dc539584dc67b15f585a8213775
+
+---
+ file.c      |  2 +-
+ libwc/wtf.c | 11 ++++++++---
+ libwc/wtf.h |  3 +--
+ 3 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/file.c b/file.c
+index f5ca8d2..4fe8239 100644
+--- a/file.c
++++ b/file.c
+@@ -3438,7 +3438,7 @@ process_img(struct parsed_tag *tag, int width)
+ 	if (use_image) {
+ 	    if (n > nw) {
+ 		char *r;
+-		for (r = q, n = 0; r; r += get_mclen(r), n += get_mcwidth(r)) {
++		for (r = q, n = 0; *r; r += get_mclen(r), n += get_mcwidth(r)) {
+ 		    if (n + get_mcwidth(r) > nw)
+ 			break;
+ 		}
+diff --git a/libwc/wtf.c b/libwc/wtf.c
+index adee338..e80d990 100644
+--- a/libwc/wtf.c
++++ b/libwc/wtf.c
+@@ -129,13 +129,18 @@ wtf_strwidth(wc_uchar *p)
+     return w;
+ }
+ 
+-/*
+ size_t
+ wtf_len1(wc_uchar *p)
+ {
+-    return (size_t)WTF_LEN_MAP[*p];
++    size_t len, len_max = WTF_LEN_MAP[*p];
++
++    for (len = 0; *(p + len); len++)
++	if (len == len_max)
++	    break;
++    if (len == 0)
++	len = 1;
++    return len;
+ }
+-*/
+ 
+ size_t
+ wtf_len(wc_uchar *p)
+diff --git a/libwc/wtf.h b/libwc/wtf.h
+index ad47973..435526f 100644
+--- a/libwc/wtf.h
++++ b/libwc/wtf.h
+@@ -59,8 +59,7 @@ extern void       wtf_init(wc_ces ces1, wc_ces ces2);
+ #define wtf_width(p) (WcOption.use_wide ? (int)WTF_WIDTH_MAP[(wc_uchar)*(p)] \
+ 		      : ((int)WTF_WIDTH_MAP[(wc_uchar)*(p)] ? 1 : 0))
+ extern int        wtf_strwidth(wc_uchar *p);
+-/* extern size_t  wtf_len1(wc_uchar *p); */
+-#define wtf_len1(p) ((int)WTF_LEN_MAP[(wc_uchar)*(p)])
++extern size_t     wtf_len1(wc_uchar *p);
+ extern size_t     wtf_len(wc_uchar *p);
+ /* extern int     wtf_type(wc_uchar *p); */
+ #define wtf_type(p) WTF_TYPE_MAP[(wc_uchar)*(p)]
+-- 
+2.10.2
+

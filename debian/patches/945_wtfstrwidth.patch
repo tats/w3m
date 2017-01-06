@@ -1,0 +1,40 @@
+Subject: Prevent overflow beyond the end of string in wtf_strwidth() and wtf_len()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/57
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=7fbaf9444fcd2d3ce061775949b38deb4d489943
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a56a8ef132945512c010cbcbc873dbb42274f9bd
+
+---
+ libwc/wtf.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/libwc/wtf.c b/libwc/wtf.c
+index b8cfdc7..adee338 100644
+--- a/libwc/wtf.c
++++ b/libwc/wtf.c
+@@ -120,8 +120,9 @@ int
+ wtf_strwidth(wc_uchar *p)
+ {
+     int w = 0;
++    wc_uchar *q = p + strlen(p);
+ 
+-    while (*p) {
++    while (p < q) {
+ 	w += wtf_width(p);
+ 	p += WTF_LEN_MAP[*p];
+     }
+@@ -140,9 +141,10 @@ size_t
+ wtf_len(wc_uchar *p)
+ {
+     wc_uchar *q = p;
++    wc_uchar *strz = p + strlen(p);
+ 
+     q += WTF_LEN_MAP[*q];
+-    while (*q && ! WTF_WIDTH_MAP[*q])
++    while (q < strz && ! WTF_WIDTH_MAP[*q])
+ 	q += WTF_LEN_MAP[*q];
+     return q - p;
+ }
+-- 
+2.10.2
+

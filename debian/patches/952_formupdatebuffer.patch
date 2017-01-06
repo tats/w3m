@@ -1,0 +1,26 @@
+Subject: Prevent invalid form_update_line() call in formUpdateBuffer()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/82
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=dc32152dc051923e322fc251aaa2dbd5e54c0fbf
+
+---
+ form.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/form.c b/form.c
+index 1aaaf19..162439a 100644
+--- a/form.c
++++ b/form.c
+@@ -490,7 +490,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ 		spos = a->start.pos;
+ 		epos = a->end.pos;
+ 	    }
+-	    if (a->start.line != a->end.line || spos > epos || epos >= l->len || spos < 0 || epos < 0)
++	    if (a->start.line != a->end.line || spos > epos || epos >= l->len ||
++		spos < 0 || epos < 0 || COLPOS(l, epos) < col)
+ 		break;
+ 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
+ 				   rows > 1,
+-- 
+2.10.2
+

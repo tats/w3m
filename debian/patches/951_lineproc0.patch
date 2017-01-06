@@ -1,0 +1,25 @@
+Subject: Prevent heap-use-after-free read in HTMLlineproc0()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/81
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=aa2077e06fc11f65ba1773e8f5da83d98057e829
+
+---
+ file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/file.c b/file.c
+index da16a0a..6ecb0a6 100644
+--- a/file.c
++++ b/file.c
+@@ -6328,7 +6328,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 	    }
+ 	    if (h_env->tagbuf->length == 0)
+ 		continue;
+-	    str = h_env->tagbuf->ptr;
++	    str = Strdup(h_env->tagbuf)->ptr;
+ 	    if (*str == '<') {
+ 		if (str[1] && REALLY_THE_BEGINNING_OF_A_TAG(str))
+ 		    is_tag = TRUE;
+-- 
+2.10.2
+

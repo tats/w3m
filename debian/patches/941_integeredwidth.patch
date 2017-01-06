@@ -1,0 +1,34 @@
+Subject: Prevent negative array index in set_integered_width()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/70
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a3ed914b0cfc3750e0eb57bb21e2ec6f86ca94f0
+
+---
+ table.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/table.c b/table.c
+index 1a37772..84e4bf6 100644
+--- a/table.c
++++ b/table.c
+@@ -961,7 +961,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
+     for (step = 0; step < 2; step++) {
+ 	for (i = 0; i <= t->maxcol; i += n) {
+ 	    int nn;
+-	    char *idx;
++	    short *idx;
+ 	    double nsum;
+ 	    if (sum < 0.5)
+ 		return;
+@@ -982,7 +982,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
+ 		    (double)rulewidth - mod[ii] > 0.5)
+ 		    fixed[ii] = 1;
+ 	    }
+-	    idx = NewAtom_N(char, n);
++	    idx = NewAtom_N(short, n);
+ 	    for (k = 0; k < cell->maxcell; k++) {
+ 		int kk, w, width, m;
+ 		j = cell->index[k];
+-- 
+2.10.2
+

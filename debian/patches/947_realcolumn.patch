@@ -1,0 +1,25 @@
+Subject: Prevent negative array index for realColumn in calcPosition()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/69
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=1978455e2ed01699789e8374d29515b74b867b2b
+
+---
+ etc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/etc.c b/etc.c
+index 8fe1215..af8a5d3 100644
+--- a/etc.c
++++ b/etc.c
+@@ -498,7 +498,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
+     static char *prevl = NULL;
+     int i, j;
+ 
+-    if (l == NULL || len == 0)
++    if (l == NULL || len == 0 || pos < 0)
+ 	return bpos;
+     if (l == prevl && mode == CP_AUTO) {
+ 	if (pos <= len)
+-- 
+2.10.2
+

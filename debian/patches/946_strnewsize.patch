@@ -1,0 +1,25 @@
+Subject: Prevent heap-buffer-overflow in Strnew_size()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/72
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=4381dffaa3fdf94c384f3588b5c7dff3ba1cc4ae
+
+---
+ Str.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Str.c b/Str.c
+index 5287c0f..7a094f5 100644
+--- a/Str.c
++++ b/Str.c
+@@ -48,6 +48,8 @@ Str
+ Strnew_size(int n)
+ {
+     Str x = GC_MALLOC(sizeof(struct _Str));
++    if (n < 0)
++	n = 0;
+     x->ptr = GC_MALLOC_ATOMIC(n + 1);
+     x->ptr[0] = '\0';
+     x->area_size = n + 1;
+-- 
+2.10.2
+

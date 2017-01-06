@@ -1,0 +1,26 @@
+Subject: Prevent negative array index for marks in shiftAnchorPosition()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/62
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=d57c13282afc6b7dca029f992331b7afa0413356
+
+---
+ anchor.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/anchor.c b/anchor.c
+index ecb211d..bed8db2 100644
+--- a/anchor.c
++++ b/anchor.c
+@@ -551,7 +551,8 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
+ 	    break;
+ 	if (a->start.pos > pos) {
+ 	    a->start.pos += shift;
+-	    if (hl && hl->marks && hl->marks[a->hseq].line == line)
++	    if (hl && hl->marks &&
++		a->hseq >= 0 && hl->marks[a->hseq].line == line)
+ 		hl->marks[a->hseq].pos = a->start.pos;
+ 	}
+ 	if (a->end.pos >= pos)
+-- 
+2.10.2
+

@@ -1,0 +1,27 @@
+Subject: Prevent infinite loop in feed_textarea()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/85
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=7a2675b4a5680d44645e72c4ec1258746a6e1b66
+
+---
+ file.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/file.c b/file.c
+index 4fe8239..da16a0a 100644
+--- a/file.c
++++ b/file.c
+@@ -4076,7 +4076,9 @@ feed_textarea(char *str)
+ 	    Strcat_charp(textarea_str[n_textarea], "\r\n");
+ 	    str++;
+ 	}
+-	else if (*str != '\r')
++	else if (*str == '\r')
++	    str++;
++	else
+ 	    Strcat_char(textarea_str[n_textarea], *(str++));
+     }
+ }
+-- 
+2.10.2
+

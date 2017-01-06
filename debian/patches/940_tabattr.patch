@@ -1,0 +1,25 @@
+Subject: Prevent array index out of bounds for tabattr in feed_table_tag()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/60
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=a6ddc331e90698fa57732bd55f2e8407f3f32f7a
+
+---
+ table.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/table.c b/table.c
+index c57187a..1a37772 100644
+--- a/table.c
++++ b/table.c
+@@ -2593,7 +2593,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
+ 	}
+ 	tbl->col++;
+ 	check_row(tbl, tbl->row);
+-	while (tbl->tabattr[tbl->row][tbl->col]) {
++	while (tbl->col < MAXCOL && tbl->tabattr[tbl->row][tbl->col]) {
+ 	    tbl->col++;
+ 	}
+ 	if (tbl->col > MAXCOL - 1) {
+-- 
+2.10.2
+

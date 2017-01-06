@@ -1,0 +1,25 @@
+Subject: Prevent negative value of row for pushTable() in HTMLlineproc0()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/67
+Origin: https://anonscm.debian.org/cgit/collab-maint/w3m.git/commit/?id=0e66622582db13c4ffeba38067e15efd2d68cd75
+
+---
+ file.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/file.c b/file.c
+index 18b350a..6850db1 100644
+--- a/file.c
++++ b/file.c
+@@ -6404,6 +6404,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
+ 		if (obuf->table_level >= 0) {
+ 		    struct table *tbl0 = tables[obuf->table_level];
+ 		    str = Sprintf("<table_alt tid=%d>", tbl0->ntable)->ptr;
++		    if (tbl0->row < 0)
++			continue;
+ 		    pushTable(tbl0, tbl);
+ 		    tbl = tbl0;
+ 		    tbl_mode = &table_mode[obuf->table_level];
+-- 
+2.10.2
+

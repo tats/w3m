@@ -5993,7 +5993,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 				       buf->document_charset);
 			if (!buf->baseURL)
 			    buf->baseURL = New(ParsedURL);
-			parseURL(p, buf->baseURL, NULL);
+			parseURL2(p, buf->baseURL, &buf->currentURL);
 #if defined(USE_M17N) || defined(USE_IMAGE)
 			base = buf->baseURL;
 #endif

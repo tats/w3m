@@ -56,10 +56,9 @@ newFormList(char *action, char *method, char *charset, char *enctype,
 	m = FORM_METHOD_INTERNAL;
     /* unknown method is regarded as 'get' */
 
-    if (enctype != NULL && !strcasecmp(enctype, "multipart/form-data")) {
+    if (m != FORM_METHOD_GET && enctype != NULL &&
+	!strcasecmp(enctype, "multipart/form-data")) {
 	e = FORM_ENCTYPE_MULTIPART;
-	if (m == FORM_METHOD_GET)
-	    m = FORM_METHOD_POST;
     }
 
 #ifdef USE_M17N

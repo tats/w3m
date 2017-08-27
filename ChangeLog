@@ -1,3 +1,35 @@
+2017-08-27  Kyle J. McKay  <mackyle@gmail.com>
+
+	Correct <base ...> parsing and do not turn a form's GET into POST
+	Bug-Debian: https://github.com/tats/w3m/pull/93
+
+	* form.c:
+	form.c: do not gratuitously turn GET into POST.
+	When encountering a <form ...> tag that contains these values:
+	    method="get" enctype="multipart/form-data"
+	Do not transform the method into POST to accomodate enctype.
+	Instead behave in the compatible way that all other browsers
+	behave in this instance and ignore the enctype parameter
+	(treating it as the default application/x-www-form-urlencoded)
+	and perform a "GET" just as the method parameter requests.
+	This behavior produces far more compatible results than
+	gratuitously changing the "get" into a "post" which can
+	result in unexpected "405 Method Not Allowed" errors.
+	Signed-off-by: Kyle J. McKay <mackyle@gmail.com>
+
+	* file.c:
+	file.c: compute correct base URL when not absolute.
+	When a server makes use of the PATH_INFO feature in a CGI,
+	the returned pages may often have a <base href="..." /> tag
+	specifying the URL of the CGI itself as the base.
+	However, to avoid hard-coding the scheme and host into such
+	a base href, the href value will often omit the scheme, host
+	and port.
+	Make sure that when parsing any such base href value that
+	any omitted components are taken from the current URL rather
+	than taken as being from a bare, absolute file:/// URL.
+	Signed-off-by: Kyle J. McKay <mackyle@gmail.com>
+
 2017-01-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

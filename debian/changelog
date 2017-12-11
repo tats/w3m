@@ -1,11 +1,13 @@
-w3m (0.5.3-34.1) UNRELEASED; urgency=medium
+w3m (0.5.3-34.1) unstable; urgency=medium
 
   * Non-maintainer upload.
+
+  [ Helmut Grohne ]
   * Partially fix FTCBFS (addresses: #812682)
     + Pass --host to configure
     + export PKG_CONFIG
 
- -- Helmut Grohne <helmut@subdivi.de>  Mon, 25 Jan 2016 20:57:02 +0100
+ -- Manuel A. Fernandez Montecelo <mafm@debian.org>  Mon, 11 Dec 2017 22:26:34 +0100
 
 w3m (0.5.3-34) unstable; urgency=medium
 

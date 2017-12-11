@@ -1,7 +1,7 @@
-w3m (0.5.3-26.1) UNRELEASED; urgency=medium
+w3m (0.5.3-34.1) UNRELEASED; urgency=medium
 
   * Non-maintainer upload.
-  * Partially fix FTCBFS (addresses: #-1)
+  * Partially fix FTCBFS (addresses: #812682)
     + Pass --host to configure
     + export PKG_CONFIG
 

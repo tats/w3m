@@ -1,3 +1,12 @@
+w3m (0.5.3-26.1) UNRELEASED; urgency=medium
+
+  * Non-maintainer upload.
+  * Partially fix FTCBFS (addresses: #-1)
+    + Pass --host to configure
+    + export PKG_CONFIG
+
+ -- Helmut Grohne <helmut@subdivi.de>  Mon, 25 Jan 2016 20:57:02 +0100
+
 w3m (0.5.3-34) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20170102

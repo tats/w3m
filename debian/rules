@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+include /usr/share/dpkg/architecture.mk
+
 #export DH_VERBOSE=1
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
@@ -27,6 +29,11 @@ confargs := --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/lib \
 	--enable-gopher \
 	--enable-image=$(DEVS) \
 	--enable-m17n --enable-unicode --enable-nls
+
+ifneq ($(DEB_BUILD_GNU_TYPE),$(DEB_HOST_GNU_TYPE))
+confargs += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+export PKG_CONFIG=$(DEB_HOST_GNU_TYPE)-pkg-config
+endif
 
 builddir := .
 

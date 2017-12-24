@@ -1,3 +1,20 @@
+w3m (0.5.3-35) unstable; urgency=medium
+
+  [ HIGUCHI Daisuke (VDR dai) ]
+  * Ack NMU.
+  * debian/control
+  - run wrap-and-sort
+  - eliminate lintian warning: vcs-field-uses-insecure-uri
+  - eliminate lintian warning: useless-autoreconf-build-depends
+  * fix spelling-error-in-binary
+  - d/p/030_fix_spelling_error.patch: new file.
+  * fix possible-documentation-but-no-doc-base-registration
+  - d/w3m.doc-base: new file.
+  * Update debhelper compat version to 10
+  * Update Standards-Version to 4.1.2
+
+ -- HIGUCHI Daisuke (VDR dai) <dai@debian.org>  Sun, 24 Dec 2017 11:50:47 +0900
+
 w3m (0.5.3-34.1) unstable; urgency=medium
 
   * Non-maintainer upload.

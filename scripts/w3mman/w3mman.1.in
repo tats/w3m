@@ -67,7 +67,7 @@ If W3MMAN_MAN is set, its value is used instead of @MAN@.
 .SH FILES
 .TP
 .I @libexecdir@/@PACKAGE@/cgi-bin/w3mman2html.cgi
-manual page to HTML convertor.
+manual page to HTML converter.
 .SH SEE ALSO
 .BR man (1),
 .BR w3m (1).

@@ -823,7 +823,7 @@ ttymode_set(int mode, int imode)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured while set %x: errno=%d\n", mode, errno);
+	printf("Error occurred while set %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif
@@ -844,7 +844,7 @@ ttymode_reset(int mode, int imode)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured while reset %x: errno=%d\n", mode, errno);
+	printf("Error occurred while reset %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif /* __MINGW32_VERSION */
@@ -861,7 +861,7 @@ set_cc(int spec, int val)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured: errno=%d\n", errno);
+	printf("Error occurred: errno=%d\n", errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 }
@@ -2282,7 +2282,7 @@ sleep_till_anykey(int sec, int purge)
     }
     er = TerminalSet(tty, &ioval);
     if (er == -1) {
-	printf("Error occured: errno=%d\n", errno);
+	printf("Error occurred: errno=%d\n", errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
     return ret;

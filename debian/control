@@ -3,7 +3,16 @@ Section: web
 Priority: optional
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Uploaders: HIGUCHI Daisuke (VDR dai) <dai@debian.org>
-Build-Depends: libgc-dev, libncurses5-dev, libgpm-dev [linux-any], zlib1g-dev, libssl-dev, debhelper (>= 9), gawk | awk, libimlib2-dev, pkg-config, autotools-dev (>= 20100122)
+Build-Depends: autotools-dev (>= 20100122),
+               debhelper (>= 9),
+               gawk | awk,
+               libgc-dev,
+               libgpm-dev [linux-any],
+               libimlib2-dev,
+               libncurses5-dev,
+               libssl-dev,
+               pkg-config,
+               zlib1g-dev
 Homepage: http://sourceforge.net/projects/w3m/
 Vcs-Git: git://anonscm.debian.org/collab-maint/w3m.git
 Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/w3m.git
@@ -12,15 +21,28 @@ Standards-Version: 3.9.8
 Package: w3m
 Architecture: any
 Multi-Arch: foreign
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: ca-certificates
 Provides: www-browser
-Suggests: w3m-img, libsixel-bin, xdg-utils, mime-support, w3m-el, man-db, cmigemo, firefox | www-browser, wget | curl, xsel, mpv, dict, dictd, dict-wn
+Suggests: cmigemo,
+          dict,
+          dict-wn,
+          dictd,
+          firefox | www-browser,
+          libsixel-bin,
+          man-db,
+          mime-support,
+          mpv,
+          w3m-el,
+          w3m-img,
+          wget | curl,
+          xdg-utils,
+          xsel
 Conflicts: w3m-ssl
 Replaces: w3m-ssl, w3mmee
 Description: WWW browsable pager with excellent tables/frames support
- w3m is a text-based World Wide Web browser with IPv6 support. 
- It features excellent support for tables and frames. It can be used 
+ w3m is a text-based World Wide Web browser with IPv6 support.
+ It features excellent support for tables and frames. It can be used
  as a standalone file pager, too.
  .
   * You can follow links and/or view images in HTML.
@@ -30,7 +52,7 @@ Description: WWW browsable pager with excellent tables/frames support
 
 Package: w3m-img
 Architecture: any
-Depends: w3m (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: w3m (= ${binary:Version}), ${misc:Depends}, ${shlibs:Depends}
 Description: inline image extension support utilities for w3m
  w3m-img provides some utilities to support inline images for w3m
  on terminal emulator in X Window System environments and Linux

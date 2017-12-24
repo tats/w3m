@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Uploaders: HIGUCHI Daisuke (VDR dai) <dai@debian.org>
 Build-Depends: autotools-dev (>= 20100122),
-               debhelper (>= 9),
+               debhelper (>= 10),
                gawk | awk,
                libgc-dev,
                libgpm-dev [linux-any],

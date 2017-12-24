@@ -1,0 +1,9 @@
+Document: w3m
+Title: Documentation of WWW browsable pager with excellent tables/frames support
+Author: Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
+Section: Network/Web Browsing
+
+Format: HTML
+Index: /usr/share/doc/w3m/MANUAL.html
+Files: /usr/share/doc/w3m/FAQ.html
+       /usr/share/doc/w3m/STORY.html

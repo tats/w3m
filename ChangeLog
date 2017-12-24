@@ -1,6 +1,10 @@
+2017-12-24  HIGUCHI Daisuke (VDR dai)  <dai@debian.org>
+
+	* scripts/w3mman/w3mman.1.in, terms.c: Fix spelling error.
+
 2017-08-27  Kyle J. McKay  <mackyle@gmail.com>
 
-	Correct <base ...> parsing and do not turn a form's GET into POST
+	Correct <base ...> parsing and do not turn a form's GET into POST.
 	Bug-Debian: https://github.com/tats/w3m/pull/93
 
 	* form.c:

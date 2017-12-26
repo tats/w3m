@@ -1,3 +1,14 @@
+2017-12-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* form.c: Prevent invalid columnPos() call in formUpdateBuffer().
+	Bug-Debian: https://github.com/tats/w3m/issues/89
+
+	* main.c: Typo fix in fusage().
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=878106
+
+	* doc-jp/README.tab, doc/README.tab, main.c: English fix.
+	cf. [emacs-w3m:12706], http://emacs-w3m.namazu.org/ml/msg12598.html
+
 2017-12-24  HIGUCHI Daisuke (VDR dai)  <dai@debian.org>
 
 	* scripts/w3mman/w3mman.1.in, terms.c: Fix spelling error.

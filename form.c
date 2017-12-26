@@ -482,6 +482,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 	rows = form->rows ? form->rows : 1;
 	col = COLPOS(l, a->start.pos);
 	for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
+	    if (l == NULL)
+		break;
 	    if (rows > 1) {
 		pos = columnPos(l, col);
 		a = retrieveAnchor(buf->formitem, l->linenumber, pos);

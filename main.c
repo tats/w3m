@@ -4105,7 +4105,7 @@ DEFUN(backBf, BACK, "Close current buffer and return to the one below in stack")
 	}
 	else
 	    /* FIXME: gettextize? */
-	    disp_message("Can't back...", TRUE);
+	    disp_message("Can't go back...", TRUE);
 	return;
     }
 

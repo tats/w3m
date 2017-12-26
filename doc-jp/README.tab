@@ -38,6 +38,6 @@ w3m をタブブラウザ化
   open_tab_blank … target が _blank か _new の場合は新しいタブで開く
                     デフォルトは OFF
   close_tab_back … 戻る時にバッファが最後ならタブを閉じる
-                    デフォルトは OFF (= Can't back...)
+                    デフォルトは OFF (= Can't go back...)
 
 を追加しています。

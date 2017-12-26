@@ -255,7 +255,7 @@ fusage(FILE * f, int err)
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
 #endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
-    fprintf(f, "    -no-graph        use ACII character for border of table and menu\n");
+    fprintf(f, "    -no-graph        use ASCII character for border of table and menu\n");
 #if 1				/* pager requires -s */
     fprintf(f, "    -s               squeeze multiple blank lines\n");
 #else

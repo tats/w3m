@@ -587,8 +587,8 @@ msgid "File consisting of PEM encoded certificates of CAs"
 msgstr "包含 PEM 编码 CA 证书的文件"
 
 #: rc.c:205
-msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)"
-msgstr "被禁止的 SSL 方式列表 (2: SSLv2, 3: SSLv3, t:TLSv1)"
+msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, t1.1: TLSv1.1)"
+msgstr "被禁止的 SSL 方式列表 (2: SSLv2, 3: SSLv3, t: TLSv1.0, t1.1: TLSv1.1)"
 
 #: rc.c:208
 msgid "Enable cookie processing"

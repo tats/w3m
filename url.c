@@ -338,6 +338,10 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 		option |= SSL_OP_NO_TLSv1;
 	    if (strchr(ssl_forbid_method, 'T'))
 		option |= SSL_OP_NO_TLSv1;
+	    if (strchr(ssl_forbid_method, 't1.1'))
+		option |= SSL_OP_NO_TLSv1_1;
+	    if (strchr(ssl_forbid_method, 'T1.1'))
+		option |= SSL_OP_NO_TLSv1_1;
 	}
 #ifdef SSL_OP_NO_COMPRESSION
 	option |= SSL_OP_NO_COMPRESSION;

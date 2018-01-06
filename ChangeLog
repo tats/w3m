@@ -1,3 +1,21 @@
+2018-01-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.SSL: Doc fix for ssl_forbid_method.
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po, rc.c:
+	* url.c: Fix multi-character character constant for ssl_forbid_method.
+
+2018-01-06  se  <se@example.com>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po, rc.c:
+	* url.c: Extend ssl_forbid_method to disable TLSv1.1.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=874218#5
+
+2018-01-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* w3mimg/fb/fb_w3mimg.c: Accept TERM=fbterm.
+	cf. https://bushowhige.blogspot.jp/2015/01/fbterm-w3m-img.html
+
 2017-12-27  Tatsuya Kinoshita  <tats@debian.org>
 
 	* form.c: Prevent invalid columnPos() call in formUpdateBuffer().

@@ -178,8 +178,8 @@ w3mimg_fbopen()
     memset(wop, 0, sizeof(w3mimg_op));
 
     if (!check_tty_console(getenv("W3M_TTY")) &&
-	strcmp("jfbterm", getenv("TERM")) != 0 &&
-	strncmp("jfbterm-", getenv("TERM"), 8) != 0) {
+	strncmp("fbterm", getenv("TERM"), 6) != 0 &&
+	strncmp("jfbterm", getenv("TERM"), 7) != 0) {
 	fprintf(stderr, "w3mimgdisplay/fb: tty is not console\n");
 	goto error;
     }

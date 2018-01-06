@@ -583,8 +583,8 @@ msgid "File consisting of PEM encoded certificates of CAs"
 msgstr "SSLの認証局のPEM形式証明書群のファイル"
 
 #: rc.c:205
-msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, t1.1: TLSv1.1)"
-msgstr "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1.0, t1.1: TLSv1.1)"
+msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1)"
+msgstr "使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1)"
 
 #: rc.c:208
 msgid "Enable cookie processing"

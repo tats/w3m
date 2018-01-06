@@ -24,7 +24,7 @@ SSL サポートについて
  ・ SSL に関して以下の設定が可能になってます:
 
     ssl_forbid_method
-        使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1)
+        使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1)
         (デフォルトは2, 3).
     ssl_verify_server ON/OFF
         SSLのサーバ認証を行う(デフォルトはON).

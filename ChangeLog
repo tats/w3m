@@ -1,3 +1,11 @@
+2018-01-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20171216.1.
+
+	* table.c: Prevent negative indent value in feed_table_block_tag().
+	Bug-Debian: https://github.com/tats/w3m/issues/88
+
 2018-01-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/README.SSL: Doc fix for ssl_forbid_method.

@@ -34,7 +34,7 @@ CONF_DIR = $(sysconfdir)/$(PACKAGE)
 DOCDIRS = @DOCDIRS@
 
 AUXBIN_TARGETS	= xface2xpm
-LIB_TARGETS	= dirlist.cgi w3mdict.cgi w3mhelp.cgi w3mmail.cgi
+LIB_TARGETS	= dirlist.cgi w3mhelp.cgi w3mmail.cgi
 HELP_TARGETS	= w3mhelp-funcname.pl w3mhelp-funcdesc-stamp
 SUBDIRS = multipart w3mman
 .PHONY: $(SUBDIRS)
@@ -87,7 +87,7 @@ install: $(LIB_TARGETS) $(HELP_TARGETS)
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(AUXBIN_DIR);  \
 	done
-	for file in $(LIB_TARGETS);     \
+	for file in w3mdict.cgi $(LIB_TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);  \
 	done
@@ -105,7 +105,7 @@ uninstall:
 	do      \
 		rm -f $(AUXBIN_DIR)/$$file; \
 	done
-	-for file in $(LIB_TARGETS); \
+	-for file in w3mdict.cgi $(LIB_TARGETS); \
 	do      \
 		rm -f $(LIB_DIR)/$$file; \
 	done

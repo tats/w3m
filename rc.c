@@ -1330,6 +1330,11 @@ init_rc(void)
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
+#ifdef HAVE_MKDTEMP
+    tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX", NULL)->ptr);
+    if (tmp_dir == NULL)
+	tmp_dir = rc_dir;
+#endif
     create_option_search_table();
     goto open_rc;
 }

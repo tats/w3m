@@ -143,6 +143,7 @@ typedef long clen_t;
 #undef HAVE_SRANDOM
 #undef HAVE_GETPASSPHRASE
 #undef HAVE_CHDIR
+#undef HAVE_MKDTEMP
 #undef HAVE_SETPGRP
 #undef HAVE_SETLOCALE
 #undef HAVE_LANGINFO_CODESET

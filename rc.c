@@ -1279,7 +1279,7 @@ init_rc(void)
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */
 	    if (do_mkdir(rc_dir, 0700) < 0) {
-		fprintf(stderr, "Can't create config directory (%s)!", rc_dir);
+		/* fprintf(stderr, "Can't create config directory (%s)!\n", rc_dir); */
 		goto rc_dir_err;
 	    }
 	    else {
@@ -1287,17 +1287,17 @@ init_rc(void)
 	    }
 	}
 	else {
-	    fprintf(stderr, "Can't open config directory (%s)!", rc_dir);
+	    /* fprintf(stderr, "Can't open config directory (%s)!\n", rc_dir); */
 	    goto rc_dir_err;
 	}
     }
     if (!S_ISDIR(st.st_mode)) {
 	/* not a directory */
-	fprintf(stderr, "%s is not a directory!", rc_dir);
+	/* fprintf(stderr, "%s is not a directory!\n", rc_dir); */
 	goto rc_dir_err;
     }
     if (!(st.st_mode & S_IWUSR)) {
-	fprintf(stderr, "%s is not writable!", rc_dir);
+	/* fprintf(stderr, "%s is not writable!\n", rc_dir); */
 	goto rc_dir_err;
     }
     no_rc_dir = FALSE;

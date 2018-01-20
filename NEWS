@@ -1,3 +1,16 @@
+Debian's w3m 0.5.3+git20180121
+
+* bug fixes
+ - fix stack overflow with malformed text
+ - fix null deref with malformed text
+ - make temporary directory safely when ~/.w3m is unwritable
+ - do not remove w3mdict.cgi when "make distclean"
+ - do not turn a form's GET into POST
+ - correct <base ...> parsing
+ - accept TERM=fbterm
+* new feature
+ - extend ssl_forbid_method to disable TLSv1.1
+
 Debian's w3m 0.5.3+git20170102
 
 * bug fixes

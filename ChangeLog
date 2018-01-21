@@ -1,3 +1,15 @@
+2018-01-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
+	* scripts/Makefile.in: Do not remove w3mdict.cgi when "make distclean".
+
+	* config.h.dist, config.h.in, configure, configure.ac, main.c, rc.c:
+	Make temporary directory safely when ~/.w3m is unwritable.
+
+	* rc.c: Suppress error messages when ~/.w3m is unwritable.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=871425
+
 2018-01-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* config.guess, config.sub:

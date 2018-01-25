@@ -1,4 +1,4 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: w3m
 Source: http://sourceforge.net/projects/w3m/
 
@@ -262,7 +262,7 @@ Comment:
  version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
 Files: config.guess config.sub
-Copyright: 1992-2015, Free Software Foundation, Inc.
+Copyright: 1992-2017, Free Software Foundation, Inc.
 License: GPL-3+ with Autoconf exception
  This file is free software; you can redistribute it and/or modify it
  under the terms of the GNU General Public License as published by
@@ -275,7 +275,7 @@ License: GPL-3+ with Autoconf exception
  General Public License for more details.
  .
  You should have received a copy of the GNU General Public License
- along with this program; if not, see <http://www.gnu.org/licenses/>.
+ along with this program; if not, see <https://www.gnu.org/licenses/>.
  .
  As a special exception to the GNU General Public License, if you
  distribute this file as part of a program that contains a
@@ -320,7 +320,7 @@ License: public-domain
  by Scarlett. public domain.
 
 Files: debian/*
-Copyright: 2008-2017, Tatsuya Kinoshita <tats@debian.org>
+Copyright: 2008-2018, Tatsuya Kinoshita <tats@debian.org>
            1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
 License: permissive-debian
  There is no restriction, so this package may be distributed under

@@ -1,3 +1,21 @@
+w3m (0.5.3-36) unstable; urgency=medium
+
+  * Update 020_debian.patch to v0.5.3+git20180125.
+     - Fix stack overflow with malformed text [CVE-2018-6196]
+     - Fix null deref with malformed text [CVE-2018-6197]
+     - Fix /tmp file races only when ~/.w3m is unwritable [CVE-2018-6198]
+       (closes: #888097)
+     - Suppress error messages when ~/.w3m is unwritable (closes: #871425)
+     - Extend ssl_forbid_method to disable TLSv1.1 (closes: #874218)
+     - Typo fix in --help message (closes: #878106)
+  * Drop 030_fix_spelling_error.patch (merged in 020_debian.patch)
+  * Don't use deprecated autotools-dev tools
+  * Migrate from anonscm.debian.org to salsa.debian.org
+  * Update debian/copyright
+  * Update Standards-Version to 4.1.3
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 25 Jan 2018 18:53:30 +0900
+
 w3m (0.5.3-35) unstable; urgency=medium
 
   [ HIGUCHI Daisuke (VDR dai) ]

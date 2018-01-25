@@ -1,9 +1,9 @@
-Debian's w3m 0.5.3+git20180121
+Debian's w3m 0.5.3+git20180125
 
 * bug fixes
- - fix stack overflow with malformed text
- - fix null deref with malformed text
- - make temporary directory safely when ~/.w3m is unwritable
+ - fix stack overflow with malformed text [CVE-2018-6196]
+ - fix null deref with malformed text [CVE-2018-6197]
+ - fix /tmp file races only when ~/.w3m is unwritable [CVE-2018-6198]
  - do not remove w3mdict.cgi when "make distclean"
  - do not turn a form's GET into POST
  - correct <base ...> parsing

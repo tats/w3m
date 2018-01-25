@@ -1,3 +1,8 @@
+2018-01-25  Tatsuya Kinoshita  <tats@debian.org>
+
+	* ChangeLog, NEWS: Add CVE IDs.
+	cf. https://security-tracker.debian.org/tracker/source-package/w3m
+
 2018-01-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

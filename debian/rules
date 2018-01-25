@@ -42,7 +42,7 @@ build-indep:
 build-arch: build-stamp
 build-stamp:
 	dh_testdir
-	cd $(builddir) && dh_autotools-dev_updateconfig
+	cd $(builddir) && dh_update_autotools_config
 	test ! -f $(builddir)/entity.h || test -f $(builddir)/entity.h.debian-bak || cp $(builddir)/entity.h $(builddir)/entity.h.debian-bak
 	cd $(builddir) && LC_ALL=C CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
@@ -57,7 +57,6 @@ clean:
 	rm -f $(builddir)/po/stamp-po
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
 	test ! -f $(builddir)/entity.h.debian-bak || mv -f $(builddir)/entity.h.debian-bak $(builddir)/entity.h
-	cd $(builddir) && dh_autotools-dev_restoreconfig
 	dh_clean
 
 install: install-stamp

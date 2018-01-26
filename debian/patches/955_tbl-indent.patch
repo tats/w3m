@@ -1,0 +1,24 @@
+Subject: Prevent negative indent value in feed_table_block_tag()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/88 [CVE-2018-6196]
+Origin: https://salsa.debian.org/debian/w3m/commit/8354763b90490d4105695df52674d0fcef823e92
+
+diff --git a/table.c b/table.c
+index 221db92..4f193e1 100644
+--- a/table.c
++++ b/table.c
+@@ -2356,10 +2356,14 @@ feed_table_block_tag(struct table *tbl,
+ 	if (mode->indent_level < MAX_INDENT_LEVEL)
+ 	    tbl->indent -= INDENT_INCR;
+     }
++    if (tbl->indent < 0)
++	tbl->indent = 0;
+     offset = tbl->indent;
+     if (cmd == HTML_DT) {
+ 	if (mode->indent_level > 0 && mode->indent_level <= MAX_INDENT_LEVEL)
+ 	    offset -= INDENT_INCR;
++	if (offset < 0)
++	    offset = 0;
+     }
+     if (tbl->indent > 0) {
+ 	check_minimum0(tbl, 0);

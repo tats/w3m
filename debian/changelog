@@ -1,3 +1,12 @@
+w3m (0.5.3-34+deb9u1) stretch; urgency=medium
+
+  * New patch 955_tbl-indent.patch to fix stack overflow [CVE-2018-6196]
+  * New patch 956_columnpos.patch to fix null deref [CVE-2018-6197]
+  * New patch 957_mkdtemp.patch to fix /tmp file races [CVE-2018-6198]
+    (closes: #888097)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 26 Jan 2018 18:50:05 +0900
+
 w3m (0.5.3-34) unstable; urgency=medium
 
   * Update 020_debian.patch to v0.5.3+git20170102

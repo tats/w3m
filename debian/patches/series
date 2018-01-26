@@ -1,3 +1,4 @@
 010_upstream.patch
 020_debian.patch
 955_tbl-indent.patch
+956_columnpos.patch

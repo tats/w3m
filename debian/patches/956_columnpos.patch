@@ -1,0 +1,18 @@
+Subject: Prevent invalid columnPos() call in formUpdateBuffer()
+From: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://github.com/tats/w3m/issues/89 [CVE-2018-6197]
+Origin: https://salsa.debian.org/debian/w3m/commit/7fdc83b0364005a0b5ed869230dd81752ba022e8
+
+diff --git a/form.c b/form.c
+index 0605513..0a71f9c 100644
+--- a/form.c
++++ b/form.c
+@@ -483,6 +483,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
+ 	rows = form->rows ? form->rows : 1;
+ 	col = COLPOS(l, a->start.pos);
+ 	for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
++	    if (l == NULL)
++		break;
+ 	    if (rows > 1) {
+ 		pos = columnPos(l, col);
+ 		a = retrieveAnchor(buf->formitem, l->linenumber, pos);

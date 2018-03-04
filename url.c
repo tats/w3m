@@ -1752,6 +1752,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		write(sock, tmp->ptr, tmp->length);
 	    if(w3m_reqlog){
 		FILE *ff = fopen(w3m_reqlog, "a");
+		if (ff == NULL)
+		    return uf;
 		if (sslh)
 		    fputs("HTTPS: request via SSL\n", ff);
 		else
@@ -1774,6 +1776,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    write(sock, tmp->ptr, tmp->length);
 	    if(w3m_reqlog){
 		FILE *ff = fopen(w3m_reqlog, "a");
+		if (ff == NULL)
+		    return uf;
 		fwrite(tmp->ptr, sizeof(char), tmp->length, ff);
 		fclose(ff);
 	    }

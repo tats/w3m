@@ -611,8 +611,10 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if(w3m_reqlog){
 	    FILE *ff;
 	    ff = fopen(w3m_reqlog, "a");
-	    Strfputs(tmp, ff);
-	    fclose(ff);
+            if(ff){
+	        Strfputs(tmp, ff);
+	        fclose(ff);
+            }
 	}
 	if (src)
 	    Strfputs(tmp, src);
@@ -7580,6 +7582,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
     tmp = Sprintf("<img src=\"%s\"><br><br>", html_quote(image.url));
     tmpf = tmpfname(TMPF_SRC, ".html");
     src = fopen(tmpf->ptr, "w");
+    if (src == NULL)
+        return NULL;
     newBuf->mailcap_source = tmpf->ptr;
 
     init_stream(&f, SCM_LOCAL, newStrStream(tmp));

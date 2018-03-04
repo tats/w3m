@@ -1,3 +1,14 @@
+2018-03-04  Jia Zhouyang  <jiazhouyang@nudt.edu.cn>
+
+	* url.c: Add error handling code for fopen.
+	Check the return code of fopen, and return when it fails.
+
+	* file.c: Add error handling code for fopen.
+	Check the return value of fopen, and add proper error handling code.
+
+	* local.c: Add error handling for chdir.
+	When chdir fails, print error message and exit.
+
 2018-01-25  Tatsuya Kinoshita  <tats@debian.org>
 
 	* ChangeLog, NEWS: Add CVE IDs.

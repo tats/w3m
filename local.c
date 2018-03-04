@@ -426,7 +426,10 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     }
 
 #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
-    chdir(cgi_dir);
+    if (chdir(cgi_dir) == -1) {
+        fprintf(stderr, "failed to chdir to %s: %s\n", cgi_dir, strerror(errno));
+        exit(1);
+    }
 #endif
     execl(file, cgi_basename, NULL);
     fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",

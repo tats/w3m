@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: Tatsuya Kinoshita <tats@debian.org>
 Uploaders: HIGUCHI Daisuke (VDR dai) <dai@debian.org>
-Build-Depends: debhelper (>= 10),
+Build-Depends: debhelper (>= 11~),
                gawk | awk,
                libgc-dev,
                libgpm-dev [linux-any],

@@ -410,7 +410,7 @@ w3m (0.5.3-4) unstable; urgency=low
  -- Tatsuya Kinoshita <tats@debian.org>  Sun, 30 Oct 2011 15:23:40 +0900
 
 w3m (0.5.3-3) unstable; urgency=low
-  
+
   * debian/control:
     - Add Vcs-* fields. (closes: #625532)
     - Update Standards-Version to 3.9.2.
@@ -680,7 +680,7 @@ w3m (0.5.1-3) unstable; urgency=low
 
 w3m (0.5.1-2) unstable; urgency=medium
 
-  * rebuilt with new version of libgdk-pixbuf-dev 
+  * rebuilt with new version of libgdk-pixbuf-dev
     to build againt with libtiff4
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri,  6 Aug 2004 01:23:48 +0900
@@ -749,7 +749,7 @@ w3m (0.5-1) unstable; urgency=low
     closes: Bug#106840: ITP: w3m-m17n -- multilingualization of w3m
     closes: Bug#96340 - no w3m-en/w3m-ja any more
     closes: Bug#217509 - segfault if TERM is not set
-  * w3m-img no longer setuid. setgid to video. 
+  * w3m-img no longer setuid. setgid to video.
     closes: Bug#200028, Bug#181631
   * fix FTBFS on GNU/Hurd
     closes: Bug#221890
@@ -760,7 +760,7 @@ w3m (0.5-1) unstable; urgency=low
 
 w3m (0.4.2-2) unstable; urgency=medium
 
-  * install conffiles as /etc/w3m/config. 
+  * install conffiles as /etc/w3m/config.
     closes: Bug#214325, Bug#215537, Bug#215537
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 14 Oct 2003 00:40:51 +0900
@@ -965,13 +965,13 @@ w3m (0.3-1) unstable; urgency=low
 w3m (0.2.5.1-1) unstable; urgency=low
 
   * new stable upstream release
-    
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  5 Feb 2002 02:04:35 +0900
 
 w3m (0.2.5-1) unstable; urgency=low
 
   * new upstream release
-  * debian/w3mconfig: 
+  * debian/w3mconfig:
      - add: default_url 1
      - fix: mailcap, mime_types: use ~/.w3m/ instead of ~/.
      - add: urimethodmap ~/.w3m//urimethodmap, /etc/w3m/urimethodmap
@@ -1006,7 +1006,7 @@ w3m (0.2.3.2-1) unstable; urgency=high
   * new upstream version
   * security fix in support scripts
    - Hironori Sakamoto found some vulnerabilities in w3m support scripts,
-     such as multipart.cgi, w3mman2html.cgi and w3mhelp.cgi.  Attacker 
+     such as multipart.cgi, w3mman2html.cgi and w3mhelp.cgi.  Attacker
      could run arbitrary commands on user's machine with user's priviledge
      by using malicious html pages.
 
@@ -1060,9 +1060,9 @@ w3m (0.2.2+20011130-1) unstable; urgency=low
   * new configure: closes: Bug#99086, Bug#117631, Bug#117633
   * w3m.sh: simplified, use option `argv_is_url 1'
   * /etc/w3m/w3mconfig, closes: Bug#57158, Bug#109288
-  * fails searches at http://www.classifieds200.com that lynx handles 
+  * fails searches at http://www.classifieds200.com that lynx handles
     unreproducible, closes: Bug#54650
-  
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  1 Dec 2001 03:39:40 +0900
 
 w3m (0.2.2-3) unstable; urgency=low
@@ -1084,7 +1084,7 @@ w3m (0.2.2-1) unstable; urgency=low
 
   * debian/copyright: w3m is now maintained on sourceforge
   * new upstream version 0.2.2
-  * debian/patches/04-cvs-20011116: 
+  * debian/patches/04-cvs-20011116:
     - fix mouse supports closes: Bug#119707
     - check NULL in search.c closes: Bug#105791
     - mark anchor on mailto: cloess: Bug#85900
@@ -1104,14 +1104,14 @@ w3m (0.2.1-17) unstable; urgency=low
     closes: Bug#102980
   * debian/rules (build): LC_ALL=C for make
     closes: Bug#118809,Bug#118810
-  
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 14 Nov 2001 02:51:36 +0900
 
 w3m (0.2.1-16) unstable; urgency=low
 
   * apply w3m-0.2.1-inu-1.5 (cummulative patch)
     http://mi.med.tohoku.ac.jp/~satodai/w3m/inu/200110/w3m-0.2.1-inu-1.5.tar.gz
- 
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue,  6 Nov 2001 04:51:06 +0900
 
 w3m (0.2.1-15) unstable; urgency=low
@@ -1149,7 +1149,7 @@ w3m (0.2.1-11) unstable; urgency=low
   * apply w3m-0.2.1-inu-1.4a2-0909.patch (cummulative patch)
     from [w3m-dev 02213]
   * add zlib1g-dev to build-depends, since inflate subprogram requires -lz
-  
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon, 10 Sep 2001 02:13:20 +0900
 
 w3m (0.2.1-10) unstable; urgency=low
@@ -1231,7 +1231,7 @@ w3m (0.2.0-1) unstable; urgency=low
 
 w3m (0.1.10+0.1.11pre+kokb23-3) unstable; urgency=low
 
-  * don't remove pager alternative when upgrading, closes: Bug#87331 
+  * don't remove pager alternative when upgrading, closes: Bug#87331
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 25 Feb 2001 00:27:58 +0900
 
@@ -1371,7 +1371,7 @@ w3m (0.1.10-3) unstable; urgency=low
   * several bug fixes:
     - resize on rxvt works fine, closes: Bug#64678, #71597
     - No segfault from history page in 0.1.10, closes: Bug#65101
-    - As bug submitter said, download problem was fixed in 0.1.10, 
+    - As bug submitter said, download problem was fixed in 0.1.10,
       closes: Bug#66235
     - no nbsp leaks with 0.1.10, closes: Bug#67581
     - fix debian/rules to check -perm 0100 instead of -perm 0111,
@@ -1391,12 +1391,12 @@ w3m (0.1.10-2) stable unstable; urgency=medium
     and I plan w3m move to next unstable/experimental release for woody,
     so I'd like to put it in stable(proposed-updates)
     I'd not like to backport to 0.9.5 from 0.1.10, because it might include
-    some bugs, so I think 0.1.10 (proven stable) is better than backported 
+    some bugs, so I think 0.1.10 (proven stable) is better than backported
     0.9.5
-    Followings are already fixed in 0.1.10 (and trivial fix to #72100), 
+    Followings are already fixed in 0.1.10 (and trivial fix to #72100),
     - resize on rxvt works fine, closes: Bug#64678, #71597
     - No segfault from history page in 0.1.10, closes: Bug#65101
-    - As bug submitter said, download problem was fixed in 0.1.10, 
+    - As bug submitter said, download problem was fixed in 0.1.10,
       closes: Bug#66235
     - no nbsp leaks with 0.1.10, closes: Bug#67581
     - fix debian/rules to check -perm 0100 instead of -perm 0111,
@@ -1429,7 +1429,7 @@ w3m (0.1.9-4) frozen unstable; urgency=medium
 w3m (0.1.9-3) frozen unstable; urgency=medium
 
   * Fix RC bug#63274, thanks Falk Hueffner <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
-  * I think this version also closes: Bug#63423, Bug#63612, 
+  * I think this version also closes: Bug#63423, Bug#63612,
     if not yet fixed, please reopen it
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  8 May 2000 01:06:15 +0900
@@ -1437,7 +1437,7 @@ w3m (0.1.9-3) frozen unstable; urgency=medium
 w3m (0.1.9-2) frozen unstable; urgency=HIGH
 
   * security fix: remote exploit
-   - When viewing image by `I', web author can run arbitrary command in 
+   - When viewing image by `I', web author can run arbitrary command in
      user's environment, because of mishandling image URL.
      This revision fixes this problem (from [w3m-dev 00518] Security hole)
 
@@ -1480,7 +1480,7 @@ w3m (0.1.6-1) frozen unstable; urgency=high
      be displayed., closes: Bug#52566
    - modify GPM support, closes: Bug#55735
    - don't use graphics character for progress bar, closes: Bug#53053
-   - http://www.egreetings.com/v/spEJQDu7Zm doesn't causes an unstoppable 
+   - http://www.egreetings.com/v/spEJQDu7Zm doesn't causes an unstoppable
      loop of cookies any more, closes: Bug#54334
    - Accept discard attribute of Set-Cookie2.
    - insert a blank line just after </dl>.
@@ -1508,7 +1508,7 @@ w3m (0.1.4-4) frozen unstable; urgency=HIGH
 
 w3m (0.1.4-3) unstable; urgency=low
 
-  * apply patch [w3m-dev 00176] Right justification bug 
+  * apply patch [w3m-dev 00176] Right justification bug
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 15 Jan 2000 03:06:22 +0900
 
@@ -1585,7 +1585,7 @@ w3m (0.0.19991126-3) unstable; urgency=low
   * fix out of order of anchor lists with nested table. (w3m-dev)
   * fix some array out of range access to cause random segfault.
   * apply Tsutomu Okada <okada@furuno.co.jp> patch in w3m-dev
-  * new w3m wrapper based on Jacobo Tarrio <jtarrio@ceu.fi.udc.es>, 
+  * new w3m wrapper based on Jacobo Tarrio <jtarrio@ceu.fi.udc.es>,
     closes: Bug#48474
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed,  1 Dec 1999 00:33:12 +0900
@@ -1594,7 +1594,7 @@ w3m (0.0.19991126-2) unstable; urgency=low
 
   * fixed fail to load help file
   * fixed segfault bug in form selection
-  * apply patch to fix w3m crash with $WWW_HOME 
+  * apply patch to fix w3m crash with $WWW_HOME
     by hsaka@mth.biglobe.ne.jp (Hironori Sakamoto) on w3m-dev ML
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 27 Nov 1999 18:00:43 +0900
@@ -1702,7 +1702,7 @@ w3m (0.0.19991015-3) unstable; urgency=low
 w3m (0.0.19991015-2) unstable; urgency=low
 
   * add -dump option for text/html copiousoutput in mime mailcap. closes: Bug#47558
-  
+
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 16 Oct 1999 23:29:04 +0900
 
 w3m (0.0.19991015-1) unstable; urgency=low
@@ -1729,7 +1729,7 @@ w3m (0.0.19991008-2) unstable; urgency=low
 w3m (0.0.19991008-1) unstable; urgency=low
 
   * dont quote %s in debian/mime, closes: Bug#45920
-  * new upstream version. 
+  * new upstream version.
     - Never hangup if a page has when too much links. closes: Bug#46381
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat,  9 Oct 1999 02:33:27 +0900
@@ -1753,7 +1753,7 @@ w3m (0.0.19990928-2) unstable; urgency=low
 
 w3m (0.0.19990928-1) unstable; urgency=low
 
-  * new upstream release 
+  * new upstream release
   * apply Hironori Sakamoto <h-saka@lsi.nec.co.jp> patch
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 29 Sep 1999 00:35:14 +0900
@@ -1768,13 +1768,13 @@ w3m (0.0.19990916-1) unstable; urgency=low
 
 w3m (0.0.19990820-1) unstable; urgency=low
 
-  * new upstream release 
+  * new upstream release
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 21 Aug 1999 02:44:14 +0900
 
 w3m (0.0.19990817-1) unstable; urgency=low
 
-  * new development release 
+  * new development release
   * display ISO-8859-1 characters probably, closes: Bug#41988
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Wed, 18 Aug 1999 02:23:15 +0900
@@ -1807,14 +1807,14 @@ w3m (0.0.19990716-3) unstable; urgency=low
 
 w3m (0.0.19990716-2) unstable; urgency=low
 
-  * auto decompress gzip file 
+  * auto decompress gzip file
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Thu,  5 Aug 1999 18:07:47 +0000
 
 w3m (0.0.19990716-1) unstable; urgency=low
 
   * new upstream version
-  * link with libgc.so.4 again 
+  * link with libgc.so.4 again
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sun, 18 Jul 1999 17:01:58 +0900
 
@@ -1847,7 +1847,7 @@ w3m (0.0.19990609-1) unstable; urgency=low
       thanks, okabe@okaibm.hep.okayama-u.ac.jp
     - fix password handling
     - (portability) `char == unsigned char' environments
-    - fix bug when unclosed comments in table. 
+    - fix bug when unclosed comments in table.
        thanks okabe@okaibm.hep.okayama-u.ac.jp
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Fri, 11 Jun 1999 03:34:59 +0900
@@ -1865,7 +1865,7 @@ w3m (0.0.19990604-1) unstable; urgency=low
 
 w3m (0.0.19990526-1) unstable; urgency=low
 
-  * apply patch 
+  * apply patch
     http://ei5nazha.yz.yamagata-u.ac.jp/BBS/spool/log.html
     <19990527130634@ei5nazha>
   * New upsteam version
@@ -1919,7 +1919,7 @@ w3m (0.0.19990430-1) unstable; urgency=low
   - ftp order
   - new feature: ftp://username@hostname/file
   - ftp can be put in bookmark
-  - fix bug: getpwuid() in ftp 
+  - fix bug: getpwuid() in ftp
   - enable align attribute in <Hn>, <P>
   - fix leading space
   - fix bug in resizing
@@ -1934,7 +1934,7 @@ w3m (0.0.19990421-1) unstable; urgency=low
 
   * remove reference to info page from w3m.1 because this package
     does not have info pages, closes Bug#35093.
-  * New upstream version 
+  * New upstream version
   - fix order of include "config.h" in term.c
   - fix bug to dump core when URL is ""
   - fix english message symbol in rc.c

@@ -9,21 +9,21 @@ cookie support of w3m
    http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt)
    cookie.
    
- * If you wont to disable cookie support, run configure script with
+ * If you want to disable cookie support, run the configure script with
     --disable-cookie option.
    
- * You can choose to use cookie or not on the Option Setting Panel or
+ * You can choose to use cookies or not on the Option Setting Panel or
    -cookie and -no-cookie option.
    
- * You can disable cookie on the Option Setting Panel. In this case
-    all cookies are rejected, however, cookies which accepted before
-    disable cookie are used.
+ * You can disable cookies on the Option Setting Panel. In this case
+    all new cookies are rejected, however, cookies which were accepted before
+    cookies were disabled are used.
    
- * You can see list of accepted cookies with C-k. In this panel, you
+ * You can see the list of accepted cookies with C-k. In this panel, you
     can choose to use each cookie or not.
    
- * You can specify domains accept or not accept cookies on the Option
-    Setting Panel. Domains are specified with following format.
+ * You can specify domains from which to accept or not accept cookies
+    on the Option Setting Panel. Domains are specified with following format:
    
       domain-list = domains
                   | ""
@@ -37,7 +37,7 @@ cookie support of w3m
                               (HDN: host domain name)
 
 
- * If the number of "." in domain name is lesser than 2, it is
+ * If the number of "." in domain name is fewer than 2, it is
     assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can
     use cookie_avoid_wrong_number_of_dots to avoid this
     restriction. You can set this in "Domains to avoid [wrong number

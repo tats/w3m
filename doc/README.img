@@ -11,8 +11,8 @@ Introduction
 
 Support
 
-  * Display inline image (GIF,PNG,JPEG, etc.) on terminals
-    (xterm,rxvt, etc.) of X11, Linux framebuffer device or
+  * Display inline images (GIF, PNG, JPEG, etc.) on terminals
+    (xterm, rxvt, etc.) of X11, Linux framebuffer device or
     terminals of Windows.
   * Support inline image of <img> tag.
     Support of attributes "width", "height", and "align".
@@ -66,7 +66,7 @@ Option panel
       Automatic loading of inline image. The default is ON.
       If it is OFF, loading starts with a command DISPLAY_IMAGE.
   max_load_image
-      Maximum process for downloading of inline image. The default is 4.
+      Maximum # of processes for downloading inline images. The default is 4.
       1 to 8 can be set.
   ext_image_viewer
       Use external image viewer, when a command VIEW_IMAGE or
@@ -75,8 +75,8 @@ Option panel
   image_scale
       Scale of image (%). The default value is 100(%).
   imgdisplay
-      External command to display image". The default value is "w3mimgdisplay".
-      See "Setting w3mimgdisplay".
+      External command to display image. The default value is "w3mimgdisplay".
+      See "Setting w3mimgdisplay."
 
 Required programs
 
@@ -124,8 +124,8 @@ Setting w3mimgdisplay
       The default value for Linux framebuffer device is #000000 (black).
       When the color is specified as #RRGGBB, escape '#'.
   -anim <n>
-      Maximum number of frames for animation. It means without limit
-      if the number is 0. Negative value count backward from the end
+      Maximum number of frames for animation. It will run everything
+      if the number is 0. Negative values count backward from the end
       of the frames. The default value is 100.
   -margin <n>
       Margin of an area to clear an image. The default value is 0.
@@ -135,13 +135,13 @@ Setting w3mimgdisplay
 
 Notice
     If you want to see GIF animation, please hit a suitable key, such
-    as 'h', 'l', etc., repeatedly, because a frame is rewritten
+    as 'h', 'l', etc., repeatedly, because a new frame is only requested
     according to the re-drawing demand from w3m.
 
     Some code in w3mimg/fb/fb.c was originally written by Mr. Yamasaki.
     http://www.sainet.or.jp/~yamasaki/download/fb-sample.tar.gz
 
-    On Windows, we check the behaver on standard console, Cygwin rxvt
+    On Windows, we check the behavior on standard console, Cygwin rxvt
     and PuTTY.
 
 

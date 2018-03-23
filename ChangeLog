@@ -1,3 +1,8 @@
+2018-03-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c: Respect simple_preserve_space for table cells.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=893902
+
 2018-03-23  Mike  <barbeque@users.noreply.github.com>
 
 	Update grammar & spelling in some English READMEs.

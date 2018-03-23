@@ -1,14 +1,25 @@
+2018-03-23  Mike  <barbeque@users.noreply.github.com>
+
+	Update grammar & spelling in some English READMEs.
+	Origin: https://github.com/tats/w3m/pull/97
+
+	* doc/README.img: Update README.img.
+	* doc/README.dict: Update README.dict.
+	* doc/README.pre_form: Update README.pre_form.
+	* doc/README.cookie: Update README.cookie.
+	* doc/README.cookie: Update README.cookie.
+
 2018-03-04  Jia Zhouyang  <jiazhouyang@nudt.edu.cn>
+
+	Fix crashes when some external APIs fail.
+	Origin: https://github.com/tats/w3m/pull/96
 
 	* url.c: Add error handling code for fopen.
 	Check the return code of fopen, and return when it fails.
-
 	* file.c: Add error handling code for fopen.
 	Check the return value of fopen, and add proper error handling code.
-
 	* local.c: Add error handling for chdir.
 	When chdir fails, print error message and exit.
-	Bug-Debian: https://github.com/tats/w3m/pull/96
 
 2018-01-25  Tatsuya Kinoshita  <tats@debian.org>
 

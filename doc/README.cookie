@@ -23,7 +23,7 @@ cookie support of w3m
     can choose to use each cookie or not.
    
  * You can specify domains from which to accept or not accept cookies
-    on the Option Setting Panel. Domains are specified with following format:
+    on the Option Setting Panel. Domains are specified in the following format:
    
       domain-list = domains
                   | ""

@@ -2290,7 +2290,8 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 	    }
 	    if (s > 0) {
 #ifdef USE_M17N
-		if (ctype == PC_KANJI1 && prev_ctype == PC_KANJI1)
+		if (!SimplePreserveSpace &&
+		    ctype == PC_KANJI1 && prev_ctype == PC_KANJI1)
 		    skip += s;
 		else
 #endif

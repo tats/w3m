@@ -6,7 +6,7 @@ include /usr/share/dpkg/architecture.mk
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 dpkg_buildflags = DEB_BUILD_MAINT_OPTIONS=$(DEB_BUILD_MAINT_OPTIONS) dpkg-buildflags
-CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS) $(shell getconf LFS_CFLAGS) 
+CFLAGS=$(shell $(dpkg_buildflags) --get CFLAGS) $(shell getconf LFS_CFLAGS)
 CPPFLAGS=$(shell $(dpkg_buildflags) --get CPPFLAGS)
 LDFLAGS=$(shell $(dpkg_buildflags) --get LDFLAGS)
 
@@ -161,7 +161,7 @@ endif
 	dh_md5sums -a $(bootstrap_dh_flags)
 	dh_builddeb -a $(bootstrap_dh_flags)
 
-source diff:                                                                  
+source diff:
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
 
 build: build-indep build-arch

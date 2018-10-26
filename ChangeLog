@@ -1,3 +1,9 @@
+2018-10-26  Ben Wong  <bugs.debian.org@wongs.net>
+
+	* buffer.c, display.c:
+	Fix that the MarkAllPages option works as originally intended.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911929
+
 2018-10-26  Tatsuya Kinoshita  <tats@debian.org>
 
 	* istream.c, url.c: Indentation fix.

@@ -327,7 +327,7 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	SSLeay_add_ssl_algorithms();
 	SSL_load_error_strings();
 #else
-  OPENSSL_init_ssl(0, NULL);
+	OPENSSL_init_ssl(0, NULL);
 #endif
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;

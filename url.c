@@ -319,12 +319,16 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #endif				/* defined(USE_SSL_VERIFY) */
     if (ssl_ctx == NULL) {
 	int option;
-#if SSLEAY_VERSION_NUMBER < 0x0800
+#if OPENSSL_VERSION_NUMBER < 0x0800
 	ssl_ctx = SSL_CTX_new();
 	X509_set_default_verify_paths(ssl_ctx->cert);
 #else				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
 	SSLeay_add_ssl_algorithms();
 	SSL_load_error_strings();
+#else
+  OPENSSL_init_ssl(0, NULL);
+#endif
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;
 	SSL_CTX_set_cipher_list(ssl_ctx, "DEFAULT:!LOW:!RC4:!EXP");

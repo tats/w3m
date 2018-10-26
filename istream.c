@@ -421,7 +421,11 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	    for (i = 0; i < n; i++) {
 		gn = sk_GENERAL_NAME_value(alt, i);
 		if (gn->type == GEN_DNS) {
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
 		    char *sn = ASN1_STRING_data(gn->d.ia5);
+#else
+        char *sn = ASN1_STRING_get0_data(gn->d.ia5);
+#endif
 		    int sl = ASN1_STRING_length(gn->d.ia5);
 
 		    if (!seen_dnsname)

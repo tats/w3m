@@ -1,3 +1,13 @@
+2018-10-26  Tatsuya Kinoshita  <tats@debian.org>
+
+	* istream.c, url.c: Indentation fix.
+
+2018-10-24  Mark Wright  <gienah@gentoo.org>
+
+	* istream.c, url.c: Do not use deprecated features with openssl-1.1.
+	Bug-Gentoo: https://bugs.gentoo.org/592510
+	Bug-Debian: https://github.com/tats/w3m/pull/103
+
 2018-05-20  Andrew Santosa  <santosa_1999@yahoo.com>
 
 	* po/Makefile.in.in: Added check for : command not producing .gmo file.

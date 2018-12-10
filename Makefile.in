@@ -35,6 +35,7 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
+CC_FOR_BUILD ?= $(CC)
 CFLAGS = $(OPTS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
@@ -178,7 +179,7 @@ functable.c: funcname.tab mktable$(EXT)
 	-rm -f functable.tab
 
 mktable$(EXT): mktable.o dummy.o Str.o hash.o myctype.o
-	$(CC) $(CFLAGS) -o mktable mktable.o dummy.o Str.o hash.o myctype.o $(LDFLAGS) $(LIBS) $(GC_LIBS)
+	$(CC_FOR_BUILD) $(CFLAGS) -o mktable mktable.o dummy.o Str.o hash.o myctype.o $(LDFLAGS) $(LIBS) $(GC_LIBS)
 
 $(BOOKMARKER): w3mbookmark.o dummy.o $(ALIB)
 	$(CC) $(CFLAGS) -o $(BOOKMARKER) w3mbookmark.o dummy.o $(LDFLAGS) $(LIBS) $(EXT_LIBS)

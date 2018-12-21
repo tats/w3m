@@ -23,17 +23,23 @@ if ((! $query{"man"}) && (! $query{"local"})) {
   if ($query{"keyword"}) {
     $keyword = $query{"keyword"};
     $k = &html_quote($keyword);
+    if ($query{"section"}) {
+      $section = $query{"section"};
+      $sectionopt = "-s $section ";
+    } else {
+      $sectionopt = "";
+    }
     print <<EOF;
 Content-Type: text/html
 
 <html>
-<head><title>man -k $k</title></head>
+<head><title>man $sectionopt-k $k</title></head>
 <body>
-<h2>man -k <b>$k</b></h2>
+<h2>man $sectionopt-k <b>$k</b></h2>
 <ul>
 EOF
     $keyword =~ s:([^-\w\200-\377.,])::g;
-    open(F, "$MAN -k $keyword 2> /dev/null |");
+    open(F, "$MAN $sectionopt -k $keyword 2> /dev/null |");
     while(<F>) {
       chop;
       $_ = &html_quote($_);
@@ -58,10 +64,10 @@ Content-Type: text/html
 <body>
 <form action="$CGI">
 <table>
-<tr><td>Manual:<td><input name=man>
-<tr><td>Section:<td><input name=section>
-<tr><td>Keyword:<td><input name=keyword>
-<tr><td><td><input type=submit> <input type=reset>
+<tr><td>Manual:<td><input name=man />
+<tr><td>Section:<td><input name=section />
+<tr><td>Keyword:<td><input name=keyword />
+<tr><td><td><input type=submit /> <input type=reset />
 </table>
 </form>
 </body>

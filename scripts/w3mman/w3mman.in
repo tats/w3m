@@ -6,8 +6,8 @@ $SCRIPT = 'file:///$LIB/w3mman2html.cgi';
 
 sub usage {
   ($_ = $0) =~ s@.*/@@;
-  print STDERR "$_ [-M <path>] [[<section>] <command>]\n";
-  print STDERR "$_ [-M <path>] [-k <keyword>]\n";
+  print STDERR "$_ [-M <path>] [<section>] <command>]\n";
+  print STDERR "$_ [-M <path>] [<section>] [-k <keyword>]\n";
   print STDERR "$_ [-l <file>]\n";
   exit 1;
 }
@@ -20,7 +20,8 @@ while (@ARGV) {
     $ENV{'MANPATH'} = shift @ARGV;
   } elsif (/^-k$/) {
     @ARGV || &usage();
-    $query = "?keyword=" . &form_encode(shift @ARGV);
+    if ( $query eq "" ) { $query = "?quit=ok"; }
+    $query .= "&keyword=" . &form_encode(shift @ARGV);
   } elsif (/^-l$/) {
     @ARGV || &usage(); 
     $query = "?quit=ok&local=" . &form_encode(shift @ARGV);
@@ -28,11 +29,11 @@ while (@ARGV) {
   } elsif (/^-/) {
     &usage();
   } elsif (/^\d/ || $_ eq 'n') {
-    @ARGV || &usage();
-    $query = "?quit=ok&man=" . &form_encode(shift @ARGV);
+    if ( $query eq "" ) { $query = "?quit=ok"; }
     $query .= "&section=" . &form_encode($_);
   } else {
-    $query = "?quit=ok&man=" . &form_encode($_);
+    if ( $query eq "" ) { $query = "?quit=ok"; }
+    $query .= "&man=" . &form_encode($_);
   }
 }
 

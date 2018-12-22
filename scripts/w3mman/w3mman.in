@@ -6,7 +6,7 @@ $SCRIPT = 'file:///$LIB/w3mman2html.cgi';
 
 sub usage {
   ($_ = $0) =~ s@.*/@@;
-  print STDERR "$_ [-M <path>] [<section>] <command>]\n";
+  print STDERR "$_ [-M <path>] [[<section>] <command>]\n";
   print STDERR "$_ [-M <path>] [<section>] [-k <keyword>]\n";
   print STDERR "$_ [-l <file>]\n";
   exit 1;

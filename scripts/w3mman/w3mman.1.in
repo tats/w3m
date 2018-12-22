@@ -21,9 +21,9 @@ w3mman \- an interface to the on-line reference manuals via w3m(1)
 .B w3mman
 [
 .BI \-M " path"
-] [
+] [ [
 .I section
-] [
+]
 .I page
 ]
 .br

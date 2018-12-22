@@ -1,3 +1,15 @@
+2018-12-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mman/w3mman.1.in, scripts/w3mman/w3mman.in:
+	Fix square brackets.
+
+2018-12-21  Nemo Inis  <nemoinis@hotmail.com>
+
+	* scripts/w3mman/w3mman.1.in, scripts/w3mman/w3mman.in:
+	* scripts/w3mman/w3mman2html.cgi.in:
+	w3mman support for section number during keyword search.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=916968#5
+
 2018-10-26  Ben Wong  <bugs.debian.org@wongs.net>
 
 	* buffer.c, display.c:

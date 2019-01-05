@@ -1,3 +1,16 @@
+2019-01-05  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS.
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20180224.1.
+
+2019-01-05  Akinori Hattori  <hattya@gentoo.org>
+
+	* w3mimg/fb/fb_imlib2.c: Fix dependency for Imlib2.
+	Bug-Gentoo: https://bugs.gentoo.org/605930
+	Origin: https://gitweb.gentoo.org/repo/gentoo.git/commit/?id=97d6e3e6839898829e8cce211b97a7fa77f5d06e
+
 2018-12-22  Tatsuya Kinoshita  <tats@debian.org>
 
 	* scripts/w3mman/w3mman.1.in, scripts/w3mman/w3mman.in:

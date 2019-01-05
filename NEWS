@@ -1,3 +1,14 @@
+Debian's w3m 0.5.3+git20190105
+
+* bug fixes
+ - do not use deprecated features with OpenSSL 1.1
+ - fix dependency for Imlib2
+ - fix that the mark_all_pages option works
+ - respect the simple_preserve_space option for table cells
+ - fix error handling for ~/.w3m/request.log and localcgi_post()
+* new feature
+ - w3mman supports specifying a section number during a keyword search
+
 Debian's w3m 0.5.3+git20180125
 
 * bug fixes

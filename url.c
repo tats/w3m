@@ -1324,12 +1324,14 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     const int *no_referer_ptr;
     int no_referer;
 
-    Strcat_charp(s, "User-Agent: ");
-    if (UserAgent == NULL || *UserAgent == '\0')
-	Strcat_charp(s, w3m_version);
-    else
-	Strcat_charp(s, UserAgent);
-    Strcat_charp(s, "\r\n");
+    if (!override_user_agent) {
+        Strcat_charp(s, "User-Agent: ");
+        if (UserAgent == NULL || *UserAgent == '\0')
+            Strcat_charp(s, w3m_version);
+        else
+            Strcat_charp(s, UserAgent);
+        Strcat_charp(s, "\r\n");
+    }
 
     Strcat_m_charp(s, "Accept: ", AcceptMedia, "\r\n", NULL);
     Strcat_m_charp(s, "Accept-Encoding: ", AcceptEncoding, "\r\n", NULL);

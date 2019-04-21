@@ -935,6 +935,7 @@ global int w3m_dump init(0);
 global int w3m_halfload init(FALSE);
 global Str header_string init(NULL);
 global int override_content_type init(FALSE);
+global int override_user_agent init(FALSE);
 
 #ifdef USE_COLOR
 global int useColor init(TRUE);

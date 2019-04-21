@@ -375,6 +375,8 @@ make_optional_header_string(char *s)
     Strcopy_charp_n(hs, s, p - s);
     if (!Strcasecmp_charp(hs, "content-type"))
 	override_content_type = TRUE;
+    if (!Strcasecmp_charp(hs, "user-agent"))
+	override_user_agent = TRUE;
     Strcat_charp(hs, ": ");
     if (*(++p)) {		/* not null header */
 	SKIP_BLANKS(p);		/* skip white spaces */

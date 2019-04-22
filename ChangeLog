@@ -1,3 +1,7 @@
+2019-04-21  Laurent Arnoud  <laurent@spkdev.net>
+
+	* fm.h, main.c, url.c: Allow to override User-Agent with -header.
+
 2019-01-05  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS.

@@ -1323,10 +1323,13 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     Str s = Strnew();
     const int *no_referer_ptr;
     int no_referer;
+    const char* url_user_agent = query_SCONF_USER_AGENT(target);
 
     if (!override_user_agent) {
         Strcat_charp(s, "User-Agent: ");
-        if (UserAgent == NULL || *UserAgent == '\0')
+	if (url_user_agent)
+	   Strcat_charp(s, url_user_agent);
+	else if (UserAgent == NULL || *UserAgent == '\0')
             Strcat_charp(s, w3m_version);
         else
             Strcat_charp(s, UserAgent);

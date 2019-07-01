@@ -13,6 +13,7 @@ substitute_url "<destination-url>"
 url_charset <charset>
 no_referer_from on|off
 no_referer_to on|off
+user_agent "string"
 
 The last match wins.
 
@@ -39,6 +40,12 @@ url_charset utf-8
 
 When combinated with "decode_url" option turned on, links to
 Wikipedia will be human-readable.
+
+url m@^https?://(.*\.)google\.com/@
+user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
+
+Tell Google we're actually Lynx. (So they send us a text-browser friendly
+results page.)
 
 ===== Regular expressions notes =====
 

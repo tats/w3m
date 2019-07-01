@@ -1602,6 +1602,7 @@ helpFile(char *base)
  * url_charset <charset>
  * no_referer_from on|off
  * no_referer_to on|off
+ * user_agent "<string>"
  * 
  * The last match wins.
  */
@@ -1614,6 +1615,7 @@ struct siteconf_rec {
     unsigned char mask[(SCONF_N_FIELD + 7) >> 3];
 
     char *substitute_url;
+    char *user_agent;
 #ifdef USE_M17N
     wc_ces url_charset;
 #endif
@@ -1640,6 +1642,7 @@ newSiteconfRec(void)
     memset(ent->mask, 0, sizeof(ent->mask));
 
     ent->substitute_url = NULL;
+    ent->user_agent = NULL;
 #ifdef USE_M17N
     ent->url_charset = 0;
 #endif
@@ -1718,6 +1721,10 @@ loadSiteconf(void)
 	    ent->substitute_url = getQWord(&p);
 	    SCONF_SET(ent, SCONF_SUBSTITUTE_URL);
 	}
+	if (strcmp(s, "user_agent") == 0) {
+	    ent->user_agent = getQWord(&p);
+	    SCONF_SET(ent, SCONF_USER_AGENT);
+	}
 #ifdef USE_M17N
 	else if (strcmp(s, "url_charset") == 0) {
 	    char *charset = getWord(&p);
@@ -1795,6 +1802,11 @@ url_found:
 	    Strcat_charp(tmp, ent->substitute_url);
 	    Strcat_charp(tmp, lastp);
 	    return tmp->ptr;
+	}
+	return NULL;
+    case SCONF_USER_AGENT:
+	if (ent->user_agent && *ent->user_agent) {
+	    return ent->user_agent;
 	}
 	return NULL;
 #ifdef USE_M17N

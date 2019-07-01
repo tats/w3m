@@ -1,3 +1,8 @@
+2019-07-01  Azure  <azure@fox.blue>
+
+	* doc/README.siteconf, fm.h, rc.c, url.c:
+	Allow setting User Agent in Siteconf.
+
 2019-04-21  Laurent Arnoud  <laurent@spkdev.net>
 
 	* fm.h, main.c, url.c: Allow to override User-Agent with -header.

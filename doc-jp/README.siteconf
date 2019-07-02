@@ -14,6 +14,7 @@ substitute_url "<destination-url>"
 url_charset <charset>
 no_referer_from on|off
 no_referer_to on|off
+user_agent "string"
 
 後ろの方に書かれたものが優先されます。
 
@@ -40,6 +41,12 @@ url_charset utf-8
 
 同時に "decode_url" オプションをオンにすると、 Wikipedia への
 リンクを UTF-8 としてデコードして表示します。
+
+url m@^https?://(.*\.)google\.com/@
+user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
+
+Google に Lynx であると告げます。(これによりテキストブラウザ向けページが
+返ります)
 
 ===== 正規表現について =====
 

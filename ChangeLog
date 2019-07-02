@@ -1,11 +1,17 @@
+2019-07-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.siteconf: Update doc-jp for user_agent in siteconf.
+
 2019-07-01  Azure  <azure@fox.blue>
 
 	* doc/README.siteconf, fm.h, rc.c, url.c:
 	Allow setting User Agent in Siteconf.
+	Origin: https://github.com/tats/w3m/pull/119
 
 2019-04-21  Laurent Arnoud  <laurent@spkdev.net>
 
 	* fm.h, main.c, url.c: Allow to override User-Agent with -header.
+	Origin: https://github.com/tats/w3m/pull/113
 
 2019-01-05  Tatsuya Kinoshita  <tats@debian.org>
 

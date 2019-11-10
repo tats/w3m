@@ -1,3 +1,8 @@
+2019-11-10  Kyle J. McKay  <mackyle@gmail.com>
+
+	* entity.tab, indep.c, indep.h: Support &apos; entity.
+	Origin: https://github.com/tats/w3m/pull/122
+
 2019-07-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/README.siteconf: Update doc-jp for user_agent in siteconf.

@@ -4256,6 +4256,23 @@ DEFUN(goURL, GOTO, "Open specified document in a new buffer")
     goURL0("Goto URL: ", FALSE);
 }
 
+DEFUN(goHome, GOTO_HOME, "Open home page in a new buffer")
+{
+    char *url;
+    if ((url = getenv("HTTP_HOME")) != NULL ||
+        (url = getenv("WWW_HOME")) != NULL) {
+        ParsedURL p_url;
+        Buffer *cur_buf = Currentbuf;
+        SKIP_BLANKS(url);
+        url = url_encode(url, NULL, 0);
+        parseURL2(url, &p_url, NULL);
+        pushHashHist(URLHist, parsedURL2Str(&p_url)->ptr);
+        cmd_loadURL(url, NULL, NULL, NULL);
+        if (Currentbuf != cur_buf)	/* success */
+        pushHashHist(URLHist, parsedURL2Str(&Currentbuf->currentURL)->ptr);
+    }
+}
+
 DEFUN(gorURL, GOTO_RELATIVE, "Go to relative address")
 {
     goURL0("Goto relative URL: ", TRUE);

@@ -13,7 +13,7 @@ unsigned char GlobalKeymap[128] = {
     /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
     movU, closeT, isrchbak, isrchfor, tabA, prevA, pgFore, wrapToggle,
     /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_      */
-    nulcmd, nulcmd, susp, escmap, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, susp, escmap, nulcmd, nulcmd, nulcmd, goHome,
     /*  SPC     !       "       #       $       %       &       '        */
     pgFore, execsh, reMark, pipesh, linend, nulcmd, nulcmd, nulcmd,
     /*  (       )       *       +       ,       -       .       /        */

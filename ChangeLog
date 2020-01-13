@@ -1,3 +1,7 @@
+2020-01-13  We're Yet  <58348703+butwerenotthereyet@users.noreply.github.com>
+
+	* keybind.c, main.c, proto.h: Add command to go home.
+
 2019-11-10  Kyle J. McKay  <mackyle@gmail.com>
 
 	* entity.tab, indep.c, indep.h: Support &apos; entity.

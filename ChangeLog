@@ -1,6 +1,7 @@
 2020-01-13  We're Yet  <58348703+butwerenotthereyet@users.noreply.github.com>
 
 	* keybind.c, main.c, proto.h: Add command to go home.
+	Origin: https://github.com/tats/w3m/pull/124
 
 2019-11-10  Kyle J. McKay  <mackyle@gmail.com>
 

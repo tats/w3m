@@ -592,8 +592,8 @@ msgid "File consisting of PEM encoded certificates of CAs"
 msgstr "Datei mit PEM-kodierten Zertifikaten von CAs"
 
 #: rc.c:205
-msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1)"
-msgstr "Liste unzulässiger SSL-Verfahren (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1)"
+msgid "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)"
+msgstr "Liste unzulässiger SSL-Verfahren (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)"
 
 #: rc.c:208
 msgid "Enable cookie processing"

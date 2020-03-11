@@ -1,3 +1,10 @@
+2020-03-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.SSL, po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po:
+	* po/zh_TW.po, rc.c: Update documents for ssl_forbid_method.
+
+	* url.c: Extend ssl_forbid_method for TLSv1.2 and TLSv1.3.
+
 2020-01-13  We're Yet  <58348703+butwerenotthereyet@users.noreply.github.com>
 
 	* keybind.c, main.c, proto.h: Add command to go home.

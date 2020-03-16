@@ -30,6 +30,7 @@ EXTERN		Verwende externen Browser zur Anzeige
 EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
 FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
 GOTO		Öffne angegebenes Dokument in neuem Puffer
+GOTO_HOME	Zurück zur Startseite (die Variablen HTTP_HOME oder WWW_HOME spezifiziert wurden)
 GOTO_LINE	Gehe zur angebenen Zeile
 GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
 GOTO_RELATIVE	Gehe zu relativer Adresse

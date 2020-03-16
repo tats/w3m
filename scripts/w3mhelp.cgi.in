@@ -148,8 +148,8 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
 		pipeBuf"));
 
 &show_keymap('Buffer Operations',
-	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
-		editBf editScr reload reshape rdrwSc dispI stopI"));
+	     split(" ", "backBf nextBf prevBf goHome selMn selBuf vwSrc svSrc
+		svBuf editBf editScr reload reshape rdrwSc dispI stopI"));
 
 &show_keymap('Tab Operations',
 	     split(" ", "newT closeT nextT prevT tabMn tabR tabL"));

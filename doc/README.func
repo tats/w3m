@@ -30,6 +30,7 @@ EXTERN		Display using an external browser
 EXTERN_LINK	Display target using an external browser
 FRAME		Toggle rendering HTML frames
 GOTO		Open specified document in a new buffer
+GOTO_HOME	Return to the homepage (specified HTTP_HOME or WWW_HOME variable)
 GOTO_LINE	Go to the specified line
 GOTO_LINK	Follow current hyperlink in a new buffer
 GOTO_RELATIVE	Go to relative address

@@ -1,3 +1,11 @@
+2020-03-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-de/MANUAL.html, doc/MANUAL.html: Update documents for GOTO_HOME.
+
+	* doc-de/README.func, doc-jp/README.func, doc-jp/keymap.default:
+	* doc/README.func, doc/keymap.default, scripts/w3mhelp.cgi.in:
+	Add GOTO_HOME to the help page.
+
 2020-03-11  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/README.SSL, po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po:

@@ -1,3 +1,9 @@
+2020-03-27  Roland Illig  <rillig@NetBSD.org>
+
+	* main.c: Fix -Wchar-subscripts.
+	Origin: http://cvsweb.netbsd.org/bsdweb.cgi/~checkout~/pkgsrc/www/w3m/patches/patch-main.c?rev=1.1&content-type=text/plain
+	Bug: https://sourceforge.net/p/w3m/patches/76/
+
 2020-03-16  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-de/MANUAL.html, doc/MANUAL.html: Update documents for GOTO_HOME.

@@ -397,8 +397,8 @@ int
 main(int argc, char **argv, char **envp)
 {
     Buffer *newbuf = NULL;
-    char *p, c;
-    int i;
+    char *p;
+    int c, i;
     InputStream redin;
     char *line_str = NULL;
     char **load_argv;

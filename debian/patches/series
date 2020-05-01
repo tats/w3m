@@ -90,3 +90,6 @@
 952_formupdatebuffer.patch
 953_formupdateline.patch
 954_wtfparse1.patch
+
+955_CVE-2018-6196_tbl-indent.patch
+956_CVE-2018-6197_columnpos.patch

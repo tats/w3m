@@ -1,3 +1,13 @@
+w3m (0.5.3-19+deb8u3) jessie-security; urgency=high
+
+  * Non-maintainer upload by the LTS Team.
+  * CVE-2018-6196
+    fix for stack overflow
+  * CVE-2018-6197
+    fix for null pointer dereference
+ 
+ -- Thorsten Alteholz <debian@alteholz.de>  Wed, 29 Apr 2020 19:03:02 +0200
+
 w3m (0.5.3-19+deb8u2) jessie; urgency=medium
 
   * Fix multiple vulnerabilities (closes: #850432)

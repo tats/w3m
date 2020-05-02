@@ -1,4 +1,4 @@
-w3m (0.5.3-38) UNRELEASED; urgency=medium
+w3m (0.5.3-38) unstable; urgency=medium
 
   [ Debian Janitor ]
   * debian/copyright: use spaces rather than tabs to start continuation
@@ -11,8 +11,10 @@ w3m (0.5.3-38) UNRELEASED; urgency=medium
   * Add debian/upstream/metadata
   * Update debhelper-compat to 13
   * Update Standards-Version to 4.5.0
+  * Update 020_debian.patch to v0.5.3+git20200502
+  * Update debian/copyright
 
- -- Tatsuya Kinoshita <tats@debian.org>  Sat, 02 May 2020 13:01:57 +0900
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 02 May 2020 13:27:52 +0900
 
 w3m (0.5.3-37) unstable; urgency=medium
 

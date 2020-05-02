@@ -1,3 +1,14 @@
+Debian's w3m 0.5.3+git20200502
+
+* bug fixes
+ - support &apos; entity
+ - prevent multiple User-Agent with -header
+ - fix -Wchar-subscripts
+* new features
+ - support setting user_agent in siteconf
+ - new command GOTO_HOME
+ - extend ssl_forbid_method for TLSv1.2 and TLSv1.3
+
 Debian's w3m 0.5.3+git20190105
 
 * bug fixes

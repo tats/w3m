@@ -2,9 +2,6 @@
 
 set -e
 
-dpkg-maintscript-helper rm_conffile \
-  /etc/w3m/w3mconfig 0.4.2-2~ -- "$@"
-
 case "$1" in
   configure)
         update-alternatives --quiet --install /usr/bin/pager pager \

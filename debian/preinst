@@ -1,8 +1,3 @@
 #!/bin/sh
-
 set -e
-
-dpkg-maintscript-helper rm_conffile \
-  /etc/w3m/w3mconfig 0.4.2-2~ -- "$@"
-
 #DEBHELPER#

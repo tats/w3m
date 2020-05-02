@@ -1,10 +1,18 @@
 w3m (0.5.3-38) UNRELEASED; urgency=medium
 
+  [ Debian Janitor ]
   * debian/copyright: use spaces rather than tabs to start continuation
     lines.
   * Update standards version to 4.4.1, no changes needed.
 
- -- Debian Janitor <janitor@jelmer.uk>  Thu, 19 Dec 2019 05:01:56 +0000
+  [ Tatsuya Kinoshita ]
+  * Replace tab with spaces in debian/copyright
+  * Use maintscript file instead of manual calls to dpkg-maintscript-helper
+  * Add debian/upstream/metadata
+  * Update debhelper-compat to 13
+  * Update Standards-Version to 4.5.0
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 02 May 2020 13:01:57 +0900
 
 w3m (0.5.3-37) unstable; urgency=medium
 

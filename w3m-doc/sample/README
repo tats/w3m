@@ -1,41 +1,41 @@
 
-�Ȥ���
+使い方
   perl w3mdoc.pl sample.wd > sample.html
 
-Ÿ���������
+展開されるもの
 
 * @xxx.yyy@
 
-  @define �� @end ���������줿�ͤ�Ÿ������롣
+  @define 〜 @end 内で定義された値に展開される。
 
 * @YYY(xxx)@
 
-  @code �� @end ���������줿�ؿ���ƤӽФ���Ÿ������롣
+  @code 〜 @end 内で定義された関数を呼び出して展開される。
 
-  ��)
+  例)
      URL(xxx)     xxx.url
      LINK(xxx)    <A HREF="xxx.url">xxx.title</A>
      MAILTO(xxx)  <A HREF="mailto:xxx.address">xxx.name</A>
 
-���ޥ�ɰ���
+コマンド一覧
 
-* ���
+* 定義
   @define
     xxx.yyy    zzz
   @end
 
-  xxx.yyy �� zzz ��������롣xxx �ϰʲ��δؿ��ΰ����ˤ�ʤ롣
-  ��� define.wd �򻲾ȡ�
+  xxx.yyy を zzz と定義する。xxx は以下の関数の引数にもなる。
+  例は define.wd を参照。
 
-* ������(�ؿ����)
+* コード(関数定義)
   @code
-    ������
+    コード
   @end
 
-  w3mdoc ��������Ƥ������Υ����ɤ�ľ�ܽ񤯡��Ȥꤢ���� perl5��
-  ��� html.wd �򻲾ȡ�
+  w3mdoc を実装している言語のコードを直接書く。とりあえず perl5。
+  例は html.wd を参照。
 
-* ���󥯥롼��
+* インクルード
   @include file
 
-  �ե������ include ���롣
+  ファイルを include する。

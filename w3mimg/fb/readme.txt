@@ -1,73 +1,73 @@
 Source: http://homepage3.nifty.com/slokar/fb/
 original readme.txt
 
-¢£Äó¶¡¤¹¤ë¤â¤Î
-  ¡¦w3mimgdisplayfb w3mimgdisplay (¤Û¤Ü)¸ß´¹¤Î framebuffer ÍÑ²èÁü¥Ó¥å¡¼¥¢
-  ¡¦w3mimgsizefb    w3mimgsize ¸ß´¹¤Î²èÁü¥µ¥¤¥ºÊó¹ğ¥×¥í¥°¥é¥à
+â– æä¾›ã™ã‚‹ã‚‚ã®
+  ãƒ»w3mimgdisplayfb w3mimgdisplay (ã»ã¼)äº’æ›ã® framebuffer ç”¨ç”»åƒãƒ“ãƒ¥ãƒ¼ã‚¢
+  ãƒ»w3mimgsizefb    w3mimgsize äº’æ›ã®ç”»åƒã‚µã‚¤ã‚ºå ±å‘Šãƒ—ãƒ­ã‚°ãƒ©ãƒ 
 
-¢£É¬Í×¤Ê¤â¤Î
-  ¡¦GdkPixbuf or Imlib2
-  ¡¦TRUE-COLOR ¤Î framebuffer ¤òÍøÍÑ¤Ç¤­¤ë´Ä¶­
+â– å¿…è¦ãªã‚‚ã®
+  ãƒ»GdkPixbuf or Imlib2
+  ãƒ»TRUE-COLOR ã® framebuffer ã‚’åˆ©ç”¨ã§ãã‚‹ç’°å¢ƒ
 
-¢£¥³¥ó¥Ñ¥¤¥ë
-  ¡¦Makefile ¤Î CFLAGS, LDFLAGS ¤ò Imlib2, GdkPixbuf ¤Î¤É¤Á¤é¤«ÍøÍÑ¤¹¤ë
-    Êı¤òÍ­¸ú¤Ë¤·¤Æ¤«¤é make ¤·¤Æ¤À¤µ¤¤¡£
+â– ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«
+  ãƒ»Makefile ã® CFLAGS, LDFLAGS ã‚’ Imlib2, GdkPixbuf ã®ã©ã¡ã‚‰ã‹åˆ©ç”¨ã™ã‚‹
+    æ–¹ã‚’æœ‰åŠ¹ã«ã—ã¦ã‹ã‚‰ make ã—ã¦ã ã•ã„ã€‚
 
-¢£ÍøÍÑË¡
-  ¡¦w3mimgdisplay, w3mimgsize ¤ÈÆ±ÍÍ
+â– åˆ©ç”¨æ³•
+  ãƒ»w3mimgdisplay, w3mimgsize ã¨åŒæ§˜
 
-¢£À©¸ÂÅù
-  ¡¦framebuffer ¤Ï 15,16,24,32bpp PACKED-PIXELS TRUE-COLOR
-    ¤Ë¤·¤«ÂĞ±ş¤·¤Æ¤¤¤Ş¤»¤ó¡£
-  ¡¦¸½ºß w3mimgdisplayfb ¤Ï -bg ¥ª¥×¥·¥ç¥ó¤ò»ÈÍÑ¤·¤Ê¤¤¾ì¹ç¤ÎÇØ·Ê¿§¤Ï¹õ
-    (#000000)¤È²¾Äê¤·¤Æ¤¤¤Ş¤¹¡£
+â– åˆ¶é™ç­‰
+  ãƒ»framebuffer ã¯ 15,16,24,32bpp PACKED-PIXELS TRUE-COLOR
+    ã«ã—ã‹å¯¾å¿œã—ã¦ã„ã¾ã›ã‚“ã€‚
+  ãƒ»ç¾åœ¨ w3mimgdisplayfb ã¯ -bg ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä½¿ç”¨ã—ãªã„å ´åˆã®èƒŒæ™¯è‰²ã¯é»’
+    (#000000)ã¨ä»®å®šã—ã¦ã„ã¾ã™ã€‚
 
-¢£³«È¯´Ä¶­
-  ¡¦ w3m version w3m/0.3+cvs-1.353-m17n-20020316
-  ¡¦ linux 2.4.18 (Vine Linux 2.5)
-  ¡¦ gcc 2.95.3
-  ¡¦ GdkPixbuf 0.16.0
-  ¡¦ Imlib2 1.0.6
-  ¡¦ $ dmesg |grep vesafb
+â– é–‹ç™ºç’°å¢ƒ
+  ãƒ» w3m version w3m/0.3+cvs-1.353-m17n-20020316
+  ãƒ» linux 2.4.18 (Vine Linux 2.5)
+  ãƒ» gcc 2.95.3
+  ãƒ» GdkPixbuf 0.16.0
+  ãƒ» Imlib2 1.0.6
+  ãƒ» $ dmesg |grep vesafb
      vesafb: framebuffer at 0xe2000000, mapped to 0xc880d000, size 8192k
      vesafb: mode is 1024x768x16, linelength=2048, pages=4
      vesafb: protected mode interface info at c000:4785
      vesafb: scrolling: redraw
      vesafb: directcolor: size=0:5:6:5, shift=0:11:5:0
-  ¡¦ ¥Ó¥Ç¥ª¥«¡¼¥É
+  ãƒ» ãƒ“ãƒ‡ã‚ªã‚«ãƒ¼ãƒ‰
     VGA compatible controller: ATI Technologies Inc 3D Rage Pro AGP 1X/2X (rev 92).
       Master Capable.  Latency=64.  Min Gnt=8.
       Non-prefetchable 32 bit memory at 0xe2000000 [0xe2ffffff].
       I/O at 0xd800 [0xd8ff].
       Non-prefetchable 32 bit memory at 0xe1800000 [0xe1800fff].
 
-¢£¤½¤ÎÂ¾
-  ¡¦w3mimgsizefb, w3mimgdisplayfb ¤ÏºäËÜ¹ÀÂ§¤µ¤ó¤Î w3mimgsize,
-    w3mimgdisplay ¤ò¤â¤È¤Ë¤·¤Æ¤¤¤Ş¤¹(¤È¤¤¤¦¤«¤Û¤È¤ó¤É¤½¤Î¤Ş¤Ş¤Ç¤¹)¡£
-  ¡¦framebuffer ÉÁ²è´Ø·¸¤Î¥³¡¼¥É¤Ï¡¢¤ä¤Ş¤µ¤­¤·¤ó¤¸¤µ¤ó¤Î¥µ¥ó¥×¥ë¥×¥í¥°
-    ¥é¥à¤ò¤â¤È¤Ë¤·¤Æ¤¤¤Ş¤¹(¤È¤¤¤¦¤«¤Û¤È¤ó¤É¤½¤Î¤Ş¤Ş¤Ç¤¹)¡£
-  ¡¦¤Ş¤À³«È¯ÅÓ¾å¤Ç¤¢¤ê¡¢Æ°ºî³ÎÇ§¤âÉÔ½½Ê¬¤Ç¤¹¡£»ÈÍÑ¤µ¤ì¤ëºİ¤Ï¤´¼«¿È¤ÎÀÕÇ¤
-    ¤Ç¤ª´ê¤¤¤·¤Ş¤¹¡£
-  ¡¦¤³¤ÎÇÛÉÛÊª¤Ë´Ş¤Ş¤ì¤ë¥³¡¼¥É¤ÏÊÑ¹¹ºÑ¤ß BSD ¥é¥¤¥»¥ó¥¹¤Ë½¾¤¦¤â¤Î¤È¤·¤Ş
-    ¤¹¡£¾ÜºÙ¤Ï license.txt ¤ò»²¾È¤·¤Æ¤¯¤À¤µ¤¤¡£
+â– ãã®ä»–
+  ãƒ»w3mimgsizefb, w3mimgdisplayfb ã¯å‚æœ¬æµ©å‰‡ã•ã‚“ã® w3mimgsize,
+    w3mimgdisplay ã‚’ã‚‚ã¨ã«ã—ã¦ã„ã¾ã™(ã¨ã„ã†ã‹ã»ã¨ã‚“ã©ãã®ã¾ã¾ã§ã™)ã€‚
+  ãƒ»framebuffer æç”»é–¢ä¿‚ã®ã‚³ãƒ¼ãƒ‰ã¯ã€ã‚„ã¾ã•ãã—ã‚“ã˜ã•ã‚“ã®ã‚µãƒ³ãƒ—ãƒ«ãƒ—ãƒ­ã‚°
+    ãƒ©ãƒ ã‚’ã‚‚ã¨ã«ã—ã¦ã„ã¾ã™(ã¨ã„ã†ã‹ã»ã¨ã‚“ã©ãã®ã¾ã¾ã§ã™)ã€‚
+  ãƒ»ã¾ã é–‹ç™ºé€”ä¸Šã§ã‚ã‚Šã€å‹•ä½œç¢ºèªã‚‚ä¸ååˆ†ã§ã™ã€‚ä½¿ç”¨ã•ã‚Œã‚‹éš›ã¯ã”è‡ªèº«ã®è²¬ä»»
+    ã§ãŠé¡˜ã„ã—ã¾ã™ã€‚
+  ãƒ»ã“ã®é…å¸ƒç‰©ã«å«ã¾ã‚Œã‚‹ã‚³ãƒ¼ãƒ‰ã¯å¤‰æ›´æ¸ˆã¿ BSD ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã«å¾“ã†ã‚‚ã®ã¨ã—ã¾
+    ã™ã€‚è©³ç´°ã¯ license.txt ã‚’å‚ç…§ã—ã¦ãã ã•ã„ã€‚
 
-¢£´ØÏ¢ URI
-   ¡¦ W3M Homepage  http://w3m.sourceforge.net/
-   ¡¦ w3m-img http://www2u.biglobe.ne.jp/~hsaka/w3m/index-ja.html
-   ¡¦ Linux Kernel Hack Japan http://www.sainet.or.jp/~yamasaki/
-   ¡¦ Imlib2 http://www.enlightenment.org/pages/main.html
-   ¡¦ GdkPixbuf http://developer.gnome.org/arch/imaging/gdkpixbuf.html
+â– é–¢é€£ URI
+   ãƒ» W3M Homepage  http://w3m.sourceforge.net/
+   ãƒ» w3m-img http://www2u.biglobe.ne.jp/~hsaka/w3m/index-ja.html
+   ãƒ» Linux Kernel Hack Japan http://www.sainet.or.jp/~yamasaki/
+   ãƒ» Imlib2 http://www.enlightenment.org/pages/main.html
+   ãƒ» GdkPixbuf http://developer.gnome.org/arch/imaging/gdkpixbuf.html
 
-¢£ÍúÎò
-  ¡¦2002/07/05 ³«È¯³«»Ï
-  ¡¦2002/07/07 ImageMagick ÈÇÆ°ºî³ÎÇ§
-  ¡¦2002/07/10 GdkPixbuf ÈÇÆ°ºî³ÎÇ§
-  ¡¦2002/07/11 Imlib2 ÈÇÆ°ºî³ÎÇ§
-  ¡¦2002/07/15 Version 0.1
-               ¸ø³«
-  ¡¦2002/07/22 Version 0.2
-               ÉÁ²è¤Î¹âÂ®²½
+â– å±¥æ­´
+  ãƒ»2002/07/05 é–‹ç™ºé–‹å§‹
+  ãƒ»2002/07/07 ImageMagick ç‰ˆå‹•ä½œç¢ºèª
+  ãƒ»2002/07/10 GdkPixbuf ç‰ˆå‹•ä½œç¢ºèª
+  ãƒ»2002/07/11 Imlib2 ç‰ˆå‹•ä½œç¢ºèª
+  ãƒ»2002/07/15 Version 0.1
+               å…¬é–‹
+  ãƒ»2002/07/22 Version 0.2
+               æç”»ã®é«˜é€ŸåŒ–
 
-¢£Ï¢ÍíÀè
+â– é€£çµ¡å…ˆ
   ZXB01226@nifty.com
   http://homepage3.nifty.com/slokar/

@@ -1,106 +1,106 @@
 
-w3m �Υ�˥塼�ˤĤ���
-                                                   (2002/11/27)  ���� ��§
+w3m のメニューについて
+                                                   (2002/11/27)  坂本 浩則
                                                    hsaka@mth.biglobe.ne.jp
 
-[1] �������
+[1] キー操作
 
-  ������Ū�ʤ��
+  ・一般的なもの
 
-    HELP, INS ����             : ��˥塼��Ω���夲
-    HELP, INS ����, C-c,       : ��˥塼�ξõ�
-    RET(C-m, C-j), SPC, ������ : ����
-    BS(C-h), DEL(C-?), ������  : ���
-    C-n, j, ������             : ���ι��ܤ�
-    C-p, k, ������             : ��ι��ܤ�
-    J                          : ���ܤ��˥���������
-    K                          : ���ܤ򲼤˥���������
-    C-a                        : ��Ƭ�ι��ܤ�
-    C-e                        : �Ǹ�ι��ܤ�
-    C-f, C-v                   : ���ڡ����ι��ܤ�
-    C-b, M-v                   : ���ڡ����ι��ܤ�
-    C-s, /                     : ���ܤ򲼤˸����äƸ���
-    C-r, ?                     : ���ܤ��˸����äƸ���
-    n                          : ���ι��ܤ򸡺�
-    N                          : ���ι��ܤ򸡺�
-    C-z                        : �����ڥ��
+    HELP, INS キー             : メニューの立ち上げ
+    HELP, INS キー, C-c,       : メニューの消去
+    RET(C-m, C-j), SPC, →キー : 選択
+    BS(C-h), DEL(C-?), ←キー  : 戻る
+    C-n, j, ↓キー             : 下の項目へ
+    C-p, k, ↑キー             : 上の項目へ
+    J                          : 項目を上にスクロール
+    K                          : 項目を下にスクロール
+    C-a                        : 先頭の項目へ
+    C-e                        : 最後の項目へ
+    C-f, C-v                   : 次ページの項目へ
+    C-b, M-v                   : 前ページの項目へ
+    C-s, /                     : 項目を下に向かって検索
+    C-r, ?                     : 項目を上に向かって検索
+    n                          : 次の項目を検索
+    N                          : 前の項目を検索
+    C-z                        : サスペンド
 
-    # INS ���̾� ^[[2~ �Ǥ��� ^[[L(���󥽡���), ^[[E(PocketBSD) �ˤ�
-      �Х���ɤ��Ƥ���ޤ���
+    # INS は通常 ^[[2~ ですが ^[[L(コンソール), ^[[E(PocketBSD) にも
+      バインドしてあります。
 
     MenuKeymap, MenuEscKeymap, MenuEscBKeymap, MenuEscDKeymap (menu.c)
-    �����
+    で定義
 
-  �����̤Υ�˥塼��
+  ・個別のメニュー用
 
-    MenuItem ��¤�� (menu.h) �� char *keys ������(ʣ����ǽ)
-    �嵭�Υ������˾�񤭤���ޤ���
+    MenuItem 構造体 (menu.h) の char *keys に設定(複数可能)
+    上記のキー操作に上書きされます。
 
-[2] �ޥ���
+[2] マウス
 
-    �ܥ��� : ��˥塼��Ω���夲
+    ボタン３ : メニューの立ち上げ
 
-   Ω���夲��
+   立ち上げ後
 
-    �ܥ���/�� (����)         : ����
-        ��      (��,MENU_NOP)  : ���⤷�ʤ�
-        ��      (�ȳ�)         : ���(��˥塼�ξõ�)
-        ��      ( : )          : ���ڡ����ޤ������ڡ����ι��ܤ�
-                                 (Ĺ����˥塼�ξ��)
-        ��      (�ɥ�å�)     : ����������
+    ボタン１/３ (項目)         : 選択
+        ″      (枠,MENU_NOP)  : 何もしない
+        ″      (枠外)         : 戻る(メニューの消去)
+        ″      ( : )          : 次ページまたは前ページの項目へ
+                                 (長いメニューの場合)
+        ″      (ドラッグ)     : スクロール
 
-[3] ��˥塼�Υ������ޥ���
+[3] メニューのカスタマイズ
 
-   ~/.w3m/menu �˥�˥塼������Ǥ��ޤ���
-   ��˥塼�ϡ�
+   ~/.w3m/menu にメニューを定義できます。
+   メニューは、
 
      menu MENU_ID
-      ����
+      項目
         :
      end
 
-   �Ȥ������ꤷ�ޤ����ƹ��ܤˤϡ�
+   として設定します。各項目には、
 
-     func  LABEL FUNCTION KEYS [DATA]	���ޥ�ɼ¹�
-     popup LABEL MENU_ID  KEYS		���֥�˥塼Ω���夲
-     nop   LABEL			���⤷�ʤ�(���ѥ졼���䥿���ȥ�)
+     func  LABEL FUNCTION KEYS [DATA]	コマンド実行
+     popup LABEL MENU_ID  KEYS		サブメニュー立ち上げ
+     nop   LABEL			何もしない(セパレータやタイトル)
 
-   �������ǽ�Ǥ���
-   ��� menu.default �� menu.submenu �򸫤Ƥ���������
-   ����Ǥ��륳�ޥ��(FUNCTION)�� README.func �򸫤Ƥ���������
-   MENU_ID �Ȥ��� "Main" �ϥᥤ���˥塼�ˡ�"Select" �ϥХåե�����
-   ��˥塼�ˡ�"SelectTab" �ϥ��������˥塼��ͽ�󤵤�Ƥ��ޤ���
-   KEYS �ϥХ���ɤ��륭����ʣ�������ǽ�Ǥ���
-   DATA �����ꤵ��Ƥ���Х��ޥ��(FUNCTION)�ΰ����Ȥ��ƻȤ��ޤ���
+   を設定可能です。
+   例は menu.default や menu.submenu を見てください。
+   設定できるコマンド(FUNCTION)は README.func を見てください。
+   MENU_ID として "Main" はメインメニューに、"Select" はバッファ選択
+   メニューに、"SelectTab" はタブ選択メニューに予約されています。
+   KEYS はバインドするキーで複数指定可能です。
+   DATA が設定されていればコマンド(FUNCTION)の引数として使われます。
 
-[4] ��ȯ�ˤĤ���
+[4] 開発について
 
-   ��˥塼�롼�������� mainMenu(), optionMenu() �򸫤��ʬ����Ȼפ��ޤ���
-   ���Υ롼����Ȱʲ��� MenuItem ��¤�Τ��������С��ۤȤ�ɤΥ�˥塼�ϡ�
-   ����Ǥ���Ȼפ��ޤ���
+   メニュールーチンの例は mainMenu(), optionMenu() を見れば分かると思います。
+   このルーチンと以下の MenuItem 構造体を定義すれば、ほとんどのメニューは、
+   設定できると思います。
 
-   MenuItem ��¤�� (menu.h)
+   MenuItem 構造体 (menu.h)
 
     struct {
-        int  type;		/* ������ */
-        char *label;		/* ��٥� */
-        int  *variable;		/* VALUE_MENU �ξ������ꤹ���ѿ� */
-        int  value;		/* VALUE_MENU �ξ������ꤹ���� */
-        void (*func)();		/* ���򤵤줿���˼¹Ԥ���ؿ� */
-        struct _Menu *popup;	/* ���֥�˥塼 */
-        char *keys;		/* �Х���ɤ��륭��(ʣ����ǽ) */
+        int  type;		/* タイプ */
+        char *label;		/* ラベル */
+        int  *variable;		/* VALUE_MENU の場合に設定する変数 */
+        int  value;		/* VALUE_MENU の場合に設定する値 */
+        void (*func)();		/* 選択された時に実行する関数 */
+        struct _Menu *popup;	/* サブメニュー */
+        char *keys;		/* バインドするキー(複数可能) */
     } MenuItem;
  
-   ������ type �ϰʲ��Τ�Τ����ѤǤ��ޤ���
+   タイプ type は以下のものが使用できます。
 
-     MENU_NOP   (1) : �ʤˤ⤷�ʤ��������Ǥ��ʤ���
-                      (�����ȥ�䥻�ѥ졼����)
-     MENU_FUNC  (2) : �ؿ���¹�
-     MENU_VALUE (4) : �ѿ�(*variable)����(value)������
-     MENU_POPUP (8) : ���֥�˥塼��Ω���夲��
+     MENU_NOP   (1) : なにもしない。選択もできない。
+                      (タイトルやセパレータ用)
+     MENU_FUNC  (2) : 関数を実行
+     MENU_VALUE (4) : 変数(*variable)に値(value)を設定
+     MENU_POPUP (8) : サブメニューを立ち上げる
 
-     MENU_FUNC �� MENU_VALUE �� (MENU_FUNC | MENU_VALUE) ��
-     ���ꤹ�뤳�Ȥ�ξ����ư��򤷤ޤ���(�ѿ����꤬��Ǥ�)
+     MENU_FUNC と MENU_VALUE は (MENU_FUNC | MENU_VALUE) と
+     設定することで両方の動作をします。(変数設定が先です)
 
-   ������ϡ�MainMenuItem (menu.c) �� new_option_menu() �򸫤Ƥ���������
+   設定例は、MainMenuItem (menu.c) や new_option_menu() を見てください。
 

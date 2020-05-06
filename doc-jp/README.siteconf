@@ -1,13 +1,13 @@
-siteconf: �������̥������ޥ���
+siteconf: サイト別カスタマイズ
 
-siteconf �ϡ� URL �Υѥ�����ȡ������ɳ�դ���줿���꤫������ޤ���
-siteconf ��Ȥ��ȡ����������ʸ�������ɤ���ꤷ�� "decode_url"
-�ν��Ϥ���������ꡢ Google �Υ�����쥯���򱪲󤷤���ǽ��
-�ץ饤�Х�������夵�����ꤹ�뤳�Ȥ��Ǥ��ޤ���
+siteconf は、 URL のパターンと、それに紐付けられた設定から成ります。
+siteconf を使うと、サイト毎に文字コードを指定して "decode_url"
+の出力を改善したり、 Google のリダイレクタを迂回して性能や
+プライバシーを向上させたりすることができます。
 
-�ǥե���ȤǤ� siteconf �� ~/.w3m/siteconf �����ɤ߹��ޤ�ޤ���
+デフォルトでは siteconf は ~/.w3m/siteconf から読み込まれます。
 
-===== ��ʸ =====
+===== 構文 =====
 
 url <url>|/<re-url>/|m@<re-url>@i [exact]
 substitute_url "<destination-url>"
@@ -16,52 +16,52 @@ no_referer_from on|off
 no_referer_to on|off
 user_agent "string"
 
-��������˽񤫤줿��Τ�ͥ�褵��ޤ���
+後ろの方に書かれたものが優先されます。
 
-===== �� =====
+===== 例 =====
 
 url "https://twitter.com/"
 substitute_url "https://mobile.twitter.com/"
 
-twitter.com ���Х��륵���Ȥ�ž�����ޤ���
+twitter.com をモバイルサイトに転送します。
 
 url "http://your.bookmark.net/"
 no_referer_from on
 
-your.bookmark.net ����ĥ�ä���󥯤�é��ݤˡ� HTTP referer ��
-����ʤ��褦�ˤ��ޤ���
+your.bookmark.net から張ったリンクを辿る際に、 HTTP referer を
+送らないようにします。
 
 url "http://www.google.com/url?" exact
 substitute_url "file:///cgi-bin/your-redirector.cgi?"
 
-Google �Υ�����쥯���� local CGI ��ž�����ޤ���
+Google のリダイレクタを local CGI に転送します。
 
 url /^http:\/\/[a-z]*\.wikipedia\.org\//
 url_charset utf-8
 
-Ʊ���� "decode_url" ���ץ����򥪥�ˤ���ȡ� Wikipedia �ؤ�
-��󥯤� UTF-8 �Ȥ��ƥǥ����ɤ���ɽ�����ޤ���
+同時に "decode_url" オプションをオンにすると、 Wikipedia への
+リンクを UTF-8 としてデコードして表示します。
 
 url m@^https?://(.*\.)google\.com/@
 user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
 
-Google �� Lynx �Ǥ���ȹ𤲤ޤ���(����ˤ��ƥ����ȥ֥饦�������ڡ�����
-�֤�ޤ�)
+Google に Lynx であると告げます。(これによりテキストブラウザ向けページが
+返ります)
 
-===== ����ɽ���ˤĤ��� =====
+===== 正規表現について =====
 
-��������ɽ���Ϥ������Ʊ����̣��ɽ���ޤ���
+次の正規表現はいずれも同じ意味を表します。
 
 /http:\/\/www\.example\.com\//
 m/http:\/\/www\.example\.com\//
 m@http://www\.example\.com/@
 m!http://www\.example\.com/!
 
-�Ǹ�� 'i' �����Ҥ��դ���ȡ���ʸ����ʸ������̤����˾ȹ��Ԥ��ޤ���
-�㤨�С� m@^http://www\.example\.com/abc/@i �ϰʲ��Τ�����Ȥ���פ��ޤ���
+最後に 'i' 修飾子を付けると、大文字小文字を区別せずに照合を行います。
+例えば、 m@^http://www\.example\.com/abc/@i は以下のいずれとも一致します。
 
 http://www.example.com/abc/
 http://www.example.com/Abc/
 http://www.example.com/ABC/
 
-���������ۥ���̾����ʬ�Ͼ�˾�ʸ�����Ѵ����Ƥ�����Ӥ��ޤ���
+ただし、ホスト名の部分は常に小文字に変換してから比較します。

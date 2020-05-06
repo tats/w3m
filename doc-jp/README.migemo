@@ -1,39 +1,39 @@
-w3m �� Migemo (�����޻�����)��Ԥ�
+w3m で Migemo (ローマ字検索)を行う
 
-                                                         (2002/02/23)  ������
+                                                         (2002/02/23)  日台健一
                                                                    hidai@nmn.jp
 
- �� Migemo ���Ѥ��뤳�Ȥǥ����޻��Υ��󥯥��󥿥븡����Ԥ����Ȥ��Ǥ��ޤ�.
-    ���餫���� Migemo �����󥹥ȡ��뤵��Ƥ���ɬ�פ�����ޤ�.
+ ・ Migemo を用いることでローマ字のインクリメンタル検索を行うことができます.
+    あらかじめ Migemo がインストールされている必要があります.
     http://migemo.namazu.org/
 
- �� configure ������ץȼ¹Ի��� --with-migemo ���ץ������դ��뤳�Ȥ����Ѳ�
-    ǽ�Ȥʤ�ޤ�.
+ ・ configure スクリプト実行時に --with-migemo オプションを付けることで利用可
+    能となります.
 
- �� ���ץ����ѥͥ�ˤưʲ�������򤷤ޤ�. ����Υѥ���Ŭ�ڤ˽񤭴����Ʋ�����.
+ ・ オプションパネルにて以下の設定をします. 辞書のパスは適切に書き換えて下さい.
 
-    Migemo ����Ѥ��� ... ON
-    Migemo ���ޥ�� ..... migemo -t egrep /usr/local/share/migemo/migemo-dict
+    Migemo を使用する ... ON
+    Migemo コマンド ..... migemo -t egrep /usr/local/share/migemo/migemo-dict
 
- �� ���������ꤵ��Ƥ���С��̾�θ����ˤ����ƥ����޻��������Ǥ���Ϥ��Ǥ�.
-    �����޻��������Ԥ��Ƥ��ʤ��褦�Ǥ���С����ι��ܤ��ǧ���Ʋ�����.
+ ・ 正しく設定されていれば、通常の検索においてローマ字検索ができるはずです.
+    ローマ字検索が行われていないようであれば、次の項目を確認して下さい.
 
- �� ���ޤ�ư���ʤ��Ȥ��ϡ��ʲ��Τ褦�� migemo ���ޥ�ɤ�ư���ǧ�򤷤Ʋ�����.
-    ���Ϥ��������޻����Ф��ơ������Ÿ����������ɽ�������Ϥ����������Ǥ�.
-    (���ޥ�ɤϡ����ץ����ѥͥ�Ρ�Migemo ���ޥ�ɡפ����ꤷ�����)
+ ・ うまく動かないときは、以下のように migemo コマンドの動作確認をして下さい.
+    入力したローマ字に対して、それを展開した正規表現が出力されれば成功です.
+    (コマンドは、オプションパネルの「Migemo コマンド」に設定したもの)
 
     % migemo -t egrep /usr/local/share/migemo/migemo-dict
     migemo
-    migemo|���������|�ߤ���|�ߥ���
+    migemo|ｍｉｇｅｍｏ|みげも|ミゲモ
     romaji
-    romaji|��������|���ޤ�|��(���޻�|�ޥ�)
+    romaji|ｒｏｍａｊｉ|ろまじ|ロ(ーマ字|マジ)
 
- �� �ǥե���ȤǤϡ�/ ? ���̾�θ�����C-s C-r �����󥯥��󥿥븡���˥Х����
-    ����Ƥ��ޤ�. / ? �ǥ��󥯥��󥿥븡����Ԥ��ˤϡ�~/.w3m/keymap �˰ʲ���
-    ����򤷤ޤ�.
+ ・ デフォルトでは、/ ? が通常の検索、C-s C-r がインクリメンタル検索にバインド
+    されています. / ? でインクリメンタル検索を行うには、~/.w3m/keymap に以下の
+    設定をします.
 
     keymap  /  ISEARCH
     keymap  ?  ISEARCH_BACK
 
- �� Migemo ����°�� migemo-server ����Ѥ���ɬ�פϤ���ޤ���. w3m �� migemo ��
-    �ޥ�ɤ�ľ�ܼ¹� (popen(3)) ���ޤ�.
+ ・ Migemo に付属の migemo-server を使用する必要はありません. w3m は migemo コ
+    マンドを直接実行 (popen(3)) します.

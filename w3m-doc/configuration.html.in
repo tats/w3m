@@ -5,24 +5,24 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>CONFIGURATION&nbsp;- $B3F<o@_Dj(B -</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>CONFIGURATION&nbsp;- 各種設定 -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">$B3F<o@_Dj(B</A></H1>
+<H1><A NAME="index">各種設定</A></H1>
 <DIV>
-<!-- w3m$B$N3F<o@_Dj$N>\:Y$r5-$9(B -->
+<!-- w3mの各種設定の詳細を記す -->
 	<UL>
-		<LI><A HREF="#option">$B5/F0%*%W%7%g%s(B</A>
-		<LI><A HREF="#environment">$B4D6-JQ?t(B</A>
-		<LI><A HREF="#bookmark">bookmark $B%U%!%$%k(B</A>
-		<LI><A HREF="#option_panel">$B%*%W%7%g%s%Q%M%k(B</A>
+		<LI><A HREF="#option">起動オプション</A>
+		<LI><A HREF="#environment">環境変数</A>
+		<LI><A HREF="#bookmark">bookmark ファイル</A>
+		<LI><A HREF="#option_panel">オプションパネル</A>
 			<UL>
-				<LI><A HREF="#external_viewer">$B30It%S%e!<%"$NJT=8(B</A>
+				<LI><A HREF="#external_viewer">外部ビューアの編集</A>
 			</UL>
-		<LI><A HREF="#other_customize">$B$=$NB>%+%9%?%^%$%:(B</A>
+		<LI><A HREF="#other_customize">その他カスタマイズ</A>
 			<UL>
 				<LI><A HREF="#keymap">keymap</A>
 				<LI><A HREF="#menu">menu</A>
@@ -31,152 +31,152 @@
 </DIV>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="option">$B5/F0%*%W%7%g%s(B</A></H2>
-<!-- $B%*%W%7%g%s$K$D$$$F$N@bL@(B -->
+<H2><A NAME="option">起動オプション</A></H2>
+<!-- オプションについての説明 -->
 <DIV>
-<P>w3m $B$N5/F0%*%W%7%g%s$O0J2<$NDL$j$G$9!#(B
+<P>w3m の起動オプションは以下の通りです。
 <BLOCKQUOTE>
 <DL>
-<DT>-t $B%?%VI}(B
-    <DD>$B%?%V$NI}$r;XDj$9$k!#%G%U%)%k%H$O(B<B>8</B>$B!#(B
+<DT>-t タブ幅
+    <DD>タブの幅を指定する。デフォルトは<B>8</B>。
 <DT>-r
-    <DD>text/plain $B$NJ8>O$rI=<($9$k>l9g!"=E$MBG$A$K$h$k6/D4J8;z$rI=<($7$J$$!#$3$N0z?t$r;XDj$7$J$$>l9g!"(B``A^H_''$B$O(B A $B$N(B<U>$B%"%s%@!<%i%$%s(B</U>$B$H$7$FI=<($5$l!"(B``A^HA'' $B$O(B A $B$N(B<B>$B%\!<%k%I(B</B>$B$H$7$FI=<($5$l$k!#(B
-<DT>-l $B9T?t(B
-    <DD>$BI8=`F~NO$NFbMF$rI=<($9$k;~$KJ]B8$5$l$k:GBg9T?t$r;XDj$9$k!#%G%U%)%k%H$O(B <B>10000</B>$B!#(B
+    <DD>text/plain の文章を表示する場合、重ね打ちによる強調文字を表示しない。この引数を指定しない場合、``A^H_''は A の<U>アンダーライン</U>として表示され、``A^HA'' は A の<B>ボールド</B>として表示される。
+<DT>-l 行数
+    <DD>標準入力の内容を表示する時に保存される最大行数を指定する。デフォルトは <B>10000</B>。
 <DT>-s
-    <DD>Shift_JIS $B%3!<%I$GI=<($9$k!#(B
+    <DD>Shift_JIS コードで表示する。
 <DT>-j
-    <DD>JIS(ISO-2022-JP) $B%3!<%I$GI=<($9$k!#(B
+    <DD>JIS(ISO-2022-JP) コードで表示する。
 <DT>-e
-    <DD>EUC-JP $B%3!<%I$GI=<($9$k!#(B
+    <DD>EUC-JP コードで表示する。
 <DT>-O e|s|j|N|m|n
-    <DD>$BI=<($9$k4A;z%3!<%I$r;XDj$9$k!#(B
+    <DD>表示する漢字コードを指定する。
 <DT>-I e|s
-    <DD>$BF~NO%U%!%$%k$N4A;z%3!<%I$r;XDj$9$k!#(B
+    <DD>入力ファイルの漢字コードを指定する。
 <DT>-B
-    <DD>Bookmark $B%U%!%$%k$r%m!<%I$9$k!#(B
-<DT>-bookmark $B%U%!%$%kL>(B
-    <DD>Bookmark $B%U%!%$%k$r;XDj$N%U%!%$%k$K$9$k!#(B
-<DT>-T $B%?%$%W(B
-    <DD>$BI=<($9$kJ8=q$N%?%$%W$r;XDj$9$k!#$3$N;XDj$,$J$$>l9g!"%U%!%$%kL>$N3HD%;R$K$h$C$F<+F0H=JL$5$l$k!#H=JL$G$-$J$$>l9g$O(B text/plain $B$H$_$J$5$l$k!#(B
+    <DD>Bookmark ファイルをロードする。
+<DT>-bookmark ファイル名
+    <DD>Bookmark ファイルを指定のファイルにする。
+<DT>-T タイプ
+    <DD>表示する文書のタイプを指定する。この指定がない場合、ファイル名の拡張子によって自動判別される。判別できない場合は text/plain とみなされる。
     <P>
-    $BNc(B:<BR>
-    <U>$BI8=`F~NO$+$i(B HTML $B%U%!%$%k$rFI$s$GI=<($9$k(B</U>
+    例:<BR>
+    <U>標準入力から HTML ファイルを読んで表示する</U>
 <PRE>
 	cat hoge.html | w3m -T text/html
 </PRE><P>
-    <U>HTML$B%U%!%$%k$N%=!<%9$rI=<($9$k(B</U>
+    <U>HTMLファイルのソースを表示する</U>
 <PRE>
 	w3m -T text/plain hoge.html
 </PRE>
 <DT>-m
-    <DD>Internet message $B%b!<%I$GI=<($9$k!#(BInternet message $B%b!<%I$N>l9g!"%X%C%@$NFbMF$r8+$F!"(BContent-Type: $B$,$"$l$P$=$l$r;29M$K$9$k!#EE;R%a!<%k$d%M%C%H%K%e!<%9$N5-;v$rFI$`;~$KJXMx!#(B
+    <DD>Internet message モードで表示する。Internet message モードの場合、ヘッダの内容を見て、Content-Type: があればそれを参考にする。電子メールやネットニュースの記事を読む時に便利。
 <DT>-v
-    <DD>$B$3$N%*%W%7%g%s$r;XDj$9$k$H!"(Bw3m $B$N%9%?!<%H%"%C%W!&%Z!<%8$rI=<($9$k!#(B
+    <DD>このオプションを指定すると、w3m のスタートアップ・ページを表示する。
 <DT>-M
-    <DD>$B%+%i!<I=<($r$7$J$$(B($B%b%N%/%mI=<($9$k(B)$B!#(B
+    <DD>カラー表示をしない(モノクロ表示する)。
 <DT>-F
-    <DD>$B%U%l!<%`$r<+F0I=<($9$k!#(B
-<DT>-cols $BI}(B
-    <DD>-dump $B%*%W%7%g%s$r;H$&>l9g$K!"J8=q$NI}$r;XDj$9$k!#(B
-<DT>-ppc $B%T%/%;%k?t(B
-    <DD>$BJ8;z$NI}$r;XDj$9$k!#%G%U%)%k%H$O(B<B>8.0</B>$B!#(B
+    <DD>フレームを自動表示する。
+<DT>-cols 幅
+    <DD>-dump オプションを使う場合に、文書の幅を指定する。
+<DT>-ppc ピクセル数
+    <DD>文字の幅を指定する。デフォルトは<B>8.0</B>。
 <DT>-dump
-    <DD>URL $B$G;XDj$5$l$?(B WWW $B$NFbMF$rFI$_9~$_!"@07A$5$l$?%P%C%U%!$NFbMF$rI8=`=PNO$K=q$-=P$9!#J8=q$NI}$O(B 80 $B7e$H2>Dj$5$l$k!#$3$NI}$O(B -cols $B%*%W%7%g%s$GJQ992DG=!#(B
+    <DD>URL で指定された WWW の内容を読み込み、整形されたバッファの内容を標準出力に書き出す。文書の幅は 80 桁と仮定される。この幅は -cols オプションで変更可能。
 <DT>-dump_head
-    <DD>URL $B$G;XDj$5$l$?(B WWW $B$NFbMF$rFI$_9~$_!"$=$N%X%C%@>pJs$N$_$rI8=`=PNO$K=q$-=P$9!#(B
+    <DD>URL で指定された WWW の内容を読み込み、そのヘッダ情報のみを標準出力に書き出す。
 <DT>-dump_source
-    <DD>URL $B$G;XDj$5$l$?(B WWW $B$NFbMF$rFI$_9~$_!"@07A$;$:$KI8=`=PNO$K=q$-=P$9!#4A;z%3!<%I$NJQ49$b9T$o$J$$!#(B
+    <DD>URL で指定された WWW の内容を読み込み、整形せずに標準出力に書き出す。漢字コードの変換も行わない。
 <DT>-dump_both
-    <DD>-dump_head $B$H(B -dump_souce $B$NN>J}$N8z2L(B
+    <DD>-dump_head と -dump_souce の両方の効果
 <DT>-dump_extra
-    <DD>-dump_both $B$K2C$(!"3HD%>pJs(B(extra information)$B$rI8=`=PNO$K=q$-=P$9!#(B
-<DT>-post $B%U%!%$%kL>(B
-    <DD>$B;XDj$7$?%U%!%$%k$NFbMF$G(B POST $B%a%=%C%I$rMQ$$$k!#(B
-<DT>-header $BJ8;zNs(B
-    <DD>insert string as a header  ($B$C$F2?!)(B)
-<DT>+$B9THV9f(B
-    <DD>w3m $B5/F08e$K!";XDj$N9THV9f$K0\F0$9$k!#(B
+    <DD>-dump_both に加え、拡張情報(extra information)を標準出力に書き出す。
+<DT>-post ファイル名
+    <DD>指定したファイルの内容で POST メソッドを用いる。
+<DT>-header 文字列
+    <DD>insert string as a header  (って何？)
+<DT>+行番号
+    <DD>w3m 起動後に、指定の行番号に移動する。
 <DT>-num
-    <DD>$B9THV9f$rI=<($9$k!#(B
+    <DD>行番号を表示する。
 <DT>-no-proxy
-    <DD>$B%W%m%-%7$rMxMQ$7$J$$!#(B
+    <DD>プロキシを利用しない。
 <DT>-no-mouse
-    <DD>$B%^%&%9$rMxMQ$7$J$$!#(B
+    <DD>マウスを利用しない。
 <DT>-cookie
-    <DD>$B%/%C%-!<$r=hM}$9$k!#(B
+    <DD>クッキーを処理する。
 <DT>-no-cookie
-    <DD>$B%/%C%-!<$r=hM}$7$J$$!#(B
+    <DD>クッキーを処理しない。
 <DT>-S
-    <DD>tet/plain $B$NJ8=q$rI=<($9$k>l9g!"J#?t$N6u9T$r(B 1$B$D$K$^$H$a$FI=<($9$k!#(B
+    <DD>tet/plain の文書を表示する場合、複数の空行を 1つにまとめて表示する。
 <DT>-W
-    <DD>$BJ8;zNs8!:w;~!"@^$jJV$7%5!<%A$r;H$&$+$I$&$+$r@Z$j49$($k!#(B
+    <DD>文字列検索時、折り返しサーチを使うかどうかを切り換える。
 <DT>-X
-    <DD>w3m $B=*N;;~$K!"(Bw3m $B5/F0A0$N2hLL$KLa$i$J$$!#(B
+    <DD>w3m 終了時に、w3m 起動前の画面に戻らない。
 <DT>-o option=value
-    <DD>w3m $B$K4X$9$k$5$^$6$^$J(B option $B$KBP$7$F(B $BCM(B (value) $B$r%;%C%H$9$k!#(B``w3m -o''$B$H<B9T$7$?>l9g!"(Busage $B$KB3$$$F!";XDj2DG=$J(B option $B$H$=$N@bL@$rI=<($9$k!#(B
-<DT>-config $B%U%!%$%kL>(B
-    <DD>w3m $B$N(B config $B%U%!%$%k$r;XDj$9$k!#(B
+    <DD>w3m に関するさまざまな option に対して 値 (value) をセットする。``w3m -o''と実行した場合、usage に続いて、指定可能な option とその説明を表示する。
+<DT>-config ファイル名
+    <DD>w3m の config ファイルを指定する。
 <!--
 <DT>-debug
-    <DD>$B%G%P%C%0MQ$J$N$G!";XDj$7$J$$$3$H!#(B
+    <DD>デバッグ用なので、指定しないこと。
 -->
 </DL>
 </BLOCKQUOTE>
 </DIV>
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="environment">$B4D6-JQ?t(B</A></H2>
-<!-- w3m $B$,;2>H$9$k4D6-JQ?t$K$D$$$F(B -->
+<H2><A NAME="environment">環境変数</A></H2>
+<!-- w3m が参照する環境変数について -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="bookmark">bookmark $B%U%!%$%k(B</A></H2>
-<!-- bookmark $B%U%!%$%k$K$D$$$F$N@bL@(B -->
+<H2><A NAME="bookmark">bookmark ファイル</A></H2>
+<!-- bookmark ファイルについての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="option_panel">$B%*%W%7%g%s%Q%M%k(B</A></H2>
-<!-- $B%*%W%7%g%s%Q%M%k$K$D$$$F$N@bL@(B -->
+<H2><A NAME="option_panel">オプションパネル</A></H2>
+<!-- オプションパネルについての説明 -->
 
-<H3><A NAME="external_viewer">$B30It%S%e!<%"$NJT=8(B</A></H3>
-<!-- $B30It%S%e!<%"$NJT=8$K$D$$$F$N@bL@(B -->
+<H3><A NAME="external_viewer">外部ビューアの編集</A></H3>
+<!-- 外部ビューアの編集についての説明 -->
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="other_customize">$B$=$NB>%+%9%?%^%$%:(B</A></H2>
-<!-- $B$=$NB>$N%+%9%?%^%$%:9`L\$K$D$$$F$N@bL@(B -->
+<H2><A NAME="other_customize">その他カスタマイズ</A></H2>
+<!-- その他のカスタマイズ項目についての説明 -->
 
 <H3><A NAME="keymap">keymap</A></H3>
-<!-- keymap $B$N%+%9%?%^%$%:$K$D$$$F$N@bL@(B -->
+<!-- keymap のカスタマイズについての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
 <H3><A NAME="menu">menu</A></H3>
-<!-- menu $B$N%+%9%?%^%$%:$K$D$$$F$N@bL@(B -->
+<!-- menu のカスタマイズについての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

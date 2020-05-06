@@ -5,105 +5,105 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <TITLE>THE DOCUMENTS FOR W3M</TITLE>
 </HEAD>
 
 <BODY>
 
-<!-- $B$3$N$"$?$j$K(B w3m $B$N%m%4(B($B$C$F$J$$$+!)(B) $B$H$+(B -->
-<!-- w3m: WWW wo Miru Tool  version @W3M.version@ $B$H$+(B -->
-<!-- (C) Copyright by @W3M.author@ March 23, 1999 $B$H$+(B -->
-<!-- $B$rF~$l$F$*$/$Y$-$+$J!)(B -->
+<!-- このあたりに w3m のロゴ(ってないか？) とか -->
+<!-- w3m: WWW wo Miru Tool  version @W3M.version@ とか -->
+<!-- (C) Copyright by @W3M.author@ March 23, 1999 とか -->
+<!-- を入れておくべきかな？ -->
 
-<H1><A NAME="index">$B:w0z(B</A></H1>
+<H1><A NAME="index">索引</A></H1>
 <OL>
-	<LI><A HREF="@DOC.prologue@" NAME="prologue">$B$O$8$a$K(B</A> <!-- README $B$N!H(B1. $B$O$8$a$K!I$NItJ,(B -->
+	<LI><A HREF="@DOC.prologue@" NAME="prologue">はじめに</A> <!-- README の“1. はじめに”の部分 -->
 		<UL>
-			<LI><A HREF="@DOC.prologue@#summary">w3m $B$H$O(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-			<LI><A HREF="@DOC.prologue@#glossary">$BMQ8l$N@bL@(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-			<LI><A HREF="@DOC.prologue@#disclaimer">$BCm0U;v9`(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-			<LI><A HREF="@DOC.copyright@">$BCx:n8"!"%i%$%;%s%9(B</A>
-			<LI><A HREF="@DOC.prologue@#confirmation">$BF0:n3NG'(B OS</A><IMG SRC=dummy ALT="[$B:Q(B]">
+			<LI><A HREF="@DOC.prologue@#summary">w3m とは</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.prologue@#glossary">用語の説明</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.prologue@#disclaimer">注意事項</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.copyright@">著作権、ライセンス</A>
+			<LI><A HREF="@DOC.prologue@#confirmation">動作確認 OS</A><IMG SRC=dummy ALT="[済]">
 		</UL>
-	<LI><A HREF="@DOC.outline@" NAME="outline">$B35MWJT(B</A>
+	<LI><A HREF="@DOC.outline@" NAME="outline">概要編</A>
 		<UL>
-			<LI><A HREF="@DOC.outline@#install">$B%$%s%9%H!<%k$N35MW(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-			<LI><A HREF="@DOC.outline@#operation">$BA`:nJ}K!$N35MW(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
+			<LI><A HREF="@DOC.outline@#install">インストールの概要</A><IMG SRC=dummy ALT="[済]">
+			<LI><A HREF="@DOC.outline@#operation">操作方法の概要</A><IMG SRC=dummy ALT="[済]">
 				<UL>
-					<LI><A HREF="@DOC.outline@#display">$BI=<(FbMF$N@bL@(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.outline@#basic">$B4pK\E*$J;H$$J}(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.outline@#help">$B%X%k%W$N;2>H(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
+					<LI><A HREF="@DOC.outline@#display">表示内容の説明</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.outline@#basic">基本的な使い方</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.outline@#help">ヘルプの参照</A><IMG SRC=dummy ALT="[済]">
 				</UL>
 		</UL>
-	<LI><A HREF="@DOC.detail@" NAME="detail">$B>\:YJT(B</A>
+	<LI><A HREF="@DOC.detail@" NAME="detail">詳細編</A>
 		<UL>
-			<LI><A HREF="@DOC.install@" NAME="install">$B%$%s%9%H!<%k$N>\:Y(B</A>
+			<LI><A HREF="@DOC.install@" NAME="install">インストールの詳細</A>
 				<UL>
-					<LI><A HREF="@DOC.install@#get_w3m">w3m $BF~<jJ}K!(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
+					<LI><A HREF="@DOC.install@#get_w3m">w3m 入手方法</A><IMG SRC=dummy ALT="[済]">
 						<UL>
-							<LI><A HREF="@DOC.install@#w3m_home">w3m Homepage</A><IMG SRC=dummy ALT="[$B:Q(B]">
-							<LI><A HREF="@DOC.install@#BBS">w3m $B$K4X$9$k7G<(HD(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
+							<LI><A HREF="@DOC.install@#w3m_home">w3m Homepage</A><IMG SRC=dummy ALT="[済]">
+							<LI><A HREF="@DOC.install@#BBS">w3m に関する掲示板</A><IMG SRC=dummy ALT="[済]">
 						</UL>
-					<LI><A HREF="@DOC.install@#require">$BI,MW$JJ*(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.install@#configure">configure $B$K$D$$$F(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.install@#config_h">config.h $B$K$D$$$F(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.install@#make">make $B$K$D$$$F(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.install@#tips">$BB>$N(B OS $B$G%$%s%9%H!<%k$9$k:]$N(B Tips</A><IMG SRC=dummy ALT="[$B:Q(B]">
+					<LI><A HREF="@DOC.install@#require">必要な物</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#configure">configure について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#config_h">config.h について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#make">make について</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.install@#tips">他の OS でインストールする際の Tips</A><IMG SRC=dummy ALT="[済]">
 				</UL>
-			<LI><A HREF="@DOC.operation@" NAME="operation">w3m $BA`:nK!(B</A> <!-- $B%-!<A`:n@bL@(B -->
+			<LI><A HREF="@DOC.operation@" NAME="operation">w3m 操作法</A> <!-- キー操作説明 -->
 				<UL>
-					<LI><A HREF="@DOC.operation@#buffer">$B%P%C%U%!A`:n(B</A>
-					<LI><A HREF="@DOC.operation@#mouse">$B%^%&%9A`:n(B</A>
-					<LI><A HREF="@DOC.operation@#line_edit">$B:G2<9TF~NO(B</A>
-					<LI><A HREF="@DOC.operation@#menu">$B%a%K%e!<A`:n(B</A>
+					<LI><A HREF="@DOC.operation@#buffer">バッファ操作</A>
+					<LI><A HREF="@DOC.operation@#mouse">マウス操作</A>
+					<LI><A HREF="@DOC.operation@#line_edit">最下行入力</A>
+					<LI><A HREF="@DOC.operation@#menu">メニュー操作</A>
 				</UL>
-			<LI><A HREF="@DOC.configuration@" NAME="configuration">$B3F<o@_Dj(B</A>
+			<LI><A HREF="@DOC.configuration@" NAME="configuration">各種設定</A>
 				<UL>
-					<LI><A HREF="@DOC.configuration@#option">$B5/F0%*%W%7%g%s(B</A><IMG SRC=dummy ALT="[$B:Q(B]">
-					<LI><A HREF="@DOC.configuration@#environment">$B4D6-JQ?t(B</A>
-					<LI><A HREF="@DOC.configuration@#bookmark">bookmark $B%U%!%$%k(B</A>
-					<LI><A HREF="@DOC.configuration@#option_panel">$B%*%W%7%g%s%Q%M%k(B</A>
+					<LI><A HREF="@DOC.configuration@#option">起動オプション</A><IMG SRC=dummy ALT="[済]">
+					<LI><A HREF="@DOC.configuration@#environment">環境変数</A>
+					<LI><A HREF="@DOC.configuration@#bookmark">bookmark ファイル</A>
+					<LI><A HREF="@DOC.configuration@#option_panel">オプションパネル</A>
 						<UL>
-							<LI><A HREF="@DOC.configuration@#external_viewer">$B30It%S%e!<%"$NJT=8(B</A>
+							<LI><A HREF="@DOC.configuration@#external_viewer">外部ビューアの編集</A>
 						</UL>
-					<LI><A HREF="@DOC.configuration@#other_customize">$B$=$NB>%+%9%?%^%$%:(B</A>
+					<LI><A HREF="@DOC.configuration@#other_customize">その他カスタマイズ</A>
 						<UL>
 							<LI><A HREF="@DOC.configuration@#keymap">keymap</A>
 							<LI><A HREF="@DOC.configuration@#menu">menu</A>
 						</UL>
 				</UL>
-			<LI><A HREF="@DOC.function@" NAME="function">$B5!G=>\:Y(B</A>
+			<LI><A HREF="@DOC.function@" NAME="function">機能詳細</A>
 				<UL>
-					<LI><A HREF="@DOC.function@#url">$BBP1~$7$F$$$k(B URL</A>
-					<LI><A HREF="@DOC.function@#html">$BBP1~$7$F$$$k(B HTML</A>
+					<LI><A HREF="@DOC.function@#url">対応している URL</A>
+					<LI><A HREF="@DOC.function@#html">対応している HTML</A>
 					<LI><A HREF="@DOC.function@#ssl">SSL</A>
 					<LI><A HREF="@DOC.function@#cookie">cookie</A>
-					<LI><A HREF="@DOC.function@#local_CGI">$B%m!<%+%k(B CGI $B5!G=(B</A>
+					<LI><A HREF="@DOC.function@#local_CGI">ローカル CGI 機能</A>
 				</UL>
 			<LI><A HREF="@DOC.FAQ@" NAME="faq">FAQ</A>
 				<UL>
-					<LI><A HREF="@DOC.FAQ@#faq">$B$h$/J9$+$l$k<ALd$H$=$NEz$((B</A>
+					<LI><A HREF="@DOC.FAQ@#faq">よく聞かれる質問とその答え</A>
 					<LI><A HREF="@DOC.FAQ@#tips">Tips</A>
 				</UL>
-			<LI><A HREF="@DOC.developement@" NAME="developement">$B3+H/%I%-%e%a%s%H(B</A>
+			<LI><A HREF="@DOC.developement@" NAME="developement">開発ドキュメント</A>
 				<UL>
-                    <LI><A HREF="@DOC.developement@#story">w3m $B$N3+H/$K$D$$$F(B</A>
-					<LI><A HREF="@DOC.developement@#known_bugs">$B8=:_H=L@$7$F$$$k%P%0(B</A>
+                    <LI><A HREF="@DOC.developement@#story">w3m の開発について</A>
+					<LI><A HREF="@DOC.developement@#known_bugs">現在判明しているバグ</A>
 					<LI><A HREF="@DOC.developement@#ToDo">ToDo</A>
-					<LI><A HREF="@DOC.developement@#history">$BMzNr(B</A>
-					<LI><A HREF="@DOC.developement@#policy">$B3+H/%]%j%7!<(B</A>
-					<LI><A HREF="@DOC.developement@#tips">$B3+H/<T8~$1(BTips</A>
+					<LI><A HREF="@DOC.developement@#history">履歴</A>
+					<LI><A HREF="@DOC.developement@#policy">開発ポリシー</A>
+					<LI><A HREF="@DOC.developement@#tips">開発者向けTips</A>
 				</UL>
-			<LI><A HREF="@DOC.community@" NAME="community">w3m $B%3%_%e%K%F%#(B</A>
+			<LI><A HREF="@DOC.community@" NAME="community">w3m コミュニティ</A>
 				<UL>
-					<LI><A HREF="@DOC.community@#ML">$B%a!<%j%s%0%j%9%H(B</A>
-					<LI><A HREF="@DOC.community@#links">$B4XO"(B Web</A>
+					<LI><A HREF="@DOC.community@#ML">メーリングリスト</A>
+					<LI><A HREF="@DOC.community@#links">関連 Web</A>
 				</UL>
 			<LI><A HREF="@DOC.copyright@" NAME="copyright">Copyright</A>
 				<UL>
-					<LI><A HREF="@DOC.copyright@#copyright">$BCx:n8"!"%i%$%;%s%9(B</A>
-					<LI><A HREF="@DOC.copyright@#thanks">$B<U<-(B</A>
+					<LI><A HREF="@DOC.copyright@#copyright">著作権、ライセンス</A>
+					<LI><A HREF="@DOC.copyright@#thanks">謝辞</A>
 				</UL>
 		</UL>
 </OL>

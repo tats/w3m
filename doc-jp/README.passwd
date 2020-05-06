@@ -1,22 +1,22 @@
-HTTP $BG'>Z$N$"$k%Z!<%8$dG'>Z$N$"$k(B proxy $B$KBP$7$F!"(B
-$B%f!<%6L>$H%Q%9%o!<%I$r@_Dj$7$F$*$/$3$H$,=PMh$^$9!#(B
+HTTP 認証のあるページや認証のある proxy に対して、
+ユーザ名とパスワードを設定しておくことが出来ます。
 
-passwd_file $B$G;XDj$7$?%U%!%$%k$K<!$N$h$&$K=q$$$F$*$1$P$=$l$r8+$^$9!#(B
+passwd_file で指定したファイルに次のように書いておけばそれを見ます。
 
-machine $B%[%9%HL>(B
-port $B%]!<%HHV9f(B
-path $B%m!<%+%k%Q!<%H(B
-realm realm$B$NJ8;zNs(B
-login $B%f!<%6L>(B
-passwd $B%Q%9%o!<%I(B
+machine ホスト名
+port ポート番号
+path ローカルパート
+realm realmの文字列
+login ユーザ名
+passwd パスワード
 proxy
 
-machine$B$G$O$8$^$C$F<!$N(Bmachine$B$^$G!#(B
-netrc$B$.$_$G$9$,4JC1$K$9$k$?$a$K0l9T$E$D!#(B
-port, path, realm $B$O>JN,2DG=(B
+machineではじまって次のmachineまで。
+netrcぎみですが簡単にするために一行づつ。
+port, path, realm は省略可能
 
-proxy $B$H=q$$$?>l9g$O(B proxy $B$N%Q%9%o!<%I$H$_$J$7$^$9!#(B
+proxy と書いた場合は proxy のパスワードとみなします。
 
-passwd_file $B$,B>$N%f!<%6!<$+$iFI$a$k>l9g7Y9p$,=P$^$9$,!"(BOS $B$N@)8B$J$I$G(B
-$B%U%!%$%k$N%Q!<%_%C%7%g%s$rJQ$($i$l$J$$>l9g$O$3$N7Y9p$r(B
-disable_secret_security_check $B$N@_Dj$GL58z$K$G$-$^$9!#(B
+passwd_file が他のユーザーから読める場合警告が出ますが、OS の制限などで
+ファイルのパーミッションを変えられない場合はこの警告を
+disable_secret_security_check の設定で無効にできます。

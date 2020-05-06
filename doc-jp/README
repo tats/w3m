@@ -3,31 +3,31 @@
 				 Hironori SAKAMOTO
 				 Fumitoshi UKAI
 
-1. �Ϥ����
+1. はじめに
 
-  w3m �ϡ�World Wide Web ���б������ڡ�����Ǥ��������ޤǥڡ�����Ǥ�����
-�ƥ����ȥ١��� WWW �֥饦���Ȥ��Ƥ�Ȥ����Ȥ��Ǥ��ޤ���
+  w3m は，World Wide Web に対応したページャです．あくまでページャですが，
+テキストベース WWW ブラウザとしても使うことができます．
 
-  w3m �ϡ�fm �Ȥ����ڡ������١����Ȥ��ƺ���ޤ�����fm �ˤĤ��Ƥξܺ�
-�ϡ�STORY.html ���ɤߤ���������w3m �Υڡ�����Ȥ��Ƥδ���Ū����ħ�ϡ�fm
-�ȤۤȤ��Ʊ���Ǥ���
+  w3m は，fm というページャをベースとして作られました．fm についての詳細
+は，STORY.html をお読みください．w3m のページャとしての基本的な特徴は，fm
+とほとんど同じです．
 
-  w3m �ȼ�����ħ�Ȥ��Ƥϡ����Τ褦�ʤ�Τ�����ޤ���
+  w3m 独自の特徴としては，次のようなものがあります．
 
-  ��WWW �б��ʤΤǡ�HTML ��ʸ����ɤ�Ǥ�����ˤϡ�������Υ�󥯤�é�ä�
-    �ꡤ�����򸫤뤳�Ȥ��Ǥ��롥
-  ��Internet message ɽ���Τ���Υ⡼�ɤ����롥���λ���Content-Type: ��
-    text/html �ξ��ϡ���ưŪ�� HTML ��ʸ��Ȥ���ɽ�����롥�ޤ������Ϥ�
-    MIME header �Υǥ����ɤ򤹤롥
-  �����Ƥ��� plain text ʸ����� URL ɽ�������ä���硤������ʬ������
-    �򤿤ɤ뤳�Ȥ��Ǥ��롥
+  ・WWW 対応なので，HTML の文書を読んでいる時には，その中のリンクを辿った
+    り，画像を見ることができる．
+  ・Internet message 表示のためのモードがある．この時，Content-Type: が
+    text/html の場合は，自動的に HTML の文書として表示する．また，自力で
+    MIME header のデコードをする．
+  ・見ている plain text 文書中に URL 表記があった場合，その部分からリンク
+    をたどることができる．
 
-  ���ߤ��������ϰʲ��Τ褦�ʤ�ΤǤ���
+  現在の問題点は以下のようなものです．
 
-  ������饤��ޥ˥奢�뤬�ϼ塥��ñ�ʻȤ����ˤĤ��Ƥϡ�MANUAL.html ���ɤ�
-    ����������
+  ・オンラインマニュアルが貧弱．簡単な使い方については，MANUAL.html をお読み
+    ください．
 
-  ����ư���ǧ����Ƥ��� OS �ϰʲ����̤�Ǥ���
+  現在動作が確認されている OS は以下の通りです．
       SunOS 4.1.x
       HP-UX 9.x, 10.x
       Solaris 2.5.x, 2.6, 8, 9
@@ -43,85 +43,85 @@
       MacOS X Server
       MacOS X 10.1, 10.2, 10.3, 10.4
 
-2. ���󥹥ȡ���
+2. インストール
 
-���󥹥ȡ���򤹤�ˤϡ����Τ褦�ˤ��ޤ���
+インストールをするには，次のようにします．
 
-  - GC library (6.1��꿷�������?)�򥤥󥹥ȡ��뤷�Ƥ����ޤ���
-    GC library �� 
+  - GC library (6.1より新しいもの?)をインストールしておきます。
+    GC library は 
      http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
-    ��������Ǥ��ޤ���
+    から入手できます。
 
-    GC library 6.1��ȤäƤ������ gc.h �� PREFIX/include ��
-    ���󥹥ȡ��뤷�Ƥ���ɬ�פ�����ޤ���
+    GC library 6.1を使っている場合は gc.h を PREFIX/include に
+    インストールしておく必要があります。
 	 # cp gc-6.1/include/gc.h PREFIX/include
 
-  - configure ��¹Ԥ��롥
+  - configure を実行する．
     % ./configure
 
-  - make ��¹�
+  - make を実行
     % make
 
-  - make install ��¹�
+  - make install を実行
     # make install
 
-�ʾ�ǥ��󥹥ȡ���Ͻ����Ǥ���
+以上でインストールは終わりです．
 
-���老�Ȥ���������
+機種ごとの注意点：
 
 HP-UX
-	HP �� C ����ѥ���(gcc�Ǥʤ�)�ǥ���ѥ��뤹���硤
-	configure ��
+	HP の C コンパイラ(gccでなく)でコンパイルする場合，
+	configure の
 
 		Input your favorite C-compiler.
 		(Default: cc)
 
-	�ˡ�cc -Aa -D_HPUX_SOURCE �������Ƥ���������cc
-	�������ȥ���ѥ��뤬�̤�ޤ���gcc �ʤ����̤�
-	�̤�ޤ������С������Ť�ξ��� -g ���դ���
-	���Ǥ���������
+	に，cc -Aa -D_HPUX_SOURCE と答えてください．cc
+	だけだとコンパイルが通りません．gcc なら普通に
+	通りますが，バージョン古めの場合は -g を付けな
+	いでください．
 
 OS/2
-	emx ��Ȥ����Ȥ� w3m �򥳥�ѥ��뤹�뤳�Ȥ��Ǥ��ޤ���
-	�ޤ��ǽ��
+	emx を使うことで w3m をコンパイルすることができます．
+	まず最初に
 
 	  cd gc
 	  make -f EMX_MAKEFILE
 
-	��¹Ԥ��� GC �饤�֥��򥳥�ѥ��뤷�Ƥ����Ƥ��顤w3m
-	���Τ򥳥�ѥ��뤷�ޤ����ʤ������顼ɽ�����Ѥˤʤ�餷��
-	�Τǡ���Υ����Ѥ˥���ѥ��뤷�������ɤ��Ǥ��礦��
+	を実行して GC ライブラリをコンパイルしておいてから，w3m
+	本体をコンパイルします．なお，カラー表示が変になるらしい
+	ので，モノクロ用にコンパイルした方が良いでしょう．
 
 Windows
-	Windows �� w3m ��ư��������ˤϡ�Windows ��� UNIX�ߴ��Ķ�
-	�Ǥ��� Cygwin(��ȯ�Ķ��դ�)��ɬ�פǤ���
-	�ܺ٤� README.cygwin �򻲾Ȥ��Ƥ���������
+	Windows で w3m を動かすためには，Windows 上の UNIX互換環境
+	である Cygwin(開発環境付き)が必要です．
+	詳細は README.cygwin を参照してください．
 
 
-3. ���
+3. 著作権
 
-w3m ������ϡ���ƣ��§��°���Ƥ��ޤ���
+w3m の著作権は，伊藤彰則に属しています．
 (C) Copyright 1994-2002 by Akinori Ito
 (C) Copyright 2002-2011 by Akinori Ito, Hironori Sakamoto, Fumitoshi Ukai
 
-4. ���۾��
+4. 配布条件
 
-���Υ��եȥ������ˤ�ä����ѼԤޤ����軰�Ԥ����餫���ﳲ�������
-��硤��ԤϤ�����Ǥ������餤�ޤ��󡥤��λ���������¤�ˤ���
-�ơ����Υ��եȥ������ϡ�ï�Ǥ��Ԥ��Ǥ�ʤ����ѡ����ѡ����ۤǤ�
-�ޤ���
+このソフトウェアによって利用者または第三者が何らかの被害を受けた
+場合，作者はその責任を一切負いません．この事を承諾する限りにおい
+て，このソフトウェアは，誰でも作者に断りなく利用・改変・配布でき
+ます．
 
-5. ���
+5. 作者
 
-	��ƣ ��§
-	���������ر����ظ����
+	伊藤 彰則
+	東北大学大学院工学研究科
 	aito@fw.ipsj.or.jp
 
-���ߤΥ��ƥ�
-	��ƣ ��
-	��������±�
+現在のメンテナ
+	佐藤 大
+	東北大学病院
 	satodai@w3m.jp
 
-���ո��������ۤ򤪴󤻤���������
+ご意見，ご感想をお寄せください．
 	http://w3m.sourceforge.net/
 	https://sourceforge.net/projects/w3m/

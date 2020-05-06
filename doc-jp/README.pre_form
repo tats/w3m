@@ -1,10 +1,10 @@
-pre_form: $BFCDj$N%5%$%H$r3+$$$?;~$K!"(Bform $B$rM=$a@_Dj$9$k5!G=$G$9!#(B
+pre_form: 特定のサイトを開いた時に、form を予め設定する機能です。
 
-$BNI$/;H$&7G<(HD$H$+$G$OJXMx$H;W$$$^$9$,!"0BA4@-$,5>@7$K$J$k$+$b(B
-$B$7$l$^$;$s!#FC$K(B submit $B$O5$$r$D$1$F;H$C$F2<$5$$!#(B
+良く使う掲示板とかでは便利と思いますが、安全性が犠牲になるかも
+しれません。特に submit は気をつけて使って下さい。
 
-$B%G%U%)%k%H$N@_Dj%U%!%$%k$O(B ~/.w3m/pre_form $B$G$9!#(B
-$B@_Dj%U%)!<%^%C%H$O!"(B
+デフォルトの設定ファイルは ~/.w3m/pre_form です。
+設定フォーマットは、
 
 url       <url>|/<re-url>/
 form      [<name>] <action>
@@ -21,15 +21,15 @@ textarea  <name>
    :
 /textarea
 
-$B$G$9!#(B
-<action> $B$,@_Dj$7$F$"$k;~$O!"0lCW$9$k(B action $BB0@-$r;}$D(B form $B$N$_(B
-$B@_Dj$7$^$9!#(B
-text, file, password, select, textarea $B$O0lCW$9$k(B name $BB0@-$r;}$D(B
-input, select $B$^$?$O(B textarea $BMWAG$N(B value $BB0@-$r@_Dj$7$^$9!#(B
-checkbox, radio $B$O(B name $BB0@-$H(B value $BB0@-$,0lCW$9$k(B input $BMWAG$r(B
-check $B$7$^$9!#(B
-<checked> $B$,(B 0$B!"(Bno $B$^$?$O(B off $B$N>l9g$O(B checkbox $B$N(B check $B$r30$7$^$9!#(B 
-submit, image $B$N>l9g!"(B<name> $B$,@_Dj$7$F$"$k;~$O!"0lCW$9$k(B name $BB0@-(B
-($B$H(B value $BB0@-(B)$B$r;}$D(B input $BMWAG$r(B submit $B$7$^$9!#(B<name> $B$r@_Dj$7$F(B
-$B$$$J$$>l9g$O!":G8e$N(B input type=submit $BMWAG$r(B submit $B$7$^$9!#(B
-<name> $B$d(B <value> $B$O!"%7%'%k$NMM$K(B \,'$B!A(B',"$B!A(B" $B$G%/%)!<%H2DG=$G$9!#(B
+です。
+<action> が設定してある時は、一致する action 属性を持つ form のみ
+設定します。
+text, file, password, select, textarea は一致する name 属性を持つ
+input, select または textarea 要素の value 属性を設定します。
+checkbox, radio は name 属性と value 属性が一致する input 要素を
+check します。
+<checked> が 0、no または off の場合は checkbox の check を外します。 
+submit, image の場合、<name> が設定してある時は、一致する name 属性
+(と value 属性)を持つ input 要素を submit します。<name> を設定して
+いない場合は、最後の input type=submit 要素を submit します。
+<name> や <value> は、シェルの様に \,'〜',"〜" でクォート可能です。

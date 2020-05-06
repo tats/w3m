@@ -1,7 +1,7 @@
 @include html.wd
 @include define.wd
 
-¤³¤ì¤Ï¥µ¥ó¥×¥ë¤Ç¤¹¡£
+ã“ã‚Œã¯ã‚µãƒ³ãƒ—ãƒ«ã§ã™ã€‚
 <P>
 \@hsaka.url\@ = @hsaka.url@
 <BR>

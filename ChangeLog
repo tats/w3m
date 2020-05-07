@@ -1,3 +1,29 @@
+2020-05-07  Shun Sakai  <sorairolake@protonmail.ch>
+
+	* Bonus/README, doc-jp/FAQ.html, doc-jp/HISTORY, doc-jp/MANUAL.html:
+	* doc-jp/README, doc-jp/README.SSL, doc-jp/README.cookie:
+	* doc-jp/README.cygwin, doc-jp/README.dict, doc-jp/README.func:
+	* doc-jp/README.img, doc-jp/README.keymap, doc-jp/README.m17n:
+	* doc-jp/README.mailcap, doc-jp/README.menu, doc-jp/README.migemo:
+	* doc-jp/README.mouse, doc-jp/README.passwd, doc-jp/README.pre_form:
+	* doc-jp/README.siteconf, doc-jp/README.tab, doc-jp/STORY.html:
+	* doc-jp/menu.default, doc-jp/menu.submenu, doc-jp/w3m.1:
+	* scripts/bm2menu/README, scripts/multipart/README:
+	* scripts/w3mman/README, w3m-doc/README.html:
+	* w3m-doc/community.html.in, w3m-doc/configuration.html.in:
+	* w3m-doc/copyright.html.in, w3m-doc/detail.html.in:
+	* w3m-doc/development.html.in, w3m-doc/faq.html.in:
+	* w3m-doc/function.html.in, w3m-doc/index.html.in:
+	* w3m-doc/install.html.in, w3m-doc/operation.html.in:
+	* w3m-doc/outline.html.in, w3m-doc/prologue.html.in:
+	* w3m-doc/sample/README, w3m-doc/sample/define.wd, w3m-doc/sample/s.wd:
+	* w3m-doc/sample/sample.html, w3m-doc/sample/sample.wd:
+	* w3mhelp-lynx_ja.html.in, w3mhelp-w3m_ja.html.in:
+	* w3mimg/fb/readme.txt:
+	Change the encoding of the Japanese docs to UTF-8.
+
+	* COPYING: Add COPYING file.
+
 2020-05-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS for 0.5.3+git20200502.

@@ -1,3 +1,11 @@
+w3m (0.5.3-39) UNRELEASED; urgency=medium
+
+  * Wrap long lines in changelog entries: 0.2.1-15, 0.2.1-12, 0.1.9-5,
+    0.1.9-4, 0.1.9-3, 0.0.19991015-2, 0.0.19990916-1, 0.0.19990815-2,
+    0.0.19990526-1.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Thu, 07 May 2020 21:05:18 +0000
+
 w3m (0.5.3-38) unstable; urgency=medium
 
   [ Debian Janitor ]
@@ -1179,7 +1187,8 @@ w3m (0.2.1-12) unstable; urgency=low
   * [w3m-dev 02219] fix strange behavior of radio button form
   * [w3m-dev 02221] -cookie enable accept_cookie as well
   * [w3m-dev 02224] fix Shift_JIS URL handling
-  * [w3m-dev 02225] Auto-detection of charset is not used when `-I' option is used.
+  * [w3m-dev 02225] Auto-detection of charset is not used when `-I' option is
+    used.
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 11 Sep 2001 02:48:51 +0900
 
@@ -1453,21 +1462,26 @@ w3m (0.1.10-1) unstable; urgency=low
 
 w3m (0.1.9-5) frozen unstable; urgency=medium
 
-  * fix bug of Segfaults on certain pages: 'http://www.linuxshop.cz/hardware.php3?typ=8&stranka=0&navrat=', closes: Bug#63937
-  * fixes Bug#64142: w3m and w3m-ssl doesn't work with zero length string proxy host.
+  * fix bug of Segfaults on certain pages:
+    'http://www.linuxshop.cz/hardware.php3?typ=8&stranka=0&navrat=', closes:
+    Bug#63937
+  * fixes Bug#64142: w3m and w3m-ssl doesn't work with zero length string proxy
+    host.
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 16 May 2000 02:00:28 +0900
 
 w3m (0.1.9-4) frozen unstable; urgency=medium
 
-  * Fix RC bug#63274, thanks Falk Hueffner <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
+  * Fix RC bug#63274, thanks Falk Hueffner
+    <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
   * Fix RC bug#63721, closes: Bug#63423, Bug#63612, Bug#63721
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Mon,  8 May 2000 19:13:26 +0900
 
 w3m (0.1.9-3) frozen unstable; urgency=medium
 
-  * Fix RC bug#63274, thanks Falk Hueffner <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
+  * Fix RC bug#63274, thanks Falk Hueffner
+    <falk.hueffner@student.uni-tuebingen.de>, closes: Bug#63274, Bug#62718.
   * I think this version also closes: Bug#63423, Bug#63612,
     if not yet fixed, please reopen it
 
@@ -1740,7 +1754,8 @@ w3m (0.0.19991015-3) unstable; urgency=low
 
 w3m (0.0.19991015-2) unstable; urgency=low
 
-  * add -dump option for text/html copiousoutput in mime mailcap. closes: Bug#47558
+  * add -dump option for text/html copiousoutput in mime mailcap. closes:
+    Bug#47558
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Sat, 16 Oct 1999 23:29:04 +0900
 
@@ -1801,7 +1816,8 @@ w3m (0.0.19990916-1) unstable; urgency=low
 
   * new upstream release
   * adapt to FHS
-  * available ~/.w3m/keymap (see /usr/share/doc/w3m/examples/keymap.lynx), closes: Bug#44421
+  * available ~/.w3m/keymap (see /usr/share/doc/w3m/examples/keymap.lynx),
+    closes: Bug#44421
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 21 Sep 1999 02:34:16 +0900
 
@@ -1821,7 +1837,8 @@ w3m (0.0.19990817-1) unstable; urgency=low
 w3m (0.0.19990815-2) unstable; urgency=low
 
   * (url.c, ftp.c) fix INET6 patch; explicit port number in URL is ignored
-  * build both w3m-en and w3m-ja.  These are dispatched in w3m by locale configurations.
+  * build both w3m-en and w3m-ja.  These are dispatched in w3m by locale
+    configurations.
   * (file.c) fix ullevel chars (gt;)
 
  -- Fumitoshi UKAI <ukai@debian.or.jp>  Tue, 17 Aug 1999 00:40:53 +0900
@@ -1917,9 +1934,11 @@ w3m (0.0.19990526-1) unstable; urgency=low
     - support <wbr>
     - fix space handling in table
     - fix width calculation <nobr>..</nobr> in table
-    - use ARTICLE instead of article to get article via NNTP, thanks patakuti@t3.rim.or.jp
+    - use ARTICLE instead of article to get article via NNTP, thanks
+      patakuti@t3.rim.or.jp
     - fix openURL() initialization
-    - fix invalid character entity in table, thanks mituharu@math.s.chiba-u.ac.jp
+    - fix invalid character entity in table, thanks
+      mituharu@math.s.chiba-u.ac.jp
     - view source if it's not HTML
     - display character entity as much as possible
     - fix compile error

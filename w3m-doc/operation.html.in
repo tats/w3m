@@ -5,46 +5,46 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>OPERATION&nbsp;- w3m $BA`:nK!(B -</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>OPERATION&nbsp;- w3m 操作法 -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">w3m $BA`:nK!(B</A></H1>
+<H1><A NAME="index">w3m 操作法</A></H1>
 <DIV>
-<!-- w3m $B$rA`:n$9$k>e$G$N>\:Y$r5-$9(B -->
+<!-- w3m を操作する上での詳細を記す -->
 </DIV>
 	<UL>
-		<LI><A HREF="#buffer">$B%P%C%U%!A`:n(B</A>
-		<LI><A HREF="#mouse">$B%^%&%9A`:n(B</A>
-		<LI><A HREF="#line_edit">$B:G2<9TF~NO(B</A>
-		<LI><A HREF="#menu">$B%a%K%e!<(B</A>
+		<LI><A HREF="#buffer">バッファ操作</A>
+		<LI><A HREF="#mouse">マウス操作</A>
+		<LI><A HREF="#line_edit">最下行入力</A>
+		<LI><A HREF="#menu">メニュー</A>
 	</UL>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="buffer">$B%P%C%U%!A`:n(B</A></H2>
-<!-- $B%P%C%U%!A`:n;~$N@bL@(B -->
+<H2><A NAME="buffer">バッファ操作</A></H2>
+<!-- バッファ操作時の説明 -->
 
-<H3><A NAME="mouse">$B%^%&%9A`:n(B</A></H3>
-<!-- $B%^%&%9A`:n;~$N@bL@(B -->
+<H3><A NAME="mouse">マウス操作</A></H3>
+<!-- マウス操作時の説明 -->
 
-<H3><A NAME="line_edit">$B:G2<9TF~NO(B</A></H3>
-<!-- $B:G2<9TF~NO;~$NA`:n$K$D$$$F$N@bL@(B -->
+<H3><A NAME="line_edit">最下行入力</A></H3>
+<!-- 最下行入力時の操作についての説明 -->
 
-<H3><A NAME="menu">$B%a%K%e!<A`:n(B</A></H3>
-<!-- $B%a%K%e!<A`:n;~$N@bL@(B -->
+<H3><A NAME="menu">メニュー操作</A></H3>
+<!-- メニュー操作時の説明 -->
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

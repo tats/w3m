@@ -1,34 +1,34 @@
-w3m�ѱ��¼�ŵ������ǽ�ˤĤ���
+w3m用英和辞典検索機能について
 
-1. �Ϥ����
+1. はじめに
 
-'webster' ���ޥ�ɤʤɤΤ褦�˼�����������Υ��ޥ�ɤ򤪻�����
-���ˤϡ�w3m ���椫�餽���Ȥ����Ȥ��Ǥ��ޤ������ε�ǽ�ϡ�
-��Ӥ�������(rubikitch@ruby-lang.org)�ˤ���Τ��Ȥ�
-Tushar Samant (scribble at pobox.com)�������򤯤廊�ޤ�����
+'webster' コマンドなどのように辞書を引くためのコマンドをお持ちの
+場合には，w3m の中からそれを使うことができます．この機能は，
+るびきちさん(rubikitch@ruby-lang.org)によるものをもとに
+Tushar Samant (scribble at pobox.com)が修正をくわえました。
 
-2. ���󥹥ȡ���
+2. インストール
 
-���ε�ǽ��Ȥ�����ˤϡ�����ѥ��륪�ץ������ǽ񤭤�����
-����ѥ��뤷�ʤ���ɬ�פ�����ޤ���configure ��¹Ԥ��� config.h
-���������줿�塤config.h ���Խ�����
+この機能を使うためには，コンパイルオプションを手で書きかえて
+コンパイルしなおす必要があります．configure を実行して config.h
+が生成された後，config.h を編集して
 
 #undef USE_DICT
 
-��
+を
 
 #define USE_DICT
 
-���ѹ�����w3m �򥳥�ѥ��뤷�ʤ����Ƥ���������
-w3m/0.3+cvs-1.373�ʹߤϡ�default��USE_DICT��define����ޤ���
+に変更し，w3m をコンパイルしなおしてください．
+w3m/0.3+cvs-1.373以降は、defaultでUSE_DICTがdefineされます。
 
-���줫�顤ʸ����򤦤��ȤäƤ��η�̤򤫤���CGI�ץ�������
-���󥹥ȡ��뤷�ޤ���
+それから，文字列をうけとってその結果をかえすCGIプログラムを
+インストールします。
 
-�Ĥ��Τ褦����ˡ������ޤ�
+つぎのような方法があります
 
- * �⤷ 'webster'�Ȥ������ޥ�ɤ�����Ф����Τ褦�����Ƥ�'w3mdict'�Ȥ���
-   ������ץȤ�Ĥ���ޤ���
+ * もし 'webster'というコマンドがあればいかのような内容の'w3mdict'という
+   スクリプトをつくります。
 
       #!/bin/sh
 
@@ -36,12 +36,12 @@ w3m/0.3+cvs-1.373�ʹߤϡ�default��USE_DICT��define����ޤ���
       echo
       webster $QUERY_STRING
 
-    ����� lcoal CGI�Ȥ��ƥ��󥹥ȡ��뤷�ޤ� (w3m�ޥ˥奢��� local CGI
-    �Υ���������ߤƤ�������) ������ w3m�Υ��ץ����ڡ�����
-    ������������ꤷ�Ƥ���������
+    これを lcoal CGIとしてインストールします (w3mマニュアルの local CGI
+    のセクションをみてください) そして w3mのオプションページで
+    辞書設定を設定してください。
 
- * �⤷ʸ�����Google�Ǹ������뵡ǽ���Ĥ���������硢
-   �ʲ��Τ褦�� local CGI������ץȤ��Ĥ����ޤ���
+ * もし文字列をGoogleで検索する機能がつかいたい場合、
+   以下のような local CGIスクリプトがつかえます。
 
       #!/bin/sh
 
@@ -54,15 +54,15 @@ w3m/0.3+cvs-1.373�ʹߤϡ�default��USE_DICT��define����ޤ���
 
       _END_
 
-    ����Υѥ��򼭽�������ޥ�ɤ�URL�Ȥ������ꤷ�Ƥ���������
+    これのパスを辞書引きコマンドのURLとして設定してください。
 
-3. �Ȥ�����
+3. 使いかた
 
-����2�ĤΥ��ޥ�ɤ��Ȥ���褦�ˤʤ�ޤ���
+次の2つのコマンドが使えるようになります．
 
-ESC w    ñ������Ϥ�������򼭽�ǰ�����ɽ�����ޤ���
+ESC w    単語を入力し，それを辞書で引いて表示します．
 
-ESC W    �Хåե���θ��ߥ������뤬����ñ��򼭽�ǰ�����ɽ�����ޤ���
+ESC W    バッファ内の現在カーソルがある単語を辞書で引き，表示します．
 
-�����Υ������ѹ�����ˤϡ�~/.w3m/keymap��DICT_WORD�����DICT_WORD_AT
-�ιԤ��ѹ����Ƥ���������
+これらのキーを変更するには、~/.w3m/keymapのDICT_WORDおよびDICT_WORD_AT
+の行を変更してください。

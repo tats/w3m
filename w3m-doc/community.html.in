@@ -5,44 +5,44 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>W3M&nbsp;COMMUNITY&nbsp;- w3m $B%3%_%e%K%F%#(B -</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>W3M&nbsp;COMMUNITY&nbsp;- w3m コミュニティ -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">w3m $B%3%_%e%K%F%#(B</A></H1>
+<H1><A NAME="index">w3m コミュニティ</A></H1>
 <DIV>
-<!-- w3m$B%3%_%e%K%F%#$K4X$7$F(B -->
+<!-- w3mコミュニティに関して -->
 </DIV>
 	<UL>
-        <LI><A HREF="#ML">$B%a!<%j%s%0%j%9%H(B</A>
-        <LI><A HREF="#links">$B4XO"(B Web</A>
+        <LI><A HREF="#ML">メーリングリスト</A>
+        <LI><A HREF="#links">関連 Web</A>
 	</UL>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="ML">$B%a!<%j%s%0%j%9%H(B</A></H2>
-<!-- w3m-dev, w3m-dev-en ML$B$N>R2p(B -->
+<H2><A NAME="ML">メーリングリスト</A></H2>
+<!-- w3m-dev, w3m-dev-en MLの紹介 -->
 <DIV>
-<P>w3m $B3+H/<TMQ%a!<%j%s%0%j%9%H(B
+<P>w3m 開発者用メーリングリスト
 </DIV>
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
-</DIV>
-<HR>
-
-<H2><A NAME="links">$B4XO"(B Web</A></H2>
-<!-- w3m$B$K4X78$7$F$$$k(BWeb -->
-<DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<H2><A NAME="links">関連 Web</A></H2>
+<!-- w3mに関係しているWeb -->
+<DIV>
+<A HREF="#index">このページの先頭に戻る</A>
+</DIV>
+<HR>
+
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

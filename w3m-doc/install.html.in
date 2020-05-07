@@ -5,69 +5,69 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>INSTALL&nbsp;- $B%$%s%9%H!<%k$N>\:Y(B -</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>INSTALL&nbsp;- インストールの詳細 -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">$B%$%s%9%H!<%k$N>\:Y(B</A></H1>
+<H1><A NAME="index">インストールの詳細</A></H1>
 <DIV>
-<!-- w3m $B$N%$%s%9%H!<%k$N>\:Y$r5-$9(B -->
+<!-- w3m のインストールの詳細を記す -->
 </DIV>
 	<UL>
-		<LI><A HREF="#get_w3m">w3m $BF~<jJ}K!(B</A>
+		<LI><A HREF="#get_w3m">w3m 入手方法</A>
 			<UL>
 				<LI><A HREF="#w3m_home">w3m Homepage</A>
-				<LI><A HREF="#BBS">w3m $B$K4X$9$k7G<(HD(B</A>
+				<LI><A HREF="#BBS">w3m に関する掲示板</A>
 			</UL>
-		<LI><A HREF="#require">$BI,MW$JJ*(B</A>
-		<LI><A HREF="#configure">configure $B$K$D$$$F(B</A>
-		<LI><A HREF="#config_h">config.h $B$K$D$$$F(B</A>
-		<LI><A HREF="#make">make $B$K$D$$$F(B</A>
-		<LI><A HREF="#tips">$BB>$N(B OS $B$G%$%s%9%H!<%k$9$k:]$N(B Tips</A>
+		<LI><A HREF="#require">必要な物</A>
+		<LI><A HREF="#configure">configure について</A>
+		<LI><A HREF="#config_h">config.h について</A>
+		<LI><A HREF="#make">make について</A>
+		<LI><A HREF="#tips">他の OS でインストールする際の Tips</A>
 	</UL>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="get_w3m">w3m $BF~<jJ}K!(B</A></H2>
-<!-- w3m $BF~<jJ}K!(B -->
+<H2><A NAME="get_w3m">w3m 入手方法</A></H2>
+<!-- w3m 入手方法 -->
 <DIV>
-<P>w3m $B$N:G?7HG$O!"0J2<$N(B<A HREF="#w3m_home">w3m home</A> $B$K$b<($7$F$"$k!"(B
+<P>w3m の最新版は、以下の<A HREF="#w3m_home">w3m home</A> にも示してある、
 <BLOCKQUOTE>
 <A HREF="http://prdownloads.sourceforge.net/w3m/">http://prdownloads.sourceforge.net/w3m/</A>
 </BLOCKQUOTE>
-$B$+$i<j$KF~$j$^$9!#(B
-<P>$B$A$J$_$K!"8=:_$N:G?7%P!<%8%g%s$O!"(B<B>@W3M.version@</B> $B$G$9!#(B
-<P>$B$J$*!"(Bw3m $B$K4X$9$k>pJs(B($B:G?7HG$d%Q%C%AEy!9(B)$B$K$D$$$F$O!"(B<A HREF="@DOC.community@">w3m $B%3%_%e%K%F%#(B</A>$B$r;2>H$7!"%a!<%j%s%0%j%9%H!"(BWeb BBS $BEy$+$iF~<j$7$F$/$@$5$$!#(B
+から手に入ります。
+<P>ちなみに、現在の最新バージョンは、<B>@W3M.version@</B> です。
+<P>なお、w3m に関する情報(最新版やパッチ等々)については、<A HREF="@DOC.community@">w3m コミュニティ</A>を参照し、メーリングリスト、Web BBS 等から入手してください。
 </DIV>
 
 <H3><A NAME="w3m_home">w3m Homepage</A></H3>
-<!-- w3m Homepage$B$K$D$$$F(B -->
+<!-- w3m Homepageについて -->
 <DIV>
-<P>w3m $B$N(B Homepage $B$O(B
+<P>w3m の Homepage は
 <BLOCKQUOTE>
 <TABLE BORDER="0">
 <TR><TD><A HREF="@W3M.home@">W3M Homepage</A></TD>
 	<TD>@W3M.home@</TD>
 </TABLE>
 </BLOCKQUOTE>
-$B$G$9!#(B
+です。
 </DIV>
 
-<H3><A NAME="BBS">w3m $B$K4X$9$k7G<(HD(B</A></H3>
-<!-- $B7G<(HD(B -->
+<H3><A NAME="BBS">w3m に関する掲示板</A></H3>
+<!-- 掲示板 -->
 <DIV>
-<P>w3m $B$K4X$9$k7G<(HD$K$O0J2<$NDL$j$G$9!#(B
+<P>w3m に関する掲示板には以下の通りです。
 <BLOCKQUOTE>
 <TABLE BORDER="0">
-<TR><TD><A HREF="@W3M.bbs@">w3m $BO"MmD"(B</A></TD>
+<TR><TD><A HREF="@W3M.bbs@">w3m 連絡帳</A></TD>
     <TD>@W3M.bbs@</TD>
     <TD>&nbsp;</TD>
-<TR><TD><A HREF="@W3M.note@">w3m $B$*$\$($,$-(B</A></TD>
+<TR><TD><A HREF="@W3M.note@">w3m おぼえがき</A></TD>
     <TD>@W3M.note@</TD>
     <TD>&nbsp;</TD>
 </TABLE>
@@ -75,52 +75,52 @@
 </DIV>
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="require">$BI,MW$JJ*(B</A></H2>
-<!-- w3m $B$r(B make $B$9$k$&$($GI,MW$JJ*!?$"$l$PNI$$J*(B -->
+<H2><A NAME="require">必要な物</A></H2>
+<!-- w3m を make するうえで必要な物／あれば良い物 -->
 <DIV>
-<P>w3m $B$r(B make $B$9$k$&$($G!"I,?\$J$b$N!"$*$h$S!"$"$l$PNI$$$b$N$O0J2<$NDL$j$G$9!#(B
+<P>w3m を make するうえで、必須なもの、および、あれば良いものは以下の通りです。
 <P>
-<UL><LI>$BI,?\$J$b$N(B
-    <UL><LI>ANSI-C $B8_49(B C $B%3%s%Q%$%i(B
+<UL><LI>必須なもの
+    <UL><LI>ANSI-C 互換 C コンパイラ
     </UL>
-    <LI>$B$"$l$PNI$$$b$N(B
-    <UL><LI>SSLeay/OpenSSL $B%i%$%V%i%j(B
-        <UL><LI>Secure HTTP(https:$B!A(B) $B$r;HMQ$9$k>l9g(B
+    <LI>あれば良いもの
+    <UL><LI>SSLeay/OpenSSL ライブラリ
+        <UL><LI>Secure HTTP(https:〜) を使用する場合
         </UL>
-		<LI>GNU patch$B%3%^%s%I(B
-		<UL><LI>w3m $B$K(B patch $B$rE,MQ$9$k>l9g(B
+		<LI>GNU patchコマンド
+		<UL><LI>w3m に patch を適用する場合
 		</UL>
 		<LI>Perl
-		<UL><LI>w3m $B$G(B $B%G%#%l%/%H%j%j%9%H$rI=<($9$k>l9g$N%m!<%+%k(B CGI $B$G;HMQ$9$k(B
+		<UL><LI>w3m で ディレクトリリストを表示する場合のローカル CGI で使用する
 		</UL>
     </UL>
 </UL>
 
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="configure">configure $B$K$D$$$F(B</A></H2>
-<!-- configure $B<B9T;~$N@bL@(B -->
+<H2><A NAME="configure">configure について</A></H2>
+<!-- configure 実行時の説明 -->
 <DIV>
-<P>w3m $B$N%"!<%+%$%V%U%!%$%k$rE83+$7$?%G%#%l%/%H%j$K$"$k(B <B>./configure</B> $B$r<B9T$7$^$9!#$$$/$D$+<ALd$5$l$k$N$G!"$=$l$KEz$($F$/$@$5$$!#(B
-<P>$B0J2<$O!"(B<B>./configure</B> $B<B9T;~$K!"<B:]$KJ9$+$l$k<ALd$N@bL@$G$9!#$J$*!"(B<B>./configure</B> $B$O3F<ALd$KBP$9$kEz$($N4{DjCM(B(default)$B$r;}$C$F$$$^$9!#J8;zNs$rF~NO$;$:$K%j%?!<%s!&%-!<$@$1$r2!$7$?>l9g$O!"$3$N4{DjCM$,;XDj$5$l$?;v$K$J$j$^$9!#(B
+<P>w3m のアーカイブファイルを展開したディレクトリにある <B>./configure</B> を実行します。いくつか質問されるので、それに答えてください。
+<P>以下は、<B>./configure</B> 実行時に、実際に聞かれる質問の説明です。なお、<B>./configure</B> は各質問に対する答えの既定値(default)を持っています。文字列を入力せずにリターン・キーだけを押した場合は、この既定値が指定された事になります。
 <P><DL>
 <DT>Which directory do you want to put the binary?
-	<DD>$B4{DjCM(B: <U>/usr/local/bin</U><BR>
-		w3m $B$r$I$3$N%G%#%l%/%H%j$N2<$K%$%s%9%H!<%k$9$k$+$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>/usr/local/bin</U><BR>
+		w3m をどこのディレクトリの下にインストールするかを指定します。
 	</DD>
 <DT>Which directory do you want to put the support binary files?
-	<DD>$B4{DjCM(B: <U>/usr/local/lib/w3m</U><BR>
-		w3m $B$,;2>H$9$k%i%$%V%i%j$rCV$/>l=j$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>/usr/local/lib/w3m</U><BR>
+		w3m が参照するライブラリを置く場所を指定します。
 	</DD>
 <DT>Which directory do you want to put the helpfile?
-	<DD>$B4{DjCM(B: <U>/usr/local/lib/w3m</U><BR>
-		w3m $B$N%X%k%W%U%!%$%k$rCV$/>l=j$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>/usr/local/lib/w3m</U><BR>
+		w3m のヘルプファイルを置く場所を指定します。
 	</DD>
 <DT>Which language do you prefer?
 	<DD>
@@ -128,8 +128,8 @@
 		<TR><TD>1</TD><TD>-</TD><TD NOWRAP>Japanese (charset ISO-2022-JP, EUC-JP, Shift_JIS)</TD>
 		<TR><TD>2</TD><TD>-</TD><TD NOWRAP>English (charset US_ASCII, ISO-8859-1, etc.)</TD>
 		</TABLE>
-	    $B4{DjCM(B: <U>1</U><BR>
-		w3m $B$G;HMQ$9$k8@8l$r;XDj$7$^$9!#(B
+	    既定値: <U>1</U><BR>
+		w3m で使用する言語を指定します。
 	</DD>
 <DT>Input your display kanji code.
 	<DD>
@@ -141,32 +141,32 @@
 		<TR><TD>n</TD><TD>-</TD><TD>JIS: ESC $B - ESC (B</TD>
 		<TR><TD>m</TD><TD>-</TD><TD>JIS: ESC $@ - ESC (B</TD>
 		</TABLE>
-	    $B4{DjCM(B: $BL5$7(B<BR>
-		$B$"$J$?$N%7%9%F%`$GI=<($KMQ$$$i$l$k4A;z%3!<%I$r;XDj$7$^$9!#(B
+	    既定値: 無し<BR>
+		あなたのシステムで表示に用いられる漢字コードを指定します。
 	</DD>
 <DT>Do you want to use Lynx-like key binding?
-	<DD>$B4{DjCM(B: <U>n</U><BR>
-		w3m $B$r(B Lynx $BIw$N%-!<%P%$%s%G%#%s%0$G;HMQ$9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>n</U><BR>
+		w3m を Lynx 風のキーバインディングで使用するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
 	</DD>
 <DT>Do you want to use 2-byte character for table border, item, etc.
-	<DD>$B4{DjCM(B: <U>y</U><BR>
-		$B%F!<%V%k$NOH$K7S@~$rMQ$$$?$j!"%"%$%F%`$K4A;z%7%s%\%k$r;HMQ$9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>y</U><BR>
+		テーブルの枠に罫線を用いたり、アイテムに漢字シンボルを使用するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
 	</DD>
 <DT>Do you want to automatically generate domain parts of passwords for anonymous FTP logins
-	<DD>$B4{DjCM(B: <U>n</U><BR>
-		$B%"%N%K%^%9(B ftp $B$G(B login $B$9$k:]$N%Q%9%o!<%I$r%m%0%$%sL>$H%I%a%$%sL>$+$i<+F0@8@.$9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>n</U><BR>
+		アノニマス ftp で login する際のパスワードをログイン名とドメイン名から自動生成するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
 	</DD>
 <DT>Do you want listing of options
-	<DD>$B4{DjCM(B: <U>n</U><BR>
-		w3m $B$N(B usage $BI=<(;~$K!":Y$+$J%*%W%7%g%s$K$D$$$F$b%j%9%HI=<($9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>n</U><BR>
+		w3m の usage 表示時に、細かなオプションについてもリスト表示するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
 	</DD>
 <DT>Do you want NNTP support
-	<DD>$B4{DjCM(B: <U>n</U><BR>
-		w3m $B$G(B NNTP $B$r%5%]!<%H$9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B``<B>y</B>''$B$r;XDj$7$?>l9g!"!H(B<U>news:$B!A(B</U>$B!I$N(B URI $B$,;HMQ$G$-$k$h$&$K$J$k!#(B
+	<DD>既定値: <U>n</U><BR>
+		w3m で NNTP をサポートするかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。``<B>y</B>''を指定した場合、“<U>news:〜</U>”の URI が使用できるようになる。
 	</DD>
 <DT>Do you want ANSI color escape sequences supprot?
-	<DD>$B4{DjCM(B: <U>n</U><BR>
-		HTML$BJ8=q(B<U>$B0J30(B</U>$B$,!"(BANSI $B$N%+%i!<MQ%(%9%1!<%W!&%7!<%1%s%9$KBP1~$9$k$+$I$&$+$r;XDj$7$^$9!#;HMQ$9$k>l9g$O(B``<B>y</B>''$B$r!";HMQ$7$J$$>l9g$O(B``<B>n</B>''$B$r;XDj$7$^$9!#(B
+	<DD>既定値: <U>n</U><BR>
+		HTML文書<U>以外</U>が、ANSI のカラー用エスケープ・シーケンスに対応するかどうかを指定します。使用する場合は``<B>y</B>''を、使用しない場合は``<B>n</B>''を指定します。
 	</DD>
 <DT>Let's do some configurations. Choose config option among the list.
 	<DD>
@@ -178,212 +178,212 @@
 		<TR><TD>5</TD><TD>-</TD><TD>Monster model</TD><TD>(with everything; you need openSSL library)</TD>
 		<TR><TD>6</TD><TD>-</TD><TD>Customize</TD>
 		</TABLE>
-	    $B4{DjCM(B: $BL5$7(B<BR>
-		make $B$9$k(B w3m $B$N%b%G%k$r;XDj$7$^$9!#(B``<B>6</B>''$B$r;XDj$7$?>l9g!"8DJL$K%*%W%7%g%s$N;HMQ$rA*Br$7$^$9!#(B<BR>
-		$BA*Br$9$k%*%W%7%g%s$O0J2<$NDL$j!#(B<BR>
+	    既定値: 無し<BR>
+		make する w3m のモデルを指定します。``<B>6</B>''を指定した場合、個別にオプションの使用を選択します。<BR>
+		選択するオプションは以下の通り。<BR>
 		<BLOCKQUOTE>
 			<TABLE BORDER="0">
-			<TR><TD>color</TD><TD>-</TD><TD>$B%+%i!<I=<((B</TD>
-			<TR><TD>menu</TD><TD>-</TD><TD>$B%a%K%e!<I=<((B</TD>
-			<TR><TD>mouse</TD><TD>-</TD><TD>$B%^%&%9BP1~(B</TD>
-			<TR><TD>cookie</TD><TD>-</TD><TD>cookie $BBP1~(B</TD>
-			<TR><TD>SSL</TD><TD>-</TD><TD>SSL$BBP1~(B($BJLES!"(BopenSSL$B$,I,MW(B)</TD>
+			<TR><TD>color</TD><TD>-</TD><TD>カラー表示</TD>
+			<TR><TD>menu</TD><TD>-</TD><TD>メニュー表示</TD>
+			<TR><TD>mouse</TD><TD>-</TD><TD>マウス対応</TD>
+			<TR><TD>cookie</TD><TD>-</TD><TD>cookie 対応</TD>
+			<TR><TD>SSL</TD><TD>-</TD><TD>SSL対応(別途、openSSLが必要)</TD>
 			</TABLE>
 		</BLOCKQUOTE>
 	</DD>
 <DT>Input your favorite editor program.
-	<DD>$B4{DjCM(B: <U>/usr/bin/vi</U><BR>
-		$B%(%G%#%?!&%W%m%0%i%`$r;XDj$7$^$9!#$3$N@_Dj$O8e$G(B<A HREF="@DOC.configuration@">$B8D?MKh$KJQ99!&@_Dj(B</A>$B$G$-$^$9(B
+	<DD>既定値: <U>/usr/bin/vi</U><BR>
+		エディタ・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます
 	</DD>
 <DT>Input your favorite mailer program.
-	<DD>$B4{DjCM(B: <U>/usr/bin/mailx</U>$B!"$^$?$O!"(B<U>/usr/bin/mail</U><BR>
-		$B%a%$%i!<!&%W%m%0%i%`$r;XDj$7$^$9!#$3$N@_Dj$O8e$G(B<A HREF="@DOC.configuration@">$B8D?MKh$KJQ99!&@_Dj(B</A>$B$G$-$^$9!#(B
+	<DD>既定値: <U>/usr/bin/mailx</U>、または、<U>/usr/bin/mail</U><BR>
+		メイラー・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます。
 	</DD>
 <DT>Input your favorite external browser program.
-	<DD>$B4{DjCM(B: <U>netscape</U>$B!"$^$?$O!"(B<U>iexplore</U>$B!"$^$?$O!"(B<U>lynx</U><BR>
-		$BBeBX%V%i%&%6!&%W%m%0%i%`$r;XDj$7$^$9!#$3$N@_Dj$O8e$G(B<A HREF="@DOC.configuration@">$B8D?MKh$KJQ99!&@_Dj(B</A>$B$G$-$^$9!#(B
+	<DD>既定値: <U>netscape</U>、または、<U>iexplore</U>、または、<U>lynx</U><BR>
+		代替ブラウザ・プログラムを指定します。この設定は後で<A HREF="@DOC.configuration@">個人毎に変更・設定</A>できます。
 	</DD>
 <DT>Input your favorite C-compiler.
-    <DD>$B4{DjCM(B: <U>gcc</U>$B!"$^$?$O!"(B<U>cc</U><BR>
-        $B;HMQ$9$k(B C $B%3%s%Q%$%i$r;XDj$7$^$9!#(B
+    <DD>既定値: <U>gcc</U>、または、<U>cc</U><BR>
+        使用する C コンパイラを指定します。
     </DD>
 <DT>Input your favorite C flags.
-    <DD>$B4{DjCM(B: <U>-O</U><BR>
-        C $B%3%s%Q%$%i$G;HMQ$9$k%3%s%Q%$%k%*%W%7%g%s$r;XDj$7$^$9!#(B
+    <DD>既定値: <U>-O</U><BR>
+        C コンパイラで使用するコンパイルオプションを指定します。
     </DD>
 <DT>Which terminal library do you want to use? (type "none" if you do not need one)
-    <DD>$BC<Kv@)8fMQ%i%$%V%i%j$r;XDj$7$^$9!#(B
+    <DD>端末制御用ライブラリを指定します。
     </DD>
 <DT>Input additional LD flags other than listed above, if any:
-    <DD>$B%j%s%/;~$KDI2C$9$Y$-%i%$%V%i%j!"%U%i%0$,$"$l$P$=$l$r;XDj$7$^$9!#(B
+    <DD>リンク時に追加すべきライブラリ、フラグがあればそれを指定します。
     </DD>
 </DL>
 <P>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="config_h">config.h $B$K$D$$$F(B</A></H2>
-<!-- config.h $B$G(B define $B$9$k$b$NEy$K$D$$$F(B -->
+<H2><A NAME="config_h">config.h について</A></H2>
+<!-- config.h で define するもの等について -->
 <DIV>
-<P><A HREF="#configure">configure</A> $B$G$O@_Dj$5$l$J$$$=$NB>$N5!G=$r;H$$$?$$>l9g$K$O!"(B<B>config.h</B> $B$rJQ99$9$kI,MW$,$"$j$^$9!#(B
-<P>$B0J2<$K(B config.h $B$G;XDj$G$-$k3F(B define $B$NL>>N$H35MW$r5-$7$^$9!#(B
+<P><A HREF="#configure">configure</A> では設定されないその他の機能を使いたい場合には、<B>config.h</B> を変更する必要があります。
+<P>以下に config.h で指定できる各 define の名称と概要を記します。
 <P><DL>
 <DT>DICT
-    <DD><B>$B<-=q0z$-5!G=(B</B>$B$rM-8z$K$7$^$9!#(B<BR>
-        $BD4$Y$?$$C18l$K%+!<%=%k$r9g$o$;!"!H(B<B>ESC&nbsp;W</B>$B!I$G(B <B>w3mdict</B> $B%3%^%s%I$r8F$S=P$7$^$9!#(B<BR>
-        <B>w3mdict</B> $B%3%^%s%I$O<+?H$N4D6-$K9g$o$;$F:n@.$G$-$^$9!#(B<BR>
-        $B$?$H$($P!"$b$C$H$b4JC1$JNc$H$7$F!"(B<B>man</B> $B%3%^%s%I$K(B wrap $B$9$k>l9g!"0J2<$N$h$&$K$7$^$9!#(B<BR>
+    <DD><B>辞書引き機能</B>を有効にします。<BR>
+        調べたい単語にカーソルを合わせ、“<B>ESC&nbsp;W</B>”で <B>w3mdict</B> コマンドを呼び出します。<BR>
+        <B>w3mdict</B> コマンドは自身の環境に合わせて作成できます。<BR>
+        たとえば、もっとも簡単な例として、<B>man</B> コマンドに wrap する場合、以下のようにします。<BR>
         <BLOCKQUOTE>
         % cat w3mdict<BR>
         #!/bin/sh<BR>
         <BR>
         man $*<BR>
         </BLOCKQUOTE>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>USE_MARK
-    <DD><B>$B%^!<%/A`:n(B</B>$B$rM-8z$K$7$^$9!#$$$o$f$k(B vi $B$N%^!<%/A`:n$HF1Ey$N$b$N$G$9!#(B<BR>
-        $B$3$l$r(B define $B$9$k$H!"0J2<$N5!G=$r;H$($k$h$&$K$J$j$^$9!#(B
+    <DD><B>マーク操作</B>を有効にします。いわゆる vi のマーク操作と同等のものです。<BR>
+        これを define すると、以下の機能を使えるようになります。
         <UL>
-            <LI>$B!H(B<B>CTRL-SPC</B>$B!I(B: $B%^!<%/$N@_Dj!?2r=|(B($B%H%0%k(B)
-            <LI>$B!H(B<B>ESC p</B>$B!I(B: $BA0$N%^!<%/$X0\F0(B
-            <LI>$B!H(B<B>ESC n</B>$B!I(B: $B<!$N%^!<%/$X0\F0(B
-            <LI>$B!H(B<B>&quot;</B>$B!I(B($B%@%V%k!&%/%)!<%F!<%7%g%s(B): $B@55,I=8=$K$h$k%^!<%/(B
+            <LI>“<B>CTRL-SPC</B>”: マークの設定／解除(トグル)
+            <LI>“<B>ESC p</B>”: 前のマークへ移動
+            <LI>“<B>ESC n</B>”: 次のマークへ移動
+            <LI>“<B>&quot;</B>”(ダブル・クォーテーション): 正規表現によるマーク
         </UL>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>USE_HISTORY
-    <DD>URL $BMzNr$NJ]B8!"8F$S=P$7(B($B!H(B<B>CTRL-h</B>$B!I(B)$B$,$G$-$k$h$&$K$J$j$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#define</B> $B$G$9!#(B
+    <DD>URL 履歴の保存、呼び出し(“<B>CTRL-h</B>”)ができるようになります。<BR>
+        既定値は <B>#define</B> です。
     </DD>
 <DT>BG_COLOR
-    <DD>$BGX7J$N?'$N@_Dj$,2DG=$H$J$j$^$9(B($B%+%i!<I=<($G$-$k(B w3m $B$N>l9g$KM-8z(B)$B!#(B<BR>
-        $B4{DjCM$O(B <B>#define</B> $B$G$9!#(B
+    <DD>背景の色の設定が可能となります(カラー表示できる w3m の場合に有効)。<BR>
+        既定値は <B>#define</B> です。
     </DD>
 <DT>VIEW_UNSEENOBJECTS
-    <DD>$BGX7J2hA|$X$N%j%s%/$J$I!"DL>o$O8+$($J$$%*%V%8%'%/%H$X$N%j%s%/$r8+$($k$h$&$K$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>背景画像へのリンクなど、通常は見えないオブジェクトへのリンクを見えるようにします。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>VI_PREC_NUM
-    <DD>$B%Z%$%80\F05!G=$,(B vi $B$N$h$&$K!X7+$jJV$72s?t!\5!G=!Y$K$J$k$h$&$K$7$^$9!#(B<BR>
-        $B$?$H$($P!"!H(B<B>2&nbsp;SPC</B>$B!I$@$H!V#2%Z%$%8?J$`!W$H$+!"!H(B<B>2&nbsp;b</B>$B!I$@$H!V#2%Z%$%8La$k!W$N$h$&$K$J$j$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(Bundef $B$N>l9g$O!"!H(B<B>2&nbsp;SPC</B>$B!I$@$H!V#2(B<U>$B9T(B</U>$B?J$`!W$K$J$j$^$9!#(B
+    <DD>ペイジ移動機能が vi のように『繰り返し回数＋機能』になるようにします。<BR>
+        たとえば、“<B>2&nbsp;SPC</B>”だと「２ペイジ進む」とか、“<B>2&nbsp;b</B>”だと「２ペイジ戻る」のようになります。<BR>
+        既定値は <B>#undef</B> です。undef の場合は、“<B>2&nbsp;SPC</B>”だと「２<U>行</U>進む」になります。
     </DD>
 <DT>FORMAT_NICE
-    <DD>$B1QC18l$r(B fill $B$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>英単語を fill します。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>USE_GOPHER
-    <DD>GOPHER $B%W%m%H%3%k$r%5%]!<%H$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>GOPHER プロトコルをサポートします。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>USE_NNTP
-    <DD>NNTP $B$r%5%]!<%H$7$^$9!#(B<BR>
-        $B$3$N(B define $B$O(B <A HREF="#configure">configure</A> $B$G@_Dj$5$l$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>NNTP をサポートします。<BR>
+        この define は <A HREF="#configure">configure</A> で設定されます。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>ANSI_COLOR
-    <DD>$B%Z!<%8%c%b!<%I$G(B ANSI color $B%(%9%1!<%W%7!<%1%s%9$KBP1~$7$^$9!#(B<BR>
-        HTML $B$N;~$d!"%(%9%1!<%W%7!<%1%s%9$,L5$$>l9g$K$OBP1~$7$^$;$s!#(B<BR>
-        $B$3$N(B define $B$O(B <A HREF="#configure">configure</A> $B$G@_Dj$5$l$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#define</B> $B$G$9!#(B
+    <DD>ページャモードで ANSI color エスケープシーケンスに対応します。<BR>
+        HTML の時や、エスケープシーケンスが無い場合には対応しません。<BR>
+        この define は <A HREF="#configure">configure</A> で設定されます。<BR>
+        既定値は <B>#define</B> です。
     </DD>
 <DT>ID_EXT
-    <DD>HTML4.0 $B$N(B ID $BB0@-$r%j%s%/$GC)$l$k$h$&$K$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#define</B> $B$G$9!#(B
+    <DD>HTML4.0 の ID 属性をリンクで辿れるようにします。<BR>
+        既定値は <B>#define</B> です。
     </DD>
 <DT>BUFINFO
-    <DD>$B%+%l%s%H$J%P%C%U%!$N(B URL $B$r(B ~/.w3m/bufinfo $B%U%!%$%k$K=q$-=P$9$h$&$K$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#define</B> $B$G$9!#(B
+    <DD>カレントなバッファの URL を ~/.w3m/bufinfo ファイルに書き出すようにします。<BR>
+        既定値は <B>#define</B> です。
     </DD>
 <DT>USE_EGD
-    <DD>EGD(Entropy Gathering Daemon)$B$KBP1~$7Mp?t$N%7!<%I$rF@$^$9!#(B<BR>
-        SSL $B$rAH$_9~$s$@(B w3m $B$N>l9g$KM-8z$G$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>EGD(Entropy Gathering Daemon)に対応し乱数のシードを得ます。<BR>
+        SSL を組み込んだ w3m の場合に有効です。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>EMACS_LIKE_LINEEDIT
-    <DD>$B:G2<9T$G$NF~NO;~!"(BEmacs $B%i%$%/$J%-!<3d$jEv$F$K$J$j$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>最下行での入力時、Emacs ライクなキー割り当てになります。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>ENABLE_REMOVE_TRAILINGSPACES
-    <DD>$B9TKv$N6uGr$r<h$j=|$-$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>行末の空白を取り除きます。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>LABEL_TOPLINE
-    <DD>$B%i%Y%k$KHt$s$@:]$N%+!<%=%k0LCV$r2hLL$N@hF,$K$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>ラベルに飛んだ際のカーソル位置を画面の先頭にします。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 <DT>NEXTPAGE_TOPLINE
-    <DD>$B%Z%$%80\F0$G!"<!$N2hLL$K0\F0$7$?:]$N%+!<%=%k0LCV$rI,$:2hLL$N@hF,$K$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(Bundef $B$N>l9g!"J8=q$NKvHx0J9_$K6u9T$,F~$i$J$$$h$&$KD4@0$5$l$k$?$a!"I,$:$7$b%+!<%=%k0LCV$O2hLL$N@hF,$KMh$^$;$s!#(B
+    <DD>ペイジ移動で、次の画面に移動した際のカーソル位置を必ず画面の先頭にします。<BR>
+        既定値は <B>#undef</B> です。undef の場合、文書の末尾以降に空行が入らないように調整されるため、必ずしもカーソル位置は画面の先頭に来ません。
     </DD>
-<P><DIV ALIGN="left"><B>###&nbsp;$B0J9_$N(B define $B$O(B @W3M.version@ $B$G$O(B unofficial $B$JJ*$G$9(B&nbsp;###</B></DIV>
+<P><DIV ALIGN="left"><B>###&nbsp;以降の define は @W3M.version@ では unofficial な物です&nbsp;###</B></DIV>
 <P>
 <DT>MENU_THIN_FRAME
-    <DD>$B%a%K%e!<OH$K:Y$$7S@~$r;HMQ$7$^$9!#(B<BR>
-        $B4{DjCM$O(B <B>#undef</B> $B$G$9!#(B
+    <DD>メニュー枠に細い罫線を使用します。<BR>
+        既定値は <B>#undef</B> です。
     </DD>
 </DL>
 
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="make">make $B$K$D$$$F(B</A></H2>
-<!-- make $B;~$N@bL@(B -->
+<H2><A NAME="make">make について</A></H2>
+<!-- make 時の説明 -->
 <DIV>
-<P><A HREF="#configure">configure</A> $B$r<B9T$7$F!"I,MW$K1~$8$F(B <A HREF="config_h">config.h $B$N=$@5(B</A>$B$r9T$C$?8e!"(B<B>make</B> $B$r<B9T$7$^$9!#(B
-<P>make $B;~$K%3%s%Q%$%k%(%i!<$,H/@8$9$k$h$&$G$"$l$P!"(B
+<P><A HREF="#configure">configure</A> を実行して、必要に応じて <A HREF="config_h">config.h の修正</A>を行った後、<B>make</B> を実行します。
+<P>make 時にコンパイルエラーが発生するようであれば、
 <BLOCKQUOTE>
     % make | &amp; tee MAKE.log
 </BLOCKQUOTE>
-$B$r<B9T$7$F!"%m%0%U%!%$%k$r85$KLdBj$N2r7h$r9T$C$F$/$@$5$$!#(B
-<P>$B$^$?!";vA0$K3:Ev%P!<%8%g%s$G$N(B w3m $B$N%Q%C%A$rF~<j$7$F$$$k>l9g$K$O!"(B<B>patch</B> $B$r<B9T$7$F$+$i(B make $B$r9T$C$F$/$@$5$$!#(B
-<P>make $B$,40N;$7!"%$%s%9%H!<%k$9$k>l9g$K$O!"(Broot $B$K$J$C$F!"(B
+を実行して、ログファイルを元に問題の解決を行ってください。
+<P>また、事前に該当バージョンでの w3m のパッチを入手している場合には、<B>patch</B> を実行してから make を行ってください。
+<P>make が完了し、インストールする場合には、root になって、
 <BLOCKQUOTE>
     % make install
 </BLOCKQUOTE>
-$B$r<B9T$7$F$/$@$5$$!#(B
-<P>$B0J>e$G%$%s%9%H!<%k$O=*N;$G$9!#(B
-<P><A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+を実行してください。
+<P>以上でインストールは終了です。
+<P><A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="tips">$BB>$N(B OS $B$G%$%s%9%H!<%k$9$k:]$N(B Tips</A></H2>
-<!-- $B3F<o(B OS $B>e$G(B w3m $B$r%$%s%9%H!<%k$9$k:]$N(B Tips -->
+<H2><A NAME="tips">他の OS でインストールする際の Tips</A></H2>
+<!-- 各種 OS 上で w3m をインストールする際の Tips -->
 <DIV>
 <P><DL>
 <DT>HP-UX
-    <DD>HP $B$N(B (gcc $B$G$O$J$$(B) C $B%3%s%Q%$%i$G%3%s%Q%$%k$9$k>l9g!"(B<A HREF="#configure">configure</A> $B$N(B
+    <DD>HP の (gcc ではない) C コンパイラでコンパイルする場合、<A HREF="#configure">configure</A> の
         <BLOCKQUOTE>
         Input your favorite C-compiler.<BR>
         (Default: cc)
         </BLOCKQUOTE>
-        $B$K!"(B<B>cc -Aa -D_HPUX_SOURCE</B> $B$HEz$($F$/$@$5$$!#(B<B>cc</B> $B$@$1$@$H%3%s%Q%$%k$,DL$j$^$;$s!#(B<B>gcc</B> $B$J$i$PIaDL$K%3%s%Q%$%k$ODL$j$^$9$,!"(Bgcc $B$N%P!<%8%g%s$,8E$a$N>l9g$K$O(B <B>-g</B> $B$r(B<U>$BIU$1$J$$(B</U>$B$G$/$@$5$$!#(B
+        に、<B>cc -Aa -D_HPUX_SOURCE</B> と答えてください。<B>cc</B> だけだとコンパイルが通りません。<B>gcc</B> ならば普通にコンパイルは通りますが、gcc のバージョンが古めの場合には <B>-g</B> を<U>付けない</U>でください。
     </DD>
 <DT>OS/2
-    <DD><B>emx</B> $B$r;H$&;v$G(B w3m $B$r%3%s%Q%$%k$9$k;v$,$G$-$^$9!#(B<BR>
-        $B$^$::G=i$K!"(B
+    <DD><B>emx</B> を使う事で w3m をコンパイルする事ができます。<BR>
+        まず最初に、
         <BLOCKQUOTE>
         % cd gc
         % make -f EMX_MAKEFILE
         </BLOCKQUOTE>
-        $B$r<B9T$7$F(B GC $B%i%$%V%i%j$r%3%s%Q%$%k$7$F$*$$$F$+$i!"(Bw3m $BK\BN$r%3%s%Q%$%k$7$^$9!#$J$*!"%+%i!<I=<($,JQ$K$J$k$i$7$$$N$G!"%b%N%/%mMQ$K%3%s%Q%$%k$7$?J}$,NI$$$G$7$g$&!#(B
+        を実行して GC ライブラリをコンパイルしておいてから、w3m 本体をコンパイルします。なお、カラー表示が変になるらしいので、モノクロ用にコンパイルした方が良いでしょう。
     </DD>
 <DT>Windows
-    <DD><A HREF="README.cygwin">README.cygwin</A> $B$r$4Mw$/$@$5$$!#(B
+    <DD><A HREF="README.cygwin">README.cygwin</A> をご覧ください。
     </DD>
 <DT>MS-DOS
-    <DD><A HREF="README.dj">README.dj</A> $B$r$4Mw$/$@$5$$!#(B
+    <DD><A HREF="README.dj">README.dj</A> をご覧ください。
     </DD>
 </DL>
 
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

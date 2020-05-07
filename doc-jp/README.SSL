@@ -1,76 +1,76 @@
-SSL ���ݡ��ȤˤĤ���
+SSL サポートについて
 
-                                                         (2000/11/07)  ��������
+                                                         (2000/11/07)  岡部克也
                                                         okabek@guitar.ocn.ne.jp
-                                                         (2001/12/27)  ����ʸ��
+                                                         (2001/12/27)  鵜飼文敏
                                                               ukai@debian.or.jp
 
- �� OpenSSL �饤�֥����̤���, SSL �򥵥ݡ��Ȥ��Ƥ��ޤ�.
-    ���餫���ᥤ�󥹥ȡ��뤷�Ƥ����Ƥ�������.
+ ・ OpenSSL ライブラリを通じて, SSL をサポートしています.
+    あらかじめインストールしておいてください.
    
- �� OpenSSL �饤�֥�꤬���󥹥ȡ��뤵��Ƥ���� configure ������ץȼ¹Ի��˼�
-    ưŪ�˸��Ф�������Ѳ�ǽ�Ȥʤ�ޤ�.
-    �⤷���ޤ�ư���ʤ��Ȥ���, config.h ������å����ƤߤƤ�������. SSL �����Ѥ�
-    �뤿��ˤ�, config.h ��, USE_SSL �ޥ������������Ƥ���ɬ�פ�����ޤ�.
-    �����, SSL ǧ�ڥ��ݡ��Ȥ����Ѥ������, USE_SSL_VERIFY �ޥ���������å���
-    �ƤߤƤ�������.
-    ����ѥ���ǥ��顼���Ф����, ��󥫥ե饰�� `-lssl -lcrypto', ����ѥ���
-    �ե饰�� '-I(SSLeay/OpenSSL �Υإå�������ǥ��쥯�ȥ�)' �����뤫��ǧ���Ƥ�
-    ������.
+ ・ OpenSSL ライブラリがインストールされていれば configure スクリプト実行時に自
+    動的に検出されて利用可能となります.
+    もしうまく動かないときは, config.h をチェックしてみてください. SSL を利用す
+    るためには, config.h で, USE_SSL マクロが定義されている必要があります.
+    さらに, SSL 認証サポートを利用する場合は, USE_SSL_VERIFY マクロもチェックし
+    てみてください.
+    コンパイルでエラーが出る場合は, リンカフラグに `-lssl -lcrypto', コンパイラ
+    フラグに '-I(SSLeay/OpenSSL のヘッダがあるディレクトリ)' があるか確認してく
+    ださい.
    
-    SSL ���ݡ��Ȥ�ͭ���ˤʤäƤ��뤫�ɤ�����, Option Setting Panel �ˡ�SSL����
-    ��פ��ޤޤ�Ƥ��뤫�ɤ����ǳ�ǧ�Ǥ��ޤ�.
+    SSL サポートが有効になっているかどうかは, Option Setting Panel に「SSLの設
+    定」が含まれているかどうかで確認できます.
    
- �� SSL �˴ؤ��ưʲ������꤬��ǽ�ˤʤäƤޤ�:
+ ・ SSL に関して以下の設定が可能になってます:
 
     ssl_forbid_method
-        �Ȥ�ʤ�SSL�᥽�åɤΥꥹ��(2: SSLv2, 3: SSLv3, t: TLSv1.0,
+        使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1.0,
         5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)
-        (�ǥե���Ȥ�2, 3).
+        (デフォルトは2, 3).
     ssl_verify_server ON/OFF
-        SSL�Υ�����ǧ�ڤ�Ԥ�(�ǥե���Ȥ�ON).
-    ssl_cert_file �ե�����̾
-        SSL�Υ��饤�������PEM����������ե�����(�ǥե���Ȥ�<NULL>).
-    ssl_key_file �ե�����̾
-        SSL�Υ��饤�������PEM������̩���ե�����(�ǥե���Ȥ�<NULL>).
-    ssl_ca_path �ǥ��쥯�ȥ�̾
-        SSL��ǧ�ڶɤ�PEM���������񷲤Τ���ǥ��쥯�ȥ�ؤΥѥ�
-        (�ǥե���Ȥ�<NULL>).
-    ssl_ca_file �ե�����̾
-        SSL��ǧ�ڶɤ�PEM���������񷲤Υե�����(�ǥե���Ȥ�<NULL>).
-    ��������SSLEAY_VERSION_NUMBER >= 0x0800�פʴĶ��Ǥʤ���̵�̤ʥ����ɤ���
-    ��������ʤΤ�, configure����disable���Ƥ������ۤ����褤�Ǥ��礦.
+        SSLのサーバ認証を行う(デフォルトはON).
+    ssl_cert_file ファイル名
+        SSLのクライアント用PEM形式証明書ファイル(デフォルトは<NULL>).
+    ssl_key_file ファイル名
+        SSLのクライアント用PEM形式秘密鍵ファイル(デフォルトは<NULL>).
+    ssl_ca_path ディレクトリ名
+        SSLの認証局のPEM形式証明書群のあるディレクトリへのパス
+        (デフォルトは<NULL>).
+    ssl_ca_file ファイル名
+        SSLの認証局のPEM形式証明書群のファイル(デフォルトは<NULL>).
+    ただし「SSLEAY_VERSION_NUMBER >= 0x0800」な環境でないと無駄なコードが増
+    えるだけなので, configure時にdisableしておいたほうがよいでしょう.
 
-    �ޤ��ºݤ�ǧ�ڤ�Ԥ����, ssl_ca_path�ޤ���ssl_ca_file��, �����Фθ���
-    ��̾���Ƥ���ǧ�ڶɤξ������ (ssl_verify_server��ON/OFF�˴ط�̵��) ����
-    ���ʤ��ȥ�����ǧ�ڤ��������ޤ���
+    また実際に認証を行う場合, ssl_ca_pathまたはssl_ca_fileで, サーバの鍵に
+    署名している認証局の証明書を (ssl_verify_serverのON/OFFに関係無く) 指定
+    しないとサーバ認証は成功しません。
 
-    �̾�Ȥ��Ƥ���ǧ�ڶɤξ�����ϰʲ��ΤȤ����ʤɤ�������Ǥ��ޤ���
+    通常使われている認証局の証明書は以下のところなどから入手できます。
 
-    * mozilla�Υ������˴ޤޤ�Ƥ��� 
+    * mozillaのソースに含まれている 
        mozilla/security/nss/lib/ckfw/builtins/certdata.txt
-      ����ź�դ� ruby script �� *.pem�ե�����Ȥ��ƤȤ���������
+      から添付の ruby script で *.pemファイルとしてとりだしたもの
 
 	% ruby certdata2pem.rb < certdata.txt
 
-      �ǥ����ȥǥ��쥯�ȥ�� *.pem�ե������Ȥ����
-      openssl�� c_rehash ���ޥ�ɤ� hash symlink ��������ޤ���
-      ���Υǥ��쥯�ȥ�� ssl_ca_path �����ꤹ�뤳�Ȥ��Ǥ��ޤ���
-      �⤷���ϡ�*.pem ��ޤȤ᤿��ĤΥե������������Ƥ�����
-      ����� ssl_ca_file �����ꤹ�뤳�Ȥ��Ǥ��ޤ���
+      でカレントディレクトリに *.pemファイルをとりだし
+      opensslの c_rehash コマンドで hash symlink を作成します。
+      このディレクトリを ssl_ca_path に設定することができます。
+      もしくは、*.pem をまとめた一つのファイルを作成しておけば
+      それを ssl_ca_file に設定することができます。
 
-   * mod_ssl�Υ������˴ޤޤ�Ƥ��� pkg.sslcfg/ca-bundle.crt
-      ����� PEM�ʤΤǡ����Υե�����Υե�ѥ�̾�� ssl_ca_file ��
-      ���ꤹ�뤳�Ȥ��Ǥ��ޤ���
+   * mod_sslのソースに含まれている pkg.sslcfg/ca-bundle.crt
+      これは PEMなので、このファイルのフルパス名を ssl_ca_file に
+      設定することができます。
 
- �� �С������ 0.9.5 �ʹߤ� OpenSSL �饤�֥���, ������������뤿��˴��Ĥ�
-    �Υ����ɤ����ꤹ��ɬ�פ�����ޤ�.
-    �ǥե���ȤǤ� /dev/urandom ������Ф�������Ѥ��ޤ���, ̵����� w3m ����
-    ���������ޤ�. �⤷, EGD (Entropy Gathering Daemon) �ޤ��� PRNGD (Pseudo
-    Random Number Generator Daemon) �����ѤǤ���Ķ��Ǥ����Ȥ���������,
-    USE_EGD �ޥ���������å����ƤߤƤ�������.
+ ・ バージョン 0.9.5 以降の OpenSSL ライブラリは, 乱数を初期化するために幾つか
+    のシードを設定する必要があります.
+    デフォルトでは /dev/urandom があればそれを利用しますが, 無ければ w3m 内部
+    で生成します. もし, EGD (Entropy Gathering Daemon) または PRNGD (Pseudo
+    Random Number Generator Daemon) が利用できる環境でこれを使いたい場合は,
+    USE_EGD マクロをチェックしてみてください.
 
- �� URL
+ ・ URL
 
     OpenSSL - http://www.openssl.org/
     PRNGD - http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html

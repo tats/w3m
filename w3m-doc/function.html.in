@@ -5,67 +5,67 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>FUNCTION&nbsp;- $B5!G=>\:Y(B -</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>FUNCTION&nbsp;- 機能詳細 -</TITLE>
 </HEAD>
 
 <BODY>
 
-<H1><A NAME="index">$B5!G=>\:Y(B</A></H1>
+<H1><A NAME="index">機能詳細</A></H1>
 <DIV>
-<!-- w3m $B$N3F5!G=$K$D$$$F$N>\:Y@bL@$r5-$9(B -->
+<!-- w3m の各機能についての詳細説明を記す -->
 </DIV>
 	<UL>
-		<LI><A HREF="#url">$BBP1~$7$F$$$k(B URL</A>
-		<LI><A HREF="#html">$BBP1~$7$F$$$k(B HTML</A>
+		<LI><A HREF="#url">対応している URL</A>
+		<LI><A HREF="#html">対応している HTML</A>
 		<LI><A HREF="#ssl">SSL</A>
 		<LI><A HREF="#cookie">cookie</A>
-		<LI><A HREF="#local_CGI">$B%m!<%+%k(B CGI $B5!G=(B</A>
+		<LI><A HREF="#local_CGI">ローカル CGI 機能</A>
 	</UL>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="url">$BBP1~$7$F$$$k(B URL</A></H2>
-<!-- w3m $B$,2r<a2DG=$J(B URL $B$K$D$$$F$N@bL@(B -->
+<H2><A NAME="url">対応している URL</A></H2>
+<!-- w3m が解釈可能な URL についての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="html">$BBP1~$7$F$$$k(B HTML</A></H2>
-<!-- w3m $B$,BP1~$7$F$$$k(B HTML $B$K$D$$$F(B -->
+<H2><A NAME="html">対応している HTML</A></H2>
+<!-- w3m が対応している HTML について -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
 <H2><A NAME="ssl">SSL</A></H2>
-<!-- SSL $B$K$D$$$F$N@bL@(B -->
+<!-- SSL についての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
 <H2><A NAME="cookie">cookie</A></H2>
-<!-- cookie $B$K$D$$$F$N@bL@(B -->
+<!-- cookie についての説明 -->
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="local_CGI">$B%m!<%+%k(B CGI $B5!G=(B</A></H2>
-<!-- $B%m!<%+%k(B CGI $B5!G=$K$D$$$F$N@bL@(B -->
+<H2><A NAME="local_CGI">ローカル CGI 機能</A></H2>
+<!-- ローカル CGI 機能についての説明 -->
 
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

@@ -2,71 +2,71 @@
 
 <HTML>
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
-<TITLE>w3m $B%I%-%e%a%s%H@0Hw$NJ}?K(B</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
+<TITLE>w3m ドキュメント整備の方針</TITLE>
 </HEAD>
 
 <BODY>
 
 <DIV ALIGN="center">
-w3m $B%I%-%e%a%s%H@0Hw$NJ}?K(B
+w3m ドキュメント整備の方針
 </DIV>
 <DIV ALIGN="right">
 Yoshinobu Sakane    February 15, 2001
 </DIV>
 
 <OL>
-<H1><LI>$BJ}?K(B</H1>
+<H1><LI>方針</H1>
 <DIV>
 	<P>
-	  w3m$B$K4X$9$k%I%-%e%a%s%HN`$r0J2<$NJ}?K$G@0Hw$7$?$$$H9M$($F$$$^$9!#(B
+	  w3mに関するドキュメント類を以下の方針で整備したいと考えています。
 	<P>
 	<UL>
-		<LI>$B8=;~E@(B(w3m-0.1.11-pre)$B$G;6J8$7$F$$$k%I%-%e%a%s%H$r0lDj$N%k!<%k$N$b$H$K$^$H$a$k(B
-		<LI>$BF~LgDxEY$N%I%-%e%a%s%H$H?<$_$K$O$a$k(B:-)$B$?$a$N%I%-%e%a%s%H$rMQ0U$9$k(B
-		<LI>HTML$BHG$H%W%l%$%s%F%-%9%HHG$rMQ0U$9$k!#$?$@$7!"%=!<%9$H$J$k%I%-%e%a%s%H$O0l$D(B
+		<LI>現時点(w3m-0.1.11-pre)で散文しているドキュメントを一定のルールのもとにまとめる
+		<LI>入門程度のドキュメントと深みにはめる:-)ためのドキュメントを用意する
+		<LI>HTML版とプレインテキスト版を用意する。ただし、ソースとなるドキュメントは一つ
 	</UL>
 </DIV>
 <BR>
 
-<H1><LI>$B9|AH$_%I%-%e%a%s%H$N@bL@(B</H1>
+<H1><LI>骨組みドキュメントの説明</H1>
 <DIV>
 	<P>
 		<TABLE BORDER>
-		<CAPTION>$B!T%3%s%F%s%D!U(B</CAPTION>
+		<CAPTION>《コンテンツ》</CAPTION>
 		<TR>
 			<TD><A HREF="w3mdoc.pl">w3mdoc.pl</A></TD>
-			<TD><A HREF="http://www2u.biglobe.ne.jp/~hsaka/">$B:dK\$5$s(B</A>$B$46`@=$N(Bperl$B%9%/%j%W%H(B</TD>
+			<TD><A HREF="http://www2u.biglobe.ne.jp/~hsaka/">坂本さん</A>ご謹製のperlスクリプト</TD>
 		<TR>
 			<TD><A HREF="mkdocs">mkdocs</A></TD>
-			<TD>$B%I%-%e%a%s%H@07AMQ%7%'%k%9%/%j%W%H(B</TD>
+			<TD>ドキュメント整形用シェルスクリプト</TD>
 		<TR>
 			<TD>README.html</TD>
-			<TD>$B$3$N%U%!%$%k(B</TD>
+			<TD>このファイル</TD>
 		<TR>
 			<TD>*.html.in</TD>
-			<TD>$B3F>O!?@aKh$N%I%-%e%a%s%H%=!<%9(B</TD>
+			<TD>各章／節毎のドキュメントソース</TD>
 		<TR>
 			<TD>*.wd</TD>
-			<TD>$B3F<oDj5A%U%!%$%k(B</TD>
+			<TD>各種定義ファイル</TD>
 		</TABLE>
 	<P>
-		w3mdoc.pl$B$N;H$$J}$K$D$$$F$O!":dK\$5$s$,=q$+$l$?(B<A HREF="sample/README">README</A>$B!"5Z$S!"%5%s%W%k%=!<%9$r;2>H$7$F$/$@$5$$!#(B<br>
+		w3mdoc.plの使い方については、坂本さんが書かれた<A HREF="sample/README">README</A>、及び、サンプルソースを参照してください。<br>
 </DIV>
 <BR>
 
-<H1><LI>$B%I%-%e%a%s%H@0Hw$N?J$aJ}(B</H1>
+<H1><LI>ドキュメント整備の進め方</H1>
 <DIV>
 	<P>
 		<UL>
-			<LI>$BM-;V(B($B0J9_!"(B<B>w3m-doc$B%a%s%P(B</B>$B$H5-$9(B)$B$K$h$kJ,3d:n6H(B
-			<LI>$BJ,3d$NC10L$O(Bw3m-doc$B%a%s%P4V$GD4@0(B
-			<LI>$B:#2s<($99|AH$_$O$"$/$^$G;X?K!#>u67!?ET9g$K$h$j(Bw3m-doc$B%a%s%P4V$GD4@0$7JQ99$9$k(B
-			<LI>$B$^$:$OF|K\8lHG$N%I%-%e%a%s%H$r:n$j!">u67$r8+$F1QLu$9$k(B
-			<LI>$B$"$kDxEY$G$-$?$H$3$m$+$i!"C`<!!"(Bw3m-dev ML$B%a%s%P$N%l%S%e!<$r<u$1$k(B
+			<LI>有志(以降、<B>w3m-docメンバ</B>と記す)による分割作業
+			<LI>分割の単位はw3m-docメンバ間で調整
+			<LI>今回示す骨組みはあくまで指針。状況／都合によりw3m-docメンバ間で調整し変更する
+			<LI>まずは日本語版のドキュメントを作り、状況を見て英訳する
+			<LI>ある程度できたところから、逐次、w3m-dev MLメンバのレビューを受ける
 		</UL>
 	<P>
-		$B$H!"9M$($F$$$^$9!#(B
+		と、考えています。
 </DIV>
 
 </OL>

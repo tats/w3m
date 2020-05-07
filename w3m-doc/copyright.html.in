@@ -5,7 +5,7 @@
 @include contain.wd
 
 <HEAD>
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-2022-jp">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=utf-8">
 <TITLE>COPYRIGHT&nbsp;- Copyright -</TITLE>
 </HEAD>
 
@@ -13,33 +13,33 @@
 
 <H1><A NAME="index">Copyright</A></H1>
 <DIV>
-<!-- w3m$B$N(BCopyright$B$K4X$7$F(B -->
+<!-- w3mのCopyrightに関して -->
 </DIV>
 	<UL>
-        <LI><A HREF="#copyright">$BCx:n8"!"%i%$%;%s%9(B</A>
-        <LI><A HREF="#thanks">$B<U<-(B</A>
+        <LI><A HREF="#copyright">著作権、ライセンス</A>
+        <LI><A HREF="#thanks">謝辞</A>
 	</UL>
 
 <DIV>
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="copyright">$BCx:n8"!"%i%$%;%s%9(B</A></H2>
-<!-- w3m $B$NCx:n8"!"%i%$%;%s%9$K$D$$$F$N@bL@(B -->
+<H2><A NAME="copyright">著作権、ライセンス</A></H2>
+<!-- w3m の著作権、ライセンスについての説明 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<H2><A NAME="thanks">$B<U<-(B</A></H2>
-<!-- $B<U<-(B -->
+<H2><A NAME="thanks">謝辞</A></H2>
+<!-- 謝辞 -->
 <DIV>
-<A HREF="#index">$B$3$N%Z!<%8$N@hF,$KLa$k(B</A>
+<A HREF="#index">このページの先頭に戻る</A>
 </DIV>
 <HR>
 
-<A HREF="@DOC.index@">$B%H%C%W%Z%$%8$KLa$k(B</A>
+<A HREF="@DOC.index@">トップペイジに戻る</A>
 
 </BODY>
 </HTML>

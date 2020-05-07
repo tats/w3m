@@ -3,6 +3,7 @@ w3m (0.5.3-39) UNRELEASED; urgency=medium
   * Wrap long lines in changelog entries: 0.2.1-15, 0.2.1-12, 0.1.9-5,
     0.1.9-4, 0.1.9-3, 0.0.19991015-2, 0.0.19990916-1, 0.0.19990815-2,
     0.0.19990526-1.
+  * Set upstream metadata fields: Archive.
 
  -- Debian Janitor <janitor@jelmer.uk>  Thu, 07 May 2020 21:05:18 +0000
 

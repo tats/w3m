@@ -16,24 +16,29 @@ w3m [OPTION]... [ \fIfile\fP | \fIURL\fP ]...
 .if \nD==0 .nr D 5
 
 \fIw3m\fP is a text based browser which can display local or remote
-web pages as well as other documents. It is able to process HTML
+web pages as well as other documents.
+It is able to process HTML
 tables and frames but it ignores JavaScript and Cascading Style
-Sheets. \fIw3m\fP can also serve as a pager for text files named as
+Sheets.
+\fIw3m\fP can also serve as a pager for text files named as
 arguments or passed on standard input, and as a general purpose
 directory browser.
 
 \fIw3m\fP organizes its content in buffers or tabs, allowing easy
-navigation between them. With the w3m-img extension installed, \fIw3m\fP can
-display inline graphics in web pages. And whenever \fIw3m\fP's HTML
+navigation between them.
+With the w3m-img extension installed, \fIw3m\fP can
+display inline graphics in web pages.
+And whenever \fIw3m\fP's HTML
 rendering capabilities do not meet your needs, the target URL can be
 handed over to a graphical browser with a single command.
 
-For help with runtime options, press \(lqH\(rq while running \fIw3m\fP. 
+For help with runtime options, press \(lqH\(rq while running \fIw3m\fP.
 
 .SH ARGUMENTS
 
 When given one or more command line arguments, \fIw3m\fP will handle
-targets according to content type. For web, \fIw3m\fP gets this
+targets according to content type.
+For web, \fIw3m\fP gets this
 information from HTTP headers; for relative or absolute file system
 paths, it relies on filenames.
 
@@ -60,18 +65,24 @@ deactivate mouse support
 display each line's number
 .TP
 \fB\-N\fP
-distribute multiple command line arguments to tabs. By default, a
+distribute multiple command line arguments to tabs.
+By default, a
 stack of buffers is used
-.TP 
+.TP
 \fB\-ppc \fInum\fR
-width of \fInum\fR pixels per character. Range of 4.0 to 32.0, default 8.0.
-Larger values will make tables narrower. (Implementation not verified)
+width of \fInum\fR pixels per character.
+Range of 4.0 to 32.0, default 8.0.
+Larger values will make tables narrower.
+(Implementation not verified)
 .TP
 \fB\-ppl \fInum\fR
-height of \fInum\fR pixels per line. Range of 4.0 to 64.0. (Implementation not verified)
+height of \fInum\fR pixels per line.
+Range of 4.0 to 64.0.
+(Implementation not verified)
 .TP
 \fB\-title\fP, \fB\-title=TERM\fP
-use the buffer name as terminal title string. With specified TERM,
+use the buffer name as terminal title string.
+With specified TERM,
 this sets the title configuration style accordingly
 .TP
 \fB\-v\fP
@@ -84,7 +95,8 @@ toggle wrapping mode in searches
 do not initialize/deinitialize the terminal
 .TP
 \fB+\fInum\fR
-go to line \fInum\fR; only effective for \fInum\fR larger than the number of lines in the terminal
+go to line \fInum\fR;
+only effective for \fInum\fR larger than the number of lines in the terminal
 .SS Browser options
 .TP
 \fB\-cols \fInum\fR
@@ -100,23 +112,27 @@ render frames
 use or do not use graphic characters for drawing HTML table and frame borders
 .TP
 \fB\-header \fIstring\fR
-append \fIstring\fR to the HTTP(S) request. Expected to match the header syntax \f(CWVariable: Value\fP
+append \fIstring\fR to the HTTP(S) request.
+Expected to match the header syntax \f(CWVariable: Value\fP
 .TP
 \fB\-m\fP
-Render the body of Usenet messages according to the header \(lqContent-type\(rq 
+Render the body of Usenet messages according to the header \(lqContent-type\(rq
 .TP
 \fB\-no-proxy\fP
 do not use proxy
 .TP
 \fB\-post \fIfile\fR
-use POST method to upload data defined in \fIfile\fR. The syntax to be used
+use POST method to upload data defined in \fIfile\fR.
+The syntax to be used
 is \f(CWvar1=value1[&var2=value2]...\fP
 .TP
 \fB\-4\fP
-IPv4 only. Corresponds to dns_order=4 in configuration files
+IPv4 only.
+Corresponds to dns_order=4 in configuration files
 .TP
 \fB\-6\fP
-IPv6 only. Corresponds to dns_order=6 in configuration files
+IPv6 only.
+Corresponds to dns_order=6 in configuration files
 .SS Text pager options
 .TP
 \fB\-l \fInum\fR
@@ -132,7 +148,8 @@ characters) instead of processing them
 squeeze multiple blank lines into one
 .TP
 \fB\-t\fP \fInum\fP
-set tab width to \fInum\fR columns. No effect on stdout
+set tab width to \fInum\fR columns.
+No effect on stdout
 .SS Data type/encoding options
 .TP
 \fB\-I \fIcharset\fR
@@ -146,7 +163,8 @@ explicit characterization of input data by MIME type
 .SS Options for data output, followed by immediate exit
 .TP
 \fB\-dump\fP
-dump rendered page into stdout. Set implicitly when output is directed
+dump rendered page into stdout.
+Set implicitly when output is directed
 to a file or pipe
 .TP
 \fB\-dump_source\fP
@@ -181,64 +199,65 @@ use \fIfile\fR instead of the default configuration file
 DO NOT USE
 .TP
 \fB\-o \fIoption=value\fR
-modify one configuration item with an explicitly given value; without \fIoption=value\fR, equivalent to \fB-show-option\fR
+modify one configuration item with an explicitly given value;
+without \fIoption=value\fR, equivalent to \fB\-show-option\fR
 .TP
 \fB\-reqlog\fP
 log headers of HTTP communication in file \f(CW~/.w3m/request.log\fP
 .SH EXAMPLES
-.SS Pager-like usage 
+.SS Pager-like usage
 .TP
-Combine snippets of HTML code and preview the page 
+Combine snippets of HTML code and preview the page
 .EX
-$ cat header.html footer.html | w3m -T text/html
+$ cat header.html footer.html | w3m \-T text/html
 .EE
 .TP
-Compare two files using tabs 
+Compare two files using tabs
 .EX
-$ w3m -N config.old config
+$ w3m \-N config.old config
 .EE
-.SS Browser-like usage 
+.SS Browser-like usage
 .TP
 Display web content in monochrome terminal
 .EX
-$ w3m -M http://w3m.sourceforge.net
+$ w3m \-M http://w3m.sourceforge.net
 .EE
 .TP
 Display embedded graphics
 .EX
-$ w3m -o auto_image=TRUE http://w3m.sourceforge.net
+$ w3m \-o auto_image=TRUE http://w3m.sourceforge.net
 .EE
 .TP
 Display content from Usenet
 .EX
-$ w3m -m nntp://news.aioe.org/comp.os.linux.networking
+$ w3m \-m nntp://news.aioe.org/comp.os.linux.networking
 .EE
 .TP
-Upload data for a URL using the POST method 
+Upload data for a URL using the POST method
 .EX
-$ w3m -post - http://example.com/form.php <<<'a=0&b=1'
+$ w3m \-post \- http://example.com/form.php <<<'a=0&b=1'
 .EE
 .SS Filter-like usage
 .TP
 Convert an HTML file to plain text with a defined line length
 .EX
-$ w3m -cols 40 foo.html > foo.txt
+$ w3m \-cols 40 foo.html > foo.txt
 .EE
 .TP
 Output the bookmarks page as text with an appended list of links
 .EX
-$ w3m -B -o display_link_number=1 > out.txt
+$ w3m \-B \-o display_link_number=1 > out.txt
 .EE
 .TP
 Conversion of file format and character encoding
 .EX
-$ w3m -T text/html -I EUC-JP -O UTF-8 < foo.html > foo.txt
+$ w3m \-T text/html \-I EUC-JP \-O UTF-8 < foo.html > foo.txt
 .EE
 .SS Start with no input
 .TP
 Welcome users with a built-in page
 .EX
-$ w3m -v
+$ w3m \-v
 .EE
 .\".SH Errors
 .SH ENVIRONMENT
@@ -247,13 +266,13 @@ fallback target for use if it is invoked without one.
 .SH FILES
 .TP
 \f(CW~/.w3m/bookmark.html\fP
-default bookmark file 
+default bookmark file
 .TP
 \f(CW~/.w3m/config\fP
 user defined configuration file; overrides \f(CW/etc/w3m/config\fP
 .TP
 \f(CW~/.w3m/cookie\fP
-cookie jar; written on exit, read on launch   
+cookie jar; written on exit, read on launch
 .TP
 \f(CW~/.w3m/history\fP
 browser history - visited files and URLs
@@ -282,7 +301,9 @@ contains predefined values to fill recurrent HTML forms
 .\" .I $~/.w3m/urimethodmap
 .\" ???
 .SH SEE ALSO
-README and example files are to be found in the doc directory of your \fIw3m\fP installation. Recent information about \fIw3m\fP may be found on 
+README and example files are to be found in the doc directory of your
+\fIw3m\fP installation.
+Recent information about \fIw3m\fP may be found on
 .UR http://w3m.sourceforge.net
 the project's web pages at
 .UE
@@ -290,7 +311,7 @@ the project's web pages at
 \fIw3m\fP has incorporated code from several sources.
 Users have contributed patches and suggestions over time.
 .SH AUTHOR
-.UR aito@fw.ipsj.or.jp
+.MT aito@fw.ipsj.or.jp
 Akinori ITO
-.UE
+.ME
 

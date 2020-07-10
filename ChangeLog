@@ -1,3 +1,15 @@
+2020-07-11  Bjarni Ingi Gislason  <bjarniig@rhi.hi.is>
+
+	* doc/w3m.1: Fix some source formatting in the manual.
+	- Begin a sentence on a new line.
+	- Split long lines (> 80).
+	- Fix warnings from "mandoc -Tlint".
+	- Remove space at end of lines.
+	- Change a HYPHEN-MINUS (code 0x55, 2D) to a dash (minus) if it matches
+	  " -[:alpha:]" or \[aq]-[:alpha:] (for options).
+	- Use the macros .MT/.ME for e-mail addresses.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=963801#5
+
 2020-05-07  Shun Sakai  <sorairolake@protonmail.ch>
 
 	* Bonus/README, doc-jp/FAQ.html, doc-jp/HISTORY, doc-jp/MANUAL.html:

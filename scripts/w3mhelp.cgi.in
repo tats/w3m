@@ -72,22 +72,26 @@ local (%funckeydesc, $key, $fname, $desc);
 %funcname = (%funcname, %buf_funcname, %lineedit_funcname, %menu_funcname);
 
 %funcdesc = (%funcdesc, %buf_funcdesc, %lineedit_funcdesc, %menu_funcdesc);
-while (($fname, $desc) = each %funcdesc) {
-    $funckeydesc{$funcname{$fname}} = "$fname\n$desc\n";
+# sort for consistent order each time this is run
+foreach my $fname (sort keys %funcdesc) {
+    $funckeydesc{$funcname{$fname}} = "$fname\n$funcdesc{$fname}\n";
 }
 
-while (($key, $fname) = each %keyfunc) {
+foreach $key (sort keys %keyfunc) {
     $keydata{$key} && next;
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+    $funckeydesc{$funcname{$keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %buf_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %buf_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$buf_keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %lineedit_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %lineedit_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$lineedit_keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %menu_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %menu_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$menu_keyfunc{$key}}} .= "$key,";
 }
 
 print <<HEADING;

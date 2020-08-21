@@ -177,7 +177,7 @@ static int OptionEncode = FALSE;
 #define CMT_USE_DICTCOMMAND  N_("Enable dictionary lookup through CGI")
 #define CMT_DICTCOMMAND  N_("URL of dictionary lookup command")
 #endif				/* USE_DICT */
-#define CMT_IGNORE_NULL_IMG_ALT	N_("Display link name for images lacking ALT")
+#define CMT_IGNORE_NULL_IMG_ALT	N_("Display link name for images with null alt text")
 #define CMT_IFILE        N_("Index file for directories")
 #define CMT_RETRY_HTTP   N_("Prepend http:// to URL automatically")
 #define CMT_DEFAULT_URL  N_("Default value for open-URL command")

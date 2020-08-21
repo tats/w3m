@@ -503,7 +503,7 @@ msgid "URL of dictionary lookup command"
 msgstr "辞書引きコマンドのURL"
 
 #: rc.c:180
-msgid "Display link name for images lacking ALT"
+msgid "Display link name for images with null alt text"
 msgstr "空のIMG ALT属性の時にリンク名を表示する"
 
 #: rc.c:181

@@ -507,8 +507,8 @@ msgid "URL of dictionary lookup command"
 msgstr "字典查詢命令的網址"
 
 #: rc.c:180
-msgid "Display link name for images lacking ALT"
-msgstr "對缺少 ALT 的圖片顯示連結名稱"
+msgid "Display link name for images with null alt text"
+msgstr "對 ALT 為空白的圖片顯示連結名稱"
 
 #: rc.c:181
 msgid "Index file for directories"

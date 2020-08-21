@@ -268,10 +268,11 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 139 HTML_SMALL */
     {"/small", NULL, 0, TFLG_END},	/* 140 HTML_N_SMALL */
 
-    {NULL, NULL, 0, 0},		/* 141 Undefined */
-    {NULL, NULL, 0, 0},		/* 142 Undefined */
-    {NULL, NULL, 0, 0},		/* 143 Undefined */
-    {NULL, NULL, 0, 0},		/* 144 Undefined */
+    {"figure", ALST_P, MAXA_P, 0},		/* 141 HTML_FIGURE */
+    {"/figure", NULL, 0, 0},			/* 142 HTML_N_FIGURE */
+    {"figcaption", ALST_P, MAXA_P, 0},		/* 143 HTML_FIGCAPTION */
+    {"/figcaption", NULL, 0, TFLG_END},		/* 144 HTML_N_FIGCAPTION */
+
     {NULL, NULL, 0, 0},		/* 145 Undefined */
     {NULL, NULL, 0, 0},		/* 146 Undefined */
     {NULL, NULL, 0, 0},		/* 147 Undefined */

@@ -231,6 +231,10 @@ typedef struct {
 #define HTML_PARAM      138
 #define HTML_SMALL      139
 #define HTML_N_SMALL    140
+#define HTML_FIGURE     141
+#define HTML_N_FIGURE   142
+#define HTML_FIGCAPTION 143
+#define HTML_N_FIGCAPTION   144
 
    /* pseudo tag */
 #define HTML_SELECT_INT     160

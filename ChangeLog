@@ -1,3 +1,13 @@
+2020-08-23  Tatsuya Kinoshita  <tats@debian.org>
+
+	* html.c: Add TFLG_END to "/sup", "/sub" and "/figure" for TagMAP.
+
+2020-08-21  Ambrose Li  <ambrose.li@gmail.com>
+
+	* file.c, html.c, html.h, tagtable.tab:
+	Rudimentary support for figure, figcaption.
+	Origin: https://github.com/tats/w3m/pull/136
+
 2020-08-02  David Spickett  <david.spickett@linaro.org>
 
 	* scripts/w3mhelp.cgi.in:

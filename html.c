@@ -226,10 +226,9 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/noframes", NULL, 0, TFLG_END},	/*  99 HTML_N_NOFRAMES */
 
     {"sup", ALST_NOP, MAXA_NOP, 0},	/* 100 HTML_SUP       */
-    {"/sup", NULL, 0, 0},	/* 101 HTML_N_SUP       */
-    /* FIXME: Should /sup and /sub have TFLG_END ? */
+    {"/sup", NULL, 0, TFLG_END},	/* 101 HTML_N_SUP       */
     {"sub", ALST_NOP, MAXA_NOP, 0},	/* 102 HTML_SUB       */
-    {"/sub", NULL, 0, 0},	/* 103 HTML_N_SUB       */
+    {"/sub", NULL, 0, TFLG_END},	/* 103 HTML_N_SUB       */
     {"link", ALST_LINK, MAXA_LINK, 0},	/*  104 HTML_LINK      */
     {"s", ALST_NOP, MAXA_NOP, 0},		/*  105 HTML_S        */
     {"/s", NULL, 0, TFLG_END},	/*  106 HTML_N_S      */
@@ -267,9 +266,8 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"param", ALST_NOP, MAXA_NOP, 0},		/* 138 HTML_PARAM */
     {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 139 HTML_SMALL */
     {"/small", NULL, 0, TFLG_END},	/* 140 HTML_N_SMALL */
-
     {"figure", ALST_P, MAXA_P, 0},		/* 141 HTML_FIGURE */
-    {"/figure", NULL, 0, 0},			/* 142 HTML_N_FIGURE */
+    {"/figure", NULL, 0, TFLG_END},		/* 142 HTML_N_FIGURE */
     {"figcaption", ALST_P, MAXA_P, 0},		/* 143 HTML_FIGCAPTION */
     {"/figcaption", NULL, 0, TFLG_END},		/* 144 HTML_N_FIGCAPTION */
 

@@ -1,4 +1,5 @@
 /* $Id: file.c,v 1.266 2012/05/22 09:45:56 inu Exp $ */
+/* vi: set sw=4 ts=8 ai sm noet : */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4324,7 +4325,7 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
 
 #define CLOSE_A \
     CLOSE_P; \
-    close_anchor(h_env, obuf);
+    if (!(obuf->flag & RB_HTML5)) close_anchor(h_env, obuf);
 
 #define CLOSE_DT \
     if (obuf->flag & RB_IN_DT) { \
@@ -5175,6 +5176,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 			     "<input type=text name=\"\" accept></form>",
 			     NULL);
 	HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
+    case HTML_DOCTYPE:
+	if (!parsedtag_exists(tag, ATTR_PUBLIC)) {
+	    obuf->flag |= RB_HTML5;
+	}
 	return 1;
     case HTML_META:
 	p = q = r = NULL;

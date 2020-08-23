@@ -661,6 +661,7 @@ struct readbuffer {
 #endif				/* FORMAT_NICE */
 #define RB_DEL		0x100000
 #define RB_S		0x200000
+#define RB_HTML5	0x400000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
 #define RB_SET_ALIGN(obuf,align) {(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }
@@ -673,7 +674,7 @@ struct readbuffer {
    RB_SET_ALIGN(obuf,(obuf)->flag_stack[--(obuf)->flag_sp]); \
 }
 
-/* status flags */
+/* state of token scanning finite state machine */
 #define R_ST_NORMAL 0		/* normal */
 #define R_ST_TAG0   1		/* within tag, just after < */
 #define R_ST_TAG    2		/* within tag */

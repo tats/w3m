@@ -192,6 +192,10 @@ optgroup	HTML_OPTGROUP
 param		HTML_PARAM
 small		HTML_SMALL
 /small		HTML_N_SMALL
+figure		HTML_FIGURE
+/figure		HTML_N_FIGURE
+figcaption	HTML_FIGCAPTION
+/figcaption	HTML_N_FIGCAPTION
 internal	HTML_INTERNAL
 /internal	HTML_N_INTERNAL
 select_int	HTML_SELECT_INT

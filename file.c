@@ -4492,6 +4492,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_Q:
 	HTMLlineproc1("'", h_env);
 	return 1;
+    case HTML_FIGURE:
+    case HTML_N_FIGURE:
     case HTML_P:
     case HTML_N_P:
 	CLOSE_A;
@@ -4506,6 +4508,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->flag |= RB_P;
 	}
 	return 1;
+    case HTML_FIGCAPTION:
+    case HTML_N_FIGCAPTION:
     case HTML_BR:
 	flushline(h_env, obuf, envs[h_env->envc].indent, 1, h_env->limit);
 	h_env->blank_lines = 0;

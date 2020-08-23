@@ -1,9 +1,24 @@
 total=0
 pass=0
 fail=0
-w3m="../w3m -config /dev/null -o ignore_null_img_alt=false"
+w3m="../w3m
+-config
+/dev/null
+-o
+ignore_null_img_alt=false"
 for i in *.html; do
-	if $w3m -I utf-8 -O utf-8 -T text/html < "$i" | diff -u - "`basename "$i" .html`.expected"; then
+	cmd="$w3m
+-I
+utf-8
+-O
+utf-8
+-T
+text/html"
+	opts="`basename "$i" .html`.opts"
+	test -f "$opts" && cmd="$cmd
+`grep -v '^#' $opts`"
+	if (set -x;IFS='
+';$cmd) < "$i" | diff -u - "`basename "$i" .html`.expected"; then
 		pass="`expr 1 + "$pass"`"
 	else
 		fail="`expr 1 + "$fail"`"

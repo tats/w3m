@@ -4930,6 +4930,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	close_anchor(h_env, obuf);
 	return 1;
     case HTML_IMG:
+	if (parsedtag_exists(tag, ATTR_USEMAP))
+	    HTML5_CLOSE_A;
 	tmp = process_img(tag, h_env->limit);
 	HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -5760,8 +5762,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 
 		case HTML_IMG_ALT:
-		    if (parsedtag_exists(tag, ATTR_USEMAP))
-			HTML5_CLOSE_A;
 		    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 #ifdef USE_IMAGE
 			int w = -1, h = -1, iseq = 0, ismap = 0;

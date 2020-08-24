@@ -1,4 +1,5 @@
 /* $Id: file.c,v 1.266 2012/05/22 09:45:56 inu Exp $ */
+/* vi: set sw=4 ts=8 ai sm noet : */
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -4322,9 +4323,12 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
       obuf->flag &= ~RB_P;\
     }
 
+#define HTML5_CLOSE_A \
+    if (obuf->flag & RB_HTML5) close_anchor(h_env, obuf);
+
 #define CLOSE_A \
     CLOSE_P; \
-    close_anchor(h_env, obuf);
+    if (!(obuf->flag & RB_HTML5)) close_anchor(h_env, obuf);
 
 #define CLOSE_DT \
     if (obuf->flag & RB_IN_DT) { \
@@ -5125,6 +5129,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
            HTMLlineproc1(tmp->ptr, h_env);
        return 1;
     case HTML_BUTTON:
+       HTML5_CLOSE_A;
        tmp = process_button(tag);
        if (tmp)
            HTMLlineproc1(tmp->ptr, h_env);
@@ -5179,6 +5184,11 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 			     "<input type=text name=\"\" accept></form>",
 			     NULL);
 	HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
+    case HTML_DOCTYPE:
+	if (!parsedtag_exists(tag, ATTR_PUBLIC)) {
+	    obuf->flag |= RB_HTML5;
+	}
 	return 1;
     case HTML_META:
 	p = q = r = NULL;
@@ -5378,6 +5388,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_EMBED:
+	HTML5_CLOSE_A;
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 		Str s;
@@ -5753,6 +5764,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 
 		case HTML_IMG_ALT:
+		    if (parsedtag_exists(tag, ATTR_USEMAP))
+			HTML5_CLOSE_A;
 		    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 #ifdef USE_IMAGE
 			int w = -1, h = -1, iseq = 0, ismap = 0;

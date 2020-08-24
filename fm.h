@@ -610,6 +610,7 @@ struct readbuffer {
     int flag_sp;
     int status;
     unsigned char end_tag;
+    unsigned char q_level;
     short table_level;
     short nobr_level;
     Anchor anchor;

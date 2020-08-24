@@ -4323,6 +4323,9 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
       obuf->flag &= ~RB_P;\
     }
 
+#define HTML5_CLOSE_A \
+    if (obuf->flag & RB_HTML5) close_anchor(h_env, obuf);
+
 #define CLOSE_A \
     CLOSE_P; \
     if (!(obuf->flag & RB_HTML5)) close_anchor(h_env, obuf);
@@ -5122,6 +5125,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
            HTMLlineproc1(tmp->ptr, h_env);
        return 1;
     case HTML_BUTTON:
+       HTML5_CLOSE_A;
        tmp = process_button(tag);
        if (tmp)
            HTMLlineproc1(tmp->ptr, h_env);
@@ -5380,6 +5384,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_EMBED:
+	HTML5_CLOSE_A;
 	if (view_unseenobject) {
 	    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 		Str s;
@@ -5755,6 +5760,8 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    break;
 
 		case HTML_IMG_ALT:
+		    if (parsedtag_exists(tag, ATTR_USEMAP))
+			HTML5_CLOSE_A;
 		    if (parsedtag_get_value(tag, ATTR_SRC, &p)) {
 #ifdef USE_IMAGE
 			int w = -1, h = -1, iseq = 0, ismap = 0;

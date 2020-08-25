@@ -727,6 +727,11 @@ next_status(char c, int *status)
 	case '>':
 	    *status = R_ST_NORMAL;
 	    break;
+	case 'D':
+	case 'd':
+	    /* could be a !doctype */
+	    *status = R_ST_TAG;
+	    break;
 	default:
 	    *status = R_ST_IRRTAG;
 	}

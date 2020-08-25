@@ -37,6 +37,8 @@ unsigned char ALST_TABLE[] =
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
 };
 #define MAXA_TABLE	MAXA_CORE + 6
+unsigned char ALST_DOCTYPE[] = { ATTR_PUBLIC }; /* only (html and) public should be checked */
+#define MAXA_DOCTYPE	1
 unsigned char ALST_META[] = { ATTR_HTTP_EQUIV, ATTR_CONTENT, ATTR_CHARSET, ATTR_CORE };
 #define MAXA_META	MAXA_CORE + 3
 unsigned char ALST_FRAME[] = { ATTR_SRC, ATTR_NAME, ATTR_CORE };
@@ -221,7 +223,7 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/option", NULL, 0, TFLG_END},	/*  94 HTML_N_OPTION   */
     {"head", ALST_NOP, MAXA_NOP, 0},	/*  95 HTML_HEAD       */
     {"/head", NULL, 0, TFLG_END},	/*  96 HTML_N_HEAD     */
-    {"doctype", ALST_NOP, MAXA_NOP, 0},	/*  97 HTML_DOCTYPE    */
+    {"doctype", ALST_DOCTYPE, MAXA_DOCTYPE, 0},	/*  97 HTML_DOCTYPE    */
     {"noframes", ALST_NOFRAMES, MAXA_NOFRAMES, 0},	/*  98 HTML_NOFRAMES   */
     {"/noframes", NULL, 0, TFLG_END},	/*  99 HTML_N_NOFRAMES */
 
@@ -367,7 +369,7 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"rev", VTYPE_STR, 0},	/* 48 ATTR_REV            */
     {"title", VTYPE_STR, 0},	/* 49 ATTR_TITLE          */
     {"accesskey", VTYPE_STR, 0},	/* 50 ATTR_ACCESSKEY          */
-    {NULL, VTYPE_NONE, 0},	/* 51 Undefined           */
+    {"public", VTYPE_NONE, 0},	/* 51 ATTR_PUBLIC         */
     {NULL, VTYPE_NONE, 0},	/* 52 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 53 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 54 Undefined           */

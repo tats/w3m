@@ -145,7 +145,7 @@ msgstr "沒有通訊協定 (scheme) 的參數一律視作網址"
 
 #: rc.c:73
 msgid "Use _self as default target"
-msgstr "使用 _self 作為預設目標 (_S)"
+msgstr "使用 _self 作為預設目標"
 
 #: rc.c:74
 msgid "Open link on new tab if target is _blank or _new"

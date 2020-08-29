@@ -201,6 +201,8 @@ internal	HTML_INTERNAL
 select_int	HTML_SELECT_INT
 /select_int	HTML_N_SELECT_INT
 option_int	HTML_OPTION_INT
+section		HTML_SECTION
+/section	HTML_N_SECTION
 textarea_int	HTML_TEXTAREA_INT
 /textarea_int	HTML_N_TEXTAREA_INT
 pre_plain	HTML_PRE_PLAIN

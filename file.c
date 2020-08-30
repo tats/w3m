@@ -4800,6 +4800,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 0;
+    case HTML_SECTION:
     case HTML_HR:
 	close_anchor(h_env, obuf);
 	tmp = process_hr(tag, h_env->limit, envs[h_env->envc].indent);

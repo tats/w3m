@@ -272,9 +272,9 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/figure", NULL, 0, TFLG_END},		/* 142 HTML_N_FIGURE */
     {"figcaption", ALST_P, MAXA_P, 0},		/* 143 HTML_FIGCAPTION */
     {"/figcaption", NULL, 0, TFLG_END},		/* 144 HTML_N_FIGCAPTION */
+    {"section", ALST_NOP, MAXA_NOP, 0},		/* 145 HTML_SECTION */
+    {"/section", NULL, 0, TFLG_END},		/* 146 HTML_N_SECTION */
 
-    {NULL, NULL, 0, 0},		/* 145 Undefined */
-    {NULL, NULL, 0, 0},		/* 146 Undefined */
     {NULL, NULL, 0, 0},		/* 147 Undefined */
     {NULL, NULL, 0, 0},		/* 148 Undefined */
     {NULL, NULL, 0, 0},		/* 149 Undefined */

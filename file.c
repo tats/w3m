@@ -4487,9 +4487,27 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	HTMLlineproc1("</b>", h_env);
 	return 1;
     case HTML_Q:
+#ifdef USE_M17N
+#ifdef USE_UNICODE
+	if (DisplayCharset != WC_CES_US_ASCII) {
+	    HTMLlineproc1((obuf->q_level & 1 ? "&lsquo;": "&ldquo;"), h_env);
+	    obuf->q_level += 1;
+	}
+	else
+#endif
+#endif
 	HTMLlineproc1("`", h_env);
 	return 1;
     case HTML_N_Q:
+#ifdef USE_M17N
+#ifdef USE_UNICODE
+	if (DisplayCharset != WC_CES_US_ASCII) {
+	    obuf->q_level -= 1;
+	    HTMLlineproc1((obuf->q_level & 1 ? "&rsquo;": "&rdquo;"), h_env);
+	}
+	else
+#endif
+#endif
 	HTMLlineproc1("'", h_env);
 	return 1;
     case HTML_FIGURE:

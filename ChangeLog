@@ -1,3 +1,53 @@
+2020-08-29  Ambrose Li  <ambrose.li@gmail.com>
+
+	* file.c, html.c, html.h, tagtable.tab:
+	Rudimentary support for the section tag
+	Origin: https://github.com/tats/w3m/pull/147
+
+	* file.c:
+	Somehow the wrong quotes were used. This should fix the failing tests.
+	Origin: https://github.com/tats/w3m/pull/139/commits/b9488ffe60963349bf622a7548e3b9dccc6e0728
+	Bug-Debian: https://github.com/tats/w3m/pull/139
+
+	* po/zh_TW.po: Missed the spurious (_S).
+	Origin: https://github.com/tats/w3m/pull/145/commits/5d7fb3719e1308d56e5505ab67160b6d8fae34b0
+	Bug-Debian: https://github.com/tats/w3m/pull/145
+
+2020-08-24  Ambrose Li  <ambrose.li@gmail.com>
+
+	* etc.c, file.c, fm.h, html.c, html.h, tests/a1.expected:
+	* tests/a1.html, tests/a2.expected, tests/a2.html, tests/run_tests:
+	Make w3m's handling of the a element HTML5 compatible (when the stream
+	is HTML5).
+	In HTML5 anchors should not be closed when encountering divs, for
+	example, but should be closed when encountering buttons, for example.
+	This also fixes a bug in the tokenizing FSM in etc.c that prevented
+	the !doctype element from being recognized; the fix is necessary
+	because HTML5 detection dependson checking the !doctype element.
+	Origin: https://github.com/tats/w3m/pull/146
+
+	* po/zh_TW.po: Corrections to traditional Chinese translation,
+	including corrections of a number of serious errors.
+	Origin: https://github.com/tats/w3m/pull/145
+
+2020-08-23  Ambrose Li  <ambrose.li@gmail.com>
+
+	* entity.c, file.c, fm.h, tests/name_entity_1.expected:
+	* tests/name_entity_1.html, tests/name_entity_1.opts:
+	* tests/name_entity_2.expected, tests/name_entity_2.html:
+	* tests/q1.expected, tests/q1.html, tests/q1.opts, tests/q2.expected:
+	* tests/q2.html, tests/q3.expected, tests/q3.html, tests/q3.opts:
+	* tests/q4.expected, tests/q4.html, tests/q4.opts, tests/q5.expected:
+	* tests/q5.html, tests/q6.expected, tests/q6.html, tests/q6.opts:
+	* tests/run_tests: Changes the behaviour of the q tag (when m17n and
+	Unicode are configured) to use "smart" quotes if the display charset
+	can handle them.  Falls back to old behaviour (ASCII quotes with
+	left/right quote semantics for 6/0 and 2/6) if display charset is
+	us-ascii.  Also changes the behaviour of conv_entity() to convert
+	left/right quotes and some dashes because named entities are needed
+	for the new code for the q tag.
+	Origin: https://github.com/tats/w3m/pull/139
+
 2020-08-23  Tatsuya Kinoshita  <tats@debian.org>
 
 	* html.c: Add TFLG_END to "/sup", "/sub" and "/figure" for TagMAP.

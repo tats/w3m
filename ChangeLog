@@ -1,3 +1,18 @@
+2020-08-31  Tatsuya Kinoshita  <tats@debian.org>
+
+	* w3m-doc/README.html, w3m-doc/community.html.in:
+	* w3m-doc/configuration.html.in, w3m-doc/contain.wd:
+	* w3m-doc/copyright.html.in, w3m-doc/define.wd, w3m-doc/detail.html.in:
+	* w3m-doc/development.html.in, w3m-doc/faq.html.in:
+	* w3m-doc/function.html.in, w3m-doc/index.html.in:
+	* w3m-doc/install.html.in, w3m-doc/mkdocs, w3m-doc/operation.html.in:
+	* w3m-doc/outline.html.in, w3m-doc/prologue.html.in:
+	* w3m-doc/sample/README, w3m-doc/sample/define.wd:
+	* w3m-doc/sample/html.wd, w3m-doc/sample/keymap.cgi:
+	* w3m-doc/sample/s.wd, w3m-doc/sample/sample.html:
+	* w3m-doc/sample/sample.wd, w3m-doc/sample/w3mdoc.pl:
+	* w3m-doc/w3mdoc.pl: Drop obsolete w3m-doc.
+
 2020-08-29  Ambrose Li  <ambrose.li@gmail.com>
 
 	* file.c, html.c, html.h, tagtable.tab:
@@ -7,11 +22,9 @@
 	* file.c:
 	Somehow the wrong quotes were used. This should fix the failing tests.
 	Origin: https://github.com/tats/w3m/pull/139/commits/b9488ffe60963349bf622a7548e3b9dccc6e0728
-	Bug-Debian: https://github.com/tats/w3m/pull/139
 
 	* po/zh_TW.po: Missed the spurious (_S).
 	Origin: https://github.com/tats/w3m/pull/145/commits/5d7fb3719e1308d56e5505ab67160b6d8fae34b0
-	Bug-Debian: https://github.com/tats/w3m/pull/145
 
 2020-08-24  Ambrose Li  <ambrose.li@gmail.com>
 
@@ -25,6 +38,8 @@
 	the !doctype element from being recognized; the fix is necessary
 	because HTML5 detection dependson checking the !doctype element.
 	Origin: https://github.com/tats/w3m/pull/146
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=290460
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847875
 
 	* po/zh_TW.po: Corrections to traditional Chinese translation,
 	including corrections of a number of serious errors.
@@ -137,6 +152,7 @@
 
 	* entity.tab, indep.c, indep.h: Support &apos; entity.
 	Origin: https://github.com/tats/w3m/pull/122
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=927409
 
 2019-07-02  Tatsuya Kinoshita  <tats@debian.org>
 

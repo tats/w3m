@@ -871,7 +871,7 @@ main(int argc, char **argv, char **envp)
 #ifdef USE_M17N
     wtf_init(DocumentCharset, DisplayCharset);
     /*  if (w3m_dump)
-     *    WcOption.pre_conv = WC_TRUE; 
+     *    WcOption.pre_conv = WC_TRUE;
      */
 #endif
 
@@ -882,7 +882,7 @@ main(int argc, char **argv, char **envp)
 	char *image_url = conv_from_system(getimage_args[0]);
 	char *base_url = conv_from_system(getimage_args[1]);
 	ParsedURL base_pu;
-	
+
 	parseURL2(base_url, &base_pu, NULL);
 	image_source = getimage_args[2];
 	newbuf = loadGeneralFile(image_url, &base_pu, NULL, 0, NULL);
@@ -978,7 +978,7 @@ main(int argc, char **argv, char **envp)
 	    SearchHeader = search_header;
 	    DefaultType = default_type;
 	    char *url;
-	    
+
 	    url = load_argv[i];
 	    if (getURLScheme(&url) == SCM_MISSING && !ArgvIsURL)
 		url = file_to_url(load_argv[i]);
@@ -1579,7 +1579,7 @@ SigPipe(SIGNAL_ARG)
 }
 #endif
 
-/* 
+/*
  * Command functions: These functions are called with a keystroke.
  */
 
@@ -2354,9 +2354,9 @@ DEFUN(movR1, MOVE_RIGHT1, "Cursor right. With edge touched, slide")
 }
 
 /* movLW, movRW */
-/* 
+/*
  * From: Takashi Nishimoto <g96p0935@mse.waseda.ac.jp> Date: Mon, 14 Jun
- * 1999 09:29:56 +0900 
+ * 1999 09:29:56 +0900
  */
 #if defined(USE_M17N) && defined(USE_UNICODE)
 #define nextChar(s, l)	do { (s)++; } while ((s) < (l)->len && (l)->propBuf[s] & PC_WCHAR2)
@@ -2373,7 +2373,7 @@ is_wordchar(wc_uint32 c)
 {
     return wc_is_ucs_alnum(c);
 }
-#else 
+#else
 #define nextChar(s, l)	(s)++
 #define prevChar(s, l)	(s)--
 #define getChar(p)	((int)*(p))
@@ -3057,7 +3057,7 @@ handleMailto(char *url)
 	return 1;
     }
 #endif
-	
+
     /* invoke external mailer */
     if (MailtoOptions == MAILTO_OPTIONS_USE_MAILTO_URL) {
 	to = Strnew_charp(html_unquote(url));
@@ -6892,4 +6892,40 @@ DEFUN(redoPos, REDO, "Cancel the last undo")
 	return;
     for (i = 0; i < PREC_NUM && b->next; i++, b = b->next) ;
     resetPos(b);
+}
+
+DEFUN(cursorTop, CURSOR_TOP, "Move cursor to the top of the screen")
+{
+    int offsety;
+    if (Currentbuf->firstLine == NULL)
+        return;
+    Currentbuf->currentLine = lineSkip(Currentbuf,
+                                       Currentbuf->topLine, 0,
+                                       FALSE);
+    arrangeLine(Currentbuf);
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+
+DEFUN(cursorMiddle, CURSOR_MIDDLE, "Move cursor to the middle of the screen")
+{
+    int offsety;
+    if (Currentbuf->firstLine == NULL)
+        return;
+    offsety = (Currentbuf->LINES - 1) / 2;
+    Currentbuf->currentLine = currentLineSkip(Currentbuf, Currentbuf->topLine,
+                                              offsety, FALSE);
+    arrangeLine(Currentbuf);
+    displayBuffer(Currentbuf, B_NORMAL);
+}
+
+DEFUN(cursorBottom, CURSOR_BOTTOM, "Move cursor to the bottom of the screen")
+{
+    int offsety;
+    if (Currentbuf->firstLine == NULL)
+        return;
+    offsety = Currentbuf->LINES - 1;
+    Currentbuf->currentLine = currentLineSkip(Currentbuf, Currentbuf->topLine,
+                                              offsety, FALSE);
+    arrangeLine(Currentbuf);
+    displayBuffer(Currentbuf, B_NORMAL);
 }

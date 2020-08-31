@@ -12,6 +12,9 @@ CLOSE_TAB	Close tab
 CLOSE_TAB_MOUSE Close tab at mouse pointer
 COMMAND 	Invoke w3m function(s)
 COOKIE		View cookie list
+CURSOR_TOP	Move cursor to the top line on the screen
+CURSOR_MIDDLE	Move cursor to the middle line on the screen
+CURSOR_BOTTOM	Move cursor to the bottom line on the screen
 DEFAULT_CHARSET Change the default character encoding
 DEFINE_KEY	Define a binding between a key stroke combination and a command
 DELETE_PREVBUF	Delete previous buffer (mainly for local CGI-scripts)

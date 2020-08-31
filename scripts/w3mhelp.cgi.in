@@ -140,7 +140,7 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
 		goLine goLineF goLineL movRW movLW
 		topA lastA nextA prevA movlistMn
 		nextR nextL nextD nextU nextRD nextLU
-		undoPos redoPos"));
+		undoPos redoPos cursorTop"));
 
 &show_keymap('Hyperlink Operations',
 	     split(" ", "followA tabA svA followI svI submitForm

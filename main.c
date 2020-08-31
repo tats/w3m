@@ -6896,12 +6896,10 @@ DEFUN(redoPos, REDO, "Cancel the last undo")
 
 DEFUN(cursorTop, CURSOR_TOP, "Move cursor to the top of the screen")
 {
-    int offsety;
     if (Currentbuf->firstLine == NULL)
         return;
-    Currentbuf->currentLine = lineSkip(Currentbuf,
-                                       Currentbuf->topLine, 0,
-                                       FALSE);
+    Currentbuf->currentLine = lineSkip(Currentbuf, Currentbuf->topLine,
+                                       0, FALSE);
     arrangeLine(Currentbuf);
     displayBuffer(Currentbuf, B_NORMAL);
 }

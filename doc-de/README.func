@@ -12,6 +12,9 @@ CLOSE_TAB	Schließe Reiter
 CLOSE_TAB_MOUSE Schließe Reiter bei Mauszeiger
 COMMAND 	Rufe w3m Funktion(en) auf
 COOKIE		Cookie-Liste ansehen
+CURSOR_TOP	Cursor auf die höchste Zeile bewegen
+CURSOR_MIDDLE	Cursor auf die mittlere Zeile bewegen
+CURSOR_BOTTOM	Cursor auf die unterste Zeile bewegen
 DEFAULT_CHARSET Ändere die Voreinstellung für die Zeichenkodierung
 DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
 DELETE_PREVBUF	Lösche vorherigen Puffer (hauptsächlich für lokale CGI-Skripte)

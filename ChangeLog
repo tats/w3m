@@ -1,3 +1,20 @@
+2020-09-01  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mhelp-funcdesc.ja.pl.in:
+	Fix broken Japanese help page, convert to UTF-8.
+
+	* doc-jp/README.func: Add CURSOR_* commands to Japanese README.func.
+
+2020-08-31  bptato  <nincsnevem662@gmail.com>
+
+	* main.c: Removed an unnecessary variable declaration.
+
+	* scripts/w3mhelp.cgi.in: Added the other two commands to w3mhelp.
+
+	* doc-de/README.func, doc/README.func, main.c, proto.h:
+	* scripts/w3mhelp.cgi.in:
+	New commands for moving to the top, middle and bottom of buffer.
+
 2020-08-31  Tatsuya Kinoshita  <tats@debian.org>
 
 	* w3m-doc/README.html, w3m-doc/community.html.in:
@@ -38,6 +55,7 @@
 	the !doctype element from being recognized; the fix is necessary
 	because HTML5 detection dependson checking the !doctype element.
 	Origin: https://github.com/tats/w3m/pull/146
+	Bug: https://sourceforge.net/p/w3m/patches/74/
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=290460
 	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=847875
 

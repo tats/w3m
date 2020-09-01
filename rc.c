@@ -131,6 +131,7 @@ static int OptionEncode = FALSE;
 #define CMT_USE_MARK	N_("Enable mark operations")
 #endif
 #define CMT_EMACS_LIKE_LINEEDIT	N_("Enable Emacs-style line editing")
+#define CMT_SPACE_AUTOCOMPLETE  N_("Space key triggers file completion while editing URLs")
 #define CMT_VI_PREC_NUM	 N_("Enable vi-like numeric prefix")
 #define CMT_LABEL_TOPLINE N_("Move cursor to top line when going to label")
 #define CMT_NEXTPAGE_TOPLINE N_("Move cursor to top line when moving to next page")
@@ -485,6 +486,8 @@ struct param_ptr params3[] = {
 #endif
     {"emacs_like_lineedit", P_INT, PI_ONOFF, (void *)&emacs_like_lineedit,
      CMT_EMACS_LIKE_LINEEDIT, NULL},
+    {"space_autocomplete", P_INT, PI_ONOFF, (void *)&space_autocomplete,
+     CMT_SPACE_AUTOCOMPLETE, NULL},
     {"vi_prec_num", P_INT, PI_ONOFF, (void *)&vi_prec_num, CMT_VI_PREC_NUM,
      NULL},
     {"mark_all_pages", P_INT, PI_ONOFF, (void *)&MarkAllPages,

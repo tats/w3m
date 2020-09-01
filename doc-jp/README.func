@@ -12,6 +12,9 @@ CLOSE_TAB	現在のタブを閉じます
 CLOSE_TAB_MOUSE	マウスカーソルの位置のタブを閉じます(マウス操作用)
 COMMAND		w3mのコマンドを実行します
 COOKIE		クッキー一覧を表示します
+CURSOR_TOP	カーソルを画面のいちばん上の行に移動します
+CURSOR_MIDDLE	カーソルを画面の中央の行に移動します
+CURSOR_BOTTOM	カーソルを画面のいちばん下の行に移動します
 DEFAULT_CHARSET デフォルトの文書の文字コードを変更します
 DEFINE_KEY	キー入力とコマンドの対応を定義します
 DELETE_PREVBUF 前のバッファを消去します(主に local-CGI 用)

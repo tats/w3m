@@ -1,8 +1,13 @@
 2020-09-02  bptato  <nincsnevem662@gmail.com>
 
-	* fm.h, linein.c, rc.c: New option space_autocomplete.
-	Space is now entered in URL fields instead of triggering file
-	completion, old behavior can be toggled via options.
+	New option space_autocomplete.
+
+	* linein.c:
+	Add closing bracket I somehow forgot about in the previous commit.
+	Origin: https://github.com/tats/w3m/pull/150
+
+	* fm.h, linein.c, rc.c: Space is now entered in URL fields instead of
+	triggering file completion, old behavior can be toggled via options.
 	Origin: https://github.com/tats/w3m/pull/149
 
 2020-09-01  Tatsuya Kinoshita  <tats@debian.org>

@@ -1,3 +1,10 @@
+2020-09-02  bptato  <nincsnevem662@gmail.com>
+
+	* fm.h, linein.c, rc.c: New option space_autocomplete.
+	Space is now entered in URL fields instead of triggering file
+	completion, old behavior can be toggled via options.
+	Origin: https://github.com/tats/w3m/pull/149
+
 2020-09-01  Tatsuya Kinoshita  <tats@debian.org>
 
 	* scripts/w3mhelp-funcdesc.ja.pl.in:
@@ -6,6 +13,9 @@
 	* doc-jp/README.func: Add CURSOR_* commands to Japanese README.func.
 
 2020-08-31  bptato  <nincsnevem662@gmail.com>
+
+	New commands CURSOR_TOP, CURSOR_MIDDLE and CURSOR_BOTTOM.
+	Origin: https://github.com/tats/w3m/pull/148
 
 	* main.c: Removed an unnecessary variable declaration.
 

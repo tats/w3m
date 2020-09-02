@@ -961,6 +961,7 @@ global int confirm_on_quit init(TRUE);
 global int use_mark init(FALSE);
 #endif
 global int emacs_like_lineedit init(FALSE);
+global int space_autocomplete init(FALSE);
 global int vi_prec_num init(FALSE);
 global int label_topline init(FALSE);
 global int nextpage_topline init(FALSE);

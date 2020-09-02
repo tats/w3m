@@ -184,7 +184,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	cm_clear = TRUE;
 	cm_disp_clear = TRUE;
 	if (!i_quote &&
-	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
+	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || (space_autocomplete && c == ' ')) ||
 	     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
 	    if (emacs_like_lineedit && cm_next) {
 		_dcompl();

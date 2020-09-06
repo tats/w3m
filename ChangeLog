@@ -1,5 +1,11 @@
 2020-09-06  Tatsuya Kinoshita  <tats@debian.org>
 
+	* README, doc-jp/README, doc/README: Mention forked version.
+
+	* configure, configure.ac, doc-jp/README, doc/README, po/Makevars:
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Drop bug report address.
+
 	* ChangeLog: Move old ChangeLog entries to ChangeLog.1.
 	* ChangeLog.1: New file.
 

@@ -110,6 +110,5 @@ Initial author:
 	Faculty of Engineering, Tohoku University
 	aito@fw.ipsj.or.jp
 
-Feel free to send your opinion to:
-	http://w3m.sourceforge.net/
-	https://sourceforge.net/projects/w3m/
+This package is maintained for Debian <https://www.debian.org>,
+forked from the original version <https://sourceforge.net/projects/w3m/>.

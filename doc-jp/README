@@ -117,6 +117,5 @@ w3m の著作権は，伊藤彰則に属しています．
 	東北大学大学院工学研究科
 	aito@fw.ipsj.or.jp
 
-ご意見，ご感想をお寄せください．
-	http://w3m.sourceforge.net/
-	https://sourceforge.net/projects/w3m/
+This package is maintained for Debian <https://www.debian.org>,
+forked from the original version <https://sourceforge.net/projects/w3m/>.

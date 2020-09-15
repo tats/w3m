@@ -1,6 +1,7 @@
 /* $Id: url.c,v 1.100 2010/12/15 10:50:24 htrb Exp $ */
 #include "fm.h"
 #ifndef __MINGW32_VERSION
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -38,6 +39,10 @@
 #ifdef __MINGW32_VERSION
 #define	write(a,b,c)	send(a,b,c, 0)
 #define close(fd)	closesocket(fd)
+#endif
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 64
 #endif
 
 #ifdef INET6
@@ -720,13 +725,34 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    copyParsedURL(p_url, current);
 	goto do_label;
     }
+    if (!strncasecmp(url, "file://", 7)) {
 #if defined( __EMX__ ) || defined( __CYGWIN__ )
-    if (!strncasecmp(url, "file://localhost/", 17)) {
-	p_url->scheme = SCM_LOCAL;
-	p += 17 - 1;
-	url += 17 - 1;
-    }
+	if (!strncasecmp(url + 7, "localhost/", 10)) {
+	    p_url->scheme = SCM_LOCAL;
+	    p += 7 + 10 - 1;
+	    url += 7 + 10 - 1;
+	} else
 #endif
+	{
+	    /* Recognize the machine's host name.  This is necessary for URLs
+	     * produced by 'ls --hyperlink' or similar.  */
+	    char hostname[HOST_NAME_MAX + 2];
+	    if (gethostname (hostname, HOST_NAME_MAX + 2) == 0) {
+		size_t hostname_len;
+		/* Don't use hostname if it is truncated.  */
+		hostname[HOST_NAME_MAX + 1] = '\0';
+		hostname_len = strlen (hostname);
+		if (hostname_len <= HOST_NAME_MAX) {
+		    if (!strncasecmp(url + 7, hostname, hostname_len)
+			&& *(url + 7 + hostname_len) == '/') {
+			p_url->scheme = SCM_LOCAL;
+			p += 7 + hostname_len;
+			url += 7 + hostname_len;
+		    }
+		}
+	    }
+	}
+    }
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (IS_ALPHA(*p) && (p[1] == ':' || p[1] == '|')) {
 	p_url->scheme = SCM_LOCAL;

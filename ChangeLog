@@ -1,3 +1,18 @@
+2020-09-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* .cvsignore, libwc/.cvsignore, po/.cvsignore, scripts/.cvsignore:
+	* scripts/multipart/.cvsignore, scripts/w3mman/.cvsignore:
+	* w3mimg/.cvsignore, w3mimg/fb/.cvsignore, w3mimg/win/.cvsignore:
+	* w3mimg/x11/.cvsignore: Remove .cvsignore.
+
+	* .gitignore: Add .gitignore.
+
+2020-09-15  Bruno Haible  <bruno@clisp.org>
+
+	* url.c: Add support for file://hostname/... URLs.
+	Origin: https://github.com/tats/w3m/files/3488813/file-hostname-support.diff.gz
+	Bug-Debian: https://github.com/tats/w3m/issues/120
+
 2020-09-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* README, doc-jp/README, doc/README: Mention forked version.

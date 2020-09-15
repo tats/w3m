@@ -1,6 +1,0 @@
-stamp-po
-POTFILES
-ja.gmo
-Makefile
-Makefile.in
-remove-potcdate.sed

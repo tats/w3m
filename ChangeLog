@@ -1,3 +1,14 @@
+2020-09-25  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mman/w3mman.in:
+	Assume a local file if the argument contains slash for w3mman.
+
+2020-09-25  Dustin Boyd  <memreflect@pm.me>
+
+	* scripts/w3mman/w3mman2html.cgi.in: Remove -l flag in CGI script.
+	Origin: https://bugs.freebsd.org/bugzilla/attachment.cgi?id=217947&action=diff
+	Bug-FreeBSD: https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=249305
+
 2020-09-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* .cvsignore, libwc/.cvsignore, po/.cvsignore, scripts/.cvsignore:

@@ -31,7 +31,7 @@ while (@ARGV) {
     $query .= "&pwd=" . &form_encode($ENV{'PWD'});
   } elsif (/^-/) {
     &usage();
-  } elsif (/^\d/ || $_ eq 'n') {
+  } elsif (/^\d/ || $_ eq 'n' || $_ eq 'l') {
     if ( $query eq "" ) { $query = "?quit=ok"; }
     $query .= "&section=" . &form_encode($_);
   } else {

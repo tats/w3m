@@ -1712,6 +1712,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     URLOption url_option;
     Str tmp;
     Str volatile page = NULL;
+#ifdef USE_GOPHER
+#endif
 #ifdef USE_M17N
     wc_ces charset = WC_CES_US_ASCII;
 #endif
@@ -1959,7 +1961,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif				/* USE_NNTP */
 #ifdef USE_GOPHER
     else if (pu.scheme == SCM_GOPHER) {
-	switch (pu.file[strlen(pu.file)-1]) {
+	p = pu.file;
+	while(*p == '/')
+	    ++p;
+	switch (*p) {
 	case '0':
 	    t = "text/plain";
 	    break;
@@ -7470,10 +7475,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	    break;
 	}
 	type = Strsubstr(name, 0, 1);
-	if(file->ptr[0] == '/')
-	    q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, file->ptr, type->ptr, NULL)->ptr;
-	else
-	    q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", file->ptr, type->ptr, NULL)->ptr;
+	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", type->ptr, file->ptr, NULL)->ptr;
 	if(link) {
 	    if(pre) {
 		Strcat_charp(tmp, "</pre>");

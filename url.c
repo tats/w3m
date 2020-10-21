@@ -931,6 +931,14 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 #endif
 
     q = p;
+#ifdef USE_GOPHER
+    if (p_url->scheme == SCM_GOPHER) {
+	if (*q == '/')
+	    q++;
+	if (*q && q[0] != '/' && q[1] != '/' && q[2] == '/')
+	    q++;
+    }
+#endif				/* USE_GOPHER */
     if (*p == '/')
 	p++;
     if (*p == '\0' || *p == '#' || *p == '?') {	/* scheme://host[:port]/ */
@@ -1562,7 +1570,11 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     Str tmp;
     int sock, scheme;
     char *p, *q, *u;
-    char end;
+#ifdef USE_GOPHER
+    Str gophertmp;
+    char type;
+    int n;
+#endif
     URLFile uf;
     HRequest hr0;
 #ifdef USE_SSL
@@ -1826,26 +1838,32 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	break;
 #ifdef USE_GOPHER
     case SCM_GOPHER:
-	if(pu->file) {
-	  end = pu->file[strlen(pu->file)-1];
-	  switch(end) {
+	p = pu->file;
+	n = 0;
+	while(*p == '/') {
+	  ++p;
+	  ++n;
+	}
+	if(*p != '\0') {
+	  type = pu->file[n];
+	  switch(type) {
 	    case '0':
 	    case '1':
 	    case 'm':
 	    case 's':
 	    case 'g':
 	    case 'h':
-	      pu->file[strlen(pu->file)-1] = '\0';
+	      tmp = Strnew_charp(pu->file);
+	      gophertmp = Strdup(tmp);
+	      Strdelete(tmp, n, 1);
+	      pu->file = tmp->ptr;
 	      break;
 	    default:
-	      if('0' <= end && end <= '9')
-		pu->file[strlen(pu->file)-1] = '\0';
-	      else
-		end = '\0';
+	      type = '\0';
 	      break;
 	  }
 	} else {
-	  end = '\0';
+	  type = '\0';
 	}
 	if (non_null(GOPHER_proxy) &&
 	    !Do_not_use_proxy &&
@@ -1869,8 +1887,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    Strcat_char(tmp, '\n');
 	}
 	write(sock, tmp->ptr, tmp->length);
-	if(end != '\0') {
-	  pu->file[strlen(pu->file)] = end;
+	if(type != '\0') {
+	  pu->file = gophertmp->ptr;
 	}
 	break;
 #endif				/* USE_GOPHER */

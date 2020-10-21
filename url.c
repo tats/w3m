@@ -931,14 +931,6 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 #endif
 
     q = p;
-#ifdef USE_GOPHER
-    if (p_url->scheme == SCM_GOPHER) {
-	if (*q == '/')
-	    q++;
-	if (*q && q[0] != '/' && q[1] != '/' && q[2] == '/')
-	    q++;
-    }
-#endif				/* USE_GOPHER */
     if (*p == '/')
 	p++;
     if (*p == '\0' || *p == '#' || *p == '?') {	/* scheme://host[:port]/ */
@@ -1570,6 +1562,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     Str tmp;
     int sock, scheme;
     char *p, *q, *u;
+    char end;
     URLFile uf;
     HRequest hr0;
 #ifdef USE_SSL
@@ -1833,6 +1826,27 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	break;
 #ifdef USE_GOPHER
     case SCM_GOPHER:
+	if(pu->file) {
+	  end = pu->file[strlen(pu->file)-1];
+	  switch(end) {
+	    case '0':
+	    case '1':
+	    case 'm':
+	    case 's':
+	    case 'g':
+	    case 'h':
+	      pu->file[strlen(pu->file)-1] = '\0';
+	      break;
+	    default:
+	      if('0' <= end && end <= '9')
+		pu->file[strlen(pu->file)-1] = '\0';
+	      else
+		end = '\0';
+	      break;
+	  }
+	} else {
+	  end = '\0';
+	}
 	if (non_null(GOPHER_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
@@ -1855,6 +1869,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    Strcat_char(tmp, '\n');
 	}
 	write(sock, tmp->ptr, tmp->length);
+	if(end != '\0') {
+	  pu->file[strlen(pu->file)] = end;
+	}
 	break;
 #endif				/* USE_GOPHER */
 #ifdef USE_NNTP

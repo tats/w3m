@@ -7395,7 +7395,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
     Str volatile tmp;
     Str lbuf, name, file, host, port, type;
     char *volatile p, *volatile q;
-    int link;
+    int link, pre;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
@@ -7415,6 +7415,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	goto gopher_end;
     TRAP_ON;
 
+    pre = 0;
     while (1) {
 	if (lbuf = StrUFgets(uf), lbuf->length == 0)
 	    break;
@@ -7469,19 +7470,33 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	    break;
 	}
 	type = Strsubstr(name, 0, 1);
-	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, file->ptr, type->ptr, NULL)->ptr;
+	if(file->ptr[0] == '/')
+	    q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, file->ptr, type->ptr, NULL)->ptr;
+	else
+	    q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", file->ptr, type->ptr, NULL)->ptr;
 	if(link) {
+	    if(pre) {
+		Strcat_charp(tmp, "</pre>");
+		pre = 0;
+	    }
 	    Strcat_m_charp(tmp, "<a href=\"",
 			   html_quote(url_encode(q, NULL, *charset)),
 			   "\">", p, " ", html_quote(name->ptr + 1), "</a><br>\n", NULL);
 	} else {
-	    Strcat_m_charp(tmp, "<p>", html_quote(name->ptr + 1), "</p>\n", NULL);
+	    if(!pre) {
+		Strcat_charp(tmp, "<pre>");
+		pre = 1;
+	    }
+
+	    Strcat_m_charp(tmp, html_quote(name->ptr + 1), "\n", NULL);
 	}
     }
 
   gopher_end:
     TRAP_OFF;
 
+    if(pre)
+	Strcat_charp(tmp, "</pre>");
     Strcat_charp(tmp, "</table>\n</body>\n</html>\n");
     return tmp;
 }

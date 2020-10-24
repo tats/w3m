@@ -1570,6 +1570,11 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
     Str tmp;
     int sock, scheme;
     char *p, *q, *u;
+#ifdef USE_GOPHER
+    Str gophertmp;
+    char type;
+    int n;
+#endif
     URLFile uf;
     HRequest hr0;
 #ifdef USE_SSL
@@ -1833,6 +1838,33 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	break;
 #ifdef USE_GOPHER
     case SCM_GOPHER:
+	p = pu->file;
+	n = 0;
+	while(*p == '/') {
+	  ++p;
+	  ++n;
+	}
+	if(*p != '\0') {
+	  type = pu->file[n];
+	  switch(type) {
+	    case '0':
+	    case '1':
+	    case 'm':
+	    case 's':
+	    case 'g':
+	    case 'h':
+	      tmp = Strnew_charp(pu->file);
+	      gophertmp = Strdup(tmp);
+	      Strdelete(tmp, n, 1);
+	      pu->file = tmp->ptr;
+	      break;
+	    default:
+	      type = '\0';
+	      break;
+	  }
+	} else {
+	  type = '\0';
+	}
 	if (non_null(GOPHER_proxy) &&
 	    !Do_not_use_proxy &&
 	    pu->host != NULL && !check_no_proxy(pu->host)) {
@@ -1855,6 +1887,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    Strcat_char(tmp, '\n');
 	}
 	write(sock, tmp->ptr, tmp->length);
+	if(type != '\0') {
+	  pu->file = gophertmp->ptr;
+	}
 	break;
 #endif				/* USE_GOPHER */
 #ifdef USE_NNTP

@@ -1712,6 +1712,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     URLOption url_option;
     Str tmp;
     Str volatile page = NULL;
+#ifdef USE_GOPHER
+#endif
 #ifdef USE_M17N
     wc_ces charset = WC_CES_US_ASCII;
 #endif
@@ -1959,7 +1961,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif				/* USE_NNTP */
 #ifdef USE_GOPHER
     else if (pu.scheme == SCM_GOPHER) {
-	switch (*pu.file) {
+	p = pu.file;
+	while(*p == '/')
+	    ++p;
+	switch (*p) {
 	case '0':
 	    t = "text/plain";
 	    break;
@@ -7393,8 +7398,9 @@ Str
 loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 {
     Str volatile tmp;
-    Str lbuf, name, file, host, port;
+    Str lbuf, name, file, host, port, type;
     char *volatile p, *volatile q;
+    int link, pre;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
@@ -7414,6 +7420,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	goto gopher_end;
     TRAP_ON;
 
+    pre = 0;
     while (1) {
 	if (lbuf = StrUFgets(uf), lbuf->length == 0)
 	    break;
@@ -7440,6 +7447,7 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	for (q = p; *q && *q != '\t' && *q != '\r' && *q != '\n'; q++) ;
 	port = Strnew_charp_n(p, q - p);
 
+	link = 1;
 	switch (name->ptr[0]) {
 	case '0':
 	    p = "[text file]";
@@ -7459,20 +7467,38 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
 	case 'h':
 	    p = "[HTML]";
 	    break;
+	case 'i':
+	    link = 0;
+	    break;
 	default:
 	    p = "[unsupported]";
 	    break;
 	}
-	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
-			   "/", file->ptr, NULL)->ptr;
-	Strcat_m_charp(tmp, "<a href=\"",
-		       html_quote(url_encode(q, NULL, *charset)),
-		       "\">", p, html_quote(name->ptr + 1), "</a>\n", NULL);
+	type = Strsubstr(name, 0, 1);
+	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", type->ptr, file->ptr, NULL)->ptr;
+	if(link) {
+	    if(pre) {
+		Strcat_charp(tmp, "</pre>");
+		pre = 0;
+	    }
+	    Strcat_m_charp(tmp, "<a href=\"",
+			   html_quote(url_encode(q, NULL, *charset)),
+			   "\">", p, " ", html_quote(name->ptr + 1), "</a><br>\n", NULL);
+	} else {
+	    if(!pre) {
+		Strcat_charp(tmp, "<pre>");
+		pre = 1;
+	    }
+
+	    Strcat_m_charp(tmp, html_quote(name->ptr + 1), "\n", NULL);
+	}
     }
 
   gopher_end:
     TRAP_OFF;
 
+    if(pre)
+	Strcat_charp(tmp, "</pre>");
     Strcat_charp(tmp, "</table>\n</body>\n</html>\n");
     return tmp;
 }

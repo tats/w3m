@@ -1,3 +1,20 @@
+2020-10-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Enable Gopher support by default.
+
+2020-10-24  bptato  <nincsnevem662@gmail.com>
+
+	Fix broken Gopher support.
+	Origin: https://github.com/tats/w3m/pull/152
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=742455
+
+	* file.c, url.c:
+	Moved back filetype indicator to the beginning of file names.
+
+	* file.c: Improved gopher directory display.
+
+	* file.c, url.c: Improved gopher support.
+
 2020-09-28  Tatsuya Kinoshita  <tats@debian.org>
 
 	* scripts/w3mman/w3mman.in: Accept section "l" for w3mman.

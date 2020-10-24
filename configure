@@ -1460,7 +1460,7 @@ Optional Features:
   --disable-alarm		disable alarm
   --disable-cookie		disable cookie
   --disable-nntp		disable NNTP
-  --enable-gopher		enable GOPHER
+  --disable-gopher		disable GOPHER
   --disable-dict		disable dictionary lookup (see README.dict)
   --disable-help-cgi		disable help cgi
   --disable-external-uri-loader	disable external URI loader
@@ -7220,7 +7220,7 @@ $as_echo_n "checking if gopher is enabled... " >&6; }
 if test "${enable_gopher+set}" = set; then :
   enableval=$enable_gopher;
 else
-  enable_gopher="no"
+  enable_gopher="yes"
 fi
 
  test x"$enable_gopher" = xyes &&  $as_echo "#define USE_GOPHER 1" >>confdefs.h

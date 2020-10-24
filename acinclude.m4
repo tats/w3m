@@ -125,8 +125,8 @@ AC_DEFUN([AC_W3M_GOPHER],
 [AC_SUBST(USE_GOPHER)
  AC_MSG_CHECKING(if gopher is enabled)
  AC_ARG_ENABLE(gopher,
-  [  --enable-gopher		enable GOPHER],,
-  [enable_gopher="no"])
+  [  --disable-gopher		disable GOPHER],,
+  [enable_gopher="yes"])
  test x"$enable_gopher" = xyes &&  AC_DEFINE(USE_GOPHER)
  AC_MSG_RESULT($enable_gopher)])
 #

@@ -1867,11 +1867,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	} else {
 	  type = '\0';
 	}
-	while(*p != '\0') {
-	  if(*p == '?')
-	    *p = '\t';
-	  ++p;
-	}
 	if(pu->query != NULL) {
 	  tmp = Strnew_charp(pu->file);
 	  Strcat_char(tmp, '\t');

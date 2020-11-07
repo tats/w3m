@@ -1839,7 +1839,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 #ifdef USE_GOPHER
     case SCM_GOPHER:
 	p = pu->file;
-	q = p;
 	n = 0;
 	while(*p == '/') {
 	  ++p;

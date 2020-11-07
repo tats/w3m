@@ -1961,7 +1961,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif				/* USE_NNTP */
 #ifdef USE_GOPHER
     else if (pu.scheme == SCM_GOPHER) {
-	p = file_unquote(pu.file);
+	p = pu.file;
 	while(*p == '/')
 	    ++p;
 	switch (*p) {

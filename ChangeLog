@@ -1,3 +1,22 @@
+2020-11-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, proto.h:
+	Fix compilation errors when USE_GOPHER and not USE_M17N.
+
+2020-11-11  bptato  <nincsnevem662@gmail.com>
+
+	Support Gopher search and binary files.
+	Origin: https://github.com/tats/w3m/pull/154
+
+	* url.c: Remove useless loop.
+
+	* file.c: Remove unnecessary file_unquote call.
+
+	* url.c: Remove unnecessary variable assignment.
+
+	* file.c, proto.h, url.c:
+	Support Gopher items search (7) and binary file (9).
+
 2020-10-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* acinclude.m4, configure: Enable Gopher support by default.

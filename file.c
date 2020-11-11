@@ -7407,8 +7407,13 @@ loadHTMLString(Str page)
 /* 
  * loadGopherDir: get gopher directory
  */
+#ifdef USE_M17N
 Str
 loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+#else
+Str
+loadGopherDir0(URLFile *uf, ParsedURL *pu)
+#endif
 {
     Str volatile tmp;
     Str lbuf, name, file, host, port, type;
@@ -7522,22 +7527,27 @@ loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
     return tmp;
 }
 
+#ifdef USE_M17N
 Str
 loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+#else
+Str
+loadGopherSearch0(URLFile *uf, ParsedURL *pu)
+#endif
 {
     Str tmp;
     char *volatile p, *volatile q;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
-    tmp = parsedURL2Str(pu);
-    p = html_quote(tmp->ptr);
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
+#endif
+
+    tmp = parsedURL2Str(pu);
+    p = html_quote(tmp->ptr);
     tmp =
 	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), RAW_MODE,
 		    charset, doc_charset);
-#endif
     q = html_quote(tmp->ptr);
-
     tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
 			 "</title>\n</head>\n<body>\n<h1>Search ", q,
 			 "</h1>\n<form role=\"search\">\n<div>\n"

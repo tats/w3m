@@ -262,6 +262,7 @@ extern void loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src,
 extern Buffer *loadHTMLString(Str page);
 #ifdef USE_GOPHER
 extern Str loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset);
+extern Str loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset);
 #endif				/* USE_GOPHER */
 extern Buffer *loadBuffer(URLFile *uf, Buffer *newBuf);
 #ifdef USE_IMAGE

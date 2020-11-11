@@ -1853,6 +1853,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    case 's':
 	    case 'g':
 	    case 'h':
+	    case '7':
+	    case '9':
 	      tmp = Strnew_charp(pu->file);
 	      gophertmp = Strdup(tmp);
 	      Strdelete(tmp, n, 1);
@@ -1864,6 +1866,12 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	  }
 	} else {
 	  type = '\0';
+	}
+	if(pu->query != NULL) {
+	  tmp = Strnew_charp(pu->file);
+	  Strcat_char(tmp, '\t');
+	  Strcat_charp(tmp, pu->query);
+	  pu->file = tmp->ptr;
 	}
 	if (non_null(GOPHER_proxy) &&
 	    !Do_not_use_proxy &&

@@ -3,7 +3,7 @@
   [w3m-dev 03635] 2ch.cgi
   2ch の dat を直読みする local CGI です。
 
-  w3m file:/cgi-bin/2ch.cgi?http://pc.2ch.net/test/read.cgi/unix/1035755937/
+  w3m file:/cgi-bin/2ch.cgi?http://toro.2ch.sc/test/read.cgi/unix/1185784998/
 
   wget の差分転送(-c)を使います。
   読んだ dat は ~/.w3m2ch/ 以下に保存します。

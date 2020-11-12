@@ -1,3 +1,11 @@
+2020-11-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Makefile.in: Update the dist target to use git archive.
+
+	* Bonus/README, Bonus/README.eng: Update examples for 2ch.cgi.
+
+	* Bonus/2ch.cgi: Add charset=Shift_JIS to 2ch.cgi.
+
 2020-11-11  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, proto.h:

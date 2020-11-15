@@ -322,7 +322,7 @@ depend:
 	makedepend $(CFLAGS) *.c
 
 dist:
-	git archive master --prefix=w3m-$(VERSION)/ --format=tar | gzip -9 > ../w3m-$(VERSION).tar.gz
+	git archive --format=tar --prefix=w3m-$(VERSION)/ HEAD | xz -9 > ../w3m-$(VERSION).tar.xz
 
 bindist:
 	cd ..; tar cvfz w3m-$(VERSION)-$(MODEL).tar.gz w3m/w3m* w3m/doc* w3m/Bonus* w3m/README w3m/scripts 

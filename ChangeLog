@@ -1,3 +1,10 @@
+2020-11-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* gitlog2changelog:
+	Include gitlog2changelog to easily generate ChangeLog.
+
+	* Makefile.in: Use xz instead of gzip for the dist target.
+
 2020-11-12  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Makefile.in: Update the dist target to use git archive.

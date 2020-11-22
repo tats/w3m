@@ -1,3 +1,24 @@
+2020-11-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* gitlog2changelog: Update example to use UTC for gitlog2changelog.
+
+	* acinclude.m4, config.h.dist, config.h.in, configure, configure.ac:
+	Drop HAVE_SYS_ERRLIST.
+
+2020-11-22  Parag A Nemade  <pnemade@fedoraproject.org>
+
+	* config.h.in:
+	Fix compilation error "too few arguments to function 'longjmp'".
+	Origin: https://src.fedoraproject.org/rpms/w3m/c/e7a12fa28cfbfbb0115ec74994092c1d3b8351d8?branch=master
+	Bug-MacPorts: https://trac.macports.org/ticket/61356
+
+2020-11-22  Parag Nemade  <pnemade@redhat.com>
+
+	* etc.c, main.c: Fix FTBFS due to redefinition of sys_errlist.
+	Origin: https://src.fedoraproject.org/rpms/w3m/c/99f30870caac12a3949b6736aa70b7233f4414d5?branch=master
+	Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1038009
+	Bug-MacPorts: https://trac.macports.org/ticket/61356
+
 2020-11-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* gitlog2changelog:

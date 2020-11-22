@@ -8,9 +8,10 @@ gitlog2changelog - tiny tool to convert Git commit logs to GNU-style ChangeLog
 
 git log | gitlog2changelog > ChangeLog
 
-git log --no-merges --numstat --pretty=fuller | gitlog2changelog > ChangeLog
+TZ=UTC git log --date=local --no-merges --numstat --pretty=fuller | gitlog2changelog > ChangeLog
 
-(Use --no-merges to ignore merge commits.
+(Use TZ=UTC and --date=local to use UTC instead of the original time zone.
+ Use --no-merges to ignore merge commits.
  Use --numstat to show changed files.
  Use --pretty=fuller to show committer date instead of author date.)
 

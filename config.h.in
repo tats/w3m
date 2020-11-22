@@ -127,7 +127,6 @@ typedef long clen_t;
 #undef HAVE_STRCASESTR
 #undef HAVE_STRCHR
 #undef HAVE_STRERROR
-#undef HAVE_SYS_ERRLIST
 #undef HAVE_BCOPY
 #undef HAVE_WAITPID
 #undef HAVE_WAIT3

@@ -161,7 +161,6 @@ case "$host_os" in
     AM_LANGINFO_CODESET
     ;;
 esac
-AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL
 

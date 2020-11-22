@@ -601,7 +601,6 @@ HELP_DIR
 SIGNAL_RETURN
 RETSIGTYPE
 HAVE_SIGSETJMP
-HAVE_SYS_ERRLIST
 USE_BINMODE_STREAM
 LIBGC
 AUXBIN_TARGETS
@@ -8972,29 +8971,6 @@ $as_echo "#define HAVE_LANGINFO_CODESET 1" >>confdefs.h
 
     ;;
 esac
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sys_errlist" >&5
-$as_echo_n "checking for sys_errlist... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-extern char *sys_errlist[];
-int
-main ()
-{
-printf("%s", sys_errlist[0]);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  have_sys_errlist="yes"; $as_echo "#define HAVE_SYS_ERRLIST 1" >>confdefs.h
-
-else
-  have_sys_errlist="no"
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_sys_errlist" >&5
-$as_echo "$have_sys_errlist" >&6; }
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sigsetjmp" >&5
 $as_echo_n "checking for sigsetjmp... " >&6; }

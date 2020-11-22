@@ -194,7 +194,6 @@ typedef long clen_t;
 #define HAVE_STRCASESTR
 #define HAVE_STRCHR
 #define HAVE_STRERROR
-#define HAVE_SYS_ERRLIST
 #define HAVE_BCOPY
 #define HAVE_WAITPID
 #define HAVE_WAIT3

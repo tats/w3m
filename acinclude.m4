@@ -860,21 +860,6 @@ if test x"$enable_ipv6" = xyes; then
 fi])
 #
 # ----------------------------------------------------------------
-# AC_W3M_SYS_ERRLIST
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_SYS_ERRLIST],
-[AC_SUBST(HAVE_SYS_ERRLIST)
-AC_MSG_CHECKING(for sys_errlist)
-AC_TRY_COMPILE(
-changequote(<<,>>)dnl
-<<extern char *sys_errlist[];>>,
-<<printf("%s", sys_errlist[0]);>>,
-changequote([,])dnl
-[have_sys_errlist="yes"; AC_DEFINE(HAVE_SYS_ERRLIST)],
-[have_sys_errlist="no"])
-AC_MSG_RESULT($have_sys_errlist)])
-#
-# ----------------------------------------------------------------
 # AC_W3M_SIGSETJMP
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_SIGSETJMP],

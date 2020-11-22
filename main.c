@@ -435,10 +435,6 @@ main(int argc, char **argv, char **envp)
     textdomain(PACKAGE);
 #endif
 
-#ifndef HAVE_SYS_ERRLIST
-    prepare_sys_errlist();
-#endif				/* not HAVE_SYS_ERRLIST */
-
     NO_proxy_domains = newTextList();
     fileToDelete = newTextList();
 

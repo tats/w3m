@@ -634,24 +634,6 @@ strerror(int errno)
 }
 #endif				/* not HAVE_STRERROR */
 
-#ifndef HAVE_SYS_ERRLIST
-char **sys_errlist;
-
-prepare_sys_errlist()
-{
-    int i, n;
-
-    i = 1;
-    while (strerror(i) != NULL)
-	i++;
-    n = i;
-    sys_errlist = New_N(char *, n);
-    sys_errlist[0] = "";
-    for (i = 1; i < n; i++)
-	sys_errlist[i] = strerror(i);
-}
-#endif				/* not HAVE_SYS_ERRLIST */
-
 int
 next_status(char c, int *status)
 {

@@ -181,7 +181,7 @@ typedef RETSIGTYPE MySignalHandler;
 #endif /* __MINGW32_VERSION */
 #else
 # define SETJMP(env) setjmp(env)
-# define LONGJMP(env,val) longjmp(env)
+# define LONGJMP(env,val) longjmp(env, val)
 # define JMP_BUF jmp_buf
 #endif
 

@@ -1,3 +1,14 @@
+2020-11-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/POTFILES.in, po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po:
+	* po/zh_TW.po: Update PO.
+
+	* configure: Update configure by autoconf 2.69.
+
+	* config.h.dist, config.h.in, configure, configure.ac:
+	Define X_DISPLAY_MISSING when configure --without-x for Imlib2.
+	cf. https://github.com/NixOS/nixpkgs/commit/3cad8fba2958981307f94b865c2b970b95e10789
+
 2020-11-22  Tatsuya Kinoshita  <tats@debian.org>
 
 	* gitlog2changelog: Update example to use UTC for gitlog2changelog.

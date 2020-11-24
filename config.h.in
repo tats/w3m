@@ -75,6 +75,7 @@
 #undef USE_IMLIB
 #undef USE_GDKPIXBUF
 #undef USE_GTK2
+#undef X_DISPLAY_MISSING
 #undef USE_IMLIB2
 #undef USE_XFACE
 #undef USE_DICT

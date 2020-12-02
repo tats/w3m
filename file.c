@@ -1993,6 +1993,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	case 'h':
 	    t = "text/html";
 	    break;
+	case 'I':
+	    t = "image/gopher";
+	    break;
+	case '5':
 	case '9':
 	    do_download = 1;
 	    break;
@@ -7473,6 +7477,9 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	case '1':
 	    p = "[directory]";
 	    break;
+	case '5':
+	    p = "[DOS binary]";
+	    break;
 	case '7':
 	    p = "[search]";
 	    break;
@@ -7490,6 +7497,9 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	    break;
 	case 'i':
 	    link = 0;
+	    break;
+	case 'I':
+	    p = "[image]";
 	    break;
 	case '9':
 	    p = "[binary]";

@@ -1853,6 +1853,8 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    case 's':
 	    case 'g':
 	    case 'h':
+	    case 'I':
+	    case '5':
 	    case '7':
 	    case '9':
 	      tmp = Strnew_charp(pu->file);

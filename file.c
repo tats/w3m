@@ -1713,6 +1713,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     Str tmp;
     Str volatile page = NULL;
 #ifdef USE_GOPHER
+    int gopher_download = FALSE;
 #endif
 #ifdef USE_M17N
     wc_ces charset = WC_CES_US_ASCII;
@@ -1993,8 +1994,15 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	case 'h':
 	    t = "text/html";
 	    break;
+	case 'I':
+	    t = guessContentType(pu.file);
+	    if(strncasecmp(t, "image/", 6) != 0) {
+		t = "image/png";
+	    }
+	    break;
+	case '5':
 	case '9':
-	    do_download = 1;
+	    gopher_download = TRUE;
 	    break;
 	}
     }
@@ -2116,7 +2124,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    Strfputs(s, src);
 	    fclose(src);
 	}
+#ifdef USE_GOPHER
+	if (do_download || gopher_download) {
+#else
 	if (do_download) {
+#endif
 	    char *file;
 	    if (!src)
 		return NULL;
@@ -2153,7 +2165,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
 	current_content_length = strtoclen(p);
+#ifdef USE_GOPHER
+    if (do_download || gopher_download) {
+#else
     if (do_download) {
+#endif
 	/* download only */
 	char *file;
 	TRAP_OFF;
@@ -2219,7 +2235,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
     else if (w3m_backend) ;
     else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
-	if (!do_download && searchExtViewer(t) != NULL) {
+	if (!do_download && 
+#ifdef USE_GOPHER
+		!gopher_download &&
+#endif
+		searchExtViewer(t) != NULL) {
 	    proc = DO_EXTERNAL;
 	}
 	else {
@@ -7473,6 +7493,9 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	case '1':
 	    p = "[directory]";
 	    break;
+	case '5':
+	    p = "[DOS binary]";
+	    break;
 	case '7':
 	    p = "[search]";
 	    break;
@@ -7490,6 +7513,9 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	    break;
 	case 'i':
 	    link = 0;
+	    break;
+	case 'I':
+	    p = "[image]";
 	    break;
 	case '9':
 	    p = "[binary]";

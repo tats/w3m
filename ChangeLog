@@ -1,3 +1,13 @@
+2020-12-09  bptato  <nincsnevem662@gmail.com>
+
+	Small Gopher fixes/improvements
+	Origin: https://github.com/tats/w3m/pull/157
+
+	* file.c: Fix Gopher binaries causing w3m to be stuck in download mode;
+	try to guess Gopher image type and fallback to png.
+
+	* file.c, url.c: Add support for Gopher items 5 and I.
+
 2020-11-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/POTFILES.in, po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po:

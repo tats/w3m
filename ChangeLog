@@ -1,3 +1,10 @@
+2020-12-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Use the default ciphers for OpenSSL 1.1 and later.
+	cf. https://bugs.launchpad.net/ubuntu/+source/w3m/+bug/1325674
+	    https://src.fedoraproject.org/rpms/w3m/blob/36f14df378762a3a03a6a724583ca5b0ff618ed5/f/Fix-the-cipher-list-string-to-ensure-that-it-contain.patch
+	    https://fedoraproject.org/wiki/Packaging:CryptoPolicies
+
 2020-12-09  bptato  <nincsnevem662@gmail.com>
 
 	Small Gopher fixes/improvements

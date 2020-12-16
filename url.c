@@ -336,7 +336,9 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #endif
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
 	SSL_CTX_set_cipher_list(ssl_ctx, "DEFAULT:!LOW:!RC4:!EXP");
+#endif
 	option = SSL_OP_ALL;
 	if (ssl_forbid_method) {
 	    if (strchr(ssl_forbid_method, '2'))

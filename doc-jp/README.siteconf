@@ -20,10 +20,10 @@ user_agent "string"
 
 ===== 例 =====
 
-url "https://twitter.com/"
-substitute_url "https://mobile.twitter.com/"
+url m!^https?://([a-z]+\.)?twitter\.com/!
+substitute_url "https://nitter.net/"
 
-twitter.com をモバイルサイトに転送します。
+twitter.com を代替サイトに転送します。
 
 url "http://your.bookmark.net/"
 no_referer_from on

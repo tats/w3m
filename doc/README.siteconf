@@ -19,10 +19,10 @@ The last match wins.
 
 ===== Examples =====
 
-url "https://twitter.com/"
-substitute_url "https://mobile.twitter.com/"
+url m!^https?://([a-z]+\.)?twitter\.com/!
+substitute_url "https://nitter.net/"
 
-This forwards the twitter.com to its mobile site.
+This forwards twitter.com to the alternative site.
 
 url "http://your.bookmark.net/"
 no_referer_from on

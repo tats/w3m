@@ -1,3 +1,9 @@
+2020-12-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.siteconf, doc/README.siteconf:
+	Update examples of siteconf, forward twitter.com to nitter.net.
+	Because mobile.twitter.com without JavaScript is unusable anymore.
+
 2020-12-16  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Use the default ciphers for OpenSSL 1.1 and later.

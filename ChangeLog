@@ -1,3 +1,16 @@
+2020-12-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/zh_TW.po: Update PO-Revision-Date for zh_TW.
+
+2020-12-18  Ambrose Li  <ambrose.li@gmail.com>
+
+	* file.c: q_level was never initialized, causing random test failures.
+	This should fix that.
+	Origin: https://github.com/tats/w3m/pull/159
+
+	* po/zh_TW.po: Translate new string.
+	Origin: https://github.com/tats/w3m/pull/158
+
 2020-12-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/README.siteconf, doc/README.siteconf:

@@ -7023,6 +7023,7 @@ init_henv(struct html_feed_environ *h_env, struct readbuffer *obuf,
     obuf->status = R_ST_NORMAL;
     obuf->table_level = -1;
     obuf->nobr_level = 0;
+    obuf->q_level = 0;
     bzero((void *)&obuf->anchor, sizeof(obuf->anchor));
     obuf->img_alt = 0;
     obuf->input_alt.hseq = 0;

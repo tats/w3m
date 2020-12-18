@@ -349,7 +349,7 @@ msgstr "啟動 Emacs 風格的列編輯"
 
 #: rc.c:134
 msgid "Space key triggers file completion while editing URLs"
-msgstr ""
+msgstr "編輯網址時空白鍵觸發檔名補齊功能"
 
 #: rc.c:135
 msgid "Enable vi-like numeric prefix"

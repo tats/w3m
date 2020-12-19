@@ -1,3 +1,8 @@
+2020-12-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.siteconf, doc/README.siteconf:
+	Add examples of siteconf, set user_agent to Googlebot for Twitter.
+
 2020-12-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/zh_TW.po: Update PO-Revision-Date for zh_TW.

@@ -48,6 +48,12 @@ user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
 Google に Lynx であると告げます。(これによりテキストブラウザ向けページが
 返ります)
 
+url m!^https?://([a-z]+\.)?twitter\.com/!
+user_agent "Googlebot/2.1"
+
+Twitter に Googlebot であると告げます。(これによりJavaScriptが無効の
+ブラウザが拒否されずにページが返ります)
+
 ===== 正規表現について =====
 
 次の正規表現はいずれも同じ意味を表します。

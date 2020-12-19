@@ -47,6 +47,12 @@ user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
 Tell Google we're actually Lynx. (So they send us a text-browser friendly
 results page.)
 
+url m!^https?://([a-z]+\.)?twitter\.com/!
+user_agent "Googlebot/2.1"
+
+Tell Twitter we're actually Googlebot. (So they send us a page without
+rejection of a JavaScript disabled browser.)
+
 ===== Regular expressions notes =====
 
 Following expressions are all equivalent:

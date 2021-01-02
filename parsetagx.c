@@ -120,6 +120,7 @@ parse_tag(char **s, int internal)
     int i, attr_id = 0, nattr;
 
     /* Parse tag name */
+    tagname[0] = '\0';
     q = (*s) + 1;
     p = tagname;
     if (*q == '/') {
@@ -221,6 +222,7 @@ parse_tag(char **s, int internal)
          int j, hidden=FALSE;
          for (j=0; j<i; j++) {
            if (tag->attrid[j] == ATTR_TYPE &&
+               tag->value[j] &&
                strcmp("hidden",tag->value[j]) == 0) {
              hidden=TRUE;
              break;

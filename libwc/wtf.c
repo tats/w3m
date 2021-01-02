@@ -120,29 +120,36 @@ int
 wtf_strwidth(wc_uchar *p)
 {
     int w = 0;
+    wc_uchar *q = p + strlen(p);
 
-    while (*p) {
+    while (p < q) {
 	w += wtf_width(p);
 	p += WTF_LEN_MAP[*p];
     }
     return w;
 }
 
-/*
 size_t
 wtf_len1(wc_uchar *p)
 {
-    return (size_t)WTF_LEN_MAP[*p];
+    size_t len, len_max = WTF_LEN_MAP[*p];
+
+    for (len = 0; *(p + len); len++)
+	if (len == len_max)
+	    break;
+    if (len == 0)
+	len = 1;
+    return len;
 }
-*/
 
 size_t
 wtf_len(wc_uchar *p)
 {
     wc_uchar *q = p;
+    wc_uchar *strz = p + strlen(p);
 
     q += WTF_LEN_MAP[*q];
-    while (*q && ! WTF_WIDTH_MAP[*q])
+    while (q < strz && ! WTF_WIDTH_MAP[*q])
 	q += WTF_LEN_MAP[*q];
     return q - p;
 }
@@ -166,15 +173,17 @@ wtf_type(wc_uchar *p)
     ((p)[3] = (((c) >>  7) & 0x7f) | 0x80), \
     ((p)[4] = ( (c)        & 0x7f) | 0x80)
 #define wtf_to_wcs16(p) \
+    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 ? 0 : \
       ((wc_uint32)((p)[0] & 0x03) << 14) \
     | ((wc_uint32)((p)[1] & 0x7f) <<  7) \
-    | ((wc_uint32)((p)[2] & 0x7f)      )
+    | ((wc_uint32)((p)[2] & 0x7f)      ))
 #define wtf_to_wcs32(p) \
+    ((p)[0] == 0 || (p)[1] == 0 || (p)[2] == 0 || (p)[3] == 0 || (p)[4] == 0 ? 0 : \
       ((wc_uint32)((p)[0] & 0x0f) << 28) \
     | ((wc_uint32)((p)[1] & 0x7f) << 21) \
     | ((wc_uint32)((p)[2] & 0x7f) << 14) \
     | ((wc_uint32)((p)[3] & 0x7f) <<  7) \
-    | ((wc_uint32)((p)[4] & 0x7f)      )
+    | ((wc_uint32)((p)[4] & 0x7f)      ))
 
 void
 wtf_push(Str os, wc_ccs ccs, wc_uint32 code)
@@ -388,7 +397,7 @@ wtf_parse1(wc_uchar **p)
 	cc.code = *(q++);
     } else if (*q > 0xa0) {
 	cc.ccs = wtf_gr_ccs;
-	if (WC_CCS_IS_WIDE(cc.ccs)) {
+	if (WC_CCS_IS_WIDE(cc.ccs) && *(q+1)) {
 	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
 	    q += 2;
 	} else
@@ -401,27 +410,47 @@ wtf_parse1(wc_uchar **p)
 	case WC_CCS_A_CS942:
 	case WC_CCS_A_PCS:
 	case WC_CCS_A_UNKNOWN:
-	    cc.ccs |= *(q++) & 0x7f;
-	    cc.code = *(q++);
+	    if (*q && *(q+1)) {
+		cc.ccs |= *(q++) & 0x7f;
+		cc.code = *(q++);
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_CS94W:
 	case WC_CCS_A_CS96W:
 	case WC_CCS_A_PCSW:
-	    cc.ccs |= *(q++) & 0x7f;
-	    cc.code = ((wc_uint32)*q << 8) | *(q+1);
-	    q += 2;
+	    if (*q && *(q+1) && *(q+2)) {
+		cc.ccs |= *(q++) & 0x7f;
+		cc.code = ((wc_uint32)*q << 8) | *(q+1);
+		q += 2;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_WCS16:
 	case WC_CCS_A_WCS16W:
-	    cc.ccs |= (*q & 0x7c) >> 2;
-	    cc.code = wtf_to_wcs16(q);
-	    q += 3;
+	    if (*q && *(q+1) && *(q+2)) {
+		cc.ccs |= (*q & 0x7c) >> 2;
+		cc.code = wtf_to_wcs16(q);
+		q += 3;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	case WC_CCS_A_WCS32:
 	case WC_CCS_A_WCS32W:
-	    cc.ccs |= (*q & 0x70) >> 4;
-	    cc.code = wtf_to_wcs32(q);
-	    q += 5;
+	    if (*q && *(q+1) && *(q+2) && *(q+3) && *(q+4)) {
+		cc.ccs |= (*q & 0x70) >> 4;
+		cc.code = wtf_to_wcs32(q);
+		q += 5;
+	    } else {
+		cc.ccs = WC_CCS_US_ASCII;
+		cc.code = (wc_uint32)' ';
+	    }
 	    break;
 	default:
 	/* case 0: */

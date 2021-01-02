@@ -76,6 +76,7 @@ typedef int wc_ces;	/* XXX: not used */
 #include "textlist.h"
 #include "funcname1.h"
 #include "terms.h"
+#include "istream.h"
 
 #ifndef HAVE_BCOPY
 void bcopy(const void *, void *, int);
@@ -264,6 +265,20 @@ extern int REV_LB[];
 #define IMG_FLAG_ERROR		2
 #define IMG_FLAG_DONT_REMOVE	4
 
+#define IS_EMPTY_PARSED_URL(pu) ((pu)->scheme == SCM_UNKNOWN && !(pu)->file)
+#define SCONF_RESERVED		0
+#define SCONF_SUBSTITUTE_URL	1
+#define SCONF_URL_CHARSET	2
+#define SCONF_NO_REFERER_FROM	3
+#define SCONF_NO_REFERER_TO	4
+#define SCONF_USER_AGENT	5
+#define SCONF_N_FIELD		6
+#define query_SCONF_SUBSTITUTE_URL(pu) ((const char *)querySiteconf(pu, SCONF_SUBSTITUTE_URL))
+#define query_SCONF_USER_AGENT(pu) ((const char *)querySiteconf(pu, SCONF_USER_AGENT))
+#define query_SCONF_URL_CHARSET(pu) ((const wc_ces *)querySiteconf(pu, SCONF_URL_CHARSET))
+#define query_SCONF_NO_REFERER_FROM(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_FROM))
+#define query_SCONF_NO_REFERER_TO(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_TO))
+
 /* 
  * Macros.
  */
@@ -275,8 +290,6 @@ extern int REV_LB[];
 #define inputFilename(p,d)	inputLine(p,d,IN_FILENAME)
 #define inputFilenameHist(p,d,h)	inputLineHist(p,d,IN_FILENAME,h)
 #define inputChar(p)		inputLine(p,"",IN_CHAR)
-
-#define free(x)  GC_free(x)	/* let GC do it. */
 
 #ifdef __EMX__
 #define HAVE_STRCASECMP
@@ -362,6 +375,8 @@ typedef struct _imageCache {
     int index;
     short width;
     short height;
+    short a_width;
+    short a_height;
 } ImageCache;
 
 typedef struct _image {
@@ -562,6 +577,13 @@ typedef struct _DownloadList {
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
 #define FOLD_BUFFER_WIDTH (FoldLine ? (INIT_BUFFER_WIDTH + 1) : -1)
 
+struct input_alt_attr {
+  int hseq;
+  int fid;
+  int in;
+  Str type, name, value;
+};
+
 typedef struct {
     int pos;
     int len;
@@ -569,6 +591,7 @@ typedef struct {
     long flag;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     short nobr_level;
     Lineprop prev_ctype;
@@ -587,10 +610,12 @@ struct readbuffer {
     int flag_sp;
     int status;
     unsigned char end_tag;
+    unsigned char q_level;
     short table_level;
     short nobr_level;
     Anchor anchor;
     Str img_alt;
+    struct input_alt_attr input_alt;
     char fontstat[FONTSTAT_SIZE];
     char fontstat_stack[FONT_STACK_SIZE][FONTSTAT_SIZE];
     int fontstat_sp;
@@ -637,6 +662,7 @@ struct readbuffer {
 #endif				/* FORMAT_NICE */
 #define RB_DEL		0x100000
 #define RB_S		0x200000
+#define RB_HTML5	0x400000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
 #define RB_SET_ALIGN(obuf,align) {(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }
@@ -649,7 +675,7 @@ struct readbuffer {
    RB_SET_ALIGN(obuf,(obuf)->flag_stack[--(obuf)->flag_sp]); \
 }
 
-/* status flags */
+/* state of token scanning finite state machine */
 #define R_ST_NORMAL 0		/* normal */
 #define R_ST_TAG0   1		/* within tag, just after < */
 #define R_ST_TAG    2		/* within tag */
@@ -802,7 +828,7 @@ global char PermitSaveToPipe init(FALSE);
 global char DecodeCTE init(FALSE);
 global char AutoUncompress init(FALSE);
 global char PreserveTimestamp init(TRUE);
-global char ArgvIsURL init(FALSE);
+global char ArgvIsURL init(TRUE);
 global char MetaRefresh init(FALSE);
 
 global char fmInitialized init(FALSE);
@@ -874,6 +900,9 @@ global char *index_file init(NULL);
 
 global char *CurrentDir;
 global int CurrentPid;
+#if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
+global char *MyProgramName init("w3m");
+#endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
 /*
  * global Buffer *Currentbuf;
  * global Buffer *Firstbuf;
@@ -896,6 +925,7 @@ global char *CurrentKeyData;
 global char *CurrentCmdData;
 global char *w3m_reqlog;
 extern char *w3m_version;
+extern int enable_inline_image;
 
 #define DUMP_BUFFER   0x01
 #define DUMP_HEAD     0x02
@@ -909,6 +939,7 @@ global int w3m_dump init(0);
 global int w3m_halfload init(FALSE);
 global Str header_string init(NULL);
 global int override_content_type init(FALSE);
+global int override_user_agent init(FALSE);
 
 #ifdef USE_COLOR
 global int useColor init(TRUE);
@@ -930,6 +961,7 @@ global int confirm_on_quit init(TRUE);
 global int use_mark init(FALSE);
 #endif
 global int emacs_like_lineedit init(FALSE);
+global int space_autocomplete init(FALSE);
 global int vi_prec_num init(FALSE);
 global int label_topline init(FALSE);
 global int nextpage_topline init(FALSE);
@@ -968,10 +1000,17 @@ global int MailtoOptions init(MAILTO_OPTIONS_IGNORE);
 global char *ExtBrowser init(DEF_EXT_BROWSER);
 global char *ExtBrowser2 init(NULL);
 global char *ExtBrowser3 init(NULL);
+global char *ExtBrowser4 init(NULL);
+global char *ExtBrowser5 init(NULL);
+global char *ExtBrowser6 init(NULL);
+global char *ExtBrowser7 init(NULL);
+global char *ExtBrowser8 init(NULL);
+global char *ExtBrowser9 init(NULL);
 global int BackgroundExtViewer init(TRUE);
 global int disable_secret_security_check init(FALSE);
 global char *passwd_file init(PASSWD_FILE);
 global char *pre_form_file init(PRE_FORM_FILE);
+global char *siteconf_file init(SITECONF_FILE);
 global char *ftppasswd init(NULL);
 global int ftppass_hostnamegen init(TRUE);
 global int do_download init(FALSE);
@@ -991,7 +1030,7 @@ global char *BookmarkFile init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
 #ifdef USE_DICT
-global int UseDictCommand init(FALSE);
+global int UseDictCommand init(TRUE);
 global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
 #endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);
@@ -1004,7 +1043,7 @@ global int FoldLine init(FALSE);
 #define DEFAULT_URL_EMPTY	0
 #define DEFAULT_URL_CURRENT	1
 #define DEFAULT_URL_LINK	2
-global int DefaultURLString init(DEFAULT_URL_EMPTY);
+global int DefaultURLString init(DEFAULT_URL_CURRENT);
 global int MarkAllPages init(FALSE);
 
 #ifdef USE_MIGEMO
@@ -1065,16 +1104,18 @@ global char SimplePreserveSpace init(FALSE);
 #define wc_Str_conv(x,charset0,charset1) (x)
 #define wc_Str_conv_strict(x,charset0,charset1) (x)
 #endif
-global char UseAltEntity init(TRUE);
+global char UseAltEntity init(FALSE);
 #define GRAPHIC_CHAR_ASCII 2
 #define GRAPHIC_CHAR_DEC 1
 #define GRAPHIC_CHAR_CHARSET 0
 global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
+global char DisplayBorders init(FALSE);
 extern char *graph_symbol[];
 extern char *graph2_symbol[];
 extern int symbol_width;
 extern int symbol_width0;
 #define N_GRAPH_SYMBOL 32
+#define N_SYMBOL (N_GRAPH_SYMBOL + 14)
 #define SYMBOL_BASE 0x20
 global int no_rc_dir init(FALSE);
 global char *rc_dir init(NULL);
@@ -1113,9 +1154,9 @@ global MouseAction mouse_action;
 
 #ifdef USE_COOKIE
 global int default_use_cookie init(TRUE);
-global int use_cookie init(FALSE);
-global int show_cookie init(TRUE);
-global int accept_cookie init(FALSE);
+global int use_cookie init(TRUE);
+global int show_cookie init(FALSE);
+global int accept_cookie init(TRUE);
 #define ACCEPT_BAD_COOKIE_DISCARD	0
 #define ACCEPT_BAD_COOKIE_ACCEPT	1
 #define ACCEPT_BAD_COOKIE_ASK		2
@@ -1135,7 +1176,7 @@ global int view_unseenobject init(TRUE);
 #endif
 
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
-global int ssl_verify_server init(FALSE);
+global int ssl_verify_server init(TRUE);
 global char *ssl_cert_file init(NULL);
 global char *ssl_key_file init(NULL);
 global char *ssl_ca_path init(NULL);
@@ -1144,15 +1185,17 @@ global int ssl_path_modified init(FALSE);
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
-global char *ssl_forbid_method init(NULL);
+global char *ssl_forbid_method init("2, 3");
 #endif
 
 global int is_redisplay init(FALSE);
 global int clear_buffer init(TRUE);
 global double pixel_per_char init(DEFAULT_PIXEL_PER_CHAR);
+global int pixel_per_char_i init(DEFAULT_PIXEL_PER_CHAR);
 global int set_pixel_per_char init(FALSE);
 #ifdef USE_IMAGE
 global double pixel_per_line init(DEFAULT_PIXEL_PER_LINE);
+global int pixel_per_line_i init(DEFAULT_PIXEL_PER_LINE);
 global int set_pixel_per_line init(FALSE);
 global double image_scale init(100);
 #endif

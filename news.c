@@ -76,13 +76,15 @@ news_close(News * news)
 static int
 news_open(News * news)
 {
-    int sock, status;
+    int sock, status, fd;
 
     sock = openSocket(news->host, "nntp", news->port);
     if (sock < 0)
 	goto open_err;
     news->rf = newInputStream(sock);
-    news->wf = fdopen(dup(sock), "wb");
+    if ((fd = dup(sock)) < 0)
+	    goto open_err;
+    news->wf = fdopen(fd, "wb");
     if (!news->rf || !news->wf)
 	goto open_err;
     IStype(news->rf) |= IST_UNCLOSE;

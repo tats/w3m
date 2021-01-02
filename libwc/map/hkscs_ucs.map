@@ -1,6 +1,8 @@
 /* HKSCS (Chinese Hong Kong) */
 
-static wc_uint16 hkscs_ucs_map[ 0x1E * 0x9D ] = {
+#define N_hkscs_ucs_map (0x1E * 0x9D)
+
+static wc_uint16 hkscs_ucs_map[ N_hkscs_ucs_map ] = {
  0,		/* 0x8840 */
  0,		/* 0x8841 */
  0,		/* 0x8842 */

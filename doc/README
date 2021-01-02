@@ -110,12 +110,5 @@ Initial author:
 	Faculty of Engineering, Tohoku University
 	aito@fw.ipsj.or.jp
 
-Current Maintainer
-	Dai Sato
-	Tohoku University Hospital
-	satodai@w3m.jp
-
-Feel free to send your opinion to the w3m mailing-lists.
-	w3m-dev@sic.med.tohoku.ac.jp (Japanese)
-	w3m-dev-en@sic.med.tohoku.ac.jp (English)
-	http://w3m.sourceforge.net/
+This package is maintained for Debian <https://www.debian.org>,
+forked from the original version <https://sourceforge.net/projects/w3m/>.

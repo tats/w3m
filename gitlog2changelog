@@ -1,0 +1,111 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+gitlog2changelog - tiny tool to convert Git commit logs to GNU-style ChangeLog
+
+=head1 SYNOPSIS
+
+git log | gitlog2changelog > ChangeLog
+
+TZ=UTC git log --date=local --no-merges --numstat --pretty=fuller | gitlog2changelog > ChangeLog
+
+(Use TZ=UTC and --date=local to use UTC instead of the original time zone.
+ Use --no-merges to ignore merge commits.
+ Use --numstat to show changed files.
+ Use --pretty=fuller to show committer date instead of author date.)
+
+=head1 SEE ALSO
+
+GNU Coding Standards:
+    <http://www.gnu.org/prep/standards/html_node/index.html>
+    <http://www.gnu.org/prep/standards/html_node/Change-Logs.html>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2013 Tatsuya Kinoshita
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted without restriction, with NO WARRANTY.
+You may regard this as a work that is placed in the public domain.
+
+=cut
+
+use strict;
+use warnings;
+
+my $author = ""; my $date = ""; my $comment = ""; my @files = ();
+my $pre_header = "";
+
+sub print_entry {
+    my $header = "$date  $author";
+    $header =~ s/ </  </;
+    if ($header ne $pre_header) {
+	print "$header\n\n";
+	$pre_header = $header;
+    }
+    print "\t* ";
+
+    my $files_line_len = 10;
+    my $files_lines = "";
+    foreach my $file (@files) {
+	my $len = length($file);
+	if ($files_line_len > 10 && ($files_line_len + $len > 78)) {
+	    $files_lines =~ s/, $/:\n\t* /;
+	    $files_line_len = 10;
+	}
+	$files_lines .= "$file, ";
+	$files_line_len += $len + 2;
+    }
+
+    if ($files_lines) {
+	my $short_comment = "";
+	if ($comment =~ /^([^\n]+)/) {
+	    $short_comment = $1;
+	}
+	if ($short_comment =~ /:[ \t]|[^\(\[][:,\)\]][ \t]*$/ ||
+	    $files_line_len + length($short_comment) > 78) {
+	    $files_lines =~ s/, $/:\n\t/;
+	} else {
+	    $files_lines =~ s/, $/: /;
+	}
+	print "$files_lines";
+    }
+
+    $comment =~ s/\.?[ \t]*\n/.\n/;
+    $comment =~ s/\n([ \t]*\n)+/\n/g;
+    $comment =~ s/\n+$//;
+    $comment =~ s/\n/\n\t/g;
+    $comment =~ s/^\* //;
+    print "$comment\n\n";
+
+    $author = ""; $date = ""; $comment = ""; @files = ();
+}
+
+while (<>) {
+    if (/^Author:[ \t]+([^\n]+)/) {
+	$author = $1;
+    } elsif (/^(Commit|)Date:[ \t]+(Sun|Mon|Tue|Wed|Thu|Fri|Sat) +(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) +(\d+) +\d+:\d+:\d+ +(\d+)/) {  # Assume git log --date=default or --date=local
+	my $mm = $3;
+	my $dd = $4;
+	my $yyyy = $5;
+	$mm =~ s/Jan/01/; $mm =~ s/Feb/02/; $mm =~ s/Mar/03/; $mm =~ s/Apr/04/;
+	$mm =~ s/May/05/; $mm =~ s/Jun/06/; $mm =~ s/Jul/07/; $mm =~ s/Aug/08/;
+	$mm =~ s/Sep/09/; $mm =~ s/Oct/10/; $mm =~ s/Nov/11/; $mm =~ s/Dec/12/;
+	$dd =~ s/^(\d)$/0$1/;
+	$date = "$yyyy-$mm-$dd";
+    } elsif (/^(Commit|)Date:[ \t]+(\d+-\d+-\d+)/) {  # Assume git log --date=short or --date=iso
+	$date = $2;
+    } elsif (/^(Commit|)Date:[ \t]+(.+)$/) {
+	$date = $2;
+    } elsif (/^    (.*)$/) {
+	$comment .= "$1\n";
+    } elsif (/^[-0-9]+\t[-0-9]+\t(.*)$/) {  # Assume git log --numstat
+	push @files, $1;
+    } elsif (/^commit / && $author && $date) {
+	&print_entry;
+    }
+}
+if ($author && $date) {
+    &print_entry;
+}

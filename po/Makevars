@@ -18,7 +18,7 @@ XGETTEXT_OPTIONS = --from-code=EUC-JP --keyword=_ --keyword=N_
 # or entity, or to disclaim their copyright.  The empty string stands for
 # the public domain; in this case the translators are expected to disclaim
 # their copyright.
-COPYRIGHT_HOLDER = Fumitoshi UKAI
+COPYRIGHT_HOLDER = THE w3m'S COPYRIGHT HOLDER
 
 # This is the email address or URL to which the translators shall report
 # bugs in the untranslated strings:
@@ -34,7 +34,7 @@ COPYRIGHT_HOLDER = Fumitoshi UKAI
 # It can be your email address, or a mailing list address where translators
 # can write to without being subscribed, or the URL of a web page through
 # which the translators can contact you.
-MSGID_BUGS_ADDRESS = satodai@w3m.jp
+MSGID_BUGS_ADDRESS =
 
 # This is the list of locale categories, beyond LC_MESSAGES, for which the
 # message catalogs shall be used.  It is usually empty.

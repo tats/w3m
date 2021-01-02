@@ -498,7 +498,7 @@ calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos, int mode)
     static char *prevl = NULL;
     int i, j;
 
-    if (l == NULL || len == 0)
+    if (l == NULL || len == 0 || pos < 0)
 	return bpos;
     if (l == prevl && mode == CP_AUTO) {
 	if (pos <= len)
@@ -634,24 +634,6 @@ strerror(int errno)
 }
 #endif				/* not HAVE_STRERROR */
 
-#ifndef HAVE_SYS_ERRLIST
-char **sys_errlist;
-
-prepare_sys_errlist()
-{
-    int i, n;
-
-    i = 1;
-    while (strerror(i) != NULL)
-	i++;
-    n = i;
-    sys_errlist = New_N(char *, n);
-    sys_errlist[0] = "";
-    for (i = 1; i < n; i++)
-	sys_errlist[i] = strerror(i);
-}
-#endif				/* not HAVE_SYS_ERRLIST */
-
 int
 next_status(char c, int *status)
 {
@@ -726,6 +708,11 @@ next_status(char c, int *status)
 	    break;
 	case '>':
 	    *status = R_ST_NORMAL;
+	    break;
+	case 'D':
+	case 'd':
+	    /* could be a !doctype */
+	    *status = R_ST_TAG;
 	    break;
 	default:
 	    *status = R_ST_IRRTAG;
@@ -1365,7 +1352,13 @@ setup_child(int child, int i, int f)
     if (!child)
 	SETPGRP();
 #endif /* __MINGW32_VERSION */
+    /*
+     * I don't know why but close_tty() sometimes interrupts loadGeneralFile() in loadImage()
+     * and corrupt image data can be cached in ~/.w3m.
+     */
+#if 0
     close_tty();
+#endif
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
     fmInitialized = FALSE;

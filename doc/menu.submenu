@@ -39,6 +39,6 @@ menu Link
 end
 
 menu Bookmark
- func   "Read bookmark       (b)"	BOOKMARK	"bB"
+ func   "View bookmarks      (b)"	BOOKMARK	"bB"
  func   "Add page to bookmark(a)"	ADD_BOOKMARK	"aA"
 end

@@ -37,6 +37,8 @@ unsigned char ALST_TABLE[] =
     ATTR_CELLPADDING, ATTR_VSPACE, ATTR_CORE
 };
 #define MAXA_TABLE	MAXA_CORE + 6
+unsigned char ALST_DOCTYPE[] = { ATTR_PUBLIC }; /* only (html and) public should be checked */
+#define MAXA_DOCTYPE	1
 unsigned char ALST_META[] = { ATTR_HTTP_EQUIV, ATTR_CONTENT, ATTR_CHARSET, ATTR_CORE };
 #define MAXA_META	MAXA_CORE + 3
 unsigned char ALST_FRAME[] = { ATTR_SRC, ATTR_NAME, ATTR_CORE };
@@ -56,6 +58,9 @@ unsigned char ALST_INPUT[] =
     ATTR_CORE
 };
 #define MAXA_INPUT      MAXA_CORE + 12
+unsigned char ALST_BUTTON[] =
+    { ATTR_TYPE, ATTR_VALUE, ATTR_NAME, ATTR_CORE };
+#define MAXA_BUTTON	MAXA_CORE + 3
 unsigned char ALST_TEXTAREA[] =
     { ATTR_COLS, ATTR_ROWS, ATTR_NAME, ATTR_READONLY, ATTR_CORE };
 #define MAXA_TEXTAREA   MAXA_CORE + 4
@@ -218,15 +223,14 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/option", NULL, 0, TFLG_END},	/*  94 HTML_N_OPTION   */
     {"head", ALST_NOP, MAXA_NOP, 0},	/*  95 HTML_HEAD       */
     {"/head", NULL, 0, TFLG_END},	/*  96 HTML_N_HEAD     */
-    {"doctype", ALST_NOP, MAXA_NOP, 0},	/*  97 HTML_DOCTYPE    */
+    {"doctype", ALST_DOCTYPE, MAXA_DOCTYPE, 0},	/*  97 HTML_DOCTYPE    */
     {"noframes", ALST_NOFRAMES, MAXA_NOFRAMES, 0},	/*  98 HTML_NOFRAMES   */
     {"/noframes", NULL, 0, TFLG_END},	/*  99 HTML_N_NOFRAMES */
 
     {"sup", ALST_NOP, MAXA_NOP, 0},	/* 100 HTML_SUP       */
-    {"/sup", NULL, 0, 0},	/* 101 HTML_N_SUP       */
-    /* FIXME: Should /sup and /sub have TFLG_END ? */
+    {"/sup", NULL, 0, TFLG_END},	/* 101 HTML_N_SUP       */
     {"sub", ALST_NOP, MAXA_NOP, 0},	/* 102 HTML_SUB       */
-    {"/sub", NULL, 0, 0},	/* 103 HTML_N_SUB       */
+    {"/sub", NULL, 0, TFLG_END},	/* 103 HTML_N_SUB       */
     {"link", ALST_LINK, MAXA_LINK, 0},	/*  104 HTML_LINK      */
     {"s", ALST_NOP, MAXA_NOP, 0},		/*  105 HTML_S        */
     {"/s", NULL, 0, TFLG_END},	/*  106 HTML_N_S      */
@@ -247,30 +251,30 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/bdo", NULL, 0, TFLG_END},	/* 121 HTML_N_BDO */
     {"big", ALST_NOP, MAXA_NOP, 0},		/* 122 HTML_BIG */
     {"/big", NULL, 0, TFLG_END},	/* 123 HTML_N_BIG */
-    {"button", ALST_NOP, MAXA_NOP, 0},		/* 124 HTML_BUTTON */
-    {"fieldset", ALST_NOP, MAXA_NOP, 0},	        /* 125 HTML_FIELDSET */
-    {"/fieldset", NULL, 0, TFLG_END},	/* 126 HTML_N_FIELDSET */
-    {"iframe", ALST_NOP, MAXA_NOP, 0},		/* 127 HTML_IFRAME */
-    {"label", ALST_NOP, MAXA_NOP, 0}, 		/* 128 HTML_LABEL */
-    {"/label", NULL, 0, TFLG_END},	/* 129 HTML_N_LABEL */
-    {"legend", ALST_NOP, MAXA_NOP, 0},		/* 130 HTML_LEGEND */
-    {"/legend", NULL, 0, TFLG_END},	/* 131 HTML_N_LEGEND */
-    {"noscript", ALST_NOP, MAXA_NOP, 0},	        /* 132 HTML_NOSCRIPT */
-    {"/noscript", NULL, 0, TFLG_END},	/* 133 HTML_N_NOSCRIPT */
-    {"object", ALST_NOP, MAXA_NOP, 0},		/* 134 HTML_OBJECT */
-    {"optgroup", ALST_NOP, MAXA_NOP, 0},	        /* 135 HTML_OPTGROUP */
-    {"/optgroup", NULL, 0, TFLG_END},	/* 136 HTML_N_OPTGROUP */
-    {"param", ALST_NOP, MAXA_NOP, 0},		/* 137 HTML_PARAM */
-    {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 138 HTML_SMALL */
-    {"/small", NULL, 0, TFLG_END},	/* 139 HTML_N_SMALL */
+    {"button", ALST_BUTTON, MAXA_BUTTON, 0},	/* 124 HTML_BUTTON */
+    {"/button", NULL, 0, TFLG_END},	/* 125 HTML_N_BUTTON */
+    {"fieldset", ALST_NOP, MAXA_NOP, 0},	/* 126 HTML_FIELDSET */
+    {"/fieldset", NULL, 0, TFLG_END},	/* 127 HTML_N_FIELDSET */
+    {"iframe", ALST_NOP, MAXA_NOP, 0},		/* 128 HTML_IFRAME */
+    {"label", ALST_NOP, MAXA_NOP, 0}, 		/* 129 HTML_LABEL */
+    {"/label", NULL, 0, TFLG_END},	/* 130 HTML_N_LABEL */
+    {"legend", ALST_NOP, MAXA_NOP, 0},		/* 131 HTML_LEGEND */
+    {"/legend", NULL, 0, TFLG_END},	/* 132 HTML_N_LEGEND */
+    {"noscript", ALST_NOP, MAXA_NOP, 0},	        /* 133 HTML_NOSCRIPT */
+    {"/noscript", NULL, 0, TFLG_END},	/* 134 HTML_N_NOSCRIPT */
+    {"object", ALST_NOP, MAXA_NOP, 0},		/* 135 HTML_OBJECT */
+    {"optgroup", ALST_NOP, MAXA_NOP, 0},	        /* 136 HTML_OPTGROUP */
+    {"/optgroup", NULL, 0, TFLG_END},	/* 137 HTML_N_OPTGROUP */
+    {"param", ALST_NOP, MAXA_NOP, 0},		/* 138 HTML_PARAM */
+    {"small", ALST_NOP, MAXA_NOP, 0}, 		/* 139 HTML_SMALL */
+    {"/small", NULL, 0, TFLG_END},	/* 140 HTML_N_SMALL */
+    {"figure", ALST_P, MAXA_P, 0},		/* 141 HTML_FIGURE */
+    {"/figure", NULL, 0, TFLG_END},		/* 142 HTML_N_FIGURE */
+    {"figcaption", ALST_P, MAXA_P, 0},		/* 143 HTML_FIGCAPTION */
+    {"/figcaption", NULL, 0, TFLG_END},		/* 144 HTML_N_FIGCAPTION */
+    {"section", ALST_NOP, MAXA_NOP, 0},		/* 145 HTML_SECTION */
+    {"/section", NULL, 0, TFLG_END},		/* 146 HTML_N_SECTION */
 
-    {NULL, NULL, 0, 0},		/* 140 Undefined */
-    {NULL, NULL, 0, 0},		/* 141 Undefined */
-    {NULL, NULL, 0, 0},		/* 142 Undefined */
-    {NULL, NULL, 0, 0},		/* 143 Undefined */
-    {NULL, NULL, 0, 0},		/* 144 Undefined */
-    {NULL, NULL, 0, 0},		/* 145 Undefined */
-    {NULL, NULL, 0, 0},		/* 146 Undefined */
     {NULL, NULL, 0, 0},		/* 147 Undefined */
     {NULL, NULL, 0, 0},		/* 148 Undefined */
     {NULL, NULL, 0, 0},		/* 149 Undefined */
@@ -365,7 +369,7 @@ TagAttrInfo AttrMAP[MAX_TAGATTR] = {
     {"rev", VTYPE_STR, 0},	/* 48 ATTR_REV            */
     {"title", VTYPE_STR, 0},	/* 49 ATTR_TITLE          */
     {"accesskey", VTYPE_STR, 0},	/* 50 ATTR_ACCESSKEY          */
-    {NULL, VTYPE_NONE, 0},	/* 51 Undefined           */
+    {"public", VTYPE_NONE, 0},	/* 51 ATTR_PUBLIC         */
     {NULL, VTYPE_NONE, 0},	/* 52 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 53 Undefined           */
     {NULL, VTYPE_NONE, 0},	/* 54 Undefined           */

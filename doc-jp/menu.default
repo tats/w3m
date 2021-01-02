@@ -7,29 +7,29 @@
 # end
 #
 # MENU_ID
-#  Main:   еседеєесе╦ехб╝
-#  Select: е╨е├е╒еб┴к┬Єесе╦ехб╝
+#  Main:   уГбуВдуГ│уГбуГЛуГеуГ╝
+#  Select: уГРуГГуГХуВбщБ╕цКЮуГбуГЛуГеуГ╝
 
 menu Main
- func	"╠сды         (b)"	BACK		"b"
- popup	"е╨е├е╒еб┴к┬Є (s)"	Select		"s"
- popup	"е┐е╓┴к┬Є     (t)"	SelectTab	"tT"
- func	"е╜б╝е╣дЄ╔╜╝и (v)"	VIEW		"vV"
- func	"е╜б╝е╣дЄ╩╘╜╕ (e)"	EDIT		"eE"
- func	"е╜б╝е╣дЄ╩▌┬╕ (S)"	SAVE		"S"
- func	"║╞╞╔д▀╣■д▀   (r)"	RELOAD		"rR"
- nop	"ибибибибибибибиб"
- func	"еъеєепдЄ╔╜╝и (a)"	GOTO_LINK	"a"
- func	"┐╖е┐е╓д╟╔╜╝и (n)"	TAB_LINK	"nN"
- func	"еъеєепдЄ╩▌┬╕ (A)"	SAVE_LINK	"A"
- func	"▓ш┴№дЄ╔╜╝и   (i)"	VIEW_IMAGE	"i"
- func	"▓ш┴№дЄ╩▌┬╕   (I)"	SAVE_IMAGE	"I"
- func	"е╒еьб╝ер╔╜╝и (f)"	FRAME		"fF"
- nop	"ибибибибибибибиб"
- func	"е╓е├епе▐б╝еп (B)"	BOOKMARK	"B"
- func	"е╪еые╫       (h)"	HELP		"hH"
- func	"еке╫е╖ечеє   (o)"	OPTIONS		"oO"
- nop	"ибибибибибибибиб"
- func	"╜к╬╗         (q)"	QUIT		"qQ"
+ func	"цИ╗уВЛ         (b)"	BACK		"b"
+ popup	"уГРуГГуГХуВбщБ╕цКЮ (s)"	Select		"s"
+ popup	"уВ┐уГЦщБ╕цКЮ     (t)"	SelectTab	"tT"
+ func	"уВ╜уГ╝уВ╣уВТшбичд║ (v)"	VIEW		"vV"
+ func	"уВ╜уГ╝уВ╣уВТч╖ищЫЖ (e)"	EDIT		"eE"
+ func	"уВ╜уГ╝уВ╣уВТф┐ЭхнШ (S)"	SAVE		"S"
+ func	"хЖНшкнуБ┐ш╛╝уБ┐   (r)"	RELOAD		"rR"
+ nop	"тФАтФАтФАтФАтФАтФАтФАтФА"
+ func	"уГкуГ│уВпуВТшбичд║ (a)"	GOTO_LINK	"a"
+ func	"цЦ░уВ┐уГЦуБзшбичд║ (n)"	TAB_LINK	"nN"
+ func	"уГкуГ│уВпуВТф┐ЭхнШ (A)"	SAVE_LINK	"A"
+ func	"чФ╗хГПуВТшбичд║   (i)"	VIEW_IMAGE	"i"
+ func	"чФ╗хГПуВТф┐ЭхнШ   (I)"	SAVE_IMAGE	"I"
+ func	"уГХуГмуГ╝уГашбичд║ (f)"	FRAME		"fF"
+ nop	"тФАтФАтФАтФАтФАтФАтФАтФА"
+ func	"уГЦуГГуВпуГЮуГ╝уВп (B)"	BOOKMARK	"B"
+ func	"уГШуГлуГЧ       (h)"	HELP		"hH"
+ func	"уВкуГЧуВ╖уГзуГ│   (o)"	OPTIONS		"oO"
+ nop	"тФАтФАтФАтФАтФАтФАтФАтФА"
+ func	"ч╡Вф║Ж         (q)"	QUIT		"qQ"
 end
 

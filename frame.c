@@ -91,7 +91,8 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
     body->baseURL = baseURL(buf);
     if (tag) {
 	if (parsedtag_get_value(tag, ATTR_SRC, &p))
-	    body->url = url_quote_conv(remove_space(p), buf->document_charset);
+	    body->url = url_encode(remove_space(p), body->baseURL,
+				   buf->document_charset);
 	if (parsedtag_get_value(tag, ATTR_NAME, &p) && *p != '_')
 	    body->name = url_quote_conv(p, buf->document_charset);
     }
@@ -639,7 +640,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			case HTML_BASE:
 			    /* "BASE" is prohibit tag */
 			    if (parsedtag_get_value(tag, ATTR_HREF, &q)) {
-				q = url_quote_conv(remove_space(q), charset);
+				q = url_encode(remove_space(q), NULL, charset);
 				parseURL(q, &base, NULL);
 			    }
 			    if (parsedtag_get_value(tag, ATTR_TARGET, &q)) {
@@ -768,8 +769,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				if (!tag->value[j])
 				    break;
 				tag->value[j] =
-				    url_quote_conv(remove_space(tag->value[j]),
-						   charset);
+				    url_encode(remove_space(tag->value[j]),
+					       &base, charset);
 				tag->need_reconstruct = TRUE;
 				parseURL2(tag->value[j], &url, &base);
 				if (url.scheme == SCM_UNKNOWN ||
@@ -894,8 +895,10 @@ renderFrame(Buffer *Cbuf, int force_reload)
     /* 
      * if (Cbuf->frameQ != NULL) fset = Cbuf->frameQ->frameset; else */
     fset = Cbuf->frameset;
-    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0)
+    if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0) {
+	fclose(f);
 	return NULL;
+    }
     fclose(f);
     flag = RG_FRAME;
     if ((Cbuf->currentURL).is_nocache)

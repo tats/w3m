@@ -89,7 +89,7 @@ CATALOGS = @CATALOGS@
 	@lang=`echo $* | sed -e 's,.*/,,'`; \
 	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
 	echo "$${cdcmd}rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics --verbose -o $${lang}.gmo $${lang}.po"; \
-	cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics --verbose -o t-$${lang}.gmo $${lang}.po && mv t-$${lang}.gmo $${lang}.gmo
+	cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics --verbose -o t-$${lang}.gmo $${lang}.po && if [ x$(GMSGFMT) != x: ] ; then mv t-$${lang}.gmo $${lang}.gmo ; fi
 
 .sin.sed:
 	sed -e '/^#/d' $< > t-$@
@@ -153,14 +153,14 @@ $(DOMAIN).pot-update: $(POTFILES) $(srcdir)/POTFILES.in remove-potcdate.sed
 	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
 	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
 	      --files-from=$(srcdir)/POTFILES.in \
-	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
+	      --copyright-holder="$(COPYRIGHT_HOLDER)" \
 	      --msgid-bugs-address="$$msgid_bugs_address" \
 	    ;; \
 	  *) \
 	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
 	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
 	      --files-from=$(srcdir)/POTFILES.in \
-	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
+	      --copyright-holder="$(COPYRIGHT_HOLDER)" \
 	      --package-name="$${package_gnu}@PACKAGE@" \
 	      --package-version='@VERSION@' \
 	      --msgid-bugs-address="$$msgid_bugs_address" \

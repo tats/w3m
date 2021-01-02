@@ -184,7 +184,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	cm_clear = TRUE;
 	cm_disp_clear = TRUE;
 	if (!i_quote &&
-	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || c == ' ')) ||
+	    (((cm_mode & CPL_ALWAYS) && (c == CTRL_I || (space_autocomplete && c == ' '))) ||
 	     ((cm_mode & CPL_ON) && (c == CTRL_I)))) {
 	    if (emacs_like_lineedit && cm_next) {
 		_dcompl();
@@ -714,7 +714,8 @@ _rdcompl(void)
 static void
 next_dcompl(int next)
 {
-    static int col, row, len;
+    static int col, row;
+    static unsigned int len;
     static Str d;
     int i, j, n, y;
     Str f;
@@ -780,9 +781,10 @@ next_dcompl(int next)
 	if (len < n)
 	    len = n;
     }
-    col = COLS / len;
-    if (col == 0)
-	col = 1;
+    if (len > 0 && COLS > len)
+        col = COLS / len;
+    else
+        col = 1;
     row = (NCFileBuf + col - 1) / col;
 
   disp_next:
@@ -1026,7 +1028,7 @@ _prev(void)
 	strCurrentBuf = strBuf;
     }
     if (DecodeURL && (cm_mode & CPL_URL) )
-	p = url_unquote_conv(p, 0);
+	p = url_decode2(p, NULL);
     strBuf = Strnew_charp(p);
     CLen = CPos = setStrType(strBuf, strProp);
     offset = 0;
@@ -1045,7 +1047,7 @@ _next(void)
     p = nextHist(hist);
     if (p) {
 	if (DecodeURL && (cm_mode & CPL_URL) )
-	    p = url_unquote_conv(p, 0);
+	    p = url_decode2(p, NULL);
 	strBuf = Strnew_charp(p);
     }
     else {

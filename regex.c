@@ -77,7 +77,7 @@ static longchar
 set_longchar(char *str)
 {
     unsigned char *p = (unsigned char *)str;
-    longchar r;
+    longchar r = { };
 
 #ifdef USE_M17N
     if (*p & 0x80) {
@@ -580,7 +580,7 @@ regmatch_iter(struct MatchingContext1 *c,
     c->lastpos = c->str;
 #ifdef REGEX_DEBUG
     if (verbose)
-	printf("Succeed: %s %d\n", c->str, c->lastpos - c->str);
+	printf("Succeed: %s %ld\n", c->str, (long)(c->lastpos - c->str));
 #endif
     YIELD(1, c, 7);
     return 0;

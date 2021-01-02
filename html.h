@@ -1,20 +1,20 @@
 /* $Id: html.h,v 1.31 2010/08/14 01:29:40 htrb Exp $ */
 #ifndef _HTML_H
 #define _HTML_H
+#include "config.h"
 #ifdef USE_SSL
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
 #endif				/* USE_SSL */
 
-#include "istream.h"
+#include <time.h>
 
 #define StrUFgets(f) StrISgets((f)->stream)
 #define StrmyUFgets(f) StrmyISgets((f)->stream)
 #define UFgetc(f) ISgetc((f)->stream)
 #define UFundogetc(f) ISundogetc((f)->stream)
-#define UFread(f,buf,len) ISread((f)->stream,buf,len)
-#define UFclose(f) (void)(ISclose((f)->stream) == 0 && ((f)->stream = NULL))
+#define UFclose(f) if (ISclose((f)->stream) == 0) {(f)->stream = NULL ;}
 #define UFfileno(f) ISfileno((f)->stream)
 
 struct cmdtable {
@@ -62,11 +62,12 @@ typedef struct _ParsedURL {
     int is_nocache;
 } ParsedURL;
 
+union input_stream;
 typedef struct {
     unsigned char scheme;
     char is_cgi;
     char encoding;
-    InputStream stream;
+    union input_stream *stream;
     char *ext;
     int compression;
     int content_encoding;
@@ -214,21 +215,28 @@ typedef struct {
 #define HTML_BIG        122
 #define HTML_N_BIG      123
 #define HTML_BUTTON     124
-#define HTML_FIELDSET   125
-#define HTML_N_FIELDSET 126
-#define HTML_IFRAME     127
-#define HTML_LABEL      128
-#define HTML_N_LABEL    129
-#define HTML_LEGEND     130
-#define HTML_N_LEGEND   131
-#define HTML_NOSCRIPT   132
-#define HTML_N_NOSCRIPT 133
-#define HTML_OBJECT     134
-#define HTML_OPTGROUP   135
-#define HTML_N_OPTGROUP 136
-#define HTML_PARAM      137
-#define HTML_SMALL      138
-#define HTML_N_SMALL    139
+#define HTML_N_BUTTON   125
+#define HTML_FIELDSET   126
+#define HTML_N_FIELDSET 127
+#define HTML_IFRAME     128
+#define HTML_LABEL      129
+#define HTML_N_LABEL    130
+#define HTML_LEGEND     131
+#define HTML_N_LEGEND   132
+#define HTML_NOSCRIPT   133
+#define HTML_N_NOSCRIPT 134
+#define HTML_OBJECT     135
+#define HTML_OPTGROUP   136
+#define HTML_N_OPTGROUP 137
+#define HTML_PARAM      138
+#define HTML_SMALL      139
+#define HTML_N_SMALL    140
+#define HTML_FIGURE     141
+#define HTML_N_FIGURE   142
+#define HTML_FIGCAPTION 143
+#define HTML_N_FIGCAPTION   144
+#define HTML_SECTION    145
+#define HTML_N_SECTION  146
 
    /* pseudo tag */
 #define HTML_SELECT_INT     160
@@ -312,6 +320,7 @@ typedef struct {
 #define ATTR_REV		48
 #define ATTR_TITLE		49
 #define ATTR_ACCESSKEY		50
+#define ATTR_PUBLIC		51
 
 /* Internal attribute */
 #define ATTR_XOFFSET		60

@@ -13,7 +13,7 @@ unsigned char GlobalKeymap[128] = {
     /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
     movU, closeT, isrchbak, isrchfor, tabA, prevA, pgFore, wrapToggle,
     /*  C-x     C-y     C-z     C-[     C-\     C-]     C-^     C-_      */
-    nulcmd, nulcmd, susp, escmap, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, susp, escmap, nulcmd, nulcmd, nulcmd, goHome,
     /*  SPC     !       "       #       $       %       &       '        */
     pgFore, execsh, reMark, pipesh, linend, nulcmd, nulcmd, nulcmd,
     /*  (       )       *       +       ,       -       .       /        */
@@ -91,7 +91,7 @@ unsigned char EscBKeymap[128] = {
     /*  0       1       2       3       4       5       6       7        */
     nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
     /*  8       9       :       ;       <       =       >       ?        */
-    nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd, nulcmd,
+    nulcmd, nulcmd, nulcmd, nulcmd, sgrmouse, nulcmd, nulcmd, nulcmd,
     /*  @       A       B       C       D       E       F       G        */
     nulcmd, movU, movD, movR, movL, nulcmd, goLineL, pgFore,
     /*  H       I       J       K       L       M       N       O        */

@@ -1,6 +1,8 @@
 /* UHC/CP949 (Korean) */
 
-static wc_uint16 uhc_ucs_map[ 0x20 * 0xB2 + 0x27 * 0x54 + 2 ] = {
+#define N_uhc_ucs_map (0x20 * 0xB2 + 0x27 * 0x54 + 2)
+
+static wc_uint16 uhc_ucs_map[ N_uhc_ucs_map ] = {
   0xAC02,	/* 0x8141 */
   0xAC03,	/* 0x8142 */
   0xAC05,	/* 0x8143 */

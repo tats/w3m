@@ -25,6 +25,7 @@
 
 #define PASSWD_FILE	RC_DIR "/passwd"
 #define PRE_FORM_FILE	RC_DIR "/pre_form"
+#define SITECONF_FILE	RC_DIR "/siteconf"
 #define USER_MAILCAP	RC_DIR "/mailcap"
 #define SYS_MAILCAP	CONF_DIR "/mailcap"
 #define USER_MIMETYPES	"~/.mime.types"
@@ -74,6 +75,7 @@
 #undef USE_IMLIB
 #undef USE_GDKPIXBUF
 #undef USE_GTK2
+#undef X_DISPLAY_MISSING
 #undef USE_IMLIB2
 #undef USE_XFACE
 #undef USE_DICT
@@ -84,7 +86,7 @@
 #undef INET6
 #undef HAVE_SOCKLEN_T
 #undef HAVE_OLD_SS_FAMILY
-#define USE_EGD
+#undef USE_EGD
 #define ENABLE_REMOVE_TRAILINGSPACES
 #undef MENU_THIN_FRAME
 #undef USE_RAW_SCROLL
@@ -126,7 +128,6 @@ typedef long clen_t;
 #undef HAVE_STRCASESTR
 #undef HAVE_STRCHR
 #undef HAVE_STRERROR
-#undef HAVE_SYS_ERRLIST
 #undef HAVE_BCOPY
 #undef HAVE_WAITPID
 #undef HAVE_WAIT3
@@ -142,6 +143,7 @@ typedef long clen_t;
 #undef HAVE_SRANDOM
 #undef HAVE_GETPASSPHRASE
 #undef HAVE_CHDIR
+#undef HAVE_MKDTEMP
 #undef HAVE_SETPGRP
 #undef HAVE_SETLOCALE
 #undef HAVE_LANGINFO_CODESET
@@ -179,7 +181,7 @@ typedef RETSIGTYPE MySignalHandler;
 #endif /* __MINGW32_VERSION */
 #else
 # define SETJMP(env) setjmp(env)
-# define LONGJMP(env,val) longjmp(env)
+# define LONGJMP(env,val) longjmp(env, val)
 # define JMP_BUF jmp_buf
 #endif
 
@@ -207,6 +209,10 @@ typedef RETSIGTYPE MySignalHandler;
 #if defined( __CYGWIN__ )
 #define SUPPORT_NETBIOS_SHARE 1
 #define SUPPORT_WIN9X_CONSOLE_MBCS 1
+#endif
+
+#if defined(__CYGWIN__) && defined(__x86_64__)
+#define DONT_CALL_GC_AFTER_FORK
 #endif
 
 #if defined(__DJGPP__)

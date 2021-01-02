@@ -1,30 +1,30 @@
 2ch.cgi
 
   [w3m-dev 03635] 2ch.cgi
-  2ch �� dat ��ľ�ɤߤ��� local CGI �Ǥ���
+  2ch の dat を直読みする local CGI です。
 
-  w3m file:/cgi-bin/2ch.cgi?http://pc.2ch.net/test/read.cgi/unix/1035755937/
+  w3m file:/cgi-bin/2ch.cgi?http://toro.2ch.sc/test/read.cgi/unix/1185784998/
 
-  wget �κ�ʬž��(-c)��Ȥ��ޤ���
-  �ɤ�� dat �� ~/.w3m2ch/ �ʲ�����¸���ޤ���
-  �񤭹��ߤϤǤ��ޤ���
+  wget の差分転送(-c)を使います。
+  読んだ dat は ~/.w3m2ch/ 以下に保存します。
+  書き込みはできません。
 
 smb.cgi
 
   [w3m-dev 03634] smb.cgi
-  SMB �˥����������� local CGI �Ǥ���
-  nmblookup,smbclient ��Ȥ��Τ� sabma �����󥹥ȡ��뤵��Ƥ���
-  ɬ�פ�����ޤ���
-  �ѥ���ɤϡ�
-  1) ~/.w3m/smb �˥ѥ���ɤ����ꤵ��Ƥ��ꡢ
-     smbclient �� -A ���ץ�����Ȥ���ʤ�
-     smbclient -A ~/.w3m/smb �Ȥ����Ϥ��ޤ���
-  2) �Ķ��ѿ� PASSWD_FILE (�ѥ���ɤΤߤΥե�����)������
-     ����Ƥ�����ϡ��Ķ��ѿ� PASSWD_FILE ��Ȥ��ޤ���
-  3) ~/.w3m/smb �˥ѥ���ɤ����ꤵ��Ƥ���С�
-     �Ķ��ѿ� PASSWD_FD ��Ȥä�ɸ�����Ϸ�ͳ���Ϥ��ޤ���
-  �ɤ���ˤ��衢���ޤ��ɤ����ǤϤʤ��Τ� SMB(CIFS)�ץ��ȥ����
-  �����Ǥ��˾��
+  SMB にアクセスする local CGI です。
+  nmblookup,smbclient を使うので sabma がインストールされている
+  必要があります。
+  パスワードは、
+  1) ~/.w3m/smb にパスワードが設定されており、
+     smbclient の -A オプションを使えるなら
+     smbclient -A ~/.w3m/smb として渡します。
+  2) 環境変数 PASSWD_FILE (パスワードのみのファイル)が設定
+     されている場合は、環境変数 PASSWD_FILE を使います。
+  3) ~/.w3m/smb にパスワードが設定されていれば、
+     環境変数 PASSWD_FD を使って標準入力経由で渡します。
+  どちらにせよ、あまり良い事ではないので SMB(CIFS)プロトコルを
+  喋る版を希望。
 
 google.cgi
 
@@ -32,49 +32,49 @@ google.cgi
 
 html2latex
 
-  HTML��ʸ���LaTeX ���Ѵ����ޤ���Ruby������ץȤǤ����Դ����Ǥ���
-  �������٤���ˤ�Ω�Ĥ��⤷��ޤ���
+  HTMLの文書をLaTeX に変換します．Rubyスクリプトです．不完全です．
+  ある程度の役には立つかもしれません．
 
-  ����ˡ
+  使用法
 
     html2latex file.html > file.tex
 
-  �������֤��Ƥ�����ͳ
+  ここに置いてある理由
 
-    makeref �Τ�������ʼ��Ǥ� :-)
+    makeref のための部品取りです :-)
 
 makeref
 
-  HTML��ʸ����ɤߡ����󥫡����ֹ�򿶤�ޤ����ֹ�򿶤ä�ʸ���
-  ɸ����Ϥ˽񤭽Ф����Ǹ�ˤ��ΰ�������Ϥ��ޤ���Ruby ������ץȤǤ���
+  HTMLの文書を読み，アンカーに番号を振ります．番号を振った文書を
+  標準出力に書き出し，最後にその一覧を出力します．Ruby スクリプトです．
 
-  ����ˡ
+  使用法
 
     makeref [-url base_url] [file]
 
-    -url: ʸ���URL����ꤷ�ޤ�����󥯤ΰ�����Ф��Ȥ��ˡ�����URL��
-          �䴰���뤿��˻Ȥ��ޤ���
+    -url: 文書のURLを指定します．リンクの一覧を出すときに，そのURLを
+          補完するために使います．
 
-  �Х�
+  バグ
 
-    HTML�ε��ҥߥ�( &lt; �ǤϤʤ� < ��Ȥ���&... �κǸ�� ; ���դ��ʤ�
-    ��)������ȡ��Ỵ�ʷ�̤ˤʤ뤳�Ȥ�����ޤ���
+    HTMLの記述ミス( &lt; ではなく < を使う，&... の最後に ; を付けない
+    等)があると，悲惨な結果になることがあります．
 
-    Ⱦ�ѥ���(JIS X-0201����)���б����Ƥ��ޤ���
+    半角カナ(JIS X-0201カナ)に対応していません．
 
 htmldump
 
-  URL ����HTMLʸ����ɤߡ����󥫡����ֹ�򿶤ä���������ɸ����Ϥ�
-  �񤭽Ф��ޤ���
+  URL からHTML文書を読み，アンカーに番号を振って整形し，標準出力に
+  書き出します．
 
-  ����ˡ
+  使用法
 
     dumphtml [URL]
 
-    URL ���ά����ȡ�$WWW_HOME �����Ƥ��ɤߤޤ���
+    URL を省略すると，$WWW_HOME の内容を読みます．
 
-  �Х�
+  バグ
 
-    URL �λؤ�ʸ��HTML�Ǥʤ��ä���硤���襤�����ʤ��Ȥˤʤ�ޤ���
-    makeref ��ȤäƤ���Τǡ�makeref �����ޤ������Ǥ��ʤ�ʸ���ɽ��
-    ���Ѥˤʤ�ޤ���
+    URL の指す文書がHTMLでなかった場合，かわいそうなことになります．
+    makeref を使っているので，makeref がうまく処理できない文書の表示
+    は変になります．

@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include "config.h"
 #include <string.h>
+#include <sys/wait.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -222,6 +223,7 @@ static void
 check_cygwin_console(void)
 {
     char *term = getenv("TERM");
+    char *ctype;
     HANDLE hWnd;
 
     if (term == NULL)
@@ -236,7 +238,9 @@ check_cygwin_console(void)
 		isLocalConsole = 1;
 	    }
 	}
-	if (strncmp(getenv("LANG"), "ja", 2) == 0) {
+	if (((ctype = getenv("LC_ALL")) ||
+	     (ctype = getenv("LC_CTYPE")) ||
+	     (ctype = getenv("LANG"))) && strncmp(ctype, "ja", 2) == 0) {
 	    isWinConsole = TERM_CYGWIN_RESERVE_IME;
 	}
 #ifdef SUPPORT_WIN9X_CONSOLE_MBCS
@@ -463,6 +467,262 @@ writestr(char *s)
 
 #define MOVE(line,column)       writestr(tgoto(T_cm,column,line));
 
+#ifdef USE_IMAGE
+void
+put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)
+{
+    Str buf;
+    char *size ;
+
+    if (w > 0 && h > 0)
+	size = Sprintf("%dx%d",w,h)->ptr;
+    else
+	size = "";
+
+    MOVE(y,x);
+    buf = Sprintf("\x1b]5379;show_picture %s %s %dx%d+%d+%d\x07",url,size,sw,sh,sx,sy);
+    writestr(buf->ptr);
+    MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+static void
+save_gif(const char *path, u_char *header, size_t  header_size, u_char *body, size_t body_size)
+{
+    int	fd;
+
+    if ((fd = open(path, O_WRONLY|O_CREAT, 0600)) >= 0) {
+	write(fd, header, header_size) ;
+	write(fd, body, body_size) ;
+	write(fd, "\x3b" , 1) ;
+	close(fd) ;
+    }
+}
+
+static u_char *
+skip_gif_header(u_char *p)
+{
+    /* Header */
+    p += 10;
+
+    if (*(p) & 0x80) {
+	p += (3 * (2 << ((*p) & 0x7)));
+    }
+    p += 3;
+
+    return p;
+}
+
+static Str
+save_first_animation_frame(const char *path)
+{
+    int	fd;
+    struct stat	st;
+    u_char *header;
+    size_t header_size;
+    u_char *body;
+    u_char *p;
+    ssize_t len;
+    Str new_path;
+
+    new_path = Strnew_charp(path);
+    Strcat_charp(new_path, "-1");
+    if (stat(new_path->ptr, &st) == 0) {
+	return new_path;
+    }
+
+    if ((fd = open( path, O_RDONLY)) < 0) {
+	return NULL;
+    }
+
+    if (fstat( fd, &st) != 0 || ! (header = GC_malloc( st.st_size))){
+	close( fd);
+	return NULL;
+    }
+
+    len = read(fd, header, st.st_size);
+    close(fd);
+
+    /* Header */
+
+    if (len != st.st_size || strncmp(header, "GIF89a", 6) != 0) {
+	return NULL;
+    }
+
+    p = skip_gif_header(header);
+    header_size = p - header;
+
+    /* Application Extension */
+    if (p[0] == 0x21 && p[1] == 0xff) {
+	p += 19;
+    }
+
+    /* Other blocks */
+    body = NULL;
+    while (p + 2 < header + st.st_size) {
+	if (*(p++) == 0x21 && *(p++) == 0xf9 && *(p++) == 0x04) {
+	    if( body) {
+		/* Graphic Control Extension */
+		save_gif(new_path->ptr, header, header_size, body, p - 3 - body);
+		return new_path;
+	    }
+	    else {
+		/* skip the first frame. */
+	    }
+	    body = p - 3;
+	}
+    }
+
+    return NULL;
+}
+
+void ttymode_set(int mode, int imode);
+void ttymode_reset(int mode, int imode);
+
+void
+put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)
+{
+    pid_t pid;
+    int do_anim;
+    MySignalHandler(*volatile previntr) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevquit) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevstop) (SIGNAL_ARG);
+
+    MOVE(y,x);
+    flush_tty();
+
+    do_anim = (n_terminal_image == 1 && x == 0 && y == 0 && sx == 0 && sy == 0);
+
+    previntr = mySignal(SIGINT, SIG_IGN);
+    prevquit = mySignal(SIGQUIT, SIG_IGN);
+    prevstop = mySignal(SIGTSTP, SIG_IGN);
+
+    if ((pid = fork()) == 0) {
+	char *env;
+	int n = 0;
+	char *argv[20];
+	char digit[2][11+1];
+	char clip[44+3+1];
+	Str str_url;
+
+	close(STDERR_FILENO);	/* Don't output error message. */
+	if (do_anim) {
+	    writestr("\x1b[?80h");
+	}
+	else if (!strstr(url, "://") && strcmp(url+strlen(url)-4, ".gif") == 0 &&
+                 (str_url = save_first_animation_frame(url))) {
+	    url = str_url->ptr;
+	}
+	ttymode_set(ISIG, 0);
+
+	if ((env = getenv("W3M_IMG2SIXEL"))) {
+	    char *p;
+	    env = Strnew_charp(env)->ptr;
+	    while (n < 8 && (p = strchr(env, ' '))) {
+		*p = '\0';
+		if (*env != '\0') {
+		    argv[n++] = env;
+		}
+		env = p+1;
+	    }
+	    if (*env != '\0') {
+		argv[n++] = env;
+	    }
+	}
+	else {
+		argv[n++] = "img2sixel";
+	}
+	argv[n++] = "-l";
+	argv[n++] = do_anim ? "auto" : "disable";
+	argv[n++] = "-w";
+	sprintf(digit[0], "%d", w*pixel_per_char_i);
+	argv[n++] = digit[0];
+	argv[n++] = "-h";
+	sprintf(digit[1], "%d", h*pixel_per_line_i);
+	argv[n++] = digit[1];
+	argv[n++] = "-c";
+	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
+			sx*pixel_per_char_i, sy*pixel_per_line_i);
+	argv[n++] = clip;
+	argv[n++] = url;
+	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0 &&
+	    (!getenv("SCREEN_VARIANT") || strcmp(getenv("SCREEN_VARIANT"), "sixel") != 0)) {
+	    argv[n++] = "-P";
+	}
+	argv[n++] = NULL;
+	execvp(argv[0],argv);
+	exit(0);
+    }
+    else if (pid > 0) {
+	int status;
+	waitpid(pid, &status, 0);
+	ttymode_reset(ISIG, 0);
+	mySignal(SIGINT, previntr);
+	mySignal(SIGQUIT, prevquit);
+	mySignal(SIGTSTP, prevstop);
+	if (do_anim) {
+	    writestr("\x1b[?80l");
+	}
+    }
+
+    MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+int
+get_pixel_per_cell(int *ppc, int *ppl)
+{
+    fd_set  rfd;
+    struct timeval tval;
+    char buf[100];
+    char *p;
+    ssize_t len;
+    ssize_t left;
+    int wp,hp,wc,hc;
+    int i;
+
+#ifdef  TIOCGWINSZ
+    struct winsize ws;
+    if (ioctl(tty, TIOCGWINSZ, &ws) == 0 && ws.ws_ypixel > 0 && ws.ws_row > 0 &&
+        ws.ws_xpixel > 0 && ws.ws_col > 0) {
+	*ppc = ws.ws_xpixel / ws.ws_col;
+	*ppl = ws.ws_ypixel / ws.ws_row;
+	return 1;
+    }
+#endif
+
+    fputs("\x1b[14t\x1b[18t",ttyf); flush_tty();
+
+    p = buf;
+    left = sizeof(buf) - 1;
+    for (i = 0; i < 10; i++) {
+	tval.tv_usec = 200000;	/* 0.2 sec * 10 */
+	tval.tv_sec = 0;
+	FD_ZERO(&rfd);
+	FD_SET(tty,&rfd);
+	if (select(tty+1,&rfd,NULL,NULL,&tval) <= 0 || ! FD_ISSET(tty,&rfd))
+	    continue;
+
+	if ((len = read(tty,p,left)) <= 0)
+	    continue;
+	p[len] = '\0';
+
+	if (sscanf(buf,"\x1b[4;%d;%dt\x1b[8;%d;%dt",&hp,&wp,&hc,&wc) == 4) {
+	    if (wp > 0 && wc > 0 && hp > 0 && hc > 0) {
+		*ppc = wp / wc;
+		*ppl = hp / hc;
+		return 1;
+	    }
+	    else {
+		return 0;
+	    }
+	}
+	p += len;
+	left -= len;
+    }
+
+    return 0;
+}
+#endif				/* USE_IMAGE */
+
 #ifdef USE_MOUSE
 #define W3M_TERM_INFO(name, title, mouse)	name, title, mouse
 #define NEED_XTERM_ON   (1)
@@ -563,7 +823,7 @@ ttymode_set(int mode, int imode)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured while set %x: errno=%d\n", mode, errno);
+	printf("Error occurred while set %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif
@@ -584,7 +844,7 @@ ttymode_reset(int mode, int imode)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured while reset %x: errno=%d\n", mode, errno);
+	printf("Error occurred while reset %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 #endif /* __MINGW32_VERSION */
@@ -601,7 +861,7 @@ set_cc(int spec, int val)
     while (TerminalSet(tty, &ioval) == -1) {
 	if (errno == EINTR || errno == EAGAIN)
 	    continue;
-	printf("Error occured: errno=%d\n", errno);
+	printf("Error occurred: errno=%d\n", errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
 }
@@ -634,7 +894,8 @@ reset_tty(void)
     writestr(T_se);		/* reset terminal */
     flush_tty();
     TerminalSet(tty, &d_ioval);
-    close_tty();
+    if (tty != 2)
+        close_tty();
 }
 
 static MySignalHandler
@@ -953,7 +1214,6 @@ addch(char pc)
 {
     l_prop *pr;
     int dest, i;
-    short *dirty;
 #ifdef USE_M17N
     static Str tmp = NULL;
     char **p;
@@ -975,7 +1235,6 @@ addch(char pc)
 	return;
     p = ScreenImage[CurLine]->lineimage;
     pr = ScreenImage[CurLine]->lineprop;
-    dirty = &ScreenImage[CurLine]->isdirty;
 
 #ifndef USE_M17N
     /* Eliminate unprintables according to * iso-8859-*.
@@ -1986,6 +2245,10 @@ skip_escseq(void)
 	    getch();
 	    getch();
 	    getch();
+	} else if (is_xterm && c == '<') {
+	    c = getch();
+	    while (IS_DIGIT(c) || c == ';')
+		c = getch();
 	}
 	else
 #endif
@@ -2019,7 +2282,7 @@ sleep_till_anykey(int sec, int purge)
     }
     er = TerminalSet(tty, &ioval);
     if (er == -1) {
-	printf("Error occured: errno=%d\n", errno);
+	printf("Error occurred: errno=%d\n", errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
     return ret;
@@ -2027,8 +2290,8 @@ sleep_till_anykey(int sec, int purge)
 
 #ifdef USE_MOUSE
 
-#define XTERM_ON   {fputs("\033[?1001s\033[?1000h",ttyf); flush_tty();}
-#define XTERM_OFF  {fputs("\033[?1000l\033[?1001r",ttyf); flush_tty();}
+#define XTERM_ON   {fputs("\033[?1001s\033[?1000h\033[?1006h",ttyf); flush_tty();}
+#define XTERM_OFF  {fputs("\033[?1006l\033[?1000l\033[?1001r",ttyf); flush_tty();}
 #define CYGWIN_ON  {fputs("\033[?1000h",ttyf); flush_tty();}
 #define CYGWIN_OFF {fputs("\033[?1000l",ttyf); flush_tty();}
 

@@ -47,6 +47,8 @@ newBuffer(int width)
 #ifdef USE_M17N
     n->auto_detect = WcOption.auto_detect;
 #endif
+    n->check_url = MarkAllPages; /* use default from -o mark_all_pages */
+    n->need_reshape = 1;	 /* always reshape new buffers to mark URLs */
     return n;
 }
 
@@ -705,6 +707,7 @@ readBufferCache(Buffer *buf)
 
     cache = fopen(buf->savecache, "r");
     if (cache == NULL || fread1(clnum, cache) || fread1(tlnum, cache)) {
+	fclose(cache);
 	buf->savecache = NULL;
 	return -1;
     }
@@ -760,8 +763,10 @@ readBufferCache(Buffer *buf)
 	}
 #endif
     }
-    buf->lastLine = prevl;
-    buf->lastLine->next = NULL;
+    if (prevl) {
+	    buf->lastLine = prevl;
+	    buf->lastLine->next = NULL;
+    }
     fclose(cache);
     unlink(buf->savecache);
     buf->savecache = NULL;

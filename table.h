@@ -17,7 +17,7 @@
 #define MAX_TABLE_N 20		/* maximum number of table in same level */
 
 #define MAXROW 50
-#define MAXCOL 50
+#define MAXCOL 256
 
 #define MAX_WIDTH 80
 

@@ -23,18 +23,23 @@ if ((! $query{"man"}) && (! $query{"local"})) {
   if ($query{"keyword"}) {
     $keyword = $query{"keyword"};
     $k = &html_quote($keyword);
+    if ($query{"section"}) {
+      $section = $query{"section"};
+      $sectionopt = "-s $section ";
+    } else {
+      $sectionopt = "";
+    }
     print <<EOF;
 Content-Type: text/html
 
 <html>
-<head><title>man -k $k</title></head>
+<head><title>man $sectionopt-k $k</title></head>
 <body>
-<h2>man -k <b>$k</b></h2>
+<h2>man $sectionopt-k <b>$k</b></h2>
 <ul>
 EOF
     $keyword =~ s:([^-\w\200-\377.,])::g;
-    open(F, "$MAN -k $keyword 2> /dev/null |");
-    @line = ();
+    open(F, "$MAN $sectionopt -k $keyword 2> /dev/null |");
     while(<F>) {
       chop;
       $_ = &html_quote($_);
@@ -59,10 +64,10 @@ Content-Type: text/html
 <body>
 <form action="$CGI">
 <table>
-<tr><td>Manual:<td><input name=man>
-<tr><td>Section:<td><input name=section>
-<tr><td>Keyword:<td><input name=keyword>
-<tr><td><td><input type=submit> <input type=reset>
+<tr><td>Manual:<td><input name=man />
+<tr><td>Section:<td><input name=section />
+<tr><td>Keyword:<td><input name=keyword />
+<tr><td><td><input type=submit /> <input type=reset />
 </table>
 </form>
 </body>
@@ -76,7 +81,7 @@ if ($query{"local"}) {
   if (! ($file =~ /^\//)) {
     $file = $query{"pwd"} . '/' . $file;
   }
-  open(F, "MAN_KEEP_FORMATTING=1 $MAN -l $file 2> /dev/null |");
+  open(F, "MAN_KEEP_FORMATTING=1 $MAN $file 2> /dev/null |");
 } else {
   $man = $query{"man"};
   if ($man =~ s/\((\w+)\)$//) {
@@ -126,12 +131,14 @@ while(<F>) {
   s/\&/\&amp;/g;
   s/\</\&lt;/g;
   s/\>/\&gt;/g;
+  # non ASCII UTF-8 codepoint
+  my $utf8="[\300-\337][\200-\277]|[\340-\357][\200-\277]{2}|[\360-\367][\200-\277]{3}|[\370-\373][\200-\277]{4}|[\374\375][\200-\277]{5}";
 
-  s@([\200-\377].)(\010{1,2}\1)+@<b>$1</b>@g;
+  s@($utf8)(\010\1)+@<b>$1</b>@g;
   s@(\&\w+;|.)(\010\1)+@<b>$1</b>@g;
-  s@__\010{1,2}((\<b\>)?[\200-\377].(\</b\>)?)@<u>$1</u>@g;
+  s@_\010((\<b\>)?($utf8)(\</b\>)?)@<u>$1</u>@g;
   s@_\010((\<b\>)?(\&\w+\;|.)(\</b\>)?)@<u>$1</u>@g;
-  s@((\<b\>)?[\200-\377].(\</b\>)?)\010{1,2}__@<u>$1</u>@g;
+  s@((\<b\>)?($utf8)(\</b\>)?)\010_@<u>$1</u>@g;
   s@((\<b\>)?(\&\w+\;|.)(\</b\>)?)\010_@<u>$1</u>@g;
   s@.\010(.)@$1@g;
 
@@ -156,7 +163,7 @@ EOF
   }
 
   s@(http|ftp)://[\w.\-/~]+[\w/]@<a href="$&">$&</a>@g;
-  s@(\W)(mailto:)?(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@$1<a href="mailto:$3">$2$3</a>@g;
+  s@\b(mailto:|)(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@<a href="mailto:$2">$1$2</a>@g;
   s@(\W)(\~?/[\w.][\w.\-/~]*)@$1 . &file_ref($2)@ge;
   s@(include(<\/?[bu]\>|\s)*\&lt;)([\w.\-/]+)@$1 . &include_ref($3)@ge;
   if ($prev && m@^\s*(\<[bu]\>)*(\w[\w.\-]*)(\</[bu]\>)*(\([\dm]\w*\))@) {
@@ -220,7 +227,7 @@ sub is_command {
   local($p);
 
   (! -d && -x) || return 0;
-  if (! defined(%PATH)) {
+  if (! %PATH) {
     for $p (split(":", $ENV{'PATH'})) {
       $p =~ s@/+$@@;
       $PATH{$p} = 1;

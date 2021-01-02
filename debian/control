@@ -12,7 +12,7 @@ Build-Depends: debhelper-compat (= 13),
                libssl-dev,
                pkg-config,
                zlib1g-dev
-Homepage: http://sourceforge.net/projects/w3m/
+Homepage: https://tracker.debian.org/pkg/w3m
 Vcs-Browser: https://salsa.debian.org/debian/w3m
 Vcs-Git: https://salsa.debian.org/debian/w3m.git
 Standards-Version: 4.5.0

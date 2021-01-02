@@ -1,6 +1,9 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: w3m
-Source: https://sourceforge.net/projects/w3m/
+Upstream-Contact: https://github.com/tats/w3m
+                  Debian's w3m package maintainers <w3m@packages.debian.org>
+                  Debian's w3m package subscribers <w3m@packages.qa.debian.org>
+Source: https://salsa.debian.org/debian/w3m
 
 Files: *
 Copyright: 1994-2002, Akinori Ito

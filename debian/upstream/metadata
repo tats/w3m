@@ -1,5 +1,5 @@
-Archive: SourceForge
-Bug-Database: https://sourceforge.net/p/w3m/patches/
-Bug-Submit: https://sourceforge.net/p/w3m/patches/new/
-Documentation: http://w3m.sourceforge.net/MANUAL.en.html
-FAQ: http://w3m.sourceforge.net/FAQ.en.html
+Bug-Database: https://bugs.debian.org/cgi-bin/pkgreport.cgi?src=w3m
+Bug-Submit: https://www.debian.org/Bugs/Reporting
+Repository: https://salsa.debian.org/debian/w3m.git
+Repository-Browse: https://salsa.debian.org/debian/w3m
+Changelog: https://salsa.debian.org/debian/w3m/-/blob/master/ChangeLog

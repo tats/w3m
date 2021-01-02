@@ -111,45 +111,6 @@ binary-arch: install
 	dh_installmime $(bootstrap_dh_flags)
 #	dh_installman $(bootstrap_dh_flags)
 	dh_installchangelogs -a $(bootstrap_dh_flags) $(builddir)/ChangeLog
-	for f in \
-		debian/w3m/usr/share/doc/w3m/examples/Bonus/README.ja \
-		debian/w3m/usr/share/doc/w3m/ja/FAQ.html \
-		debian/w3m/usr/share/doc/w3m/ja/HISTORY \
-		debian/w3m/usr/share/doc/w3m/ja/MANUAL.html \
-		debian/w3m/usr/share/doc/w3m/ja/README \
-		debian/w3m/usr/share/doc/w3m/ja/README.SSL \
-		debian/w3m/usr/share/doc/w3m/ja/README.cookie \
-		debian/w3m/usr/share/doc/w3m/ja/README.dict \
-		debian/w3m/usr/share/doc/w3m/ja/README.func \
-		debian/w3m/usr/share/doc/w3m/ja/README.keymap \
-		debian/w3m/usr/share/doc/w3m/ja/README.m17n \
-		debian/w3m/usr/share/doc/w3m/ja/README.mailcap \
-		debian/w3m/usr/share/doc/w3m/ja/README.menu \
-		debian/w3m/usr/share/doc/w3m/ja/README.migemo \
-		debian/w3m/usr/share/doc/w3m/ja/README.mouse \
-		debian/w3m/usr/share/doc/w3m/ja/README.siteconf \
-		debian/w3m/usr/share/doc/w3m/ja/STORY.html \
-		debian/w3m/usr/share/doc/w3m/ja/examples/menu.default \
-		debian/w3m/usr/share/doc/w3m/ja/examples/menu.submenu \
-		debian/w3m/usr/share/man/ja/man1/w3m.1; do \
-		iconv -f euc-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
-	done
-ifeq (,$(findstring stage1,$(DEB_BUILD_PROFILES)))
-	for f in \
-		debian/w3m/usr/share/doc/w3m-img/README.img.ja; do \
-		iconv -f euc-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
-	done
-endif
-	for f in \
-		debian/w3m/usr/share/doc/w3m/ja/README.passwd \
-		debian/w3m/usr/share/doc/w3m/ja/README.pre_form \
-		debian/w3m/usr/share/doc/w3m/ja/README.tab; do \
-		iconv -f iso-2022-jp -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
-	done
-	for f in \
-		debian/w3m/usr/share/doc/w3m/examples/Bonus/2ch.cgi; do \
-		iconv -f cp932 -t utf-8 "$$f" > "$$f".tmp && mv -f "$$f".tmp "$$f" || rm -f "$$f".tmp; \
-	done
 	dh_strip -a $(bootstrap_dh_flags)
 	dh_compress -a $(bootstrap_dh_flags) -XREADME.func
 	dh_lintian -a $(bootstrap_dh_flags)

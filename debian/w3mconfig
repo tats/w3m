@@ -7,6 +7,8 @@ decode_url 0
 display_lineinfo 0
 ext_dirlist 1
 dirlist_cmd file:///$LIB/dirlist.cgi
+use_dictcommand 1
+dictcommand file:///$LIB/w3mdict.cgi
 multicol 0
 alt_entity 0
 graphic_char 0
@@ -16,6 +18,7 @@ display_ins_del 1
 ignore_null_img_alt 1
 view_unseenobject 1
 display_image 1
+pseudo_inlines 1
 fold_line 0
 show_lnum 0
 show_srch_str 1
@@ -40,6 +43,7 @@ confirm_qq 1
 close_tab_back 0
 mark 0
 emacs_like_lineedit 0
+space_autocomplete 0
 vi_prec_num 0
 mark_all_pages 0
 wrap_search 0

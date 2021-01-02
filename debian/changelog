@@ -1,11 +1,30 @@
-w3m (0.5.3-39) UNRELEASED; urgency=medium
+w3m (0.5.3+git20210102-1) unstable; urgency=medium
 
+  [ Debian Janitor ]
   * Wrap long lines in changelog entries: 0.2.1-15, 0.2.1-12, 0.1.9-5,
     0.1.9-4, 0.1.9-3, 0.0.19991015-2, 0.0.19990916-1, 0.0.19990815-2,
     0.0.19990526-1.
   * Set upstream metadata fields: Archive.
 
- -- Debian Janitor <janitor@jelmer.uk>  Thu, 07 May 2020 21:05:18 +0000
+  [ Tatsuya Kinoshita ]
+  * Switch upstream to Debian's w3m
+  * New upstream version 0.5.3+git20210102
+    - Fix some source formatting in the manual (closes: #963801)
+    - Fix links containing divs (closes: #847875)
+    - Fix broken Gopher support (closes: #742455)
+  * Update description to mention Debian's forked version
+  * Drop debian/patches
+  * Drop debian/gitlog2changelog
+  * Drop README.Debian
+  * Drop unneeded conversion for document files
+  * Drop unneeded handling of entity.h
+  * Add options to /etc/w3m/config
+  * Update extbrowser2 to use xdg-open
+  * Update extbrowser3 to use surf with JavaScript disabled
+  * Update debian/copyright
+  * Update Standards-Version to 4.5.1
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sat, 02 Jan 2021 09:46:48 +0900
 
 w3m (0.5.3-38) unstable; urgency=medium
 

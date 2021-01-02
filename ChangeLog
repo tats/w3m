@@ -1,3 +1,7 @@
+2021-01-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS for 0.5.3+git20210102.
+
 2020-12-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc-jp/README.siteconf, doc/README.siteconf:

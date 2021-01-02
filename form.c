@@ -10,8 +10,10 @@
 #include "regex.h"
 
 extern Str *textarea_str;
+extern int max_textarea;
 #ifdef MENU_SELECT
 extern FormSelectOption *select_option;
+extern int max_select;
 #include "menu.h"
 #endif				/* MENU_SELECT */
 
@@ -54,10 +56,9 @@ newFormList(char *action, char *method, char *charset, char *enctype,
 	m = FORM_METHOD_INTERNAL;
     /* unknown method is regarded as 'get' */
 
-    if (enctype != NULL && !strcasecmp(enctype, "multipart/form-data")) {
+    if (m != FORM_METHOD_GET && enctype != NULL &&
+	!strcasecmp(enctype, "multipart/form-data")) {
 	e = FORM_ENCTYPE_MULTIPART;
-	if (m == FORM_METHOD_GET)
-	    m = FORM_METHOD_POST;
     }
 
 #ifdef USE_M17N
@@ -122,10 +123,12 @@ formList_addInput(struct form_list *fl, struct parsed_tag *tag)
     parsedtag_get_value(tag, ATTR_SIZE, &item->size);
     parsedtag_get_value(tag, ATTR_MAXLENGTH, &item->maxlength);
     item->readonly = parsedtag_exists(tag, ATTR_READONLY);
-    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i))
+    if (parsedtag_get_value(tag, ATTR_TEXTAREANUMBER, &i)
+	&& i >= 0 && i < max_textarea)
 	item->value = item->init_value = textarea_str[i];
 #ifdef MENU_SELECT
-    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i))
+    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &i)
+	&& i >= 0 && i < max_select)
 	item->select_option = select_option[i].first;
 #endif				/* MENU_SELECT */
     if (parsedtag_get_value(tag, ATTR_ROWS, &p))
@@ -196,7 +199,7 @@ formtype(char *typestr)
 	if (!strcasecmp(typestr, _formtypetbl[i]))
 	    return i;
     }
-    return FORM_UNKNOWN;
+    return FORM_INPUT_TEXT;
 }
 
 void
@@ -316,7 +319,8 @@ form_update_line(Line *line, char **str, int spos, int epos, int width,
     pos += width - w;
 
     len = line->len + pos + spos - epos;
-    buf = New_N(char, len);
+    buf = New_N(char, len + 1);
+    buf[len] = '\0';
     prop = New_N(Lineprop, len);
     bcopy((void *)line->lineBuf, (void *)buf, spos * sizeof(char));
     bcopy((void *)line->propBuf, (void *)prop, spos * sizeof(Lineprop));
@@ -438,6 +442,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
     switch (form->type) {
     case FORM_INPUT_CHECKBOX:
     case FORM_INPUT_RADIO:
+	if (buf->currentLine == NULL ||
+	    spos >= buf->currentLine->len || spos < 0)
+	    break;
 	if (form->checked)
 	    buf->currentLine->lineBuf[spos] = '*';
 	else
@@ -455,8 +462,14 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 	}
 	else
 #endif				/* MENU_SELECT */
+	{
+	    if (!form->value)
+		break;
 	    p = form->value->ptr;
+	}
 	l = buf->currentLine;
+	if (!l)
+	    break;
 	if (form->type == FORM_TEXTAREA) {
 	    int n = a->y - buf->currentLine->linenumber;
 	    if (n > 0)
@@ -469,6 +482,8 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 	rows = form->rows ? form->rows : 1;
 	col = COLPOS(l, a->start.pos);
 	for (c_rows = 0; c_rows < rows; c_rows++, l = l->next) {
+	    if (l == NULL)
+		break;
 	    if (rows > 1) {
 		pos = columnPos(l, col);
 		a = retrieveAnchor(buf->formitem, l->linenumber, pos);
@@ -477,6 +492,9 @@ formUpdateBuffer(Anchor *a, Buffer *buf, FormItemList *form)
 		spos = a->start.pos;
 		epos = a->end.pos;
 	    }
+	    if (a->start.line != a->end.line || spos > epos || epos >= l->len ||
+		spos < 0 || epos < 0 || COLPOS(l, epos) < col)
+		break;
 	    pos = form_update_line(l, &p, spos, epos, COLPOS(l, epos) - col,
 				   rows > 1,
 				   form->type == FORM_INPUT_PASSWORD);
@@ -787,7 +805,7 @@ struct pre_form {
 static struct pre_form *PreForm = NULL;
 
 static struct pre_form *
-add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
+add_pre_form(struct pre_form *prev, char *url, Regex *re_url, char *name, char *action)
 {
     ParsedURL pu;
     struct pre_form *new;
@@ -796,21 +814,13 @@ add_pre_form(struct pre_form *prev, char *url, char *name, char *action)
 	new = prev->next = New(struct pre_form);
     else
 	new = PreForm = New(struct pre_form);
-    if (url && *url == '/') {
-	int l = strlen(url);
-	if (l > 1 && url[l - 1] == '/')
-	    new->url = allocStr(url + 1, l - 2);
-	else
-	    new->url = url + 1;
-	new->re_url = newRegex(new->url, FALSE, NULL, NULL);
-	if (!new->re_url)
-	    new->url = NULL;
-    }
-    else if (url) {
+    if (url && !re_url) {
 	parseURL2(url, &pu, NULL);
 	new->url = parsedURL2Str(&pu)->ptr;
-	new->re_url = NULL;
     }
+    else
+	new->url = url;
+    new->re_url = re_url;
     new->name = (name && *name) ? name : NULL;
     new->action = (action && *action) ? action : NULL;
     new->item = NULL;
@@ -834,7 +844,7 @@ add_pre_form_item(struct pre_form *pf, struct pre_form_item *prev, int type,
     new->name = name;
     new->value = value;
     if (checked && *checked && (!strcmp(checked, "0") ||
-				strcasecmp(checked, "off")
+				!strcasecmp(checked, "off")
 				|| !strcasecmp(checked, "no")))
 	new->checked = 0;
     else
@@ -875,6 +885,7 @@ loadPreForm(void)
 	return;
     while (1) {
 	char *p, *s, *arg;
+	Regex *re_arg;
 
 	line = Strfgets(fp);
 	if (line->length == 0)
@@ -890,18 +901,20 @@ loadPreForm(void)
 	if (*p == '#' || *p == '\0')
 	    continue;		/* comment or empty line */
 	s = getWord(&p);
-	arg = getWord(&p);
 
 	if (!strcmp(s, "url")) {
+	    arg = getRegexWord((const char **)&p, &re_arg);
 	    if (!arg || !*arg)
 		continue;
 	    p = getQWord(&p);
-	    pf = add_pre_form(pf, arg, NULL, p);
+	    pf = add_pre_form(pf, arg, re_arg, NULL, p);
 	    pi = pf->item;
 	    continue;
 	}
 	if (!pf)
 	    continue;
+
+	arg = getWord(&p);
 	if (!strcmp(s, "form")) {
 	    if (!arg || !*arg)
 		continue;
@@ -913,7 +926,7 @@ loadPreForm(void)
 	    }
 	    if (pf->item) {
 		struct pre_form *prev = pf;
-		pf = add_pre_form(prev, "", s, p);
+		pf = add_pre_form(prev, "", NULL, s, p);
 		/* copy previous URL */
 		pf->url = prev->url;
 		pf->re_url = prev->re_url;

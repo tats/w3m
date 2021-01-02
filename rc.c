@@ -9,7 +9,9 @@
 #include <errno.h>
 #include "parsetag.h"
 #include "local.h"
+#include "regex.h"
 #include <stdlib.h>
+#include <stddef.h>
 
 struct param_ptr {
     char *name;
@@ -88,6 +90,7 @@ static int OptionEncode = FALSE;
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
+#define CMT_DISP_BORDERS N_("Display table borders, ignore value of BORDER")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
@@ -128,6 +131,7 @@ static int OptionEncode = FALSE;
 #define CMT_USE_MARK	N_("Enable mark operations")
 #endif
 #define CMT_EMACS_LIKE_LINEEDIT	N_("Enable Emacs-style line editing")
+#define CMT_SPACE_AUTOCOMPLETE  N_("Space key triggers file completion while editing URLs")
 #define CMT_VI_PREC_NUM	 N_("Enable vi-like numeric prefix")
 #define CMT_LABEL_TOPLINE N_("Move cursor to top line when going to label")
 #define CMT_NEXTPAGE_TOPLINE N_("Move cursor to top line when moving to next page")
@@ -140,12 +144,19 @@ static int OptionEncode = FALSE;
 #define CMT_EDITOR       N_("Editor")
 #define CMT_MAILER       N_("Mailer")
 #define CMT_MAILTO_OPTIONS N_("How to call Mailer for mailto URLs with options")
-#define CMT_EXTBRZ       N_("External Browser")
-#define CMT_EXTBRZ2      N_("Second External Browser")
-#define CMT_EXTBRZ3      N_("Third External Browser")
+#define CMT_EXTBRZ       N_("External browser")
+#define CMT_EXTBRZ2      N_("2nd external browser")
+#define CMT_EXTBRZ3      N_("3rd external browser")
+#define CMT_EXTBRZ4      N_("4th external browser")
+#define CMT_EXTBRZ5      N_("5th external browser")
+#define CMT_EXTBRZ6      N_("6th external browser")
+#define CMT_EXTBRZ7      N_("7th external browser")
+#define CMT_EXTBRZ8      N_("8th external browser")
+#define CMT_EXTBRZ9      N_("9th external browser")
 #define CMT_DISABLE_SECRET_SECURITY_CHECK	N_("Disable secret file security check")
 #define CMT_PASSWDFILE	 N_("Password file")
 #define CMT_PRE_FORM_FILE	N_("File for setting form on loading")
+#define CMT_SITECONF_FILE	N_("File for preferences for each site")
 #define CMT_FTPPASS      N_("Password for anonymous FTP (your mail address)")
 #define CMT_FTPPASS_HOSTNAMEGEN N_("Generate domain part of password for FTP")
 #define CMT_USERAGENT    N_("User-Agent identification string")
@@ -192,7 +203,7 @@ static int OptionEncode = FALSE;
 #define CMT_SSL_CA_PATH N_("Path to directory for PEM encoded certificates of CAs")
 #define CMT_SSL_CA_FILE N_("File consisting of PEM encoded certificates of CAs")
 #endif				/* USE_SSL_VERIFY */
-#define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t:TLSv1)")
+#define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)")
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
@@ -390,6 +401,8 @@ struct param_ptr params1[] = {
      NULL},
     {"graphic_char", P_CHARINT, PI_SEL_C, (void *)&UseGraphicChar,
      CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
+    {"display_borders", P_CHARINT, PI_ONOFF, (void *)&DisplayBorders,
+     CMT_DISP_BORDERS, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
@@ -473,6 +486,8 @@ struct param_ptr params3[] = {
 #endif
     {"emacs_like_lineedit", P_INT, PI_ONOFF, (void *)&emacs_like_lineedit,
      CMT_EMACS_LIKE_LINEEDIT, NULL},
+    {"space_autocomplete", P_INT, PI_ONOFF, (void *)&space_autocomplete,
+     CMT_SPACE_AUTOCOMPLETE, NULL},
     {"vi_prec_num", P_INT, PI_ONOFF, (void *)&vi_prec_num, CMT_VI_PREC_NUM,
      NULL},
     {"mark_all_pages", P_INT, PI_ONOFF, (void *)&MarkAllPages,
@@ -561,6 +576,18 @@ struct param_ptr params6[] = {
      NULL},
     {"extbrowser3", P_STRING, PI_TEXT, (void *)&ExtBrowser3, CMT_EXTBRZ3,
      NULL},
+    {"extbrowser4", P_STRING, PI_TEXT, (void *)&ExtBrowser4, CMT_EXTBRZ4,
+     NULL},
+    {"extbrowser5", P_STRING, PI_TEXT, (void *)&ExtBrowser5, CMT_EXTBRZ5,
+     NULL},
+    {"extbrowser6", P_STRING, PI_TEXT, (void *)&ExtBrowser6, CMT_EXTBRZ6,
+     NULL},
+    {"extbrowser7", P_STRING, PI_TEXT, (void *)&ExtBrowser7, CMT_EXTBRZ7,
+     NULL},
+    {"extbrowser8", P_STRING, PI_TEXT, (void *)&ExtBrowser8, CMT_EXTBRZ8,
+     NULL},
+    {"extbrowser9", P_STRING, PI_TEXT, (void *)&ExtBrowser9, CMT_EXTBRZ9,
+     NULL},
     {"bgextviewer", P_INT, PI_ONOFF, (void *)&BackgroundExtViewer,
      CMT_BGEXTVIEW, NULL},
     {"use_lessopen", P_INT, PI_ONOFF, (void *)&use_lessopen, CMT_USE_LESSOPEN,
@@ -619,6 +646,8 @@ struct param_ptr params9[] = {
      CMT_FTPPASS_HOSTNAMEGEN, NULL},
     {"pre_form_file", P_STRING, PI_TEXT, (void *)&pre_form_file,
      CMT_PRE_FORM_FILE, NULL},
+    {"siteconf_file", P_STRING, PI_TEXT, (void *)&siteconf_file,
+     CMT_SITECONF_FILE, NULL},
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
@@ -771,7 +800,7 @@ create_option_search_table()
     qsort(RC_search_table, RC_table_size, sizeof(struct rc_search_table),
 	  (int (*)(const void *, const void *))compare_table);
 
-    diff1 = diff2 = 0;
+    diff2 = 0;
     for (i = 0; i < RC_table_size - 1; i++) {
 	p = RC_search_table[i].param->name;
 	q = RC_search_table[i + 1].param->name;
@@ -829,7 +858,7 @@ void
 show_params(FILE * fp)
 {
     int i, j, l;
-    char *t = NULL;
+    const char *t = "";
     char *cmt;
 
 #ifdef USE_M17N
@@ -1173,6 +1202,8 @@ do_mkdir(const char *dir, long mode)
 #endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
+static void loadSiteconf(void);
+
 void
 sync_with_option(void)
 {
@@ -1199,6 +1230,7 @@ sync_with_option(void)
 #endif
     loadPasswd();
     loadPreForm();
+    loadSiteconf();
 
     if (AcceptLang == NULL || *AcceptLang == '\0') {
 	/* TRANSLATORS: 
@@ -1250,7 +1282,7 @@ init_rc(void)
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */
 	    if (do_mkdir(rc_dir, 0700) < 0) {
-		fprintf(stderr, "Can't create config directory (%s)!", rc_dir);
+		/* fprintf(stderr, "Can't create config directory (%s)!\n", rc_dir); */
 		goto rc_dir_err;
 	    }
 	    else {
@@ -1258,17 +1290,17 @@ init_rc(void)
 	    }
 	}
 	else {
-	    fprintf(stderr, "Can't open config directory (%s)!", rc_dir);
+	    /* fprintf(stderr, "Can't open config directory (%s)!\n", rc_dir); */
 	    goto rc_dir_err;
 	}
     }
     if (!S_ISDIR(st.st_mode)) {
 	/* not a directory */
-	fprintf(stderr, "%s is not a directory!", rc_dir);
+	/* fprintf(stderr, "%s is not a directory!\n", rc_dir); */
 	goto rc_dir_err;
     }
     if (!(st.st_mode & S_IWUSR)) {
-	fprintf(stderr, "%s is not writable!", rc_dir);
+	/* fprintf(stderr, "%s is not writable!\n", rc_dir); */
 	goto rc_dir_err;
     }
     no_rc_dir = FALSE;
@@ -1301,6 +1333,11 @@ init_rc(void)
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
+#ifdef HAVE_MKDTEMP
+    tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX", NULL)->ptr);
+    if (tmp_dir == NULL)
+	tmp_dir = rc_dir;
+#endif
     create_option_search_table();
     goto open_rc;
 }
@@ -1483,6 +1520,7 @@ panel_set_option(struct parsed_tagarg *arg)
 {
     FILE *f = NULL;
     char *p;
+    Str s = Strnew(), tmp;
 
     if (config_file == NULL) {
 	disp_message("There's no config file... config not saved", FALSE);
@@ -1498,14 +1536,17 @@ panel_set_option(struct parsed_tagarg *arg)
 	if (arg->value) {
 	    p = conv_to_system(arg->value);
 	    if (set_param(arg->arg, p)) {
-		if (f)
-		    fprintf(f, "%s %s\n", arg->arg, p);
+		tmp = Sprintf("%s %s\n", arg->arg, p);
+		Strcat(tmp, s);
+		s = tmp;
 	    }
 	}
 	arg = arg->next;
     }
-    if (f)
+    if (f) {
+	fputs(s->ptr, f);
 	fclose(f);
+    }
     sync_with_option();
     backBf();
 }
@@ -1556,3 +1597,229 @@ helpFile(char *base)
     return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
 }
 #endif
+
+/* siteconf */
+/*
+ * url "<url>"|/<re-url>/|m@<re-url>@i [exact]
+ * substitute_url "<destination-url>"
+ * url_charset <charset>
+ * no_referer_from on|off
+ * no_referer_to on|off
+ * user_agent "<string>"
+ * 
+ * The last match wins.
+ */
+
+struct siteconf_rec {
+    struct siteconf_rec *next;
+    char *url;
+    Regex *re_url;
+    int url_exact;
+    unsigned char mask[(SCONF_N_FIELD + 7) >> 3];
+
+    char *substitute_url;
+    char *user_agent;
+#ifdef USE_M17N
+    wc_ces url_charset;
+#endif
+    int no_referer_from;
+    int no_referer_to;
+};
+#define SCONF_TEST(ent, f) ((ent)->mask[(f)>>3] & (1U<<((f)&7)))
+#define SCONF_SET(ent, f) ((ent)->mask[(f)>>3] |= (1U<<((f)&7)))
+#define SCONF_CLEAR(ent, f) ((ent)->mask[(f)>>3] &= ~(1U<<((f)&7)))
+
+static struct siteconf_rec *siteconf_head = NULL;
+static struct siteconf_rec *newSiteconfRec(void);
+
+static struct siteconf_rec *
+newSiteconfRec(void)
+{
+    struct siteconf_rec *ent;
+
+    ent = New(struct siteconf_rec);
+    ent->next = NULL;
+    ent->url = NULL;
+    ent->re_url = NULL;
+    ent->url_exact = FALSE;
+    memset(ent->mask, 0, sizeof(ent->mask));
+
+    ent->substitute_url = NULL;
+    ent->user_agent = NULL;
+#ifdef USE_M17N
+    ent->url_charset = 0;
+#endif
+    return ent;
+}
+
+static void
+loadSiteconf(void)
+{
+    char *efname;
+    FILE *fp;
+    Str line;
+    struct siteconf_rec *ent = NULL;
+
+    siteconf_head = NULL;
+    if (!siteconf_file)
+	return;
+    if ((efname = expandPath(siteconf_file)) == NULL)
+	return;
+    fp = fopen(efname, "r");
+    if (fp == NULL)
+	return;
+    while (line = Strfgets(fp), line->length > 0) {
+	char *p, *s;
+
+	Strchop(line);
+	p = line->ptr;
+	SKIP_BLANKS(p);
+	if (*p == '#' || *p == '\0')
+	    continue;
+	s = getWord(&p);
+
+	/* The "url" begins a new record. */
+	if (strcmp(s, "url") == 0) {
+	    char *url, *opt;
+	    struct siteconf_rec *newent;
+
+	    /* First, register the current record. */
+	    if (ent) {
+		ent->next = siteconf_head;
+		siteconf_head = ent;
+		ent = NULL;
+	    }
+
+	    /* Second, create a new record. */
+	    newent = newSiteconfRec();
+	    url = getRegexWord((const char **)&p, &newent->re_url);
+	    opt = getWord(&p);
+	    SKIP_BLANKS(p);
+	    if (!newent->re_url) {
+		ParsedURL pu;
+		if (!url || !*url)
+		    continue;
+		parseURL2(url, &pu, NULL);
+		newent->url = parsedURL2Str(&pu)->ptr;
+	    }
+	    /* If we have an extra or unknown option, ignore this record
+	     * for future extensions. */
+	    if (strcmp(opt, "exact") == 0) {
+		newent->url_exact = TRUE;
+	    }
+	    else if (*opt != 0)
+		    continue;
+	    if (*p)
+		continue;
+	    ent = newent;
+	    continue;
+	}
+
+	/* If the current record is broken, skip to the next "url". */
+	if (!ent)
+	    continue;
+
+	/* Fill the new record. */
+	if (strcmp(s, "substitute_url") == 0) {
+	    ent->substitute_url = getQWord(&p);
+	    SCONF_SET(ent, SCONF_SUBSTITUTE_URL);
+	}
+	if (strcmp(s, "user_agent") == 0) {
+	    ent->user_agent = getQWord(&p);
+	    SCONF_SET(ent, SCONF_USER_AGENT);
+	}
+#ifdef USE_M17N
+	else if (strcmp(s, "url_charset") == 0) {
+	    char *charset = getWord(&p);
+	    ent->url_charset = (charset && *charset) ?
+		wc_charset_to_ces(charset) : 0;
+	    SCONF_SET(ent, SCONF_URL_CHARSET);
+	}
+#endif /* USE_M17N */
+	else if (strcmp(s, "no_referer_from") == 0) {
+	    ent->no_referer_from = str_to_bool(getWord(&p), 0);
+	    SCONF_SET(ent, SCONF_NO_REFERER_FROM);
+	}
+	else if (strcmp(s, "no_referer_to") == 0) {
+	    ent->no_referer_to = str_to_bool(getWord(&p), 0);
+	    SCONF_SET(ent, SCONF_NO_REFERER_TO);
+	}
+    }
+    if (ent) {
+	ent->next = siteconf_head;
+	siteconf_head = ent;
+	ent = NULL;
+    }
+    fclose(fp);
+}
+
+const void *
+querySiteconf(const ParsedURL *query_pu, int field)
+{
+    const struct siteconf_rec *ent;
+    Str u;
+    char *firstp, *lastp;
+
+    if (field < 0 || field >= SCONF_N_FIELD)
+	return NULL;
+    if (!query_pu || IS_EMPTY_PARSED_URL(query_pu))
+	return NULL;
+    u = parsedURL2Str((ParsedURL *)query_pu);
+    if (u->length == 0)
+	return NULL;
+
+    for (ent = siteconf_head; ent; ent = ent->next) {
+	if (!SCONF_TEST(ent, field))
+	    continue;
+	if (ent->re_url) {
+	    if (RegexMatch(ent->re_url, u->ptr, u->length, 1)) {
+		MatchedPosition(ent->re_url, &firstp, &lastp);
+		if (!ent->url_exact)
+		    goto url_found;
+		if (firstp != u->ptr || lastp == firstp)
+		    continue;
+		if (*lastp == 0 || *lastp == '?' || *(lastp - 1) == '?' ||
+		    *lastp == '#' || *(lastp - 1) == '#')
+		    goto url_found;
+	    }
+	} else {
+	    int matchlen = strmatchlen(ent->url, u->ptr, u->length);
+	    if (matchlen == 0 || ent->url[matchlen] != 0)
+		continue;
+	    firstp = u->ptr;
+	    lastp = u->ptr + matchlen;
+	    if (*lastp == 0 || *lastp == '?' || *(lastp - 1) == '?' ||
+		*lastp == '#' || *(lastp - 1) == '#')
+		goto url_found;
+	    if (!ent->url_exact && (*lastp == '/' || *(lastp - 1) == '/'))
+		goto url_found;
+	}
+    }
+    return NULL;
+
+url_found:
+    switch (field) {
+    case SCONF_SUBSTITUTE_URL:
+	if (ent->substitute_url && *ent->substitute_url) {
+	    Str tmp = Strnew_charp_n(u->ptr, firstp - u->ptr);
+	    Strcat_charp(tmp, ent->substitute_url);
+	    Strcat_charp(tmp, lastp);
+	    return tmp->ptr;
+	}
+	return NULL;
+    case SCONF_USER_AGENT:
+	if (ent->user_agent && *ent->user_agent) {
+	    return ent->user_agent;
+	}
+	return NULL;
+#ifdef USE_M17N
+    case SCONF_URL_CHARSET:
+	return &ent->url_charset;
+#endif
+    case SCONF_NO_REFERER_FROM:
+	return &ent->no_referer_from;
+    case SCONF_NO_REFERER_TO:
+	return &ent->no_referer_to;
+    }
+    return NULL;
+}

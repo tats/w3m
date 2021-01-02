@@ -1,0 +1,2353 @@
+
+<html>
+  <head>
+  <title>w3m Handbuch</title>
+    <style>
+      span.mono {
+        font-family:mono;
+      }
+    </style>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+  </head>
+  <body>
+   <!--
+insertions tagged with "mh 2016-03-29" and "mh 2016-06-11" come from the latest version of manual page w3m (1) 
+   -->
+   
+   <h1>w3m HANDBUCH</h1>
+  <div align="right">
+   Akinori Ito<br> aito@fw.ipsj.or.jp
+  </div>
+  <h2>Übersicht</h2>
+  <ul>
+   <li>
+    <a href="#Einführung">
+     Einführung
+    </a>
+   </li>
+   <li>
+    <a href="#Einstellungen">
+     Einstellungen
+    </a>
+   </li>
+   <li>
+    <a href="#Color">
+     Farbzuordnung im Dokument
+    </a>
+   </li>
+   <li>
+    <a href="#Functions">
+     Funktionen und Tastaturbelegung
+    </a>
+   </li>
+<!-- mh 2016-06-13 obsolete
+   <li>
+    <a href="#Key:lynx">
+     Lynx-like key bindings
+    </a>
+   </li>
+-->
+   <li>
+    <a href="#Mouse">
+     Bedienung per Maus
+    </a>
+   </li>
+<!-- mh 2016-06-13 obsolete
+   <li>
+    <a href="#Key:custom">
+     Key customization
+    </a>
+   </li>
+   -->
+   <li>
+    <a href="#LocalCGI">
+     Lokale CGI-Skripte
+    </a>
+   </li>
+  </ul>
+  <hr>
+  <h2 id="Einführung">
+   Einführung
+  </h2>
+  <p>
+   w3m ist ein textorientierter Browser und Textbetrachter (Pager). In einem Terminalemulator können Sie damit lokale und andere Dokumente anzeigen lassen und Verknüpfungen (Hyperlinks) weiterverfolgen.
+  </p>
+  <hr>
+  <h2 id="Einstellungen">
+   Einstellungen
+  </h2>
+  <p>
+   Der Aufruf per Befehlszeile lautet
+  </p>
+<!-- mh 2016-08-06 invocation adapted to w3m(1). w3m accepts several options and several targets -->
+<pre>
+  w3m [Option]… [Datei|Adresse]…
+</pre>
+  <p>
+   Wenn Sie Dateinamen oder Adressen in der Befehlszeile angeben, werden diese Dokumente angezeigt. Fehlen entsprechende Argumente, wird w3m ein Dokument aus der Standardeingabe erwarten und anzeigen. Erhält das Programm auch hier keine Daten, beendet es sich normalerweise selbstständig.
+  </p>
+  <p>
+   Optionen sind unter anderem:
+  </p>
+  <dl>
+<h3>Allgemeine Optionen</h3>
+    <dt>
+    -B
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+    
+     starte mit einer Ansicht aller Lesezeichen (wenn kein anderes Zielobjekt angegeben ist)
+    </p>
+   </dd>
+   <dt>
+    -M
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+    
+    monochrome Anzeige
+    </p>
+   </dd>
+   <dt>
+    -no-mouse
+   </dt>
+   <dd>
+    <p>
+     Mausfunktion aus
+    </p>
+   </dd>
+   <dt>
+    -num
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      zeige Zeilennummern an
+
+    </p>
+   </dd>
+<!-- mh 2016-08-06 commented out. As implementation is not verified.
+   <dt>
+    -ppc <i>num</i>
+   </dt>
+   <dd>
+    <p>
+    width of <i>num</i> pixels per character. Range of 4.0 to 32.0,
+    default 8.0. Larger values will make tables
+    narrower. (Implementation not verified)
+    </p>
+   </dd>
+-->
+   <dt>
+    -v
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+    
+      begrüße den Benutzer mit einer eingebauten Seite (wenn kein anderes Zielobjekt angegeben ist)
+    </p>
+   </dd>
+   <dt>
+    -W
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      wechsle zwischen umlaufendem und nicht umlaufendem Suchen
+    </p>
+   </dd>
+   <dt>
+    -X
+   </dt>
+   <dd>
+    <p>
+     nach Beenden des Programms das Terminal nicht neu initialisieren.
+    </p>
+   </dd>
+   <dt>
+    +<i>Zahl</i>
+   </dt>
+   <dd>
+     <!--mh 2016-06-11 --><p>
+       gehe zu Zeile <i>Zahl</i>. Wirkt nur, wenn <i>Zahl</i> größer ist als die im Terminal verfügbare Zeilenzahl
+    </p>
+   </dd>
+<h3>Browser-Optionen</h3>
+   <dt>
+    -cols <i>Zahl</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-06-11 --><p>
+      
+      bei für die Standardausgabe bestimmten Inhalten, nimm bei zur Umsetzung von HTML eine Länge von <i>num</i> Zeichen pro Zeile
+    </p>
+   </dd>
+   <dt>
+    -cookie
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      verwende gespeicherte Cookies und akzeptiere neue
+    </p>
+   </dd>
+   <dt>
+    -no-cookie
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+     
+     verwende weder gespeicherte Cookies noch akzeptiere neue
+
+    </p>
+   </dd>
+   <dt>
+    -F
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      verarbeite Frames
+    </p>
+   </dd>
+   <dt>
+    -no-graph
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      verwende bei der Umsetzung von Tabellen und Frames keine grafischen Zeichen
+    </p>
+   </dd>
+   <dt>
+    -header <i>Zeichenkette</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      füge der HTTP(S)-Anfrage <i>Zeichenkette</i> an. Diese muss der Kopfdaten-Syntax <span class="mono">"Variable: Wert"</span> entsprechen
+    </p>
+   </dd>
+   <dt>
+    -m
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29
+Render the body of Usenet messages according to the header <q>Content-type</q>
+--><p>
+     arbeite im <q>Internetnachrichten-Modus</q>. Mit dieser Option entnimmt w3m den Typ eines Dokumentes dessen Kopfdaten. Dies ist nützlich beim Lesen von Mails und Usenet-Nachrichten.
+
+    </p>
+   </dd>
+   <dt>
+    -no-proxy
+   </dt>
+   <dd>
+    <!-- mh 2016-06-11--><p>
+      
+      verwende keinen Proxy
+   </p>
+   </dd>
+   <dt>
+    -post <i>Datei</i>
+   </dt>
+   <dd>
+    <!--funktionierend 2016-06-28T08:22>--><p>
+      verwende die Methode POST, um in <i>Datei</i> hinterlegte Daten hochzuladen. Hierbei wird die Syntax <span class="mono">"var1=wert1[&amp;var2=wert2]&hellip;"</span> erwartet
+    </p>
+   </dd>
+<h3>Textbetrachter-Optionen</h3>
+   <dt>
+    -l <i>Zahl</i>
+   </dt>
+   <dd>
+    <!-- mh2016-06-11--><p>
+      
+      Anzahl der Zeilen, die zwischengespeichert werden, wenn Text per Standardeingabe übergeben wurde. (Voreinstellung ist 10000)
+    </p>
+   </dd>
+   <dt>
+    -r
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29 --><p>
+      
+      verarbeite spezielle Escape-Zeichen (beispielsweise ANSI-Escape-Zeichen oder nroff-Rückwärtsschritte für fette und unterstrichene Zeichen) nicht, sondern zeige sie stattdessen mittels Caret-Notation.
+    </p>
+   </dd>
+   <dt>
+    -s
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      mehrere leere Zeilen werden bis auf eine gelöscht
+    </p>
+   </dd>
+  
+  <!--mh 2016-03-29 --><dt>
+     -t <i>Zahl</i>
+   </dt>
+   <dd>
+    <!--mh 2016-03-29--><p>
+       Tab-Zeichen so verwerten, dass Spalten mit einer Weite von <i>Zahl</i> Zeichen entstehen. Wirkt nicht auf Standardausgabe
+    </p>
+   </dd>
+<h3>Datenart- und Datenkodierungs-Optionen</h3>
+   <dt>
+    -I <i>Zeichenkodierung</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      zu benutzende Zeichenkodierung für erhaltene Daten 
+    </p>
+   </dd>
+   <dt>
+    -O <i>Zeichenkodierung</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29 --><p>
+      
+      zu benutzende Zeichenkodierung für auszugebende Daten 
+    </p>
+   </dd>
+   <dt>
+    -T <i>Typ</i>
+   </dt>
+   <dd>
+     <!-- mh 2016-06-11--><p>
+       
+      legt den MIME-Typ erhaltener Daten fest. Ohne diese Option bestimmt ihn das Programm anhand der Dateinamen-Erweiterung. Wenn dies fehlschlägt, wird text/plain als Typ angenommen. Zum Beispiel:
+     </p>
+    <p>
+     Übernimm HTML-Dokument von der Standardeingabe und zeige es an
+    </p>
+<pre>
+   cat beispiel.html | w3m -T text/html
+</pre>
+   <p>
+    Zeige HTML-Quelltext an
+   </p>
+<pre>
+   w3m -T text/plain beispiel.html
+</pre>
+   </dd>
+<h3>Optionen zur Datenausgabe, mit sofortigem Verlassen des Programms</h3>
+   <dt>
+    -dump
+   </dt>
+   <dd>
+     <!-- mh 2016-03-29 --><p>
+      lies das per URL angegebene Dokument und leite es verarbeitet der Standardausgabe zu. Wenn mit der Option -cols nichts anderes eingestellt ist, erhält es eine Breite von 80 Zeichen
+      </p>
+   </dd>
+   <dt>
+    -dump_source
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      leite den Seitenquelltext der Standardausgabe zu
+    </p>
+   </dd>
+   <dt>
+    -dump_head
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      leite die Antwort einer HEAD-Anfrage für eine URL der Standardausgabe zu
+    </p>
+   </dd>
+   <dt>
+    -dump_both
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+      leite Antwort auf HEAD-Anfrage und Seitenquelltext der Standardausgabe zu
+
+    </p>
+   </dd>
+   <dt>
+    -dump_extra
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+      
+     leite Antwort auf HEAD-Anfrage, Seitenquelltext und Extrainformation der Standardausgabe zu
+    </p>
+   </dd>
+
+<h3>Optionen, die Standards für Einstellungen und Datenquellen außer Kraft setzen</h3>
+   
+   <dt>
+    -bookmark <i>Datei</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+    
+     benutze anstelle der Standarddatei bookmark.html für Lesezeichen die Datei <i>Datei</i>
+    </p>
+   </dd>
+   <dt>
+    -config <i>Datei</i>
+   </dt>
+   <dd>
+    <!--mh 2016-06-11--><p>
+            
+      benutze <i>Datei</i> anstelle der Standard-Konfigurationsdatei 
+    </p>
+   </dd>
+   <dt>
+    -o <i>Option</i>=<i>Wert</i>
+   </dt>
+   <dd>
+    <!-- mh 2016-03-29--><p>
+     
+      arbeite mit einer Konfiguration, bei der die Einstellung <i>Option</i> mit <i>Wert</i> belegt ist. Ohne <i>Option=Wert</i> gleichwertig mit <i>-show-option</i>
+    </p>
+   </dd>
+  </dl>
+  <hr>
+  <h2 id="Color">
+   Farbzuordnung im Dokument
+  </h2>
+  <p>
+   Links und Bildelemente werden wie folgt angezeigt:
+  </p>
+  <div align="center"> <table border="1"> <tr>
+     <th>
+     </th>
+     <th>
+      Farbmodus
+     </th>
+     <th>
+      Monochrom-Modus
+     </th>
+    </tr>
+    <tr>
+     <td>
+      Hyperlinks
+     </td>
+     <td>
+      blau
+     </td>
+     <td>
+      unterstrichen
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Bilder
+     </td>
+     <td>
+      grün
+     </td>
+     <td>
+      invertiert
+     </td>
+    </tr>
+    <tr>
+     <td>
+      Formular-Eingabefelder
+     </td>
+     <td>
+      rot
+     </td>
+     <td>
+      invertiert
+     </td>
+    </tr>
+   </table>
+  </div>
+  <p>
+   Diese Farben können nach Eingabe von <q>o</q> im Einstellungs-Dialog anders zugeordnet werden.
+  </p>
+  <hr>
+  <h2 id="Functions">
+   Funktionen und Tastaturbelegung
+  </h2>
+  
+  <!-- mh 2016-06-13 obsolete
+   If you prefer using Lynx-like
+   key bindings, make w3m start with the respective keymap file keymap.lynx. (see w3m (1)).--><p>
+   Wenn w3m läuft, bedienen Sie das Programm, indem Sie Funktionen anhand ihres Namens oder der ihr zugeordneten Tastenkombination aufrufen. Es gibt voreingestellte Tastaturbelegungen.
+
+  </p>
+<!--
+  <h2 id="Key:custom">
+   Key customization
+  </h2>
+-->
+  <p>
+   Sie können die Tastaturbelegungen (abgesehen von jenen des Menü- und des Texteingabe-Modus) in einer Datei ~/.w3m/keymap anpassen. Beispielsweise bindet
+  </p>
+
+<pre>
+   keymap C-o NEXT_PAGE
+</pre>
+
+  <p>
+   die Funktion <span class="mono">NEXT_PAGE</span> (die normalerweise mit SPC und C-v verknüpft ist) mit C-o. Siehe die Liste verfügbarer Funktionen in <a href="README.func">README.func</a>. Original- und Lynx-artige Tastaturbelegungen enthalten die Beispieldateien <a href="keymap.default">keymap.default</a> und <a href="keymap.lynx">keymap.lynx</a>.
+  </p>
+
+   <p>
+   Im Folgenden stehen <i>C-</i> und <i>M-</i> für die Eingabe-Modifikationen mit der <i>Steuerungs-</i> und der <i>Meta-Taste</i>. Die letztere ersetzt die <i>ALT-Taste</i>, wohingegen Drücken der <i>ESC</i>-Taste zwischen <i>Meta</i>-modifiziertem und einfachen Tastendruck wechselt. Das Minus-Zeichen bedeutet das gleichzeitige Drücken von Tasten; der Leerraum dagegen steht dafür, dass eine Taste nach der anderen gedrückt wird. Mit <i>2 M</i> ist also gemeint, die <i>2</i> und dann <i>M</i> zu drücken.
+  </p>
+
+
+  <table border="1" width="100%">
+    <colgroup>
+      <col width="20%">
+      <col width="20%">
+      <col width="20%">
+      <col width="40%">
+    </colgroup>
+    <tr>
+      <th rowspan="2">
+	Funktion
+     </th>
+    <th colspan="2">Tastenkombination
+    </th>
+    <th rowspan="2">
+      Beschreibung
+    </th>
+   </tr>
+    <tr>
+    <th>
+     Standard
+    </th>
+    <th>
+     Lynx-ähnlich
+    </th>
+   </tr>
+    <tr>
+      <td colspan="4">
+      <h3>Navigation innerhalb von Seiten</h3>
+</td>
+    </tr>
+    <tr>
+     <td>
+       NEXT_PAGE
+     </td>
+    <td>
+     SPC, C-v, +, PGDN
+    </td>
+    <td>
+     SPC, C-v, +
+    </td>
+    <td>
+     Scrolle eine Seite abwärts
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PREVIOUS_PAGE
+     </td>
+    <td>
+     b, M-v, -, PGUP
+    </td>
+    <td>
+     b, M-v, -
+    </td>
+    <td>
+     Scrolle eine Seite aufwärts
+    </td>
+   </tr>
+   <tr>
+     <td>
+       MOVE_RIGHT
+     </td>
+    <td>
+     l, C-f, RIGHT
+    </td>
+    <td>
+     l
+    </td>
+    <td>
+     Bewege Cursor nach rechts (mit Verschiebung um halbe Bildschirmbreite an dessen Rand)
+    </td>
+   </tr>
+   <tr>
+     <td>
+       C-b, LEFT
+     </td>
+    <td>
+     h, C-b, LEFT
+    </td>
+    <td>
+     h
+    </td>
+    <td>
+     Bewege Cursor nach links (mit Verschiebung um halbe Bildschirmbreite an dessen Rand)
+    </td>
+   </tr>
+   <tr>
+     <td>
+       MOVE_DOWN
+     </td>
+    <td>
+     j, C-n, DOWN
+    </td>
+    <td>
+     j
+    </td>
+    <td>
+     Bewege Cursor abwärts (scrolle eine Zeile am Bildschirmrand)
+    </td>
+   </tr>
+   <tr>
+     <td>
+       MOVE_UP
+     </td>
+    <td>
+     k, C-p, UP
+    </td>
+    <td>
+     k
+    </td>
+    <td>
+     Bewege Cursor aufwärts (scrolle eine Zeile am Bildschirmrand)
+    </td>
+   </tr>
+   <tr>
+     <td>
+       UP
+     </td>
+    <td>
+     J
+    </td>
+    <td>
+     J
+    </td>
+    <td>
+     Scrolle den Anzeigebereich eine Zeile aufwärts
+    </td>
+   </tr>
+   <tr>
+     <td>
+       DOWN
+     </td>
+    <td>
+     K
+    </td>
+    <td>
+     K
+    </td>
+    <td>
+     Scrolle den Anzeigebereich eine Zeile abwärts
+    </td>
+   </tr>
+   <tr>
+     <td>
+       LINE_BEGIN
+     </td>
+    <td>
+     ^, C-a
+    </td>
+    <td>
+     ^
+    </td>
+    <td>
+     Gehe zum Zeilenanfang
+    </td>
+   </tr>
+   <tr>
+     <td>
+       LINE_END
+     </td>
+    <td>
+     $, C-e
+    </td>
+    <td>
+     $
+    </td>
+    <td>
+     Gehe zum Zeilenende
+    </td>
+   </tr>
+   <tr>
+     <td>
+       NEXT_WORD
+     </td>
+    <td>
+     w
+    </td>
+    <td>
+     w
+    </td>
+    <td>
+     Gehe zum nächsten Wort
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PREVIOUS_WORD
+     </td>
+    <td>
+     W
+    </td>
+    <td>
+     W
+    </td>
+    <td>
+     Gehe zum vorherigen Wort
+    </td>
+   </tr>
+   <tr>
+     <td>
+       SHIFT_RIGHT
+     </td>
+    <td>
+     >
+    </td>
+    <td>
+     >
+    </td>
+    <td>
+     Anzeigebereich nach rechts versetzen
+    </td>
+   </tr>
+   <tr>
+     <td>
+       SHIFT_LEFT
+     </td>
+    <td>
+     <
+    </td>
+    <td>
+     <
+    </td>
+    <td>
+     Anzeigebereich nach links versetzen
+    </td>
+   </tr>
+   <tr>
+     <td>
+       RIGHT
+     </td>
+    <td>
+     .
+    </td>
+    <td>
+     .
+    </td>
+    <td>
+     Anzeigebereich um eine Spalte nach rechts verschieben
+    </td>
+   </tr>
+   <tr>
+     <td>
+       LEFT
+     </td>
+    <td>
+     ,
+    </td>
+    <td>
+     ,
+    </td>
+    <td>
+     Anzeigebereich um eine Spalte nach links verschieben
+    </td>
+   </tr>
+   <tr>
+     <td>
+       BEGIN
+     </td>
+    <td>
+     g, M-<, HOME
+    </td>
+    <td>
+     C-a, M-<
+    </td>
+    <td>
+     Gehe zur ersten Zeile
+    </td>
+   </tr>
+   <tr>
+     <td>
+       END
+     </td>
+    <td>
+     G, M->, END
+    </td>
+    <td>
+     C-e, M->
+    </td>
+    <td>
+     Gehe zur letzten Zeile
+    </td>
+   </tr>
+   <tr>
+     <td>
+       GOTO_LINE
+     </td>
+    <td>
+     M-g
+    </td>
+    <td>
+     G
+    </td>
+    <td>
+     Gehe zur angegebenen Zeile
+    </td>
+   </tr>
+   <tr>
+     <td>
+       LINE_INFO
+     </td>
+    <td>
+     C-g
+    </td>
+    <td>
+     C-g
+    </td>
+    <td>
+     Zeige aktuelle Position im Dokument an
+    </td>
+   </tr>
+   <tr>
+     <td>
+       CENTER_H
+     </td>
+    <td>
+     Z
+    </td>
+<!--Correction by mh 2014-04-06 
+Description for keybinding of z and Z had been mingled
+-->
+    <td>
+     Z
+    </td>
+    <td>
+     Bildschirm rechts und links des Cursors zentrieren
+    </td>
+   </tr>
+   <tr>
+     <td>
+       CENTER_V
+     </td>
+    <td>
+     z
+    </td>
+    <td>
+     z
+    </td>
+    <td>
+     Bildschirm ober- und unterhalb des Cursors zentrieren
+    </td>
+   </tr>
+   <tr>
+     <td>
+       NEXT_LINK
+     </td>
+    <td>
+     TAB
+    </td>
+    <td>
+     TAB, C-n, DOWN
+    </td>
+    <td>
+     Gehe zum nächsten Hyperlink
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PREVIOUS_LINK
+     </td>
+    <td>
+     M-TAB, C-u 
+    </td>
+    <td>
+     M-TAB, C-u, C-p, UP
+    </td>
+    <td>
+     Gehe zum vorangegangen Hyperlink
+    </td>
+<!-- Annotion mh 2016-04-06
+Keybinding description for C-g had been moved as it did not fit to "Hyperlink operation" and position in the default and lynx-like series differed 
+  -->
+   </tr>
+   <tr>
+     <td>
+       LINK_BEGIN
+     </td>
+    <td>
+     [
+    </td>
+    <td>
+     [
+    </td>
+    <td>
+     Gehe zum ersten Hyperlink
+    </td>
+   </tr>
+   <tr>
+     <td>
+       LINK_END
+     </td>
+    <td>
+     ]
+    </td>
+    <td>
+     ]
+    </td>
+    <td>
+     Gehe zum letzten Hyperlink
+    </td>
+   </tr>
+<tr>
+<td>MOVE_LIST_MENU</td>
+<td>M-m</td>
+<td>M-m</td>
+<td>Öffne Menü mit vorhandenen Hyperlinks</td>
+</tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Umgang mit Hyperlinks</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+   <tr>
+     <td>
+       GOTO_LINK
+     </td>
+    <td>
+     C-j, C-m, RET
+    </td>
+    <td width="100">
+     C-f, C-j, C-m, RET, RIGHT
+    </td>
+    <td>
+     Folge dem aktuellen Hyperlink in neuem Puffer
+    </td>
+   </tr>
+<tr>
+<td>LIST_MENU</td>
+<td>M-l</td>
+<td>M-l</td>
+<td>Öffne Menü mit Hyperlinks und folge dem ausgewählten</td>
+</tr>
+   <tr>
+     <td>
+       SAVE_LINK
+     </td>
+    <td>
+     a, M-RET
+    </td>
+    <td>
+     d, M-RET
+    </td>
+    <td>
+     Speichere Ziel des Hyperlinks
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PEEK_LINK
+     </td>
+    <td>
+     u
+    </td>
+    <td>
+     u
+    </td>
+    <td>
+     Zeige Zieladresse
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PEEK_IMG
+     </td>
+    <td>
+     i
+    </td>
+    <td>
+     i
+    </td>
+    <td>
+     Zeige Adresse des Bildes
+    </td>
+   </tr>
+   <tr>
+     <td>
+       VIEW_IMAGE
+     </td>
+    <td>
+     I
+    </td>
+    <td>
+     I
+    </td>
+    <td>
+     Zeige Bild in Betrachter
+    </td>
+   </tr>
+   <tr>
+     <td>
+       SAVE_IMAGE
+     </td>
+    <td>
+     M-I
+    </td>
+    <td>
+     M-I
+    </td>
+    <td>
+     Speichere Bild
+    </td>
+   </tr>
+<tr>
+<td>MARK_WORD</td>
+<td>;</td>
+<td>;</td>
+<td>Wandle aktuelles Wort in Hyperlink um</td>
+</tr>
+   <tr>
+     <td>
+       MARK_URL
+     </td>
+    <td>
+     :
+    </td>
+    <td>
+     :
+    </td>
+    <td>
+     Wandle URL-artige Zeichenketten um in Hyperlinks
+    </td>
+   </tr>
+   <tr>
+     <td>
+       MARK_MID
+     </td>
+    <td>
+     M-:
+    </td>
+    <td>
+     M-:
+    </td>
+    <!-- changed due to mail dated Mon, 04 Apr 2016 00:47:09 +0900 (JST)
+from Tatsuya Kinoshita --><td>
+ 
+     Wandle Nachrichten-ID-artige Zeichenketten um in Hyperlinks
+    </td>
+   </tr>
+   <tr>
+     <td>
+       PEEK
+     </td>
+    <td>
+     c
+    </td>
+    <td>
+     c
+    </td>
+    <td>
+     Zeige aktuelle Adresse an
+    </td>
+   </tr>
+   <tr>
+     <td>
+       INFO
+     </td>
+    <td>
+     =
+    </td>
+    <td>
+     =
+    </td>
+    <td>
+      Zeige Informationen über dieses Dokument
+    </td>
+   </tr>
+   <tr>
+     <td>
+       HISTORY
+     </td>
+    <td>
+     C-h
+    </td>
+    <td>
+     C-h
+    </td>
+    <td>
+     Chronik aufgesuchter Dokumente
+    </td>
+   </tr>
+   <tr>
+     <td>
+       EXTERN
+     </td>
+    <td>
+     M
+    </td>
+    <td>
+     M
+    </td>
+    <td>
+     Zeige das aktuelle Dokument mit einem externen Browser (wird eine Taste von 2 bis 9 gedrückt, also beispielsweise 3 M, eingegeben, kommt ein anderer, in der Konfiguration hinterlegter Browser zum Einsatz)
+    </td>
+   </tr>
+   <tr>
+     <td>
+       EXTERN_LINK
+     </td>
+    <td>
+     M-M
+    </td>
+    <td>
+     M-M
+    </td>
+    <td>
+     Bringe das Linkziel mit einem externen Browser zur Anzeige (vorangestellte Zahlen wirken sich wie oben beschrieben aus)
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Verwalten von Lesezeichen</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+    <tr>
+      <td>
+	BOOKMARK
+      </td>
+    <td>
+     M-b
+    </td>
+    <td>
+     v, M-b
+    </td>
+    <td>
+     Lesezeichen ansehen
+    </td>
+   </tr>
+   <tr>
+      <td>
+	ADD_BOOKMARK
+      </td>
+    <td>
+     M-a
+    </td>
+    <td>
+     a, M-a
+    </td>
+    <td>
+     Lege für aktuelle Seite Lesezeichen an
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Umgang mit Dateien und Datenströmen</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+	<td>
+	  GOTO
+     </td>
+    <td>
+     U
+    </td>
+    <td>
+     g, U
+    </td>
+    <td>
+     Öffne angegebenes Dokument in neuem Puffer
+    </td>
+   </tr>
+<tr>
+<td>GOTO_RELATIVE</td>
+<td>M-u</td>
+<td>M-u</td>
+<td>Öffne relative Adresse in neuem Puffer</td>
+</tr>
+      <tr>
+     <td>
+       LOAD
+     </td>
+    <td>
+     V
+    </td>
+    <td>
+     V
+    </td>
+    <td>
+     Öffne lokale Datei in einem neuen Puffer
+    </td>
+   </tr>
+      <tr>
+     <td>
+       READ_SHELL
+     </td>
+    <td>
+     @
+    </td>
+    <td>
+     @
+    </td>
+    <!--Execute shell command and view output--><!--mh 2016-06-13 No difference to PIPE_SHELL could be discerned--><td>
+      
+       
+      Führe einen Shell-Befehl aus und zeige Ausgabe in einem neuen Puffer
+    </td>
+   </tr>
+      <tr>
+     <td>
+       PIPE_SHELL
+     </td>
+    <td>
+     #
+    </td>
+    <td>
+     #
+    </td>
+    <!--Execute shell command and browse output--><!--mh 2016-06-13 No difference to READ_SHELL could be discerned--><td>
+      
+       
+      Führe einen Shell-Befehl aus und zeige Ausgabe in einem neuen Puffer
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Arbeit an Seiteninhalten</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <!-- is an alias to SOURCE --><td>
+       VIEW 
+     </td>
+    <td>
+     v
+    </td>
+    <td>
+     \
+    </td>
+    <td>
+     Wechsle zwischen HTML-Quellcode und verarbeitetem Dokument
+    </td>
+   </tr>
+<tr>
+<td>LIST</td>
+<td>L</td>
+<td>L</td>
+<td>Liste Link-Elemente, Hyperlinks und Bilder auf</td>
+</tr>
+      <tr>
+     <td>
+       FRAME
+     </td>
+    <td>
+     F
+    </td>
+    <td>
+     F
+    </td>
+    <td>
+     Wechsle zwischen Kennung und Umsetzung von HTML-Frames
+    </td>
+   </tr>
+      <tr>
+     <td>
+       REDRAW
+     </td>
+    <td>
+     C-l
+    </td>
+    <td>
+     C-l, C-w
+    </td>
+    <td>
+     Bildschirmanzeige neu aufbauen
+    </td>
+   </tr>
+      <tr>
+     <td>
+       RELOAD
+     </td>
+    <td>
+     R
+    </td>
+    <td>
+     R, C-r
+    </td>
+    <td>
+     Aktuelles Dokument erneut laden
+    </td>
+   </tr>
+      <tr>
+     <td>
+       EDIT
+     </td>
+    <td>
+     E
+    </td>
+    <td>
+     E
+    </td>
+    <td>
+     Bearbeite lokales Quelldokument
+    </td>
+   </tr>
+      <tr>
+     <td>
+       EDIT_SCREEN
+     </td>
+    <td>
+     M-e
+    </td>
+    <td>
+     M-e
+    </td>
+    <td>
+     Bearbeite eine Kopie des verarbeiteten Dokuments
+    </td>
+   </tr>
+<tr>
+<td>PIPE_BUF</td>
+<td>|</td>
+<td>|</td>
+<td>Leite aktuellen Pufferinhalt einem Shell-Befehl zu und zeige Ausgabe an</td>
+</tr>
+      <tr>
+     <!-- is an alias to SAVE --><td>
+       DOWNLOAD 
+     </td>
+    <td>
+     M-s
+    </td>
+    <td>
+     M-s
+    </td>
+    <td>
+     Dokument-Quellcode speichern
+    </td>
+   </tr>
+      <tr>
+     <td>
+       SAVE_SCREEN
+     </td>
+    <td>
+     S
+    </td>
+    <td>
+     S, p
+    </td>
+    <td>
+     Speichere verarbeitetes Dokument
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Navigation zwischen Puffern und Reitern</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+       BACK
+     </td>
+    <td>
+     B
+    </td>
+     <td>
+     B, C-b, LEFT
+    </td>
+    <td>
+     Schließe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zurück
+    </td>
+   </tr>
+      <tr>
+     <td>
+       GOTO_HOME
+     </td>
+    <td>
+     C-_
+    </td>
+     <td>
+    </td>
+    <td>
+     Zurück zur Startseite (die Variablen HTTP_HOME oder WWW_HOME spezifiziert wurden)
+    </td>
+   </tr>
+      <tr>
+     <td>
+       SELECT_MENU
+     </td>
+    <td>
+     s
+    </td>
+    <td>
+     s, C-h
+    </td>
+    <td>
+     Öffne Pufferstapel-Menü
+    </td>
+   </tr>
+      <tr>
+     <td>
+       TAB_MENU
+     </td>
+    <td>
+     M-t
+    </td>
+    <td>
+     M-t
+    </td>
+    <td>
+     Öffne das Reiter-Auswahl-Menü
+    </td>
+   </tr>
+      <tr>
+     <td>
+       NEW_TAB
+     </td>
+    <td>
+     T
+    </td>
+    <td>
+     T
+    </td>
+    <td>
+     Öffne neuen Reiter (mit aktuellem Dokument)
+    </td>
+   </tr>
+      <tr>
+     <td>
+       TAB_LINK
+     </td>
+    <td>
+     C-t
+    </td>
+    <td>
+     C-t
+    </td>
+    <td>
+     Folge dem aktuellen Hyperlink in einem neuen Reiter
+    </td>
+   </tr>
+      <tr>
+     <td>
+       NEXT_TAB
+     </td>
+    <td>
+     }
+    </td>
+    <td>
+     }
+    </td>
+    <td>
+     Schalte zum nächsten Reiter
+    </td>
+   </tr>
+      <tr>
+     <td>
+       PREV_TAB
+     </td>
+    <td>
+     {
+    </td>
+    <td>
+     {
+    </td>
+    <td>
+     Schalte zum vorherigen Reiter
+    </td>
+   </tr>
+      <tr>
+     <td>
+       CLOSE_TAB
+     </td>
+    <td>
+     C-q
+    </td>
+    <td>
+     C-q
+    </td>
+    <td>
+     Schließe aktuellen Reiter
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Suchfunktionen</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+       SEARCH
+     </td>
+    <td>
+     /
+    </td>
+    <td>
+     /, C-s
+    </td>
+    <td>
+     Suche vorwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+       SEARCH_BACK
+     </td>
+    <td>
+     ?
+    </td>
+     <td>
+     </td>
+    <td>
+     Suche rückwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+       ISEARCH
+     </td>
+    <td>
+     C-s
+    </td>
+     <td>
+     </td>
+    <td>
+     Inkrementelle Suche vorwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+       ISEARCH_BACK
+     </td>
+    <td>
+     C-r
+    </td>
+     <td>
+     </td>
+    <td>
+     Inkrementelle Suche rückwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+       SEARCH_NEXT
+     </td>
+    <td>
+     n
+    </td>
+    <td>
+     n
+    </td>
+    <td>
+     Setze Suche vorwärts fort
+    </td>
+   </tr>
+      <tr>
+     <td>
+       SEARCH_PREV
+     </td>
+    <td>
+     N
+    </td>
+     <td>
+     </td>
+    <td>
+     Setze Suche rückwärts fort
+    </td>
+   </tr>
+      <tr>
+     <td>
+       WRAP_TOGGLE
+     </td>
+    <td>
+     C-w
+    </td>
+    <td>
+     w
+    </td>
+    <td>
+     Wechsle zwischen umlaufendem und nicht-umlaufendem Suchen
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Arbeit mit Textmarken</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+       MARK
+     </td>
+    <td>
+     C-SPC
+    </td>
+    <td>
+     C-SPC
+    </td>
+    <td>
+     Setze/Lösche Markierung
+    </td>
+   </tr>
+      <tr>
+     <td>
+       PREV_MARK
+     </td>
+    <td>
+     M-p
+    </td>
+    <td>
+     P
+    </td>
+    <td>
+     Gehe zur vorherigen Markierung
+    </td>
+   </tr>
+      <tr>
+     <td>
+       NEXT_MARK
+     </td>
+    <td>
+     M-n
+    </td>
+    <td>
+     N
+    </td>
+    <td>
+     Gehe zur nächsten Markierung
+    </td>
+   </tr>
+      <tr>
+     <td>
+       REG_MARK
+     </td>
+    <td>
+     "
+    </td>
+    <td>
+     "
+    </td>
+    <td>
+     Markiere alle Vorkommen eines Zeichenmusters
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="4">
+	<h3>Verschiedenes</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+       COMMAND
+     </td>
+    <td>
+     M-c
+    </td>
+    <td>
+     M-c
+    </td>
+    <td>
+     Rufe eine oder mehrere durch Strichpunkt getrennte w3m-Funktionen auf
+    </td>
+   </tr>
+<!--
+TODO: Where does this key binding M-Fn come from. I do not find a Fn-key on my keyboard. I do not know how to type in the keystroke combinations listed in keymap.default which are
+keymap  M-[E    MENU
+keymap  M-[L    MENU
+keymap  M-[2~   MENU
+keymap  M-[28~  MENU
+<tr>
+<td>MENU</td>
+<Td>M-Fn</Td>
+<td></td>
+<td>Pop up menu</td>
+</tr>
+-->
+      <tr>
+     <td>
+       HELP
+     </td>
+    <td>
+     H
+    </td>
+    <td>
+     H, ?
+    </td>
+    <td>
+     Zeige Hilfe-Übersicht
+    </td>
+   </tr>
+      <tr>
+     <td>
+       OPTIONEN
+     </td>
+    <td>
+     o
+    </td>
+    <td>
+     o
+    </td>
+    <td>
+     Einstellungs-Dialog öffnen
+    </td>
+   </tr>
+<tr>
+<td>SET_OPTION</td>
+<td>M-o</td>
+<td>M-o</td>
+<td>Setze Option</td>
+</tr>
+<tr>
+<td>DEFINE_KEY</td>
+<td>M-k</td>
+<td>M-k</td>
+<td>Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando</td>
+</tr>
+<tr>
+<td>MOUSE_TOGGLE</td>
+<td>m</td>
+<td>m</td>
+<td>Schalte Mausbedienung an oder ab</td>
+</tr>
+<tr>
+<td>DOWNLOAD_LIST</td>
+<td>D</td>
+<td>D</td>
+<td>Übersicht heruntergeladener Dateien anzeigen</td>
+</tr>
+      <tr>
+     <td>
+       COOKIE
+     </td>
+    <td>
+     C-k
+    </td>
+    <td>
+     C-k
+    </td>
+    <td>
+     Zeige die gespeicherten Cookies
+    </td>
+   </tr>
+<!-- 
+mh 2016-06-12 Interrupt is an alias to SUSPEND, no need to mention it here
+   <tr>
+     <td>
+       INTERRUPT
+     </td>
+    <td>
+     C-c
+    </td>
+    <td>
+     C-c
+    </td>
+    <td>
+     Interrupt
+    </td>
+   </tr>
+-->
+<tr>
+<td>UNDO</td>
+<td>(</td>
+<td>(</td>
+<td>Nimm die letzte Cursorbewegung zurück</td>
+</tr>
+<tr>
+<td>REDO</td>
+<td>)</td>
+<td>)</td>
+<td>Den letzten Rücknahmebefehl zurücknehmen</td>
+</tr>
+      <tr>
+     <!-- is an alias of SHELL --><td>
+       EXEC_SHELL 
+     </td>
+    <td>
+     !
+    </td>
+    <td>
+     !
+    </td>
+    <td>
+     Shell-Befehl ausführen
+    </td>
+   </tr>
+<tr>
+<td>DICT_WORD</td>
+<td>M-w</td>
+<td>M-w</td>
+<td>Führe eine Wörterbuch-Funktion aus (siehe <a href="../doc/README.dict">README.dict</a>)</td>
+</tr>
+<tr>
+<td>DICT_WORD_AT</td>
+<td>M-W</td>
+<td>M-W</td>
+<td>Benutze Wörterbuch für Wort unter Cursor</td>
+</tr>
+<tr>
+<td>VERSION</td>
+<td>r</td>
+<td>r</td>
+<td>Zeige die Version von w3m an</td>
+</tr>
+      <tr>
+     <td>
+       SUSPEND
+     </td>
+    <td>
+     C-z
+    </td>
+    <td>
+     C-z
+    </td>
+    <td>
+      w3m zum Hintergrundprozess machen. (Wird mit dem Shell-Befehl <span class="mono">fg</span> zurückgenommen.)
+    </td>
+   </tr>
+      <tr>
+     <td>
+       QUIT
+     </td>
+    <td>
+     q
+    </td>
+    <td>
+     q
+    </td>
+    <td>
+     Mit Bestätigungsfrage beenden
+    </td>
+   </tr>
+      <tr>
+     <td>
+       EXIT
+     </td>
+    <td>
+     Q
+    </td>
+    <td>
+     Q
+    </td>
+    <td>
+     Sofort beenden
+    </td>
+   </tr>
+  </table>
+
+   <p>
+   Darüber hinaus gibt es die folgenden Bedien-Modi mit fester Tastaturbelegung für die entsprechenden Funktionen. Diese sind nicht durch die Funktion DEFINE_KEY oder Einträge der keymap-Datei veränderbar.
+   </p>
+   
+  <table border="1" width="100%">
+    <colgroup>
+      <col width="20%">
+      <col width="40%">
+      <col width="40%">
+    </colgroup>
+    <tr>
+      <th>
+	Funktion<br>(interner Name)
+     </th>
+    <th>Tastenkombination
+    </th>
+    <th>
+      Beschreibung
+    </th>
+   </tr>
+    <tr>
+      <td colspan="3">
+	<h3>Menü-Auswahl-Modus</h3>
+      </td>
+    </tr>
+      <tr>
+     <td>
+     BUF:NEXT</td>
+    <td>
+     j, C-n, DOWN
+    </td>
+    <td>
+     Nächster Eintrag
+    </td>
+   </tr>
+      <tr>
+     <td>BUF:PREV
+     </td>
+    <td>
+     k, C-p, UP
+    </td>
+    <td>
+     Vorheriger Eintrag
+    </td>
+   </tr>
+      <tr>
+     <td>
+     BUF:DELETE</td>
+    <td>
+     D
+    </td>
+    <td>
+     Lösche Eintrag
+    </td>
+   </tr>
+      <tr>
+     <td>
+       BUF:GO
+     </td>
+    <td>
+     SPC, RET, RIGHT
+    </td>
+    <td>
+     Wähle Eintrag aus
+    </td>
+   </tr>
+<!--  </table>-->
+    <tr>
+      <td colspan="3">
+	<h3>Popup-Menü-Modus</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+MENU:SELECT
+     </td>
+    <td>
+    SPC, RET, RIGHT</td>
+    <td>
+      Wähle Punkt aus
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:CLOSE
+     </td>
+      <td>C-c
+    </td>
+    <td>
+      Schließe Menü
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:CANCEL
+     </td>
+      <td>
+    LEFT, BKSPC, C-h</td>
+    <td>
+      Einen Auswahlschritt zurück
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:DOWN
+     </td>
+      <td>j, C-n, DOWN
+    </td>
+    <td>
+      Gehe zum nächsten Punkt
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:UP
+     </td>
+      <td>
+    k, C-p, UP</td>
+    <td>
+      Gehe zum vorherigen Punkt
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:LINE_UP
+     </td>
+      <td>K
+    </td>
+    <td>
+      Scrolle einen Punkt aufwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:LINE_DOWN
+     </td>
+      <td>J
+    </td>
+    <td>
+      Scrolle einen Punkt abwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:TOP
+     </td>
+      <td>C-a
+    </td>
+    <td>
+      Gehe zum ersten Punkt
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:LAST
+     </td>
+      <td>C-e
+    </td>
+    <td>
+      Gehe zum letzten Punkt
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:NEXT
+     </td>
+      <td>C-v, C-f
+    </td>
+    <td>Gehe zur nächsten Seite
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:PREV
+     </td>
+      <td>ESC v, C-b
+    </td>
+    <td>
+      Gehe zur vorherigen Seite
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:SEARCH_FORE
+     </td>
+      <td>C-s, /
+    </td>
+    <td>
+      Suche vorwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+MENU:SEARCH_BACK
+     </td>
+      <td>
+    C-r, ?</td>
+    <td>
+      Suche rückwärts
+    </td>
+      </tr>
+      <tr>
+	<td>
+MENU:SEARCH_NEXT
+	</td>
+	<td>
+	n</td>
+	<td>
+	Suche weitere Übereinstimmung</td>
+      </tr>
+      <tr>
+	<td>
+MENU:SEARCH_PREV
+	</td>
+	<td>
+	N</td>
+	<td>
+	Suche frühere Übereinstimmung</td>
+      </tr>
+<!--mh 2016-06-12 Pressing C-z in menu mode (with menu active) has the same effect as in normal operation of w3m: Browser gets in the background
+       <tr>
+	<td>
+MENU:SUSPEND
+	</td>
+	<td>
+	C-z</td>
+	<td>
+	Suspend</td>
+      </tr>
+-->
+<!--  </table>-->
+    <tr>
+      <td colspan="3">
+	<h3>Eingabezeile-Bearbeitungs-Modus</h3>
+      </td>
+    </tr>
+<!--  <table>-->
+      <tr>
+     <td>
+       LINEEDIT:FORWARD
+     </td>
+    <td width="100">
+     C-f, RIGHT
+    </td>
+    <td>
+     Bewege Cursor vorwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:BACK
+     </td>
+    <td>
+     C-b, LEFT
+    </td>
+    <td>
+     Bewege Cursor rückwärts
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:BS
+     </td>
+    <td>
+     C-h, BKSPC
+    </td>
+    <td>
+     Vorheriges Zeichen löschen
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:DEL
+     </td>
+    <td>
+     C-d
+    </td>
+    <td>
+     Aktuelles Zeichen löschen
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:KILL_AFTER
+     </td>
+    <td>
+     C-k
+    </td>
+    <td>
+     Lösche alles nach dem Cursor
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:KILL_BEFORE
+     </td>
+    <td>
+     C-u
+    </td>
+    <td>
+     Lösche alles vor dem Cursor
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:TOP
+     </td>
+    <td>
+     C-a
+    </td>
+    <td>
+     Gehe zum Zeilenanfang
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:BOTTOM
+     </td>
+    <td>
+     C-e
+    </td>
+    <td>
+     Gehe zum Zeilenende
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:PREV
+     </td>
+    <td>
+     C-p, UP
+    </td>
+    <td>
+      Hole den vorherigen Chronik-Eintrag
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:NEXT
+     </td>
+    <td>
+     C-n, DOWN
+    </td>
+    <td>
+     Hole den nächsten Chronik-Eintrag
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:COMPLETE
+     </td>
+    <td>
+     TAB, SPC
+    </td>
+    <td>
+     Versuche, den Dateinamen zu komplettieren
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:EDITOR
+     </td>
+    <td>
+     C-o
+    </td>
+    <td>
+     Bearbeite mit externem Editor
+    </td>
+   </tr>
+      <tr>
+     <td>
+LINEEDIT:ACCEPT
+     </td>
+    <td>
+     RET
+    </td>
+    <td>
+     Eingabezeile übernehmen
+    </td>
+   </tr>
+  </table>
+<!-- mh 2016-06-12 As it suffices to use the provided keymap file for Lynx-like keybindings and this file is listed in section FILES of man w3m (1), the following hint for getting w3m with Lynx-like key bindings has been deleted.
+   <p>
+   If w3m was compiled with <q>Lynx-like key bindings</q>, you can use
+   the following key bindings.
+  </p>
+-->
+<!-- mh 2016-06-12 Remark is obsolete as the two sets key binding are presented along within tables 
+  <hr>
+  <h2 id="Key:lynx">
+   <p>
+   The Lynx-like configuration leaves keymappings unchanged in the
+   menu-selection and line-editing modes.
+  </p>
+ </h2>
+-->
+  <hr>
+  <h2 id="Mouse">
+   Bedienung per Maus
+  </h2>
+  <p>
+   Wenn w3m mit Mausfunktionen kompiliert wurde und Sie das Programm entweder in einer Konsole mit GPM oder in einem X-Terminal-Emulator starten, ist ein Navigieren mit der Maus möglich. (Im Falle von rxvt müssen Sie die Umgebungsvariable TERM mit <q>xterm</q> oder <q>kxterm</q> belegen.)
+  </p>
+   <p>Die Datei <a href="README.mouse">README.mouse</a> erklärt, wie die Bedienung per Maus an eigene Vorlieben angepasst werden kann.
+   </p>
+  <table border="1">
+    <colgroup>
+      <col width="20%">
+      <col width="80%">
+    </colgroup>
+    <tr>
+      <th>Handlung
+      </th>
+      <th>Beschreibung
+      </th>
+    </tr>   
+    <tr>
+    <td>
+     Linksklick
+    </td>
+    <td>
+<b>Zuerst:</b><br> Der Cursor wird an die Mauszeigerposition versetzt.<br> <b>Dann:</b><br> Dem Hyperlink, auf dem der Cursor momentan steht und auf den sich der Mauszeiger richtet, wird gefolgt.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Mittelklick
+    </td>
+    <td>
+     Zurück zum vorherigen Puffer.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Rechtsklick
+    </td>
+    <td>
+     Öffne Menü. Sie können Menüpunkte durch Anklicken auswählen.
+    </td>
+   </tr>
+   <tr>
+    <td>
+     Linksziehen
+    </td>
+    <td>
+     Dokument scrollen. Standardmäßig wird das Dokument im Fenster verschoben. Ein Verschieben des Fensters über dem stehenden Dokument erreichen Sie über den Einstellungs-Dialog.
+    </td>
+   </tr>
+  </table>
+  <hr>
+  <h2 id="LocalCGI">
+   Lokale CGI-Skripte
+  </h2>
+  <p>
+   w3m ist in der Lage, CGI-Skripte direkt laufen zu lassen. Dies bedeutet, dass sich das Programm wie ein HTTP-Server verhält und das CGI-Skript ausführt und dessen Ausgabe anzeigt. Beispielsweise wurden die Lesezeichen-Registrierung und der Verzeichnis-Browser als lokale CGI-Skripte programmiert. Darüber hinaus kann w3m durch solche Skripte als Schnittstelle zum Einholen von Daten aller Art fungieren.
+  </p>
+  <p>
+   Aus Sicherheitsgründen kommen für von w3m benutzte CGI-Skripte nur folgende Verzeichnisse in Frage:
+  </p>
+  <ul>
+   <li>
+    Das Verzeichnis, in dem w3m-bezogene Dateien abgelegt sind (typischerweise /usr/local/lib/w3m). Auf dieses Verzeichnis kann mit der Variblen $LIB referenziert werden.
+   </li>
+   <li>
+    Das Verzeichnis /cgi-bin/. Sie können /cgi-bin/ im Feld <q>Verzeichnis für ausführbare Skripte</q> des Einstellungs-Dialogs jedem gewünschten Verzeichnis zuordnen. Mehrere Pfade lassen sich durch Doppelpunkt getrennt angeben, also in der Form <span class="mono">/usr/local/cgi-bin:/home/aito/cgi-bin</span>. Es wird davon abgeraten, das aktuelle Verzeichnis hier mitaufzunehmen. Zum Zugriff auf Skripte im Verzeichnis /cgi-bin/ erwartet w3m eine URL folgender Art:
+    </li>
+<pre>
+ w3m -o cgi_bin=/path/to/cgi-bin file:/cgi-bin/script.cgi
+</pre>
+  </ul>
+  <p>
+    Das CGI-Skript kann zur Steuerung von w3m die spezielle Kopfzeile <span class="mono">w3m-control:</span> enthalten. Darin können alle Funkionen (siehe <a href="README.func">README.func</a>) eingetragen sein. Die angegebene Funktion wird aufgerufen, nachdem das Dokument angezeigt wird. Beispielsweise, wird eine Skriptausgabe
+  </p>
+<pre>
+Content-Type: text/plain<br>W3m-control: BACK
+</pre>
+  <p>
+   eine leere Seite anzeigen und den Puffer sofort löschen. Dies ist nützlich, wenn es nicht gewünscht ist, die Seite nach Aufrufen des Skriptes anzuzeigen. Das nächste Beispiel
+  </p>
+<pre>
+Content-Type: text/plain<br>W3m-control: DELETE_PREVBUF contents.....
+</pre>
+  <p>
+   führt zum Übergehen des aktuellen Puffers.
+  </p>
+  <p>
+    Jede <span class="mono">w3m-control</span>-Kopfzeile kann nur eine Funktion aufrufen. Jedoch können Sie im Kopfteil einer HTTP-Kommunikation mehr als eine <span class="mono">w3m-control</span>-Anweisung hinterlegen. Überdies ist es möglich, die GOTO-Funktion mit einem Argument aufzurufen:
+  </p>
+<pre>
+Content-Type: text/plain<br>W3m-control: GOTO http://www.example.org/
+</pre>
+   <p>
+    Sie bewirken damit das gleiche wie mit der Anweisung <q>Location:</q> im Kopfteil:
+   </p>
+<pre>
+Content-Type: text/plain<br>Location: http://www.example.org/
+</pre>
+  <p>
+   Beachten Sie, dass diese Anweisung wirkungslos ist, wenn das CGI-Skript durch einen HTTP-Server angesprochen wird.
+  </p>
+ </body>
+</html>

@@ -64,12 +64,22 @@ ha2d(char x, char y)
 Str
 decodeB(char **ww)
 {
+    struct growbuf gb;
+
+    growbuf_init(&gb);
+    decodeB_to_growbuf(&gb, ww);
+    return growbuf_to_Str(&gb);
+}
+
+void
+decodeB_to_growbuf(struct growbuf *gb, char **ww)
+{
     unsigned char c[4];
     char *wp = *ww;
     char d[3];
     int i, n_pad;
-    Str ap = Strnew_size(strlen(wp));
 
+    growbuf_reserve(gb, strlen(wp) + 1);
     n_pad = 0;
     while (1) {
 	for (i = 0; i < 4; i++) {
@@ -93,39 +103,50 @@ decodeB(char **ww)
 	for (i = 0; i < 4; i++) {
 	    c[i] = c2e(c[i]);
 	    if (c[i] == BAD_BASE64) {
-		*ww = wp;
-		return ap;
+		goto last;
 	    }
 	}
 	d[0] = ((c[0] << 2) | (c[1] >> 4));
 	d[1] = ((c[1] << 4) | (c[2] >> 2));
 	d[2] = ((c[2] << 6) | c[3]);
 	for (i = 0; i < 3 - n_pad; i++) {
-	    Strcat_char(ap, d[i]);
+	    GROWBUF_ADD_CHAR(gb, d[i]);
 	}
 	if (n_pad || *wp == '\0' || *wp == '?')
 	    break;
     }
+last:
+    growbuf_reserve(gb, gb->length + 1);
+    gb->ptr[gb->length] = '\0';
     *ww = wp;
-    return ap;
+    return;
 }
 
 Str
 decodeU(char **ww)
 {
+    struct growbuf gb;
+
+    growbuf_init(&gb);
+    decodeU_to_growbuf(&gb, ww);
+    return growbuf_to_Str(&gb);
+}
+
+void
+decodeU_to_growbuf(struct growbuf *gb, char **ww)
+{
     unsigned char c1, c2;
     char *w = *ww;
     int n, i;
-    Str a;
 
     if (*w <= 0x20 || *w >= 0x60)
-	return Strnew_size(0);
+	return;
     n = *w - 0x20;
-    a = Strnew_size(n);
+    growbuf_reserve(gb, n + 1);
     for (w++, i = 2; *w != '\0' && n; n--) {
 	c1 = (w[0] - 0x20) % 0x40;
 	c2 = (w[1] - 0x20) % 0x40;
-	Strcat_char(a, (c1 << i) | (c2 >> (6 - i)));
+	gb->ptr[gb->length++] = (c1 << i) | (c2 >> (6 - i));
 	if (i == 6) {
 	    w += 2;
 	    i = 2;
@@ -135,7 +156,8 @@ decodeU(char **ww)
 	    i += 2;
 	}
     }
-    return a;
+    gb->ptr[gb->length] = '\0';
+    return;
 }
 
 /* RFC2047 (4.2. The "Q" encoding) */
@@ -165,9 +187,19 @@ decodeQ(char **ww)
 Str
 decodeQP(char **ww)
 {
-    char *w = *ww;
-    Str a = Strnew_size(strlen(w));
+    struct growbuf gb;
 
+    growbuf_init(&gb);
+    decodeQP_to_growbuf(&gb, ww);
+    return growbuf_to_Str(&gb);
+}
+
+void
+decodeQP_to_growbuf(struct growbuf *gb, char **ww)
+{
+    char *w = *ww;
+
+    growbuf_reserve(gb, strlen(w) + 1);
     for (; *w != '\0'; w++) {
 	if (*w == '=') {
 	    w++;
@@ -180,15 +212,16 @@ decodeQP(char **ww)
 	    else {
 		if (*w == '\0' || *(w + 1) == '\0')
 		    break;
-		Strcat_char(a, ha2d(*w, *(w + 1)));
+		gb->ptr[gb->length++] = ha2d(*w, *(w + 1));
 		w++;
 	    }
 	}
 	else
-	    Strcat_char(a, *w);
+	    gb->ptr[gb->length++] = *w;
     }
+    gb->ptr[gb->length] = '\0';
     *ww = w;
-    return a;
+    return;
 }
 
 #ifdef USE_M17N

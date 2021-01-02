@@ -6,7 +6,8 @@ dnl w3m autoconf macros
 AC_DEFUN([AC_W3M_VERSION],
 [AC_SUBST(CURRENT_VERSION)
  cvsver=`$AWK '\$[1] ~ /Id:/ { print \$[3]}' $srcdir/ChangeLog`
- sed -e 's/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
+ ymdver=`sed -e 's/ .*//;s/-//g;q' $srcdir/ChangeLog`
+ sed -e 's/define CURRENT_VERSION "\(.*\)YYYYMMDD/define CURRENT_VERSION "\1'$ymdver'/;s/define CURRENT_VERSION "\(.*\)+cvs/define CURRENT_VERSION "\1+cvs-'$cvsver'/' $srcdir/version.c.in > version.c
  CURRENT_VERSION=`sed -n 's/.*define CURRENT_VERSION *"w3m\/\(.*\)".*$/\1/p' version.c`])
 #
 # ----------------------------------------------------------------
@@ -124,8 +125,8 @@ AC_DEFUN([AC_W3M_GOPHER],
 [AC_SUBST(USE_GOPHER)
  AC_MSG_CHECKING(if gopher is enabled)
  AC_ARG_ENABLE(gopher,
-  [  --enable-gopher		enable GOPHER],,
-  [enable_gopher="no"])
+  [  --disable-gopher		disable GOPHER],,
+  [enable_gopher="yes"])
  test x"$enable_gopher" = xyes &&  AC_DEFINE(USE_GOPHER)
  AC_MSG_RESULT($enable_gopher)])
 #
@@ -330,10 +331,10 @@ AC_DEFINE_UNQUOTED(DEF_MAILER, "$w3m_mailer")])
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_EXT_BROWSER],
 [AC_SUBST(DEF_EXT_BROWSER)
-w3m_browser="/usr/bin/mozilla"
+w3m_browser="/usr/bin/firefox"
 AC_MSG_CHECKING(which external browser is used by default)
 AC_ARG_WITH(browser,
- [  --with-browser=BROWSER	default browser (/usr/bin/mozilla)],
+ [  --with-browser=BROWSER	default browser (/usr/bin/firefox)],
  [w3m_browser="$with_browser"])
 AC_MSG_RESULT($w3m_browser)
 AC_DEFINE_UNQUOTED(DEF_EXT_BROWSER, "$w3m_browser")])
@@ -400,10 +401,10 @@ AC_DEFUN([AC_W3M_TERMLIB],
 AC_ARG_WITH(termlib,
  [  --with-termlib[=LIBS]		terminal library
 				LIBS is space separated list of:
-				  terminfo mytinfo termcap ncurses curses],,
+				  terminfo mytinfo termcap tinfo ncurses curses],,
  [with_termlib="yes"])
  AC_MSG_RESULT($with_termlib)
- test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap ncurses curses"
+ test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
  for lib in $with_termlib; do
    AC_CHECK_LIB($lib, tgetent, [W3M_LIBS="$W3M_LIBS -l$lib"; break])
  done
@@ -600,7 +601,7 @@ AC_DEFUN([AC_W3M_IMAGE],
   if test x"$enable_image" = xyes; then
     enable_image=x11
     case "`uname -s`" in
-    Linux|linux|LINUX) 
+    Linux|linux|LINUX|FreeBSD|freebsd|FREEBSD) 
 	if test -c /dev/fb0; then
 	  enable_image=x11,fb
         fi;;
@@ -649,6 +650,9 @@ AC_DEFUN([AC_W3M_IMAGE],
      fi;;
    imlib2)
      with_imlib2="yes"
+     if test x"$PKG_CONFIG" = x; then
+       PKG_CONFIG=pkg-config
+     fi
      if test x"$IMLIB2_CONFIG" = x; then
        IMLIB2_CONFIG=imlib2-config
      fi;;
@@ -661,8 +665,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      with_gtk2="yes"
      if test x"$PKG_CONFIG" = x; then
        PKG_CONFIG=pkg-config
-     else
-       PKG_CONFIG=:
      fi;;
    esac
   done
@@ -705,8 +707,8 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="x11"    
      AC_DEFINE(USE_GDKPIXBUF)
      AC_DEFINE(USE_GTK2)
-     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
-     IMGX11LDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0 gtk+-2.0`"
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs gdk-pixbuf-2.0 gdk-pixbuf-xlib-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
@@ -728,7 +730,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="x11"    
      AC_DEFINE(USE_IMLIB2)
      IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGX11LDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
@@ -740,8 +742,8 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="${IMGTARGETS} fb"
      AC_DEFINE(USE_GDKPIXBUF)
      AC_DEFINE(USE_GTK2)
-     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0 gtk+-2.0`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0 gtk+-2.0`"
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags gdk-pixbuf-2.0`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs gdk-pixbuf-2.0`"
    elif test x"$have_gdkpixbuf" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
@@ -756,7 +758,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGFBLDFLAGS="`${IMLIB2_CONFIG} --libs`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi
@@ -856,21 +858,6 @@ if test x"$enable_ipv6" = xyes; then
     AC_DEFINE(INET6)
  fi
 fi])
-#
-# ----------------------------------------------------------------
-# AC_W3M_SYS_ERRLIST
-# ----------------------------------------------------------------
-AC_DEFUN([AC_W3M_SYS_ERRLIST],
-[AC_SUBST(HAVE_SYS_ERRLIST)
-AC_MSG_CHECKING(for sys_errlist)
-AC_TRY_COMPILE(
-changequote(<<,>>)dnl
-<<extern char *sys_errlist[];>>,
-<<printf(sys_errlist[0]);>>,
-changequote([,])dnl
-[have_sys_errlist="yes"; AC_DEFINE(HAVE_SYS_ERRLIST)],
-[have_sys_errlist="no"])
-AC_MSG_RESULT($have_sys_errlist)])
 #
 # ----------------------------------------------------------------
 # AC_W3M_SIGSETJMP

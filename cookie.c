@@ -22,10 +22,10 @@ static int is_saved = 1;
 
 #define contain_no_dots(p, ep) (total_dot_number((p),(ep),1)==0)
 
-static int
-total_dot_number(char *p, char *ep, int max_count)
+static unsigned int
+total_dot_number(char *p, char *ep, unsigned int max_count)
 {
-    int count = 0;
+    unsigned int count = 0;
     if (!ep)
 	ep = p + strlen(p);
 
@@ -105,6 +105,7 @@ make_portlist(Str port)
 	pl->next = first;
 	first = pl;
     }
+    Strfree(tmp);
     return first;
 }
 
@@ -247,15 +248,11 @@ find_cookie(ParsedURL *pu)
 		Strcat(tmp, Sprintf("; $Domain=\"%s\"", p1->domain->ptr));
 	    if (p1->portl)
 		Strcat(tmp,
-		       Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)));
+		       Sprintf("; $Port=\"%s\"", portlist2str(p1->portl)->ptr));
 	}
     }
     return tmp;
 }
-
-char *special_domain[] = {
-    ".com", ".edu", ".gov", ".mil", ".net", ".org", ".int", NULL
-};
 
 int
 check_avoid_wrong_number_of_dots_domain( Str domain )
@@ -324,24 +321,11 @@ add_cookie(ParsedURL *pu, Str name, Str value,
 
 	if (version == 0) {
 	    /* [NETSCAPE] rule */
-	    int n = total_dot_number(domain->ptr,
+	    unsigned int n = total_dot_number(domain->ptr,
 				     domain->ptr + domain->length,
 				     3);
 	    if (n < 2) {
 		if (! check_avoid_wrong_number_of_dots_domain(domain)) {
-		    COOKIE_ERROR(COO_ESPECIAL);
-		}
-	    }
-	    else if (n == 2) {
-		char **sdomain;
-		int ok = 0;
-		for (sdomain = special_domain; !ok && *sdomain; sdomain++) {
-		    int offset = domain->length - strlen(*sdomain);
-		    if (offset >= 0 &&
-			strcasecmp(*sdomain, &domain->ptr[offset]) == 0)
-			ok = 1;
-		}
-		if (!ok && ! check_avoid_wrong_number_of_dots_domain(domain)) {
 		    COOKIE_ERROR(COO_ESPECIAL);
 		}
 	    }
@@ -463,7 +447,7 @@ save_cookies(void)
 	    continue;
 	fprintf(fp, "%s\t%s\t%s\t%ld\t%s\t%s\t%d\t%d\t%s\t%s\t%s\n",
 		parsedURL2Str(&p->url)->ptr,
-		p->name->ptr, p->value->ptr, p->expires,
+		p->name->ptr, p->value->ptr, (long)p->expires,
 		p->domain->ptr, p->path->ptr, p->flag,
 		p->version, str2charp(p->comment),
 		(p->portl) ? portlist2str(p->portl)->ptr : "",
@@ -517,36 +501,36 @@ load_cookies(void)
 	cookie->commentURL = NULL;
 	parseURL(readcol(&str)->ptr, &cookie->url, NULL);
 	if (!*str)
-	    return;
+	    break;
 	cookie->name = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->value = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->expires = (time_t) atol(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->domain = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->path = readcol(&str);
 	if (!*str)
-	    return;
+	    break;
 	cookie->flag = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->version = atoi(readcol(&str)->ptr);
 	if (!*str)
-	    return;
+	    break;
 	cookie->comment = readcol(&str);
 	if (cookie->comment->length == 0)
 	    cookie->comment = NULL;
 	if (!*str)
-	    return;
+	    break;
 	cookie->portl = make_portlist(readcol(&str));
 	if (!*str)
-	    return;
+	    break;
 	cookie->commentURL = readcol(&str);
 	if (cookie->commentURL->length == 0)
 	    cookie->commentURL = NULL;

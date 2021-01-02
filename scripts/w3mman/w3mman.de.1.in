@@ -1,0 +1,71 @@
+.\"*******************************************************************
+.\"
+.\" This file was generated with po4a. Translate the source file.
+.\"
+.\"*******************************************************************
+.TH W3MMAN 1 2016\-07\-13  
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+w3mman \- eine Schnittstelle zur Anzeige von Online\-Referenzhandbüchern durch
+w3m(1)
+.SH SYNOPSIS
+.\" mh 2016-07-04: "page" is an optional argument.
+.\" Started without it, w3mman displays a form that allows selection
+.\" of a manual page according to section, name and keyword.
+.\" Therefore square brackets introduced
+\fBw3mman\fP [ \fB\-M\fP \fIPfad\fP ] [ \fIAbschnitt\fP ] [ \fISeite\fP ]
+.br
+\fBw3mman\fP [\fB\-M\fP \fIPfad\fP] \fB\-k\fP \fIStichwort\fP
+.br
+\fBw3mman\fP \fB\-l\fP \fIDatei\fP
+.br
+.SH BESCHREIBUNG
+.\" mh 2016-07-04 text edited. This section shall deliver
+.\" more information than section NAME 
+\fBw3mman\fP ist ein Perl\-Skript, welches auf \fBw3m\fP(1) zurückgreift, um als
+Betrachter für Online\-Referenzhandbücher zu dienen.
+.SH OPTIONEN
+Es folgt eine Zusammenfassung der Optionen.
+.TP 
+\fB\-M\fP\fI Pfad\fP
+Suchpfad für Handbuchseiten auf \fIPfad\fP setzen
+.TP 
+\fB\-k\fP \fIStichwort\fP
+zum \fIStichwort\fP passende Handbuchseiten anzeigen
+.TP 
+\fB\-l\fP \fIDatei\fP
+die Handbuchseiten\-Datei \fIDatei\fP anzeigen
+.SH UMGEBUNGSVARIABLEN
+Zur Fehleranalyse stehen zwei Variablen zur Verfügung.
+.TP 
+\fBW3MMAN_W3M\fP
+Ist W3MMAN_W3M gesetzt, wird ihr Wert anstelle von @W3M@ verwendet.
+.TP 
+\fBW3MMAN_MAN\fP
+Ist W3MMAN_MAN gesetzt, wird ihr Wert anstelle von @MAN@ verwendet.
+.SH DATEIEN
+.TP 
+\fI@libexecdir@/@PACKAGE@/cgi\-bin/w3mman2html.cgi\fP
+Skript, welches Handbuchseiten in HTML konvertiert
+.SH "SIEHE AUCH"
+\fBman\fP(1), \fBw3m\fP(1).
+.SH AUTOR
+Diese Handbuchseite wurde von Fumitoshi UKAI <ukai@debian.or.jp> für
+Debian GNU / Linux geschrieben, sie kann aber auch auf anderen Systemen
+verwendet werden.
+Die deutsche Übersetzung wurde 2016 von
+.UR markus.hiereth@freenet.de
+Markus Hiereth
+.UE
+erstellt.

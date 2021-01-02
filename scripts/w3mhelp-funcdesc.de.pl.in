@@ -1,0 +1,66 @@
+# charset
+$charset = 'UTF-8';
+
+# Buffer selection mode
+
+%buf_funcdesc = (
+ 'BUF:PREV', 'Gehe zum vorherigen Punkt',
+ 'BUF:NEXT', 'Gehe zum nächsten Punkt',
+ 'BUF:DELETE', 'Lösche den ausgewählten Eintrag',
+ 'BUF:GO', 'Gehe zum ausgewählten Eintrag',
+);
+
+%lineedit_funcdesc = (
+ 'LINEEDIT:FORWARD', 'Bewege Cursor vorwärts',
+ 'LINEEDIT:BACK', 'Bewege Cursor rückwärts',
+ 'LINEEDIT:BS',  'Vorheriges Zeichen löschen',
+ 'LINEEDIT:DEL', 'Aktuelles Zeichen löschen',
+ 'LINEEDIT:KILL_AFTER', 'Lösche alles nach dem Cursor',
+ 'LINEEDIT:KILL_BEFORE', 'Lösche alles vor dem Cursor',
+ 'LINEEDIT:TOP', 'Gehe zum Zeilenanfang',
+ 'LINEEDIT:BOTTOM', 'Gehe zum Zeilenende',
+ 'LINEEDIT:PREV', 'Hole den vorherigen Chronik-Eintrag',
+ 'LINEEDIT:NEXT', 'Hole den nächsten Chronik-Eintrag',
+ 'LINEEDIT:EDITOR', 'Bearbeite mit externem Editor',
+ 'LINEEDIT:COMPLETE', 'Versuche, den Dateinamen zu komplettieren',
+ 'LINEEDIT:ACCEPT', 'Eingabezeile annehmen',
+);
+
+%menu_funcdesc = (
+ 'MENU:SELECT', 'Wähle Eintrag aus',
+ 'MENU:CLOSE', 'Schließe Menü',
+ 'MENU:CANCEL', 'Einen Auswahlschritt zurück',
+ 'MENU:DOWN', 'Gehe zum nächsten Punkt',
+ 'MENU:UP', 'Gehe zum vorherigen Punkt',
+ 'MENU:LINE_UP', 'Scrolle einen Punkt aufwärts',
+ 'MENU:LINE_DOWN', 'Scrolle einen Punkt abwärts',
+ 'MENU:TOP', 'Gehe zum ersten Punkt',
+ 'MENU:LAST', 'Gehe zum letzten Punkt',
+ 'MENU:NEXT', 'Gehe zur nächsten Seite',
+ 'MENU:PREV', 'Gehe zur vorherigen Seite',
+ 'MENU:SEARCH_FORE', 'Suche vorwärts',
+ 'MENU:SEARCH_BACK', 'Suche rückwärts',
+ 'MENU:SEARCH_NEXT', 'Suche weitere Übereinstimmung',
+ 'MENU:SEARCH_PREV', 'Suche frühere Übereinstimmung',
+ 'MENU:SUSPEND', 'Zurückstellen',
+);
+
+%title = (
+ "Current keymap file", 'Aktuelle Datei mit Tastaturbefehlszuordnung',
+ "In-page Navigation", 'Navigation auf der Seite',
+ "Hyperlink Operations", 'Umgang mit Hyperlinks',
+ "File/Stream Operations", 'Umgang mit Dateien und Datenströmen',
+ "Buffer Operations", 'Umgang mit Puffern',
+ "Tab Operations", 'Umgang mit Reitern',
+ "Buffer and Tab Selection Mode", 'Puffer/Reiter-Auswahl-Modus',
+ "Bookmark Management", 'Lesezeichenverwaltung',
+ "Searches", 'Suchen',
+ "Dictionary Lookup", 'Abgleich mit Wörterbuch',
+ "Mark Operations", 'Umgang mit Textmarken',
+ "Miscellaneous", 'Verschiedenes',
+ "User-defined key bindings", 'Benutzerdefinierte Tastaturbefehle',
+ "Input Line Editing Mode", 'Bearbeitung der Eingabezeile',
+ "Popup Menu Mode", 'Navigation in Menüs',
+);
+
+1;

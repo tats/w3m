@@ -1,6 +1,6 @@
 dnl w3m autoconf
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(w3m, 0.5.3, satodai@w3m.jp)
+AC_INIT(w3m, 0.5.3)
 PACKAGE=w3m
 VERSION=0.5.3
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE")
@@ -28,6 +28,7 @@ AC_PROG_RANLIB
 AC_PATH_PROGS(PERL, perl, /usr/local/bin/perl)
 AC_PATH_PROGS(NKF, nkf, /usr/local/bin/nkf)
 AC_PATH_PROGS(MAN, man, /usr/bin/man)
+AC_PATH_XTRA
 AC_CANONICAL_HOST
 
 AC_EXEEXT
@@ -150,7 +151,7 @@ dnl AC_FUNC_MEMCMP
 dnl AC_FUNC_MMAP
 dnl AC_FUNC_SETVBUF_REVERSED
 dnl AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid setlocale)
+AC_CHECK_FUNCS(strcasecmp strcasestr strchr memcpy strerror bcopy setpgrp chdir mkdtemp getcwd getwd readlink setenv putenv strtoll stroq atoll atoq symlink readlink lstat srand48 srandom getpassphrase waitpid setlocale)
 AC_FUNC_STRFTIME
 AC_FUNC_WAIT3
 AC_FUNC_SETPGRP
@@ -161,7 +162,6 @@ case "$host_os" in
     AM_LANGINFO_CODESET
     ;;
 esac
-AC_W3M_SYS_ERRLIST
 AC_W3M_SIGSETJMP
 AC_W3M_SIGNAL
 
@@ -172,7 +172,7 @@ AC_SUBST(RC_DIR)
 RC_DIR="~/.$PACKAGE"
 AC_DEFINE(RC_DIR, "$RC_DIR")
 AC_SUBST(DOCDIRS)
-DOCDIRS="doc:en_English doc-jp:ja_Japanese"
+DOCDIRS="doc:en_English doc-jp:ja_Japanese doc-de:de_German"
 AC_DEFINE_UNQUOTED(DOCDIRS, "$DOCDIRS")
 
 AC_W3M_VERSION
@@ -181,7 +181,8 @@ scripts/Makefile scripts/dirlist.cgi \
 scripts/w3mhelp.cgi \
 scripts/w3mmail.cgi scripts/xface2xpm \
 scripts/multipart/Makefile scripts/multipart/multipart.cgi \
-scripts/w3mman/Makefile scripts/w3mman/w3mman scripts/w3mman/w3mman.1 \
+scripts/w3mman/Makefile scripts/w3mman/w3mman \
+scripts/w3mman/w3mman.1 scripts/w3mman/w3mman.de.1 \
 scripts/w3mman/w3mman2html.cgi \
 libwc/Makefile \
 w3mimg/Makefile w3mimg/fb/Makefile w3mimg/x11/Makefile w3mimg/win/Makefile \

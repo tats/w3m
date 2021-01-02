@@ -405,7 +405,8 @@ wc_push_to_iso2022(Str os, wc_wchar_t cc, wc_status *st)
     case WC_CCS_A_CS94:
 	if (cc.ccs == WC_CCS_US_ASCII)
 	    cc.ccs = st->g0_ccs;
-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	break;
     case WC_CCS_A_CS94W:
 	is_wide = 1;
@@ -435,35 +436,41 @@ wc_push_to_iso2022(Str os, wc_wchar_t cc, wc_status *st)
 	    break;
 #endif
 	}
-	g = cs94w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs94w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	break;
     case WC_CCS_A_CS96:
-	g = cs96_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs96_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	break;
     case WC_CCS_A_CS96W:
 	is_wide = 1;
-	g = cs96w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs96w_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	break;
     case WC_CCS_A_CS942:
-	g = cs942_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs942_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	break;
     case WC_CCS_A_UNKNOWN_W:
 	if (WcOption.no_replace)
 	    return;
 	is_wide = 1;
 	cc.ccs = WC_CCS_US_ASCII;
-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	cc.code = ((wc_uint32)WC_REPLACE_W[0] << 8) | WC_REPLACE_W[1];
 	break;
     case WC_CCS_A_UNKNOWN:
 	if (WcOption.no_replace)
 	    return;
 	cc.ccs = WC_CCS_US_ASCII;
-	g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
+	if (WC_CCS_INDEX(cc.ccs) >= WC_F_ISO_BASE)
+	    g = cs94_gmap[WC_CCS_INDEX(cc.ccs) - WC_F_ISO_BASE];
 	cc.code = (wc_uint32)WC_REPLACE[0];
 	break;
     default:
-	if ((cc.ccs == WC_CCS_JOHAB || WC_CCS_JOHAB_1 ||
+	if ((cc.ccs == WC_CCS_JOHAB || cc.ccs == WC_CCS_JOHAB_1 ||
 		cc.ccs == WC_CCS_JOHAB_2 || cc.ccs == WC_CCS_JOHAB_3) &&
 		cs94w_gmap[WC_F_KS_X_1001 - WC_F_ISO_BASE]) {
 	    wc_wchar_t cc2 = wc_johab_to_ksx1001(cc);

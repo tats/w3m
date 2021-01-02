@@ -48,6 +48,8 @@ Str
 Strnew_size(int n)
 {
     Str x = GC_MALLOC(sizeof(struct _Str));
+    if (n < 0)
+	n = 0;
     x->ptr = GC_MALLOC_ATOMIC(n + 1);
     x->ptr[0] = '\0';
     x->area_size = n + 1;
@@ -56,7 +58,7 @@ Strnew_size(int n)
 }
 
 Str
-Strnew_charp(char *p)
+Strnew_charp(const char *p)
 {
     Str x;
     int n;
@@ -73,7 +75,7 @@ Strnew_charp(char *p)
 }
 
 Str
-Strnew_m_charp(char *p, ...)
+Strnew_m_charp(const char *p, ...)
 {
     va_list ap;
     Str r = Strnew();
@@ -87,7 +89,7 @@ Strnew_m_charp(char *p, ...)
 }
 
 Str
-Strnew_charp_n(char *p, int n)
+Strnew_charp_n(const char *p, int n)
 {
     Str x;
 
@@ -140,7 +142,7 @@ Strcopy(Str x, Str y)
 }
 
 void
-Strcopy_charp(Str x, char *y)
+Strcopy_charp(Str x, const char *y)
 {
     int len;
 
@@ -160,7 +162,7 @@ Strcopy_charp(Str x, char *y)
 }
 
 void
-Strcopy_charp_n(Str x, char *y, int n)
+Strcopy_charp_n(Str x, const char *y, int n)
 {
     int len = n;
 
@@ -180,7 +182,7 @@ Strcopy_charp_n(Str x, char *y, int n)
 }
 
 void
-Strcat_charp_n(Str x, char *y, int n)
+Strcat_charp_n(Str x, const char *y, int n)
 {
     int newlen;
 
@@ -209,7 +211,7 @@ Strcat(Str x, Str y)
 }
 
 void
-Strcat_charp(Str x, char *y)
+Strcat_charp(Str x, const char *y)
 {
     if (y == NULL)
 	return;
@@ -232,8 +234,8 @@ Strgrow(Str x)
 {
     char *old = x->ptr;
     int newlen;
-    newlen = x->length * 6 / 5;
-    if (newlen == x->length)
+    newlen = x->area_size * 6 / 5;
+    if (newlen == x->area_size)
 	newlen += 2;
     x->ptr = GC_MALLOC_ATOMIC(newlen);
     x->area_size = newlen;
@@ -278,8 +280,8 @@ void
 Strchop(Str s)
 {
     STR_LENGTH_CHECK(s);
-    while ((s->ptr[s->length - 1] == '\n' || s->ptr[s->length - 1] == '\r') &&
-	   s->length > 0) {
+    while (s->length > 0 &&
+	   (s->ptr[s->length - 1] == '\n' || s->ptr[s->length - 1] == '\r')) {
 	s->length--;
     }
     s->ptr[s->length] = '\0';
@@ -301,7 +303,7 @@ Strinsert_char(Str s, int pos, char c)
 }
 
 void
-Strinsert_charp(Str s, int pos, char *p)
+Strinsert_charp(Str s, int pos, const char *p)
 {
     STR_LENGTH_CHECK(s);
     while (*p)
@@ -530,11 +532,8 @@ Str
 Strfgets(FILE * f)
 {
     Str s = Strnew();
-    char c;
-    while (1) {
-	c = fgetc(f);
-	if (feof(f) || ferror(f))
-	    break;
+    int c;
+    while ((c = fgetc(f)) != EOF) {
 	Strcat_char(s, c);
 	if (c == '\n')
 	    break;
@@ -546,11 +545,8 @@ Str
 Strfgetall(FILE * f)
 {
     Str s = Strnew();
-    char c;
-    while (1) {
-	c = fgetc(f);
-	if (feof(f) || ferror(f))
-	    break;
+    int c;
+    while ((c = fgetc(f)) != EOF) {
 	Strcat_char(s, c);
     }
     return s;

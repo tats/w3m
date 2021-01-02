@@ -48,7 +48,7 @@ if (defined($ENV{'QUERY_STRING'})) {
 	}
 	# print "tlang=$tlang\n";
 	eval {require "w3mhelp-funcdesc.$tlang.pl";};
-	if (defined(%funcdesc)) {
+	if (%funcdesc) {
 	    $lang = $tlang;
 	}
     }
@@ -72,22 +72,26 @@ local (%funckeydesc, $key, $fname, $desc);
 %funcname = (%funcname, %buf_funcname, %lineedit_funcname, %menu_funcname);
 
 %funcdesc = (%funcdesc, %buf_funcdesc, %lineedit_funcdesc, %menu_funcdesc);
-while (($fname, $desc) = each %funcdesc) {
-    $funckeydesc{$funcname{$fname}} = "$fname\n$desc\n";
+# sort for consistent order each time this is run
+foreach my $fname (sort keys %funcdesc) {
+    $funckeydesc{$funcname{$fname}} = "$fname\n$funcdesc{$fname}\n";
 }
 
-while (($key, $fname) = each %keyfunc) {
+foreach $key (sort keys %keyfunc) {
     $keydata{$key} && next;
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+    $funckeydesc{$funcname{$keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %buf_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %buf_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$buf_keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %lineedit_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %lineedit_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$lineedit_keyfunc{$key}}} .= "$key,";
 }
-while (($key, $fname) = each %menu_keyfunc) {
-    $funckeydesc{$funcname{$fname}} .= "$key,";
+foreach $key (sort keys %menu_keyfunc) {
+    $keydata{$key} && next;
+    $funckeydesc{$funcname{$menu_keyfunc{$key}}} .= "$key,";
 }
 
 print <<HEADING;
@@ -102,8 +106,7 @@ Content-Type: text/html; charset=$charset
 ******* 
 <A HREF="http://w3m.sourceforge.net/">w3m</A>
  (WWW-wo-Miru)  Version $version by 
-<A HREF="mailto:aito\@fw.ipsj.or.jp">A.ITO</A> ********<BR>
-             ***** Key assign table *****
+<A HREF="mailto:aito\@fw.ipsj.or.jp">A.ITO</A> ********
 </CENTER>
 
 HEADING
@@ -112,77 +115,77 @@ $q_version = $version;
 $q_version =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
 $script = "<A HREF=\"$ENV{'SCRIPT_NAME'}?version=$q_version&amp;lang=";
 
-# doc:en_English doc-jp:ja_Japanese
+# doc:en_English doc-jp:ja_Japanese doc-de:de_German
 for $otherlang (@docdirs) {
     local(@d) = split(/[:_]/, $otherlang);
     
     if ($d[1] ne $lang) {
 	$d[1] =~ s/[^A-Za-z0-9_\$\.\-]/sprintf('%%%02X', ord($&))/ge;
-	print $script, $d[1], "\">$d[2] version</A>\n";
+	print $script, $d[1], "\">[$d[2]]</A>\n";
     }
 }
 
 $keymap =~ s/[<>&]/$htmlesc{$&}/ge;
-$head = "Show keymap file";
+$head = 'Current keymap file';
 if (defined($title{$head})) {
 	$head = $title{$head};
 	$head =~ s/[<>&]/$htmlesc{$&}/ge;
 }
 print "<P><A HREF=\"$keymap\">$head</A>\n";
 
-&show_keymap("Page/Cursor motion", 
+&show_keymap('In-page Navigation', 
 	     split(" ", "pgFore pgBack movR movL movD movU
 		movR1 movL1 movD1 movU1 ldown1 lup1
 		shiftl shiftr col1L col1R linbeg linend ctrCsrH ctrCsrV
 		goLine goLineF goLineL movRW movLW
 		topA lastA nextA prevA movlistMn
 		nextR nextL nextD nextU nextRD nextLU
-		undoPos redoPos"));
+		undoPos redoPos cursorTop cursorMiddle cursorBottom"));
 
-&show_keymap("Hyperlink operation",
+&show_keymap('Hyperlink Operations',
 	     split(" ", "followA tabA svA followI svI submitForm
 		curURL peekURL peekIMG pginfo curlno chkURL chkWORD chkNMID
 		rFrame extbrz linkbrz linkLst listMn linkMn accessKey"));
 
-&show_keymap("File/Stream operation",
+&show_keymap('File/Stream Operations',
 	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh
 		pipeBuf"));
 
-&show_keymap("Buffer operation",
-	     split(" ", "backBf nextBf prevBf selMn selBuf vwSrc svSrc svBuf
-		editBf editScr reload reshape rdrwSc dispI stopI"));
+&show_keymap('Buffer Operations',
+	     split(" ", "backBf nextBf prevBf goHome selMn selBuf vwSrc svSrc
+		svBuf editBf editScr reload reshape rdrwSc dispI stopI"));
 
-&show_keymap("Tab operation",
+&show_keymap('Tab Operations',
 	     split(" ", "newT closeT nextT prevT tabMn tabR tabL"));
 
-&show_keymap("Bookmark operation",
+&show_keymap('Bookmark Management',
 	     split(" ", "ldBmark adBmark"));
 
-&show_keymap("Search",
+&show_keymap('Searches',
 	     split(" ", "srchfor srchbak srchnxt srchprv isrchfor isrchbak"));
 
-&show_keymap("Dictionary look-up",
+&show_keymap('Dictionary Lookup',
 	     split(" ", "dictword dictwordat"));
 
-&show_keymap("Mark operation",
+&show_keymap('Mark Operations',
 	     split(" ", "_mark nextMk prevMk reMark"));
 
-&show_keymap("Miscellany",
+&show_keymap('Miscellaneous',
 	     split(" ", "mainMn ldhelp ldOpt dispVer cooLst ldHist ldDL
 		docCSet defCSet
 		msgs msToggle wrapToggle execCmd setAlarm setOpt setEnv defKey
 		reinit execsh susp qquitfm quitfm"));
 
-&show_keymap_data("User defined keymaps");
+&show_keymap_data('User-defined key bindings');
 
 print "<BR>\n<HR WIDTH=80%>\n";
 
-&show_keymap("Buffer selection mode",
+&show_keymap('Buffer and Tab Selection Mode',
 	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
 
 print "<BR>\n<HR WIDTH=80%>\n";
 
-&show_keymap("Line-edit mode",
+&show_keymap('Input Line Editing Mode',
 	     split(" ", "lineedit_forward lineedit_back lineedit_backspace 
 		lineedit_delete lineedit_kill_after lineedit_kill_before
 		lineedit_top lineedit_bottom lineedit_prev lineedit_next
@@ -190,7 +193,7 @@ print "<BR>\n<HR WIDTH=80%>\n";
 
 print "<BR>\n<HR WIDTH=80%>\n";
 
-&show_keymap("Popup menu",
+&show_keymap('Popup Menu Mode',
 	     split(" ", "menu_select menu_close menu_cancel menu_down menu_up
 		menu_line_up menu_line_down menu_top menu_last menu_next
 		menu_prev menu_search_fore menu_search_back menu_search_next

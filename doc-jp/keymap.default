@@ -11,6 +11,7 @@
 # Left  : LEFT, ^[[D
 
 keymap	C-@	MARK
+keymap	C-_	GOTO_HOME
 keymap	C-a	LINE_BEGIN
 keymap	C-b	MOVE_LEFT
 keymap	C-e	LINE_END

@@ -188,7 +188,7 @@ dv2sv(double *dv, short *iv, int size)
     indexarray = NewAtom_N(short, size);
     edv = NewAtom_N(double, size);
     for (i = 0; i < size; i++) {
-	iv[i] = ceil(dv[i]);
+	iv[i] = (short) ceil(dv[i]);
 	edv[i] = (double)iv[i] - dv[i];
     }
 
@@ -205,7 +205,7 @@ dv2sv(double *dv, short *iv, int size)
 	indexarray[i] = k;
     }
     iw = min((int)(w + 0.5), size);
-    if (iw == 0)
+    if (iw <= 1)
 	return;
     x = edv[(int)indexarray[iw - 1]];
     for (i = 0; i < size; i++) {
@@ -429,7 +429,6 @@ visible_length(char *str)
     char *t, *r2;
     int amp_len = 0;
 
-    t = str;
     while (*str) {
 	prev_status = status;
 	if (next_status(*str, &status)) {
@@ -761,7 +760,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 	    struct parsed_tag *tag;
 	    if ((tag = parse_tag(&p, TRUE)) != NULL)
 		parsedtag_get_value(tag, ATTR_TID, &id);
-	    if (id >= 0 && id < tbl->ntable) {
+	    if (id >= 0 && id < tbl->ntable && tbl->tables[id].ptr) {
 		int alignment;
 		TextLineListItem *ti;
 		struct table *t = tbl->tables[id].ptr;
@@ -961,7 +960,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
     for (step = 0; step < 2; step++) {
 	for (i = 0; i <= t->maxcol; i += n) {
 	    int nn;
-	    char *idx;
+	    short *idx;
 	    double nsum;
 	    if (sum < 0.5)
 		return;
@@ -982,7 +981,7 @@ set_integered_width(struct table *t, double *dwidth, short *iwidth)
 		    (double)rulewidth - mod[ii] > 0.5)
 		    fixed[ii] = 1;
 	    }
-	    idx = NewAtom_N(char, n);
+	    idx = NewAtom_N(short, n);
 	    for (k = 0; k < cell->maxcell; k++) {
 		int kk, w, width, m;
 		j = cell->index[k];
@@ -1624,6 +1623,15 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 #define fixed_table_width(t)\
   (get_table_width(t,t->fixed_width,t->cell.fixed_width,CHECK_MINIMUM))
 
+#define MAX_COTABLE_LEVEL 100
+static int cotable_level;
+
+void
+initRenderTable(void)
+{
+    cotable_level = 0;
+}
+
 void
 renderCoTable(struct table *tbl, int maxlimit)
 {
@@ -1634,8 +1642,14 @@ renderCoTable(struct table *tbl, int maxlimit)
     int i, col, row;
     int indent, maxwidth;
 
+    if (cotable_level >= MAX_COTABLE_LEVEL)
+	return;	/* workaround to prevent infinite recursion */
+    cotable_level++;
+
     for (i = 0; i < tbl->ntable; i++) {
 	t = tbl->tables[i].ptr;
+	if (t == NULL)
+	    continue;
 	col = tbl->tables[i].col;
 	row = tbl->tables[i].row;
 	indent = tbl->tables[i].indent;
@@ -1691,7 +1705,7 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 {
     int i, j, w, r, h;
     Str renderbuf;
-    short new_tabwidth[MAXCOL];
+    short new_tabwidth[MAXCOL] = { 0 };
 #ifdef MATRIX
     int itr;
     VEC *newwidth;
@@ -1723,6 +1737,10 @@ renderTable(struct table *t, int max_width, struct html_feed_environ *h_env)
 
     if (max_width < rulewidth)
 	max_width = rulewidth;
+
+#define MAX_TABWIDTH 10000
+    if (max_width > MAX_TABWIDTH)
+	max_width = MAX_TABWIDTH;
 
     check_maximum_width(t);
 
@@ -2272,7 +2290,8 @@ skip_space(struct table *t, char *line, struct table_linfo *linfo,
 	    }
 	    if (s > 0) {
 #ifdef USE_M17N
-		if (ctype == PC_KANJI1 && prev_ctype == PC_KANJI1)
+		if (!SimplePreserveSpace &&
+		    ctype == PC_KANJI1 && prev_ctype == PC_KANJI1)
 		    skip += s;
 		else
 #endif
@@ -2323,6 +2342,8 @@ feed_table_block_tag(struct table *tbl,
     int offset;
     if (mode->indent_level <= 0 && indent == -1)
 	return;
+    if (mode->indent_level >= CHAR_MAX && indent == 1)
+	return;
     setwidth(tbl, mode);
     feed_table_inline_tag(tbl, line, mode, -1);
     clearcontentssize(tbl, mode);
@@ -2336,10 +2357,14 @@ feed_table_block_tag(struct table *tbl,
 	if (mode->indent_level < MAX_INDENT_LEVEL)
 	    tbl->indent -= INDENT_INCR;
     }
+    if (tbl->indent < 0)
+	tbl->indent = 0;
     offset = tbl->indent;
     if (cmd == HTML_DT) {
 	if (mode->indent_level > 0 && mode->indent_level <= MAX_INDENT_LEVEL)
 	    offset -= INDENT_INCR;
+	if (offset < 0)
+	    offset = 0;
     }
     if (tbl->indent > 0) {
 	check_minimum0(tbl, 0);
@@ -2546,8 +2571,10 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    }
 	}
 #ifdef ID_EXT
-	if (parsedtag_get_value(tag, ATTR_ID, &p))
+	if (parsedtag_get_value(tag, ATTR_ID, &p)) {
+	    check_row(tbl, tbl->row);
 	    tbl->tridvalue[tbl->row] = Strnew_charp(p);
+	}
 #endif				/* ID_EXT */
 	tbl->trattr = align | valign;
 	break;
@@ -2572,7 +2599,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	tbl->col++;
 	check_row(tbl, tbl->row);
-	while (tbl->tabattr[tbl->row][tbl->col]) {
+	while (tbl->col < MAXCOL && tbl->tabattr[tbl->row][tbl->col]) {
 	    tbl->col++;
 	}
 	if (tbl->col > MAXCOL - 1) {
@@ -2600,12 +2627,16 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
 		check_row(tbl, tbl->row + rowspan);
 	}
+	if (rowspan < 1)
+	    rowspan = 1;
 	if (parsedtag_get_value(tag, ATTR_COLSPAN, &colspan)) {
 	    if ((tbl->col + colspan) >= MAXCOL) {
 		/* Can't expand column */
 		colspan = MAXCOL - tbl->col;
 	    }
 	}
+	if (colspan < 1)
+	    colspan = 1;
 	if (parsedtag_get_value(tag, ATTR_ALIGN, &i)) {
 	    switch (i) {
 	    case ALIGN_LEFT:
@@ -2878,6 +2909,14 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	tmp = process_input(tag);
 	feed_table1(tbl, tmp, mode, width);
 	break;
+    case HTML_BUTTON:
+       tmp = process_button(tag);
+       feed_table1(tbl, tmp, mode, width);
+       break;
+    case HTML_N_BUTTON:
+       tmp = process_n_button();
+       feed_table1(tbl, tmp, mode, width);
+       break;
     case HTML_SELECT:
 	tmp = process_select(tag);
 	if (tmp)
@@ -3010,7 +3049,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	break;
     case HTML_TABLE_ALT:
 	id = -1;
-	w = 0;
 	parsedtag_get_value(tag, ATTR_TID, &id);
 	if (id >= 0 && id < tbl->ntable) {
 	    struct table *tbl1 = tbl->tables[id].ptr;

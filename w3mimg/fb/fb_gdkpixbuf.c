@@ -6,7 +6,7 @@
 #include "config.h"
 #if defined(USE_GTK2)
 #include <glib-object.h>
-#include <gdk/gdk.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #endif
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include "fb.h"

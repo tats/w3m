@@ -60,7 +60,7 @@ w3mhelp-funcname.pl: w3mhelp-funcname.pl.in ../funcname.tab $(top_srcdir)/doc/ke
 	@cat $(srcdir)/w3mhelp-funcname.pl.in >> w3mhelp-funcname.pl
 	@echo "done"
 
-w3mhelp-funcdesc-stamp: $(top_srcdir)/doc/README.func $(top_srcdir)/doc-jp/README.func w3mhelp-funcdesc.en.pl.in w3mhelp-funcdesc.ja.pl.in
+w3mhelp-funcdesc-stamp: $(top_srcdir)/doc/README.func $(top_srcdir)/doc-jp/README.func $(top_srcdir)/doc-de/README.func w3mhelp-funcdesc.en.pl.in w3mhelp-funcdesc.ja.pl.in w3mhelp-funcdesc.de.pl.in
 	@echo "generating w3mhelp-funcdesc*.pl..."
 	@for dirlang in $(DOCDIRS); do \
 	  dir=`expr "$$dirlang" : "\(.*\):.*"`; \
@@ -87,7 +87,7 @@ install: $(LIB_TARGETS) $(HELP_TARGETS)
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(AUXBIN_DIR);  \
 	done
-	for file in $(LIB_TARGETS);     \
+	for file in w3mdict.cgi $(LIB_TARGETS);     \
 	do      \
 		$(INSTALL_SCRIPT) $$file $(DESTDIR)$(CGIBIN_DIR);  \
 	done
@@ -105,7 +105,7 @@ uninstall:
 	do      \
 		rm -f $(AUXBIN_DIR)/$$file; \
 	done
-	-for file in $(LIB_TARGETS); \
+	-for file in w3mdict.cgi $(LIB_TARGETS); \
 	do      \
 		rm -f $(LIB_DIR)/$$file; \
 	done

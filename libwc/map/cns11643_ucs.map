@@ -1,6 +1,8 @@
 /* CNS 11643 (Chinese Taiwan) */
 
-static wc_uint16 cns116431_ucs_map[ 0x5E * 0x5E ] = {
+#define N_cns116431_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 cns116431_ucs_map[ N_cns116431_ucs_map ] = {
  0x3000,	/* 0x2121 */
  0xFF0C,	/* 0x2122 */
  0x3001,	/* 0x2123 */
@@ -8839,7 +8841,9 @@ static wc_uint16 cns116431_ucs_map[ 0x5E * 0x5E ] = {
  0,		/* 0x7E7E */
 };
 
-static wc_uint16 cns116432_ucs_map[ 0x5E * 0x5E ] = {
+#define N_cns116432_ucs_map (0x5E * 0x5E)
+
+static wc_uint16 cns116432_ucs_map[ N_cns116432_ucs_map ] = {
  0x4E42,	/* 0x2121 */
  0x4E5C,	/* 0x2122 */
  0x51F5,	/* 0x2123 */

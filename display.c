@@ -257,7 +257,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     parseURL2(url, &pu, baseURL(buf));
     u = parsedURL2Str(&pu);
     if (DecodeURL)
-	u = Strnew_charp(url_unquote_conv(u->ptr, buf->document_charset));
+	u = Strnew_charp(url_decode2(u->ptr, buf));
 #ifdef USE_M17N
     u = checkType(u, &pr, NULL);
 #endif
@@ -487,7 +487,7 @@ displayBuffer(Buffer *buf, int mode)
     term_title(conv_to_system(buf->buffername));
     refresh();
 #ifdef USE_IMAGE
-    if (activeImage && displayImage && buf->img) {
+    if (activeImage && displayImage && buf->img && buf->image_loaded) {
 	drawImage();
     }
 #endif
@@ -497,6 +497,10 @@ displayBuffer(Buffer *buf, int mode)
 	save_current_buf = buf;
     }
 #endif
+    if (mode == B_FORCE_REDRAW &&  (buf->check_url & CHK_URL) ) {
+	chkURLBuffer(buf);
+	displayBuffer(buf, B_NORMAL);
+    }
 }
 
 static void
@@ -521,7 +525,15 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 		break;
 	}
 	if (hseq >= 0 && an->hseq == hseq) {
+	    int start_pos = an->start.pos;
+	    int end_pos = an->end.pos;
 	    for (i = an->start.pos; i < an->end.pos; i++) {
+	        if (enable_inline_image && (l->propBuf[i] & PE_IMAGE)) {
+		    if (start_pos == i)
+			start_pos = i + 1;
+		    else if (end_pos == an->end.pos)
+		        end_pos = i - 1;
+		}
 		if (l->propBuf[i] & (PE_IMAGE | PE_ANCHOR | PE_FORM)) {
 		    if (active)
 			l->propBuf[i] |= PE_ACTIVE;
@@ -529,9 +541,9 @@ drawAnchorCursor0(Buffer *buf, AnchorList *al, int hseq, int prevhseq,
 			l->propBuf[i] &= ~PE_ACTIVE;
 		}
 	    }
-	    if (active)
+	    if (active && start_pos < end_pos)
 		redrawLineRegion(buf, l, l->linenumber - tline + buf->rootY,
-				 an->start.pos, an->end.pos);
+				 start_pos, end_pos);
 	}
 	else if (prevhseq >= 0 && an->hseq == prevhseq) {
 	    if (active)
@@ -855,14 +867,16 @@ redrawLineImage(Buffer *buf, Line *l, int i)
 		y = (int)(i * pixel_per_line);
 		sx = (int)((rcol - COLPOS(l, a->start.pos)) * pixel_per_char);
 		sy = (int)((l->linenumber - image->y) * pixel_per_line);
-		if (sx == 0 && x + image->xoffset >= 0)
-		    x += image->xoffset;
-		else
-		    sx -= image->xoffset;
-		if (sy == 0 && y + image->yoffset >= 0)
-		    y += image->yoffset;
-		else
-		    sy -= image->yoffset;
+		if (! enable_inline_image) {
+		    if (sx == 0 && x + image->xoffset >= 0)
+			x += image->xoffset;
+		    else
+			sx -= image->xoffset;
+		    if (sy == 0 && y + image->yoffset >= 0)
+			y += image->yoffset;
+		    else
+			sy -= image->yoffset;
+		}
 		if (image->width > 0)
 		    w = image->width - sx;
 		else
@@ -1119,18 +1133,18 @@ addChar(char c, Lineprop mode)
 	    }
 #ifdef USE_M17N
 	    if (w == 2 && WcOption.use_wide)
-		addstr(graph2_symbol[(int)c]);
+		addstr(graph2_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	    else
 #endif
-		addch(*graph_symbol[(int)c]);
+		addch(*graph_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	}
 	else {
 #ifdef USE_M17N
 	    symbol = get_symbol(DisplayCharset, &w);
-	    addstr(symbol[(int)c]);
+	    addstr(symbol[(unsigned char)c % N_SYMBOL]);
 #else
 	    symbol = get_symbol();
-	    addch(*symbol[(int)c]);
+	    addch(*symbol[(unsigned char)c % N_SYMBOL]);
 #endif
 	}
     }

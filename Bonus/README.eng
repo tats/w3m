@@ -3,7 +3,7 @@
   [w3m-dev 03635] 2ch.cgi
   localcgi to read 2ch dat directly
 
-  w3m file:/cgi-bin/2ch.cgi?http://pc.2ch.net/test/read.cgi/unix/1035755937/
+  w3m file:/cgi-bin/2ch.cgi?http://toro.2ch.sc/test/read.cgi/unix/1185784998/
 
   It uses wget -c.
   `dat' files are recorded under ~/w3m2ch/.

@@ -39,7 +39,7 @@ Options:
   open_tab_blank ...	open new tab if target is _blank or _new
 			default: OFF
   close_tab_back ...	close the tab when you back from last buffer in the tab
-			default: OFF (= Can't back...)
+			default: OFF (= Can't go back...)
 
 
 

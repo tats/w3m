@@ -123,6 +123,7 @@ static int
 ftp_login(FTP ftp)
 {
     int sock, status;
+    int sock_wf;
 
     sock = openSocket(ftp->host, "ftp", 21);
     if (sock < 0)
@@ -139,7 +140,6 @@ ftp_login(FTP ftp)
 	    socklen_t socknamelen = sizeof(sockname);
 
 	    if (!getsockname(sock, (struct sockaddr *)&sockname, &socknamelen)) {
-		struct hostent *sockent;
 		Str tmp = Strnew_charp(ftp->pass);
 #ifdef INET6
 		char hostbuf[NI_MAXHOST];
@@ -156,6 +156,7 @@ ftp_login(FTP ftp)
 		    Strcat_charp(tmp, "unknown");
 #else
 
+		struct hostent *sockent;
 		if ((sockent = gethostbyaddr((char *)&sockname.sin_addr,
 					     sizeof(sockname.sin_addr),
 					     sockname.sin_family)))
@@ -169,7 +170,10 @@ ftp_login(FTP ftp)
 	}
     }
     ftp->rf = newInputStream(sock);
-    ftp->wf = fdopen(dup(sock), "wb");
+    if ((sock_wf = dup(sock)) >= 0 )
+	    ftp->wf = fdopen(sock_wf, "wb");
+    else
+	    goto open_err;
     if (!ftp->rf || !ftp->wf)
 	goto open_err;
     IStype(ftp->rf) |= IST_UNCLOSE;

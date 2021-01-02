@@ -109,6 +109,7 @@ loadLocalDir(char *dname)
 	    n++;
 	}
     }
+    closedir(d);
 
     if (multicolList) {
 	l = COLS / (maxlen + 2);
@@ -167,7 +168,7 @@ loadLocalDir(char *dname)
 	else {
 #if defined(HAVE_LSTAT) && defined(HAVE_READLINK)
 	    if (S_ISLNK(lst.st_mode)) {
-		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf))) > 0) {
+		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf) - 1)) > 0) {
 		    lbuf[l] = '\0';
 		    Strcat_m_charp(tmp, " -> ",
 				   html_quote(conv_from_system(lbuf)), NULL);
@@ -212,18 +213,17 @@ set_environ(char *var, char *value)
     if (var != NULL && value != NULL)
 	setenv(var, value, 1);
 #else				/* not HAVE_SETENV */
-#ifdef HAVE_PUTENV
     static Hash_sv *env_hash = NULL;
     Str tmp = Strnew_m_charp(var, "=", value, NULL);
 
     if (env_hash == NULL)
 	env_hash = newHash_sv(20);
     putHash_sv(env_hash, var, (void *)tmp->ptr);
+#ifdef HAVE_PUTENV
     putenv(tmp->ptr);
 #else				/* not HAVE_PUTENV */
     extern char **environ;
     char **ne;
-    char *p;
     int i, l, el;
     char **e, **newenv;
 
@@ -250,7 +250,7 @@ set_environ(char *var, char *value)
     if (newenv == NULL)
 	return;
     for (e = environ, ne = newenv; *e != NULL; *(ne++) = *(e++)) ;
-    *(ne++) = p;
+    *(ne++) = tmp->ptr;
     *ne = NULL;
     environ = newenv;
 #endif				/* not HAVE_PUTENV */
@@ -359,6 +359,10 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     int status;
     pid_t pid;
     char *file = uri, *name = uri, *path_info = NULL, *tmpf = NULL;
+#ifdef HAVE_CHDIR
+    char *cgi_dir;
+#endif
+    char *cgi_basename;
 
 #ifdef __MINGW32_VERSION
     return NULL;
@@ -373,18 +377,25 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	if (!fw)
 	    return NULL;
     }
+    if (qstr)
+	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
+#ifdef HAVE_CHDIR
+    cgi_dir = mydirname(file);
+#endif
+    cgi_basename = mybasename(file);
     pid = open_pipe_rw(&fr, NULL);
-    if (pid < 0)
+    /* Don't invoke gc after here, or the program might crash in some platforms */
+    if (pid < 0) {
+	if (fw)
+	    fclose(fw);
 	return NULL;
-    else if (pid) {
+    } else if (pid) {
 	if (fw)
 	    fclose(fw);
 	return fr;
     }
     setup_child(TRUE, 2, fw ? fileno(fw) : -1);
 
-    if (qstr)
-	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
     set_cgi_environ(name, file, uri);
     if (path_info)
 	set_environ("PATH_INFO", path_info);
@@ -415,12 +426,14 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     }
 
 #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */
-    chdir(mydirname(file));
+    if (chdir(cgi_dir) == -1) {
+        fprintf(stderr, "failed to chdir to %s: %s\n", cgi_dir, strerror(errno));
+        exit(1);
+    }
 #endif
-    execl(file, mybasename(file), NULL);
+    execl(file, cgi_basename, NULL);
     fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
-	    file, mybasename(file), strerror(errno));
+	    file, cgi_basename, strerror(errno));
     exit(1);
-    return NULL;
 #endif
 }

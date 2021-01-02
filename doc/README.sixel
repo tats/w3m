@@ -1,0 +1,27 @@
+Sixel support of w3m
+                                                              2014/11/05
+                                                              K. Araki
+
+Introduction
+
+  This is the extension for w3m to show inline images by sixel graphics.
+
+Requirements
+
+  Install 'img2sixel' command provided by libsixel project.
+  (https://github.com/saitoha/libsixel)
+
+Build
+
+  $ ./configure --enable-image ...
+  $ make
+  $ make install
+
+Usage
+
+  $ w3m -sixel http://...
+
+  You can specify options of 'img2sixel' command by "W3M_IMG2SIXEL"
+  environmental variable.
+
+  $ W3M_IMG2SIXEL="img2sixel -d atkinson" w3m -sixel http://...

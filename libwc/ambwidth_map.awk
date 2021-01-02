@@ -3,9 +3,15 @@ BEGIN {
     i = 0;
 }
 $2 == "A" { 
-    code = sprintf("0x%s", $1);
-    if (strtonum(code) < 0x10000) {
-	map[i] = code
+    code = code2 = strtonum(sprintf("0x%s", $1))
+    if (match($1, /[.]+[0-9A-Fa-f]+/)) {
+	s = substr($1, RSTART, RLENGTH)
+	sub(/[.]+/, "0x", s)
+	code2 = strtonum(s)
+    }
+    for (; code <= code2; code++) {
+	if (code >= 0x10000) { break }
+	map[i] = sprintf("0x%04X", code)
 	i++;
     }
 }
@@ -15,28 +21,14 @@ END {
     prev = strtonum(map[0]);
     for (j = 1; j < i; j++) {
 	cur = strtonum(map[j]);
-	if (match(map[j], "[.]+")) {
+	if (cur - prev > 1) {
 	    map2[n] = sprintf("%s, %s", start, map[j - 1]);
 	    n++;
-	    gsub("[.]+", ", 0x", map[j])
-	    map2[n] = map[j];
-	    n++;
-	    start = map[j + 1];
-	    cur = strtonum(start);
-	} else {
-	    if (cur - prev > 2) {
-		map2[n] = sprintf("%s, %s", start, map[j - 1]);
-		start = map[j];
-		n++;
-	    }
-
-	    if (j == i - 1) {
-		map2[n] = sprintf("%s, %s", start, map[j]);
-		n++;
-	    }
+	    start = map[j];
 	}
 	prev = cur;
     }
+    if (i > 0) { map2[n] = sprintf("%s, %s", start, map[i - 1]); n++ }
 
     printf("static wc_map ucs_ambwidth_map[] = {\n");
     for (j = 0; j < n; j++) {

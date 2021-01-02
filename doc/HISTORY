@@ -588,7 +588,7 @@ From: Okabe Katsuya <okabek@guitar.ocn.ne.jp>
   * space characters in a buffer are mapped into 0x80-0x9f.
   * unprintable characters (0x80-0xa0) are displayed as \xxx.
 
-From: Tsutomu Okada (岡田 勉) <okada@furuno.co.jp>
+From: Tsutomu Okada <okada@furuno.co.jp>
 Subject: [w3m-dev 01354] minimize when #undef USE_GOPHER or USE_NNTP
 
 2000/11/16
@@ -1422,7 +1422,7 @@ HTML4.0 ID attribute support.
 
 From: Okabe Katsuya <okabe@fphy.hep.okayama-u.ac.jp>
 table get weird when it contains <input type=hidden>.
-修正．
+Fixed.
 
 2000.2.12
 From: Rogue Metal - Jake Moorman <roguemtl@stampede.org>
@@ -1649,15 +1649,15 @@ From: patakuti
 If an <input type=button> tag has no `name' attribute,
 w3m adds it an inappropriate name attribute.
 
-From: やま
+From: Yama
 Now w3m can handle a frameset that has both ROWS and COLS.
 
 From: aito
 Now bookmarking is done by a separate command w3mbookmark.
 
-C-s で画面表示が止まっていたバグの修正．
+Bug fix that C-s hangs.
 
-文字入力時に C-g で中止できるようにした．
+Enable C-g to quit for keyboard input.
 
 From: hovav@cs.stanford.edu
 When downloading a file, an attempt to save it to a non-exist
@@ -1699,7 +1699,7 @@ Menu behavior is changed.
 * Clicking outside the menu causes cancellation of sub-menu.
 * <, >, +, - abandoned
 
-From: おかだ <okada@furuno.co.jp>
+From: Okada <okada@furuno.co.jp>
 Now C-a/C-e are bound to 'jump to the first/last item in menu.'
 
 From: "OMAE, jun" <jun-o@osb.att.ne.jp>

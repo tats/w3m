@@ -79,6 +79,7 @@ print_bookmark_panel(char *bmark, char *url, char *title, char *charset)
 	    }
 	}
 	printf("</select>\n");
+	fclose(f);
     }
     printf(bkmark_src2, html_quote(url), html_quote(title));
 }
@@ -99,7 +100,7 @@ create_new_bookmark(char *bmark, char *section, char *title, char *url,
 	fprintf(f, "<body>\n<h1>Bookmarks</h1>\n");
 	fprintf(f, "<h2>%s</h2>\n<ul>\n", section);
 	fprintf(f, "<li><a href=\"%s\">%s</a>\n", url, title);
-	fprintf(f, end_section);
+	fprintf(f, "%s", end_section);
 	fprintf(f, "</ul>\n</body>\n</html>\n");
 	fclose(f);
     }
@@ -168,7 +169,10 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 	/* In this case, a new bookmark is appeneded after the bookmark file */
 	return create_new_bookmark(bmark, section, title, url, "a");
     }
-    f = fopen(bmark, "w");
+    if ((f = fopen(bmark, "w")) == NULL) {
+	printf("\nCannot open bookmark %s\n", bmark);
+	return FALSE;
+    }
     while (tl->nitem) {
 	fputs(popText(tl), f);
     }

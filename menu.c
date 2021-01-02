@@ -57,6 +57,7 @@ static int mCancel(char c);
 static int mClose(char c);
 static int mSusp(char c);
 static int mMouse(char c);
+static int mSgrMouse(char c);
 static int mSrchF(char c);
 static int mSrchB(char c);
 static int mSrchN(char c);
@@ -116,15 +117,15 @@ static int (*MenuEscKeymap[128]) (char c) = {
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  O     */
+/*                                                          O     */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mEscB,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  [                                     */
+/*                          [                                     */
     mNull,  mNull,  mNull,  mEscB,  mNull,  mNull,  mNull,  mNull,
 
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  v             */
+/*                                                  v             */
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mPrev,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 };
@@ -137,10 +138,11 @@ static int (*MenuEscBKeymap[128]) (char c) = {
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-    mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-/*  A       B       C       D       E                     */
+/*  8       9       :       ;       <       =       >       ?     */
+    mNull,  mNull,  mNull,  mNull,  mSgrMouse,mNull,mNull,  mNull,
+/*          A       B       C       D       E                     */
     mNull,  mUp,    mDown,  mOk,    mCancel,mClose, mNull, mNull,
-/*  L       M                     */
+/*                                  L       M                     */
     mNull,  mNull,  mNull,  mNull,  mClose, mMouse, mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
@@ -359,7 +361,6 @@ geom_menu(Menu *menu, int x, int y, int mselect)
 	if (win_w > COLS) {
 	    menu->width = COLS - 2 * FRAME_WIDTH;
 	    menu->width -= menu->width % FRAME_WIDTH;
-	    win_w = menu->width + 2 * FRAME_WIDTH;
 	}
     }
     menu->x = win_x + FRAME_WIDTH;
@@ -1203,6 +1204,48 @@ mMouse(char c)
     return process_mMouse(btn, x, y);
 }
 
+static int
+mSgrMouse(char c)
+{
+    int btn = 0, x = 0, y = 0;
+    unsigned char ch;
+
+    for (ch = getch(); IS_DIGIT(ch); ch = getch())
+	btn = btn * 10 + ch - '0';
+    if (ch != ';')
+	return MENU_NOTHING;
+
+#if defined (__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
+    if (cygwin_mouse_btn_swapped) {
+	if (btn == MOUSE_BTN2_DOWN)
+	    btn = MOUSE_BTN3_DOWN;
+	else if (btn == MOUSE_BTN3_DOWN)
+	    btn = MOUSE_BTN2_DOWN;
+    }
+#endif
+
+    for (ch = getch(); IS_DIGIT(ch); ch = getch())
+	x = x * 10 + ch - '0';
+    if (ch != ';')
+	return MENU_NOTHING;
+    if (x > 0)
+	x--;
+
+    for (ch = getch(); IS_DIGIT(ch); ch = getch())
+	y = y * 10 + ch - '0';
+    if (ch == 'm')
+	btn |= 3;
+    else if (ch != 'M' && ch != ';')
+	return MENU_NOTHING;
+    if (y > 0)
+	y--;
+
+    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
+	return MENU_NOTHING;
+
+    return process_mMouse(btn, x, y);
+}
+
 #ifdef USE_GPM
 static int
 gpm_process_menu_mouse(Gpm_Event * event, void *data)
@@ -1261,6 +1304,12 @@ mMouse(char c)
 {
     return (MENU_NOTHING);
 }
+
+static int
+mSgrMouse(char c)
+{
+    return (MENU_NOTHING);
+}
 #endif				/* not USE_MOUSE */
 
 /* --- MenuFunctions (END) --- */
@@ -1289,7 +1338,7 @@ mainMenu(int x, int y)
     popupMenu(x, y, &MainMenu);
 }
 
-DEFUN(mainMn, MAIN_MENU MENU, "Popup menu")
+DEFUN(mainMn, MAIN_MENU MENU, "Pop up menu")
 {
     Menu *menu = &MainMenu;
     char *data;
@@ -1317,7 +1366,7 @@ DEFUN(mainMn, MAIN_MENU MENU, "Popup menu")
 
 /* --- SelectMenu --- */
 
-DEFUN(selMn, SELECT_MENU, "Popup buffer selection menu")
+DEFUN(selMn, SELECT_MENU, "Pop up buffer-stack menu")
 {
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;
@@ -1365,9 +1414,7 @@ initSelectMenu(void)
 		break;
 	    default:
 		Strcat_char(str, ' ');
-		p = parsedURL2Str(&buf->currentURL)->ptr;
-		if (DecodeURL)
-		    p = url_unquote_conv(p, 0);
+		p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
 		Strcat_charp(str, p);
 		break;
 	    }
@@ -1464,7 +1511,7 @@ smDelBuf(char c)
 
 /* --- SelTabMenu --- */
 
-DEFUN(tabMn, TAB_MENU, "Popup tab selection menu")
+DEFUN(tabMn, TAB_MENU, "Pop up tab selection menu")
 {
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;
@@ -1513,9 +1560,7 @@ initSelTabMenu(void)
 	    case SCM_MISSING:
 		break;
 	    default:
-		p = parsedURL2Str(&buf->currentURL)->ptr;
-		if (DecodeURL)
-		    p = url_unquote_conv(p, 0);
+		p = url_decode2(parsedURL2Str(&buf->currentURL)->ptr, NULL);
 		Strcat_charp(str, p);
 		break;
 	    }
@@ -1696,7 +1741,7 @@ initMenu(void)
     FILE *mf;
     MenuList *list;
 
-    w3mMenuList = New_N(MenuList, 3);
+    w3mMenuList = New_N(MenuList, 4);
     w3mMenuList[0].id = "Main";
     w3mMenuList[0].menu = &MainMenu;
     w3mMenuList[0].item = MainMenuItem;
@@ -1845,10 +1890,8 @@ link_menu(Buffer *buf)
 	    Strcat_charp(str, " ");
 	if (!l->url)
 	    p = "";
-	else if (DecodeURL)
-	    p = url_unquote_conv(l->url, buf->document_charset);
 	else
-	    p = l->url;
+	    p = url_decode2(l->url, buf);
 	Strcat_charp(str, p);
 	label[i] = str->ptr;
 	if (len < str->length)
@@ -1913,6 +1956,7 @@ accesskey_menu(Buffer *buf)
     }
     label[nitem] = NULL;
 
+    set_menu_frame();
     new_option_menu(&menu, label, &key, NULL);
 
     menu.initial = 0;
@@ -2024,7 +2068,6 @@ list_menu(Buffer *buf)
     }
     label[nitem] = NULL;
 
-    set_menu_frame();
     set_menu_frame();
     new_option_menu(&menu, label, &key, NULL);
 

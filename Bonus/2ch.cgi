@@ -63,7 +63,7 @@ for (0 .. ($lines - 1) / 100) {
 }
 $head .= "<a href=\"$cgi/l50\">ç≈êV50</a>\n";
 print <<EOF;
-Content-Type: text/html
+Content-Type: text/html; charset=Shift_JIS
 
 EOF
 $i = 1;
@@ -128,7 +128,7 @@ sub subback {
 	$cmd = "mkdir -p $dir; $WGET -O $tmp $dat >/dev/null 2>&1";
 	system $cmd;
 print <<EOF;
-Content-Type: text/html
+Content-Type: text/html; charset=Shift_JIS
 
 EOF
 	@ARGV = ($tmp);
@@ -153,7 +153,7 @@ sub post {
 	my $host = $1;
 	my $sock = IO::Socket::INET->new("$host:80") or die;
 	# retrieve posting cookie; this may not work
-	print "Content-Type: text/html\n\n";
+	print "Content-Type: text/html; charset=Shift_JIS\n\n";
 	print $sock
 	    "HEAD /test/bbs.cgi HTTP/1.1\n",
 	    "Host: $host\n",

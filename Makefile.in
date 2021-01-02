@@ -111,6 +111,7 @@ IMGDISPLAY=w3mimgdisplay$(EXT)
 MAN1_TARGET=$(PACKAGE).1
 MAN1=$(top_srcdir)/doc/w3m.1
 MAN1_JA=$(top_srcdir)/doc-jp/w3m.1
+MAN1_DE=$(top_srcdir)/doc-de/w3m.1
 
 LIB_TARGETS=$(BOOKMARKER) $(HELPER)
 AUXBIN_TARGETS=@AUXBIN_TARGETS@
@@ -150,7 +151,7 @@ parsetagx.o: html.c
 
 funcname.tab: $(DEFUNS)
 	(echo '#define DEFUN(x,y,z) x y';\
-	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) - | \
+	 sed -ne '/^DEFUN/{p;n;/^[ 	]/p;}' $(DEFUNS)) | $(CPP) $(CPPFLAGS) - | \
 	 awk '$$1 ~ /^[_A-Za-z]/ { \
 	       for (i=2;i<=NF;i++) { print $$i, $$1} \
 	 }' > $@.tmp
@@ -220,10 +221,12 @@ install-core: $(TARGETS)
 	-$(MKDIR) $(DESTDIR)$(HELP_DIR)
 	-$(MKDIR) $(DESTDIR)$(mandir)/man1
 	-$(MKDIR) $(DESTDIR)$(mandir)/ja/man1
+	-$(MKDIR) $(DESTDIR)$(mandir)/de/man1
 	$(INSTALL_PROGRAM) $(TARGET) $(DESTDIR)$(bindir)/$(TARGET)
 	$(INSTALL_DATA) $(HELP_FILE) $(DESTDIR)$(HELP_DIR)/$(HELP_TARGET)
 	$(INSTALL_DATA) $(MAN1) $(DESTDIR)$(mandir)/man1/$(MAN1_TARGET)
 	$(INSTALL_DATA) $(MAN1_JA) $(DESTDIR)$(mandir)/ja/man1/$(MAN1_TARGET)
+	$(INSTALL_DATA) $(MAN1_DE) $(DESTDIR)$(mandir)/de/man1/$(MAN1_TARGET)
 	targets="$(AUXBIN_TARGETS)"; for file in $$targets; \
 	do \
 		case $$file in \
@@ -250,7 +253,7 @@ install-po:
 	 (cd $$subdir && $(MAKE) install); \
 	done
 
-all-scripts:
+all-scripts: funcname.tab
 	for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir && $(MAKE) $(MAKE_ARGS)); \
@@ -280,6 +283,7 @@ uninstall:
 	-$(RM) -f $(HELP_DIR)/$(HELP_TARGET)
 	-$(RM) -f $(mandir)/man1/$(MAN1_TARGET)
 	-$(RM) -f $(mandir)/ja/man1/$(MAN1_TARGET)
+	-$(RM) -f $(mandir)/de/man1/$(MAN1_TARGET)
 	-for dir in $(SCRIPTSUBDIRS);	\
 	do	\
 		(cd $$dir && $(MAKE) $(MAKE_ARGS) uninstall); \
@@ -288,7 +292,7 @@ uninstall:
 clean: sweep
 	-$(RM) -f *.o *.a $(TARGETS) mktable$(EXT)
 	-$(RM) -f funcname.tab
-	-$(RM) -f funcname.c funcname1.h funcname2.h tagtable.c functable.c
+	-$(RM) -f entity.h funcname.c funcname1.h funcname2.h tagtable.c functable.c
 	-for dir in w3mimg libwc; \
 	do \
 		(cd $$dir && $(MAKE) clean RM="$(RM)"); \
@@ -318,7 +322,7 @@ depend:
 	makedepend $(CFLAGS) *.c
 
 dist:
-	cd ..; tar cvfz w3m-$(VERSION).tar.gz w3m
+	git archive --format=tar --prefix=w3m-$(VERSION)/ HEAD | xz -9 > ../w3m-$(VERSION).tar.xz
 
 bindist:
 	cd ..; tar cvfz w3m-$(VERSION)-$(MODEL).tar.gz w3m/w3m* w3m/doc* w3m/Bonus* w3m/README w3m/scripts 

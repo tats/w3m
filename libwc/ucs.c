@@ -100,6 +100,7 @@ wc_ucs_to_any(wc_uint32 ucs, wc_table *t)
 	    return t->conv(t->ccs, map->code2);
     }
     cc.ccs = WC_CCS_UNKNOWN;
+    cc.code = 0;
     return cc;
 }
 
@@ -108,6 +109,7 @@ wc_any_to_ucs(wc_wchar_t cc)
 {
     int f;
     wc_uint16 *map = NULL;
+    wc_uint32 map_size = 0x80;
     wc_map *map2;
 
     f = WC_CCS_INDEX(cc.ccs);
@@ -138,6 +140,7 @@ wc_any_to_ucs(wc_wchar_t cc)
 	if (f < WC_F_ISO_BASE || f > WC_F_CS94W_END)
 	    return 0;
 	map = cs94w_ucs_map[f - WC_F_ISO_BASE];
+	map_size = cs94w_ucs_map_size[f - WC_F_ISO_BASE];
 	cc.code = WC_CS94W_N(cc.code);
 	break;
     case WC_CCS_A_CS96:
@@ -150,6 +153,7 @@ wc_any_to_ucs(wc_wchar_t cc)
 	if (f < WC_F_ISO_BASE || f > WC_F_CS96W_END)
 	    return WC_C_UCS4_ERROR;
 	map = cs96w_ucs_map[f - WC_F_ISO_BASE];
+	map_size = cs96w_ucs_map_size[f - WC_F_ISO_BASE];
 	cc.code = WC_CS96W_N(cc.code);
 	break;
     case WC_CCS_A_CS942:
@@ -174,12 +178,14 @@ wc_any_to_ucs(wc_wchar_t cc)
 	    return WC_C_UCS2_EURO;
 	}
 	map = pcs_ucs_map[f - WC_F_PCS_BASE];
+	map_size = pcs_ucs_map_size[f - WC_F_PCS_BASE];
 	cc.code &= 0x7f;
 	break;
     case WC_CCS_A_PCSW:
 	if (f < WC_F_PCS_BASE || f > WC_F_PCSW_END)
 	    return WC_C_UCS4_ERROR;
 	map = pcsw_ucs_map[f - WC_F_PCS_BASE];
+	map_size = pcsw_ucs_map_size[f - WC_F_PCS_BASE];
 	switch (cc.ccs) {
 	case WC_CCS_BIG5:
 	    cc.code = WC_BIG5_N(cc.code);
@@ -270,6 +276,8 @@ wc_any_to_ucs(wc_wchar_t cc)
 	return WC_C_UCS4_ERROR;
     }
     if (map == NULL)
+	return WC_C_UCS4_ERROR;
+    if (map_size == 0 || cc.code > map_size - 1)
 	return WC_C_UCS4_ERROR;
     cc.code = map[cc.code];
     return cc.code ? cc.code : WC_C_UCS4_ERROR;

@@ -1,24 +1,24 @@
 
-w3m �Υ����Х���ɤˤĤ���
-                                                   (1999/06/30)  ���� ��§
+w3m のキーバインドについて
+                                                   (1999/06/30)  坂本 浩則
                                                    hsaka@mth.biglobe.ne.jp
 
-  ~/.w3m/keymap �˥����Х���ɤ�����Ǥ��ޤ���
-  ������ˡ�ϡ�
+  ~/.w3m/keymap にキーバインドを定義できます。
+  指定方法は、
 
-    keymap  ����  ���ޥ��  [����]
+    keymap  キー  コマンド  [引数]
 
-  �Ǥ���
-  ��� keymap.default �� keymap.lynx �򸫤Ƥ���������
-  ����Ǥ��륳�ޥ�ɤ� README.func �򸫤Ƥ���������
+  です。
+  例は keymap.default や keymap.lynx を見てください。
+  設定できるコマンドは README.func を見てください。
 
-  ʣ��ʸ������ʤ륨�������ץ������󥹤ϡ�
-    Escape ʸ��
-    Escape [ ʸ��, Escape O ʸ��
-    Escape [ ���� ~, EScape [ ���� ���� ~
-  �Τ������ǽ�Ǥ���
+  複数文字からなるエスケープシーケンスは、
+    Escape 文字
+    Escape [ 文字, Escape O 文字
+    Escape [ 数字 ~, EScape [ 数字 数字 ~
+  のみ設定可能です。
 
-  �ü�ʸ���ϡ�
+  特殊文字は、
 
     Ctrl     : C-, ^
     Escape   : ESC-, M-, \e, ^[
@@ -35,8 +35,8 @@ w3m �Υ����Х���ɤˤĤ���
     Left     : LEFT, ^[[D
     ^        : \^
 
-  �Ȥ���ɽ�����Ȥ��Ǥ��ޤ���
-  �ޤ���ü���ˤ�äƤϡ�
+  として表すことができます。
+  また、端末によっては、
  
     Insert  : ^[[2~
     PageUp  : ^[[5~
@@ -53,6 +53,6 @@ w3m �Υ����Х���ɤˤĤ���
     F10     : ^[[21~
     Help    : ^[[28~
 
-  �ʤɤ���Ѳ�ǽ���⤷��ޤ���
-  (�ƥ����Υ����ɤ� Ctrl-V + ���� �ǳ�ǧ�Ǥ��ޤ���)
+  なども使用可能かもしれません。
+  (各キーのコードは Ctrl-V + キー で確認できます。)
 

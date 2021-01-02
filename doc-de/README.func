@@ -1,0 +1,150 @@
+ABORT		Sofort beenden
+ACCESSKEY	Öffne Zugangstasten-Menü
+ADD_BOOKMARK	Lege für aktuelle Seite Lesezeichen an
+ALARM		Alarm einrichten
+BACK		Schließe aktuellen Puffer und kehre zu dem im Stapel darunterliegenden zurück
+BEGIN		Gehe zur ersten Zeile
+BOOKMARK	Lesezeichen ansehen
+CENTER_H	Um Cursor herum horizontal zentrieren
+CENTER_V	Um Cursor herum vertikal zentrieren
+CHARSET 	Ändere die Zeichenkodierung für das aktuelle Dokument
+CLOSE_TAB	Schließe Reiter
+CLOSE_TAB_MOUSE Schließe Reiter bei Mauszeiger
+COMMAND 	Rufe w3m Funktion(en) auf
+COOKIE		Cookie-Liste ansehen
+CURSOR_TOP	Cursor auf die höchste Zeile bewegen
+CURSOR_MIDDLE	Cursor auf die mittlere Zeile bewegen
+CURSOR_BOTTOM	Cursor auf die unterste Zeile bewegen
+DEFAULT_CHARSET Ändere die Voreinstellung für die Zeichenkodierung
+DEFINE_KEY	Definiere eine Verbindung zwischen einer Tastenkombination und einem Kommando
+DELETE_PREVBUF	Lösche vorherigen Puffer (hauptsächlich für lokale CGI-Skripte)
+DICT_WORD	Führe eine Wörterbuch-Funktion aus (siehe README.dict)
+DICT_WORD_AT	Benutze Wörterbuch für Wort unter Cursor
+DISPLAY_IMAGE	Starte das Laden und die Erstellung von Bildern erneut
+DOWN		Scrolle den Anzeigebereich eine Zeile abwärts
+DOWNLOAD	Dokument-Quellcode speichern
+DOWNLOAD_LIST	Die Übersicht heruntergeladener Dateien zeigen
+EDIT		Bearbeite lokales Quelldokument
+EDIT_SCREEN	Bearbeite eine Kopie des verarbeiteten Dokuments
+END		Gehe zur letzten Zeile
+EXEC_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
+EXIT		Sofort beenden
+EXTERN		Verwende externen Browser zur Anzeige
+EXTERN_LINK	Verwende externen Browser zur Anzeige des Linkziels
+FRAME		Wechsle zwischen Kennung und Umsetzung von HTML-Frames
+GOTO		Öffne angegebenes Dokument in neuem Puffer
+GOTO_HOME	Zurück zur Startseite (die Variablen HTTP_HOME oder WWW_HOME spezifiziert wurden)
+GOTO_LINE	Gehe zur angebenen Zeile
+GOTO_LINK	Folge dem aktuellen Hyperlink in neuem Puffer
+GOTO_RELATIVE	Gehe zu relativer Adresse
+HELP		Zeige Hilfe-Übersicht
+HISTORY 	Chronik aufgesuchter Dokumente
+INFO		Zeige Informationen über dieses Dokument
+INTERRUPT	w3m zum Hintergrundprozess machen
+ISEARCH 	Inkrementelle Suche vorwärts
+ISEARCH_BACK	Inkrementelle Suche rückwärts
+LEFT		Anzeigebereich um eine Spalte nach links verschieben
+LINE_BEGIN	Gehe zum Zeilenanfang
+LINE_END	Gehe zum Zeilenende
+LINE_INFO	Zeige aktuelle Position im Dokument an
+LINK_BEGIN	Gehe zum ersten Hyperlink
+LINK_END	Gehe zum letzten Hyperlink
+LINK_MENU	Öffne Menü mit den Link-Elementen
+LIST		Zeige alle referenzierten URLs
+LIST_MENU	Öffne Menü mit aufsuchbaren Hyperlinks
+LOAD		Öffne lokale Datei in einem neuen Puffer
+MAIN_MENU	Öffne Menü
+MARK		Setze/Lösche Markierung
+MARK_MID	Wandle Nachrichten-ID-artige Zeichenketten um in Hyperlinks
+MARK_URL	Wandle URL-artige Zeichenketten um in Hyperlinks
+MARK_WORD	Wandle aktuelles Wort in Hyperlink um
+MENU		Öffne Menü
+MENU_MOUSE	Öffne Menü beim Mauszeiger
+MOUSE_TOGGLE	Schalte Mausbedienung an oder ab
+MOVE_DOWN	Cursor abwärts
+MOVE_DOWN1	Cursor abwärts; am Rand gleitend bewegen
+MOVE_LEFT	Cursor nach links
+MOVE_LEFT1	Cursor nach links; am Rand gleitend bewegen
+MOVE_LIST_MENU	Öffne Menü mit vorhandenen Hyperlinks
+MOVE_MOUSE	Cursor auf Mauszeigerposition setzen
+MOVE_RIGHT	Cursor nach rechts
+MOVE_RIGHT1	Cursor nach rechts; am Rand gleitend bewegen
+MOVE_UP		Cursor aufwärts
+MOVE_UP1	Cursor aufwärts; am Rand gleitend bewegen
+MSGS		Zeige Fehlermeldungen an
+NEW_TAB 	Öffne neuen Reiter (mit aktuellem Dokument)
+NEXT		Schalte zum nächsten Puffer
+NEXT_DOWN	Gehe abwärts zum nächsten Hyperlink
+NEXT_HALF_PAGE	Scrolle eine halbe Seite abwärts
+NEXT_LEFT	Gehe zum nächsten Hyperlink links
+NEXT_LEFT_UP	Gehe zum nächsten Hyperlink links oder oberhalb
+NEXT_LINK	Gehe zum nächsten Hyperlink
+NEXT_MARK	Gehe zur nächsten Markierung
+NEXT_PAGE	Eine Seite abwärts
+NEXT_RIGHT	Gehe zum nächsten Hyperlink rechts
+NEXT_RIGHT_DOWN	Gehe zum nächsten Hyperlink rechts oder unterhalb
+NEXT_TAB	Schalte zum nächsten Reiter
+NEXT_UP		Gehe zum nächsten Hyperlink oberhalb
+NEXT_VISITED	Gehe zum nächsten besuchten Hyperlink
+NEXT_WORD	Gehe zum nächsten Wort
+NOTHING 	Tue nichts
+NULL		Tue nichts
+OPTIONS 	Zeige Einstellungen für Änderungen
+PEEK		Zeige aktuelle Adresse an
+PEEK_IMG	Zeige Adresse des Bildes
+PEEK_LINK	Zeige Zieladresse
+PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Befehl zu und zeige Ausgabe an
+PIPE_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
+PREV		Schalte zum vorherigen Puffer
+PREV_HALF_PAGE	Scrolle eine halbe Seite aufwärts
+PREV_LINK	Gehe zum vorangegangen Hyperlink
+PREV_MARK	Gehe zur vorherigen Markierung
+PREV_PAGE	Eine Seite aufwärts
+PREV_TAB	Schalte zum vorherigen Reiter
+PREV_VISITED	Gehe zum vorherigen besuchten Hyperlink
+PREV_WORD	Gehe zum vorherigen Wort
+PRINT		Speichere verarbeitetes Dokument
+QUIT		Mit Bestätigungsfrage beenden
+READ_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
+REDO		Den letzten Rücknahmebefehl zurücknehmen
+REDRAW		Bildschirmanzeige neu aufbauen
+REG_MARK	Zu einem Muster passenden Zeichenfolgen überall markieren
+REINIT		Konfigurationsdatei erneut laden
+RELOAD		Aktuelles Dokument erneut laden
+RESHAPE 	Dokument nochmals verarbeiten
+RIGHT		Anzeigebereich um eine Spalte nach rechts verschieben
+SAVE		Dokument-Quellcode speichern
+SAVE_IMAGE	Speichere Bild
+SAVE_LINK	Speichere Ziel des Hyperlinks
+SAVE_SCREEN	Speichere verarbeitetes Dokument
+SEARCH		Suche vorwärts
+SEARCH_BACK	Suche rückwärts
+SEARCH_FORE	Suche vorwärts
+SEARCH_NEXT	Setze Suche vorwärts fort
+SEARCH_PREV	Setze Suche rückwärts fort
+SELECT		Zeige Puffferstapel-Übersicht
+SELECT_MENU	Öffne Puffferstapel-Menü
+SETENV		Setze Umgebungsvariable
+SET_OPTION	Setze Option
+SHELL		Führe Shell-Befehl aus und zeige Ausgabe an
+SHIFT_LEFT	Anzeigebereich nach links versetzen
+SHIFT_RIGHT	Anzeigebereich nach rechts versetzen
+SOURCE		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
+STOP_IMAGE	Bilder nicht mehr laden und anzeigen
+SUBMIT		Formular übermitteln
+SUSPEND 	w3m zum Hintergrundprozess machen
+TAB_GOTO	Öffne das angegebene Dokument in einem neuen Reiter
+TAB_GOTO_RELATIVE	Öffne relative Adresse in einem neuen Reiter
+TAB_LEFT	Einen Reiter weiter nach links gehen
+TAB_LINK	Folge dem aktuellen Hyperlink in einem neuen Reiter
+TAB_MENU	Öffne das Reiter-Auswahl-Menü
+TAB_MOUSE	Wähle per Maus Reiter aus
+TAB_RIGHT	Einen Reiter weiter nach rechts gehen
+UNDO		Nimm die letzte Cursorbewegung zurück
+UP		Scrolle den Anzeigebereich eine Zeile aufwärts
+VERSION		Zeige die Version von w3m an
+VIEW		Wechsle zwischen HTML-Wiedergabe und -Verarbeitung
+VIEW_BOOKMARK	Lesezeichen ansehen
+VIEW_IMAGE	Zeige Bild in Betrachter
+WHEREIS 	Suche vorwärts
+WRAP_TOGGLE	Wechsle zwischen umlaufendem und nicht-umlaufendem Suchen

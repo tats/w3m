@@ -63,7 +63,7 @@ editor sensible-editor
 mailto_options 1
 mailer xdg-open mailto:%s
 extbrowser sensible-browser
-extbrowser2 
+extbrowser2 xdg-open %s &
 extbrowser3 chromium %s &
 extbrowser4 epiphany %s &
 extbrowser5 konqueror %s &

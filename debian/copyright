@@ -39,7 +39,7 @@ License: copyleft-matrix-c
  LUfactor, LUsolve, Usolve and Lsolve, are based on the functions in
  Meschach Library Version 1.2b.
  .
-                              Meschach Library
+                           Meschach Library
  .
  This Meschach Library is provided "as is" without any express 
  or implied warranty of any kind with respect to this software. 
@@ -298,7 +298,7 @@ License: permissive-aclocal
  modifications, as long as this notice is preserved.
 
 Files: configure
-Copyright: 1992-2010, Free Software Foundation, Inc.
+Copyright: 1992-2012, Free Software Foundation, Inc.
 License: permissive-configure
  This configure script is free software; the Free Software Foundation
  gives unlimited permission to copy, distribute and modify it.
@@ -314,7 +314,8 @@ License: permissive-po
  General Public License and is *not* in the public domain.
 
 Files: po/*.po*
-Copyright: 2003-2015, THE w3m'S COPYRIGHT HOLDER
+Copyright: 2003-2020, THE w3m'S COPYRIGHT HOLDER
+           2014-2020, w3m contributors
 License: w3m
 
 Files: alloc.h
@@ -322,16 +323,16 @@ Copyright: 2015, Scarlett
 License: public-domain
  by Scarlett. public domain.
 
-Files: debian/*
-Copyright: 2008-2020, Tatsuya Kinoshita <tats@debian.org>
-           1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
-License: permissive-debian
- There is no restriction, so this package may be distributed under
- the same conditions as the upstream.
-
-Files: debian/gitlog2changelog
+Files: gitlog2changelog
 Copyright: 2013, Tatsuya Kinoshita
 License: permissive-gitlog2changelog
  Redistribution and use in source and binary forms, with or without
  modification, are permitted without restriction, with NO WARRANTY.
  You may regard this as a work that is placed in the public domain.
+
+Files: debian/*
+Copyright: 2008-2021, Tatsuya Kinoshita <tats@debian.org>
+           1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
+License: permissive-debian
+ There is no restriction, so this package may be distributed under
+ the same conditions as the upstream.

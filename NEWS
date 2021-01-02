@@ -1,3 +1,24 @@
+Debian's w3m 0.5.3+git20210102
+
+* new features
+ - support links containing divs for HTML5
+ - rudimentary support for HTML5 tags: figure, figcaption, and section
+ - enhance the behaviour of the q tag when m17n and Unicode are configured
+ - support for file://hostname/... URLs
+ - new commands CURSOR_TOP, CURSOR_MIDDLE, and CURSOR_BOTTOM
+ - new option space_autocomplete, disabled by default
+* bug fixes
+ - fix and improve broken Gopher support, enabled by default
+ - change the encoding of the Japanese document files to UTF-8
+ - use the default ciphers without SSL_CTX_set_cipher_list for OpenSSL 1.1
+ - fix compilation errors due to sys_errlist and longjmp
+ - define X_DISPLAY_MISSING when configure --without-x for Imlib2
+ - avoid the -l option of the man command for w3mman
+ - fix some source formatting in the manual
+ - show keyboard shortcuts in a consistent order in help
+ - fix traditional Chinese translation
+ - drop obsolete w3m-doc
+
 Debian's w3m 0.5.3+git20200502
 
 * bug fixes

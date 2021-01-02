@@ -43,7 +43,6 @@ build-arch: build-stamp
 build-stamp:
 	dh_testdir
 	cd $(builddir) && dh_update_autotools_config
-	test ! -f $(builddir)/entity.h || test -f $(builddir)/entity.h.debian-bak || cp $(builddir)/entity.h $(builddir)/entity.h.debian-bak
 	cd $(builddir) && LC_ALL=C CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
 	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
@@ -56,7 +55,6 @@ clean:
 	rm -f $(builddir)/po/*.gmo
 	rm -f $(builddir)/po/stamp-po
 	rm -f extract-stamp patch-stamp configure-stamp build-stamp install-stamp
-	test ! -f $(builddir)/entity.h.debian-bak || mv -f $(builddir)/entity.h.debian-bak $(builddir)/entity.h
 	dh_clean
 
 install: install-stamp

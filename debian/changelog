@@ -1,3 +1,9 @@
+w3m (0.5.3+git20210102-2) unstable; urgency=medium
+
+  * New patch 010_section.patch to disable <section> behaves as <hr>
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Mon, 18 Jan 2021 22:42:27 +0900
+
 w3m (0.5.3+git20210102-1) unstable; urgency=medium
 
   [ Debian Janitor ]

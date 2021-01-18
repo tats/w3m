@@ -1,3 +1,11 @@
+2021-01-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Disable <section> behaves as <hr>.
+	Because displaying horizontal rules are redundantly and unneeded,
+	especially when sections are nested.
+
+	* Makefile.in: Use xz with -9e for the dist target.
+
 2021-01-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Indentation fix.

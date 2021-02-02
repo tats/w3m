@@ -1175,7 +1175,11 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     Str s = Strdup(uname);
     Strcat_char(s, ':');
     Strcat(s, pw);
-    return Strnew_m_charp("Basic ", base64_encode(s->ptr, s->length), NULL);
+    char *base64 = base64_encode(s->ptr, s->length);
+    if (!base64)
+	return Strnew_charp("Basic ");
+    else
+	return Strnew_m_charp("Basic ", base64, NULL);
 }
 
 #ifdef USE_DIGEST_AUTH

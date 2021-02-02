@@ -2008,7 +2008,7 @@ void (*mySignal(int signal_number, void (*action) (int))) (int) {
 static char Base64Table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-const char *
+char *
 base64_encode(const unsigned char *src, int len)
 {
     unsigned char *w, *at;
@@ -2021,9 +2021,9 @@ base64_encode(const unsigned char *src, int len)
     k = k / 3 * 4;
 
     if (k < len)
-	return "";
+	return NULL;
 
-    w = GC_MALLOC_ATOMIC(k);
+    w = GC_MALLOC_ATOMIC(k + 1);
     w[k] = 0;
 
     at = w;
@@ -2061,5 +2061,5 @@ base64_encode(const unsigned char *src, int len)
 	    *at++ = '=';
 	}
     }
-    return w;
+    return (char *)w;
 }

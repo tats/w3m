@@ -312,6 +312,10 @@ extern int REV_LB[];
 #define EOL(l) (&(l)->ptr[(l)->length])
 #define IS_EOL(p,l) ((p)==&(l)->ptr[(l)->length])
 
+#define INLINE_IMG_NONE		0
+#define INLINE_IMG_OSC5379	1
+#define INLINE_IMG_SIXEL	2
+
 /* 
  * Types.
  */

@@ -86,6 +86,7 @@ static int OptionEncode = FALSE;
 #define CMT_IMAGE_SCALE  N_("Scale of image (%)")
 #define CMT_IMGDISPLAY   N_("External command to display image")
 #define CMT_IMAGE_MAP_LIST N_("Use link list of image map")
+#define CMT_INLINE_IMG_PROTOCOL N_("Inline image protocol")
 #endif
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
@@ -363,6 +364,15 @@ static struct sel_c graphic_char_str[] = {
     {0, NULL, NULL}
 };
 
+#ifdef USE_IMAGE
+static struct sel_c inlineimgstr[] = {
+    {N_S(INLINE_IMG_NONE), N_("none")},
+    {N_S(INLINE_IMG_OSC5379), N_("mlterm osc 5379")},
+    {N_S(INLINE_IMG_SIXEL), N_("sixel")},
+    {0, NULL, NULL}
+};
+#endif				/* USE_IMAGE */
+
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
@@ -428,6 +438,8 @@ struct param_ptr params1[] = {
      NULL},
     {"image_map_list", P_INT, PI_ONOFF, (void *)&image_map_list,
      CMT_IMAGE_MAP_LIST, NULL},
+    {"inline_img_protocol", P_INT, PI_SEL_C, (void *)&enable_inline_image,
+     CMT_INLINE_IMG_PROTOCOL, (void *)inlineimgstr},
 #endif
     {"fold_line", P_INT, PI_ONOFF, (void *)&FoldLine, CMT_FOLD_LINE, NULL},
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
@@ -1223,7 +1235,7 @@ sync_with_option(void)
     init_migemo();
 #endif
 #ifdef USE_IMAGE
-    if (fmInitialized && displayImage)
+    if (fmInitialized && (displayImage || enable_inline_image))
 	initImage();
 #else
     displayImage = FALSE;	/* XXX */

@@ -469,7 +469,7 @@ writestr(char *s)
 
 #ifdef USE_IMAGE
 void
-put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)
+put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh)
 {
     Str buf;
     char *size ;
@@ -481,6 +481,37 @@ put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 
     MOVE(y,x);
     buf = Sprintf("\x1b]5379;show_picture %s %s %dx%d+%d+%d\x07",url,size,sw,sh,sx,sy);
+    writestr(buf->ptr);
+    MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+
+void
+put_image_iterm2(char *url, int x, int y, int w, int h)
+{
+    Str buf, filecontent;
+    const char *base64;
+    FILE *fp;
+
+    fp = fopen(url, "r");
+    if (!fp)
+	return;
+    filecontent = Strfgetall(fp);
+
+    base64 = base64_encode(filecontent->ptr, filecontent->length);
+    if (!base64)
+	return;
+
+    MOVE(y,x);
+    buf = Sprintf("\x1b]1337;"
+      "File="
+      "name=%s;"
+      "size=%d;"
+      "width=%d;"
+      "height=%d;"
+      "preserveAspectRatio=0;"
+      "inline=1"
+      ":%s\a", url, filecontent->length, w, h, base64);
     writestr(buf->ptr);
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }

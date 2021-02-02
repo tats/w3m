@@ -195,8 +195,9 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
-void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
 void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_iterm2(char *url, int x, int y, int w, int h);
 
 void
 drawImage()
@@ -214,19 +215,6 @@ drawImage()
 	i = &terminal_image[j];
 
 	if (enable_inline_image) {
-#if 0
-	    if(stat(i->cache->file, &st)) {
-	      fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		  ((enable_inline_image == 2 || getenv("WINDOWID")) &&
-		   i->cache->touch) ? i->cache->file : i->cache->url,
-		  i->x, i->y,
-		  i->cache->width > 0 ? i->cache->width : 0,
-		  i->cache->height > 0 ? i->cache->height : 0,
-		  i->sx, i->sy, i->width, i->height,
-		  pixel_per_char_i, pixel_per_line_i);
-	    }
-#endif
-
 	    /*
 	     * So this shouldn't ever happen, but if it does then at least let's
 	     * not have external programs fetch images from the Internet...
@@ -254,10 +242,20 @@ drawImage()
 	    int sh = (i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) /
 		      pixel_per_line_i;
 
+#if 0
+	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
+		i->cache->file,
+		x, y, w, h, sx, sy, sw, sh,
+		pixel_per_char_i, pixel_per_line_i);
+#endif
+
+
 	    if (enable_inline_image == INLINE_IMG_SIXEL) {
 		put_image_sixel(url, x, y, w, h, sx, sy, sw, sh, n_terminal_image);
-	    } else {
-		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh, n_terminal_image);
+	    } else if (enable_inline_image == INLINE_IMG_OSC5379) {
+		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh);
+	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {
+		put_image_iterm2(url, x, y, sw, sh);
 	    }
 
 	    continue ;
@@ -481,8 +479,7 @@ loadImage(Buffer *buf, int flag)
 	     */
 	    cache->pid = 0;
 	}
-	/*TODO I'm pretty sure this can be accessed again when the buffer isn't
-	 * discarded. not sure though
+	/*TODO make sure removing this didn't break anything
 	unlink(cache->touch);
 	*/
 	image_cache[i] = NULL;
@@ -557,11 +554,10 @@ loadImage(Buffer *buf, int flag)
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
-	    /* TODO this apparently messes up stuff but why? */
-#if 0
+	    /* TODO make sure removing this didn't break anything
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
 		unlink(cache->file);
-#endif
+	    */
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 #else

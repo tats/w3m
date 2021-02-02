@@ -2004,3 +2004,62 @@ void (*mySignal(int signal_number, void (*action) (int))) (int) {
     return (signal(signal_number, action));
 #endif
 }
+
+static char Base64Table[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+const char *
+base64_encode(const unsigned char *src, int len)
+{
+    unsigned char *w, *at;
+    const unsigned char *in, *endw;
+    int j, k;
+
+    k = len;
+    if (k % 3)
+      k += 3 - (k % 3);
+    k = k / 3 * 4;
+
+    if (k < len)
+	return "";
+
+    w = GC_MALLOC_ATOMIC(k);
+    w[k] = 0;
+
+    at = w;
+    in = src;
+
+    endw = src + len - 2;
+
+    while (in < endw) {
+	j = *in++;
+	j = j << 8 | *in++;
+	j = j << 8 | *in++;
+
+	*at++ = Base64Table[(j >> 18) & 0x3f];
+	*at++ = Base64Table[(j >> 12) & 0x3f];
+	*at++ = Base64Table[(j >> 6) & 0x3f];
+	*at++ = Base64Table[j & 0x3f];
+    }
+
+    if (in - src - len) {
+	if (in - src - len == 1) {
+	    j = *in++;
+	    j = j << 8;
+	    j = j << 8;
+	    *at++ = Base64Table[(j >> 18) & 0x3f];
+	    *at++ = Base64Table[(j >> 12) & 0x3f];
+	    *at++ = '=';
+	    *at++ = '=';
+	} else {
+	    j = *in++;
+	    j = j << 8 | *in++;
+	    j = j << 8;
+	    *at++ = Base64Table[(j >> 18) & 0x3f];
+	    *at++ = Base64Table[(j >> 12) & 0x3f];
+	    *at++ = Base64Table[(j >> 6) & 0x3f];
+	    *at++ = '=';
+	}
+    }
+    return w;
+}

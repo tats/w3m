@@ -369,6 +369,7 @@ static struct sel_c inlineimgstr[] = {
     {N_S(INLINE_IMG_NONE), N_("none")},
     {N_S(INLINE_IMG_OSC5379), N_("mlterm")},
     {N_S(INLINE_IMG_SIXEL), N_("sixel")},
+    {N_S(INLINE_IMG_ITERM2), N_("iterm2")},
     {0, NULL, NULL}
 };
 #endif				/* USE_IMAGE */

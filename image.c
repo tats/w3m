@@ -214,20 +214,27 @@ drawImage()
 	i = &terminal_image[j];
 
 	if (enable_inline_image) {
-	#if 0
-	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		((enable_inline_image == 2 || getenv("WINDOWID")) &&
-		 i->cache->touch) ? i->cache->file : i->cache->url,
-		i->x, i->y,
-		i->cache->width > 0 ? i->cache->width : 0,
-		i->cache->height > 0 ? i->cache->height : 0,
-		i->sx, i->sy, i->width, i->height,
-		pixel_per_char_i, pixel_per_line_i);
-	#endif
-	    char *url = ((enable_inline_image == INLINE_IMG_SIXEL || getenv("WINDOWID")) &&
-		 /* XXX I don't know why but sometimes i->cache->file doesn't exist. */
-		 i->cache->touch && stat(i->cache->file,&st) == 0) ?
-		 /* local */ i->cache->file : /* remote */ i->cache->url;
+#if 0
+	    if(stat(i->cache->file, &st)) {
+	      fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
+		  ((enable_inline_image == 2 || getenv("WINDOWID")) &&
+		   i->cache->touch) ? i->cache->file : i->cache->url,
+		  i->x, i->y,
+		  i->cache->width > 0 ? i->cache->width : 0,
+		  i->cache->height > 0 ? i->cache->height : 0,
+		  i->sx, i->sy, i->width, i->height,
+		  pixel_per_char_i, pixel_per_line_i);
+	    }
+#endif
+
+	    /*
+	     * So this shouldn't ever happen, but if it does then at least let's
+	     * not have external programs fetch images from the Internet...
+	     */
+	    if (!i->cache->touch || stat(i->cache->file,&st))
+	      return;
+
+	    char *url = i->cache->file;
 
 	    int x = i->x / pixel_per_char_i;
 	    int y = i->y / pixel_per_line_i;
@@ -474,7 +481,10 @@ loadImage(Buffer *buf, int flag)
 	     */
 	    cache->pid = 0;
 	}
+	/*TODO I'm pretty sure this can be accessed again when the buffer isn't
+	 * discarded. not sure though
 	unlink(cache->touch);
+	*/
 	image_cache[i] = NULL;
     }
 
@@ -547,8 +557,11 @@ loadImage(Buffer *buf, int flag)
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
+	    /* TODO this apparently messes up stuff but why? */
+#if 0
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
 		unlink(cache->file);
+#endif
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 #else

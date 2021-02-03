@@ -2009,18 +2009,19 @@ static char Base64Table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 char *
-base64_encode(const unsigned char *src, int len)
+base64_encode(const unsigned char *src, size_t len)
 {
     unsigned char *w, *at;
     const unsigned char *in, *endw;
-    int j, k;
+    int j;
+    size_t k;
 
     k = len;
     if (k % 3)
       k += 3 - (k % 3);
     k = k / 3 * 4;
 
-    if (k < len)
+    if (k + 1 < len)
 	return NULL;
 
     w = GC_MALLOC_ATOMIC(k + 1);

@@ -1,3 +1,32 @@
+2021-02-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* rc.c: Update option setting strings for inline image display method.
+
+2021-02-06  bptato  <nincsnevem662@gmail.com>
+
+	Improved inline image protocol support
+	Origin: https://github.com/tats/w3m/pull/161
+
+	* rc.c: Clarify inline image setting's wording.
+
+	* etc.c: Use GC_MALLOC_ATOMIC_IGNORE_OFF_PAGE for allocating memory
+	for base64 encoding.
+
+	* etc.c, proto.h: base64_encode: fix input and output length types.
+
+	* etc.c, file.c, proto.h: Some cleanup for base64_encode.
+
+	* etc.c, file.c, fm.h, image.c, mimehead.c, proto.h, rc.c, terms.c:
+	Support iTerm2 graphics protocol, replace encodeB with base64_encode.
+
+	* image.c, rc.c: Avoid having external programs download images.
+
+	* fm.h, image.c, main.c, rc.c:
+	sixel and osc5379 image display protocols can be chosen in options.
+
 2021-01-18  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Disable <section> behaves as <hr>.

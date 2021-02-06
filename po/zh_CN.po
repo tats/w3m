@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-24 19:21+0900\n"
-"PO-Revision-Date: 2016-03-14 19:51+0900\n"
+"POT-Creation-Date: 2021-02-06 12:07+0900\n"
+"PO-Revision-Date: 2021-02-06 12:10+0900\n"
 "Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
 "Language-Team: AOSC zh_CN <aosc@members.fsf.org>\n"
 "Language: zh_CN\n"
@@ -198,399 +198,403 @@ msgstr "用于显示图像的外部命令"
 msgid "Use link list of image map"
 msgstr "使用图像映射的链接列表"
 
-#: rc.c:90
+#: rc.c:89
+msgid "Inline image display method"
+msgstr "内联图像协议"
+
+#: rc.c:91
 msgid "Display file names in multi-column format"
 msgstr "以多列格式显示文件名"
 
-#: rc.c:91
+#: rc.c:92
 msgid "Use ASCII equivalents to display entities"
 msgstr "使用对应的 ASCII 编码来显示实体 "
 
-#: rc.c:92
+#: rc.c:93
 msgid "Character type for border of table and menu"
 msgstr "表格和菜单边框的字符类型"
 
-#: rc.c:93
+#: rc.c:94
 msgid "Display table borders, ignore value of BORDER"
 msgstr "显示表格边框，忽略 BORDER 数值"
 
-#: rc.c:94
+#: rc.c:95
 msgid "Fold lines in TEXTAREA"
 msgstr "在文本区 (TEXTAREA) 中折叠行"
 
-#: rc.c:95
+#: rc.c:96
 msgid "Display INS, DEL, S and STRIKE element"
 msgstr "显示 INS, DEL, S 及 STRIKE 元素"
 
-#: rc.c:96
+#: rc.c:97
 msgid "Display with color"
 msgstr "使用带颜色的显示"
 
-#: rc.c:97
+#: rc.c:98
 msgid "Color of normal character"
 msgstr "一般文字颜色"
 
-#: rc.c:98
+#: rc.c:99
 msgid "Color of anchor"
 msgstr "链接文字颜色"
 
-#: rc.c:99
+#: rc.c:100
 msgid "Color of image link"
 msgstr "图片链接颜色"
 
-#: rc.c:100
+#: rc.c:101
 msgid "Color of form"
 msgstr "表格颜色"
 
-#: rc.c:101
+#: rc.c:102
 msgid "Enable coloring of active link"
 msgstr "为活动链接开启上色"
 
-#: rc.c:102
+#: rc.c:103
 msgid "Color of currently active link"
 msgstr "当前活动链接的颜色"
 
-#: rc.c:103
+#: rc.c:104
 msgid "Use visited link color"
 msgstr "为访问过的链接上色"
 
-#: rc.c:104
+#: rc.c:105
 msgid "Color of visited link"
 msgstr "已访问链接颜色"
 
-#: rc.c:105
+#: rc.c:106
 msgid "Color of background"
 msgstr "背景色"
 
-#: rc.c:106
+#: rc.c:107
 msgid "Color of mark"
 msgstr "标记颜色"
 
-#: rc.c:107
+#: rc.c:108
 msgid "Use proxy"
 msgstr "使用代理服务器"
 
-#: rc.c:108
+#: rc.c:109
 msgid "URL of HTTP proxy host"
 msgstr "HTTP 代理主机地址"
 
-#: rc.c:110
+#: rc.c:111
 msgid "URL of HTTPS proxy host"
 msgstr "HTTPS 代理主机地址"
 
-#: rc.c:113
+#: rc.c:114
 msgid "URL of GOPHER proxy host"
 msgstr "GOPHER 代理主机地址"
 
-#: rc.c:115
+#: rc.c:116
 msgid "URL of FTP proxy host"
 msgstr "FTP 代理主机地址"
 
-#: rc.c:116
+#: rc.c:117
 msgid "Domains to be accessed directly (no proxy)"
 msgstr "直接访问而不是用代理服务器访问的 URL"
 
-#: rc.c:117
+#: rc.c:118
 msgid "Check noproxy by network address"
 msgstr "根据网络地址检查 noproxy"
 
-#: rc.c:118
+#: rc.c:119
 msgid "Disable cache"
 msgstr "禁用缓存"
 
-#: rc.c:120
+#: rc.c:121
 msgid "News server"
 msgstr "新闻服务器"
 
-#: rc.c:121
+#: rc.c:122
 msgid "Mode of news server"
 msgstr "新闻服务器模式"
 
-#: rc.c:122
+#: rc.c:123
 msgid "Number of news messages"
 msgstr "新闻消息的数量"
 
-#: rc.c:124
+#: rc.c:125
 msgid "Order of name resolution"
 msgstr "名称解析顺序"
 
-#: rc.c:125
+#: rc.c:126
 msgid "Directory corresponding to / (document root)"
 msgstr "对应 / 的目录 (文档根目录)"
 
-#: rc.c:126
+#: rc.c:127
 msgid "Directory corresponding to /~user"
 msgstr "对应 /~user 的目录"
 
-#: rc.c:127
+#: rc.c:128
 msgid "Directory corresponding to /cgi-bin"
 msgstr "对应 /cgi-bin 的目录"
 
-#: rc.c:128
+#: rc.c:129
 msgid "Confirm when quitting with q"
 msgstr "使用 q 键退出时请求确认"
 
-#: rc.c:129
+#: rc.c:130
 msgid "Close tab if buffer is last when back"
 msgstr "在返回时缓冲区还是以前状态就关闭标签页"
 
-#: rc.c:131
+#: rc.c:132
 msgid "Enable mark operations"
 msgstr "启用标记操作"
 
-#: rc.c:133
+#: rc.c:134
 msgid "Enable Emacs-style line editing"
 msgstr "启用 Emacs 风格的行编辑"
 
-#: rc.c:134
-msgid "Space key triggers file completion while editing URLs"
-msgstr ""
-
 #: rc.c:135
+msgid "Space key triggers file completion while editing URLs"
+msgstr "空白键档名补齐功能"
+
+#: rc.c:136
 msgid "Enable vi-like numeric prefix"
 msgstr "启动 vi 式的数字跳转"
 
-#: rc.c:136
+#: rc.c:137
 msgid "Move cursor to top line when going to label"
 msgstr "当移动到标签时将光标移到最顶行"
 
-#: rc.c:137
+#: rc.c:138
 msgid "Move cursor to top line when moving to next page"
 msgstr "当转到下一页时将光标移到最顶行"
 
-#: rc.c:138
+#: rc.c:139
 msgid "Fold lines of plain text file"
 msgstr "对纯文本文件实行行折叠"
 
-#: rc.c:139
+#: rc.c:140
 msgid "Show line numbers"
 msgstr "显示行号"
 
-#: rc.c:140
+#: rc.c:141
 msgid "Show search string"
 msgstr "显示搜索字符串"
 
-#: rc.c:141
+#: rc.c:142
 msgid "List of mime.types files"
 msgstr "mime.type 文件列表"
 
-#: rc.c:142
+#: rc.c:143
 msgid "List of mailcap files"
 msgstr "mailcap 文件列表"
 
-#: rc.c:143
+#: rc.c:144
 msgid "List of urimethodmap files"
 msgstr "urlmethodmap 文件列表"
 
-#: rc.c:144
+#: rc.c:145
 msgid "Editor"
 msgstr "编辑器"
 
-#: rc.c:145
+#: rc.c:146
 msgid "Mailer"
 msgstr "发送者"
 
-#: rc.c:146
+#: rc.c:147
 msgid "How to call Mailer for mailto URLs with options"
 msgstr "启动 mailto 地址时调用电子邮件程序的方式和参数"
 
-#: rc.c:147
+#: rc.c:148
 msgid "External browser"
 msgstr "外部浏览器"
 
-#: rc.c:148
+#: rc.c:149
 msgid "2nd external browser"
 msgstr "第二外部浏览器"
 
-#: rc.c:149
+#: rc.c:150
 msgid "3rd external browser"
 msgstr "第三外部浏览器"
 
-#: rc.c:150
+#: rc.c:151
 msgid "4th external browser"
 msgstr "第四外部浏览器"
 
-#: rc.c:151
+#: rc.c:152
 msgid "5th external browser"
 msgstr "第五外部浏览器"
 
-#: rc.c:152
+#: rc.c:153
 msgid "6th external browser"
 msgstr "第六外部浏览器"
 
-#: rc.c:153
+#: rc.c:154
 msgid "7th external browser"
 msgstr "第七外部浏览器"
 
-#: rc.c:154
+#: rc.c:155
 msgid "8th external browser"
 msgstr "第八外部浏览器"
 
-#: rc.c:155
+#: rc.c:156
 msgid "9th external browser"
 msgstr "第九外部浏览器"
 
-#: rc.c:156
+#: rc.c:157
 msgid "Disable secret file security check"
 msgstr "关闭秘密文件安全检查"
 
-#: rc.c:157
+#: rc.c:158
 msgid "Password file"
 msgstr "密码文件"
 
-#: rc.c:158
+#: rc.c:159
 msgid "File for setting form on loading"
 msgstr "设置窗口加载时的文件"
 
-#: rc.c:159
+#: rc.c:160
 msgid "File for preferences for each site"
 msgstr "各个站点的首选项文件"
 
-#: rc.c:160
+#: rc.c:161
 msgid "Password for anonymous FTP (your mail address)"
 msgstr "匿名FTP密码（您的邮箱地址）"
 
-#: rc.c:161
+#: rc.c:162
 msgid "Generate domain part of password for FTP"
 msgstr "为 FTP 生成密码的域部分"
 
-#: rc.c:162
+#: rc.c:163
 msgid "User-Agent identification string"
 msgstr "User-Agent 串"
 
-#: rc.c:163
+#: rc.c:164
 msgid "Accept-Encoding header"
 msgstr "接受的编码 (Accept-Encoding) 报头"
 
-#: rc.c:164
+#: rc.c:165
 msgid "Accept header"
 msgstr "接受 (Accept) 报头"
 
-#: rc.c:165
+#: rc.c:166
 msgid "Accept-Language header"
 msgstr "接受的语言 (Accept-Language) 报头"
 
-#: rc.c:166
+#: rc.c:167
 msgid "Treat URL-like strings as links in all pages"
 msgstr "将所有页面中类似于 URL 的字符串当做链接"
 
-#: rc.c:167
+#: rc.c:168
 msgid "Wrap search"
 msgstr "包装搜索结果"
 
-#: rc.c:168
+#: rc.c:169
 msgid "Display unseen objects (e.g. bgimage tag)"
 msgstr "显示看不到的对象 （例如，bdimage标签）"
 
-#: rc.c:169
+#: rc.c:170
 msgid "Uncompress compressed data automatically when downloading"
 msgstr "在下载时自动解压被压缩的数据"
 
-#: rc.c:171
+#: rc.c:172
 msgid "Run external viewer in a separate session"
 msgstr "在另一个会话中运行外部查看器"
 
-#: rc.c:173
+#: rc.c:174
 msgid "Run external viewer in the background"
 msgstr "在后台运行外部查看器"
 
-#: rc.c:175
+#: rc.c:176
 msgid "Use external program for directory listing"
 msgstr "使用外部程序列出目录"
 
-#: rc.c:176
+#: rc.c:177
 msgid "URL of directory listing command"
 msgstr "目录列表命令的网址"
 
-#: rc.c:178
+#: rc.c:179
 msgid "Enable dictionary lookup through CGI"
 msgstr "启用基于 CGI 的词典查询"
 
-#: rc.c:179
+#: rc.c:180
 msgid "URL of dictionary lookup command"
 msgstr "字典查找命令的网址"
 
-#: rc.c:181
+#: rc.c:182
 msgid "Display link name for images lacking ALT"
 msgstr "对缺少 ALT 的图片显示链接名称"
 
-#: rc.c:182
+#: rc.c:183
 msgid "Index file for directories"
 msgstr "目录的索引文件"
 
-#: rc.c:183
+#: rc.c:184
 msgid "Prepend http:// to URL automatically"
 msgstr "自动在 URL 前加入 http://"
 
-#: rc.c:184
+#: rc.c:185
 msgid "Default value for open-URL command"
 msgstr "打开网址命令的默认值"
 
-#: rc.c:185
+#: rc.c:186
 msgid "Decode Content-Transfer-Encoding when saving"
 msgstr "保存时对内容传输编码信息 (Content-Transfer-Encoding) 进行解码"
 
-#: rc.c:186
+#: rc.c:187
 msgid "Preserve timestamp when saving"
 msgstr "在保存时保留时间戳"
 
-#: rc.c:188
+#: rc.c:189
 msgid "Enable mouse"
 msgstr "启用鼠标"
 
-#: rc.c:189
+#: rc.c:190
 msgid "Scroll in reverse direction of mouse drag"
 msgstr "向鼠标拖动的反方向滚动"
 
-#: rc.c:190
+#: rc.c:191
 msgid "Behavior of wheel scroll speed"
 msgstr "滚轮滚动速度行为"
 
-#: rc.c:191
+#: rc.c:192
 msgid "(A only)Scroll by # (%) of screen"
 msgstr "(仅 A) 每次滚动 # (%) 的屏幕高度"
 
-#: rc.c:192
+#: rc.c:193
 msgid "(B only)Scroll by # lines"
 msgstr "(仅 B) 每次滚动 # 行"
 
-#: rc.c:194
+#: rc.c:195
 msgid "Free memory of undisplayed buffers"
 msgstr "释放未显示缓存的存储"
 
-#: rc.c:195
+#: rc.c:196
 msgid "Suppress `Referer:' header"
 msgstr "禁止 'Referer:' 文件头"
 
-#: rc.c:196
+#: rc.c:197
 msgid "Search case-insensitively"
 msgstr "搜索不区分大小写"
 
-#: rc.c:197
+#: rc.c:198
 msgid "Use LESSOPEN"
 msgstr "使用 LESSOPEN"
 
-#: rc.c:200
+#: rc.c:201
 msgid "Perform SSL server verification"
 msgstr "进行 SSL 服务器检查"
 
-#: rc.c:201
+#: rc.c:202
 msgid "PEM encoded certificate file of client"
 msgstr "客户端的 PEM 编码证书文件"
 
-#: rc.c:202
+#: rc.c:203
 msgid "PEM encoded private key file of client"
 msgstr "客户端的 PEM 编码私钥文件"
 
-#: rc.c:203
+#: rc.c:204
 msgid "Path to directory for PEM encoded certificates of CAs"
 msgstr "PEM 编码 CA 证书目录的路径"
 
-#: rc.c:204
+#: rc.c:205
 msgid "File consisting of PEM encoded certificates of CAs"
 msgstr "包含 PEM 编码 CA 证书的文件"
 
-#: rc.c:206
+#: rc.c:207
 msgid ""
 "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, "
 "6: TLSv1.2, 7: TLSv1.3)"
@@ -598,319 +602,335 @@ msgstr ""
 "被禁止的 SSL 方式列表 (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: "
 "TLSv1.2, 7: TLSv1.3)"
 
-#: rc.c:209
+#: rc.c:210
 msgid "Enable cookie processing"
 msgstr "开启 Cookie 处理"
 
-#: rc.c:210
+#: rc.c:211
 msgid "Print a message when receiving a cookie"
 msgstr "在接收一个 Cookie 时显示一个消息"
 
-#: rc.c:211
+#: rc.c:212
 msgid "Accept cookies"
 msgstr "接受 Cookies"
 
-#: rc.c:212
+#: rc.c:213
 msgid "Action to be taken on invalid cookie"
 msgstr "对无效 Cookies 进行的操作"
 
-#: rc.c:213
+#: rc.c:214
 msgid "Domains to reject cookies from"
 msgstr "拒绝如下域的 Cookies"
 
-#: rc.c:214
+#: rc.c:215
 msgid "Domains to accept cookies from"
 msgstr "接受如下域的 Cookies"
 
-#: rc.c:215
+#: rc.c:216
 msgid "Domains to avoid [wrong number of dots]"
 msgstr "避免访问的域 [错误的点数]"
 
-#: rc.c:217
+#: rc.c:218
 msgid "Number of redirections to follow"
 msgstr "跟随的重定向数量"
 
-#: rc.c:218
+#: rc.c:219
 msgid "Enable processing of meta-refresh tag"
 msgstr "开启 meta-refresh 标签处理"
 
-#: rc.c:221
+#: rc.c:222
 msgid "Enable Migemo (Roma-ji search)"
 msgstr "开启 Migemo (罗马字搜索)"
 
-#: rc.c:222
+#: rc.c:223
 msgid "Migemo command"
 msgstr "Migemo 命令"
 
-#: rc.c:226
+#: rc.c:227
 msgid "Display charset"
 msgstr "显示字符集"
 
-#: rc.c:227
+#: rc.c:228
 msgid "Default document charset"
 msgstr "默认文档字符集"
 
-#: rc.c:228
+#: rc.c:229
 msgid "Automatic charset detect when loading"
 msgstr "在载入时进行自动字符集探测"
 
-#: rc.c:229
+#: rc.c:230
 msgid "System charset"
 msgstr "系统字符集"
 
-#: rc.c:230
+#: rc.c:231
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr "根据系统设置 (LC_CTYPE) 选定系统字符集"
 
-#: rc.c:231
+#: rc.c:232
 msgid "Output halfdump with display charset"
 msgstr "使用显示字符集输出 halfdump"
 
-#: rc.c:232
+#: rc.c:233
 msgid "Use multi column characters"
 msgstr "使用多列字符"
 
-#: rc.c:233
+#: rc.c:234
 msgid "Use combining characters"
 msgstr "使用合并字符"
 
-#: rc.c:234
+#: rc.c:235
 msgid "Use double width for some Unicode characters"
 msgstr "使 Unicode 字符使用双重宽度"
 
-#: rc.c:235
+#: rc.c:236
 msgid "Use Unicode language tags"
 msgstr "使用 Unicode 语言标签"
 
-#: rc.c:236
+#: rc.c:237
 msgid "Charset conversion using Unicode map"
 msgstr "使用 Unicode 映射进行字符集转换"
 
-#: rc.c:237
+#: rc.c:238
 msgid "Charset conversion when loading"
 msgstr "在载入时进行字符集转换"
 
-#: rc.c:238
+#: rc.c:239
 msgid "Adjust search string for document charset"
 msgstr "调整文档字符集的搜索字串"
 
-#: rc.c:239
+#: rc.c:240
 msgid "Fix character width when conversion"
 msgstr "在转换时固定字符宽度"
 
-#: rc.c:240
+#: rc.c:241
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr "使用 GB 12345 Unicode 映射而非 GB 2312"
 
-#: rc.c:241
+#: rc.c:242
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr "使用 JIS X 0201 罗马字母于 ISO-2022-JP"
 
-#: rc.c:242
+#: rc.c:243
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr "使用 JIS C 6226:1978 于 ISO-2022-JP"
 
-#: rc.c:243
+#: rc.c:244
 msgid "Use JIS X 0201 Katakana"
 msgstr "使用 JIS X 0201 片假名"
 
-#: rc.c:244
+#: rc.c:245
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr "使用 JIS X 0212:1990 (补充汉字)"
 
-#: rc.c:245
+#: rc.c:246
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr "使用 JIS X 0213:2000 (2000JIS)"
 
-#: rc.c:246
+#: rc.c:247
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr "严格 ISO-2022-JP/KR/CN"
 
-#: rc.c:247
+#: rc.c:248
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr "视 GB18030 编码的 4 字节字符为 Unicode"
 
-#: rc.c:248
+#: rc.c:249
 msgid "Simple Preserve space"
 msgstr "简单的保留空间"
 
-#: rc.c:251
+#: rc.c:252
 msgid "keymap file"
 msgstr "键盘映射文件"
 
-#: rc.c:268
+#: rc.c:269
 msgid "black"
 msgstr "黑色"
 
-#: rc.c:269
+#: rc.c:270
 msgid "red"
 msgstr "红色"
 
-#: rc.c:270
+#: rc.c:271
 msgid "green"
 msgstr "绿色"
 
-#: rc.c:271
+#: rc.c:272
 msgid "yellow"
 msgstr "黄色"
 
-#: rc.c:272
+#: rc.c:273
 msgid "blue"
 msgstr "蓝色"
 
-#: rc.c:273
+#: rc.c:274
 msgid "magenta"
 msgstr "品红"
 
-#: rc.c:274
+#: rc.c:275
 msgid "cyan"
 msgstr "青色"
 
-#: rc.c:275
+#: rc.c:276
 msgid "white"
 msgstr "白色"
 
-#: rc.c:276
+#: rc.c:277
 msgid "terminal"
 msgstr "终端"
 
-#: rc.c:295
+#: rc.c:296
 msgid "none"
 msgstr "无"
 
-#: rc.c:296
+#: rc.c:297
 msgid "current URL"
 msgstr "当前 URL"
 
-#: rc.c:297
+#: rc.c:298
 msgid "link URL"
 msgstr "链接 URL"
 
-#: rc.c:302
+#: rc.c:303
 msgid "simple"
 msgstr "简单"
 
-#: rc.c:303
+#: rc.c:304
 msgid "use tag"
 msgstr "使用标签"
 
-#: rc.c:304
+#: rc.c:305
 msgid "fontify"
-msgstr ""
+msgstr "格式化"
 
-#: rc.c:310
+#: rc.c:311
 msgid "A:relative to screen height"
 msgstr "A:相对于屏幕高度"
 
-#: rc.c:311
+#: rc.c:312
 msgid "B:fixed speed"
 msgstr "B:固定速度"
 
-#: rc.c:318
+#: rc.c:319
 msgid "unspecified"
 msgstr "未指定"
 
-#: rc.c:319
+#: rc.c:320
 msgid "inet inet6"
 msgstr ""
 
-#: rc.c:320
+#: rc.c:321
 msgid "inet6 inet"
 msgstr ""
 
-#: rc.c:321
+#: rc.c:322
 msgid "inet only"
 msgstr "仅 inet"
 
-#: rc.c:322
+#: rc.c:323
 msgid "inet6 only"
 msgstr "仅 inet6"
 
-#: rc.c:329
+#: rc.c:330
 msgid "discard"
 msgstr "丢弃"
 
-#: rc.c:331
+#: rc.c:332
 msgid "accept"
 msgstr "接受"
 
-#: rc.c:333
+#: rc.c:334
 msgid "ask"
 msgstr "询问"
 
-#: rc.c:340
+#: rc.c:341
 msgid "use internal mailer instead"
 msgstr "使用内建邮件发送器"
 
-#: rc.c:342
+#: rc.c:343
 msgid "ignore options and use only the address"
 msgstr "忽略选项而只使用地址"
 
-#: rc.c:343
+#: rc.c:344
 msgid "use full mailto URL"
 msgstr "使用整个 mailto URL"
 
-#: rc.c:352
+#: rc.c:353
 msgid "OFF"
 msgstr "关"
 
-#: rc.c:353
+#: rc.c:354
 msgid "Only ISO 2022"
 msgstr "仅 ISO 2022"
 
-#: rc.c:354
+#: rc.c:355
 msgid "ON"
 msgstr "开"
 
-#: rc.c:360
+#: rc.c:361
 msgid "ASCII"
 msgstr "ASCII"
 
-#: rc.c:361
+#: rc.c:362
 msgid "charset specific"
 msgstr "字符集特定"
 
-#: rc.c:362
+#: rc.c:363
 msgid "DEC special graphics"
 msgstr "DEC 特殊图像"
 
-#: rc.c:743
+#: rc.c:369
+msgid "external command"
+msgstr "外部命令"
+
+#: rc.c:370
+msgid "OSC 5379 (mlterm)"
+msgstr ""
+
+#: rc.c:371
+msgid "sixel (img2sixel)"
+msgstr ""
+
+#: rc.c:372
+msgid "OSC 1337 (iTerm2)"
+msgstr ""
+
+#: rc.c:756
 msgid "Display Settings"
 msgstr "显示设置"
 
-#: rc.c:745
+#: rc.c:758
 msgid "Color Settings"
 msgstr "颜色设置"
 
-#: rc.c:747
+#: rc.c:760
 msgid "Miscellaneous Settings"
 msgstr "杂项设置"
 
-#: rc.c:748
+#: rc.c:761
 msgid "Directory Settings"
 msgstr "目录设置"
 
-#: rc.c:749
+#: rc.c:762
 msgid "External Program Settings"
 msgstr "外部程序设置"
 
-#: rc.c:750
+#: rc.c:763
 msgid "Network Settings"
 msgstr "网络设置"
 
-#: rc.c:751
+#: rc.c:764
 msgid "Proxy Settings"
 msgstr "代理设置"
 
-#: rc.c:753
+#: rc.c:766
 msgid "SSL Settings"
 msgstr "SSL 设置"
 
-#: rc.c:756
+#: rc.c:769
 msgid "Cookie Settings"
 msgstr "Cookie 设置"
 
-#: rc.c:759
+#: rc.c:772
 msgid "Charset Settings"
 msgstr "字符集设置"
 
@@ -919,6 +939,6 @@ msgstr "字符集设置"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1241
+#: rc.c:1254
 msgid "en;q=1.0"
 msgstr "zh-CN;q=1.0, zh-Hans;q=0.9, zh;q=0.8, en;q=0.6"

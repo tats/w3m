@@ -123,7 +123,7 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
-int enable_inline_image;	/* 1 == mlterm OSC 5379, 2 == sixel */
+int enable_inline_image;
 
 static void
 fversion(FILE * f)
@@ -692,10 +692,10 @@ main(int argc, char **argv, char **envp)
 	    }
 #endif
 	    else if (!strcmp("-ri", argv[i])) {
-	        enable_inline_image = 1;
+	        enable_inline_image = INLINE_IMG_OSC5379;
 	    }
 	    else if (!strcmp("-sixel", argv[i])) {
-		enable_inline_image = 2;
+		enable_inline_image = INLINE_IMG_SIXEL;
 	    }
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;
@@ -5961,7 +5961,7 @@ deleteFiles()
     }
     while ((f = popText(fileToDelete)) != NULL) {
 	unlink(f);
-	if (enable_inline_image == 2 && strcmp(f+strlen(f)-4, ".gif") == 0) {
+	if (enable_inline_image == INLINE_IMG_SIXEL && strcmp(f+strlen(f)-4, ".gif") == 0) {
 	    Str firstframe = Strnew_charp(f);
 	    Strcat_charp(firstframe, "-1");
 	    unlink(firstframe->ptr);

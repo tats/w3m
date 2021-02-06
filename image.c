@@ -195,8 +195,9 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
-void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
 void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
+void put_image_iterm2(char *url, int x, int y, int w, int h);
 
 void
 drawImage()
@@ -214,41 +215,48 @@ drawImage()
 	i = &terminal_image[j];
 
 	if (enable_inline_image) {
-	#if 0
-	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		((enable_inline_image == 2 || getenv("WINDOWID")) &&
-		 i->cache->touch) ? i->cache->file : i->cache->url,
-		i->x, i->y,
-		i->cache->width > 0 ? i->cache->width : 0,
-		i->cache->height > 0 ? i->cache->height : 0,
-		i->sx, i->sy, i->width, i->height,
-		pixel_per_char_i, pixel_per_line_i);
-	#endif
-	    (enable_inline_image == 2 ? put_image_sixel : put_image_osc5379)(
-		((enable_inline_image == 2 /* sixel */ || getenv("WINDOWID")) &&
-		 /* XXX I don't know why but sometimes i->cache->file doesn't exist. */
-		 i->cache->touch && stat(i->cache->file,&st) == 0) ?
-			/* local */ i->cache->file : /* remote */ i->cache->url,
-		i->x / pixel_per_char_i,
-		i->y / pixel_per_line_i,
-	    #if 1
-		i->cache->a_width > 0 ?
-			(i->cache->width + i->x % pixel_per_char_i + pixel_per_char_i - 1) /
-				pixel_per_char_i :
-	    #endif
-			0,
+	    /*
+	     * So this shouldn't ever happen, but if it does then at least let's
+	     * not have external programs fetch images from the Internet...
+	     */
+	    if (!i->cache->touch || stat(i->cache->file,&st))
+	      return;
 
-	    #if 1
-		i->cache->a_height > 0 ?
-			(i->cache->height + i->y % pixel_per_line_i + pixel_per_line_i - 1) /
-				pixel_per_line_i :
-	    #endif
-			0,
-		i->sx / pixel_per_char_i,
-		i->sy / pixel_per_line_i,
-		(i->width + i->sx % pixel_per_char_i + pixel_per_char_i - 1) / pixel_per_char_i,
-		(i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) / pixel_per_line_i,
-		n_terminal_image);
+	    char *url = i->cache->file;
+
+	    int x = i->x / pixel_per_char_i;
+	    int y = i->y / pixel_per_line_i;
+
+	    int w = i->cache->a_width > 0 ? (
+		    (i->cache->width + i->x % pixel_per_char_i + pixel_per_char_i - 1) /
+		    pixel_per_char_i) : 0;
+	    int h = i->cache->a_height > 0 ? (
+		    (i->cache->height + i->y % pixel_per_line_i + pixel_per_line_i - 1) /
+		    pixel_per_line_i) : 0;
+
+	    int sx = i->sx / pixel_per_char_i;
+	    int sy = i->sy / pixel_per_line_i;
+
+	    int sw = (i->width + i->sx % pixel_per_char_i + pixel_per_char_i - 1) /
+		      pixel_per_char_i;
+	    int sh = (i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) /
+		      pixel_per_line_i;
+
+#if 0
+	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
+		i->cache->file,
+		x, y, w, h, sx, sy, sw, sh,
+		pixel_per_char_i, pixel_per_line_i);
+#endif
+
+
+	    if (enable_inline_image == INLINE_IMG_SIXEL) {
+		put_image_sixel(url, x, y, w, h, sx, sy, sw, sh, n_terminal_image);
+	    } else if (enable_inline_image == INLINE_IMG_OSC5379) {
+		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh);
+	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {
+		put_image_iterm2(url, x, y, sw, sh);
+	    }
 
 	    continue ;
 	}
@@ -471,7 +479,9 @@ loadImage(Buffer *buf, int flag)
 	     */
 	    cache->pid = 0;
 	}
+	/*TODO make sure removing this didn't break anything
 	unlink(cache->touch);
+	*/
 	image_cache[i] = NULL;
     }
 
@@ -544,8 +554,10 @@ loadImage(Buffer *buf, int flag)
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    b = loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
+	    /* TODO make sure removing this didn't break anything
 	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
 		unlink(cache->file);
+	    */
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 #else
@@ -599,7 +611,7 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->pid = 0;
 	cache->index = 0;
 	cache->loaded = IMG_FLAG_UNLOADED;
-	if (enable_inline_image == 1) {
+	if (enable_inline_image == INLINE_IMG_OSC5379) {
 	    if (image->width > 0 && image->width % pixel_per_char_i > 0)
 		image->width += (pixel_per_char_i - image->width % pixel_per_char_i);
 

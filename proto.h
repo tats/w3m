@@ -828,3 +828,5 @@ extern void dispVer(void);
 void srand48(long);
 long lrand48(void);
 #endif
+
+extern char *base64_encode(const unsigned char *src, size_t len);

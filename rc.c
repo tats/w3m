@@ -367,9 +367,9 @@ static struct sel_c graphic_char_str[] = {
 #ifdef USE_IMAGE
 static struct sel_c inlineimgstr[] = {
     {N_S(INLINE_IMG_NONE), N_("external command")},
-    {N_S(INLINE_IMG_OSC5379), N_("mlterm")},
-    {N_S(INLINE_IMG_SIXEL), N_("sixel")},
-    {N_S(INLINE_IMG_ITERM2), N_("iterm2")},
+    {N_S(INLINE_IMG_OSC5379), N_("OSC 5379 (mlterm)")},
+    {N_S(INLINE_IMG_SIXEL), N_("sixel (img2sixel)")},
+    {N_S(INLINE_IMG_ITERM2), N_("OSC 1337 (iTerm2)")},
     {0, NULL, NULL}
 };
 #endif				/* USE_IMAGE */

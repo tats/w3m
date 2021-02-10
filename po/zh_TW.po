@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-06 12:07+0900\n"
+"POT-Creation-Date: 2021-02-10 22:29+0900\n"
 "PO-Revision-Date: 2021-02-06 12:10+0900\n"
 "Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
 "Language-Team: Pidgin zh_TW <http://www.transifex.com/pidgin/pidgin/language/"
@@ -608,335 +608,343 @@ msgstr ""
 "禁止使用的 SSL 版本 (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, "
 "7: TLSv1.3)"
 
-#: rc.c:210
+#: rc.c:209
+msgid "Minimum SSL version (TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
+msgstr ""
+
+#: rc.c:211
+msgid "SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)"
+msgstr ""
+
+#: rc.c:214
 msgid "Enable cookie processing"
 msgstr "啟動 Cookie 處理"
 
-#: rc.c:211
+#: rc.c:215
 msgid "Print a message when receiving a cookie"
 msgstr "接收 Cookie 時顯示訊息"
 
-#: rc.c:212
+#: rc.c:216
 msgid "Accept cookies"
 msgstr "接受 Cookie"
 
-#: rc.c:213
+#: rc.c:217
 msgid "Action to be taken on invalid cookie"
 msgstr "無效 Cookie 的處理方法"
 
-#: rc.c:214
+#: rc.c:218
 msgid "Domains to reject cookies from"
 msgstr "拒絕以下網域的 Cookie"
 
-#: rc.c:215
+#: rc.c:219
 msgid "Domains to accept cookies from"
 msgstr "接受以下網域的 Cookie"
 
-#: rc.c:216
+#: rc.c:220
 msgid "Domains to avoid [wrong number of dots]"
 msgstr "避免瀏覽的網域 [網址含錯誤數量的點號]"
 
-#: rc.c:218
+#: rc.c:222
 msgid "Number of redirections to follow"
 msgstr "跟隨的重定向數量"
 
-#: rc.c:219
+#: rc.c:223
 msgid "Enable processing of meta-refresh tag"
 msgstr "啟動 meta-refresh 標籤處理"
 
-#: rc.c:222
+#: rc.c:226
 msgid "Enable Migemo (Roma-ji search)"
 msgstr "啟動 Migemo (日語羅馬字搜尋)"
 
-#: rc.c:223
+#: rc.c:227
 msgid "Migemo command"
 msgstr "Migemo 指令"
 
-#: rc.c:227
+#: rc.c:231
 msgid "Display charset"
 msgstr "輸出編碼"
 
-#: rc.c:228
+#: rc.c:232
 msgid "Default document charset"
 msgstr "預設文件編碼"
 
-#: rc.c:229
+#: rc.c:233
 msgid "Automatic charset detect when loading"
 msgstr "載入時自動偵測文件編碼"
 
-#: rc.c:230
+#: rc.c:234
 msgid "System charset"
 msgstr "系統編碼"
 
-#: rc.c:231
+#: rc.c:235
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr "按 LC_CTYPE 選擇系統編碼"
 
-#: rc.c:232
+#: rc.c:236
 msgid "Output halfdump with display charset"
 msgstr "使用輸出編碼時使用半傾印 (halfdump) 輸出模式"
 
-#: rc.c:233
+#: rc.c:237
 msgid "Use multi column characters"
 msgstr "使用寛於半形符號的字元"
 
-#: rc.c:234
+#: rc.c:238
 msgid "Use combining characters"
 msgstr "使用組合字元"
 
-#: rc.c:235
+#: rc.c:239
 msgid "Use double width for some Unicode characters"
 msgstr "使用全形字顯示某些 Unicode 字元"
 
-#: rc.c:236
+#: rc.c:240
 msgid "Use Unicode language tags"
 msgstr "使用 Unicode 語言標籤"
 
-#: rc.c:237
+#: rc.c:241
 msgid "Charset conversion using Unicode map"
 msgstr "使用 Unicode 對映進行編碼轉換"
 
-#: rc.c:238
+#: rc.c:242
 msgid "Charset conversion when loading"
 msgstr "載入時進行編碼轉換"
 
-#: rc.c:239
+#: rc.c:243
 msgid "Adjust search string for document charset"
 msgstr "搜尋時按文件編碼自動調整搜尋字串"
 
-#: rc.c:240
+#: rc.c:244
 msgid "Fix character width when conversion"
 msgstr "轉換編碼時自動校正字元寬度"
 
-#: rc.c:241
+#: rc.c:245
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr "使用 GB 12345 而非 GB 2312 的 Unicode 對映"
 
-#: rc.c:242
+#: rc.c:246
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr "使用 JIS X 0201 羅馬字母處理 ISO-2022-JP"
 
-#: rc.c:243
+#: rc.c:247
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr "使用 JIS C 6226:1978 處理 ISO-2022-JP"
 
-#: rc.c:244
+#: rc.c:248
 msgid "Use JIS X 0201 Katakana"
 msgstr "使用 JIS X 0201 片假名"
 
-#: rc.c:245
+#: rc.c:249
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr "使用 JIS X 0212:1990 (補充漢字)"
 
-#: rc.c:246
+#: rc.c:250
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr "使用 JIS X 0213:2000 (2000JIS)"
 
-#: rc.c:247
+#: rc.c:251
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr "嚴格處理 ISO-2022-JP/KR/CN"
 
-#: rc.c:248
+#: rc.c:252
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr "GB18030 編碼的 4 位元組字元一律視為 Unicode"
 
-#: rc.c:249
+#: rc.c:253
 msgid "Simple Preserve space"
 msgstr "保留空白時只作簡單處理"
 
-#: rc.c:252
+#: rc.c:256
 msgid "keymap file"
 msgstr "鍵盤對映檔案"
 
-#: rc.c:269
+#: rc.c:273
 msgid "black"
 msgstr "黑色"
 
-#: rc.c:270
+#: rc.c:274
 msgid "red"
 msgstr "紅色"
 
-#: rc.c:271
+#: rc.c:275
 msgid "green"
 msgstr "綠色"
 
-#: rc.c:272
+#: rc.c:276
 msgid "yellow"
 msgstr "黃色"
 
-#: rc.c:273
+#: rc.c:277
 msgid "blue"
 msgstr "藍色"
 
-#: rc.c:274
+#: rc.c:278
 msgid "magenta"
 msgstr "洋紅"
 
-#: rc.c:275
+#: rc.c:279
 msgid "cyan"
 msgstr "青藍"
 
-#: rc.c:276
+#: rc.c:280
 msgid "white"
 msgstr "白色"
 
-#: rc.c:277
+#: rc.c:281
 msgid "terminal"
 msgstr "終端機預設"
 
-#: rc.c:296
+#: rc.c:300
 msgid "none"
 msgstr "空白"
 
-#: rc.c:297
+#: rc.c:301
 msgid "current URL"
 msgstr "所在緩衝區網址"
 
-#: rc.c:298
+#: rc.c:302
 msgid "link URL"
 msgstr "連結網址"
 
-#: rc.c:303
+#: rc.c:307
 msgid "simple"
 msgstr "不作處理"
 
-#: rc.c:304
+#: rc.c:308
 msgid "use tag"
 msgstr "顯示標籤"
 
-#: rc.c:305
+#: rc.c:309
 msgid "fontify"
 msgstr "格式化"
 
-#: rc.c:311
+#: rc.c:315
 msgid "A:relative to screen height"
 msgstr "A:相對於螢幕高度"
 
-#: rc.c:312
+#: rc.c:316
 msgid "B:fixed speed"
 msgstr "B:固定速度"
 
-#: rc.c:319
+#: rc.c:323
 msgid "unspecified"
 msgstr "未指定"
 
-#: rc.c:320
+#: rc.c:324
 msgid "inet inet6"
 msgstr "IPv4 然後 IPv6"
 
-#: rc.c:321
+#: rc.c:325
 msgid "inet6 inet"
 msgstr "IPv6 然後 IPv4"
 
-#: rc.c:322
+#: rc.c:326
 msgid "inet only"
 msgstr "限用 IPv4"
 
-#: rc.c:323
+#: rc.c:327
 msgid "inet6 only"
 msgstr "限用 IPv6"
 
-#: rc.c:330
+#: rc.c:334
 msgid "discard"
 msgstr "丟棄"
 
-#: rc.c:332
+#: rc.c:336
 msgid "accept"
 msgstr "接受"
 
-#: rc.c:334
+#: rc.c:338
 msgid "ask"
 msgstr "詢問"
 
-#: rc.c:341
+#: rc.c:345
 msgid "use internal mailer instead"
 msgstr "使用內建郵件傳送器"
 
-#: rc.c:343
+#: rc.c:347
 msgid "ignore options and use only the address"
 msgstr "忽略參數，限用地址部分"
 
-#: rc.c:344
+#: rc.c:348
 msgid "use full mailto URL"
 msgstr "使用整個 mailto 網址"
 
-#: rc.c:353
+#: rc.c:357
 msgid "OFF"
 msgstr "停用"
 
-#: rc.c:354
+#: rc.c:358
 msgid "Only ISO 2022"
 msgstr "只限 ISO 2022"
 
-#: rc.c:355
+#: rc.c:359
 msgid "ON"
 msgstr "啟動"
 
-#: rc.c:361
+#: rc.c:365
 msgid "ASCII"
 msgstr "限用 ASCII"
 
-#: rc.c:362
+#: rc.c:366
 msgid "charset specific"
 msgstr "依照編碼"
 
-#: rc.c:363
+#: rc.c:367
 msgid "DEC special graphics"
 msgstr "使用 DEC 圖形字元"
 
-#: rc.c:369
+#: rc.c:373
 msgid "external command"
 msgstr "外部指令"
 
-#: rc.c:370
+#: rc.c:374
 msgid "OSC 5379 (mlterm)"
 msgstr ""
 
-#: rc.c:371
+#: rc.c:375
 msgid "sixel (img2sixel)"
 msgstr ""
 
-#: rc.c:372
+#: rc.c:376
 msgid "OSC 1337 (iTerm2)"
 msgstr ""
 
-#: rc.c:756
+#: rc.c:766
 msgid "Display Settings"
 msgstr "顯示設定"
 
-#: rc.c:758
+#: rc.c:768
 msgid "Color Settings"
 msgstr "顏色設定"
 
-#: rc.c:760
+#: rc.c:770
 msgid "Miscellaneous Settings"
 msgstr "雜項設定"
 
-#: rc.c:761
+#: rc.c:771
 msgid "Directory Settings"
 msgstr "目錄設定"
 
-#: rc.c:762
+#: rc.c:772
 msgid "External Program Settings"
 msgstr "外部程式設定"
 
-#: rc.c:763
+#: rc.c:773
 msgid "Network Settings"
 msgstr "網路設定"
 
-#: rc.c:764
+#: rc.c:774
 msgid "Proxy Settings"
 msgstr "代理伺服器設定"
 
-#: rc.c:766
+#: rc.c:776
 msgid "SSL Settings"
 msgstr "SSL 設定"
 
-#: rc.c:769
+#: rc.c:779
 msgid "Cookie Settings"
 msgstr "Cookie 設定"
 
-#: rc.c:772
+#: rc.c:782
 msgid "Charset Settings"
 msgstr "編碼設定"
 
@@ -945,6 +953,6 @@ msgstr "編碼設定"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1254
+#: rc.c:1264
 msgid "en;q=1.0"
 msgstr "zh-TW;q=1.0, zh-Hant;q=0.9, en;q=0.8; zh;q=0.6"

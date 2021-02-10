@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-06 12:07+0900\n"
+"POT-Creation-Date: 2021-02-10 22:29+0900\n"
 "PO-Revision-Date: 2021-02-06 12:10+0900\n"
 "Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
@@ -607,350 +607,358 @@ msgstr ""
 "Liste unzulässiger SSL-Verfahren (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: "
 "TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)"
 
-#: rc.c:210
+#: rc.c:209
+msgid "Minimum SSL version (TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
+msgstr ""
+
+#: rc.c:211
+msgid "SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)"
+msgstr ""
+
+#: rc.c:214
 msgid "Enable cookie processing"
 msgstr "Cookie-Verarbeitung aktivieren"
 
-#: rc.c:211
+#: rc.c:215
 msgid "Print a message when receiving a cookie"
 msgstr "Den Empfang von Cookies melden"
 
-#: rc.c:212
+#: rc.c:216
 msgid "Accept cookies"
 msgstr "Cookies akzeptieren"
 
-#: rc.c:213
+#: rc.c:217
 msgid "Action to be taken on invalid cookie"
 msgstr "Reaktion auf ungültiges Cookie"
 
-#: rc.c:214
+#: rc.c:218
 msgid "Domains to reject cookies from"
 msgstr "Domains, deren Cookies abzulehnen sind"
 
-#: rc.c:215
+#: rc.c:219
 msgid "Domains to accept cookies from"
 msgstr "Domains, deren Cookies akzeptiert werden"
 
 # Variable vom Typ String im Abschnitt Cookies-Einstellungen, mh 10.10.2014
-#: rc.c:216
+#: rc.c:220
 msgid "Domains to avoid [wrong number of dots]"
 msgstr "Zu meidende Domains (falsche Anzahl von Punkten)"
 
-#: rc.c:218
+#: rc.c:222
 msgid "Number of redirections to follow"
 msgstr "Anzahl zu akzeptierender Umleitungen"
 
 # Konfigurationsvariable vom Typ string, mh, 05.10.2014
-#: rc.c:219
+#: rc.c:223
 msgid "Enable processing of meta-refresh tag"
 msgstr "Meta-Refresh-Element verarbeiten"
 
-#: rc.c:222
+#: rc.c:226
 msgid "Enable Migemo (Roma-ji search)"
 msgstr "Romaji-Suche mittels Migemo aktivieren"
 
-#: rc.c:223
+#: rc.c:227
 msgid "Migemo command"
 msgstr "Migemo-Befehl"
 
-#: rc.c:227
+#: rc.c:231
 msgid "Display charset"
 msgstr "Zeichenkodierung der Anzeige"
 
-#: rc.c:228
+#: rc.c:232
 msgid "Default document charset"
 msgstr "Zeichenkodierungs-Vorgabe für Dokumente"
 
-#: rc.c:229
+#: rc.c:233
 msgid "Automatic charset detect when loading"
 msgstr "Selbstständige Erkennung der Zeichenkodierung beim Laden"
 
-#: rc.c:230
+#: rc.c:234
 msgid "System charset"
 msgstr "Zeichenkodierung des Systems"
 
-#: rc.c:231
+#: rc.c:235
 msgid "System charset follows locale(LC_CTYPE)"
 msgstr "Zeichenkodierung des Systems entsprechend Locale (LC_CTYPE)"
 
 # war zuvor
 # msgstr "Halfdump mit der zur Anzeige benutzten Zeichenkodierung exportieren"
-#: rc.c:232
+#: rc.c:236
 msgid "Output halfdump with display charset"
 msgstr "Halfdump in der zur Anzeige benutzten Kodierung"
 
 # Konfigurationsvariable vom Typ boolean, mh, 05.10.2014
-#: rc.c:233
+#: rc.c:237
 msgid "Use multi column characters"
 msgstr "Spaltenübergreifende Zeichen verwenden"
 
-#: rc.c:234
+#: rc.c:238
 msgid "Use combining characters"
 msgstr "Kombinationszeichen verwenden"
 
-#: rc.c:235
+#: rc.c:239
 msgid "Use double width for some Unicode characters"
 msgstr "Einzelnen Unicode-Zeichen zwei Spalten einräumen"
 
-#: rc.c:236
+#: rc.c:240
 msgid "Use Unicode language tags"
 msgstr "Unicode-Sprach-Tags verwenden"
 
-#: rc.c:237
+#: rc.c:241
 msgid "Charset conversion using Unicode map"
 msgstr "Zeichen in Unicode kodieren"
 
-#: rc.c:238
+#: rc.c:242
 msgid "Charset conversion when loading"
 msgstr "Zeichenkodierung beim Laden anpassen"
 
-#: rc.c:239
+#: rc.c:243
 msgid "Adjust search string for document charset"
 msgstr "Zu suchende Zeichenkette der Kodierung des Dokumentes anpassen"
 
-#: rc.c:240
+#: rc.c:244
 msgid "Fix character width when conversion"
 msgstr "Bei Umwandlung an der Breite von Zeichen festhalten"
 
-#: rc.c:241
+#: rc.c:245
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
 msgstr "GB-12345-Unicode statt GB 2312 verwenden"
 
-#: rc.c:242
+#: rc.c:246
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
 msgstr "JIS X 0201 Roman statt ISO-2022-JP verwenden"
 
-#: rc.c:243
+#: rc.c:247
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
 msgstr "JIS C 6226:1978 statt ISO-2022-JP verwenden"
 
-#: rc.c:244
+#: rc.c:248
 msgid "Use JIS X 0201 Katakana"
 msgstr "JIS X 0201 Katakana verwenden"
 
-#: rc.c:245
+#: rc.c:249
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
 msgstr "JIS X 0212:1990 verwenden (ergänzendes Kanji)"
 
-#: rc.c:246
+#: rc.c:250
 msgid "Use JIS X 0213:2000 (2000JIS)"
 msgstr "JIS X 0213:2000 verwenden (2000JIS)"
 
-#: rc.c:247
+#: rc.c:251
 msgid "Strict ISO-2022-JP/KR/CN"
 msgstr "Striktes ISO-2022-JP/KR/CN"
 
-#: rc.c:248
+#: rc.c:252
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
 msgstr "4-Byte-Zeichen von GB 18030 als Unicode auffassen"
 
-#: rc.c:249
+#: rc.c:253
 msgid "Simple Preserve space"
 msgstr "Einfache Platzerhaltung"
 
-#: rc.c:252
+#: rc.c:256
 msgid "keymap file"
 msgstr "Tastaturbelegungs-Datei"
 
-#: rc.c:269
+#: rc.c:273
 msgid "black"
 msgstr "schwarz"
 
-#: rc.c:270
+#: rc.c:274
 msgid "red"
 msgstr "rot"
 
-#: rc.c:271
+#: rc.c:275
 msgid "green"
 msgstr "grün"
 
-#: rc.c:272
+#: rc.c:276
 msgid "yellow"
 msgstr "gelb"
 
-#: rc.c:273
+#: rc.c:277
 msgid "blue"
 msgstr "blau"
 
-#: rc.c:274
+#: rc.c:278
 msgid "magenta"
 msgstr "magenta"
 
-#: rc.c:275
+#: rc.c:279
 msgid "cyan"
 msgstr "cyan"
 
-#: rc.c:276
+#: rc.c:280
 msgid "white"
 msgstr "weiß"
 
-#: rc.c:277
+#: rc.c:281
 msgid "terminal"
 msgstr "wie Terminal"
 
-#: rc.c:296
+#: rc.c:300
 msgid "none"
 msgstr "keiner"
 
-#: rc.c:297
+#: rc.c:301
 msgid "current URL"
 msgstr "aktuelle URL"
 
-#: rc.c:298
+#: rc.c:302
 msgid "link URL"
 msgstr "Link-URL"
 
-#: rc.c:303
+#: rc.c:307
 msgid "simple"
 msgstr "einfach"
 
-#: rc.c:304
+#: rc.c:308
 msgid "use tag"
 msgstr "durch Tags"
 
-#: rc.c:305
+#: rc.c:309
 msgid "fontify"
 msgstr "hervorgehoben"
 
-#: rc.c:311
+#: rc.c:315
 msgid "A:relative to screen height"
 msgstr "A: relativ zu Fensterhöhe"
 
-#: rc.c:312
+#: rc.c:316
 msgid "B:fixed speed"
 msgstr "B: feste Geschwindigkeit"
 
-#: rc.c:319
+#: rc.c:323
 msgid "unspecified"
 msgstr "nicht spezifiziert"
 
-#: rc.c:320
+#: rc.c:324
 msgid "inet inet6"
 msgstr "inet inet6"
 
-#: rc.c:321
+#: rc.c:325
 msgid "inet6 inet"
 msgstr "inet6 inet"
 
-#: rc.c:322
+#: rc.c:326
 msgid "inet only"
 msgstr "nur inet"
 
-#: rc.c:323
+#: rc.c:327
 msgid "inet6 only"
 msgstr "nur inet6"
 
-#: rc.c:330
+#: rc.c:334
 msgid "discard"
 msgstr "verwerfen"
 
-#: rc.c:332
+#: rc.c:336
 msgid "accept"
 msgstr "annehmen"
 
-#: rc.c:334
+#: rc.c:338
 msgid "ask"
 msgstr "nachfragen"
 
 # gehört zu rc.c:142
 # erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
-#: rc.c:341
+#: rc.c:345
 msgid "use internal mailer instead"
 msgstr "Mail intern erstellen"
 
 # gehört zu rc.c:142
 # erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
-#: rc.c:343
+#: rc.c:347
 msgid "ignore options and use only the address"
 msgstr "Optionen ignorieren"
 
 # gehört zu rc.c:142
 # erscheint in Pulldown-Menü, daher verkürzt. mh 09.10.2014
-#: rc.c:344
+#: rc.c:348
 msgid "use full mailto URL"
 msgstr "komplett verwenden"
 
-#: rc.c:353
+#: rc.c:357
 msgid "OFF"
 msgstr "AUS"
 
-#: rc.c:354
+#: rc.c:358
 msgid "Only ISO 2022"
 msgstr "Nur ISO-2022"
 
-#: rc.c:355
+#: rc.c:359
 msgid "ON"
 msgstr "AN"
 
 # Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
-#: rc.c:361
+#: rc.c:365
 msgid "ASCII"
 msgstr "ASCII"
 
 # Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
 # hier ist "Zeichensatz" akzeptabel mh, 09.10.2014
-#: rc.c:362
+#: rc.c:366
 msgid "charset specific"
 msgstr "zeichensatzspezifisch"
 
 # Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
-#: rc.c:363
+#: rc.c:367
 msgid "DEC special graphics"
 msgstr "mit DEC-Grafiken"
 
-#: rc.c:369
+#: rc.c:373
 msgid "external command"
 msgstr "Externen Befehl"
 
-#: rc.c:370
+#: rc.c:374
 msgid "OSC 5379 (mlterm)"
 msgstr ""
 
-#: rc.c:371
+#: rc.c:375
 msgid "sixel (img2sixel)"
 msgstr ""
 
-#: rc.c:372
+#: rc.c:376
 msgid "OSC 1337 (iTerm2)"
 msgstr ""
 
-#: rc.c:756
+#: rc.c:766
 msgid "Display Settings"
 msgstr "Einstellungen zur Anzeige"
 
-#: rc.c:758
+#: rc.c:768
 msgid "Color Settings"
 msgstr "Farbeinstellungen"
 
-#: rc.c:760
+#: rc.c:770
 msgid "Miscellaneous Settings"
 msgstr "Weitere Einstellungen"
 
-#: rc.c:761
+#: rc.c:771
 msgid "Directory Settings"
 msgstr "Verzeichnis-Einstellungen"
 
-#: rc.c:762
+#: rc.c:772
 msgid "External Program Settings"
 msgstr "Einstellungen für externe Programme"
 
-#: rc.c:763
+#: rc.c:773
 msgid "Network Settings"
 msgstr "Netzwerk-Einstellungen"
 
-#: rc.c:764
+#: rc.c:774
 msgid "Proxy Settings"
 msgstr "Proxy-Einstellungen"
 
-#: rc.c:766
+#: rc.c:776
 msgid "SSL Settings"
 msgstr "SSL-Einstellungen"
 
-#: rc.c:769
+#: rc.c:779
 msgid "Cookie Settings"
 msgstr "Cookie-Einstellungen"
 
-#: rc.c:772
+#: rc.c:782
 msgid "Charset Settings"
 msgstr "Zeichenkodierungs-Einstellungen"
 
@@ -959,6 +967,6 @@ msgstr "Zeichenkodierungs-Einstellungen"
 #. * header. For example, ja.po should translate it as
 #. * "ja;q=1.0, en;q=0.5" like that.
 #.
-#: rc.c:1254
+#: rc.c:1264
 msgid "en;q=1.0"
 msgstr "de;q=1.0, en;q=0.5"

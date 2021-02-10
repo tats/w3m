@@ -474,8 +474,11 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	SSL_free(handle);
     /* FIXME: gettextize? */
     disp_err_message(Sprintf
-		     ("SSL error: %s",
-		      ERR_error_string(ERR_get_error(), NULL))->ptr, FALSE);
+		     ("SSL error: %s"
+#ifdef SSL_CTX_set_min_proto_version
+		      ", a workaround might be: w3m -o ssl_cipher=ALL:@SECLEVEL=0 -o ssl_min_version=TLSv1.0 -o ssl_forbid_method= -o ssl_verify_server=0"
+#endif
+		      , ERR_error_string(ERR_get_error(), NULL))->ptr, FALSE);
     return NULL;
 }
 

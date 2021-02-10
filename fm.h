@@ -1190,7 +1190,7 @@ global int ssl_path_modified init(FALSE);
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
-global char *ssl_forbid_method init("2, 3");
+global char *ssl_forbid_method init("2, 3, t, 5");
 #ifdef SSL_CTX_set_min_proto_version
 global char *ssl_min_version init(NULL);
 #endif

@@ -26,7 +26,7 @@ SSL サポートについて
     ssl_forbid_method
         使わないSSLメソッドのリスト(2: SSLv2, 3: SSLv3, t: TLSv1.0,
         5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)
-        (デフォルトは2, 3).
+        (デフォルトは2, 3, t, 5).
     ssl_min_version
         最小のSSLバージョン, OpenSSL 1.1以上で有効(TLSv1.0, TLSv1.1,
         TLSv1.2, TLSv1.3のいずれか) (デフォルトは<NULL>).

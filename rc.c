@@ -205,6 +205,7 @@ static int OptionEncode = FALSE;
 #define CMT_SSL_CA_FILE N_("File consisting of PEM encoded certificates of CAs")
 #endif				/* USE_SSL_VERIFY */
 #define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)")
+#define CMT_SSL_CIPHER N_("SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)")
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
@@ -612,6 +613,8 @@ struct param_ptr params6[] = {
 struct param_ptr params7[] = {
     {"ssl_forbid_method", P_STRING, PI_TEXT, (void *)&ssl_forbid_method,
      CMT_SSL_FORBID_METHOD, NULL},
+    {"ssl_cipher", P_STRING, PI_TEXT, (void *)&ssl_cipher, CMT_SSL_CIPHER,
+     NULL},
 #ifdef USE_SSL_VERIFY
     {"ssl_verify_server", P_INT, PI_ONOFF, (void *)&ssl_verify_server,
      CMT_SSL_VERIFY_SERVER, NULL},

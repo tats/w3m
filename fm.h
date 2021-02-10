@@ -1191,7 +1191,12 @@ global int ssl_path_modified init(FALSE);
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
 global char *ssl_forbid_method init("2, 3");
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
+global char *ssl_cipher init("DEFAULT:!LOW:!RC4:!EXP");
+#else
+global char *ssl_cipher init(NULL);
 #endif
+#endif				/* USE_SSL */
 
 global int is_redisplay init(FALSE);
 global int clear_buffer init(TRUE);

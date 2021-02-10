@@ -1,3 +1,21 @@
+2021-02-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc-jp/README.SSL, fm.h: Disable TLSv1.0 and TLSv1.1 by default.
+
+	* url.c: Mention ssl_* options as a workaround for SSL error.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=900984
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=934493
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=953045
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_min_version for OpenSSL 1.1.
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_cipher to specify ciphers for TLSv1.2 and below.
+
 2021-02-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:

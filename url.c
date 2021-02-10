@@ -293,6 +293,38 @@ init_PRNG()
 }
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
+#ifdef SSL_CTX_set_min_proto_version
+static int
+str_to_ssl_version(const char *name)
+{
+#ifdef TLS1_3_VERSION
+    if (!strcasecmp(name, "TLSv1.3"))
+	return TLS1_3_VERSION;
+#endif
+#ifdef TLS1_2_VERSION
+    if (!strcasecmp(name, "TLSv1.2"))
+	return TLS1_2_VERSION;
+#endif
+#ifdef TLS1_1_VERSION
+    if (!strcasecmp(name, "TLSv1.1"))
+	return TLS1_1_VERSION;
+#endif
+    if (!strcasecmp(name, "TLSv1.0"))
+	return TLS1_VERSION;
+    if (!strcasecmp(name, "TLSv1"))
+	return TLS1_VERSION;
+    if (!strcasecmp(name, "SSLv3.0"))
+	return SSL3_VERSION;
+    if (!strcasecmp(name, "SSLv3"))
+	return SSL3_VERSION;
+    if (!strcasecmp(name, "SSLv2.0"))
+	return SSL2_VERSION;
+    if (!strcasecmp(name, "SSLv2"))
+	return SSL2_VERSION;
+    return 0;
+}
+#endif				/* SSL_CTX_set_min_proto_version */
+
 static SSL *
 openSSLHandle(int sock, char *hostname, char **p_cert)
 {
@@ -336,6 +368,17 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #endif
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;
+#ifdef SSL_CTX_set_min_proto_version
+	if (ssl_min_version && *ssl_min_version != '\0') {
+	    int sslver;
+	    sslver = str_to_ssl_version(ssl_min_version);
+	    if (sslver <= 0
+		|| !SSL_CTX_set_min_proto_version(ssl_ctx, sslver)) {
+		free_ssl_ctx();
+		goto eend;
+	    }
+	}
+#endif
 	if (ssl_cipher && *ssl_cipher != '\0')
 	    if (!SSL_CTX_set_cipher_list(ssl_ctx, ssl_cipher)) {
 		free_ssl_ctx();

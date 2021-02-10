@@ -1191,6 +1191,9 @@ global int ssl_path_modified init(FALSE);
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
 global char *ssl_forbid_method init("2, 3");
+#ifdef SSL_CTX_set_min_proto_version
+global char *ssl_min_version init(NULL);
+#endif
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
 global char *ssl_cipher init("DEFAULT:!LOW:!RC4:!EXP");
 #else

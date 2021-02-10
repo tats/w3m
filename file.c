@@ -161,20 +161,24 @@ static struct compression_decoder {
     char *name;
     char *encoding;
     char *encodings[4];
+    int use_d_arg;
 } compression_decoders[] = {
     { CMP_COMPRESS, ".gz", "application/x-gzip",
       0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip", 
-      {"gzip", "x-gzip", NULL} }, 
+      {"gzip", "x-gzip", NULL}, 0 }, 
     { CMP_COMPRESS, ".Z", "application/x-compress",
       0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress",
-      {"compress", "x-compress", NULL} }, 
+      {"compress", "x-compress", NULL}, 0 }, 
     { CMP_BZIP2, ".bz2", "application/x-bzip",
       0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2",
-      {"x-bzip", "bzip", "bzip2", NULL} }, 
+      {"x-bzip", "bzip", "bzip2", NULL}, 0 }, 
     { CMP_DEFLATE, ".deflate", "application/x-deflate",
       1, INFLATE_CMDNAME, INFLATE_NAME, "deflate",
-      {"deflate", "x-deflate", NULL} }, 
-    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}},
+      {"deflate", "x-deflate", NULL}, 0 }, 
+    { CMP_BROTLI, ".br", "application/x-br",
+      0, BROTLI_CMDNAME, BROTLI_NAME, "br",
+      {"br", "x-br", NULL}, 1 }, 
+    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}, 0},
 };
 /* *INDENT-ON* */
 
@@ -8642,6 +8646,7 @@ uncompress_stream(URLFile *uf, char **src)
     char *tmpf = NULL;
     char *ext = NULL;
     struct compression_decoder *d;
+    int use_d_arg = 0;
 
     if (IStype(uf->stream) != IST_ENCODED) {
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
@@ -8655,6 +8660,7 @@ uncompress_stream(URLFile *uf, char **src)
 		expand_cmd = d->cmd;
 	    expand_name = d->name;
 	    ext = d->ext;
+	    use_d_arg = d->use_d_arg;
 	    break;
 	}
     }
@@ -8709,7 +8715,10 @@ uncompress_stream(URLFile *uf, char **src)
 	/* child1 */
 	dup2(1, 2);		/* stderr>&stdout */
 	setup_child(TRUE, -1, -1);
-	execlp(expand_cmd, expand_name, NULL);
+	if (use_d_arg)
+	    execlp(expand_cmd, expand_name, "-d", NULL);
+	else
+	    execlp(expand_cmd, expand_name, NULL);
 	exit(1);
     }
     if (tmpf) {

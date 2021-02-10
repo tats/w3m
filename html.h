@@ -84,6 +84,7 @@ typedef struct {
 #define CMP_GZIP         2
 #define CMP_BZIP2        3
 #define CMP_DEFLATE      4
+#define CMP_BROTLI       5
 
 #define ENC_7BIT	0
 #define ENC_BASE64	1

@@ -241,11 +241,13 @@ typedef RETSIGTYPE MySignalHandler;
 #define DEV_TTY_PATH	"/dev/tty"
 #define CGI_EXTENSION	".cgi"
 #endif
+#define BROTLI_CMDNAME "brotli"
 
 #define PATH_SEPARATOR	':'
 #define GUNZIP_NAME  "gunzip"
 #define BUNZIP2_NAME "bunzip2"
 #define INFLATE_NAME "inflate"
+#define BROTLI_NAME "brotli"
 
 #ifdef __MINGW32_VERSION
 #define SIGKILL SIGTERM

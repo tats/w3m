@@ -271,10 +271,10 @@ fusage(FILE * f, int err)
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -show-option     print all config options\n");
     fprintf(f, "    -config file     specify config file\n");
+    fprintf(f, "    -debug           use debug mode (only for debugging)\n");
+    fprintf(f, "    -reqlog          write request logfile\n");
     fprintf(f, "    -help            print this usage message\n");
     fprintf(f, "    -version         print w3m version\n");
-    fprintf(f, "    -reqlog          write request logfile\n");
-    fprintf(f, "    -debug           DO NOT USE\n");
     if (show_params_p)
 	show_params(f);
     exit(err);

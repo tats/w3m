@@ -30,9 +30,9 @@ SSL サポートについて
     ssl_min_version
         最小のSSLバージョン, OpenSSL 1.1以上で有効(all, TLSv1.0, TLSv1.1,
         TLSv1.2, TLSv1.3のいずれか) (デフォルトは<NULL>).
-    ssl_ciphers
+    ssl_cipher
         TLSv1.2以下用のSSL暗号(例: DEFAULT:@SECLEVEL=2) (デフォルトは
-        OpenSSL 1.1以上なら<NULL>、それ以外なら"DEFAULT:!LOW:!RC4:!EXP").
+        OpenSSL 1.1以上なら<NULL>、それ以外ならDEFAULT:!LOW:!RC4:!EXP).
     ssl_verify_server ON/OFF
         SSLのサーバ認証を行う(デフォルトはON).
     ssl_cert_file ファイル名

@@ -247,6 +247,9 @@ fusage(FILE * f, int err)
     fprintf(f, "    -4               IPv4 only (-o dns_order=4)\n");
     fprintf(f, "    -6               IPv6 only (-o dns_order=6)\n");
 #endif
+#ifdef USE_SSL
+    fprintf(f, "    -insecure        use insecure SSL config options\n");
+#endif
 #ifdef USE_MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
 #endif				/* USE_MOUSE */
@@ -752,6 +755,18 @@ main(int argc, char **argv, char **envp)
 		displayTitleTerm = getenv("TERM");
 	    else if (!strncmp("-title=", argv[i], 7))
 		displayTitleTerm = argv[i] + 7;
+#ifdef USE_SSL
+	    else if (!strcmp("-insecure", argv[i])) {
+		set_param_option("ssl_cipher=ALL:@SECLEVEL=0");
+#ifdef SSL_CTX_set_min_proto_version
+		set_param_option("ssl_min_version=all");
+#endif
+		set_param_option("ssl_forbid_method=");
+#ifdef USE_SSL_VERIFY
+		set_param_option("ssl_verify_server=0");
+#endif
+	    }
+#endif				/* USE_SSL */
 	    else if (!strcmp("-o", argv[i]) ||
 		     !strcmp("-show-option", argv[i])) {
 		if (!strcmp("-show-option", argv[i]) || ++i >= argc ||

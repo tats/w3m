@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-10 22:29+0900\n"
-"PO-Revision-Date: 2021-02-06 12:10+0900\n"
+"POT-Creation-Date: 2021-02-11 19:00+0900\n"
+"PO-Revision-Date: 2021-02-11 19:05+0900\n"
 "Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
 "Language-Team: Pidgin zh_TW <http://www.transifex.com/pidgin/pidgin/language/"
 "zh_TW/>\n"
@@ -609,8 +609,8 @@ msgstr ""
 "7: TLSv1.3)"
 
 #: rc.c:209
-msgid "Minimum SSL version (TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
-msgstr ""
+msgid "Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
+msgstr "最低 SSL 版本 (all, TLSv1.0, TLSv1.1, TLSv1.2, TLSv1.3)"
 
 #: rc.c:211
 msgid "SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-10 22:29+0900\n"
+"POT-Creation-Date: 2021-02-11 19:00+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -596,7 +596,7 @@ msgid ""
 msgstr ""
 
 #: rc.c:209
-msgid "Minimum SSL version (TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
+msgid "Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
 msgstr ""
 
 #: rc.c:211

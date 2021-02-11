@@ -1,3 +1,35 @@
+2021-02-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc/w3m.1, main.c: Update wording for -debug option.
+
+	* doc/w3m.1: Update manpage for -insecure option.
+
+	* url.c: Mention -insecure option as a workaround for SSL error.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=900984
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=934493
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=953045
+
+	* main.c: New option -insecure to use insecure SSL config options.
+	Alias for `-o ssl_cipher=ALL:@SECLEVEL=0 -o ssl_min_version=all
+	-o ssl_forbid_method= -o ssl_verify_server=0`.
+
+	* doc-jp/README.SSL: Typo fix for ssl_cipher.
+
+	* doc-jp/README.SSL, rc.c, url.c:
+	Update ssl_min_version to accept "all" and reject "SSLv2".
+
+2021-02-11  bptato  <nincsnevem662@gmail.com>
+
+	Support brotli content encoding
+	Origin: https://github.com/tats/w3m/pull/164
+
+	* config.h.dist: Update config.h.dist.
+
+	* config.h.in, file.c, html.h: Support brotli content encoding.
+
 2021-02-10  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
@@ -15,6 +47,7 @@
 
 	* doc-jp/README.SSL, fm.h, rc.c, url.c:
 	New option ssl_cipher to specify ciphers for TLSv1.2 and below.
+	e.g. DEFAULT:@SECLEVEL=2, ALL:@SECLEVEL=0
 
 2021-02-06  Tatsuya Kinoshita  <tats@debian.org>
 

@@ -206,7 +206,7 @@ static int OptionEncode = FALSE;
 #endif				/* USE_SSL_VERIFY */
 #define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)")
 #ifdef SSL_CTX_set_min_proto_version
-#define CMT_SSL_MIN_VERSION N_("Minimum SSL version (TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)")
+#define CMT_SSL_MIN_VERSION N_("Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)")
 #endif
 #define CMT_SSL_CIPHER N_("SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)")
 #endif				/* USE_SSL */

@@ -297,6 +297,10 @@ init_PRNG()
 static int
 str_to_ssl_version(const char *name)
 {
+    if(!strcasecmp(name, "all"))
+	return 0;
+    if(!strcasecmp(name, "none"))
+	return 0;
 #ifdef TLS1_3_VERSION
     if (!strcasecmp(name, "TLSv1.3"))
 	return TLS1_3_VERSION;
@@ -317,11 +321,7 @@ str_to_ssl_version(const char *name)
 	return SSL3_VERSION;
     if (!strcasecmp(name, "SSLv3"))
 	return SSL3_VERSION;
-    if (!strcasecmp(name, "SSLv2.0"))
-	return SSL2_VERSION;
-    if (!strcasecmp(name, "SSLv2"))
-	return SSL2_VERSION;
-    return 0;
+    return -1;
 }
 #endif				/* SSL_CTX_set_min_proto_version */
 
@@ -372,7 +372,7 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	if (ssl_min_version && *ssl_min_version != '\0') {
 	    int sslver;
 	    sslver = str_to_ssl_version(ssl_min_version);
-	    if (sslver <= 0
+	    if (sslver < 0
 		|| !SSL_CTX_set_min_proto_version(ssl_ctx, sslver)) {
 		free_ssl_ctx();
 		goto eend;

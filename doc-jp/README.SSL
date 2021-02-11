@@ -28,7 +28,7 @@ SSL サポートについて
         5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)
         (デフォルトは2, 3, t, 5).
     ssl_min_version
-        最小のSSLバージョン, OpenSSL 1.1以上で有効(TLSv1.0, TLSv1.1,
+        最小のSSLバージョン, OpenSSL 1.1以上で有効(all, TLSv1.0, TLSv1.1,
         TLSv1.2, TLSv1.3のいずれか) (デフォルトは<NULL>).
     ssl_ciphers
         TLSv1.2以下用のSSL暗号(例: DEFAULT:@SECLEVEL=2) (デフォルトは

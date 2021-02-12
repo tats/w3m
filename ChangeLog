@@ -1,3 +1,10 @@
+2021-02-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Check empty string conditions for ssl_ca_file and ssl_ca_path.
+
+	* url.c:
+	Fix OpenSSL default always overrides ssl_ca_file and ssl_ca_path.
+
 2021-02-11  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:

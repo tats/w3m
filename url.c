@@ -444,7 +444,8 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 		goto eend;
 	    }
 	}
-	if ((!ssl_ca_file && !ssl_ca_path)
+	if ((!ssl_ca_file || *ssl_ca_file == '\0')
+	    && (!ssl_ca_path || *ssl_ca_path == '\0')
 	    || !SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
 #endif				/* defined(USE_SSL_VERIFY) */
 	    SSL_CTX_set_default_verify_paths(ssl_ctx);

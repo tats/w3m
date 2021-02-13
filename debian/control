@@ -22,7 +22,7 @@ Package: w3m
 Architecture: any
 Multi-Arch: foreign
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: ca-certificates
+Recommends: ca-certificates, bzip2
 Provides: www-browser
 Suggests: cmigemo,
           dict,

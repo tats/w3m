@@ -275,9 +275,8 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"section", ALST_NOP, MAXA_NOP, 0},		/* 145 HTML_SECTION */
     {"/section", NULL, 0, TFLG_END},		/* 146 HTML_N_SECTION */
     {"/dt", NULL, 0, TFLG_END},		/* 147 HTML_N_DT */
-    {"/dd", NULL, 0, TFLG_END},		/* 147 HTML_N_DD */
+    {"/dd", NULL, 0, TFLG_END},		/* 148 HTML_N_DD */
 
-    {NULL, NULL, 0, 0},		/* 148 Undefined */
     {NULL, NULL, 0, 0},		/* 149 Undefined */
     {NULL, NULL, 0, 0},		/* 150 Undefined */
     {NULL, NULL, 0, 0},		/* 151 Undefined */

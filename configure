@@ -1513,9 +1513,9 @@ Optional Features:
   --disable-dict		disable dictionary lookup (see README.dict)
   --disable-help-cgi		disable help cgi
   --disable-external-uri-loader	disable external URI loader
-   --disable-w3mmailer		disable w3mmailer
+  --disable-w3mmailer		disable w3mmailer
   --disable-ipv6		disable IPv6
-   --disable-sslverify		verify SSL certificate
+  --disable-sslverify		verify SSL certificate
   --disable-digest-auth		disable digest auth
 
 Optional Packages:
@@ -1528,19 +1528,19 @@ Optional Packages:
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
   --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
   --without-libintl-prefix     don't search for libintl in includedir and libdir
-  --with-imagelib=IMAGELIBS		image library
+  --with-imagelib=IMAGELIBS	image library
 				 IMAGELIBS may be space separeted list of:
-				    gtk2 gdk-pixbuf imlib imlib2
+				  gtk2 gdk-pixbuf imlib imlib2
   --with-migemo=MIGEMO_COMMAND	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
   --with-browser=BROWSER	default browser (/usr/bin/firefox)
-  --with-ssl=PREFIX		support https protocol
+  --with-ssl			support https protocol
    --with-cafile=CAFILE		CA file to verify SSL certificate
   --with-termlib=LIBS		terminal library
-				LIBS is space separated list of:
+				 LIBS is space separated list of:
 				  terminfo mytinfo termcap tinfo ncurses curses
-  --with-gc=PREFIX	  	libgc PREFIX
+  --with-gc=PREFIX		libgc PREFIX
 
 Some influential environment variables:
   CXX         C++ compiler command

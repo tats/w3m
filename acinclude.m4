@@ -370,7 +370,7 @@ AC_DEFUN([AC_W3M_W3MMAILER],
 [AC_SUBST(USE_W3MMAILER)
  AC_MSG_CHECKING(if w3mmail is used)
  AC_ARG_ENABLE(w3mmailer,
- [   --disable-w3mmailer		disable w3mmailer],,
+ [  --disable-w3mmailer		disable w3mmailer],,
  [enable_w3mmailer="$enable_external_uri_loader"])
  test x"$enable_external_uri_loader" = xno && enable_w3mmailer=no
  test x"$enable_w3mmailer" = xyes && AC_DEFINE(USE_W3MMAILER)
@@ -400,7 +400,7 @@ AC_DEFUN([AC_W3M_TERMLIB],
 [AC_MSG_CHECKING(terminal library)
 AC_ARG_WITH(termlib,
  [  --with-termlib[=LIBS]		terminal library
-				LIBS is space separated list of:
+				 LIBS is space separated list of:
 				  terminfo mytinfo termcap tinfo ncurses curses],,
  [with_termlib="yes"])
  AC_MSG_RESULT($with_termlib)
@@ -417,7 +417,7 @@ AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
 AC_SUBST(LIBGC)
 AC_ARG_WITH(gc,
- [  --with-gc[=PREFIX]	  	libgc PREFIX],
+ [  --with-gc[=PREFIX]		libgc PREFIX],
  [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
  [with_gc="yes"])
  AC_MSG_RESULT($with_gc)
@@ -472,7 +472,7 @@ AC_DEFUN([AC_W3M_SSL_DIGEST_AUTH],
 AC_SUBST(USE_SSL_VERIFY)
 AC_MSG_CHECKING(if SSL is suported)
 AC_ARG_WITH(ssl,
- [  --with-ssl[=PREFIX]		support https protocol],,
+ [  --with-ssl			support https protocol],,
  [with_ssl="yes"])
 AC_MSG_RESULT($with_ssl)
 if test x"$with_ssl" != xno; then
@@ -504,7 +504,7 @@ if test x"$with_ssl" != xno; then
     AC_DEFINE(USE_SSL)
     AC_MSG_CHECKING(if SSL certificate verify is enabled)
     AC_ARG_ENABLE(sslverify,
-      [   --disable-sslverify		verify SSL certificate],,
+      [  --disable-sslverify		verify SSL certificate],,
       [enable_sslverify="yes"])
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
@@ -647,9 +647,9 @@ AC_DEFUN([AC_W3M_IMAGE],
   AC_DEFINE(USE_IMAGE)
   AC_MSG_CHECKING(image library)
   AC_ARG_WITH(imagelib,
-   [  --with-imagelib=IMAGELIBS		image library
+   [  --with-imagelib=IMAGELIBS	image library
 				 IMAGELIBS may be space separeted list of: 
-				    gtk2 gdk-pixbuf imlib imlib2],,
+				  gtk2 gdk-pixbuf imlib imlib2],,
 
    [with_imagelib="yes"])
   if test x"$with_imagelib" = xyes; then

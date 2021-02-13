@@ -1,3 +1,17 @@
+2021-02-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Minor fixes for ./configure --help.
+
+	* acinclude.m4, config.h.dist, config.h.in, configure:
+	* doc-jp/README.SSL, fm.h:
+	Add auto-detection of ssl_ca_file by configure.
+	cf. gnutls-trustfiles in Emacs 27.1
+	<https://git.savannah.gnu.org/cgit/emacs.git/tree/lisp/net/gnutls.el?h=emacs-27.1#n106>
+
+	* doc-jp/README.SSL: Doc fix.
+
+	* url.c: Use ssl_ca_file and ssl_ca_path only when ssl_verify_server.
+
 2021-02-12  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Check empty string conditions for ssl_ca_file and ssl_ca_path.

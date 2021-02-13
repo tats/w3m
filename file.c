@@ -4404,6 +4404,7 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
       ++h_env->envc; \
       envs[h_env->envc].env = cmd; \
       envs[h_env->envc].count = 0; \
+      envs[h_env->envc].indent = envs[h_env->envc - 1].indent; \
     }
 
 #define POP_ENV \
@@ -4652,7 +4653,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		      h_env->limit);
 	    POP_ENV;
 	    if (!(obuf->flag & RB_PREMODE) &&
-		(h_env->envc == 0 || cmd == HTML_N_DL || cmd == HTML_N_BLQ)) {
+		(h_env->envc == 0 || cmd == HTML_N_BLQ)) {
 		do_blankline(h_env, obuf,
 			     envs[h_env->envc].indent,
 			     INDENT_INCR, h_env->limit);
@@ -4665,7 +4666,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    if (!(obuf->flag & RB_PREMODE))
+	    if (!(obuf->flag & RB_PREMODE) && envs[h_env->envc].env != HTML_DL
+		    && envs[h_env->envc].env != HTML_DL_COMPACT
+		    && envs[h_env->envc].env != HTML_DD)
 		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			     h_env->limit);
 	}
@@ -4796,10 +4799,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
 	    PUSH_ENV(HTML_DL);
 	}
+
 	if (h_env->envc <= MAX_INDENT_LEVEL)
 	    envs[h_env->envc].indent = envs[h_env->envc - 1].indent + INDENT_INCR;
-	else
-	    envs[h_env->envc].indent = envs[h_env->envc - 1].indent;
 
 	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
 	    if (obuf->pos > envs[h_env->envc].indent)
@@ -4818,7 +4820,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	     envs[h_env->envc].env != HTML_DL &&
 	     envs[h_env->envc].env != HTML_DL_COMPACT))
 	    return 1;
-	envs[h_env->envc].indent = envs[h_env->envc - 1].indent - INDENT_INCR;
+	envs[h_env->envc].indent = envs[h_env->envc].indent - INDENT_INCR;
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 1;
     case HTML_TITLE:
 	close_anchor(h_env, obuf);

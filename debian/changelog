@@ -1,3 +1,13 @@
+w3m (0.5.3+git20210102-3) unstable; urgency=medium
+
+  * New patch 020_ssl-ca.patch to work ssl_ca_file and ssl_ca_path
+  * Add bzip2 to Recommends
+  * Install ChangeLog.1
+  * Use ssl_ca_file instead of ssl_ca_path
+  * Reduce sample extbrowsers
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 14 Feb 2021 01:00:05 +0900
+
 w3m (0.5.3+git20210102-2) unstable; urgency=medium
 
   * New patch 010_section.patch to disable <section> behaves as <hr>

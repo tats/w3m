@@ -510,6 +510,26 @@ if test x"$with_ssl" != xno; then
     AC_MSG_RESULT($enable_sslverify)
   fi
 fi
+AC_SUBST(DEF_CAFILE)
+w3m_cafile=""
+if test x"$enable_sslverify" = xyes; then
+  AC_MSG_CHECKING(for CA bundle location)
+  AC_ARG_WITH(cafile,
+    [   --with-cafile=CAFILE		CA file to verify SSL certificate],
+    [w3m_cafile="$with_cafile"],[
+      for f in /etc/ssl/certs/ca-certificates.crt \
+        /etc/pki/tls/certs/ca-bundle.crt \
+        /etc/ssl/ca-bundle.pem \
+        /usr/ssl/certs/ca-bundle.crt \
+        /usr/local/share/certs/ca-root-nss.crt \
+        /etc/ssl/cert.pem \
+        /etc/certs/ca-certificates.crt; do
+        if test -f "$f" -a -r "$f"; then w3m_cafile="$f"; break; fi
+      done
+    ])
+  AC_MSG_RESULT($w3m_cafile)
+fi
+AC_DEFINE_UNQUOTED(DEF_CAFILE, "$w3m_cafile")
 AC_SUBST(USE_DIGEST_AUTH)
 AC_MSG_CHECKING(if digest auth is enabled)
 AC_ARG_ENABLE(digest_auth,

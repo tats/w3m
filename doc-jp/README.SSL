@@ -43,7 +43,8 @@ SSL サポートについて
         SSLの認証局のPEM形式証明書群のあるディレクトリへのパス
         (デフォルトは<NULL>).
     ssl_ca_file ファイル名
-        SSLの認証局のPEM形式証明書群のファイル(デフォルトは<NULL>).
+        SSLの認証局のPEM形式証明書群のファイル(デフォルトはconfigureで
+        自動設定).
     ただし「SSLEAY_VERSION_NUMBER >= 0x0800」な環境でないと無駄なコードが増
     えるだけなので, configure時にdisableしておいたほうがよいでしょう.
 

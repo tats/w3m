@@ -1185,7 +1185,7 @@ global int ssl_verify_server init(TRUE);
 global char *ssl_cert_file init(NULL);
 global char *ssl_key_file init(NULL);
 global char *ssl_ca_path init(NULL);
-global char *ssl_ca_file init(NULL);
+global char *ssl_ca_file init(DEF_CAFILE);
 global int ssl_path_modified init(FALSE);
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */

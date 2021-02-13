@@ -634,6 +634,7 @@ AUXBIN_TARGETS
 USE_SYSMOUSE
 USE_W3M
 USE_DIGEST_AUTH
+DEF_CAFILE
 SSL_LIBS
 SSL_CFLAGS
 PKG_CONFIG_LIBDIR
@@ -836,6 +837,7 @@ with_browser
 enable_ipv6
 with_ssl
 enable_sslverify
+with_cafile
 enable_digest_auth
 with_termlib
 with_gc
@@ -1534,6 +1536,7 @@ Optional Packages:
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
   --with-browser=BROWSER	default browser (/usr/bin/firefox)
   --with-ssl=PREFIX		support https protocol
+   --with-cafile=CAFILE		CA file to verify SSL certificate
   --with-termlib=LIBS		terminal library
 				LIBS is space separated list of:
 				  terminfo mytinfo termcap tinfo ncurses curses
@@ -8557,6 +8560,36 @@ fi
 $as_echo "$enable_sslverify" >&6; }
   fi
 fi
+
+w3m_cafile=""
+if test x"$enable_sslverify" = xyes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for CA bundle location" >&5
+$as_echo_n "checking for CA bundle location... " >&6; }
+
+# Check whether --with-cafile was given.
+if test "${with_cafile+set}" = set; then :
+  withval=$with_cafile; w3m_cafile="$with_cafile"
+else
+
+      for f in /etc/ssl/certs/ca-certificates.crt \
+        /etc/pki/tls/certs/ca-bundle.crt \
+        /etc/ssl/ca-bundle.pem \
+        /usr/ssl/certs/ca-bundle.crt \
+        /usr/local/share/certs/ca-root-nss.crt \
+        /etc/ssl/cert.pem \
+        /etc/certs/ca-certificates.crt; do
+        if test -f "$f" -a -r "$f"; then w3m_cafile="$f"; break; fi
+      done
+
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $w3m_cafile" >&5
+$as_echo "$w3m_cafile" >&6; }
+fi
+cat >>confdefs.h <<_ACEOF
+#define DEF_CAFILE "$w3m_cafile"
+_ACEOF
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if digest auth is enabled" >&5
 $as_echo_n "checking if digest auth is enabled... " >&6; }

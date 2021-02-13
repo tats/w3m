@@ -203,6 +203,8 @@ select_int	HTML_SELECT_INT
 option_int	HTML_OPTION_INT
 section		HTML_SECTION
 /section	HTML_N_SECTION
+/dt		HTML_N_DT
+/dd		HTML_N_DD
 textarea_int	HTML_TEXTAREA_INT
 /textarea_int	HTML_N_TEXTAREA_INT
 pre_plain	HTML_PRE_PLAIN

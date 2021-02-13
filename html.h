@@ -238,6 +238,8 @@ typedef struct {
 #define HTML_N_FIGCAPTION   144
 #define HTML_SECTION    145
 #define HTML_N_SECTION  146
+#define HTML_N_DT       147
+#define HTML_N_DD       148
 
    /* pseudo tag */
 #define HTML_SELECT_INT     160

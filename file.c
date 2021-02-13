@@ -4662,7 +4662,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			     h_env->limit);
 	}
-	PUSH_ENV(cmd);
 	if (parsedtag_exists(tag, ATTR_COMPACT))
 	    envs[h_env->envc].env = HTML_DL_COMPACT;
 	obuf->flag |= RB_IGNORE_P;
@@ -4754,21 +4753,28 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_DT:
 	CLOSE_A;
-	if (h_env->envc == 0 ||
-	    (h_env->envc_real < h_env->nenv &&
-	     envs[h_env->envc].env != HTML_DL &&
-	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	if (h_env->envc > 0 &&
+		(envs[h_env->envc].env == HTML_DL ||
+		envs[h_env->envc].env == HTML_DL_COMPACT)) {
+	    POP_ENV;
 	}
-	if (h_env->envc > 0) {
+	if (h_env->envc >= 0) {
 	    flushline(h_env, obuf,
-		      envs[h_env->envc - 1].indent, 0, h_env->limit);
+		      envs[h_env->envc].indent, 0, h_env->limit);
 	}
 	if (!(obuf->flag & RB_IN_DT)) {
 	    HTMLlineproc1("<b>", h_env);
 	    obuf->flag |= RB_IN_DT;
 	}
 	obuf->flag |= RB_IGNORE_P;
+	return 1;
+    case HTML_N_DT:
+	if (!(obuf->flag & RB_IN_DT))
+	    return 1;
+	obuf->flag &= ~RB_IN_DT;
+	HTMLlineproc1("</b>", h_env);
+	flushline(h_env, obuf, envs[h_env->envc].indent, 0,
+		  h_env->limit);
 	return 1;
     case HTML_DD:
 	CLOSE_A;
@@ -4789,6 +4795,14 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	/* obuf->flag |= RB_IGNORE_P; */
+	return 1;
+    case HTML_N_DD:
+	if (h_env->envc > 0 &&
+		(envs[h_env->envc].env == HTML_DL ||
+		envs[h_env->envc].env == HTML_DL_COMPACT)) {
+	    POP_ENV;
+	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	}
 	return 1;
     case HTML_TITLE:
 	close_anchor(h_env, obuf);

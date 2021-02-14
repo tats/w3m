@@ -1,3 +1,20 @@
+2021-02-14  bptato  <nincsnevem662@gmail.com>
+
+	Improve description list rendering
+	Origin: https://github.com/tats/w3m/pull/167
+	Bug-Debian: https://github.com/tats/w3m/issues/162
+
+	* html.c: Fix a mistake I made with </dd> and </dt> tags.
+
+	* file.c, tests/dl.expected, tests/dl.html: Nested <dl>s.
+
+	* file.c, tests/dl.expected, tests/dl.html: Fix <dl compact>.
+
+	* tests/dl.expected, tests/dl.html: <dl> test.
+
+	* file.c, html.c, html.h, tagtable.tab:
+	Improve description list rendering.
+
 2021-02-13  Tatsuya Kinoshita  <tats@debian.org>
 
 	* acinclude.m4, configure: Minor fixes for ./configure --help.

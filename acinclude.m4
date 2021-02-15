@@ -266,7 +266,7 @@ AC_DEFUN([AC_W3M_KEYMAP],
 [AC_SUBST(KEYMAP_FILE)
  AC_MSG_CHECKING(default keymap)
  AC_ARG_ENABLE(keymap,
-  [  --enable-keymap[=w3m|lynx]	default keybind style(w3m or lynx)],,
+  [  --enable-keymap=w3m|lynx	default keybind style (w3m or lynx)],,
   [enable_keymap="w3m"])
  AC_MSG_RESULT($enable_keymap)
  case x"$enable_keymap" in
@@ -292,7 +292,7 @@ AC_DEFUN([AC_W3M_MIGEMO],
  migemo_command="migemo -t egrep /usr/local/share/migemo/migemo-dict"
  AC_MSG_CHECKING(if migemo is supported with)
  AC_ARG_WITH(migemo,
-  [  --with-migemo=MIGEMO_COMMAND	migemo command],
+  [  --with-migemo[[=COMMAND]]	migemo command],
   [test x"$with_migemo" = xyes || migemo_command="$with_migemo"])
  if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    AC_DEFINE(USE_MIGEMO)
@@ -399,7 +399,7 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 AC_DEFUN([AC_W3M_TERMLIB],
 [AC_MSG_CHECKING(terminal library)
 AC_ARG_WITH(termlib,
- [  --with-termlib[=LIBS]		terminal library
+ [  --with-termlib[[=LIBS]]		terminal library
 				 LIBS is space separated list of:
 				  terminfo mytinfo termcap tinfo ncurses curses],,
  [with_termlib="yes"])
@@ -417,7 +417,7 @@ AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
 AC_SUBST(LIBGC)
 AC_ARG_WITH(gc,
- [  --with-gc[=PREFIX]		libgc PREFIX],
+ [  --with-gc[[=PREFIX]]		libgc PREFIX],
  [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
  [with_gc="yes"])
  AC_MSG_RESULT($with_gc)
@@ -502,9 +502,9 @@ if test x"$with_ssl" != xno; then
 
   if test x"$w3m_ssl" = xfound; then
     AC_DEFINE(USE_SSL)
-    AC_MSG_CHECKING(if SSL certificate verify is enabled)
+    AC_MSG_CHECKING(if SSL certificate verification is enabled)
     AC_ARG_ENABLE(sslverify,
-      [  --disable-sslverify		verify SSL certificate],,
+      [  --disable-sslverify		disable SSL certificate verification],,
       [enable_sslverify="yes"])
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
@@ -613,9 +613,9 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_SUBST(IMGWINLDFLAGS)
  AC_MSG_CHECKING(if image is enabled)
  AC_ARG_ENABLE(image,
- [  --enable-image[=DEVS]		enable inline image handler for DEVS
+ [  --enable-image[[=DEVS]]		enable inline image handler for DEVS
 				 DEVS may be comma separeted: x11,fb,fb+s,win
-				 default: autodetected.
+				 default: autodetected
 				 'no' means disable inline image],,
  [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
@@ -650,10 +650,9 @@ AC_DEFUN([AC_W3M_IMAGE],
   AC_DEFINE(USE_IMAGE)
   AC_MSG_CHECKING(image library)
   AC_ARG_WITH(imagelib,
-   [  --with-imagelib=IMAGELIBS	image library
+   [  --with-imagelib[[=IMAGELIBS]]	image library
 				 IMAGELIBS may be space separeted list of: 
 				  gtk2 gdk-pixbuf imlib imlib2],,
-
    [with_imagelib="yes"])
   if test x"$with_imagelib" = xyes; then
     with_imagelib="gtk2 gdk-pixbuf imlib imlib2"

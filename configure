@@ -1497,12 +1497,12 @@ Optional Features:
   --disable-color		disable color for vt100 terminal
    --disable-ansi-color		disable ansi color escape sequence
    --disable-bgcolor		disable to set background color
-  --enable-image=DEVS		enable inline image handler for DEVS
+  --enable-image[=DEVS]		enable inline image handler for DEVS
 				 DEVS may be comma separeted: x11,fb,fb+s,win
-				 default: autodetected.
+				 default: autodetected
 				 'no' means disable inline image
    --disable-xface		disable xface support
-  --enable-keymap=w3m|lynx	default keybind style(w3m or lynx)
+  --enable-keymap=w3m|lynx	default keybind style (w3m or lynx)
   --disable-menu		disable popup menu
   --disable-mouse		disable mouse operation
   --disable-history		disable URL history
@@ -1515,7 +1515,7 @@ Optional Features:
   --disable-external-uri-loader	disable external URI loader
   --disable-w3mmailer		disable w3mmailer
   --disable-ipv6		disable IPv6
-  --disable-sslverify		verify SSL certificate
+  --disable-sslverify		disable SSL certificate verification
   --disable-digest-auth		disable digest auth
 
 Optional Packages:
@@ -1528,20 +1528,20 @@ Optional Packages:
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
   --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
   --without-libintl-prefix     don't search for libintl in includedir and libdir
-  --with-imagelib=IMAGELIBS	image library
+  --with-imagelib[=IMAGELIBS]	image library
 				 IMAGELIBS may be space separeted list of:
 				  gtk2 gdk-pixbuf imlib imlib2
-  --with-migemo=MIGEMO_COMMAND	migemo command
+  --with-migemo[=COMMAND]	migemo command
   --with-editor=EDITOR		default editor (/usr/bin/vi)
   --with-mailer=MAILER		default mailer (/usr/bin/mail)
   --with-browser=BROWSER	default browser (/usr/bin/firefox)
   --with-ssl			support https protocol
    --with-cafile[=CAFILE]	CA file to verify SSL certificate
 				default: autodetected
-  --with-termlib=LIBS		terminal library
+  --with-termlib[=LIBS]		terminal library
 				 LIBS is space separated list of:
 				  terminfo mytinfo termcap tinfo ncurses curses
-  --with-gc=PREFIX		libgc PREFIX
+  --with-gc[=PREFIX]		libgc PREFIX
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -8546,8 +8546,8 @@ fi
   if test x"$w3m_ssl" = xfound; then
     $as_echo "#define USE_SSL 1" >>confdefs.h
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if SSL certificate verify is enabled" >&5
-$as_echo_n "checking if SSL certificate verify is enabled... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if SSL certificate verification is enabled" >&5
+$as_echo_n "checking if SSL certificate verification is enabled... " >&6; }
     # Check whether --enable-sslverify was given.
 if test "${enable_sslverify+set}" = set; then :
   enableval=$enable_sslverify;

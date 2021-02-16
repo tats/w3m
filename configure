@@ -1488,60 +1488,58 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --disable-m17n		do not use m17n
-   --disable-unicode		do not use unicode
-   --enable-messagel10n=LL	message l10n instead of NLS
-   --enable-japanese=CODE	support Japanese CODE=(S|E|J|U)
+  --disable-m17n          do not use m17n
+   --disable-unicode      do not use Unicode
+   --enable-messagel10n=LL  message l10n instead of Native Language Support
+   --enable-japanese=CODE support Japanese CODE=(S|E|J|U)
   --disable-nls           do not use Native Language Support
   --disable-rpath         do not hardcode runtime library paths
-  --disable-color		disable color for vt100 terminal
-   --disable-ansi-color		disable ansi color escape sequence
-   --disable-bgcolor		disable to set background color
-  --enable-image[=DEVS]		enable inline image handler for DEVS
-				 DEVS may be comma separeted: x11,fb,fb+s,win
-				 default: autodetected
-				 'no' means disable inline image
-   --disable-xface		disable xface support
-  --enable-keymap=w3m|lynx	default keybind style (w3m or lynx)
-  --disable-menu		disable popup menu
-  --disable-mouse		disable mouse operation
-  --disable-history		disable URL history
-  --disable-alarm		disable alarm
-  --disable-cookie		disable cookie
-  --disable-nntp		disable NNTP
-  --disable-gopher		disable GOPHER
-  --disable-dict		disable dictionary lookup (see README.dict)
-  --disable-help-cgi		disable help cgi
-  --disable-external-uri-loader	disable external URI loader
-  --disable-w3mmailer		disable w3mmailer
-  --disable-ipv6		disable IPv6
-  --disable-sslverify		disable SSL certificate verification
-  --disable-digest-auth		disable digest auth
+  --disable-color         disable color for VT100 terminal
+   --disable-ansi-color   disable ANSI color escape sequence
+   --disable-bgcolor      disable to set background color
+  --enable-image[=DEVS]   inline image handler [guessed]
+                           DEVS may be comma separated: x11,fb,fb+s,win
+   --disable-xface        disable X-Face support
+  --enable-keymap=STYLE   default keybind style (w3m or lynx) [w3m]
+  --disable-menu          disable popup menu
+  --disable-mouse         disable mouse operation
+  --disable-history       disable URL history
+  --disable-alarm         disable alarm
+  --disable-cookie        disable cookie
+  --disable-nntp          disable NNTP
+  --disable-gopher        disable Gopher
+  --disable-dict          disable dictionary lookup
+  --disable-help-cgi      disable help cgi
+  --disable-external-uri-loader  disable external URI loader
+  --disable-w3mmailer     disable w3mmailer
+  --disable-ipv6          disable IPv6
+  --disable-sslverify     disable SSL certificate verification
+  --disable-digest-auth   disable digest auth
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-x                use the X Window System
-  --with-charset=CHARSET
+  --with-charset=CHARSET  charset for display [UTF-8]
   --with-gnu-ld           assume the C compiler uses GNU ld default=no
   --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
   --with-libintl-prefix[=DIR]  search for libintl in DIR/include and DIR/lib
   --without-libintl-prefix     don't search for libintl in includedir and libdir
-  --with-imagelib[=IMAGELIBS]	image library
-				 IMAGELIBS may be space separeted list of:
-				  gtk2 gdk-pixbuf imlib imlib2
-  --with-migemo[=COMMAND]	migemo command
-  --with-editor=EDITOR		default editor (/usr/bin/vi)
-  --with-mailer=MAILER		default mailer (/usr/bin/mail)
-  --with-browser=BROWSER	default browser (/usr/bin/firefox)
-  --with-ssl			support https protocol
-   --with-cafile[=CAFILE]	CA file to verify SSL certificate
-				default: autodetected
-  --with-termlib[=LIBS]		terminal library
-				 LIBS is space separated list of:
-				  terminfo mytinfo termcap tinfo ncurses curses
-  --with-gc[=PREFIX]		libgc PREFIX
+  --with-imagelib[=LIBS]  image library [guessed]
+                           LIBS may be space separated:
+                            gtk2 gdk-pixbuf imlib imlib2
+  --with-migemo[=COMMAND] migemo command and options
+                          [migemo -t egrep /usr/local/share/migemo/migemo-dict]
+  --with-editor=EDITOR    default editor [/usr/bin/vi]
+  --with-mailer=MAILER    default mailer [/usr/bin/mail]
+  --with-browser=BROWSER  default browser [/usr/bin/firefox]
+  --with-ssl[=PREFIX]     SSL library/header location [guessed]
+   --with-cafile[=CAFILE] CA file to verify SSL certificate [guessed]
+  --with-termlib[=LIBS]   terminal library [guessed]
+                           LIBS may be space separated:
+                            terminfo mytinfo termcap tinfo ncurses curses
+  --with-gc[=PREFIX]      GC library/header location [guessed]
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -5066,8 +5064,8 @@ else
  WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
  wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking if unicode support is enabled" >&5
-$as_echo_n "checking if unicode support is enabled... " >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking if Unicode support is enabled" >&5
+$as_echo_n "checking if Unicode support is enabled... " >&6; }
  # Check whether --enable-unicode was given.
 if test "${enable_unicode+set}" = set; then :
   enableval=$enable_unicode;
@@ -7423,8 +7421,8 @@ test x"$enable_color" = xyes && $as_echo "#define USE_COLOR 1" >>confdefs.h
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_color" >&5
 $as_echo "$enable_color" >&6; }
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if ansi color escape sequence support is enabled" >&5
-$as_echo_n "checking if ansi color escape sequence support is enabled... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if ANSI color escape sequence support is enabled" >&5
+$as_echo_n "checking if ANSI color escape sequence support is enabled... " >&6; }
 # Check whether --enable-ansi_color was given.
 if test "${enable_ansi_color+set}" = set; then :
   enableval=$enable_ansi_color;
@@ -7763,8 +7761,8 @@ $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with FB support" >&2;}
 if test x"$enable_image" != xno; then
  AUXBIN_TARGETS="$AUXBIN_TARGETS w3mimgdisplay\$(EXT)"
 
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking if xface is enabled" >&5
-$as_echo_n "checking if xface is enabled... " >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking if X-Face is enabled" >&5
+$as_echo_n "checking if X-Face is enabled... " >&6; }
  # Check whether --enable-xface was given.
 if test "${enable_xface+set}" = set; then :
   enableval=$enable_xface;
@@ -7954,8 +7952,8 @@ fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_nntp" >&5
 $as_echo "$enable_nntp" >&6; }
 
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking if gopher is enabled" >&5
-$as_echo_n "checking if gopher is enabled... " >&6; }
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking if Gopher is enabled" >&5
+$as_echo_n "checking if Gopher is enabled... " >&6; }
  # Check whether --enable-gopher was given.
 if test "${enable_gopher+set}" = set; then :
   enableval=$enable_gopher;
@@ -8378,8 +8376,8 @@ $as_echo "no" >&6; }
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if SSL is suported" >&5
-$as_echo_n "checking if SSL is suported... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if SSL is supported" >&5
+$as_echo_n "checking if SSL is supported... " >&6; }
 
 # Check whether --with-ssl was given.
 if test "${with_ssl+set}" = set; then :
@@ -8926,7 +8924,7 @@ $as_echo_n "checking GC library exists... " >&6; }
 
 # Check whether --with-gc was given.
 if test "${with_gc+set}" = set; then :
-  withval=$with_gc; test x"$with_gc" = xno && as_fn_error $? "You can not build w3m without gc" "$LINENO" 5
+  withval=$with_gc; test x"$with_gc" = xno && as_fn_error $? "You can not build w3m without GC" "$LINENO" 5
 else
   with_gc="yes"
 fi

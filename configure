@@ -7650,7 +7650,16 @@ $as_echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 
  fi
   fi
   if test x"$x11" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     $as_echo "#define USE_W3MIMG_X11 1" >>confdefs.h
+
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"
+     $as_echo "#define USE_IMLIB2 1" >>confdefs.h
+
+     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      $as_echo "#define USE_W3MIMG_X11 1" >>confdefs.h
 
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
@@ -7680,22 +7689,23 @@ $as_echo "$as_me: WARNING: Imlib2 is not installed.  Install Imlib2 (version >= 
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"
-   elif test x"$have_imlib2" = xyes; then
-     $as_echo "#define USE_W3MIMG_X11 1" >>confdefs.h
-
-     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
-     IMGTARGETS="x11"
-     $as_echo "#define USE_IMLIB2 1" >>confdefs.h
-
-     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    else
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unable to build w3mimgdisplay with X11 support" >&5
 $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with X11 support" >&2;}
    fi
   fi
   if test x"$fb" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     $as_echo "#define USE_W3MIMG_FB 1" >>confdefs.h
+
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     $as_echo "#define USE_IMLIB2 1" >>confdefs.h
+
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      $as_echo "#define USE_W3MIMG_FB 1" >>confdefs.h
 
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
@@ -7715,16 +7725,6 @@ $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with X11 support" >&2;}
 
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-   elif test x"$have_imlib2" = xyes; then
-     $as_echo "#define USE_W3MIMG_FB 1" >>confdefs.h
-
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGTARGETS="${IMGTARGETS} fb"
-     $as_echo "#define USE_IMLIB2 1" >>confdefs.h
-
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    else
      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unable to build w3mimgdisplay with FB support" >&5
 $as_echo "$as_me: WARNING: unable to build w3mimgdisplay with FB support" >&2;}

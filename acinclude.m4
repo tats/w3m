@@ -722,7 +722,14 @@ AC_DEFUN([AC_W3M_IMAGE],
 	[have_imlib2="no"])
   fi
   if test x"$x11" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     AC_DEFINE(USE_W3MIMG_X11)
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_IMLIB2)
+     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGTARGETS="x11"    
@@ -745,19 +752,20 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"    
-   elif test x"$have_imlib2" = xyes; then
-     AC_DEFINE(USE_W3MIMG_X11)
-     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
-     IMGTARGETS="x11"    
-     AC_DEFINE(USE_IMLIB2)
-     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
   fi
   if test x"$fb" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     AC_DEFINE(USE_W3MIMG_FB)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     AC_DEFINE(USE_IMLIB2)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGTARGETS="${IMGTARGETS} fb"
@@ -772,14 +780,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      AC_DEFINE(USE_GDKPIXBUF)
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-   elif test x"$have_imlib2" = xyes; then
-     AC_DEFINE(USE_W3MIMG_FB)
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGTARGETS="${IMGTARGETS} fb"
-     AC_DEFINE(USE_IMLIB2)
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi

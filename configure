@@ -1529,8 +1529,7 @@ Optional Packages:
   --with-imagelib[=LIBS]  image library [guessed]
                            LIBS may be space separated:
                             gtk2 gdk-pixbuf imlib imlib2
-  --with-migemo[=COMMAND] migemo command and options
-                          [migemo -t egrep /usr/local/share/migemo/migemo-dict]
+  --with-migemo[=COMMAND] migemo/cmigemo command and options [guessed]
   --with-editor=EDITOR    default editor [/usr/bin/vi]
   --with-mailer=MAILER    default mailer [/usr/bin/mail]
   --with-browser=BROWSER  default browser [/usr/bin/firefox]
@@ -8025,21 +8024,43 @@ fi
 $as_echo "$enable_w3mmailer" >&6; }
 
 
- migemo_command="migemo -t egrep /usr/local/share/migemo/migemo-dict"
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if migemo is supported with" >&5
 $as_echo_n "checking if migemo is supported with... " >&6; }
 
 # Check whether --with-migemo was given.
 if test "${with_migemo+set}" = set; then :
   withval=$with_migemo; test x"$with_migemo" = xyes || migemo_command="$with_migemo"
+else
+  migemo_command=no
 fi
 
+ if test x"$with_migemo" = xyes; then
+  if command -v migemo >/dev/null 2>&1; then
+   migemo_command="migemo -t egrep"
+   for f in \
+    /usr/share/migemo/migemo-dict \
+    /usr/local/share/migemo/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  else
+   migemo_command="cmigemo -q -d"
+   for f in \
+    /usr/local/share/migemo/utf-8/migemo-dict \
+    /usr/local/share/cmigemo/utf-8/migemo-dict \
+    /usr/share/migemo/utf-8/migemo-dict \
+    /usr/share/cmigemo/utf-8/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  fi
+  migemo_command="$migemo_command $f"
+ fi
  if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    $as_echo "#define USE_MIGEMO 1" >>confdefs.h
 
  fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $migemo_command" >&5
 $as_echo "$migemo_command" >&6; }
+ if test x"$migemo_command" = xno; then migemo_command=""; fi
  cat >>confdefs.h <<_ACEOF
 #define DEF_MIGEMO_COMMAND "$migemo_command"
 _ACEOF

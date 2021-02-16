@@ -289,16 +289,36 @@ AC_DEFUN([AC_W3M_KEYMAP],
 AC_DEFUN([AC_W3M_MIGEMO],
 [AC_SUBST(USE_MIGEMO)
  AC_SUBST(DEF_MIGEMO_COMMAND)
- migemo_command="migemo -t egrep /usr/local/share/migemo/migemo-dict"
  AC_MSG_CHECKING(if migemo is supported with)
  AC_ARG_WITH(migemo,
-  [  --with-migemo[[=COMMAND]] migemo command and options
-                          [[migemo -t egrep /usr/local/share/migemo/migemo-dict]]],
-  [test x"$with_migemo" = xyes || migemo_command="$with_migemo"])
+  [  --with-migemo[[=COMMAND]] migemo/cmigemo command and options [[guessed]]],
+  [test x"$with_migemo" = xyes || migemo_command="$with_migemo"],
+  migemo_command=no)
+ if test x"$with_migemo" = xyes; then
+  if command -v migemo >/dev/null 2>&1; then
+   migemo_command="migemo -t egrep"
+   for f in \
+    /usr/share/migemo/migemo-dict \
+    /usr/local/share/migemo/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  else
+   migemo_command="cmigemo -q -d"
+   for f in \
+    /usr/local/share/migemo/utf-8/migemo-dict \
+    /usr/local/share/cmigemo/utf-8/migemo-dict \
+    /usr/share/migemo/utf-8/migemo-dict \
+    /usr/share/cmigemo/utf-8/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  fi
+  migemo_command="$migemo_command $f"
+ fi
  if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    AC_DEFINE(USE_MIGEMO)
  fi
  AC_MSG_RESULT($migemo_command)
+ if test x"$migemo_command" = xno; then migemo_command=""; fi
  AC_DEFINE_UNQUOTED(DEF_MIGEMO_COMMAND, "$migemo_command")])
 #
 # ----------------------------------------------------------------

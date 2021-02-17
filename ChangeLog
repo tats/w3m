@@ -1,3 +1,19 @@
+2021-02-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/iso2022.c, w3mimgdisplay.c: Typo fix.
+
+2021-02-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure:
+	Add auto-detection for configure --with-migemo.
+
+	* acinclude.m4, configure: Prefer Imlib2 over GTK2 by default.
+	Bug-Debian: https://github.com/tats/w3m/issues/95
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=672121
+
+	* acinclude.m4, configure:
+	Indentation and wording fixes for configure --help.
+
 2021-02-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* acinclude.m4, configure: Wording fixes for configure --help.

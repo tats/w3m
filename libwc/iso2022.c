@@ -280,12 +280,12 @@ wc_parse_iso2022_esc(wc_uchar **ptr, wc_status *st)
 		state = cs = WC_C_G0_CS96;
 		g = *p & 0x03;
 		continue;
-	    case WC_C_C0:	/* ESC '!' */ /* not suported */
-	    case WC_C_C1:	/* ESC '"' */ /* not suported */
-	    case WC_C_REP:	/* ESC '&' */ /* not suported */
+	    case WC_C_C0:	/* ESC '!' */ /* not supported */
+	    case WC_C_C1:	/* ESC '"' */ /* not supported */
+	    case WC_C_REP:	/* ESC '&' */ /* not supported */
 		state = cs = WC_C_C0;
 		continue;
-	    case WC_C_CSWSR:	/* ESC '%' */ /* not suported */
+	    case WC_C_CSWSR:	/* ESC '%' */ /* not supported */
 		state = cs = WC_C_CSWSR;
 		continue;
 	    case WC_C_SS2:	/* ESC 'N' */

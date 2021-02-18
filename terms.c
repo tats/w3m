@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -489,20 +490,19 @@ put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 void
 put_image_iterm2(char *url, int x, int y, int w, int h)
 {
-    Str buf, filecontent;
-    const char *base64;
+    Str buf;
+    char *base64, *cbuf;
     FILE *fp;
+    int c, i;
+    struct stat st;
+
+    if (stat(url, &st))
+	return;
 
     fp = fopen(url, "r");
     if (!fp)
 	return;
-    filecontent = Strfgetall(fp);
 
-    base64 = base64_encode(filecontent->ptr, filecontent->length);
-    if (!base64)
-	return;
-
-    MOVE(y,x);
     buf = Sprintf("\x1b]1337;"
       "File="
       "name=%s;"
@@ -511,8 +511,39 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
       "height=%d;"
       "preserveAspectRatio=0;"
       "inline=1"
-      ":%s\a", url, filecontent->length, w, h, base64);
+      ":", url, st.st_size, w, h);
+
+    MOVE(y,x);
+
     writestr(buf->ptr);
+
+    cbuf = GC_MALLOC_ATOMIC(3072);
+    i = 0;
+    while ((c = fgetc(fp)) != EOF) {
+	cbuf[i] = c;
+	Strcat_char(buf, c);
+	++i;
+	if (i == 3072) {
+	    base64 = base64_encode(cbuf, i);
+	    if (!base64) {
+		writestr("\a");
+		return;
+	    }
+	    writestr(base64);
+	    i = 0;
+	}
+    }
+
+    if (i) {
+	base64 = base64_encode(cbuf, i);
+	if (!base64) {
+	    writestr("\a");
+	    return;
+	}
+	writestr(base64);
+    }
+
+    writestr("\a");
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 

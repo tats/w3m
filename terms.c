@@ -564,7 +564,7 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 	return;
 
     type = guessContentType(url);
-    if(!strcasecmp(type, "image/png")) {
+    if(type && !strcasecmp(type, "image/png")) {
       t = 100;
     } else {
       /* TODO: kitty +kitten icat or link imlib/gdkpixbuf? */

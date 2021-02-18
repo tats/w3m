@@ -2016,6 +2016,10 @@ base64_encode(const unsigned char *src, size_t len)
     unsigned long j;
     size_t k;
 
+
+    if (!len)
+	return NULL;
+
     k = len;
     if (k % 3)
       k += 3 - (k % 3);

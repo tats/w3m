@@ -521,7 +521,6 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
     i = 0;
     while ((c = fgetc(fp)) != EOF) {
 	cbuf[i] = c;
-	Strcat_char(buf, c);
 	++i;
 	if (i == 3072) {
 	    base64 = base64_encode(cbuf, i);
@@ -545,6 +544,85 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
 
     writestr("\a");
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+void
+put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
+    int sh, int cols, int rows)
+{
+    Str buf;
+    char *base64, *cbuf, *type;
+    FILE *fp;
+    int c, i, j, k, t;
+    struct stat st;
+
+    if (stat(url, &st))
+	return;
+
+    fp = fopen(url, "r");
+    if (!fp)
+	return;
+
+    type = guessContentType(url);
+    if(!strcasecmp(type, "image/png")) {
+      t = 100;
+    } else {
+      /* TODO: kitty +kitten icat or link imlib/gdkpixbuf? */
+      return;
+    }
+
+    MOVE(y, x);
+    buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=1,X=%d,Y=%d,x=%d,y=%d,"
+	"w=%d,h=%d,c=%d,r=%d;",
+	w, h, x, y, sx, sy, sw, sh, cols, rows);
+
+    writestr(buf->ptr);
+
+    cbuf = GC_MALLOC_ATOMIC(3072);
+    i = 0;
+    j = buf->length;
+
+    while (buf->length + i / 3 * 4 < 4096 && (c = fgetc(fp)) != EOF) {
+	cbuf[i] = c;
+	++i;
+    }
+
+    base64 = base64_encode(cbuf, i);
+    if (!base64)
+	return;
+
+    buf = Sprintf("%s\x1b\\", base64);
+    writestr(buf->ptr);
+    i = 0;
+    base64 = NULL;
+
+    while ((c = fgetc(fp)) != EOF) {
+	if (!i && base64) {
+	    buf = Sprintf("\x1b_Gm=1;%s\x1b\\", base64);
+	    writestr(buf->ptr);
+	}
+	cbuf[i] = c;
+	++i;
+	if (i == 3072) {
+	    base64 = base64_encode(cbuf, i);
+	    if (!base64)
+		return;
+
+	    i = 0;
+	}
+    }
+
+    if (i) {
+	base64 = base64_encode(cbuf, i);
+	if (!base64)
+	    return;
+    }
+
+    if (base64) {
+	buf = Sprintf("\x1b_Gm=0;%s\x1b\\", base64);
+	writestr(buf->ptr);
+    }
+    MOVE(Currentbuf->cursorY, Currentbuf->cursorX);
 }
 
 static void

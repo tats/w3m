@@ -546,15 +546,75 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 
+void ttymode_set(int mode, int imode);
+void ttymode_reset(int mode, int imode);
+
 void
 put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
     int sh, int cols, int rows)
 {
     Str buf;
-    char *base64, *cbuf, *type;
+    char *base64, *cbuf, *type, *tmpf;
+    char *argv[4];
     FILE *fp;
     int c, i, j, k, t;
     struct stat st;
+    pid_t pid;
+    MySignalHandler(*volatile previntr) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevquit) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevstop) (SIGNAL_ARG);
+
+    if (!url)
+	return;
+
+    type = guessContentType(url);
+    t = 100; /* always convert to png for now. */
+
+    if(!(type && !strcasecmp(type, "image/png"))) {
+	buf = Strnew();
+	tmpf = Sprintf("%s/%s.png", tmp_dir, mybasename(url))->ptr;
+
+	/* convert only if png doesn't exist yet. */
+
+	if (stat(tmpf, &st)) {
+	    if (stat(url, &st))
+		return;
+
+	    flush_tty();
+
+	    previntr = mySignal(SIGINT, SIG_IGN);
+	    prevquit = mySignal(SIGQUIT, SIG_IGN);
+	    prevstop = mySignal(SIGTSTP, SIG_IGN);
+
+	    if ((pid = fork()) == 0) {
+		i = 0;
+
+		close(STDERR_FILENO);	/* Don't output error message. */
+		ttymode_set(ISIG, 0);
+
+		if ((cbuf = getenv("W3M_KITTY_TO_PNG")))
+		    argv[i++] = cbuf;
+		else
+		    argv[i++] = "convert";
+
+		argv[i++] = url;
+		argv[i++] = tmpf;
+		argv[i++] = NULL;
+		execvp(argv[0],argv);
+		exit(0);
+	    }
+	    else if (pid > 0) {
+		waitpid(pid, &i, 0);
+		ttymode_reset(ISIG, 0);
+		mySignal(SIGINT, previntr);
+		mySignal(SIGQUIT, prevquit);
+		mySignal(SIGTSTP, prevstop);
+	    }
+
+	    pushText(fileToDelete, tmpf);
+	}
+	url = tmpf;
+    }
 
     if (stat(url, &st))
 	return;
@@ -563,18 +623,10 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
     if (!fp)
 	return;
 
-    type = guessContentType(url);
-    if(type && !strcasecmp(type, "image/png")) {
-      t = 100;
-    } else {
-      /* TODO: kitty +kitten icat or link imlib/gdkpixbuf? */
-      return;
-    }
-
     MOVE(y, x);
-    buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=1,X=%d,Y=%d,x=%d,y=%d,"
+    buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=1,x=%d,y=%d,"
 	"w=%d,h=%d,c=%d,r=%d;",
-	w, h, x, y, sx, sy, sw, sh, cols, rows);
+	w, h, sx, sy, sw, sh, cols, rows);
 
 
     cbuf = GC_MALLOC_ATOMIC(3072);
@@ -591,9 +643,9 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 	return;
 
     if (c == EOF)
-      buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=0,X=%d,Y=%d,x=%d,y=%d,"
+      buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=0,x=%d,y=%d,"
 	"w=%d,h=%d,c=%d,r=%d;",
-	w, h, x, y, sx, sy, sw, sh, cols, rows);
+	w, h, sx, sy, sw, sh, cols, rows);
     writestr(buf->ptr);
 
     buf = Sprintf("%s\x1b\\", base64);
@@ -721,9 +773,6 @@ save_first_animation_frame(const char *path)
 
     return NULL;
 }
-
-void ttymode_set(int mode, int imode);
-void ttymode_reset(int mode, int imode);
 
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)

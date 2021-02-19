@@ -259,7 +259,7 @@ drawImage()
 	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {
 		put_image_iterm2(url, x, y, sw, sh);
 	    } else if (enable_inline_image == INLINE_IMG_KITTY) {
-		put_image_kitty(url, x, y, w, h, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, sw, sh);
+		put_image_kitty(url, x, y, i->width, i->height, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, sw, sh);
 	    }
 
 	    continue ;

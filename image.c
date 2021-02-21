@@ -198,6 +198,8 @@ syncImage(void)
 void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
 void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
 void put_image_iterm2(char *url, int x, int y, int w, int h);
+void put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int
+    sw, int sh, int c, int r);
 
 void
 drawImage()
@@ -256,6 +258,8 @@ drawImage()
 		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh);
 	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {
 		put_image_iterm2(url, x, y, sw, sh);
+	    } else if (enable_inline_image == INLINE_IMG_KITTY) {
+		put_image_kitty(url, x, y, i->width, i->height, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, sw, sh);
 	    }
 
 	    continue ;

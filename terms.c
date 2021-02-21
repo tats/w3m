@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/time.h>
@@ -489,20 +490,19 @@ put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 void
 put_image_iterm2(char *url, int x, int y, int w, int h)
 {
-    Str buf, filecontent;
-    const char *base64;
+    Str buf;
+    char *base64, *cbuf;
     FILE *fp;
+    int c, i;
+    struct stat st;
+
+    if (stat(url, &st))
+	return;
 
     fp = fopen(url, "r");
     if (!fp)
 	return;
-    filecontent = Strfgetall(fp);
 
-    base64 = base64_encode(filecontent->ptr, filecontent->length);
-    if (!base64)
-	return;
-
-    MOVE(y,x);
     buf = Sprintf("\x1b]1337;"
       "File="
       "name=%s;"
@@ -511,9 +511,177 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
       "height=%d;"
       "preserveAspectRatio=0;"
       "inline=1"
-      ":%s\a", url, filecontent->length, w, h, base64);
+      ":", url, st.st_size, w, h);
+
+    MOVE(y,x);
+
     writestr(buf->ptr);
+
+    cbuf = GC_MALLOC_ATOMIC(3072);
+    i = 0;
+    while ((c = fgetc(fp)) != EOF) {
+	cbuf[i] = c;
+	++i;
+	if (i == 3072) {
+	    base64 = base64_encode(cbuf, i);
+	    if (!base64) {
+		writestr("\a");
+		return;
+	    }
+	    writestr(base64);
+	    i = 0;
+	}
+    }
+
+    if (i) {
+	base64 = base64_encode(cbuf, i);
+	if (!base64) {
+	    writestr("\a");
+	    return;
+	}
+	writestr(base64);
+    }
+
+    writestr("\a");
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
+}
+
+void ttymode_set(int mode, int imode);
+void ttymode_reset(int mode, int imode);
+
+void
+put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
+    int sh, int cols, int rows)
+{
+    Str buf;
+    char *base64, *cbuf, *type, *tmpf;
+    char *argv[4];
+    FILE *fp;
+    int c, i, j, k, t;
+    struct stat st;
+    pid_t pid;
+    MySignalHandler(*volatile previntr) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevquit) (SIGNAL_ARG);
+    MySignalHandler(*volatile prevstop) (SIGNAL_ARG);
+
+    if (!url)
+	return;
+
+    type = guessContentType(url);
+    t = 100; /* always convert to png for now. */
+
+    if(!(type && !strcasecmp(type, "image/png"))) {
+	buf = Strnew();
+	tmpf = Sprintf("%s/%s.png", tmp_dir, mybasename(url))->ptr;
+
+	/* convert only if png doesn't exist yet. */
+
+	if (stat(tmpf, &st)) {
+	    if (stat(url, &st))
+		return;
+
+	    flush_tty();
+
+	    previntr = mySignal(SIGINT, SIG_IGN);
+	    prevquit = mySignal(SIGQUIT, SIG_IGN);
+	    prevstop = mySignal(SIGTSTP, SIG_IGN);
+
+	    if ((pid = fork()) == 0) {
+		i = 0;
+
+		close(STDERR_FILENO);	/* Don't output error message. */
+		ttymode_set(ISIG, 0);
+
+		if ((cbuf = getenv("W3M_KITTY_TO_PNG")))
+		    argv[i++] = cbuf;
+		else
+		    argv[i++] = "convert";
+
+		argv[i++] = url;
+		argv[i++] = tmpf;
+		argv[i++] = NULL;
+		execvp(argv[0],argv);
+		exit(0);
+	    }
+	    else if (pid > 0) {
+		waitpid(pid, &i, 0);
+		ttymode_reset(ISIG, 0);
+		mySignal(SIGINT, previntr);
+		mySignal(SIGQUIT, prevquit);
+		mySignal(SIGTSTP, prevstop);
+	    }
+
+	    pushText(fileToDelete, tmpf);
+	}
+	url = tmpf;
+    }
+
+    if (stat(url, &st))
+	return;
+
+    fp = fopen(url, "r");
+    if (!fp)
+	return;
+
+    MOVE(y, x);
+    buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=1,x=%d,y=%d,"
+	"w=%d,h=%d,c=%d,r=%d;",
+	w, h, sx, sy, sw, sh, cols, rows);
+
+
+    cbuf = GC_MALLOC_ATOMIC(3072);
+    i = 0;
+    j = buf->length;
+
+    while (buf->length + i / 3 * 4 < 4096 && (c = fgetc(fp)) != EOF) {
+	cbuf[i] = c;
+	++i;
+    }
+
+    base64 = base64_encode(cbuf, i);
+    if (!base64)
+	return;
+
+    if (c == EOF)
+      buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=0,x=%d,y=%d,"
+	"w=%d,h=%d,c=%d,r=%d;",
+	w, h, sx, sy, sw, sh, cols, rows);
+    writestr(buf->ptr);
+
+    buf = Sprintf("%s\x1b\\", base64);
+    writestr(buf->ptr);
+
+    if (c != EOF) {
+      i = 0;
+      base64 = NULL;
+      while ((c = fgetc(fp)) != EOF) {
+	  if (!i && base64) {
+	      buf = Sprintf("\x1b_Gm=1;%s\x1b\\", base64);
+	      writestr(buf->ptr);
+	  }
+	  cbuf[i] = c;
+	  ++i;
+	  if (i == 3072) {
+	      base64 = base64_encode(cbuf, i);
+	      if (!base64)
+		  return;
+
+	      i = 0;
+	  }
+      }
+
+      if (i) {
+	  base64 = base64_encode(cbuf, i);
+	  if (!base64)
+	      return;
+      }
+
+      if (base64) {
+	  buf = Sprintf("\x1b_Gm=0;%s\x1b\\", base64);
+	  writestr(buf->ptr);
+      }
+    }
+    MOVE(Currentbuf->cursorY, Currentbuf->cursorX);
 }
 
 static void
@@ -605,9 +773,6 @@ save_first_animation_frame(const char *path)
 
     return NULL;
 }
-
-void ttymode_set(int mode, int imode);
-void ttymode_reset(int mode, int imode);
 
 void
 put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image)

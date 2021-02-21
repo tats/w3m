@@ -316,6 +316,7 @@ extern int REV_LB[];
 #define INLINE_IMG_OSC5379	1
 #define INLINE_IMG_SIXEL	2
 #define INLINE_IMG_ITERM2	3
+#define INLINE_IMG_KITTY	4
 
 /* 
  * Types.

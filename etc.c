@@ -2013,8 +2013,12 @@ base64_encode(const unsigned char *src, size_t len)
 {
     unsigned char *w, *at;
     const unsigned char *in, *endw;
-    int j;
+    unsigned long j;
     size_t k;
+
+
+    if (!len)
+	return NULL;
 
     k = len;
     if (k % 3)
@@ -2024,7 +2028,9 @@ base64_encode(const unsigned char *src, size_t len)
     if (k + 1 < len)
 	return NULL;
 
-    w = GC_MALLOC_ATOMIC_IGNORE_OFF_PAGE(k + 1);
+    w = GC_MALLOC_ATOMIC(k + 1);
+    if (!w)
+	return NULL;
     w[k] = 0;
 
     at = w;

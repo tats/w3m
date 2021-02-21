@@ -1,3 +1,25 @@
+2021-02-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Don't use SECLEVEL when not OPENSSL_TLS_SECURITY_LEVEL.
+
+	* doc/w3m.1, main.c: Add eNULL to ssl_cipher when -insecure.
+
+2021-02-21  bptato  <nincsnevem662@gmail.com>
+
+	Improved iTerm2 image display + initial kitty image support
+	Origin: https://github.com/tats/w3m/pull/168
+
+	* image.c, rc.c, terms.c:
+	Convert images to PNG for kitty with ImageMagick.
+
+	* terms.c: Fix potential segfault.
+
+	* terms.c: Fix small images on kitty.
+
+	* etc.c, fm.h, image.c, rc.c, terms.c: Support kitty image protocol.
+
+	* etc.c, terms.c: Handle iTerm2 images more efficiently.
+
 2021-02-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/iso2022.c, w3mimgdisplay.c: Typo fix.

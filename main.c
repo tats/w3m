@@ -757,7 +757,11 @@ main(int argc, char **argv, char **envp)
 		displayTitleTerm = argv[i] + 7;
 #ifdef USE_SSL
 	    else if (!strcmp("-insecure", argv[i])) {
+#ifdef OPENSSL_TLS_SECURITY_LEVEL
 		set_param_option("ssl_cipher=ALL:eNULL:@SECLEVEL=0");
+#else
+		set_param_option("ssl_cipher=ALL:eNULL");
+#endif
 #ifdef SSL_CTX_set_min_proto_version
 		set_param_option("ssl_min_version=all");
 #endif

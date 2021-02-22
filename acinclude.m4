@@ -537,7 +537,7 @@ if test x"$enable_sslverify" = xyes; then
   AC_MSG_CHECKING(for CA file location)
   AC_ARG_WITH(cafile,
   [   --with-cafile[[=CAFILE]] CA file to verify SSL certificate [[guessed]]],,
-  [with_cafile=yes])
+  [with_cafile=no])
   if test x"$with_cafile" = xyes; then
     for f in /etc/ssl/certs/ca-certificates.crt \
       /etc/pki/tls/certs/ca-bundle.crt \

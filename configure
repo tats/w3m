@@ -8590,7 +8590,7 @@ $as_echo_n "checking for CA file location... " >&6; }
 if test "${with_cafile+set}" = set; then :
   withval=$with_cafile;
 else
-  with_cafile=yes
+  with_cafile=no
 fi
 
   if test x"$with_cafile" = xyes; then

@@ -444,11 +444,17 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 		goto eend;
 	    }
 	}
-	if ((!ssl_ca_file || *ssl_ca_file == '\0')
-	    && (!ssl_ca_path || *ssl_ca_path == '\0')
-	    || !ssl_verify_server
-	    || !SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
-	    SSL_CTX_set_default_verify_paths(ssl_ctx);
+	if (ssl_verify_server) {
+	    char *file = NULL, *path = NULL;
+	    if (ssl_ca_file && *ssl_ca_file != '\0') file = ssl_ca_file;
+	    if (ssl_ca_path && *ssl_ca_path != '\0') path = ssl_ca_path;
+	    if (!file && !path)
+		SSL_CTX_set_default_verify_paths(ssl_ctx);
+	    else if (!SSL_CTX_load_verify_locations(ssl_ctx, file, path)) {
+		free_ssl_ctx();
+		goto eend;
+	    }
+	}
 #endif				/* defined(USE_SSL_VERIFY) */
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
     }

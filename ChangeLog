@@ -1,3 +1,13 @@
+2021-02-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Don't fallback when SSL_CTX_load_verify_locations fails.
+
+	* url.c:
+	Don't use SSL_CTX_set_default_verify_paths when not USE_SSL_VERIFY.
+
+	* acinclude.m4, config.h.dist, configure, doc-jp/README.SSL:
+	Disable --with-cafile by default to use OpenSSL default paths.
+
 2021-02-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* main.c: Don't use SECLEVEL when not OPENSSL_TLS_SECURITY_LEVEL.

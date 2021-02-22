@@ -448,8 +448,8 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	    && (!ssl_ca_path || *ssl_ca_path == '\0')
 	    || !ssl_verify_server
 	    || !SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
-#endif				/* defined(USE_SSL_VERIFY) */
 	    SSL_CTX_set_default_verify_paths(ssl_ctx);
+#endif				/* defined(USE_SSL_VERIFY) */
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
     }
     handle = SSL_new(ssl_ctx);

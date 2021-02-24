@@ -1,3 +1,14 @@
+2021-02-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.SSL: Simplify doc for SSL.
+
+2021-02-24  davkor  <david@adalogics.com>
+
+	* fuzz/fuzz-conv.c:
+	Added initial fuzzer for integration with OSS-Fuzz.
+	Origin: https://github.com/tats/w3m/pull/169
+	Bug-Debian: https://github.com/tats/w3m/issues/165
+
 2021-02-22  Tatsuya Kinoshita  <tats@debian.org>
 
 	* url.c: Don't fallback when SSL_CTX_load_verify_locations fails.

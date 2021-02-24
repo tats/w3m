@@ -29,93 +29,22 @@ SSL サポートについて
         (デフォルトは2, 3, t, 5).
     ssl_min_version
         最小のSSLバージョン, OpenSSL 1.1以上で有効(all, TLSv1.0, TLSv1.1,
-        TLSv1.2, TLSv1.3のいずれか) (デフォルトは<NULL>).
+        TLSv1.2, TLSv1.3のいずれか) (デフォルトは未設定).
     ssl_cipher
         TLSv1.2以下用のSSL暗号(例: DEFAULT:@SECLEVEL=2) (デフォルトは
-        OpenSSL 1.1以上なら<NULL>、それ以外ならDEFAULT:!LOW:!RC4:!EXP).
+        OpenSSL 1.1以上なら未設定, それ以外ならDEFAULT:!LOW:!RC4:!EXP).
     ssl_verify_server ON/OFF
         SSLのサーバ認証を行う(デフォルトはON).
     ssl_cert_file ファイル名
-        SSLのクライアント用PEM形式証明書ファイル(デフォルトは<NULL>).
+        SSLのクライアント用PEM形式証明書ファイル(デフォルトは未設定).
     ssl_key_file ファイル名
-        SSLのクライアント用PEM形式秘密鍵ファイル(デフォルトは<NULL>).
+        SSLのクライアント用PEM形式秘密鍵ファイル(デフォルトは未設定).
     ssl_ca_path ディレクトリ名
         SSLの認証局のPEM形式証明書群のあるディレクトリへのパス
-        (デフォルトは<NULL>).
+        (デフォルトは未設定).
     ssl_ca_file ファイル名
-        SSLの認証局のPEM形式証明書群のファイル(デフォルトはconfigure時に
-        未設定なら"").
-    ただし「SSLEAY_VERSION_NUMBER >= 0x0800」な環境でないと無駄なコードが増
-    えるだけなので, configure時にdisableしておいたほうがよいでしょう.
+        SSLの認証局のPEM形式証明書群のファイル(デフォルトは未設定,
+        configure時に自動検出可).
 
-    通常使われている認証局の証明書は以下のところなどから入手できます。
-
-    * mozillaのソースに含まれている 
-       mozilla/security/nss/lib/ckfw/builtins/certdata.txt
-      から添付の ruby script で *.pemファイルとしてとりだしたもの
-
-	% ruby certdata2pem.rb < certdata.txt
-
-      でカレントディレクトリに *.pemファイルをとりだし
-      opensslの c_rehash コマンドで hash symlink を作成します。
-      このディレクトリを ssl_ca_path に設定することができます。
-      もしくは、*.pem をまとめた一つのファイルを作成しておけば
-      それを ssl_ca_file に設定することができます。
-
-   * mod_sslのソースに含まれている pkg.sslcfg/ca-bundle.crt
-      これは PEMなので、このファイルのフルパス名を ssl_ca_file に
-      設定することができます。
-
- ・ バージョン 0.9.5 以降の OpenSSL ライブラリは, 乱数を初期化するために幾つか
-    のシードを設定する必要があります.
-    デフォルトでは /dev/urandom があればそれを利用しますが, 無ければ w3m 内部
-    で生成します. もし, EGD (Entropy Gathering Daemon) または PRNGD (Pseudo
-    Random Number Generator Daemon) が利用できる環境でこれを使いたい場合は,
+ ・ EGD (Entropy Gathering Daemon) が利用できる環境でこれを使いたい場合は,
     USE_EGD マクロをチェックしてみてください.
-
- ・ URL
-
-    OpenSSL - http://www.openssl.org/
-    PRNGD - http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html
-
-----------------------------------------------------------------
-#!/usr/bin/ruby
-# Copyright (c) 2001 Fumitoshi UKAI <ukai@debian.or.jp>
-#     All rights reserved.
-#     This is free software with ABSOLUTELY NO WARRANTY.
-#
-# You can redistribute it and/or modify it under the terms of 
-# the Ruby's licence.
-#
-# certdata2pem.rb
-
-if RUBY_VERSION>="1.9"
-  Encoding.default_external="UTF-8"
-end
-while line = $stdin.gets
-  next if line =~ /^#/
-  next if line =~ /^\s*$/
-  line.chomp!
-  if line =~ /CKA_LABEL/
-    label,type,val = line.split(' ',3)
-    val.sub!(/^"/, "")
-    val.sub!(/"$/, "")
-    fname = val.gsub(/\//,"_").gsub(/\s+/, "_").gsub(/[()]/, "=") + ".pem"
-    next
-  end
-  if line =~ /CKA_VALUE MULTILINE_OCTAL/
-    data=''
-    while line = $stdin.gets
-      break if /^END/
-      line.chomp!
-      line.gsub(/\\([0-3][0-7][0-7])/) { data += $1.oct.chr }
-    end
-    open(fname, "w") do |fp|
-      fp.puts "-----BEGIN CERTIFICATE-----"
-      fp.puts [data].pack("m*")
-      fp.puts "-----END CERTIFICATE-----"
-    end
-    puts "Created #{fname}"
-  end
-end
-system("c_rehash", ".")

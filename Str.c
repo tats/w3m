@@ -21,10 +21,12 @@
 #ifdef __EMX__			/* or include "fm.h" for HAVE_BCOPY? */
 #include <strings.h>
 #endif
+#include <limits.h>
 #include "Str.h"
 #include "myctype.h"
 
 #define INITIAL_STR_SIZE 32
+#define STR_SIZE_MAX INT_MAX
 
 #ifdef STR_DEBUG
 /* This is obsolete, because "Str" can handle a '\0' character now. */
@@ -237,9 +239,12 @@ Strgrow(Str x)
     newlen = x->area_size * 6 / 5;
     if (newlen == x->area_size)
 	newlen += 2;
+    if (newlen < 0 || newlen > STR_SIZE_MAX)
+	newlen = STR_SIZE_MAX;
     x->ptr = GC_MALLOC_ATOMIC(newlen);
     x->area_size = newlen;
     bcopy((void *)old, (void *)x->ptr, x->length);
+    x->ptr[x->length] = '\0';
     GC_free(old);
 }
 

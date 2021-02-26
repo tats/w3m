@@ -1,0 +1,162 @@
+Subject: Fix overflow due to Str.c
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+
+	* Str.c: Fix potential overflow due to Str.c.
+	* Str.c: Fix integer overflow due to Strgrow.
+
+--- a/Str.c
++++ b/Str.c
+@@ -21,10 +21,12 @@
+ #ifdef __EMX__			/* or include "fm.h" for HAVE_BCOPY? */
+ #include <strings.h>
+ #endif
++#include <limits.h>
+ #include "Str.h"
+ #include "myctype.h"
+ 
+ #define INITIAL_STR_SIZE 32
++#define STR_SIZE_MAX INT_MAX
+ 
+ #ifdef STR_DEBUG
+ /* This is obsolete, because "Str" can handle a '\0' character now. */
+@@ -48,8 +50,8 @@ Str
+ Strnew_size(int n)
+ {
+     Str x = GC_MALLOC(sizeof(struct _Str));
+-    if (n < 0)
+-	n = 0;
++    if (n < 0 || n >= STR_SIZE_MAX)
++	n = STR_SIZE_MAX - 1;
+     x->ptr = GC_MALLOC_ATOMIC(n + 1);
+     x->ptr[0] = '\0';
+     x->area_size = n + 1;
+@@ -67,10 +69,13 @@ Strnew_charp(const char *p)
+ 	return Strnew();
+     x = GC_MALLOC(sizeof(struct _Str));
+     n = strlen(p) + 1;
++    if (n < 0 || n > STR_SIZE_MAX)
++	n = STR_SIZE_MAX;
+     x->ptr = GC_MALLOC_ATOMIC(n);
+     x->area_size = n;
+     x->length = n - 1;
+-    bcopy((void *)p, (void *)x->ptr, n);
++    bcopy((void *)p, (void *)x->ptr, n - 1);
++    x->ptr[x->length] = '\0';
+     return x;
+ }
+ 
+@@ -96,6 +101,8 @@ Strnew_charp_n(const char *p, int n)
+     if (p == NULL)
+ 	return Strnew_size(n);
+     x = GC_MALLOC(sizeof(struct _Str));
++    if (n < 0 || n >= STR_SIZE_MAX)
++	n = STR_SIZE_MAX - 1;
+     x->ptr = GC_MALLOC_ATOMIC(n + 1);
+     x->area_size = n + 1;
+     x->length = n;
+@@ -149,15 +156,19 @@ Strcopy_charp(Str x, const char *y)
+     STR_LENGTH_CHECK(x);
+     if (y == NULL) {
+ 	x->length = 0;
++	x->ptr[0] = '\0';
+ 	return;
+     }
+     len = strlen(y);
++    if (len < 0 || len >= STR_SIZE_MAX)
++	len = STR_SIZE_MAX - 1;
+     if (x->area_size < len + 1) {
+ 	GC_free(x->ptr);
+ 	x->ptr = GC_MALLOC_ATOMIC(len + 1);
+ 	x->area_size = len + 1;
+     }
+-    bcopy((void *)y, (void *)x->ptr, len + 1);
++    bcopy((void *)y, (void *)x->ptr, len);
++    x->ptr[len] = '\0';
+     x->length = len;
+ }
+ 
+@@ -169,16 +180,19 @@ Strcopy_charp_n(Str x, const char *y, int n)
+     STR_LENGTH_CHECK(x);
+     if (y == NULL) {
+ 	x->length = 0;
++	x->ptr[0] = '\0';
+ 	return;
+     }
++    if (len < 0 || len >= STR_SIZE_MAX)
++	len = STR_SIZE_MAX - 1;
+     if (x->area_size < len + 1) {
+ 	GC_free(x->ptr);
+ 	x->ptr = GC_MALLOC_ATOMIC(len + 1);
+ 	x->area_size = len + 1;
+     }
+-    bcopy((void *)y, (void *)x->ptr, n);
+-    x->ptr[n] = '\0';
+-    x->length = n;
++    bcopy((void *)y, (void *)x->ptr, len);
++    x->ptr[len] = '\0';
++    x->length = len;
+ }
+ 
+ void
+@@ -189,10 +203,18 @@ Strcat_charp_n(Str x, const char *y, int n)
+     STR_LENGTH_CHECK(x);
+     if (y == NULL)
+ 	return;
++    if (n < 0)
++	n = STR_SIZE_MAX - 1;
+     newlen = x->length + n + 1;
++    if (newlen < 0 || newlen > STR_SIZE_MAX) {
++	newlen = STR_SIZE_MAX;
++	n = newlen - x->length - 1;
++    }
+     if (x->area_size < newlen) {
+ 	char *old = x->ptr;
+ 	newlen = newlen * 3 / 2;
++	if (newlen < 0 || newlen > STR_SIZE_MAX)
++	    newlen = STR_SIZE_MAX;
+ 	x->ptr = GC_MALLOC_ATOMIC(newlen);
+ 	x->area_size = newlen;
+ 	bcopy((void *)old, (void *)x->ptr, x->length);
+@@ -237,9 +259,12 @@ Strgrow(Str x)
+     newlen = x->area_size * 6 / 5;
+     if (newlen == x->area_size)
+ 	newlen += 2;
++    if (newlen < 0 || newlen > STR_SIZE_MAX)
++	newlen = STR_SIZE_MAX;
+     x->ptr = GC_MALLOC_ATOMIC(newlen);
+     x->area_size = newlen;
+     bcopy((void *)old, (void *)x->ptr, x->length);
++    x->ptr[x->length] = '\0';
+     GC_free(old);
+ }
+ 
+@@ -315,6 +340,10 @@ Strdelete(Str s, int pos, int n)
+ {
+     int i;
+     STR_LENGTH_CHECK(s);
++    if (pos < 0 || s->length < pos)
++	return;
++    if (n < 0)
++	n = STR_SIZE_MAX - pos - 1;
+     if (s->length <= pos + n) {
+ 	s->ptr[pos] = '\0';
+ 	s->length = pos;
+@@ -330,6 +359,8 @@ void
+ Strtruncate(Str s, int pos)
+ {
+     STR_LENGTH_CHECK(s);
++    if (pos < 0 || s->length < pos)
++	return;
+     s->ptr[pos] = '\0';
+     s->length = pos;
+ }
+@@ -342,7 +373,7 @@ Strshrink(Str s, int n)
+ 	s->length = 0;
+ 	s->ptr[0] = '\0';
+     }
+-    else {
++    else if (n > 0) {
+ 	s->length -= n;
+ 	s->ptr[s->length] = '\0';
+     }

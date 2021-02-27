@@ -1,3 +1,8 @@
+2021-02-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: One more fix overflow due to Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+
 2021-02-26  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Fix potential overflow due to Str.c.

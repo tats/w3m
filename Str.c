@@ -26,7 +26,7 @@
 #include "myctype.h"
 
 #define INITIAL_STR_SIZE 32
-#define STR_SIZE_MAX INT_MAX
+#define STR_SIZE_MAX (INT_MAX - 1)
 
 #ifdef STR_DEBUG
 /* This is obsolete, because "Str" can handle a '\0' character now. */
@@ -259,8 +259,11 @@ Strgrow(Str x)
     newlen = x->area_size * 6 / 5;
     if (newlen == x->area_size)
 	newlen += 2;
-    if (newlen < 0 || newlen > STR_SIZE_MAX)
+    if (newlen < 0 || newlen > STR_SIZE_MAX) {
 	newlen = STR_SIZE_MAX;
+	if (x->length + 1 >= newlen)
+	    x->length = newlen - 2;
+    }
     x->ptr = GC_MALLOC_ATOMIC(newlen);
     x->area_size = newlen;
     bcopy((void *)old, (void *)x->ptr, x->length);

@@ -45,6 +45,8 @@ SSL サポートについて
     ssl_ca_file ファイル名
         SSLの認証局のPEM形式証明書群のファイル(デフォルトは未設定,
         configure時に自動検出可).
+    ssl_ca_default ON/OFF
+        SSLの認証局のPEM形式証明書群のために標準の場所を使う(デフォルトはON).
 
  ・ EGD (Entropy Gathering Daemon) が利用できる環境でこれを使いたい場合は,
     USE_EGD マクロをチェックしてみてください.

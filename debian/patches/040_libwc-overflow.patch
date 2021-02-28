@@ -1,0 +1,29 @@
+Subject: Prevent unintentional integer overflow in libwc
+Author: Tatsuya Kinoshita <tats@debian.org>
+
+diff --git a/libwc/utf7.c b/libwc/utf7.c
+index 44a3330..874bc3d 100644
+--- a/libwc/utf7.c
++++ b/libwc/utf7.c
+@@ -73,7 +73,7 @@ wc_conv_from_utf7(Str is, wc_ces ces)
+ 	;
+     if (p == ep)
+ 	return is;
+-    os = Strnew_size(is->length * 4 / 3);
++    os = Strnew_size(is->length + is->length / 3);
+     if (p > sp)
+ 	Strcat_charp_n(os, is->ptr, (int)(p - sp));
+ 
+diff --git a/libwc/utf8.c b/libwc/utf8.c
+index e523139..c878499 100644
+--- a/libwc/utf8.c
++++ b/libwc/utf8.c
+@@ -150,7 +150,7 @@ wc_conv_from_utf8(Str is, wc_ces ces)
+ 	;
+     if (p == ep)
+ 	return is;
+-    os = Strnew_size(is->length * 4 / 3);
++    os = Strnew_size(is->length + is->length / 3);
+     if (p > sp)
+ 	Strcat_charp_n(os, is->ptr, (int)(p - sp));
+ 

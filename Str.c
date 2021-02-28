@@ -69,7 +69,7 @@ Strnew_charp(const char *p)
 	return Strnew();
     x = GC_MALLOC(sizeof(struct _Str));
     n = strlen(p) + 1;
-    if (n < 0 || n > STR_SIZE_MAX)
+    if (n <= 0 || n > STR_SIZE_MAX)
 	n = STR_SIZE_MAX;
     x->ptr = GC_MALLOC_ATOMIC(n);
     x->area_size = n;
@@ -206,14 +206,14 @@ Strcat_charp_n(Str x, const char *y, int n)
     if (n < 0)
 	n = STR_SIZE_MAX - 1;
     newlen = x->length + n + 1;
-    if (newlen < 0 || newlen > STR_SIZE_MAX) {
+    if (newlen <= 0 || newlen > STR_SIZE_MAX) {
 	newlen = STR_SIZE_MAX;
 	n = newlen - x->length - 1;
     }
     if (x->area_size < newlen) {
 	char *old = x->ptr;
 	newlen += newlen / 2;
-	if (newlen < 0 || newlen > STR_SIZE_MAX)
+	if (newlen <= 0 || newlen > STR_SIZE_MAX)
 	    newlen = STR_SIZE_MAX;
 	x->ptr = GC_MALLOC_ATOMIC(newlen);
 	x->area_size = newlen;
@@ -259,7 +259,7 @@ Strgrow(Str x)
     newlen = x->area_size + x->area_size / 5;
     if (newlen == x->area_size)
 	newlen += 2;
-    if (newlen < 0 || newlen > STR_SIZE_MAX) {
+    if (newlen <= 0 || newlen > STR_SIZE_MAX) {
 	newlen = STR_SIZE_MAX;
 	if (x->length + 1 >= newlen)
 	    x->length = newlen - 2;

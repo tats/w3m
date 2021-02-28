@@ -1,3 +1,14 @@
+2021-02-28  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/utf7.c, libwc/utf8.c:
+	Prevent unintentional integer overflow in libwc.
+
+	* Str.c: Prevent unintentional integer overflow in Strcat_charp_n.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
+
+	* Str.c: Prevent unintentional integer overflow in Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31467
+
 2021-02-27  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: One more fix overflow due to Strgrow.

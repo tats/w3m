@@ -99,8 +99,8 @@ ssl_forbid_method 2, 3
 ssl_verify_server 1
 ssl_cert_file 
 ssl_key_file 
-ssl_ca_path 
-ssl_ca_file /etc/ssl/certs/ca-certificates.crt
+ssl_ca_path /etc/ssl/certs
+ssl_ca_file 
 use_cookie 1
 show_cookie 0
 accept_cookie 1

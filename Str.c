@@ -212,7 +212,7 @@ Strcat_charp_n(Str x, const char *y, int n)
     }
     if (x->area_size < newlen) {
 	char *old = x->ptr;
-	newlen = newlen * 3 / 2;
+	newlen += newlen / 2;
 	if (newlen < 0 || newlen > STR_SIZE_MAX)
 	    newlen = STR_SIZE_MAX;
 	x->ptr = GC_MALLOC_ATOMIC(newlen);

@@ -256,7 +256,7 @@ Strgrow(Str x)
 {
     char *old = x->ptr;
     int newlen;
-    newlen = x->area_size * 6 / 5;
+    newlen = x->area_size + x->area_size / 5;
     if (newlen == x->area_size)
 	newlen += 2;
     if (newlen < 0 || newlen > STR_SIZE_MAX) {

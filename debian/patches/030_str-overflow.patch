@@ -1,9 +1,14 @@
 Subject: Fix overflow due to Str.c
 Author: Tatsuya Kinoshita <tats@debian.org>
 Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31467
+Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
 
-	* Str.c: Fix potential overflow due to Str.c.
-	* Str.c: Fix integer overflow due to Strgrow.
+    Prevent unintentional integer overflow in Strcat_charp_n
+    Prevent unintentional integer overflow in Strgrow
+    One more fix overflow due to Strgrow
+    Fix potential overflow due to Str.c
+    Fix integer overflow due to Strgrow
 
 --- a/Str.c
 +++ b/Str.c
@@ -16,7 +21,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
  #include "myctype.h"
  
  #define INITIAL_STR_SIZE 32
-+#define STR_SIZE_MAX INT_MAX
++#define STR_SIZE_MAX (INT_MAX - 1)
  
  #ifdef STR_DEBUG
  /* This is obsolete, because "Str" can handle a '\0' character now. */
@@ -112,18 +117,26 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
 +    }
      if (x->area_size < newlen) {
  	char *old = x->ptr;
- 	newlen = newlen * 3 / 2;
+-	newlen = newlen * 3 / 2;
++	newlen += newlen / 2;
 +	if (newlen < 0 || newlen > STR_SIZE_MAX)
 +	    newlen = STR_SIZE_MAX;
  	x->ptr = GC_MALLOC_ATOMIC(newlen);
  	x->area_size = newlen;
  	bcopy((void *)old, (void *)x->ptr, x->length);
-@@ -237,9 +259,12 @@ Strgrow(Str x)
-     newlen = x->area_size * 6 / 5;
+@@ -234,12 +256,18 @@ Strgrow(Str x)
+ {
+     char *old = x->ptr;
+     int newlen;
+-    newlen = x->area_size * 6 / 5;
++    newlen = x->area_size + x->area_size / 5;
      if (newlen == x->area_size)
  	newlen += 2;
-+    if (newlen < 0 || newlen > STR_SIZE_MAX)
++    if (newlen < 0 || newlen > STR_SIZE_MAX) {
 +	newlen = STR_SIZE_MAX;
++	if (x->length + 1 >= newlen)
++	    x->length = newlen - 2;
++    }
      x->ptr = GC_MALLOC_ATOMIC(newlen);
      x->area_size = newlen;
      bcopy((void *)old, (void *)x->ptr, x->length);
@@ -131,7 +144,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
      GC_free(old);
  }
  
-@@ -315,6 +340,10 @@ Strdelete(Str s, int pos, int n)
+@@ -315,6 +343,10 @@ Strdelete(Str s, int pos, int n)
  {
      int i;
      STR_LENGTH_CHECK(s);
@@ -142,7 +155,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
      if (s->length <= pos + n) {
  	s->ptr[pos] = '\0';
  	s->length = pos;
-@@ -330,6 +359,8 @@ void
+@@ -330,6 +362,8 @@ void
  Strtruncate(Str s, int pos)
  {
      STR_LENGTH_CHECK(s);
@@ -151,7 +164,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
      s->ptr[pos] = '\0';
      s->length = pos;
  }
-@@ -342,7 +373,7 @@ Strshrink(Str s, int n)
+@@ -342,7 +376,7 @@ Strshrink(Str s, int n)
  	s->length = 0;
  	s->ptr[0] = '\0';
      }

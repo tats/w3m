@@ -1,5 +1,7 @@
 2021-02-28  Tatsuya Kinoshita  <tats@debian.org>
 
+	* Str.c: Prevent zero size allocation in Str.c.
+
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
 	Update PO strings.
 

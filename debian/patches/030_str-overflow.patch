@@ -4,12 +4,15 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
 Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31467
 Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
 
+    Prevent zero size allocation in Str.c
     Prevent unintentional integer overflow in Strcat_charp_n
     Prevent unintentional integer overflow in Strgrow
     One more fix overflow due to Strgrow
     Fix potential overflow due to Str.c
     Fix integer overflow due to Strgrow
 
+diff --git a/Str.c b/Str.c
+index 61fe3ca..03e0950 100644
 --- a/Str.c
 +++ b/Str.c
 @@ -21,10 +21,12 @@
@@ -40,7 +43,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
  	return Strnew();
      x = GC_MALLOC(sizeof(struct _Str));
      n = strlen(p) + 1;
-+    if (n < 0 || n > STR_SIZE_MAX)
++    if (n <= 0 || n > STR_SIZE_MAX)
 +	n = STR_SIZE_MAX;
      x->ptr = GC_MALLOC_ATOMIC(n);
      x->area_size = n;
@@ -111,7 +114,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
 +    if (n < 0)
 +	n = STR_SIZE_MAX - 1;
      newlen = x->length + n + 1;
-+    if (newlen < 0 || newlen > STR_SIZE_MAX) {
++    if (newlen <= 0 || newlen > STR_SIZE_MAX) {
 +	newlen = STR_SIZE_MAX;
 +	n = newlen - x->length - 1;
 +    }
@@ -119,7 +122,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
  	char *old = x->ptr;
 -	newlen = newlen * 3 / 2;
 +	newlen += newlen / 2;
-+	if (newlen < 0 || newlen > STR_SIZE_MAX)
++	if (newlen <= 0 || newlen > STR_SIZE_MAX)
 +	    newlen = STR_SIZE_MAX;
  	x->ptr = GC_MALLOC_ATOMIC(newlen);
  	x->area_size = newlen;
@@ -132,7 +135,7 @@ Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
 +    newlen = x->area_size + x->area_size / 5;
      if (newlen == x->area_size)
  	newlen += 2;
-+    if (newlen < 0 || newlen > STR_SIZE_MAX) {
++    if (newlen <= 0 || newlen > STR_SIZE_MAX) {
 +	newlen = STR_SIZE_MAX;
 +	if (x->length + 1 >= newlen)
 +	    x->length = newlen - 2;

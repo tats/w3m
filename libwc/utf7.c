@@ -73,7 +73,7 @@ wc_conv_from_utf7(Str is, wc_ces ces)
 	;
     if (p == ep)
 	return is;
-    os = Strnew_size(is->length * 4 / 3);
+    os = Strnew_size(is->length + is->length / 3);
     if (p > sp)
 	Strcat_charp_n(os, is->ptr, (int)(p - sp));
 

@@ -1,3 +1,11 @@
+w3m (0.5.3+git20210102-5) unstable; urgency=medium
+
+  * Update 030_str-overflow.patch to fix overflow due to Str.c
+  * New patch 040_libwc-overflow.patch to fix integer overflow in libwc
+  * Revert 020_ssl-ca.patch and use ssl_ca_path to keep old behavior
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 28 Feb 2021 16:57:53 +0900
+
 w3m (0.5.3+git20210102-4) unstable; urgency=medium
 
   * New patch 030_str-overflow.patch to fix overflow due to Str.c

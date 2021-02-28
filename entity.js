@@ -1,4 +1,4 @@
-//Usage: qjs --std entitytest.js [test/tab] > outfile
+//Usage: qjs --std entity.js [test/tab] > outfile
 
 const a = getEntities();
 
@@ -39,7 +39,7 @@ function gentestitem(b, c, d) {
 		b +
 		"</td>" +
 		"<td>" +
-		c.characters +
+		c.characters.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt') +
 		"</td>");
 	console.log("		</tr>");
 }
@@ -47,7 +47,7 @@ function gentestitem(b, c, d) {
 function gentest() {
 	console.log("<!DOCTYPE html>");
 	console.log("<head>");
-	console.log("	<meta charset=\"utf-8\"");
+	console.log("	<meta charset=\"utf-8\">");
 	console.log("</head>");
 	console.log("<body>");
 	console.log("	<table>");

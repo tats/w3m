@@ -1,5 +1,11 @@
 2021-02-28  Tatsuya Kinoshita  <tats@debian.org>
 
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_ca_default to explicitly use OpenSSL default paths.
+
 	* libwc/utf7.c, libwc/utf8.c:
 	Prevent unintentional integer overflow in libwc.
 

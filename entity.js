@@ -39,7 +39,7 @@ function gentestitem(b, c, d) {
 		b +
 		"</td>" +
 		"<td>" +
-		c.characters.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt') +
+		c.characters.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;') +
 		"</td>");
 	console.log("		</tr>");
 }

@@ -1,3 +1,27 @@
+2021-03-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent large memory usage and null-deref in Str.c.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31579
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31589
+
+2021-03-02  bptato  <nincsnevem662@gmail.com>
+
+	Support named character references specified by the living standard
+	Origin: https://github.com/tats/w3m/pull/170
+
+	* entity.js, tests/allentity.html:
+	Use &gt; instead of &gt in entity test generator.
+
+	* entity.js, tests/allentity.html:
+	Fix small mistakes in entity test generator.
+
+	* entity.js, entity.tab, tests/allentity.expected:
+	* tests/allentity.html:
+	Support single-codepoint HTML entities specified by whatwg.
+	https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references
+
+	* entity.tab: Support period entity name.
+
 2021-02-28  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Prevent zero size allocation in Str.c.
@@ -12,7 +36,7 @@
 	Prevent unintentional integer overflow in libwc.
 
 	* Str.c: Prevent unintentional integer overflow in Strcat_charp_n.
-	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500 (not yet fixed)
 
 	* Str.c: Prevent unintentional integer overflow in Strgrow.
 	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31467
@@ -20,14 +44,14 @@
 2021-02-27  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: One more fix overflow due to Strgrow.
-	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397 (not yet fixed)
 
 2021-02-26  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Fix potential overflow due to Str.c.
 
 	* Str.c: Fix integer overflow due to Strgrow.
-	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397 (not yet fixed)
 
 2021-02-24  Tatsuya Kinoshita  <tats@debian.org>
 

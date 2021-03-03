@@ -288,13 +288,15 @@ Strgrow(Str x)
 	if (x->length + 1 >= newlen)
 	    x->length = newlen - 2;
     }
-    x->ptr = GC_MALLOC_ATOMIC(newlen);
-    if (x->ptr == NULL)
-	exit(1);
-    x->area_size = newlen;
-    bcopy((void *)old, (void *)x->ptr, x->length);
+    if (x->area_size < newlen) {
+	x->ptr = GC_MALLOC_ATOMIC(newlen);
+	if (x->ptr == NULL)
+	    exit(1);
+	x->area_size = newlen;
+	bcopy((void *)old, (void *)x->ptr, x->length);
+	GC_free(old);
+    }
     x->ptr[x->length] = '\0';
-    GC_free(old);
 }
 
 Str

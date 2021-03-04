@@ -348,7 +348,7 @@ Strinsert_char(Str s, int pos, char c)
 {
     int i;
     STR_LENGTH_CHECK(s);
-    if (pos < 0)
+    if (pos < 0 || s->length < pos)
 	return;
     if (s->length + 2 > s->area_size)
 	Strgrow(s);

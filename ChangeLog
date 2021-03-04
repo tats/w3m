@@ -1,5 +1,7 @@
 2021-03-04  Tatsuya Kinoshita  <tats@debian.org>
 
+	* Str.c: Prevent unneeded Strgrow in Strinsert_char.
+
 	* Str.c: Consider Strgrow overflow in Strinsert_char.
 
 2021-03-03  Tatsuya Kinoshita  <tats@debian.org>

@@ -156,8 +156,7 @@ Strcopy(Str x, Str y)
     STR_LENGTH_CHECK(x);
     STR_LENGTH_CHECK(y);
     if (x->area_size < y->length + 1) {
-	GC_free(x->ptr);
-	x->ptr = GC_MALLOC_ATOMIC(y->length + 1);
+	x->ptr = GC_REALLOC(x->ptr, y->length + 1);
 	if (x->ptr == NULL)
 	    exit(1);
 	x->area_size = y->length + 1;
@@ -181,8 +180,7 @@ Strcopy_charp(Str x, const char *y)
     if (len < 0 || len >= STR_SIZE_MAX)
 	len = STR_SIZE_MAX - 1;
     if (x->area_size < len + 1) {
-	GC_free(x->ptr);
-	x->ptr = GC_MALLOC_ATOMIC(len + 1);
+	x->ptr = GC_REALLOC(x->ptr, len + 1);
 	if (x->ptr == NULL)
 	    exit(1);
 	x->area_size = len + 1;
@@ -206,8 +204,7 @@ Strcopy_charp_n(Str x, const char *y, int n)
     if (len < 0 || len >= STR_SIZE_MAX)
 	len = STR_SIZE_MAX - 1;
     if (x->area_size < len + 1) {
-	GC_free(x->ptr);
-	x->ptr = GC_MALLOC_ATOMIC(len + 1);
+	x->ptr = GC_REALLOC(x->ptr, len + 1);
 	if (x->ptr == NULL)
 	    exit(1);
 	x->area_size = len + 1;
@@ -223,7 +220,7 @@ Strcat_charp_n(Str x, const char *y, int n)
     int newlen;
 
     STR_LENGTH_CHECK(x);
-    if (y == NULL)
+    if (y == NULL || n == 0)
 	return;
     if (n < 0)
 	n = STR_SIZE_MAX - 1;
@@ -231,18 +228,17 @@ Strcat_charp_n(Str x, const char *y, int n)
     if (newlen <= 0 || newlen > STR_SIZE_MAX) {
 	newlen = STR_SIZE_MAX;
 	n = newlen - x->length - 1;
+	if (n <= 0)
+	    return;
     }
     if (x->area_size < newlen) {
-	char *old = x->ptr;
 	newlen += newlen / 2;
 	if (newlen <= 0 || newlen > STR_SIZE_MAX)
 	    newlen = STR_SIZE_MAX;
-	x->ptr = GC_MALLOC_ATOMIC(newlen);
+	x->ptr = GC_REALLOC(x->ptr, newlen);
 	if (x->ptr == NULL)
 	    exit(1);
 	x->area_size = newlen;
-	bcopy((void *)old, (void *)x->ptr, x->length);
-	GC_free(old);
     }
     bcopy((void *)y, (void *)&x->ptr[x->length], n);
     x->length += n;
@@ -278,7 +274,6 @@ Strcat_m_charp(Str x, ...)
 void
 Strgrow(Str x)
 {
-    char *old = x->ptr;
     int newlen;
     newlen = x->area_size + x->area_size / 5;
     if (newlen == x->area_size)
@@ -289,12 +284,10 @@ Strgrow(Str x)
 	    x->length = newlen - 2;
     }
     if (x->area_size < newlen) {
-	x->ptr = GC_MALLOC_ATOMIC(newlen);
+	x->ptr = GC_REALLOC(x->ptr, newlen);
 	if (x->ptr == NULL)
 	    exit(1);
 	x->area_size = newlen;
-	bcopy((void *)old, (void *)x->ptr, x->length);
-	GC_free(old);
     }
     x->ptr[x->length] = '\0';
 }

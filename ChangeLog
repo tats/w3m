@@ -1,5 +1,7 @@
 2021-03-04  Tatsuya Kinoshita  <tats@debian.org>
 
+	* Str.c: Prevent redundant memory reallocation in Str.c.
+
 	* Str.c: Prevent unneeded Strgrow in Strinsert_char.
 
 	* Str.c: Consider Strgrow overflow in Strinsert_char.
@@ -7,6 +9,7 @@
 2021-03-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Prevent unneeded memory allocation in Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31664
 
 2021-03-02  Tatsuya Kinoshita  <tats@debian.org>
 

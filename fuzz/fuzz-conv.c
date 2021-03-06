@@ -14,11 +14,21 @@ char *get_null_terminated(const uint8_t *data, size_t size) {
     return new_str;
 }
 
+static void *die_oom(size_t bytes) {
+    fprintf(stderr, "Out of memory: %lu bytes unavailable!\n", (unsigned long)bytes);
+    exit(1);
+}
+
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
     static int init_done = 0;
 
     if (!init_done) {
 	GC_INIT();
+#if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
+	GC_set_oom_fn(die_oom);
+#else
+	GC_oom_fn = die_oom;
+#endif
 	init_done = 1;
     }
 

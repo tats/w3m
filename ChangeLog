@@ -1,3 +1,12 @@
+2021-03-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c: Call GC_INIT() in fuzzing.
+
+2021-03-06  bptato  <nincsnevem662@gmail.com>
+
+	* terms.c: Fix file handle leaks in kitty and iTerm2 image display.
+	Origin: https://github.com/tats/w3m/pull/174
+
 2021-03-04  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Prevent redundant memory reallocation in Str.c.

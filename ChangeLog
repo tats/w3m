@@ -1,5 +1,7 @@
 2021-03-06  Tatsuya Kinoshita  <tats@debian.org>
 
+	* fuzz/fuzz-conv.c: Set GC_oom_fn in fuzzing.
+
 	* fuzz/fuzz-conv.c: Call GC_INIT() in fuzzing.
 
 2021-03-06  bptato  <nincsnevem662@gmail.com>

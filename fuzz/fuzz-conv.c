@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <gc.h>
 #include "wc.h"
 
 char *get_null_terminated(const uint8_t *data, size_t size) {
@@ -14,6 +15,13 @@ char *get_null_terminated(const uint8_t *data, size_t size) {
 }
 
 int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
+    static int init_done = 0;
+
+    if (!init_done) {
+	GC_INIT();
+	init_done = 1;
+    }
+
     if (size < 30) {
         return 0;
     }

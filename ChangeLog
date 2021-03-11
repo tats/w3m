@@ -1,6 +1,13 @@
+2021-03-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ucs.c, libwc/ucs.h:
+	Prevent index overflow due to tag_map in libwc.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31936
+
 2021-03-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* fuzz/fuzz-conv.c: Set GC_oom_fn in fuzzing.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
 
 	* fuzz/fuzz-conv.c: Call GC_INIT() in fuzzing.
 

@@ -677,9 +677,9 @@ wc_ucs_put_tag(char *p)
 	if (!strcasecmp(p, tag_map[i]))
 	    return i;
     }
-    n_tag_map++;
-    if (n_tag_map == MAX_TAG_MAP)
+    if (n_tag_map + 1 >= MAX_TAG_MAP)
 	return 0;
+    n_tag_map++;
     tag_map[n_tag_map] = p;
     return n_tag_map;
 }
@@ -687,7 +687,7 @@ wc_ucs_put_tag(char *p)
 char *
 wc_ucs_get_tag(int ntag)
 {
-    if (ntag == 0 || ntag > n_tag_map)
+    if (ntag <= 0 || ntag > n_tag_map)
 	return NULL;
     return tag_map[ntag];
 }

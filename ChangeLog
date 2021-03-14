@@ -1,3 +1,10 @@
+2021-03-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c:
+	Include unistd.h for getpid() and unlink() in fuzzer.
+
+	* fuzz/fuzz-conv.c: Call wtf_init() in fuzzing.
+
 2021-03-11  Tatsuya Kinoshita  <tats@debian.org>
 
 	* libwc/ucs.c, libwc/ucs.h:

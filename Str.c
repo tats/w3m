@@ -26,7 +26,7 @@
 #include "myctype.h"
 
 #define INITIAL_STR_SIZE 32
-#define STR_SIZE_MAX (INT_MAX / 8)
+#define STR_SIZE_MAX (INT_MAX / 32)
 
 #ifdef STR_DEBUG
 /* This is obsolete, because "Str" can handle a '\0' character now. */

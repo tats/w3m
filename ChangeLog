@@ -1,3 +1,7 @@
+2021-03-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent very small allocation in Str.c.
+
 2021-03-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Decrease STR_SIZE_MAX to prevent large memory usage.

@@ -1,10 +1,16 @@
+2021-03-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c, Str.h: Check STR_SIZE_MAX in Strcat_char.
+
 2021-03-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Prevent very small allocation in Str.c.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
 
 2021-03-19  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Decrease STR_SIZE_MAX to prevent large memory usage.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31468
 
 2021-03-14  Tatsuya Kinoshita  <tats@debian.org>
 

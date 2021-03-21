@@ -21,12 +21,10 @@
 #ifdef __EMX__			/* or include "fm.h" for HAVE_BCOPY? */
 #include <strings.h>
 #endif
-#include <limits.h>
 #include "Str.h"
 #include "myctype.h"
 
 #define INITIAL_STR_SIZE 32
-#define STR_SIZE_MAX (INT_MAX / 32)
 
 #ifdef STR_DEBUG
 /* This is obsolete, because "Str" can handle a '\0' character now. */

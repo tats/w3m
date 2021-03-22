@@ -1,6 +1,12 @@
+2021-03-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ucs.c: Prevent very long language tag in libwc.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=32229
+
 2021-03-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c, Str.h: Check STR_SIZE_MAX in Strcat_char.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31804
 
 2021-03-20  Tatsuya Kinoshita  <tats@debian.org>
 

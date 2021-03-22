@@ -29,6 +29,7 @@
 #include "map/ucs_isupper.map"
 #include "map/ucs_case.map"
 
+#define MAX_TAG_LEN (8 + 1 + 8)
 #define MAX_TAG_MAP 0x100
 static int n_tag_map = 0;
 static char *tag_map[ MAX_TAG_MAP ];
@@ -701,11 +702,12 @@ wtf_push_ucs(Str os, wc_uint32 ucs, wc_status *st)
 	if (! WcOption.use_language_tag)
 	    return;
 	if (ucs == WC_C_LANGUAGE_TAG)
-	    st->tag = Strnew_size(4);
+	    st->tag = Strnew_size(MAX_TAG_LEN);
 	else if (ucs == WC_C_CANCEL_TAG) {
 	    st->tag = NULL;
 	    st->ntag = 0;
-	}  else if (st->tag && ucs >= WC_C_TAG_SPACE)
+	}  else if (st->tag && st->tag->length < MAX_TAG_LEN &&
+		    ucs >= WC_C_TAG_SPACE)
 	    Strcat_char(st->tag, (char)(ucs & 0x7f));
 	return;
     }

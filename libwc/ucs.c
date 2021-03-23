@@ -702,8 +702,13 @@ wtf_push_ucs(Str os, wc_uint32 ucs, wc_status *st)
 	if (! WcOption.use_language_tag)
 	    return;
 	if (ucs == WC_C_LANGUAGE_TAG)
-	    st->tag = Strnew_size(MAX_TAG_LEN);
+	    if (st->tag)
+		Strclear(st->tag);
+	    else
+		st->tag = Strnew_size(MAX_TAG_LEN);
 	else if (ucs == WC_C_CANCEL_TAG) {
+	    if (st->tag)
+		Strfree(st->tag);
 	    st->tag = NULL;
 	    st->ntag = 0;
 	}  else if (st->tag && st->tag->length < MAX_TAG_LEN &&

@@ -282,7 +282,11 @@ void
 Strgrow(Str x)
 {
     int newlen, addlen;
-    addlen = x->area_size / 5;
+
+    if (x->area_size < 8192)
+	addlen = x->area_size;
+    else
+	addlen = x->area_size / 2;
     if (addlen < INITIAL_STR_SIZE)
 	addlen = INITIAL_STR_SIZE;
     newlen = x->area_size + addlen;

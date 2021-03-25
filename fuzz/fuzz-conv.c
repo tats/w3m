@@ -9,7 +9,7 @@
 char *get_null_terminated(const uint8_t *data, size_t size) {
     char *new_str = (char *)malloc(size+1);
     if (new_str == NULL){
-            return NULL;
+	exit(1);
     }
     memcpy(new_str, data, size);
     new_str[size] = '\0';
@@ -57,17 +57,19 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
     sprintf(filename, "/tmp/libfuzzer.%d", getpid());
 
     FILE *fp = fopen(filename, "wb");
-    if (!fp) {
-            return 0;
+    if (fp) {
+	fwrite(data, size, 1, fp);
+	fclose(fp);
     }
-    fwrite(data, size, 1, fp);
-    fclose(fp);
 
     FILE *f = fopen(filename, "r");
-    Str s = Strfgetall(f);
-    wc_Str_conv_with_detect(s, &from, from, to);
-    if (s != NULL) {
-            Strfree(s);
+    if (f) {
+	Str s = Strfgetall(f);
+	wc_Str_conv_with_detect(s, &from, from, to);
+	if (s != NULL) {
+	    Strfree(s);
+	}
+	fclose(f);
     }
 
     unlink(filename);

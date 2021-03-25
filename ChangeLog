@@ -1,3 +1,9 @@
+2021-03-25  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c: Explicitly call GC_gcollect() in fuzzer.
+
+	* fuzz/fuzz-conv.c: Prevent memory leak in fuzzer.
+
 2021-03-23  Tatsuya Kinoshita  <tats@debian.org>
 
 	* Str.c: Reduce memory reallocation due to Strgrow.

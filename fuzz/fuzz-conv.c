@@ -45,6 +45,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
         return 0;
     }
 
+    GC_disable();
+
     char *new_str1 = get_null_terminated(data, 20);
     data += 20; size -= 20;
     char *new_str2 = get_null_terminated(data, size);
@@ -76,5 +78,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
 
     free(new_str1);
     free(new_str2);
+
+    GC_enable();
+    GC_gcollect();
+
     return 0;
 }

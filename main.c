@@ -786,7 +786,7 @@ main(int argc, char **argv, char **envp)
 		    usage();
 		}
 	    }
-	    else if (!strcmp("-dummy", argv[i])) {
+	    else if (!strcmp("-", argv[i]) || !strcmp("-dummy", argv[i])) {
 		/* do nothing */
 	    }
 	    else if (!strcmp("-debug", argv[i])) {

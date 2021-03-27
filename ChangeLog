@@ -1,3 +1,7 @@
+2021-03-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* indep.c: Fix potential integer overflow in allocStr.
+
 2021-03-26  Tatsuya Kinoshita  <tats@debian.org>
 
 	* main.c: Ignore the "-" option to accept `w3m -` as "read from stdin".

@@ -1,3 +1,10 @@
+2021-03-29  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Prevent GC warnings of repeated allocation.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=746701
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=832407
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=862382
+
 2021-03-27  Tatsuya Kinoshita  <tats@debian.org>
 
 	* indep.c: Fix potential integer overflow in allocStr.

@@ -424,6 +424,8 @@ main(int argc, char **argv, char **envp)
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+    if (!getenv("GC_LARGE_ALLOC_WARN_INTERVAL"))
+	set_environ("GC_LARGE_ALLOC_WARN_INTERVAL", "30000");
     GC_INIT();
 #if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
     GC_set_oom_fn(die_oom);

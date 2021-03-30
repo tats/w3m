@@ -278,7 +278,7 @@ newTable()
     t->max_rowsize = MAXROW;
     t->tabdata = New_N(GeneralList **, MAXROW);
     t->tabattr = New_N(table_attr *, MAXROW);
-    t->tabheight = NewAtom_N(short, MAXROW);
+    t->tabheight = NewAtom_N(int, MAXROW);
 #ifdef ID_EXT
     t->tabidvalue = New_N(Str *, MAXROW);
     t->tridvalue = New_N(Str, MAXROW);
@@ -331,7 +331,7 @@ check_row(struct table *t, int row)
     int i, r;
     GeneralList ***tabdata;
     table_attr **tabattr;
-    short *tabheight;
+    int *tabheight;
 #ifdef ID_EXT
     Str **tabidvalue;
     Str *tridvalue;
@@ -341,7 +341,7 @@ check_row(struct table *t, int row)
 	r = max(t->max_rowsize * 2, row + 1);
 	tabdata = New_N(GeneralList **, r);
 	tabattr = New_N(table_attr *, r);
-	tabheight = NewAtom_N(short, r);
+	tabheight = NewAtom_N(int, r);
 #ifdef ID_EXT
 	tabidvalue = New_N(Str *, r);
 	tridvalue = New_N(Str, r);
@@ -843,6 +843,39 @@ table_rule_width(struct table *t)
     if (t->border_mode == BORDER_NONE)
 	return 1;
     return RULE_WIDTH;
+}
+
+static void
+check_cell_height(int *tabheight, int *cellheight,
+		 short *row, short *rowspan, short maxcell,
+		 short *indexarray, int space, int dir)
+{
+    int i, j, k, brow, erow;
+    int sheight, height;
+
+    for (k = 0; k <= maxcell; k++) {
+	j = indexarray[k];
+	if (cellheight[j] <= 0)
+	    continue;
+	brow = row[j];
+	erow = brow + rowspan[j];
+	sheight = 0;
+	for (i = brow; i < erow; i++)
+	    sheight += tabheight[i];
+
+	height = cellheight[j] - (rowspan[j] - 1) * space;
+	if (height > sheight) {
+	    int w = (height - sheight) / rowspan[j];
+	    int r = (height - sheight) % rowspan[j];
+	    for (i = brow; i < erow; i++)
+		tabheight[i] += w;
+	    /* dir {0: horizontal, 1: vertical} */
+	    if (dir == 1 && r > 0)
+		r = rowspan[j];
+	    for (i = 1; i <= r; i++)
+		tabheight[erow - i]++;
+	}
+    }
 }
 
 static void
@@ -1478,7 +1511,7 @@ check_table_height(struct table *t)
 	short *indexarray;
 	short maxcell;
 	short size;
-	short *height;
+	int *height;
     } cell;
     int space = 0;
 
@@ -1517,7 +1550,7 @@ check_table_height(struct table *t)
 			cell.row = NewAtom_N(short, cell.size);
 			cell.rowspan = NewAtom_N(short, cell.size);
 			cell.indexarray = NewAtom_N(short, cell.size);
-			cell.height = NewAtom_N(short, cell.size);
+			cell.height = NewAtom_N(int, cell.size);
 		    }
 		    else {
 			cell.size = max(cell.size + MAXCELL, c + 1);
@@ -1526,7 +1559,7 @@ check_table_height(struct table *t)
 						 cell.size);
 			cell.indexarray = New_Reuse(short, cell.indexarray,
 						    cell.size);
-			cell.height = New_Reuse(short, cell.height, cell.size);
+			cell.height = New_Reuse(int, cell.height, cell.size);
 		    }
 		}
 		if (c > cell.maxcell) {
@@ -1560,7 +1593,7 @@ check_table_height(struct table *t)
     case BORDER_NONE:
 	space = 0;
     }
-    check_cell_width(t->tabheight, cell.height, cell.row, cell.rowspan,
+    check_cell_height(t->tabheight, cell.height, cell.row, cell.rowspan,
 		     cell.maxcell, cell.indexarray, space, 1);
 }
 

@@ -5,6 +5,7 @@
 #include "textlist.h"
 #include "hash.h"
 
+#define HIST_LIST_MAX GENERAL_LIST_MAX
 #define HIST_HASH_SIZE 127
 
 typedef ListItem HistItem;

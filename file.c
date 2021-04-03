@@ -5107,9 +5107,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_TABLE:
 	close_anchor(h_env, obuf);
-	obuf->table_level++;
-	if (obuf->table_level >= MAX_TABLE)
+	if (obuf->table_level + 1 >= MAX_TABLE)
 	    break;
+	obuf->table_level++;
 	w = BORDER_NONE;
 	/* x: cellspacing, y: cellpadding */
 	x = 2;

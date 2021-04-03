@@ -337,8 +337,12 @@ check_row(struct table *t, int row)
     Str *tridvalue;
 #endif				/* ID_EXT */
 
+    if (row < 0 || row >= MAXROW_LIMIT)
+	return;
     if (row >= t->max_rowsize) {
 	r = max(t->max_rowsize * 2, row + 1);
+	if (r <= 0 || r > MAXROW_LIMIT)
+	    r = MAXROW_LIMIT;
 	tabdata = New_N(GeneralList **, r);
 	tabattr = New_N(table_attr *, r);
 	tabheight = NewAtom_N(int, r);
@@ -634,6 +638,8 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
     int rule_mode;
     int i, k, l, m;
 
+    if (row + 1 < 0 || row + 1 >= MAXROW_LIMIT)
+	return;
     if (row >= 0)
 	check_row(t, row);
     check_row(t, row + 1);
@@ -2246,7 +2252,8 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
 
     if (!(tbl->flag & TBL_IN_ROW)) {
 	tbl->flag |= TBL_IN_ROW;
-	tbl->row++;
+	if (tbl->row + 1 < MAXROW_LIMIT)
+	    tbl->row++;
 	if (tbl->row > tbl->maxrow)
 	    tbl->maxrow = tbl->row;
 	tbl->col = -1;
@@ -2263,6 +2270,8 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
 	if (tbl->col < MAXCOL)
 	    break;
 	tbl->col = 0;
+	if (tbl->row + 1 >= MAXROW_LIMIT)
+	    break;
     }
     if (tbl->row > tbl->maxrow)
 	tbl->maxrow = tbl->row;
@@ -2569,6 +2578,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    check_rowcol(tbl, mode);
 	return TAG_ACTION_N_TABLE;
     case HTML_TR:
+	if (tbl->row + 1 >= MAXROW_LIMIT)
+	    return TAG_ACTION_NONE;
 	if (tbl->col >= 0 && tbl->tabcontentssize > 0)
 	    setwidth(tbl, mode);
 	tbl->col = -1;
@@ -2624,6 +2635,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	if (tbl->col == -1) {
 	    if (!(tbl->flag & TBL_IN_ROW)) {
+		if (tbl->row + 1 >= MAXROW_LIMIT)
+		    return TAG_ACTION_NONE;
 		tbl->row++;
 		tbl->flag |= TBL_IN_ROW;
 	    }
@@ -2654,11 +2667,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	else
 	    valign = HTT_MIDDLE;
 	if (parsedtag_get_value(tag, ATTR_ROWSPAN, &rowspan)) {
-	    if(rowspan > ATTR_ROWSPAN_MAX) {
+	    if (rowspan < 0 || rowspan > ATTR_ROWSPAN_MAX)
 		rowspan = ATTR_ROWSPAN_MAX;
-	    }
-	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
-		check_row(tbl, tbl->row + rowspan);
+	    if ((tbl->row + rowspan - 1) >= MAXROW_LIMIT)
+		rowspan = MAXROW_LIMIT - tbl->row;
+	    if ((tbl->row + rowspan) > tbl->max_rowsize)
+		check_row(tbl, tbl->row + rowspan - 1);
 	}
 	if (rowspan < 1)
 	    rowspan = 1;
@@ -3357,12 +3371,16 @@ pushTable(struct table *tbl, struct table *tbl1)
     int col;
     int row;
 
+    if (tbl->ntable < 0 || tbl->ntable >= MAX_TABLE_N_LIMIT)
+	return;
     col = tbl->col;
     row = tbl->row;
 
     if (tbl->ntable >= tbl->tables_size) {
 	struct table_in *tmp;
 	tbl->tables_size += MAX_TABLE_N;
+	if (tbl->tables_size <= 0 || tbl->tables_size > MAX_TABLE_N_LIMIT)
+	    tbl->tables_size = MAX_TABLE_N_LIMIT;
 	tmp = New_N(struct table_in, tbl->tables_size);
 	if (tbl->tables)
 	    bcopy(tbl->tables, tmp, tbl->ntable * sizeof(struct table_in));

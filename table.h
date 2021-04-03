@@ -14,8 +14,10 @@
 #include "Str.h"
 
 #define MAX_TABLE 20		/* maximum nest level of table */
+#define MAX_TABLE_N_LIMIT 2000
 #define MAX_TABLE_N 20		/* maximum number of table in same level */
 
+#define MAXROW_LIMIT 32767
 #define MAXROW 50
 #define MAXCOL 256
 

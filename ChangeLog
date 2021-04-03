@@ -1,3 +1,8 @@
+2021-04-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, table.c, table.h:
+	Limit size and number of tables to prevent integer overflow.
+
 2021-03-30  Tatsuya Kinoshita  <tats@debian.org>
 
 	* table.c, table.h: Treat table height as int instead of short.

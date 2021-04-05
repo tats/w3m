@@ -1,3 +1,15 @@
+2021-04-05  Tatsuya Kinoshita  <tats@debian.org>
+
+	* etc.c: Use Strcatc and Strnulterm in base64_encode.
+
+	* Str.h: New macro Strcatc and Strnulterm.
+
+2021-04-05  bptato  <nincsnevem662@gmail.com>
+
+	* etc.c, file.c, proto.h, terms.c: Return Str from base64_encode.
+	Fix base64 padding could be applied incorrectly.
+	Fix extraction of first gif frame for animations in put_image_kitty.
+
 2021-04-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, table.c, table.h:

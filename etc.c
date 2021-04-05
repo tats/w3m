@@ -2008,32 +2008,25 @@ void (*mySignal(int signal_number, void (*action) (int))) (int) {
 static char Base64Table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-char *
+Str
 base64_encode(const unsigned char *src, size_t len)
 {
-    unsigned char *w, *at;
+    Str dest;
     const unsigned char *in, *endw;
     unsigned long j;
     size_t k;
 
-
-    if (!len)
-	return NULL;
-
     k = len;
     if (k % 3)
-      k += 3 - (k % 3);
+	k += 3 - (k % 3);
+
     k = k / 3 * 4;
 
-    if (k + 1 < len)
-	return NULL;
+    if (!len || k + 1 < len)
+	return Strnew();
 
-    w = GC_MALLOC_ATOMIC(k + 1);
-    if (!w)
-	return NULL;
-    w[k] = 0;
+    dest = Strnew_size(k);
 
-    at = w;
     in = src;
 
     endw = src + len - 2;
@@ -2043,30 +2036,28 @@ base64_encode(const unsigned char *src, size_t len)
 	j = j << 8 | *in++;
 	j = j << 8 | *in++;
 
-	*at++ = Base64Table[(j >> 18) & 0x3f];
-	*at++ = Base64Table[(j >> 12) & 0x3f];
-	*at++ = Base64Table[(j >> 6) & 0x3f];
-	*at++ = Base64Table[j & 0x3f];
+	Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
+	Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
+	Strcat_char(dest, Base64Table[(j >> 6) & 0x3f]);
+	Strcat_char(dest, Base64Table[j & 0x3f]);
     }
 
-    if (in - src - len) {
-	if (in - src - len == 1) {
-	    j = *in++;
-	    j = j << 8;
-	    j = j << 8;
-	    *at++ = Base64Table[(j >> 18) & 0x3f];
-	    *at++ = Base64Table[(j >> 12) & 0x3f];
-	    *at++ = '=';
-	    *at++ = '=';
-	} else {
-	    j = *in++;
+    if (src + len - in) {
+	j = *in++;
+	if (src + len - in) {
 	    j = j << 8 | *in++;
 	    j = j << 8;
-	    *at++ = Base64Table[(j >> 18) & 0x3f];
-	    *at++ = Base64Table[(j >> 12) & 0x3f];
-	    *at++ = Base64Table[(j >> 6) & 0x3f];
-	    *at++ = '=';
+	    Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
+	    Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
+	    Strcat_char(dest, Base64Table[(j >> 6) & 0x3f]);
+	} else {
+	    j = j << 8;
+	    j = j << 8;
+	    Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
+	    Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
+	    Strcat_char(dest, '=');
 	}
+	Strcat_char(dest, '=');
     }
-    return (char *)w;
+    return dest;
 }

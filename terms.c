@@ -491,7 +491,7 @@ void
 put_image_iterm2(char *url, int x, int y, int w, int h)
 {
     Str buf;
-    char *base64, *cbuf;
+    char *cbuf;
     FILE *fp;
     int c, i;
     struct stat st;
@@ -518,32 +518,25 @@ put_image_iterm2(char *url, int x, int y, int w, int h)
     writestr(buf->ptr);
 
     cbuf = GC_MALLOC_ATOMIC(3072);
+    if (!cbuf)
+	goto cleanup;
     i = 0;
     while ((c = fgetc(fp)) != EOF) {
 	cbuf[i++] = c;
 	if (i == 3072) {
-	    base64 = base64_encode(cbuf, i);
-	    if (!base64) {
-		writestr("\a");
-		fclose(fp);
-		return;
-	    }
-	    writestr(base64);
+	    buf = base64_encode(cbuf, i);
+	    writestr(buf->ptr);
 	    i = 0;
 	}
     }
 
-    fclose(fp);
-
     if (i) {
-	base64 = base64_encode(cbuf, i);
-	if (!base64) {
-	    writestr("\a");
-	    return;
-	}
-	writestr(base64);
+	buf = base64_encode(cbuf, i);
+	writestr(buf->ptr);
     }
 
+cleanup:
+    fclose(fp);
     writestr("\a");
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
@@ -555,11 +548,11 @@ void
 put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
     int sh, int cols, int rows)
 {
-    Str buf;
-    char *base64, *cbuf, *type, *tmpf;
+    Str buf, base64;
+    char *cbuf, *type, *tmpf;
     char *argv[4];
     FILE *fp;
-    int c, i, j, k, t;
+    int c, i, j, m, t, is_anim;
     struct stat st;
     pid_t pid;
     MySignalHandler(*volatile previntr) (SIGNAL_ARG);
@@ -573,8 +566,13 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
     t = 100; /* always convert to png for now. */
 
     if(!(type && !strcasecmp(type, "image/png"))) {
-	buf = Strnew();
 	tmpf = Sprintf("%s/%s.png", tmp_dir, mybasename(url))->ptr;
+
+	if (!strcasecmp(type, "image/gif")) {
+	    is_anim = 1;
+	} else {
+	    is_anim = 0;
+	}
 
 	/* convert only if png doesn't exist yet. */
 
@@ -599,7 +597,13 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 		else
 		    argv[i++] = "convert";
 
-		argv[i++] = url;
+		if (is_anim) {
+		    buf = Strnew_charp(url);
+		    Strcat_charp(buf, "[0]");
+		    argv[i++] = buf->ptr;
+		} else {
+		    argv[i++] = url;
+		}
 		argv[i++] = tmpf;
 		argv[i++] = NULL;
 		execvp(argv[0],argv);
@@ -626,67 +630,50 @@ put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int sw,
 	return;
 
     MOVE(y, x);
-    buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=1,x=%d,y=%d,"
-	"w=%d,h=%d,c=%d,r=%d;",
-	w, h, sx, sy, sw, sh, cols, rows);
 
 
-    cbuf = GC_MALLOC_ATOMIC(3072);
+    cbuf = GC_MALLOC_ATOMIC(3072); /* base64-encoded chunks of 4096 bytes */
+    if (!cbuf)
+	goto cleanup;
     i = 0;
-    j = buf->length;
 
-    while (buf->length + i / 3 * 4 < 4096 && (c = fgetc(fp)) != EOF) {
+    while (i < 3072 && (c = fgetc(fp)) != EOF)
 	cbuf[i++] = c;
-    }
+
 
     base64 = base64_encode(cbuf, i);
-    if (!base64) {
-	fclose(fp);
-	return;
-    }
 
     if (c == EOF)
-      buf = Sprintf("\x1b_Gf=100,s=%d,v=%d,a=T,m=0,x=%d,y=%d,"
-	"w=%d,h=%d,c=%d,r=%d;",
-	w, h, sx, sy, sw, sh, cols, rows);
+	m = 0;
+    else
+	m = 1;
+    buf = Sprintf("\x1b_Gf=%d,s=%d,v=%d,a=T,m=%d,x=%d,y=%d,w=%d,h=%d,c=%d,r=%d;"
+	  "%s\x1b\\", t, w, h, m, sx, sy, sw, sh, cols, rows, base64->ptr);
     writestr(buf->ptr);
 
-    buf = Sprintf("%s\x1b\\", base64);
-    writestr(buf->ptr);
+    if (m) {
+	i = 0;
+	j = 0;
+	while ((c = fgetc(fp)) != EOF) {
+	    if (j) {
+		base64 = base64_encode(cbuf, i);
+		buf = Sprintf("\x1b_Gm=1;%s\x1b\\", base64->ptr);
+		writestr(buf->ptr);
+		i = 0;
+		j = 0;
+	    }
+	    cbuf[i++] = c;
+	    if (i == 3072)
+		j = 1;
+	}
 
-    if (c != EOF) {
-      i = 0;
-      base64 = NULL;
-      while ((c = fgetc(fp)) != EOF) {
-	  if (!i && base64) {
-	      buf = Sprintf("\x1b_Gm=1;%s\x1b\\", base64);
-	      writestr(buf->ptr);
-	  }
-	  cbuf[i++] = c;
-	  if (i == 3072) {
-	      base64 = base64_encode(cbuf, i);
-	      if (!base64) {
-		  fclose(fp);
-		  return;
-	      }
-
-	      i = 0;
-	  }
-      }
-
-      if (i) {
-	  base64 = base64_encode(cbuf, i);
-	  if (!base64) {
-	      fclose(fp);
-	      return;
-	  }
-      }
-
-      if (base64) {
-	  buf = Sprintf("\x1b_Gm=0;%s\x1b\\", base64);
-	  writestr(buf->ptr);
-      }
+	if (i) {
+	    base64 = base64_encode(cbuf, i);
+	    buf = Sprintf("\x1b_Gm=0;%s\x1b\\", base64->ptr);
+	    writestr(buf->ptr);
+	}
     }
+cleanup:
     fclose(fp);
     MOVE(Currentbuf->cursorY, Currentbuf->cursorX);
 }

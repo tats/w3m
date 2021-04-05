@@ -2026,6 +2026,10 @@ base64_encode(const unsigned char *src, size_t len)
 	return Strnew();
 
     dest = Strnew_size(k);
+    if (dest->area_size <= k) {
+	Strfree(dest);
+	return Strnew();
+    }
 
     in = src;
 
@@ -2036,10 +2040,10 @@ base64_encode(const unsigned char *src, size_t len)
 	j = j << 8 | *in++;
 	j = j << 8 | *in++;
 
-	Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
-	Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
-	Strcat_char(dest, Base64Table[(j >> 6) & 0x3f]);
-	Strcat_char(dest, Base64Table[j & 0x3f]);
+	Strcatc(dest, Base64Table[(j >> 18) & 0x3f]);
+	Strcatc(dest, Base64Table[(j >> 12) & 0x3f]);
+	Strcatc(dest, Base64Table[(j >> 6) & 0x3f]);
+	Strcatc(dest, Base64Table[j & 0x3f]);
     }
 
     if (src + len - in) {
@@ -2047,17 +2051,18 @@ base64_encode(const unsigned char *src, size_t len)
 	if (src + len - in) {
 	    j = j << 8 | *in++;
 	    j = j << 8;
-	    Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
-	    Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
-	    Strcat_char(dest, Base64Table[(j >> 6) & 0x3f]);
+	    Strcatc(dest, Base64Table[(j >> 18) & 0x3f]);
+	    Strcatc(dest, Base64Table[(j >> 12) & 0x3f]);
+	    Strcatc(dest, Base64Table[(j >> 6) & 0x3f]);
 	} else {
 	    j = j << 8;
 	    j = j << 8;
-	    Strcat_char(dest, Base64Table[(j >> 18) & 0x3f]);
-	    Strcat_char(dest, Base64Table[(j >> 12) & 0x3f]);
-	    Strcat_char(dest, '=');
+	    Strcatc(dest, Base64Table[(j >> 18) & 0x3f]);
+	    Strcatc(dest, Base64Table[(j >> 12) & 0x3f]);
+	    Strcatc(dest, '=');
 	}
-	Strcat_char(dest, '=');
+	Strcatc(dest, '=');
     }
+    Strnulterm(dest);
     return dest;
 }

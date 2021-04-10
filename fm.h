@@ -583,6 +583,7 @@ typedef struct _DownloadList {
 #define FONT_STACK_SIZE 5
 
 #define FONTSTAT_SIZE 7
+#define FONTSTAT_MAX 127
 
 #define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)

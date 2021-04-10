@@ -3196,7 +3196,8 @@ save_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
     if (obuf->fontstat_sp < FONT_STACK_SIZE)
 	bcopy(obuf->fontstat, obuf->fontstat_stack[obuf->fontstat_sp],
 	      FONTSTAT_SIZE);
-    obuf->fontstat_sp++;
+    if (obuf->fontstat_sp < INT_MAX)
+	obuf->fontstat_sp++;
     if (obuf->in_bold)
 	push_tag(obuf, "</b>", HTML_N_B);
     if (obuf->in_italic)
@@ -4493,7 +4494,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 
     switch (cmd) {
     case HTML_B:
-	obuf->in_bold++;
+	if (obuf->in_bold < FONTSTAT_MAX)
+	    obuf->in_bold++;
 	if (obuf->in_bold > 1)
 	    return 1;
 	return 0;
@@ -4507,7 +4509,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_I:
-	obuf->in_italic++;
+	if (obuf->in_italic < FONTSTAT_MAX)
+	    obuf->in_italic++;
 	if (obuf->in_italic > 1)
 	    return 1;
 	return 0;
@@ -4521,7 +4524,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_U:
-	obuf->in_under++;
+	if (obuf->in_under < FONTSTAT_MAX)
+	    obuf->in_under++;
 	if (obuf->in_under > 1)
 	    return 1;
 	return 0;
@@ -5359,7 +5363,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[DEL:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_strike++;
+	    if (obuf->in_strike < FONTSTAT_MAX)
+		obuf->in_strike++;
 	    if (obuf->in_strike == 1) {
 		push_tag(obuf, "<s>", HTML_S);
 	    }
@@ -5396,7 +5401,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[S:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_strike++;
+	    if (obuf->in_strike < FONTSTAT_MAX)
+		obuf->in_strike++;
 	    if (obuf->in_strike == 1) {
 		push_tag(obuf, "<s>", HTML_S);
 	    }
@@ -5432,7 +5438,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[INS:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_ins++;
+	    if (obuf->in_ins < FONTSTAT_MAX)
+		obuf->in_ins++;
 	    if (obuf->in_ins == 1) {
 		push_tag(obuf, "<ins>", HTML_INS);
 	    }

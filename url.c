@@ -1456,7 +1456,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	else
 #endif
 	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
-	    current->scheme != SCM_LOCAL_CGI &&
+	    current->scheme != SCM_LOCAL_CGI && current->scheme != SCM_DATA &&
 	    (current->scheme != SCM_FTP ||
 	     (current->user == NULL && current->pass == NULL))) {
 	    char *p = current->label;

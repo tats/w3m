@@ -194,6 +194,7 @@ static int OptionEncode = FALSE;
 #endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     N_("Free memory of undisplayed buffers")
 #define CMT_NOSENDREFERER N_("Suppress `Referer:' header")
+#define CMT_CROSSORIGINREFERER N_("Exclude pathname and query string from `Referer:' header when cross domain communication")
 #define CMT_IGNORE_CASE N_("Search case-insensitively")
 #define CMT_USE_LESSOPEN N_("Use LESSOPEN")
 #ifdef USE_SSL
@@ -678,6 +679,8 @@ struct param_ptr params9[] = {
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
+    {"cross_origin_referer", P_INT, PI_ONOFF, (void *)&CrossOriginReferer,
+     CMT_CROSSORIGINREFERER, NULL},
     {"accept_language", P_STRING, PI_TEXT, (void *)&AcceptLang, CMT_ACCEPTLANG,
      NULL},
     {"accept_encoding", P_STRING, PI_TEXT, (void *)&AcceptEncoding,

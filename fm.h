@@ -1025,6 +1025,7 @@ global char *image_source init(NULL);
 #endif
 global char *UserAgent init(NULL);
 global int NoSendReferer init(FALSE);
+global int CrossOriginReferer init(TRUE);
 global char *AcceptLang init(NULL);
 global char *AcceptEncoding init(NULL);
 global char *AcceptMedia init(NULL);

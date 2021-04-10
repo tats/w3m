@@ -1374,6 +1374,21 @@ parsedURL2Str(ParsedURL *pu)
     return _parsedURL2Str(pu, FALSE, TRUE, TRUE);
 }
 
+static Str
+parsedURL2RefererOriginStr(ParsedURL *pu)
+{
+    Str s;
+    char *f = pu->file, *q = pu->query;
+
+    pu->file = NULL;
+    pu->query = NULL;
+    s = _parsedURL2Str(pu, FALSE, FALSE, FALSE);
+    pu->file = f;
+    pu->query = q;
+
+    return s;
+}
+
 Str
 parsedURL2RefererStr(ParsedURL *pu)
 {
@@ -1455,6 +1470,13 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     no_referer_ptr = query_SCONF_NO_REFERER_TO(target);
     no_referer = no_referer || (no_referer_ptr && *no_referer_ptr);
     if (!no_referer) {
+	int cross_origin = FALSE;
+	if (CrossOriginReferer && current && current->host &&
+	    (!target || !target->host ||
+	     strcasecmp(current->host, target->host) != 0 || 
+	     current->port != target->port ||
+	     current->scheme != target->scheme))
+	    cross_origin = TRUE;
 #ifdef USE_SSL
         if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
 	  /* Don't send Referer: if https:// -> http:// */
@@ -1466,12 +1488,18 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	    (current->scheme != SCM_FTP ||
 	     (current->user == NULL && current->pass == NULL))) {
 	    Strcat_charp(s, "Referer: ");
-	    Strcat(s, parsedURL2RefererStr(current));
+	    if (cross_origin)
+		Strcat(s, parsedURL2RefererOriginStr(current));
+	    else
+		Strcat(s, parsedURL2RefererStr(current));
 	    Strcat_charp(s, "\r\n");
 	}
 	else if (referer != NULL && referer != NO_REFERER) {
 	    Strcat_charp(s, "Referer: ");
-	    Strcat_charp(s, referer);
+	    if (cross_origin)
+		Strcat(s, parsedURL2RefererOriginStr(current));
+	    else
+		Strcat_charp(s, referer);
 	    Strcat_charp(s, "\r\n");
 	}
     }

@@ -2948,7 +2948,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
 	base->scheme == SCM_DATA)
 	referer = NO_REFERER;
     if (referer == NULL)
-	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	referer = parsedURL2RefererStr(&Currentbuf->currentURL)->ptr;
     buf = loadGeneralFile(url, baseURL(Currentbuf), referer, flag, request);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", url)->ptr;
@@ -4247,7 +4247,7 @@ goURL0(char *prompt, int relative)
 	    current->scheme == SCM_DATA)
 	    referer = NO_REFERER;
 	else
-	    referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	    referer = parsedURL2RefererStr(&Currentbuf->currentURL)->ptr;
 	url = url_encode(url, current, Currentbuf->document_charset);
     }
     else {

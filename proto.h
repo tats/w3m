@@ -544,6 +544,7 @@ extern void parseURL(char *url, ParsedURL *p_url, ParsedURL *current);
 extern void copyParsedURL(ParsedURL *p, const ParsedURL *q);
 extern void parseURL2(char *url, ParsedURL *pu, ParsedURL *current);
 extern Str parsedURL2Str(ParsedURL *pu);
+extern Str parsedURL2RefererStr(ParsedURL *pu);
 extern int getURLScheme(char **url);
 extern void init_stream(URLFile *uf, int scheme, InputStream stream);
 Str HTTPrequestMethod(HRequest *hr);

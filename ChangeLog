@@ -1,14 +1,27 @@
+2021-04-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* fm.h, rc.c, url.c:
+	New option cross_origin_referer to use origin only Referer.
+
+	* main.c, proto.h, url.c: Don't include username in Referer.
+
+	* main.c, url.c: Don't set Referer when data URI scheme.
+
 2021-04-05  Tatsuya Kinoshita  <tats@debian.org>
 
 	* etc.c: Use Strcatc and Strnulterm in base64_encode.
 
-	* Str.h: New macro Strcatc and Strnulterm.
+	* Str.h: New macros Strcatc and Strnulterm.
 
 2021-04-05  bptato  <nincsnevem662@gmail.com>
 
 	* etc.c, file.c, proto.h, terms.c: Return Str from base64_encode.
 	Fix base64 padding could be applied incorrectly.
 	Fix extraction of first gif frame for animations in put_image_kitty.
+	Origin: https://github.com/tats/w3m/pull/177
 
 2021-04-03  Tatsuya Kinoshita  <tats@debian.org>
 

@@ -1,3 +1,12 @@
+2021-04-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* fm.h, rc.c, url.c:
+	New option localhost_only to restrict connections only to localhost.
+	Bug-Debian: https://github.com/tats/w3m/issues/117
+
 2021-04-10  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:

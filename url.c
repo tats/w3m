@@ -1696,6 +1696,10 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	}
     }
 
+    if (LocalhostOnly && pu->host &&
+	strcasecmp(pu->host, "localhost") && strcasecmp(pu->host, "127.0.0.1"))
+	pu->host = NULL;
+
     uf.scheme = pu->scheme;
     uf.url = parsedURL2Str(pu)->ptr;
     pu->is_nocache = (option->flag & RG_NOCACHE);

@@ -223,6 +223,7 @@ static int OptionEncode = FALSE;
 #endif
 #define CMT_FOLLOW_REDIRECTION N_("Number of redirections to follow")
 #define CMT_META_REFRESH N_("Enable processing of meta-refresh tag")
+#define CMT_LOCALHOST_ONLY N_("Restrict connections only to localhost")
 
 #ifdef USE_MIGEMO
 #define CMT_USE_MIGEMO N_("Enable Migemo (Roma-ji search)")
@@ -698,6 +699,8 @@ struct param_ptr params9[] = {
      CMT_FOLLOW_REDIRECTION, NULL},
     {"meta_refresh", P_CHARINT, PI_ONOFF, (void *)&MetaRefresh,
      CMT_META_REFRESH, NULL},
+    {"localhost_only", P_CHARINT, PI_ONOFF, (void *)&LocalhostOnly,
+     CMT_LOCALHOST_ONLY, NULL},
 #ifdef INET6
     {"dns_order", P_INT, PI_SEL_C, (void *)&DNS_order, CMT_DNS_ORDER,
      (void *)dnsorders},

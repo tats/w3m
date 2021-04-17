@@ -836,6 +836,7 @@ global char AutoUncompress init(FALSE);
 global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(TRUE);
 global char MetaRefresh init(FALSE);
+global char LocalhostOnly init(FALSE);
 
 global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);

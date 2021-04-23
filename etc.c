@@ -1573,6 +1573,16 @@ expandName(char *name)
 }
 #endif
 
+int
+is_localhost(const char *host)
+{
+    if (!host ||
+	!strcasecmp(host, "localhost") || !strcmp(host, "127.0.0.1") ||
+	(HostName && !strcasecmp(host, HostName)) || !strcmp(host, "[::1]"))
+	return TRUE;
+    return FALSE;
+}
+
 char *
 file_to_url(char *file)
 {

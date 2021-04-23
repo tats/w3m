@@ -672,6 +672,7 @@ extern void myExec(char *command);
 extern void mySystem(char *command, int background);
 extern Str myExtCommand(char *cmd, char *arg, int redirect);
 extern Str myEditor(char *cmd, char *file, int line);
+extern int is_localhost(const char *host);
 extern char *file_to_url(char *file);
 #ifdef USE_M17N
 extern char *url_unquote_conv(char *url, wc_ces charset);

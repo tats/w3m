@@ -455,6 +455,18 @@ main(int argc, char **argv, char **envp)
     BookmarkFile = NULL;
     config_file = NULL;
 
+    {
+	char hostname[HOST_NAME_MAX + 2];
+	if (gethostname(hostname, HOST_NAME_MAX + 2) == 0) {
+	    size_t hostname_len;
+	    /* Don't use hostname if it is truncated.  */
+	    hostname[HOST_NAME_MAX + 1] = '\0';
+	    hostname_len = strlen(hostname);
+	    if (hostname_len <= HOST_NAME_MAX && hostname_len <= INT_MAX)
+		HostName = allocStr(hostname, (int)hostname_len);
+	}
+    }
+
     /* argument search 1 */
     for (i = 1; i < argc; i++) {
 	if (*argv[i] == '-') {

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -134,6 +135,10 @@ void bzero(void *, int);
 #ifdef USE_DICT
 #define DICTBUFFERNAME "*dictionary*"
 #endif				/* USE_DICT */
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 
 /* 
  * Line Property
@@ -837,6 +842,7 @@ global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(TRUE);
 global char MetaRefresh init(FALSE);
 global char LocalhostOnly init(FALSE);
+global char* HostName init(NULL);
 
 global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);

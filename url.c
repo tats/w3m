@@ -41,10 +41,6 @@
 #define close(fd)	closesocket(fd)
 #endif
 
-#ifndef HOST_NAME_MAX
-#define HOST_NAME_MAX 64
-#endif
-
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */
 int ai_family_order_table[7][3] = {
@@ -781,34 +777,13 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    copyParsedURL(p_url, current);
 	goto do_label;
     }
-    if (!strncasecmp(url, "file://", 7)) {
 #if defined( __EMX__ ) || defined( __CYGWIN__ )
-	if (!strncasecmp(url + 7, "localhost/", 10)) {
-	    p_url->scheme = SCM_LOCAL;
-	    p += 7 + 10 - 1;
-	    url += 7 + 10 - 1;
-	} else
-#endif
-	{
-	    /* Recognize the machine's host name.  This is necessary for URLs
-	     * produced by 'ls --hyperlink' or similar.  */
-	    char hostname[HOST_NAME_MAX + 2];
-	    if (gethostname (hostname, HOST_NAME_MAX + 2) == 0) {
-		size_t hostname_len;
-		/* Don't use hostname if it is truncated.  */
-		hostname[HOST_NAME_MAX + 1] = '\0';
-		hostname_len = strlen (hostname);
-		if (hostname_len <= HOST_NAME_MAX) {
-		    if (!strncasecmp(url + 7, hostname, hostname_len)
-			&& *(url + 7 + hostname_len) == '/') {
-			p_url->scheme = SCM_LOCAL;
-			p += 7 + hostname_len;
-			url += 7 + hostname_len;
-		    }
-		}
-	    }
-	}
+    if (!strncasecmp(url, "file://localhost/", 17)) {
+	p_url->scheme = SCM_LOCAL;
+	p += 17 - 1;
+	url += 17 - 1;
     }
+#endif
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (IS_ALPHA(*p) && (p[1] == ':' || p[1] == '|')) {
 	p_url->scheme = SCM_LOCAL;
@@ -951,7 +926,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 #ifndef SUPPORT_NETBIOS_SHARE
     if (p_url->scheme == SCM_LOCAL && p_url->user == NULL &&
 	p_url->host != NULL && *p_url->host != '\0' &&
-	strcmp(p_url->host, "localhost")) {
+	!is_localhost(p_url->host)) {
 	/*
 	 * In the environments other than CYGWIN, a URL like 
 	 * file://host/file is regarded as ftp://host/file.
@@ -1262,7 +1237,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	}
 	if (pu->scheme == SCM_LOCAL) {
 #ifdef SUPPORT_NETBIOS_SHARE
-	    if (pu->host && strcmp(pu->host, "localhost") != 0) {
+	    if (pu->host && !is_localhost(pu->host)) {
 		Str tmp = Strnew_charp("//");
 		Strcat_m_charp(tmp, pu->host,
 			       cleanupName(file_unquote(pu->file)), NULL);
@@ -1696,8 +1671,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	}
     }
 
-    if (LocalhostOnly && pu->host &&
-	strcasecmp(pu->host, "localhost") && strcasecmp(pu->host, "127.0.0.1"))
+    if (LocalhostOnly && pu->host && !is_localhost(pu->host))
 	pu->host = NULL;
 
     uf.scheme = pu->scheme;

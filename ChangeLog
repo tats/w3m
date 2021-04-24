@@ -1,3 +1,9 @@
+2021-04-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, fm.h: Prevent integer overflow due to fontstat.
+
+	* main.c: Check length of hostname with STR_SIZE_MAX.
+
 2021-04-23  Tatsuya Kinoshita  <tats@debian.org>
 
 	* etc.c, fm.h, local.c, main.c, proto.h, url.c:

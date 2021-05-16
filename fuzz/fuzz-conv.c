@@ -25,6 +25,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
     static int init_done = 0;
 
     if (!init_done) {
+	setenv("GC_LARGE_ALLOC_WARN_INTERVAL", "30000", 1);
 	GC_INIT();
 #if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
 	GC_set_oom_fn(die_oom);

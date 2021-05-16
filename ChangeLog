@@ -1,3 +1,14 @@
+2021-05-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c:
+	Prevent GC warnings of repeated allocation in fuzzer.
+
+2021-05-16  bptato  <nincsnevem662@gmail.com>
+
+	* terms.c: Fix null pointer dereference in put_image_kitty.
+	Origin: https://github.com/tats/w3m/pull/182
+	Bug-Debian: https://github.com/tats/w3m/issues/181
+
 2021-04-24  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c, fm.h: Prevent integer overflow due to fontstat.

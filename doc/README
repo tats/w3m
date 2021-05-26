@@ -44,8 +44,7 @@ w3m is known to work on these platforms.
 Follow these instructions to install w3m.  
 
  - You need latest version of GC library (at least 6.1?).
-   You can get GC library from 
-   http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
+   You can get GC library from https://www.hboehm.info/gc
 
    Note: if you're using GC library 6.1, you should install gc.h 
    to PREFIX/include:

@@ -1,3 +1,8 @@
+2021-06-05  Laurenz  <git@laure.nz>
+
+	* doc-jp/README, doc/README: Fix link to hboehm's gc library.
+	Origin: https://github.com/tats/w3m/pull/183
+
 2021-05-16  Tatsuya Kinoshita  <tats@debian.org>
 
 	* fuzz/fuzz-conv.c:

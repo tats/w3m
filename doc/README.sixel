@@ -9,7 +9,7 @@ Introduction
 Requirements
 
   Install 'img2sixel' command provided by libsixel project.
-  (https://github.com/saitoha/libsixel)
+  (https://github.com/libsixel/libsixel)
 
 Build
 

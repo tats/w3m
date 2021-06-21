@@ -1,3 +1,8 @@
+2021-06-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc/README.sixel: Add information of Debian's libsixel-bin package.
+	Bug-Debian: https://github.com/tats/w3m/pull/184
+
 2021-06-05  Laurenz  <git@laure.nz>
 
 	* doc-jp/README, doc/README: Fix link to hboehm's gc library.

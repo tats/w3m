@@ -4319,7 +4319,10 @@ set_alignment(struct readbuffer *obuf, struct parsed_tag *tag)
     if (parsedtag_get_value(tag, ATTR_ALIGN, &align)) {
 	switch (align) {
 	case ALIGN_CENTER:
-	    flag = RB_CENTER;
+	    if (DisableCenter)
+		flag = RB_LEFT;
+	    else
+		flag = RB_CENTER;
 	    break;
 	case ALIGN_RIGHT:
 	    flag = RB_RIGHT;
@@ -5183,7 +5186,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (!(obuf->flag & (RB_PREMODE | RB_IGNORE_P)))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	RB_SAVE_FLAG(obuf);
-	RB_SET_ALIGN(obuf, RB_CENTER);
+	if (DisableCenter)
+	    RB_SET_ALIGN(obuf, RB_LEFT);
+	else
+	    RB_SET_ALIGN(obuf, RB_CENTER);
 	return 1;
     case HTML_N_CENTER:
 	CLOSE_A;

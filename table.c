@@ -616,12 +616,17 @@ print_item(struct table *t, int row, int col, int width, Str buf)
 	    alignment = ALIGN_RIGHT;
 	else if ((t->tabattr[row][col] & HTT_ALIGN) == HTT_CENTER)
 	    alignment = ALIGN_CENTER;
+	if (DisableCenter && alignment == ALIGN_CENTER)
+	    alignment = ALIGN_LEFT;
 	align(lbuf, width, alignment);
 	Strcat(buf, lbuf->line);
     }
     else {
 	lbuf = newTextLine(NULL, 0);
-	align(lbuf, width, ALIGN_CENTER);
+	if (DisableCenter)
+	    align(lbuf, width, ALIGN_LEFT);
+	else
+	    align(lbuf, width, ALIGN_CENTER);
 	Strcat(buf, lbuf->line);
     }
 }

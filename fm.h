@@ -677,7 +677,7 @@ struct readbuffer {
 #define RB_HTML5	0x400000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
-#define RB_SET_ALIGN(obuf,align) {(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }
+#define RB_SET_ALIGN(obuf,align) do{(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }while(0)
 #define RB_SAVE_FLAG(obuf) {\
   if ((obuf)->flag_sp < RB_STACK_SIZE) \
     (obuf)->flag_stack[(obuf)->flag_sp++] = RB_GET_ALIGN(obuf); \
@@ -1125,6 +1125,7 @@ global char UseAltEntity init(FALSE);
 #define GRAPHIC_CHAR_CHARSET 0
 global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
 global char DisplayBorders init(FALSE);
+global char DisableCenter init(FALSE);
 extern char *graph_symbol[];
 extern char *graph2_symbol[];
 extern int symbol_width;

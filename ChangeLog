@@ -1,3 +1,13 @@
+2021-07-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* file.c, fm.h, rc.c, table.c:
+	New option disable_center to disable center alignment.
+	Bug-Debian: https://github.com/tats/w3m/issues/175
+	Bug-Debian: https://github.com/tats/w3m/issues/185
+
 2021-06-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* doc/README.sixel: Add information of Debian's libsixel-bin package.

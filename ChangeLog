@@ -1,3 +1,14 @@
+2021-07-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/LINGUAS: Enable Italian translation.
+
+	* po/it.po, po/ja.po: Update PO information.
+
+2021-07-17  Marco Scardovi  <marco@scardovi.com>
+
+	* po/it.po: Add italian translation.
+	Origin: https://github.com/tats/w3m/pull/187
+
 2021-07-03  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:

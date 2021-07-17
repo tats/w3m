@@ -1,5 +1,4 @@
-# Japanese translations for w3m package
-# w3m パッケージに対する英訳.
+# Japanese translation for w3m
 # Copyright (C) 2003-2021 THE w3m'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the w3m package.
 # Fumitoshi UKAI <ukai@debian.or.jp>, 2003.

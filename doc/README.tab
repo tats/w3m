@@ -1,31 +1,32 @@
 w3m tab browsing
 
-No default keybinding for tab browsing. Pleaes configure following
-function to appropriate keys:
+Default keybindings:
 
-  NEW_TAB      open new tab, clone current page
-  TAB_LINK     open document refered by link in a new tab
-               Num(N) + TAB_LINK will open in Nth tab
-  TAB_GOTO     open URL in a new tab
-               Num(N) + TAB_GOTO will open in Nth tab
-  TAB_GOTO_RELATIVE
-               open relative URL in a new tab
-               Num(N) + TAB_GOTO_RELATIVE will open in Nth tab
-  CLOSE_TAB    close current tab
-               Num(N) + CLOSE_TAB will close Nth tab
-  NEXT_TAB     change to next tab
-               Num(N) + NEXT_TAB will change to Nth next tab
-  PREV_TAB     change to prev tab
-               Num(N) + PREV_TAB will change to Nth prev tab
-  TAB_RIGHT    move current tab to right
-               Num(N) + TAB_RIGHT will move current tab to N right
-  TAB_LEFT     move current tab to left
-               Num(N) + TAB_LEFT will move current tab to N left
-  TAB_MENU     open tab selection menu
-               operation in tab selection menu is same as operation 
-		in buffer selection menu
+NEW_TAB       T         open new tab, clone current page
+TAB_LINK      C-t         open document refered by link in a new tab
+                        Num(N) + TAB_LINK will open in Nth tab
+CLOSE_TAB     C-q       close current tab
+                        Num(N) + CLOSE_TAB will close Nth tab
+NEXT_TAB      }         change to next tab
+                        Num(N) + NEXT_TAB will change to Nth next tab
+PREV_TAB      {         change to prev tab
+                        Num(N) + PREV_TAB will change to Nth prev tab
+TAB_MENU      ESC-T     open tab selection menu
+                                  operation in tab selection menu is same as operation 
+                                    in buffer selection menu
 
-You can operate with mouse
+No default keybinding for the following functions:
+
+TAB_GOTO                open URL in a new tab
+                        Num(N) + TAB_GOTO will open in Nth tab
+TAB_GOTO_RELATIVE       open relative URL in a new tab
+                        Num(N) + TAB_GOTO_RELATIVE will open in Nth tab
+TAB_RIGHT               move current tab to right
+                        Num(N) + TAB_RIGHT will move current tab to N right
+TAB_LEFT                move current tab to left
+                        Num(N) + TAB_LEFT will move current tab to N left
+
+You can operate with mouse:
 
   left button .. 	move the tab if you click on the tab
 		      	dragging a tab to another tab will move tab

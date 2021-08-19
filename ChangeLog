@@ -1,3 +1,14 @@
+2021-08-19  Augusto Gunsch  <augustogunsch@tutanota.com>
+
+	Update README.tab
+	Origin: https://github.com/tats/w3m/pull/189
+
+	* doc/README.tab: Fix wrong quote character.
+
+	* doc/README.tab: Make spacing more consistent.
+
+	* doc/README.tab: Update default tab navigation keybindings.
+
 2021-07-17  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/LINGUAS: Enable Italian translation.

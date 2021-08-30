@@ -1,3 +1,8 @@
+2021-08-30  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mman/w3mman.in: Fix incorrect query string for `w3mman 7z`.
+	Bug-Debian: https://github.com/tats/w3m/issues/191
+
 2021-08-19  Augusto Gunsch  <augustogunsch@tutanota.com>
 
 	Update README.tab

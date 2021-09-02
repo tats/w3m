@@ -37,7 +37,7 @@
 #include <stdio.h>
 
 int
-main()
+main(void)
 {
     char *cp;
     Display *dpy;

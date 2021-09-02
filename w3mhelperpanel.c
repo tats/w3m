@@ -164,7 +164,7 @@ editMailcap(char *mailcap, struct parsed_tagarg *args)
 }
 
 int
-main(int argc, char *argv[])
+main(void)
 {
     Str mailcapfile;
     extern char *getenv();

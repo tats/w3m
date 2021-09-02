@@ -402,7 +402,7 @@ die_oom(size_t bytes)
 }
 
 int
-main(int argc, char **argv, char **envp)
+main(int argc, char **argv)
 {
     Buffer *newbuf = NULL;
     char *p;

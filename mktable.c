@@ -26,7 +26,7 @@ defhashfunc(HashItem_ss *, int, hss_i)
 /* *INDENT-ON* */
 
 int
-main(int argc, char *argv[], char **envp)
+main(int argc, char *argv[])
 {
     FILE *f;
     Hash_ss *hash;

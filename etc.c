@@ -1662,7 +1662,7 @@ url_unquote_conv0(char *url)
 }
 
 static char *tmpf_base[MAX_TMPF_TYPE] = {
-    "tmp", "src", "frame", "cache", "cookie",
+    "tmp", "src", "frame", "cache", "cookie", "hist",
 };
 static unsigned int tmpf_seq[MAX_TMPF_TYPE];
 
@@ -1670,8 +1670,23 @@ Str
 tmpfname(int type, char *ext)
 {
     Str tmpf;
+    char *dir;
+
+    switch(type) {
+    case TMPF_HIST:
+	dir = rc_dir;
+	break;
+    case TMPF_DFL:
+    case TMPF_COOKIE:
+    case TMPF_SRC:
+    case TMPF_FRAME:
+    case TMPF_CACHE:
+    default:
+	dir = tmp_dir;
+    }
+
     tmpf = Sprintf("%s/w3m%s%d-%d%s",
-		   tmp_dir,
+		   dir,
 		   tmpf_base[type],
 		   CurrentPid, tmpf_seq[type]++, (ext) ? ext : "");
     pushText(fileToDelete, tmpf->ptr);

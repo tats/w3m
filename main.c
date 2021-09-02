@@ -1813,15 +1813,11 @@ static int
 dispincsrch(int ch, Str buf, Lineprop *prop)
 {
     static Buffer sbuf;
-    static Line *currentLine;
-    static int pos;
     char *str;
     int do_next_search = FALSE;
 
     if (ch == 0 && buf == NULL) {
 	SAVE_BUFPOSITION(&sbuf);	/* search starting point */
-	currentLine = sbuf.currentLine;
-	pos = sbuf.pos;
 	return -1;
     }
 
@@ -1870,8 +1866,6 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
 	arrangeCursor(Currentbuf);
 	srchcore(str, searchRoutine);
 	arrangeCursor(Currentbuf);
-	currentLine = Currentbuf->currentLine;
-	pos = Currentbuf->pos;
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
     clear_mark(Currentbuf->currentLine);

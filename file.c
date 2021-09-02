@@ -3803,7 +3803,7 @@ process_button(struct parsed_tag *tag)
 {
     Str tmp = NULL;
     char *p, *q, *r, *qq = "";
-    int qlen, v;
+    int v;
 
     if (cur_form_id < 0) {
        char *s = "<form_int method=internal action=none>";
@@ -3847,7 +3847,6 @@ process_button(struct parsed_tag *tag)
     }
     if (q) {
        qq = html_quote(q);
-       qlen = strlen(q);
     }
 
     /*    Strcat_charp(tmp, "<pre_int>"); */
@@ -7601,7 +7600,6 @@ loadGopherSearch0(URLFile *uf, ParsedURL *pu)
 {
     Str tmp;
     char *volatile p, *volatile q;
-    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
 #endif

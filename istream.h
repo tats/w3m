@@ -100,12 +100,6 @@ union input_stream {
 };
 
 typedef struct base_stream *BaseStream;
-typedef struct file_stream *FileStream;
-typedef struct str_stream *StrStream;
-#ifdef USE_SSL
-typedef struct ssl_stream *SSLStream;
-#endif				/* USE_SSL */
-typedef struct encoded_stream *EncodedStrStream;
 
 typedef union input_stream *InputStream;
 

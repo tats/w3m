@@ -1290,7 +1290,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     tmp = Strnew_m_charp(uname->ptr, ":",
 			 qstr_unquote(get_auth_param(ha->param, "realm"))->ptr,
 			 ":", pw->ptr, NULL);
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a1buf = digest_hex(md5);
 
     if (algorithm) {
@@ -1303,7 +1303,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	    tmp = Strnew_m_charp(a1buf->ptr, ":",
 				 qstr_unquote(nonce)->ptr,
 				 ":", qstr_unquote(cnonce)->ptr, NULL);
-	    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	    a1buf = digest_hex(md5);
 	}
 	else if (strcasecmp(algorithm->ptr, "MD5") == 0)
@@ -1325,23 +1325,23 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 		    Str ebody;
 		    ebody = Strfgetall(fp);
 		    fclose(fp);
-		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
+		    MD5((unsigned char *)ebody->ptr, strlen(ebody->ptr), md5);
 		}
 		else {
-		    MD5("", 0, md5);
+		    MD5((unsigned char *)"", 0, md5);
 		}
 	    }
 	    else {
-		MD5(request->body, request->length, md5);
+		MD5((unsigned char *)request->body, request->length, md5);
 	    }
 	}
 	else {
-	    MD5("", 0, md5);
+	    MD5((unsigned char *)"", 0, md5);
 	}
 	Strcat_char(tmp, ':');
 	Strcat(tmp, digest_hex(md5));
     }
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a2buf = digest_hex(md5);
 
     if (qop_i >= QOP_AUTH) {
@@ -1359,7 +1359,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 			     ":", qstr_unquote(cnonce)->ptr,
 			     ":", qop_i == QOP_AUTH ? "auth" : "auth-int",
 			     ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
     else {
@@ -1369,7 +1369,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	tmp = Strnew_m_charp(a1buf->ptr, ":",
 			     qstr_unquote(get_auth_param(ha->param, "nonce"))->
 			     ptr, ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
 

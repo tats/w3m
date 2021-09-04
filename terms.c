@@ -356,7 +356,7 @@ char *ttyname(int);
 #define SETCHMODE(var,mode)	((var) = (((var)&~C_WHICHCHAR) | mode))
 #ifdef USE_M17N
 #define SETCH(var,ch,len)	((var) = New_Reuse(char, (var), (len) + 1), \
-				strncpy((var), (ch), (len)), (var)[len] = '\0')
+				strncpy((var), (ch), (len + 1)))
 #else
 #define SETCH(var,ch,len)	((var) = (ch))
 #endif

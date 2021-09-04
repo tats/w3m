@@ -366,8 +366,6 @@ listBuffer(Buffer *top, Buffer *current)
     message("Buffer selection mode: SPC for select / D for delete buffer", 0,
 	    0);
     standend();
-    /* 
-     * move(LASTLINE, COLS - 1); */
     move(c, 0);
     refresh();
     return buf->nextBuffer;
@@ -491,9 +489,6 @@ selectBuffer(Buffer *firstbuf, Buffer *currentbuf, char *selectchar)
 	    *selectchar = c;
 	    return currentbuf;
 	}
-	/* 
-	 * move(LASTLINE, COLS - 1);
-	 */
 	move(spoint, 0);
 	refresh();
     }

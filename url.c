@@ -416,13 +416,8 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 
 #ifdef USE_SSL_VERIFY
 	/* derived from openssl-0.9.5/apps/s_{client,cb}.c */
-#if 1				/* use SSL_get_verify_result() to verify cert */
+	/* use SSL_get_verify_result() to verify cert */
 	SSL_CTX_set_verify(ssl_ctx, SSL_VERIFY_NONE, NULL);
-#else
-	SSL_CTX_set_verify(ssl_ctx,
-			   ssl_verify_server ? SSL_VERIFY_PEER :
-			   SSL_VERIFY_NONE, NULL);
-#endif
 	if (ssl_cert_file != NULL && *ssl_cert_file != '\0') {
 	    int ng = 1;
 	    if (SSL_CTX_use_certificate_file
@@ -2454,17 +2449,6 @@ url_encode(const char *url, const ParsedURL *base, wc_ces doc_charset)
     return url_quote_conv((char *)url,
 			  url_to_charset(url, base, doc_charset));
 }
-
-#if 0 /* unused */
-char *
-url_decode(const char *url, const ParsedURL *base, wc_ces doc_charset)
-{
-    if (!DecodeURL)
-	return (char *)url;
-    return url_unquote_conv((char *)url,
-			    url_to_charset(url, base, doc_charset));
-}
-#endif
 
 char *
 url_decode2(const char *url, const Buffer *buf)

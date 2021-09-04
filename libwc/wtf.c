@@ -108,14 +108,6 @@ wtf_init(wc_ces ces1, wc_ces ces2)
     }
 }
 
-/*
-int
-wtf_width(wc_uchar *p)
-{
-    return (int)WTF_WIDTH_MAP[*p];
-}
-*/
-
 int
 wtf_strwidth(wc_uchar *p)
 {

@@ -432,11 +432,6 @@ displayBuffer(Buffer *buf, int mode)
 		scroll(n);
 	    }
 	    else if (n < 0 && n > -buf->LINES) {
-#if 0 /* defined(__CYGWIN__) */
-		move(LASTLINE + n + 1, 0);
-		clrtoeolx();
-		refresh();
-#endif				/* defined(__CYGWIN__) */
 		rscroll(-n);
 	    }
 	    redrawNLine(buf, n);
@@ -639,10 +634,6 @@ redrawNLine(Buffer *buf, int n)
 	    if (t == CurrentTab)
 		boldend();
 	}
-#if 0
-	move(0, COLS - 2);
-	addstr(" x");
-#endif
 	move(LastTab->y + 1, 0);
 	for (i = 0; i < COLS; i++)
 	    addch('~');
@@ -721,7 +712,6 @@ redrawLine(Buffer *buf, Line *l, int i)
 	clrtoeolx();
 	return l;
     }
-    /* need_clrtoeol(); */
     pos = columnPos(l, column);
     p = &(l->lineBuf[pos]);
     pr = &(l->propBuf[pos]);
@@ -1472,9 +1462,6 @@ arrangeCursor(Buffer *buf)
     /* Arrange line */
     if (buf->currentLine->linenumber - buf->topLine->linenumber >= buf->LINES
 	|| buf->currentLine->linenumber < buf->topLine->linenumber) {
-	/*
-	 * buf->topLine = buf->currentLine;
-	 */
 	buf->topLine = lineSkip(buf, buf->currentLine, 0, FALSE);
     }
     /* Arrange column */

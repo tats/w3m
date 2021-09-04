@@ -238,14 +238,6 @@ drawImage(void)
 	    int sh = (i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) /
 		      pixel_per_line_i;
 
-#if 0
-	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		i->cache->file,
-		x, y, w, h, sx, sy, sw, sh,
-		pixel_per_char_i, pixel_per_line_i);
-#endif
-
-
 	    if (enable_inline_image == INLINE_IMG_SIXEL) {
 		w = i->cache->a_width > 0 ? i->width : 0;
 		h = i->cache->a_height > 0 ? i->height : 0;
@@ -441,13 +433,6 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-	    /*
-	     * #ifdef HAVE_WAITPID
-	     * waitpid(cache->pid, &wait_st, 0);
-	     * #else
-	     * wait(&wait_st);
-	     * #endif
-	     */
 	    cache->pid = 0;
 	}
 	if (!stat(cache->file, &st)) {
@@ -470,18 +455,8 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-	    /*
-	     * #ifdef HAVE_WAITPID
-	     * waitpid(cache->pid, &wait_st, 0);
-	     * #else
-	     * wait(&wait_st);
-	     * #endif
-	     */
 	    cache->pid = 0;
 	}
-	/*TODO make sure removing this didn't break anything
-	unlink(cache->touch);
-	*/
 	image_cache[i] = NULL;
     }
 
@@ -547,16 +522,9 @@ loadImage(Buffer *buf, int flag)
 	}
 #else /* !DONT_CALL_GC_AFTER_FORK */
 	if ((cache->pid = fork()) == 0) {
-	    /*
-	     * setup_child(TRUE, 0, -1);
-	     */
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
-	    /* TODO make sure removing this didn't break anything
-	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
-		unlink(cache->file);
-	    */
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 #else

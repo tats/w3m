@@ -290,17 +290,8 @@ static struct sel_c colorstr[] = {
 };
 #endif				/* USE_COLOR */
 
-#if 1				/* ANSI-C ? */
 #define N_STR(x)	#x
 #define N_S(x)	(x), N_STR(x)
-#else				/* for traditional cpp? */
-static char n_s[][2] = {
-    {'0', 0},
-    {'1', 0},
-    {'2', 0},
-};
-#define N_S(x) (x), n_s[(x)]
-#endif
 
 
 static struct sel_c defaulturls[] = {
@@ -339,9 +330,6 @@ static struct sel_c dnsorders[] = {
 #ifdef USE_COOKIE
 static struct sel_c badcookiestr[] = {
     {N_S(ACCEPT_BAD_COOKIE_DISCARD), N_("discard")},
-#if 0
-    {N_S(ACCEPT_BAD_COOKIE_ACCEPT), N_("accept")},
-#endif
     {N_S(ACCEPT_BAD_COOKIE_ASK), N_("ask")},
     {0, NULL, NULL}
 };
@@ -1683,14 +1671,6 @@ auxbinFile(char *base)
 {
     return expandPath(Strnew_m_charp(w3m_auxbin_dir(), "/", base, NULL)->ptr);
 }
-
-#if 0				/* not used */
-char *
-libFile(char *base)
-{
-    return expandPath(Strnew_m_charp(w3m_lib_dir(), "/", base, NULL)->ptr);
-}
-#endif
 
 char *
 etcFile(char *base)

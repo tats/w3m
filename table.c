@@ -307,12 +307,6 @@ newTable()
     t->matrix = NULL;
     t->vector = NULL;
 #endif				/* MATRIX */
-#if 0
-    t->tabcontentssize = 0;
-    t->indent = 0;
-    t->linfo.prev_ctype = PC_ASCII;
-    t->linfo.prev_spaces = -1;
-#endif
     t->linfo.prevchar = Strnew_size(8);
     set_prevchar(t->linfo.prevchar, "", 0);
     t->trattr = 0;
@@ -2792,9 +2786,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	for (i = 0; i < rowspan; i++) {
 	    check_row(tbl, tbl->row + i);
 	    for (j = 0; j < colspan; j++) {
-#if 0
-		tbl->tabattr[tbl->row + i][tbl->col + j] &= ~(HTT_X | HTT_Y);
-#endif
 		if (!(tbl->tabattr[tbl->row + i][tbl->col + j] &
 		      (HTT_X | HTT_Y))) {
 		    tbl->tabattr[tbl->row + i][tbl->col + j] |=

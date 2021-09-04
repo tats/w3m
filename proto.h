@@ -174,17 +174,10 @@ extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
 			     wc_ces doc_charset);
 extern char *url_encode(const char *url, const ParsedURL *base,
 			wc_ces doc_charset);
-#if 0
-extern char *url_decode(const char *url, const ParsedURL *base,
-			wc_ces doc_charset);
-#endif
 extern char *url_decode2(const char *url, const Buffer *buf);
 #else /* !defined(USE_M17N) */
 #define url_encode(url, base, cs) url_quote(url)
 extern char *url_decode0(const char *url);
-#if 0
-#define url_decode(url, base, cs) url_decode0(url)
-#endif
 #define url_decode2(url, buf) url_decode0(url)
 #endif /* !defined(USE_M17N) */
 extern void examineFile(char *path, URLFile *uf);
@@ -501,9 +494,6 @@ extern void clear(void);
 extern void scroll(int);
 extern void rscroll(int);
 #endif
-#if 0
-extern void need_clrtoeol(void);
-#endif
 extern void clrtoeol(void);
 extern void clrtoeolx(void);
 extern void clrtobot(void);
@@ -639,7 +629,6 @@ extern char *rcFile(char *base);
 extern char *etcFile(char *base);
 extern char *confFile(char *base);
 extern char *auxbinFile(char *base);
-extern char *libFile(char *base);
 extern char *helpFile(char *base);
 extern const void *querySiteconf(const ParsedURL *query_pu, int field);
 extern Str localCookie(void);
@@ -804,9 +793,6 @@ extern void dictwordat(void);
 #define dictword nulcmd
 #define dictwordat nulcmd
 #endif				/* not USE_DICT */
-#if 0
-extern void reloadBuffer(Buffer *buf);
-#endif
 extern char *guess_save_name(Buffer *buf, char *file);
 
 extern void wrapToggle(void);

@@ -1524,7 +1524,7 @@ check_table_height(struct table *t)
 	short maxcell;
 	short size;
 	int *height;
-    } cell;
+    } cell = {0};
     int space = 0;
 
     cell.size = 0;

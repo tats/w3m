@@ -737,7 +737,7 @@ save_first_animation_frame(const char *path)
 
     /* Header */
 
-    if (len != st.st_size || strncmp(header, "GIF89a", 6) != 0) {
+    if (len != st.st_size || strncmp((char *)header, "GIF89a", 6) != 0) {
 	return NULL;
     }
 

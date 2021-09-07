@@ -1708,7 +1708,6 @@ getLinkNumberStr(int correction)
 /* 
  * loadGeneralFile: load file to buffer
  */
-#define DO_EXTERNAL ((Buffer *(*)(URLFile *, Buffer *))doExternal)
 Buffer *
 loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		int flag, FormList *volatile request)
@@ -2180,7 +2179,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
     if (real_type == NULL)
 	real_type = t;
-    proc = loadBuffer;
 
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
@@ -2260,7 +2258,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		!gopher_download &&
 #endif
 		searchExtViewer(t) != NULL) {
-	    proc = DO_EXTERNAL;
+	    proc = NULL;
 	}
 	else {
 	    TRAP_OFF;
@@ -2296,7 +2294,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     t_buf->ssl_certificate = f.ssl_certificate;
 #endif
     frame_source = flag & RG_FRAME_SRC;
-    if (proc == DO_EXTERNAL) {
+    if (proc == NULL) {
 	b = doExternal(f, t, t_buf);
     } else {
 	b = loadSomething(&f, proc, t_buf);

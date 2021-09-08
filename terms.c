@@ -159,8 +159,6 @@ read_win32_console_input(void)
 static int
 read_win32_console(char *s, int n)
 {
-    KEY_EVENT_RECORD *ker;
-
     if (hConIn == INVALID_HANDLE_VALUE)
 	return read(tty, s, n);
 

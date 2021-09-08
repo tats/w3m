@@ -43,8 +43,6 @@
 #ifdef USE_M17N
 #include "wc.h"
 #include "wtf.h"
-#else
-typedef int wc_ces;	/* XXX: not used */
 #endif
 
 #ifdef HAVE_LOCALE_H

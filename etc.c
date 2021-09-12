@@ -2021,12 +2021,14 @@ static char Base64Table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 Str
-base64_encode(const unsigned char *src, size_t len)
+base64_encode(const char *src, size_t len)
 {
     Str dest;
-    const unsigned char *in, *endw;
+    const unsigned char *in, *endw, *s;
     unsigned long j;
     size_t k;
+
+    s = (unsigned char*)src;
 
     k = len;
     if (k % 3)
@@ -2043,9 +2045,9 @@ base64_encode(const unsigned char *src, size_t len)
 	return Strnew();
     }
 
-    in = src;
+    in = s;
 
-    endw = src + len - 2;
+    endw = s + len - 2;
 
     while (in < endw) {
 	j = *in++;
@@ -2058,9 +2060,9 @@ base64_encode(const unsigned char *src, size_t len)
 	Strcatc(dest, Base64Table[j & 0x3f]);
     }
 
-    if (src + len - in) {
+    if (s + len - in) {
 	j = *in++;
-	if (src + len - in) {
+	if (s + len - in) {
 	    j = j << 8 | *in++;
 	    j = j << 8;
 	    Strcatc(dest, Base64Table[(j >> 18) & 0x3f]);

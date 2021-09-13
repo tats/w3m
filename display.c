@@ -1368,15 +1368,14 @@ cursorRight(Buffer *buf, int n)
 {
     int i, delta = 1, cpos, vpos2;
     Line *l = buf->currentLine;
-    Lineprop *p;
 
     if (buf->firstLine == NULL)
 	return;
     if (buf->pos == l->len && !(l->next && l->next->bpos))
 	return;
     i = buf->pos;
-    p = l->propBuf;
 #ifdef USE_M17N
+    Lineprop *p = l->propBuf;
     while (i + delta < l->len && p[i + delta] & PC_WCHAR2)
 	delta++;
 #endif
@@ -1419,13 +1418,12 @@ cursorLeft(Buffer *buf, int n)
 {
     int i, delta = 1, cpos;
     Line *l = buf->currentLine;
-    Lineprop *p;
 
     if (buf->firstLine == NULL)
 	return;
     i = buf->pos;
-    p = l->propBuf;
 #ifdef USE_M17N
+    Lineprop *p = l->propBuf;
     while (i - delta > 0 && p[i - delta] & PC_WCHAR2)
 	delta++;
 #endif

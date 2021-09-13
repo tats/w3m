@@ -8164,7 +8164,6 @@ int
 save2tmp(URLFile uf, char *tmpf)
 {
     FILE *ff;
-    int check;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
@@ -8181,8 +8180,8 @@ save2tmp(URLFile uf, char *tmpf)
 	goto _end;
     }
     TRAP_ON;
-    check = 0;
 #ifdef USE_NNTP
+    int check = 0;
     if (uf.scheme == SCM_NEWS) {
 	char c;
 	while (c = UFgetc(&uf), !iseos(uf.stream)) {

@@ -253,8 +253,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
     char *es = NULL;
 #endif
     int do_copy = FALSE;
+#ifdef USE_M17N
     int i;
     int plen = 0, clen;
+#endif
 
     if (prop_size < s->length) {
 	prop_size = (s->length > LINELEN) ? s->length : LINELEN;
@@ -429,7 +431,6 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	}
 #endif
 
-	plen = get_mclen(str);
 	mode = get_mctype(str) | effect;
 #ifdef USE_ANSI_COLOR
 	if (color) {
@@ -439,6 +440,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 #endif
 	*(prop++) = mode;
 #ifdef USE_M17N
+	plen = get_mclen(str);
 	if (plen > 1) {
 	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 	    for (i = 1; i < plen; i++) {

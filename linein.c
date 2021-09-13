@@ -77,8 +77,6 @@ static Str strCurrentBuf;
 static int use_hist;
 #ifdef USE_M17N
 static void ins_char(Str str);
-#else
-static void ins_char(char c);
 #endif
 
 char *

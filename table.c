@@ -419,7 +419,7 @@ suspend_or_pushdata(struct table *tbl, char *line)
 #ifdef USE_M17N
 #define PUSH_TAG(str,n) Strcat_charp_n(tagbuf, str, n)
 #else
-#define PUSH_TAG(str,n) Strcat_char(tagbuf, *str)
+#define PUSH_TAG(str,n) Strcat_char(tagbuf, *str), (void)n
 #endif
 
 int visible_length_offset = 0;

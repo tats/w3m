@@ -4001,7 +4001,6 @@ void
 process_option(void)
 {
     char begin_char = '[', end_char = ']';
-    int len;
 
     if (cur_select == NULL || cur_option == NULL)
 	return;
@@ -4012,6 +4011,7 @@ process_option(void)
     if (cur_option_label == NULL)
 	cur_option_label = cur_option;
 #ifdef MENU_SELECT
+    int len;
     if (!select_is_multiple) {
 	len = get_Str_strwidth(cur_option_label);
 	if (len > cur_option_maxwidth)

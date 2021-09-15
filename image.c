@@ -733,7 +733,7 @@ getImageSize(ImageCache * cache)
 {
     Str tmp;
     FILE *f;
-    int w = 0, h = 0;
+    unsigned int w = 0, h = 0;
 
     if (!activeImage)
 	return FALSE;
@@ -751,7 +751,7 @@ getImageSize(ImageCache * cache)
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;
-    while (fscanf(f, "%d %d", &w, &h) < 0) {
+    while (fscanf(f, "%u %u", &w, &h) < 0) {
 	if (feof(f))
 	    break;
     }

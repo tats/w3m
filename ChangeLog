@@ -1,3 +1,8 @@
+2021-09-18  Rene Kita  <mail@rkta.de>
+
+	* istream.c: Fix manipulation of ASN1_STRING.
+	Origin: https://github.com/tats/w3m/pull/193
+
 2021-09-05  Rene Kita  <mail@rkta.de>
 
 	* table.c: Ensure VLA size is at least one.

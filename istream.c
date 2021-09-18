@@ -422,25 +422,36 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 		gn = sk_GENERAL_NAME_value(alt, i);
 		if (gn->type == GEN_DNS) {
 #if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
-		    char *sn = ASN1_STRING_data(gn->d.ia5);
+		    unsigned char *sn = ASN1_STRING_data(gn->d.ia5);
 #else
-		    char *sn = ASN1_STRING_get0_data(gn->d.ia5);
+		    const unsigned char *sn = ASN1_STRING_get0_data(gn->d.ia5);
 #endif
 		    int sl = ASN1_STRING_length(gn->d.ia5);
+
+		    /*
+		     * sn is a pointer to internal data and not guaranteed to
+		     * be null terminated. Ensure we have a null terminated
+		     * string that we can modify.
+		     */
+		    char *asn = GC_MALLOC(sl + 1);
+		    if (!asn)
+			exit(1);
+		    bcopy(sn, asn, sl);
+		    asn[sl] = '\0';
 
 		    if (!seen_dnsname)
 			seen_dnsname = Strnew();
 		    /* replace \0 to make full string visible to user */
-		    if (sl != strlen(sn)) {
+		    if (sl != strlen(asn)) {
 			int i;
 			for (i = 0; i < sl; ++i) {
-			    if (!sn[i])
-				sn[i] = '!';
+			    if (!asn[i])
+				asn[i] = '!';
 			}
 		    }
-		    Strcat_m_charp(seen_dnsname, sn, " ", NULL);
-		    if (sl == strlen(sn) /* catch \0 in SAN */
-			&& ssl_match_cert_ident(sn, sl, hostname))
+		    Strcat_m_charp(seen_dnsname, asn, " ", NULL);
+		    if (sl == strlen(asn) /* catch \0 in SAN */
+			&& ssl_match_cert_ident(asn, sl, hostname))
 			break;
 		}
 	    }

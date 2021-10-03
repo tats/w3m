@@ -35,7 +35,7 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
-CFLAGS = $(OPTS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS)
+CFLAGS = -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS) $(OPTS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \

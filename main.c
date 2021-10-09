@@ -394,6 +394,11 @@ die_oom(size_t bytes)
 {
     fprintf(stderr, "Out of memory: %lu bytes unavailable!\n", (unsigned long)bytes);
     exit(1);
+    /*
+     * Suppress compiler warning: function might return no value
+     * This code is never reached.
+     */
+    return NULL;
 }
 
 int

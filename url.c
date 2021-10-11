@@ -978,7 +978,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     }
 #ifdef USE_GOPHER
     if (p_url->scheme == SCM_GOPHER && *p == 'R') {
-	p++;
+	if (!*++p) {
+	    p_url->file = "";
+	    goto do_query;
+	}
 	tmp = Strnew();
 	Strcat_char(tmp, *(p++));
 	while (*p && *p != '/')

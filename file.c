@@ -4399,6 +4399,14 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
         envs[h_env->envc].indent = envs[h_env->envc - 1].indent; \
     }
 
+#define PUSH_ENV_NOINDENT(cmd) \
+    if (++h_env->envc_real < h_env->nenv) { \
+      ++h_env->envc; \
+      envs[h_env->envc].env = cmd; \
+      envs[h_env->envc].count = 0; \
+      envs[h_env->envc].indent = envs[h_env->envc - 1].indent; \
+    }
+
 #define POP_ENV \
     if (h_env->envc_real-- < h_env->nenv) \
       h_env->envc--;
@@ -4641,6 +4649,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_OL:
     case HTML_N_DL:
     case HTML_N_BLQ:
+    case HTML_N_DD:
 	CLOSE_DT;
 	CLOSE_A;
 	if (h_env->envc > 0) {
@@ -4667,7 +4676,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			     h_env->limit);
 	}
-	PUSH_ENV(cmd);
+	PUSH_ENV_NOINDENT(cmd);
 	if (parsedtag_exists(tag, ATTR_COMPACT))
 	    envs[h_env->envc].env = HTML_DL_COMPACT;
 	obuf->flag |= RB_IGNORE_P;
@@ -4763,7 +4772,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    (h_env->envc_real < h_env->nenv &&
 	     envs[h_env->envc].env != HTML_DL &&
 	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	    PUSH_ENV_NOINDENT(HTML_DL);
 	}
 	if (h_env->envc > 0) {
 	    flushline(h_env, obuf,
@@ -4788,14 +4797,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_DD:
 	CLOSE_A;
 	CLOSE_DT;
-	if (h_env->envc == 0 ||
-	    (h_env->envc_real < h_env->nenv &&
-	     envs[h_env->envc].env != HTML_DL &&
-	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	if (envs[h_env->envc].env == HTML_DL ||
+		envs[h_env->envc].env == HTML_DL_COMPACT) {
+	    PUSH_ENV(HTML_DD);
 	}
 
-	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
+	if (h_env->envc > 0 && envs[h_env->envc - 1].env == HTML_DL_COMPACT) {
 	    if (obuf->pos > envs[h_env->envc].indent)
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);

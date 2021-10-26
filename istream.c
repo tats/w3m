@@ -185,12 +185,16 @@ int
 ISclose(InputStream stream)
 {
     MySignalHandler(*prevtrap) ();
-    if (stream == NULL || stream->base.close == NULL ||
-	stream->base.type & IST_UNCLOSE)
-	return -1;
-    prevtrap = mySignal(SIGINT, SIG_IGN);
-    stream->base.close (stream->base.handle);
-    mySignal(SIGINT, prevtrap);
+    if (stream == NULL)
+        return -1;
+    if (stream->base.close != NULL) {
+        if (stream->base.type & IST_UNCLOSE) {
+            return -1;
+        }
+        prevtrap = mySignal(SIGINT, SIG_IGN);
+        stream->base.close (stream->base.handle);
+        mySignal(SIGINT, prevtrap);
+    }
     xfree(stream->base.stream.buf);
     xfree(stream);
     return 0;

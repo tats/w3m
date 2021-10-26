@@ -4649,6 +4649,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_OL:
     case HTML_N_DL:
     case HTML_N_BLQ:
+    case HTML_N_DD:
 	CLOSE_DT;
 	CLOSE_A;
 	if (h_env->envc > 0) {
@@ -4796,17 +4797,12 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_DD:
 	CLOSE_A;
 	CLOSE_DT;
-	if (h_env->envc == 0 ||
-	    (h_env->envc_real < h_env->nenv &&
-	     envs[h_env->envc].env != HTML_DL &&
-	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	if (envs[h_env->envc].env == HTML_DL ||
+		envs[h_env->envc].env == HTML_DL_COMPACT) {
+	    PUSH_ENV(HTML_DD);
 	}
 
-	if (h_env->envc <= MAX_INDENT_LEVEL)
-	    envs[h_env->envc].indent = envs[h_env->envc - 1].indent + INDENT_INCR;
-
-	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
+	if (h_env->envc > 0 && envs[h_env->envc - 1].env == HTML_DL_COMPACT) {
 	    if (obuf->pos > envs[h_env->envc].indent)
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);
@@ -4816,15 +4812,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	else
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	/* obuf->flag |= RB_IGNORE_P; */
-	return 1;
-    case HTML_N_DD:
-	if (h_env->envc == 0 ||
-	    (h_env->envc_real < h_env->nenv &&
-	     envs[h_env->envc].env != HTML_DL &&
-	     envs[h_env->envc].env != HTML_DL_COMPACT))
-	    return 1;
-	envs[h_env->envc].indent = envs[h_env->envc].indent - INDENT_INCR;
-	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 1;
     case HTML_TITLE:
 	close_anchor(h_env, obuf);

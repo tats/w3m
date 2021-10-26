@@ -1,3 +1,24 @@
+2021-10-26  Kuang-che Wu  <kcwu@google.com>
+
+	* istream.c: fix StrStream memory leak.
+	Origin: https://github.com/tats/w3m/pull/203
+
+2021-10-26  bptato  <nincsnevem662@gmail.com>
+
+	Fix stack overflow due to closing dd tags
+	Origin: https://github.com/tats/w3m/pull/202
+	Bug: https://github.com/tats/w3m/issues/198
+
+	* file.c: Fix description title rendering (again).
+
+	* file.c:
+	Revert changes introducing #198 stack-overflow in HTMLlineproc0.
+
+2021-10-26  Rene Kita  <mail@rkta.de>
+
+	* table.c: Ensure VLA size is at least one (again).
+	Origin: https://github.com/tats/w3m/pull/197
+
 2021-09-18  Rene Kita  <mail@rkta.de>
 
 	* istream.c: Fix manipulation of ASN1_STRING.

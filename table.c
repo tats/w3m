@@ -1262,7 +1262,8 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
     int corr = 0;
     struct table_cell *cell = &t->cell;
 #ifdef __GNUC__
-    short orgwidth[t->maxcol + 1], corwidth[t->maxcol + 1];
+    short orgwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
+    short corwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
     short cwidth[cell->maxcell >= 0 ? cell->maxcell + 1 : 1];
     double swidth[cell->maxcell >= 0 ? cell->maxcell + 1 : 1];
 #else				/* __GNUC__ */
@@ -1615,7 +1616,7 @@ int
 get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 {
 #ifdef __GNUC__
-    short newwidth[t->maxcol + 1];
+    short newwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
 #else				/* not __GNUC__ */
     short newwidth[MAXCOL];
 #endif				/* not __GNUC__ */

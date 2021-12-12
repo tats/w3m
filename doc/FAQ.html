@@ -725,7 +725,7 @@ from Tatsuya Kinoshita <tats@debian.org>
    </dt>
    <dd>
     <p>
-     It is ~/.w3m/config.
+     By default, it is ~/.w3m/config.
     </p>
 
     <p>
@@ -733,6 +733,12 @@ from Tatsuya Kinoshita <tats@debian.org>
      the values of options whose effects are described in the options
      setting panel. Each line contains one option setting, consisting
      of an option name and its value with a space as a separator.
+    </p>
+
+    <p>
+     If the W3M_DIR environment variable is set to the name of a
+     directory, w3m will store its files in that directory instead of
+     in ~/.w3m.
     </p>
     
     <p>Without a user-specific configuration file, w3m honours

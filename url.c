@@ -603,7 +603,6 @@ openSocket(char *const hostname,
 	    /* try next ai family */
 	    continue;
 	}
-	sock = -1;
 	for (res = res0; res; res = res->ai_next) {
 	    sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	    if (sock < 0) {

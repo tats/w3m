@@ -3503,7 +3503,7 @@ correct_table_matrix4(struct table *t, int col, int cspan, char *flags,
 static void
 set_table_matrix0(struct table *t, int maxwidth)
 {
-    int size = t->maxcol + 1;
+    size_t size = t->maxcol + 1;
     int i, j, k, bcol, ecol;
     int width;
     double w0, w1, w, s, b;

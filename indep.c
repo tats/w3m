@@ -325,40 +325,6 @@ strcasestr(const char *s1, const char *s2)
 }
 #endif
 
-static int
-strcasematch(char *s1, char *s2)
-{
-    int x;
-    while (*s1) {
-	if (*s2 == '\0')
-	    return 1;
-	x = TOLOWER(*s1) - TOLOWER(*s2);
-	if (x != 0)
-	    break;
-	s1++;
-	s2++;
-    }
-    return (*s2 == '\0');
-}
-
-/* search multiple strings */
-int
-strcasemstr(char *str, char *srch[], char **ret_ptr)
-{
-    int i;
-    while (*str) {
-	for (i = 0; srch[i]; i++) {
-	    if (strcasematch(str, srch[i])) {
-		if (ret_ptr)
-		    *ret_ptr = str;
-		return i;
-	    }
-	}
-	str++;
-    }
-    return -1;
-}
-
 int
 strmatchlen(const char *s1, const char *s2, int maxlen)
 {

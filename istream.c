@@ -276,26 +276,6 @@ ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl)
     return;
 }
 
-#ifdef unused
-int
-ISread(InputStream stream, Str buf, int count)
-{
-    int len;
-
-    if (count + 1 > buf->area_size) {
-	char *newptr = GC_MALLOC_ATOMIC(count + 1);
-	memcpy(newptr, buf->ptr, buf->length);
-	newptr[buf->length] = '\0';
-	buf->ptr = newptr;
-	buf->area_size = count + 1;
-    }
-    len = ISread_n(stream, buf->ptr, count);
-    buf->length = (len > 0) ? len : 0;
-    buf->ptr[buf->length] = '\0';
-    return (len > 0) ? 1 : 0;
-}
-#endif
-
 int
 ISread_n(InputStream stream, unsigned char *dst, int count)
 {
@@ -338,15 +318,6 @@ ISfileno(InputStream stream)
     default:
 	return -1;
     }
-}
-
-int
-ISeos(InputStream stream)
-{
-    BaseStream base = &stream->base;
-    if (!base->iseos && MUST_BE_UPDATED(base))
-	do_update(base);
-    return base->iseos;
 }
 
 #ifdef USE_SSL

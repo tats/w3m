@@ -2082,12 +2082,6 @@ clrtobot_eol(void (*clrtoeol) (void))
 }
 
 void
-clrtobot(void)
-{
-    clrtobot_eol(clrtoeol);
-}
-
-void
 clrtobotx(void)
 {
     clrtobot_eol(clrtoeolx);
@@ -2173,29 +2167,6 @@ crmode(void)
     ttymode_set(CBREAK, 0);
 }
 #endif				/* HAVE_SGTTY_H */
-
-void
-nocrmode(void)
-#ifndef HAVE_SGTTY_H
-{
-    ttymode_set(ICANON, 0);
-#ifdef HAVE_TERMIOS_H
-    set_cc(VMIN, 4);
-#else				/* not HAVE_TERMIOS_H */
-    set_cc(VEOF, 4);
-#endif				/* not HAVE_TERMIOS_H */
-}
-#else				/* HAVE_SGTTY_H */
-{
-    ttymode_reset(CBREAK, 0);
-}
-#endif				/* HAVE_SGTTY_H */
-
-void
-term_echo(void)
-{
-    ttymode_set(ECHO, 0);
-}
 
 void
 term_noecho(void)

@@ -1327,12 +1327,6 @@ popupMenu(int x, int y, Menu *menu)
     popup_menu(NULL, menu);
 }
 
-void
-mainMenu(int x, int y)
-{
-    popupMenu(x, y, &MainMenu);
-}
-
 DEFUN(mainMn, MAIN_MENU MENU, "Pop up menu")
 {
     Menu *menu = &MainMenu;

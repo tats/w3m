@@ -122,16 +122,6 @@ last:
     return;
 }
 
-Str
-decodeU(char **ww)
-{
-    struct growbuf gb;
-
-    growbuf_init(&gb);
-    decodeU_to_growbuf(&gb, ww);
-    return growbuf_to_Str(&gb);
-}
-
 void
 decodeU_to_growbuf(struct growbuf *gb, char **ww)
 {
@@ -181,17 +171,6 @@ decodeQ(char **ww)
     }
     *ww = w;
     return a;
-}
-
-/* RFC2045 (6.7. Quoted-Printable Content-Transfer-Encoding) */
-Str
-decodeQP(char **ww)
-{
-    struct growbuf gb;
-
-    growbuf_init(&gb);
-    decodeQP_to_growbuf(&gb, ww);
-    return growbuf_to_Str(&gb);
 }
 
 void

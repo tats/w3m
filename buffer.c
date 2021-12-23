@@ -117,25 +117,6 @@ discardBuffer(Buffer *buf)
 }
 
 /* 
- * namedBuffer: Select buffer which have specified name
- */
-Buffer *
-namedBuffer(Buffer *first, char *name)
-{
-    Buffer *buf;
-
-    if (!strcmp(first->buffername, name)) {
-	return first;
-    }
-    for (buf = first; buf->nextBuffer != NULL; buf = buf->nextBuffer) {
-	if (!strcmp(buf->nextBuffer->buffername, name)) {
-	    return buf->nextBuffer;
-	}
-    }
-    return NULL;
-}
-
-/* 
  * deleteBuffer: delete buffer
  */
 Buffer *

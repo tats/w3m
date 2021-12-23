@@ -6331,7 +6331,7 @@ proc_escape(struct readbuffer *obuf, char **str_return)
     char *str = *str_return, *estr;
     int ech = getescapechar(str_return);
     int width, n_add = *str_return - str;
-    Lineprop mode = PC_ASCII;
+    Lineprop mode;
 
     if (ech < 0) {
 	*str_return = str;

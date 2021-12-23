@@ -412,7 +412,7 @@ cleanup_line(Str s, int mode)
 int
 getescapechar(char **str)
 {
-    int dummy = -1;
+    int dummy;
     char *p = *str, *q;
     int strict_entity = TRUE;
 

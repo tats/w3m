@@ -1381,16 +1381,15 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
      */
 
     tmp = Strnew_m_charp("Digest username=\"", uname->ptr, "\"", NULL);
-    Strcat_m_charp(tmp, ", realm=",
-		   get_auth_param(ha->param, "realm")->ptr, NULL);
-    Strcat_m_charp(tmp, ", nonce=",
-		   get_auth_param(ha->param, "nonce")->ptr, NULL);
+    if ((s = get_auth_param(ha->param, "realm")) != NULL)
+	Strcat_m_charp(tmp, ", realm=", s->ptr, NULL);
+    if ((s = get_auth_param(ha->param, "nonce")) != NULL)
+	Strcat_m_charp(tmp, ", nonce=", s->ptr, NULL);
     Strcat_m_charp(tmp, ", uri=\"", uri->ptr, "\"", NULL);
     Strcat_m_charp(tmp, ", response=\"", rd->ptr, "\"", NULL);
 
-    if (algorithm)
-	Strcat_m_charp(tmp, ", algorithm=",
-		       get_auth_param(ha->param, "algorithm")->ptr, NULL);
+    if (algorithm && (s = get_auth_param(ha->param, "algorithm")))
+	Strcat_m_charp(tmp, ", algorithm=", s->ptr, NULL);
 
     if (cnonce)
 	Strcat_m_charp(tmp, ", cnonce=\"", cnonce->ptr, "\"", NULL);

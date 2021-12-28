@@ -443,7 +443,7 @@ loadNewsgroup0(ParsedURL *pu)
 		continue;
 	    if (*p == '<')
 		p++;
-	    if (!(q = strchr(p, '>')) && !(q = strchr(p, '\t')))
+	    if ((q = strchr(p, '>')) || (q = strchr(p, '\t')))
 		*q = '\0';
 	    if (!(s = checkHeader(buf, "Subject:")))
 		continue;

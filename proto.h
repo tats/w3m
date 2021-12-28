@@ -201,7 +201,6 @@ extern void update_utf8_symbol(void);
 extern Buffer *loadGeneralFile(char *path, ParsedURL *current, char *referer,
 			       int flag, FormList *request);
 extern int is_boundary(unsigned char *, unsigned char *);
-extern int is_blank_line(char *line, int indent);
 extern void push_render_image(Str str, int width, int limit,
 			      struct html_feed_environ *h_env);
 extern void flushline(struct html_feed_environ *h_env, struct readbuffer *obuf,
@@ -383,7 +382,6 @@ extern Str unescape_spaces(Str s);
 #ifdef USE_HISTORY
 extern Buffer *historyBuffer(Hist *hist);
 #endif				/* not USE_HISTORY */
-extern double log_like(int x);
 extern struct table *newTable(void);
 extern void pushdata(struct table *t, int row, int col, char *data);
 extern int visible_length(char *str);
@@ -398,7 +396,6 @@ extern struct table *begin_table(int border, int spacing, int padding,
 				 int vspace);
 extern void end_table(struct table *tbl);
 extern void check_rowcol(struct table *tbl, struct table_mode *mode);
-extern int minimum_length(char *line);
 extern int feed_table(struct table *tbl, char *line, struct table_mode *mode,
 		      int width, int internal);
 extern void feed_table1(struct table *tbl, Str tok, struct table_mode *mode,
@@ -498,7 +495,6 @@ extern void clrtoeol(void);
 extern void clrtoeolx(void);
 extern void clrtobot(void);
 extern void clrtobotx(void);
-extern void no_clrtoeol(void);
 extern void addstr(char *s);
 extern void addnstr(char *s, int n);
 extern void addnstr_sup(char *s, int n);

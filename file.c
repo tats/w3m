@@ -8139,7 +8139,8 @@ getNextPage(Buffer *buf, int plen)
 		l = l->next;
 	    } while (l && l->bpos);
 	    buf->firstLine = l;
-	    buf->firstLine->prev = NULL;
+	    if (l)
+		buf->firstLine->prev = NULL;
 	}
     }
   pager_end:

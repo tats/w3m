@@ -707,7 +707,8 @@ readBufferCache(Buffer *buf)
 
     cache = fopen(buf->savecache, "r");
     if (cache == NULL || fread1(clnum, cache) || fread1(tlnum, cache)) {
-	fclose(cache);
+	if (cache != NULL)
+	    fclose(cache);
 	buf->savecache = NULL;
 	return -1;
     }

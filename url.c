@@ -1243,7 +1243,8 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	    if (pu->host && !is_localhost(pu->host)) {
 		Str tmp = Strnew_charp("//");
 		Strcat_m_charp(tmp, pu->host,
-			       cleanupName(file_unquote(pu->file)), NULL);
+			       cleanupName(file_unquote(pu->file)),
+			       (const char *)NULL);
 		pu->real_file = tmp->ptr;
 	    }
 	    else
@@ -1427,9 +1428,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
         Strcat_charp(s, "\r\n");
     }
 
-    Strcat_m_charp(s, "Accept: ", AcceptMedia, "\r\n", NULL);
-    Strcat_m_charp(s, "Accept-Encoding: ", AcceptEncoding, "\r\n", NULL);
-    Strcat_m_charp(s, "Accept-Language: ", AcceptLang, "\r\n", NULL);
+    Strcat_m_charp(s, "Accept: ", AcceptMedia, "\r\n",
+		   (const char *)NULL);
+    Strcat_m_charp(s, "Accept-Encoding: ", AcceptEncoding, "\r\n",
+		   (const char *)NULL);
+    Strcat_m_charp(s, "Accept-Language: ", AcceptLang, "\r\n",
+		   (const char *)NULL);
 
     if (target->host) {
 	Strcat_charp(s, "Host: ");
@@ -1739,7 +1743,7 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	if (uf.stream == NULL && retryAsHttp && url[0] != '/') {
 	    if (scheme == SCM_MISSING || scheme == SCM_UNKNOWN) {
 		/* retry it as "http://" */
-		u = Strnew_m_charp("http://", url, NULL)->ptr;
+		u = Strnew_m_charp("http://", url, (const char *)NULL)->ptr;
 		goto retry;
 	    }
 	}
@@ -2016,7 +2020,8 @@ add_index_file(ParsedURL *pu, URLFile *uf)
 	return;
     }
     for (ti = index_file_list->first; ti; ti = ti->next) {
-	p = Strnew_m_charp(pu->file, "/", file_quote(ti->ptr), NULL)->ptr;
+	p = Strnew_m_charp(pu->file, "/", file_quote(ti->ptr),
+			   (const char *)NULL)->ptr;
 	p = cleanupName(p);
 	q = cleanupName(file_unquote(p));
 	examineFile(q, uf);

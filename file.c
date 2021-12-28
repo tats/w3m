@@ -667,7 +667,8 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 		    tmpf = &tmp->ptr[12];
 		    SKIP_BLANKS(tmpf);
 		    src = Strnew_m_charp("<img src=\"", html_quote(tmpf),
-					 "\" alt=\"X-Image-URL\">", NULL);
+					 "\" alt=\"X-Image-URL\">",
+					 (const char *)NULL);
 		}
 #ifdef USE_XFACE
 		else if (!strncasecmp(tmp->ptr, "X-Face:", 7)) {
@@ -676,7 +677,8 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 			src = Strnew_m_charp("<img src=\"file:",
 					     html_quote(tmpf),
 					     "\" alt=\"X-Face\"",
-					     " width=48 height=48>", NULL);
+					     " width=48 height=48>",
+					     (const char *)NULL);
 		}
 #endif
 		if (src) {
@@ -1180,7 +1182,8 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     Str s = Strdup(uname);
     Strcat_char(s, ':');
     Strcat(s, pw);
-    return Strnew_m_charp("Basic ", base64_encode(s->ptr, s->length)->ptr, NULL);
+    return Strnew_m_charp("Basic ", base64_encode(s->ptr, s->length)->ptr,
+			  (const char *)NULL);
 }
 
 #ifdef USE_DIGEST_AUTH
@@ -1290,7 +1293,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     /* A1 = unq(username-value) ":" unq(realm-value) ":" passwd */
     tmp = Strnew_m_charp(uname->ptr, ":",
 			 qstr_unquote(get_auth_param(ha->param, "realm"))->ptr,
-			 ":", pw->ptr, NULL);
+			 ":", pw->ptr, (const char *)NULL);
     MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a1buf = digest_hex(md5);
 
@@ -1303,7 +1306,8 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 		return NULL;
 	    tmp = Strnew_m_charp(a1buf->ptr, ":",
 				 qstr_unquote(nonce)->ptr,
-				 ":", qstr_unquote(cnonce)->ptr, NULL);
+				 ":", qstr_unquote(cnonce)->ptr,
+				 (const char *)NULL);
 	    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	    a1buf = digest_hex(md5);
 	}
@@ -1316,7 +1320,8 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     }
 
     /* A2 = Method ":" digest-uri-value */
-    tmp = Strnew_m_charp(HTTPrequestMethod(hr)->ptr, ":", uri->ptr, NULL);
+    tmp = Strnew_m_charp(HTTPrequestMethod(hr)->ptr, ":", uri->ptr,
+			 (const char *)NULL);
     if (qop_i == QOP_AUTH_INT) {
 	/*  A2 = Method ":" digest-uri-value ":" H(entity-body) */
 	if (request && request->body) {
@@ -1359,7 +1364,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 			     ":", nc,
 			     ":", qstr_unquote(cnonce)->ptr,
 			     ":", qop_i == QOP_AUTH ? "auth" : "auth-int",
-			     ":", a2buf->ptr, NULL);
+			     ":", a2buf->ptr, (const char *)NULL);
 	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
@@ -1369,7 +1374,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	 */
 	tmp = Strnew_m_charp(a1buf->ptr, ":",
 			     qstr_unquote(get_auth_param(ha->param, "nonce"))->
-			     ptr, ":", a2buf->ptr, NULL);
+			     ptr, ":", a2buf->ptr, (const char *)NULL);
 	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
@@ -1381,31 +1386,32 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
      *                          [nonce-count]  | [auth-param] )
      */
 
-    tmp = Strnew_m_charp("Digest username=\"", uname->ptr, "\"", NULL);
+    tmp = Strnew_m_charp("Digest username=\"", uname->ptr, "\"",
+			 (const char *)NULL);
     if ((s = get_auth_param(ha->param, "realm")) != NULL)
-	Strcat_m_charp(tmp, ", realm=", s->ptr, NULL);
+	Strcat_m_charp(tmp, ", realm=", s->ptr, (const char *)NULL);
     if ((s = get_auth_param(ha->param, "nonce")) != NULL)
-	Strcat_m_charp(tmp, ", nonce=", s->ptr, NULL);
-    Strcat_m_charp(tmp, ", uri=\"", uri->ptr, "\"", NULL);
-    Strcat_m_charp(tmp, ", response=\"", rd->ptr, "\"", NULL);
+	Strcat_m_charp(tmp, ", nonce=", s->ptr, (const char *)NULL);
+    Strcat_m_charp(tmp, ", uri=\"", uri->ptr, "\"", (const char *)NULL);
+    Strcat_m_charp(tmp, ", response=\"", rd->ptr, "\"", (const char *)NULL);
 
     if (algorithm && (s = get_auth_param(ha->param, "algorithm")))
-	Strcat_m_charp(tmp, ", algorithm=", s->ptr, NULL);
 
     if (cnonce)
-	Strcat_m_charp(tmp, ", cnonce=\"", cnonce->ptr, "\"", NULL);
+	Strcat_m_charp(tmp, ", cnonce=\"", cnonce->ptr, "\"",
+		       (const char *)NULL);
 
     if ((s = get_auth_param(ha->param, "opaque")) != NULL)
-	Strcat_m_charp(tmp, ", opaque=", s->ptr, NULL);
+	Strcat_m_charp(tmp, ", opaque=", s->ptr, (const char *)NULL);
 
     if (qop_i >= QOP_AUTH) {
 	Strcat_m_charp(tmp, ", qop=",
 		       qop_i == QOP_AUTH ? "auth" : "auth-int",
-		       NULL);
+		       (const char *)NULL);
 	/* XXX how to count? */
 	/* Since nonce is unique up to each *-Authenticate and w3m does not re-use *-Authenticate: headers,
 	   nonce-count should be always "00000001". */
-	Strcat_m_charp(tmp, ", nc=", nc, NULL);
+	Strcat_m_charp(tmp, ", nc=", nc, (const char *)NULL);
     }
 
     return tmp;
@@ -1623,7 +1629,7 @@ getAuthCookie(struct http_auth *hauth, char *auth_header,
     ss = hauth->cred(hauth, *uname, *pwd, pu, hr, request);
     if (ss) {
 	tmp = Strnew_charp(auth_header);
-	Strcat_m_charp(tmp, " ", ss->ptr, "\r\n", NULL);
+	Strcat_m_charp(tmp, " ", ss->ptr, "\r\n", (const char *)NULL);
 	pushText(extra_header, tmp->ptr);
     }
     else {
@@ -3251,7 +3257,7 @@ process_n_title(struct parsed_tag *tag)
     Strremovefirstspaces(cur_title);
     Strremovetrailingspaces(cur_title);
     tmp = Strnew_m_charp("<title_alt title=\"",
-			 html_quote(cur_title->ptr), "\">", NULL);
+			 html_quote(cur_title->ptr), "\">", (const char *)NULL);
     cur_title = NULL;
     return tmp;
 }
@@ -5284,7 +5290,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 			     "\">",
 			     html_quote(p),
 			     "<input type=text name=\"\" accept></form>",
-			     NULL);
+			     (const char *)NULL);
 	HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_DOCTYPE:
@@ -6484,7 +6490,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    is_tag = TRUE;
 		else if (!(pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT |
 				       RB_SCRIPT | RB_STYLE | RB_TITLE))) {
-		    line = Strnew_m_charp(str + 1, line, NULL)->ptr;
+		    line = Strnew_m_charp(str + 1, line,
+					  (const char *)NULL)->ptr;
 		    str = "&lt;";
 		}
 	    }
@@ -6528,7 +6535,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    if (is_tag) {
 		if (strncmp(str, "<!--", 4) && (p = strchr(str + 1, '<'))) {
 		    str = Strnew_charp_n(str, p - str)->ptr;
-		    line = Strnew_m_charp(p, line, NULL)->ptr;
+		    line = Strnew_m_charp(p, line, (const char *)NULL)->ptr;
 		}
 		is_tag = FALSE;
 		continue;
@@ -7178,7 +7185,7 @@ print_internal_information(struct html_feed_environ *henv)
     pushTextLine(tl, newTextLine(s, 0));
     if (henv->title) {
 	s = Strnew_m_charp("<title_alt title=\"",
-			   html_quote(henv->title), "\">", NULL);
+			   html_quote(henv->title), "\">", (const char *)NULL);
 	pushTextLine(tl, newTextLine(s, 0));
     }
 #if 0
@@ -7502,7 +7509,7 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
     q = html_quote(tmp->ptr);
     tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
 			 "</title>\n</head>\n<body>\n<h1>Index of ", q,
-			 "</h1>\n<table>\n", NULL);
+			 "</h1>\n<table>\n", (const char *)NULL);
 
     if (SETJMP(AbortLoading) != 0)
 	goto gopher_end;
@@ -7575,7 +7582,9 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	    break;
 	}
 	type = Strsubstr(name, 0, 1);
-	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", type->ptr, file->ptr, NULL)->ptr;
+	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr,
+			   "/", type->ptr, file->ptr,
+			   (const char *)NULL)->ptr;
 	if(link) {
 	    if(pre) {
 		Strcat_charp(tmp, "</pre>");
@@ -7583,14 +7592,15 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 	    }
 	    Strcat_m_charp(tmp, "<a href=\"",
 			   html_quote(url_encode(q, NULL, *charset)),
-			   "\">", p, " ", html_quote(name->ptr + 1), "</a><br>\n", NULL);
+			   "\">", p, " ", html_quote(name->ptr + 1),
+			   "</a><br>\n", (const char *)NULL);
 	} else {
 	    if(!pre) {
 		Strcat_charp(tmp, "<pre>");
 		pre = 1;
 	    }
 
-	    Strcat_m_charp(tmp, html_quote(name->ptr + 1), "\n", NULL);
+	    Strcat_m_charp(tmp, html_quote(name->ptr + 1), "\n", (const char *)NULL);
 	}
     }
 
@@ -7627,7 +7637,7 @@ loadGopherSearch0(URLFile *uf, ParsedURL *pu)
 			 "</title>\n</head>\n<body>\n<h1>Search ", q,
 			 "</h1>\n<form role=\"search\">\n<div>\n"
 			 "<input type=\"search\" name=\"\">"
-			 "</div>\n</form>\n</body>", NULL);
+			 "</div>\n</form>\n</body>", (const char *)NULL);
 
     return tmp;
 }

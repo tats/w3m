@@ -1370,7 +1370,8 @@ init_rc(void)
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
 #ifdef HAVE_MKDTEMP
-    tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX", NULL)->ptr);
+    tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX",
+				     (const char *)NULL)->ptr);
     if (tmp_dir == NULL)
 	tmp_dir = rc_dir;
 #endif
@@ -1481,11 +1482,12 @@ load_option_panel(void)
 
     Strcat_charp(src, "<table><tr><td>");
     for (i = 0; sections[i].name != NULL; i++) {
-	Strcat_m_charp(src, "<h1>", sections[i].name, "</h1>", NULL);
+	Strcat_m_charp(src, "<h1>", sections[i].name, "</h1>",
+		       (const char *)NULL);
 	p = sections[i].params;
 	Strcat_charp(src, "<table width=100% cellpadding=0>");
 	while (p->name) {
-	    Strcat_m_charp(src, "<tr><td>", p->comment, NULL);
+	    Strcat_m_charp(src, "<tr><td>", p->comment, (const char *)NULL);
 	    Strcat(src, Sprintf("</td><td width=%d>",
 				(int)(28 * pixel_per_char)));
 	    switch (p->inputtype) {
@@ -1493,7 +1495,8 @@ load_option_panel(void)
 		Strcat_m_charp(src, "<input type=text name=",
 			       p->name,
 			       " value=\"",
-			       html_quote(to_str(p)->ptr), "\">", NULL);
+			       html_quote(to_str(p)->ptr), "\">",
+			       (const char *)NULL);
 		break;
 	    case PI_ONOFF:
 		x = atoi(to_str(p)->ptr);
@@ -1503,11 +1506,12 @@ load_option_panel(void)
 			       (x ? " checked" : ""),
 			       ">YES&nbsp;&nbsp;<input type=radio name=",
 			       p->name,
-			       " value=0", (x ? "" : " checked"), ">NO", NULL);
+			       " value=0", (x ? "" : " checked"), ">NO",
+			       (const char *)NULL);
 		break;
 	    case PI_SEL_C:
 		tmp = to_str(p);
-		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
+		Strcat_m_charp(src, "<select name=", p->name, ">", (const char *)NULL);
 		for (s = (struct sel_c *)p->select; s->text != NULL; s++) {
 		    Strcat_charp(src, "<option value=");
 		    Strcat(src, Sprintf("%s\n", s->cvalue));
@@ -1522,7 +1526,8 @@ load_option_panel(void)
 #ifdef USE_M17N
 	    case PI_CODE:
 		tmp = to_str(p);
-		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
+		Strcat_m_charp(src, "<select name=", p->name, ">",
+			       (const char *)NULL);
 		for (c = *(wc_ces_list **) p->select; c->desc != NULL; c++) {
 		    Strcat_charp(src, "<option value=");
 		    Strcat(src, Sprintf("%s\n", c->name));
@@ -1597,13 +1602,15 @@ rcFile(char *base)
 	 || (base[0] == '~' && base[1] == '/')))
 	/* /file, ./file, ../file, ~/file */
 	return expandPath(base);
-    return expandPath(Strnew_m_charp(rc_dir, "/", base, NULL)->ptr);
+    return expandPath(Strnew_m_charp(rc_dir, "/", base,
+				     (const char *)NULL)->ptr);
 }
 
 char *
 auxbinFile(char *base)
 {
-    return expandPath(Strnew_m_charp(w3m_auxbin_dir(), "/", base, NULL)->ptr);
+    return expandPath(Strnew_m_charp(w3m_auxbin_dir(), "/", base,
+				     (const char *)NULL)->ptr);
 }
 
 #if 0				/* not used */
@@ -1617,20 +1624,23 @@ libFile(char *base)
 char *
 etcFile(char *base)
 {
-    return expandPath(Strnew_m_charp(w3m_etc_dir(), "/", base, NULL)->ptr);
+    return expandPath(Strnew_m_charp(w3m_etc_dir(), "/", base,
+				     (const char *)NULL)->ptr);
 }
 
 char *
 confFile(char *base)
 {
-    return expandPath(Strnew_m_charp(w3m_conf_dir(), "/", base, NULL)->ptr);
+    return expandPath(Strnew_m_charp(w3m_conf_dir(), "/", base,
+				     (const char *)NULL)->ptr);
 }
 
 #ifndef USE_HELP_CGI
 char *
 helpFile(char *base)
 {
-    return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
+    return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base,
+				     (const char *)NULL)->ptr);
 }
 #endif
 

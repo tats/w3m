@@ -567,7 +567,8 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    is_tag = TRUE;
 			else if (!(pre_mode & (RB_PLAIN | RB_INTXTA |
 					       RB_SCRIPT | RB_STYLE))) {
-			    p = Strnew_m_charp(tok->ptr + 1, p, NULL)->ptr;
+			    p = Strnew_m_charp(tok->ptr + 1, p,
+					       (const char *)NULL)->ptr;
 			    tok = Strnew_charp("&lt;");
 			}
 		    }
@@ -590,7 +591,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 			    if (strncmp(tok->ptr, "<!--", 4) &&
 				(q = strchr(tok->ptr + 1, '<'))) {
 				tok = Strnew_charp_n(tok->ptr, q - tok->ptr);
-				p = Strnew_m_charp(q, p, NULL)->ptr;
+				p = Strnew_m_charp(q, p, (const char *)NULL)->ptr;
 				status = R_ST_NORMAL;
 			    }
 			    is_tag = FALSE;

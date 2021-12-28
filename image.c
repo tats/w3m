@@ -74,8 +74,8 @@ getCharSize()
 
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
-	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
-    Strcat_m_charp(tmp, Imgdisplay, " -test 2>/dev/null", NULL);
+	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", (const char *)NULL);
+    Strcat_m_charp(tmp, Imgdisplay, " -test 2>/dev/null", (const char *)NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;
@@ -113,7 +113,8 @@ openImgdisplay()
     char *cmd;
 
     if (!strchr(Imgdisplay, '/'))
-	cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay, NULL)->ptr;
+	cmd = Strnew_m_charp(w3m_auxbin_dir(), "/", Imgdisplay,
+			     (const char *)NULL)->ptr;
     else
 	cmd = Imgdisplay;
     Imgdisplay_pid = open_pipe_rw(&Imgdisplay_rf, &Imgdisplay_wf);
@@ -746,8 +747,12 @@ getImageSize(ImageCache * cache)
 
     tmp = Strnew();
     if (!strchr(Imgdisplay, '/'))
-	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/", NULL);
-    Strcat_m_charp(tmp, Imgdisplay, " -size ", shell_quote(cache->file), NULL);
+	Strcat_m_charp(tmp, w3m_auxbin_dir(), "/",
+		       (const char *)NULL);
+
+    Strcat_m_charp(tmp, Imgdisplay, " -size ",
+		   shell_quote(cache->file),
+		   (const char *)NULL);
     f = popen(tmp->ptr, "r");
     if (!f)
 	return FALSE;

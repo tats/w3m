@@ -153,7 +153,7 @@ ftp_login(FTP ftp)
 		else if (getnameinfo((struct sockaddr *)&sockname, socknamelen,
 				        hostbuf, sizeof hostbuf, NULL, 0, NI_NUMERICHOST)
 			== 0)
-		    Strcat_m_charp(tmp, "[", hostbuf, "]", NULL);
+		    Strcat_m_charp(tmp, "[", hostbuf, "]", (const char *)NULL);
 		else
 		    Strcat_charp(tmp, "unknown");
 #else
@@ -165,7 +165,7 @@ ftp_login(FTP ftp)
 		    Strcat_charp(tmp, sockent->h_name);
 		else
 		    Strcat_m_charp(tmp, "[", inet_ntoa(sockname.sin_addr),
-				   "]", NULL);
+				   "]", (const char *)NULL);
 #endif
 		ftp->pass = tmp->ptr;
 	    }
@@ -530,7 +530,7 @@ loadFTPDir0(ParsedURL *pu)
     FTPDIRtmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", fn,
 			       "\">\n<title>", q,
 			       "</title>\n</head>\n<body>\n<h1>Index of ", q,
-			       "</h1>\n", NULL);
+			       "</h1>\n", (const char *)NULL);
 
     if (SETJMP(AbortLoading) != 0) {
 	if (sv_type == UNIXLIKE_SERVER)
@@ -609,7 +609,8 @@ loadFTPDir0(ParsedURL *pu)
 	    if (ftype == FTPDIR_LINK)
 		Strcat_char(tmp, '@');
 	    Strcat_m_charp(FTPDIRtmp, "<a href=\"", html_quote(file_quote(fn)),
-			   "\">", html_quote(tmp->ptr), "</a>", NULL);
+			   "\">", html_quote(tmp->ptr), "</a>",
+			   (const char *)NULL);
 	    for (i = get_Str_strwidth(tmp); i <= max_len; i++) {
 		if ((max_len % 2 + i) % 2)
 		    Strcat_char(FTPDIRtmp, '.');
@@ -618,7 +619,8 @@ loadFTPDir0(ParsedURL *pu)
 	    }
 	    tmp = convertLine(NULL, Strnew_charp(date), RAW_MODE, charset,
 			      doc_charset);
-	    Strcat_m_charp(FTPDIRtmp, html_quote(tmp->ptr), "\n", NULL);
+	    Strcat_m_charp(FTPDIRtmp, html_quote(tmp->ptr), "\n",
+			   (const char *)NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</pre>\n");
     }
@@ -638,7 +640,8 @@ loadFTPDir0(ParsedURL *pu)
 			      doc_charset);
 	    Strcat_m_charp(FTPDIRtmp, "<li><a href=\"",
 			   html_quote(file_quote(fn)), "\">",
-			   html_quote(tmp->ptr), "</a>\n", NULL);
+			   html_quote(tmp->ptr), "</a>\n",
+			   (const char *)NULL);
 	}
 	Strcat_charp(FTPDIRtmp, "</ul>\n");
     }

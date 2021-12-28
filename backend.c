@@ -105,7 +105,7 @@ internal_get(char *url, int flag, FormList *request)
 	    }
 	    first = Strnew_charp("<pre>\n");
 	    last = Strnew_m_charp("</pre><title>", html_quote(buf->buffername),
-				  "</title>\n", NULL);
+				  "</title>\n", (const char *)NULL);
 	    print_headers(buf, len + first->length + last->length);
 	    printf("\n");
 	    printf("%s", first->ptr);

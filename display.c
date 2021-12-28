@@ -241,7 +241,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     int l = COLS - 1, i;
 
     if (title && *title) {
-	s = Strnew_m_charp("[", title, "]", NULL);
+	s = Strnew_m_charp("[", title, "]", (const char *)NULL);
 	for (p = s->ptr; *p; p++) {
 	    if (IS_CNTRL(*p) || IS_SPACE(*p))
 		*p = ' ';
@@ -1214,7 +1214,7 @@ message_list_panel(void)
     if (message_list)
 	for (p = message_list->last; p; p = p->prev)
 	    Strcat_m_charp(tmp, "<tr><td><pre>", html_quote(p->ptr),
-			   "</pre></td></tr>\n", NULL);
+			   "</pre></td></tr>\n", (const char *)NULL);
     else
 	Strcat_charp(tmp, "<tr><td>(no message recorded)</td></tr>\n");
     Strcat_charp(tmp, "</table></body></html>");

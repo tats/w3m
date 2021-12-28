@@ -284,7 +284,7 @@ follow_map_panel(Buffer *buf, char *name)
 	    p = q;
 	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
-		       "</a><td>", p, NULL);
+		       "</a><td>", p, (const char *)NULL);
     }
     Strcat_charp(mappage, "</table></body></html>");
 
@@ -410,7 +410,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 
     Strcat_m_charp(tmp,
 		   "<tr valign=top><td colspan=2>Links of current image map",
-		   "<tr valign=top><td colspan=2><table>", NULL);
+		   "<tr valign=top><td colspan=2><table>", (const char *)NULL);
     for (al = ml->area->first; al != NULL; al = al->next) {
 	a = (MapArea *) al->ptr;
 	if (!a)
@@ -421,7 +421,7 @@ append_map_info(Buffer *buf, Str tmp, FormItemList *fi)
 	Strcat_m_charp(tmp, "<tr valign=top><td>&nbsp;&nbsp;<td><a href=\"",
 		       q, "\">",
 		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
-		       "</a><td>", p, "\n", NULL);
+		       "</a><td>", p, "\n", (const char *)NULL);
     }
     Strcat_charp(tmp, "</table>");
 }
@@ -447,7 +447,7 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	    url = "(empty)";
 	Strcat_m_charp(html, "<tr valign=top><td><a href=\"", url, "\">",
 		       l->title ? html_quote(l->title) : "(empty)", "</a><td>",
-		       NULL);
+		       (const char *)NULL);
 	if (l->type == LINK_TYPE_REL)
 	    Strcat_charp(html, "[Rel]");
 	else if (l->type == LINK_TYPE_REV)
@@ -456,9 +456,10 @@ append_link_info(Buffer *buf, Str html, LinkList * link)
 	    url = "(empty)";
 	else
 	    url = html_quote(url_decode2(l->url, buf));
-	Strcat_m_charp(html, "<td>", url, NULL);
+	Strcat_m_charp(html, "<td>", url, (const char *)NULL);
 	if (l->ctype)
-	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")", NULL);
+	    Strcat_m_charp(html, " (", html_quote(l->ctype), ")",
+			   (const char *)NULL);
 	Strcat_charp(html, "\n");
     }
     Strcat_charp(html, "</table>\n");
@@ -486,7 +487,7 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		for (j = 0; j < level; j++)
 		    Strcat_charp(html, "   ");
 		q = html_quote(frame.body->url);
-		Strcat_m_charp(html, "<a href=\"", q, "\">", NULL);
+		Strcat_m_charp(html, "<a href=\"", q, "\">", (const char *)NULL);
 		if (frame.body->name) {
 		    p = html_quote(url_unquote_conv(frame.body->name,
 						    buf->document_charset));
@@ -496,13 +497,13 @@ append_frame_info(Buffer *buf, Str html, struct frameset *set, int level)
 		    p = html_quote(url_decode2(frame.body->url, buf));
 		else
 		    p = q;
-		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", NULL);
+		Strcat_m_charp(html, " ", p, "</a></pre_int><br>\n", (const char *)NULL);
 #ifdef USE_SSL
 		if (frame.body->ssl_certificate)
 		    Strcat_m_charp(html,
 				   "<blockquote><h2>SSL certificate</h2><pre>\n",
 				   html_quote(frame.body->ssl_certificate),
-				   "</pre></blockquote>\n", NULL);
+				   "</pre></blockquote>\n", (const char *)NULL);
 #endif
 		break;
 	    case F_FRAMESET:
@@ -553,7 +554,7 @@ page_info_panel(Buffer *buf)
 		   "<tr valign=top><td nowrap>Document Type<td>",
 		   buf->real_type ? html_quote(buf->real_type) : "unknown",
 		   "<tr valign=top><td nowrap>Last Modified<td>",
-		   html_quote(last_modified(buf)), NULL);
+		   html_quote(last_modified(buf)), (const char *)NULL);
 #ifdef USE_M17N
     if (buf->document_charset != InnerCharset) {
 	list = wc_get_ces_list();
@@ -563,7 +564,7 @@ page_info_panel(Buffer *buf)
 	    sprintf(charset, "%d", (unsigned int)list->id);
 	    Strcat_m_charp(tmp, "<option value=", charset,
 			   (buf->document_charset == list->id) ? " selected>"
-			   : ">", list->desc, NULL);
+			   : ">", list->desc, (const char *)NULL);
 	}
 	Strcat_charp(tmp, "</select>");
 	Strcat_charp(tmp, "<tr><td><td><input type=submit value=Change>");
@@ -573,7 +574,8 @@ page_info_panel(Buffer *buf)
 		   "<tr valign=top><td nowrap>Number of lines<td>",
 		   Sprintf("%d", all)->ptr,
 		   "<tr valign=top><td nowrap>Transferred bytes<td>",
-		   Sprintf("%lu", (unsigned long)buf->trbyte)->ptr, NULL);
+		   Sprintf("%lu", (unsigned long)buf->trbyte)->ptr,
+				   (const char *)NULL);
 
     a = retrieveCurrentAnchor(buf);
     if (a != NULL) {
@@ -586,7 +588,7 @@ page_info_panel(Buffer *buf)
 	    p = q;
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>URL of current anchor<td><a href=\"",
-		       q, "\">", p, "</a>", NULL);
+		       q, "\">", p, "</a>", (const char *)NULL);
     }
     a = retrieveCurrentImg(buf);
     if (a != NULL) {
@@ -599,7 +601,7 @@ page_info_panel(Buffer *buf)
 	    p = q;
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>URL of current image<td><a href=\"",
-		       q, "\">", p, "</a>", NULL);
+		       q, "\">", p, "</a>", (const char *)NULL);
     }
     a = retrieveCurrentForm(buf);
     if (a != NULL) {
@@ -608,7 +610,7 @@ page_info_panel(Buffer *buf)
 	p = html_quote(url_decode2(p, buf));
 	Strcat_m_charp(tmp,
 		       "<tr valign=top><td nowrap>Method/type of current form&nbsp;<td>",
-		       p, NULL);
+		       p, (const char *)NULL);
 	if (fi->parent->method == FORM_METHOD_INTERNAL
 	    && !Strcmp_charp(fi->parent->action, "map"))
 	    append_map_info(buf, tmp, fi->parent->item);
@@ -624,7 +626,7 @@ page_info_panel(Buffer *buf)
 	Strcat_charp(tmp, "<hr width=50%><h1>Header information</h1><pre>\n");
 	for (ti = buf->document_header->first; ti != NULL; ti = ti->next)
 	    Strcat_m_charp(tmp, "<pre_int>", html_quote(ti->ptr),
-			   "</pre_int>\n", NULL);
+			   "</pre_int>\n", (const char *)NULL);
 	Strcat_charp(tmp, "</pre>\n");
     }
 
@@ -641,7 +643,8 @@ page_info_panel(Buffer *buf)
 #ifdef USE_SSL
     if (buf->ssl_certificate)
 	Strcat_m_charp(tmp, "<h1>SSL certificate</h1><pre>\n",
-		       html_quote(buf->ssl_certificate), "</pre>\n", NULL);
+		       html_quote(buf->ssl_certificate), "</pre>\n",
+		       (const char *)NULL);
 #endif
   end:
     Strcat_charp(tmp, "</body></html>");

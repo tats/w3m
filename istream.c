@@ -452,7 +452,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 				asn[i] = '!';
 			}
 		    }
-		    Strcat_m_charp(seen_dnsname, asn, " ", NULL);
+		    Strcat_m_charp(seen_dnsname, asn, " ", (const char *)NULL);
 		    if (sl == strlen(asn) /* catch \0 in SAN */
 			&& ssl_match_cert_ident(asn, sl, hostname))
 			break;
@@ -612,12 +612,12 @@ ssl_get_certificate(SSL * ssl, char *hostname)
     if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
 	Strcat_charp(s, " subject=<unknown>");
     else
-	Strcat_m_charp(s, " subject=", buf, NULL);
+	Strcat_m_charp(s, " subject=", buf, (const char *)NULL);
     xn = X509_get_issuer_name(x);
     if (X509_NAME_get_text_by_NID(xn, NID_commonName, buf, sizeof(buf)) == -1)
 	Strcat_charp(s, ": issuer=<unknown>");
     else
-	Strcat_m_charp(s, ": issuer=", buf, NULL);
+	Strcat_m_charp(s, ": issuer=", buf, (const char *)NULL);
     Strcat_charp(s, "\n\n");
 
     bp = BIO_new(BIO_s_mem());

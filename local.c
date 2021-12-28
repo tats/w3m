@@ -90,7 +90,7 @@ loadLocalDir(char *dname)
 			html_quote(file_quote(dirname->ptr)),
 			 "\">\n<TITLE>Directory list of ", qdir,
 			 "</TITLE>\n</HEAD>\n<BODY>\n<H1>Directory list of ",
-			 qdir, "</H1>\n", NULL);
+			 qdir, "</H1>\n", (const char *)NULL);
     flist = New_N(char *, nfile_max);
     nfile = 0;
     while ((dir = readdir(d)) != NULL) {
@@ -146,10 +146,12 @@ loadLocalDir(char *dname)
 	    else
 		Strcat_charp(tmp, "[FILE] ");
 	}
-	Strcat_m_charp(tmp, "<A HREF=\"", html_quote(file_quote(p)), NULL);
+	Strcat_m_charp(tmp, "<A HREF=\"", html_quote(file_quote(p)),
+		       (const char *)NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
-	Strcat_m_charp(tmp, "\">", html_quote(conv_from_system(p)), NULL);
+	Strcat_m_charp(tmp, "\">", html_quote(conv_from_system(p)),
+		       (const char *)NULL);
 	if (S_ISDIR(st.st_mode))
 	    Strcat_char(tmp, '/');
 	Strcat_charp(tmp, "</A>");
@@ -168,7 +170,8 @@ loadLocalDir(char *dname)
 		if ((l = readlink(fbuf->ptr, lbuf, sizeof(lbuf) - 1)) > 0) {
 		    lbuf[l] = '\0';
 		    Strcat_m_charp(tmp, " -> ",
-				   html_quote(conv_from_system(lbuf)), NULL);
+				   html_quote(conv_from_system(lbuf)),
+				   (const char *)NULL);
 		    if (S_ISDIR(st.st_mode))
 			Strcat_char(tmp, '/');
 		}
@@ -211,7 +214,7 @@ set_environ(char *var, char *value)
 	setenv(var, value, 1);
 #else				/* not HAVE_SETENV */
     static Hash_sv *env_hash = NULL;
-    Str tmp = Strnew_m_charp(var, "=", value, NULL);
+    Str tmp = Strnew_m_charp(var, "=", value, (const char *)NULL);
 
     if (env_hash == NULL)
 	env_hash = newHash_sv(20);
@@ -375,7 +378,7 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	    return NULL;
     }
     if (qstr)
-	uri = Strnew_m_charp(uri, "?", qstr, NULL)->ptr;
+	uri = Strnew_m_charp(uri, "?", qstr, (const char *)NULL)->ptr;
 #ifdef HAVE_CHDIR
     cgi_dir = mydirname(file);
 #endif

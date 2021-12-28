@@ -1479,9 +1479,9 @@ myExtCommand(char *cmd, char *arg, int redirect)
     }
     if (!set_arg) {
 	if (redirect)
-	    tmp = Strnew_m_charp("(", cmd, ") < ", arg, NULL);
+	    tmp = Strnew_m_charp("(", cmd, ") < ", arg, (const char *)NULL);
 	else
-	    tmp = Strnew_m_charp(cmd, " ", arg, NULL);
+	    tmp = Strnew_m_charp(cmd, " ", arg, (const char *)NULL);
     }
     return tmp;
 }
@@ -1518,7 +1518,7 @@ myEditor(char *cmd, char *file, int line)
 	    tmp = Strnew_charp(cmd);
 	if (!set_line && line > 1 && strcasestr(cmd, "vi"))
 	    Strcat(tmp, Sprintf(" +%d", line));
-	Strcat_m_charp(tmp, " ", file, NULL);
+	Strcat_m_charp(tmp, " ", file, (const char *)NULL);
     }
     return tmp;
 }
@@ -1557,7 +1557,8 @@ expandName(char *name)
 	    if (!passent)
 		goto rest;
 	    extpath = Strnew_m_charp(passent->pw_dir, "/",
-				     personal_document_root, NULL);
+				     personal_document_root,
+				     (const char *)NULL);
 	    if (*personal_document_root == '\0' && *p == '/')
 		p++;
 	}

@@ -346,7 +346,7 @@ loadNewsgroup0(ParsedURL *pu)
     page = Strnew_m_charp("<html>\n<head>\n<base href=\"",
 			  parsedURL2Str(pu)->ptr, "\">\n<title>Newsgroup: ",
 			  qgroup, "</title>\n</head>\n<body>\n<h1>Newsgroup: ",
-			  qgroup, "</h1>\n<hr>\n", NULL);
+			  qgroup, "</h1>\n<hr>\n", (const char *)NULL);
 
     if (SETJMP(AbortLoading) != 0) {
 	news_close(&current_news);

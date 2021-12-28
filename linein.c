@@ -690,7 +690,8 @@ next_compl(int next)
     if (status == CPL_FAIL)
 	return;
 
-    strBuf = Strnew_m_charp(CBeforeBuf->ptr, s->ptr, CAfterBuf->ptr, NULL);
+    strBuf = Strnew_m_charp(CBeforeBuf->ptr, s->ptr, CAfterBuf->ptr,
+			    (const char *)NULL);
     CLen = setStrType(strBuf, strProp);
     CPos = CBeforeBuf->length + s->length;
     if (CPos > CLen)

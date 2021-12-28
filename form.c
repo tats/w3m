@@ -182,12 +182,14 @@ form2str(FormItemList *fi)
 	Strcat_charp(tmp, "input type=");
     Strcat_charp(tmp, _formtypetbl[fi->type]);
     if (fi->name && fi->name->length)
-	Strcat_m_charp(tmp, " name=\"", fi->name->ptr, "\"", NULL);
+	Strcat_m_charp(tmp, " name=\"", fi->name->ptr, "\"",
+		       (const char *)NULL);
     if ((fi->type == FORM_INPUT_RADIO || fi->type == FORM_INPUT_CHECKBOX ||
 	 fi->type == FORM_SELECT) && fi->value)
-	Strcat_m_charp(tmp, " value=\"", fi->value->ptr, "\"", NULL);
+	Strcat_m_charp(tmp, " value=\"", fi->value->ptr, "\"",
+		       (const char *)NULL);
     Strcat_m_charp(tmp, " (", _formmethodtbl[fi->parent->method], " ",
-		   fi->parent->action->ptr, ")", NULL);
+		   fi->parent->action->ptr, ")", (const char *)NULL);
     return tmp->ptr;
 }
 

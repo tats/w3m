@@ -975,7 +975,7 @@ main(int argc, char **argv)
 			   "w3m</a>!<p><p>This is w3m version ",
 			   w3m_version,
 			   "<br>Written by <a href='mailto:aito@fw.ipsj.or.jp'>Akinori Ito</a>",
-			   NULL);
+			   (const char *)NULL);
 	    newbuf = loadHTMLString(s_page);
 	    if (newbuf == NULL)
 		Strcat_charp(err_msg, "w3m: Can't load string.\n");
@@ -3021,7 +3021,7 @@ loadLink(char *url, char *target, char *referer, FormList *request)
 	    al = searchAnchor(f_element->body->nameList, label);
 	}
 	if (!al) {
-	    label = Strnew_m_charp("_", target, NULL)->ptr;
+	    label = Strnew_m_charp("_", target, (const char *)NULL)->ptr;
 	    al = searchURLLabel(Currentbuf, label);
 	}
 	if (al) {
@@ -6620,7 +6620,7 @@ addDownloadList(pid_t pid, char *url, char *save, char *lock, clen_t size)
     d->pid = pid;
     d->url = url;
     if (save[0] != '/' && save[0] != '~')
-	save = Strnew_m_charp(CurrentDir, "/", save, NULL)->ptr;
+	save = Strnew_m_charp(CurrentDir, "/", save, (const char *)NULL)->ptr;
     d->save = expandPath(save);
     d->lock = lock;
     d->size = size;

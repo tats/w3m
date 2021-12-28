@@ -774,7 +774,7 @@ link_list_panel(Buffer *buf)
 	    t = Sprintf("%s%s\n", l->title ? l->title : "", t)->ptr;
 	    t = html_quote(t);
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
-			   "\n", NULL);
+			   "\n", (const char *)NULL);
 	}
 	Strcat_charp(tmp, "</ol>\n");
     }
@@ -796,7 +796,7 @@ link_list_panel(Buffer *buf)
 	    t = getAnchorText(buf, al, a);
 	    t = t ? html_quote(t) : "";
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
-			   "\n", NULL);
+			   "\n", (const char *)NULL);
 	}
 	Strcat_charp(tmp, "</ol>\n");
     }
@@ -820,7 +820,7 @@ link_list_panel(Buffer *buf)
 	    else
 		t = html_quote(url_decode2(a->url, buf));
 	    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t, "</a><br>", p,
-			   "\n", NULL);
+			   "\n", (const char *)NULL);
 	    a = retrieveAnchor(buf->formitem, a->start.line, a->start.pos);
 	    if (!a)
 		continue;
@@ -850,7 +850,7 @@ link_list_panel(Buffer *buf)
 		    else
 			t = html_quote(url_decode2(m->url, buf));
 		    Strcat_m_charp(tmp, "<li><a href=\"", u, "\">", t,
-				   "</a><br>", p, "\n", NULL);
+				   "</a><br>", p, "\n", (const char *)NULL);
 		}
 		Strcat_charp(tmp, "</ol>\n");
 	    }

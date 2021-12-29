@@ -142,7 +142,6 @@ extern Str ssl_get_certificate(SSL * ssl, char *hostname);
 #define IST_UNCLOSE	0x10
 
 #define IStype(stream) ((stream)->base.type)
-#define is_eos(stream) ISeos(stream)
 #define iseos(stream) ((stream)->base.iseos)
 #define file_of(stream) ((stream)->file.handle->f)
 #define set_close(stream,closep) ((IStype(stream)==IST_FILE)?((stream)->file.handle->close=(closep)):0)

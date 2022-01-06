@@ -537,7 +537,7 @@ Sprintf(char *fmt, ...)
 		case 'x':
 		case 'X':
 		case 'u':
-		    vi = va_arg(ap, int);
+		    va_arg(ap, int);
 		    len += (p > 0) ? p : 10;
 		    break;
 		case 'f':
@@ -550,7 +550,7 @@ Sprintf(char *fmt, ...)
 		    break;
 		case 'c':
 		    len += 1;
-		    vi = va_arg(ap, int);
+		    va_arg(ap, int);
 		    break;
 		case 's':
 		    vs = va_arg(ap, char *);

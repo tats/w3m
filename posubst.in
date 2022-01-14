@@ -52,5 +52,22 @@ foreach my $src (@src) {
 }
 
 map {s/(.*\.c)$/.$1/} @ARGV;
+my $err = 0;
 system @ARGV;
+if ($? == -1) {
+	print "failed to execute: $!\n";
+	$err = 125;
+}
+elsif ($? & 127) {
+	printf "child died with signal %d\n", ($? & 127);
+	$err = 125;
+}
+else {
+	$err = $? >> 8;
+	if ($err != 0) {
+		printf "child exited with value %d\n", $err;
+	}
+}
+
 unlink @tmp;
+exit $err;

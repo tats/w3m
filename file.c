@@ -6523,6 +6523,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    line = Strnew_m_charp(p, line, NULL)->ptr;
 		}
 		is_tag = FALSE;
+		continue;
 	    }
 	    if (obuf->table_level >= 0)
 		goto proc_normal;

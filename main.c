@@ -5073,7 +5073,7 @@ chkURLBuffer(Buffer *buf)
 	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=\\-]",
 	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
 #ifdef USE_GOPHER
-	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
+	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_~]*",
 #endif				/* USE_GOPHER */
 	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
 #ifdef USE_NNTP

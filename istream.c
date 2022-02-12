@@ -418,7 +418,7 @@ ssl_check_cert_ident(X509 * x, char *hostname)
 	if (alt) {
 	    int n;
 	    GENERAL_NAME *gn;
-	    X509V3_EXT_METHOD *method;
+	    const X509V3_EXT_METHOD *method;
 	    Str seen_dnsname = NULL;
 
 	    n = sk_GENERAL_NAME_num(alt);

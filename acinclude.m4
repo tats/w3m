@@ -693,9 +693,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      with_imlib2="yes"
      if test x"$PKG_CONFIG" = x; then
        PKG_CONFIG=pkg-config
-     fi
-     if test x"$IMLIB2_CONFIG" = x; then
-       IMLIB2_CONFIG=imlib2-config
      fi;;
    gdk-pixbuf)
      with_gdkpixbuf="yes"
@@ -736,7 +733,7 @@ AC_DEFUN([AC_W3M_IMAGE],
   fi
   if test x"$with_imlib2" = xyes; then
    AC_W3M_CHECK_VER([Imlib2],
-	[`$IMLIB2_CONFIG --version 2>/dev/null`],
+	[`$PKG_CONFIG --modversion imlib2 2>/dev/null`],
 	1, 0, 5,
 	[have_imlib2="yes"],
 	[have_imlib2="no"])
@@ -747,7 +744,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGTARGETS="x11"    
      AC_DEFINE(USE_IMLIB2)
-     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags imlib2`"
      IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
@@ -783,7 +780,7 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGTARGETS="${IMGTARGETS} fb"
      AC_DEFINE(USE_IMLIB2)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags imlib2`"
      IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)

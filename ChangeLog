@@ -1,3 +1,14 @@
+2022-02-16  Rene Kita  <mail@rkta.de>
+
+	* acinclude.m4, configure: Do not use imlib2-config.
+	imlib2-config was dropped by Imlib2:
+	https://git.enlightenment.org/legacy/imlib2.git/commit/?id=e9d84bd2163e6fab494b5ce5cc8830a54ff97765
+	Origin: https://github.com/tats/w3m/pull/215
+
+	* file.c: Ignore tokens that look like HTML, but are not.
+	Origin: https://github.com/tats/w3m/pull/217
+	Bug-Debian: https://github.com/tats/w3m/issues/200
+
 2021-10-26  Kuang-che Wu  <kcwu@google.com>
 
 	* istream.c: fix StrStream memory leak.
@@ -7,7 +18,7 @@
 
 	Fix stack overflow due to closing dd tags
 	Origin: https://github.com/tats/w3m/pull/202
-	Bug: https://github.com/tats/w3m/issues/198
+	Bug-Debian: https://github.com/tats/w3m/issues/198
 
 	* file.c: Fix description title rendering (again).
 

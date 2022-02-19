@@ -1,9 +1,26 @@
+2022-02-19  Rene Kita  <mail@rkta.de>
+
+	* url.c: Check for end of string when parsing Gopher URLs.
+	Origin: https://github.com/tats/w3m/pull/218
+	Bug-Debian: https://github.com/tats/w3m/issues/199
+
+2022-02-19  NRK  <nrk@disroot.org>
+
+	* libwc/search.c: Fix wc_map_range_search() parameter type mismatch.
+	Origin: https://github.com/tats/w3m/pull/214
+
+2022-02-19  Kuang-che Wu  <kcwu@google.com>
+
+	* fuzz/fuzz-conv.c: Improve fuzz-conv fuzzer.
+	Origin: https://github.com/tats/w3m/pull/204
+
 2022-02-16  Rene Kita  <mail@rkta.de>
 
 	* acinclude.m4, configure: Do not use imlib2-config.
 	imlib2-config was dropped by Imlib2:
 	https://git.enlightenment.org/legacy/imlib2.git/commit/?id=e9d84bd2163e6fab494b5ce5cc8830a54ff97765
 	Origin: https://github.com/tats/w3m/pull/215
+	Bug-Debian: https://github.com/tats/w3m/issues/213
 
 	* file.c: Ignore tokens that look like HTML, but are not.
 	Origin: https://github.com/tats/w3m/pull/217

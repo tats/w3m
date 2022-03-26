@@ -94,6 +94,7 @@ PEEK		Show current address
 PEEK_IMG	Show image address
 PEEK_LINK	Show target address
 PIPE_BUF	Pipe current buffer through a shell command and display output
+PIPE_LINK	Pipe the contents of the current hyperlink directly to a shell command
 PIPE_SHELL	Execute shell command and display output
 PREV		Switch to the previous buffer
 PREV_HALF_PAGE	Scroll up half a page

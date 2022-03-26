@@ -2150,6 +2150,10 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    doFileMove(tmp->ptr, file);
 	    return NO_BUFFER;
 	}
+	if (do_pipe) {
+	    return NO_BUFFER;
+	}
+
 	b = loadHTMLString(page);
 	if (b) {
 	    copyParsedURL(&b->currentURL, &pu);
@@ -2193,6 +2197,19 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    UFhalfclose(&f);
 	else
 	    UFclose(&f);
+	return NO_BUFFER;
+    }
+
+    if (do_pipe) {
+	TRAP_OFF;
+	if (DecodeCTE && IStype(f.stream) != IST_ENCODED)
+	    f.stream = newEncodedStream(f.stream, f.encoding);
+	if (doFilePipe(f) == 0) {
+	    UFhalfclose(&f);
+	}
+	else {
+	    UFclose(&f);
+	}
 	return NO_BUFFER;
     }
 
@@ -8186,20 +8203,16 @@ getNextPage(Buffer *buf, int plen)
 }
 
 int
-save2tmp(URLFile uf, char *tmpf)
+save2file(URLFile uf, FILE *ff)
 {
     FILE *ff;
+    int check;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
     volatile int retval = 0;
     char *volatile buf = NULL;
 
-    ff = fopen(tmpf, "wb");
-    if (ff == NULL) {
-	/* fclose(f); */
-	return -1;
-    }
     bcopy(AbortLoading, env_bak, sizeof(JMP_BUF));
     if (SETJMP(AbortLoading) != 0) {
 	goto _end;
@@ -8248,9 +8261,24 @@ save2tmp(URLFile uf, char *tmpf)
     bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
     TRAP_OFF;
     xfree(buf);
-    fclose(ff);
     current_content_length = 0;
     return retval;
+}
+
+int
+save2tmp(URLFile uf, char *tmpf)
+{
+    FILE *ff;
+    int r;
+
+    ff = fopen(tmpf, "wb");
+    if (ff == NULL) {
+	/* fclose(f); */
+	return -1;
+    }
+    r = save2file(uf, ff);
+    fclose(ff);
+    return r;
 }
 
 Buffer *
@@ -8620,6 +8648,70 @@ doFileSave(URLFile uf, char *defstr)
 	}
 	if (PreserveTimestamp && uf.modtime != -1)
 	    setModtime(p, uf.modtime);
+    }
+#endif /* __MINGW32_VERSION */
+    return 0;
+}
+
+int
+doFilePipe(URLFile uf)
+{
+#ifndef __MINGW32_VERSION
+    Str msg;
+    Str filen;
+    pid_t pid;
+    char *p, *q;
+
+    if (fmInitialized) {
+	p = searchKeyData();
+	if (p == NULL || *p == '\0') {
+	    /* FIXME: gettextize? */
+	    p = inputLineHist("(Download)Pipe into: ",
+			      "", IN_FILENAME, SaveHist);
+	    if (p == NULL || *p == '\0')
+		return -1;
+	    p = conv_to_system(p);
+	}
+	pid = fork();
+	if (!pid) {
+	    int err;
+	    if ((uf.content_encoding != CMP_NOCOMPRESS) && AutoUncompress) {
+		uncompress_stream(&uf, NULL);
+	    }
+	    setup_child(FALSE, 0, UFfileno(&uf));
+	    FILE *ff = popen(p, "w");
+	    err = save2file(uf, ff);
+
+	    pclose(ff);
+	    UFclose(&uf);
+	    if (err != 0)
+		exit(-err);
+	    exit(0);
+	}
+    } else {
+	q = searchKeyData();
+	if (q == NULL || *q == '\0') {
+	    /* FIXME: gettextize? */
+	    printf("(Download)Pipe into: ");
+	    fflush(stdout);
+	    filen = Strfgets(stdin);
+	    if (filen->length == 0)
+		return -1;
+	    q = filen->ptr;
+	}
+	for (p = q + strlen(q) - 1; IS_SPACE(*p); p--) ;
+	*(p + 1) = '\0';
+	if (*q == '\0')
+	    return -1;
+	p = expandPath(q);
+	if (uf.content_encoding != CMP_NOCOMPRESS && AutoUncompress) {
+	    uncompress_stream(&uf, NULL);
+	}
+	if (save2tmp(uf, p) < 0) {
+	    /* FIXME: gettextize? */
+	    printf("Couldn't pipe into %s\n", p);
+	    return -1;
+	}
     }
 #endif /* __MINGW32_VERSION */
     return 0;

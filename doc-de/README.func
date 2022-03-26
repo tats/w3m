@@ -94,6 +94,7 @@ PEEK		Zeige aktuelle Adresse an
 PEEK_IMG	Zeige Adresse des Bildes
 PEEK_LINK	Zeige Zieladresse
 PIPE_BUF	Leite aktuellen Pufferinhalt einem Shell-Befehl zu und zeige Ausgabe an
+PIPE_LINK	Leite den Inhalt des Links unter dem Cursor direkt an einem Shell-Befehl weiter
 PIPE_SHELL	Führe Shell-Befehl aus und zeige Ausgabe an
 PREV		Schalte zum vorherigen Puffer
 PREV_HALF_PAGE	Scrolle eine halbe Seite aufwärts

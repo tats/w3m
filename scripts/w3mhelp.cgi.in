@@ -149,7 +149,7 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
 
 &show_keymap('File/Stream Operations',
 	     split(" ", "goURL gorURL tabURL tabrURL ldfile readsh pipesh
-		pipeBuf"));
+		pipeLink pipeBuf"));
 
 &show_keymap('Buffer Operations',
 	     split(" ", "backBf nextBf prevBf goHome selMn selBuf vwSrc svSrc

@@ -2160,6 +2160,14 @@ DEFUN(pipeBuf, PIPE_BUF, "Pipe current buffer through a shell command and displa
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
+DEFUN(pipeLink, PIPE_LINK, "Load and pipe a URL into a shell command")
+{
+    CurrentKeyData = NULL;	/* not allowed in w3m-control: */
+    do_pipe = TRUE;
+    followA();
+    do_pipe = FALSE;
+}
+
 /* Execute shell command and read output ac pipe. */
 DEFUN(pipesh, PIPE_SHELL, "Execute shell command and display output")
 {

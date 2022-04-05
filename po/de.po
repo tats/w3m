@@ -1,14 +1,14 @@
 # German translation of w3m
 # Copyright (C) 2014 THE w3m'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the w3m package.
-# Markus Hiereth <markus.hiereth@freenet.de>, 2014.
+# Markus Hiereth <translation@hiereth.de>, 2014,2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-03 15:24+0900\n"
-"PO-Revision-Date: 2021-02-11 19:05+0900\n"
-"Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
+"PO-Revision-Date: 2022-01-19 09:00+0100\n"
+"Last-Translator: Markus Hiereth <translation@hiereth.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -272,7 +272,6 @@ msgstr "Hintergrundfarbe"
 msgid "Color of mark"
 msgstr "Farbe für Textmarken"
 
-# msgstr "Farbe für Textmarkierungen"
 #: rc.c:109
 msgid "Use proxy"
 msgstr "Proxy verwenden"
@@ -346,14 +345,16 @@ msgstr "Reiter mit nur einem Puffer auf Zurück-Befehl hin schließen"
 msgid "Enable mark operations"
 msgstr "Arbeit mit Textmarken ermöglichen"
 
-# msgstr "Arbeit mit Textmarkierungen ermöglichen"
 #: rc.c:135
 msgid "Enable Emacs-style line editing"
 msgstr "Zeilen wie in Emacs bearbeiten"
 
+#FIXME mh 2022-01-19 I think this is only true for local paths and files
 #: rc.c:136
 msgid "Space key triggers file completion while editing URLs"
-msgstr ""
+msgstr "Beim Editieren von URLs wird nach Drücken der Leerzeichentaste ein"
+"möglicher kompletter Dateiname angeboten, bei nochmaligem Drücken ein"
+"nächster."
 
 #: rc.c:137
 msgid "Enable vi-like numeric prefix"

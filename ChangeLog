@@ -1,3 +1,13 @@
+2022-04-05  Markus Hiereth  <translation@hiereth.de>
+
+	* po/de.po: Updated German message catalogue.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1003936#5
+
+2022-04-05  Sebastian Rasmussen  <sebras@gmail.com>
+
+	* po/LINGUAS, po/sv_SE.po: Add Swedish translation.
+	Origin: https://github.com/tats/w3m/pull/209
+
 2022-02-19  Rene Kita  <mail@rkta.de>
 
 	* url.c: Check for end of string when parsing Gopher URLs.
@@ -28,7 +38,7 @@
 
 2021-10-26  Kuang-che Wu  <kcwu@google.com>
 
-	* istream.c: fix StrStream memory leak.
+	* istream.c: Fix StrStream memory leak.
 	Origin: https://github.com/tats/w3m/pull/203
 
 2021-10-26  bptato  <nincsnevem662@gmail.com>

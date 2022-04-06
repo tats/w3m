@@ -18,7 +18,7 @@ msgstr ""
 
 #: menu.c:269
 msgid " Back         (b) "
-msgstr " Indietro (b) "
+msgstr " Indietro              (b) "
 
 #: menu.c:270
 msgid " Select Buffer(s) "
@@ -26,67 +26,67 @@ msgstr " Selezionare i Buffers (s) "
 
 #: menu.c:272
 msgid " Select Tab   (t) "
-msgstr " Selezionare la Tab (t) "
+msgstr " Selezionare la Tab    (t) "
 
 #: menu.c:274
 msgid " View Source  (v) "
-msgstr " Vedere il codice (v) "
+msgstr " Vedere il codice      (v) "
 
 #: menu.c:275
 msgid " Edit Source  (e) "
-msgstr " Editare il Codice (e) "
+msgstr " Editare il Codice     (e) "
 
 #: menu.c:276
 msgid " Save Source  (S) "
-msgstr " Salvare il codice (S) "
+msgstr " Salvare il codice     (S) "
 
 #: menu.c:277
 msgid " Reload       (r) "
-msgstr " Ricaricare (r) "
+msgstr " Ricaricare            (r) "
 
 #: menu.c:278 menu.c:285 menu.c:289
 msgid " ---------------- "
-msgstr " ---------------- "
+msgstr " ------------------------- "
 
 #: menu.c:279
 msgid " Go Link      (a) "
-msgstr " Andare al link      (a) "
+msgstr " Andare al link        (a) "
 
 #: menu.c:280
 msgid "   on New Tab (n) "
-msgstr "  nella nuova Tab (n) "
+msgstr "       nella nuova Tab (n) "
 
 #: menu.c:281
 msgid " Save Link    (A) "
-msgstr " Salvare il Link     (A) "
+msgstr " Salvare il Link       (A) "
 
 #: menu.c:282
 msgid " View Image   (i) "
-msgstr " Vedere l'Immagine      (i) "
+msgstr " Vedere l'Immagine     (i) "
 
 #: menu.c:283
 msgid " Save Image   (I) "
-msgstr " Salvare l'Immagine     (I) "
+msgstr " Salvare l'Immagine    (I) "
 
 #: menu.c:284
 msgid " View Frame   (f) "
-msgstr " Vedere il Frame      (f) "
+msgstr " Vedere il Frame       (f) "
 
 #: menu.c:286
 msgid " Bookmark     (B) "
-msgstr " Bookmark        (B) "
+msgstr " Bookmark              (B) "
 
 #: menu.c:287
 msgid " Help         (h) "
-msgstr " Aiuto              (h) "
+msgstr " Aiuto                 (h) "
 
 #: menu.c:288
 msgid " Option       (o) "
-msgstr " Opzioni      (o) "
+msgstr " Opzioni               (o) "
 
 #: menu.c:290
 msgid " Quit         (q) "
-msgstr " Esci (q) "
+msgstr " Esci                  (q) "
 
 #: rc.c:62
 msgid "External Viewer Setup"

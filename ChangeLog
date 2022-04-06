@@ -1,3 +1,10 @@
+2022-04-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/it.po: Adjust spacing in menu strings.
+	cf. https://github.com/tats/w3m/issues/225
+
+	* po/zh_CN.po, po/zh_TW.po: Fix typo in menu strings.
+
 2022-04-05  Markus Hiereth  <translation@hiereth.de>
 
 	* po/de.po: Updated German message catalogue.

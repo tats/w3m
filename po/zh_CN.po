@@ -28,7 +28,7 @@ msgstr " 后退         (b) "
 
 #: menu.c:270
 msgid " Select Buffer(s) "
-msgstr " 选择缓冲区       "
+msgstr " 选择缓冲区   (s) "
 
 #: menu.c:272
 msgid " Select Tab   (t) "

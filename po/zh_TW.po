@@ -33,7 +33,7 @@ msgstr " 返回         (b) "
 
 #: menu.c:270
 msgid " Select Buffer(s) "
-msgstr " 選擇緩衝區       "
+msgstr " 選擇緩衝區   (s) "
 
 #: menu.c:272
 msgid " Select Tab   (t) "

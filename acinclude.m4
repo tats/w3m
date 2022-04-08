@@ -427,7 +427,9 @@ AC_ARG_WITH(termlib,
  AC_MSG_RESULT($with_termlib)
  test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
  for lib in $with_termlib; do
-   AC_CHECK_LIB($lib, tgetent, [W3M_LIBS="$W3M_LIBS -l$lib"; break])
+   AC_CHECK_LIB($lib, tgetent,
+                [W3M_LIBS="$W3M_LIBS -l$lib"; break],
+                [test "$lib" = curses && AC_MSG_ERROR([No terminal library found])])
  done
 ])
 #
@@ -774,6 +776,7 @@ AC_DEFUN([AC_W3M_IMAGE],
    fi
   fi
   if test x"$fb" = xyes; then
+   AC_CHECK_HEADER(linux/fb.h, [], [AC_MSG_ERROR([linux/fb.h not found])])
    if test x"$have_imlib2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"

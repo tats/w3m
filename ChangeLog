@@ -1,3 +1,17 @@
+2022-04-08  Rene Kita  <mail@rkta.de>
+
+	Add some missing checks to configure
+	Origin: https://github.com/tats/w3m/pull/221
+	* acinclude.m4, configure: Check for linux/fb.h when configuring.
+	* configure, configure.ac: Let configure fail if Perl is not in $PATH.
+	* acinclude.m4, configure: Let configure fail if no terminal library
+	is found.
+	* .gitignore: Ignore autom4te cache directory.
+
+	* posubst.in: Do not swallow errors from GCC.
+	Use strict and warnings in posubst.
+	Origin: https://github.com/tats/w3m/pull/220
+
 2022-04-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/it.po: Adjust spacing in menu strings.

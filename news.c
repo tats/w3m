@@ -235,7 +235,6 @@ InputStream
 openNewsStream(ParsedURL *pu)
 {
     char *host, *mode, *group, *p;
-    Str tmp;
     int port, status;
 
     if (pu->file == NULL || *pu->file == '\0')
@@ -262,7 +261,7 @@ openNewsStream(ParsedURL *pu)
 	mode = NULL;
     if (current_news.host) {
 	if (!strcmp(current_news.host, host) && current_news.port == port) {
-	    tmp = news_command(&current_news, "MODE", mode ? mode : "READER",
+	    news_command(&current_news, "MODE", mode ? mode : "READER",
 			       &status);
 	    if (status != 200 && status != 201)
 		news_close(&current_news);

@@ -821,7 +821,7 @@ growbuf_reserve(struct growbuf *gb, int leastarea)
 }
 
 void
-growbuf_append(struct growbuf *gb, const char *src, int len)
+growbuf_append(struct growbuf *gb, const unsigned char *src, int len)
 {
     growbuf_reserve(gb, gb->length + len);
     memcpy(&gb->ptr[gb->length], src, len);

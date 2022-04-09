@@ -253,8 +253,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
     char *es = NULL;
 #endif
     int do_copy = FALSE;
+#ifdef USE_M17N
     int i;
     int plen = 0, clen;
+#endif
 
     if (prop_size < s->length) {
 	prop_size = (s->length > LINELEN) ? s->length : LINELEN;
@@ -429,7 +431,6 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	}
 #endif
 
-	plen = get_mclen(str);
 	mode = get_mctype(str) | effect;
 #ifdef USE_ANSI_COLOR
 	if (color) {
@@ -439,6 +440,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 #endif
 	*(prop++) = mode;
 #ifdef USE_M17N
+	plen = get_mclen(str);
 	if (plen > 1) {
 	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 	    for (i = 1; i < plen; i++) {
@@ -2019,12 +2021,14 @@ static char Base64Table[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 Str
-base64_encode(const unsigned char *src, size_t len)
+base64_encode(const char *src, size_t len)
 {
     Str dest;
-    const unsigned char *in, *endw;
+    const unsigned char *in, *endw, *s;
     unsigned long j;
     size_t k;
+
+    s = (unsigned char*)src;
 
     k = len;
     if (k % 3)
@@ -2041,9 +2045,9 @@ base64_encode(const unsigned char *src, size_t len)
 	return Strnew();
     }
 
-    in = src;
+    in = s;
 
-    endw = src + len - 2;
+    endw = s + len - 2;
 
     while (in < endw) {
 	j = *in++;
@@ -2056,9 +2060,9 @@ base64_encode(const unsigned char *src, size_t len)
 	Strcatc(dest, Base64Table[j & 0x3f]);
     }
 
-    if (src + len - in) {
+    if (s + len - in) {
 	j = *in++;
-	if (src + len - in) {
+	if (s + len - in) {
 	    j = j << 8 | *in++;
 	    j = j << 8;
 	    Strcatc(dest, Base64Table[(j >> 18) & 0x3f]);

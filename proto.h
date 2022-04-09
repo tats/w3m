@@ -5,7 +5,7 @@
  *
  *   Created: Wed Feb 10 12:47:03 1999
  */
-extern int main(int argc, char **argv, char **envp);
+extern int main(int argc, char **argv);
 extern void nulcmd(void);
 extern void pushEvent(int cmd, void *data);
 extern MySignalHandler intTrap(SIGNAL_ARG);
@@ -831,4 +831,4 @@ void srand48(long);
 long lrand48(void);
 #endif
 
-extern Str base64_encode(const unsigned char *src, size_t len);
+extern Str base64_encode(const char *src, size_t len);

@@ -520,10 +520,8 @@ Sprintf(char *fmt, ...)
 	case SP_PREC:
 	    if (IS_ALPHA(*f)) {
 		/* conversion char. */
-		double vd;
 		int vi;
 		char *vs;
-		void *vp;
 
 		switch (*f) {
 		case 'l':
@@ -545,7 +543,7 @@ Sprintf(char *fmt, ...)
 		case 'e':
 		case 'G':
 		case 'E':
-		    vd = va_arg(ap, double);
+		    va_arg(ap, double);
 		    len += (p > 0) ? p : 15;
 		    break;
 		case 'c':
@@ -558,11 +556,11 @@ Sprintf(char *fmt, ...)
 		    len += (p > vi) ? p : vi;
 		    break;
 		case 'p':
-		    vp = va_arg(ap, void *);
+		    va_arg(ap, void *);
 		    len += 10;
 		    break;
 		case 'n':
-		    vp = va_arg(ap, void *);
+		    va_arg(ap, void *);
 		    break;
 		}
 		status = SP_NORMAL;

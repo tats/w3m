@@ -1290,7 +1290,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     tmp = Strnew_m_charp(uname->ptr, ":",
 			 qstr_unquote(get_auth_param(ha->param, "realm"))->ptr,
 			 ":", pw->ptr, NULL);
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a1buf = digest_hex(md5);
 
     if (algorithm) {
@@ -1303,7 +1303,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	    tmp = Strnew_m_charp(a1buf->ptr, ":",
 				 qstr_unquote(nonce)->ptr,
 				 ":", qstr_unquote(cnonce)->ptr, NULL);
-	    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	    a1buf = digest_hex(md5);
 	}
 	else if (strcasecmp(algorithm->ptr, "MD5") == 0)
@@ -1325,23 +1325,23 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 		    Str ebody;
 		    ebody = Strfgetall(fp);
 		    fclose(fp);
-		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
+		    MD5((unsigned char *)ebody->ptr, strlen(ebody->ptr), md5);
 		}
 		else {
-		    MD5("", 0, md5);
+		    MD5((unsigned char *)"", 0, md5);
 		}
 	    }
 	    else {
-		MD5(request->body, request->length, md5);
+		MD5((unsigned char *)request->body, request->length, md5);
 	    }
 	}
 	else {
-	    MD5("", 0, md5);
+	    MD5((unsigned char *)"", 0, md5);
 	}
 	Strcat_char(tmp, ':');
 	Strcat(tmp, digest_hex(md5));
     }
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a2buf = digest_hex(md5);
 
     if (qop_i >= QOP_AUTH) {
@@ -1359,7 +1359,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 			     ":", qstr_unquote(cnonce)->ptr,
 			     ":", qop_i == QOP_AUTH ? "auth" : "auth-int",
 			     ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
     else {
@@ -1369,7 +1369,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	tmp = Strnew_m_charp(a1buf->ptr, ":",
 			     qstr_unquote(get_auth_param(ha->param, "nonce"))->
 			     ptr, ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
 
@@ -3803,7 +3803,7 @@ process_button(struct parsed_tag *tag)
 {
     Str tmp = NULL;
     char *p, *q, *r, *qq = "";
-    int qlen, v;
+    int v;
 
     if (cur_form_id < 0) {
        char *s = "<form_int method=internal action=none>";
@@ -3847,7 +3847,6 @@ process_button(struct parsed_tag *tag)
     }
     if (q) {
        qq = html_quote(q);
-       qlen = strlen(q);
     }
 
     /*    Strcat_charp(tmp, "<pre_int>"); */
@@ -4002,7 +4001,6 @@ void
 process_option(void)
 {
     char begin_char = '[', end_char = ']';
-    int len;
 
     if (cur_select == NULL || cur_option == NULL)
 	return;
@@ -4013,6 +4011,7 @@ process_option(void)
     if (cur_option_label == NULL)
 	cur_option_label = cur_option;
 #ifdef MENU_SELECT
+    int len;
     if (!select_is_multiple) {
 	len = get_Str_strwidth(cur_option_label);
 	if (len > cur_option_maxwidth)
@@ -7601,7 +7600,6 @@ loadGopherSearch0(URLFile *uf, ParsedURL *pu)
 {
     Str tmp;
     char *volatile p, *volatile q;
-    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
 #endif
@@ -8166,7 +8164,6 @@ int
 save2tmp(URLFile uf, char *tmpf)
 {
     FILE *ff;
-    int check;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
@@ -8183,8 +8180,8 @@ save2tmp(URLFile uf, char *tmpf)
 	goto _end;
     }
     TRAP_ON;
-    check = 0;
 #ifdef USE_NNTP
+    int check = 0;
     if (uf.scheme == SCM_NEWS) {
 	char c;
 	while (c = UFgetc(&uf), !iseos(uf.stream)) {

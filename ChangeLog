@@ -1,3 +1,58 @@
+2022-04-09  Rene Kita  <mail@rkta.de>
+
+	Fix all reported warnings when -Wall
+	Origin: https://github.com/tats/w3m/pull/222
+	Bug-Debian: https://github.com/tats/w3m/pull/216
+
+	* symbol.c: Cast away a warning under OpenBSD 7.0.
+
+	* Makefile.in: Enable -Wall by default.
+
+	* image.c: Use unsigned int for image size.
+	This removes a warning with -Wall.
+
+	* terms.c: Use cast to suppress warning.
+
+	* table.c: Initialize struct before use.
+
+	* buffer.c: Fix a potential buffer overflow.
+	When compiling with -Wformat-overflow=2 GCC reports:
+	  note: 'sprintf' output between 16 and 35 bytes into a destination of size 32
+
+	* etc.c, proto.h: Let base64_encode() take a char *.
+	Throughout the whole code base only char * is passed, but a unsigned
+	char * is expected. This leads to several warnings.
+	Fix the interface and cast to unsigned char * internally to avoid any
+	changes to the behaviour.
+
+	* file.c: Explicitly cast to unsigned when passing to MD5().
+
+	* terms.c: Let strncpy write the null terminator.
+
+	* indep.c, indep.h: Take the correct char type in growbuf_append().
+	This change removes all warnings (-Wall) from this function.
+
+	* file.c: Fix warning for unused variable w/o MENU_SELECT.
+
+	* display.c, etc.c, file.c, linein.c, table.c:
+	Fix warning for unused variable without USE_M17N.
+
+	* Str.c, file.c, image.c, istream.c, main.c, menu.c, news.c:
+	Remove unused variable.
+
+	* scrsize.c, w3mbookmark.c, w3mhelperpanel.c:
+	Use main(void) when not taking arguments.
+
+	* main.c, mktable.c, proto.h, w3mbookmark.c, w3mhelperpanel.c:
+	Use standard conforming main() definition.
+
+	* local.c, main.c: Suppress two warnings when compiling with tcc.
+	While there, add some comments to better understand the code flow in
+	localcgi_post().
+
+	* Makefile.in: Move OPTS to end of CFLAGS.
+	This allows the user to override default options.
+
 2022-04-08  Rene Kita  <mail@rkta.de>
 
 	Add some missing checks to configure

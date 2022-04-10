@@ -1,3 +1,11 @@
+2022-04-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* proto.h: Remove unused encodeB declaration.
+
+	* table.h: Remove unused MAX_WIDTH.
+
+	* ChangeLog, gitlog2changelog: Prefer https for GNU URLs.
+
 2022-04-09  Rene Kita  <mail@rkta.de>
 
 	Fix all reported warnings when -Wall

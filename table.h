@@ -21,8 +21,6 @@
 #define MAXROW 50
 #define MAXCOL 256
 
-#define MAX_WIDTH 80
-
 #define BORDER_NONE 0
 #define BORDER_THIN 1
 #define BORDER_THICK 2

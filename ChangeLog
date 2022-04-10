@@ -1733,7 +1733,7 @@
 2016-03-30  Leo Famulari  <leo@famulari.name>
 
 	* url.c: Disable RC4.
-	Origin: http://git.savannah.gnu.org/cgit/guix.git/commit/?id=62339e2d493bf87a3aabe12e45458581e9705d83
+	Origin: https://git.savannah.gnu.org/cgit/guix.git/commit/?id=62339e2d493bf87a3aabe12e45458581e9705d83
 
 2016-03-29  Tatsuya Kinoshita  <tats@debian.org>
 

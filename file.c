@@ -3103,11 +3103,14 @@ purgeline(struct html_feed_environ *h_env)
 {
     char *p, *q;
     Str tmp;
+    TextLine *tl;
 
     if (h_env->buf == NULL || h_env->blank_lines == 0)
 	return;
 
-    p = rpopTextLine(h_env->buf)->line->ptr;
+    if (!(tl = rpopTextLine(h_env->buf)))
+	return;
+    p = tl->line->ptr;
     tmp = Strnew();
     while (*p) {
 	q = p;

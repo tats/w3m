@@ -51,7 +51,7 @@ news_command(News * news, char *cmd, char *arg, int *status)
 	return NULL;
     *status = -1;
     tmp = StrISgets(news->rf);
-    if (tmp->length)
+    if (tmp && tmp->length)
 	sscanf(tmp->ptr, "%d", status);
     return tmp;
 }
@@ -396,7 +396,8 @@ loadNewsgroup0(ParsedURL *pu)
     if (status == 224) {
 	f.scheme = SCM_NEWS;
 	while (1) {
-	    tmp = StrISgets(current_news.rf);
+	    if (!(tmp = StrISgets(current_news.rf)))
+		break;
 	    if (NEWS_ENDLINE(tmp->ptr))
 		break;
 	    if (sscanf(tmp->ptr, "%d", &i) != 1)
@@ -474,7 +475,8 @@ loadNewsgroup0(ParsedURL *pu)
     if (status != 215)
 	goto news_end;
     while (1) {
-	tmp = StrISgets(current_news.rf);
+	if (!(tmp = StrISgets(current_news.rf)))
+	    break;
 	if (NEWS_ENDLINE(tmp->ptr))
 	    break;
 	if (flag < 2) {

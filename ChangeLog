@@ -1,3 +1,18 @@
+2022-04-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Allow building without terminal library.
+	This reverts commit 0d3416e0c250a4f08206967634fb641e9c8e008c.
+	cf. https://github.com/tats/w3m/pull/221
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=46629
+
+	* configure, configure.ac: Allow building without Perl.
+	This reverts commit a0c8de3f3fe0178d655af54737e50168586f87a3.
+	cf. https://github.com/tats/w3m/pull/221
+
+	* acinclude.m4, configure: Do not reject FreeBSD framebuffer.
+	This reverts commit cb3118b389b99eff001212c0d27a39f78c615a03.
+	cf. https://github.com/tats/w3m/pull/221
+
 2022-04-10  Tatsuya Kinoshita  <tats@debian.org>
 
 	* proto.h: Remove unused encodeB declaration.

@@ -1596,7 +1596,8 @@ file_to_url(char *file)
     char *host = NULL;
 #endif
 
-    file = expandPath(file);
+    if (!(file = expandPath(file)))
+	return NULL;
 #ifdef SUPPORT_NETBIOS_SHARE
     if (file[0] == '/' && file[1] == '/') {
 	char *p;

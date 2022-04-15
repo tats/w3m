@@ -8803,8 +8803,6 @@ eval ac_res=\$$as_ac_Lib
 $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_Lib"\" = x"yes"; then :
   W3M_LIBS="$W3M_LIBS -l$lib"; break
-else
-  test "$lib" = curses && as_fn_error $? "No terminal library found" "$LINENO" 5
 fi
 
  done

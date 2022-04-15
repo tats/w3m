@@ -25,8 +25,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AC_CHECK_PROG(PERL,[perl],[$(command -v perl)],[no])
-test "$PERL" == "no" && AC_MSG_ERROR([Required program 'perl' not found.])
+AC_PATH_PROGS(PERL, perl, /usr/local/bin/perl)
 AC_PATH_PROGS(NKF, nkf, /usr/local/bin/nkf)
 AC_PATH_PROGS(MAN, man, /usr/bin/man)
 AC_PATH_XTRA

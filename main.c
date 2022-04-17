@@ -1079,6 +1079,10 @@ main(int argc, char **argv)
 	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
+	    if (!FirstTab) {
+		fprintf(stderr, "%s\n","Can't allocated memory");
+		exit(1);
+	    }
 	    nTab = 1;
 	    Firstbuf = Currentbuf = newbuf;
 	}

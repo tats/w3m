@@ -158,6 +158,9 @@ extractMailcapEntry(char *mcap_entry, struct mailcap *mcap)
 		 matchMailcapAttr(p, "htmloutput", 10, NULL)) {
 	    mcap->flags |= MAILCAP_HTMLOUTPUT;
 	}
+	else if (matchMailcapAttr(p, "x-nosaveinput", 14, NULL)) {
+	    mcap->flags |= MAILCAP_NOSAVEINPUT;
+	}
 	else if (matchMailcapAttr(p, "test", 4, &tmp)) {
 	    mcap->test = allocStr(tmp->ptr, tmp->length);
 	}

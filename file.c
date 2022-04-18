@@ -8205,8 +8205,6 @@ getNextPage(Buffer *buf, int plen)
 int
 save2file(URLFile uf, FILE *ff)
 {
-    FILE *ff;
-    int check;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
@@ -8286,19 +8284,28 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 {
     Str tmpf, command;
     struct mailcap *mcap;
-    int mc_stat;
+    int mc_stat, err;
     Buffer *buf = NULL;
     char *header, *src = NULL, *ext = uf.ext;
+    FILE *ff;
 
     if (!(mcap = searchExtViewer(type)))
 	return NULL;
 
-    if (mcap->nametemplate) {
-	tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
-	if (tmpf->ptr[0] == '.')
-	    ext = tmpf->ptr;
+    if ((mcap->flags & MAILCAP_NOSAVEINPUT)) {
+	if (uf.scheme == SCM_LOCAL) {
+	    tmpf = Strnew_charp(uf.url);
+	} else {
+	    tmpf = Strnew_charp("-"); /* make it a pipe */
+	}
+    } else {
+	if (mcap->nametemplate) {
+	    tmpf = unquote_mailcap(mcap->nametemplate, NULL, "", NULL, NULL);
+	    if (tmpf->ptr[0] == '.')
+		ext = tmpf->ptr;
+	}
+	tmpf = tmpfname(TMPF_DFL, (ext && *ext) ? ext : NULL);
     }
-    tmpf = tmpfname(TMPF_DFL, (ext && *ext) ? ext : NULL);
 
     if (IStype(uf.stream) != IST_ENCODED)
 	uf.stream = newEncodedStream(uf.stream, uf.encoding);
@@ -8319,18 +8326,37 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 	flush_tty();
 	if (!fork()) {
 	    setup_child(FALSE, 0, UFfileno(&uf));
-	    if (save2tmp(uf, tmpf->ptr) < 0)
-		exit(1);
-	    UFclose(&uf);
-	    myExec(command->ptr);
+	    if (!(mcap->flags & MAILCAP_NOSAVEINPUT)) {
+		if (save2tmp(uf, tmpf->ptr) < 0)
+		    exit(1);
+		UFclose(&uf);
+		myExec(command->ptr);
+	    } else {
+		if (uf.scheme == SCM_LOCAL) {
+		    /* local, so we don't need uf (pass the url itself) */
+		    UFclose(&uf);
+		    myExec(command->ptr);
+		} else {
+		    /* remote, so we pipe uf then close it */
+		    ff = popen(command->ptr, "w");
+		    err = save2file(uf, ff);
+
+		    pclose(ff);
+		    UFclose(&uf);
+		    if (err != 0)
+			exit(-err);
+		}
+	    }
 	}
 	return NO_BUFFER;
     }
     else
 #endif
     {
-	if (save2tmp(uf, tmpf->ptr) < 0) {
-	    return NULL;
+	if (!(mcap->flags & MAILCAP_NOSAVEINPUT)) {
+	    if (save2tmp(uf, tmpf->ptr) < 0) {
+		return NULL;
+	    }
 	}
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
@@ -8657,7 +8683,6 @@ int
 doFilePipe(URLFile uf)
 {
 #ifndef __MINGW32_VERSION
-    Str msg;
     Str filen;
     pid_t pid;
     char *p, *q;

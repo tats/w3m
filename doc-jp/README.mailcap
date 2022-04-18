@@ -35,7 +35,7 @@ mailcap サポートについて
     いかもしれません.
     (2001/08/01) 坂本
      htmloutput → x-htmloutput
-   
+
  ・ nametemplate= は外部コマンドに渡すファイル名の拡張子を指定します.
     テンポラリファイルを作るとき, 通常元の URL の拡張子がファイル名に付けられま
     すが, nametemplate= フィールドによって変更する事ができます.
@@ -44,4 +44,20 @@ mailcap サポートについて
     application/x-dvi;xdvi '%s';test=test -n "$DISPLAY";nametemplate=%s.dvi
    
  ・ needsterminal, edit については RFC 1524 を見てください.
-   
+
+ ・ w3m の拡張フィールドとして, x-nosaveinput も使えます. この拡張フィールドが
+    mailcap エントリに存在する場合, 外部コマンドを実行する度にテンポラリファイ
+    ルが作られません.
+
+    入力データがローカルファイルである場合, そのパスは直接パス名として渡されま
+    す. 他の場合は入力データをパイプに渡して, パス名を - (マイナス) とします.
+    例:
+
+    video/mkv;mpv '%s';x-nosaveinput
+
+    と書けば, file:///tmp/test.mkv と言う URL のファイルを mpv /tmp/test.mkv
+    と言うコマンドで見られます. また, ftp://abcd/tmp/test.mkv と言う URL のフ
+    ァイルは mpv - と言うコマンドで見られます. (この場合はファイルがパイプに渡
+    たされます.)
+    (2023/07/29) bptato
+     x-nosaveinput を追加

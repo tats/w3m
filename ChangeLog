@@ -1,3 +1,29 @@
+2022-04-19  Rene Kita  <mail@rkta.de>
+
+	Fix some more warnings
+	Origin: https://github.com/tats/w3m/pull/230
+	* w3mimg/x11/x11_w3mimg.c: Fix a warning about an unused variable.
+	* libwc/wtf.c: Cast away a warning.
+
+	Fix all warnings when building with -Wnull-dereference
+	Origin: https://github.com/tats/w3m/pull/229
+	* Makefile.in: Enable -Wnull-dereference by default.
+	* main.c: Exit if we cannot allocate a new tab during start.
+	* main.c: Fix potential null dereference.
+	* file.c: Fix potential null dereference.
+	* etc.c: Fix potential null dereference.
+	* file.c, frame.c, ftp.c, news.c:
+	Check return value of Str... functions.
+	* w3mimg/fb/fb_imlib2.c: Fix potential null pointer dereference.
+	* w3mimg/fb/fb.c: Check for NULL before dereferencing the pointer.
+	* buffer.c: Do not call fclose() on a NULL pointer.
+	* file.c: Check for NULL before dereferencing a pointer.
+	* file.c: Check for NULL before dereferencing a pointer.
+	* news.c: Remove null pointer dereference.
+
+	* file.c: Fix broken anchor with link number at EOL.
+	Origin: https://github.com/tats/w3m/pull/227
+
 2022-04-15  Tatsuya Kinoshita  <tats@debian.org>
 
 	* acinclude.m4, configure: Allow building without terminal library.

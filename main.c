@@ -1079,6 +1079,10 @@ main(int argc, char **argv)
 	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
+	    if (!FirstTab) {
+		fprintf(stderr, "%s\n","Can't allocated memory");
+		exit(1);
+	    }
 	    nTab = 1;
 	    Firstbuf = Currentbuf = newbuf;
 	}
@@ -6481,8 +6485,8 @@ followTab(TabBuffer * tab)
 	Buffer *c, *p;
 
 	c = Currentbuf;
-	p = prevBuffer(c, buf);
-	p->nextBuffer = NULL;
+	if ((p = prevBuffer(c, buf)))
+	    p->nextBuffer = NULL;
 	Firstbuf = buf;
 	deleteTab(CurrentTab);
 	CurrentTab = tab;
@@ -6522,8 +6526,8 @@ tabURL0(TabBuffer * tab, char *prompt, int relative)
 	Buffer *c, *p;
 
 	c = Currentbuf;
-	p = prevBuffer(c, buf);
-	p->nextBuffer = NULL;
+	if ((p = prevBuffer(c, buf)))
+	    p->nextBuffer = NULL;
 	Firstbuf = buf;
 	deleteTab(CurrentTab);
 	CurrentTab = tab;

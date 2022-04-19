@@ -30,6 +30,7 @@
 #define MAX_INPUT_SIZE 80 /* TODO - max should be screen line length */
 
 static int frame_source = 0;
+static int need_number = 0;
 
 static char *guess_filename(char *file);
 static int _MoveFile(char *path1, char *path2);
@@ -5017,8 +5018,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->anchor.hseq = cur_hseq;
 	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
 	    push_tag(obuf, tmp->ptr, HTML_A);
-	    if (displayLinkNumber)
-		HTMLlineproc1(getLinkNumberStr(-1)->ptr, h_env);
 	    return 1;
 	}
 	return 0;
@@ -5029,6 +5028,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (parsedtag_exists(tag, ATTR_USEMAP))
 	    HTML5_CLOSE_A;
 	tmp = process_img(tag, h_env->limit);
+	if (need_number) {
+	    tmp = Strnew_m_charp(getLinkNumberStr(-1)->ptr, tmp->ptr, NULL);
+	    need_number = 0;
+	}
 	HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_IMG_ALT:
@@ -6489,6 +6492,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    if (obuf->status != R_ST_NORMAL)	/* R_ST_AMP ? */
 		obuf->status = R_ST_NORMAL;
 	    str = tokbuf->ptr;
+	    if (need_number) {
+		str = Strnew_m_charp(getLinkNumberStr(-1)->ptr, str, NULL)->ptr;
+		need_number = 0;
+	    }
 	}
 
 	if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT | RB_SCRIPT |
@@ -6616,8 +6623,12 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    clear_ignore_p_flag(cmd, obuf);
 	    if (cmd == HTML_TABLE)
 		goto table_start;
-	    else
+	    else {
+		if (displayLinkNumber && cmd == HTML_A && !internal)
+		    if (h_env->obuf->anchor.url)
+			need_number = 1;
 		continue;
+	    }
 	}
 
 	if (obuf->flag & (RB_DEL | RB_S))

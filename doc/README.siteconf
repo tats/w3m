@@ -23,39 +23,33 @@ entries.
 
 ===== Examples =====
 
+# This forwards twitter.com to the alternative site.
 url m!^https?://([a-z]+\.)?twitter\.com/!
 substitute_url "https://nitter.net/"
 
-This forwards twitter.com to the alternative site.
-
+# This prevents HTTP referers from being sent when you follow links
+# at the your.bookmark.net.
 url "http://your.bookmark.net/"
 no_referer_from on
 
-This prevents HTTP referers from being sent when you follow links
-at the your.bookmark.net.
-
+# This forwards the Google's redirector to your local CGI.
 url "http://www.google.com/url?" exact
 substitute_url "file:///cgi-bin/your-redirector.cgi?"
 
-This forwards the Google's redirector to your local CGI.
-
+# When combinated with "decode_url" option turned on, links to
+# Wikipedia will be human-readable.
 url /^http:\/\/[a-z]*\.wikipedia\.org\//
 url_charset utf-8
 
-When combinated with "decode_url" option turned on, links to
-Wikipedia will be human-readable.
-
+# Tell Google we're actually Lynx. (So they send us a text-browser friendly
+# results page.)
 url m@^https?://(.*\.)google\.com/@
 user_agent "Lynx/2.8.8dev.3 libwww-FM/2.14 SSL-MM/1.4.1"
 
-Tell Google we're actually Lynx. (So they send us a text-browser friendly
-results page.)
-
+# Tell Twitter we're actually Googlebot. (So they send us a page without
+# rejection of a JavaScript disabled browser.)
 url m!^https?://([a-z]+\.)?twitter\.com/!
 user_agent "Googlebot/2.1"
-
-Tell Twitter we're actually Googlebot. (So they send us a page without
-rejection of a JavaScript disabled browser.)
 
 ===== Regular expressions notes =====
 

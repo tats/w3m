@@ -8,6 +8,7 @@ The siteconf is read from ~/.w3m/siteconf by default.
 
 ===== The syntax =====
 
+# comment
 url <url>|/<re-url>/|m@<re-url>@i [exact]
 substitute_url "<destination-url>"
 url_charset <charset>
@@ -16,6 +17,9 @@ no_referer_to on|off
 user_agent "string"
 
 The last match wins.
+
+Lines starting with a '#' are ignored. You can use this to annotate the
+entries.
 
 ===== Examples =====
 

@@ -1726,7 +1726,7 @@ CounterClockwiseContourIntegral;
 &shcy;                           0x448          ш      ш                        ш
 &shortmid;                       0x2223         ∣      ∣                        ∣
 &shortparallel;                  0x2225         ∥      ∥                        ∥
-&shy;                            0xAD                                           ­
+&shy;                            0xAD
 &sigma;                          0x3C3          σ      σ                        σ
 &sigmaf;                         0x3C2          ς      ς                        ς
 &sigmav;                         0x3C2          ς      ς                        ς
@@ -2125,7 +2125,7 @@ CounterClockwiseContourIntegral;
 &raquo                           0xBB           »      &raquo                   »
 &reg                             0xAE           ®      &reg                     ®
 &sect                            0xA7           §      &sect                    §
-&shy                             0xAD                  &shy                     ­
+&shy                             0xAD                  &shy
 &sup1                            0xB9           ¹      &sup1                    ¹
 &sup2                            0xB2           ²      &sup2                    ²
 &sup3                            0xB3           ³      &sup3                    ³

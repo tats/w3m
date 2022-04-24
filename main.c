@@ -1457,7 +1457,8 @@ escKeyProc(int c, int esc, unsigned char *map)
 	esc |= (CurrentKey & ~0xFFFF);
     }
     CurrentKey = esc | c;
-    w3mFuncList[(int)map[c]].func();
+    if (map)
+        w3mFuncList[(int)map[c]].func();
 }
 
 DEFUN(escmap, ESCMAP, "ESC map")

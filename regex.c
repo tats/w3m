@@ -747,7 +747,7 @@ lc2c(longchar * x, int len)
     int i = 0, j = 0;
     char *r;
 
-    while (x[j].type != RE_TYPE_END && j < len) {
+    while (j < len && x[j].type != RE_TYPE_END) {
 	if (x[j].type == RE_WHICH_RANGE)
 	    y[i++] = '-';
 #ifdef USE_M17N

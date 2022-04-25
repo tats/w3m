@@ -1,3 +1,11 @@
+2022-04-25  NRK  <nrk@disroot.org>
+
+	Cppcheck fixes
+	Origin: https://github.com/tats/w3m/pull/231
+	* regex.c: check bound _before_ making access.
+	* main.c: ensure map isn't NULL.
+	* Str.c: properly close va_list.
+
 2022-04-19  Rene Kita  <mail@rkta.de>
 
 	Fix some more warnings

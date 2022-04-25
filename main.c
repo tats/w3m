@@ -1012,9 +1012,11 @@ main(int argc, char **argv)
 	    SearchHeader = search_header;
 	    DefaultType = default_type;
 	    char *url;
+	    int retry = 0;
 
 	    url = load_argv[i];
 	    if (getURLScheme(&url) == SCM_MISSING && !ArgvIsURL)
+	  retry_as_local_file:
 		url = file_to_url(load_argv[i]);
 	    else
 		url = url_encode(conv_from_system(load_argv[i]), NULL, 0);
@@ -1053,6 +1055,10 @@ main(int argc, char **argv)
 		newbuf = loadGeneralFile(url, NULL, NO_REFERER, 0, request);
 	    }
 	    if (newbuf == NULL) {
+		if (ArgvIsURL && !retry) {
+		    retry = 1;
+		    goto retry_as_local_file;
+		}
 		/* FIXME: gettextize? */
 		Strcat(err_msg,
 		       Sprintf("w3m: Can't load %s.\n", load_argv[i]));

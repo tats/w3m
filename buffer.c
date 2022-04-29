@@ -61,7 +61,8 @@ nullBuffer(void)
     Buffer *b;
 
     b = newBuffer(COLS);
-    b->buffername = "*Null*";
+    if (b != NULL)
+	    b->buffername = "*Null*";
     return b;
 }
 

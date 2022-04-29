@@ -1,3 +1,52 @@
+Debian's w3m 0.5.3+git20220429
+
+* new features
+  - support kitty's APC G graphics protocol with ImageMagick's convert
+  - support iTerm2's OSC 1337 graphics protocol
+  - new option inline_img_protocol to select the graphics protocol
+    (0: w3m-img, 1: OSC 5379, 2: sixel, 3: OSC 1337, 4: APC G)
+  - new option ssl_cipher to specify TLSv1.2 ciphers, e.g. DEFAULT:@SECLEVEL=2
+  - new option ssl_min_version for OpenSSL 1.1
+  - new option -insecure to use insecure SSL config options
+  - new option ssl_ca_default, explicitly use OpenSSL default paths by default
+  - new option cross_origin_referer, use origin only Referer when cross origin
+  - new option localhost_only to restrict connections only to localhost
+  - new option disable_center to disable center alignment
+  - support brotli content encoding
+  - ignore the "-" option to accept `w3m -` as "read from stdin"
+  - new configure option --with-cafile to detect CA bundle file
+  - support auto-detection for configure --with-migemo
+  - add fuzzer for OSS-Fuzz
+  - add Italian translation
+  - add Swedish translation
+* bug fixes
+  - prevent index overflow and huge allocation due to Str, libwc, and table
+  - prevent integer overflow due to fontstat
+  - prevent StrStream memory leak
+  - prevent GC warnings of repeated allocation
+  - prevent buffer overflow in shiftAnchorPosition
+  - prevent buffer overflow READ when parsing Gopher URLs
+  - prevent buffer overflow in gotoLine and gotoRealLine
+  - prevent warnings when -Wnull-dereference, enabled by default
+  - prevent warnings when -Wall, enabled by default
+  - prevent warnings from Cppcheck
+  - avoid zero length arrays even when GCC
+  - fix fail to render over 32767 lines in a table cell
+  - disable `<section>` behaves as `<hr>`
+  - disable TLSv1.0 and TLSv1.1 by default
+  - mention a workaround for SSL error
+  - fix manipulation of ASN1_STRING
+  - don't include username in Referer
+  - don't set Referer when data URI scheme
+  - fix broken anchor with link number at EOL
+  - fix incorrect query string for `w3mman 7z`
+  - drop imlib2-config, use pkg-config
+  - improve named character references
+  - improve `<dl>` rendering
+  - prefer Imlib2 over GTK2 by default
+  - replace encodeB with base64_encode to encode null bytes
+  - wording fixes for configure --help
+
 Debian's w3m 0.5.3+git20210102
 
 * new features

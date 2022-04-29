@@ -116,6 +116,8 @@ name_from_address(char *str, int n)
     int l, space = TRUE;
 
     s = allocStr(str, -1);
+    if (s == NULL)
+	    return NULL;
     SKIP_BLANKS(s);
     if (*s == '<' && (p = strchr(s, '>'))) {
 	*p++ = '\0';
@@ -194,6 +196,8 @@ add_news_message(Str str, int index, char *date, char *name, char *subject,
     struct tm *tm;
 
     name = name_from_address(name, 16);
+    if (name == NULL)
+	    return; /* TODO(nrk): maybe print some error message ?? */
     t = mymktime(date);
     tm = localtime(&t);
     Strcat(str,

@@ -12,6 +12,7 @@
 #include "regex.h"
 #include <stdlib.h>
 #include <stddef.h>
+#include "rc.h"
 
 struct param_ptr {
     char *name;
@@ -850,7 +851,7 @@ create_option_search_table()
     }
 }
 
-struct param_ptr *
+static struct param_ptr *
 search_param(char *name)
 {
     size_t b, e, i;

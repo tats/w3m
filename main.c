@@ -18,6 +18,7 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
+#include "rc.h"
 #ifdef USE_M17N
 #include "wc.h"
 #include "wtf.h"
@@ -363,7 +364,7 @@ sig_chld(int signo)
 }
 #endif
 
-Str
+static Str
 make_optional_header_string(char *s)
 {
     char *p;
@@ -1886,7 +1887,7 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
     return -1;
 }
 
-void
+static void
 isrch(int (*func) (Buffer *, char *), char *prompt)
 {
     char *str;
@@ -1902,7 +1903,7 @@ isrch(int (*func) (Buffer *, char *), char *prompt)
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-void
+static void
 srch(int (*func) (Buffer *, char *), char *prompt)
 {
     char *str;

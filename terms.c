@@ -2059,7 +2059,7 @@ clrtoeol(void)
 }
 
 #ifdef USE_BG_COLOR
-void
+static void
 clrtoeol_with_bcolor(void)
 {
     int i, cli, cco;
@@ -2093,7 +2093,7 @@ clrtoeolx(void)
 }
 #endif				/* not USE_BG_COLOR */
 
-void
+static void
 clrtobot_eol(void (*clrtoeol) ())
 {
     int l, c;
@@ -2422,7 +2422,7 @@ bell(void)
     write1(7);
 }
 
-void
+static void
 skip_escseq(void)
 {
     int c;

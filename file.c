@@ -418,7 +418,7 @@ examineFile(char *path, URLFile *uf)
 
 #define S_IXANY	(S_IXUSR|S_IXGRP|S_IXOTH)
 
-int
+static int
 check_command(char *cmd, int auxbin_p)
 {
     static char *path = NULL;
@@ -938,7 +938,7 @@ checkHeader(Buffer *buf, char *field)
     return NULL;
 }
 
-char *
+static char *
 checkContentType(Buffer *buf)
 {
     char *p;
@@ -2750,7 +2750,7 @@ is_blank_line(char *line, int indent)
 }
 #endif
 
-void
+static void
 fillline(struct readbuffer *obuf, int indent)
 {
     push_spaces(obuf, 1, indent - obuf->pos);
@@ -4148,7 +4148,7 @@ feed_textarea(char *str)
     }
 }
 
-Str
+static Str
 process_hr(struct parsed_tag *tag, int width, int indent_width)
 {
     Str tmp = Strnew_charp("<nobr>");
@@ -6341,7 +6341,7 @@ file_feed(void)
     return s;
 }
 
-void
+static void
 HTMLlineproc3(Buffer *buf, InputStream stream)
 {
     _file_lp2 = stream;

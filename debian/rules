@@ -41,7 +41,7 @@ build-stamp:
 	dh_testdir
 	cd $(builddir) && dh_update_autotools_config
 	cd $(builddir) && LC_ALL=C CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" ./configure $(confargs)
-	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-Wall -g -DDEBIAN"
+	cd $(builddir) && LC_ALL=C $(MAKE) OPTS="-g"
 	cd $(builddir)/po && LC_ALL=C $(MAKE) update-gmo
 	touch build-stamp
 

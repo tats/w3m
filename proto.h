@@ -5,7 +5,7 @@
  *
  *   Created: Wed Feb 10 12:47:03 1999
  */
-extern int main(int argc, char **argv, char **envp);
+extern int main(int argc, char **argv);
 extern void nulcmd(void);
 extern void pushEvent(int cmd, void *data);
 extern MySignalHandler intTrap(SIGNAL_ARG);
@@ -544,6 +544,7 @@ extern void parseURL(char *url, ParsedURL *p_url, ParsedURL *current);
 extern void copyParsedURL(ParsedURL *p, const ParsedURL *q);
 extern void parseURL2(char *url, ParsedURL *pu, ParsedURL *current);
 extern Str parsedURL2Str(ParsedURL *pu);
+extern Str parsedURL2RefererStr(ParsedURL *pu);
 extern int getURLScheme(char **url);
 extern void init_stream(URLFile *uf, int scheme, InputStream stream);
 Str HTTPrequestMethod(HRequest *hr);
@@ -635,7 +636,6 @@ extern Str decodeMIME0(Str orgstr);
 #define decodeWord(ow,charset) decodeWord0(ow)
 #define decodeMIME(orgstr,charset) decodeMIME0(orgstr)
 #endif
-extern Str encodeB(char *a);
 extern int set_param_option(char *option);
 extern char *get_param_option(char *name);
 extern void init_rc(void);
@@ -671,6 +671,7 @@ extern void myExec(char *command);
 extern void mySystem(char *command, int background);
 extern Str myExtCommand(char *cmd, char *arg, int redirect);
 extern Str myEditor(char *cmd, char *file, int line);
+extern int is_localhost(const char *host);
 extern char *file_to_url(char *file);
 #ifdef USE_M17N
 extern char *url_unquote_conv(char *url, wc_ces charset);
@@ -828,3 +829,5 @@ extern void dispVer(void);
 void srand48(long);
 long lrand48(void);
 #endif
+
+extern Str base64_encode(const char *src, size_t len);

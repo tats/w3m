@@ -17,6 +17,7 @@
 #define GC_STR_H
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #ifdef __EMX__
 #define strcasecmp	stricmp
 #define strncasecmp	strnicmp
@@ -66,7 +67,10 @@ Str Strfgetall(FILE *);
 
 void Strgrow(Str s);
 
-#define Strcat_char(x,y) (((x)->length+1>=(x)->area_size)?Strgrow(x),0:0,(x)->ptr[(x)->length++]=(y),(x)->ptr[(x)->length]=0)
+#define STR_SIZE_MAX (INT_MAX / 32)
+#define Strcat_char(x,y) (((x)->length+1>=STR_SIZE_MAX)?0:(((x)->length+1>=(x)->area_size)?Strgrow(x),0:0,(x)->ptr[(x)->length++]=(y),(x)->ptr[(x)->length]=0))
+#define Strcatc(x,y) ((x)->ptr[(x)->length++]=(y))
+#define Strnulterm(x) ((x)->ptr[(x)->length]=0)
 #define Strcmp(x,y)                  strcmp((x)->ptr,(y)->ptr)
 #define Strcmp_charp(x,y)            strcmp((x)->ptr,(y))
 #define Strncmp(x,y,n)               strncmp((x)->ptr,(y)->ptr,(n))

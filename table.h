@@ -14,12 +14,12 @@
 #include "Str.h"
 
 #define MAX_TABLE 20		/* maximum nest level of table */
+#define MAX_TABLE_N_LIMIT 2000
 #define MAX_TABLE_N 20		/* maximum number of table in same level */
 
+#define MAXROW_LIMIT 32767
 #define MAXROW 50
 #define MAXCOL 256
-
-#define MAX_WIDTH 80
 
 #define BORDER_NONE 0
 #define BORDER_THIN 1
@@ -100,7 +100,7 @@ struct table {
     short minimum_width[MAXCOL];
     short fixed_width[MAXCOL];
     struct table_cell cell;
-    short *tabheight;
+    int *tabheight;
     struct table_in *tables;
     short ntable;
     short tables_size;

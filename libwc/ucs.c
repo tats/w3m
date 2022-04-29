@@ -29,6 +29,7 @@
 #include "map/ucs_isupper.map"
 #include "map/ucs_case.map"
 
+#define MAX_TAG_LEN (8 + 1 + 8)
 #define MAX_TAG_MAP 0x100
 static int n_tag_map = 0;
 static char *tag_map[ MAX_TAG_MAP ];
@@ -677,9 +678,9 @@ wc_ucs_put_tag(char *p)
 	if (!strcasecmp(p, tag_map[i]))
 	    return i;
     }
-    n_tag_map++;
-    if (n_tag_map == MAX_TAG_MAP)
+    if (n_tag_map + 1 >= MAX_TAG_MAP)
 	return 0;
+    n_tag_map++;
     tag_map[n_tag_map] = p;
     return n_tag_map;
 }
@@ -687,7 +688,7 @@ wc_ucs_put_tag(char *p)
 char *
 wc_ucs_get_tag(int ntag)
 {
-    if (ntag == 0 || ntag > n_tag_map)
+    if (ntag <= 0 || ntag > n_tag_map)
 	return NULL;
     return tag_map[ntag];
 }
@@ -701,11 +702,17 @@ wtf_push_ucs(Str os, wc_uint32 ucs, wc_status *st)
 	if (! WcOption.use_language_tag)
 	    return;
 	if (ucs == WC_C_LANGUAGE_TAG)
-	    st->tag = Strnew_size(4);
+	    if (st->tag)
+		Strclear(st->tag);
+	    else
+		st->tag = Strnew_size(MAX_TAG_LEN);
 	else if (ucs == WC_C_CANCEL_TAG) {
+	    if (st->tag)
+		Strfree(st->tag);
 	    st->tag = NULL;
 	    st->ntag = 0;
-	}  else if (st->tag && ucs >= WC_C_TAG_SPACE)
+	}  else if (st->tag && st->tag->length < MAX_TAG_LEN &&
+		    ucs >= WC_C_TAG_SPACE)
 	    Strcat_char(st->tag, (char)(ucs & 0x7f));
 	return;
     }

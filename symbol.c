@@ -181,7 +181,7 @@ push_symbol(Str str, char symbol, int width, int n)
 #endif
 	p = alt_symbol[(unsigned char)symbol % N_SYMBOL];
     for (i = 0; i < 2 && *p; i++, p++)
-	buf[i] = (*p == ' ') ? NBSP_CODE : *p;
+	buf[i] = (*p == ' ') ? (char)NBSP_CODE : *p;
 
     Strcat(str, Sprintf("<_SYMBOL TYPE=%d>", symbol));
     for (; n > 0; n--)

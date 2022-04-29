@@ -30,7 +30,7 @@ void
 pushValue(GeneralList *tl, void *s)
 {
     ListItem *it;
-    if (s == NULL)
+    if (s == NULL || tl == NULL || tl->nitem >= GENERAL_LIST_MAX)
 	return;
     it = newListItem(s, NULL, tl->last);
     if (tl->first == NULL) {
@@ -99,6 +99,9 @@ appendGeneralList(GeneralList *tl, GeneralList *tl2)
     if (tl && tl2) {
 	if (tl2->first) {
 	    if (tl->last) {
+		if (tl->nitem + tl2->nitem > GENERAL_LIST_MAX) {
+		    return tl;
+		}
 		tl->last->next = tl2->first;
 		tl2->first->prev = tl->last;
 		tl->last = tl2->last;

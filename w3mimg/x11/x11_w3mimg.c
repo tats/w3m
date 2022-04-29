@@ -698,8 +698,8 @@ static int
 x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 		   int *h)
 {
-    struct x11_info *xi;
 #if defined(USE_IMLIB)
+    struct x11_info *xi;
     ImlibImage *im;
 #elif defined(USE_IMLIB2)
     Imlib_Image im;

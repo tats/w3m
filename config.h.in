@@ -61,6 +61,7 @@
 #undef USE_DIGEST_AUTH
 #undef USE_SSL
 #undef USE_SSL_VERIFY
+#define DEF_CAFILE	"@DEF_CAFILE@"
 #undef USE_HELP_CGI
 #undef USE_EXTERNAL_URI_LOADER
 #undef USE_W3MMAILER
@@ -241,11 +242,13 @@ typedef RETSIGTYPE MySignalHandler;
 #define DEV_TTY_PATH	"/dev/tty"
 #define CGI_EXTENSION	".cgi"
 #endif
+#define BROTLI_CMDNAME "brotli"
 
 #define PATH_SEPARATOR	':'
 #define GUNZIP_NAME  "gunzip"
 #define BUNZIP2_NAME "bunzip2"
 #define INFLATE_NAME "inflate"
+#define BROTLI_NAME "brotli"
 
 #ifdef __MINGW32_VERSION
 #define SIGKILL SIGTERM

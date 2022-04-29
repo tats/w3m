@@ -119,7 +119,8 @@ unshiftHist(Hist *hist, char *ptr)
 {
     HistItem *item;
 
-    if (hist == NULL || hist->list == NULL)
+    if (hist == NULL || hist->list == NULL ||
+	hist->list->nitem >= HIST_LIST_MAX)
 	return NULL;
     item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
 				   (ListItem *)hist->list->first, NULL);
@@ -137,7 +138,8 @@ pushHist(Hist *hist, char *ptr)
 {
     HistItem *item;
 
-    if (hist == NULL || hist->list == NULL)
+    if (hist == NULL || hist->list == NULL ||
+	hist->list->nitem >= HIST_LIST_MAX)
 	return NULL;
     item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
 				   NULL, (ListItem *)hist->list->last);
@@ -157,7 +159,8 @@ pushHashHist(Hist *hist, char *ptr)
 {
     HistItem *item;
 
-    if (hist == NULL || hist->list == NULL)
+    if (hist == NULL || hist->list == NULL ||
+	hist->list->nitem >= HIST_LIST_MAX)
 	return NULL;
     item = getHashHist(hist, ptr);
     if (item) {

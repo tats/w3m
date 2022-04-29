@@ -123,7 +123,7 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
-int enable_inline_image;	/* 1 == mlterm OSC 5379, 2 == sixel */
+int enable_inline_image;
 
 static void
 fversion(FILE * f)
@@ -247,6 +247,9 @@ fusage(FILE * f, int err)
     fprintf(f, "    -4               IPv4 only (-o dns_order=4)\n");
     fprintf(f, "    -6               IPv6 only (-o dns_order=6)\n");
 #endif
+#ifdef USE_SSL
+    fprintf(f, "    -insecure        use insecure SSL config options\n");
+#endif
 #ifdef USE_MOUSE
     fprintf(f, "    -no-mouse        don't use mouse\n");
 #endif				/* USE_MOUSE */
@@ -268,10 +271,10 @@ fusage(FILE * f, int err)
     fprintf(f, "    -o opt=value     assign value to config option\n");
     fprintf(f, "    -show-option     print all config options\n");
     fprintf(f, "    -config file     specify config file\n");
+    fprintf(f, "    -debug           use debug mode (only for debugging)\n");
+    fprintf(f, "    -reqlog          write request logfile\n");
     fprintf(f, "    -help            print this usage message\n");
     fprintf(f, "    -version         print w3m version\n");
-    fprintf(f, "    -reqlog          write request logfile\n");
-    fprintf(f, "    -debug           DO NOT USE\n");
     if (show_params_p)
 	show_params(f);
     exit(err);
@@ -391,10 +394,15 @@ die_oom(size_t bytes)
 {
     fprintf(stderr, "Out of memory: %lu bytes unavailable!\n", (unsigned long)bytes);
     exit(1);
+    /*
+     * Suppress compiler warning: function might return no value
+     * This code is never reached.
+     */
+    return NULL;
 }
 
 int
-main(int argc, char **argv, char **envp)
+main(int argc, char **argv)
 {
     Buffer *newbuf = NULL;
     char *p;
@@ -421,6 +429,8 @@ main(int argc, char **argv, char **envp)
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
+    if (!getenv("GC_LARGE_ALLOC_WARN_INTERVAL"))
+	set_environ("GC_LARGE_ALLOC_WARN_INTERVAL", "30000");
     GC_INIT();
 #if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
     GC_set_oom_fn(die_oom);
@@ -449,6 +459,18 @@ main(int argc, char **argv, char **envp)
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
     BookmarkFile = NULL;
     config_file = NULL;
+
+    {
+	char hostname[HOST_NAME_MAX + 2];
+	if (gethostname(hostname, HOST_NAME_MAX + 2) == 0) {
+	    size_t hostname_len;
+	    /* Don't use hostname if it is truncated.  */
+	    hostname[HOST_NAME_MAX + 1] = '\0';
+	    hostname_len = strlen(hostname);
+	    if (hostname_len <= HOST_NAME_MAX && hostname_len < STR_SIZE_MAX)
+		HostName = allocStr(hostname, (int)hostname_len);
+	}
+    }
 
     /* argument search 1 */
     for (i = 1; i < argc; i++) {
@@ -692,10 +714,10 @@ main(int argc, char **argv, char **envp)
 	    }
 #endif
 	    else if (!strcmp("-ri", argv[i])) {
-	        enable_inline_image = 1;
+	        enable_inline_image = INLINE_IMG_OSC5379;
 	    }
 	    else if (!strcmp("-sixel", argv[i])) {
-		enable_inline_image = 2;
+		enable_inline_image = INLINE_IMG_SIXEL;
 	    }
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;
@@ -752,6 +774,22 @@ main(int argc, char **argv, char **envp)
 		displayTitleTerm = getenv("TERM");
 	    else if (!strncmp("-title=", argv[i], 7))
 		displayTitleTerm = argv[i] + 7;
+#ifdef USE_SSL
+	    else if (!strcmp("-insecure", argv[i])) {
+#ifdef OPENSSL_TLS_SECURITY_LEVEL
+		set_param_option("ssl_cipher=ALL:eNULL:@SECLEVEL=0");
+#else
+		set_param_option("ssl_cipher=ALL:eNULL");
+#endif
+#ifdef SSL_CTX_set_min_proto_version
+		set_param_option("ssl_min_version=all");
+#endif
+		set_param_option("ssl_forbid_method=");
+#ifdef USE_SSL_VERIFY
+		set_param_option("ssl_verify_server=0");
+#endif
+	    }
+#endif				/* USE_SSL */
 	    else if (!strcmp("-o", argv[i]) ||
 		     !strcmp("-show-option", argv[i])) {
 		if (!strcmp("-show-option", argv[i]) || ++i >= argc ||
@@ -767,7 +805,7 @@ main(int argc, char **argv, char **envp)
 		    usage();
 		}
 	    }
-	    else if (!strcmp("-dummy", argv[i])) {
+	    else if (!strcmp("-", argv[i]) || !strcmp("-dummy", argv[i])) {
 		/* do nothing */
 	    }
 	    else if (!strcmp("-debug", argv[i])) {
@@ -1041,6 +1079,10 @@ main(int argc, char **argv, char **envp)
 	    newbuf->search_header = search_header;
 	if (CurrentTab == NULL) {
 	    FirstTab = LastTab = CurrentTab = newTab();
+	    if (!FirstTab) {
+		fprintf(stderr, "%s\n","Can't allocated memory");
+		exit(1);
+	    }
 	    nTab = 1;
 	    Firstbuf = Currentbuf = newbuf;
 	}
@@ -1415,7 +1457,8 @@ escKeyProc(int c, int esc, unsigned char *map)
 	esc |= (CurrentKey & ~0xFFFF);
     }
     CurrentKey = esc | c;
-    w3mFuncList[(int)map[c]].func();
+    if (map)
+        w3mFuncList[(int)map[c]].func();
 }
 
 DEFUN(escmap, ESCMAP, "ESC map")
@@ -1775,15 +1818,11 @@ static int
 dispincsrch(int ch, Str buf, Lineprop *prop)
 {
     static Buffer sbuf;
-    static Line *currentLine;
-    static int pos;
     char *str;
     int do_next_search = FALSE;
 
     if (ch == 0 && buf == NULL) {
 	SAVE_BUFPOSITION(&sbuf);	/* search starting point */
-	currentLine = sbuf.currentLine;
-	pos = sbuf.pos;
 	return -1;
     }
 
@@ -1832,8 +1871,6 @@ dispincsrch(int ch, Str buf, Lineprop *prop)
 	arrangeCursor(Currentbuf);
 	srchcore(str, searchRoutine);
 	arrangeCursor(Currentbuf);
-	currentLine = Currentbuf->currentLine;
-	pos = Currentbuf->pos;
     }
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
     clear_mark(Currentbuf->currentLine);
@@ -2923,10 +2960,11 @@ loadLink(char *url, char *target, char *referer, FormList *request)
     base = baseURL(Currentbuf);
     if ((no_referer_ptr && *no_referer_ptr) ||
 	base == NULL ||
-	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI)
+	base->scheme == SCM_LOCAL || base->scheme == SCM_LOCAL_CGI ||
+	base->scheme == SCM_DATA)
 	referer = NO_REFERER;
     if (referer == NULL)
-	referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	referer = parsedURL2RefererStr(&Currentbuf->currentURL)->ptr;
     buf = loadGeneralFile(url, baseURL(Currentbuf), referer, flag, request);
     if (buf == NULL) {
 	char *emsg = Sprintf("Can't load %s", url)->ptr;
@@ -4221,10 +4259,11 @@ goURL0(char *prompt, int relative)
 	current = baseURL(Currentbuf);
 	if ((no_referer_ptr && *no_referer_ptr) ||
 	    current == NULL ||
-	    current->scheme == SCM_LOCAL || current->scheme == SCM_LOCAL_CGI)
+	    current->scheme == SCM_LOCAL || current->scheme == SCM_LOCAL_CGI ||
+	    current->scheme == SCM_DATA)
 	    referer = NO_REFERER;
 	else
-	    referer = parsedURL2Str(&Currentbuf->currentURL)->ptr;
+	    referer = parsedURL2RefererStr(&Currentbuf->currentURL)->ptr;
 	url = url_encode(url, current, Currentbuf->document_charset);
     }
     else {
@@ -5961,7 +6000,7 @@ deleteFiles()
     }
     while ((f = popText(fileToDelete)) != NULL) {
 	unlink(f);
-	if (enable_inline_image == 2 && strcmp(f+strlen(f)-4, ".gif") == 0) {
+	if (enable_inline_image == INLINE_IMG_SIXEL && strcmp(f+strlen(f)-4, ".gif") == 0) {
 	    Str firstframe = Strnew_charp(f);
 	    Strcat_charp(firstframe, "-1");
 	    unlink(firstframe->ptr);
@@ -6447,8 +6486,8 @@ followTab(TabBuffer * tab)
 	Buffer *c, *p;
 
 	c = Currentbuf;
-	p = prevBuffer(c, buf);
-	p->nextBuffer = NULL;
+	if ((p = prevBuffer(c, buf)))
+	    p->nextBuffer = NULL;
 	Firstbuf = buf;
 	deleteTab(CurrentTab);
 	CurrentTab = tab;
@@ -6488,8 +6527,8 @@ tabURL0(TabBuffer * tab, char *prompt, int relative)
 	Buffer *c, *p;
 
 	c = Currentbuf;
-	p = prevBuffer(c, buf);
-	p->nextBuffer = NULL;
+	if ((p = prevBuffer(c, buf)))
+	    p->nextBuffer = NULL;
 	Firstbuf = buf;
 	deleteTab(CurrentTab);
 	CurrentTab = tab;

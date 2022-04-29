@@ -17,7 +17,7 @@ AC_DEFUN([AC_W3M_COLOR],
 [AC_SUBST(USE_COLOR)
 AC_MSG_CHECKING(if color escape sequence for kterm/pxvt is enabled)
 AC_ARG_ENABLE(color,
- [  --disable-color		disable color for vt100 terminal],,
+ [  --disable-color         disable color for VT100 terminal],,
  [enable_color="yes"])
 test x"$enable_color" = xyes && AC_DEFINE(USE_COLOR)
 AC_MSG_RESULT($enable_color)])
@@ -27,9 +27,9 @@ AC_MSG_RESULT($enable_color)])
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_ANSI_COLOR],
 [AC_SUBST(USE_ANSI_COLOR)
-AC_MSG_CHECKING(if ansi color escape sequence support is enabled)
+AC_MSG_CHECKING(if ANSI color escape sequence support is enabled)
 AC_ARG_ENABLE(ansi_color,
- [   --disable-ansi-color		disable ansi color escape sequence],,
+ [   --disable-ansi-color   disable ANSI color escape sequence],,
  [enable_ansi_color="$enable_color"])
  test x"$enable_ansi_color" = xyes && AC_DEFINE(USE_ANSI_COLOR)
  AC_MSG_RESULT($enable_ansi_color)])
@@ -41,7 +41,7 @@ AC_DEFUN([AC_W3M_BG_COLOR],
 [AC_SUBST(USE_BG_COLOR)
 AC_MSG_CHECKING(if background color support is enabled)
 AC_ARG_ENABLE(bgcolor,
- [   --disable-bgcolor		disable to set background color],,
+ [   --disable-bgcolor      disable to set background color],,
  [enable_bgcolor="$enable_color"])
  test x"$enable_bgcolor" = xyes && AC_DEFINE(USE_BG_COLOR)
 AC_MSG_RESULT($enable_bgcolor)])
@@ -53,7 +53,7 @@ AC_DEFUN([AC_W3M_MENU],
 [AC_SUBST(USE_MENU)
 AC_MSG_CHECKING(if popup menu is enabled)
 AC_ARG_ENABLE(menu,
- [  --disable-menu		disable popup menu],,
+ [  --disable-menu          disable popup menu],,
  [enable_menu="yes"])
  test x"$enable_menu" = xyes && AC_DEFINE(USE_MENU)
  AC_MSG_RESULT($enable_menu)])
@@ -65,7 +65,7 @@ AC_DEFUN([AC_W3M_MOUSE],
 [AC_SUBST(USE_MOUSE)
 AC_MSG_CHECKING(if mouse operation enabled)
 AC_ARG_ENABLE(mouse,
- [  --disable-mouse		disable mouse operation],,
+ [  --disable-mouse         disable mouse operation],,
  [enable_mouse="yes"])
 test x"$enable_mouse" = xyes && AC_DEFINE(USE_MOUSE)
 AC_MSG_RESULT($enable_mouse)])
@@ -77,7 +77,7 @@ AC_DEFUN([AC_W3M_COOKIE],
 [AC_SUBST(USE_COOKIE)
 AC_MSG_CHECKING(if cookie is enabled)
 AC_ARG_ENABLE(cookie,
- [  --disable-cookie		disable cookie],,
+ [  --disable-cookie        disable cookie],,
  [enable_cookie="yes"])
 test x"$enable_cookie" = xyes && AC_DEFINE(USE_COOKIE)
 AC_MSG_RESULT($enable_cookie)])
@@ -89,7 +89,7 @@ AC_DEFUN([AC_W3M_DICT],
 [AC_SUBST(USE_DICT)
 AC_MSG_CHECKING(if dictionary lookup is enabled)
 AC_ARG_ENABLE(dict,
- [  --disable-dict		disable dictionary lookup (see README.dict)],,
+ [  --disable-dict          disable dictionary lookup],,
  [enable_dict="yes"])
  test x"$enable_dict" = xyes && AC_DEFINE(USE_DICT)
  AC_MSG_RESULT($enable_dict)])
@@ -101,7 +101,7 @@ AC_DEFUN([AC_W3M_HISTORY],
 [AC_SUBST(USE_HISTORY)
 AC_MSG_CHECKING(if URL history is enabled)
 AC_ARG_ENABLE(history,
- [  --disable-history		disable URL history],,
+ [  --disable-history       disable URL history],,
  [enable_history="yes"])
  test x"$enable_history" = xyes && AC_DEFINE(USE_HISTORY)
  AC_MSG_RESULT($enable_history)])
@@ -113,7 +113,7 @@ AC_DEFUN([AC_W3M_NNTP],
 [AC_SUBST(USE_NNTP)
  AC_MSG_CHECKING(if nntp is enabled)
  AC_ARG_ENABLE(nntp,
-  [  --disable-nntp		disable NNTP],,
+  [  --disable-nntp          disable NNTP],,
   [enable_nntp="yes"])
  test x"$enable_nntp" = xyes && AC_DEFINE(USE_NNTP)
  AC_MSG_RESULT($enable_nntp)])
@@ -123,9 +123,9 @@ AC_DEFUN([AC_W3M_NNTP],
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_GOPHER],
 [AC_SUBST(USE_GOPHER)
- AC_MSG_CHECKING(if gopher is enabled)
+ AC_MSG_CHECKING(if Gopher is enabled)
  AC_ARG_ENABLE(gopher,
-  [  --disable-gopher		disable GOPHER],,
+  [  --disable-gopher        disable Gopher],,
   [enable_gopher="yes"])
  test x"$enable_gopher" = xyes &&  AC_DEFINE(USE_GOPHER)
  AC_MSG_RESULT($enable_gopher)])
@@ -147,7 +147,7 @@ AC_SUBST(POLANG)
 WCTARGET=""; WCCFLAGS=""; wcinclude=""; wclib=""
 AC_MSG_CHECKING(if m17n support is enabled)
 AC_ARG_ENABLE(m17n,
- [  --disable-m17n		do not use m17n],,
+ [  --disable-m17n          do not use m17n],,
  [enable_m17n="yes"])
 AC_MSG_RESULT($enable_m17n)
 if test x"$enable_m17n" = xno; then
@@ -165,9 +165,9 @@ else
  WCCFLAGS='-I$(srcdir) -I$(srcdir)/..'
  wcinclude='-I$(srcdir)/libwc'
  wclib="-L./libwc -lwc"
- AC_MSG_CHECKING(if unicode support is enabled)
+ AC_MSG_CHECKING(if Unicode support is enabled)
  AC_ARG_ENABLE(unicode,
-  [   --disable-unicode		do not use unicode],,
+  [   --disable-unicode      do not use Unicode],,
   [enable_unicode="yes"])
  AC_MSG_RESULT($enable_unicode)
  if test x"$enable_m17n" = xyes; then
@@ -184,7 +184,7 @@ else
  fi
  AC_MSG_CHECKING(if message l10n)
  AC_ARG_ENABLE(messagel10n,
-   [   --enable-messagel10n=LL	message l10n instead of NLS],,
+   [   --enable-messagel10n=LL  message l10n instead of Native Language Support],,
    [enable_messagel10n="no"])
  if test x$enable_messagel10n = xyes; then
   enable_messagel10n="ja";
@@ -198,7 +198,7 @@ else
  fi
  AC_MSG_CHECKING(if japanese support is enabled)
  AC_ARG_ENABLE(japanese,
-   [   --enable-japanese=CODE	support Japanese CODE=(S|E|J|U)],,
+   [   --enable-japanese=CODE support Japanese CODE=(S|E|J|U)],,
    [enable_japanese="no"])
  AC_MSG_RESULT($enable_japanese)
  if test x"$enable_japanese" = xno; then
@@ -215,7 +215,7 @@ else
  display_charset=$charset
  AC_MSG_CHECKING(which charset is used for display)
  AC_ARG_WITH(charset,
-  [  --with-charset=CHARSET],
+  [  --with-charset=CHARSET  charset for display [[UTF-8]]],
   [test x"with_charset" = xyes || display_charset="$with_charset"])
  AC_MSG_RESULT($display_charset)
  display_charset=`awk '$[1] == "'$display_charset'" {print $[2]}' $srcdir/charset-list`
@@ -266,7 +266,7 @@ AC_DEFUN([AC_W3M_KEYMAP],
 [AC_SUBST(KEYMAP_FILE)
  AC_MSG_CHECKING(default keymap)
  AC_ARG_ENABLE(keymap,
-  [  --enable-keymap[=w3m|lynx]	default keybind style(w3m or lynx)],,
+  [  --enable-keymap=STYLE   default keybind style (w3m or lynx) [[w3m]]],,
   [enable_keymap="w3m"])
  AC_MSG_RESULT($enable_keymap)
  case x"$enable_keymap" in
@@ -289,15 +289,36 @@ AC_DEFUN([AC_W3M_KEYMAP],
 AC_DEFUN([AC_W3M_MIGEMO],
 [AC_SUBST(USE_MIGEMO)
  AC_SUBST(DEF_MIGEMO_COMMAND)
- migemo_command="migemo -t egrep /usr/local/share/migemo/migemo-dict"
  AC_MSG_CHECKING(if migemo is supported with)
  AC_ARG_WITH(migemo,
-  [  --with-migemo=MIGEMO_COMMAND	migemo command],
-  [test x"$with_migemo" = xyes || migemo_command="$with_migemo"])
+  [  --with-migemo[[=COMMAND]] migemo/cmigemo command and options [[guessed]]],
+  [test x"$with_migemo" = xyes || migemo_command="$with_migemo"],
+  migemo_command=no)
+ if test x"$with_migemo" = xyes; then
+  if command -v migemo >/dev/null 2>&1; then
+   migemo_command="migemo -t egrep"
+   for f in \
+    /usr/share/migemo/migemo-dict \
+    /usr/local/share/migemo/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  else
+   migemo_command="cmigemo -q -d"
+   for f in \
+    /usr/local/share/migemo/utf-8/migemo-dict \
+    /usr/local/share/cmigemo/utf-8/migemo-dict \
+    /usr/share/migemo/utf-8/migemo-dict \
+    /usr/share/cmigemo/utf-8/migemo-dict; do
+    if test -f "$f" -a -r "$f"; then break; fi
+   done
+  fi
+  migemo_command="$migemo_command $f"
+ fi
  if test "${with_migemo+set}" = set -a "$with_migemo" != "no"; then
    AC_DEFINE(USE_MIGEMO)
  fi
  AC_MSG_RESULT($migemo_command)
+ if test x"$migemo_command" = xno; then migemo_command=""; fi
  AC_DEFINE_UNQUOTED(DEF_MIGEMO_COMMAND, "$migemo_command")])
 #
 # ----------------------------------------------------------------
@@ -308,7 +329,7 @@ AC_DEFUN([AC_W3M_EDITOR],
 w3m_editor="/usr/bin/vi"
 AC_MSG_CHECKING(which editor is used by default)
 AC_ARG_WITH(editor,
- [  --with-editor=EDITOR		default editor (/usr/bin/vi)],
+ [  --with-editor=EDITOR    default editor [[/usr/bin/vi]]],
  [w3m_editor="$with_editor"])
 AC_MSG_RESULT($w3m_editor)
 AC_DEFINE_UNQUOTED(DEF_EDITOR, "$w3m_editor")])
@@ -321,7 +342,7 @@ AC_DEFUN([AC_W3M_MAILER],
 w3m_mailer="/usr/bin/mail"
 AC_MSG_CHECKING(which mailer is used by default)
 AC_ARG_WITH(mailer,
- [  --with-mailer=MAILER		default mailer (/usr/bin/mail)],
+ [  --with-mailer=MAILER    default mailer [[/usr/bin/mail]]],
  [w3m_mailer="$with_mailer"])
 AC_MSG_RESULT($w3m_mailer)
 AC_DEFINE_UNQUOTED(DEF_MAILER, "$w3m_mailer")])
@@ -334,7 +355,7 @@ AC_DEFUN([AC_W3M_EXT_BROWSER],
 w3m_browser="/usr/bin/firefox"
 AC_MSG_CHECKING(which external browser is used by default)
 AC_ARG_WITH(browser,
- [  --with-browser=BROWSER	default browser (/usr/bin/firefox)],
+ [  --with-browser=BROWSER  default browser [[/usr/bin/firefox]]],
  [w3m_browser="$with_browser"])
 AC_MSG_RESULT($w3m_browser)
 AC_DEFINE_UNQUOTED(DEF_EXT_BROWSER, "$w3m_browser")])
@@ -346,7 +367,7 @@ AC_DEFUN([AC_W3M_HELP_CGI],
 [AC_SUBST(USE_HELP_CGI)
  AC_MSG_CHECKING(if help cgi is enabled)
  AC_ARG_ENABLE(help_cgi,
-  [  --disable-help-cgi		disable help cgi],,
+  [  --disable-help-cgi      disable help cgi],,
   [enable_help_cgi="yes"])
  test x"$enable_help_cgi" = xyes && AC_DEFINE(USE_HELP_CGI)
  AC_MSG_RESULT($enable_help_cgi)])
@@ -358,7 +379,7 @@ AC_DEFUN([AC_W3M_EXTERNAL_URI_LOADER],
 [AC_SUBST(USE_EXTERNAL_URI_LOADER)
  AC_MSG_CHECKING(if external URI loader is enabled)
  AC_ARG_ENABLE(external_uri_loader,
- [  --disable-external-uri-loader	disable external URI loader],,
+ [  --disable-external-uri-loader  disable external URI loader],,
  [enable_external_uri_loader="yes"])
  test x"$enable_external_uri_loader" = xyes && AC_DEFINE(USE_EXTERNAL_URI_LOADER)
  AC_MSG_RESULT($enable_external_uri_loader)])
@@ -370,7 +391,7 @@ AC_DEFUN([AC_W3M_W3MMAILER],
 [AC_SUBST(USE_W3MMAILER)
  AC_MSG_CHECKING(if w3mmail is used)
  AC_ARG_ENABLE(w3mmailer,
- [   --disable-w3mmailer		disable w3mmailer],,
+ [  --disable-w3mmailer     disable w3mmailer],,
  [enable_w3mmailer="$enable_external_uri_loader"])
  test x"$enable_external_uri_loader" = xno && enable_w3mmailer=no
  test x"$enable_w3mmailer" = xyes && AC_DEFINE(USE_W3MMAILER)
@@ -399,9 +420,9 @@ AC_DEFUN([AC_W3M_EXTLIBS],
 AC_DEFUN([AC_W3M_TERMLIB],
 [AC_MSG_CHECKING(terminal library)
 AC_ARG_WITH(termlib,
- [  --with-termlib[=LIBS]		terminal library
-				LIBS is space separated list of:
-				  terminfo mytinfo termcap tinfo ncurses curses],,
+ [  --with-termlib[[=LIBS]]   terminal library [[guessed]]
+                           LIBS may be space separated:
+                            terminfo mytinfo termcap tinfo ncurses curses],,
  [with_termlib="yes"])
  AC_MSG_RESULT($with_termlib)
  test x"$with_termlib" = xyes && with_termlib="terminfo mytinfo termlib termcap tinfo ncurses curses"
@@ -417,8 +438,8 @@ AC_DEFUN([AC_W3M_GC],
 [AC_MSG_CHECKING(GC library exists)
 AC_SUBST(LIBGC)
 AC_ARG_WITH(gc,
- [  --with-gc[=PREFIX]	  	libgc PREFIX],
- [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without gc])],
+ [  --with-gc[[=PREFIX]]      GC library/header location [[guessed]]],
+ [test x"$with_gc" = xno && AC_MSG_ERROR([You can not build w3m without GC])],
  [with_gc="yes"])
  AC_MSG_RESULT($with_gc)
  test x"$with_gc" = xyes && with_gc="/usr /usr/local ${HOME}"
@@ -470,9 +491,9 @@ AC_ARG_WITH(gc,
 AC_DEFUN([AC_W3M_SSL_DIGEST_AUTH],
 [AC_SUBST(USE_SSL)
 AC_SUBST(USE_SSL_VERIFY)
-AC_MSG_CHECKING(if SSL is suported)
+AC_MSG_CHECKING(if SSL is supported)
 AC_ARG_WITH(ssl,
- [  --with-ssl[=PREFIX]		support https protocol],,
+ [  --with-ssl[[=PREFIX]]     SSL library/header location [[guessed]]],,
  [with_ssl="yes"])
 AC_MSG_RESULT($with_ssl)
 if test x"$with_ssl" != xno; then
@@ -502,18 +523,41 @@ if test x"$with_ssl" != xno; then
 
   if test x"$w3m_ssl" = xfound; then
     AC_DEFINE(USE_SSL)
-    AC_MSG_CHECKING(if SSL certificate verify is enabled)
+    AC_MSG_CHECKING(if SSL certificate verification is enabled)
     AC_ARG_ENABLE(sslverify,
-      [   --disable-sslverify		verify SSL certificate],,
+      [  --disable-sslverify     disable SSL certificate verification],,
       [enable_sslverify="yes"])
     test x"$enable_sslverify" = xyes && AC_DEFINE(USE_SSL_VERIFY)
     AC_MSG_RESULT($enable_sslverify)
   fi
 fi
+AC_SUBST(DEF_CAFILE)
+w3m_cafile=""
+if test x"$enable_sslverify" = xyes; then
+  AC_MSG_CHECKING(for CA file location)
+  AC_ARG_WITH(cafile,
+  [   --with-cafile[[=CAFILE]] CA file to verify SSL certificate [[guessed]]],,
+  [with_cafile=no])
+  if test x"$with_cafile" = xyes; then
+    for f in /etc/ssl/certs/ca-certificates.crt \
+      /etc/pki/tls/certs/ca-bundle.crt \
+      /etc/ssl/ca-bundle.pem \
+      /usr/ssl/certs/ca-bundle.crt \
+      /usr/local/share/certs/ca-root-nss.crt \
+      /etc/ssl/cert.pem \
+      /etc/certs/ca-certificates.crt; do
+      if test -f "$f" -a -r "$f"; then w3m_cafile="$f"; break; fi
+    done
+  elif test x"$with_cafile" != xno; then
+    w3m_cafile="$with_cafile"
+  fi
+  AC_MSG_RESULT($w3m_cafile)
+fi
+AC_DEFINE_UNQUOTED(DEF_CAFILE, "$w3m_cafile")
 AC_SUBST(USE_DIGEST_AUTH)
 AC_MSG_CHECKING(if digest auth is enabled)
 AC_ARG_ENABLE(digest_auth,
- [  --disable-digest-auth		disable digest auth],,
+ [  --disable-digest-auth   disable digest auth],,
  [enable_digest_auth="yes"])
 if test x"$enable_digest_auth" = xyes -a x"$w3m_ssl" = xfound; then
   AC_DEFINE(USE_DIGEST_AUTH)
@@ -530,7 +574,7 @@ AC_DEFUN([AC_W3M_ALARM],
 [AC_SUBST(USE_ALARM)
  AC_MSG_CHECKING(if alarm is enabled)
  AC_ARG_ENABLE(alarm,
- [  --disable-alarm		disable alarm],,
+ [  --disable-alarm         disable alarm],,
  [enable_alarm="yes"])
  AC_MSG_RESULT($enable_alarm)
  if test x"$enable_alarm" = xyes; then
@@ -590,10 +634,8 @@ AC_DEFUN([AC_W3M_IMAGE],
  AC_SUBST(IMGWINLDFLAGS)
  AC_MSG_CHECKING(if image is enabled)
  AC_ARG_ENABLE(image,
- [  --enable-image[=DEVS]		enable inline image handler for DEVS
-				 DEVS may be comma separeted: x11,fb,fb+s,win
-				 default: autodetected.
-				 'no' means disable inline image],,
+ [  --enable-image[[=DEVS]]   inline image handler [[guessed]]
+                           DEVS may be comma separated: x11,fb,fb+s,win],,
  [enable_image="yes"])
  AC_MSG_RESULT($enable_image)
  if test x"$enable_image" != xno; then
@@ -627,10 +669,9 @@ AC_DEFUN([AC_W3M_IMAGE],
   AC_DEFINE(USE_IMAGE)
   AC_MSG_CHECKING(image library)
   AC_ARG_WITH(imagelib,
-   [  --with-imagelib=IMAGELIBS		image library
-				 IMAGELIBS may be space separeted list of: 
-				    gtk2 gdk-pixbuf imlib imlib2],,
-
+   [  --with-imagelib[[=LIBS]]  image library [[guessed]]
+                           LIBS may be space separated:
+                            gtk2 gdk-pixbuf imlib imlib2],,
    [with_imagelib="yes"])
   if test x"$with_imagelib" = xyes; then
     with_imagelib="gtk2 gdk-pixbuf imlib imlib2"
@@ -652,9 +693,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      with_imlib2="yes"
      if test x"$PKG_CONFIG" = x; then
        PKG_CONFIG=pkg-config
-     fi
-     if test x"$IMLIB2_CONFIG" = x; then
-       IMLIB2_CONFIG=imlib2-config
      fi;;
    gdk-pixbuf)
      with_gdkpixbuf="yes"
@@ -695,13 +733,20 @@ AC_DEFUN([AC_W3M_IMAGE],
   fi
   if test x"$with_imlib2" = xyes; then
    AC_W3M_CHECK_VER([Imlib2],
-	[`$IMLIB2_CONFIG --version 2>/dev/null`],
+	[`$PKG_CONFIG --modversion imlib2 2>/dev/null`],
 	1, 0, 5,
 	[have_imlib2="yes"],
 	[have_imlib2="no"])
   fi
   if test x"$x11" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     AC_DEFINE(USE_W3MIMG_X11)
+     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
+     IMGTARGETS="x11"    
+     AC_DEFINE(USE_IMLIB2)
+     IMGX11CFLAGS="`${PKG_CONFIG} --cflags imlib2`"
+     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_X11)
      IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
      IMGTARGETS="x11"    
@@ -724,19 +769,20 @@ AC_DEFUN([AC_W3M_IMAGE],
      IMGX11CFLAGS="`${IMLIB_CONFIG} --cflags`"
      IMGX11LDFLAGS="`${IMLIB_CONFIG} --libs`"
      IMGTARGETS="x11"    
-   elif test x"$have_imlib2" = xyes; then
-     AC_DEFINE(USE_W3MIMG_X11)
-     IMGOBJS="$IMGOBJS x11/x11_w3mimg.o"
-     IMGTARGETS="x11"    
-     AC_DEFINE(USE_IMLIB2)
-     IMGX11CFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGX11LDFLAGS="-lX11 `${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with X11 support])
    fi
   fi
   if test x"$fb" = xyes; then
-   if test x"$have_gtk2" = xyes; then
+   if test x"$have_imlib2" = xyes; then
+     AC_DEFINE(USE_W3MIMG_FB)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGTARGETS="${IMGTARGETS} fb"
+     AC_DEFINE(USE_IMLIB2)
+     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
+     IMGFBCFLAGS="`${PKG_CONFIG} --cflags imlib2`"
+     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
+   elif test x"$have_gtk2" = xyes; then
      AC_DEFINE(USE_W3MIMG_FB)
      IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
      IMGTARGETS="${IMGTARGETS} fb"
@@ -751,14 +797,6 @@ AC_DEFUN([AC_W3M_IMAGE],
      AC_DEFINE(USE_GDKPIXBUF)
      IMGFBCFLAGS="`${GDKPIXBUF_CONFIG} --cflags`"
      IMGFBLDFLAGS="`${GDKPIXBUF_CONFIG} --libs`"
-   elif test x"$have_imlib2" = xyes; then
-     AC_DEFINE(USE_W3MIMG_FB)
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGTARGETS="${IMGTARGETS} fb"
-     AC_DEFINE(USE_IMLIB2)
-     IMGOBJS="$IMGOBJS fb/fb_w3mimg.o fb/fb.o fb/fb_img.o"
-     IMGFBCFLAGS="`${IMLIB2_CONFIG} --cflags`"
-     IMGFBLDFLAGS="`${PKG_CONFIG} --libs imlib2`"
    else
      AC_MSG_WARN([unable to build w3mimgdisplay with FB support])
    fi
@@ -786,9 +824,9 @@ AC_DEFUN([AC_W3M_IMAGE],
 # ----------------------------------------------------------------
 AC_DEFUN([AC_W3M_XFACE],
 [AC_SUBST(USE_XFACE)
- AC_MSG_CHECKING(if xface is enabled)
+ AC_MSG_CHECKING(if X-Face is enabled)
  AC_ARG_ENABLE(xface,
-  [   --disable-xface		disable xface support],,
+  [   --disable-xface        disable X-Face support],,
   [enable_xface="$enable_image"])
  test x"$enable_xface" = xyes && AC_DEFINE(USE_XFACE)
  AC_MSG_RESULT($enable_xface)
@@ -802,7 +840,7 @@ AC_DEFUN([AC_W3M_XFACE],
 AC_DEFUN([AC_W3M_IPv6],
 [AC_MSG_CHECKING(if IPv6 support is enabled)
 AC_ARG_ENABLE(ipv6,
- [  --disable-ipv6		disable IPv6],,
+ [  --disable-ipv6          disable IPv6],,
  [enable_ipv6="yes"])
 AC_MSG_RESULT($enable_ipv6)
 

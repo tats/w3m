@@ -532,7 +532,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		    !strcasecmp(frame.body->type, "text/plain")) {
 		    Str tmp;
 		    fprintf(f1, "<pre>\n");
-		    while ((tmp = StrmyUFgets(&f2))->length) {
+		    while ((tmp = StrmyUFgets(&f2)) && tmp->length) {
 			tmp = convertLine(NULL, tmp, HTML_MODE, &charset,
 					  doc_charset);
 			fprintf(f1, "%s", html_quote(tmp->ptr));
@@ -549,7 +549,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		    do {
 			if (*p == '\0') {
 			    Str tmp = StrmyUFgets(&f2);
-			    if (tmp->length == 0)
+			    if (!tmp || tmp->length == 0)
 				break;
 			    tmp = convertLine(NULL, tmp, HTML_MODE, &charset,
 					      doc_charset);

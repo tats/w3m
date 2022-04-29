@@ -181,7 +181,7 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 }
 
 int
-main(int argc, char *argv[], char **envp)
+main(void)
 {
     extern char *getenv();
     char *p;

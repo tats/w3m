@@ -426,11 +426,13 @@ fb_frame_new(int w, int h, int n)
 
     for (i = 0; i < n; i++) {
 	frame[i] = fb_image_new(w, h);
+	if (frame[i] == NULL) {
+	    error = 1;
+	    break;
+	}
 	frame[i]->num = n;
 	frame[i]->id = i;
 	frame[i]->delay = 1000;
-	if (frame[i] == NULL)
-	    error = 1;
     }
 
     if (error) {

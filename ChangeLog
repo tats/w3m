@@ -1,3 +1,10 @@
+2022-04-29  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS for w3m 0.5.3+git20220429.
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20220109.1.
+
 2022-04-25  NRK  <nrk@disroot.org>
 
 	Cppcheck fixes

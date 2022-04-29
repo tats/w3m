@@ -24,7 +24,8 @@ Multi-Arch: foreign
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Recommends: ca-certificates
 Provides: www-browser
-Suggests: bzip2,
+Suggests: brotli,
+          bzip2,
           cmigemo,
           dict,
           dict-wn,

@@ -1,3 +1,29 @@
+w3m (0.5.3+git20220429-1) unstable; urgency=medium
+
+  * Update config options
+  * Move bzip2 to Suggests
+  * Add brotli to Suggests
+  * Add compface to Suggests
+  * Simplify configure options
+  * Remove unneeded compile options
+  * Drop old config file handling (closes: #996099)
+  * Remove empty maintainer scripts
+  * Replace mime-support with media-types and mailcap in Suggests
+    (closes: #1009766)
+  * Update debian/copyright
+  * Update Build-Depends with build profile annotations (closes: #870026)
+  * Drop debian/patches
+  * Update Standards-Version to 4.6.0
+  * New upstream version 0.5.3+git20220429
+    - Mention -insecure option as a workaround for SSL error
+      (closes: #900984, #934493, #953045)
+    - Prevent GC warnings of repeated allocation
+      (closes: #746701, #832407, #862382)
+    - Fix fail to render over 32767 lines in a table cell (closes: #838952)
+    - Updated German translation (closes: #1003936)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Fri, 29 Apr 2022 11:55:11 +0900
+
 w3m (0.5.3+git20210102-6) unstable; urgency=medium
 
   * Update 030_str-overflow.patch to avoid zero size allocation in Str.c

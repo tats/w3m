@@ -7935,7 +7935,7 @@ getshell(char *cmd)
 Buffer *
 getpipe(char *cmd)
 {
-    FILE *f, *popen(const char *, const char *);
+    FILE *f;
     Buffer *buf;
 
     if (cmd == NULL || *cmd == '\0')
@@ -7944,6 +7944,10 @@ getpipe(char *cmd)
     if (f == NULL)
 	return NULL;
     buf = newBuffer(INIT_BUFFER_WIDTH);
+    if (buf == NULL) {
+	pclose(f);
+	return NULL;
+    }
     buf->pagerSource = newFileStream(f, (void (*)())pclose);
     buf->filename = cmd;
     buf->buffername = Sprintf("%s %s", PIPEBUFFERNAME,

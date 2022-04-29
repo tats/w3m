@@ -1,3 +1,672 @@
+2022-04-29  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Update NEWS for w3m 0.5.3+git20220429.
+
+	* config.guess, config.sub:
+	Update config.* with autotools-dev 20220109.1.
+
+2022-04-25  NRK  <nrk@disroot.org>
+
+	Cppcheck fixes
+	Origin: https://github.com/tats/w3m/pull/231
+	* regex.c: check bound _before_ making access.
+	* main.c: ensure map isn't NULL.
+	* Str.c: properly close va_list.
+
+2022-04-19  Rene Kita  <mail@rkta.de>
+
+	Fix some more warnings
+	Origin: https://github.com/tats/w3m/pull/230
+	* w3mimg/x11/x11_w3mimg.c: Fix a warning about an unused variable.
+	* libwc/wtf.c: Cast away a warning.
+
+	Fix all warnings when building with -Wnull-dereference
+	Origin: https://github.com/tats/w3m/pull/229
+	* Makefile.in: Enable -Wnull-dereference by default.
+	* main.c: Exit if we cannot allocate a new tab during start.
+	* main.c: Fix potential null dereference.
+	* file.c: Fix potential null dereference.
+	* etc.c: Fix potential null dereference.
+	* file.c, frame.c, ftp.c, news.c:
+	Check return value of Str... functions.
+	* w3mimg/fb/fb_imlib2.c: Fix potential null pointer dereference.
+	* w3mimg/fb/fb.c: Check for NULL before dereferencing the pointer.
+	* buffer.c: Do not call fclose() on a NULL pointer.
+	* file.c: Check for NULL before dereferencing a pointer.
+	* file.c: Check for NULL before dereferencing a pointer.
+	* news.c: Remove null pointer dereference.
+
+	* file.c: Fix broken anchor with link number at EOL.
+	Origin: https://github.com/tats/w3m/pull/227
+
+2022-04-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Allow building without terminal library.
+	This reverts commit 0d3416e0c250a4f08206967634fb641e9c8e008c.
+	cf. https://github.com/tats/w3m/pull/221
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=46629
+
+	* configure, configure.ac: Allow building without Perl.
+	This reverts commit a0c8de3f3fe0178d655af54737e50168586f87a3.
+	cf. https://github.com/tats/w3m/pull/221
+
+	* acinclude.m4, configure: Do not reject FreeBSD framebuffer.
+	This reverts commit cb3118b389b99eff001212c0d27a39f78c615a03.
+	cf. https://github.com/tats/w3m/pull/221
+
+2022-04-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* proto.h: Remove unused encodeB declaration.
+
+	* table.h: Remove unused MAX_WIDTH.
+
+	* ChangeLog, gitlog2changelog: Prefer https for GNU URLs.
+
+2022-04-09  Rene Kita  <mail@rkta.de>
+
+	Fix all reported warnings when -Wall
+	Origin: https://github.com/tats/w3m/pull/222
+	Bug-Debian: https://github.com/tats/w3m/pull/216
+
+	* symbol.c: Cast away a warning under OpenBSD 7.0.
+
+	* Makefile.in: Enable -Wall by default.
+
+	* image.c: Use unsigned int for image size.
+	This removes a warning with -Wall.
+
+	* terms.c: Use cast to suppress warning.
+
+	* table.c: Initialize struct before use.
+
+	* buffer.c: Fix a potential buffer overflow.
+	When compiling with -Wformat-overflow=2 GCC reports:
+	  note: 'sprintf' output between 16 and 35 bytes into a destination of size 32
+
+	* etc.c, proto.h: Let base64_encode() take a char *.
+	Throughout the whole code base only char * is passed, but a unsigned
+	char * is expected. This leads to several warnings.
+	Fix the interface and cast to unsigned char * internally to avoid any
+	changes to the behaviour.
+
+	* file.c: Explicitly cast to unsigned when passing to MD5().
+
+	* terms.c: Let strncpy write the null terminator.
+
+	* indep.c, indep.h: Take the correct char type in growbuf_append().
+	This change removes all warnings (-Wall) from this function.
+
+	* file.c: Fix warning for unused variable w/o MENU_SELECT.
+
+	* display.c, etc.c, file.c, linein.c, table.c:
+	Fix warning for unused variable without USE_M17N.
+
+	* Str.c, file.c, image.c, istream.c, main.c, menu.c, news.c:
+	Remove unused variable.
+
+	* scrsize.c, w3mbookmark.c, w3mhelperpanel.c:
+	Use main(void) when not taking arguments.
+
+	* main.c, mktable.c, proto.h, w3mbookmark.c, w3mhelperpanel.c:
+	Use standard conforming main() definition.
+
+	* local.c, main.c: Suppress two warnings when compiling with tcc.
+	While there, add some comments to better understand the code flow in
+	localcgi_post().
+
+	* Makefile.in: Move OPTS to end of CFLAGS.
+	This allows the user to override default options.
+
+2022-04-08  Rene Kita  <mail@rkta.de>
+
+	Add some missing checks to configure
+	Origin: https://github.com/tats/w3m/pull/221
+	* acinclude.m4, configure: Check for linux/fb.h when configuring.
+	* configure, configure.ac: Let configure fail if Perl is not in $PATH.
+	* acinclude.m4, configure: Let configure fail if no terminal library
+	is found.
+	* .gitignore: Ignore autom4te cache directory.
+
+	* posubst.in: Do not swallow errors from GCC.
+	Use strict and warnings in posubst.
+	Origin: https://github.com/tats/w3m/pull/220
+
+2022-04-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/it.po: Adjust spacing in menu strings.
+	cf. https://github.com/tats/w3m/issues/225
+
+	* po/zh_CN.po, po/zh_TW.po: Fix typo in menu strings.
+
+2022-04-05  Markus Hiereth  <translation@hiereth.de>
+
+	* po/de.po: Updated German message catalogue.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1003936#5
+
+2022-04-05  Sebastian Rasmussen  <sebras@gmail.com>
+
+	* po/LINGUAS, po/sv_SE.po: Add Swedish translation.
+	Origin: https://github.com/tats/w3m/pull/209
+
+2022-02-19  Rene Kita  <mail@rkta.de>
+
+	* url.c: Check for end of string when parsing Gopher URLs.
+	Origin: https://github.com/tats/w3m/pull/218
+	Bug-Debian: https://github.com/tats/w3m/issues/199
+
+2022-02-19  NRK  <nrk@disroot.org>
+
+	* libwc/search.c: Fix wc_map_range_search() parameter type mismatch.
+	Origin: https://github.com/tats/w3m/pull/214
+
+2022-02-19  Kuang-che Wu  <kcwu@google.com>
+
+	* fuzz/fuzz-conv.c: Improve fuzz-conv fuzzer.
+	Origin: https://github.com/tats/w3m/pull/204
+
+2022-02-16  Rene Kita  <mail@rkta.de>
+
+	* acinclude.m4, configure: Do not use imlib2-config.
+	imlib2-config was dropped by Imlib2:
+	https://git.enlightenment.org/legacy/imlib2.git/commit/?id=e9d84bd2163e6fab494b5ce5cc8830a54ff97765
+	Origin: https://github.com/tats/w3m/pull/215
+	Bug-Debian: https://github.com/tats/w3m/issues/213
+
+	* file.c: Ignore tokens that look like HTML, but are not.
+	Origin: https://github.com/tats/w3m/pull/217
+	Bug-Debian: https://github.com/tats/w3m/issues/200
+
+2021-10-26  Kuang-che Wu  <kcwu@google.com>
+
+	* istream.c: Fix StrStream memory leak.
+	Origin: https://github.com/tats/w3m/pull/203
+
+2021-10-26  bptato  <nincsnevem662@gmail.com>
+
+	Fix stack overflow due to closing dd tags
+	Origin: https://github.com/tats/w3m/pull/202
+	Bug-Debian: https://github.com/tats/w3m/issues/198
+
+	* file.c: Fix description title rendering (again).
+
+	* file.c:
+	Revert changes introducing #198 stack-overflow in HTMLlineproc0.
+
+2021-10-26  Rene Kita  <mail@rkta.de>
+
+	* table.c: Ensure VLA size is at least one (again).
+	Origin: https://github.com/tats/w3m/pull/197
+
+2021-09-18  Rene Kita  <mail@rkta.de>
+
+	* istream.c: Fix manipulation of ASN1_STRING.
+	Origin: https://github.com/tats/w3m/pull/193
+
+2021-09-05  Rene Kita  <mail@rkta.de>
+
+	* table.c: Ensure VLA size is at least one.
+	Origin: https://github.com/tats/w3m/pull/192
+	Bug-Debian: https://github.com/tats/w3m/issues/51
+
+2021-08-30  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mman/w3mman.in: Fix incorrect query string for `w3mman 7z`.
+	Bug-Debian: https://github.com/tats/w3m/issues/191
+
+2021-08-19  Augusto Gunsch  <augustogunsch@tutanota.com>
+
+	Update README.tab
+	Origin: https://github.com/tats/w3m/pull/189
+
+	* doc/README.tab: Fix wrong quote character.
+
+	* doc/README.tab: Make spacing more consistent.
+
+	* doc/README.tab: Update default tab navigation keybindings.
+
+2021-07-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/LINGUAS: Enable Italian translation.
+
+	* po/it.po, po/ja.po: Update PO information.
+
+2021-07-17  Marco Scardovi  <marco@scardovi.com>
+
+	* po/it.po: Add italian translation.
+	Origin: https://github.com/tats/w3m/pull/187
+
+2021-07-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* file.c, fm.h, rc.c, table.c:
+	New option disable_center to disable center alignment.
+	Bug-Debian: https://github.com/tats/w3m/issues/175
+	Bug-Debian: https://github.com/tats/w3m/issues/185
+
+2021-06-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc/README.sixel: Add information of Debian's libsixel-bin package.
+	Bug-Debian: https://github.com/tats/w3m/pull/184
+
+2021-06-05  Laurenz  <git@laure.nz>
+
+	* doc-jp/README, doc/README: Fix link to hboehm's gc library.
+	Origin: https://github.com/tats/w3m/pull/183
+
+2021-05-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c:
+	Prevent GC warnings of repeated allocation in fuzzer.
+
+2021-05-16  bptato  <nincsnevem662@gmail.com>
+
+	* terms.c: Fix null pointer dereference in put_image_kitty.
+	Origin: https://github.com/tats/w3m/pull/182
+	Bug-Debian: https://github.com/tats/w3m/issues/181
+
+2021-04-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, fm.h: Prevent integer overflow due to fontstat.
+
+	* main.c: Check length of hostname with STR_SIZE_MAX.
+
+2021-04-23  Tatsuya Kinoshita  <tats@debian.org>
+
+	* etc.c, fm.h, local.c, main.c, proto.h, url.c:
+	Treat 127.0.0.1, [::1], and hostname as localhost.
+
+2021-04-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* fm.h, rc.c, url.c:
+	New option localhost_only to restrict connections only to localhost.
+	Bug-Debian: https://github.com/tats/w3m/issues/117
+
+2021-04-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* fm.h, rc.c, url.c:
+	New option cross_origin_referer to use origin only Referer.
+
+	* main.c, proto.h, url.c: Don't include username in Referer.
+
+	* main.c, url.c: Don't set Referer when data URI scheme.
+
+2021-04-05  Tatsuya Kinoshita  <tats@debian.org>
+
+	* etc.c: Use Strcatc and Strnulterm in base64_encode.
+
+	* Str.h: New macros Strcatc and Strnulterm.
+
+2021-04-05  bptato  <nincsnevem662@gmail.com>
+
+	* etc.c, file.c, proto.h, terms.c: Return Str from base64_encode.
+	Fix base64 padding could be applied incorrectly.
+	Fix extraction of first gif frame for animations in put_image_kitty.
+	Origin: https://github.com/tats/w3m/pull/177
+
+2021-04-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c, table.c, table.h:
+	Limit size and number of tables to prevent integer overflow.
+
+2021-03-30  Tatsuya Kinoshita  <tats@debian.org>
+
+	* table.c, table.h: Treat table height as int instead of short.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
+
+	* history.c, history.h, textlist.c, textlist.h:
+	Treat textlist item number as int instead of short.
+	cf. https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=838952
+
+2021-03-29  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Prevent GC warnings of repeated allocation.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=746701
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=832407
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=862382
+
+2021-03-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* indep.c: Fix potential integer overflow in allocStr.
+
+2021-03-26  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Ignore the "-" option to accept `w3m -` as "read from stdin".
+	Bug-Debian: https://github.com/tats/w3m/issues/87
+
+2021-03-25  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c: Explicitly call GC_gcollect() in fuzzer.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=32453
+
+	* fuzz/fuzz-conv.c: Prevent memory leak in fuzzer.
+
+2021-03-23  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Reduce memory reallocation due to Strgrow.
+
+	* libwc/ucs.c:
+	Prevent unneeded memory allocation for language tags in libwc.
+	cf. https://oss-fuzz.com/testcase-detail/6275874304425984
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+
+2021-03-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ucs.c: Prevent very long language tag in libwc.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=32229
+
+2021-03-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c, Str.h: Check STR_SIZE_MAX in Strcat_char.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31804
+
+2021-03-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent very small allocation in Str.c.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397
+
+2021-03-19  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Decrease STR_SIZE_MAX to prevent large memory usage.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31468
+
+2021-03-14  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c:
+	Include unistd.h for getpid() and unlink() in fuzzer.
+
+	* fuzz/fuzz-conv.c: Call wtf_init() in fuzzing.
+
+2021-03-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/ucs.c, libwc/ucs.h:
+	Prevent index overflow due to tag_map in libwc.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31936
+
+2021-03-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* fuzz/fuzz-conv.c: Set GC_oom_fn in fuzzing.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500
+
+	* fuzz/fuzz-conv.c: Call GC_INIT() in fuzzing.
+
+2021-03-06  bptato  <nincsnevem662@gmail.com>
+
+	* terms.c: Fix file handle leaks in kitty and iTerm2 image display.
+	Origin: https://github.com/tats/w3m/pull/174
+
+2021-03-04  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent redundant memory reallocation in Str.c.
+
+	* Str.c: Prevent unneeded Strgrow in Strinsert_char.
+
+	* Str.c: Consider Strgrow overflow in Strinsert_char.
+
+2021-03-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent unneeded memory allocation in Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31664
+
+2021-03-02  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent large memory usage and null-deref in Str.c.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31579
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31589
+
+2021-03-02  bptato  <nincsnevem662@gmail.com>
+
+	Support named character references specified by the living standard
+	Origin: https://github.com/tats/w3m/pull/170
+
+	* entity.js, tests/allentity.html:
+	Use &gt; instead of &gt in entity test generator.
+
+	* entity.js, tests/allentity.html:
+	Fix small mistakes in entity test generator.
+
+	* entity.js, entity.tab, tests/allentity.expected:
+	* tests/allentity.html:
+	Support single-codepoint HTML entities specified by whatwg.
+	https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references
+
+	* entity.tab: Support period entity name.
+
+2021-02-28  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Prevent zero size allocation in Str.c.
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_ca_default to explicitly use OpenSSL default paths.
+
+	* libwc/utf7.c, libwc/utf8.c:
+	Prevent unintentional integer overflow in libwc.
+
+	* Str.c: Prevent unintentional integer overflow in Strcat_charp_n.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31500 (not yet fixed)
+
+	* Str.c: Prevent unintentional integer overflow in Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31467
+
+2021-02-27  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: One more fix overflow due to Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397 (not yet fixed)
+
+2021-02-26  Tatsuya Kinoshita  <tats@debian.org>
+
+	* Str.c: Fix potential overflow due to Str.c.
+
+	* Str.c: Fix integer overflow due to Strgrow.
+	Bug-Chromium: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=31397 (not yet fixed)
+
+2021-02-24  Tatsuya Kinoshita  <tats@debian.org>
+
+	* doc-jp/README.SSL: Simplify doc for SSL.
+
+2021-02-24  davkor  <david@adalogics.com>
+
+	* fuzz/fuzz-conv.c:
+	Added initial fuzzer for integration with OSS-Fuzz.
+	Origin: https://github.com/tats/w3m/pull/169
+	Bug-Debian: https://github.com/tats/w3m/issues/165
+
+2021-02-22  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Don't fallback when SSL_CTX_load_verify_locations fails.
+
+	* url.c:
+	Don't use SSL_CTX_set_default_verify_paths when not USE_SSL_VERIFY.
+
+	* acinclude.m4, config.h.dist, configure, doc-jp/README.SSL:
+	Disable --with-cafile by default to use OpenSSL default paths.
+
+2021-02-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* main.c: Don't use SECLEVEL when not OPENSSL_TLS_SECURITY_LEVEL.
+
+	* doc/w3m.1, main.c: Add eNULL to ssl_cipher when -insecure.
+
+2021-02-21  bptato  <nincsnevem662@gmail.com>
+
+	Improved iTerm2 image display + initial kitty image support
+	Origin: https://github.com/tats/w3m/pull/168
+
+	* image.c, rc.c, terms.c:
+	Convert images to PNG for kitty with ImageMagick.
+
+	* terms.c: Fix potential segfault.
+
+	* terms.c: Fix small images on kitty.
+
+	* etc.c, fm.h, image.c, rc.c, terms.c: Support kitty image protocol.
+
+	* etc.c, terms.c: Handle iTerm2 images more efficiently.
+
+2021-02-17  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/iso2022.c, w3mimgdisplay.c: Typo fix.
+
+2021-02-16  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure:
+	Add auto-detection for configure --with-migemo.
+
+	* acinclude.m4, configure: Prefer Imlib2 over GTK2 by default.
+	Bug-Debian: https://github.com/tats/w3m/issues/95
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=672121
+
+	* acinclude.m4, configure:
+	Indentation and wording fixes for configure --help.
+
+2021-02-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Wording fixes for configure --help.
+
+	* acinclude.m4, configure:
+	Accept configure --with-cafile without filename.
+
+2021-02-14  bptato  <nincsnevem662@gmail.com>
+
+	Improve description list rendering
+	Origin: https://github.com/tats/w3m/pull/167
+	Bug-Debian: https://github.com/tats/w3m/issues/162
+
+	* html.c: Fix a mistake I made with </dd> and </dt> tags.
+
+	* file.c, tests/dl.expected, tests/dl.html: Nested <dl>s.
+
+	* file.c, tests/dl.expected, tests/dl.html: Fix <dl compact>.
+
+	* tests/dl.expected, tests/dl.html: <dl> test.
+
+	* file.c, html.c, html.h, tagtable.tab:
+	Improve description list rendering.
+
+2021-02-13  Tatsuya Kinoshita  <tats@debian.org>
+
+	* acinclude.m4, configure: Minor fixes for ./configure --help.
+
+	* acinclude.m4, config.h.dist, config.h.in, configure:
+	* doc-jp/README.SSL, fm.h:
+	Add auto-detection of ssl_ca_file by configure.
+	New configure option --with-cafile to specify ssl_ca_file.
+	cf. gnutls-trustfiles in Emacs 27.1
+	<https://git.savannah.gnu.org/cgit/emacs.git/tree/lisp/net/gnutls.el?h=emacs-27.1#n106>
+
+	* doc-jp/README.SSL: Doc fix.
+
+	* url.c: Use ssl_ca_file and ssl_ca_path only when ssl_verify_server.
+
+2021-02-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* url.c: Check empty string conditions for ssl_ca_file and ssl_ca_path.
+
+	* url.c:
+	Fix OpenSSL default always overrides ssl_ca_file and ssl_ca_path.
+
+2021-02-11  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc/w3m.1, main.c: Update wording for -debug option.
+
+	* doc/w3m.1: Update manpage for -insecure option.
+
+	* url.c: Mention -insecure option as a workaround for SSL error.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=900984
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=934493
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=953045
+
+	* main.c: New option -insecure to use insecure SSL config options.
+	Alias for `-o ssl_cipher=ALL:@SECLEVEL=0 -o ssl_min_version=all
+	-o ssl_forbid_method= -o ssl_verify_server=0`.
+
+	* doc-jp/README.SSL: Typo fix for ssl_cipher.
+
+	* doc-jp/README.SSL, rc.c, url.c:
+	Update ssl_min_version to accept "all" and reject "SSLv2".
+
+2021-02-11  bptato  <nincsnevem662@gmail.com>
+
+	Support brotli content encoding
+	Origin: https://github.com/tats/w3m/pull/164
+
+	* config.h.dist: Update config.h.dist.
+
+	* config.h.in, file.c, html.h: Support brotli content encoding.
+
+2021-02-10  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* doc-jp/README.SSL, fm.h: Disable TLSv1.0 and TLSv1.1 by default.
+
+	* url.c: Mention ssl_* options as a workaround for SSL error.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=900984
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=934493
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=953045
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_min_version for OpenSSL 1.1.
+
+	* doc-jp/README.SSL, fm.h, rc.c, url.c:
+	New option ssl_cipher to specify ciphers for TLSv1.2 and below.
+	e.g. DEFAULT:@SECLEVEL=2, ALL:@SECLEVEL=0
+
+2021-02-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/ja.po, po/w3m.pot, po/zh_CN.po, po/zh_TW.po:
+	Update PO strings.
+
+	* rc.c: Update option setting strings for inline image display method.
+
+2021-02-06  bptato  <nincsnevem662@gmail.com>
+
+	Improved inline image protocol support
+	Origin: https://github.com/tats/w3m/pull/161
+
+	* rc.c: Clarify inline image setting's wording.
+
+	* etc.c: Use GC_MALLOC_ATOMIC_IGNORE_OFF_PAGE for allocating memory
+	for base64 encoding.
+
+	* etc.c, proto.h: base64_encode: fix input and output length types.
+
+	* etc.c, file.c, proto.h: Some cleanup for base64_encode.
+
+	* etc.c, file.c, fm.h, image.c, mimehead.c, proto.h, rc.c, terms.c:
+	Support iTerm2 graphics protocol, replace encodeB with base64_encode.
+
+	* image.c, rc.c: Avoid having external programs download images.
+
+	* fm.h, image.c, main.c, rc.c:
+	sixel and osc5379 image display protocols can be chosen in options.
+
+2021-01-18  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Disable <section> behaves as <hr>.
+	Because displaying horizontal rules are redundantly and unneeded,
+	especially when sections are nested.
+
+	* Makefile.in: Use xz with -9e for the dist target.
+
+2021-01-03  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Indentation fix.
+
 2021-01-02  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS for 0.5.3+git20210102.
@@ -1128,7 +1797,7 @@
 2016-03-30  Leo Famulari  <leo@famulari.name>
 
 	* url.c: Disable RC4.
-	Origin: http://git.savannah.gnu.org/cgit/guix.git/commit/?id=62339e2d493bf87a3aabe12e45458581e9705d83
+	Origin: https://git.savannah.gnu.org/cgit/guix.git/commit/?id=62339e2d493bf87a3aabe12e45458581e9705d83
 
 2016-03-29  Tatsuya Kinoshita  <tats@debian.org>
 

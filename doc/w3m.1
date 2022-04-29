@@ -133,6 +133,11 @@ Corresponds to dns_order=4 in configuration files
 \fB\-6\fP
 IPv6 only.
 Corresponds to dns_order=6 in configuration files
+.TP
+\fB\-insecure\fP
+use insecure SSL config options,
+alias for \f(CW-o ssl_cipher=ALL:eNULL:@SECLEVEL=0 -o ssl_min_version=all
+-o ssl_forbid_method= -o ssl_verify_server=0\fP
 .SS Text pager options
 .TP
 \fB\-l \fInum\fR
@@ -195,12 +200,12 @@ use \fIfile\fR instead of the default bookmark.html file
 \fB\-config \fIfile\fR
 use \fIfile\fR instead of the default configuration file
 .TP
-\fB\-debug\fP
-DO NOT USE
-.TP
 \fB\-o \fIoption=value\fR
 modify one configuration item with an explicitly given value;
 without \fIoption=value\fR, equivalent to \fB\-show-option\fR
+.TP
+\fB\-debug\fP
+use debug mode (only for debugging)
 .TP
 \fB\-reqlog\fP
 log headers of HTTP communication in file \f(CW~/.w3m/request.log\fP

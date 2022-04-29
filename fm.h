@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -134,6 +135,10 @@ void bzero(void *, int);
 #ifdef USE_DICT
 #define DICTBUFFERNAME "*dictionary*"
 #endif				/* USE_DICT */
+
+#ifndef HOST_NAME_MAX
+#define HOST_NAME_MAX 255
+#endif
 
 /* 
  * Line Property
@@ -311,6 +316,12 @@ extern int REV_LB[];
 
 #define EOL(l) (&(l)->ptr[(l)->length])
 #define IS_EOL(p,l) ((p)==&(l)->ptr[(l)->length])
+
+#define INLINE_IMG_NONE		0
+#define INLINE_IMG_OSC5379	1
+#define INLINE_IMG_SIXEL	2
+#define INLINE_IMG_ITERM2	3
+#define INLINE_IMG_KITTY	4
 
 /* 
  * Types.
@@ -572,6 +583,7 @@ typedef struct _DownloadList {
 #define FONT_STACK_SIZE 5
 
 #define FONTSTAT_SIZE 7
+#define FONTSTAT_MAX 127
 
 #define _INIT_BUFFER_WIDTH (COLS - (showLineNum ? 6 : 1))
 #define INIT_BUFFER_WIDTH ((_INIT_BUFFER_WIDTH > 0) ? _INIT_BUFFER_WIDTH : 0)
@@ -665,7 +677,7 @@ struct readbuffer {
 #define RB_HTML5	0x400000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
-#define RB_SET_ALIGN(obuf,align) {(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }
+#define RB_SET_ALIGN(obuf,align) do{(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }while(0)
 #define RB_SAVE_FLAG(obuf) {\
   if ((obuf)->flag_sp < RB_STACK_SIZE) \
     (obuf)->flag_stack[(obuf)->flag_sp++] = RB_GET_ALIGN(obuf); \
@@ -830,6 +842,8 @@ global char AutoUncompress init(FALSE);
 global char PreserveTimestamp init(TRUE);
 global char ArgvIsURL init(TRUE);
 global char MetaRefresh init(FALSE);
+global char LocalhostOnly init(FALSE);
+global char* HostName init(NULL);
 
 global char fmInitialized init(FALSE);
 global char QuietMessage init(FALSE);
@@ -1019,6 +1033,7 @@ global char *image_source init(NULL);
 #endif
 global char *UserAgent init(NULL);
 global int NoSendReferer init(FALSE);
+global int CrossOriginReferer init(TRUE);
 global char *AcceptLang init(NULL);
 global char *AcceptEncoding init(NULL);
 global char *AcceptMedia init(NULL);
@@ -1110,6 +1125,7 @@ global char UseAltEntity init(FALSE);
 #define GRAPHIC_CHAR_CHARSET 0
 global char UseGraphicChar init(GRAPHIC_CHAR_CHARSET);
 global char DisplayBorders init(FALSE);
+global char DisableCenter init(FALSE);
 extern char *graph_symbol[];
 extern char *graph2_symbol[];
 extern int symbol_width;
@@ -1180,13 +1196,22 @@ global int ssl_verify_server init(TRUE);
 global char *ssl_cert_file init(NULL);
 global char *ssl_key_file init(NULL);
 global char *ssl_ca_path init(NULL);
-global char *ssl_ca_file init(NULL);
+global char *ssl_ca_file init(DEF_CAFILE);
+global int ssl_ca_default init(TRUE);
 global int ssl_path_modified init(FALSE);
 #endif				/* defined(USE_SSL) &&
 				 * defined(USE_SSL_VERIFY) */
 #ifdef USE_SSL
-global char *ssl_forbid_method init("2, 3");
+global char *ssl_forbid_method init("2, 3, t, 5");
+#ifdef SSL_CTX_set_min_proto_version
+global char *ssl_min_version init(NULL);
 #endif
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
+global char *ssl_cipher init("DEFAULT:!LOW:!RC4:!EXP");
+#else
+global char *ssl_cipher init(NULL);
+#endif
+#endif				/* USE_SSL */
 
 global int is_redisplay init(FALSE);
 global int clear_buffer init(TRUE);

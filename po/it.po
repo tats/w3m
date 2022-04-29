@@ -1,974 +1,964 @@
-# zh_TW translation for w3m
-# Copyright (C) 2014-2020 w3m contributors.
+# Italian translation for w3m
+# Copyright (C) 2021 THE w3m'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the w3m package.
-#
-# Comparative editing:
-# Ambrose Li <ambrose.li@gmail.com>, 2020.
-#
-# Originally machine-converted from zh_CN translation translated by:
-# Junde Yi <lmy441900@gmail.com>, 2014.
-# Mingcong Bai <jeffbai@aosc.xyz>, 2014.
-# liushuyu <liushuyu_011@126.com>, 2014.
-# Xingda Zheng <icenowy@outlook.com>, 2014.
-# Mingye Wang (Arthur2e5) <arthur200126@gmail.com>, 2014, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-03 15:24+0900\n"
-"PO-Revision-Date: 2021-02-11 19:05+0900\n"
-"Last-Translator: Tatsuya Kinoshita <tats@debian.org>\n"
-"Language-Team: Pidgin zh_TW <http://www.transifex.com/pidgin/pidgin/language/"
-"zh_TW/>\n"
-"Language: zh_TW\n"
+"PO-Revision-Date: 2021-07-15 08:36+0200\n"
+"Last-Translator: Marco Scardovi <marco@scardovi.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: menu.c:269
 msgid " Back         (b) "
-msgstr " 返回         (b) "
+msgstr " Indietro              (b) "
 
 #: menu.c:270
 msgid " Select Buffer(s) "
-msgstr " 選擇緩衝區   (s) "
+msgstr " Selezionare i Buffers (s) "
 
 #: menu.c:272
 msgid " Select Tab   (t) "
-msgstr " 選擇分頁     (t) "
+msgstr " Selezionare la Tab    (t) "
 
 #: menu.c:274
 msgid " View Source  (v) "
-msgstr " 檢視源始碼   (v) "
+msgstr " Vedere il codice      (v) "
 
 #: menu.c:275
 msgid " Edit Source  (e) "
-msgstr " 修改源始碼   (e) "
+msgstr " Editare il Codice     (e) "
 
 #: menu.c:276
 msgid " Save Source  (S) "
-msgstr " 儲存源始碼   (S) "
+msgstr " Salvare il codice     (S) "
 
 #: menu.c:277
 msgid " Reload       (r) "
-msgstr " 重新載入     (r) "
+msgstr " Ricaricare            (r) "
 
 #: menu.c:278 menu.c:285 menu.c:289
 msgid " ---------------- "
-msgstr " ---------------- "
+msgstr " ------------------------- "
 
 #: menu.c:279
 msgid " Go Link      (a) "
-msgstr " 打開連結     (a) "
+msgstr " Andare al link        (a) "
 
 #: menu.c:280
 msgid "   on New Tab (n) "
-msgstr "   於新分頁   (n) "
+msgstr "       nella nuova Tab (n) "
 
 #: menu.c:281
 msgid " Save Link    (A) "
-msgstr " 儲存連結     (A) "
+msgstr " Salvare il Link       (A) "
 
 #: menu.c:282
 msgid " View Image   (i) "
-msgstr " 檢視影像     (i) "
+msgstr " Vedere l'Immagine     (i) "
 
 #: menu.c:283
 msgid " Save Image   (I) "
-msgstr " 儲存影像     (I) "
+msgstr " Salvare l'Immagine    (I) "
 
 #: menu.c:284
 msgid " View Frame   (f) "
-msgstr " 檢視框架     (f) "
+msgstr " Vedere il Frame       (f) "
 
 #: menu.c:286
 msgid " Bookmark     (B) "
-msgstr " 書籤         (B) "
+msgstr " Bookmark              (B) "
 
 #: menu.c:287
 msgid " Help         (h) "
-msgstr " 說明         (h) "
+msgstr " Aiuto                 (h) "
 
 #: menu.c:288
 msgid " Option       (o) "
-msgstr " 選項         (o) "
+msgstr " Opzioni               (o) "
 
 #: menu.c:290
 msgid " Quit         (q) "
-msgstr " 結束程式     (q) "
+msgstr " Esci                  (q) "
 
 #: rc.c:62
 msgid "External Viewer Setup"
-msgstr "外部檢視器設定"
+msgstr "Impostazioni per il visualizzatore esterno"
 
 #: rc.c:63
 msgid "Tab width in characters"
-msgstr "欄標字元寬度（半形字元個數）"
+msgstr "Dimensione Tab in caratteri"
 
 #: rc.c:64
 msgid "Indent for HTML rendering"
-msgstr "縮排字元數（顯示 HTML 專用）"
+msgstr "Rendering per l'indentazione in HTML"
 
 #: rc.c:65
 msgid "Number of pixels per character (4.0...32.0)"
-msgstr "半形字元寛度（像素） (4.0...32.0)"
+msgstr "Numero di pixel per carattere (da 4.0 a 32.0)"
 
 #: rc.c:66
 msgid "Number of pixels per line (4.0...64.0)"
-msgstr "半形字元高度（像素） (4.0...64.0)"
+msgstr "Numero di pixel per linea (da 4.0 a 64.0)"
 
 #: rc.c:67
 msgid "Number of remembered lines when used as a pager"
-msgstr "作為分頁器使用時記憶的行數"
+msgstr "Numero di linee da ricordare quando usato come paginatore"
 
 #: rc.c:68
 msgid "Use URL history"
-msgstr "啟動網址歷史記錄"
+msgstr "Usare la cronologia URL"
 
 #: rc.c:69
 msgid "Number of remembered URL"
-msgstr "記錄的網址個數"
+msgstr "Numero di URL da ricordare"
 
 #: rc.c:70
 msgid "Save URL history"
-msgstr "儲存網址歷史"
+msgstr "Salvare la cronologia URL"
 
 #: rc.c:71
 msgid "Render frames automatically"
-msgstr "自動顯示框架"
+msgstr "Renderizzare i frame automaticamente"
 
 #: rc.c:72
 msgid "Treat argument without scheme as URL"
-msgstr "沒有通訊協定 (scheme) 的參數一律視作網址"
+msgstr "Trattare argomente senza schema come URL"
 
 #: rc.c:73
 msgid "Use _self as default target"
-msgstr "使用 _self 作為預設目標"
+msgstr "Usare _self come target di default"
 
 #: rc.c:74
 msgid "Open link on new tab if target is _blank or _new"
-msgstr "當目標為 _blank 或 _new 時使用新分頁打開連結"
+msgstr "Aprire link in un nuova pagina se il target è _blank o _new"
 
 #: rc.c:75
 msgid "Open download list panel on new tab"
-msgstr "在新分頁顯示下載清單"
+msgstr "Aprire la lista download in una nuova Tab"
 
 #: rc.c:76
 msgid "Display link URL automatically"
-msgstr "自動顯示連結網址"
+msgstr "Mostare il link URL automaticamente"
 
 #: rc.c:77
 msgid "Display link numbers"
-msgstr "顯示連結編號"
+msgstr "Mostrare il numero di link"
 
 #: rc.c:78
 msgid "Display decoded URL"
-msgstr "顯示網址前先行解碼"
+msgstr "Mostrare URL decodificati"
 
 #: rc.c:79
 msgid "Display current line number"
-msgstr "顯示目前行號"
+msgstr "Mostrare il numero di linea corrente"
 
 #: rc.c:80
 msgid "Display inline images"
-msgstr "顯示嵌入影像"
+msgstr "Mostrare le immagini in linea"
 
 #: rc.c:81
 msgid "Display pseudo-ALTs for inline images with no ALT or TITLE string"
-msgstr "嵌入影像沒有 ALT 或 TITLE 屬性時顯示虛擬替代文字"
+msgstr "Visualizzare pseudo-ALT per le immagini in linea senza stringa ALT o TITLE"
 
 #: rc.c:83
 msgid "Load inline images automatically"
-msgstr "自動載入嵌入影像"
+msgstr "Caricare immagini in linea automaticamente"
 
 #: rc.c:84
 msgid "Maximum processes for parallel image loading"
-msgstr "平行載入影像時繁洐的子程序數量上限"
+msgstr "Numero massimo di processi per il caricamento parallelo delle immagini"
 
 #: rc.c:85
 msgid "Use external image viewer"
-msgstr "使用外置影像檢視器"
+msgstr "Usare un visualizzatore per immagini esterno"
 
 #: rc.c:86
 msgid "Scale of image (%)"
-msgstr "影像比例 (%)"
+msgstr "Scala dell'immagine (%)"
 
 #: rc.c:87
 msgid "External command to display image"
-msgstr "顯示影像的指令"
+msgstr "Comando esterno per visualizzare l'immagine"
 
 #: rc.c:88
 msgid "Use link list of image map"
-msgstr "使用影像地圖內的連結清單"
+msgstr "Usare l'elenco dei collegamenti della mappa immagine"
 
 #: rc.c:89
 msgid "Inline image display method"
-msgstr "嵌入影像協定"
+msgstr "Metodo di visualizzazione delle immagini in linea"
 
 #: rc.c:91
 msgid "Display file names in multi-column format"
-msgstr "以多重欄位格式顯示檔名"
+msgstr "Mostrare i nomi dei file in formato multi-colonna"
 
 #: rc.c:92
 msgid "Use ASCII equivalents to display entities"
-msgstr "限用 ASCII 字元顯示名稱實體"
+msgstr "Usare equivalente ASCII per mostrare le entità"
 
 #: rc.c:93
 msgid "Character type for border of table and menu"
-msgstr "顯示表格和選單的外框和格線時使用的字元類型"
+msgstr "Tipo di carattere per bordo tabella e menu"
 
 #: rc.c:94
 msgid "Display table borders, ignore value of BORDER"
-msgstr "所有表格一律顯示外框和格線（忽略 BORDER 數值）"
+msgstr "Visualizzare i bordi della tabella, ignora il valore di BORDER"
 
 #: rc.c:95
 msgid "Disable center alignment"
-msgstr ""
+msgstr "Disabilitare l'allineamento centrato"
 
 #: rc.c:96
 msgid "Fold lines in TEXTAREA"
-msgstr "在文字區 (TEXTAREA) 中折叠長行"
+msgstr "Linee di piega in TEXTAREA"
 
 #: rc.c:97
 msgid "Display INS, DEL, S and STRIKE element"
-msgstr "INS、DEL、S 及 STRIKE 元素的顯示方法"
+msgstr "Mostrare elementi INS, DEL, S e STRIKE"
 
 #: rc.c:98
 msgid "Display with color"
-msgstr "使用顏色"
+msgstr "Mostrare con colore"
 
 #: rc.c:99
 msgid "Color of normal character"
-msgstr "一般文字顏色"
+msgstr "Mostrare con carattere normale"
 
 #: rc.c:100
 msgid "Color of anchor"
-msgstr "文字連結顏色"
+msgstr "Colore dell'ancora"
 
 #: rc.c:101
 msgid "Color of image link"
-msgstr "圖片連結顏色"
+msgstr "Colore del link immagine"
 
 #: rc.c:102
 msgid "Color of form"
-msgstr "表格顏色"
+msgstr "Colore del modulo"
 
 #: rc.c:103
 msgid "Enable coloring of active link"
-msgstr "游標所在連結以不同顏色顯示"
+msgstr "Abilita la colorazione del link attivo"
 
 #: rc.c:104
 msgid "Color of currently active link"
-msgstr "游標所在連結的顏色"
+msgstr "Colore del link attivo corrente"
 
 #: rc.c:105
 msgid "Use visited link color"
-msgstr "開啟過的連結以不同顏色顯示"
+msgstr "Usare colore link visitati"
 
 #: rc.c:106
 msgid "Color of visited link"
-msgstr "開啟過的連結的顏色"
+msgstr "Colore dei link visitati"
 
 #: rc.c:107
 msgid "Color of background"
-msgstr "背景顏色"
+msgstr "Colore dello sfondo"
 
 #: rc.c:108
 msgid "Color of mark"
-msgstr "標記顏色"
+msgstr "Colore della marcatura"
 
 #: rc.c:109
 msgid "Use proxy"
-msgstr "使用代理伺服器"
+msgstr "Usare proxy"
 
 #: rc.c:110
 msgid "URL of HTTP proxy host"
-msgstr "HTTP 代理伺服器位址"
+msgstr "URL dell'host proxy HTTP"
 
 #: rc.c:112
 msgid "URL of HTTPS proxy host"
-msgstr "HTTPS 代理伺服器位址"
+msgstr "URL dell'host proxy HTTPS"
 
 #: rc.c:115
 msgid "URL of GOPHER proxy host"
-msgstr "GOPHER 代理伺服器位址"
+msgstr "URL dell'host proxy GOPHER"
 
 #: rc.c:117
 msgid "URL of FTP proxy host"
-msgstr "FTP 代理伺服器位址"
+msgstr "URL dell'host proxy FTP"
 
 #: rc.c:118
 msgid "Domains to be accessed directly (no proxy)"
-msgstr "不使用代理伺服器的網域"
+msgstr "Domini da accedere direttamente (no proxy)"
 
 #: rc.c:119
 msgid "Check noproxy by network address"
-msgstr "上列不使用代理伺服器的網域含有網路位址"
+msgstr "Controlla noproxy per indirizzo di rete"
 
 #: rc.c:120
 msgid "Disable cache"
-msgstr "停用快取"
+msgstr "Disabilitare cache"
 
 #: rc.c:122
 msgid "News server"
-msgstr "新聞伺服器"
+msgstr "Server news"
 
 #: rc.c:123
 msgid "Mode of news server"
-msgstr "存取新聞伺服器時使用的模式參數"
+msgstr "Modalità per server news"
 
 #: rc.c:124
 msgid "Number of news messages"
-msgstr "新聞訊息的每次讀取個數"
+msgstr "Numero di messaggi news"
 
 #: rc.c:126
 msgid "Order of name resolution"
-msgstr "主機名稱解析順序"
+msgstr "Ordine della risoluzione del nome"
 
 #: rc.c:127
 msgid "Directory corresponding to / (document root)"
-msgstr "對應本地端 / （文件根目錄）的目錄"
+msgstr "Directory corrispondente a / (documento radice)"
 
 #: rc.c:128
 msgid "Directory corresponding to /~user"
-msgstr "對應本地端 /~user 的目錄"
+msgstr "Directory corrispondente a /~user"
 
 #: rc.c:129
 msgid "Directory corresponding to /cgi-bin"
-msgstr "對應本地端 /cgi-bin 的目錄"
+msgstr "Directory corrispondente a /cgi-bin"
 
 #: rc.c:130
 msgid "Confirm when quitting with q"
-msgstr "使用 q 鍵結束程式時先行確認"
+msgstr "Conferma quando esci con q"
 
 #: rc.c:131
 msgid "Close tab if buffer is last when back"
-msgstr "從最後一個緩衝區返回時隨即關閉分頁"
+msgstr "Chiudere Tab se il buffer è l'ultimo quando indietro"
 
 #: rc.c:133
 msgid "Enable mark operations"
-msgstr "啟動標記操作"
+msgstr "Abilitare operazioni di marcatura"
 
 #: rc.c:135
 msgid "Enable Emacs-style line editing"
-msgstr "啟動 Emacs 風格的列編輯"
+msgstr "Abilitare editing linea Emacs-style"
 
 #: rc.c:136
 msgid "Space key triggers file completion while editing URLs"
-msgstr "編輯網址時空白鍵觸發檔名補齊功能"
+msgstr "Attivare il completamento del file durante la modifica degli URL con la varra spaziatrice"
 
 #: rc.c:137
 msgid "Enable vi-like numeric prefix"
-msgstr "啟動 vi 式的數字前綴"
+msgstr "Abilitare prefisso numerico come vi"
 
 #: rc.c:138
 msgid "Move cursor to top line when going to label"
-msgstr "跳到標籤時將游標移到最頂行"
+msgstr "Spostare il cursore sulla riga superiore quando si va all'etichetta"
 
 #: rc.c:139
 msgid "Move cursor to top line when moving to next page"
-msgstr "跳到下一頁時將游標移到最頂行"
+msgstr "Spostare il cursore sulla riga superiore quando si va alla pagina successiva"
 
 #: rc.c:140
 msgid "Fold lines of plain text file"
-msgstr "顯示純文字檔案時折叠長行"
+msgstr "Piegare linee di file di testo normale"
 
 #: rc.c:141
 msgid "Show line numbers"
-msgstr "顯示行號"
+msgstr "Mostrare numero di linea"
 
 #: rc.c:142
 msgid "Show search string"
-msgstr "顯示搜尋字串"
+msgstr "Mostrare la stringa di ricerca"
 
 #: rc.c:143
 msgid "List of mime.types files"
-msgstr "mime.type 檔案列表"
+msgstr "Lista dei file mime.types"
 
 #: rc.c:144
 msgid "List of mailcap files"
-msgstr "mailcap 檔案列表"
+msgstr "Lista file mailcap"
 
 #: rc.c:145
 msgid "List of urimethodmap files"
-msgstr "urlmethodmap 檔案列表"
+msgstr "Lista file urimethodmap"
 
 #: rc.c:146
 msgid "Editor"
-msgstr "文字編輯器"
+msgstr "Editor"
 
 #: rc.c:147
 msgid "Mailer"
-msgstr "電子郵件程式"
+msgstr "Mailer"
 
 #: rc.c:148
 msgid "How to call Mailer for mailto URLs with options"
-msgstr "開啟含參數的 mailto 網址時執行電子郵件程式的方法"
+msgstr "Come chiamare il Mailer per gli URL mailto con opzioni"
 
 #: rc.c:149
 msgid "External browser"
-msgstr "外部瀏覽器"
+msgstr "Browser esterno"
 
 #: rc.c:150
 msgid "2nd external browser"
-msgstr "外部瀏覽器之二"
+msgstr "2° browser esterno"
 
 #: rc.c:151
 msgid "3rd external browser"
-msgstr "外部瀏覽器之三"
+msgstr "3° browser esterno"
 
 #: rc.c:152
 msgid "4th external browser"
-msgstr "外部瀏覽器之四"
+msgstr "4° browser esterno"
 
 #: rc.c:153
 msgid "5th external browser"
-msgstr "外部瀏覽器之五"
+msgstr "5° browser esterno"
 
 #: rc.c:154
 msgid "6th external browser"
-msgstr "外部瀏覽器之六"
+msgstr "6° browser esterno"
 
 #: rc.c:155
 msgid "7th external browser"
-msgstr "外部瀏覽器之七"
+msgstr "7° browser esterno"
 
 #: rc.c:156
 msgid "8th external browser"
-msgstr "外部瀏覽器之八"
+msgstr "8° browser esterno"
 
 #: rc.c:157
 msgid "9th external browser"
-msgstr "外部瀏覽器之九"
+msgstr "9° browser esterno"
 
 #: rc.c:158
 msgid "Disable secret file security check"
-msgstr "停用秘密檔案的安全檢查"
+msgstr "Disabilitare il controllo di sicurezza dei file segreti"
 
 #: rc.c:159
 msgid "Password file"
-msgstr "密碼檔案"
+msgstr "File password"
 
 #: rc.c:160
 msgid "File for setting form on loading"
-msgstr "填寫表格時專用的秘密檔案"
+msgstr "File per l'impostazione del modulo al caricamento"
 
 #: rc.c:161
 msgid "File for preferences for each site"
-msgstr "記錄個別網站偏好的檔案"
+msgstr "File delle preferenze per ogni sito"
 
 #: rc.c:162
 msgid "Password for anonymous FTP (your mail address)"
-msgstr "匿名FTP密碼（您的電子郵件地址）"
+msgstr "Password per FTP anonimo (tuo indirizzo mail)"
 
 #: rc.c:163
 msgid "Generate domain part of password for FTP"
-msgstr "為 FTP 生成密碼的網域部分"
+msgstr "Generare parte del dominio della password per FTP"
 
 #: rc.c:164
 msgid "User-Agent identification string"
-msgstr "User-Agent 識別符"
+msgstr "Stringa di identificazione user-agent"
 
 #: rc.c:165
 msgid "Accept-Encoding header"
-msgstr "Accept-Encoding 標頭值（可接受的壓縮方法）"
+msgstr "Intestazione di accettazione della codifica"
 
 #: rc.c:166
 msgid "Accept header"
-msgstr "Accept 標頭值（可接受的文件格式）"
+msgstr "Intestazione di accettazione"
 
 #: rc.c:167
 msgid "Accept-Language header"
-msgstr "Accept-Language 標頭值（可接受的語言）"
+msgstr "Intestazione di accettazione della lingua"
 
 #: rc.c:168
 msgid "Treat URL-like strings as links in all pages"
-msgstr "頁面中所有疑似網址的字串一律視作連結處理"
+msgstr "Trattare le stringhe URL-like come link in tutte le pagine"
 
 #: rc.c:169
 msgid "Wrap search"
-msgstr "啟動搜尋回繞"
+msgstr "Avvolgere la ricerca"
 
 #: rc.c:170
 msgid "Display unseen objects (e.g. bgimage tag)"
-msgstr "顯示看不到的物件（例如 bgimage 標籤）"
+msgstr "Mostrare oggetti non visti (es bgimage tag)"
 
 #: rc.c:171
 msgid "Uncompress compressed data automatically when downloading"
-msgstr "下載時自動解壓被壓縮的資料"
+msgstr "Decomprimere automaticamente i dati durante lo scaricamento"
 
 #: rc.c:173
 msgid "Run external viewer in a separate session"
-msgstr "在獨立的工作階段執行外部檢視器"
+msgstr "Avviare il visualizzatore esterno in una sessione separata"
 
 #: rc.c:175
 msgid "Run external viewer in the background"
-msgstr "在後台執行外部檢視器"
+msgstr "Avviare il visualizzatore esterno in background"
 
 #: rc.c:177
 msgid "Use external program for directory listing"
-msgstr "使用外部程式列出目錄"
+msgstr "Usare un programma esterno per listare le directory"
 
 #: rc.c:178
 msgid "URL of directory listing command"
-msgstr "目錄列表指令的網址"
+msgstr "URL del comando per listare le directory"
 
 #: rc.c:180
 msgid "Enable dictionary lookup through CGI"
-msgstr "啟用基於 CGI 的詞典查詢"
+msgstr "Abilitare la ricerca nel dizionario tramite CGI"
 
 #: rc.c:181
 msgid "URL of dictionary lookup command"
-msgstr "詞典查詢指令的網址"
+msgstr "URL del comando per la ricerca nel dizionario"
 
-# NOTE: This option is problematic because it enables a behaviour that violates WCAG
 #: rc.c:183
 msgid "Display link name for images lacking ALT"
-msgstr "影像 ALT 值為空白時顯示影像檔案名稱"
+msgstr "Mostrare nome link per le immagini senza ALT"
 
 #: rc.c:184
 msgid "Index file for directories"
-msgstr "目錄的索引檔案"
+msgstr "File indice per directory"
 
 #: rc.c:185
 msgid "Prepend http:// to URL automatically"
-msgstr "自動在網址前加上 http://"
+msgstr "Anteporre automaticamente http:// all'URL"
 
 #: rc.c:186
 msgid "Default value for open-URL command"
-msgstr "開啟網址時的網址預設值"
+msgstr "Valore di default per il comando per aprire gli URL"
 
 #: rc.c:187
 msgid "Decode Content-Transfer-Encoding when saving"
-msgstr "儲存檔案前先按 Content-Transfer-Encoding 進行解碼"
+msgstr "Decodifica Contenuto-Trasferimento-Codifica durante il salvataggio"
 
 #: rc.c:188
 msgid "Preserve timestamp when saving"
-msgstr "儲存檔案時保留時間戳記"
+msgstr "Preservare il timestamp durante il salvataggio"
 
 #: rc.c:190
 msgid "Enable mouse"
-msgstr "啟動滑鼠"
+msgstr "Abilitare il mouse"
 
 #: rc.c:191
 msgid "Scroll in reverse direction of mouse drag"
-msgstr "拖曳滑鼠時反方向捲動"
+msgstr "Scorrere in direzione inversa al trascinamento del mouse"
 
 #: rc.c:192
 msgid "Behavior of wheel scroll speed"
-msgstr "滾動滾輪時計算捲動速度的方法"
+msgstr "Comportamento della velocità di scorrimento della rotella"
 
 #: rc.c:193
 msgid "(A only)Scroll by # (%) of screen"
-msgstr "（方法 A 適用）捲動螢幕高度的百分值"
+msgstr "(Solo A)Scorrere di # (%) dello schermo"
 
 #: rc.c:194
 msgid "(B only)Scroll by # lines"
-msgstr "（方法 B 適用）捲動行數"
+msgstr "(Solo B)Scorrere di # (%) dello schermo"
 
 #: rc.c:196
 msgid "Free memory of undisplayed buffers"
-msgstr "緩衝區如未被顯示，先要釋放記憶體"
+msgstr "Memoria libera per i buffer non mostrati"
 
 #: rc.c:197
 msgid "Suppress `Referer:' header"
-msgstr "不傳送 Referer 標頭"
+msgstr "Sopprimere `Referer:' intestazione"
 
 #: rc.c:198
 msgid ""
 "Exclude pathname and query string from `Referer:' header when cross domain "
 "communication"
 msgstr ""
+"Escludi il percorso e la stringa di query dall'intestazione `Referer:' quando si incrociano i domini "
+"di comunicazione"
 
 #: rc.c:199
 msgid "Search case-insensitively"
-msgstr "搜尋時不區分大小寫"
+msgstr "Cerca senza distinzione tra maiuscole e minuscole"
 
 #: rc.c:200
 msgid "Use LESSOPEN"
-msgstr "使用 LESSOPEN"
+msgstr "Usare LESSOPEN"
 
 #: rc.c:203
 msgid "Perform SSL server verification"
-msgstr "進行 SSL 伺服器驗證"
+msgstr "Eseguire la verifica SSL del server"
 
 #: rc.c:204
 msgid "PEM encoded certificate file of client"
-msgstr "用戶端的 PEM 憑證檔案"
+msgstr "File di certificato codificato PEM del cliente"
 
 #: rc.c:205
 msgid "PEM encoded private key file of client"
-msgstr "用戶端的 PEM 私鑰檔案"
+msgstr "File della chiave privata con codifica PEM del cliente"
 
 #: rc.c:206
 msgid "Path to directory for PEM encoded certificates of CAs"
-msgstr "憑證機構的 PEM 憑證所在目錄路徑"
+msgstr "Percorso alla directory per i certificati con codifica PEM delle CA"
 
 #: rc.c:207
 msgid "File consisting of PEM encoded certificates of CAs"
-msgstr "含有憑證機構的 PEM 證書的單個檔案"
+msgstr "File composto da certificati codificati PEM di CAs"
 
 #: rc.c:208
 msgid "Use default locations for PEM encoded certificates of CAs"
-msgstr ""
+msgstr "Usare i percorsi predefiniti per i certificati con codifica PEM delle CA"
 
 #: rc.c:210
 msgid ""
 "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, "
 "6: TLSv1.2, 7: TLSv1.3)"
 msgstr ""
-"禁止使用的 SSL 版本 (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, "
-"7: TLSv1.3)"
+"Elenco dei metodi SSL vietati (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, "
+"6: TLSv1.2, 7: TLSv1.3)"
 
 #: rc.c:212
 msgid "Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
-msgstr "最低 SSL 版本 (all, TLSv1.0, TLSv1.1, TLSv1.2, TLSv1.3)"
+msgstr "Versione SSL minima (tutti, TLSv1.0, TLSv1.1, TLSv1.2 o TLSv1.3)"
 
 #: rc.c:214
 msgid "SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)"
-msgstr ""
+msgstr "Cifrari SSL per TLSv1.2 e precedenti (ad es. DEFAULT:@SECLEVEL=2)"
 
 #: rc.c:217
 msgid "Enable cookie processing"
-msgstr "啟動 Cookie 處理"
+msgstr "Abilitare l'elaborazione dei cookie"
 
 #: rc.c:218
 msgid "Print a message when receiving a cookie"
-msgstr "接收 Cookie 時顯示訊息"
+msgstr "Stampare un messaggio quando su riceve un cookie"
 
 #: rc.c:219
 msgid "Accept cookies"
-msgstr "接受 Cookie"
+msgstr "Accettare i cookie"
 
 #: rc.c:220
 msgid "Action to be taken on invalid cookie"
-msgstr "無效 Cookie 的處理方法"
+msgstr "Azione da eseguire in caso di cookie invalido"
 
 #: rc.c:221
 msgid "Domains to reject cookies from"
-msgstr "拒絕以下網域的 Cookie"
+msgstr "Domini da cui rifiutare i cookie"
 
 #: rc.c:222
 msgid "Domains to accept cookies from"
-msgstr "接受以下網域的 Cookie"
+msgstr "Domini da cui accettare i cookie"
 
 #: rc.c:223
 msgid "Domains to avoid [wrong number of dots]"
-msgstr "避免瀏覽的網域 [網址含錯誤數量的點號]"
+msgstr "Domini da evitare [numero di punti errato]"
 
 #: rc.c:225
 msgid "Number of redirections to follow"
-msgstr "跟隨的重定向數量"
+msgstr "Numero di reindirizzamenti da seguire"
 
 #: rc.c:226
 msgid "Enable processing of meta-refresh tag"
-msgstr "啟動 meta-refresh 標籤處理"
+msgstr "Abilitare l'elaborazione del tag meta-refresh"
 
 #: rc.c:227
 msgid "Restrict connections only to localhost"
-msgstr ""
+msgstr "Restringere le connessioni solo al localhost"
 
 #: rc.c:230
 msgid "Enable Migemo (Roma-ji search)"
-msgstr "啟動 Migemo (日語羅馬字搜尋)"
+msgstr "Abilitare Migemo (cerca Roma-ji)"
 
 #: rc.c:231
 msgid "Migemo command"
-msgstr "Migemo 指令"
+msgstr "Comando Migemo"
 
 #: rc.c:235
 msgid "Display charset"
-msgstr "輸出編碼"
+msgstr "Mostrare set caratteri"
 
 #: rc.c:236
 msgid "Default document charset"
-msgstr "預設文件編碼"
+msgstr "Set caratteri di default"
 
 #: rc.c:237
 msgid "Automatic charset detect when loading"
-msgstr "載入時自動偵測文件編碼"
+msgstr "Set caratteri da rilevare automaticamente durante il caricamento"
 
 #: rc.c:238
 msgid "System charset"
-msgstr "系統編碼"
+msgstr "Set caratteri di sistema"
 
 #: rc.c:239
 msgid "System charset follows locale(LC_CTYPE)"
-msgstr "按 LC_CTYPE 選擇系統編碼"
+msgstr "Il set di caratteri di sistema segue locale(LC_CTYPE)"
 
 #: rc.c:240
 msgid "Output halfdump with display charset"
-msgstr "使用輸出編碼時使用半傾印 (halfdump) 輸出模式"
+msgstr "Mostrare halfdump con display charset"
 
 #: rc.c:241
 msgid "Use multi column characters"
-msgstr "使用寛於半形符號的字元"
+msgstr "Usare caratteri multicolonna"
 
 #: rc.c:242
 msgid "Use combining characters"
-msgstr "使用組合字元"
+msgstr "Usare caratteri combinati"
 
 #: rc.c:243
 msgid "Use double width for some Unicode characters"
-msgstr "使用全形字顯示某些 Unicode 字元"
+msgstr "Usare il doppio della larghezza con alcuni caratteri Unicode"
 
 #: rc.c:244
 msgid "Use Unicode language tags"
-msgstr "使用 Unicode 語言標籤"
+msgstr "Usare i tag Unicode per la lingua"
 
 #: rc.c:245
 msgid "Charset conversion using Unicode map"
-msgstr "使用 Unicode 對映進行編碼轉換"
+msgstr "Convertire i set caratteri con la mappa Unicode"
 
 #: rc.c:246
 msgid "Charset conversion when loading"
-msgstr "載入時進行編碼轉換"
+msgstr "Convertire il set caratteri durante il caricamento"
 
 #: rc.c:247
 msgid "Adjust search string for document charset"
-msgstr "搜尋時按文件編碼自動調整搜尋字串"
+msgstr "Regolare la stringa di ricerca per il set caratteri del documento"
 
 #: rc.c:248
 msgid "Fix character width when conversion"
-msgstr "轉換編碼時自動校正字元寬度"
+msgstr "Correggere la larghezza del set caratteri durante la conversione"
 
 #: rc.c:249
 msgid "Use GB 12345 Unicode map instead of GB 2312's"
-msgstr "使用 GB 12345 而非 GB 2312 的 Unicode 對映"
+msgstr "Usare la mappa Unicode GB 12345 invece della GB 2312"
 
 #: rc.c:250
 msgid "Use JIS X 0201 Roman for ISO-2022-JP"
-msgstr "使用 JIS X 0201 羅馬字母處理 ISO-2022-JP"
+msgstr "Usare JIS X 0201 Roman per ISO-2022-JP"
 
 #: rc.c:251
 msgid "Use JIS C 6226:1978 for ISO-2022-JP"
-msgstr "使用 JIS C 6226:1978 處理 ISO-2022-JP"
+msgstr "Usare JIS C 6226:1978 per ISO-2022-JP"
 
 #: rc.c:252
 msgid "Use JIS X 0201 Katakana"
-msgstr "使用 JIS X 0201 片假名"
+msgstr "Usare JIS X 0201 per Katakana"
 
 #: rc.c:253
 msgid "Use JIS X 0212:1990 (Supplemental Kanji)"
-msgstr "使用 JIS X 0212:1990 (補充漢字)"
+msgstr "Usare JIS X 0212:1990 (Kanji supplementare)"
 
 #: rc.c:254
 msgid "Use JIS X 0213:2000 (2000JIS)"
-msgstr "使用 JIS X 0213:2000 (2000JIS)"
+msgstr "Usare JIS X 0213:2000 (2000JIS)"
 
 #: rc.c:255
 msgid "Strict ISO-2022-JP/KR/CN"
-msgstr "嚴格處理 ISO-2022-JP/KR/CN"
+msgstr "Restringere a ISO-2022-JP/KR/CN"
 
 #: rc.c:256
 msgid "Treat 4 bytes char. of GB18030 as Unicode"
-msgstr "GB18030 編碼的 4 位元組字元一律視為 Unicode"
+msgstr "Tratta i caratteri a 4 byte di GB18030 come Unicode"
 
 #: rc.c:257
 msgid "Simple Preserve space"
-msgstr "保留空白時只作簡單處理"
+msgstr "Preserva spazio semplice"
 
 #: rc.c:260
 msgid "keymap file"
-msgstr "鍵盤對映檔案"
+msgstr "File mappa dei tasti"
 
 #: rc.c:277
 msgid "black"
-msgstr "黑色"
+msgstr "nero"
 
 #: rc.c:278
 msgid "red"
-msgstr "紅色"
+msgstr "rosso"
 
 #: rc.c:279
 msgid "green"
-msgstr "綠色"
+msgstr "verde"
 
 #: rc.c:280
 msgid "yellow"
-msgstr "黃色"
+msgstr "giallo"
 
 #: rc.c:281
 msgid "blue"
-msgstr "藍色"
+msgstr "blu"
 
 #: rc.c:282
 msgid "magenta"
-msgstr "洋紅"
+msgstr "magenta"
 
 #: rc.c:283
 msgid "cyan"
-msgstr "青藍"
+msgstr "ciano"
 
 #: rc.c:284
 msgid "white"
-msgstr "白色"
+msgstr "bianco"
 
 #: rc.c:285
 msgid "terminal"
-msgstr "終端機預設"
+msgstr "terminale"
 
 #: rc.c:304
 msgid "none"
-msgstr "空白"
+msgstr "nessuno"
 
 #: rc.c:305
 msgid "current URL"
-msgstr "所在緩衝區網址"
+msgstr "URL corrente"
 
 #: rc.c:306
 msgid "link URL"
-msgstr "連結網址"
+msgstr "link URL"
 
 #: rc.c:311
 msgid "simple"
-msgstr "不作處理"
+msgstr "semplice"
 
 #: rc.c:312
 msgid "use tag"
-msgstr "顯示標籤"
+msgstr "tag usati"
 
 #: rc.c:313
 msgid "fontify"
-msgstr "格式化"
+msgstr "fontificare"
 
 #: rc.c:319
 msgid "A:relative to screen height"
-msgstr "A:相對於螢幕高度"
+msgstr "A: relativo all'altezza dello schermo"
 
 #: rc.c:320
 msgid "B:fixed speed"
-msgstr "B:固定速度"
+msgstr "B:velocità fissa"
 
 #: rc.c:327
 msgid "unspecified"
-msgstr "未指定"
+msgstr "non specificato"
 
 #: rc.c:328
 msgid "inet inet6"
-msgstr "IPv4 然後 IPv6"
+msgstr "inet inet6"
 
 #: rc.c:329
 msgid "inet6 inet"
-msgstr "IPv6 然後 IPv4"
+msgstr "inet6 inet"
 
 #: rc.c:330
 msgid "inet only"
-msgstr "限用 IPv4"
+msgstr "solo inet"
 
 #: rc.c:331
 msgid "inet6 only"
-msgstr "限用 IPv6"
+msgstr "solo inet6"
 
 #: rc.c:338
 msgid "discard"
-msgstr "丟棄"
+msgstr "dimenticare"
 
 #: rc.c:340
 msgid "accept"
-msgstr "接受"
+msgstr "accettare"
 
 #: rc.c:342
 msgid "ask"
-msgstr "詢問"
+msgstr "chiedere"
 
 #: rc.c:349
 msgid "use internal mailer instead"
-msgstr "使用內建郵件傳送器"
+msgstr "usare invece il mailer interno"
 
 #: rc.c:351
 msgid "ignore options and use only the address"
-msgstr "忽略參數，限用地址部分"
+msgstr "ignorare opzioni e usare solo l'indirizzo"
 
 #: rc.c:352
 msgid "use full mailto URL"
-msgstr "使用整個 mailto 網址"
+msgstr "usare l'URL mailto completo"
 
 #: rc.c:361
 msgid "OFF"
-msgstr "停用"
+msgstr "OFF"
 
 #: rc.c:362
 msgid "Only ISO 2022"
-msgstr "只限 ISO 2022"
+msgstr "Solo ISO 2022"
 
 #: rc.c:363
 msgid "ON"
-msgstr "啟動"
+msgstr "ON"
 
 #: rc.c:369
 msgid "ASCII"
-msgstr "限用 ASCII"
+msgstr "ASCII"
 
 #: rc.c:370
 msgid "charset specific"
-msgstr "依照編碼"
+msgstr "set caratteri specifico"
 
 #: rc.c:371
 msgid "DEC special graphics"
-msgstr "使用 DEC 圖形字元"
+msgstr "grafiche speciali DEC"
 
 #: rc.c:377
 msgid "external command"
-msgstr "外部指令"
+msgstr "comando esterno"
 
 #: rc.c:378
 msgid "OSC 5379 (mlterm)"
-msgstr ""
+msgstr "OSC 5379 (mlterm)"
 
 #: rc.c:379
 msgid "sixel (img2sixel)"
-msgstr ""
+msgstr "sixel (img2sixel)"
 
 #: rc.c:380
 msgid "OSC 1337 (iTerm2)"
-msgstr ""
+msgstr "OSC 1337 (iTerm2)"
 
 #: rc.c:381
 msgid "kitty (ImageMagick)"
-msgstr ""
+msgstr "kitty (ImageMagick)"
 
 #: rc.c:779
 msgid "Display Settings"
-msgstr "顯示設定"
+msgstr "Mostrare Impostazioni"
 
 #: rc.c:781
 msgid "Color Settings"
-msgstr "顏色設定"
+msgstr "Impostazioni Colore"
 
 #: rc.c:783
 msgid "Miscellaneous Settings"
-msgstr "雜項設定"
+msgstr "Impostazioni Varie"
 
 #: rc.c:784
 msgid "Directory Settings"
-msgstr "目錄設定"
+msgstr "Impostazioni Directory"
 
 #: rc.c:785
 msgid "External Program Settings"
-msgstr "外部程式設定"
+msgstr "Impostazioni Programmi Esterni"
 
 #: rc.c:786
 msgid "Network Settings"
-msgstr "網路設定"
+msgstr "Impostazioni Rete"
 
 #: rc.c:787
 msgid "Proxy Settings"
-msgstr "代理伺服器設定"
+msgstr "Impostazioni Proxy"
 
 #: rc.c:789
 msgid "SSL Settings"
-msgstr "SSL 設定"
+msgstr "Impostazioni SSL"
 
 #: rc.c:792
 msgid "Cookie Settings"
-msgstr "Cookie 設定"
+msgstr "Impostazioni Cookie"
 
 #: rc.c:795
 msgid "Charset Settings"
-msgstr "編碼設定"
+msgstr "Impostazioni Set Caratteri"
 
 #. TRANSLATORS:
 #. * AcceptLang default: this is used in Accept-Language: HTTP request
@@ -977,4 +967,4 @@ msgstr "編碼設定"
 #.
 #: rc.c:1277
 msgid "en;q=1.0"
-msgstr "zh-TW;q=1.0, zh-Hant;q=0.9, en;q=0.8; zh;q=0.6"
+msgstr "it;q=1.0"

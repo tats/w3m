@@ -51,7 +51,7 @@ news_command(News * news, char *cmd, char *arg, int *status)
 	return NULL;
     *status = -1;
     tmp = StrISgets(news->rf);
-    if (tmp->length)
+    if (tmp && tmp->length)
 	sscanf(tmp->ptr, "%d", status);
     return tmp;
 }
@@ -235,7 +235,6 @@ InputStream
 openNewsStream(ParsedURL *pu)
 {
     char *host, *mode, *group, *p;
-    Str tmp;
     int port, status;
 
     if (pu->file == NULL || *pu->file == '\0')
@@ -262,7 +261,7 @@ openNewsStream(ParsedURL *pu)
 	mode = NULL;
     if (current_news.host) {
 	if (!strcmp(current_news.host, host) && current_news.port == port) {
-	    tmp = news_command(&current_news, "MODE", mode ? mode : "READER",
+	    news_command(&current_news, "MODE", mode ? mode : "READER",
 			       &status);
 	    if (status != 200 && status != 201)
 		news_close(&current_news);
@@ -397,7 +396,8 @@ loadNewsgroup0(ParsedURL *pu)
     if (status == 224) {
 	f.scheme = SCM_NEWS;
 	while (1) {
-	    tmp = StrISgets(current_news.rf);
+	    if (!(tmp = StrISgets(current_news.rf)))
+		break;
 	    if (NEWS_ENDLINE(tmp->ptr))
 		break;
 	    if (sscanf(tmp->ptr, "%d", &i) != 1)
@@ -444,7 +444,7 @@ loadNewsgroup0(ParsedURL *pu)
 		continue;
 	    if (*p == '<')
 		p++;
-	    if (!(q = strchr(p, '>')) && !(q = strchr(p, '\t')))
+	    if ((q = strchr(p, '>')) || (q = strchr(p, '\t')))
 		*q = '\0';
 	    if (!(s = checkHeader(buf, "Subject:")))
 		continue;
@@ -475,7 +475,8 @@ loadNewsgroup0(ParsedURL *pu)
     if (status != 215)
 	goto news_end;
     while (1) {
-	tmp = StrISgets(current_news.rf);
+	if (!(tmp = StrISgets(current_news.rf)))
+	    break;
 	if (NEWS_ENDLINE(tmp->ptr))
 	    break;
 	if (flag < 2) {

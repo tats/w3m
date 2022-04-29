@@ -278,7 +278,7 @@ newTable()
     t->max_rowsize = MAXROW;
     t->tabdata = New_N(GeneralList **, MAXROW);
     t->tabattr = New_N(table_attr *, MAXROW);
-    t->tabheight = NewAtom_N(short, MAXROW);
+    t->tabheight = NewAtom_N(int, MAXROW);
 #ifdef ID_EXT
     t->tabidvalue = New_N(Str *, MAXROW);
     t->tridvalue = New_N(Str, MAXROW);
@@ -331,17 +331,21 @@ check_row(struct table *t, int row)
     int i, r;
     GeneralList ***tabdata;
     table_attr **tabattr;
-    short *tabheight;
+    int *tabheight;
 #ifdef ID_EXT
     Str **tabidvalue;
     Str *tridvalue;
 #endif				/* ID_EXT */
 
+    if (row < 0 || row >= MAXROW_LIMIT)
+	return;
     if (row >= t->max_rowsize) {
 	r = max(t->max_rowsize * 2, row + 1);
+	if (r <= 0 || r > MAXROW_LIMIT)
+	    r = MAXROW_LIMIT;
 	tabdata = New_N(GeneralList **, r);
 	tabattr = New_N(table_attr *, r);
-	tabheight = NewAtom_N(short, r);
+	tabheight = NewAtom_N(int, r);
 #ifdef ID_EXT
 	tabidvalue = New_N(Str *, r);
 	tridvalue = New_N(Str, r);
@@ -415,7 +419,7 @@ suspend_or_pushdata(struct table *tbl, char *line)
 #ifdef USE_M17N
 #define PUSH_TAG(str,n) Strcat_charp_n(tagbuf, str, n)
 #else
-#define PUSH_TAG(str,n) Strcat_char(tagbuf, *str)
+#define PUSH_TAG(str,n) Strcat_char(tagbuf, *str), (void)n
 #endif
 
 int visible_length_offset = 0;
@@ -612,12 +616,17 @@ print_item(struct table *t, int row, int col, int width, Str buf)
 	    alignment = ALIGN_RIGHT;
 	else if ((t->tabattr[row][col] & HTT_ALIGN) == HTT_CENTER)
 	    alignment = ALIGN_CENTER;
+	if (DisableCenter && alignment == ALIGN_CENTER)
+	    alignment = ALIGN_LEFT;
 	align(lbuf, width, alignment);
 	Strcat(buf, lbuf->line);
     }
     else {
 	lbuf = newTextLine(NULL, 0);
-	align(lbuf, width, ALIGN_CENTER);
+	if (DisableCenter)
+	    align(lbuf, width, ALIGN_LEFT);
+	else
+	    align(lbuf, width, ALIGN_CENTER);
 	Strcat(buf, lbuf->line);
     }
 }
@@ -634,6 +643,8 @@ print_sep(struct table *t, int row, int type, int maxcol, Str buf)
     int rule_mode;
     int i, k, l, m;
 
+    if (row + 1 < 0 || row + 1 >= MAXROW_LIMIT)
+	return;
     if (row >= 0)
 	check_row(t, row);
     check_row(t, row + 1);
@@ -843,6 +854,39 @@ table_rule_width(struct table *t)
     if (t->border_mode == BORDER_NONE)
 	return 1;
     return RULE_WIDTH;
+}
+
+static void
+check_cell_height(int *tabheight, int *cellheight,
+		 short *row, short *rowspan, short maxcell,
+		 short *indexarray, int space, int dir)
+{
+    int i, j, k, brow, erow;
+    int sheight, height;
+
+    for (k = 0; k <= maxcell; k++) {
+	j = indexarray[k];
+	if (cellheight[j] <= 0)
+	    continue;
+	brow = row[j];
+	erow = brow + rowspan[j];
+	sheight = 0;
+	for (i = brow; i < erow; i++)
+	    sheight += tabheight[i];
+
+	height = cellheight[j] - (rowspan[j] - 1) * space;
+	if (height > sheight) {
+	    int w = (height - sheight) / rowspan[j];
+	    int r = (height - sheight) % rowspan[j];
+	    for (i = brow; i < erow; i++)
+		tabheight[i] += w;
+	    /* dir {0: horizontal, 1: vertical} */
+	    if (dir == 1 && r > 0)
+		r = rowspan[j];
+	    for (i = 1; i <= r; i++)
+		tabheight[erow - i]++;
+	}
+    }
 }
 
 static void
@@ -1218,9 +1262,10 @@ check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
     int corr = 0;
     struct table_cell *cell = &t->cell;
 #ifdef __GNUC__
-    short orgwidth[t->maxcol + 1], corwidth[t->maxcol + 1];
-    short cwidth[cell->maxcell + 1];
-    double swidth[cell->maxcell + 1];
+    short orgwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
+    short corwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
+    short cwidth[cell->maxcell >= 0 ? cell->maxcell + 1 : 1];
+    double swidth[cell->maxcell >= 0 ? cell->maxcell + 1 : 1];
 #else				/* __GNUC__ */
     short orgwidth[MAXCOL], corwidth[MAXCOL];
     short cwidth[MAXCELL];
@@ -1478,8 +1523,8 @@ check_table_height(struct table *t)
 	short *indexarray;
 	short maxcell;
 	short size;
-	short *height;
-    } cell;
+	int *height;
+    } cell = {0};
     int space = 0;
 
     cell.size = 0;
@@ -1517,7 +1562,7 @@ check_table_height(struct table *t)
 			cell.row = NewAtom_N(short, cell.size);
 			cell.rowspan = NewAtom_N(short, cell.size);
 			cell.indexarray = NewAtom_N(short, cell.size);
-			cell.height = NewAtom_N(short, cell.size);
+			cell.height = NewAtom_N(int, cell.size);
 		    }
 		    else {
 			cell.size = max(cell.size + MAXCELL, c + 1);
@@ -1526,7 +1571,7 @@ check_table_height(struct table *t)
 						 cell.size);
 			cell.indexarray = New_Reuse(short, cell.indexarray,
 						    cell.size);
-			cell.height = New_Reuse(short, cell.height, cell.size);
+			cell.height = New_Reuse(int, cell.height, cell.size);
 		    }
 		}
 		if (c > cell.maxcell) {
@@ -1560,7 +1605,7 @@ check_table_height(struct table *t)
     case BORDER_NONE:
 	space = 0;
     }
-    check_cell_width(t->tabheight, cell.height, cell.row, cell.rowspan,
+    check_cell_height(t->tabheight, cell.height, cell.row, cell.rowspan,
 		     cell.maxcell, cell.indexarray, space, 1);
 }
 
@@ -1571,7 +1616,7 @@ int
 get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 {
 #ifdef __GNUC__
-    short newwidth[t->maxcol + 1];
+    short newwidth[t->maxcol >= 0 ? t->maxcol + 1 : 1];
 #else				/* not __GNUC__ */
     short newwidth[MAXCOL];
 #endif				/* not __GNUC__ */
@@ -1585,7 +1630,7 @@ get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 
     if (flag & CHECK_FIXED) {
 #ifdef __GNUC__
-	short ccellwidth[cell->maxcell + 1];
+	short ccellwidth[cell->maxcell >= 0 ? cell->maxcell + 1 : 1];
 #else				/* not __GNUC__ */
 	short ccellwidth[MAXCELL];
 #endif				/* not __GNUC__ */
@@ -2213,7 +2258,8 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
 
     if (!(tbl->flag & TBL_IN_ROW)) {
 	tbl->flag |= TBL_IN_ROW;
-	tbl->row++;
+	if (tbl->row + 1 < MAXROW_LIMIT)
+	    tbl->row++;
 	if (tbl->row > tbl->maxrow)
 	    tbl->maxrow = tbl->row;
 	tbl->col = -1;
@@ -2230,6 +2276,8 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
 	if (tbl->col < MAXCOL)
 	    break;
 	tbl->col = 0;
+	if (tbl->row + 1 >= MAXROW_LIMIT)
+	    break;
     }
     if (tbl->row > tbl->maxrow)
 	tbl->maxrow = tbl->row;
@@ -2536,6 +2584,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	    check_rowcol(tbl, mode);
 	return TAG_ACTION_N_TABLE;
     case HTML_TR:
+	if (tbl->row + 1 >= MAXROW_LIMIT)
+	    return TAG_ACTION_NONE;
 	if (tbl->col >= 0 && tbl->tabcontentssize > 0)
 	    setwidth(tbl, mode);
 	tbl->col = -1;
@@ -2591,6 +2641,8 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	}
 	if (tbl->col == -1) {
 	    if (!(tbl->flag & TBL_IN_ROW)) {
+		if (tbl->row + 1 >= MAXROW_LIMIT)
+		    return TAG_ACTION_NONE;
 		tbl->row++;
 		tbl->flag |= TBL_IN_ROW;
 	    }
@@ -2621,11 +2673,12 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	else
 	    valign = HTT_MIDDLE;
 	if (parsedtag_get_value(tag, ATTR_ROWSPAN, &rowspan)) {
-	    if(rowspan > ATTR_ROWSPAN_MAX) {
+	    if (rowspan < 0 || rowspan > ATTR_ROWSPAN_MAX)
 		rowspan = ATTR_ROWSPAN_MAX;
-	    }
-	    if ((tbl->row + rowspan) >= tbl->max_rowsize)
-		check_row(tbl, tbl->row + rowspan);
+	    if ((tbl->row + rowspan - 1) >= MAXROW_LIMIT)
+		rowspan = MAXROW_LIMIT - tbl->row;
+	    if ((tbl->row + rowspan) > tbl->max_rowsize)
+		check_row(tbl, tbl->row + rowspan - 1);
 	}
 	if (rowspan < 1)
 	    rowspan = 1;
@@ -3324,12 +3377,16 @@ pushTable(struct table *tbl, struct table *tbl1)
     int col;
     int row;
 
+    if (tbl->ntable < 0 || tbl->ntable >= MAX_TABLE_N_LIMIT)
+	return;
     col = tbl->col;
     row = tbl->row;
 
     if (tbl->ntable >= tbl->tables_size) {
 	struct table_in *tmp;
 	tbl->tables_size += MAX_TABLE_N;
+	if (tbl->tables_size <= 0 || tbl->tables_size > MAX_TABLE_N_LIMIT)
+	    tbl->tables_size = MAX_TABLE_N_LIMIT;
 	tmp = New_N(struct table_in, tbl->tables_size);
 	if (tbl->tables)
 	    bcopy(tbl->tables, tmp, tbl->ntable * sizeof(struct table_in));

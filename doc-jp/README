@@ -48,9 +48,7 @@
 インストールをするには，次のようにします．
 
   - GC library (6.1より新しいもの?)をインストールしておきます。
-    GC library は 
-     http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
-    から入手できます。
+    GC library は https://www.hboehm.info/gc から入手できます。
 
     GC library 6.1を使っている場合は gc.h を PREFIX/include に
     インストールしておく必要があります。

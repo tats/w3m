@@ -101,7 +101,7 @@ main(int argc, char **argv)
 	 * |op|; |args             |\n|
 	 * +--+--+--+--+ .......+--+--+
 	 *
-	 * args is separeted by ';'
+	 * args is separated by ';'
 	 * op   args
 	 *  0;  params          draw image
 	 *  1;  params          redraw image

@@ -84,6 +84,9 @@ draw(FB_IMAGE * img, Imlib_Image image)
     imlib_context_set_image(image);
     data = imlib_image_get_data_for_reading_only();
 
+    if (data == NULL)
+	return;
+
     for (j = 0; j < img->height; j++) {
 	offset = img->width * j;
 	for (i = 0; i < img->width; i++) {

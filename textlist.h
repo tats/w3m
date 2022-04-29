@@ -2,6 +2,8 @@
 #ifndef TEXTLIST_H
 #define TEXTLIST_H
 #include "Str.h"
+#include <limits.h>
+#define GENERAL_LIST_MAX (INT_MAX / 32)
 
 /* General doubly linked list */
 
@@ -14,7 +16,7 @@ typedef struct _listitem {
 typedef struct _generallist {
     ListItem *first;
     ListItem *last;
-    short nitem;
+    int nitem;
 } GeneralList;
 
 extern ListItem *newListItem(void *s, ListItem *n, ListItem *p);
@@ -36,7 +38,7 @@ typedef struct _textlistitem {
 typedef struct _textlist {
     TextListItem *first;
     TextListItem *last;
-    short nitem;
+    int nitem;
 } TextList;
 
 #define newTextList() ((TextList *)newGeneralList())
@@ -50,7 +52,7 @@ typedef struct _textlist {
 
 typedef struct _TextLine {
     Str line;
-    short pos;
+    int pos;
 } TextLine;
 
 typedef struct _textlinelistitem {
@@ -62,7 +64,7 @@ typedef struct _textlinelistitem {
 typedef struct _textlinelist {
     TextLineListItem *first;
     TextLineListItem *last;
-    short nitem;
+    int nitem;
 } TextLineList;
 
 extern TextLine *newTextLine(Str line, int pos);

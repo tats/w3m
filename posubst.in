@@ -1,12 +1,15 @@
 #!@PERL@
 # gettext message substitute
 #
-$po_dir='po';
-$lang='@POLANG@';
-%msg = ();
-$msgid = '';
-$charset = "UTF-8";
-$charset_code = "WC_CES_UTF_8";
+use strict;
+use warnings;
+
+my $po_dir='po';
+my $lang='@POLANG@';
+my %msg = ();
+my $msgid = '';
+my $charset = "UTF-8";
+my $charset_code = "WC_CES_UTF_8";
 open(PO, "$po_dir/$lang.po") or die "cannot open $po_dir/$lang.po, $!";
 while (<PO>) {
     if (/^msgid\s*"(.*)"/) {
@@ -25,7 +28,7 @@ while (<PO>) {
 close(PO);
 open(CL, "charset-list") or die "cannot open charset-list, $!";
 while (<CL>) {
-    @l = split;
+    my @l = split;
     if ($l[0] eq $charset) {
 	$charset_code = $l[1];
 	last;
@@ -33,9 +36,9 @@ while (<CL>) {
 }
 close(CL);
 
-@src = grep {/\.c$/} @ARGV;
-@tmp = ();
-foreach $src (@src) {
+my @src = grep {/\.c$/} @ARGV;
+my @tmp = ();
+foreach my $src (@src) {
     open(SRC0, $src) or die "cannot open $src, $!";
     push(@tmp, ".$src");
     open(SRC1, ">.$src") or die "cannot create .$src, $!";
@@ -49,5 +52,22 @@ foreach $src (@src) {
 }
 
 map {s/(.*\.c)$/.$1/} @ARGV;
+my $err = 0;
 system @ARGV;
+if ($? == -1) {
+	print "failed to execute: $!\n";
+	$err = 125;
+}
+elsif ($? & 127) {
+	printf "child died with signal %d\n", ($? & 127);
+	$err = 125;
+}
+else {
+	$err = $? >> 8;
+	if ($err != 0) {
+		printf "child exited with value %d\n", $err;
+	}
+}
+
 unlink @tmp;
+exit $err;

@@ -35,7 +35,8 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
-CFLAGS = $(OPTS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS)
+WARNINGS= -Wall -Wnull-dereference
+CFLAGS = $(WARNINGS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS) $(OPTS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@
 DEFS = @DEFS@ -DAUXBIN_DIR=\"$(AUXBIN_DIR)\" \
@@ -322,7 +323,7 @@ depend:
 	makedepend $(CFLAGS) *.c
 
 dist:
-	git archive --format=tar --prefix=w3m-$(VERSION)/ HEAD | xz -9 > ../w3m-$(VERSION).tar.xz
+	git archive --format=tar --prefix=w3m-$(VERSION)/ HEAD | xz -9e > ../w3m-$(VERSION).tar.xz
 
 bindist:
 	cd ..; tar cvfz w3m-$(VERSION)-$(MODEL).tar.gz w3m/w3m* w3m/doc* w3m/Bonus* w3m/README w3m/scripts 

@@ -41,10 +41,6 @@
 #define close(fd)	closesocket(fd)
 #endif
 
-#ifndef HOST_NAME_MAX
-#define HOST_NAME_MAX 64
-#endif
-
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */
 int ai_family_order_table[7][3] = {
@@ -293,6 +289,38 @@ init_PRNG()
 }
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x00905100 */
 
+#ifdef SSL_CTX_set_min_proto_version
+static int
+str_to_ssl_version(const char *name)
+{
+    if(!strcasecmp(name, "all"))
+	return 0;
+    if(!strcasecmp(name, "none"))
+	return 0;
+#ifdef TLS1_3_VERSION
+    if (!strcasecmp(name, "TLSv1.3"))
+	return TLS1_3_VERSION;
+#endif
+#ifdef TLS1_2_VERSION
+    if (!strcasecmp(name, "TLSv1.2"))
+	return TLS1_2_VERSION;
+#endif
+#ifdef TLS1_1_VERSION
+    if (!strcasecmp(name, "TLSv1.1"))
+	return TLS1_1_VERSION;
+#endif
+    if (!strcasecmp(name, "TLSv1.0"))
+	return TLS1_VERSION;
+    if (!strcasecmp(name, "TLSv1"))
+	return TLS1_VERSION;
+    if (!strcasecmp(name, "SSLv3.0"))
+	return SSL3_VERSION;
+    if (!strcasecmp(name, "SSLv3"))
+	return SSL3_VERSION;
+    return -1;
+}
+#endif				/* SSL_CTX_set_min_proto_version */
+
 static SSL *
 openSSLHandle(int sock, char *hostname, char **p_cert)
 {
@@ -336,9 +364,22 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 #endif
 	if (!(ssl_ctx = SSL_CTX_new(SSLv23_client_method())))
 	    goto eend;
-#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
-	SSL_CTX_set_cipher_list(ssl_ctx, "DEFAULT:!LOW:!RC4:!EXP");
+#ifdef SSL_CTX_set_min_proto_version
+	if (ssl_min_version && *ssl_min_version != '\0') {
+	    int sslver;
+	    sslver = str_to_ssl_version(ssl_min_version);
+	    if (sslver < 0
+		|| !SSL_CTX_set_min_proto_version(ssl_ctx, sslver)) {
+		free_ssl_ctx();
+		goto eend;
+	    }
+	}
 #endif
+	if (ssl_cipher && *ssl_cipher != '\0')
+	    if (!SSL_CTX_set_cipher_list(ssl_ctx, ssl_cipher)) {
+		free_ssl_ctx();
+		goto eend;
+	    }
 	option = SSL_OP_ALL;
 	if (ssl_forbid_method) {
 	    if (strchr(ssl_forbid_method, '2'))
@@ -399,10 +440,19 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 		goto eend;
 	    }
 	}
-	if ((!ssl_ca_file && !ssl_ca_path)
-	    || SSL_CTX_load_verify_locations(ssl_ctx, ssl_ca_file, ssl_ca_path))
+	if (ssl_verify_server) {
+	    char *file = NULL, *path = NULL;
+	    if (ssl_ca_file && *ssl_ca_file != '\0') file = ssl_ca_file;
+	    if (ssl_ca_path && *ssl_ca_path != '\0') path = ssl_ca_path;
+	    if ((file || path)
+		&& !SSL_CTX_load_verify_locations(ssl_ctx, file, path)) {
+		free_ssl_ctx();
+		goto eend;
+	    }
+	    if (ssl_ca_default)
+		SSL_CTX_set_default_verify_paths(ssl_ctx);
+	}
 #endif				/* defined(USE_SSL_VERIFY) */
-	    SSL_CTX_set_default_verify_paths(ssl_ctx);
 #endif				/* SSLEAY_VERSION_NUMBER >= 0x0800 */
     }
     handle = SSL_new(ssl_ctx);
@@ -429,7 +479,7 @@ openSSLHandle(int sock, char *hostname, char **p_cert)
 	SSL_free(handle);
     /* FIXME: gettextize? */
     disp_err_message(Sprintf
-		     ("SSL error: %s",
+		     ("SSL error: %s, a workaround might be: w3m -insecure",
 		      ERR_error_string(ERR_get_error(), NULL))->ptr, FALSE);
     return NULL;
 }
@@ -727,34 +777,13 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    copyParsedURL(p_url, current);
 	goto do_label;
     }
-    if (!strncasecmp(url, "file://", 7)) {
 #if defined( __EMX__ ) || defined( __CYGWIN__ )
-	if (!strncasecmp(url + 7, "localhost/", 10)) {
-	    p_url->scheme = SCM_LOCAL;
-	    p += 7 + 10 - 1;
-	    url += 7 + 10 - 1;
-	} else
-#endif
-	{
-	    /* Recognize the machine's host name.  This is necessary for URLs
-	     * produced by 'ls --hyperlink' or similar.  */
-	    char hostname[HOST_NAME_MAX + 2];
-	    if (gethostname (hostname, HOST_NAME_MAX + 2) == 0) {
-		size_t hostname_len;
-		/* Don't use hostname if it is truncated.  */
-		hostname[HOST_NAME_MAX + 1] = '\0';
-		hostname_len = strlen (hostname);
-		if (hostname_len <= HOST_NAME_MAX) {
-		    if (!strncasecmp(url + 7, hostname, hostname_len)
-			&& *(url + 7 + hostname_len) == '/') {
-			p_url->scheme = SCM_LOCAL;
-			p += 7 + hostname_len;
-			url += 7 + hostname_len;
-		    }
-		}
-	    }
-	}
+    if (!strncasecmp(url, "file://localhost/", 17)) {
+	p_url->scheme = SCM_LOCAL;
+	p += 17 - 1;
+	url += 17 - 1;
     }
+#endif
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
     if (IS_ALPHA(*p) && (p[1] == ':' || p[1] == '|')) {
 	p_url->scheme = SCM_LOCAL;
@@ -897,7 +926,7 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 #ifndef SUPPORT_NETBIOS_SHARE
     if (p_url->scheme == SCM_LOCAL && p_url->user == NULL &&
 	p_url->host != NULL && *p_url->host != '\0' &&
-	strcmp(p_url->host, "localhost")) {
+	!is_localhost(p_url->host)) {
 	/*
 	 * In the environments other than CYGWIN, a URL like 
 	 * file://host/file is regarded as ftp://host/file.
@@ -949,7 +978,10 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
     }
 #ifdef USE_GOPHER
     if (p_url->scheme == SCM_GOPHER && *p == 'R') {
-	p++;
+	if (!*++p) {
+	    p_url->file = "";
+	    goto do_query;
+	}
 	tmp = Strnew();
 	Strcat_char(tmp, *(p++));
 	while (*p && *p != '/')
@@ -1208,7 +1240,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	}
 	if (pu->scheme == SCM_LOCAL) {
 #ifdef SUPPORT_NETBIOS_SHARE
-	    if (pu->host && strcmp(pu->host, "localhost") != 0) {
+	    if (pu->host && !is_localhost(pu->host)) {
 		Str tmp = Strnew_charp("//");
 		Strcat_m_charp(tmp, pu->host,
 			       cleanupName(file_unquote(pu->file)), NULL);
@@ -1222,7 +1254,7 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 }
 
 static Str
-_parsedURL2Str(ParsedURL *pu, int pass)
+_parsedURL2Str(ParsedURL *pu, int pass, int user, int label)
 {
     Str tmp;
     static char *scheme_str[] = {
@@ -1239,13 +1271,13 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     else if (pu->scheme == SCM_UNKNOWN) {
 	return Strnew_charp(pu->file);
     }
-    if (pu->host == NULL && pu->file == NULL && pu->label != NULL) {
+    if (pu->host == NULL && pu->file == NULL && label && pu->label != NULL) {
 	/* local label */
 	return Sprintf("#%s", pu->label);
     }
     if (pu->scheme == SCM_LOCAL && !strcmp(pu->file, "-")) {
 	tmp = Strnew_charp("-");
-	if (pu->label) {
+	if (label && pu->label) {
 	    Strcat_char(tmp, '#');
 	    Strcat_charp(tmp, pu->label);
 	}
@@ -1273,7 +1305,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
     {
 	Strcat_charp(tmp, "//");
     }
-    if (pu->user) {
+    if (user && pu->user) {
 	Strcat_charp(tmp, pu->user);
 	if (pass && pu->pass) {
 	    Strcat_char(tmp, ':');
@@ -1307,7 +1339,7 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 	Strcat_char(tmp, '?');
 	Strcat_charp(tmp, pu->query);
     }
-    if (pu->label) {
+    if (label && pu->label) {
 	Strcat_char(tmp, '#');
 	Strcat_charp(tmp, pu->label);
     }
@@ -1317,7 +1349,28 @@ _parsedURL2Str(ParsedURL *pu, int pass)
 Str
 parsedURL2Str(ParsedURL *pu)
 {
-    return _parsedURL2Str(pu, FALSE);
+    return _parsedURL2Str(pu, FALSE, TRUE, TRUE);
+}
+
+static Str
+parsedURL2RefererOriginStr(ParsedURL *pu)
+{
+    Str s;
+    char *f = pu->file, *q = pu->query;
+
+    pu->file = NULL;
+    pu->query = NULL;
+    s = _parsedURL2Str(pu, FALSE, FALSE, FALSE);
+    pu->file = f;
+    pu->query = q;
+
+    return s;
+}
+
+Str
+parsedURL2RefererStr(ParsedURL *pu)
+{
+    return _parsedURL2Str(pu, FALSE, FALSE, FALSE);
 }
 
 int
@@ -1395,6 +1448,13 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
     no_referer_ptr = query_SCONF_NO_REFERER_TO(target);
     no_referer = no_referer || (no_referer_ptr && *no_referer_ptr);
     if (!no_referer) {
+	int cross_origin = FALSE;
+	if (CrossOriginReferer && current && current->host &&
+	    (!target || !target->host ||
+	     strcasecmp(current->host, target->host) != 0 || 
+	     current->port != target->port ||
+	     current->scheme != target->scheme))
+	    cross_origin = TRUE;
 #ifdef USE_SSL
         if (current && current->scheme == SCM_HTTPS && target->scheme != SCM_HTTPS) {
 	  /* Don't send Referer: if https:// -> http:// */
@@ -1402,21 +1462,20 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	else
 #endif
 	if (referer == NULL && current && current->scheme != SCM_LOCAL &&
-	    current->scheme != SCM_LOCAL_CGI &&
+	    current->scheme != SCM_LOCAL_CGI && current->scheme != SCM_DATA &&
 	    (current->scheme != SCM_FTP ||
 	     (current->user == NULL && current->pass == NULL))) {
-	    char *p = current->label;
 	    Strcat_charp(s, "Referer: ");
-	    current->label = NULL;
-	    Strcat(s, parsedURL2Str(current));
-	    current->label = p;
+	    if (cross_origin)
+		Strcat(s, parsedURL2RefererOriginStr(current));
+	    else
+		Strcat(s, parsedURL2RefererStr(current));
 	    Strcat_charp(s, "\r\n");
 	}
 	else if (referer != NULL && referer != NO_REFERER) {
-	    char *p = strchr(referer, '#');
 	    Strcat_charp(s, "Referer: ");
-	    if (p)
-		Strcat_charp_n(s, referer, p - referer);
+	    if (cross_origin)
+		Strcat(s, parsedURL2RefererOriginStr(current));
 	    else
 		Strcat_charp(s, referer);
 	    Strcat_charp(s, "\r\n");
@@ -1459,12 +1518,8 @@ HTTPrequestURI(ParsedURL *pu, HRequest *hr)
 	    Strcat_charp(tmp, pu->query);
 	}
     }
-    else {
-	char *save_label = pu->label;
-	pu->label = NULL;
-	Strcat(tmp, _parsedURL2Str(pu, TRUE));
-	pu->label = save_label;
-    }
+    else
+	Strcat(tmp, _parsedURL2Str(pu, TRUE, TRUE, FALSE));
     return tmp;
 }
 
@@ -1618,6 +1673,9 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	    return uf;
 	}
     }
+
+    if (LocalhostOnly && pu->host && !is_localhost(pu->host))
+	pu->host = NULL;
 
     uf.scheme = pu->scheme;
     uf.url = parsedURL2Str(pu)->ptr;

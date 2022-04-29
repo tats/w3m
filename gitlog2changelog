@@ -18,8 +18,8 @@ TZ=UTC git log --date=local --no-merges --numstat --pretty=fuller | gitlog2chang
 =head1 SEE ALSO
 
 GNU Coding Standards:
-    <http://www.gnu.org/prep/standards/html_node/index.html>
-    <http://www.gnu.org/prep/standards/html_node/Change-Logs.html>
+    <https://www.gnu.org/prep/standards/html_node/index.html>
+    <https://www.gnu.org/prep/standards/html_node/Change-Logs.html>
 
 =head1 COPYRIGHT
 

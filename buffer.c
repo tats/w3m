@@ -239,7 +239,7 @@ writeBufferName(Buffer *buf, int n)
 void
 gotoLine(Buffer *buf, int n)
 {
-    char msg[32];
+    char msg[36];
     Line *l = buf->firstLine;
 
     if (l == NULL)
@@ -284,7 +284,7 @@ gotoLine(Buffer *buf, int n)
 void
 gotoRealLine(Buffer *buf, int n)
 {
-    char msg[32];
+    char msg[36];
     Line *l = buf->firstLine;
 
     if (l == NULL)
@@ -707,7 +707,8 @@ readBufferCache(Buffer *buf)
 
     cache = fopen(buf->savecache, "r");
     if (cache == NULL || fread1(clnum, cache) || fread1(tlnum, cache)) {
-	fclose(cache);
+	if (cache != NULL)
+	    fclose(cache);
 	buf->savecache = NULL;
 	return -1;
     }

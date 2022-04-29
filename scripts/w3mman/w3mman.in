@@ -31,13 +31,16 @@ while (@ARGV) {
     $query .= "&pwd=" . &form_encode($ENV{'PWD'});
   } elsif (/^-/) {
     &usage();
-  } elsif (/^\d/ || $_ eq 'n' || $_ eq 'l') {
+  } elsif ($query !~ /&section=/ && (/^\d/ || $_ eq 'n' || $_ eq 'l')) {
     if ( $query eq "" ) { $query = "?quit=ok"; }
     $query .= "&section=" . &form_encode($_);
   } else {
     if ( $query eq "" ) { $query = "?quit=ok"; }
     $query .= "&man=" . &form_encode($_);
   }
+}
+if ($query =~ /&section=/ && $query !~ /&keyword=/ && $query !~ /&man=/) {
+  $query =~ s/&section=/&man=/;
 }
 
 exec @W3M, "$SCRIPT$query";

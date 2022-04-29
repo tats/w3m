@@ -25,3 +25,7 @@ Usage
   environmental variable.
 
   $ W3M_IMG2SIXEL="img2sixel -d atkinson" w3m -sixel http://...
+
+This package is maintained for Debian <https://www.debian.org>,
+merged from arakiken's w3m remoteimg branch, intended to work with
+Debian's libsixel-bin package <https://tracker.debian.org/pkg/libsixel>.

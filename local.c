@@ -51,13 +51,10 @@ writeLocalCookie()
 Str
 localCookie()
 {
-    char hostname[256];
-
     if (Local_cookie)
 	return Local_cookie;
-    gethostname(hostname, 256);
     srand48((long)New(char) + (long)time(NULL));
-    Local_cookie = Sprintf("%ld@%s", lrand48(), hostname);
+    Local_cookie = Sprintf("%ld@%s", lrand48(), HostName ? HostName : "localhost");
     return Local_cookie;
 }
 
@@ -383,17 +380,19 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     cgi_dir = mydirname(file);
 #endif
     cgi_basename = mybasename(file);
-    pid = open_pipe_rw(&fr, NULL);
+    pid = open_pipe_rw(&fr, NULL); /* open_pipe_rw() forks */
     /* Don't invoke gc after here, or the program might crash in some platforms */
     if (pid < 0) {
 	if (fw)
 	    fclose(fw);
 	return NULL;
     } else if (pid) {
+	/* parent */
 	if (fw)
 	    fclose(fw);
 	return fr;
     }
+    /* child */
     setup_child(TRUE, 2, fw ? fileno(fw) : -1);
 
     set_cgi_environ(name, file, uri);
@@ -436,4 +435,9 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	    file, cgi_basename, strerror(errno));
     exit(1);
 #endif
+    /*
+     * Suppress compiler warning: function might return no value
+     * This code is never reached.
+     */
+    return NULL;
 }

@@ -86,11 +86,13 @@ static int OptionEncode = FALSE;
 #define CMT_IMAGE_SCALE  N_("Scale of image (%)")
 #define CMT_IMGDISPLAY   N_("External command to display image")
 #define CMT_IMAGE_MAP_LIST N_("Use link list of image map")
+#define CMT_INLINE_IMG_PROTOCOL N_("Inline image display method")
 #endif
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
 #define CMT_DISP_BORDERS N_("Display table borders, ignore value of BORDER")
+#define CMT_DISABLE_CENTER N_("Disable center alignment")
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
@@ -193,6 +195,7 @@ static int OptionEncode = FALSE;
 #endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     N_("Free memory of undisplayed buffers")
 #define CMT_NOSENDREFERER N_("Suppress `Referer:' header")
+#define CMT_CROSSORIGINREFERER N_("Exclude pathname and query string from `Referer:' header when cross domain communication")
 #define CMT_IGNORE_CASE N_("Search case-insensitively")
 #define CMT_USE_LESSOPEN N_("Use LESSOPEN")
 #ifdef USE_SSL
@@ -202,8 +205,13 @@ static int OptionEncode = FALSE;
 #define CMT_SSL_KEY_FILE N_("PEM encoded private key file of client")
 #define CMT_SSL_CA_PATH N_("Path to directory for PEM encoded certificates of CAs")
 #define CMT_SSL_CA_FILE N_("File consisting of PEM encoded certificates of CAs")
+#define CMT_SSL_CA_DEFAULT N_("Use default locations for PEM encoded certificates of CAs")
 #endif				/* USE_SSL_VERIFY */
 #define CMT_SSL_FORBID_METHOD N_("List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)")
+#ifdef SSL_CTX_set_min_proto_version
+#define CMT_SSL_MIN_VERSION N_("Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)")
+#endif
+#define CMT_SSL_CIPHER N_("SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)")
 #endif				/* USE_SSL */
 #ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
@@ -216,6 +224,7 @@ static int OptionEncode = FALSE;
 #endif
 #define CMT_FOLLOW_REDIRECTION N_("Number of redirections to follow")
 #define CMT_META_REFRESH N_("Enable processing of meta-refresh tag")
+#define CMT_LOCALHOST_ONLY N_("Restrict connections only to localhost")
 
 #ifdef USE_MIGEMO
 #define CMT_USE_MIGEMO N_("Enable Migemo (Roma-ji search)")
@@ -363,6 +372,17 @@ static struct sel_c graphic_char_str[] = {
     {0, NULL, NULL}
 };
 
+#ifdef USE_IMAGE
+static struct sel_c inlineimgstr[] = {
+    {N_S(INLINE_IMG_NONE), N_("external command")},
+    {N_S(INLINE_IMG_OSC5379), N_("OSC 5379 (mlterm)")},
+    {N_S(INLINE_IMG_SIXEL), N_("sixel (img2sixel)")},
+    {N_S(INLINE_IMG_ITERM2), N_("OSC 1337 (iTerm2)")},
+    {N_S(INLINE_IMG_KITTY), N_("kitty (ImageMagick)")},
+    {0, NULL, NULL}
+};
+#endif				/* USE_IMAGE */
+
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
     {"indent_incr", P_NZINT, PI_TEXT, (void *)&IndentIncr, CMT_INDENT_INCR,
@@ -403,6 +423,8 @@ struct param_ptr params1[] = {
      CMT_GRAPHIC_CHAR, (void *)graphic_char_str},
     {"display_borders", P_CHARINT, PI_ONOFF, (void *)&DisplayBorders,
      CMT_DISP_BORDERS, NULL},
+    {"disable_center", P_CHARINT, PI_ONOFF, (void *)&DisableCenter,
+     CMT_DISABLE_CENTER, NULL},
     {"fold_textarea", P_CHARINT, PI_ONOFF, (void *)&FoldTextarea,
      CMT_FOLD_TEXTAREA, NULL},
     {"display_ins_del", P_INT, PI_SEL_C, (void *)&displayInsDel,
@@ -424,6 +446,8 @@ struct param_ptr params1[] = {
      CMT_EXT_IMAGE_VIEWER, NULL},
     {"image_scale", P_SCALE, PI_TEXT, (void *)&image_scale, CMT_IMAGE_SCALE,
      NULL},
+    {"inline_img_protocol", P_INT, PI_SEL_C, (void *)&enable_inline_image,
+     CMT_INLINE_IMG_PROTOCOL, (void *)inlineimgstr},
     {"imgdisplay", P_STRING, PI_TEXT, (void *)&Imgdisplay, CMT_IMGDISPLAY,
      NULL},
     {"image_map_list", P_INT, PI_ONOFF, (void *)&image_map_list,
@@ -599,6 +623,12 @@ struct param_ptr params6[] = {
 struct param_ptr params7[] = {
     {"ssl_forbid_method", P_STRING, PI_TEXT, (void *)&ssl_forbid_method,
      CMT_SSL_FORBID_METHOD, NULL},
+#ifdef SSL_CTX_set_min_proto_version
+    {"ssl_min_version", P_STRING, PI_TEXT, (void *)&ssl_min_version,
+     CMT_SSL_MIN_VERSION, NULL},
+#endif
+    {"ssl_cipher", P_STRING, PI_TEXT, (void *)&ssl_cipher, CMT_SSL_CIPHER,
+     NULL},
 #ifdef USE_SSL_VERIFY
     {"ssl_verify_server", P_INT, PI_ONOFF, (void *)&ssl_verify_server,
      CMT_SSL_VERIFY_SERVER, NULL},
@@ -610,6 +640,8 @@ struct param_ptr params7[] = {
      NULL},
     {"ssl_ca_file", P_SSLPATH, PI_TEXT, (void *)&ssl_ca_file, CMT_SSL_CA_FILE,
      NULL},
+    {"ssl_ca_default", P_INT, PI_ONOFF, (void *)&ssl_ca_default,
+     CMT_SSL_CA_DEFAULT, NULL},
 #endif				/* USE_SSL_VERIFY */
     {NULL, 0, 0, NULL, NULL, NULL},
 };
@@ -651,6 +683,8 @@ struct param_ptr params9[] = {
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
+    {"cross_origin_referer", P_INT, PI_ONOFF, (void *)&CrossOriginReferer,
+     CMT_CROSSORIGINREFERER, NULL},
     {"accept_language", P_STRING, PI_TEXT, (void *)&AcceptLang, CMT_ACCEPTLANG,
      NULL},
     {"accept_encoding", P_STRING, PI_TEXT, (void *)&AcceptEncoding,
@@ -668,6 +702,8 @@ struct param_ptr params9[] = {
      CMT_FOLLOW_REDIRECTION, NULL},
     {"meta_refresh", P_CHARINT, PI_ONOFF, (void *)&MetaRefresh,
      CMT_META_REFRESH, NULL},
+    {"localhost_only", P_CHARINT, PI_ONOFF, (void *)&LocalhostOnly,
+     CMT_LOCALHOST_ONLY, NULL},
 #ifdef INET6
     {"dns_order", P_INT, PI_SEL_C, (void *)&DNS_order, CMT_DNS_ORDER,
      (void *)dnsorders},
@@ -1223,7 +1259,7 @@ sync_with_option(void)
     init_migemo();
 #endif
 #ifdef USE_IMAGE
-    if (fmInitialized && displayImage)
+    if (fmInitialized && (displayImage || enable_inline_image))
 	initImage();
 #else
     displayImage = FALSE;	/* XXX */

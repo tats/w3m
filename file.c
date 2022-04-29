@@ -30,6 +30,7 @@
 #define MAX_INPUT_SIZE 80 /* TODO - max should be screen line length */
 
 static int frame_source = 0;
+static int need_number = 0;
 
 static char *guess_filename(char *file);
 static int _MoveFile(char *path1, char *path2);
@@ -161,20 +162,24 @@ static struct compression_decoder {
     char *name;
     char *encoding;
     char *encodings[4];
+    int use_d_arg;
 } compression_decoders[] = {
     { CMP_COMPRESS, ".gz", "application/x-gzip",
       0, GUNZIP_CMDNAME, GUNZIP_NAME, "gzip", 
-      {"gzip", "x-gzip", NULL} }, 
+      {"gzip", "x-gzip", NULL}, 0 }, 
     { CMP_COMPRESS, ".Z", "application/x-compress",
       0, GUNZIP_CMDNAME, GUNZIP_NAME, "compress",
-      {"compress", "x-compress", NULL} }, 
+      {"compress", "x-compress", NULL}, 0 }, 
     { CMP_BZIP2, ".bz2", "application/x-bzip",
       0, BUNZIP2_CMDNAME, BUNZIP2_NAME, "bzip, bzip2",
-      {"x-bzip", "bzip", "bzip2", NULL} }, 
+      {"x-bzip", "bzip", "bzip2", NULL}, 0 }, 
     { CMP_DEFLATE, ".deflate", "application/x-deflate",
       1, INFLATE_CMDNAME, INFLATE_NAME, "deflate",
-      {"deflate", "x-deflate", NULL} }, 
-    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}},
+      {"deflate", "x-deflate", NULL}, 0 }, 
+    { CMP_BROTLI, ".br", "application/x-br",
+      0, BROTLI_CMDNAME, BROTLI_NAME, "br",
+      {"br", "x-br", NULL}, 1 }, 
+    { CMP_NOCOMPRESS, NULL, NULL, 0, NULL, NULL, NULL, {NULL}, 0},
 };
 /* *INDENT-ON* */
 
@@ -604,7 +609,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	if (src)
 	    newBuf->header_source = tmpf;
     }
-    while ((tmp = StrmyUFgets(uf))->length) {
+    while ((tmp = StrmyUFgets(uf)) && tmp->length) {
 #ifdef USE_NNTP
 	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
 	    Strshrinkfirst(tmp, 1);
@@ -1175,7 +1180,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     Str s = Strdup(uname);
     Strcat_char(s, ':');
     Strcat(s, pw);
-    return Strnew_m_charp("Basic ", encodeB(s->ptr)->ptr, NULL);
+    return Strnew_m_charp("Basic ", base64_encode(s->ptr, s->length)->ptr, NULL);
 }
 
 #ifdef USE_DIGEST_AUTH
@@ -1286,7 +1291,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
     tmp = Strnew_m_charp(uname->ptr, ":",
 			 qstr_unquote(get_auth_param(ha->param, "realm"))->ptr,
 			 ":", pw->ptr, NULL);
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a1buf = digest_hex(md5);
 
     if (algorithm) {
@@ -1299,7 +1304,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	    tmp = Strnew_m_charp(a1buf->ptr, ":",
 				 qstr_unquote(nonce)->ptr,
 				 ":", qstr_unquote(cnonce)->ptr, NULL);
-	    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	    a1buf = digest_hex(md5);
 	}
 	else if (strcasecmp(algorithm->ptr, "MD5") == 0)
@@ -1321,23 +1326,23 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 		    Str ebody;
 		    ebody = Strfgetall(fp);
 		    fclose(fp);
-		    MD5(ebody->ptr, strlen(ebody->ptr), md5);
+		    MD5((unsigned char *)ebody->ptr, strlen(ebody->ptr), md5);
 		}
 		else {
-		    MD5("", 0, md5);
+		    MD5((unsigned char *)"", 0, md5);
 		}
 	    }
 	    else {
-		MD5(request->body, request->length, md5);
+		MD5((unsigned char *)request->body, request->length, md5);
 	    }
 	}
 	else {
-	    MD5("", 0, md5);
+	    MD5((unsigned char *)"", 0, md5);
 	}
 	Strcat_char(tmp, ':');
 	Strcat(tmp, digest_hex(md5));
     }
-    MD5(tmp->ptr, strlen(tmp->ptr), md5);
+    MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
     a2buf = digest_hex(md5);
 
     if (qop_i >= QOP_AUTH) {
@@ -1355,7 +1360,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 			     ":", qstr_unquote(cnonce)->ptr,
 			     ":", qop_i == QOP_AUTH ? "auth" : "auth-int",
 			     ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
     else {
@@ -1365,7 +1370,7 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 	tmp = Strnew_m_charp(a1buf->ptr, ":",
 			     qstr_unquote(get_auth_param(ha->param, "nonce"))->
 			     ptr, ":", a2buf->ptr, NULL);
-	MD5(tmp->ptr, strlen(tmp->ptr), md5);
+	MD5((unsigned char *)tmp->ptr, strlen(tmp->ptr), md5);
 	rd = digest_hex(md5);
     }
 
@@ -1377,16 +1382,15 @@ AuthDigestCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
      */
 
     tmp = Strnew_m_charp("Digest username=\"", uname->ptr, "\"", NULL);
-    Strcat_m_charp(tmp, ", realm=",
-		   get_auth_param(ha->param, "realm")->ptr, NULL);
-    Strcat_m_charp(tmp, ", nonce=",
-		   get_auth_param(ha->param, "nonce")->ptr, NULL);
+    if ((s = get_auth_param(ha->param, "realm")) != NULL)
+	Strcat_m_charp(tmp, ", realm=", s->ptr, NULL);
+    if ((s = get_auth_param(ha->param, "nonce")) != NULL)
+	Strcat_m_charp(tmp, ", nonce=", s->ptr, NULL);
     Strcat_m_charp(tmp, ", uri=\"", uri->ptr, "\"", NULL);
     Strcat_m_charp(tmp, ", response=\"", rd->ptr, "\"", NULL);
 
-    if (algorithm)
-	Strcat_m_charp(tmp, ", algorithm=",
-		       get_auth_param(ha->param, "algorithm")->ptr, NULL);
+    if (algorithm && (s = get_auth_param(ha->param, "algorithm")))
+	Strcat_m_charp(tmp, ", algorithm=", s->ptr, NULL);
 
     if (cnonce)
 	Strcat_m_charp(tmp, ", cnonce=\"", cnonce->ptr, "\"", NULL);
@@ -3100,11 +3104,14 @@ purgeline(struct html_feed_environ *h_env)
 {
     char *p, *q;
     Str tmp;
+    TextLine *tl;
 
     if (h_env->buf == NULL || h_env->blank_lines == 0)
 	return;
 
-    p = rpopTextLine(h_env->buf)->line->ptr;
+    if (!(tl = rpopTextLine(h_env->buf)))
+	return;
+    p = tl->line->ptr;
     tmp = Strnew();
     while (*p) {
 	q = p;
@@ -3192,7 +3199,8 @@ save_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
     if (obuf->fontstat_sp < FONT_STACK_SIZE)
 	bcopy(obuf->fontstat, obuf->fontstat_stack[obuf->fontstat_sp],
 	      FONTSTAT_SIZE);
-    obuf->fontstat_sp++;
+    if (obuf->fontstat_sp < INT_MAX)
+	obuf->fontstat_sp++;
     if (obuf->in_bold)
 	push_tag(obuf, "</b>", HTML_N_B);
     if (obuf->in_italic)
@@ -3798,7 +3806,7 @@ process_button(struct parsed_tag *tag)
 {
     Str tmp = NULL;
     char *p, *q, *r, *qq = "";
-    int qlen, v;
+    int v;
 
     if (cur_form_id < 0) {
        char *s = "<form_int method=internal action=none>";
@@ -3842,7 +3850,6 @@ process_button(struct parsed_tag *tag)
     }
     if (q) {
        qq = html_quote(q);
-       qlen = strlen(q);
     }
 
     /*    Strcat_charp(tmp, "<pre_int>"); */
@@ -3997,7 +4004,6 @@ void
 process_option(void)
 {
     char begin_char = '[', end_char = ']';
-    int len;
 
     if (cur_select == NULL || cur_option == NULL)
 	return;
@@ -4008,6 +4014,7 @@ process_option(void)
     if (cur_option_label == NULL)
 	cur_option_label = cur_option;
 #ifdef MENU_SELECT
+    int len;
     if (!select_is_multiple) {
 	len = get_Str_strwidth(cur_option_label);
 	if (len > cur_option_maxwidth)
@@ -4314,7 +4321,10 @@ set_alignment(struct readbuffer *obuf, struct parsed_tag *tag)
     if (parsedtag_get_value(tag, ATTR_ALIGN, &align)) {
 	switch (align) {
 	case ALIGN_CENTER:
-	    flag = RB_CENTER;
+	    if (DisableCenter)
+		flag = RB_LEFT;
+	    else
+		flag = RB_CENTER;
 	    break;
 	case ALIGN_RIGHT:
 	    flag = RB_RIGHT;
@@ -4389,6 +4399,14 @@ process_idattr(struct readbuffer *obuf, int cmd, struct parsed_tag *tag)
         envs[h_env->envc].indent = envs[h_env->envc - 1].indent + INDENT_INCR; \
       else \
         envs[h_env->envc].indent = envs[h_env->envc - 1].indent; \
+    }
+
+#define PUSH_ENV_NOINDENT(cmd) \
+    if (++h_env->envc_real < h_env->nenv) { \
+      ++h_env->envc; \
+      envs[h_env->envc].env = cmd; \
+      envs[h_env->envc].count = 0; \
+      envs[h_env->envc].indent = envs[h_env->envc - 1].indent; \
     }
 
 #define POP_ENV \
@@ -4481,7 +4499,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 
     switch (cmd) {
     case HTML_B:
-	obuf->in_bold++;
+	if (obuf->in_bold < FONTSTAT_MAX)
+	    obuf->in_bold++;
 	if (obuf->in_bold > 1)
 	    return 1;
 	return 0;
@@ -4495,7 +4514,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_I:
-	obuf->in_italic++;
+	if (obuf->in_italic < FONTSTAT_MAX)
+	    obuf->in_italic++;
 	if (obuf->in_italic > 1)
 	    return 1;
 	return 0;
@@ -4509,7 +4529,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	return 1;
     case HTML_U:
-	obuf->in_under++;
+	if (obuf->in_under < FONTSTAT_MAX)
+	    obuf->in_under++;
 	if (obuf->in_under > 1)
 	    return 1;
 	return 0;
@@ -4630,6 +4651,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_OL:
     case HTML_N_DL:
     case HTML_N_BLQ:
+    case HTML_N_DD:
 	CLOSE_DT;
 	CLOSE_A;
 	if (h_env->envc > 0) {
@@ -4637,7 +4659,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		      h_env->limit);
 	    POP_ENV;
 	    if (!(obuf->flag & RB_PREMODE) &&
-		(h_env->envc == 0 || cmd == HTML_N_DL || cmd == HTML_N_BLQ)) {
+		(h_env->envc == 0 || cmd == HTML_N_BLQ)) {
 		do_blankline(h_env, obuf,
 			     envs[h_env->envc].indent,
 			     INDENT_INCR, h_env->limit);
@@ -4650,11 +4672,13 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    if (!(obuf->flag & RB_PREMODE))
+	    if (!(obuf->flag & RB_PREMODE) && envs[h_env->envc].env != HTML_DL
+		    && envs[h_env->envc].env != HTML_DL_COMPACT
+		    && envs[h_env->envc].env != HTML_DD)
 		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
 			     h_env->limit);
 	}
-	PUSH_ENV(cmd);
+	PUSH_ENV_NOINDENT(cmd);
 	if (parsedtag_exists(tag, ATTR_COMPACT))
 	    envs[h_env->envc].env = HTML_DL_COMPACT;
 	obuf->flag |= RB_IGNORE_P;
@@ -4750,7 +4774,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    (h_env->envc_real < h_env->nenv &&
 	     envs[h_env->envc].env != HTML_DL &&
 	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	    PUSH_ENV_NOINDENT(HTML_DL);
 	}
 	if (h_env->envc > 0) {
 	    flushline(h_env, obuf,
@@ -4762,16 +4786,25 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	obuf->flag |= RB_IGNORE_P;
 	return 1;
+    case HTML_N_DT:
+	if (!(obuf->flag & RB_IN_DT)) {
+	    return 1;
+	}
+	obuf->flag &= ~RB_IN_DT;
+	HTMLlineproc1("</b>", h_env);
+	if (h_env->envc > 0 && envs[h_env->envc].env == HTML_DL)
+	    flushline(h_env, obuf,
+		      envs[h_env->envc - 1].indent, 0, h_env->limit);
+	return 1;
     case HTML_DD:
 	CLOSE_A;
 	CLOSE_DT;
-	if (h_env->envc == 0 ||
-	    (h_env->envc_real < h_env->nenv &&
-	     envs[h_env->envc].env != HTML_DL &&
-	     envs[h_env->envc].env != HTML_DL_COMPACT)) {
-	    PUSH_ENV(HTML_DL);
+	if (envs[h_env->envc].env == HTML_DL ||
+		envs[h_env->envc].env == HTML_DL_COMPACT) {
+	    PUSH_ENV(HTML_DD);
 	}
-	if (envs[h_env->envc].env == HTML_DL_COMPACT) {
+
+	if (h_env->envc > 0 && envs[h_env->envc - 1].env == HTML_DL_COMPACT) {
 	    if (obuf->pos > envs[h_env->envc].indent)
 		flushline(h_env, obuf, envs[h_env->envc].indent, 0,
 			  h_env->limit);
@@ -4838,7 +4871,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	}
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	return 0;
-    case HTML_SECTION:
     case HTML_HR:
 	close_anchor(h_env, obuf);
 	tmp = process_hr(tag, h_env->limit, envs[h_env->envc].indent);
@@ -4988,8 +5020,6 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    obuf->anchor.hseq = cur_hseq;
 	    tmp = process_anchor(tag, h_env->tagbuf->ptr);
 	    push_tag(obuf, tmp->ptr, HTML_A);
-	    if (displayLinkNumber)
-		HTMLlineproc1(getLinkNumberStr(-1)->ptr, h_env);
 	    return 1;
 	}
 	return 0;
@@ -5000,6 +5030,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (parsedtag_exists(tag, ATTR_USEMAP))
 	    HTML5_CLOSE_A;
 	tmp = process_img(tag, h_env->limit);
+	if (need_number) {
+	    tmp = Strnew_m_charp(getLinkNumberStr(-1)->ptr, tmp->ptr, NULL);
+	    need_number = 0;
+	}
 	HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_IMG_ALT:
@@ -5067,9 +5101,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	return 1;
     case HTML_TABLE:
 	close_anchor(h_env, obuf);
-	obuf->table_level++;
-	if (obuf->table_level >= MAX_TABLE)
+	if (obuf->table_level + 1 >= MAX_TABLE)
 	    break;
+	obuf->table_level++;
 	w = BORDER_NONE;
 	/* x: cellspacing, y: cellpadding */
 	x = 2;
@@ -5143,7 +5177,10 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (!(obuf->flag & (RB_PREMODE | RB_IGNORE_P)))
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	RB_SAVE_FLAG(obuf);
-	RB_SET_ALIGN(obuf, RB_CENTER);
+	if (DisableCenter)
+	    RB_SET_ALIGN(obuf, RB_LEFT);
+	else
+	    RB_SET_ALIGN(obuf, RB_CENTER);
 	return 1;
     case HTML_N_CENTER:
 	CLOSE_A;
@@ -5323,7 +5360,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[DEL:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_strike++;
+	    if (obuf->in_strike < FONTSTAT_MAX)
+		obuf->in_strike++;
 	    if (obuf->in_strike == 1) {
 		push_tag(obuf, "<s>", HTML_S);
 	    }
@@ -5360,7 +5398,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[S:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_strike++;
+	    if (obuf->in_strike < FONTSTAT_MAX)
+		obuf->in_strike++;
 	    if (obuf->in_strike == 1) {
 		push_tag(obuf, "<s>", HTML_S);
 	    }
@@ -5396,7 +5435,8 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    HTMLlineproc1("<U>[INS:</U>", h_env);
 	    break;
 	case DISPLAY_INS_DEL_FONTIFY:
-	    obuf->in_ins++;
+	    if (obuf->in_ins < FONTSTAT_MAX)
+		obuf->in_ins++;
 	    if (obuf->in_ins == 1) {
 		push_tag(obuf, "<ins>", HTML_INS);
 	    }
@@ -6294,7 +6334,7 @@ file_feed()
 {
     Str s;
     s = StrISgets(_file_lp2);
-    if (s->length == 0) {
+    if (s && s->length == 0) {
 	ISclose(_file_lp2);
 	return NULL;
     }
@@ -6454,6 +6494,10 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    if (obuf->status != R_ST_NORMAL)	/* R_ST_AMP ? */
 		obuf->status = R_ST_NORMAL;
 	    str = tokbuf->ptr;
+	    if (need_number) {
+		str = Strnew_m_charp(getLinkNumberStr(-1)->ptr, str, NULL)->ptr;
+		need_number = 0;
+	    }
 	}
 
 	if (pre_mode & (RB_PLAIN | RB_INTXTA | RB_INSELECT | RB_SCRIPT |
@@ -6487,6 +6531,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    line = Strnew_m_charp(p, line, NULL)->ptr;
 		}
 		is_tag = FALSE;
+		continue;
 	    }
 	    if (obuf->table_level >= 0)
 		goto proc_normal;
@@ -6580,8 +6625,12 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    clear_ignore_p_flag(cmd, obuf);
 	    if (cmd == HTML_TABLE)
 		goto table_start;
-	    else
+	    else {
+		if (displayLinkNumber && cmd == HTML_A && !internal)
+		    if (h_env->obuf->anchor.url)
+			need_number = 1;
 		continue;
+	    }
 	}
 
 	if (obuf->flag & (RB_DEL | RB_S))
@@ -7304,7 +7353,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
     if (IStype(f->stream) != IST_ENCODED)
 	f->stream = newEncodedStream(f->stream, f->encoding);
-    while ((lineBuf2 = StrmyUFgets(f))->length) {
+    while ((lineBuf2 = StrmyUFgets(f)) && lineBuf2->length) {
 #ifdef USE_NNTP
 	if (f->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
 	    Strshrinkfirst(lineBuf2, 1);
@@ -7461,7 +7510,7 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 
     pre = 0;
     while (1) {
-	if (lbuf = StrUFgets(uf), lbuf->length == 0)
+	if (!(lbuf = StrUFgets(uf)) || lbuf->length == 0)
 	    break;
 	if (lbuf->ptr[0] == '.' &&
 	    (lbuf->ptr[1] == '\n' || lbuf->ptr[1] == '\r'))
@@ -7564,7 +7613,6 @@ loadGopherSearch0(URLFile *uf, ParsedURL *pu)
 {
     Str tmp;
     char *volatile p, *volatile q;
-    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
 #ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
 #endif
@@ -7632,7 +7680,7 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     nlines = 0;
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
-    while ((lineBuf2 = StrmyISgets(uf->stream))->length) {
+    while ((lineBuf2 = StrmyISgets(uf->stream)) && lineBuf2->length) {
 #ifdef USE_NNTP
 	if (uf->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
 	    Strshrinkfirst(lineBuf2, 1);
@@ -8056,7 +8104,8 @@ getNextPage(Buffer *buf, int plen)
 
     init_stream(&uf, SCM_UNKNOWN, NULL);
     for (i = 0; i < plen; i++) {
-	lineBuf2 = StrmyISgets(buf->pagerSource);
+	if (!(lineBuf2 = StrmyISgets(buf->pagerSource)))
+	    return NULL;
 	if (lineBuf2->length == 0) {
 	    /* Assume that `cmd == buf->filename' */
 	    if (buf->filename)
@@ -8105,7 +8154,8 @@ getNextPage(Buffer *buf, int plen)
 		l = l->next;
 	    } while (l && l->bpos);
 	    buf->firstLine = l;
-	    buf->firstLine->prev = NULL;
+	    if (l)
+		buf->firstLine->prev = NULL;
 	}
     }
   pager_end:
@@ -8129,7 +8179,6 @@ int
 save2tmp(URLFile uf, char *tmpf)
 {
     FILE *ff;
-    int check;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
@@ -8146,8 +8195,8 @@ save2tmp(URLFile uf, char *tmpf)
 	goto _end;
     }
     TRAP_ON;
-    check = 0;
 #ifdef USE_NNTP
+    int check = 0;
     if (uf.scheme == SCM_NEWS) {
 	char c;
 	while (c = UFgetc(&uf), !iseos(uf.stream)) {
@@ -8639,6 +8688,7 @@ uncompress_stream(URLFile *uf, char **src)
     char *tmpf = NULL;
     char *ext = NULL;
     struct compression_decoder *d;
+    int use_d_arg = 0;
 
     if (IStype(uf->stream) != IST_ENCODED) {
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
@@ -8652,6 +8702,7 @@ uncompress_stream(URLFile *uf, char **src)
 		expand_cmd = d->cmd;
 	    expand_name = d->name;
 	    ext = d->ext;
+	    use_d_arg = d->use_d_arg;
 	    break;
 	}
     }
@@ -8706,7 +8757,10 @@ uncompress_stream(URLFile *uf, char **src)
 	/* child1 */
 	dup2(1, 2);		/* stderr>&stdout */
 	setup_child(TRUE, -1, -1);
-	execlp(expand_cmd, expand_name, NULL);
+	if (use_d_arg)
+	    execlp(expand_cmd, expand_name, "-d", NULL);
+	else
+	    execlp(expand_cmd, expand_name, NULL);
 	exit(1);
     }
     if (tmpf) {

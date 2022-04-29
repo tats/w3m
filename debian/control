@@ -27,6 +27,7 @@ Provides: www-browser
 Suggests: brotli,
           bzip2,
           cmigemo,
+          compface,
           dict,
           dict-wn,
           dictd,

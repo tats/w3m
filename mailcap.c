@@ -220,7 +220,7 @@ loadMailcap(char *filename)
 }
 
 void
-initMailcap()
+initMailcap(void)
 {
     TextListItem *tl;
     int i;
@@ -238,7 +238,7 @@ initMailcap()
 }
 
 char *
-acceptableMimeTypes()
+acceptableMimeTypes(void)
 {
     static Str types = NULL;
     TextList *l;

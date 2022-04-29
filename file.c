@@ -449,7 +449,7 @@ check_command(char *cmd, int auxbin_p)
 }
 
 char *
-acceptableEncoding()
+acceptableEncoding(void)
 {
     static Str encodings = NULL;
     struct compression_decoder *d;
@@ -5547,7 +5547,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 static TextLineListItem *_tl_lp2;
 
 static Str
-textlist_feed()
+textlist_feed(void)
 {
     TextLine *p;
     if (_tl_lp2 != NULL) {
@@ -6330,7 +6330,7 @@ HTMLlineproc2(Buffer *buf, TextLineList *tl)
 static InputStream _file_lp2;
 
 static Str
-file_feed()
+file_feed(void)
 {
     Str s;
     s = StrISgets(_file_lp2);

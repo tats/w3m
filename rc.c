@@ -1180,8 +1180,8 @@ interpret_rc(FILE * f)
     }
 }
 
-void
-parse_proxy()
+static void
+parse_proxy(void)
 {
     if (non_null(HTTP_proxy))
 	parseURL(HTTP_proxy, &HTTP_proxy_parsed, NULL);
@@ -1200,8 +1200,8 @@ parse_proxy()
 }
 
 #ifdef USE_COOKIE
-void
-parse_cookie()
+static void
+parse_cookie(void)
 {
     if (non_null(cookie_reject_domains))
 	Cookie_reject_domains = make_domain_list(cookie_reject_domains);

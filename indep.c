@@ -840,32 +840,32 @@ w3m_dir(const char *name, char *dft)
 }
 
 char *
-w3m_auxbin_dir()
+w3m_auxbin_dir(void)
 {
     return w3m_dir("W3M_AUXBIN_DIR", AUXBIN_DIR);
 }
 
 char *
-w3m_lib_dir()
+w3m_lib_dir(void)
 {
     /* FIXME: use W3M_CGIBIN_DIR? */
     return w3m_dir("W3M_LIB_DIR", CGIBIN_DIR);
 }
 
 char *
-w3m_etc_dir()
+w3m_etc_dir(void)
 {
     return w3m_dir("W3M_ETC_DIR", ETC_DIR);
 }
 
 char *
-w3m_conf_dir()
+w3m_conf_dir(void)
 {
     return w3m_dir("W3M_CONF_DIR", CONF_DIR);
 }
 
 char *
-w3m_help_dir()
+w3m_help_dir(void)
 {
     return w3m_dir("W3M_HELP_DIR", HELP_DIR);
 }

@@ -13,12 +13,14 @@ multicol 0
 alt_entity 0
 graphic_char 0
 display_borders 0
+disable_center 0
 fold_textarea 0
 display_ins_del 1
 ignore_null_img_alt 1
 view_unseenobject 1
 display_image 1
 pseudo_inlines 1
+inline_img_protocol 0
 fold_line 0
 show_lnum 0
 show_srch_str 1
@@ -81,11 +83,13 @@ pre_form_file ~/.w3m/pre_form
 siteconf_file ~/.w3m/siteconf
 user_agent 
 no_referer 0
+cross_origin_referer 1
 argv_is_url 1
 retry_http 1
 default_url 1
 follow_redirection 10
 meta_refresh 0
+localhost_only 0
 dns_order 0
 use_proxy 1
 http_proxy 
@@ -95,12 +99,15 @@ ftp_proxy
 no_proxy 
 noproxy_netaddr 0
 no_cache 0
-ssl_forbid_method 2, 3
+ssl_forbid_method 2, 3, t, 5
+ssl_min_version 
+ssl_cipher 
 ssl_verify_server 1
 ssl_cert_file 
 ssl_key_file 
 ssl_ca_path /etc/ssl/certs
 ssl_ca_file 
+ssl_ca_default 1
 use_cookie 1
 show_cookie 0
 accept_cookie 1

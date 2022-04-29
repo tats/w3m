@@ -12,26 +12,6 @@ case "$1" in
            /usr/bin/w3m 25 \
 	   --slave /usr/share/man/man1/www-browser.1.gz www-browser.1.gz \
 	   /usr/share/man/man1/w3m.1.gz
-       # upgrade old config file to new config file
-       if test -e /etc/w3m/w3mconfig; then
-	   mv -f /etc/w3m/w3mconfig /etc/w3m/w3mconfig.dpkg-tmp
-	   tmp=$(tempfile -p w3m.subst.)
-	   trap "rm -f $tmp" 0
-	   while read opt val
-	   do
-	      val0=$(sed -ne 's/^'$opt'[[:space:]]*//p' /etc/w3m/w3mconfig.dpkg-tmp)
-	      if [ "$val0" != "" ] && [ "$val" != "$val0" ]; then
-		  echo 's/^'$opt'[[:space:]]*.*/'$opt' '$val0'/' >> $tmp
-	      fi
-	   done < /etc/w3m/config
-	   if test -s $tmp; then
-	       mv -f /etc/w3m/config /etc/w3m/config.dpkg-tmp
-	       sed -f $tmp /etc/w3m/config.dpkg-tmp > /etc/w3m/config
-	       rm -f $tmp
-	       rm -f /etc/w3m/config.dpkg-tmp
-	   fi
-	   rm -f /etc/w3m/w3mconfig /etc/w3m/w3mconfig.dpkg-tmp
-       fi
        ;;
   *)
 esac

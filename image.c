@@ -14,8 +14,6 @@
 
 static int image_index = 0;
 
-static void closeImgdisplay(void);
-
 /* display image */
 
 typedef struct _termialImage {

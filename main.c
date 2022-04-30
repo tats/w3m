@@ -3054,6 +3054,10 @@ gotoLabel(char *label)
 	return;
     }
     buf = newBuffer(Currentbuf->width);
+    if (buf == NULL) {
+	disp_err_message("allocation failed", TRUE);
+	return;
+    }
     copyBuffer(buf, Currentbuf);
     for (i = 0; i < MAX_LB; i++)
 	buf->linkBuffer[i] = NULL;
@@ -6276,6 +6280,10 @@ _newT(void)
 	return;
 
     buf = newBuffer(Currentbuf->width);
+    if (buf == NULL) {
+	deleteTab(tag);
+	return;
+    }
     copyBuffer(buf, Currentbuf);
     buf->nextBuffer = NULL;
     for (i = 0; i < MAX_LB; i++)

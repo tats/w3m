@@ -7,6 +7,10 @@ extern int LINES, COLS;
 extern int LASTLINE;
 #endif
 
+void clear(void);
+void flush_tty();
+void setlinescols(void);
+
 #ifdef USE_MOUSE
 /* Addition:mouse event */
 #define MOUSE_BTN1_DOWN 0
@@ -18,6 +22,8 @@ extern int LASTLINE;
 #define MOUSE_BTN5_DOWN_XTERM 65
 #define MOUSE_BTN_UP 3
 #define MOUSE_BTN_RESET -1
+
+void mouse_end();
 #endif
 
 #ifdef __CYGWIN__

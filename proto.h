@@ -452,7 +452,6 @@ extern MySignalHandler reset_exit(SIGNAL_ARG);
 extern MySignalHandler error_dump(SIGNAL_ARG);
 extern void set_int(void);
 extern void getTCstr(void);
-extern void setlinescols(void);
 extern void setupscreen(void);
 extern pid_t open_pipe_rw(FILE ** fr, FILE ** fw);
 extern int initscr(void);
@@ -479,7 +478,6 @@ extern void setbcolor(int color);
 #endif				/* USE_BG_COLOR */
 #endif				/* USE_COLOR */
 extern void refresh(void);
-extern void clear(void);
 #ifdef USE_RAW_SCROLL
 extern void scroll(int);
 extern void rscroll(int);
@@ -496,7 +494,6 @@ extern void term_raw(void);
 extern void term_cooked(void);
 extern void term_cbreak(void);
 extern void term_title(char *s);
-extern void flush_tty(void);
 extern void toggle_stand(void);
 extern void bell(void);
 extern int sleep_till_anykey(int sec, int purge);
@@ -690,7 +687,6 @@ extern void reMark(void);
 extern void mouse(void);
 extern void sgrmouse(void);
 extern void mouse_init(void);
-extern void mouse_end(void);
 extern void mouse_active(void);
 extern void mouse_inactive(void);
 extern void msToggle(void);

@@ -5,6 +5,8 @@
  *
  *   Created: Wed Feb 10 12:47:03 1999
  */
+#ifndef W3M_PROTO_H__
+#define W3M_PROTO_H__
 extern int main(int argc, char **argv);
 extern void nulcmd(void);
 extern void pushEvent(int cmd, void *data);
@@ -824,3 +826,4 @@ long lrand48(void);
 #endif
 
 extern Str base64_encode(const char *src, size_t len);
+#endif

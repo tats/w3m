@@ -5,7 +5,6 @@
  *
  *   Created: Wed Feb 10 12:47:03 1999
  */
-extern int main(int argc, char **argv);
 extern void nulcmd(void);
 extern void pushEvent(int cmd, void *data);
 extern MySignalHandler intTrap(SIGNAL_ARG);
@@ -448,8 +447,6 @@ extern void set_cc(int spec, int val);
 extern void close_tty(void);
 extern char *ttyname_tty(void);
 extern void reset_tty(void);
-extern MySignalHandler reset_exit(SIGNAL_ARG);
-extern MySignalHandler error_dump(SIGNAL_ARG);
 extern void set_int(void);
 extern void getTCstr(void);
 extern void setupscreen(void);
@@ -460,8 +457,6 @@ extern void move(int line, int column);
 extern void addmch(char *p, size_t len);
 #endif
 extern void addch(char c);
-extern void wrap(void);
-extern void touch_line(void);
 extern void standout(void);
 extern void standend(void);
 extern void bold(void);
@@ -482,7 +477,6 @@ extern void refresh(void);
 extern void scroll(int);
 extern void rscroll(int);
 #endif
-extern void clrtoeol(void);
 extern void clrtoeolx(void);
 extern void clrtobotx(void);
 extern void addstr(char *s);
@@ -686,7 +680,6 @@ extern void reMark(void);
 #ifdef USE_MOUSE
 extern void mouse(void);
 extern void sgrmouse(void);
-extern void mouse_init(void);
 extern void mouse_active(void);
 extern void mouse_inactive(void);
 extern void msToggle(void);

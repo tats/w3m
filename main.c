@@ -98,7 +98,6 @@ static void cmd_loadURL(char *url, ParsedURL *current, char *referer,
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 int show_params_p = 0;
-void show_params(FILE * fp);
 
 static char *getCurWord(Buffer *buf, int *spos, int *epos);
 

@@ -41,7 +41,7 @@ static int xpix, ypix, nbs, obs = 0;
 
 static int is_xterm = 0;
 
-void mouse_init(void), mouse_end(void);
+void mouse_init();
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
 
@@ -260,10 +260,7 @@ check_cygwin_console(void)
 }
 #endif				/* __CYGWIN__ */
 
-char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), reset_error_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
-void setlinescols(void);
-void flush_tty(void);
 
 #ifndef SIGIOT
 #define SIGIOT SIGABRT
@@ -452,7 +449,7 @@ extern int tgetflag(char *);
 extern char *tgetstr(char *, char **);
 extern char *tgoto(char *, int, int);
 extern int tputs(char *, int, int (*)(char));
-void clear(void), wrap(void), touch_line(void), touch_column(int);
+void wrap(void), touch_line(void), touch_column(int);
 void clrtoeol(void);		/* conflicts with curs_clear(3)? */
 
 static int write1(char);

@@ -44,8 +44,6 @@ initImage()
 	activeImage = TRUE;
 }
 
-int get_pixel_per_cell(int *ppc, int *ppl);
-
 static int
 getCharSize(void)
 {

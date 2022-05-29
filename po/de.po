@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: w3m 0.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-04 19:22+0900\n"
-"PO-Revision-Date: 2022-01-19 09:00+0100\n"
+"PO-Revision-Date: 2022-05-29 09:00+0100\n"
 "Last-Translator: Markus Hiereth <translation@hiereth.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
@@ -218,7 +218,7 @@ msgstr "Zeige Tabellen gerahmt, BORDER-Wert ignorieren"
 
 #: rc.c:96
 msgid "Disable center alignment"
-msgstr ""
+msgstr "Zentrierung deaktivieren"
 
 #: rc.c:97
 msgid "Fold lines in TEXTAREA"
@@ -589,6 +589,8 @@ msgid ""
 "Exclude pathname and query string from `Referer:' header when cross domain "
 "communication"
 msgstr ""
+"Bei Domain-übergreifender Kommunikation in der Kopfzeile »Referer:« den Pfad "
+"und die Abfrage-Zeichenkette weglassen"
 
 #: rc.c:202
 msgid "Search case-insensitively"
@@ -620,23 +622,30 @@ msgstr "Datei mit PEM-kodierten Zertifikaten von CAs"
 
 #: rc.c:211
 msgid "Use default locations for PEM encoded certificates of CAs"
-msgstr ""
+msgstr "Verwende voreingestellte Orte für PEM-kodierte Zertifikate von CAs"
 
 #: rc.c:213
 msgid ""
 "List of forbidden SSL methods (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: TLSv1.1, "
 "6: TLSv1.2, 7: TLSv1.3)"
 msgstr ""
-"Liste unzulässiger SSL-Verfahren (2: SSLv2, 3: SSLv3, t: TLSv1.0, 5: "
-"TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)"
+"Liste unzulässiger SSL-Verschlüsselungsverfahren (2: SSLv2, 3: SSLv3, t: "
+"TLSv1.0, 5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)"
 
+# MH 2022-05-29:
+# Es is unklar, ob "all" ein vorgegebener Wert in einer Auswahl ist oder
+# ob das Wort zu übersetzen wäre
 #: rc.c:215
 msgid "Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)"
-msgstr "Minimum SSL-Verfahren (all, TLSv1.0, TLSv1.1, TLSv1.2 oder TLSv1.3)"
+msgstr ""
+"Minimalversion der SSL-Verschlüsselung (all, TLSv1.0, TLSv1.1, TLSv1.2 oder "
+"TLSv1.3)"
 
 #: rc.c:217
 msgid "SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)"
 msgstr ""
+"Version der SSL-Verschlüsselung für TLSv1.2 und niedrigere (z.B. DEFAULT:"
+"@SECLEVEL=2)"
 
 #: rc.c:220
 msgid "Enable cookie processing"
@@ -678,7 +687,7 @@ msgstr "Meta-Refresh-Element verarbeiten"
 
 #: rc.c:230
 msgid "Restrict connections only to localhost"
-msgstr ""
+msgstr "Nur mit Localhost verbinden"
 
 #: rc.c:233
 msgid "Enable Migemo (Roma-ji search)"
@@ -939,19 +948,19 @@ msgstr "Externen Befehl"
 
 #: rc.c:381
 msgid "OSC 5379 (mlterm)"
-msgstr ""
+msgstr "OSC 5379 (mlterm)"
 
 #: rc.c:382
 msgid "sixel (img2sixel)"
-msgstr ""
+msgstr "sixel (img2sixel)"
 
 #: rc.c:383
 msgid "OSC 1337 (iTerm2)"
-msgstr ""
+msgstr "OSC 1337 (iTerm2)"
 
 #: rc.c:384
 msgid "kitty (ImageMagick)"
-msgstr ""
+msgstr "kitty (ImageMagick)"
 
 #: rc.c:784
 msgid "Display Settings"

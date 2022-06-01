@@ -6911,6 +6911,8 @@ loadHTMLBuffer(URLFile *f, Buffer *newBuf)
 
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+    if (newBuf == NULL)
+	exit(1); /* FIXME: figure out what to do here */
     if (newBuf->sourcefile == NULL &&
 	(f->scheme != SCM_LOCAL || newBuf->mailcap)) {
 	tmp = tmpfname(TMPF_SRC, ".html");
@@ -7772,6 +7774,8 @@ loadImageBuffer(URLFile *uf, Buffer *newBuf)
   image_buffer:
     if (newBuf == NULL)
 	newBuf = newBuffer(INIT_BUFFER_WIDTH);
+    if (newBuf == NULL)
+	exit(1); /* FIXME: figure out what to do here */
     cache->loaded |= IMG_FLAG_DONT_REMOVE;
     if (newBuf->sourcefile == NULL && uf->scheme != SCM_LOCAL)
 	newBuf->sourcefile = cache->file;
@@ -8296,6 +8300,8 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
 	if (defaultbuf == NULL)
 	    defaultbuf = newBuffer(INIT_BUFFER_WIDTH);
+	if (defaultbuf == NULL)
+	    exit(1); /* FIXME: figure out what to do here */
 	if (defaultbuf->sourcefile)
 	    src = defaultbuf->sourcefile;
 	else

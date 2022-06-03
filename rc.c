@@ -1245,13 +1245,11 @@ do_recursive_mkdir(const char *dir)
     size_t n;
     struct stat st;
 
-    n = strlen(dir);
-    if (n == 0)
+    if (*dir == '\0')
 	 return -1;
 
-    if ((dircpy = malloc(n + 1)) == NULL)
-	 return -1;
-    strcpy(dircpy, dir);
+    if ((dircpy = strdup(dir)) == NULL)
+	 return -1; 
 
     ch = dircpy + 1;
     do {

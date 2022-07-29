@@ -9,15 +9,18 @@ cookie support of w3m
    http://www.ics.uci.edu/pub/ietf/http/draft-ietf-http-state-man-mec-12.txt)
    cookie.
    
- * If you want to disable cookie support, run the configure script with
+ * Cookie support is enabled by default in the configure script. If the
+    configure script will not run, check that the USE_COOKIE macro is
+    defined in config.h
+    If you want to disable cookie support, run the configure script with
     --disable-cookie option.
    
- * You can choose to use cookies or not on the Option Setting Panel or
-   -cookie and -no-cookie option.
+ * You can choose whether or not to use cookies from the Option Setting Panel
+    (normally bound to 'o') or -cookie and -no-cookie option.
    
- * You can disable cookies on the Option Setting Panel. In this case
-    all new cookies are rejected, however, cookies which were accepted before
-    cookies were disabled are used.
+ * You can disable cookies on the Option Setting Panel. When you do this,
+    all new cookies will be rejected, however, cookies which were accepted
+    before cookies were disabled will continue to be used.
    
  * You can see the list of accepted cookies with C-k. In this panel, you
     can choose to use each cookie or not.
@@ -36,6 +39,18 @@ cookie support of w3m
 
                               (HDN: host domain name)
 
+For the following example, if the cookies for selected domain (.xxx.or.jp)
+will be accepted then the settings would look like the following:
+┌────────────────────────────────────┐
+|Cookie Settings                     |
+|                                    |
+|Use Cookies            (*)ON ( )OFF |
+|Accept Cookies         (*)ON ( )OFF |
+|Use Problematic Cookies [discard]   |
+|Reject Cookie Domain [.          ]  |
+|Accept Cookie Domain [.xxx.or.jp ]  |
+|                         [OK]       |
+└────────────────────────────────────┘
 
  * If the number of "." in domain name is fewer than 2, it is
     assumed as invalid cookie (cf. RFC 2109 4.3.2), however, you can

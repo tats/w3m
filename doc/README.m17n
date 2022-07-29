@@ -5,15 +5,16 @@ Muntilingualizaion of w3m
 
 Introduction
 
-  I have tried the muntilingualization of w3m (w3m-m17n).
+  I have tried the multilingualization of w3m (w3m-m17n).
   The patch for w3m-0.4.1 is available on the following site.
 
     http://www2u.biglobe.ne.jp/~hsaka/w3m/index.html#m17n
                                           patch/w3m-0.4.1-m17n-20030308.tar.gz
                                           patch/README.m17n
 
-  It is a development version. And enough test is not preformed because
-  I can understand Japanese only. Please use, test, and report bugs.
+  This is a development version, and should be enough to test.
+  I can understand Japanese only, so please use this version, test it,
+  and report bugs.
 
   Now, w3m-m17n has following functions.
 
@@ -156,11 +157,11 @@ Option pannel
    display_charset
        Display charset.
    document_charset
-       Defalut Document charset.
+       Default Document charset.
    auto_detect
-       Automatic charset detect when loading. (Default: ON)
+       Automatic charset detection when loading. (Default: ON)
    system_charset
-       System charset. It is used for configuration files and file name.
+       System charset. It is used for configuration files and file names.
    follow_locale
        System charset follows locale($LANG). (Default: ON)
    ext_halfdump
@@ -168,7 +169,7 @@ Option pannel
    search_conv
        Adjust search string for document charset. (Default: ON)
    use_wide
-       Use multi column characters. (Default: ON)
+       Use multi-column characters. (Default: ON)
    use_combining
        Use combining characters. (Default: ON)
    use_language_tag
@@ -178,7 +179,7 @@ Option pannel
    pre_conv
        Charset conversion when loading. (Default: OFF)
    fix_width
-       Fix character width when conversion. (Default: ON)
+       Fix character width when converting. (Default: ON)
        If it is OFF, the rendering may collapse.
    use_gb12345_map
        Use GB 12345 Unicode map instead of GB 2312's. (Default: OFF)

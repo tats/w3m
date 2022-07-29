@@ -1,0 +1,105 @@
+w3m menu options
+                                                 (2002/11/27)  H. Sakamoto
+                                                   hsaka@mth.biglobe.ne.jp
+
+[1] Hotkeys
+
+  * General Purpose
+
+    HELP, INS key             : open menu
+    HELP, INS key, C-c,       : close menu
+    RET(C-m, C-j), SPC, right-key : select
+    BS(C-h), DEL(C-?), left-key   : go back
+    C-n, j, down-key           : go to lower selection
+    C-p, k, up-key             : go to upper selection
+    J                          : scroll down
+    K                          : scroll up
+    C-a                        : previous heading
+    C-e                        : next heading
+    C-f, C-v                   : next page
+    C-b, M-v                   : last page
+    C-s, /                     : search down
+    C-r, ?                     : search up
+    n                          : search for next
+    N                          : search for previous
+    C-z                        : suspend
+
+    # INS is normally ^[[2~ but is bound to ^[[L(console), ^[[E(PocketBSD).
+
+    MenuKeymap, MenuEscKeymap, MenuEscBKeymap, MenuEscDKeymap are defined
+     in (menu.c)
+
+  * Special Case
+
+    MenuItem structure (menu.h) is set as (possibly multiple)
+     char * keys
+     from the keys listed above.
+
+[2] Mouse
+
+    Button 3: open menu
+
+  After opening the menu
+
+    button 1/3 (heading)         : select
+    button 1/3 (frame, MENU_NOP) : nothing
+    button 1/3 (outside menu)    : go back (close menu)
+    button 1/3 ( : )             : next page or prev page heading
+                                    (in case of long menu)
+    button 1/3 (drag)            : scroll
+
+[3] menu customization
+
+   menu is defined in ~/.w3m/menu
+   menu is
+
+     menu MENU_ID
+      heading
+        :
+     end
+
+  For settings, every heading is
+
+     func  LABEL FUNCTION KEYS [DATA]	//command execution
+     popup LABEL MENU_ID  KEYS		//open sub-menu
+     nop   LABEL			//no action (separator or title)
+
+  are possible settings.
+  Look at menu.defualt and menu.submenu for examples.
+   Look at README.func for setting commands (FUNCTION).
+  For MENU_ID "Main" is the main menu, "Select" is buffer
+   choice menu, "SelectTab" is the tab selection menu.
+   For KEYS, the key to be bound to the menu.
+   For DATA, set the command (FUNCTION) arguments.
+
+[4] Development
+
+    See Below to understand menu routines such as mainMenu(),
+     optionMenu() etc.
+     The MenuItem routine structure is defined below, almost
+     all menus are constructed like this.
+
+   MenuItem 構造体 (menu.h)
+
+    struct {
+        int  type;		/* type */
+        char *label;		/* label */
+        int  *variable;		/* VALUE_MENU variable settings */
+        int  value;		/* VALUE_MENU variable value */
+        void (*func)();		/* function choice */
+        struct _Menu *popup;	/* submenu */
+        char *keys;		/* bound keys */
+    } MenuItem;
+
+   Type "type" used below.
+
+     MENU_NOP   (1) : No action, no setting.
+                      (title and separator)
+     MENU_FUNC  (2) : function execution
+     MENU_VALUE (4) : (*variable) and (value) setting
+     MENU_POPUP (8) : submenu to open
+
+     MENU_FUNC and MENU_VALUE are (MENU_FUNC | MENU_VALUE) and
+      need to be set together。(variable needs to be set)
+
+   Example of MainMenuItem and new_option_menu() can be seen in (menu.c).

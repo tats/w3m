@@ -76,7 +76,7 @@ Option panel
       Scale of image (%). The default value is 100(%).
   imgdisplay
       External command to display image. The default value is "w3mimgdisplay".
-      See "Setting w3mimgdisplay."
+      See "w3mimgdisplay Settings" section
 
 Required programs
 
@@ -89,8 +89,8 @@ Required programs
       http://w3m.sourceforge.net/
       http://sourceforge.net/projects/w3m/
       http://prdownloads.sourceforge.net/w3m/
-    * Imlib-1.9.8 (1.9.10 is recommendable.)
-      libungif-4.1.0b1 is recommendable.
+    * Imlib-1.9.8 (1.9.10 or later is recommended.)
+    * libungif-4.1.0b1 or later is recommended.
 
   for Linux framebuffer device
     * GdkPixbuf-0.16 or later
@@ -103,7 +103,7 @@ Required programs
       and 16/24/32 bpp truecolor/directcolor)
 
 
-Setting w3mimgdisplay
+w3mimgdisplay Settings
 
   "w3mimgdisplay" has the following options. Set options to fit terminal.
 
@@ -134,7 +134,7 @@ Setting w3mimgdisplay
     w3m -o 'imgdisplay=w3mimgdisplay -x 5 -bg "#cccccc"'
 
 Notice
-    If you want to see GIF animation, please hit a suitable key, such
+    If you want to see GIF animation, please hit a movement key, such
     as 'h', 'l', etc., repeatedly, because a new frame is only requested
     according to the re-drawing demand from w3m.
 
@@ -145,7 +145,7 @@ Notice
     and PuTTY.
 
 
-Change log
+Changelog
 
 2002/02/04
  * Revised this document.

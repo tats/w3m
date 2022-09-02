@@ -620,16 +620,8 @@ getImage(Image * image, ParsedURL *current, int flag)
 
 	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
 		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
-	    if (image->height > 0 && image->width > 0) {
-		cache->loaded = IMG_FLAG_LOADED;
-	    }
 	}
-	if (cache->loaded == IMG_FLAG_UNLOADED) {
-	    cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
-	}
-	else {
-	    cache->touch = NULL;
-	}
+	cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
 
 	cache->width = image->width ;
 	cache->height = image->height ;

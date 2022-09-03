@@ -8199,6 +8199,8 @@ save2tmp(URLFile uf, char *tmpf)
     int check = 0;
     if (uf.scheme == SCM_NEWS) {
 	char c;
+	if (!uf.stream)
+		return -1;
 	while (c = UFgetc(&uf), !iseos(uf.stream)) {
 	    if (c == '\n') {
 		if (check == 0)

@@ -391,11 +391,6 @@ extern char *inputLineHistSearch(char *prompt, char *def_str, int flag,
 extern Str unescape_spaces(Str s);
 #ifdef USE_HISTORY
 extern Buffer *historyBuffer(Hist *hist);
-extern int loadHistory(Hist *hist);
-extern void saveHistory(Hist *hist, size_t size);
-extern void ldHist(void);
-#else				/* not USE_HISTORY */
-#define ldHist nulcmd
 #endif				/* not USE_HISTORY */
 extern double log_like(int x);
 extern struct table *newTable(void);

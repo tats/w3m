@@ -87,6 +87,11 @@ fail:
 }
 #endif				/* USE_HISTORY */
 
+/*
+ * The following functions are used for internal stuff, we need them regardless
+ * if history is used or not.
+ */
+
 Hist *
 newHist(void)
 {

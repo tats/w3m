@@ -31,16 +31,16 @@ historyBuffer(Hist *hist)
     return loadHTMLString(src);
 }
 
-void
+int
 loadHistory(Hist *hist)
 {
     FILE *f;
     Str line;
 
     if (hist == NULL)
-	return;
+	return 1;
     if ((f = fopen(rcFile(HISTORY_FILE), "rt")) == NULL)
-	return;
+	return 1;
 
     while (!feof(f)) {
 	line = Strfgets(f);
@@ -52,6 +52,7 @@ loadHistory(Hist *hist)
 	pushHist(hist, url_quote(line->ptr));
     }
     fclose(f);
+    return 0;
 }
 
 void

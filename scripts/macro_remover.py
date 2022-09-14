@@ -132,8 +132,35 @@ class MacroNode:
         for child in self.children:
             child.print(indent + '  ')
 
+    def apply(self, lines):
+        match self.result:
+            case True | False:
+                lines[self.begin] = '// ' + lines[self.begin]
+            case None:
+                pass
 
-def main(path: pathlib.Path):
+        l = self.begin + 1
+        for child in self.children:
+            while l < child.begin:
+                if self.result == False:
+                    lines[l] = None
+                l += 1
+            child.apply(lines)
+        while l < self.end:
+            if self.result == False:
+                lines[l] = None
+            l += 1
+
+        match self.result:
+            case True | False:
+                lines[self.end] = '// ' + lines[self.end]
+            case None:
+                pass
+
+
+def main(path: pathlib.Path, debug=False):
+    if path.suffix not in ['.h', '.c']:
+        return
     lines = path.read_text().splitlines()
     root = MacroNode(0, None)
     stack = [root]
@@ -151,7 +178,7 @@ def main(path: pathlib.Path):
                     stack[-1].children.append(node)
                     stack.append(node)
                 case Elif() | Else() as m:
-                    stack[-1].close(i, m)
+                    stack[-1].close(i, None)
                     stack.pop()
                     # new node
                     node = MacroNode(i, m)
@@ -167,7 +194,12 @@ def main(path: pathlib.Path):
     assert (len(stack) == 1)
     root.close(len(lines) - 1, None)
     root.eval(CONTEXT)
-    root.print()
+
+    if debug:
+        root.print()
+    else:
+        root.apply(lines)
+        path.write_text(''.join(l + '\n' for l in lines))
 
 
 if __name__ == '__main__':

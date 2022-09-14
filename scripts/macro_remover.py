@@ -51,13 +51,11 @@ class Elif(NamedTuple):
 
 
 class Else(NamedTuple):
-
-    def eval(self, context) -> bool:
-        return True
+    dummy: bool = True
 
 
 class Endif(NamedTuple):
-    pass
+    dummy: bool = True
 
 
 def parse_macro(l: str) -> Union[None, Include, Define, If, Ifdef, Ifndef, Else, Elif, Endif]:
@@ -92,26 +90,45 @@ class MacroNode:
         self.children: List[MacroNode] = []
         self.result = None
 
-    def close(self, end: int, end_macro):
+    def close(self, end, end_macro):
         self.end = end
-        self.end_macro = end_macro
+        if end_macro:
+            self.end_macro = end_macro
+
+    def get_prevs(self):
+        prevs = []
+        current = self
+        while True:
+            prevs.append(current.result)
+            if not current.prev:
+                break
+            current = current.prev
+        return prevs
 
     def eval(self, context):
+        prevs = self.get_prevs()
+
         match self.begin_macro:
             case None:
                 pass
-            case If() | Ifndef() | Ifdef() | Elif() | Else() as m:
-                has_true = False
-                current = self
-                while True:
-                    if not current.prev:
-                        break
-                    current = current.prev
-                    if current.result:
-                        has_true = True
-                        break
-                if not has_true:
+            case If() | Ifndef() | Ifdef() as m:
+                self.result = m.eval(context)
+            case Elif() as m:
+                if True in prevs:
+                    pass
+                else:
                     self.result = m.eval(context)
+            case Else() as m:
+                if any(prevs):
+                    self.result = False
+                else:
+                    all_false = True
+                    for p in prevs:
+                        if p == None:
+                            all_false = False
+                            break
+                    if all_false:
+                        self.result = True
             case _:
                 raise NotImplementedError()
         for child in self.children:
@@ -133,9 +150,13 @@ class MacroNode:
             child.print(indent + '  ')
 
     def apply(self, lines):
+        removed = False
+        # begin
         match self.result:
             case True | False:
-                lines[self.begin] = '// ' + lines[self.begin]
+                # lines[self.begin] = '// ' + lines[self.begin]
+                lines[self.begin] = None
+                removed = True
             case None:
                 pass
 
@@ -151,11 +172,10 @@ class MacroNode:
                 lines[l] = None
             l += 1
 
-        match self.result:
-            case True | False:
-                lines[self.end] = '// ' + lines[self.end]
-            case None:
-                pass
+        # end
+        if self.end_macro and removed:
+            # lines[self.end] = '// ' + lines[self.end]
+            lines[self.end] = None
 
 
 def main(path: pathlib.Path, debug=False):
@@ -179,9 +199,9 @@ def main(path: pathlib.Path, debug=False):
                     stack.append(node)
                 case Elif() | Else() as m:
                     stack[-1].close(i, None)
-                    stack.pop()
+                    prev = stack.pop()
                     # new node
-                    node = MacroNode(i, m)
+                    node = MacroNode(i, m, prev)
                     stack[-1].children.append(node)
                     stack.append(node)
                 case Endif() as m:
@@ -199,8 +219,10 @@ def main(path: pathlib.Path, debug=False):
         root.print()
     else:
         root.apply(lines)
-        path.write_text(''.join(l + '\n' for l in lines))
+        path.write_text(''.join(l + '\n' for l in lines if l != None))
 
 
 if __name__ == '__main__':
-    main(pathlib.Path(sys.argv[1]))
+    main(pathlib.Path(sys.argv[1])
+         # , True
+         )

@@ -1149,11 +1149,7 @@ do_mkdir(const char *dir, long mode)
     return mkdir(abs, mode);
 }
 #else				/* not __EMX__ */
-#ifdef __MINGW32_VERSION
-#define do_mkdir(dir,mode) mkdir(dir)
-#else
 #define do_mkdir(dir,mode) mkdir(dir,mode)
-#endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
 static void loadSiteconf(void);

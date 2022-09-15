@@ -36,10 +36,6 @@
 #define	write(a,b,c)	write_s(a,b,c)
 #endif				/* __WATT32__ */
 
-#ifdef __MINGW32_VERSION
-#define	write(a,b,c)	send(a,b,c, 0)
-#define close(fd)	closesocket(fd)
-#endif
 
 #ifdef INET6
 /* see rc.c, "dns_order" and dnsorders[] */

@@ -22,11 +22,6 @@
 #include "wtf.h"
 #include "ucs.h"
 
-#ifdef __MINGW32_VERSION
-#include <winsock.h>
-
-WSADATA WSAData;
-#endif
 
 #define DSTR_LEN	256
 
@@ -777,22 +772,6 @@ main(int argc, char **argv, char **envp)
     sock_init();
 #endif
 
-#ifdef __MINGW32_VERSION
-    {
-      int err;
-      WORD wVerReq;
-
-      wVerReq = MAKEWORD(1, 1);
-
-      err = WSAStartup(wVerReq, &WSAData);
-      if (err != 0)
-        {
-	  fprintf(stderr, "Can't find winsock\n");
-	  return 1;
-        }
-      _fmode = _O_BINARY;
-    }
-#endif
 
     FirstTab = NULL;
     LastTab = NULL;
@@ -5388,9 +5367,6 @@ w3m_exit(int i)
     disconnectFTP();
 #ifdef USE_NNTP
     disconnectNews();
-#endif
-#ifdef __MINGW32_VERSION
-    WSACleanup();
 #endif
 #ifdef HAVE_MKDTEMP
     if (no_rc_dir && tmp_dir != rc_dir)

@@ -6,9 +6,6 @@
 #ifdef USE_SSL
 #include <openssl/x509v3.h>
 #endif
-#ifdef __MINGW32_VERSION
-#include <winsock.h>
-#endif
 
 #define	uchar		unsigned char
 
@@ -636,22 +633,14 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 static void
 basic_close(int *handle)
 {
-#ifdef __MINGW32_VERSION
-    closesocket(*(int *)handle);
-#else
     close(*(int *)handle);
-#endif
     xfree(handle);
 }
 
 static int
 basic_read(int *handle, char *buf, int len)
 {
-#ifdef __MINGW32_VERSION
-    return recv(*(int *)handle, buf, len, 0);
-#else
     return read(*(int *)handle, buf, len);
-#endif
 }
 
 static void

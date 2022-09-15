@@ -16,9 +16,6 @@
 #include "local.h"
 #include "hash.h"
 
-#ifdef __MINGW32_VERSION
-#include <winsock.h>
-#endif
 
 #define CGIFN_NORMAL     0
 #define CGIFN_LIBDIR     1
@@ -361,9 +358,6 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 #endif
     char *cgi_basename;
 
-#ifdef __MINGW32_VERSION
-    return NULL;
-#else
     status = cgi_filename(uri, &file, &name, &path_info);
     if (check_local_cgi(file, status) < 0)
 	return NULL;
@@ -432,5 +426,4 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
     fprintf(stderr, "execl(\"%s\", \"%s\", NULL): %s\n",
 	    file, cgi_basename, strerror(errno));
     exit(1);
-#endif
 }

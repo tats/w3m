@@ -17,7 +17,7 @@ CONTEXT = {
     'USE_ANSI_COLOR': True,
     'USE_MOUSE': False,
     'USE_GPM': False,
-    # '__MINGW32_VERSION': False,
+    '__MINGW32_VERSION': False,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')

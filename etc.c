@@ -1460,13 +1460,6 @@ myEditor(char *cmd, char *file, int line)
     return tmp;
 }
 
-#ifdef __MINGW32_VERSION
-char *
-expandName(char *name)
-{
-    return getenv("HOME");
-}
-#else
 char *
 expandName(char *name)
 {
@@ -1510,7 +1503,6 @@ expandName(char *name)
   rest:
     return name;
 }
-#endif
 
 int
 is_localhost(const char *host)

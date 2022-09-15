@@ -18,13 +18,9 @@
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"
-#ifdef USE_M17N
 #include "wc.h"
 #include "wtf.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
-#endif
 #ifdef USE_MOUSE
 #ifdef USE_GPM
 #include <gpm.h>
@@ -134,9 +130,7 @@ fversion(FILE * f)
 #else
 	    "lang=en"
 #endif
-#ifdef USE_M17N
 	    ",m17n"
-#endif
 #ifdef USE_IMAGE
 	    ",image"
 #endif
@@ -203,14 +197,12 @@ fusage(FILE * f, int err)
     fprintf(f, "    -t tab           set tab width\n");
     fprintf(f, "    -r               ignore backspace effect\n");
     fprintf(f, "    -l line          # of preserved line (default 10000)\n");
-#ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
 #if 0				/* use -O{s|j|e} instead */
     fprintf(f, "    -e               EUC-JP\n");
     fprintf(f, "    -s               Shift_JIS\n");
     fprintf(f, "    -j               JIS\n");
-#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -280,10 +272,8 @@ fusage(FILE * f, int err)
     exit(err);
 }
 
-#ifdef USE_M17N
 #ifdef __EMX__
 static char *getCodePage(void);
-#endif
 #endif
 
 static GC_warn_proc orig_GC_warn_proc = NULL;
@@ -414,12 +404,10 @@ main(int argc, char **argv, char **envp)
     char *default_type = NULL;
     char *post_file = NULL;
     Str err_msg;
-#ifdef USE_M17N
     char *Locale = NULL;
     wc_uint8 auto_detect;
 #ifdef __EMX__
     wc_ces CodePage;
-#endif
 #endif
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
@@ -486,7 +474,6 @@ main(int argc, char **argv, char **envp)
 	}
     }
 
-#ifdef USE_M17N
     if (non_null(Locale = getenv("LC_ALL")) ||
 	non_null(Locale = getenv("LC_CTYPE")) ||
 	non_null(Locale = getenv("LANG"))) {
@@ -499,7 +486,6 @@ main(int argc, char **argv, char **envp)
     if (CodePage)
 	DisplayCharset = DocumentCharset = SystemCharset = CodePage;
 #endif
-#endif
 
     /* initializations */
     init_rc();
@@ -510,14 +496,12 @@ main(int argc, char **argv, char **envp)
     TextHist = newHist();
     URLHist = newHist();
 
-#ifdef USE_M17N
     if (FollowLocale && Locale) {
 	DisplayCharset = wc_guess_locale_charset(Locale, DisplayCharset);
 	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
     }
     auto_detect = WcOption.auto_detect;
     BookmarkCharset = DocumentCharset;
-#endif
 
     if (!non_null(HTTP_proxy) &&
 	((p = getenv("HTTP_PROXY")) ||
@@ -575,7 +559,6 @@ main(int argc, char **argv, char **envp)
 		if (atoi(argv[i]) > 0)
 		    PagerMax = atoi(argv[i]);
 	    }
-#ifdef USE_M17N
 #if 0				/* use -O{s|j|e} instead */
 	    else if (!strcmp("-s", argv[i]))
 		DisplayCharset = WC_CES_SHIFT_JIS;
@@ -606,7 +589,6 @@ main(int argc, char **argv, char **envp)
 		}
 		DisplayCharset = wc_guess_charset_short(p, DisplayCharset);
 	    }
-#endif
 	    else if (!strcmp("-graph", argv[i]))
 		UseGraphicChar = GRAPHIC_CHAR_DEC;
 	    else if (!strcmp("-no-graph", argv[i]))
@@ -897,12 +879,10 @@ main(int argc, char **argv, char **envp)
 	loadHistory(URLHist);
 #endif				/* not USE_HISTORY */
 
-#ifdef USE_M17N
     wtf_init(DocumentCharset, DisplayCharset);
     /*  if (w3m_dump)
      *    WcOption.pre_conv = WC_TRUE;
      */
-#endif
 
     if (w3m_backend)
 	backend();
@@ -1150,10 +1130,8 @@ main(int argc, char **argv, char **envp)
 
     SearchHeader = FALSE;
     DefaultType = NULL;
-#ifdef USE_M17N
     UseContentCharset = TRUE;
     WcOption.auto_detect = auto_detect;
-#endif
 
     Currentbuf = Firstbuf;
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
@@ -1321,13 +1299,9 @@ dump_head(Buffer *buf)
 	return;
     }
     for (ti = buf->document_header->first; ti; ti = ti->next) {
-#ifdef USE_M17N
 	printf("%s",
 	       wc_conv_strict(ti->ptr, InnerCharset,
 			      buf->document_charset)->ptr);
-#else
-	printf("%s", ti->ptr);
-#endif
     }
     puts("");
 }
@@ -1338,10 +1312,8 @@ dump_extra(Buffer *buf)
     printf("W3m-current-url: %s\n", parsedURL2Str(&buf->currentURL)->ptr);
     if (buf->baseURL)
 	printf("W3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
-#ifdef USE_M17N
     printf("W3m-document-charset: %s\n",
 	   wc_ces_to_charset(buf->document_charset));
-#endif
 #ifdef USE_SSL
     if (buf->ssl_certificate) {
 	Str tmp = Strnew();
@@ -3242,9 +3214,7 @@ save_submit_formlist(FormItemList *src)
     list = New(FormList);
     list->method = srclist->method;
     list->action = Strdup(srclist->action);
-#ifdef USE_M17N
     list->charset = srclist->charset;
-#endif
     list->enctype = srclist->enctype;
     list->nitems = srclist->nitems;
     list->body = srclist->body;
@@ -3301,7 +3271,6 @@ save_submit_formlist(FormItemList *src)
     return ret;
 }
 
-#ifdef USE_M17N
 static Str
 conv_form_encoding(Str val, FormItemList *fi, Buffer *buf)
 {
@@ -3313,9 +3282,6 @@ conv_form_encoding(Str val, FormItemList *fi, Buffer *buf)
 	charset = buf->document_charset;
     return wc_Str_conv_strict(val, InnerCharset, charset);
 }
-#else
-#define conv_form_encoding(val, fi, buf) (val)
-#endif
 
 static void
 query_from_followform(Str *query, FormItemList *fi, int multipart)
@@ -4342,22 +4308,16 @@ DEFUN(adBmark, ADD_BOOKMARK, "Add current page to bookmarks")
     FormList *request;
 
     tmp = Sprintf("mode=panel&cookie=%s&bmark=%s&url=%s&title=%s"
-#ifdef USE_M17N
 		    "&charset=%s"
-#endif
 		    ,
 		  (Str_form_quote(localCookie()))->ptr,
 		  (Str_form_quote(Strnew_charp(BookmarkFile)))->ptr,
 		  (Str_form_quote(parsedURL2Str(&Currentbuf->currentURL)))->
 		  ptr,
-#ifdef USE_M17N
 		  (Str_form_quote(wc_conv_strict(Currentbuf->buffername,
 						 InnerCharset,
 						 BookmarkCharset)))->ptr,
 		  wc_ces_to_charset(BookmarkCharset));
-#else
-		  (Str_form_quote(Strnew_charp(Currentbuf->buffername)))->ptr);
-#endif
     request = newFormList(NULL, "post", NULL, NULL, NULL, NULL, NULL);
     request->body = tmp->ptr;
     request->length = tmp->length;
@@ -4531,9 +4491,7 @@ DEFUN(linkLst, LIST, "Show all URLs referenced")
 
     buf = link_list_panel(Currentbuf);
     if (buf != NULL) {
-#ifdef USE_M17N
 	buf->document_charset = Currentbuf->document_charset;
-#endif
 	cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
     }
 }
@@ -4652,10 +4610,8 @@ _peekURL(int only_img)
     Anchor *a;
     ParsedURL pu;
     static Str s = NULL;
-#ifdef USE_M17N
     static Lineprop *p = NULL;
     Lineprop *pp;
-#endif
     static int offset = 0, n;
 
     if (Currentbuf->firstLine == NULL)
@@ -4688,19 +4644,15 @@ _peekURL(int only_img)
     }
     if (DecodeURL)
 	s = Strnew_charp(url_decode2(s->ptr, Currentbuf));
-#ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
     bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
-#endif
   disp:
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
 	offset = (n - 1) * (COLS - 1);
-#ifdef USE_M17N
     while (offset < s->length && p[offset] & PC_WCHAR2)
 	offset++;
-#endif
     disp_message_nomouse(&s->ptr[offset], TRUE);
 }
 
@@ -4728,10 +4680,8 @@ currentURL(void)
 DEFUN(curURL, PEEK, "Show current address")
 {
     static Str s = NULL;
-#ifdef USE_M17N
     static Lineprop *p = NULL;
     Lineprop *pp;
-#endif
     static int offset = 0, n;
 
     if (Currentbuf->bufferprop & BP_INTERNAL)
@@ -4747,19 +4697,15 @@ DEFUN(curURL, PEEK, "Show current address")
 	s = currentURL();
 	if (DecodeURL)
 	    s = Strnew_charp(url_decode2(s->ptr, NULL));
-#ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);
 	bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
-#endif
     }
     n = searchKeyNum();
     if (n > 1 && s->length > (n - 1) * (COLS - 1))
 	offset = (n - 1) * (COLS - 1);
-#ifdef USE_M17N
     while (offset < s->length && p[offset] & PC_WCHAR2)
 	offset++;
-#endif
     disp_message_nomouse(&s->ptr[offset], TRUE);
 }
 /* view HTML source */
@@ -4779,27 +4725,21 @@ DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
     if (Currentbuf->sourcefile == NULL) {
 	if (Currentbuf->pagerSource &&
 	    !strcasecmp(Currentbuf->type, "text/plain")) {
-#ifdef USE_M17N
 	    wc_ces old_charset;
 	    wc_bool old_fix_width_conv;
-#endif
 	    FILE *f;
 	    Str tmpf = tmpfname(TMPF_SRC, NULL);
 	    f = fopen(tmpf->ptr, "w");
 	    if (f == NULL)
 		return;
-#ifdef USE_M17N
 	    old_charset = DisplayCharset;
 	    old_fix_width_conv = WcOption.fix_width_conv;
 	    DisplayCharset = (Currentbuf->document_charset != WC_CES_US_ASCII)
 		? Currentbuf->document_charset : 0;
 	    WcOption.fix_width_conv = WC_FALSE;
-#endif
 	    saveBufferBody(Currentbuf, f, TRUE);
-#ifdef USE_M17N
 	    DisplayCharset = old_charset;
 	    WcOption.fix_width_conv = old_fix_width_conv;
-#endif
 	    fclose(f);
 	    Currentbuf->sourcefile = tmpf->ptr;
 	}
@@ -4842,9 +4782,7 @@ DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
     buf->sourcefile = Currentbuf->sourcefile;
     buf->header_source = Currentbuf->header_source;
     buf->search_header = Currentbuf->search_header;
-#ifdef USE_M17N
     buf->document_charset = Currentbuf->document_charset;
-#endif
     buf->clone = Currentbuf->clone;
     (*buf->clone)++;
 
@@ -4858,9 +4796,7 @@ DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
 DEFUN(reload, RELOAD, "Load current document anew")
 {
     Buffer *buf, *fbuf = NULL, sbuf;
-#ifdef USE_M17N
     wc_ces old_charset;
-#endif
     Str url;
     FormList *request;
     int multipart;
@@ -4933,17 +4869,13 @@ DEFUN(reload, RELOAD, "Load current document anew")
     /* FIXME: gettextize? */
     message("Reloading...", 0, 0);
     refresh();
-#ifdef USE_M17N
     old_charset = DocumentCharset;
     if (Currentbuf->document_charset != WC_CES_US_ASCII)
 	DocumentCharset = Currentbuf->document_charset;
-#endif
     SearchHeader = Currentbuf->search_header;
     DefaultType = Currentbuf->real_type;
     buf = loadGeneralFile(url->ptr, NULL, NO_REFERER, RG_NOCACHE, request);
-#ifdef USE_M17N
     DocumentCharset = old_charset;
-#endif
     SearchHeader = FALSE;
     DefaultType = NULL;
 
@@ -4987,7 +4919,6 @@ DEFUN(reshape, RESHAPE, "Re-render document")
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-#ifdef USE_M17N
 static void
 _docCSet(wc_ces charset)
 {
@@ -5055,7 +4986,6 @@ DEFUN(defCSet, DEFAULT_CHARSET, "Change the default character encoding")
 	DocumentCharset = charset;
     displayBuffer(Currentbuf, B_NORMAL);
 }
-#endif
 
 /* mark URL-like patterns as anchors */
 void
@@ -5287,10 +5217,8 @@ DEFUN(curlno, LINE_INFO, "Display current position in document")
 	tmp = Sprintf("line %d/%d (%d%%) col %d/%d", cur, all,
 		      (int)((double)cur * 100.0 / (double)(all ? all : 1)
 			    + 0.5), col, len);
-#ifdef USE_M17N
     Strcat_charp(tmp, "  ");
     Strcat_charp(tmp, wc_ces_to_charset_desc(Currentbuf->document_charset));
-#endif
 
     disp_message(tmp->ptr, FALSE);
 }
@@ -5392,12 +5320,10 @@ do_mouse_action(int btn, int x, int y)
     else if (y > ny) {
 	if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 	    (x == Currentbuf->cursorX + Currentbuf->rootX
-#ifdef USE_M17N
 	     || (WcOption.use_wide && Currentbuf->currentLine != NULL &&
 		 (CharType(Currentbuf->currentLine->propBuf[Currentbuf->pos])
 		  == PC_KANJI1)
 		 && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
-#endif
 	    )) {
 	    if (retrieveCurrentAnchor(Currentbuf) ||
 		retrieveCurrentForm(Currentbuf)) {
@@ -5411,12 +5337,10 @@ do_mouse_action(int btn, int x, int y)
 	    cursorXY(Currentbuf, x - Currentbuf->rootX, y - Currentbuf->rootY);
 	    if (y == Currentbuf->cursorY + Currentbuf->rootY &&
 		(x == Currentbuf->cursorX + Currentbuf->rootX
-#ifdef USE_M17N
 		 || (WcOption.use_wide && Currentbuf->currentLine != NULL &&
 		     (CharType(Currentbuf->currentLine->
 			       propBuf[Currentbuf->pos]) == PC_KANJI1)
 		     && x == Currentbuf->cursorX + Currentbuf->rootX + 1)
-#endif
 		) &&
 		(retrieveCurrentAnchor(Currentbuf) ||
 		 retrieveCurrentForm(Currentbuf)))
@@ -5475,14 +5399,12 @@ process_mouse(int btn, int x, int y)
 			     press_y - Currentbuf->rootY);
 		    if (Currentbuf->cursorY == press_y - Currentbuf->rootY &&
 			(Currentbuf->cursorX == press_x - Currentbuf->rootX
-#ifdef USE_M17N
 			 || (WcOption.use_wide &&
 			     Currentbuf->currentLine != NULL &&
 			     (CharType(Currentbuf->currentLine->
 				       propBuf[Currentbuf->pos]) == PC_KANJI1)
 			     && Currentbuf->cursorX == press_x
 			     - Currentbuf->rootX - 1)
-#endif
 			)) {
 			displayBuffer(Currentbuf, B_NORMAL);
 			followTab(t);
@@ -5889,9 +5811,7 @@ set_buffer_environ(Buffer *buf)
 	set_environ("W3M_TITLE", buf->buffername);
 	set_environ("W3M_URL", parsedURL2Str(&buf->currentURL)->ptr);
 	set_environ("W3M_TYPE", buf->real_type ? buf->real_type : "unknown");
-#ifdef USE_M17N
 	set_environ("W3M_CHARSET", wc_ces_to_charset(buf->document_charset));
-#endif
     }
     l = buf->currentLine;
     if (l && (buf != prev_buf || l != prev_line || buf->pos != prev_pos)) {
@@ -5968,7 +5888,6 @@ searchKeyNum(void)
 }
 
 #ifdef __EMX__
-#ifdef USE_M17N
 static char *
 getCodePage(void)
 {
@@ -5978,7 +5897,6 @@ getCodePage(void)
 	return Sprintf("CP%d", *CpList)->ptr;
     return NULL;
 }
-#endif
 #endif
 
 void

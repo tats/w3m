@@ -304,9 +304,6 @@ extern char *mydirname(char *s);
 extern int next_status(char c, int *status);
 extern int read_token(Str buf, char **instr, int *status, int pre, int append);
 extern Str correct_irrtag(int status);
-#ifdef USE_MIGEMO
-extern void init_migemo(void);
-#endif
 extern char *conv_search_string(char *str, wc_ces f_ces);
 extern int forwardSearch(Buffer *buf, char *str);
 extern int backwardSearch(Buffer *buf, char *str);
@@ -585,17 +582,10 @@ extern void docCSet(void);
 extern void defCSet(void);
 extern void change_charset(struct parsed_tagarg *arg);
 
-#ifdef USE_MARK
-extern void _mark(void);
-extern void nextMk(void);
-extern void prevMk(void);
-extern void reMark(void);
-#else				/* not USE_MARK */
 #define _mark  nulcmd
 #define nextMk nulcmd
 #define prevMk nulcmd
 #define reMark nulcmd
-#endif				/* not USE_MARK */
 
 #define mouse nulcmd
 #define sgrmouse nulcmd
@@ -652,27 +642,16 @@ extern void optionMenu(int x, int y, char **label, int *variable, int initial,
 		       void (*func) ());
 extern void initMenu(void);
 
-#ifdef USE_DICT
 extern void dictword(void);
 extern void dictwordat(void);
-#else				/* not USE_DICT */
-#define dictword nulcmd
-#define dictwordat nulcmd
-#endif				/* not USE_DICT */
 extern char *guess_save_name(Buffer *buf, char *file);
 
 extern void wrapToggle(void);
-#ifdef USE_BUFINFO
 extern void saveBufferInfo(void);
-#endif
 
 extern Str getLinkNumberStr(int correction);
 
 extern void dispVer(void);
 
-#ifdef USE_INCLUDED_SRAND48
-void srand48(long);
-long lrand48(void);
-#endif
 
 extern Str base64_encode(const unsigned char *src, size_t len);

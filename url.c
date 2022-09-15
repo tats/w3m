@@ -77,9 +77,7 @@ struct cmdtable schemetable[] = {
     {"news", SCM_NEWS},
     /*  {"news", SCM_NEWS_GROUP}, */
     {"data", SCM_DATA},
-#ifndef USE_W3MMAILER
     {"mailto", SCM_MAILTO},
-#endif
     {"https", SCM_HTTPS},
     {NULL, SCM_UNKNOWN},
 };
@@ -1011,10 +1009,8 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
     int relative_uri = FALSE;
 
     parseURL(url, pu, current);
-#ifndef USE_W3MMAILER
     if (pu->scheme == SCM_MAILTO)
 	return;
-#endif
     if (pu->scheme == SCM_DATA)
 	return;
     if (pu->scheme == SCM_NEWS || pu->scheme == SCM_NEWS_GROUP) {
@@ -1202,7 +1198,6 @@ _parsedURL2Str(ParsedURL *pu, int pass, int user, int label)
     }
     tmp = Strnew_charp(scheme_str[pu->scheme]);
     Strcat_char(tmp, ':');
-#ifndef USE_W3MMAILER
     if (pu->scheme == SCM_MAILTO) {
 	Strcat_charp(tmp, pu->file);
 	if (pu->query) {
@@ -1211,7 +1206,6 @@ _parsedURL2Str(ParsedURL *pu, int pass, int user, int label)
 	}
 	return tmp;
     }
-#endif
     if (pu->scheme == SCM_DATA) {
 	Strcat_charp(tmp, pu->file);
 	return tmp;

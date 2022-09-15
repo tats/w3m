@@ -118,9 +118,7 @@ void bzero(void *, int);
 #define SHELLBUFFERNAME	"*Shellout*"
 #define PIPEBUFFERNAME	"*stream*"
 #define CPIPEBUFFERNAME	"*stream(closed)*"
-#ifdef USE_DICT
 #define DICTBUFFERNAME "*dictionary*"
-#endif				/* USE_DICT */
 
 #ifndef HOST_NAME_MAX
 #define HOST_NAME_MAX 255
@@ -917,9 +915,6 @@ global int active_color init(6);	/* cyan */
 global int useVisitedColor init(FALSE);
 global int visited_color init(5);	/* magenta  */
 global int confirm_on_quit init(TRUE);
-#ifdef USE_MARK
-global int use_mark init(FALSE);
-#endif
 global int emacs_like_lineedit init(FALSE);
 global int space_autocomplete init(FALSE);
 global int vi_prec_num init(FALSE);
@@ -942,14 +937,7 @@ global int maxLoadImage init(4);
 global int image_map_list init(TRUE);
 global int pseudoInlines init(TRUE);
 global char *Editor init(DEF_EDITOR);
-#ifdef USE_W3MMAILER
-global char *Mailer init(NULL);
-#else
 global char *Mailer init(DEF_MAILER);
-#endif
-#ifdef USE_W3MMAILER
-#define MAILTO_OPTIONS_USE_W3MMAILER 0
-#endif
 #define MAILTO_OPTIONS_IGNORE 1
 #define MAILTO_OPTIONS_USE_MAILTO_URL 2
 global int MailtoOptions init(MAILTO_OPTIONS_IGNORE);
@@ -984,10 +972,8 @@ global int squeezeBlankLine init(FALSE);
 global char *BookmarkFile init(NULL);
 global int UseExternalDirBuffer init(TRUE);
 global char *DirBufferCommand init("file:///$LIB/dirlist" CGI_EXTENSION);
-#ifdef USE_DICT
 global int UseDictCommand init(TRUE);
 global char *DictCommand init("file:///$LIB/w3mdict" CGI_EXTENSION);
-#endif				/* USE_DICT */
 global int ignore_null_img_alt init(TRUE);
 #define DISPLAY_INS_DEL_SIMPLE	0
 #define DISPLAY_INS_DEL_NORMAL	1
@@ -1001,11 +987,6 @@ global int FoldLine init(FALSE);
 global int DefaultURLString init(DEFAULT_URL_CURRENT);
 global int MarkAllPages init(FALSE);
 
-#ifdef USE_MIGEMO
-global int use_migemo init(FALSE);
-global int migemo_active init(0);
-global char *migemo_command init(DEF_MIGEMO_COMMAND);
-#endif				/* USE_MIGEMO */
 
 global struct auth_cookie *Auth_cookie init(NULL);
 global struct cookie *First_cookie init(NULL);

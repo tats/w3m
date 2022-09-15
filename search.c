@@ -12,74 +12,6 @@ set_mark(Line *l, int pos, int epos)
 	l->propBuf[pos] |= PE_MARK;
 }
 
-#ifdef USE_MIGEMO
-/* Migemo: romaji --> kana+kanji in regexp */
-static FILE *migemor = NULL, *migemow = NULL;
-static int migemo_running;
-static int migemo_pid = 0;
-
-void
-init_migemo()
-{
-    migemo_active = migemo_running = use_migemo;
-    if (migemor != NULL)
-	fclose(migemor);
-    if (migemow != NULL)
-	fclose(migemow);
-    migemor = migemow = NULL;
-    if (migemo_pid)
-	kill(migemo_pid, SIGKILL);
-    migemo_pid = 0;
-}
-
-static int
-open_migemo(char *migemo_command)
-{
-    migemo_pid = open_pipe_rw(&migemor, &migemow);
-    if (migemo_pid < 0)
-	goto err0;
-    if (migemo_pid == 0) {
-	/* child */
-	setup_child(FALSE, 2, -1);
-	myExec(migemo_command);
-	/* XXX: ifdef __EMX__, use start /f ? */
-    }
-    return 1;
-  err0:
-    migemo_pid = 0;
-    migemo_active = migemo_running = 0;
-    return 0;
-}
-
-static char *
-migemostr(char *str)
-{
-    Str tmp = NULL;
-    if (migemor == NULL || migemow == NULL)
-	if (open_migemo(migemo_command) == 0)
-	    return str;
-    fprintf(migemow, "%s\n", conv_to_system(str));
-  again:
-    if (fflush(migemow) != 0) {
-	switch (errno) {
-	case EINTR:
-	    goto again;
-	default:
-	    goto err;
-	}
-    }
-    tmp = Str_conv_from_system(Strfgets(migemor));
-    Strchop(tmp);
-    if (tmp->length == 0)
-	goto err;
-    return conv_search_string(tmp->ptr, SystemCharset);
-  err:
-    /* XXX: backend migemo is not working? */
-    init_migemo();
-    migemo_active = migemo_running = 0;
-    return str;
-}
-#endif				/* USE_MIGEMO */
 
 /* normalize search string */
 char *
@@ -99,16 +31,6 @@ forwardSearch(Buffer *buf, char *str)
     int wrapped = FALSE;
     int pos;
 
-#ifdef USE_MIGEMO
-    if (migemo_active > 0) {
-	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
-	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
-	    message(p, 0, 0);
-	    return SR_NOTFOUND;
-	}
-    }
-    else
-#endif
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
 	return SR_NOTFOUND;
@@ -192,16 +114,6 @@ backwardSearch(Buffer *buf, char *str)
     int wrapped = FALSE;
     int pos;
 
-#ifdef USE_MIGEMO
-    if (migemo_active > 0) {
-	if (((p = regexCompile(migemostr(str), IgnoreCase)) != NULL)
-	    && ((p = regexCompile(str, IgnoreCase)) != NULL)) {
-	    message(p, 0, 0);
-	    return SR_NOTFOUND;
-	}
-    }
-    else
-#endif
     if ((p = regexCompile(str, IgnoreCase)) != NULL) {
 	message(p, 0, 0);
 	return SR_NOTFOUND;

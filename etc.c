@@ -1234,9 +1234,7 @@ reset_signals(void)
 #ifdef SIGCHLD
     mySignal(SIGCHLD, SIG_IGN);
 #endif
-#ifdef SIGPIPE
     mySignal(SIGPIPE, SIG_IGN);
-#endif
 }
 
 #ifndef FOPEN_MAX

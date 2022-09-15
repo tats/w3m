@@ -12,6 +12,7 @@ CONTEXT = {
     'USE_M17N': True,
     'USE_UNICODE': True,
     'SIGWINCH': True,
+    'SIGPIPE': True,
     'USE_COOKIE': True,
     'USE_COLOR': True,
     'USE_ANSI_COLOR': True,

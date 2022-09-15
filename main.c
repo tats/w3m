@@ -49,9 +49,7 @@ static int need_resize_screen = FALSE;
 static MySignalHandler resize_hook(SIGNAL_ARG);
 static void resize_screen(void);
 
-#ifdef SIGPIPE
 static MySignalHandler SigPipe(SIGNAL_ARG);
-#endif
 
 static char *SearchString = NULL;
 int (*searchRoutine) (Buffer *, char *);
@@ -782,9 +780,7 @@ main(int argc, char **argv, char **envp)
 #ifdef SIGCHLD
     mySignal(SIGCHLD, sig_chld);
 #endif
-#ifdef SIGPIPE
     mySignal(SIGPIPE, SigPipe);
-#endif
 
 #if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))
     orig_GC_warn_proc = GC_get_warn_proc();
@@ -1393,14 +1389,12 @@ resize_screen(void)
 	displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-#ifdef SIGPIPE
 static MySignalHandler
 SigPipe(SIGNAL_ARG)
 {
     mySignal(SIGPIPE, SigPipe);
     SIGNAL_RETURN;
 }
-#endif
 
 /*
  * Command functions: These functions are called with a keystroke.

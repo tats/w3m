@@ -1693,11 +1693,6 @@ DEFUN(ctrCsrV, CENTER_V, "Center on cursor line")
 	return;
     offsety = Currentbuf->LINES / 2 - Currentbuf->cursorY;
     if (offsety != 0) {
-#if 0
-	Currentbuf->currentLine = lineSkip(Currentbuf,
-					   Currentbuf->currentLine, offsety,
-					   FALSE);
-#endif
 	Currentbuf->topLine =
 	    lineSkip(Currentbuf, Currentbuf->topLine, -offsety, FALSE);
 	arrangeLine(Currentbuf);
@@ -3126,14 +3121,6 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
     }
     if (handleMailto(a->url))
 	return;
-#if 0
-    else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
-	/* news:newsgroup is not supported */
-	/* FIXME: gettextize? */
-	disp_err_message("news:newsgroup_name is not supported", TRUE);
-	return;
-    }
-#endif				/* USE_NNTP */
     url = a->url;
 #ifdef USE_IMAGE
     if (map)
@@ -4155,14 +4142,6 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 
     if (handleMailto(url))
 	return;
-#if 0
-    if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
-	/* news:newsgroup is not supported */
-	/* FIXME: gettextize? */
-	disp_err_message("news:newsgroup_name is not supported", TRUE);
-	return;
-    }
-#endif				/* USE_NNTP */
 
     refresh();
     buf = loadGeneralFile(url, current, referer, 0, request);
@@ -6234,11 +6213,7 @@ void
 calcTabPos(void)
 {
     TabBuffer *tab;
-#if 0
-    int lcol = 0, rcol = 2, col;
-#else
     int lcol = 0, rcol = 0, col;
-#endif
     int n1, n2, na, nx, ny, ix, iy;
 
 #ifdef USE_MOUSE

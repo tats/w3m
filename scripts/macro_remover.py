@@ -25,6 +25,8 @@ class If(NamedTuple):
     value: str
 
     def eval(self, context) -> Optional[bool]:
+        if self.value == '0':
+            return False
         return None
 
 
@@ -50,12 +52,14 @@ class Elif(NamedTuple):
         return None
 
 
-class Else(NamedTuple):
-    dummy: bool = True
+class Else:
+    def __str__(self) -> str:
+        return 'Else'
 
 
-class Endif(NamedTuple):
-    dummy: bool = True
+class Endif:
+    def __str__(self) -> str:
+        return 'Endif'
 
 
 def parse_macro(l: str) -> Union[None, Include, Define, If, Ifdef, Ifndef, Else, Elif, Endif]:
@@ -120,17 +124,15 @@ class MacroNode:
                     self.result = m.eval(context)
             case Else() as m:
                 if any(prevs):
+                    assert (self.result == None)
                     self.result = False
-                else:
-                    all_false = True
-                    for p in prevs:
-                        if p == None:
-                            all_false = False
-                            break
-                    if all_false:
-                        self.result = True
+                elif any(prev == False for prev in prevs):
+                    # has false
+                    assert (self.result == None)
+                    self.result = True
             case _:
                 raise NotImplementedError()
+
         for child in self.children:
             child.eval(context)
 
@@ -223,6 +225,6 @@ def main(path: pathlib.Path, debug=False):
 
 
 if __name__ == '__main__':
-    main(pathlib.Path(sys.argv[1])
-         # , True
-         )
+    # debug = True
+    debug = False
+    main(pathlib.Path(sys.argv[1]), debug)

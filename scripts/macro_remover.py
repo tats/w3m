@@ -8,6 +8,7 @@ from termcolor import colored
 CONTEXT = {
     'USE_M17N': True,
     'USE_UNICODE': True,
+    'SIGWINCH': True,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')

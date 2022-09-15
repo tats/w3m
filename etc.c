@@ -14,10 +14,6 @@
 #endif
 #include <signal.h>
 
-#ifdef	__WATT32__
-#define	read(a,b,c)	read_s(a,b,c)
-#define	close(x)	close_s(x)
-#endif				/* __WATT32__ */
 
 struct auth_pass {
     int bad;

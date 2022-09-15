@@ -202,10 +202,8 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
     ListItem *al;
     int i, selected = -1;
     int initial = 0;
-#ifdef MENU_MAP
     MapArea *a;
     char **label;
-#endif
 
     ml = searchMapList(buf, name);
     if (ml == NULL || ml->area == NULL || ml->area->nitem == 0)
@@ -219,7 +217,6 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
 	goto map_end;
     }
 
-#ifdef MENU_MAP
     label = New_N(char *, ml->area->nitem + 1);
     for (i = 0, al = ml->area->first; al != NULL; i++, al = al->next) {
 	a = (MapArea *) al->ptr;
@@ -231,7 +228,6 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
     label[ml->area->nitem] = NULL;
 
     optionMenu(x, y, label, &selected, initial, NULL);
-#endif
 
   map_end:
     if (selected >= 0) {
@@ -244,50 +240,6 @@ follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x, int y)
 }
 #endif
 
-#ifndef MENU_MAP
-char *map1 = "<HTML><HEAD><TITLE>Image map links</TITLE></HEAD>\
-<BODY><H1>Image map links</H1>\
-<table>";
-
-Buffer *
-follow_map_panel(Buffer *buf, char *name)
-{
-    Str mappage;
-    MapList *ml;
-    ListItem *al;
-    MapArea *a;
-    ParsedURL pu;
-    char *p, *q;
-    Buffer *newbuf;
-
-    ml = searchMapList(buf, name);
-    if (ml == NULL)
-	return NULL;
-
-    mappage = Strnew_charp(map1);
-    for (al = ml->area->first; al != NULL; al = al->next) {
-	a = (MapArea *) al->ptr;
-	if (!a)
-	    continue;
-	parseURL2(a->url, &pu, baseURL(buf));
-	p = parsedURL2Str(&pu)->ptr;
-	q = html_quote(p);
-	if (DecodeURL)
-	    p = html_quote(url_decode2(p, buf));
-	else
-	    p = q;
-	Strcat_m_charp(mappage, "<tr valign=top><td><a href=\"", q, "\">",
-		       html_quote(*a->alt ? a->alt : mybasename(a->url)),
-		       "</a><td>", p, NULL);
-    }
-    Strcat_charp(mappage, "</table></body></html>");
-
-    newbuf = loadHTMLString(mappage);
-    if (newbuf)
-	newbuf->document_charset = buf->document_charset;
-    return newbuf;
-}
-#endif
 
 MapArea *
 newMapArea(char *url, char *target, char *alt, char *shape, char *coords)

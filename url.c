@@ -23,9 +23,6 @@
 #endif
 #include <openssl/err.h>
 
-#ifdef	__WATT32__
-#define	write(a,b,c)	write_s(a,b,c)
-#endif				/* __WATT32__ */
 
 
 #ifdef INET6

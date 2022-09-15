@@ -1404,13 +1404,6 @@ confFile(char *base)
     return expandPath(Strnew_m_charp(w3m_conf_dir(), "/", base, NULL)->ptr);
 }
 
-#ifndef USE_HELP_CGI
-char *
-helpFile(char *base)
-{
-    return expandPath(Strnew_m_charp(w3m_help_dir(), "/", base, NULL)->ptr);
-}
-#endif
 
 /* siteconf */
 /*

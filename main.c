@@ -443,14 +443,6 @@ main(int argc, char **argv, char **envp)
 		if (atoi(argv[i]) > 0)
 		    PagerMax = atoi(argv[i]);
 	    }
-#if 0				/* use -O{s|j|e} instead */
-	    else if (!strcmp("-s", argv[i]))
-		DisplayCharset = WC_CES_SHIFT_JIS;
-	    else if (!strcmp("-j", argv[i]))
-		DisplayCharset = WC_CES_ISO_2022_JP;
-	    else if (!strcmp("-e", argv[i]))
-		DisplayCharset = WC_CES_EUC_JP;
-#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -612,11 +604,7 @@ main(int argc, char **argv, char **envp)
 		use_cookie = TRUE;
 		accept_cookie = TRUE;
 	    }
-#if 1				/* pager requires -s */
 	    else if (!strcmp("-s", argv[i]))
-#else
-	    else if (!strcmp("-S", argv[i]))
-#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
@@ -682,11 +670,6 @@ main(int argc, char **argv, char **envp)
 	i++;
     }
 
-#ifdef	__WATT32__
-    if (w3m_debug)
-	dbug_init();
-    sock_init();
-#endif
 
 
     FirstTab = NULL;
@@ -706,9 +689,6 @@ main(int argc, char **argv, char **envp)
 	    COLS = DEFAULT_COLS;
     }
 
-#ifdef USE_BINMODE_STREAM
-    setmode(fileno(stdout), O_BINARY);
-#endif
     if (!w3m_dump && !w3m_backend) {
 	fmInit();
 	mySignal(SIGWINCH, resize_hook);
@@ -1997,7 +1977,6 @@ DEFUN(ldfile, LOAD, "Open local file in a new buffer")
 /* Load help file */
 DEFUN(ldhelp, HELP, "Show help panel")
 {
-#ifdef USE_HELP_CGI
     char *lang;
     int n;
     Str tmp;
@@ -2008,9 +1987,6 @@ DEFUN(ldhelp, HELP, "Show help panel")
 		  Str_form_quote(Strnew_charp(w3m_version))->ptr,
 		  Str_form_quote(Strnew_charp_n(lang, n))->ptr);
     cmd_loadURL(tmp->ptr, NULL, NO_REFERER, NULL);
-#else
-    cmd_loadURL(helpFile(HELP_FILE), NULL, NO_REFERER, NULL);
-#endif
 }
 
 static void
@@ -2367,31 +2343,15 @@ DEFUN(selBuf, SELECT, "Display buffer-stack panel")
 /* Suspend (on BSD), or run interactive shell (on SysV) */
 DEFUN(susp, INTERRUPT SUSPEND, "Suspend w3m to background")
 {
-#ifndef SIGSTOP
     char *shell;
-#endif				/* not SIGSTOP */
     move(LASTLINE, 0);
     clrtoeolx();
     refresh();
     fmTerm();
-#ifndef SIGSTOP
     shell = getenv("SHELL");
     if (shell == NULL)
 	shell = "/bin/sh";
     system(shell);
-#else				/* SIGSTOP */
-#ifdef SIGTSTP
-    signal(SIGTSTP, SIG_DFL);  /* just in case */
-    /*
-     * Note: If susp() was called from SIGTSTP handler,
-     * unblocking SIGTSTP would be required here.
-     * Currently not.
-     */
-    kill(0, SIGTSTP);  /* stop whole job, not a single process */
-#else
-    kill((pid_t) 0, SIGSTOP);
-#endif
-#endif				/* SIGSTOP */
     fmInit();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
@@ -2813,11 +2773,9 @@ save_submit_formlist(FormItemList *src)
     FormItemList *srcitem;
     FormItemList *item;
     FormItemList *ret = NULL;
-#ifdef MENU_SELECT
     FormSelectOptionItem *opt;
     FormSelectOptionItem *curopt;
     FormSelectOptionItem *srcopt;
-#endif				/* MENU_SELECT */
 
     if (src == NULL)
 	return NULL;
@@ -2843,7 +2801,6 @@ save_submit_formlist(FormItemList *src)
 	item->rows = srcitem->rows;
 	item->maxlength = srcitem->maxlength;
 	item->readonly = srcitem->readonly;
-#ifdef MENU_SELECT
 	opt = curopt = NULL;
 	for (srcopt = srcitem->select_option; srcopt; srcopt = srcopt->next) {
 	    if (!srcopt->checked)
@@ -2863,7 +2820,6 @@ save_submit_formlist(FormItemList *src)
 	item->select_option = opt;
 	if (srcitem->label)
 	    item->label = Strdup(srcitem->label);
-#endif				/* MENU_SELECT */
 	item->parent = list;
 	item->next = NULL;
 
@@ -3118,7 +3074,6 @@ _followForm(int submit)
 	fi->checked = !fi->checked;
 	formUpdateBuffer(a, Currentbuf, fi);
 	break;
-#ifdef MENU_SELECT
     case FORM_SELECT:
 	if (submit)
 	    goto do_submit;
@@ -3131,7 +3086,6 @@ _followForm(int submit)
 	if (fi->parent->nitems == 1)
 	    goto do_submit;
 	break;
-#endif				/* MENU_SELECT */
     case FORM_INPUT_IMAGE:
     case FORM_INPUT_SUBMIT:
     case FORM_INPUT_BUTTON:
@@ -3198,10 +3152,8 @@ _followForm(int submit)
 		f2->type != FORM_INPUT_RESET) {
 		f2->value = f2->init_value;
 		f2->checked = f2->init_checked;
-#ifdef MENU_SELECT
 		f2->label = f2->init_label;
 		f2->selected = f2->init_selected;
-#endif				/* MENU_SELECT */
 		formUpdateBuffer(a2, Currentbuf, f2);
 	    }
 	}
@@ -3991,12 +3943,6 @@ follow_map(struct parsed_tagarg *arg)
     a = follow_map_menu(Currentbuf, name, an, x, y);
     if (a == NULL || a->url == NULL || *(a->url) == '\0') {
 #endif
-#ifndef MENU_MAP
-	Buffer *buf = follow_map_panel(Currentbuf, name);
-
-	if (buf != NULL)
-	    cmd_loadBuffer(buf, BP_NORMAL, LB_NOLINK);
-#endif
 #if defined(MENU_MAP) || defined(USE_IMAGE)
 	return;
     }
@@ -4588,9 +4534,7 @@ chkURLBuffer(Buffer *buf)
 	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=\\-]",
 	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
 	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
-#ifndef USE_W3MMAILER		/* see also chkExternalURIBuffer() */
 	"mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
-#endif
 #ifdef INET6
 	"https?://[a-zA-Z0-9:%\\-\\./_@]*\\[[a-fA-F0-9:][a-fA-F0-9:\\.]*\\][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*",
 	"ftp://[a-zA-Z0-9:%\\-\\./_@]*\\[[a-fA-F0-9:][a-fA-F0-9:\\.]*\\][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*",

@@ -62,13 +62,11 @@ static Str cur_option_value;
 static Str cur_option_label;
 static int cur_option_selected;
 static int cur_status;
-#ifdef MENU_SELECT
 /* menu based <select>  */
 FormSelectOption *select_option;
 int max_select = MAX_SELECT;
 static int n_select;
 static int cur_option_maxwidth;
-#endif				/* MENU_SELECT */
 
 static Str cur_textarea;
 Str *textarea_str;
@@ -3628,7 +3626,6 @@ process_select(struct parsed_tag *tag)
     cur_select = Strnew_charp(p);
     select_is_multiple = parsedtag_exists(tag, ATTR_MULTIPLE);
 
-#ifdef MENU_SELECT
     if (!select_is_multiple) {
 	select_str = Strnew_charp("<pre_int>");
 	if (displayLinkNumber)
@@ -3647,7 +3644,6 @@ process_select(struct parsed_tag *tag)
 	cur_option_maxwidth = 0;
     }
     else
-#endif				/* MENU_SELECT */
 	select_str = Strnew();
     cur_option = NULL;
     cur_status = R_ST_NORMAL;
@@ -3661,7 +3657,6 @@ process_n_select(void)
     if (cur_select == NULL)
 	return NULL;
     process_option();
-#ifdef MENU_SELECT
     if (!select_is_multiple) {
 	if (select_option[n_select].first) {
 	    FormItemList sitem;
@@ -3672,7 +3667,6 @@ process_n_select(void)
 	n_select++;
     }
     else
-#endif				/* MENU_SELECT */
 	Strcat_charp(select_str, "<br>");
     cur_select = NULL;
     n_selectitem = 0;
@@ -3757,7 +3751,6 @@ process_option(void)
 	cur_option_value = cur_option;
     if (cur_option_label == NULL)
 	cur_option_label = cur_option;
-#ifdef MENU_SELECT
     if (!select_is_multiple) {
 	len = get_Str_strwidth(cur_option_label);
 	if (len > cur_option_maxwidth)
@@ -3767,7 +3760,6 @@ process_option(void)
 			cur_option_label, cur_option_selected);
 	return;
     }
-#endif				/* MENU_SELECT */
     if (!select_is_multiple) {
 	begin_char = '(';
 	end_char = ')';
@@ -5325,9 +5317,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
     char symbol = '\0';
     int internal = 0;
     Anchor **a_textarea = NULL;
-#ifdef MENU_SELECT
     Anchor **a_select = NULL;
-#endif
 #if defined(USE_M17N) || defined(USE_IMAGE)
     ParsedURL *base = baseURL(buf);
 #endif
@@ -5346,14 +5336,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 	textarea_str = New_N(Str, max_textarea);
 	a_textarea = New_N(Anchor *, max_textarea);
     }
-#ifdef MENU_SELECT
     n_select = -1;
     if (!max_select) {		/* halfload */
 	max_select = MAX_SELECT;
 	select_option = New_N(FormSelectOption, max_select);
 	a_select = New_N(Anchor *, max_select);
     }
-#endif
 
 #ifdef DEBUG
     if (w3m_debug)
@@ -5645,9 +5633,7 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			FormList *form;
 			int top = 0, bottom = 0;
 			int textareanumber = -1;
-#ifdef MENU_SELECT
 			int selectnumber = -1;
-#endif
 			hseq = 0;
 			form_id = -1;
 
@@ -5695,7 +5681,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 						       max_textarea);
 			    }
 			}
-#ifdef MENU_SELECT
 			if (a_select &&
 			    parsedtag_get_value(tag, ATTR_SELECTNUMBER,
 						&selectnumber)) {
@@ -5708,15 +5693,12 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 						     max_select);
 			    }
 			}
-#endif
 			a_form =
 			    registerForm(buf, form, tag, currentLn(buf), pos);
 			if (a_textarea && textareanumber >= 0)
 			    a_textarea[textareanumber] = a_form;
-#ifdef MENU_SELECT
 			if (a_select && selectnumber >= 0)
 			    a_select[selectnumber] = a_form;
-#endif
 			if (a_form) {
 			    a_form->hseq = hseq - 1;
 			    a_form->y = currentLn(buf) - top;
@@ -5864,7 +5846,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 			    textarea_str[n_textarea];
 		    }
 		    break;
-#ifdef MENU_SELECT
 		case HTML_SELECT_INT:
 		    if (parsedtag_get_value(tag, ATTR_SELECTNUMBER, &n_select)
 			&& n_select >= 0 && n_select < max_select) {
@@ -5898,7 +5879,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 					selected);
 		    }
 		    break;
-#endif
 		case HTML_TITLE_ALT:
 		    if (parsedtag_get_value(tag, ATTR_TITLE, &p))
 			buf->buffername = html_unquote(p);
@@ -6836,7 +6816,6 @@ print_internal_information(struct html_feed_environ *henv)
 			   html_quote(henv->title), "\">", NULL);
 	pushTextLine(tl, newTextLine(s, 0));
     }
-#ifdef MENU_SELECT
     if (n_select > 0) {
 	FormSelectOptionItem *ip;
 	for (i = 0; i < n_select; i++) {
@@ -6854,7 +6833,6 @@ print_internal_information(struct html_feed_environ *henv)
 	    pushTextLine(tl, newTextLine(s, 0));
 	}
     }
-#endif				/* MENU_SELECT */
     if (n_textarea > 0) {
 	for (i = 0; i < n_textarea; i++) {
 	    s = Sprintf("<textarea_int textareanumber=%d>", i);
@@ -6904,11 +6882,9 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     cur_textarea = NULL;
     max_textarea = MAX_TEXTAREA;
     textarea_str = New_N(Str, max_textarea);
-#ifdef MENU_SELECT
     n_select = 0;
     max_select = MAX_SELECT;
     select_option = New_N(FormSelectOption, max_select);
-#endif				/* MENU_SELECT */
     cur_select = NULL;
     form_sp = -1;
     form_max = -1;
@@ -6927,9 +6903,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 	newBuf->buffername = "---";
 	newBuf->document_charset = InnerCharset;
 	max_textarea = 0;
-#ifdef MENU_SELECT
 	max_select = 0;
-#endif
 	HTMLlineproc3(newBuf, f->stream);
 	w3m_halfload = FALSE;
 	return;

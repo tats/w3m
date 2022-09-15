@@ -362,9 +362,6 @@ extern void follow_map(struct parsed_tagarg *arg);
 extern MapArea *follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x,
 				int y);
 #endif
-#ifndef MENU_MAP
-extern Buffer *follow_map_panel(Buffer *buf, char *name);
-#endif
 extern int getMapXY(Buffer *buf, Anchor *a, int *x, int *y);
 extern MapArea *retrieveCurrentMapArea(Buffer *buf);
 extern Anchor *retrieveCurrentMap(Buffer *buf);

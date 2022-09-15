@@ -23,6 +23,7 @@ CONTEXT = {
     'USE_GPM': False,
     '__MINGW32_VERSION': False,
     'USE_NNTP': False,
+    'USE_GOPHER': False,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')

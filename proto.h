@@ -223,10 +223,6 @@ extern void completeHTMLstream(struct html_feed_environ *,
 extern void loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src,
 			   int internal);
 extern Buffer *loadHTMLString(Str page);
-#ifdef USE_GOPHER
-extern Str loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset);
-extern Str loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset);
-#endif				/* USE_GOPHER */
 extern Buffer *loadBuffer(URLFile *uf, Buffer *newBuf);
 extern Buffer *loadImageBuffer(URLFile *uf, Buffer *newBuf);
 extern void saveBuffer(Buffer *buf, FILE * f, int cont);

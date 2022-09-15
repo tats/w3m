@@ -126,9 +126,6 @@ fversion(FILE * f)
 #ifdef USE_W3MMAILER
 	    ",w3mmailer"
 #endif
-#ifdef USE_GOPHER
-	    ",gopher"
-#endif
 #ifdef INET6
 	    ",ipv6"
 #endif
@@ -458,12 +455,6 @@ main(int argc, char **argv, char **envp)
 	HTTPS_proxy = p;
     if (HTTPS_proxy == NULL && non_null(HTTP_proxy))
 	HTTPS_proxy = HTTP_proxy;
-#ifdef USE_GOPHER
-    if (!non_null(GOPHER_proxy) &&
-	((p = getenv("GOPHER_PROXY")) ||
-	 (p = getenv("gopher_proxy")) || (p = getenv("GOPHER_proxy"))))
-	GOPHER_proxy = p;
-#endif				/* USE_GOPHER */
     if (!non_null(FTP_proxy) &&
 	((p = getenv("FTP_PROXY")) ||
 	 (p = getenv("ftp_proxy")) || (p = getenv("FTP_proxy"))))
@@ -4823,9 +4814,6 @@ chkURLBuffer(Buffer *buf)
     static char *url_like_pat[] = {
 	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=\\-]",
 	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
-#ifdef USE_GOPHER
-	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
-#endif				/* USE_GOPHER */
 	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
 #ifndef USE_W3MMAILER		/* see also chkExternalURIBuffer() */
 	"mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",

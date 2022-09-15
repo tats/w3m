@@ -1655,9 +1655,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     URLOption url_option;
     Str tmp;
     Str volatile page = NULL;
-#ifdef USE_GOPHER
-    int gopher_download = FALSE;
-#endif
     wc_ces charset = WC_CES_US_ASCII;
     HRequest hr;
     ParsedURL *volatile auth_pu;
@@ -1769,9 +1766,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (pu.scheme == SCM_HTTP ||
 	pu.scheme == SCM_HTTPS ||
 	((
-#ifdef USE_GOPHER
-	     (pu.scheme == SCM_GOPHER && non_null(GOPHER_proxy)) ||
-#endif				/* USE_GOPHER */
 	     (pu.scheme == SCM_FTP && non_null(FTP_proxy))
 	 ) && !Do_not_use_proxy && !check_no_proxy(pu.host))) {
 
@@ -1879,53 +1873,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
 	f.modtime = mymktime(checkHeader(t_buf, "Last-Modified:"));
     }
-#ifdef USE_GOPHER
-    else if (pu.scheme == SCM_GOPHER) {
-	p = pu.file;
-	while(*p == '/')
-	    ++p;
-	switch (*p) {
-	case '0':
-	    t = "text/plain";
-	    break;
-	case '1':
-	case 'm':
-	    page = loadGopherDir(&f, &pu, &charset);
-	    t = "gopher:directory";
-	    TRAP_OFF;
-	    goto page_loaded;
-	case '7':
-	    if(pu.query != NULL) {
-		page = loadGopherDir(&f, &pu, &charset);
-		t = "gopher:directory";
-	    } else {
-		page = loadGopherSearch(&f, &pu, &charset);
-		t = "gopher:search";
-	    }
-	    TRAP_OFF;
-	    goto page_loaded;
-	case 's':
-	    t = "audio/basic";
-	    break;
-	case 'g':
-	    t = "image/gif";
-	    break;
-	case 'h':
-	    t = "text/html";
-	    break;
-	case 'I':
-	    t = guessContentType(pu.file);
-	    if(strncasecmp(t, "image/", 6) != 0) {
-		t = "image/png";
-	    }
-	    break;
-	case '5':
-	case '9':
-	    gopher_download = TRUE;
-	    break;
-	}
-    }
-#endif				/* USE_GOPHER */
     else if (pu.scheme == SCM_FTP) {
 	check_compression(path, &f);
 	if (f.compression != CMP_NOCOMPRESS) {
@@ -2020,19 +1967,11 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    Strfputs(s, src);
 	    fclose(src);
 	}
-#ifdef USE_GOPHER
-	if (do_download || gopher_download) {
-#else
 	if (do_download) {
-#endif
 	    char *file;
 	    if (!src)
 		return NULL;
 	    file = guess_filename(pu.file);
-#ifdef USE_GOPHER
-	    if (f.scheme == SCM_GOPHER)
-		file = Sprintf("%s.html", file)->ptr;
-#endif
 	    doFileMove(tmp->ptr, file);
 	    return NO_BUFFER;
 	}
@@ -2055,11 +1994,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
 	current_content_length = strtoclen(p);
-#ifdef USE_GOPHER
-    if (do_download || gopher_download) {
-#else
     if (do_download) {
-#endif
 	/* download only */
 	char *file;
 	TRAP_OFF;
@@ -2122,9 +2057,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     else if (w3m_backend) ;
     else if (!(w3m_dump & ~DUMP_FRAME) || is_dump_text_type(t)) {
 	if (!do_download && 
-#ifdef USE_GOPHER
-		!gopher_download &&
-#endif
 		searchExtViewer(t) != NULL) {
 	    proc = DO_EXTERNAL;
 	}
@@ -7133,153 +7065,6 @@ loadHTMLString(Str page)
     return newBuf;
 }
 
-#ifdef USE_GOPHER
-
-/* 
- * loadGopherDir: get gopher directory
- */
-Str
-loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset)
-{
-    Str volatile tmp;
-    Str lbuf, name, file, host, port, type;
-    char *volatile p, *volatile q;
-    int link, pre;
-    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
-    wc_ces doc_charset = DocumentCharset;
-
-    tmp = parsedURL2Str(pu);
-    p = html_quote(tmp->ptr);
-    tmp =
-	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), RAW_MODE,
-		    charset, doc_charset);
-    q = html_quote(tmp->ptr);
-    tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
-			 "</title>\n</head>\n<body>\n<h1>Index of ", q,
-			 "</h1>\n<table>\n", NULL);
-
-    if (SETJMP(AbortLoading) != 0)
-	goto gopher_end;
-    TRAP_ON;
-
-    pre = 0;
-    while (1) {
-	if (lbuf = StrUFgets(uf), lbuf->length == 0)
-	    break;
-	if (lbuf->ptr[0] == '.' &&
-	    (lbuf->ptr[1] == '\n' || lbuf->ptr[1] == '\r'))
-	    break;
-	lbuf = convertLine(uf, lbuf, HTML_MODE, charset, doc_charset);
-	p = lbuf->ptr;
-	for (q = p; *q && *q != '\t'; q++) ;
-	name = Strnew_charp_n(p, q - p);
-	if (!*q)
-	    continue;
-	p = q + 1;
-	for (q = p; *q && *q != '\t'; q++) ;
-	file = Strnew_charp_n(p, q - p);
-	if (!*q)
-	    continue;
-	p = q + 1;
-	for (q = p; *q && *q != '\t'; q++) ;
-	host = Strnew_charp_n(p, q - p);
-	if (!*q)
-	    continue;
-	p = q + 1;
-	for (q = p; *q && *q != '\t' && *q != '\r' && *q != '\n'; q++) ;
-	port = Strnew_charp_n(p, q - p);
-
-	link = 1;
-	switch (name->ptr[0]) {
-	case '0':
-	    p = "[text file]";
-	    break;
-	case '1':
-	    p = "[directory]";
-	    break;
-	case '5':
-	    p = "[DOS binary]";
-	    break;
-	case '7':
-	    p = "[search]";
-	    break;
-	case 'm':
-	    p = "[message]";
-	    break;
-	case 's':
-	    p = "[sound]";
-	    break;
-	case 'g':
-	    p = "[gif]";
-	    break;
-	case 'h':
-	    p = "[HTML]";
-	    break;
-	case 'i':
-	    link = 0;
-	    break;
-	case 'I':
-	    p = "[image]";
-	    break;
-	case '9':
-	    p = "[binary]";
-	    break;
-	default:
-	    p = "[unsupported]";
-	    break;
-	}
-	type = Strsubstr(name, 0, 1);
-	q = Strnew_m_charp("gopher://", host->ptr, ":", port->ptr, "/", type->ptr, file->ptr, NULL)->ptr;
-	if(link) {
-	    if(pre) {
-		Strcat_charp(tmp, "</pre>");
-		pre = 0;
-	    }
-	    Strcat_m_charp(tmp, "<a href=\"",
-			   html_quote(url_encode(q, NULL, *charset)),
-			   "\">", p, " ", html_quote(name->ptr + 1), "</a><br>\n", NULL);
-	} else {
-	    if(!pre) {
-		Strcat_charp(tmp, "<pre>");
-		pre = 1;
-	    }
-
-	    Strcat_m_charp(tmp, html_quote(name->ptr + 1), "\n", NULL);
-	}
-    }
-
-  gopher_end:
-    TRAP_OFF;
-
-    if(pre)
-	Strcat_charp(tmp, "</pre>");
-    Strcat_charp(tmp, "</table>\n</body>\n</html>\n");
-    return tmp;
-}
-
-Str
-loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset)
-{
-    Str tmp;
-    char *volatile p, *volatile q;
-    MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
-    wc_ces doc_charset = DocumentCharset;
-
-    tmp = parsedURL2Str(pu);
-    p = html_quote(tmp->ptr);
-    tmp =
-	convertLine(NULL, Strnew_charp(file_unquote(tmp->ptr)), RAW_MODE,
-		    charset, doc_charset);
-    q = html_quote(tmp->ptr);
-    tmp = Strnew_m_charp("<html>\n<head>\n<base href=\"", p, "\">\n<title>", q,
-			 "</title>\n</head>\n<body>\n<h1>Search ", q,
-			 "</h1>\n<form role=\"search\">\n<div>\n"
-			 "<input type=\"search\" name=\"\">"
-			 "</div>\n</form>\n</body>", NULL);
-
-    return tmp;
-}
-#endif				/* USE_GOPHER */
 
 /* 
  * loadBuffer: read file and make new buffer

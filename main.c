@@ -130,11 +130,6 @@ fusage(FILE * f, int err)
     fprintf(f, "    -l line          # of preserved line (default 10000)\n");
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
-#if 0				/* use -O{s|j|e} instead */
-    fprintf(f, "    -e               EUC-JP\n");
-    fprintf(f, "    -s               Shift_JIS\n");
-    fprintf(f, "    -j               JIS\n");
-#endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
     fprintf(f, "    -T type          specify content-type\n");
@@ -171,11 +166,7 @@ fusage(FILE * f, int err)
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
     fprintf(f, "    -no-graph        use ASCII character for border of table and menu\n");
-#if 1				/* pager requires -s */
     fprintf(f, "    -s               squeeze multiple blank lines\n");
-#else
-    fprintf(f, "    -S               squeeze multiple blank lines\n");
-#endif
     fprintf(f, "    -W               toggle search wrap mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -192,9 +183,6 @@ fusage(FILE * f, int err)
     exit(err);
 }
 
-#ifdef __EMX__
-static char *getCodePage(void);
-#endif
 
 static GC_warn_proc orig_GC_warn_proc = NULL;
 #define GC_WARN_KEEP_MAX (20)
@@ -326,9 +314,6 @@ main(int argc, char **argv, char **envp)
     Str err_msg;
     char *Locale = NULL;
     wc_uint8 auto_detect;
-#ifdef __EMX__
-    wc_ces CodePage;
-#endif
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     char **getimage_args = NULL;
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
@@ -401,11 +386,6 @@ main(int argc, char **argv, char **envp)
 	DocumentCharset = wc_guess_locale_charset(Locale, DocumentCharset);
 	SystemCharset = wc_guess_locale_charset(Locale, SystemCharset);
     }
-#ifdef __EMX__
-    CodePage = wc_guess_charset(getCodePage(), 0);
-    if (CodePage)
-	DisplayCharset = DocumentCharset = SystemCharset = CodePage;
-#endif
 
     /* initializations */
     init_rc();
@@ -1212,17 +1192,10 @@ DEFUN(nulcmd, NOTHING NULL @@@, "Do nothing")
 {				/* do nothing */
 }
 
-#ifdef __EMX__
-DEFUN(pcmap, PCMAP, "pcmap")
-{
-    w3mFuncList[(int)PcKeymap[(int)getch()]].func();
-}
-#else				/* not __EMX__ */
 void
 pcmap(void)
 {
 }
-#endif
 
 static void
 escKeyProc(int c, int esc, unsigned char *map)
@@ -5043,17 +5016,6 @@ searchKeyNum(void)
     return n * PREC_NUM;
 }
 
-#ifdef __EMX__
-static char *
-getCodePage(void)
-{
-    unsigned long CpList[8], CpSize;
-
-    if (!getenv("WINDOWID") && !DosQueryCp(sizeof(CpList), CpList, &CpSize))
-	return Sprintf("CP%d", *CpList)->ptr;
-    return NULL;
-}
-#endif
 
 void
 deleteFiles()

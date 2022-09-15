@@ -31,6 +31,7 @@ CONTEXT = {
     'USE_MOUSE': False,
     'USE_GPM': False,
     '__MINGW32_VERSION': False,
+    '__EMX__': False,
     'USE_NNTP': False,
     'USE_GOPHER': False,
     'USE_INCLUDED_SRAND48': False,
@@ -54,8 +55,11 @@ class If(NamedTuple):
     value: str
 
     def eval(self, context) -> Optional[bool]:
-        if self.value == '0':
-            return False
+        match self.value:
+            case '0':
+                return False
+            case '1':
+                return True
         return None
 
 
@@ -101,17 +105,17 @@ def parse_macro(l: str) -> Union[None, Include, Define, If, Ifdef, Ifndef, Else,
     if m:
         match m.group(1):
             case 'include':
-                return Include(m.group(2))
+                return Include(m.group(2).strip())
             case 'define':
-                return Define(m.group(2))
+                return Define(m.group(2).strip())
             case 'if':
-                return If(m.group(2))
+                return If(m.group(2).strip())
             case 'ifndef':
-                return Ifndef(m.group(2))
+                return Ifndef(m.group(2).strip())
             case 'ifdef':
-                return Ifdef(m.group(2))
+                return Ifdef(m.group(2).strip())
             case 'elif':
-                return Elif(m.group(2))
+                return Elif(m.group(2).strip())
             case 'else':
                 return Else()
             case 'endif':

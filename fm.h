@@ -73,9 +73,6 @@
 void bcopy(const void *, void *, int);
 void bzero(void *, int);
 #endif				/* HAVE_BCOPY */
-#ifdef __EMX__
-#include <strings.h>		/* for bzero() and bcopy() */
-#endif
 
 #ifdef MAINPROGRAM
 #define global
@@ -275,11 +272,6 @@ extern int REV_LB[];
 #define inputFilenameHist(p,d,h)	inputLineHist(p,d,IN_FILENAME,h)
 #define inputChar(p)		inputLine(p,"",IN_CHAR)
 
-#ifdef __EMX__
-#define HAVE_STRCASECMP
-#define strcasecmp	stricmp
-#define strncasecmp	strnicmp
-#endif				/* __EMX__ */
 
 
 #define SKIP_BLANKS(p) {while(*(p)&&IS_SPACE(*(p)))(p)++;}
@@ -825,9 +817,6 @@ extern unsigned char GlobalKeymap[];
 extern unsigned char EscKeymap[];
 extern unsigned char EscBKeymap[];
 extern unsigned char EscDKeymap[];
-#ifdef __EMX__
-extern unsigned char PcKeymap[];
-#endif
 extern FuncList w3mFuncList[];
 
 global char *HTTP_proxy init(NULL);

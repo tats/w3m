@@ -10,9 +10,6 @@
 #ifdef HAVE_READLINK
 #include <unistd.h>
 #endif				/* HAVE_READLINK */
-#ifdef __EMX__
-#include <limits.h>		/* _MAX_PATH ? */
-#endif				/* __EMX__ */
 #include "local.h"
 #include "hash.h"
 
@@ -309,15 +306,7 @@ cgi_filename(char *uri, char **fn, char **name, char **path_info)
 	return CGIFN_CGIBIN;
     }
 
-#ifdef __EMX__
-    {
-	char lib[_MAX_PATH];
-	_abspath(lib, w3m_lib_dir(), _MAX_PATH);	/* Translate '\\' to '/' */
-	tmp = Strnew_charp(lib);
-    }
-#else
     tmp = Strnew_charp(w3m_lib_dir());
-#endif
     if (Strlastchar(tmp) != '/')
 	Strcat_char(tmp, '/');
     if (strncmp(uri, "/$LIB/", 6) == 0)

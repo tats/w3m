@@ -76,11 +76,6 @@ EFFECT_ACTIVE_START
 {
     if (useColor) {
 	if (useActiveColor) {
-#ifdef __EMX__
-	    if(!getenv("WINDOWID"))
-		setfcolor(active_color);
-	    else
-#endif
 	    {
 		EFFECT_ACTIVE_START_C;
 	    }

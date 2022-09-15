@@ -2,10 +2,6 @@
 #include "fm.h"
 
 
-#ifdef __EMX__
-#include <sys/kbdscan.h>
-#include <strings.h>
-#endif
 char *NullLine = "";
 Lineprop NullProp[] = { 0 };
 
@@ -405,22 +401,6 @@ selectBuffer(Buffer *firstbuf, Buffer *currentbuf, char *selectchar)
 		}
 	    }
 	}
-#ifdef __EMX__
-	else if (!c)
-	    switch (getch()) {
-	    case K_UP:
-		c = 'k';
-		break;
-	    case K_DOWN:
-		c = 'j';
-		break;
-	    case K_RIGHT:
-		c = ' ';
-		break;
-	    case K_LEFT:
-		c = 'B';
-	    }
-#endif
 	switch (c) {
 	case CTRL_N:
 	case 'j':

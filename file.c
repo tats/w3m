@@ -7613,12 +7613,10 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
     if (header)
 	header = conv_to_system(header);
     command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, header, &mc_stat);
-#ifndef __EMX__
     if (!(mc_stat & MCSTAT_REPNAME)) {
 	Str tmp = Sprintf("(%s) < %s", command->ptr, shell_quote(tmpf->ptr));
 	command = tmp;
     }
-#endif
 
 #ifdef HAVE_SETPGRP
     if (!(mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) &&

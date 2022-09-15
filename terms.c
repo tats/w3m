@@ -27,10 +27,6 @@ static int tty;
 #include "fm.h"
 #include "myctype.h"
 
-#ifdef __EMX__
-#define INCL_DOSNLS
-#include <os2.h>
-#endif				/* __EMX__ */
 
 #if defined(__CYGWIN__)
 #include <windows.h>
@@ -1122,22 +1118,7 @@ setlinescols(void)
 {
     char *p;
     int i;
-#ifdef __EMX__
-    {
-	int s[2];
-	_scrsize(s);
-	COLS = s[0];
-	LINES = s[1];
-
-	if (getenv("WINDOWID")) {
-	    FILE *fd = popen("scrsize", "rt");
-	    if (fd) {
-		fscanf(fd, "%i %i", &COLS, &LINES);
-		pclose(fd);
-	    }
-	}
-    }
-#elif defined(HAVE_TERMIOS_H) && defined(TIOCGWINSZ)
+#if defined(HAVE_TERMIOS_H) && defined(TIOCGWINSZ)
     struct winsize wins;
 
     i = ioctl(tty, TIOCGWINSZ, &wins);
@@ -2006,14 +1987,7 @@ void
 term_cooked(void)
 #ifndef HAVE_SGTTY_H
 {
-#ifdef __EMX__
-    /* On XFree86/OS2, some scrambled characters
-     * will appear when asserting IEXTEN flag.
-     */
-    ttymode_set((TTY_MODE) & ~IEXTEN, 0);
-#else
     ttymode_set(TTY_MODE, 0);
-#endif
 #ifdef HAVE_TERMIOS_H
     set_cc(VMIN, 4);
 #else				/* not HAVE_TERMIOS_H */

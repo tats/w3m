@@ -43,18 +43,11 @@ static int mSrchF(char c);
 static int mSrchB(char c);
 static int mSrchN(char c);
 static int mSrchP(char c);
-#ifdef __EMX__
-static int mPc(char c);
-#endif
 
 /* *INDENT-OFF* */
 static int (*MenuKeymap[128]) (char c) = {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g      */
-#ifdef __EMX__
-    mPc,    mTop,   mPrev,  mClose, mNull,  mLast,  mNext,  mNull,
-#else
     mNull,  mTop,   mPrev,  mClose, mNull,  mLast,  mNext,  mNull,
-#endif
 /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o      */
     mCancel,mNull,  mOk,    mNull,  mNull,  mOk,    mDown,  mNull,
 /*  C-p     C-q     C-r     C-s     C-t     C-u     C-v     C-w      */
@@ -159,62 +152,6 @@ static int (*MenuEscDKeymap[128]) (char c) = {
     mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
 };
 
-#ifdef __EMX__
-static int (*MenuPcKeymap[256])(char c)={
-//			  Null
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-//							  S-Tab
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-q	  A-w	  A-E	  A-r	  A-t	  A-y	  A-u	  A-i
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-o	  A-p	  A-[	  A-]			  A-a	  A-s
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-d	  A-f	  A-g	  A-h	  A-j	  A-k	  A-l	  A-;
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-'    A-'		  A-\		  A-x	  A-c	  A-v
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mPrev,
-// A-b	  A-n	  A-m	  A-,	  A-.	  A-/		  A-+
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-//			  F1	  F2	  F3	  F4	  F5
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// F6	  F7	  F8	  F9	  F10			  Home
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mTop,
-// Up	  PgUp	  A-/	  Left	  5	  Right	  C-*	  End
-  mUp,	  mUp,	  mNull,  mCancel,mNull,  mOk,	  mNull,  mLast,
-// Down	  PgDn	  Ins	  Del	  S-F1	  S-F2	  S-F3	  S-F4
-  mDown,  mDown,  mClose, mCancel,mNull,  mNull,  mNull,  mNull,
-// S-F5	  S-F6	  S-F7	  S-F8	  S-F9	  S-F10	  C-F1	  C-F2
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// C-F3	  C-F4	  C-F5	  C-F6	  C-F7	  C-F8	  C-F9	  C-F10
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-F1	  A-F2	  A-F3	  A-F4	  A-F5	  A-F6	  A-F7	  A-F8
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-F9	  A-F10	  PrtSc	  C-Left  C-Right C-End	  C-PgDn  C-Home
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-1	  A-2	  A-3	  A-4	  A-5	  A-6	  A-7/8	  A-9
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// A-0	  A -	  A-=		  C-PgUp  F11	  F12	  S-F11
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// S-F12  C-F11	  C-F12	  A-F11	  A-F12	  C-Up	  C-/	  C-5
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-// S-*	  C-Down  C-Ins	  C-Del	  C-Tab	  C -	  C-+
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,
-//				  A -	  A-Tab	  A-Enter
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 160
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 168
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 176
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 184
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 192
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 200
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 208
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 216
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 224
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 232
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,   // 240
-  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull,  mNull	   // 248
-};
-#endif
 /* *INDENT-ON* */
 /* --- SelectMenu --- */
 
@@ -662,14 +599,6 @@ set_menu_frame(void)
 
 /* --- MenuFunctions --- */
 
-#ifdef __EMX__
-static int
-mPc(char c)
-{
-    c = getch();
-    return (MenuPcKeymap[(int)c] (c));
-}
-#endif
 
 static int
 mEsc(char c)

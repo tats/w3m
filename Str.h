@@ -18,10 +18,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#ifdef __EMX__
-#define strcasecmp	stricmp
-#define strncasecmp	strnicmp
-#endif
 
 typedef struct _Str {
     char *ptr;

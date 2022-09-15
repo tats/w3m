@@ -230,7 +230,6 @@ wrap_GC_warn_proc(char *msg, GC_word arg)
 	fprintf(stderr, msg, (unsigned long)arg);
 }
 
-#ifdef SIGCHLD
 static void
 sig_chld(int signo)
 {
@@ -259,7 +258,6 @@ sig_chld(int signo)
     mySignal(SIGCHLD, sig_chld);
     return;
 }
-#endif
 
 Str
 make_optional_header_string(char *s)
@@ -757,9 +755,7 @@ main(int argc, char **argv, char **envp)
 
     if (w3m_dump)
 	mySignal(SIGINT, SIG_IGN);
-#ifdef SIGCHLD
     mySignal(SIGCHLD, sig_chld);
-#endif
     mySignal(SIGPIPE, SigPipe);
 
 #if (GC_VERSION_MAJOR>7) || ((GC_VERSION_MAJOR==7) && (GC_VERSION_MINOR>=2))

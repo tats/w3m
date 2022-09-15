@@ -1231,9 +1231,7 @@ reset_signals(void)
 #ifdef SIGBUS
     mySignal(SIGBUS, SIG_DFL);	/* create core image */
 #endif				/* SIGBUS */
-#ifdef SIGCHLD
     mySignal(SIGCHLD, SIG_IGN);
-#endif
     mySignal(SIGPIPE, SIG_IGN);
 }
 

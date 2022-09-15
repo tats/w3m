@@ -9,6 +9,9 @@ CONTEXT = {
     'USE_M17N': True,
     'USE_UNICODE': True,
     'SIGWINCH': True,
+    'USE_IMAGE': True,
+    'USE_COLOR': True,
+    'USE_ANSI_COLOR': True,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')

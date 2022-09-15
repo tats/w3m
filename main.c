@@ -129,15 +129,9 @@ fversion(FILE * f)
 	    "lang=en"
 #endif
 	    ",m17n"
-#ifdef USE_IMAGE
 	    ",image"
-#endif
-#ifdef USE_COLOR
 	    ",color"
-#ifdef USE_ANSI_COLOR
 	    ",ansi-color"
-#endif
-#endif
 #ifdef USE_MOUSE
 	    ",mouse"
 #ifdef USE_GPM
@@ -207,9 +201,7 @@ fusage(FILE * f, int err)
     fprintf(f, "    -T type          specify content-type\n");
     fprintf(f, "    -m               internet message mode\n");
     fprintf(f, "    -v               visual startup mode\n");
-#ifdef USE_COLOR
     fprintf(f, "    -M               monochrome display\n");
-#endif				/* USE_COLOR */
     fprintf(f,
 	    "    -N               open URL of command line on each new tab\n");
     fprintf(f, "    -F               automatically render frames\n");
@@ -217,10 +209,8 @@ fusage(FILE * f, int err)
 	    "    -cols width      specify column width (used with -dump)\n");
     fprintf(f,
 	    "    -ppc count       specify the number of pixels per character (4.0...32.0)\n");
-#ifdef USE_IMAGE
     fprintf(f,
 	    "    -ppl count       specify the number of pixels per line (4.0...64.0)\n");
-#endif
     fprintf(f, "    -dump            dump formatted page into stdout\n");
     fprintf(f,
 	    "    -dump_head       dump response of HEAD request into stdout\n");
@@ -602,10 +592,8 @@ main(int argc, char **argv, char **envp)
 		visual_start = TRUE;
 	    else if (!strcmp("-N", argv[i]))
 		open_new_tab = TRUE;
-#ifdef USE_COLOR
 	    else if (!strcmp("-M", argv[i]))
 		useColor = FALSE;
-#endif				/* USE_COLOR */
 	    else if (!strcmp("-B", argv[i]))
 		load_bookmark = TRUE;
 	    else if (!strcmp("-bookmark", argv[i])) {
@@ -675,7 +663,6 @@ main(int argc, char **argv, char **envp)
 		    set_pixel_per_char = TRUE;
 		}
 	    }
-#ifdef USE_IMAGE
 	    else if (!strcmp("-ppl", argv[i])) {
 		double ppc;
 		if (++i >= argc)
@@ -687,7 +674,6 @@ main(int argc, char **argv, char **envp)
 		    set_pixel_per_line = TRUE;
 		}
 	    }
-#endif
 	    else if (!strcmp("-ri", argv[i])) {
 	        enable_inline_image = INLINE_IMG_OSC5379;
 	    }
@@ -858,10 +844,8 @@ main(int argc, char **argv, char **envp)
 	fmInit();
 	mySignal(SIGWINCH, resize_hook);
     }
-#ifdef USE_IMAGE
     else if (w3m_halfdump && displayImage)
 	activeImage = TRUE;
-#endif
 
     sync_with_option();
 #ifdef USE_COOKIE
@@ -1187,7 +1171,6 @@ main(int argc, char **argv, char **envp)
 	}
 #endif
 	mySignal(SIGWINCH, resize_hook);
-#ifdef USE_IMAGE
 	if (activeImage && displayImage && Currentbuf->img &&
 	    !Currentbuf->image_loaded) {
 	    do {
@@ -1197,7 +1180,6 @@ main(int argc, char **argv, char **envp)
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 	else
-#endif
 	{
 	    do {
 		if (need_resize_screen)
@@ -1486,9 +1468,7 @@ pushBuffer(Buffer *buf)
 {
     Buffer *b;
 
-#ifdef USE_IMAGE
     deleteImage(Currentbuf);
-#endif
     if (clear_buffer)
 	tmpClearBuffer(Currentbuf);
     if (Firstbuf == Currentbuf) {
@@ -2509,10 +2489,8 @@ _quitfm(int confirm)
     }
 
     term_title("");		/* XXX */
-#ifdef USE_IMAGE
     if (activeImage)
 	termImage();
-#endif
     fmTerm();
 #ifdef USE_COOKIE
     save_cookies();
@@ -2575,9 +2553,7 @@ DEFUN(selBuf, SELECT, "Display buffer-stack panel")
     for (buf = Firstbuf; buf != NULL; buf = buf->nextBuffer) {
 	if (buf == Currentbuf)
 	    continue;
-#ifdef USE_IMAGE
 	deleteImage(buf);
-#endif
 	if (clear_buffer)
 	    tmpClearBuffer(buf);
     }
@@ -3060,15 +3036,12 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
 {
     Anchor *a;
     ParsedURL u;
-#ifdef USE_IMAGE
     int x = 0, y = 0, map = 0;
-#endif
     char *url;
 
     if (Currentbuf->firstLine == NULL)
 	return;
 
-#ifdef USE_IMAGE
     a = retrieveCurrentImg(Currentbuf);
     if (a && a->image && a->image->map) {
 	_followForm(FALSE);
@@ -3078,13 +3051,6 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
 	getMapXY(Currentbuf, a, &x, &y);
 	map = 1;
     }
-#else
-    a = retrieveCurrentMap(Currentbuf);
-    if (a) {
-	_followForm(FALSE);
-	return;
-    }
-#endif
     a = retrieveCurrentAnchor(Currentbuf);
     if (a == NULL) {
 	_followForm(FALSE);
@@ -3105,10 +3071,8 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
     if (handleMailto(a->url))
 	return;
     url = a->url;
-#ifdef USE_IMAGE
     if (map)
 	url = Sprintf("%s?%d,%d", a->url, x, y)->ptr;
-#endif
 
     if (check_target && open_tab_blank && a->target &&
 	(!strcasecmp(a->target, "_new") || !strcasecmp(a->target, "_blank"))) {
@@ -3295,9 +3259,7 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	if (multipart) {
 	    if (f2->type == FORM_INPUT_IMAGE) {
 		int x = 0, y = 0;
-#ifdef USE_IMAGE
 		getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
-#endif
 		*query = Strdup(conv_form_encoding(f2->name, fi, Currentbuf));
 		Strcat_charp(*query, ".x");
 		form_write_data(body, fi->parent->boundary, (*query)->ptr,
@@ -3327,9 +3289,7 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 	    /* not multipart */
 	    if (f2->type == FORM_INPUT_IMAGE) {
 		int x = 0, y = 0;
-#ifdef USE_IMAGE
 		getMapXY(Currentbuf, retrieveCurrentImg(Currentbuf), &x, &y);
-#endif
 		Strcat(*query,
 		       Str_form_quote(conv_form_encoding
 				      (f2->name, fi, Currentbuf)));
@@ -5185,7 +5145,6 @@ DEFUN(curlno, LINE_INFO, "Display current position in document")
     disp_message(tmp->ptr, FALSE);
 }
 
-#ifdef USE_IMAGE
 DEFUN(dispI, DISPLAY_IMAGE, "Restart loading and drawing of images")
 {
     if (!displayImage)
@@ -5213,7 +5172,6 @@ DEFUN(stopI, STOP_IMAGE, "Stop loading and drawing of images")
     Currentbuf->image_flag = IMG_FLAG_SKIP;
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
-#endif
 
 #ifdef USE_MOUSE
 
@@ -6328,10 +6286,8 @@ followTab(TabBuffer * tab)
     Buffer *buf;
     Anchor *a;
 
-#ifdef USE_IMAGE
     a = retrieveCurrentImg(Currentbuf);
     if (!(a && a->image && a->image->map))
-#endif
 	a = retrieveCurrentAnchor(Currentbuf);
     if (a == NULL)
 	return;

@@ -906,10 +906,8 @@ global int basic_color init(8);	/* don't change */
 global int anchor_color init(4);	/* blue  */
 global int image_color init(2);	/* green */
 global int form_color init(1);	/* red   */
-#ifdef USE_BG_COLOR
 global int bg_color init(8);	/* don't change */
 global int mark_color init(6);	/* cyan */
-#endif				/* USE_BG_COLOR */
 global int useActiveColor init(FALSE);
 global int active_color init(6);	/* cyan */
 global int useVisitedColor init(FALSE);
@@ -993,9 +991,7 @@ global struct cookie *First_cookie init(NULL);
 
 global char *mailcap_files init(USER_MAILCAP ", " SYS_MAILCAP);
 global char *mimetypes_files init(USER_MIMETYPES ", " SYS_MIMETYPES);
-#ifdef USE_EXTERNAL_URI_LOADER
 global char *urimethodmap_files init(USER_URIMETHODMAP ", " SYS_URIMETHODMAP);
-#endif
 
 global TextList *fileToDelete;
 
@@ -1004,11 +1000,9 @@ extern Hist *SaveHist;
 extern Hist *URLHist;
 extern Hist *ShellHist;
 extern Hist *TextHist;
-#ifdef USE_HISTORY
 global int UseHistory init(TRUE);
 global int URLHistSize init(100);
 global int SaveURLHist init(TRUE);
-#endif				/* USE_HISTORY */
 global int multicolList init(FALSE);
 
 global wc_ces InnerCharset init(WC_CES_WTF);	/* Don't change */

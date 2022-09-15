@@ -15,6 +15,8 @@ CONTEXT = {
     'USE_COOKIE': True,
     'USE_COLOR': True,
     'USE_ANSI_COLOR': True,
+    'USE_BG_COLOR': True,
+    'USE_RAW_SCROLL': True,
     'USE_ALARM': True,
     'USE_SSL': True,
     'USE_SSL_VERIFY': True,
@@ -22,6 +24,8 @@ CONTEXT = {
     'USE_DICT': True,
     'USE_IMAGE': True,
     'USE_BUFINFO': True,
+    'USE_HISTORY': True,
+    'USE_EXTERNAL_URI_LOADER': True,
     #
     'USE_MOUSE': False,
     'USE_GPM': False,

@@ -34,22 +34,14 @@
 #define EFFECT_FORM_START_C         setfcolor(form_color)
 #define EFFECT_ACTIVE_START_C      (setfcolor(active_color), underline())
 #define EFFECT_VISITED_START_C      setfcolor(visited_color)
-#ifdef USE_BG_COLOR
 #define EFFECT_MARK_START_C         setbcolor(mark_color)
-#else
-#define EFFECT_MARK_START_C         standout()
-#endif
 
 #define EFFECT_IMAGE_END_C          setfcolor(basic_color)
 #define EFFECT_ANCHOR_END_C         setfcolor(basic_color)
 #define EFFECT_FORM_END_C           setfcolor(basic_color)
 #define EFFECT_ACTIVE_END_C        (setfcolor(basic_color), underlineend())
 #define EFFECT_VISITED_END_C        setfcolor(basic_color)
-#ifdef USE_BG_COLOR
 #define EFFECT_MARK_END_C           setbcolor(bg_color)
-#else
-#define EFFECT_MARK_END_C           standend()
-#endif
 
 #define EFFECT_ANCHOR_START_M       underline()
 #define EFFECT_ANCHOR_END_M         underlineend()
@@ -362,7 +354,6 @@ displayBuffer(Buffer *buf, int mode)
     }
     if (mode == B_FORCE_REDRAW || mode == B_SCROLL || mode == B_REDRAW_IMAGE ||
 	cline != buf->topLine || ccolumn != buf->currentColumn) {
-#ifdef USE_RAW_SCROLL
 	if (
 	       !(activeImage && displayImage && draw_image_flag) &&
 	       mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
@@ -384,7 +375,6 @@ displayBuffer(Buffer *buf, int mode)
 	    redrawNLine(buf, n);
 	}
 	else
-#endif
 	{
 	    if (activeImage &&
 		(mode == B_REDRAW_IMAGE ||
@@ -531,9 +521,7 @@ redrawNLine(Buffer *buf, int n)
 
     if (useColor) {
 	EFFECT_ANCHOR_END_C;
-#ifdef USE_BG_COLOR
 	setbcolor(bg_color);
-#endif				/* USE_BG_COLOR */
     }
     if (nTab > 1
 	) {
@@ -967,12 +955,10 @@ do_color(Linecolor c)
 	setfcolor(c & 0x7);
     else if (color_mode & 0x8)
 	setfcolor(basic_color);
-#ifdef USE_BG_COLOR
     if (c & 0x80)
 	setbcolor((c >> 4) & 0x7);
     else if (color_mode & 0x80)
 	setbcolor(bg_color);
-#endif
     color_mode = c;
 }
 

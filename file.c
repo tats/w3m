@@ -1713,7 +1713,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    t = "ftp:directory";
 	    break;
 	case SCM_UNKNOWN:
-#ifdef USE_EXTERNAL_URI_LOADER
 	    tmp = searchURIMethods(&pu);
 	    if (tmp != NULL) {
 		b = loadGeneralFile(tmp->ptr, current, referer, flag, request);
@@ -1721,7 +1720,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		    copyParsedURL(&b->currentURL, &pu);
 		return b;
 	    }
-#endif
 	    /* FIXME: gettextize? */
 	    disp_err_message(Sprintf("Unknown URI: %s",
 				     parsedURL2Str(&pu)->ptr)->ptr, FALSE);

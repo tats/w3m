@@ -318,9 +318,7 @@ listBuffer(Buffer *top, Buffer *current)
     move(0, 0);
     if (useColor) {
 	setfcolor(basic_color);
-#ifdef USE_BG_COLOR
 	setbcolor(bg_color);
-#endif				/* USE_BG_COLOR */
     }
     clrtobotx();
     for (i = 0; i < LASTLINE; i++) {

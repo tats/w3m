@@ -113,9 +113,7 @@ fversion(FILE * f)
 	    ",cookie"
 	    ",ssl"
 	    ",ssl-verify"
-#ifdef USE_EXTERNAL_URI_LOADER
 	    ",external-uri-loader"
-#endif
 #ifdef INET6
 	    ",ipv6"
 #endif
@@ -744,10 +742,8 @@ main(int argc, char **argv, char **envp)
 
     sync_with_option();
     initCookie();
-#ifdef USE_HISTORY
     if (UseHistory)
 	loadHistory(URLHist);
-#endif				/* not USE_HISTORY */
 
     wtf_init(DocumentCharset, DisplayCharset);
     /*  if (w3m_dump)
@@ -2342,10 +2338,8 @@ _quitfm(int confirm)
 	termImage();
     fmTerm();
     save_cookies();
-#ifdef USE_HISTORY
     if (UseHistory && SaveURLHist)
 	saveHistory(URLHist, URLHistSize);
-#endif				/* USE_HISTORY */
     w3m_exit(0);
 }
 
@@ -4146,13 +4140,11 @@ DEFUN(cooLst, COOKIE, "View cookie list")
 	cmd_loadBuffer(buf, BP_NO_URL, LB_NOLINK);
 }
 
-#ifdef USE_HISTORY
 /* History page */
 DEFUN(ldHist, HISTORY, "Show browsing history")
 {
     cmd_loadBuffer(historyBuffer(URLHist), BP_NO_URL, LB_NOLINK);
 }
-#endif				/* USE_HISTORY */
 
 /* download HREF link */
 DEFUN(svA, SAVE_LINK, "Save hyperlink target")
@@ -4646,9 +4638,7 @@ chkURLBuffer(Buffer *buf)
     for (i = 0; url_like_pat[i]; i++) {
 	reAnchor(buf, url_like_pat[i]);
     }
-#ifdef USE_EXTERNAL_URI_LOADER
     chkExternalURIBuffer(buf);
-#endif
     buf->check_url |= CHK_URL;
 }
 
@@ -5266,12 +5256,10 @@ DEFUN(reinit, REINIT, "Reload configuration file")
 	return;
     }
 
-#ifdef USE_EXTERNAL_URI_LOADER
     if (!strcasecmp(resource, "URIMETHODS")) {
 	initURIMethods();
 	return;
     }
-#endif
 
     disp_err_message(Sprintf("Don't know how to reinitialize '%s'", resource)->
 		     ptr, FALSE);

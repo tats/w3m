@@ -1065,7 +1065,6 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 	pu->host = current->host;
 	pu->port = current->port;
 	if (pu->file && *pu->file) {
-#ifdef USE_EXTERNAL_URI_LOADER
 	    if (pu->scheme == SCM_UNKNOWN
 		&& strchr(pu->file, ':') == NULL
 		&& current && (p = strchr(current->file, ':')) != NULL) {
@@ -1074,7 +1073,6 @@ parseURL2(char *url, ParsedURL *pu, ParsedURL *current)
 					    p - current->file), pu->file)->ptr;
 	    }
 	    else
-#endif
 		if (
 		       pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
@@ -2047,7 +2045,6 @@ filename_extension(char *path, int is_url)
 	return last_dot;
 }
 
-#ifdef USE_EXTERNAL_URI_LOADER
 static struct table2 **urimethods;
 static struct table2 default_urimethods[] = {
     {"mailto", "file:///$LIB/w3mmail.cgi?%s"},
@@ -2192,7 +2189,6 @@ chkExternalURIBuffer(Buffer *buf)
 	reAnchor(buf, Sprintf("%s:%s", ump->item1, URI_PATTERN)->ptr);
     }
 }
-#endif
 
 ParsedURL *
 schemeToProxy(int scheme)

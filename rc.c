@@ -403,12 +403,10 @@ struct param_ptr params2[] = {
      (void *)colorstr},
     {"form_color", P_COLOR, PI_SEL_C, (void *)&form_color, CMT_F_COLOR,
      (void *)colorstr},
-#ifdef USE_BG_COLOR
     {"mark_color", P_COLOR, PI_SEL_C, (void *)&mark_color, CMT_MARK_COLOR,
      (void *)colorstr},
     {"bg_color", P_COLOR, PI_SEL_C, (void *)&bg_color, CMT_BG_COLOR,
      (void *)colorstr},
-#endif				/* USE_BG_COLOR */
     {"active_style", P_INT, PI_ONOFF, (void *)&useActiveColor,
      CMT_ACTIVE_STYLE, NULL},
     {"active_color", P_COLOR, PI_SEL_C, (void *)&active_color, CMT_C_COLOR,
@@ -423,11 +421,9 @@ struct param_ptr params2[] = {
 
 struct param_ptr params3[] = {
     {"pagerline", P_NZINT, PI_TEXT, (void *)&PagerMax, CMT_PAGERLINE, NULL},
-#ifdef USE_HISTORY
     {"use_history", P_INT, PI_ONOFF, (void *)&UseHistory, CMT_HISTORY, NULL},
     {"history", P_INT, PI_TEXT, (void *)&URLHistSize, CMT_HISTSIZE, NULL},
     {"save_hist", P_INT, PI_ONOFF, (void *)&SaveURLHist, CMT_SAVEHIST, NULL},
-#endif				/* USE_HISTORY */
     {"confirm_qq", P_INT, PI_ONOFF, (void *)&confirm_on_quit, CMT_CONFIRM_QQ,
      NULL},
     {"close_tab_back", P_INT, PI_ONOFF, (void *)&close_tab_back,
@@ -486,10 +482,8 @@ struct param_ptr params6[] = {
     {"mime_types", P_STRING, PI_TEXT, (void *)&mimetypes_files, CMT_MIMETYPES,
      NULL},
     {"mailcap", P_STRING, PI_TEXT, (void *)&mailcap_files, CMT_MAILCAP, NULL},
-#ifdef USE_EXTERNAL_URI_LOADER
     {"urimethodmap", P_STRING, PI_TEXT, (void *)&urimethodmap_files,
      CMT_URIMETHODMAP, NULL},
-#endif
     {"editor", P_STRING, PI_TEXT, (void *)&Editor, CMT_EDITOR, NULL},
     {"mailto_options", P_INT, PI_SEL_C, (void *)&MailtoOptions,
      CMT_MAILTO_OPTIONS, (void *)mailtooptionsstr},
@@ -1093,9 +1087,7 @@ sync_with_option(void)
     parse_cookie();
     initMailcap();
     initMimeTypes();
-#ifdef USE_EXTERNAL_URI_LOADER
     initURIMethods();
-#endif
     if (fmInitialized && (displayImage || enable_inline_image))
 	initImage();
     loadPasswd();

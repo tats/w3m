@@ -142,11 +142,9 @@ extern void cursorBottom(void);
 extern int currentLn(Buffer *buf);
 extern void tmpClearBuffer(Buffer *buf);
 extern char *filename_extension(char *patch, int is_url);
-#ifdef USE_EXTERNAL_URI_LOADER
 extern void initURIMethods();
 extern Str searchURIMethods(ParsedURL *pu);
 extern void chkExternalURIBuffer(Buffer *buf);
-#endif
 extern ParsedURL *schemeToProxy(int scheme);
 extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
 			     wc_ces doc_charset);
@@ -316,14 +314,10 @@ extern char *inputLineHistSearch(char *prompt, char *def_str, int flag,
 				 Hist *hist, int (*incfunc) (int ch, Str buf,
 							     Lineprop *prop));
 extern Str unescape_spaces(Str s);
-#ifdef USE_HISTORY
 extern Buffer *historyBuffer(Hist *hist);
 extern void loadHistory(Hist *hist);
 extern void saveHistory(Hist *hist, size_t size);
 extern void ldHist(void);
-#else				/* not USE_HISTORY */
-#define ldHist nulcmd
-#endif				/* not USE_HISTORY */
 extern double log_like(int x);
 extern struct table *newTable(void);
 extern void pushdata(struct table *t, int row, int col, char *data);
@@ -420,15 +414,11 @@ extern void graphstart(void);
 extern void graphend(void);
 extern int graph_ok(void);
 extern void setfcolor(int color);
-#ifdef USE_BG_COLOR
 extern void setbcolor(int color);
-#endif				/* USE_BG_COLOR */
 extern void refresh(void);
 extern void clear(void);
-#ifdef USE_RAW_SCROLL
 extern void scroll(int);
 extern void rscroll(int);
-#endif
 extern void clrtoeol(void);
 extern void clrtoeolx(void);
 extern void clrtobot(void);

@@ -2,11 +2,9 @@
 #ifndef _HTML_H
 #define _HTML_H
 #include "config.h"
-#ifdef USE_SSL
 #include <openssl/bio.h>
 #include <openssl/x509.h>
 #include <openssl/ssl.h>
-#endif				/* USE_SSL */
 
 #include <time.h>
 
@@ -72,9 +70,7 @@ typedef struct {
     int compression;
     int content_encoding;
     char *guess_type;
-#ifdef USE_SSL
     char *ssl_certificate;
-#endif
     char *url;
     time_t modtime;
 } URLFile;
@@ -414,8 +410,6 @@ struct environment {
 #define SCM_NEWS_GROUP	10
 #define SCM_DATA	11
 #define SCM_MAILTO      12
-#ifdef USE_SSL
 #define SCM_HTTPS       13
-#endif				/* USE_SSL */
 
 #endif				/* _HTML_H */

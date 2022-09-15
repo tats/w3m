@@ -178,13 +178,8 @@ match_cookie(ParsedURL *pu, struct cookie *cookie, char *domainname)
 	return 0;
     if (strncmp(cookie->path->ptr, pu->file, cookie->path->length) != 0)
 	return 0;
-#ifdef USE_SSL
     if (cookie->flag & COO_SECURE && pu->scheme != SCM_HTTPS)
 	return 0;
-#else				/* not USE_SSL */
-    if (cookie->flag & COO_SECURE)
-	return 0;
-#endif				/* not USE_SSL */
     if (cookie->portl && !port_match(cookie->portl, pu->port))
 	return 0;
 

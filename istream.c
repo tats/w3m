@@ -3,9 +3,7 @@
 #include "myctype.h"
 #include "istream.h"
 #include <signal.h>
-#ifdef USE_SSL
 #include <openssl/x509v3.h>
-#endif
 
 #define	uchar		unsigned char
 
@@ -24,10 +22,8 @@ static int file_read(struct io_file_handle *handle, char *buf, int len);
 
 static int str_read(Str handle, char *buf, int len);
 
-#ifdef USE_SSL
 static void ssl_close(struct ssl_handle *handle);
 static int ssl_read(struct ssl_handle *handle, char *buf, int len);
-#endif
 
 static int ens_read(struct ens_handle *handle, char *buf, int len);
 static void ens_close(struct ens_handle *handle);
@@ -139,7 +135,6 @@ newStrStream(Str s)
     return stream;
 }
 
-#ifdef USE_SSL
 InputStream
 newSSLStream(SSL * ssl, int sock)
 {
@@ -156,7 +151,6 @@ newSSLStream(SSL * ssl, int sock)
     stream->ssl.close = (void (*)())ssl_close;
     return stream;
 }
-#endif
 
 InputStream
 newEncodedStream(InputStream is, char encoding)
@@ -326,10 +320,8 @@ ISfileno(InputStream stream)
 	return *(int *)stream->base.handle;
     case IST_FILE:
 	return fileno(stream->file.handle->f);
-#ifdef USE_SSL
     case IST_SSL:
 	return stream->ssl.handle->sock;
-#endif
     case IST_ENCODED:
 	return ISfileno(stream->ens.handle->is);
     default:
@@ -346,7 +338,6 @@ ISeos(InputStream stream)
     return base->iseos;
 }
 
-#ifdef USE_SSL
 static Str accept_this_site;
 
 void
@@ -540,7 +531,6 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	s = amsg ? amsg : Strnew_charp("valid certificate");
 	return s;
     }
-#ifdef USE_SSL_VERIFY
     /* check the cert chain.
      * The chain length is automatically checked by OpenSSL when we
      * set the verify depth in the ctx.
@@ -573,7 +563,6 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 	    }
 	}
     }
-#endif
     emsg = ssl_check_cert_ident(x, hostname);
     if (emsg != NULL) {
 	if (accept_this_site
@@ -626,7 +615,6 @@ ssl_get_certificate(SSL * ssl, char *hostname)
     X509_free(x);
     return s;
 }
-#endif
 
 /* Raw level input stream functions */
 
@@ -662,7 +650,6 @@ str_read(Str handle, char *buf, int len)
     return 0;
 }
 
-#ifdef USE_SSL
 static void
 ssl_close(struct ssl_handle *handle)
 {
@@ -677,7 +664,6 @@ ssl_read(struct ssl_handle *handle, char *buf, int len)
 {
     int status;
     if (handle->ssl) {
-#ifdef USE_SSL_VERIFY
 	for (;;) {
 	    status = SSL_read(handle->ssl, buf, len);
 	    if (status > 0)
@@ -691,15 +677,11 @@ ssl_read(struct ssl_handle *handle, char *buf, int len)
 	    }
 	    break;
 	}
-#else				/* if !defined(USE_SSL_VERIFY) */
-	status = SSL_read(handle->ssl, buf, len);
-#endif				/* !defined(USE_SSL_VERIFY) */
     }
     else
 	status = read(handle->sock, buf, len);
     return status;
 }
-#endif				/* USE_SSL */
 
 static void
 ens_close(struct ens_handle *handle)

@@ -555,9 +555,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 
     headerlist = newBuf->document_header = newTextList();
     if (uf->scheme == SCM_HTTP
-#ifdef USE_SSL
 	|| uf->scheme == SCM_HTTPS
-#endif				/* USE_SSL */
 	)
 	http_response_code = -1;
     else
@@ -655,9 +653,7 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    lineBuf2 = tmp;
 	}
 	if ((uf->scheme == SCM_HTTP
-#ifdef USE_SSL
 	     || uf->scheme == SCM_HTTPS
-#endif				/* USE_SSL */
 	    ) && http_response_code == -1) {
 	    p = lineBuf2->ptr;
 	    while (*p && !IS_SPACE(*p))
@@ -1771,9 +1767,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	header_string = NULL;
     TRAP_ON;
     if (pu.scheme == SCM_HTTP ||
-#ifdef USE_SSL
 	pu.scheme == SCM_HTTPS ||
-#endif				/* USE_SSL */
 	((
 #ifdef USE_GOPHER
 	     (pu.scheme == SCM_GOPHER && non_null(GOPHER_proxy)) ||
@@ -2164,9 +2158,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     if (flag & RG_FRAME) {
 	t_buf->bufferprop |= BP_FRAME;
     }
-#ifdef USE_SSL
     t_buf->ssl_certificate = f.ssl_certificate;
-#endif
     frame_source = flag & RG_FRAME_SRC;
     if (proc == DO_EXTERNAL) {
 	b = doExternal(f, t, t_buf);

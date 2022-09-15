@@ -118,12 +118,8 @@ fversion(FILE * f)
 #ifdef USE_COOKIE
 	    ",cookie"
 #endif
-#ifdef USE_SSL
 	    ",ssl"
-#ifdef USE_SSL_VERIFY
 	    ",ssl-verify"
-#endif
-#endif
 #ifdef USE_EXTERNAL_URI_LOADER
 	    ",external-uri-loader"
 #endif
@@ -193,9 +189,7 @@ fusage(FILE * f, int err)
     fprintf(f, "    -4               IPv4 only (-o dns_order=4)\n");
     fprintf(f, "    -6               IPv6 only (-o dns_order=6)\n");
 #endif
-#ifdef USE_SSL
     fprintf(f, "    -insecure        use insecure SSL config options\n");
-#endif
 #ifdef USE_COOKIE
     fprintf(f,
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
@@ -458,14 +452,12 @@ main(int argc, char **argv, char **envp)
 	((p = getenv("HTTP_PROXY")) ||
 	 (p = getenv("http_proxy")) || (p = getenv("HTTP_proxy"))))
 	HTTP_proxy = p;
-#ifdef USE_SSL
     if (!non_null(HTTPS_proxy) &&
 	((p = getenv("HTTPS_PROXY")) ||
 	 (p = getenv("https_proxy")) || (p = getenv("HTTPS_proxy"))))
 	HTTPS_proxy = p;
     if (HTTPS_proxy == NULL && non_null(HTTP_proxy))
 	HTTPS_proxy = HTTP_proxy;
-#endif				/* USE_SSL */
 #ifdef USE_GOPHER
     if (!non_null(GOPHER_proxy) &&
 	((p = getenv("GOPHER_PROXY")) ||
@@ -687,7 +679,6 @@ main(int argc, char **argv, char **envp)
 		displayTitleTerm = getenv("TERM");
 	    else if (!strncmp("-title=", argv[i], 7))
 		displayTitleTerm = argv[i] + 7;
-#ifdef USE_SSL
 	    else if (!strcmp("-insecure", argv[i])) {
 #ifdef OPENSSL_TLS_SECURITY_LEVEL
 		set_param_option("ssl_cipher=ALL:eNULL:@SECLEVEL=0");
@@ -698,11 +689,8 @@ main(int argc, char **argv, char **envp)
 		set_param_option("ssl_min_version=all");
 #endif
 		set_param_option("ssl_forbid_method=");
-#ifdef USE_SSL_VERIFY
 		set_param_option("ssl_verify_server=0");
-#endif
 	    }
-#endif				/* USE_SSL */
 	    else if (!strcmp("-o", argv[i]) ||
 		     !strcmp("-show-option", argv[i])) {
 		if (!strcmp("-show-option", argv[i]) || ++i >= argc ||
@@ -1202,7 +1190,6 @@ dump_extra(Buffer *buf)
 	printf("W3m-base-url: %s\n", parsedURL2Str(buf->baseURL)->ptr);
     printf("W3m-document-charset: %s\n",
 	   wc_ces_to_charset(buf->document_charset));
-#ifdef USE_SSL
     if (buf->ssl_certificate) {
 	Str tmp = Strnew();
 	char *p;
@@ -1218,7 +1205,6 @@ dump_extra(Buffer *buf)
 	    Strcat_char(tmp, '\n');
 	printf("W3m-ssl-certificate: %s", tmp->ptr);
     }
-#endif
 }
 
 static int
@@ -5312,9 +5298,7 @@ w3m_exit(int i)
 #endif
     stopDownload();
     deleteFiles();
-#ifdef USE_SSL
     free_ssl_ctx();
-#endif
     disconnectFTP();
 #ifdef HAVE_MKDTEMP
     if (no_rc_dir && tmp_dir != rc_dir)

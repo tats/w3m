@@ -16,6 +16,8 @@ CONTEXT = {
     'USE_COLOR': True,
     'USE_ANSI_COLOR': True,
     'USE_ALARM': True,
+    'USE_SSL': True,
+    'USE_SSL_VERIFY': True,
     #
     'USE_MOUSE': False,
     'USE_GPM': False,

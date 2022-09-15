@@ -288,10 +288,8 @@ make_lastline_message(Buffer *buf)
     else
 	/* FIXME: gettextize? */
 	Strcat_charp(msg, "Viewing");
-#ifdef USE_SSL
     if (buf->ssl_certificate)
 	Strcat_charp(msg, "[SSL]");
-#endif
     Strcat_charp(msg, " <");
     Strcat_charp(msg, buf->buffername);
 

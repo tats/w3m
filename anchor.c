@@ -560,7 +560,6 @@ shiftAnchorPosition(AnchorList *al, HmarkerList *hl, int line, int pos,
     }
 }
 
-#ifdef USE_IMAGE
 void
 addMultirowsImg(Buffer *buf, AnchorList *al)
 {
@@ -637,7 +636,6 @@ addMultirowsImg(Buffer *buf, AnchorList *al)
 	img->rows = 0;
     }
 }
-#endif
 
 void
 addMultirowsForm(Buffer *buf, AnchorList *al)

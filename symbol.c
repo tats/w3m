@@ -3,15 +3,12 @@
 
 #include "Symbols/alt.sym"
 #include "Symbols/graph.sym"
-#ifdef USE_M17N
 #include "Symbols/eucjp.sym"
 #include "Symbols/euckr.sym"
 #include "Symbols/euccn.sym"
 #include "Symbols/euctw.sym"
 #include "Symbols/big5.sym"
-#ifdef USE_UNICODE
 #include "Symbols/utf8.sym"
-#endif
 #include "Symbols/cp850.sym"
 
 typedef struct {
@@ -34,9 +31,7 @@ static symbol_set euckr_symbol_set = { WC_CES_EUC_KR,   2, euckr_symbol, NULL };
 static symbol_set euccn_symbol_set = { WC_CES_EUC_CN,   2, euccn_symbol, NULL };
 static symbol_set euctw_symbol_set = { WC_CES_EUC_TW,   2, euctw_symbol, NULL };
 static symbol_set big5_symbol_set  = { WC_CES_BIG5,     2, big5_symbol,  NULL };
-#ifdef USE_UNICODE
 static symbol_set utf8_symbol_set  = { WC_CES_UTF_8,    1, utf8_symbol,  NULL };
-#endif
 static symbol_set cp850_symbol_set = { WC_CES_CP850,    1, cp850_symbol, NULL };
 
 static charset_symbol_set charset_symbol_list[] = {
@@ -57,9 +52,7 @@ static charset_symbol_set charset_symbol_list[] = {
     { WC_CES_EUC_TW,        &euctw_symbol_set },
     { WC_CES_BIG5,          &big5_symbol_set  },
     { WC_CES_HKSCS,         &big5_symbol_set  },
-#ifdef USE_UNICODE
     { WC_CES_UTF_8,         &utf8_symbol_set  },
-#endif
     { WC_CES_CP850,         &cp850_symbol_set },
     { 0, NULL },
 };
@@ -144,7 +137,6 @@ set_symbol(int width)
     return symbol_buf;
 }
 
-#ifdef USE_UNICODE
 void
 update_utf8_symbol(void)
 {
@@ -157,16 +149,7 @@ update_utf8_symbol(void)
 	}
     }
 }
-#endif
 
-#else
-
-char **
-get_symbol(void)
-{
-    return alt_symbol;
-}
-#endif
 
 void
 push_symbol(Str str, char symbol, int width, int n)
@@ -174,11 +157,9 @@ push_symbol(Str str, char symbol, int width, int n)
     char buf[2], *p;
     int i;
 
-#ifdef USE_M17N
     if (width == 2)
 	p = alt2_symbol[(unsigned char)symbol % N_SYMBOL];
     else
-#endif
 	p = alt_symbol[(unsigned char)symbol % N_SYMBOL];
     for (i = 0; i < 2 && *p; i++, p++)
 	buf[i] = (*p == ' ') ? NBSP_CODE : *p;

@@ -224,17 +224,10 @@ decodeQP_to_growbuf(struct growbuf *gb, char **ww)
     return;
 }
 
-#ifdef USE_M17N
 Str
 decodeWord(char **ow, wc_ces * charset)
-#else
-Str
-decodeWord0(char **ow)
-#endif
 {
-#ifdef USE_M17N
     wc_ces c;
-#endif
     char *p, *w = *ow;
     char method;
     Str a = Strnew();
@@ -248,15 +241,9 @@ decodeWord0(char **ow)
 	    goto convert_fail;
 	Strcat_char(tmp, *w);
     }
-#ifdef USE_M17N
     c = wc_guess_charset(tmp->ptr, 0);
     if (!c)
 	goto convert_fail;
-#else
-    if (strcasecmp(tmp->ptr, "ISO-8859-1") != 0 && strcasecmp(tmp->ptr, "US_ASCII") != 0)
-	/* NOT ISO-8859-1 encoding ... don't convert */
-	goto convert_fail;
-#endif
     w++;
     method = *(w++);
     if (*w != '?')
@@ -281,9 +268,7 @@ decodeWord0(char **ow)
 	    w++;
     }
     *ow = w;
-#ifdef USE_M17N
     *charset = c;
-#endif
     return a;
 
   convert_fail:
@@ -293,21 +278,14 @@ decodeWord0(char **ow)
 /* 
  * convert MIME encoded string to the original one
  */
-#ifdef USE_M17N
 Str
 decodeMIME(Str orgstr, wc_ces * charset)
-#else
-Str
-decodeMIME0(Str orgstr)
-#endif
 {
     char *org = orgstr->ptr, *endp = org + orgstr->length;
     char *org0, *p;
     Str cnv = NULL;
 
-#ifdef USE_M17N
     *charset = 0;
-#endif
     while (org < endp) {
 	if (*org == '=' && *(org + 1) == '?') {
 	    if (cnv == NULL) {

@@ -1,5 +1,4 @@
 
-#ifdef USE_UNICODE
 
 #include <stdlib.h>
 #include "wc.h"
@@ -735,4 +734,3 @@ wtf_push_ucs(Str os, wc_uint32 ucs, wc_status *st)
     }
 }
 
-#endif

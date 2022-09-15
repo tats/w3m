@@ -133,17 +133,6 @@ LUsolve(Matrix A, int *indexarray, Vector b, Vector x)
 
 /* m_inverse -- returns inverse of A, provided A is not too rank deficient
  *           -- uses LU factorisation */
-#if 0
-Matrix
-m_inverse(Matrix A, Matrix out)
-{
-    int *indexarray = NewAtom_N(int, A->dim);
-    Matrix A1 = new_matrix(A->dim);
-    m_copy(A, A1);
-    LUfactor(A1, indexarray);
-    return LUinverse(A1, indexarray, out);
-}
-#endif				/* 0 */
 
 Matrix
 LUinverse(Matrix A, int *indexarray, Matrix out)

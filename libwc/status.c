@@ -3,9 +3,7 @@
 #include "../alloc.h"
 
 #include "wc.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
 
 wc_option WcOption = {
     WC_OPT_DETECT_ON,	/* auto_detect */
@@ -62,19 +60,15 @@ wc_input_init(wc_ces ces, wc_status *st)
 	}
     }
 
-#ifdef USE_UNICODE
     st->tag = NULL;
     st->ntag = 0;
-#endif
 }
 
 void
 wc_output_init(wc_ces ces, wc_status *st)
 {
     wc_gset *gset;
-#ifdef USE_UNICODE
     size_t i, n, nw;
-#endif
 
     if (output_set && ces == output_st.ces_info->id &&
 	! wc_option_cmp(&WcOption, &output_option)) {
@@ -103,7 +97,6 @@ wc_output_init(wc_ces ces, wc_status *st)
     if (ces & WC_CES_T_ISO_2022)
 	wc_create_gmap(st);
 
-#ifdef USE_UNICODE
     st->tag = NULL;
     st->ntag = 0;
 
@@ -154,7 +147,6 @@ wc_output_init(wc_ces ces, wc_status *st)
     st->tlist[n] = NULL;
     st->tlistw[nw] = NULL;
     }
-#endif
 
     output_st = *st;
     output_set = WC_TRUE;

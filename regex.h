@@ -4,9 +4,7 @@
 
 typedef struct {
     char type;
-#ifdef USE_M17N
     wc_wchar_t wch;
-#endif
     unsigned char ch;
 } longchar;
 

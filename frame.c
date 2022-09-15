@@ -337,9 +337,6 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
     parseURL2(b->url, &url, currentURL);
     switch (url.scheme) {
     case SCM_LOCAL:
-#if 0
-	b->source = url.real_file;
-#endif
 	b->flags = 0;
     default:
 	is_redisplay = TRUE;
@@ -405,9 +402,7 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 {
     int r, c, t_stack;
     URLFile f2;
-#ifdef USE_M17N
     wc_ces charset, doc_charset;
-#endif
     char *d_target, *p_target, *s_target, *t_target;
     ParsedURL *currentURL, base;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
@@ -520,13 +515,11 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 		s_target = frame.body->name;
 		t_target = "_blank";
 		d_target = TargetSelf ? s_target : t_target;
-#ifdef USE_M17N
 		charset = WC_CES_US_ASCII;
 		if (current->document_charset != WC_CES_US_ASCII)
 		    doc_charset = current->document_charset;
 		else
 		    doc_charset = DocumentCharset;
-#endif
 		t_stack = 0;
 		if (frame.body->type &&
 		    !strcasecmp(frame.body->type, "text/plain")) {
@@ -671,7 +664,6 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    }
 				}
 			    }
-#ifdef USE_M17N
 			    if (UseContentCharset &&
 				parsedtag_get_value(tag, ATTR_HTTP_EQUIV, &q)
 				&& !strcasecmp(q, "Content-Type")
@@ -689,7 +681,6 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				    }
 				}
 			    }
-#endif
 			    /* fall thru, "META" is prohibit tag */
 			case HTML_HEAD:
 			case HTML_N_HEAD:
@@ -784,14 +775,12 @@ createFrameFile(struct frameset *f, FILE * f1, Buffer *current, int level,
 				parsedtag_set_value(tag,
 						    ATTR_REFERER,
 						    parsedURL2Str(&base)->ptr);
-#ifdef USE_M17N
 				if (tag->attrid[j] == ATTR_ACTION &&
 				    charset != WC_CES_US_ASCII)
 				    parsedtag_set_value(tag,
 							ATTR_CHARSET,
 							wc_ces_to_charset
 							(charset));
-#endif
 				break;
 			    case ATTR_TARGET:
 				if (!tag->value[j])
@@ -884,9 +873,7 @@ renderFrame(Buffer *Cbuf, int force_reload)
     Buffer *buf;
     int flag;
     struct frameset *fset;
-#ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset;
-#endif
 
     tmp = tmpfname(TMPF_FRAME, ".html");
     f = fopen(tmp->ptr, "w");
@@ -905,20 +892,14 @@ renderFrame(Buffer *Cbuf, int force_reload)
 	flag |= RG_NOCACHE;
     renderFrameSet = Cbuf->frameset;
     flushFrameSet(renderFrameSet);
-#ifdef USE_M17N
     DocumentCharset = InnerCharset;
-#endif
     buf = loadGeneralFile(tmp->ptr, NULL, NULL, flag, NULL);
-#ifdef USE_M17N
     DocumentCharset = doc_charset;
-#endif
     renderFrameSet = NULL;
     if (buf == NULL || buf == NO_BUFFER)
 	return NULL;
     buf->sourcefile = tmp->ptr;
-#ifdef USE_M17N
     buf->document_charset = Cbuf->document_charset;
-#endif
     copyParsedURL(&buf->currentURL, &Cbuf->currentURL);
     preFormUpdateBuffer(buf);
     return buf;

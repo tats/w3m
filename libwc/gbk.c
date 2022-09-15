@@ -3,9 +3,7 @@
 #include "gbk.h"
 #include "search.h"
 #include "wtf.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
 
 #include "map/gb2312_gbk.map"
 
@@ -175,11 +173,9 @@ wc_push_to_gbk(Str os, wc_wchar_t cc, wc_status *st)
 	    Strcat_charp(os, WC_REPLACE);
 	return;
     default:
-#ifdef USE_UNICODE
 	if (WcOption.ucs_conv)
 	    cc = wc_any_to_any_ces(cc, st);
 	else
-#endif
 	    cc.ccs = WC_CCS_IS_WIDE(cc.ccs) ? WC_CCS_UNKNOWN_W : WC_CCS_UNKNOWN;
 	continue;
     }

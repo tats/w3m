@@ -305,13 +305,8 @@ openNewsStream(ParsedURL *pu)
 }
 
 
-#ifdef USE_M17N
 Str
 loadNewsgroup(ParsedURL *pu, wc_ces * charset)
-#else
-Str
-loadNewsgroup0(ParsedURL *pu)
-#endif
 {
     volatile Str page;
     Str tmp;
@@ -322,11 +317,9 @@ loadNewsgroup0(ParsedURL *pu)
     int status, i, first, last;
     volatile int flag = 0, start = 0, end = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
-#ifdef USE_M17N
     wc_ces doc_charset = DocumentCharset, mime_charset;
 
     *charset = WC_CES_US_ASCII;
-#endif
     if (current_news.host == NULL || !pu->file || *pu->file == '\0')
 	return NULL;
     group = allocStr(pu->file, -1);

@@ -102,17 +102,13 @@ typedef struct {
     wc_ccs       g0_ccs;
     wc_ccs       g1_ccs;
     wc_ccs       design[4];
-#ifdef USE_UNICODE
     wc_table   **tlist;
     wc_table   **tlistw;
-#endif
     int          state;
-#ifdef USE_UNICODE
     Str          tag;
     int          ntag;
     wc_uint32    base;
     int          shift;
-#endif
 } wc_status;
 
 #endif

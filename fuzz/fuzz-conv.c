@@ -32,13 +32,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size){
 #else
 	GC_oom_fn = die_oom;
 #endif
-#ifdef USE_M17N
-#ifdef USE_UNICODE
 	wtf_init(WC_CES_UTF_8, WC_CES_UTF_8);
-#else
-	wtf_init(WC_CES_EUC_JP, WC_CES_EUC_JP);
-#endif
-#endif
 	init_done = 1;
     }
 

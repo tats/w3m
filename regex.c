@@ -15,13 +15,9 @@
 #include <string.h>
 #include <gc.h>
 #include "config.h"
-#ifdef USE_M17N
 #include "wc.h"
 #include "wtf.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
-#endif
 #include "regex.h"
 #include "config.h"
 #include "myctype.h"
@@ -55,11 +51,7 @@ char *lc2c(longchar *, int);
 int verbose;
 #endif				/* REGEX_DEBUG */
 
-#ifdef USE_M17N
 #define get_mclen(c) wtf_len1((wc_uchar *)(c))
-#else
-#define get_mclen(c) 1
-#endif
 
 #ifndef TOLOWER
 #include <ctype.h>
@@ -79,26 +71,22 @@ set_longchar(char *str)
     unsigned char *p = (unsigned char *)str;
     longchar r = { };
 
-#ifdef USE_M17N
     if (*p & 0x80) {
 	r.wch = wtf_parse1(&p);
 	if (r.wch.ccs == WC_CCS_SPECIAL || r.wch.ccs == WC_CCS_SPECIAL_W) {
 	    r.type = RE_TYPE_SYMBOL;
 	    return r;
 	}
-#ifdef USE_UNICODE
 	if (WC_CCS_IS_UNICODE(r.wch.ccs)) {
 	    if (WC_CCS_SET(r.wch.ccs) == WC_CCS_UCS_TAG)
 		r.wch.code = wc_ucs_tag_to_ucs(r.wch.code);
 	    r.wch.ccs = WC_CCS_UCS4;
 	}
 	else
-#endif
 	    r.wch.ccs = WC_CCS_SET(r.wch.ccs);
 	r.type = RE_TYPE_WCHAR_T;
 	return r;
     }
-#endif
     r.ch = *p;
     r.type = RE_TYPE_CHAR;
     return r;
@@ -618,10 +606,8 @@ regmatch1(regexchar * re, longchar * c)
 {
     int ans;
 
-#ifdef USE_M17N
     if (c->type == RE_TYPE_SYMBOL)
 	return 0;
-#endif
     switch (RE_MODE(re)) {
     case RE_ANY:
 #ifdef REGEX_DEBUG
@@ -681,11 +667,9 @@ matchWhich(longchar * pattern, longchar * c, int igncase)
 static int
 match_longchar(longchar * a, longchar * b, int ignore)
 {
-#ifdef USE_M17N
     if (a->type != b->type)
 	return 0;
     if (a->type == RE_TYPE_WCHAR_T) {
-#ifdef USE_UNICODE
 	if (ignore) {
 	    wc_uint32 ua = wc_any_to_ucs(a->wch), ub = wc_any_to_ucs(b->wch);
 	    return (ua == ub ||
@@ -693,10 +677,8 @@ match_longchar(longchar * a, longchar * b, int ignore)
 	            ua == wc_ucs_toupper(ub) ||
 		    ua == wc_ucs_totitle(ub));
 	}
-#endif
 	return (a->wch.ccs == b->wch.ccs) && (a->wch.code == b->wch.code);
     }
-#endif
     if (ignore && IS_ALPHA(b->ch))
 	return (a->ch == TOLOWER(b->ch) || a->ch == TOUPPER(b->ch));
     else
@@ -706,13 +688,11 @@ match_longchar(longchar * a, longchar * b, int ignore)
 static int
 match_range_longchar(longchar * a, longchar * b, longchar * c, int ignore)
 {
-#ifdef USE_M17N
     if (a->type != b->type || a->type != c->type)
 	return 0;
     if (a->type == RE_TYPE_WCHAR_T) {
 	if (a->wch.ccs != c->wch.ccs || c->wch.ccs != b->wch.ccs)
 	    return 0;
-#ifdef USE_UNICODE
 	if (ignore) {
 	    wc_uint32 uc = wc_any_to_ucs(c->wch);
 
@@ -728,10 +708,8 @@ match_range_longchar(longchar * a, longchar * b, longchar * c, int ignore)
 			(ua <= title && title <= ub));
 	    }
 	}
-#endif
 	return (a->wch.code <= c->wch.code && c->wch.code <= b->wch.code);
     }
-#endif
     if (ignore && IS_ALPHA(c->ch))
 	return ((a->ch <= TOLOWER(c->ch) && TOLOWER(c->ch) <= b->ch) ||
 		(a->ch <= TOUPPER(c->ch) && TOUPPER(c->ch) <= b->ch));
@@ -750,14 +728,12 @@ lc2c(longchar * x, int len)
     while (x[j].type != RE_TYPE_END && j < len) {
 	if (x[j].type == RE_WHICH_RANGE)
 	    y[i++] = '-';
-#ifdef USE_M17N
 	else if (x[j].type == RE_TYPE_WCHAR_T) {
 	    char buf[20];
 	    sprintf(buf, "[%x-%x]", x[j].wch.ccs, x[j].wch.code);
 	    strcpy(&y[i], buf);
 	    i += strlen(buf);
 	}
-#endif
 	else
 	    y[i++] = x[j].ch;
 	j++;
@@ -830,9 +806,7 @@ main(int argc, char **argv)
     FILE *f = stdin;
     int i = 1;
 
-#ifdef USE_M17N
     wtf_init(WC_CES_EUC_JP, WC_CES_EUC_JP);
-#endif
 #ifdef REGEX_DEBUG
     for (i = 1; i < argc; i++) {
 	if (strcmp(argv[i], "-v") == 0)

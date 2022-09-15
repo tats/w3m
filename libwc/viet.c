@@ -3,9 +3,7 @@
 #include "viet.h"
 #include "wtf.h"
 #include "search.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
 #include "map/tcvn57123_tcvn5712.map"
 
 wc_uint8 wc_c0_tcvn57122_map[ 0x20 ] = {
@@ -204,11 +202,9 @@ wc_push_to_viet(Str os, wc_wchar_t cc, wc_status *st)
 	    Strcat_charp(os, WC_REPLACE);
 	return;
     default:
-#ifdef USE_UNICODE
 	if (WcOption.ucs_conv)
 	    cc = wc_any_to_any_ces(cc, st);
 	else
-#endif
 	    cc.ccs = WC_CCS_IS_WIDE(cc.ccs) ? WC_CCS_UNKNOWN_W : WC_CCS_UNKNOWN;
 	continue;
     }

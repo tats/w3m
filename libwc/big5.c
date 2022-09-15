@@ -3,9 +3,7 @@
 #include "big5.h"
 #include "search.h"
 #include "wtf.h"
-#ifdef USE_UNICODE
 #include "ucs.h"
-#endif
 
 #define C0 WC_BIG5_MAP_C0
 #define GL WC_BIG5_MAP_GL
@@ -131,11 +129,9 @@ wc_push_to_big5(Str os, wc_wchar_t cc, wc_status *st)
 	    Strcat_charp(os, WC_REPLACE);
 	return;
     default:
-#ifdef USE_UNICODE
 	if (WcOption.ucs_conv)
 	    cc = wc_any_to_any_ces(cc, st);
 	else
-#endif
 	    cc.ccs = WC_CCS_IS_WIDE(cc.ccs) ? WC_CCS_UNKNOWN_W : WC_CCS_UNKNOWN;
 	continue;
     }

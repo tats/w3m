@@ -12,8 +12,8 @@ CONTEXT = {
     'USE_IMAGE': True,
     'USE_COLOR': True,
     'USE_ANSI_COLOR': True,
-    # 'USE_MOUSE': False,
-    # 'USE_GPM': False,
+    'USE_MOUSE': False,
+    'USE_GPM': False,
     # '__MINGW32_VERSION': False,
 }
 

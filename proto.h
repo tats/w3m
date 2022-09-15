@@ -295,11 +295,7 @@ extern void disp_err_message(char *s, int redraw_current);
 extern void disp_message_nsec(char *s, int redraw_current, int sec, int purge,
 			      int mouse);
 extern void disp_message(char *s, int redraw_current);
-#ifdef USE_MOUSE
-extern void disp_message_nomouse(char *s, int redraw_current);
-#else
 #define disp_message_nomouse disp_message
-#endif
 extern void set_delayed_message(char *s);
 extern void cursorUp0(Buffer *buf, int n);
 extern void cursorUp(Buffer *buf, int n);
@@ -638,23 +634,6 @@ extern void reMark(void);
 #define reMark nulcmd
 #endif				/* not USE_MARK */
 
-#ifdef USE_MOUSE
-extern void mouse(void);
-extern void sgrmouse(void);
-extern void mouse_init(void);
-extern void mouse_end(void);
-extern void mouse_active(void);
-extern void mouse_inactive(void);
-extern void msToggle(void);
-extern void movMs(void);
-#ifdef USE_MENU
-extern void menuMs(void);
-#else
-#define menuMs nulcmd
-#endif
-extern void tabMs(void);
-extern void closeTMs(void);
-#else				/* not USE_MOUSE */
 #define mouse nulcmd
 #define sgrmouse nulcmd
 #define msToggle nulcmd
@@ -662,7 +641,6 @@ extern void closeTMs(void);
 #define menuMs nulcmd
 #define tabMs nulcmd
 #define closeTMs nulcmd
-#endif				/* not USE_MOUSE */
 
 extern void initImage(void);
 extern void termImage(void);
@@ -682,9 +660,6 @@ extern char *getWord(char **str);
 extern char *getQWord(char **str);
 struct regex;
 extern char *getRegexWord(const char **str, struct regex **regex_ret);
-#ifdef USE_MOUSE
-extern void initMouseAction(void);
-#endif
 
 #ifdef USE_MENU
 extern void new_menu(Menu *menu, MenuItem *item);

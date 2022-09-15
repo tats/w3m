@@ -1,15 +1,6 @@
 /* $Id: buffer.c,v 1.30 2010/07/18 14:10:09 htrb Exp $ */
 #include "fm.h"
 
-#ifdef USE_MOUSE
-#ifdef USE_GPM
-#include <gpm.h>
-#endif
-#if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
-#define getch()	do_getch()
-#endif				/* USE_GPM */
-#endif				/* USE_MOUSE */
 
 #ifdef __EMX__
 #include <sys/kbdscan.h>
@@ -44,9 +35,7 @@ newBuffer(int width)
 #ifdef USE_SSL
     n->ssl_certificate = NULL;
 #endif
-#ifdef USE_M17N
     n->auto_detect = WcOption.auto_detect;
-#endif
     n->check_url = MarkAllPages; /* use default from -o mark_all_pages */
     n->need_reshape = 1;	 /* always reshape new buffers to mark URLs */
     return n;
@@ -85,9 +74,7 @@ discardBuffer(Buffer *buf)
     int i;
     Buffer *b;
 
-#ifdef USE_IMAGE
     deleteImage(buf);
-#endif
     clearBuffer(buf);
     for (i = 0; i < MAX_LB; i++) {
 	b = buf->linkBuffer[i];
@@ -331,14 +318,12 @@ listBuffer(Buffer *top, Buffer *current)
     Buffer *buf = top;
 
     move(0, 0);
-#ifdef USE_COLOR
     if (useColor) {
 	setfcolor(basic_color);
 #ifdef USE_BG_COLOR
 	setbcolor(bg_color);
 #endif				/* USE_BG_COLOR */
     }
-#endif				/* USE_COLOR */
     clrtobotx();
     for (i = 0; i < LASTLINE; i++) {
 	if (buf == current) {
@@ -507,9 +492,7 @@ reshapeBuffer(Buffer *buf)
 {
     URLFile f;
     Buffer sbuf;
-#ifdef USE_M17N
     wc_uint8 old_auto_detect = WcOption.auto_detect;
-#endif
 
     if (!buf->need_reshape)
 	return;
@@ -556,19 +539,15 @@ reshapeBuffer(Buffer *buf)
 	    readHeader(&f, buf, TRUE, NULL);
     }
 
-#ifdef USE_M17N
     WcOption.auto_detect = WC_OPT_DETECT_OFF;
     UseContentCharset = FALSE;
-#endif
     if (is_html_type(buf->type))
 	loadHTMLBuffer(&f, buf);
     else
 	loadBuffer(&f, buf);
     UFclose(&f);
-#ifdef USE_M17N
     WcOption.auto_detect = old_auto_detect;
     UseContentCharset = TRUE;
-#endif
 
     buf->height = LASTLINE + 1;
     if (buf->firstLine && sbuf.firstLine) {
@@ -635,9 +614,7 @@ writeBufferCache(Buffer *buf)
     Str tmp;
     FILE *cache = NULL;
     Line *l;
-#ifdef USE_ANSI_COLOR
     int colorflag;
-#endif
 
     if (buf->savecache)
 	return -1;
@@ -668,7 +645,6 @@ writeBufferCache(Buffer *buf)
 		fwrite(l->propBuf, sizeof(Lineprop), l->size, cache) < l->size)
 		goto _error;
 	}
-#ifdef USE_ANSI_COLOR
 	colorflag = l->colorBuf ? 1 : 0;
 	if (fwrite1(colorflag, cache))
 	    goto _error;
@@ -679,7 +655,6 @@ writeBufferCache(Buffer *buf)
 		    goto _error;
 	    }
 	}
-#endif
     }
 
     fclose(cache);
@@ -698,9 +673,7 @@ readBufferCache(Buffer *buf)
     FILE *cache;
     Line *l = NULL, *prevl = NULL, *basel = NULL;
     long lnum = 0, clnum, tlnum;
-#ifdef USE_ANSI_COLOR
     int colorflag;
-#endif
 
     if (buf->savecache == NULL)
 	return -1;
@@ -747,7 +720,6 @@ readBufferCache(Buffer *buf)
 	}
 	else
 	    break;
-#ifdef USE_ANSI_COLOR
 	if (fread1(colorflag, cache))
 	    break;
 	if (colorflag) {
@@ -761,7 +733,6 @@ readBufferCache(Buffer *buf)
 	else {
 	    l->colorBuf = NULL;
 	}
-#endif
     }
     if (prevl) {
 	    buf->lastLine = prevl;

@@ -178,13 +178,6 @@ static int OptionEncode = FALSE;
 #define CMT_DEFAULT_URL  N_("Default value for open-URL command")
 #define CMT_DECODE_CTE   N_("Decode Content-Transfer-Encoding when saving")
 #define CMT_PRESERVE_TIMESTAMP N_("Preserve timestamp when saving")
-#ifdef USE_MOUSE
-#define CMT_MOUSE         N_("Enable mouse")
-#define CMT_REVERSE_MOUSE N_("Scroll in reverse direction of mouse drag")
-#define CMT_RELATIVE_WHEEL_SCROLL N_("Behavior of wheel scroll speed")
-#define CMT_RELATIVE_WHEEL_SCROLL_RATIO N_("(A only)Scroll by # (%) of screen")
-#define CMT_FIXED_WHEEL_SCROLL_COUNT N_("(B only)Scroll by # lines")
-#endif				/* USE_MOUSE */
 #define CMT_CLEAR_BUF     N_("Free memory of undisplayed buffers")
 #define CMT_NOSENDREFERER N_("Suppress `Referer:' header")
 #define CMT_CROSSORIGINREFERER N_("Exclude pathname and query string from `Referer:' header when cross domain communication")
@@ -300,13 +293,6 @@ static struct sel_c displayinsdel[] = {
     {0, NULL, NULL}
 };
 
-#ifdef USE_MOUSE
-static struct sel_c wheelmode[] = {
-    {TRUE, "1", N_("A:relative to screen height")},
-    {FALSE, "0", N_("B:fixed speed")},
-    {0, NULL, NULL}
-};
-#endif				/* MOUSE */
 
 #ifdef INET6
 static struct sel_c dnsorders[] = {
@@ -498,19 +484,6 @@ struct param_ptr params3[] = {
     {"migemo_command", P_STRING, PI_TEXT, (void *)&migemo_command,
      CMT_MIGEMO_COMMAND, NULL},
 #endif				/* USE_MIGEMO */
-#ifdef USE_MOUSE
-    {"use_mouse", P_INT, PI_ONOFF, (void *)&use_mouse, CMT_MOUSE, NULL},
-    {"reverse_mouse", P_INT, PI_ONOFF, (void *)&reverse_mouse,
-     CMT_REVERSE_MOUSE, NULL},
-    {"relative_wheel_scroll", P_INT, PI_SEL_C, (void *)&relative_wheel_scroll,
-     CMT_RELATIVE_WHEEL_SCROLL, (void *)wheelmode},
-    {"relative_wheel_scroll_ratio", P_INT, PI_TEXT,
-     (void *)&relative_wheel_scroll_ratio,
-     CMT_RELATIVE_WHEEL_SCROLL_RATIO, NULL},
-    {"fixed_wheel_scroll_count", P_INT, PI_TEXT,
-     (void *)&fixed_wheel_scroll_count,
-     CMT_FIXED_WHEEL_SCROLL_COUNT, NULL},
-#endif				/* USE_MOUSE */
     {"clear_buffer", P_INT, PI_ONOFF, (void *)&clear_buffer, CMT_CLEAR_BUF,
      NULL},
     {"decode_cte", P_CHARINT, PI_ONOFF, (void *)&DecodeCTE, CMT_DECODE_CTE,
@@ -1224,9 +1197,6 @@ sync_with_option(void)
     update_utf8_symbol();
     if (fmInitialized) {
 	initKeymap(FALSE);
-#ifdef USE_MOUSE
-	initMouseAction();
-#endif				/* MOUSE */
 #ifdef USE_MENU
 	initMenu();
 #endif				/* MENU */

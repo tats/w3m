@@ -10,24 +10,6 @@
 #include "myctype.h"
 #include "regex.h"
 
-#ifdef USE_MOUSE
-#ifdef USE_GPM
-#include <gpm.h>
-static int gpm_process_menu_mouse(Gpm_Event * event, void *data);
-extern int gpm_process_mouse(Gpm_Event *, void *);
-#endif				/* USE_GPM */
-#ifdef USE_SYSMOUSE
-extern int (*sysm_handler) (int x, int y, int nbs, int obs);
-static int sysm_process_menu_mouse(int, int, int, int);
-extern int sysm_process_mouse(int, int, int, int);
-#endif				/* USE_SYSMOUSE */
-#if defined(USE_GPM) || defined(USE_SYSMOUSE)
-#define X_MOUSE_SELECTED (char)0xff
-static int X_Mouse_Selection;
-extern int do_getch();
-#define getch()	do_getch()
-#endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
-#endif				/* USE_MOUSE */
 
 #ifdef USE_MENU
 
@@ -555,22 +537,7 @@ action_menu(Menu *menu)
     select_menu(menu, menu->select);
 
     while (1) {
-#ifdef USE_MOUSE
-	if (use_mouse)
-	    mouse_active();
-#endif				/* USE_MOUSE */
 	c = getch();
-#ifdef USE_MOUSE
-	if (use_mouse)
-	    mouse_inactive();
-#if defined(USE_GPM) || defined(USE_SYSMOUSE)
-	if (c == X_MOUSE_SELECTED) {
-	    mselect = X_Mouse_Selection;
-	    if (mselect != MENU_NOTHING)
-		break;
-	}
-#endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
-#endif				/* USE_MOUSE */
 	if (IS_ASCII(c)) {	/* Ascii */
 	    mselect = (*menu->keymap[(int)c]) (c);
 	    if (mselect != MENU_NOTHING)
@@ -612,14 +579,6 @@ popup_menu(Menu *parent, Menu *menu)
     if (menu->active)
 	return;
 
-#ifdef USE_MOUSE
-#ifdef USE_GPM
-    gpm_handler = gpm_process_menu_mouse;
-#endif				/* USE_GPM */
-#ifdef USE_SYSMOUSE
-    sysm_handler = sysm_process_menu_mouse;
-#endif				/* USE_SYSMOUSE */
-#endif				/* USE_MOUSE */
     menu->parent = parent;
     menu->select = menu->initial;
     menu->offset = 0;
@@ -638,16 +597,6 @@ popup_menu(Menu *parent, Menu *menu)
     }
     menu->active = 0;
     CurrentMenu = parent;
-#ifdef USE_MOUSE
-#ifdef USE_GPM
-    if (CurrentMenu == NULL)
-	gpm_handler = gpm_process_mouse;
-#endif				/* USE_GPM */
-#ifdef USE_SYSMOUSE
-    if (CurrentMenu == NULL)
-	sysm_handler = sysm_process_mouse;
-#endif				/* USE_SYSMOUSE */
-#endif				/* USE_MOUSE */
 }
 
 void
@@ -1066,232 +1015,6 @@ mSrchP(char c)
     return (MENU_NOTHING);
 }
 
-#ifdef USE_MOUSE
-#define MOUSE_BTN1_DOWN 0
-#define MOUSE_BTN2_DOWN 1
-#define MOUSE_BTN3_DOWN 2
-#define MOUSE_BTN4_DOWN_RXVT 3
-#define MOUSE_BTN5_DOWN_RXVT 4
-#define MOUSE_BTN4_DOWN_XTERM 64
-#define MOUSE_BTN5_DOWN_XTERM 65
-#define MOUSE_BTN_UP 3
-#define MOUSE_BTN_RESET -1
-
-static int
-mMouse_scroll_line(void)
-{
-    int i = 0;
-    if (relative_wheel_scroll)
-	i = (relative_wheel_scroll_ratio * CurrentMenu->height + 99) / 100;
-    else
-	i = fixed_wheel_scroll_count;
-    return i ? i : 1;
-}
-
-static int
-process_mMouse(int btn, int x, int y)
-{
-    Menu *menu;
-    int mselect, i;
-    static int press_btn = MOUSE_BTN_RESET, press_x, press_y;
-    char c = ' ';
-
-    menu = CurrentMenu;
-
-    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
-	return (MENU_NOTHING);
-
-    if (btn == MOUSE_BTN_UP) {
-	switch (press_btn) {
-	case MOUSE_BTN1_DOWN:
-	case MOUSE_BTN3_DOWN:
-	    if (x < menu->x - FRAME_WIDTH ||
-		x >= menu->x + menu->width + FRAME_WIDTH ||
-		y < menu->y - 1 || y >= menu->y + menu->height + 1) {
-		return (MENU_CANCEL);
-	    }
-	    else if ((x >= menu->x - FRAME_WIDTH &&
-		      x < menu->x) ||
-		     (x >= menu->x + menu->width &&
-		      x < menu->x + menu->width + FRAME_WIDTH)) {
-		return (MENU_NOTHING);
-	    }
-	    else if (press_y > y) {
-		for (i = 0; i < press_y - y; i++)
-		    mLineU(c);
-		return (MENU_NOTHING);
-	    }
-	    else if (press_y < y) {
-		for (i = 0; i < y - press_y; i++)
-		    mLineD(c);
-		return (MENU_NOTHING);
-	    }
-	    else if (y == menu->y - 1) {
-		mPrev(c);
-		return (MENU_NOTHING);
-	    }
-	    else if (y == menu->y + menu->height) {
-		mNext(c);
-		return (MENU_NOTHING);
-	    }
-	    else {
-		mselect = y - menu->y + menu->offset;
-		if (menu->item[mselect].type == MENU_NOP)
-		    return (MENU_NOTHING);
-		return (select_menu(menu, mselect));
-	    }
-	    break;
-	case MOUSE_BTN4_DOWN_RXVT:
-	    for (i = 0; i < mMouse_scroll_line(); i++)
-		mLineD(c);
-	    break;
-	case MOUSE_BTN5_DOWN_RXVT:
-	    for (i = 0; i < mMouse_scroll_line(); i++)
-		mLineU(c);
-	    break;
-	}
-    }
-    else if (btn == MOUSE_BTN4_DOWN_XTERM) {
-	for (i = 0; i < mMouse_scroll_line(); i++)
-	    mLineD(c);
-    }
-    else if (btn == MOUSE_BTN5_DOWN_XTERM) {
-	for (i = 0; i < mMouse_scroll_line(); i++)
-	    mLineU(c);
-    }
-
-    if (btn != MOUSE_BTN4_DOWN_RXVT || press_btn == MOUSE_BTN_RESET) {
-	press_btn = btn;
-	press_x = x;
-	press_y = y;
-    }
-    else {
-	press_btn = MOUSE_BTN_RESET;
-    }
-    return (MENU_NOTHING);
-}
-
-static int
-mMouse(char c)
-{
-    int btn, x, y;
-
-    btn = (unsigned char)getch() - 32;
-#if defined(__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
-    if (cygwin_mouse_btn_swapped) {
-	if (btn == MOUSE_BTN2_DOWN)
-	    btn = MOUSE_BTN3_DOWN;
-	else if (btn == MOUSE_BTN3_DOWN)
-	    btn = MOUSE_BTN2_DOWN;
-    }
-#endif
-    x = (unsigned char)getch() - 33;
-    if (x < 0)
-	x += 0x100;
-    y = (unsigned char)getch() - 33;
-    if (y < 0)
-	y += 0x100;
-
-    /* 
-     * if (x < 0 || x >= COLS || y < 0 || y > LASTLINE) return; */
-    return process_mMouse(btn, x, y);
-}
-
-static int
-mSgrMouse(char c)
-{
-    int btn = 0, x = 0, y = 0;
-    unsigned char ch;
-
-    for (ch = getch(); IS_DIGIT(ch); ch = getch())
-	btn = btn * 10 + ch - '0';
-    if (ch != ';')
-	return MENU_NOTHING;
-
-#if defined (__CYGWIN__) && CYGWIN_VERSION_DLL_MAJOR < 1005
-    if (cygwin_mouse_btn_swapped) {
-	if (btn == MOUSE_BTN2_DOWN)
-	    btn = MOUSE_BTN3_DOWN;
-	else if (btn == MOUSE_BTN3_DOWN)
-	    btn = MOUSE_BTN2_DOWN;
-    }
-#endif
-
-    for (ch = getch(); IS_DIGIT(ch); ch = getch())
-	x = x * 10 + ch - '0';
-    if (ch != ';')
-	return MENU_NOTHING;
-    if (x > 0)
-	x--;
-
-    for (ch = getch(); IS_DIGIT(ch); ch = getch())
-	y = y * 10 + ch - '0';
-    if (ch == 'm')
-	btn |= 3;
-    else if (ch != 'M' && ch != ';')
-	return MENU_NOTHING;
-    if (y > 0)
-	y--;
-
-    if (x < 0 || x >= COLS || y < 0 || y > LASTLINE)
-	return MENU_NOTHING;
-
-    return process_mMouse(btn, x, y);
-}
-
-#ifdef USE_GPM
-static int
-gpm_process_menu_mouse(Gpm_Event * event, void *data)
-{
-    int btn = MOUSE_BTN_RESET, x, y;
-    if (event->type & GPM_UP)
-	btn = MOUSE_BTN_UP;
-    else if (event->type & GPM_DOWN) {
-	switch (event->buttons) {
-	case GPM_B_LEFT:
-	    btn = MOUSE_BTN1_DOWN;
-	    break;
-	case GPM_B_MIDDLE:
-	    btn = MOUSE_BTN2_DOWN;
-	    break;
-	case GPM_B_RIGHT:
-	    btn = MOUSE_BTN3_DOWN;
-	    break;
-	}
-    }
-    else {
-	GPM_DRAWPOINTER(event);
-	return 0;
-    }
-    x = event->x;
-    y = event->y;
-    X_Mouse_Selection = process_mMouse(btn, x - 1, y - 1);
-    return X_MOUSE_SELECTED;
-}
-#endif				/* USE_GPM */
-
-#ifdef USE_SYSMOUSE
-static int
-sysm_process_menu_mouse(int x, int y, int nbs, int obs)
-{
-    int btn;
-    int bits;
-
-    if (obs & ~nbs)
-	btn = MOUSE_BTN_UP;
-    else if (nbs & ~obs) {
-	bits = nbs & ~obs;
-	btn = bits & 0x1 ? MOUSE_BTN1_DOWN :
-	    (bits & 0x2 ? MOUSE_BTN2_DOWN :
-	     (bits & 0x4 ? MOUSE_BTN3_DOWN : 0));
-    }
-    else			/* nbs == obs */
-	return 0;
-    X_Mouse_Selection = process_mMouse(btn, x, y);
-    return X_MOUSE_SELECTED;
-}
-#endif				/* USE_SYSMOUSE */
-#else				/* not USE_MOUSE */
 static int
 mMouse(char c)
 {
@@ -1303,7 +1026,6 @@ mSgrMouse(char c)
 {
     return (MENU_NOTHING);
 }
-#endif				/* not USE_MOUSE */
 
 /* --- MenuFunctions (END) --- */
 
@@ -1346,12 +1068,6 @@ DEFUN(mainMn, MAIN_MENU MENU, "Pop up menu")
 	    return;
 	menu = w3mMenuList[n].menu;
     }
-#ifdef USE_MOUSE
-    if (mouse_action.in_action) {
-	x = mouse_action.cursorX;
-	y = mouse_action.cursorY;
-    }
-#endif
     popupMenu(x, y, menu);
 }
 
@@ -1364,12 +1080,6 @@ DEFUN(selMn, SELECT_MENU, "Pop up buffer-stack menu")
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;
 
-#ifdef USE_MOUSE
-    if (mouse_action.in_action) {
-	x = mouse_action.cursorX;
-	y = mouse_action.cursorY;
-    }
-#endif
     popupMenu(x, y, &SelectMenu);
 }
 
@@ -1507,12 +1217,6 @@ DEFUN(tabMn, TAB_MENU, "Pop up tab selection menu")
     int x = Currentbuf->cursorX + Currentbuf->rootX,
 	y = Currentbuf->cursorY + Currentbuf->rootY;
 
-#ifdef USE_MOUSE
-    if (mouse_action.in_action) {
-	x = mouse_action.cursorX;
-	y = mouse_action.cursorY;
-    }
-#endif
     popupMenu(x, y, &SelTabMenu);
 }
 

@@ -9,9 +9,9 @@
 
 #if LANG == JA
 /* FIXME: gettextize here */
-#define BKMARK_TITLE "╔ж╔ц╔╞╔ч║╪╔╞╓непо©"
-#define BKMARK_ADD "епо©"
-#define DEFAULT_SECTION "л╓й╛нЮ"
+#define BKMARK_TITLE "Ц┐√Ц┐┐Ц┌╞Ц┐·Ц┐╪Ц┌╞Ц│╝Г≥╩И▄╡"
+#define BKMARK_ADD "Г≥╩И▄╡"
+#define DEFAULT_SECTION "Ф°╙Е┬├И║·"
 #else
 #define BKMARK_TITLE "Register to my bookmark"
 #define BKMARK_ADD "ADD"

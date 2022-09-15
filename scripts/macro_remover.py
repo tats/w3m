@@ -1,9 +1,12 @@
 import sys
+import os
 import pathlib
 import re
 from typing import NamedTuple, Union, List, Optional
 from enum import Enum, auto
 from termcolor import colored
+
+HERE = pathlib.Path(__file__).absolute().parent
 
 CONTEXT = {
     'USE_M17N': True,
@@ -189,6 +192,8 @@ class MacroNode:
 def main(path: pathlib.Path, debug=False):
     if path.suffix not in ['.h', '.c']:
         return
+
+    print(colored(str(path), 'magenta'))
     lines = path.read_text().splitlines()
     root = MacroNode(0, None)
     stack = [root]
@@ -233,5 +238,9 @@ def main(path: pathlib.Path, debug=False):
 if __name__ == '__main__':
     debug = False
     # debug = True
-    for arg in sys.argv[1:]:
-        main(pathlib.Path(arg), debug)
+    # for arg in sys.argv[1:]:
+    #     main(pathlib.Path(arg), debug)
+
+    for root, dirs, files in os.walk(HERE.parent):
+        for f in files:
+            main(pathlib.Path(root) / f, debug)

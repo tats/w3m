@@ -46,18 +46,14 @@ static int RC_table_size;
 #ifdef USE_COLOR
 #define P_COLOR    6
 #endif
-#ifdef USE_M17N
 #define P_CODE     7
-#endif
 #define P_PIXELS   8
 #define P_NZINT    9
 #define P_SCALE    10
 
 /* FIXME: gettextize here */
-#ifdef USE_M17N
 static wc_ces OptionCharset = WC_CES_US_ASCII;	/* FIXME: charset of source code */
 static int OptionEncode = FALSE;
-#endif
 
 #define CMT_HELPER	 N_("External Viewer Setup")
 #define CMT_TABSTOP      N_("Tab width in characters")
@@ -231,7 +227,6 @@ static int OptionEncode = FALSE;
 #define CMT_MIGEMO_COMMAND N_("Migemo command")
 #endif				/* USE_MIGEMO */
 
-#ifdef USE_M17N
 #define CMT_DISPLAY_CHARSET  N_("Display charset")
 #define CMT_DOCUMENT_CHARSET N_("Default document charset")
 #define CMT_AUTO_DETECT      N_("Automatic charset detect when loading")
@@ -255,16 +250,13 @@ static int OptionEncode = FALSE;
 #define CMT_STRICT_ISO2022   N_("Strict ISO-2022-JP/KR/CN")
 #define CMT_GB18030_AS_UCS   N_("Treat 4 bytes char. of GB18030 as Unicode")
 #define CMT_SIMPLE_PRESERVE_SPACE N_("Simple Preserve space")
-#endif
 
 #define CMT_KEYMAP_FILE N_("keymap file")
 
 #define PI_TEXT    0
 #define PI_ONOFF   1
 #define PI_SEL_C   2
-#ifdef USE_M17N
 #define PI_CODE    3
-#endif
 
 struct sel_c {
     int value;
@@ -336,9 +328,6 @@ static struct sel_c dnsorders[] = {
 #ifdef USE_COOKIE
 static struct sel_c badcookiestr[] = {
     {N_S(ACCEPT_BAD_COOKIE_DISCARD), N_("discard")},
-#if 0
-    {N_S(ACCEPT_BAD_COOKIE_ACCEPT), N_("accept")},
-#endif
     {N_S(ACCEPT_BAD_COOKIE_ASK), N_("ask")},
     {0, NULL, NULL}
 };
@@ -353,7 +342,6 @@ static struct sel_c mailtooptionsstr[] = {
     {0, NULL, NULL}
 };
 
-#ifdef USE_M17N
 static wc_ces_list *display_charset_str = NULL;
 static wc_ces_list *document_charset_str = NULL;
 static wc_ces_list *system_charset_str = NULL;
@@ -363,7 +351,6 @@ static struct sel_c auto_detect_str[] = {
     {N_S(WC_OPT_DETECT_ON), N_("ON")},
     {0, NULL, NULL}
 };
-#endif
 
 static struct sel_c graphic_char_str[] = {
     {N_S(GRAPHIC_CHAR_ASCII), N_("ASCII")},
@@ -717,7 +704,6 @@ struct param_ptr params9[] = {
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
-#ifdef USE_M17N
 struct param_ptr params10[] = {
     {"display_charset", P_CODE, PI_CODE, (void *)&DisplayCharset,
      CMT_DISPLAY_CHARSET, (void *)&display_charset_str},
@@ -735,24 +721,20 @@ struct param_ptr params10[] = {
      NULL},
     {"use_combining", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_combining,
      CMT_USE_COMBINING, NULL},
-#ifdef USE_UNICODE
     {"east_asian_width", P_CHARINT, PI_ONOFF,
      (void *)&WcOption.east_asian_width, CMT_EAST_ASIAN_WIDTH, NULL},
     {"use_language_tag", P_CHARINT, PI_ONOFF,
      (void *)&WcOption.use_language_tag, CMT_USE_LANGUAGE_TAG, NULL},
     {"ucs_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.ucs_conv, CMT_UCS_CONV,
      NULL},
-#endif
     {"pre_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.pre_conv, CMT_PRE_CONV,
      NULL},
     {"search_conv", P_CHARINT, PI_ONOFF, (void *)&SearchConv, CMT_SEARCH_CONV,
      NULL},
     {"fix_width_conv", P_CHARINT, PI_ONOFF, (void *)&WcOption.fix_width_conv,
      CMT_FIX_WIDTH_CONV, NULL},
-#ifdef USE_UNICODE
     {"use_gb12345_map", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_gb12345_map,
      CMT_USE_GB12345_MAP, NULL},
-#endif
     {"use_jisx0201", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisx0201,
      CMT_USE_JISX0201, NULL},
     {"use_jisc6226", P_CHARINT, PI_ONOFF, (void *)&WcOption.use_jisc6226,
@@ -765,15 +747,12 @@ struct param_ptr params10[] = {
      CMT_USE_JISX0213, NULL},
     {"strict_iso2022", P_CHARINT, PI_ONOFF, (void *)&WcOption.strict_iso2022,
      CMT_STRICT_ISO2022, NULL},
-#ifdef USE_UNICODE
     {"gb18030_as_ucs", P_CHARINT, PI_ONOFF, (void *)&WcOption.gb18030_as_ucs,
      CMT_GB18030_AS_UCS, NULL},
-#endif
     {"simple_preserve_space", P_CHARINT, PI_ONOFF, (void *)&SimplePreserveSpace,
      CMT_SIMPLE_PRESERVE_SPACE, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
-#endif
 
 struct param_section sections[] = {
     {N_("Display Settings"), params1},
@@ -791,9 +770,7 @@ struct param_section sections[] = {
 #ifdef USE_COOKIE
     {N_("Cookie Settings"), params8},
 #endif
-#ifdef USE_M17N
     {N_("Charset Settings"), params10},
-#endif
     {NULL, NULL}
 };
 
@@ -897,21 +874,17 @@ show_params(FILE * fp)
     const char *t = "";
     char *cmt;
 
-#ifdef USE_M17N
 #ifdef ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
-#endif
 #endif
 
     fputs("\nconfiguration parameters\n", fp);
     for (j = 0; sections[j].name != NULL; j++) {
-#ifdef USE_M17N
 	if (!OptionEncode)
 	    cmt =
 		wc_conv(_(sections[j].name), OptionCharset,
 			InnerCharset)->ptr;
 	else
-#endif
 	    cmt = sections[j].name;
 	fprintf(fp, "  section[%d]: %s\n", j, conv_to_system(cmt));
 	i = 0;
@@ -940,11 +913,9 @@ show_params(FILE * fp)
 		t = "color";
 		break;
 #endif
-#ifdef USE_M17N
 	    case P_CODE:
 		t = "charset";
 		break;
-#endif
 	    case P_PIXELS:
 		t = "number";
 		break;
@@ -952,12 +923,10 @@ show_params(FILE * fp)
 		t = "percent";
 		break;
 	    }
-#ifdef USE_M17N
 	    if (!OptionEncode)
 		cmt = wc_conv(_(sections[j].params[i].comment),
 			      OptionCharset, InnerCharset)->ptr;
 	    else
-#endif
 		cmt = sections[j].params[i].comment;
 	    l = 30 - (strlen(sections[j].params[i].name) + strlen(t));
 	    if (l < 0)
@@ -1088,12 +1057,10 @@ set_param(char *name, char *value)
 	*(int *)p->varptr = str_to_color(value);
 	break;
 #endif
-#ifdef USE_M17N
     case P_CODE:
 	*(wc_ces *) p->varptr =
 	    wc_guess_charset_short(value, *(wc_ces *) p->varptr);
 	break;
-#endif
     case P_PIXELS:
 	ppc = atof(value);
 	if (ppc >= MINIMUM_PIXEL_PER_CHAR && ppc <= MAXIMUM_PIXEL_PER_CHAR * 2)
@@ -1280,9 +1247,7 @@ sync_with_option(void)
 	AcceptEncoding = acceptableEncoding();
     if (AcceptMedia == NULL || *AcceptMedia == '\0')
 	AcceptMedia = acceptableMimeTypes();
-#ifdef USE_UNICODE
     update_utf8_symbol();
-#endif
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE
@@ -1309,11 +1274,9 @@ init_rc(void)
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
 
-#ifdef USE_M17N
     display_charset_str = wc_get_ces_list();
     document_charset_str = display_charset_str;
     system_charset_str = display_charset_str;
-#endif
 
     if (stat(rc_dir, &st) < 0) {
 	if (errno == ENOENT) {	/* no directory */
@@ -1399,10 +1362,8 @@ to_str(struct param_ptr *p)
 #ifdef USE_COLOR
     case P_COLOR:
 #endif
-#ifdef USE_M17N
     case P_CODE:
 	return Sprintf("%d", (int)(*(wc_ces *) p->varptr));
-#endif
     case P_NZINT:
 	return Sprintf("%d", *(int *)p->varptr);
     case P_SHORT:
@@ -1431,9 +1392,7 @@ load_option_panel(void)
     Str src;
     struct param_ptr *p;
     struct sel_c *s;
-#ifdef USE_M17N
     wc_ces_list *c;
-#endif
     int x, i;
     Str tmp;
     Buffer *buf;
@@ -1441,7 +1400,6 @@ load_option_panel(void)
     if (optionpanel_str == NULL)
 	optionpanel_str = Sprintf(optionpanel_src1, w3m_version,
 			      html_quote(localCookie()->ptr), _(CMT_HELPER));
-#ifdef USE_M17N
 #ifdef ENABLE_NLS
     OptionCharset = SystemCharset;	/* FIXME */
 #endif
@@ -1476,7 +1434,6 @@ load_option_panel(void)
 #endif
 	OptionEncode = TRUE;
     }
-#endif
     src = Strdup(optionpanel_str);
 
     Strcat_charp(src, "<table><tr><td>");
@@ -1519,7 +1476,6 @@ load_option_panel(void)
 		}
 		Strcat_charp(src, "</select>");
 		break;
-#ifdef USE_M17N
 	    case PI_CODE:
 		tmp = to_str(p);
 		Strcat_m_charp(src, "<select name=", p->name, ">", NULL);
@@ -1533,7 +1489,6 @@ load_option_panel(void)
 		}
 		Strcat_charp(src, "</select>");
 		break;
-#endif
 	    }
 	    Strcat_charp(src, "</td></tr>\n");
 	    p++;
@@ -1544,10 +1499,8 @@ load_option_panel(void)
     }
     Strcat_charp(src, "</table></form></body></html>");
     buf = loadHTMLString(src);
-#ifdef USE_M17N
     if (buf)
 	buf->document_charset = OptionCharset;
-#endif
     return buf;
 }
 
@@ -1655,9 +1608,7 @@ struct siteconf_rec {
 
     char *substitute_url;
     char *user_agent;
-#ifdef USE_M17N
     wc_ces url_charset;
-#endif
     int no_referer_from;
     int no_referer_to;
 };
@@ -1682,9 +1633,7 @@ newSiteconfRec(void)
 
     ent->substitute_url = NULL;
     ent->user_agent = NULL;
-#ifdef USE_M17N
     ent->url_charset = 0;
-#endif
     return ent;
 }
 
@@ -1764,14 +1713,12 @@ loadSiteconf(void)
 	    ent->user_agent = getQWord(&p);
 	    SCONF_SET(ent, SCONF_USER_AGENT);
 	}
-#ifdef USE_M17N
 	else if (strcmp(s, "url_charset") == 0) {
 	    char *charset = getWord(&p);
 	    ent->url_charset = (charset && *charset) ?
 		wc_charset_to_ces(charset) : 0;
 	    SCONF_SET(ent, SCONF_URL_CHARSET);
 	}
-#endif /* USE_M17N */
 	else if (strcmp(s, "no_referer_from") == 0) {
 	    ent->no_referer_from = str_to_bool(getWord(&p), 0);
 	    SCONF_SET(ent, SCONF_NO_REFERER_FROM);
@@ -1848,10 +1795,8 @@ url_found:
 	    return ent->user_agent;
 	}
 	return NULL;
-#ifdef USE_M17N
     case SCONF_URL_CHARSET:
 	return &ent->url_charset;
-#endif
     case SCONF_NO_REFERER_FROM:
 	return &ent->no_referer_from;
     case SCONF_NO_REFERER_TO:

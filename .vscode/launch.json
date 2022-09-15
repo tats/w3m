@@ -10,7 +10,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/scripts/macro_remover.py",
             "args": [
-                "main.c"
+                "main.c",
+                "func.c",
+                "proto.h",
+                "rc.c",
+                "menu.c",
+                "display.c",
             ],
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",

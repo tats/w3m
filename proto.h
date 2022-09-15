@@ -169,42 +169,21 @@ extern Str searchURIMethods(ParsedURL *pu);
 extern void chkExternalURIBuffer(Buffer *buf);
 #endif
 extern ParsedURL *schemeToProxy(int scheme);
-#ifdef USE_M17N
 extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
 			     wc_ces doc_charset);
 extern char *url_encode(const char *url, const ParsedURL *base,
 			wc_ces doc_charset);
-#if 0
-extern char *url_decode(const char *url, const ParsedURL *base,
-			wc_ces doc_charset);
-#endif
 extern char *url_decode2(const char *url, const Buffer *buf);
-#else /* !defined(USE_M17N) */
-#define url_encode(url, base, cs) url_quote(url)
-extern char *url_decode0(const char *url);
-#if 0
-#define url_decode(url, base, cs) url_decode0(url)
-#endif
-#define url_decode2(url, buf) url_decode0(url)
-#endif /* !defined(USE_M17N) */
 extern void examineFile(char *path, URLFile *uf);
 extern char *acceptableEncoding();
 extern int dir_exist(char *path);
 extern int is_html_type(char *type);
-#ifdef USE_M17N
 extern char **get_symbol(wc_ces charset, int *width);
 extern char **set_symbol(int width);
 extern Str convertLine(URLFile *uf, Str line, int mode, wc_ces * charset,
 		       wc_ces doc_charset);
-#else
-extern char **get_symbol(void);
-extern Str convertLine0(URLFile *uf, Str line, int mode);
-#define convertLine(uf,line,mode,charset,dcharset) convertLine0(uf,line,mode)
-#endif
 extern void push_symbol(Str str, char symbol, int width, int n);
-#ifdef USE_UNICODE
 extern void update_utf8_symbol(void);
-#endif
 extern Buffer *loadGeneralFile(char *path, ParsedURL *current, char *referer,
 			       int flag, FormList *request);
 extern int is_boundary(unsigned char *, unsigned char *);
@@ -261,15 +240,8 @@ extern void loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src,
 			   int internal);
 extern Buffer *loadHTMLString(Str page);
 #ifdef USE_GOPHER
-#ifdef USE_M17N
 extern Str loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset);
 extern Str loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset);
-#else
-extern Str loadGopherDir0(URLFile *uf, ParsedURL *pu);
-extern Str loadGopherSearch0(URLFile *uf, ParsedURL *pu);
-#define loadGopherDir(uf,pu,charset) loadGopherDir0(uf,pu)
-#define loadGopherSearch(uf,pu,charset) loadGopherSearch0(uf,pu)
-#endif
 #endif				/* USE_GOPHER */
 extern Buffer *loadBuffer(URLFile *uf, Buffer *newBuf);
 #ifdef USE_IMAGE
@@ -324,9 +296,7 @@ extern void fmTerm(void);
 extern void fmInit(void);
 extern void displayBuffer(Buffer *buf, int mode);
 extern void addChar(char c, Lineprop mode);
-#ifdef USE_M17N
 extern void addMChar(char *c, Lineprop mode, size_t len);
-#endif
 extern void record_err_message(char *s);
 extern Buffer *message_list_panel(void);
 extern void message(char *s, int return_x, int return_y);
@@ -373,11 +343,7 @@ extern Str correct_irrtag(int status);
 #ifdef USE_MIGEMO
 extern void init_migemo(void);
 #endif
-#ifdef USE_M17N
 extern char *conv_search_string(char *str, wc_ces f_ces);
-#else
-#define conv_search_string(str, f_ces)	str
-#endif
 extern int forwardSearch(Buffer *buf, char *str);
 extern int backwardSearch(Buffer *buf, char *str);
 extern void pcmap(void);
@@ -481,9 +447,7 @@ extern void setupscreen(void);
 extern pid_t open_pipe_rw(FILE ** fr, FILE ** fw);
 extern int initscr(void);
 extern void move(int line, int column);
-#ifdef USE_M17N
 extern void addmch(char *p, size_t len);
-#endif
 extern void addch(char c);
 extern void wrap(void);
 extern void touch_line(void);
@@ -507,9 +471,6 @@ extern void clear(void);
 #ifdef USE_RAW_SCROLL
 extern void scroll(int);
 extern void rscroll(int);
-#endif
-#if 0
-extern void need_clrtoeol(void);
 #endif
 extern void clrtoeol(void);
 extern void clrtoeolx(void);
@@ -564,22 +525,12 @@ extern char *guessContentType(char *filename);
 extern TextList *make_domain_list(char *domain_list);
 extern int check_no_proxy(char *domain);
 extern InputStream openFTPStream(ParsedURL *pu, URLFile *uf);
-#ifdef USE_M17N
 extern Str loadFTPDir(ParsedURL *pu, wc_ces * charset);
-#else
-extern Str loadFTPDir0(ParsedURL *pu);
-#define loadFTPDir(pu,charset)	loadFTPDir0(pu)
-#endif
 extern void closeFTP(void);
 extern void disconnectFTP(void);
 #ifdef USE_NNTP
 extern InputStream openNewsStream(ParsedURL *pu);
-#ifdef USE_M17N
 extern Str loadNewsgroup(ParsedURL *pu, wc_ces * charset);
-#else
-extern Str loadNewsgroup0(ParsedURL *pu);
-#define loadNewsgroup(pu,charset) loadNewsgroup0(pu)
-#endif
 extern void closeNews(void);
 extern void disconnectNews(void);
 #endif
@@ -627,15 +578,8 @@ extern Str decodeQP(char **ww);
 extern void decodeQP_to_growbuf(struct growbuf *gb, char **ww);
 extern Str decodeU(char **ww);
 extern void decodeU_to_growbuf(struct growbuf *gb, char **ww);
-#ifdef USE_M17N
 extern Str decodeWord(char **ow, wc_ces * charset);
 extern Str decodeMIME(Str orgstr, wc_ces * charset);
-#else
-extern Str decodeWord0(char **ow);
-extern Str decodeMIME0(Str orgstr);
-#define decodeWord(ow,charset) decodeWord0(ow)
-#define decodeMIME(orgstr,charset) decodeMIME0(orgstr)
-#endif
 extern Str encodeB(char *a);
 extern int set_param_option(char *option);
 extern char *get_param_option(char *name);
@@ -674,12 +618,7 @@ extern Str myExtCommand(char *cmd, char *arg, int redirect);
 extern Str myEditor(char *cmd, char *file, int line);
 extern int is_localhost(const char *host);
 extern char *file_to_url(char *file);
-#ifdef USE_M17N
 extern char *url_unquote_conv(char *url, wc_ces charset);
-#else
-extern char *url_unquote_conv0(char *url);
-#define url_unquote_conv(url, charset) url_unquote_conv0(url)
-#endif
 extern char *expandName(char *name);
 extern Str tmpfname(int type, char *ext);
 extern time_t mymktime(char *timestr);
@@ -700,14 +639,9 @@ extern int check_cookie_accept_domain(char *domain);
 #else				/* not USE_COOKIE */
 #define cooLst nulcmd
 #endif				/* not USE_COOKIE */
-#ifdef USE_M17N
 extern void docCSet(void);
 extern void defCSet(void);
 extern void change_charset(struct parsed_tagarg *arg);
-#else
-#define docCSet nulcmd
-#define defCSet nulcmd
-#endif
 
 #ifdef USE_MARK
 extern void _mark(void);
@@ -812,9 +746,6 @@ extern void dictwordat(void);
 #define dictword nulcmd
 #define dictwordat nulcmd
 #endif				/* not USE_DICT */
-#if 0
-extern void reloadBuffer(Buffer *buf);
-#endif
 extern char *guess_save_name(Buffer *buf, char *file);
 
 extern void wrapToggle(void);

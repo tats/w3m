@@ -233,9 +233,7 @@ static Str
 make_lastline_link(Buffer *buf, char *title, char *url)
 {
     Str s = NULL, u;
-#ifdef USE_M17N
     Lineprop *pr;
-#endif
     ParsedURL pu;
     char *p;
     int l = COLS - 1, i;
@@ -258,9 +256,7 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     u = parsedURL2Str(&pu);
     if (DecodeURL)
 	u = Strnew_charp(url_decode2(u->ptr, buf));
-#ifdef USE_M17N
     u = checkType(u, &pr, NULL);
-#endif
     if (l <= 4 || l >= get_Str_strwidth(u)) {
 	if (!s)
 	    return u;
@@ -270,17 +266,13 @@ make_lastline_link(Buffer *buf, char *title, char *url)
     if (!s)
 	s = Strnew_size(COLS);
     i = (l - 2) / 2;
-#ifdef USE_M17N
     while (i && pr[i] & PC_WCHAR2)
 	i--;
-#endif
     Strcat_charp_n(s, u->ptr, i);
     Strcat_charp(s, "..");
     i = get_Str_strwidth(u) - (COLS - 1 - get_Str_strwidth(s));
-#ifdef USE_M17N
     while (i < u->length && pr[i] & PC_WCHAR2)
 	i++;
-#endif
     Strcat_charp(s, &u->ptr[i]);
     return s;
 }
@@ -343,7 +335,6 @@ make_lastline_message(Buffer *buf)
     if (s) {
 	int l = COLS - 3 - sl;
 	if (get_Str_strwidth(msg) > l) {
-#ifdef USE_M17N
 	    char *p;
 	    for (p = msg->ptr; *p; p += get_mclen(p)) {
 		l -= get_mcwidth(p);
@@ -351,7 +342,6 @@ make_lastline_message(Buffer *buf)
 		    break;
 	    }
 	    l = p - msg->ptr;
-#endif
 	    Strtruncate(msg, l);
 	}
 	Strcat_charp(msg, "> ");
@@ -637,10 +627,6 @@ redrawNLine(Buffer *buf, int n)
 	    if (t == CurrentTab)
 		boldend();
 	}
-#if 0
-	move(0, COLS - 2);
-	addstr(" x");
-#endif
 	move(LastTab->y + 1, 0);
 	for (i = 0; i < COLS; i++)
 	    addch('~');
@@ -745,9 +731,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 	    }
 	}
 #endif
-#ifdef USE_M17N
 	delta = wtf_len((wc_uchar *) & p[j]);
-#endif
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
@@ -765,11 +749,7 @@ redrawLine(Buffer *buf, Line *l, int i)
 		addChar(' ', 0);
 	}
 	else {
-#ifdef USE_M17N
 	    addMChar(&p[j], pr[j], delta);
-#else
-	    addChar(p[j], pr[j]);
-#endif
 	}
 	rcol = ncol;
     }
@@ -946,9 +926,7 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 	    }
 	}
 #endif
-#ifdef USE_M17N
 	delta = wtf_len((wc_uchar *) & p[j]);
-#endif
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
@@ -969,11 +947,7 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 		    addChar(' ', 0);
 	    }
 	    else
-#ifdef USE_M17N
 		addMChar(&p[j], pr[j], delta);
-#else
-		addChar(p[j], pr[j]);
-#endif
 	}
 	rcol = ncol;
     }
@@ -1095,7 +1069,6 @@ do_color(Linecolor c)
 }
 #endif
 
-#ifdef USE_M17N
 void
 addChar(char c, Lineprop mode)
 {
@@ -1104,48 +1077,31 @@ addChar(char c, Lineprop mode)
 
 void
 addMChar(char *p, Lineprop mode, size_t len)
-#else
-void
-addChar(char c, Lineprop mode)
-#endif
 {
     Lineprop m = CharEffect(mode);
-#ifdef USE_M17N
     char c = *p;
 
     if (mode & PC_WCHAR2)
 	return;
-#endif
     do_effects(m);
     if (mode & PC_SYMBOL) {
 	char **symbol;
-#ifdef USE_M17N
 	int w = (mode & PC_KANJI) ? 2 : 1;
 
 	c = ((char)wtf_get_code((wc_uchar *) p) & 0x7f) - SYMBOL_BASE;
-#else
-	c -= SYMBOL_BASE;
-#endif
 	if (graph_ok() && c < N_GRAPH_SYMBOL) {
 	    if (!graph_mode) {
 		graphstart();
 		graph_mode = TRUE;
 	    }
-#ifdef USE_M17N
 	    if (w == 2 && WcOption.use_wide)
 		addstr(graph2_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	    else
-#endif
 		addch(*graph_symbol[(unsigned char)c % N_GRAPH_SYMBOL]);
 	}
 	else {
-#ifdef USE_M17N
 	    symbol = get_symbol(DisplayCharset, &w);
 	    addstr(symbol[(unsigned char)c % N_SYMBOL]);
-#else
-	    symbol = get_symbol();
-	    addch(*symbol[(unsigned char)c % N_SYMBOL]);
-#endif
 	}
     }
     else if (mode & PC_CTRL) {
@@ -1167,7 +1123,6 @@ addChar(char c, Lineprop mode)
 	    break;
 	}
     }
-#ifdef USE_M17N
     else if (mode & PC_UNKNOWN) {
 	char buf[5];
 	sprintf(buf, "[%.2X]",
@@ -1176,12 +1131,6 @@ addChar(char c, Lineprop mode)
     }
     else
 	addmch(p, len);
-#else
-    else if (0x80 <= (unsigned char)c && (unsigned char)c <= NBSP_CODE)
-	addch(' ');
-    else
-	addch(c);
-#endif
 }
 
 static GeneralList *message_list = NULL;
@@ -1376,10 +1325,8 @@ cursorRight(Buffer *buf, int n)
 	return;
     i = buf->pos;
     p = l->propBuf;
-#ifdef USE_M17N
     while (i + delta < l->len && p[i + delta] & PC_WCHAR2)
 	delta++;
-#endif
     if (i + delta < l->len) {
 	buf->pos = i + delta;
     }
@@ -1394,18 +1341,14 @@ cursorRight(Buffer *buf, int n)
     }
     else {
 	buf->pos = l->len - 1;
-#ifdef USE_M17N
 	while (buf->pos && p[buf->pos] & PC_WCHAR2)
 	    buf->pos--;
-#endif
     }
     cpos = COLPOS(l, buf->pos);
     buf->visualpos = l->bwidth + cpos - buf->currentColumn;
     delta = 1;
-#ifdef USE_M17N
     while (buf->pos + delta < l->len && p[buf->pos + delta] & PC_WCHAR2)
 	delta++;
-#endif
     vpos2 = COLPOS(l, buf->pos + delta) - buf->currentColumn - 1;
     if (vpos2 >= buf->COLS && n) {
 	columnSkip(buf, n + (vpos2 - buf->COLS) - (vpos2 - buf->COLS) % n);
@@ -1425,10 +1368,8 @@ cursorLeft(Buffer *buf, int n)
 	return;
     i = buf->pos;
     p = l->propBuf;
-#ifdef USE_M17N
     while (i - delta > 0 && p[i - delta] & PC_WCHAR2)
 	delta++;
-#endif
     if (i >= delta)
 	buf->pos = i - delta;
     else if (l->prev && l->bpos) {
@@ -1493,16 +1434,12 @@ arrangeCursor(Buffer *buf)
 	buf->pos = 0;
     else if (buf->pos >= buf->currentLine->len)
 	buf->pos = buf->currentLine->len - 1;
-#ifdef USE_M17N
     while (buf->pos > 0 && buf->currentLine->propBuf[buf->pos] & PC_WCHAR2)
 	buf->pos--;
-#endif
     col = COLPOS(buf->currentLine, buf->pos);
-#ifdef USE_M17N
     while (buf->pos + delta < buf->currentLine->len &&
 	   buf->currentLine->propBuf[buf->pos + delta] & PC_WCHAR2)
 	delta++;
-#endif
     col2 = COLPOS(buf->currentLine, buf->pos + delta);
     if (col < buf->currentColumn || col2 > buf->COLS + buf->currentColumn) {
 	buf->currentColumn = 0;

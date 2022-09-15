@@ -122,9 +122,7 @@ interpret_keymap(FILE * kf, struct stat *current, int force)
     Str line;
     char *p, *s, *emsg;
     int lineno;
-#ifdef USE_M17N
     wc_ces charset = SystemCharset;
-#endif
     int verbose = 1;
     extern int str_to_bool(char *value, int old);
 
@@ -144,22 +142,18 @@ interpret_keymap(FILE * kf, struct stat *current, int force)
 	Strremovefirstspaces(line);
 	if (line->length == 0)
 	    continue;
-#ifdef USE_M17N
 	line = wc_Str_conv(line, charset, InnerCharset);
-#endif
 	p = line->ptr;
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
 	    continue;
 	if (!strcmp(s, "keymap")) ;
-#ifdef USE_M17N
 	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
 	    s = getQWord(&p);
 	    if (*s)
 		charset = wc_guess_charset(s, charset);
 	    continue;
 	}
-#endif
 	else if (!strcmp(s, "verbose")) {
 	    s = getWord(&p);
 	    if (*s)
@@ -696,12 +690,8 @@ initMouseAction(void)
 	  (void *)mouse_action.lastline_map[0],
 	  sizeof(default_lastline_action));
     {
-#ifdef USE_M17N
 	int w = 0;
 	char **symbol = get_symbol(DisplayCharset, &w);
-#else
-	char **symbol = get_symbol();
-#endif
 	mouse_action.lastline_str =
 	    Strnew_charp(symbol[N_GRAPH_SYMBOL + 13])->ptr;
     }

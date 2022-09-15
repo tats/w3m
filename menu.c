@@ -258,11 +258,9 @@ static int smDelTab(char c);
 /* --- MainMenu --- */
 
 static Menu MainMenu;
-#ifdef USE_M17N
 /* FIXME: gettextize here */
 static wc_ces MainMenuCharset = WC_CES_US_ASCII;	/* FIXME: charset of source code */
 static int MainMenuEncode = FALSE;
-#endif
 
 static MenuItem MainMenuItem[] = {
     /* type        label           variable value func     popup keys data  */
@@ -707,15 +705,10 @@ set_menu_frame(void)
     }
     else {
 	graph_mode = FALSE;
-#ifdef USE_M17N
 	FRAME_WIDTH = 0;
 	FRAME = get_symbol(DisplayCharset, &FRAME_WIDTH);
 	if (!WcOption.use_wide)
 	    FRAME_WIDTH = 1;
-#else
-	FRAME_WIDTH = 1;
-	FRAME = get_symbol();
-#endif
     }
 }
 
@@ -1681,9 +1674,7 @@ interpret_menu(FILE * mf)
     char *p, *s;
     int in_menu = 0, nmenu = 0, nitem = 0, type;
     MenuItem *item = NULL;
-#ifdef USE_M17N
     wc_ces charset = SystemCharset;
-#endif
 
     while (!feof(mf)) {
 	line = Strfgets(mf);
@@ -1691,9 +1682,7 @@ interpret_menu(FILE * mf)
 	Strremovefirstspaces(line);
 	if (line->length == 0)
 	    continue;
-#ifdef USE_M17N
 	line = wc_Str_conv(line, charset, InnerCharset);
-#endif
 	p = line->ptr;
 	s = getWord(&p);
 	if (*s == '#')		/* comment */
@@ -1724,14 +1713,12 @@ interpret_menu(FILE * mf)
 	    nitem = 0;
 	    item[nitem].type = MENU_END;
 	}
-#ifdef USE_M17N
 	else if (!strcmp(s, "charset") || !strcmp(s, "encoding")) {
 	    s = getQWord(&p);
 	    if (*s == '\0')	/* error */
 		continue;
 	    charset = wc_guess_charset(s, charset);
 	}
-#endif
     }
 }
 
@@ -1753,7 +1740,6 @@ initMenu(void)
     w3mMenuList[2].item = NULL;
     w3mMenuList[3].id = NULL;
 
-#ifdef USE_M17N
     if (!MainMenuEncode) {
 	MenuItem *item;
 #ifdef ENABLE_NLS
@@ -1766,7 +1752,6 @@ initMenu(void)
 			InnerCharset)->ptr;
 	MainMenuEncode = TRUE;
     }
-#endif
     if ((mf = fopen(confFile(MENU_FILE), "rt")) != NULL) {
 	interpret_menu(mf);
 	fclose(mf);

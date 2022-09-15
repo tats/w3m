@@ -8,10 +8,13 @@ from termcolor import colored
 CONTEXT = {
     'USE_M17N': True,
     'USE_UNICODE': True,
-    'SIGWINCH': True,
-    'USE_IMAGE': True,
-    'USE_COLOR': True,
-    'USE_ANSI_COLOR': True,
+    # 'SIGWINCH': True,
+    # 'USE_IMAGE': True,
+    # 'USE_COLOR': True,
+    # 'USE_ANSI_COLOR': True,
+    # 'USE_MOUSE': False,
+    # 'USE_GPM': False,
+    # '__MINGW32_VERSION': False,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')
@@ -38,8 +41,7 @@ class Ifdef(NamedTuple):
     value: str
 
     def eval(self, context) -> Optional[bool]:
-        if self.value in context:
-            return True
+        return context.get(self.value)
 
 
 class Ifndef(NamedTuple):
@@ -229,6 +231,7 @@ def main(path: pathlib.Path, debug=False):
 
 
 if __name__ == '__main__':
-    # debug = True
     debug = False
-    main(pathlib.Path(sys.argv[1]), debug)
+    # debug = True
+    for arg in sys.argv[1:]:
+        main(pathlib.Path(arg), debug)

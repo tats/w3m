@@ -229,9 +229,7 @@ show(TextList *argv)
 static void
 quit(TextList *argv)
 {
-#ifdef USE_COOKIE
     save_cookies();
-#endif				/* USE_COOKIE */
     w3m_exit(0);
 }
 

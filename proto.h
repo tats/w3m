@@ -126,7 +126,6 @@ extern void tabR(void);
 extern void tabL(void);
 extern void ldDL(void);
 extern void linkLst(void);
-#ifdef USE_MENU
 extern void linkMn(void);
 extern LinkList *link_menu(Buffer *buf);
 extern void accessKey(void);
@@ -134,12 +133,6 @@ extern Anchor *accesskey_menu(Buffer *buf);
 extern void listMn(void);
 extern void movlistMn(void);
 extern Anchor *list_menu(Buffer *buf);
-#else
-#define linkMn nulcmd
-#define accessKey nulcmd
-#define listMn nulcmd
-#define movlistMn nulcmd
-#endif
 extern void undoPos(void);
 extern void redoPos(void);
 extern void cursorTop(void);
@@ -576,7 +569,6 @@ extern char *expandName(char *name);
 extern Str tmpfname(int type, char *ext);
 extern time_t mymktime(char *timestr);
 extern void (*mySignal(int signal_number, void (*action) (int))) (int);
-#ifdef USE_COOKIE
 extern char *FQDN(char *host);
 extern Str find_cookie(ParsedURL *pu);
 extern int add_cookie(ParsedURL *pu, Str name, Str value, time_t expires,
@@ -589,9 +581,6 @@ extern void cooLst(void);
 extern Buffer *cookie_list_panel(void);
 extern void set_cookie_flag(struct parsed_tagarg *arg);
 extern int check_cookie_accept_domain(char *domain);
-#else				/* not USE_COOKIE */
-#define cooLst nulcmd
-#endif				/* not USE_COOKIE */
 extern void docCSet(void);
 extern void defCSet(void);
 extern void change_charset(struct parsed_tagarg *arg);
@@ -635,7 +624,6 @@ extern char *getQWord(char **str);
 struct regex;
 extern char *getRegexWord(const char **str, struct regex **regex_ret);
 
-#ifdef USE_MENU
 extern void new_menu(Menu *menu, MenuItem *item);
 extern void geom_menu(Menu *menu, int x, int y, int mselect);
 extern void draw_all_menu(Menu *menu);
@@ -663,11 +651,6 @@ extern void tabMn(void);
 extern void optionMenu(int x, int y, char **label, int *variable, int initial,
 		       void (*func) ());
 extern void initMenu(void);
-#else				/* not USE_MENU */
-#define mainMn nulcmd
-#define selMn selBuf
-#define tabMn nulcmd
-#endif				/* not USE_MENU */
 
 #ifdef USE_DICT
 extern void dictword(void);

@@ -12,7 +12,6 @@
 #include "fm.h"
 #include "html.h"
 
-#ifdef USE_COOKIE
 #include <time.h>
 #include "local.h"
 #include "regex.h"
@@ -708,4 +707,3 @@ check_cookie_accept_domain(char *domain)
     }
     return 1;
 }
-#endif				/* USE_COOKIE */

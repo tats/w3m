@@ -184,7 +184,6 @@ static int OptionEncode = FALSE;
 #define CMT_SSL_MIN_VERSION N_("Minimum SSL version (all, TLSv1.0, TLSv1.1, TLSv1.2, or TLSv1.3)")
 #endif
 #define CMT_SSL_CIPHER N_("SSL ciphers for TLSv1.2 and below (e.g. DEFAULT:@SECLEVEL=2)")
-#ifdef USE_COOKIE
 #define CMT_USECOOKIE   N_("Enable cookie processing")
 #define CMT_SHOWCOOKIE  N_("Print a message when receiving a cookie")
 #define CMT_ACCEPTCOOKIE N_("Accept cookies")
@@ -192,7 +191,6 @@ static int OptionEncode = FALSE;
 #define CMT_COOKIE_REJECT_DOMAINS N_("Domains to reject cookies from")
 #define CMT_COOKIE_ACCEPT_DOMAINS N_("Domains to accept cookies from")
 #define CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS N_("Domains to avoid [wrong number of dots]")
-#endif
 #define CMT_FOLLOW_REDIRECTION N_("Number of redirections to follow")
 #define CMT_META_REFRESH N_("Enable processing of meta-refresh tag")
 #define CMT_LOCALHOST_ONLY N_("Restrict connections only to localhost")
@@ -291,13 +289,11 @@ static struct sel_c dnsorders[] = {
 };
 #endif				/* INET6 */
 
-#ifdef USE_COOKIE
 static struct sel_c badcookiestr[] = {
     {N_S(ACCEPT_BAD_COOKIE_DISCARD), N_("discard")},
     {N_S(ACCEPT_BAD_COOKIE_ASK), N_("ask")},
     {0, NULL, NULL}
 };
-#endif				/* USE_COOKIE */
 
 static struct sel_c mailtooptionsstr[] = {
 #ifdef USE_W3MMAILER
@@ -569,7 +565,6 @@ struct param_ptr params7[] = {
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
-#ifdef USE_COOKIE
 struct param_ptr params8[] = {
     {"use_cookie", P_INT, PI_ONOFF, (void *)&use_cookie, CMT_USECOOKIE, NULL},
     {"show_cookie", P_INT, PI_ONOFF, (void *)&show_cookie,
@@ -587,7 +582,6 @@ struct param_ptr params8[] = {
      CMT_COOKIE_AVOID_WONG_NUMBER_OF_DOTS, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
-#endif
 
 struct param_ptr params9[] = {
     {"passwd_file", P_STRING, PI_TEXT, (void *)&passwd_file, CMT_PASSWDFILE,
@@ -692,9 +686,7 @@ struct param_section sections[] = {
     {N_("Network Settings"), params9},
     {N_("Proxy Settings"), params4},
     {N_("SSL Settings"), params7},
-#ifdef USE_COOKIE
     {N_("Cookie Settings"), params8},
-#endif
     {N_("Charset Settings"), params10},
     {NULL, NULL}
 };
@@ -1079,7 +1071,6 @@ parse_proxy()
 	set_no_proxy(NO_proxy);
 }
 
-#ifdef USE_COOKIE
 void
 parse_cookie()
 {
@@ -1091,7 +1082,6 @@ parse_cookie()
 	Cookie_avoid_wrong_number_of_dots_domains
 	       	= make_domain_list(cookie_avoid_wrong_number_of_dots);
 }
-#endif
 
 #ifdef __EMX__
 static int
@@ -1123,9 +1113,7 @@ sync_with_option(void)
 	PagerMax = LINES;
     WrapSearch = WrapDefault;
     parse_proxy();
-#ifdef USE_COOKIE
     parse_cookie();
-#endif
     initMailcap();
     initMimeTypes();
 #ifdef USE_EXTERNAL_URI_LOADER
@@ -1155,9 +1143,7 @@ sync_with_option(void)
     update_utf8_symbol();
     if (fmInitialized) {
 	initKeymap(FALSE);
-#ifdef USE_MENU
 	initMenu();
-#endif				/* MENU */
     }
 }
 

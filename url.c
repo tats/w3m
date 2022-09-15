@@ -1437,9 +1437,7 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 {
     Str tmp;
     TextListItem *i;
-#ifdef USE_COOKIE
     Str cookie;
-#endif				/* USE_COOKIE */
     tmp = HTTPrequestMethod(hr);
     Strcat_charp(tmp, " ");
     Strcat_charp(tmp, HTTPrequestURI(pu, hr)->ptr);
@@ -1464,7 +1462,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	    Strcat_charp(tmp, i->ptr);
 	}
 
-#ifdef USE_COOKIE
     if (hr->command != HR_COMMAND_CONNECT &&
 	use_cookie && (cookie = find_cookie(pu))) {
 	Strcat_charp(tmp, "Cookie: ");
@@ -1474,7 +1471,6 @@ HTTPrequest(ParsedURL *pu, ParsedURL *current, HRequest *hr, TextList *extra)
 	if (cookie->ptr[0] != '$')
 	    Strcat_charp(tmp, "Cookie2: $Version=\"1\"\r\n");
     }
-#endif				/* USE_COOKIE */
     if (hr->command == HR_COMMAND_POST) {
 	if (hr->request->enctype == FORM_ENCTYPE_MULTIPART) {
 	    Strcat_charp(tmp, "Content-Type: multipart/form-data; boundary=");

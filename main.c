@@ -112,12 +112,8 @@ fversion(FILE * f)
 	    ",image"
 	    ",color"
 	    ",ansi-color"
-#ifdef USE_MENU
 	    ",menu"
-#endif
-#ifdef USE_COOKIE
 	    ",cookie"
-#endif
 	    ",ssl"
 	    ",ssl-verify"
 #ifdef USE_EXTERNAL_URI_LOADER
@@ -187,10 +183,8 @@ fusage(FILE * f, int err)
     fprintf(f, "    -6               IPv6 only (-o dns_order=6)\n");
 #endif
     fprintf(f, "    -insecure        use insecure SSL config options\n");
-#ifdef USE_COOKIE
     fprintf(f,
 	    "    -cookie          use cookie (-no-cookie: don't use cookie)\n");
-#endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
     fprintf(f, "    -no-graph        use ASCII character for border of table and menu\n");
 #if 1				/* pager requires -s */
@@ -648,7 +642,6 @@ main(int argc, char **argv, char **envp)
 		    argv[i]++;
 		}
 	    }
-#ifdef USE_COOKIE
 	    else if (!strcmp("-no-cookie", argv[i])) {
 		use_cookie = FALSE;
 		accept_cookie = FALSE;
@@ -657,7 +650,6 @@ main(int argc, char **argv, char **envp)
 		use_cookie = TRUE;
 		accept_cookie = TRUE;
 	    }
-#endif				/* USE_COOKIE */
 #if 1				/* pager requires -s */
 	    else if (!strcmp("-s", argv[i]))
 #else
@@ -763,9 +755,7 @@ main(int argc, char **argv, char **envp)
 	activeImage = TRUE;
 
     sync_with_option();
-#ifdef USE_COOKIE
     initCookie();
-#endif				/* USE_COOKIE */
 #ifdef USE_HISTORY
     if (UseHistory)
 	loadHistory(URLHist);
@@ -974,9 +964,7 @@ main(int argc, char **argv, char **envp)
     if (w3m_dump) {
 	if (err_msg->length)
 	    fprintf(stderr, "%s", err_msg->ptr);
-#ifdef USE_COOKIE
 	save_cookies();
-#endif				/* USE_COOKIE */
 	w3m_exit(0);
     }
 
@@ -1009,9 +997,7 @@ main(int argc, char **argv, char **envp)
 	if (err_msg->length)
 	    fprintf(stderr, "%s", err_msg->ptr);
 	if (newbuf == NO_BUFFER) {
-#ifdef USE_COOKIE
 	    save_cookies();
-#endif				/* USE_COOKIE */
 	    if (!err_msg->length)
 		w3m_exit(0);
 	}
@@ -2390,9 +2376,7 @@ _quitfm(int confirm)
     if (activeImage)
 	termImage();
     fmTerm();
-#ifdef USE_COOKIE
     save_cookies();
-#endif				/* USE_COOKIE */
 #ifdef USE_HISTORY
     if (UseHistory && SaveURLHist)
 	saveHistory(URLHist, URLHistSize);
@@ -4247,7 +4231,6 @@ follow_map(struct parsed_tagarg *arg)
 #endif
 }
 
-#ifdef USE_MENU
 /* link menu */
 DEFUN(linkMn, LINK_MENU, "Pop up link element menu")
 {
@@ -4302,7 +4285,6 @@ DEFUN(movlistMn, MOVE_LIST_MENU, "Pop up menu to navigate between hyperlinks")
 {
     anchorMn(list_menu, FALSE);
 }
-#endif
 
 /* link,anchor,image list */
 DEFUN(linkLst, LIST, "Show all URLs referenced")
@@ -4316,7 +4298,6 @@ DEFUN(linkLst, LIST, "Show all URLs referenced")
     }
 }
 
-#ifdef USE_COOKIE
 /* cookie list */
 DEFUN(cooLst, COOKIE, "View cookie list")
 {
@@ -4326,7 +4307,6 @@ DEFUN(cooLst, COOKIE, "View cookie list")
     if (buf != NULL)
 	cmd_loadBuffer(buf, BP_NO_URL, LB_NOLINK);
 }
-#endif				/* USE_COOKIE */
 
 #ifdef USE_HISTORY
 /* History page */
@@ -5415,9 +5395,7 @@ DEFUN(reinit, REINIT, "Reload configuration file")
     if (resource == NULL) {
 	init_rc();
 	sync_with_option();
-#ifdef USE_COOKIE
 	initCookie();
-#endif
 	displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 	return;
     }
@@ -5429,12 +5407,10 @@ DEFUN(reinit, REINIT, "Reload configuration file")
 	return;
     }
 
-#ifdef USE_COOKIE
     if (!strcasecmp(resource, "COOKIE")) {
 	initCookie();
 	return;
     }
-#endif
 
     if (!strcasecmp(resource, "KEYMAP")) {
 	initKeymap(TRUE);
@@ -5447,12 +5423,10 @@ DEFUN(reinit, REINIT, "Reload configuration file")
     }
 
 
-#ifdef USE_MENU
     if (!strcasecmp(resource, "MENU")) {
 	initMenu();
 	return;
     }
-#endif
 
     if (!strcasecmp(resource, "MIMETYPES")) {
 	initMimeTypes();

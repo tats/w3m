@@ -189,25 +189,6 @@ searchURLLabel(Buffer *buf, char *url)
     return searchAnchor(buf->name, url);
 }
 
-#ifdef USE_NNTP
-static Anchor *
-_put_anchor_news(Buffer *buf, char *p1, char *p2, int line, int pos)
-{
-    Str tmp;
-
-    if (*p1 == '<') {
-	p1++;
-	if (*(p2 - 1) == '>')
-	    p2--;
-    }
-    tmp = Strnew_charp("news:");
-    Strcat_charp_n(tmp, p1, p2 - p1);
-    return registerHref(buf, url_encode(tmp->ptr, baseURL(buf),
-					buf->document_charset),
-			NULL, NO_REFERER, NULL, '\0', line,
-			pos);
-}
-#endif				/* USE_NNTP */
 
 static Anchor *
 _put_anchor_all(Buffer *buf, char *p1, char *p2, int line, int pos)
@@ -386,70 +367,6 @@ reAnchor(Buffer *buf, char *re)
     return reAnchorAny(buf, re, _put_anchor_all);
 }
 
-#ifdef USE_NNTP
-char *
-reAnchorNews(Buffer *buf, char *re)
-{
-    return reAnchorAny(buf, re, _put_anchor_news);
-}
-
-char *
-reAnchorNewsheader(Buffer *buf)
-{
-    Line *l;
-    char *p, *p1, *p2;
-    static char *header_mid[] = {
-	"Message-Id:", "References:", "In-Reply-To:", NULL
-    };
-    static char *header_group[] = {
-	"Newsgroups:", NULL
-    };
-    char **header, **q;
-    int i, search = FALSE;
-
-    if (!buf || !buf->firstLine)
-	return NULL;
-    for (i = 0; i <= 1; i++) {
-	if (i == 0) {
-	    regexCompile("<[!-;=?-~]+@[a-zA-Z0-9\\.\\-_]+>", 1);
-	    header = header_mid;
-	}
-	else {
-	    regexCompile("[a-zA-Z0-9\\.\\-_]+", 1);
-	    header = header_group;
-	}
-	for (l = buf->firstLine; l != NULL && l->real_linenumber == 0;
-	     l = l->next) {
-	    if (l->bpos)
-		continue;
-	    p = l->lineBuf;
-	    if (!IS_SPACE(*p)) {
-		search = FALSE;
-		for (q = header; *q; q++) {
-		    if (!strncasecmp(p, *q, strlen(*q))) {
-			search = TRUE;
-			p = strchr(p, ':') + 1;
-			break;
-		    }
-		}
-	    }
-	    if (!search)
-		continue;
-	    for (;;) {
-		if (regexMatch(p, &l->lineBuf[l->size] - p, p == l->lineBuf)
-		    == 1) {
-		    matchedPosition(&p1, &p2);
-		    p = reAnchorPos(buf, l, p1, p2, _put_anchor_news);
-		}
-		else
-		    break;
-	    }
-	}
-    }
-    reseq_anchor(buf);
-    return NULL;
-}
-#endif				/* USE_NNTP */
 
 #define FIRST_MARKER_SIZE 30
 HmarkerList *

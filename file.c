@@ -101,9 +101,6 @@ static struct link_stack *link_stack = NULL;
 #define FORMSTACK_SIZE 10
 #define FRAMESTACK_SIZE 10
 
-#ifdef USE_NNTP
-#define Str_news_endline(s) ((s)->ptr[0]=='.'&&((s)->ptr[1]=='\n'||(s)->ptr[1]=='\r'||(s)->ptr[1]=='\0'))
-#endif				/* USE_NNTP */
 
 #define INITIAL_FORM_SIZE 10
 static FormList **forms;
@@ -189,12 +186,6 @@ UFhalfclose(URLFile *f)
     case SCM_FTP:
 	closeFTP();
 	break;
-#ifdef USE_NNTP
-    case SCM_NEWS:
-    case SCM_NNTP:
-	closeNews();
-	break;
-#endif
     default:
 	UFclose(f);
 	break;
@@ -471,10 +462,6 @@ convertLine(URLFile *uf, Str line, int mode, wc_ces * charset,
     line = wc_Str_conv_with_detect(line, charset, doc_charset, InnerCharset);
     if (mode != RAW_MODE)
 	cleanup_line(line, mode);
-#ifdef USE_NNTP
-    if (uf && uf->scheme == SCM_NEWS)
-	Strchop(line);
-#endif				/* USE_NNTP */
     return line;
 }
 
@@ -585,10 +572,6 @@ readHeader(URLFile *uf, Buffer *newBuf, int thru, ParsedURL *pu)
 	    newBuf->header_source = tmpf;
     }
     while ((tmp = StrmyUFgets(uf))->length) {
-#ifdef USE_NNTP
-	if (uf->scheme == SCM_NEWS && tmp->ptr[0] == '.')
-	    Strshrinkfirst(tmp, 1);
-#endif
 	if(w3m_reqlog){
 	    FILE *ff;
 	    ff = fopen(w3m_reqlog, "a");
@@ -1742,12 +1725,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    page = loadFTPDir(&pu, &charset);
 	    t = "ftp:directory";
 	    break;
-#ifdef USE_NNTP
-	case SCM_NEWS_GROUP:
-	    page = loadNewsgroup(&pu, &charset);
-	    t = "news:group";
-	    break;
-#endif
 	case SCM_UNKNOWN:
 #ifdef USE_EXTERNAL_URI_LOADER
 	    tmp = searchURIMethods(&pu);
@@ -1908,16 +1885,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
 	f.modtime = mymktime(checkHeader(t_buf, "Last-Modified:"));
     }
-#ifdef USE_NNTP
-    else if (pu.scheme == SCM_NEWS || pu.scheme == SCM_NNTP) {
-	if (t_buf == NULL)
-	    t_buf = newBuffer(INIT_BUFFER_WIDTH);
-	readHeader(&f, t_buf, TRUE, &pu);
-	t = checkContentType(t_buf);
-	if (t == NULL)
-	    t = "text/plain";
-    }
-#endif				/* USE_NNTP */
 #ifdef USE_GOPHER
     else if (pu.scheme == SCM_GOPHER) {
 	p = pu.file;
@@ -2070,10 +2037,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    file = guess_filename(pu.file);
 #ifdef USE_GOPHER
 	    if (f.scheme == SCM_GOPHER)
-		file = Sprintf("%s.html", file)->ptr;
-#endif
-#ifdef USE_NNTP
-	    if (f.scheme == SCM_NEWS_GROUP)
 		file = Sprintf("%s.html", file)->ptr;
 #endif
 	    doFileMove(tmp->ptr, file);
@@ -2241,10 +2204,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     }
     if (header_string)
 	header_string = NULL;
-#ifdef USE_NNTP
-    if (b && b != NO_BUFFER && (f.scheme == SCM_NNTP || f.scheme == SCM_NEWS))
-	reAnchorNewsheader(b);
-#endif
     if (b && b != NO_BUFFER)
 	preFormUpdateBuffer(b);
     TRAP_OFF;
@@ -5947,7 +5906,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 		    if (p && q && !strcasecmp(p, "refresh") && MetaRefresh) {
 			Str tmp = NULL;
 			int refresh_interval = getMetaRefreshParam(q, &tmp);
-#ifdef USE_ALARM
 			if (tmp) {
 			    p = url_encode(remove_space(tmp->ptr), base,
 					   buf->document_charset);
@@ -5961,13 +5919,6 @@ HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
 						       refresh_interval,
 						       AL_IMPLICIT,
 						       FUNCNAME_reload, NULL);
-#else
-			if (tmp && refresh_interval == 0) {
-			    p = url_encode(remove_space(tmp->ptr), base,
-					   buf->document_charset);
-			    pushEvent(FUNCNAME_gorURL, p);
-			}
-#endif
 		    }
 		    break;
 		case HTML_INTERNAL:
@@ -7098,18 +7049,6 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
     if (IStype(f->stream) != IST_ENCODED)
 	f->stream = newEncodedStream(f->stream, f->encoding);
     while ((lineBuf2 = StrmyUFgets(f))->length) {
-#ifdef USE_NNTP
-	if (f->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
-	    Strshrinkfirst(lineBuf2, 1);
-	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
-		lineBuf2->ptr[0] == '\0') {
-		/*
-		 * iseos(f->stream) = TRUE;
-		 */
-		break;
-	    }
-	}
-#endif				/* USE_NNTP */
 	if (src)
 	    Strfputs(lineBuf2, src);
 	linelen += lineBuf2->length;
@@ -7392,18 +7331,6 @@ loadBuffer(URLFile *uf, Buffer *volatile newBuf)
     if (IStype(uf->stream) != IST_ENCODED)
 	uf->stream = newEncodedStream(uf->stream, uf->encoding);
     while ((lineBuf2 = StrmyISgets(uf->stream))->length) {
-#ifdef USE_NNTP
-	if (uf->scheme == SCM_NEWS && lineBuf2->ptr[0] == '.') {
-	    Strshrinkfirst(lineBuf2, 1);
-	    if (lineBuf2->ptr[0] == '\n' || lineBuf2->ptr[0] == '\r' ||
-		lineBuf2->ptr[0] == '\0') {
-		/*
-		 * iseos(uf->stream) = TRUE;
-		 */
-		break;
-	    }
-	}
-#endif				/* USE_NNTP */
 	if (src)
 	    Strfputs(lineBuf2, src);
 	linelen += lineBuf2->length;
@@ -7870,29 +7797,6 @@ save2tmp(URLFile uf, char *tmpf)
     }
     TRAP_ON;
     check = 0;
-#ifdef USE_NNTP
-    if (uf.scheme == SCM_NEWS) {
-	char c;
-	while (c = UFgetc(&uf), !iseos(uf.stream)) {
-	    if (c == '\n') {
-		if (check == 0)
-		    check++;
-		else if (check == 3)
-		    break;
-	    }
-	    else if (c == '.' && check == 1)
-		check++;
-	    else if (c == '\r' && check == 2)
-		check++;
-	    else
-		check = 0;
-	    putc(c, ff);
-	    linelen += sizeof(c);
-	    showProgress(&linelen, &trbyte);
-	}
-    }
-    else
-#endif				/* USE_NNTP */
     {
 	int count;
 

@@ -799,16 +799,6 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	    case SCM_FTPDIR:
 		p_url->scheme = SCM_FTP;
 		break;
-#ifdef USE_NNTP
-	    case SCM_NNTP:
-	    case SCM_NNTP_GROUP:
-		p_url->scheme = SCM_NNTP;
-		break;
-	    case SCM_NEWS:
-	    case SCM_NEWS_GROUP:
-		p_url->scheme = SCM_NEWS;
-		break;
-#endif
 	    default:
 		p_url->scheme = current->scheme;
 		break;
@@ -1288,9 +1278,6 @@ _parsedURL2Str(ParsedURL *pu, int pass, int user, int label)
 	Strcat_charp(tmp, pu->file);
 	return tmp;
     }
-#ifdef USE_NNTP
-    if (pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP)
-#endif				/* USE_NNTP */
     {
 	Strcat_charp(tmp, "//");
     }
@@ -1310,9 +1297,6 @@ _parsedURL2Str(ParsedURL *pu, int pass, int user, int label)
 	}
     }
     if (
-#ifdef USE_NNTP
-	   pu->scheme != SCM_NEWS && pu->scheme != SCM_NEWS_GROUP &&
-#endif				/* USE_NNTP */
 	   (pu->file == NULL || (pu->file[0] != '/'
 #ifdef SUPPORT_DOS_DRIVE_PREFIX
 				 && !(IS_ALPHA(pu->file[0])
@@ -1951,18 +1935,6 @@ openURL(char *url, ParsedURL *pu, ParsedURL *current,
 	}
 	break;
 #endif				/* USE_GOPHER */
-#ifdef USE_NNTP
-    case SCM_NNTP:
-    case SCM_NNTP_GROUP:
-    case SCM_NEWS:
-    case SCM_NEWS_GROUP:
-	if (pu->scheme == SCM_NNTP || pu->scheme == SCM_NEWS)
-	    uf.scheme = SCM_NEWS;
-	else
-	    uf.scheme = SCM_NEWS_GROUP;
-	uf.stream = openNewsStream(pu);
-	return uf;
-#endif				/* USE_NNTP */
     case SCM_DATA:
 	if (pu->file == NULL)
 	    return uf;

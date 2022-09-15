@@ -110,11 +110,6 @@ static int OptionEncode = FALSE;
 #define CMT_NO_PROXY     N_("Domains to be accessed directly (no proxy)")
 #define CMT_NOPROXY_NETADDR	N_("Check noproxy by network address")
 #define CMT_NO_CACHE     N_("Disable cache")
-#ifdef USE_NNTP
-#define CMT_NNTP_SERVER  N_("News server")
-#define CMT_NNTP_MODE    N_("Mode of news server")
-#define CMT_MAX_NEWS     N_("Number of news messages")
-#endif
 #define CMT_DNS_ORDER	N_("Order of name resolution")
 #define CMT_DROOT       N_("Directory corresponding to / (document root)")
 #define CMT_PDROOT      N_("Directory corresponding to /~user")
@@ -654,12 +649,6 @@ struct param_ptr params9[] = {
     {"dns_order", P_INT, PI_SEL_C, (void *)&DNS_order, CMT_DNS_ORDER,
      (void *)dnsorders},
 #endif				/* INET6 */
-#ifdef USE_NNTP
-    {"nntpserver", P_STRING, PI_TEXT, (void *)&NNTP_server, CMT_NNTP_SERVER,
-     NULL},
-    {"nntpmode", P_STRING, PI_TEXT, (void *)&NNTP_mode, CMT_NNTP_MODE, NULL},
-    {"max_news", P_INT, PI_TEXT, (void *)&MaxNewsMessage, CMT_MAX_NEWS, NULL},
-#endif
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 

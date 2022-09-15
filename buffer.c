@@ -579,12 +579,6 @@ reshapeBuffer(Buffer *buf)
     }
     if (buf->check_url & CHK_URL)
 	chkURLBuffer(buf);
-#ifdef USE_NNTP
-    if (buf->check_url & CHK_NMID)
-	chkNMIDBuffer(buf);
-    if (buf->real_scheme == SCM_NNTP || buf->real_scheme == SCM_NEWS)
-	reAnchorNewsheader(buf);
-#endif
     formResetBuffer(buf, sbuf.formitem);
 }
 

@@ -15,9 +15,12 @@ CONTEXT = {
     'USE_IMAGE': True,
     'USE_COLOR': True,
     'USE_ANSI_COLOR': True,
+    'USE_ALARM': True,
+    #
     'USE_MOUSE': False,
     'USE_GPM': False,
     '__MINGW32_VERSION': False,
+    'USE_NNTP': False,
 }
 
 MACRO_PATTERN = re.compile(r'^#\s*(\S+)\s*(\S.*)?')

@@ -39,13 +39,11 @@ typedef struct _Event {
 static Event *CurrentEvent = NULL;
 static Event *LastEvent = NULL;
 
-#ifdef USE_ALARM
 static AlarmEvent DefaultAlarm = {
     0, AL_UNSET, FUNCNAME_nulcmd, NULL
 };
 static AlarmEvent *CurrentAlarm = &DefaultAlarm;
 static MySignalHandler SigAlarm(SIGNAL_ARG);
-#endif
 
 static int need_resize_screen = FALSE;
 static MySignalHandler resize_hook(SIGNAL_ARG);
@@ -132,18 +130,13 @@ fversion(FILE * f)
 #ifdef USE_W3MMAILER
 	    ",w3mmailer"
 #endif
-#ifdef USE_NNTP
-	    ",nntp"
-#endif
 #ifdef USE_GOPHER
 	    ",gopher"
 #endif
 #ifdef INET6
 	    ",ipv6"
 #endif
-#ifdef USE_ALARM
 	    ",alarm"
-#endif
 #ifdef USE_MARK
 	    ",mark"
 #endif
@@ -487,12 +480,6 @@ main(int argc, char **argv, char **envp)
 	((p = getenv("NO_PROXY")) ||
 	 (p = getenv("no_proxy")) || (p = getenv("NO_proxy"))))
 	NO_proxy = p;
-#ifdef USE_NNTP
-    if (!non_null(NNTP_server) && (p = getenv("NNTPSERVER")) != NULL)
-	NNTP_server = p;
-    if (!non_null(NNTP_mode) && (p = getenv("NNTPMODE")) != NULL)
-	NNTP_mode = p;
-#endif
 
     if (!non_null(Editor) && (p = getenv("EDITOR")) != NULL)
 	Editor = p;
@@ -1088,7 +1075,6 @@ main(int argc, char **argv, char **envp)
 	    continue;
 	}
 	/* get keypress event */
-#ifdef USE_ALARM
 	if (Currentbuf->event) {
 	    if (Currentbuf->event->status != AL_UNSET) {
 		CurrentAlarm = Currentbuf->event;
@@ -1107,13 +1093,10 @@ main(int argc, char **argv, char **envp)
 	}
 	if (!Currentbuf->event)
 	    CurrentAlarm = &DefaultAlarm;
-#endif
-#ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
 	    mySignal(SIGALRM, SigAlarm);
 	    alarm(CurrentAlarm->sec);
 	}
-#endif
 	mySignal(SIGWINCH, resize_hook);
 	if (activeImage && displayImage && Currentbuf->img &&
 	    !Currentbuf->image_loaded) {
@@ -1131,11 +1114,9 @@ main(int argc, char **argv, char **envp)
 	    } while (sleep_till_anykey(1, 0) <= 0);
 	}
 	c = getch();
-#ifdef USE_ALARM
 	if (CurrentAlarm->sec > 0) {
 	    alarm(0);
 	}
-#endif
 	if (IS_ASCII(c)) {	/* Ascii */
 	    if (('0' <= c) && (c <= '9') &&
 		(prec_num || (GlobalKeymap[c] == FUNCNAME_nulcmd))) {
@@ -4860,10 +4841,6 @@ chkURLBuffer(Buffer *buf)
 	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
 #endif				/* USE_GOPHER */
 	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
-#ifdef USE_NNTP
-	"news:[^<> 	][^<> 	]*",
-	"nntp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
-#endif				/* USE_NNTP */
 #ifndef USE_W3MMAILER		/* see also chkExternalURIBuffer() */
 	"mailto:[^<> 	][^<> 	]*@[a-zA-Z0-9][a-zA-Z0-9\\-\\._]*[a-zA-Z0-9]",
 #endif
@@ -4900,28 +4877,6 @@ DEFUN(chkWORD, MARK_WORD, "Turn current word into hyperlink")
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 
-#ifdef USE_NNTP
-/* mark Message-ID-like patterns as NEWS anchors */
-void
-chkNMIDBuffer(Buffer *buf)
-{
-    static char *url_like_pat[] = {
-	"<[!-;=?-~]+@[a-zA-Z0-9\\.\\-_]+>",
-	NULL,
-    };
-    int i;
-    for (i = 0; url_like_pat[i]; i++) {
-	reAnchorNews(buf, url_like_pat[i]);
-    }
-    buf->check_url |= CHK_NMID;
-}
-
-DEFUN(chkNMID, MARK_MID, "Turn Message-ID-like strings into hyperlinks")
-{
-    chkNMIDBuffer(Currentbuf);
-    displayBuffer(Currentbuf, B_FORCE_REDRAW);
-}
-#endif				/* USE_NNTP */
 
 /* render frames */
 DEFUN(rFrame, FRAME, "Toggle rendering HTML frames")
@@ -5361,9 +5316,6 @@ w3m_exit(int i)
     free_ssl_ctx();
 #endif
     disconnectFTP();
-#ifdef USE_NNTP
-    disconnectNews();
-#endif
 #ifdef HAVE_MKDTEMP
     if (no_rc_dir && tmp_dir != rc_dir)
 	if (rmdir(tmp_dir) != 0) {
@@ -5409,7 +5361,6 @@ DEFUN(execCmd, COMMAND, "Invoke w3m function(s)")
     displayBuffer(Currentbuf, B_NORMAL);
 }
 
-#ifdef USE_ALARM
 static MySignalHandler
 SigAlarm(SIGNAL_ARG)
 {
@@ -5484,7 +5435,6 @@ setAlarmEvent(AlarmEvent * event, int sec, short status, int cmd, void *data)
     event->data = data;
     return event;
 }
-#endif
 
 DEFUN(reinit, REINIT, "Reload configuration file")
 {
@@ -6116,9 +6066,7 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display downloads panel")
 {
     Buffer *buf;
     int replace = FALSE, new_tab = FALSE;
-#ifdef USE_ALARM
     int reload;
-#endif
 
     if (Currentbuf->bufferprop & BP_INTERNAL &&
 	!strcmp(Currentbuf->buffername, DOWNLOAD_LIST_TITLE))
@@ -6135,9 +6083,7 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display downloads panel")
 	}
 	return;
     }
-#ifdef USE_ALARM
     reload = checkDownloadList();
-#endif
     buf = DownloadListBuffer();
     if (!buf) {
 	displayBuffer(Currentbuf, B_NORMAL);
@@ -6155,11 +6101,9 @@ DEFUN(ldDL, DOWNLOAD_LIST, "Display downloads panel")
     pushBuffer(buf);
     if (replace || new_tab)
 	deletePrevBuf();
-#ifdef USE_ALARM
     if (reload)
 	Currentbuf->event = setAlarmEvent(Currentbuf->event, 1, AL_IMPLICIT,
 					  FUNCNAME_reload, NULL);
-#endif
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
 

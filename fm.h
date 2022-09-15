@@ -485,9 +485,7 @@ typedef struct _Buffer {
     char need_reshape;
     Anchor *submit;
     struct _BufferPos *undo;
-#ifdef USE_ALARM
     struct _AlarmEvent *event;
-#endif
 } Buffer;
 
 typedef struct _BufferPos {
@@ -872,11 +870,6 @@ global char NoCache init(FALSE);
 global char use_proxy init(TRUE);
 #define Do_not_use_proxy (!use_proxy)
 global int Do_not_use_ti_te init(FALSE);
-#ifdef USE_NNTP
-global char *NNTP_server init(NULL);
-global char *NNTP_mode init(NULL);
-global int MaxNewsMessage init(50);
-#endif
 
 global char *document_root init(NULL);
 global char *personal_document_root init(NULL);
@@ -1160,7 +1153,6 @@ int backend(void);
 extern void deleteFiles(void);
 void w3m_exit(int i);
 
-#ifdef USE_ALARM
 #define AL_UNSET         0
 #define AL_EXPLICIT      1
 #define AL_IMPLICIT      2
@@ -1172,7 +1164,6 @@ typedef struct _AlarmEvent {
     int cmd;
     void *data;
 } AlarmEvent;
-#endif
 
 /* 
  * Externals

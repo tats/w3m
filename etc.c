@@ -1,8 +1,6 @@
 /* $Id: etc.c,v 1.81 2007/05/23 15:06:05 inu Exp $ */
 #include "fm.h"
-#ifndef __MINGW32_VERSION
 #include <pwd.h>
-#endif
 #include "myctype.h"
 #include "html.h"
 #include "local.h"
@@ -1290,10 +1288,8 @@ setup_child(int child, int i, int f)
 {
     reset_signals();
     mySignal(SIGINT, SIG_IGN);
-#ifndef __MINGW32_VERSION
     if (!child)
 	SETPGRP();
-#endif /* __MINGW32_VERSION */
     /*
      * I don't know why but close_tty() sometimes interrupts loadGeneralFile() in loadImage()
      * and corrupt image data can be cached in ~/.w3m.
@@ -1304,7 +1300,6 @@ setup_child(int child, int i, int f)
     TrapSignal = FALSE;
 }
 
-#ifndef __MINGW32_VERSION
 pid_t
 open_pipe_rw(FILE ** fr, FILE ** fw)
 {
@@ -1362,7 +1357,6 @@ open_pipe_rw(FILE ** fr, FILE ** fw)
   err0:
     return (pid_t) - 1;
 }
-#endif /* __MINGW32_VERSION */
 
 void
 myExec(char *command)
@@ -1375,7 +1369,6 @@ myExec(char *command)
 void
 mySystem(char *command, int background)
 {
-#ifndef __MINGW32_VERSION
     if (background) {
 #ifndef __EMX__
 	flush_tty();
@@ -1390,7 +1383,6 @@ mySystem(char *command, int background)
 #endif
     }
     else
-#endif /* __MINGW32_VERSION */
 	system(command);
 }
 
@@ -1843,11 +1835,7 @@ mymktime(char *timestr)
 #ifdef INET6
 #include <sys/socket.h>
 #endif				/* INET6 */
-#ifndef __MINGW32_VERSION
 #include <netdb.h>
-#else
-#include <winsock.h>
-#endif
 char *
 FQDN(char *host)
 {

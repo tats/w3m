@@ -315,9 +315,6 @@ extern int columnLen(Line *line, int column);
 extern Line *lineSkip(Buffer *buf, Line *line, int offset, int last);
 extern Line *currentLineSkip(Buffer *buf, Line *line, int offset, int last);
 extern int gethtmlcmd(char **s);
-#ifndef USE_ANSI_COLOR
-#define checkType(a,b,c) _checkType(a,b)
-#endif
 extern Str checkType(Str s, Lineprop **oprop, Linecolor **ocolor);
 extern int calcPosition(char *l, Lineprop *pr, int len, int pos, int bpos,
 			int mode);

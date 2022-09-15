@@ -51,7 +51,13 @@ class Ifndef(NamedTuple):
     value: str
 
     def eval(self, context) -> Optional[bool]:
-        return None
+        match context.get(self.value):
+            case True:
+                return False
+            case False:
+                return True
+            case None:
+                return None
 
 
 class Elif(NamedTuple):

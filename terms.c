@@ -17,11 +17,7 @@
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
-#ifndef __MINGW32_VERSION
 #include <sys/ioctl.h>
-#else
-#include <winsock.h>
-#endif /* __MINGW32_VERSION */
 
 static char *title_str = NULL;
 
@@ -902,7 +898,6 @@ set_tty(void)
 void
 ttymode_set(int mode, int imode)
 {
-#ifndef __MINGW32_VERSION
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -917,13 +912,11 @@ ttymode_set(int mode, int imode)
 	printf("Error occurred while set %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
-#endif
 }
 
 void
 ttymode_reset(int mode, int imode)
 {
-#ifndef __MINGW32_VERSION
     TerminalMode ioval;
 
     TerminalGet(tty, &ioval);
@@ -938,7 +931,6 @@ ttymode_reset(int mode, int imode)
 	printf("Error occurred while reset %x: errno=%d\n", mode, errno);
 	reset_error_exit(SIGNAL_ARGLIST);
     }
-#endif /* __MINGW32_VERSION */
 }
 
 #ifndef HAVE_SGTTY_H
@@ -1291,12 +1283,6 @@ addmch(char *pc, size_t len)
     p = ScreenImage[CurLine]->lineimage;
     pr = ScreenImage[CurLine]->lineprop;
 
-#ifndef USE_M17N
-    /* Eliminate unprintables according to * iso-8859-*.
-     * Particularly 0x96 messes up T.Dickey's * (xfree-)xterm */
-    if (IS_INTSPACE(c))
-	c = ' ';
-#endif
 
     if (pr[CurColumn] & S_EOL) {
 	if (c == ' ' && !(CurrentMode & M_SPACE)) {

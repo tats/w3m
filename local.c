@@ -193,10 +193,8 @@ check_local_cgi(char *file, int status)
 	return -1;
     if (S_ISDIR(st.st_mode))
 	return -1;
-#ifndef __MINGW32_VERSION
     if ((st.st_uid == geteuid() && (st.st_mode & S_IXUSR)) || (st.st_gid == getegid() && (st.st_mode & S_IXGRP)) || (st.st_mode & S_IXOTH))	/* executable */
 	return 0;
-#endif
     return -1;
 }
 

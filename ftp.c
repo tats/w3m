@@ -1,8 +1,6 @@
 /* $Id: ftp.c,v 1.42 2010/12/15 10:50:24 htrb Exp $ */
 #include <stdio.h>
-#ifndef __MINGW32_VERSION
 #include <pwd.h>
-#endif /* __MINGW32_VERSION */
 #include <Str.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -16,14 +14,10 @@
 #include <malloc.h>
 #endif				/* DEBUG */
 
-#ifndef __MINGW32_VERSION
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#else
-#include <winsock.h>
-#endif /* __MINGW32_VERSION */
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
@@ -404,14 +398,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
 		term_cbreak();
 	    }
 	    else {
-#ifndef __MINGW32_VERSION
 		pwd = Strnew_charp((char *)getpass("Password: "));
-#else
-		term_raw();
-		pwd = Strnew_charp(inputLine("Password: ", NULL, IN_PASSWORD));
-		pwd = Str_conv_to_system(pwd);
-		term_cbreak();
-#endif /* __MINGW32_VERSION */
 	    }
 	    add_auth_cookie_flag = TRUE;
 	}
@@ -420,12 +407,8 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
     else if (ftppasswd != NULL && *ftppasswd != '\0')
 	pass = ftppasswd;
     else {
-#ifndef __MINGW32_VERSION
 	struct passwd *mypw = getpwuid(getuid());
 	tmp = Strnew_charp(mypw ? mypw->pw_name : "anonymous");
-#else
-	tmp = Strnew_charp("anonymous");
-#endif /* __MINGW32_VERSION */
 	Strcat_char(tmp, '@');
 	pass = tmp->ptr;
     }

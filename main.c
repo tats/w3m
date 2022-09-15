@@ -61,11 +61,7 @@ static char *MarkString = NULL;
 static char *SearchString = NULL;
 int (*searchRoutine) (Buffer *, char *);
 
-#ifndef __MINGW32_VERSION
 JMP_BUF IntReturn;
-#else
-_JBTYPE IntReturn[_JBLEN];
-#endif /* __MINGW32_VERSION */
 
 static void delBuffer(Buffer *buf);
 static void cmd_loadfile(char *path);
@@ -6076,9 +6072,7 @@ download_action(struct parsed_tagarg *arg)
     for (; arg; arg = arg->next) {
 	if (!strncmp(arg->arg, "stop", 4)) {
 	    pid = (pid_t) atoi(&arg->arg[4]);
-#ifndef __MINGW32_VERSION
 	    kill(pid, SIGKILL);
-#endif
 	}
 	else if (!strncmp(arg->arg, "ok", 2))
 	    pid = (pid_t) atoi(&arg->arg[2]);
@@ -6112,9 +6106,7 @@ stopDownload(void)
     for (d = FirstDL; d != NULL; d = d->next) {
 	if (!d->running)
 	    continue;
-#ifndef __MINGW32_VERSION
 	kill(d->pid, SIGKILL);
-#endif
 	unlink(d->lock);
     }
 }

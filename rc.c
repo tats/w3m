@@ -43,9 +43,7 @@ static int RC_table_size;
 #if defined(USE_SSL) && defined(USE_SSL_VERIFY)
 #define P_SSLPATH  5
 #endif
-#ifdef USE_COLOR
 #define P_COLOR    6
-#endif
 #define P_CODE     7
 #define P_PIXELS   8
 #define P_NZINT    9
@@ -75,7 +73,6 @@ static int OptionEncode = FALSE;
 #define CMT_DISPLINEINFO N_("Display current line number")
 #define CMT_DISP_IMAGE   N_("Display inline images")
 #define CMT_PSEUDO_INLINES N_("Display pseudo-ALTs for inline images with no ALT or TITLE string")
-#ifdef USE_IMAGE
 #define CMT_AUTO_IMAGE   N_("Load inline images automatically")
 #define CMT_MAX_LOAD_IMAGE N_("Maximum processes for parallel image loading")
 #define CMT_EXT_IMAGE_VIEWER   N_("Use external image viewer")
@@ -83,7 +80,6 @@ static int OptionEncode = FALSE;
 #define CMT_IMGDISPLAY   N_("External command to display image")
 #define CMT_IMAGE_MAP_LIST N_("Use link list of image map")
 #define CMT_INLINE_IMG_PROTOCOL N_("Inline image display method")
-#endif
 #define CMT_MULTICOL     N_("Display file names in multi-column format")
 #define CMT_ALT_ENTITY   N_("Use ASCII equivalents to display entities")
 #define CMT_GRAPHIC_CHAR N_("Character type for border of table and menu")
@@ -264,7 +260,6 @@ struct sel_c {
     char *text;
 };
 
-#ifdef USE_COLOR
 static struct sel_c colorstr[] = {
     {0, "black", N_("black")},
     {1, "red", N_("red")},
@@ -277,7 +272,6 @@ static struct sel_c colorstr[] = {
     {8, "terminal", N_("terminal")},
     {0, NULL, NULL}
 };
-#endif				/* USE_COLOR */
 
 #if 1				/* ANSI-C ? */
 #define N_STR(x)	#x
@@ -359,7 +353,6 @@ static struct sel_c graphic_char_str[] = {
     {0, NULL, NULL}
 };
 
-#ifdef USE_IMAGE
 static struct sel_c inlineimgstr[] = {
     {N_S(INLINE_IMG_NONE), N_("external command")},
     {N_S(INLINE_IMG_OSC5379), N_("OSC 5379 (mlterm)")},
@@ -368,7 +361,6 @@ static struct sel_c inlineimgstr[] = {
     {N_S(INLINE_IMG_KITTY), N_("kitty (ImageMagick)")},
     {0, NULL, NULL}
 };
-#endif				/* USE_IMAGE */
 
 struct param_ptr params1[] = {
     {"tabstop", P_NZINT, PI_TEXT, (void *)&Tabstop, CMT_TABSTOP, NULL},
@@ -376,10 +368,8 @@ struct param_ptr params1[] = {
      NULL},
     {"pixel_per_char", P_PIXELS, PI_TEXT, (void *)&pixel_per_char,
      CMT_PIXEL_PER_CHAR, NULL},
-#ifdef USE_IMAGE
     {"pixel_per_line", P_PIXELS, PI_TEXT, (void *)&pixel_per_line,
      CMT_PIXEL_PER_LINE, NULL},
-#endif
     {"frame", P_CHARINT, PI_ONOFF, (void *)&RenderFrame, CMT_FRAME, NULL},
     {"target_self", P_CHARINT, PI_ONOFF, (void *)&TargetSelf, CMT_TSELF, NULL},
     {"open_tab_blank", P_INT, PI_ONOFF, (void *)&open_tab_blank,
@@ -425,7 +415,6 @@ struct param_ptr params1[] = {
      NULL},
     {"pseudo_inlines", P_INT, PI_ONOFF, (void *)&pseudoInlines,
      CMT_PSEUDO_INLINES, NULL},
-#ifdef USE_IMAGE
     {"auto_image", P_INT, PI_ONOFF, (void *)&autoImage, CMT_AUTO_IMAGE, NULL},
     {"max_load_image", P_INT, PI_TEXT, (void *)&maxLoadImage,
      CMT_MAX_LOAD_IMAGE, NULL},
@@ -439,7 +428,6 @@ struct param_ptr params1[] = {
      NULL},
     {"image_map_list", P_INT, PI_ONOFF, (void *)&image_map_list,
      CMT_IMAGE_MAP_LIST, NULL},
-#endif
     {"fold_line", P_INT, PI_ONOFF, (void *)&FoldLine, CMT_FOLD_LINE, NULL},
     {"show_lnum", P_INT, PI_ONOFF, (void *)&showLineNum, CMT_SHOW_NUM, NULL},
     {"show_srch_str", P_INT, PI_ONOFF, (void *)&show_srch_str,
@@ -451,7 +439,6 @@ struct param_ptr params1[] = {
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
-#ifdef USE_COLOR
 struct param_ptr params2[] = {
     {"color", P_INT, PI_ONOFF, (void *)&useColor, CMT_COLOR, NULL},
     {"basic_color", P_COLOR, PI_SEL_C, (void *)&basic_color, CMT_B_COLOR,
@@ -478,7 +465,6 @@ struct param_ptr params2[] = {
      (void *)colorstr},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
-#endif				/* USE_COLOR */
 
 
 struct param_ptr params3[] = {
@@ -756,9 +742,7 @@ struct param_ptr params10[] = {
 
 struct param_section sections[] = {
     {N_("Display Settings"), params1},
-#ifdef USE_COLOR
     {N_("Color Settings"), params2},
-#endif				/* USE_COLOR */
     {N_("Miscellaneous Settings"), params3},
     {N_("Directory Settings"), params5},
     {N_("External Program Settings"), params6},
@@ -908,11 +892,9 @@ show_params(FILE * fp)
 		t = "path";
 		break;
 #endif
-#ifdef USE_COLOR
 	    case P_COLOR:
 		t = "color";
 		break;
-#endif
 	    case P_CODE:
 		t = "charset";
 		break;
@@ -966,7 +948,6 @@ str_to_bool(char *value, int old)
     return 1;
 }
 
-#ifdef USE_COLOR
 static int
 str_to_color(char *value)
 {
@@ -1006,7 +987,6 @@ str_to_color(char *value)
     }
     return 8;			/* terminal */
 }
-#endif
 
 static int
 set_param(char *name, char *value)
@@ -1052,11 +1032,9 @@ set_param(char *name, char *value)
 	ssl_path_modified = 1;
 	break;
 #endif
-#ifdef USE_COLOR
     case P_COLOR:
 	*(int *)p->varptr = str_to_color(value);
 	break;
-#endif
     case P_CODE:
 	*(wc_ces *) p->varptr =
 	    wc_guess_charset_short(value, *(wc_ces *) p->varptr);
@@ -1225,12 +1203,8 @@ sync_with_option(void)
 #ifdef USE_MIGEMO
     init_migemo();
 #endif
-#ifdef USE_IMAGE
     if (fmInitialized && (displayImage || enable_inline_image))
 	initImage();
-#else
-    displayImage = FALSE;	/* XXX */
-#endif
     loadPasswd();
     loadPreForm();
     loadSiteconf();
@@ -1359,9 +1333,7 @@ to_str(struct param_ptr *p)
 {
     switch (p->type) {
     case P_INT:
-#ifdef USE_COLOR
     case P_COLOR:
-#endif
     case P_CODE:
 	return Sprintf("%d", (int)(*(wc_ces *) p->varptr));
     case P_NZINT:
@@ -1415,9 +1387,7 @@ load_option_panel(void)
 		    wc_conv(_(p->comment), OptionCharset,
 			    InnerCharset)->ptr;
 		if (p->inputtype == PI_SEL_C
-#ifdef USE_COLOR
 			&& p->select != colorstr
-#endif
 			) {
 		    for (s = (struct sel_c *)p->select; s->text != NULL; s++) {
 			s->text =
@@ -1427,11 +1397,9 @@ load_option_panel(void)
 		}
 	    }
 	}
-#ifdef USE_COLOR
 	for (s = colorstr; s->text; s++)
 	    s->text = wc_conv(_(s->text), OptionCharset,
 			      InnerCharset)->ptr;
-#endif
 	OptionEncode = TRUE;
     }
     src = Strdup(optionpanel_str);

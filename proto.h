@@ -113,13 +113,8 @@ extern void extbrz(void);
 extern void linkbrz(void);
 extern void curlno(void);
 extern void execCmd(void);
-#ifdef USE_IMAGE
 extern void dispI(void);
 extern void stopI(void);
-#else
-#define dispI nulcmd
-#define stopI nulcmd
-#endif
 #ifdef USE_ALARM
 extern void setAlarm(void);
 extern AlarmEvent *setAlarmEvent(AlarmEvent * event, int sec, short status,
@@ -200,13 +195,11 @@ extern void save_fonteffect(struct html_feed_environ *h_env,
 			    struct readbuffer *obuf);
 extern void restore_fonteffect(struct html_feed_environ *h_env,
 			       struct readbuffer *obuf);
-#ifdef USE_IMAGE
 extern void deleteImage(Buffer *buf);
 extern void getAllImage(Buffer *buf);
 extern void loadImage(Buffer *buf, int flag);
 extern ImageCache *getImage(Image * image, ParsedURL *current, int flag);
 extern int getImageSize(ImageCache * cache);
-#endif
 extern Str process_img(struct parsed_tag *tag, int width);
 extern Str process_anchor(struct parsed_tag *tag, char *tagbuf);
 extern Str process_input(struct parsed_tag *tag);
@@ -244,9 +237,7 @@ extern Str loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset);
 extern Str loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset);
 #endif				/* USE_GOPHER */
 extern Buffer *loadBuffer(URLFile *uf, Buffer *newBuf);
-#ifdef USE_IMAGE
 extern Buffer *loadImageBuffer(URLFile *uf, Buffer *newBuf);
-#endif
 extern void saveBuffer(Buffer *buf, FILE * f, int cont);
 extern void saveBufferBody(Buffer *buf, FILE * f, int cont);
 extern Buffer *getshell(char *cmd);
@@ -410,10 +401,8 @@ extern MapArea *follow_map_menu(Buffer *buf, char *name, Anchor *a_img, int x,
 #ifndef MENU_MAP
 extern Buffer *follow_map_panel(Buffer *buf, char *name);
 #endif
-#ifdef USE_IMAGE
 extern int getMapXY(Buffer *buf, Anchor *a, int *x, int *y);
 extern MapArea *retrieveCurrentMapArea(Buffer *buf);
-#endif
 extern Anchor *retrieveCurrentMap(Buffer *buf);
 extern MapArea *newMapArea(char *url, char *target, char *alt, char *shape,
 			   char *coords);
@@ -460,12 +449,10 @@ extern void underlineend(void);
 extern void graphstart(void);
 extern void graphend(void);
 extern int graph_ok(void);
-#ifdef USE_COLOR
 extern void setfcolor(int color);
 #ifdef USE_BG_COLOR
 extern void setbcolor(int color);
 #endif				/* USE_BG_COLOR */
-#endif				/* USE_COLOR */
 extern void refresh(void);
 extern void clear(void);
 #ifdef USE_RAW_SCROLL
@@ -493,9 +480,7 @@ extern void toggle_stand(void);
 extern char getch(void);
 extern void bell(void);
 extern int sleep_till_anykey(int sec, int purge);
-#ifdef USE_IMAGE
 extern void touch_cursor();
-#endif
 extern void initMimeTypes();
 extern void free_ssl_ctx();
 extern ParsedURL *baseURL(Buffer *buf);
@@ -562,9 +547,7 @@ extern char *reAnchorNewsheader(Buffer *buf);
 extern void addMultirowsForm(Buffer *buf, AnchorList *al);
 extern Anchor *closest_next_anchor(AnchorList *a, Anchor *an, int x, int y);
 extern Anchor *closest_prev_anchor(AnchorList *a, Anchor *an, int x, int y);
-#ifdef USE_IMAGE
 void addMultirowsImg(Buffer *buf, AnchorList *al);
-#endif
 extern HmarkerList *putHmarker(HmarkerList *ml, int line, int pos, int seq);
 extern void shiftAnchorPosition(AnchorList *a, HmarkerList *hl, int line,
 				int pos, int shift);
@@ -681,14 +664,12 @@ extern void closeTMs(void);
 #define closeTMs nulcmd
 #endif				/* not USE_MOUSE */
 
-#ifdef USE_IMAGE
 extern void initImage(void);
 extern void termImage(void);
 extern void addImage(ImageCache * cache, int x, int y, int sx, int sy, int w,
 		     int h);
 extern void drawImage(void);
 extern void clearImage(void);
-#endif
 
 extern char *searchKeyData(void);
 

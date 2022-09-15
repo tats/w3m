@@ -3,7 +3,6 @@
 #include "fm.h"
 
 /* *INDENT-OFF* */
-#ifdef USE_COLOR
 
 #define EFFECT_ANCHOR_START       effect_anchor_start()
 #define EFFECT_ANCHOR_END         effect_anchor_end()
@@ -139,21 +138,6 @@ EFFECT_VISITED_END
     }
 }
 
-#else				/* not USE_COLOR */
-
-#define EFFECT_ANCHOR_START       underline()
-#define EFFECT_ANCHOR_END         underlineend()
-#define EFFECT_IMAGE_START        standout()
-#define EFFECT_IMAGE_END          standend()
-#define EFFECT_FORM_START         standout()
-#define EFFECT_FORM_END           standend()
-#define EFFECT_ACTIVE_START       bold()
-#define EFFECT_ACTIVE_END         boldend()
-#define EFFECT_VISITED_START /**/
-#define EFFECT_VISITED_END /**/
-#define EFFECT_MARK_START         standout()
-#define EFFECT_MARK_END           standend()
-#endif				/* not USE_COLOR */
 /* *INDENT-ON* */
 
 void
@@ -163,10 +147,8 @@ fmTerm(void)
 	move(LASTLINE, 0);
 	clrtoeolx();
 	refresh();
-#ifdef USE_IMAGE
 	if (activeImage)
 	    loadImage(NULL, IMG_FLAG_STOP);
-#endif
 #ifdef USE_MOUSE
 	if (use_mouse)
 	    mouse_end();
@@ -187,10 +169,8 @@ fmInit(void)
 	initscr();
 	term_raw();
 	term_noecho();
-#ifdef USE_IMAGE
 	if (displayImage)
 	    initImage();
-#endif
     }
     fmInitialized = TRUE;
 }
@@ -204,9 +184,7 @@ static int ccolumn = -1;
 static int ulmode = 0, somode = 0, bomode = 0;
 static int anch_mode = 0, emph_mode = 0, imag_mode = 0, form_mode = 0,
     active_mode = 0, visited_mode = 0, mark_mode = 0, graph_mode = 0;
-#ifdef USE_ANSI_COLOR
 static Linecolor color_mode = 0;
-#endif
 
 #ifdef USE_BUFINFO
 static Buffer *save_current_buf = NULL;
@@ -218,16 +196,12 @@ static void drawAnchorCursor(Buffer *buf);
 #define redrawBuffer(buf) redrawNLine(buf, LASTLINE)
 static void redrawNLine(Buffer *buf, int n);
 static Line *redrawLine(Buffer *buf, Line *l, int i);
-#ifdef USE_IMAGE
 static int image_touch = 0;
 static int draw_image_flag = FALSE;
 static Line *redrawLineImage(Buffer *buf, Line *l, int i);
-#endif
 static int redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos);
 static void do_effects(Lineprop m);
-#ifdef USE_ANSI_COLOR
 static void do_color(Linecolor c);
-#endif
 
 static Str
 make_lastline_link(Buffer *buf, char *title, char *url)
@@ -284,12 +258,10 @@ make_lastline_message(Buffer *buf)
     int sl = 0;
 
     if (displayLink) {
-#ifdef USE_IMAGE
 	MapArea *a = retrieveCurrentMapArea(buf);
 	if (a)
 	    s = make_lastline_link(buf, a->alt, a->url);
 	else
-#endif
 	{
 	    Anchor *a = retrieveCurrentAnchor(buf);
 	    char *p = NULL;
@@ -408,9 +380,7 @@ displayBuffer(Buffer *buf, int mode)
 	cline != buf->topLine || ccolumn != buf->currentColumn) {
 #ifdef USE_RAW_SCROLL
 	if (
-#ifdef USE_IMAGE
 	       !(activeImage && displayImage && draw_image_flag) &&
-#endif
 	       mode == B_SCROLL && cline && buf->currentColumn == ccolumn) {
 	    int n = buf->topLine->linenumber - cline->linenumber;
 	    if (n > 0 && n < buf->LINES) {
@@ -432,7 +402,6 @@ displayBuffer(Buffer *buf, int mode)
 	else
 #endif
 	{
-#ifdef USE_IMAGE
 	    if (activeImage &&
 		(mode == B_REDRAW_IMAGE ||
 		 cline != buf->topLine || ccolumn != buf->currentColumn)) {
@@ -443,7 +412,6 @@ displayBuffer(Buffer *buf, int mode)
 		image_touch++;
 		draw_image_flag = FALSE;
 	    }
-#endif
 	    redrawBuffer(buf);
 	}
 	cline = buf->topLine;
@@ -452,12 +420,10 @@ displayBuffer(Buffer *buf, int mode)
     if (buf->topLine == NULL)
 	buf->topLine = buf->firstLine;
 
-#ifdef USE_IMAGE
     if (buf->need_reshape) {
 	displayBuffer(buf, B_FORCE_REDRAW);
 	return;
     }
-#endif
 
     drawAnchorCursor(buf);
 
@@ -476,11 +442,9 @@ displayBuffer(Buffer *buf, int mode)
     standend();
     term_title(conv_to_system(buf->buffername));
     refresh();
-#ifdef USE_IMAGE
     if (activeImage && displayImage && buf->img && buf->image_loaded) {
 	drawImage();
     }
-#endif
 #ifdef USE_BUFINFO
     if (buf != save_current_buf) {
 	saveBufferInfo();
@@ -583,14 +547,12 @@ redrawNLine(Buffer *buf, int n)
     Line *l;
     int i;
 
-#ifdef USE_COLOR
     if (useColor) {
 	EFFECT_ANCHOR_END_C;
 #ifdef USE_BG_COLOR
 	setbcolor(bg_color);
 #endif				/* USE_BG_COLOR */
     }
-#endif				/* USE_COLOR */
     if (nTab > 1
 #ifdef USE_MOUSE
 	|| mouse_action.menu_str
@@ -642,7 +604,6 @@ redrawNLine(Buffer *buf, int n)
 	clrtobotx();
     }
 
-#ifdef USE_IMAGE
     if (!(activeImage && displayImage && buf->img))
 	return;
     move(buf->cursorY + buf->rootY, buf->cursorX + buf->rootX);
@@ -651,7 +612,6 @@ redrawNLine(Buffer *buf, int n)
 	    redrawLineImage(buf, l, i + buf->rootY);
     }
     getAllImage(buf);
-#endif
 }
 
 static Line *
@@ -661,14 +621,10 @@ redrawLine(Buffer *buf, Line *l, int i)
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
-#ifdef USE_ANSI_COLOR
     Linecolor *pc;
-#endif
-#ifdef USE_COLOR
     Anchor *a;
     ParsedURL url;
     int k, vpos = -1;
-#endif
 
     if (l == NULL) {
 	if (buf->pagerSource) {
@@ -709,16 +665,13 @@ redrawLine(Buffer *buf, Line *l, int i)
     pos = columnPos(l, column);
     p = &(l->lineBuf[pos]);
     pr = &(l->propBuf[pos]);
-#ifdef USE_ANSI_COLOR
     if (useColor && l->colorBuf)
 	pc = &(l->colorBuf[pos]);
     else
 	pc = NULL;
-#endif
     rcol = COLPOS(l, pos);
 
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
-#ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
 	    if (a) {
@@ -730,15 +683,12 @@ redrawLine(Buffer *buf, Line *l, int i)
 		vpos = a->end.pos;
 	    }
 	}
-#endif
 	delta = wtf_len((wc_uchar *) & p[j]);
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
-#ifdef USE_ANSI_COLOR
 	if (pc)
 	    do_color(pc[j]);
-#endif
 	if (rcol < column) {
 	    for (rcol = column; rcol < ncol; rcol++)
 		addChar(' ', 0);
@@ -798,16 +748,13 @@ redrawLine(Buffer *buf, Line *l, int i)
 	graph_mode = FALSE;
 	graphend();
     }
-#ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
-#endif
     if (rcol - column < buf->COLS)
 	clrtoeolx();
     return l;
 }
 
-#ifdef USE_IMAGE
 static Line *
 redrawLineImage(Buffer *buf, Line *l, int i)
 {
@@ -878,7 +825,6 @@ redrawLineImage(Buffer *buf, Line *l, int i)
     }
     return l;
 }
-#endif
 
 static int
 redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
@@ -887,33 +833,26 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
     int column = buf->currentColumn;
     char *p;
     Lineprop *pr;
-#ifdef USE_ANSI_COLOR
     Linecolor *pc;
-#endif
     int bcol, ecol;
-#ifdef USE_COLOR
     Anchor *a;
     ParsedURL url;
     int k, vpos = -1;
-#endif
 
     if (l == NULL)
 	return 0;
     pos = columnPos(l, column);
     p = &(l->lineBuf[pos]);
     pr = &(l->propBuf[pos]);
-#ifdef USE_ANSI_COLOR
     if (useColor && l->colorBuf)
 	pc = &(l->colorBuf[pos]);
     else
 	pc = NULL;
-#endif
     rcol = COLPOS(l, pos);
     bcol = bpos - pos;
     ecol = epos - pos;
 
     for (j = 0; rcol - column < buf->COLS && pos + j < l->len; j += delta) {
-#ifdef USE_COLOR
 	if (useVisitedColor && vpos <= pos + j && !(pr[j] & PE_VISITED)) {
 	    a = retrieveAnchor(buf->href, l->linenumber, pos + j);
 	    if (a) {
@@ -925,15 +864,12 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 		vpos = a->end.pos;
 	    }
 	}
-#endif
 	delta = wtf_len((wc_uchar *) & p[j]);
 	ncol = COLPOS(l, pos + j + delta);
 	if (ncol - column > buf->COLS)
 	    break;
-#ifdef USE_ANSI_COLOR
 	if (pc)
 	    do_color(pc[j]);
-#endif
 	if (j >= bcol && j < ecol) {
 	    if (rcol < column) {
 		move(i, buf->rootX);
@@ -996,10 +932,8 @@ redrawLineRegion(Buffer *buf, Line *l, int i, int bpos, int epos)
 	graph_mode = FALSE;
 	graphend();
     }
-#ifdef USE_ANSI_COLOR
     if (color_mode)
 	do_color(0);
-#endif
     return rcol - column;
 }
 
@@ -1051,7 +985,6 @@ do_effects(Lineprop m)
     do_effect1(PE_MARK, mark_mode, EFFECT_MARK_START, EFFECT_MARK_END);
 }
 
-#ifdef USE_ANSI_COLOR
 static void
 do_color(Linecolor c)
 {
@@ -1067,7 +1000,6 @@ do_color(Linecolor c)
 #endif
     color_mode = c;
 }
-#endif
 
 void
 addChar(char c, Lineprop mode)

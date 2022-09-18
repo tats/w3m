@@ -675,6 +675,7 @@ struct readbuffer {
 #define RB_DEL		0x100000
 #define RB_S		0x200000
 #define RB_HTML5	0x400000
+#define RB_HEAD	0x800000
 
 #define RB_GET_ALIGN(obuf) ((obuf)->flag&RB_ALIGN)
 #define RB_SET_ALIGN(obuf,align) do{(obuf)->flag &= ~RB_ALIGN; (obuf)->flag |= (align); }while(0)

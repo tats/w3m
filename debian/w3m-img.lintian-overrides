@@ -1,1 +1,1 @@
-w3m-img: setgid-binary usr/lib/w3m/w3mimgdisplay 2755 root/video
+w3m-img: elevated-privileges usr/lib/w3m/w3mimgdisplay 2755 root/video

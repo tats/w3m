@@ -219,6 +219,7 @@ fusage(FILE * f, int err)
     fprintf(f, "    -v               visual startup mode\n");
 #ifdef USE_COLOR
     fprintf(f, "    -M               monochrome display\n");
+    fprintf(f, "    -H               use high-intensity colors\n");
 #endif				/* USE_COLOR */
     fprintf(f,
 	    "    -N               open URL of command line on each new tab\n");
@@ -630,6 +631,8 @@ main(int argc, char **argv)
 #ifdef USE_COLOR
 	    else if (!strcmp("-M", argv[i]))
 		useColor = FALSE;
+	    else if (!strcmp("-H", argv[i]))
+		highIntensityColors = TRUE;
 #endif				/* USE_COLOR */
 	    else if (!strcmp("-B", argv[i]))
 		load_bookmark = TRUE;

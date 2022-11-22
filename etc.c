@@ -2048,7 +2048,7 @@ FQDN(char *host)
 	for (res = res0; res != NULL; res = res->ai_next) {
 	    if (res->ai_canonname) {
 		/* found */
-		namebuf = strdup(res->ai_canonname);
+		namebuf = Strnew_charp(res->ai_canonname)->ptr;
 		freeaddrinfo(res0);
 		return namebuf;
 	    }

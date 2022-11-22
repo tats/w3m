@@ -62,7 +62,7 @@ ha2d(char x, char y)
 }
 
 Str
-decodeB(char **ww)
+decodeB(char *ww)
 {
     struct growbuf gb;
 
@@ -72,10 +72,10 @@ decodeB(char **ww)
 }
 
 void
-decodeB_to_growbuf(struct growbuf *gb, char **ww)
+decodeB_to_growbuf(struct growbuf *gb, char *ww)
 {
     unsigned char c[4];
-    char *wp = *ww;
+    char *wp = ww;
     char d[3];
     int i, n_pad;
 
@@ -118,15 +118,15 @@ decodeB_to_growbuf(struct growbuf *gb, char **ww)
 last:
     growbuf_reserve(gb, gb->length + 1);
     gb->ptr[gb->length] = '\0';
-    *ww = wp;
+    ww = wp;
     return;
 }
 
 void
-decodeU_to_growbuf(struct growbuf *gb, char **ww)
+decodeU_to_growbuf(struct growbuf *gb, char *ww)
 {
     unsigned char c1, c2;
-    char *w = *ww;
+    char *w = ww;
     int n, i;
 
     if (*w <= 0x20 || *w >= 0x60)
@@ -152,9 +152,9 @@ decodeU_to_growbuf(struct growbuf *gb, char **ww)
 
 /* RFC2047 (4.2. The "Q" encoding) */
 Str
-decodeQ(char **ww)
+decodeQ(char *ww)
 {
-    char *w = *ww;
+    char *w = ww;
     Str a = Strnew_size(strlen(w));
 
     for (; *w != '\0' && *w != '?'; w++) {
@@ -169,14 +169,14 @@ decodeQ(char **ww)
 	else
 	    Strcat_char(a, *w);
     }
-    *ww = w;
+    ww = w;
     return a;
 }
 
 void
-decodeQP_to_growbuf(struct growbuf *gb, char **ww)
+decodeQP_to_growbuf(struct growbuf *gb, char *ww)
 {
-    char *w = *ww;
+    char *w = ww;
 
     growbuf_reserve(gb, strlen(w) + 1);
     for (; *w != '\0'; w++) {
@@ -199,22 +199,22 @@ decodeQP_to_growbuf(struct growbuf *gb, char **ww)
 	    gb->ptr[gb->length++] = *w;
     }
     gb->ptr[gb->length] = '\0';
-    *ww = w;
+    ww = w;
     return;
 }
 
 #ifdef USE_M17N
 Str
-decodeWord(char **ow, wc_ces * charset)
+decodeWord(char *ow, wc_ces * charset)
 #else
 Str
-decodeWord0(char **ow)
+decodeWord0(char *ow)
 #endif
 {
 #ifdef USE_M17N
     wc_ces c;
 #endif
-    char *p, *w = *ow;
+    char *p, *w = ow;
     char method;
     Str a = Strnew();
     Str tmp = Strnew();
@@ -244,10 +244,10 @@ decodeWord0(char **ow)
     p = w;
     switch (TOUPPER(method)) {
     case 'B':
-	a = decodeB(&w);
+	a = decodeB(w);
 	break;
     case 'Q':
-	a = decodeQ(&w);
+	a = decodeQ(w);
 	break;
     default:
 	goto convert_fail;
@@ -259,7 +259,7 @@ decodeWord0(char **ow)
 	if (*w == '=')
 	    w++;
     }
-    *ow = w;
+    ow = w;
 #ifdef USE_M17N
     *charset = c;
 #endif
@@ -295,7 +295,7 @@ decodeMIME0(Str orgstr)
 	    }
 	  nextEncodeWord:
 	    p = org;
-	    Strcat(cnv, decodeWord(&org, charset));
+	    Strcat(cnv, decodeWord(org, charset));
 	    if (org == p) {	/* Convert failure */
 		Strcat_charp(cnv, org);
 		return cnv;

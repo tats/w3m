@@ -712,11 +712,11 @@ ens_read(struct ens_handle *handle, char *buf, int len)
 	growbuf_init_without_GC(&gbtmp);
 	p = handle->gb.ptr;
 	if (handle->encoding == ENC_QUOTE)
-	    decodeQP_to_growbuf(&gbtmp, &p);
+	    decodeQP_to_growbuf(&gbtmp, p);
 	else if (handle->encoding == ENC_BASE64)
-	    decodeB_to_growbuf(&gbtmp, &p);
+	    decodeB_to_growbuf(&gbtmp, p);
 	else if (handle->encoding == ENC_UUENCODE)
-	    decodeU_to_growbuf(&gbtmp, &p);
+	    decodeU_to_growbuf(&gbtmp, p);
 	growbuf_clear(&handle->gb);
 	handle->gb = gbtmp;
 	handle->pos = 0;

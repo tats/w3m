@@ -1361,7 +1361,7 @@ dump_extra(Buffer *buf)
 static int
 cmp_anchor_hseq(const void *a, const void *b)
 {
-    return (*((const Anchor **) a))->hseq - (*((const Anchor **) b))->hseq;
+    return (*((const Anchor * const *) a))->hseq - (*((const Anchor * const *) b))->hseq;
 }
 
 static void

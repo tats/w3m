@@ -640,7 +640,7 @@ extern FILE *openSecretFile(char *fname);
 extern void loadPasswd(void);
 extern void loadPreForm(void);
 extern int find_auth_user_passwd(ParsedURL *pu, char *realm,
-				 Str *uname, Str *pwd, int is_proxy);
+				 volatile Str *uname, volatile Str *pwd, int is_proxy);
 extern void add_auth_user_passwd(ParsedURL *pu, char *realm,
 				 Str uname, Str pwd, int is_proxy);
 extern void invalidate_auth_user_passwd(ParsedURL *pu, char *realm,

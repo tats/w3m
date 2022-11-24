@@ -1020,7 +1020,7 @@ find_auth_pass_entry(char *host, int port, char *realm, char *uname,
 
 int
 find_auth_user_passwd(ParsedURL *pu, char *realm,
-		      Str *uname, Str *pwd, int is_proxy)
+		      volatile Str *uname, volatile Str *pwd, int is_proxy)
 {
     struct auth_pass *ent;
 
@@ -2089,7 +2089,7 @@ base64_encode(const char *src, size_t len)
     unsigned long j;
     size_t k;
 
-    s = (unsigned char*)src;
+    s = (const unsigned char*)src;
 
     k = len;
     if (k % 3)

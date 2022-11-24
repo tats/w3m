@@ -468,7 +468,7 @@ wc_check_ces(wc_ces ces)
 static int
 wc_ces_list_cmp(const void *a, const void *b)
 {
-    return strcasecmp(((wc_ces_list *)a)->desc, ((wc_ces_list *)b)->desc);
+    return strcasecmp(((const wc_ces_list *)a)->desc, ((const wc_ces_list *)b)->desc);
 }
 
 static wc_ces_list *list = NULL;

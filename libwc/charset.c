@@ -410,8 +410,6 @@ wc_locale_to_ces(char *locale)
 	return wc_charset_to_ces(p);
     }
 
-    if (!strcmp(buf, "japanese"))
-	return WC_CES_SHIFT_JIS;
     if (!strcmp(buf, "zh_tw") ||
 	!strcmp(buf, "zh_hk"))
 	return WC_CES_BIG5;

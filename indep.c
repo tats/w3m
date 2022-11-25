@@ -106,7 +106,7 @@ allocStr(const char *s, int len)
 }
 
 int
-strCmp(const void *s1, const void *s2)
+strCmp(const void *s1, const void *s2) /* helper for qsort */
 {
     return strcmp(*(const char **)s1, *(const char **)s2);
 }

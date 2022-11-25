@@ -449,7 +449,7 @@ fb_frame_free(FB_IMAGE ** frame)
 {
     int i, n;
 
-    if (frame == NULL)
+    if (frame == NULL || frame[0] == NULL)
 	return;
 
     n = frame[0]->num;

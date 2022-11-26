@@ -2424,14 +2424,14 @@ schemeToProxy(int scheme)
 
 #ifdef USE_M17N
 wc_ces
-url_to_charset(const char *url, const ParsedURL *base, wc_ces doc_charset)
+url_to_charset(char *url, ParsedURL *base, wc_ces doc_charset)
 {
-    const ParsedURL *pu;
+    ParsedURL *pu;
     ParsedURL pu_buf;
     const wc_ces *csptr;
 
     if (url && *url && *url != '#') {
-	parseURL2((char *)url, &pu_buf, (ParsedURL *)base);
+	parseURL2(url, &pu_buf, base);
 	pu = &pu_buf;
     } else {
 	pu = base;
@@ -2444,14 +2444,14 @@ url_to_charset(const char *url, const ParsedURL *base, wc_ces doc_charset)
 }
 
 char *
-url_encode(const char *url, const ParsedURL *base, wc_ces doc_charset)
+url_encode(char *url, ParsedURL *base, wc_ces doc_charset)
 {
     return url_quote_conv((char *)url,
 			  url_to_charset(url, base, doc_charset));
 }
 
 char *
-url_decode2(const char *url, const Buffer *buf)
+url_decode2(char *url, Buffer *buf)
 {
     wc_ces url_charset;
 

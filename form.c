@@ -904,7 +904,7 @@ loadPreForm(void)
 	s = getWord(&p);
 
 	if (!strcmp(s, "url")) {
-	    arg = getRegexWord((const char **)&p, &re_arg);
+	    arg = getRegexWord(&p, &re_arg);
 	    if (!arg || !*arg)
 		continue;
 	    p = getQWord(&p);

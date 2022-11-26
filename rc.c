@@ -1786,7 +1786,7 @@ loadSiteconf(void)
 
 	    /* Second, create a new record. */
 	    newent = newSiteconfRec();
-	    url = getRegexWord((const char **)&p, &newent->re_url);
+	    url = getRegexWord(&p, &newent->re_url);
 	    opt = getWord(&p);
 	    SKIP_BLANKS(p);
 	    if (!newent->re_url) {
@@ -1847,10 +1847,10 @@ loadSiteconf(void)
     fclose(fp);
 }
 
-const void *
-querySiteconf(const ParsedURL *query_pu, int field)
+void *
+querySiteconf(ParsedURL *query_pu, int field)
 {
-    const struct siteconf_rec *ent;
+    struct siteconf_rec *ent;
     Str u;
     char *firstp, *lastp;
 

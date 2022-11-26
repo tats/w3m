@@ -446,10 +446,10 @@ getQWord(char **str)
  * XXX: Actually this is unrelated to func.c.
  */
 char *
-getRegexWord(const char **str, Regex **regex_ret)
+getRegexWord(char **str, Regex **regex_ret)
 {
     char *word = NULL;
-    const char *p, *headp, *bodyp, *tailp;
+    char *p, *headp, *bodyp, *tailp;
     char delimiter;
     int esc;
     int igncase = 0;
@@ -514,7 +514,7 @@ getRegexWord(const char **str, Regex **regex_ret)
 
 not_regex:
     p = headp;
-    word = getQWord((char **)&p);
+    word = getQWord(&p);
     if (regex_ret)
 	*regex_ret = NULL;
 

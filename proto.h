@@ -170,11 +170,11 @@ extern void chkExternalURIBuffer(Buffer *buf);
 #endif
 extern ParsedURL *schemeToProxy(int scheme);
 #ifdef USE_M17N
-extern wc_ces url_to_charset(const char *url, const ParsedURL *base,
+extern wc_ces url_to_charset(char *url, ParsedURL *base,
 			     wc_ces doc_charset);
-extern char *url_encode(const char *url, const ParsedURL *base,
+extern char *url_encode(char *url, ParsedURL *base,
 			wc_ces doc_charset);
-extern char *url_decode2(const char *url, const Buffer *buf);
+extern char *url_decode2(char *url, Buffer *buf);
 #else /* !defined(USE_M17N) */
 #define url_encode(url, base, cs) url_quote(url)
 extern char *url_decode0(const char *url);
@@ -630,7 +630,7 @@ extern char *etcFile(char *base);
 extern char *confFile(char *base);
 extern char *auxbinFile(char *base);
 extern char *helpFile(char *base);
-extern const void *querySiteconf(const ParsedURL *query_pu, int field);
+extern void *querySiteconf(ParsedURL *query_pu, int field);
 extern Str localCookie(void);
 extern Str loadLocalDir(char *dirname);
 extern void set_environ(char *var, char *value);
@@ -747,7 +747,7 @@ extern char *getKeyData(int key);
 extern char *getWord(char **str);
 extern char *getQWord(char **str);
 struct regex;
-extern char *getRegexWord(const char **str, struct regex **regex_ret);
+extern char *getRegexWord(char **str, struct regex **regex_ret);
 #ifdef USE_MOUSE
 extern void initMouseAction(void);
 #endif

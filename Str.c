@@ -169,7 +169,7 @@ Strcopy(Str x, Str y)
 	    exit(1);
 	x->area_size = y->length + 1;
     }
-    bcopy((void *)y->ptr, (void *)x->ptr, y->length + 1);
+    bcopy((const void *)y->ptr, (void *)x->ptr, y->length + 1);
     x->length = y->length;
 }
 

@@ -297,7 +297,9 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    char *sp = str, *ep;
 	    s = Strnew_size(s->length);
 	    do_copy = TRUE;
-	    ep = bs ? (bs - 2) : endp;
+	    ep = endp;
+	    if (bs && ep > bs - 2)
+		ep = bs - 2;
 #ifdef USE_ANSI_COLOR
 	    if (es && ep > es - 2)
 		ep = es - 2;
@@ -318,6 +320,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
     if (!do_copy) {
 	for (; str < endp && IS_ASCII(*str); str++) {
 	    *(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
+#ifdef USE_ANSI_COLOR
+	    if (color)
+		*(color++) = 0;
+#endif
 #ifdef USE_M17N
 	    *(plens++) = plen = 1;
 #endif
@@ -383,6 +389,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, plen);
 			    prop -= plen;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color -= plen;
+#endif
 			    plen = *(--plens);
 			    str += 2;
 			}
@@ -405,6 +415,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, plen);
 			    prop -= plen;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color -= plen;
+#endif
 			    plen = *(--plens);
 			    str++;
 			}
@@ -416,6 +430,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, 1);
 			    prop--;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color--;
+#endif
 			    str++;
 			}
 #endif
@@ -460,6 +478,8 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	*(prop++) = mode;
 #ifdef USE_M17N
 	plen = get_mclen(str);
+	if (str + plen > endp)
+	    plen = endp - str;
 	*(plens++) = plen;
 	if (plen > 1) {
 	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;

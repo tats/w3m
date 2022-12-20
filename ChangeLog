@@ -1,3 +1,13 @@
+2022-12-20  Tatsuya Kinoshita  <tats@debian.org>
+
+	* etc.c: Fix potential overflow in checkType.
+
+	* etc.c:
+	Fix m17n backspace handling causes out-of-bounds write in checkType.
+	[CVE-2022-38223]
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1019599
+	Bug-Debian: https://github.com/tats/w3m/issues/242
+
 2022-04-29  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS for w3m 0.5.3+git20220429.

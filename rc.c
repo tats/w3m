@@ -1238,6 +1238,50 @@ do_mkdir(const char *dir, long mode)
 #endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
+static int
+do_recursive_mkdir(const char *dir)
+{
+    char *ch, *dircpy, tmp;
+    size_t n;
+    struct stat st;
+
+    if (*dir == '\0')
+	 return -1;
+
+    dircpy = Strnew_charp(dir)->ptr; 
+    ch = dircpy + 1;
+    do {
+	while (!(*ch == '/' || *ch == '\0')) {
+	    ch++;
+	}
+
+	tmp = *ch;
+	*ch = '\0';
+
+	if (stat(dircpy, &st) < 0) {
+	    if (errno != ENOENT) {	/* no directory */
+		return -1; 
+	    }
+	    if (do_mkdir(dircpy, 0700) < 0) {
+		return -1; 
+	    }
+	    stat(dircpy, &st);
+	}
+	if (!S_ISDIR(st.st_mode)) {
+	    /* not a directory */
+	    return -1; 
+	}
+	if (!(st.st_mode & S_IWUSR)) {
+	    return -1; 
+	}
+
+	*ch = tmp;
+
+    } while (*ch++ != '\0');
+
+    return 0;
+}
+
 static void loadSiteconf(void);
 
 void
@@ -1298,13 +1342,16 @@ void
 init_rc(void)
 {
     int i;
-    struct stat st;
     FILE *f;
 
     if (rc_dir != NULL)
 	goto open_rc;
 
-    rc_dir = expandPath(RC_DIR);
+    if ((rc_dir = getenv("W3M_DIR")) == NULL || *rc_dir == '\0') {
+	rc_dir = RC_DIR;
+    }
+    rc_dir = expandPath(rc_dir);
+
     i = strlen(rc_dir);
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
@@ -1315,30 +1362,9 @@ init_rc(void)
     system_charset_str = display_charset_str;
 #endif
 
-    if (stat(rc_dir, &st) < 0) {
-	if (errno == ENOENT) {	/* no directory */
-	    if (do_mkdir(rc_dir, 0700) < 0) {
-		/* fprintf(stderr, "Can't create config directory (%s)!\n", rc_dir); */
-		goto rc_dir_err;
-	    }
-	    else {
-		stat(rc_dir, &st);
-	    }
-	}
-	else {
-	    /* fprintf(stderr, "Can't open config directory (%s)!\n", rc_dir); */
-	    goto rc_dir_err;
-	}
-    }
-    if (!S_ISDIR(st.st_mode)) {
-	/* not a directory */
-	/* fprintf(stderr, "%s is not a directory!\n", rc_dir); */
+    if (do_recursive_mkdir(rc_dir) == -1)
 	goto rc_dir_err;
-    }
-    if (!(st.st_mode & S_IWUSR)) {
-	/* fprintf(stderr, "%s is not writable!\n", rc_dir); */
-	goto rc_dir_err;
-    }
+
     no_rc_dir = FALSE;
     tmp_dir = rc_dir;
 

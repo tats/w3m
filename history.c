@@ -64,7 +64,7 @@ saveHistory(Hist *hist, size_t size)
 
     if (hist == NULL || hist->list == NULL)
 	return;
-    tmpf = tmpfname(TMPF_DFL, NULL)->ptr;
+    tmpf = tmpfname(TMPF_HIST, NULL)->ptr;
     if ((f = fopen(tmpf, "w")) == NULL) {
 	/* FIXME: gettextize? */
 	disp_err_message("Can't open history", FALSE);

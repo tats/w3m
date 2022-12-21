@@ -1,3 +1,27 @@
+2022-12-21  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/it.po, po/ja.po, po/sv_SE.po, po/w3m.pot, po/zh_CN.po:
+	* po/zh_TW.po: Update PO strings.
+
+2022-12-21  Rene Kita  <mail@rkta.de>
+
+	* etc.c, fm.h, history.c, rc.c:
+	Add option to set directory for temporary files.
+	Origin: https://github.com/tats/w3m/pull/219
+	cf. https://github.com/tats/w3m/issues/130
+
+2022-12-21  Yash Lala  <yashlala@gmail.com>
+
+	* rc.c: Use `Strnew_charp()` to create `char *` instead of `strdup()`.
+
+	* rc.c:
+	refactor: Substitute some clunky code with a `strdup()`.
+
+	* doc/FAQ.html, doc/MANUAL.html, doc/w3m.1, rc.c:
+	Set `rc_dir` based on `W3M_DIR` environment variable.
+	Origin: https://github.com/tats/w3m/pull/207
+	cf. https://github.com/tats/w3m/issues/130
+
 2022-12-20  Tatsuya Kinoshita  <tats@debian.org>
 
 	* etc.c: Fix potential overflow in checkType.

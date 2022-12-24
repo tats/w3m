@@ -8781,38 +8781,29 @@ lessopen_stream(char *path)
 {
     char *lessopen;
     FILE *fp;
+    Str tmpf;
+    int c;
 
     lessopen = getenv("LESSOPEN");
-    if (lessopen == NULL) {
+    if (lessopen == NULL || lessopen[0] == '\0')
+	return NULL;
+
+    if (lessopen[0] != '|') /* filename mode, not supported m(__)m */
+	return NULL;
+
+    /* pipe mode */
+    ++lessopen;
+    tmpf = Sprintf(lessopen, shell_quote(path));
+    fp = popen(tmpf->ptr, "r");
+    if (fp == NULL) {
 	return NULL;
     }
-    if (lessopen[0] == '\0') {
+    c = getc(fp);
+    if (c == EOF) {
+	pclose(fp);
 	return NULL;
     }
-
-    if (lessopen[0] == '|') {
-	/* pipe mode */
-	Str tmpf;
-	int c;
-
-	++lessopen;
-	tmpf = Sprintf(lessopen, shell_quote(path));
-	fp = popen(tmpf->ptr, "r");
-	if (fp == NULL) {
-	    return NULL;
-	}
-	c = getc(fp);
-	if (c == EOF) {
-	    pclose(fp);
-	    return NULL;
-	}
-	ungetc(c, fp);
-    }
-    else {
-	/* filename mode */
-	/* not supported m(__)m */
-	fp = NULL;
-    }
+    ungetc(c, fp);
     return fp;
 }
 

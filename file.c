@@ -8776,13 +8776,14 @@ uncompress_stream(URLFile *uf, char **src)
 #endif /* __MINGW32_VERSION */
 }
 
+
 static FILE *
 lessopen_stream(char *path)
 {
     char *lessopen;
     FILE *fp;
     Str tmpf;
-    int c;
+    int c, n = 0;
 
     lessopen = getenv("LESSOPEN");
     if (lessopen == NULL || lessopen[0] == '\0')
@@ -8793,6 +8794,24 @@ lessopen_stream(char *path)
 
     /* pipe mode */
     ++lessopen;
+
+    /* LESSOPEN must contain one conversion specifier for strings ('%s'). */
+    for (const char *f = lessopen; *f; f++) {
+	if (*f == '%') {
+	    if (f[1] == '%') /* Literal % */
+		f++;
+	    else if (*++f == 's') {
+		if (n)
+		    return NULL;
+		n++;
+	    }
+	    else
+		return NULL;
+	}
+    }
+    if (!n)
+	return NULL;
+
     tmpf = Sprintf(lessopen, shell_quote(path));
     fp = popen(tmpf->ptr, "r");
     if (fp == NULL) {

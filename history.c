@@ -65,26 +65,24 @@ saveHistory(Hist *hist, size_t size)
     if (hist == NULL || hist->list == NULL)
 	return;
     tmpf = tmpfname(TMPF_HIST, NULL)->ptr;
-    if ((f = fopen(tmpf, "w")) == NULL) {
-	/* FIXME: gettextize? */
-	disp_err_message("Can't open history", FALSE);
-	return;
-    }
+    if ((f = fopen(tmpf, "w")) == NULL)
+	goto fail;
     for (item = hist->list->first; item && hist->list->nitem > size;
 	 item = item->next)
 	size++;
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
-    if (fclose(f) == EOF) {
-	/* FIXME: gettextize? */
-	disp_err_message("Can't save history", FALSE);
-	return;
-    }
+    if (fclose(f) == EOF)
+	goto fail;
     rename_ret = rename(tmpf, rcFile(HISTORY_FILE));
-    if (rename_ret != 0) {
-	disp_err_message("Can't save history", FALSE);
-	return;
-    }
+    if (rename_ret != 0)
+	goto fail;
+
+    return;
+
+fail:
+    disp_err_message("Can't open history", FALSE);
+    return;
 }
 #endif				/* USE_HISTORY */
 

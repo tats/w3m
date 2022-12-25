@@ -37,6 +37,8 @@ extern int do_getch();
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif
 
+#include "util.h"
+
 #ifdef __MINGW32_VERSION
 #include <winsock.h>
 
@@ -2242,7 +2244,7 @@ DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command and display output")
     if (cmd != NULL && *cmd != '\0') {
 	fmTerm();
 	printf("\n");
-	system(cmd);
+	(void)!system(cmd); /* We do not care about the exit code here! */
 	/* FIXME: gettextize? */
 	printf("\n[Hit any key]");
 	fflush(stdout);
@@ -2792,9 +2794,7 @@ DEFUN(editBf, EDIT, "Edit local source")
     else
 	cmd = myEditor(Editor, shell_quote(fn),
 		       cur_real_linenumber(Currentbuf));
-    fmTerm();
-    system(cmd->ptr);
-    fmInit();
+    exec_cmd(cmd->ptr);
 
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
     reload();
@@ -2815,10 +2815,8 @@ DEFUN(editScr, EDIT_SCREEN, "Edit rendered copy of document")
     }
     saveBuffer(Currentbuf, f, TRUE);
     fclose(f);
-    fmTerm();
-    system(myEditor(Editor, shell_quote(tmpf),
-		    cur_real_linenumber(Currentbuf))->ptr);
-    fmInit();
+    exec_cmd(myEditor(Editor, shell_quote(tmpf),
+		   cur_real_linenumber(Currentbuf))->ptr);
     unlink(tmpf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
@@ -3111,10 +3109,8 @@ handleMailto(char *url)
 	if ((pos = strchr(to->ptr, '?')) != NULL)
 	    Strtruncate(to, pos - to->ptr);
     }
-    fmTerm();
-    system(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
+    exec_cmd(myExtCommand(Mailer, shell_quote(file_unquote(to->ptr)),
 			FALSE)->ptr);
-    fmInit();
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
     pushHashHist(URLHist, url);
     return 1;

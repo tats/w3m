@@ -2,6 +2,19 @@
 #include "fm.h"
 
 #ifdef USE_HISTORY
+/* Merge entries from their history into ours */
+static int
+mergeHistory(Hist *ours, Hist *theirs)
+{
+    HistItem *item;
+
+    for (item = theirs->list->first; item; item = item->next)
+	if (!getHashHist(ours, item->ptr))
+	    pushHist(ours, (char *)item->ptr);
+
+    return 0;
+}
+
 Buffer *
 historyBuffer(Hist *hist)
 {
@@ -36,11 +49,18 @@ loadHistory(Hist *hist)
 {
     FILE *f;
     Str line;
+    struct stat st;
 
     if (hist == NULL)
 	return 1;
     if ((f = fopen(rcFile(HISTORY_FILE), "rt")) == NULL)
 	return 1;
+
+    if (fstat(fileno(f), &st) == -1) {
+	fclose(f);
+	return 1;
+    }
+    hist->mtime = (long long)st.st_mtim.tv_sec;
 
     while (!feof(f)) {
 	line = Strfgets(f);
@@ -59,12 +79,27 @@ void
 saveHistory(Hist *hist, size_t size)
 {
     FILE *f;
+    Hist *fhist;
     HistItem *item;
+    char *histf;
     char *tmpf;
     int rename_ret;
+    struct stat st;
 
     if (hist == NULL || hist->list == NULL)
 	return;
+
+    histf = rcFile(HISTORY_FILE);
+    if (stat(histf, &st) == -1)
+	goto fail;
+    if (hist->mtime != (long long)st.st_mtim.tv_sec) {
+	fhist = newHist();
+	if (loadHistory(fhist) || mergeHistory(fhist, hist))
+	    disp_err_message("Can't merge history", FALSE);
+	else
+	    hist = fhist;
+    }
+
     tmpf = tmpfname(TMPF_HIST, NULL)->ptr;
     if ((f = fopen(tmpf, "w")) == NULL)
 	goto fail;

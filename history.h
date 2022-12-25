@@ -16,6 +16,7 @@ typedef struct {
     HistList *list;
     HistItem *current;
     Hash_sv *hash;
+    long long mtime;
 } Hist;
 
 extern Hist *newHist(void);

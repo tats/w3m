@@ -9767,6 +9767,7 @@ $as_echo_n "checking for sigsetjmp... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <setjmp.h>
+ #include <stdlib.h>
 int
 main ()
 {

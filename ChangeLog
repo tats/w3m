@@ -1,3 +1,50 @@
+2022-12-25  Tatsuya Kinoshita  <tats@debian.org>
+
+	* configure: Update configure with acinclude.m4.
+
+2022-12-25  Sam James  <sam@gentoo.org>
+
+	* acinclude.m4: Fix configure tests broken with Clang 16.
+	Origin: https://github.com/tats/w3m/pull/248
+
+2022-12-25  Rin Okuyama  <rokuyama.rk@gmail.com>
+
+	* image.c, terms.c:
+	For sixel, no need to round image size to multiple of character size.
+	Origin: https://github.com/tats/w3m/pull/246
+
+	* image.c: Display resized image for OSC 5379 (mlterm).
+	Origin: https://github.com/tats/w3m/pull/245
+
+2022-12-25  Rene Kita  <mail@rkta.de>
+
+	* doc/README.siteconf: Say what the comment character is.
+	Use the comment character in Examples.
+	Origin: https://github.com/tats/w3m/pull/237
+
+	* main.c: Retry if loading of a file fails when argv_is_url.
+	Origin: https://github.com/tats/w3m/pull/235
+	Bug-Debian: https://github.com/tats/w3m/issues/210
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=537761
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=946440
+
+2022-12-25  NRK  <nrk@disroot.org>
+
+	* image.c: remove duplicate declaration.
+	* cookie.c, entity.c, file.c, frame.c, func.c, image.c, linein.c:
+	* mailcap.c, main.c, rc.c, rc.h, table.c, terms.c, terms.h:
+	* w3mbookmark.c, w3mhelperpanel.c:
+	fix all -Wmissing-prototypes warnings.
+	* file.c, history.c, history.h, indep.c, indep.h, mailcap.c, proto.h:
+	* rc.c, terms.c, url.c: fix some -Wstrict-prototypes warnings.
+	Origin: https://github.com/tats/w3m/pull/234
+
+2022-12-25  Rene Kita  <mail@rkta.de>
+
+	* .github/workflows/build.yml:
+	Add GitHub Action to build source when pushing.
+	Origin: https://github.com/tats/w3m/pull/228
+
 2022-12-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/it.po, po/ja.po, po/sv_SE.po, po/w3m.pot, po/zh_CN.po:

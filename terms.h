@@ -38,4 +38,6 @@ extern void put_image_kitty(char *url, int x, int y, int w, int h, int sx, int s
 extern int get_pixel_per_cell(int *ppc, int *ppl);
 #endif
 
+char getch(void);
+
 #endif				/* not TERMS_H */

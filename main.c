@@ -15,6 +15,7 @@
 #if defined(__CYGWIN__) && defined(USE_BINMODE_STREAM)
 #include <io.h>
 #endif
+#include "display.h"
 #include "terms.h"
 #include "myctype.h"
 #include "regex.h"

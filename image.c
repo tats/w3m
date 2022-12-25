@@ -247,7 +247,9 @@ drawImage(void)
 
 
 	    if (enable_inline_image == INLINE_IMG_SIXEL) {
-		put_image_sixel(url, x, y, w, h, sx, sy, sw, sh, n_terminal_image);
+		w = i->cache->a_width > 0 ? i->width : 0;
+		h = i->cache->a_height > 0 ? i->height : 0;
+		put_image_sixel(url, x, y, w, h, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, n_terminal_image);
 	    } else if (enable_inline_image == INLINE_IMG_OSC5379) {
 		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh);
 	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {

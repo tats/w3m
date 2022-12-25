@@ -824,14 +824,13 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 	argv[n++] = "-l";
 	argv[n++] = do_anim ? "auto" : "disable";
 	argv[n++] = "-w";
-	sprintf(digit[0], "%d", w*pixel_per_char_i);
+	sprintf(digit[0], "%d", w);
 	argv[n++] = digit[0];
 	argv[n++] = "-h";
-	sprintf(digit[1], "%d", h*pixel_per_line_i);
+	sprintf(digit[1], "%d", h);
 	argv[n++] = digit[1];
 	argv[n++] = "-c";
-	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
-			sx*pixel_per_char_i, sy*pixel_per_line_i);
+	sprintf(clip, "%dx%d+%d+%d", sw, sh, sx, sy);
 	argv[n++] = clip;
 	argv[n++] = url;
 	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0 &&

@@ -18,7 +18,7 @@ typedef struct {
     Hash_sv *hash;
 } Hist;
 
-extern Hist *newHist();
+extern Hist *newHist(void);
 extern Hist *copyHist(Hist *hist);
 extern HistItem *unshiftHist(Hist *hist, char *ptr);
 extern HistItem *pushHist(Hist *hist, char *ptr);

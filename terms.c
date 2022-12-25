@@ -41,7 +41,7 @@ static int xpix, ypix, nbs, obs = 0;
 
 static int is_xterm = 0;
 
-void mouse_init(), mouse_end();
+void mouse_init(void), mouse_end(void);
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
 
@@ -263,7 +263,7 @@ check_cygwin_console(void)
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), reset_error_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
 void setlinescols(void);
-void flush_tty();
+void flush_tty(void);
 
 #ifndef SIGIOT
 #define SIGIOT SIGABRT
@@ -452,7 +452,7 @@ extern int tgetflag(char *);
 extern char *tgetstr(char *, char **);
 extern char *tgoto(char *, int, int);
 extern int tputs(char *, int, int (*)(char));
-void clear(), wrap(), touch_line(), touch_column(int);
+void clear(void), wrap(void), touch_line(void), touch_column(int);
 #if 0
 void need_clrtoeol(void);
 #endif
@@ -2059,7 +2059,7 @@ clrtoeol(void)
 }
 
 #ifdef USE_BG_COLOR
-void
+static void
 clrtoeol_with_bcolor(void)
 {
     int i, cli, cco;
@@ -2093,7 +2093,7 @@ clrtoeolx(void)
 }
 #endif				/* not USE_BG_COLOR */
 
-void
+static void
 clrtobot_eol(void (*clrtoeol) ())
 {
     int l, c;
@@ -2422,7 +2422,7 @@ bell(void)
     write1(7);
 }
 
-void
+static void
 skip_escseq(void)
 {
     int c;
@@ -2654,7 +2654,7 @@ mouse_inactive()
 #endif				/* USE_MOUSE */
 
 void
-flush_tty()
+flush_tty(void)
 {
     if (ttyf)
 	fflush(ttyf);
@@ -2662,7 +2662,7 @@ flush_tty()
 
 #ifdef USE_IMAGE
 void
-touch_cursor()
+touch_cursor(void)
 {
 #ifdef USE_M17N
     int i;

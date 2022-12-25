@@ -9,6 +9,7 @@
 #include "func.h"
 #include "myctype.h"
 #include "regex.h"
+#include "rc.h"
 
 #include "funcname.c"
 #include "functable.c"

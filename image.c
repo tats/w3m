@@ -31,9 +31,9 @@ static int n_terminal_image = 0;
 static int max_terminal_image = 0;
 static FILE *Imgdisplay_rf = NULL, *Imgdisplay_wf = NULL;
 static pid_t Imgdisplay_pid = 0;
-static int openImgdisplay();
-static void closeImgdisplay();
-int getCharSize();
+static int openImgdisplay(void);
+static void closeImgdisplay(void);
+static int getCharSize(void);
 
 void
 initImage()
@@ -46,8 +46,8 @@ initImage()
 
 int get_pixel_per_cell(int *ppc, int *ppl);
 
-int
-getCharSize()
+static int
+getCharSize(void)
 {
     FILE *f;
     Str tmp;
@@ -134,7 +134,7 @@ openImgdisplay()
 }
 
 static void
-closeImgdisplay()
+closeImgdisplay(void)
 {
     if (Imgdisplay_wf)
 	fclose(Imgdisplay_wf);
@@ -195,14 +195,8 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
-void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
-void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
-void put_image_iterm2(char *url, int x, int y, int w, int h);
-void put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int
-    sw, int sh, int c, int r);
-
 void
-drawImage()
+drawImage(void)
 {
     static char buf[64];
     int j, draw = FALSE;
@@ -388,7 +382,7 @@ getAllImage(Buffer *buf)
     }
 }
 
-void
+static void
 showImageProgress(Buffer *buf)
 {
     AnchorList *al;

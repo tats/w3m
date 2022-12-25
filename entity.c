@@ -14,6 +14,8 @@
 #endif
 #endif				/* DUMMY */
 
+extern char * conv_entity(unsigned int c);
+
 /* *INDENT-OFF* */
 static char *alt_latin1[ 96 ] = {
     NBSP,  "!",   "-c-", "-L-", "CUR", "=Y=",  "|",  "S:",

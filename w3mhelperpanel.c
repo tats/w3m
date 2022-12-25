@@ -29,9 +29,9 @@
 #define MSG_DOIT		"Do it"
 #endif				/* LANG != JA */
 
-char *local_cookie;
+static char *local_cookie;
 
-void
+static void
 extractMailcapEntry(char *mcap_entry, char **type, char **cmd)
 {
     int j;
@@ -56,7 +56,7 @@ bye(const char *action, const char *mailcap)
     exit(1);
 }
 
-void
+static void
 printMailcapPanel(char *mailcap)
 {
     FILE *f;
@@ -118,7 +118,7 @@ printMailcapPanel(char *mailcap)
     fclose(f);
 }
 
-void
+static void
 editMailcap(char *mailcap, struct parsed_tagarg *args)
 {
     TextList *t = newTextList();

@@ -89,7 +89,7 @@ saveHistory(Hist *hist, size_t size)
 #endif				/* USE_HISTORY */
 
 Hist *
-newHist()
+newHist(void)
 {
     Hist *hist;
 

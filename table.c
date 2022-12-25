@@ -404,7 +404,7 @@ pushdata(struct table *t, int row, int col, char *data)
     pushText(t->tabdata[row][col], data ? data : "");
 }
 
-void
+static void
 suspend_or_pushdata(struct table *tbl, char *line)
 {
     if (tbl->flag & TBL_IN_COL)
@@ -509,7 +509,7 @@ visible_length(char *str)
     return len > max_len ? len : max_len;
 }
 
-int
+static int
 visible_length_plain(char *str)
 {
     int len = 0, max_len = 0;
@@ -922,7 +922,7 @@ check_cell_width(short *tabwidth, short *cellwidth,
     }
 }
 
-void
+static void
 check_minimum_width(struct table *t, short *tabwidth)
 {
     int i;
@@ -937,7 +937,7 @@ check_minimum_width(struct table *t, short *tabwidth)
 		     cell->maxcell, cell->index, t->cellspacing, 0);
 }
 
-void
+static void
 check_maximum_width(struct table *t)
 {
     struct table_cell *cell = &t->cell;
@@ -1255,7 +1255,7 @@ check_compressible_cell(struct table *t, MAT * minv,
 }
 
 #define MAX_ITERATION 10
-int
+static int
 check_table_width(struct table *t, double *newwidth, MAT * minv, int itr)
 {
     int i, j, k, m, bcol, ecol;
@@ -1513,7 +1513,7 @@ set_table_width(struct table *t, short *newwidth, int maxwidth)
 }
 #endif				/* not MATRIX */
 
-void
+static void
 check_table_height(struct table *t)
 {
     int i, j, k;
@@ -1612,7 +1612,7 @@ check_table_height(struct table *t)
 #define CHECK_MINIMUM	1
 #define CHECK_FIXED	2
 
-int
+static int
 get_table_width(struct table *t, short *orgwidth, short *cellwidth, int flag)
 {
 #ifdef __GNUC__
@@ -1677,7 +1677,7 @@ initRenderTable(void)
     cotable_level = 0;
 }
 
-void
+static void
 renderCoTable(struct table *tbl, int maxlimit)
 {
     struct readbuffer obuf;
@@ -2289,7 +2289,7 @@ check_rowcol(struct table *tbl, struct table_mode *mode)
     tbl->flag |= TBL_IN_COL;
 }
 
-int
+static int
 skip_space(struct table *t, char *line, struct table_linfo *linfo,
 	   int checkminimum)
 {
@@ -3585,7 +3585,7 @@ set_table_matrix0(struct table *t, int maxwidth)
     }
 }
 
-void
+static void
 check_relative_width(struct table *t, int maxwidth)
 {
     int i;

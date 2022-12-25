@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - '*'
+    pull_request:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt install build-essential libgc-dev libgpm-dev
+
+      - name: configure
+        run: ./configure --enable-alarm --enable-ansi_color --enable-color --enable-cookie --enable-external_uri_loader --enable-gopher --enable-image --enable-ipv6 --enable-m17n --enable-menu --enable-mouse --enable-nls --enable-nntp --enable-sslverify --enable-unicode --enable-w3mmailer --with-imagelib=imlib2 --with-migemo="cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict" --with-ssl --with-gc
+
+      - name: build
+        run: OPTS='-Wno-unused-result -Werror' make

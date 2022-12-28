@@ -6,6 +6,7 @@
 /* Define HTML Tag Infomation Table */
 
 #define ATTR_CORE	ATTR_ID
+unsigned char ALST_ID[] = { ATTR_CORE };
 unsigned char ALST_A[] = {
     ATTR_NAME, ATTR_HREF, ATTR_REL, ATTR_CHARSET, ATTR_TARGET, ATTR_HSEQ,
     ATTR_REFERER,
@@ -237,9 +238,9 @@ TagInfo TagMAP[MAX_HTMLTAG] = {
     {"/section", NULL, 0, TFLG_END},				/* 146 HTML_N_SECTION  */
     {"/dt", NULL, 0, TFLG_END},					/* 147 HTML_N_DT       */
     {"/dd", NULL, 0, TFLG_END},					/* 148 HTML_N_DD       */
+    {"dfn", ALST_ID, ARR_SZ(ALST_ID), 0},			/* 149 HTML_DFN */
+    {"/dfn", NULL, 0, TFLG_END},				/* 150 HTML_N_DFN */
 
-    {NULL, NULL, 0, 0},						/* 149 Undefined */
-    {NULL, NULL, 0, 0},						/* 150 Undefined */
     {NULL, NULL, 0, 0},						/* 151 Undefined */
     {NULL, NULL, 0, 0},						/* 152 Undefined */
     {NULL, NULL, 0, 0},						/* 153 Undefined */

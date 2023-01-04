@@ -1,3 +1,36 @@
+2023-01-04  Tatsuya Kinoshita  <tats@debian.org>
+
+	* po/de.po, po/it.po, po/ja.po, po/sv_SE.po, po/w3m.pot, po/zh_CN.po:
+	* po/zh_TW.po: Update PO strings.
+
+	* doc/MANUAL.html, doc/README.img, libwc/wc_types.h, main.c, rc.c:
+	English fixes.
+	cf. https://github.com/tats/w3m/pull/241
+
+2023-01-04  Rene Kita  <mail@rkta.de>
+
+	* rc.c: Remove unused variable.
+	* table.c: Remove a warning for bzero with GCC 12.
+	* file.c: Fix potential null pointer dereference.
+	* .github/workflows/build.yml:
+	Don't error out on deprecated declaration warnings.
+	Origin: https://github.com/tats/w3m/pull/255
+	cf. https://github.com/tats/w3m/issues/252
+
+2023-01-04  nico  <smnicolas@gmail.com>
+
+	* doc/MANUAL.html, doc/w3m.1, fm.h, main.c, rc.c, terms.c:
+	Add high-intensity colors option and cli flag.
+	Origin: https://github.com/tats/w3m/pull/251
+
+2023-01-04  Trafficone  <trafficone@gmail.com>
+
+	* doc/README.SSL, doc/README.keymap, doc/README.menu: Translate from
+	doc-jp.
+	* doc/README.cookie, doc/README.func, doc/README.img, doc/README.m17n:
+	* doc/README.passwd: Clarified wording.  Minor grammar changes.
+	Origin: https://github.com/tats/w3m/pull/241
+
 2022-12-25  Tatsuya Kinoshita  <tats@debian.org>
 
 	* configure: Update configure with acinclude.m4.

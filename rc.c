@@ -97,6 +97,7 @@ static int OptionEncode = FALSE;
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
+#define CMT_HINTENSITY_COLOR N_("Use high-intensity colors")
 #define CMT_B_COLOR      N_("Color of normal character")
 #define CMT_A_COLOR      N_("Color of anchor")
 #define CMT_I_COLOR      N_("Color of image link")
@@ -469,6 +470,7 @@ struct param_ptr params1[] = {
 #ifdef USE_COLOR
 struct param_ptr params2[] = {
     {"color", P_INT, PI_ONOFF, (void *)&useColor, CMT_COLOR, NULL},
+    {"high-intensity", P_INT, PI_ONOFF, (void *)&highIntensityColors, CMT_HINTENSITY_COLOR, NULL},
     {"basic_color", P_COLOR, PI_SEL_C, (void *)&basic_color, CMT_B_COLOR,
      (void *)colorstr},
     {"anchor_color", P_COLOR, PI_SEL_C, (void *)&anchor_color, CMT_A_COLOR,

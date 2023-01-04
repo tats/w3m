@@ -1678,7 +1678,7 @@ static char *
 color_seq(int colmode)
 {
     static char seqbuf[32];
-    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + 30);
+    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + (highIntensityColors ? 90 : 30));
     return seqbuf;
 }
 

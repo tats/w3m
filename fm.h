@@ -958,6 +958,7 @@ global int override_user_agent init(FALSE);
 
 #ifdef USE_COLOR
 global int useColor init(TRUE);
+global int highIntensityColors init(FALSE);
 global int basic_color init(8);	/* don't change */
 global int anchor_color init(4);	/* blue  */
 global int image_color init(2);	/* green */

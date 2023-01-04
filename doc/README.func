@@ -1,4 +1,4 @@
-ABORT		Quit at once
+ABORT		Quit without confirmation
 ACCESSKEY	Pop up accesskey menu
 ADD_BOOKMARK	Add current page to bookmarks
 ALARM		Set alarm
@@ -28,7 +28,7 @@ EDIT		Edit local source
 EDIT_SCREEN	Edit rendered copy of document
 END		Go to the last line
 EXEC_SHELL	Execute shell command and display output
-EXIT		Quit at once
+EXIT		Quit without confirmation
 EXTERN		Display using an external browser
 EXTERN_LINK	Display target using an external browser
 FRAME		Toggle rendering HTML frames
@@ -38,7 +38,7 @@ GOTO_LINE	Go to the specified line
 GOTO_LINK	Follow current hyperlink in a new buffer
 GOTO_RELATIVE	Go to relative address
 HELP		Show help panel
-HISTORY 	Show browsing history
+HISTORY		Show browsing history
 INFO		Display information about the current document
 INTERRUPT	Suspend w3m to background
 ISEARCH 	Incremental search forward

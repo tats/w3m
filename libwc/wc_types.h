@@ -73,7 +73,7 @@ typedef struct {
 } wc_ces_list;
 
 typedef struct {
-    wc_uint8 auto_detect;	/* automatically charset detect */
+    wc_uint8 auto_detect;	/* automatically charset detection */
     wc_bool use_combining;	/* use combining characters */
     wc_bool use_language_tag;	/* use language_tags */
     wc_bool ucs_conv;		/* charset conversion using Unicode */

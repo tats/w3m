@@ -2589,7 +2589,7 @@ _quitfm(int confirm)
 }
 
 /* Quit */
-DEFUN(quitfm, ABORT EXIT, "Quit at once")
+DEFUN(quitfm, ABORT EXIT, "Quit without confirmation")
 {
     _quitfm(FALSE);
 }

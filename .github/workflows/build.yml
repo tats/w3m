@@ -23,4 +23,6 @@ jobs:
         run: ./configure --enable-alarm --enable-ansi_color --enable-color --enable-cookie --enable-external_uri_loader --enable-gopher --enable-image --enable-ipv6 --enable-m17n --enable-menu --enable-mouse --enable-nls --enable-nntp --enable-sslverify --enable-unicode --enable-w3mmailer --with-imagelib=imlib2 --with-migemo="cmigemo -q -d /usr/share/cmigemo/utf-8/migemo-dict" --with-ssl --with-gc
 
       - name: build
-        run: OPTS='-Wno-unused-result -Werror' make
+        # TODO(rkta): Remove -Wno-error=deprecated-declarations once support for
+        # OpenSSL 3.0 has arrived.
+        run: make OPTS='-Werror -Wno-error=deprecated-declarations -Wno-unused-result'

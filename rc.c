@@ -1247,7 +1247,6 @@ static int
 do_recursive_mkdir(const char *dir)
 {
     char *ch, *dircpy, tmp;
-    size_t n;
     struct stat st;
 
     if (*dir == '\0')

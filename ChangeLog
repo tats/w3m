@@ -1,3 +1,31 @@
+2023-01-05  Markus Hiereth  <translation@hiereth.de>
+
+	* po/de.po: Update German message catalogue.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1011945#10
+
+2023-01-05  Rene Kita  <mail@rkta.de>
+
+	* buffer.c: Exit with error if a new buffer can't be allocated.
+	Origin: https://git.sr.ht/~rkta/w3m/commit/1f88544c1a009ed2088ff20973bcfffe6cbcb5de
+	Bug-Debian: https://github.com/tats/w3m/pull/232
+	Bug-Debian: https://github.com/tats/w3m/pull/233
+
+	* history.c, history.h:
+	Merge history file if it was modified after start.
+	* history.h, proto.h: Move declarations to the appropriate header file.
+	* history.c: Add comment to explain placement of the ifdef.
+	* history.c, proto.h: Let loadHistory return an error code.
+	* history.c: Use 'goto fail' to remove code duplication.
+	Origin: https://github.com/tats/w3m/pull/247
+	Bug-Debian: https://github.com/tats/w3m/issues/176
+
+2023-01-05  Alberto Fanjul  <albertofanjul@gmail.com>
+
+	* scripts/w3mman/w3mman2html.cgi.in:
+	Turn ansi escape sequences into html tags.
+	Origin: https://github.com/tats/w3m/pull/238
+	Bug-Debian: https://github.com/tats/w3m/issues/201
+
 2023-01-04  Tatsuya Kinoshita  <tats@debian.org>
 
 	* po/de.po, po/it.po, po/ja.po, po/sv_SE.po, po/w3m.pot, po/zh_CN.po:
@@ -22,6 +50,8 @@
 	* doc/MANUAL.html, doc/w3m.1, fm.h, main.c, rc.c, terms.c:
 	Add high-intensity colors option and cli flag.
 	Origin: https://github.com/tats/w3m/pull/251
+	cf. https://github.com/tats/w3m/issues/250
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=626291
 
 2023-01-04  Trafficone  <trafficone@gmail.com>
 

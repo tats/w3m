@@ -2,6 +2,19 @@
 #include "fm.h"
 
 #ifdef USE_HISTORY
+/* Merge entries from their history into ours */
+static int
+mergeHistory(Hist *ours, Hist *theirs)
+{
+    HistItem *item;
+
+    for (item = theirs->list->first; item; item = item->next)
+	if (!getHashHist(ours, item->ptr))
+	    pushHist(ours, (char *)item->ptr);
+
+    return 0;
+}
+
 Buffer *
 historyBuffer(Hist *hist)
 {
@@ -31,16 +44,23 @@ historyBuffer(Hist *hist)
     return loadHTMLString(src);
 }
 
-void
+int
 loadHistory(Hist *hist)
 {
     FILE *f;
     Str line;
+    struct stat st;
 
     if (hist == NULL)
-	return;
+	return 1;
     if ((f = fopen(rcFile(HISTORY_FILE), "rt")) == NULL)
-	return;
+	return 1;
+
+    if (fstat(fileno(f), &st) == -1) {
+	fclose(f);
+	return 1;
+    }
+    hist->mtime = (long long)st.st_mtim.tv_sec;
 
     while (!feof(f)) {
 	line = Strfgets(f);
@@ -52,41 +72,60 @@ loadHistory(Hist *hist)
 	pushHist(hist, url_quote(line->ptr));
     }
     fclose(f);
+    return 0;
 }
 
 void
 saveHistory(Hist *hist, size_t size)
 {
     FILE *f;
+    Hist *fhist;
     HistItem *item;
+    char *histf;
     char *tmpf;
     int rename_ret;
+    struct stat st;
 
     if (hist == NULL || hist->list == NULL)
 	return;
-    tmpf = tmpfname(TMPF_HIST, NULL)->ptr;
-    if ((f = fopen(tmpf, "w")) == NULL) {
-	/* FIXME: gettextize? */
-	disp_err_message("Can't open history", FALSE);
-	return;
+
+    histf = rcFile(HISTORY_FILE);
+    if (stat(histf, &st) == -1)
+	goto fail;
+    if (hist->mtime != (long long)st.st_mtim.tv_sec) {
+	fhist = newHist();
+	if (loadHistory(fhist) || mergeHistory(fhist, hist))
+	    disp_err_message("Can't merge history", FALSE);
+	else
+	    hist = fhist;
     }
+
+    tmpf = tmpfname(TMPF_HIST, NULL)->ptr;
+    if ((f = fopen(tmpf, "w")) == NULL)
+	goto fail;
     for (item = hist->list->first; item && hist->list->nitem > size;
 	 item = item->next)
 	size++;
     for (; item; item = item->next)
 	fprintf(f, "%s\n", (char *)item->ptr);
-    if (fclose(f) == EOF) {
-	/* FIXME: gettextize? */
-	disp_err_message("Can't save history", FALSE);
-	return;
-    }
+    if (fclose(f) == EOF)
+	goto fail;
     rename_ret = rename(tmpf, rcFile(HISTORY_FILE));
-    if (rename_ret != 0) {
-	disp_err_message("Can't save history", FALSE);
-	return;
-    }
+    if (rename_ret != 0)
+	goto fail;
+
+    return;
+
+fail:
+    disp_err_message("Can't open history", FALSE);
+    return;
 }
 #endif				/* USE_HISTORY */
+
+/*
+ * The following functions are used for internal stuff, we need them regardless
+ * if history is used or not.
+ */
 
 Hist *
 newHist(void)

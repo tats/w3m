@@ -111,7 +111,7 @@ wc_charset_to_ces(char *charset)
     char buf[16];
     int n;
 
-    if (tolower(*p) == 'x' && *(p+1) == '-')
+    if ((*p == 'x' || *p == 'X') && *(p+1) == '-')
 	p += 2;
     for (n = 0; *p && n < 15; p++) {
 	if ((unsigned char)*p > 0x20 && *p != '_' && *p != '-')

@@ -60,7 +60,7 @@ loadHistory(Hist *hist)
 	fclose(f);
 	return 1;
     }
-    hist->mtime = (long long)st.st_mtim.tv_sec;
+    hist->mtime = (long long)st.st_mtime;
 
     while (!feof(f)) {
 	line = Strfgets(f);
@@ -92,7 +92,7 @@ saveHistory(Hist *hist, size_t size)
     histf = rcFile(HISTORY_FILE);
     if (stat(histf, &st) == -1)
 	goto fail;
-    if (hist->mtime != (long long)st.st_mtim.tv_sec) {
+    if (hist->mtime != (long long)st.st_mtime) {
 	fhist = newHist();
 	if (loadHistory(fhist) || mergeHistory(fhist, hist))
 	    disp_err_message("Can't merge history", FALSE);

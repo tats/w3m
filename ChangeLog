@@ -1,3 +1,44 @@
+2023-01-06  Tatsuya Kinoshita  <tats@debian.org>
+
+	* libwc/charset.c: Avoid locale sensitive tolower in wc_charset_to_ces.
+
+2023-01-06  Sertaç Ö. Yıldız  <sertacyildiz@gmail.com>
+
+	* libwc/charset.c:
+	Fix charset declaration parser fails with turkish locale.
+	Origin: https://bugzilla-attachments.redhat.com/attachment.cgi?id=160014
+	Bug-Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=249675
+
+	* history.c: Use st_mtime instead of st_mtim.tv_sec to compile on macos.
+	cf. https://github.com/tats/w3m/pull/247
+
+2023-01-06  Rene Kita  <mail@rkta.de>
+
+	* html.c, html.h, tagtable.tab: Recognize link targets in dfn elements.
+	Refactor html.c.  Align in html.c.
+	Origin: https://github.com/tats/w3m/pull/259
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1018696
+
+	* Makefile.in, form.c, main.c, util.c, util.h:
+	Handle failed system calls.
+	* display.c, display.h, file.c, form.c, main.c, proto.h, terms.h:
+	Move declarations to appropiate header files.
+	Origin: https://github.com/tats/w3m/pull/257
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=398989
+
+	* entity.js, etc.c, table.c, tests/allentity.expected:
+	* tests/allentity.html: Skip soft hyphen when reading token.
+	Fix generated HTML for entity test.
+	Origin: https://github.com/tats/w3m/pull/256
+	Bug-Debian: https://github.com/tats/w3m/issues/224
+	Bug-Debian: https://github.com/tats/w3m/issues/258
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=830173
+
+	* file.c: Check LESSOPEN to avoid undefined behaviour.
+	Refactor lessopen_stream.
+	Origin: https://github.com/tats/w3m/pull/254
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=991608
+
 2023-01-05  Markus Hiereth  <translation@hiereth.de>
 
 	* po/de.po: Update German message catalogue.

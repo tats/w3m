@@ -1,4 +1,5 @@
-//Usage: qjs --std entity.js [test/tab] > outfile
+// Usage: qjs --std entity.js [test/tab] > outfile
+// See: https://github.com/bellard/quickjs
 
 const a = getEntities();
 
@@ -15,9 +16,9 @@ function gentable(criteria, item) {
 }
 
 function gentestitem(b, c, d) {
-	let ha = "0x" + d[0].toString(16).toUpperCase() + "</td>";
+	let ha = "0x" + d[0].toString(16).toUpperCase();
 	if (d.length == 2)
-		var hb = "0x" + d[1].toString(16).toUpperCase() + "</td>";
+		var hb = "0x" + d[1].toString(16).toUpperCase();
 	else
 		var hb = "";
 	console.log("		<tr>");
@@ -54,19 +55,19 @@ function gentest() {
 	console.log("		<tr>");
 	console.log("			" +
 		"<th>Name</th><th>Hex 1</th><th>Hex 2</th><th>Hex result</th><th>Name result</th><th>Byte result</th>");
-	console.log("		</th>");
+	console.log("		</tr>");
 
 	gentable((b, d) => d.length == 1 && b[b.length - 1] == ';', gentestitem);
 
-	console.log("<th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th>");
+	console.log("<tr><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th></tr>");
 
 	gentable((b, d) => d.length == 1 && b[b.length - 1] != ';', gentestitem);
 
-	console.log("<th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th>");
+	console.log("<tr><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th></tr>");
 
 	gentable((b, d) => d.length == 2 && b[b.length - 1] == ';', gentestitem);
 
-	console.log("<th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th>");
+	console.log("<tr><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th><th><hr></th></tr>");
 
 	gentable((b, d) => d.length == 2 && b[b.length - 1] != ';', gentestitem);
 
@@ -1996,8 +1997,8 @@ function getEntities() {
   "&shcy;": { "codepoints": [1096], "characters": "\u0448" },
   "&shortmid;": { "codepoints": [8739], "characters": "\u2223" },
   "&shortparallel;": { "codepoints": [8741], "characters": "\u2225" },
-  "&shy": { "codepoints": [173], "characters": "\u00AD" },
-  "&shy;": { "codepoints": [173], "characters": "\u00AD" },
+  "&shy": { "codepoints": [173], "characters": "" },
+  "&shy;": { "codepoints": [173], "characters": "" },
   "&sigma;": { "codepoints": [963], "characters": "\u03C3" },
   "&sigmaf;": { "codepoints": [962], "characters": "\u03C2" },
   "&sigmav;": { "codepoints": [962], "characters": "\u03C2" },

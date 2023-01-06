@@ -3274,8 +3274,9 @@ feed_table(struct table *tbl, char *line, struct table_mode *mode,
 			break;
 		    default:
 			r = conv_entity(ec);
-			if (r != NULL && strlen(r) == 1 &&
-			    ec == (unsigned char)*r) {
+			if (!r || !*r)
+			    break;
+			if (strlen(r) == 1 && ec == (unsigned char)*r) {
 			    Strcat_char(tmp, *r);
 			    break;
 			}

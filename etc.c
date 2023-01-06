@@ -834,6 +834,15 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
     if (**instr == '\0')
 	return 0;
     for (p = *instr; *p; p++) {
+	/* Drop Unicode soft hyphen */
+	if (*(unsigned char *)p == 0210
+	    && *(unsigned char *)(p + 1) == 0200
+	    && *(unsigned char *)(p + 2) == 0201
+	    && *(unsigned char *)(p + 3) == 0255) {
+	    p += 3;
+	    continue;
+	}
+
 	prev_status = *status;
 	next_status(*p, status);
 	switch (*status) {

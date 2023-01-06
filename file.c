@@ -5232,17 +5232,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_INPUT:
 	close_anchor(h_env, obuf);
 	tmp = process_input(tag);
-       if (tmp)
-           HTMLlineproc1(tmp->ptr, h_env);
-       return 1;
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
     case HTML_BUTTON:
-       HTML5_CLOSE_A;
-       tmp = process_button(tag);
-       if (tmp)
-           HTMLlineproc1(tmp->ptr, h_env);
-       return 1;
+	HTML5_CLOSE_A;
+	tmp = process_button(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
     case HTML_N_BUTTON:
-       tmp = process_n_button();
+	tmp = process_n_button();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -5531,7 +5531,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	obuf->flag &= ~RB_HEAD;
 	if (obuf->flag & RB_TITLE)
 	    HTMLlineproc1("</title>", h_env);
-	    return 1;
+	return 1;
     case HTML_HEAD:
 	obuf->flag |= RB_HEAD;
 	return 1;

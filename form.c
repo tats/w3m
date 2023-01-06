@@ -2,12 +2,14 @@
 /* 
  * HTML forms
  */
+#include "display.h"
 #include "fm.h"
 #include "parsetag.h"
 #include "parsetagx.h"
 #include "myctype.h"
 #include "local.h"
 #include "regex.h"
+#include "util.h"
 
 extern Str *textarea_str;
 extern int max_textarea;
@@ -602,9 +604,8 @@ input_textarea(FormItemList *fi)
 	form_fputs_decode(fi->value, f);
     fclose(f);
 
-    fmTerm();
-    system(myEditor(Editor, tmpf, 1)->ptr);
-    fmInit();
+    if (exec_cmd(myEditor(Editor, tmpf, 1)->ptr))
+	    goto input_end;
 
     if (fi->readonly)
 	goto input_end;

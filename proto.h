@@ -320,8 +320,6 @@ extern void copyBuffer(Buffer *a, Buffer *b);
 extern Buffer *prevBuffer(Buffer *first, Buffer *buf);
 extern int writeBufferCache(Buffer *buf);
 extern int readBufferCache(Buffer *buf);
-extern void fmTerm(void);
-extern void fmInit(void);
 extern void displayBuffer(Buffer *buf, int mode);
 extern void addChar(char c, Lineprop mode);
 #ifdef USE_M17N
@@ -524,7 +522,6 @@ extern void term_cbreak(void);
 extern void term_title(char *s);
 extern void flush_tty(void);
 extern void toggle_stand(void);
-extern char getch(void);
 extern void bell(void);
 extern int sleep_till_anykey(int sec, int purge);
 #ifdef USE_IMAGE

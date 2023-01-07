@@ -60,6 +60,7 @@ static wc_ces cur_document_charset = 0;
 #endif
 
 static Str cur_title;
+static Str pre_title;
 static Str cur_select;
 static Str select_str;
 static int select_is_multiple;
@@ -3238,6 +3239,8 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 static Str
 process_title(struct parsed_tag *tag)
 {
+    if (pre_title)
+	return NULL;
     cur_title = Strnew();
     return NULL;
 }
@@ -3247,12 +3250,15 @@ process_n_title(struct parsed_tag *tag)
 {
     Str tmp;
 
+    if (pre_title)
+	return NULL;
     if (!cur_title)
 	return NULL;
     Strremovefirstspaces(cur_title);
     Strremovetrailingspaces(cur_title);
     tmp = Strnew_m_charp("<title_alt title=\"",
 			 html_quote(cur_title->ptr), "\">", NULL);
+    pre_title = cur_title;
     cur_title = NULL;
     return tmp;
 }
@@ -3260,6 +3266,8 @@ process_n_title(struct parsed_tag *tag)
 static void
 feed_title(char *str)
 {
+    if (pre_title)
+	return;
     if (!cur_title)
 	return;
     while (*str) {
@@ -7280,6 +7288,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
 
     cur_title = NULL;
+    pre_title = NULL;
     n_textarea = 0;
     cur_textarea = NULL;
     max_textarea = MAX_TEXTAREA;

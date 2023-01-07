@@ -4817,23 +4817,19 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	/* obuf->flag |= RB_IGNORE_P; */
 	return 1;
     case HTML_TITLE:
-	if (obuf->flag & RB_HEAD) {
-	    close_anchor(h_env, obuf);
-	    process_title(tag);
-	    obuf->flag |= RB_TITLE;
-	    obuf->end_tag = HTML_N_TITLE;
-	}
+	close_anchor(h_env, obuf);
+	process_title(tag);
+	obuf->flag |= RB_TITLE;
+	obuf->end_tag = HTML_N_TITLE;
 	return 1;
     case HTML_N_TITLE:
-	if (obuf->flag & RB_HEAD) {
-	    if (!(obuf->flag & RB_TITLE))
-		return 1;
-	    obuf->flag &= ~RB_TITLE;
-	    obuf->end_tag = 0;
-	    tmp = process_n_title(tag);
-	    if (tmp)
-		HTMLlineproc1(tmp->ptr, h_env);
-	}
+	if (!(obuf->flag & RB_TITLE))
+	    return 1;
+	obuf->flag &= ~RB_TITLE;
+	obuf->end_tag = 0;
+	tmp = process_n_title(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
     case HTML_TITLE_ALT:
 	if (parsedtag_get_value(tag, ATTR_TITLE, &p))
@@ -5528,13 +5524,9 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    }
 	}
     case HTML_N_HEAD:
-	obuf->flag &= ~RB_HEAD;
 	if (obuf->flag & RB_TITLE)
 	    HTMLlineproc1("</title>", h_env);
-	return 1;
     case HTML_HEAD:
-	obuf->flag |= RB_HEAD;
-	return 1;
     case HTML_N_BODY:
 	return 1;
     default:

@@ -1,3 +1,10 @@
+2023-01-07  Tatsuya Kinoshita  <tats@debian.org>
+
+	* file.c: Only read a first title.
+	* file.c, fm.h: Revert "Only read title when in head".
+	This reverts commit 0189e8aa5c4c4919a9bbc4dcbe0e521aada51e3c.
+	Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1020215
+
 2023-01-06  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Indentation fix for HTMLtagproc1.

@@ -421,21 +421,7 @@ from Tatsuya Kinoshita <tats@debian.org>
    </dt>
    <dd>
     <p>
-     Yes. When you run <q>./configure</q>, answer the question
-    </p>
-<pre>
-  Let's do some configurations. Choose config option among the list.
-
-  1 - Baby model    (no color, no menu, no mouse, no cookie, no SSL)
-  2 - Little model  (color, menu, no mouse, no cookie, no SSL)
-  3 - Mouse model   (color, menu, mouse, no cookie, no SSL)
-  4 - Cookie model  (color, menu, mouse, cookie, no SSL)
-  5 - Monster model (with everything; you need openSSL library)
-  6 - Customize
-  Which?
-</pre>
-    <p>
-     with 2, 3, 4, or 5.
+     Yes. Run <q>./configure</q> without <q>--disable-color</q>.
     </p>
    </dd>
    <dt>
@@ -448,10 +434,6 @@ from Tatsuya Kinoshita <tats@debian.org>
      Yes. You may either
     </p>
     <ul>
-     <li>
-      Answer the above-mentioned <q>configure</q> question with 1,
-      or
-     </li>
      <li>
       Invoke w3m with the -M option, or
      </li>

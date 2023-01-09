@@ -1,3 +1,29 @@
+Debian's w3m 0.5.3+git202301XX
+
+* new features
+  - location of ~/.w3m can be changed with the W3M_DIR environment variable
+  - new option tmp_dir to set directory for temporary files
+    e.g. W3M_DIR=~/.local/state/w3m w3m -o tmp_dir=~/.cache/w3m
+  - new option -H to use high-intensity colors
+  - recognize link targets in dfn elements
+* bug fixes
+  - fix m17n backspace handling causes out-of-bounds write in checkType
+    [CVE-2022-38223]
+  - fix LESSOPEN format string problem
+  - fix potential overflow in checkType
+  - fix potential null deref for newBuffer
+  - fix potential null deref in main.c, file.c, etc.c, fb_imlib2.c, news.c
+  - fix browsing local file fails when argv_is_url
+  - skip soft hyphen when reading token
+  - fix configure tests broken with Clang 16
+  - do not override history file if it was changed
+  - only read a first title to avoid titles in svg
+  - add workaround for w3mman on Fedora
+  - handle failed system calls
+  - fix charset declaration parser fails with turkish locale
+  - fix images are not displayed for OSC 5379
+  - prevent unneeded image resizing for sixel
+
 Debian's w3m 0.5.3+git20220429
 
 * new features

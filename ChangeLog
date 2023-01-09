@@ -1,3 +1,13 @@
+2023-01-09  Tatsuya Kinoshita  <tats@debian.org>
+
+	* NEWS: Prepare NEWS for w3m 0.5.3+git202301XX.
+
+	* doc-de/FAQ.html, doc-jp/FAQ.html, doc/FAQ.html:
+	Remove obsolete documents.
+
+	* doc-de/FAQ.html, doc-de/MANUAL.html:
+	Wrap long lines to avoid Lintian warnings.
+
 2023-01-07  Tatsuya Kinoshita  <tats@debian.org>
 
 	* file.c: Only read a first title.

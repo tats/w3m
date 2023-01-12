@@ -1,0 +1,90 @@
+Subject: Fix m17n backspace handling causes out-of-bounds write in checkType [CVE-2022-38223]
+Author: Tatsuya Kinoshita <tats@debian.org>
+Bug-Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1019599
+Bug-Debian: https://github.com/tats/w3m/issues/242
+
+--- a/etc.c
++++ b/etc.c
+@@ -253,14 +253,26 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+     char *es = NULL;
+ #endif
+     int do_copy = FALSE;
++#ifdef USE_M17N
+     int i;
+     int plen = 0, clen;
++    int *plens = NULL;
++    static int *plens_buffer = NULL;
++    static int plens_size = 0;
++#endif
+ 
+     if (prop_size < s->length) {
+ 	prop_size = (s->length > LINELEN) ? s->length : LINELEN;
+ 	prop_buffer = New_Reuse(Lineprop, prop_buffer, prop_size);
+     }
+     prop = prop_buffer;
++#ifdef USE_M17N
++    if (plens_size < s->length) {
++	plens_size = (s->length > LINELEN) ? s->length : LINELEN;
++	plens_buffer = New_Reuse(int, plens_buffer, plens_size);
++    }
++    plens = plens_buffer;
++#endif
+ 
+     if (ShowEffect) {
+ 	bs = memchr(str, '\b', s->length);
+@@ -295,14 +307,21 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+ #ifdef USE_ANSI_COLOR
+ 		if (color)
+ 		    *(color++) = 0;
++#endif
++#ifdef USE_M17N
++		*(plens++) = plen = 1;
+ #endif
+ 	    }
+ 	    Strcat_charp_n(s, sp, (int)(str - sp));
+ 	}
+     }
+     if (!do_copy) {
+-	for (; str < endp && IS_ASCII(*str); str++)
++	for (; str < endp && IS_ASCII(*str); str++) {
+ 	    *(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
++#ifdef USE_M17N
++	    *(plens++) = plen = 1;
++#endif
++	}
+     }
+ 
+     while (str < endp) {
+@@ -364,6 +383,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+ 			else {
+ 			    Strshrink(s, plen);
+ 			    prop -= plen;
++			    plen = *(--plens);
+ 			    str += 2;
+ 			}
+ 		    }
+@@ -385,6 +405,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+ 			else {
+ 			    Strshrink(s, plen);
+ 			    prop -= plen;
++			    plen = *(--plens);
+ 			    str++;
+ 			}
+ #else
+@@ -429,7 +450,6 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+ 	}
+ #endif
+ 
+-	plen = get_mclen(str);
+ 	mode = get_mctype(str) | effect;
+ #ifdef USE_ANSI_COLOR
+ 	if (color) {
+@@ -439,6 +459,8 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
+ #endif
+ 	*(prop++) = mode;
+ #ifdef USE_M17N
++	plen = get_mclen(str);
++	*(plens++) = plen;
+ 	if (plen > 1) {
+ 	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
+ 	    for (i = 1; i < plen; i++) {

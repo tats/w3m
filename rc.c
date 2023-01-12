@@ -1332,6 +1332,9 @@ sync_with_option(void)
 #ifdef USE_UNICODE
     update_utf8_symbol();
 #endif
+#ifdef USE_M17N
+    wtf_init(DocumentCharset, DisplayCharset);
+#endif
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE

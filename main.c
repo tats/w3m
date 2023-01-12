@@ -910,7 +910,6 @@ main(int argc, char **argv)
 #endif				/* not USE_HISTORY */
 
 #ifdef USE_M17N
-    wtf_init(DocumentCharset, DisplayCharset);
     /*  if (w3m_dump)
      *    WcOption.pre_conv = WC_TRUE;
      */

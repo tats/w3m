@@ -212,6 +212,7 @@ typedef long clen_t;
 #undef HAVE_GETPASSPHRASE
 #define HAVE_CHDIR
 #define HAVE_MKDTEMP
+#define HAVE_FACCESSAT
 
 
 #define SETJMP(env) sigsetjmp(env,1)

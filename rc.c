@@ -1282,6 +1282,11 @@ do_recursive_mkdir(const char *dir)
 	*ch = tmp;
 
     } while (*ch++ != '\0');
+#ifdef HAVE_FACCESSAT
+    if (faccessat(AT_FDCWD, dir, W_OK|X_OK, AT_EACCESS) < 0) {
+	return -1; 
+    }
+#endif
 
     return 0;
 }

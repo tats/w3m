@@ -1352,9 +1352,11 @@ init_rc(void)
     if (rc_dir != NULL)
 	goto open_rc;
 
-    if ((rc_dir = getenv("W3M_DIR")) == NULL || *rc_dir == '\0') {
-	rc_dir = RC_DIR;
-    }
+    rc_dir = allocStr(getenv("W3M_DIR"), -1);
+    if (rc_dir == NULL || *rc_dir == '\0')
+	rc_dir = allocStr(RC_DIR, -1);
+    if (rc_dir == NULL || *rc_dir == '\0')
+	goto rc_dir_err;
     rc_dir = expandPath(rc_dir);
 
     i = strlen(rc_dir);

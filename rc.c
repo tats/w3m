@@ -584,7 +584,7 @@ struct param_ptr params5[] = {
      (void *)&personal_document_root, CMT_PDROOT, NULL},
     {"cgi_bin", P_STRING, PI_TEXT, (void *)&cgi_bin, CMT_CGIBIN, NULL},
     {"index_file", P_STRING, PI_TEXT, (void *)&index_file, CMT_IFILE, NULL},
-    {"tmp_dir", P_STRING, PI_TEXT, (void *)&tmp_dir, CMT_TMP, NULL},
+    {"tmp_dir", P_STRING, PI_TEXT, (void *)&param_tmp_dir, CMT_TMP, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -1416,6 +1416,8 @@ init_tmp(void)
 {
     int i;
 
+    if (param_tmp_dir)
+	tmp_dir = param_tmp_dir;
     if (*tmp_dir == '\0')
 	tmp_dir = rc_dir;
 

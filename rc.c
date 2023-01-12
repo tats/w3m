@@ -1291,6 +1291,7 @@ static void loadSiteconf(void);
 void
 sync_with_option(void)
 {
+    init_tmp();
     if (PagerMax < LINES)
 	PagerMax = LINES;
     WrapSearch = WrapDefault;
@@ -1366,11 +1367,12 @@ init_rc(void)
     system_charset_str = display_charset_str;
 #endif
 
+    tmp_dir = rc_dir;
+
     if (do_recursive_mkdir(rc_dir) == -1)
 	goto rc_dir_err;
 
     no_rc_dir = FALSE;
-    tmp_dir = rc_dir;
 
     if (config_file == NULL)
 	config_file = rcFile(CONFIG_FILE);
@@ -1395,17 +1397,51 @@ init_rc(void)
 
   rc_dir_err:
     no_rc_dir = TRUE;
+    create_option_search_table();
+    goto open_rc;
+}
+
+void
+init_tmp(void)
+{
+    int i;
+
+    if (*tmp_dir == '\0')
+	tmp_dir = rc_dir;
+
+    if (strcmp(tmp_dir, rc_dir) == 0) {
+	if (no_rc_dir)
+	    goto tmp_dir_err;
+	return;
+    }
+
+    tmp_dir = expandPath(tmp_dir);
+    i = strlen(tmp_dir);
+    if (i > 1 && tmp_dir[i - 1] == '/')
+	tmp_dir[i - 1] = '\0';
+    if (do_recursive_mkdir(tmp_dir) == -1)
+	goto tmp_dir_err;
+    return;
+
+  tmp_dir_err:
+#ifdef HAVE_MKDTEMP
+    if (mkd_tmp_dir) {
+	tmp_dir = mkd_tmp_dir;
+	return;
+    }
+#endif
     if (((tmp_dir = getenv("TMPDIR")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
 #ifdef HAVE_MKDTEMP
     tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX", NULL)->ptr);
-    if (tmp_dir == NULL)
+    if (tmp_dir)
+	mkd_tmp_dir = tmp_dir;
+    else
 	tmp_dir = rc_dir;
 #endif
-    create_option_search_table();
-    goto open_rc;
+    return;
 }
 
 

@@ -631,6 +631,7 @@ extern Str decodeMIME0(Str orgstr);
 extern int set_param_option(char *option);
 extern char *get_param_option(char *name);
 extern void init_rc(void);
+extern void init_tmp(void);
 extern Buffer *load_option_panel(void);
 extern void panel_set_option(struct parsed_tagarg *);
 extern void sync_with_option(void);

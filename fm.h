@@ -1138,6 +1138,9 @@ extern int symbol_width0;
 global int no_rc_dir init(FALSE);
 global char *rc_dir init(NULL);
 global char *tmp_dir;
+#ifdef HAVE_MKDTEMP
+global char *mkd_tmp_dir init(NULL);
+#endif
 global char *config_file init(NULL);
 
 #ifdef USE_MOUSE

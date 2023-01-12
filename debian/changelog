@@ -1,3 +1,10 @@
+w3m (0.5.3+git20210102-6+deb11u1) bullseye; urgency=medium
+
+  * New patch 050_checktype.patch to fix out-of-bounds write in checkType
+    [CVE-2022-38223] (closes: #1019599)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Thu, 12 Jan 2023 23:28:20 +0900
+
 w3m (0.5.3+git20210102-6) unstable; urgency=medium
 
   * Update 030_str-overflow.patch to avoid zero size allocation in Str.c

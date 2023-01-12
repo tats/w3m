@@ -1,5 +1,7 @@
 2023-01-12  Tatsuya Kinoshita  <tats@debian.org>
 
+	* fm.h, rc.c: Do not expand config value of tmp_dir.
+
 	* config.h.dist, config.h.in, configure, configure.ac, rc.c:
 	Use faccessat for rc_dir and tmp_dir.
 

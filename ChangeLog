@@ -1,3 +1,16 @@
+2023-01-12  Tatsuya Kinoshita  <tats@debian.org>
+
+	* config.h.dist, config.h.in, configure, configure.ac, rc.c:
+	Use faccessat for rc_dir and tmp_dir.
+
+	* local.c: Allow writeLocalCookie even when no_rc_dir.
+
+	* main.c, rc.c: Call wtf_init in sync_with_option.
+
+	* rc.c: Avoid modifying read-only rc_dir.
+
+	* fm.h, main.c, proto.h, rc.c: Make tmp_dir if not found.
+
 2023-01-09  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Prepare NEWS for w3m 0.5.3+git202301XX.

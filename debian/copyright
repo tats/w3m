@@ -259,7 +259,7 @@ License: permissive-gitlog2changelog
  You may regard this as a work that is placed in the public domain.
 
 Files: debian/*
-Copyright: 2008-2022, Tatsuya Kinoshita <tats@debian.org>
+Copyright: 2008-2023, Tatsuya Kinoshita <tats@debian.org>
            1999-2006, Fumitoshi UKAI <ukai@debian.or.jp>
 License: permissive-debian
  There is no restriction, so this package may be distributed under

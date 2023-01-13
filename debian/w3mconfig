@@ -27,6 +27,7 @@ show_srch_str 1
 label_topline 0
 nextpage_topline 0
 color 1
+high-intensity 0
 basic_color terminal
 anchor_color blue
 image_color green

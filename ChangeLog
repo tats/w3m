@@ -1,3 +1,15 @@
+2023-01-15  Tatsuya Kinoshita  <tats@debian.org>
+
+	* scripts/w3mman/w3mman2html.cgi.in:
+	Add GROFF_NO_SGR=1 to w3mman2html.cgi for non-Debian groff.
+	Bug-Debian: https://github.com/tats/w3m/pull/238
+	Bug-Debian: https://github.com/tats/w3m/issues/201
+
+	* scripts/w3mman/w3mman2html.cgi.in:
+	Revert "Turn ansi escape sequences into html tags".
+	This reverts commit 44af9271e0e984544762e2212549f134c86b4418.
+	cf. https://github.com/tats/w3m/pull/238
+
 2023-01-12  Tatsuya Kinoshita  <tats@debian.org>
 
 	* fm.h, rc.c: Do not expand config value of tmp_dir.

@@ -28,7 +28,7 @@ newBuffer(int width)
 
     n = New(Buffer);
     if (n == NULL)
-	return NULL;
+	exit(3);
     bzero((void *)n, sizeof(Buffer));
     n->width = width;
     n->COLS = COLS;

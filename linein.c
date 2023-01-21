@@ -845,7 +845,7 @@ next_dcompl(int next)
 }
 
 
-Str
+static Str
 escape_spaces(Str s)
 {
     Str tmp = NULL;

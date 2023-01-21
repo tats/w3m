@@ -164,7 +164,7 @@ extern int currentLn(Buffer *buf);
 extern void tmpClearBuffer(Buffer *buf);
 extern char *filename_extension(char *patch, int is_url);
 #ifdef USE_EXTERNAL_URI_LOADER
-extern void initURIMethods();
+extern void initURIMethods(void);
 extern Str searchURIMethods(ParsedURL *pu);
 extern void chkExternalURIBuffer(Buffer *buf);
 #endif
@@ -188,7 +188,7 @@ extern char *url_decode0(const char *url);
 #define url_decode2(url, buf) url_decode0(url)
 #endif /* !defined(USE_M17N) */
 extern void examineFile(char *path, URLFile *uf);
-extern char *acceptableEncoding();
+extern char *acceptableEncoding(void);
 extern int dir_exist(char *path);
 extern int is_html_type(char *type);
 #ifdef USE_M17N
@@ -320,8 +320,6 @@ extern void copyBuffer(Buffer *a, Buffer *b);
 extern Buffer *prevBuffer(Buffer *first, Buffer *buf);
 extern int writeBufferCache(Buffer *buf);
 extern int readBufferCache(Buffer *buf);
-extern void fmTerm(void);
-extern void fmInit(void);
 extern void displayBuffer(Buffer *buf, int mode);
 extern void addChar(char c, Lineprop mode);
 #ifdef USE_M17N
@@ -391,11 +389,6 @@ extern char *inputLineHistSearch(char *prompt, char *def_str, int flag,
 extern Str unescape_spaces(Str s);
 #ifdef USE_HISTORY
 extern Buffer *historyBuffer(Hist *hist);
-extern void loadHistory(Hist *hist);
-extern void saveHistory(Hist *hist, size_t size);
-extern void ldHist(void);
-#else				/* not USE_HISTORY */
-#define ldHist nulcmd
 #endif				/* not USE_HISTORY */
 extern double log_like(int x);
 extern struct table *newTable(void);
@@ -529,14 +522,13 @@ extern void term_cbreak(void);
 extern void term_title(char *s);
 extern void flush_tty(void);
 extern void toggle_stand(void);
-extern char getch(void);
 extern void bell(void);
 extern int sleep_till_anykey(int sec, int purge);
 #ifdef USE_IMAGE
-extern void touch_cursor();
+extern void touch_cursor(void);
 #endif
-extern void initMimeTypes();
-extern void free_ssl_ctx();
+extern void initMimeTypes(void);
+extern void free_ssl_ctx(void);
 extern ParsedURL *baseURL(Buffer *buf);
 extern int openSocket(char *hostname, char *remoteport_name,
 		      unsigned short remoteport_num);
@@ -555,8 +547,8 @@ extern URLFile openURL(char *url, ParsedURL *pu, ParsedURL *current,
 		       HRequest *hr, unsigned char *status);
 extern int mailcapMatch(struct mailcap *mcap, char *type);
 extern struct mailcap *searchMailcap(struct mailcap *table, char *type);
-extern void initMailcap();
-extern char *acceptableMimeTypes();
+extern void initMailcap(void);
+extern char *acceptableMimeTypes(void);
 extern struct mailcap *searchExtViewer(char *type);
 extern Str unquote_mailcap(char *qstr, char *type, char *name, char *attr,
 			   int *mc_stat);
@@ -639,6 +631,7 @@ extern Str decodeMIME0(Str orgstr);
 extern int set_param_option(char *option);
 extern char *get_param_option(char *name);
 extern void init_rc(void);
+extern void init_tmp(void);
 extern Buffer *load_option_panel(void);
 extern void panel_set_option(struct parsed_tagarg *);
 extern void sync_with_option(void);

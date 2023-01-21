@@ -55,6 +55,9 @@ may take an argument.
 \fB\-B\fP
 with no other target defined, use the bookmark page for startup
 .TP
+\fB\-H\fP
+use high-intensity colors
+.TP
 \fB\-M\fP
 monochrome display
 .TP
@@ -266,9 +269,16 @@ $ w3m \-v
 .EE
 .\".SH Errors
 .SH ENVIRONMENT
-\fIw3m\fP recognises the environment variable WWW_HOME as defining a
-fallback target for use if it is invoked without one.
+\fIw3m\fP recognises the environment variable \fBWWW_HOME\fP as
+defining a fallback target for use if it is invoked without one.
+
+If the \fBW3M_DIR\fP environment variable is set to a directory
+name, \fIw3m\fP will store its user files there instead of
+under the ~/.w3m directory.
 .SH FILES
+The default locations of some files are listed below. These
+locations can be altered via the \fBW3M_DIR\fP environment
+variable.
 .TP
 \f(CW~/.w3m/bookmark.html\fP
 default bookmark file

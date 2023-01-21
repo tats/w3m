@@ -904,7 +904,8 @@ AC_DEFUN([AC_W3M_SIGSETJMP],
 [AC_SUBST(HAVE_SIGSETJMP)
 AC_MSG_CHECKING(for sigsetjmp)
 AC_TRY_COMPILE(
-[#include <setjmp.h>],
+[#include <setjmp.h>
+ #include <stdlib.h>],
 [ jmp_buf env;
    if (sigsetjmp(env, 1) != 0) { exit(0); } siglongjmp(env, 1);],
 [have_sigsetjmp="yes"; AC_DEFINE(HAVE_SIGSETJMP)],

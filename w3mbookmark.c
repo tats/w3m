@@ -51,7 +51,7 @@ static char end_section[] =
 
 static char *Local_cookie = NULL;
 
-void
+static void
 print_bookmark_panel(char *bmark, char *url, char *title, char *charset)
 {
     Str tmp, tmp2;
@@ -107,7 +107,7 @@ create_new_bookmark(char *bmark, char *section, char *title, char *url,
     return TRUE;
 }
 
-int
+static int
 insert_bookmark(char *bmark, struct parsed_tagarg *data)
 {
     char *url, *title, *section;

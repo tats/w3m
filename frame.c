@@ -210,7 +210,7 @@ copyFrameSet(struct frameset *of)
     return rf;
 }
 
-void
+static void
 flushFrameSet(struct frameset *fs)
 {
     int n = fs->i;

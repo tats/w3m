@@ -70,7 +70,8 @@ insertions tagged with "mh 2016-03-29" and "mh 2016-06-11" come from the latest 
    Einführung
   </h2>
   <p>
-   w3m ist ein textorientierter Browser und Textbetrachter (Pager). In einem Terminalemulator können Sie damit lokale und andere Dokumente anzeigen lassen und Verknüpfungen (Hyperlinks) weiterverfolgen.
+   w3m ist ein textorientierter Browser und Textbetrachter (Pager).
+   In einem Terminalemulator können Sie damit lokale und andere Dokumente anzeigen lassen und Verknüpfungen (Hyperlinks) weiterverfolgen.
   </p>
   <hr>
   <h2 id="Einstellungen">
@@ -84,7 +85,9 @@ insertions tagged with "mh 2016-03-29" and "mh 2016-06-11" come from the latest 
   w3m [Option]… [Datei|Adresse]…
 </pre>
   <p>
-   Wenn Sie Dateinamen oder Adressen in der Befehlszeile angeben, werden diese Dokumente angezeigt. Fehlen entsprechende Argumente, wird w3m ein Dokument aus der Standardeingabe erwarten und anzeigen. Erhält das Programm auch hier keine Daten, beendet es sich normalerweise selbstständig.
+   Wenn Sie Dateinamen oder Adressen in der Befehlszeile angeben, werden diese Dokumente angezeigt.
+   Fehlen entsprechende Argumente, wird w3m ein Dokument aus der Standardeingabe erwarten und anzeigen.
+   Erhält das Programm auch hier keine Daten, beendet es sich normalerweise selbstständig.
   </p>
   <p>
    Optionen sind unter anderem:
@@ -236,7 +239,9 @@ insertions tagged with "mh 2016-03-29" and "mh 2016-06-11" come from the latest 
     <!-- mh 2016-03-29
 Render the body of Usenet messages according to the header <q>Content-type</q>
 --><p>
-     arbeite im <q>Internetnachrichten-Modus</q>. Mit dieser Option entnimmt w3m den Typ eines Dokumentes dessen Kopfdaten. Dies ist nützlich beim Lesen von Mails und Usenet-Nachrichten.
+     arbeite im <q>Internetnachrichten-Modus</q>.
+     Mit dieser Option entnimmt w3m den Typ eines Dokumentes dessen Kopfdaten.
+     Dies ist nützlich beim Lesen von Mails und Usenet-Nachrichten.
 
     </p>
    </dd>
@@ -254,7 +259,8 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
    </dt>
    <dd>
     <!--funktionierend 2016-06-28T08:22>--><p>
-      verwende die Methode POST, um in <i>Datei</i> hinterlegte Daten hochzuladen. Hierbei wird die Syntax <span class="mono">"var1=wert1[&amp;var2=wert2]&hellip;"</span> erwartet
+      verwende die Methode POST, um in <i>Datei</i> hinterlegte Daten hochzuladen.
+      Hierbei wird die Syntax <span class="mono">"var1=wert1[&amp;var2=wert2]&hellip;"</span> erwartet
     </p>
    </dd>
 <h3>Textbetrachter-Optionen</h3>
@@ -319,7 +325,9 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
    <dd>
      <!-- mh 2016-06-11--><p>
        
-      legt den MIME-Typ erhaltener Daten fest. Ohne diese Option bestimmt ihn das Programm anhand der Dateinamen-Erweiterung. Wenn dies fehlschlägt, wird text/plain als Typ angenommen. Zum Beispiel:
+      legt den MIME-Typ erhaltener Daten fest.
+      Ohne diese Option bestimmt ihn das Programm anhand der Dateinamen-Erweiterung.
+      Wenn dies fehlschlägt, wird text/plain als Typ angenommen. Zum Beispiel:
      </p>
     <p>
      Übernimm HTML-Dokument von der Standardeingabe und zeige es an
@@ -340,7 +348,8 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
    </dt>
    <dd>
      <!-- mh 2016-03-29 --><p>
-      lies das per URL angegebene Dokument und leite es verarbeitet der Standardausgabe zu. Wenn mit der Option -cols nichts anderes eingestellt ist, erhält es eine Breite von 80 Zeichen
+      lies das per URL angegebene Dokument und leite es verarbeitet der Standardausgabe zu.
+      Wenn mit der Option -cols nichts anderes eingestellt ist, erhält es eine Breite von 80 Zeichen
       </p>
    </dd>
    <dt>
@@ -407,7 +416,8 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
    <dd>
     <!-- mh 2016-03-29--><p>
      
-      arbeite mit einer Konfiguration, bei der die Einstellung <i>Option</i> mit <i>Wert</i> belegt ist. Ohne <i>Option=Wert</i> gleichwertig mit <i>-show-option</i>
+      arbeite mit einer Konfiguration, bei der die Einstellung <i>Option</i> mit <i>Wert</i> belegt ist.
+      Ohne <i>Option=Wert</i> gleichwertig mit <i>-show-option</i>
     </p>
    </dd>
   </dl>
@@ -474,7 +484,8 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
   <!-- mh 2016-06-13 obsolete
    If you prefer using Lynx-like
    key bindings, make w3m start with the respective keymap file keymap.lynx. (see w3m (1)).--><p>
-   Wenn w3m läuft, bedienen Sie das Programm, indem Sie Funktionen anhand ihres Namens oder der ihr zugeordneten Tastenkombination aufrufen. Es gibt voreingestellte Tastaturbelegungen.
+   Wenn w3m läuft, bedienen Sie das Programm, indem Sie Funktionen anhand ihres Namens oder der ihr zugeordneten Tastenkombination aufrufen.
+   Es gibt voreingestellte Tastaturbelegungen.
 
   </p>
 <!--
@@ -491,11 +502,16 @@ Render the body of Usenet messages according to the header <q>Content-type</q>
 </pre>
 
   <p>
-   die Funktion <span class="mono">NEXT_PAGE</span> (die normalerweise mit SPC und C-v verknüpft ist) mit C-o. Siehe die Liste verfügbarer Funktionen in <a href="README.func">README.func</a>. Original- und Lynx-artige Tastaturbelegungen enthalten die Beispieldateien <a href="keymap.default">keymap.default</a> und <a href="keymap.lynx">keymap.lynx</a>.
+   die Funktion <span class="mono">NEXT_PAGE</span> (die normalerweise mit SPC und C-v verknüpft ist) mit C-o.
+   Siehe die Liste verfügbarer Funktionen in <a href="README.func">README.func</a>.
+   Original- und Lynx-artige Tastaturbelegungen enthalten die Beispieldateien <a href="keymap.default">keymap.default</a> und <a href="keymap.lynx">keymap.lynx</a>.
   </p>
 
    <p>
-   Im Folgenden stehen <i>C-</i> und <i>M-</i> für die Eingabe-Modifikationen mit der <i>Steuerungs-</i> und der <i>Meta-Taste</i>. Die letztere ersetzt die <i>ALT-Taste</i>, wohingegen Drücken der <i>ESC</i>-Taste zwischen <i>Meta</i>-modifiziertem und einfachen Tastendruck wechselt. Das Minus-Zeichen bedeutet das gleichzeitige Drücken von Tasten; der Leerraum dagegen steht dafür, dass eine Taste nach der anderen gedrückt wird. Mit <i>2 M</i> ist also gemeint, die <i>2</i> und dann <i>M</i> zu drücken.
+   Im Folgenden stehen <i>C-</i> und <i>M-</i> für die Eingabe-Modifikationen mit der <i>Steuerungs-</i> und der <i>Meta-Taste</i>.
+   Die letztere ersetzt die <i>ALT-Taste</i>, wohingegen Drücken der <i>ESC</i>-Taste zwischen <i>Meta</i>-modifiziertem und einfachen Tastendruck wechselt.
+   Das Minus-Zeichen bedeutet das gleichzeitige Drücken von Tasten; der Leerraum dagegen steht dafür, dass eine Taste nach der anderen gedrückt wird.
+   Mit <i>2 M</i> ist also gemeint, die <i>2</i> und dann <i>M</i> zu drücken.
   </p>
 
 
@@ -1849,7 +1865,8 @@ mh 2016-06-12 Interrupt is an alias to SUSPEND, no need to mention it here
   </table>
 
    <p>
-   Darüber hinaus gibt es die folgenden Bedien-Modi mit fester Tastaturbelegung für die entsprechenden Funktionen. Diese sind nicht durch die Funktion DEFINE_KEY oder Einträge der keymap-Datei veränderbar.
+   Darüber hinaus gibt es die folgenden Bedien-Modi mit fester Tastaturbelegung für die entsprechenden Funktionen.
+   Diese sind nicht durch die Funktion DEFINE_KEY oder Einträge der keymap-Datei veränderbar.
    </p>
    
   <table border="1" width="100%">
@@ -2250,7 +2267,8 @@ LINEEDIT:ACCEPT
    Bedienung per Maus
   </h2>
   <p>
-   Wenn w3m mit Mausfunktionen kompiliert wurde und Sie das Programm entweder in einer Konsole mit GPM oder in einem X-Terminal-Emulator starten, ist ein Navigieren mit der Maus möglich. (Im Falle von rxvt müssen Sie die Umgebungsvariable TERM mit <q>xterm</q> oder <q>kxterm</q> belegen.)
+   Wenn w3m mit Mausfunktionen kompiliert wurde und Sie das Programm entweder in einer Konsole mit GPM oder in einem X-Terminal-Emulator starten, ist ein Navigieren mit der Maus möglich.
+   (Im Falle von rxvt müssen Sie die Umgebungsvariable TERM mit <q>xterm</q> oder <q>kxterm</q> belegen.)
   </p>
    <p>Die Datei <a href="README.mouse">README.mouse</a> erklärt, wie die Bedienung per Maus an eigene Vorlieben angepasst werden kann.
    </p>
@@ -2294,7 +2312,8 @@ LINEEDIT:ACCEPT
      Linksziehen
     </td>
     <td>
-     Dokument scrollen. Standardmäßig wird das Dokument im Fenster verschoben. Ein Verschieben des Fensters über dem stehenden Dokument erreichen Sie über den Einstellungs-Dialog.
+     Dokument scrollen. Standardmäßig wird das Dokument im Fenster verschoben.
+     Ein Verschieben des Fensters über dem stehenden Dokument erreichen Sie über den Einstellungs-Dialog.
     </td>
    </tr>
   </table>
@@ -2303,30 +2322,41 @@ LINEEDIT:ACCEPT
    Lokale CGI-Skripte
   </h2>
   <p>
-   w3m ist in der Lage, CGI-Skripte direkt laufen zu lassen. Dies bedeutet, dass sich das Programm wie ein HTTP-Server verhält und das CGI-Skript ausführt und dessen Ausgabe anzeigt. Beispielsweise wurden die Lesezeichen-Registrierung und der Verzeichnis-Browser als lokale CGI-Skripte programmiert. Darüber hinaus kann w3m durch solche Skripte als Schnittstelle zum Einholen von Daten aller Art fungieren.
+   w3m ist in der Lage, CGI-Skripte direkt laufen zu lassen.
+   Dies bedeutet, dass sich das Programm wie ein HTTP-Server verhält und das CGI-Skript ausführt und dessen Ausgabe anzeigt.
+   Beispielsweise wurden die Lesezeichen-Registrierung und der Verzeichnis-Browser als lokale CGI-Skripte programmiert.
+   Darüber hinaus kann w3m durch solche Skripte als Schnittstelle zum Einholen von Daten aller Art fungieren.
   </p>
   <p>
    Aus Sicherheitsgründen kommen für von w3m benutzte CGI-Skripte nur folgende Verzeichnisse in Frage:
   </p>
   <ul>
    <li>
-    Das Verzeichnis, in dem w3m-bezogene Dateien abgelegt sind (typischerweise /usr/local/lib/w3m). Auf dieses Verzeichnis kann mit der Variblen $LIB referenziert werden.
+    Das Verzeichnis, in dem w3m-bezogene Dateien abgelegt sind (typischerweise /usr/local/lib/w3m).
+    Auf dieses Verzeichnis kann mit der Variblen $LIB referenziert werden.
    </li>
    <li>
-    Das Verzeichnis /cgi-bin/. Sie können /cgi-bin/ im Feld <q>Verzeichnis für ausführbare Skripte</q> des Einstellungs-Dialogs jedem gewünschten Verzeichnis zuordnen. Mehrere Pfade lassen sich durch Doppelpunkt getrennt angeben, also in der Form <span class="mono">/usr/local/cgi-bin:/home/aito/cgi-bin</span>. Es wird davon abgeraten, das aktuelle Verzeichnis hier mitaufzunehmen. Zum Zugriff auf Skripte im Verzeichnis /cgi-bin/ erwartet w3m eine URL folgender Art:
+    Das Verzeichnis /cgi-bin/.
+    Sie können /cgi-bin/ im Feld <q>Verzeichnis für ausführbare Skripte</q> des Einstellungs-Dialogs jedem gewünschten Verzeichnis zuordnen.
+    Mehrere Pfade lassen sich durch Doppelpunkt getrennt angeben, also in der Form <span class="mono">/usr/local/cgi-bin:/home/aito/cgi-bin</span>.
+    Es wird davon abgeraten, das aktuelle Verzeichnis hier mitaufzunehmen.
+    Zum Zugriff auf Skripte im Verzeichnis /cgi-bin/ erwartet w3m eine URL folgender Art:
     </li>
 <pre>
  w3m -o cgi_bin=/path/to/cgi-bin file:/cgi-bin/script.cgi
 </pre>
   </ul>
   <p>
-    Das CGI-Skript kann zur Steuerung von w3m die spezielle Kopfzeile <span class="mono">w3m-control:</span> enthalten. Darin können alle Funkionen (siehe <a href="README.func">README.func</a>) eingetragen sein. Die angegebene Funktion wird aufgerufen, nachdem das Dokument angezeigt wird. Beispielsweise, wird eine Skriptausgabe
+    Das CGI-Skript kann zur Steuerung von w3m die spezielle Kopfzeile <span class="mono">w3m-control:</span> enthalten.
+    Darin können alle Funkionen (siehe <a href="README.func">README.func</a>) eingetragen sein.
+    Die angegebene Funktion wird aufgerufen, nachdem das Dokument angezeigt wird. Beispielsweise, wird eine Skriptausgabe
   </p>
 <pre>
 Content-Type: text/plain<br>W3m-control: BACK
 </pre>
   <p>
-   eine leere Seite anzeigen und den Puffer sofort löschen. Dies ist nützlich, wenn es nicht gewünscht ist, die Seite nach Aufrufen des Skriptes anzuzeigen. Das nächste Beispiel
+   eine leere Seite anzeigen und den Puffer sofort löschen.
+   Dies ist nützlich, wenn es nicht gewünscht ist, die Seite nach Aufrufen des Skriptes anzuzeigen. Das nächste Beispiel
   </p>
 <pre>
 Content-Type: text/plain<br>W3m-control: DELETE_PREVBUF contents.....
@@ -2335,7 +2365,9 @@ Content-Type: text/plain<br>W3m-control: DELETE_PREVBUF contents.....
    führt zum Übergehen des aktuellen Puffers.
   </p>
   <p>
-    Jede <span class="mono">w3m-control</span>-Kopfzeile kann nur eine Funktion aufrufen. Jedoch können Sie im Kopfteil einer HTTP-Kommunikation mehr als eine <span class="mono">w3m-control</span>-Anweisung hinterlegen. Überdies ist es möglich, die GOTO-Funktion mit einem Argument aufzurufen:
+    Jede <span class="mono">w3m-control</span>-Kopfzeile kann nur eine Funktion aufrufen.
+    Jedoch können Sie im Kopfteil einer HTTP-Kommunikation mehr als eine <span class="mono">w3m-control</span>-Anweisung hinterlegen.
+    Überdies ist es möglich, die GOTO-Funktion mit einem Argument aufzurufen:
   </p>
 <pre>
 Content-Type: text/plain<br>W3m-control: GOTO http://www.example.org/

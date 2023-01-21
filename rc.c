@@ -12,6 +12,7 @@
 #include "regex.h"
 #include <stdlib.h>
 #include <stddef.h>
+#include "rc.h"
 
 struct param_ptr {
     char *name;
@@ -96,6 +97,7 @@ static int OptionEncode = FALSE;
 #define CMT_FOLD_TEXTAREA N_("Fold lines in TEXTAREA")
 #define CMT_DISP_INS_DEL N_("Display INS, DEL, S and STRIKE element")
 #define CMT_COLOR        N_("Display with color")
+#define CMT_HINTENSITY_COLOR N_("Use high-intensity colors")
 #define CMT_B_COLOR      N_("Color of normal character")
 #define CMT_A_COLOR      N_("Color of anchor")
 #define CMT_I_COLOR      N_("Color of image link")
@@ -127,6 +129,7 @@ static int OptionEncode = FALSE;
 #define CMT_DROOT       N_("Directory corresponding to / (document root)")
 #define CMT_PDROOT      N_("Directory corresponding to /~user")
 #define CMT_CGIBIN      N_("Directory corresponding to /cgi-bin")
+#define CMT_TMP         N_("Directory for temporary files")
 #define CMT_CONFIRM_QQ  N_("Confirm when quitting with q")
 #define CMT_CLOSE_TAB_BACK N_("Close tab if buffer is last when back")
 #ifdef USE_MARK
@@ -234,18 +237,18 @@ static int OptionEncode = FALSE;
 #ifdef USE_M17N
 #define CMT_DISPLAY_CHARSET  N_("Display charset")
 #define CMT_DOCUMENT_CHARSET N_("Default document charset")
-#define CMT_AUTO_DETECT      N_("Automatic charset detect when loading")
+#define CMT_AUTO_DETECT      N_("Automatic charset detection when loading")
 #define CMT_SYSTEM_CHARSET   N_("System charset")
 #define CMT_FOLLOW_LOCALE    N_("System charset follows locale(LC_CTYPE)")
 #define CMT_EXT_HALFDUMP     N_("Output halfdump with display charset")
-#define CMT_USE_WIDE         N_("Use multi column characters")
+#define CMT_USE_WIDE         N_("Use multi-column characters")
 #define CMT_USE_COMBINING    N_("Use combining characters")
 #define CMT_EAST_ASIAN_WIDTH N_("Use double width for some Unicode characters")
 #define CMT_USE_LANGUAGE_TAG N_("Use Unicode language tags")
 #define CMT_UCS_CONV         N_("Charset conversion using Unicode map")
 #define CMT_PRE_CONV         N_("Charset conversion when loading")
 #define CMT_SEARCH_CONV      N_("Adjust search string for document charset")
-#define CMT_FIX_WIDTH_CONV   N_("Fix character width when conversion")
+#define CMT_FIX_WIDTH_CONV   N_("Fix character width when converting")
 #define CMT_USE_GB12345_MAP  N_("Use GB 12345 Unicode map instead of GB 2312's")
 #define CMT_USE_JISX0201     N_("Use JIS X 0201 Roman for ISO-2022-JP")
 #define CMT_USE_JISC6226     N_("Use JIS C 6226:1978 for ISO-2022-JP")
@@ -467,6 +470,7 @@ struct param_ptr params1[] = {
 #ifdef USE_COLOR
 struct param_ptr params2[] = {
     {"color", P_INT, PI_ONOFF, (void *)&useColor, CMT_COLOR, NULL},
+    {"high-intensity", P_INT, PI_ONOFF, (void *)&highIntensityColors, CMT_HINTENSITY_COLOR, NULL},
     {"basic_color", P_COLOR, PI_SEL_C, (void *)&basic_color, CMT_B_COLOR,
      (void *)colorstr},
     {"anchor_color", P_COLOR, PI_SEL_C, (void *)&anchor_color, CMT_A_COLOR,
@@ -580,6 +584,7 @@ struct param_ptr params5[] = {
      (void *)&personal_document_root, CMT_PDROOT, NULL},
     {"cgi_bin", P_STRING, PI_TEXT, (void *)&cgi_bin, CMT_CGIBIN, NULL},
     {"index_file", P_STRING, PI_TEXT, (void *)&index_file, CMT_IFILE, NULL},
+    {"tmp_dir", P_STRING, PI_TEXT, (void *)&param_tmp_dir, CMT_TMP, NULL},
     {NULL, 0, 0, NULL, NULL, NULL},
 };
 
@@ -850,7 +855,7 @@ create_option_search_table()
     }
 }
 
-struct param_ptr *
+static struct param_ptr *
 search_param(char *name)
 {
     size_t b, e, i;
@@ -1180,8 +1185,8 @@ interpret_rc(FILE * f)
     }
 }
 
-void
-parse_proxy()
+static void
+parse_proxy(void)
 {
     if (non_null(HTTP_proxy))
 	parseURL(HTTP_proxy, &HTTP_proxy_parsed, NULL);
@@ -1200,8 +1205,8 @@ parse_proxy()
 }
 
 #ifdef USE_COOKIE
-void
-parse_cookie()
+static void
+parse_cookie(void)
 {
     if (non_null(cookie_reject_domains))
 	Cookie_reject_domains = make_domain_list(cookie_reject_domains);
@@ -1238,11 +1243,60 @@ do_mkdir(const char *dir, long mode)
 #endif				/* not __MINW32_VERSION */
 #endif				/* not __EMX__ */
 
+static int
+do_recursive_mkdir(const char *dir)
+{
+    char *ch, *dircpy, tmp;
+    struct stat st;
+
+    if (*dir == '\0')
+	 return -1;
+
+    dircpy = Strnew_charp(dir)->ptr; 
+    ch = dircpy + 1;
+    do {
+	while (!(*ch == '/' || *ch == '\0')) {
+	    ch++;
+	}
+
+	tmp = *ch;
+	*ch = '\0';
+
+	if (stat(dircpy, &st) < 0) {
+	    if (errno != ENOENT) {	/* no directory */
+		return -1; 
+	    }
+	    if (do_mkdir(dircpy, 0700) < 0) {
+		return -1; 
+	    }
+	    stat(dircpy, &st);
+	}
+	if (!S_ISDIR(st.st_mode)) {
+	    /* not a directory */
+	    return -1; 
+	}
+	if (!(st.st_mode & S_IWUSR)) {
+	    return -1; 
+	}
+
+	*ch = tmp;
+
+    } while (*ch++ != '\0');
+#ifdef HAVE_FACCESSAT
+    if (faccessat(AT_FDCWD, dir, W_OK|X_OK, AT_EACCESS) < 0) {
+	return -1; 
+    }
+#endif
+
+    return 0;
+}
+
 static void loadSiteconf(void);
 
 void
 sync_with_option(void)
 {
+    init_tmp();
     if (PagerMax < LINES)
 	PagerMax = LINES;
     WrapSearch = WrapDefault;
@@ -1283,6 +1337,9 @@ sync_with_option(void)
 #ifdef USE_UNICODE
     update_utf8_symbol();
 #endif
+#ifdef USE_M17N
+    wtf_init(DocumentCharset, DisplayCharset);
+#endif
     if (fmInitialized) {
 	initKeymap(FALSE);
 #ifdef USE_MOUSE
@@ -1298,13 +1355,18 @@ void
 init_rc(void)
 {
     int i;
-    struct stat st;
     FILE *f;
 
     if (rc_dir != NULL)
 	goto open_rc;
 
-    rc_dir = expandPath(RC_DIR);
+    rc_dir = allocStr(getenv("W3M_DIR"), -1);
+    if (rc_dir == NULL || *rc_dir == '\0')
+	rc_dir = allocStr(RC_DIR, -1);
+    if (rc_dir == NULL || *rc_dir == '\0')
+	goto rc_dir_err;
+    rc_dir = expandPath(rc_dir);
+
     i = strlen(rc_dir);
     if (i > 1 && rc_dir[i - 1] == '/')
 	rc_dir[i - 1] = '\0';
@@ -1315,32 +1377,12 @@ init_rc(void)
     system_charset_str = display_charset_str;
 #endif
 
-    if (stat(rc_dir, &st) < 0) {
-	if (errno == ENOENT) {	/* no directory */
-	    if (do_mkdir(rc_dir, 0700) < 0) {
-		/* fprintf(stderr, "Can't create config directory (%s)!\n", rc_dir); */
-		goto rc_dir_err;
-	    }
-	    else {
-		stat(rc_dir, &st);
-	    }
-	}
-	else {
-	    /* fprintf(stderr, "Can't open config directory (%s)!\n", rc_dir); */
-	    goto rc_dir_err;
-	}
-    }
-    if (!S_ISDIR(st.st_mode)) {
-	/* not a directory */
-	/* fprintf(stderr, "%s is not a directory!\n", rc_dir); */
-	goto rc_dir_err;
-    }
-    if (!(st.st_mode & S_IWUSR)) {
-	/* fprintf(stderr, "%s is not writable!\n", rc_dir); */
-	goto rc_dir_err;
-    }
-    no_rc_dir = FALSE;
     tmp_dir = rc_dir;
+
+    if (do_recursive_mkdir(rc_dir) == -1)
+	goto rc_dir_err;
+
+    no_rc_dir = FALSE;
 
     if (config_file == NULL)
 	config_file = rcFile(CONFIG_FILE);
@@ -1365,17 +1407,53 @@ init_rc(void)
 
   rc_dir_err:
     no_rc_dir = TRUE;
+    create_option_search_table();
+    goto open_rc;
+}
+
+void
+init_tmp(void)
+{
+    int i;
+
+    if (param_tmp_dir)
+	tmp_dir = param_tmp_dir;
+    if (*tmp_dir == '\0')
+	tmp_dir = rc_dir;
+
+    if (strcmp(tmp_dir, rc_dir) == 0) {
+	if (no_rc_dir)
+	    goto tmp_dir_err;
+	return;
+    }
+
+    tmp_dir = expandPath(tmp_dir);
+    i = strlen(tmp_dir);
+    if (i > 1 && tmp_dir[i - 1] == '/')
+	tmp_dir[i - 1] = '\0';
+    if (do_recursive_mkdir(tmp_dir) == -1)
+	goto tmp_dir_err;
+    return;
+
+  tmp_dir_err:
+#ifdef HAVE_MKDTEMP
+    if (mkd_tmp_dir) {
+	tmp_dir = mkd_tmp_dir;
+	return;
+    }
+#endif
     if (((tmp_dir = getenv("TMPDIR")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TMP")) == NULL || *tmp_dir == '\0') &&
 	((tmp_dir = getenv("TEMP")) == NULL || *tmp_dir == '\0'))
 	tmp_dir = "/tmp";
 #ifdef HAVE_MKDTEMP
     tmp_dir = mkdtemp(Strnew_m_charp(tmp_dir, "/w3m-XXXXXX", NULL)->ptr);
-    if (tmp_dir == NULL)
+    if (tmp_dir)
+	mkd_tmp_dir = tmp_dir;
+    else
 	tmp_dir = rc_dir;
 #endif
-    create_option_search_table();
-    goto open_rc;
+    return;
 }
 
 

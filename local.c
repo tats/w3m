@@ -32,8 +32,6 @@ writeLocalCookie()
 {
     FILE *f;
 
-    if (no_rc_dir)
-	return;
     if (Local_cookie_file)
 	return;
     Local_cookie_file = tmpfname(TMPF_COOKIE, NULL)->ptr;

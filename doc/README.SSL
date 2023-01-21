@@ -1,0 +1,52 @@
+Support for SSL
+                                                   (2000/11/07) Katsunari Okabe
+                                                        okabek@guitar.ocn.ne.jp
+                                                   (2001/12/27)  Fumitoshi Ukai
+                                                              ukai@debian.or.jp
+
+
+* Install the OpenSSL Library before building w3m
+   to provide SSL support.
+
+* The configure script can automatically detect if the
+   OpenSSL Library has been installed. If the script does
+   not run, confirm the USE_SSL macro has been defined in
+   config.h. Furthermore, if you want to enable SSL support
+   confirm that the USE_SSL_VERIFY macro has been defined as well.
+   If the compiler throws an error, confirm the `-lssl -lcrypto`
+   linker flags are set, as well as the '-I(SSLeay/OpenSSL
+   header directory)` flag.
+
+   SSL Support can be validated from the "SSL Settings" section
+   of the Option Setting Panel.
+
+ * The following settings are available for SSL:
+
+   ssl_forbid_method
+       List of methods you can forbid (2: SSLv2: 3: SSLv3, t: TLSv1.0,
+       5: TLSv1.1, 6: TLSv1.2, 7: TLSv1.3)
+       (default is 2, 3, t, 5)
+   ssl_min_version
+       Lowest SSL Version, OpenSSL 1.1 and later, options are: (all,
+       TLSv1.0, TLSv1.1, TLSv1.2, TLSv1.3) (default is not set)
+   ssl_cipher
+       Prior to TLSv1.2 the SSL cipher (example: DEFAULT:@SECLEVEL=2)
+       (default for OpenSSL 1.1 and later is not set.
+       Otherwise DEFAULT:!LOW:!RC4:!EXP).
+   ssl_verify_server ON/OFF
+       Verify the SSL server (default: ON)
+   ssl_cert_file filename
+       SSL client PEM certificate (default is not set)
+   ssl_key_file
+       SSL client PEM secret key (default is not set)
+   ssl_ca_path directory
+       SSL CA PEM certificate directory (default is not set)
+   ssl_ca_file filename
+       SSL CA PEM certificate filename (default is not set,
+       set when you run the configure script)
+   ssl_ca_default ON/OFF
+       Use the standard location for the SSL CA PEM certificate file
+       (default ON)
+
+ * If your environment uses the EGD (Entropy Gathering Daemon),
+   please check the USE_EGD macro.

@@ -41,7 +41,7 @@ static int xpix, ypix, nbs, obs = 0;
 
 static int is_xterm = 0;
 
-void mouse_init(), mouse_end();
+void mouse_init(void), mouse_end(void);
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
 
@@ -263,7 +263,7 @@ check_cygwin_console(void)
 char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), reset_error_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
 void setlinescols(void);
-void flush_tty();
+void flush_tty(void);
 
 #ifndef SIGIOT
 #define SIGIOT SIGABRT
@@ -452,7 +452,7 @@ extern int tgetflag(char *);
 extern char *tgetstr(char *, char **);
 extern char *tgoto(char *, int, int);
 extern int tputs(char *, int, int (*)(char));
-void clear(), wrap(), touch_line(), touch_column(int);
+void clear(void), wrap(void), touch_line(void), touch_column(int);
 #if 0
 void need_clrtoeol(void);
 #endif
@@ -824,14 +824,13 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
 	argv[n++] = "-l";
 	argv[n++] = do_anim ? "auto" : "disable";
 	argv[n++] = "-w";
-	sprintf(digit[0], "%d", w*pixel_per_char_i);
+	sprintf(digit[0], "%d", w);
 	argv[n++] = digit[0];
 	argv[n++] = "-h";
-	sprintf(digit[1], "%d", h*pixel_per_line_i);
+	sprintf(digit[1], "%d", h);
 	argv[n++] = digit[1];
 	argv[n++] = "-c";
-	sprintf(clip, "%dx%d+%d+%d", sw*pixel_per_char_i, sh*pixel_per_line_i,
-			sx*pixel_per_char_i, sy*pixel_per_line_i);
+	sprintf(clip, "%dx%d+%d+%d", sw, sh, sx, sy);
 	argv[n++] = clip;
 	argv[n++] = url;
 	if (getenv("TERM") && strcmp(getenv("TERM"), "screen") == 0 &&
@@ -1679,7 +1678,7 @@ static char *
 color_seq(int colmode)
 {
     static char seqbuf[32];
-    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + 30);
+    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + (highIntensityColors ? 90 : 30));
     return seqbuf;
 }
 
@@ -2059,7 +2058,7 @@ clrtoeol(void)
 }
 
 #ifdef USE_BG_COLOR
-void
+static void
 clrtoeol_with_bcolor(void)
 {
     int i, cli, cco;
@@ -2093,7 +2092,7 @@ clrtoeolx(void)
 }
 #endif				/* not USE_BG_COLOR */
 
-void
+static void
 clrtobot_eol(void (*clrtoeol) ())
 {
     int l, c;
@@ -2422,7 +2421,7 @@ bell(void)
     write1(7);
 }
 
-void
+static void
 skip_escseq(void)
 {
     int c;
@@ -2654,7 +2653,7 @@ mouse_inactive()
 #endif				/* USE_MOUSE */
 
 void
-flush_tty()
+flush_tty(void)
 {
     if (ttyf)
 	fflush(ttyf);
@@ -2662,7 +2661,7 @@ flush_tty()
 
 #ifdef USE_IMAGE
 void
-touch_cursor()
+touch_cursor(void)
 {
 #ifdef USE_M17N
     int i;

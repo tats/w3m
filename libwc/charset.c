@@ -111,11 +111,11 @@ wc_charset_to_ces(char *charset)
     char buf[16];
     int n;
 
-    if (tolower(*p) == 'x' && *(p+1) == '-')
+    if ((*p == 'x' || *p == 'X') && *(p+1) == '-')
 	p += 2;
     for (n = 0; *p && n < 15; p++) {
 	if ((unsigned char)*p > 0x20 && *p != '_' && *p != '-')
-	    buf[n++] = tolower(*p);
+	    buf[n++] = *p | 32; /* tolower(*p); */
     }
     buf[n] = 0;
     p = buf;
@@ -289,7 +289,7 @@ wc_charset_short_to_ces(char *charset)
 
     for (n = 0; *p && n < 15; p++) {
 	if ((unsigned char)*p > 0x20 && *p != '_' && *p != '-')
-	    buf[n++] = tolower(*p);
+	    buf[n++] = *p | 32; /* tolower(*p); */
     }
     buf[n] = 0;
     p = buf;
@@ -381,7 +381,7 @@ wc_locale_to_ces(char *locale)
 #endif
     for (n = 0; *p && *p != '.' && n < 7; p++) {
 	if ((unsigned char)*p > 0x20)
-	    buf[n++] = tolower(*p);
+	    buf[n++] = *p | 32; /* tolower(*p); */
     }
     buf[n] = 0;
     if (*p == '.') {

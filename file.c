@@ -1,5 +1,6 @@
 /* $Id: file.c,v 1.266 2012/05/22 09:45:56 inu Exp $ */
 /* vi: set sw=4 ts=8 ai sm noet : */
+#include "display.h"
 #include "fm.h"
 #include <sys/types.h>
 #include "myctype.h"
@@ -59,6 +60,7 @@ static wc_ces cur_document_charset = 0;
 #endif
 
 static Str cur_title;
+static Str pre_title;
 static Str cur_select;
 static Str select_str;
 static int select_is_multiple;
@@ -418,7 +420,7 @@ examineFile(char *path, URLFile *uf)
 
 #define S_IXANY	(S_IXUSR|S_IXGRP|S_IXOTH)
 
-int
+static int
 check_command(char *cmd, int auxbin_p)
 {
     static char *path = NULL;
@@ -449,7 +451,7 @@ check_command(char *cmd, int auxbin_p)
 }
 
 char *
-acceptableEncoding()
+acceptableEncoding(void)
 {
     static Str encodings = NULL;
     struct compression_decoder *d;
@@ -938,7 +940,7 @@ checkHeader(Buffer *buf, char *field)
     return NULL;
 }
 
-char *
+static char *
 checkContentType(Buffer *buf)
 {
     char *p;
@@ -2750,7 +2752,7 @@ is_blank_line(char *line, int indent)
 }
 #endif
 
-void
+static void
 fillline(struct readbuffer *obuf, int indent)
 {
     push_spaces(obuf, 1, indent - obuf->pos);
@@ -3237,6 +3239,8 @@ restore_fonteffect(struct html_feed_environ *h_env, struct readbuffer *obuf)
 static Str
 process_title(struct parsed_tag *tag)
 {
+    if (pre_title)
+	return NULL;
     cur_title = Strnew();
     return NULL;
 }
@@ -3246,12 +3250,15 @@ process_n_title(struct parsed_tag *tag)
 {
     Str tmp;
 
+    if (pre_title)
+	return NULL;
     if (!cur_title)
 	return NULL;
     Strremovefirstspaces(cur_title);
     Strremovetrailingspaces(cur_title);
     tmp = Strnew_m_charp("<title_alt title=\"",
 			 html_quote(cur_title->ptr), "\">", NULL);
+    pre_title = cur_title;
     cur_title = NULL;
     return tmp;
 }
@@ -3259,6 +3266,8 @@ process_n_title(struct parsed_tag *tag)
 static void
 feed_title(char *str)
 {
+    if (pre_title)
+	return;
     if (!cur_title)
 	return;
     while (*str) {
@@ -4148,7 +4157,7 @@ feed_textarea(char *str)
     }
 }
 
-Str
+static Str
 process_hr(struct parsed_tag *tag, int width, int indent_width)
 {
     Str tmp = Strnew_charp("<nobr>");
@@ -5227,17 +5236,17 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_INPUT:
 	close_anchor(h_env, obuf);
 	tmp = process_input(tag);
-       if (tmp)
-           HTMLlineproc1(tmp->ptr, h_env);
-       return 1;
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
     case HTML_BUTTON:
-       HTML5_CLOSE_A;
-       tmp = process_button(tag);
-       if (tmp)
-           HTMLlineproc1(tmp->ptr, h_env);
-       return 1;
+	HTML5_CLOSE_A;
+	tmp = process_button(tag);
+	if (tmp)
+	    HTMLlineproc1(tmp->ptr, h_env);
+	return 1;
     case HTML_N_BUTTON:
-       tmp = process_n_button();
+	tmp = process_n_button();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -5547,7 +5556,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 static TextLineListItem *_tl_lp2;
 
 static Str
-textlist_feed()
+textlist_feed(void)
 {
     TextLine *p;
     if (_tl_lp2 != NULL) {
@@ -6330,7 +6339,7 @@ HTMLlineproc2(Buffer *buf, TextLineList *tl)
 static InputStream _file_lp2;
 
 static Str
-file_feed()
+file_feed(void)
 {
     Str s;
     s = StrISgets(_file_lp2);
@@ -6341,7 +6350,7 @@ file_feed()
     return s;
 }
 
-void
+static void
 HTMLlineproc3(Buffer *buf, InputStream stream)
 {
     _file_lp2 = stream;
@@ -7279,6 +7288,7 @@ loadHTMLstream(URLFile *f, Buffer *newBuf, FILE * src, int internal)
 #endif
 
     cur_title = NULL;
+    pre_title = NULL;
     n_textarea = 0;
     cur_textarea = NULL;
     max_textarea = MAX_TEXTAREA;
@@ -8199,6 +8209,8 @@ save2tmp(URLFile uf, char *tmpf)
     int check = 0;
     if (uf.scheme == SCM_NEWS) {
 	char c;
+	if (!uf.stream)
+		return -1;
 	while (c = UFgetc(&uf), !iseos(uf.stream)) {
 	    if (c == '\n') {
 		if (check == 0)
@@ -8774,43 +8786,53 @@ uncompress_stream(URLFile *uf, char **src)
 #endif /* __MINGW32_VERSION */
 }
 
+
 static FILE *
 lessopen_stream(char *path)
 {
     char *lessopen;
     FILE *fp;
+    Str tmpf;
+    int c, n = 0;
 
     lessopen = getenv("LESSOPEN");
-    if (lessopen == NULL) {
+    if (lessopen == NULL || lessopen[0] == '\0')
+	return NULL;
+
+    if (lessopen[0] != '|') /* filename mode, not supported m(__)m */
+	return NULL;
+
+    /* pipe mode */
+    ++lessopen;
+
+    /* LESSOPEN must contain one conversion specifier for strings ('%s'). */
+    for (const char *f = lessopen; *f; f++) {
+	if (*f == '%') {
+	    if (f[1] == '%') /* Literal % */
+		f++;
+	    else if (*++f == 's') {
+		if (n)
+		    return NULL;
+		n++;
+	    }
+	    else
+		return NULL;
+	}
+    }
+    if (!n)
+	return NULL;
+
+    tmpf = Sprintf(lessopen, shell_quote(path));
+    fp = popen(tmpf->ptr, "r");
+    if (fp == NULL) {
 	return NULL;
     }
-    if (lessopen[0] == '\0') {
+    c = getc(fp);
+    if (c == EOF) {
+	pclose(fp);
 	return NULL;
     }
-
-    if (lessopen[0] == '|') {
-	/* pipe mode */
-	Str tmpf;
-	int c;
-
-	++lessopen;
-	tmpf = Sprintf(lessopen, shell_quote(path));
-	fp = popen(tmpf->ptr, "r");
-	if (fp == NULL) {
-	    return NULL;
-	}
-	c = getc(fp);
-	if (c == EOF) {
-	    pclose(fp);
-	    return NULL;
-	}
-	ungetc(c, fp);
-    }
-    else {
-	/* filename mode */
-	/* not supported m(__)m */
-	fp = NULL;
-    }
+    ungetc(c, fp);
     return fp;
 }
 

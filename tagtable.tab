@@ -50,8 +50,8 @@ img		HTML_IMG
 image		HTML_IMG
 code		HTML_NOP
 /code		HTML_NOP
-dfn		HTML_NOP
-/dfn		HTML_NOP
+dfn		HTML_DFN
+/dfn		HTML_N_DFN
 em		HTML_EM
 /em		HTML_N_EM
 cite		HTML_NOP

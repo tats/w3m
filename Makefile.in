@@ -90,11 +90,11 @@ MODEL=@W3M_TARGET@-@W3M_LANG@
 SRCS=main.c file.c buffer.c display.c etc.c search.c linein.c table.c local.c \
 	form.c map.c frame.c rc.c menu.c mailcap.c image.c \
 	symbol.c entity.c terms.c url.c ftp.c mimehead.c regex.c news.c \
-	func.c cookie.c history.c backend.c $(KEYBIND_SRC)
+	func.c cookie.c history.c backend.c util.c $(KEYBIND_SRC)
 OBJS=main.o file.o buffer.o display.o etc.o search.o linein.o table.o local.o\
 	form.o map.o frame.o rc.o menu.o mailcap.o image.o \
 	symbol.o entity.o terms.o url.o ftp.o mimehead.o regex.o news.o \
-	func.o cookie.o history.o backend.o $(KEYBIND_OBJ)
+	func.o cookie.o history.o backend.o util.o $(KEYBIND_OBJ)
 LSRCS=anchor.c parsetagx.c tagtable.c istream.c
 LOBJS=anchor.o parsetagx.o tagtable.o istream.o
 LLOBJS=version.o

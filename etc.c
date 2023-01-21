@@ -256,6 +256,9 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 #ifdef USE_M17N
     int i;
     int plen = 0, clen;
+    int *plens = NULL;
+    static int *plens_buffer = NULL;
+    static int plens_size = 0;
 #endif
 
     if (prop_size < s->length) {
@@ -263,6 +266,13 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	prop_buffer = New_Reuse(Lineprop, prop_buffer, prop_size);
     }
     prop = prop_buffer;
+#ifdef USE_M17N
+    if (plens_size < s->length) {
+	plens_size = (s->length > LINELEN) ? s->length : LINELEN;
+	plens_buffer = New_Reuse(int, plens_buffer, plens_size);
+    }
+    plens = plens_buffer;
+#endif
 
     if (ShowEffect) {
 	bs = memchr(str, '\b', s->length);
@@ -287,7 +297,9 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    char *sp = str, *ep;
 	    s = Strnew_size(s->length);
 	    do_copy = TRUE;
-	    ep = bs ? (bs - 2) : endp;
+	    ep = endp;
+	    if (bs && ep > bs - 2)
+		ep = bs - 2;
 #ifdef USE_ANSI_COLOR
 	    if (es && ep > es - 2)
 		ep = es - 2;
@@ -298,13 +310,24 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 		if (color)
 		    *(color++) = 0;
 #endif
+#ifdef USE_M17N
+		*(plens++) = plen = 1;
+#endif
 	    }
 	    Strcat_charp_n(s, sp, (int)(str - sp));
 	}
     }
     if (!do_copy) {
-	for (; str < endp && IS_ASCII(*str); str++)
+	for (; str < endp && IS_ASCII(*str); str++) {
 	    *(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
+#ifdef USE_ANSI_COLOR
+	    if (color)
+		*(color++) = 0;
+#endif
+#ifdef USE_M17N
+	    *(plens++) = plen = 1;
+#endif
+	}
     }
 
     while (str < endp) {
@@ -366,6 +389,11 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, plen);
 			    prop -= plen;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color -= plen;
+#endif
+			    plen = *(--plens);
 			    str += 2;
 			}
 		    }
@@ -387,6 +415,11 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, plen);
 			    prop -= plen;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color -= plen;
+#endif
+			    plen = *(--plens);
 			    str++;
 			}
 #else
@@ -397,6 +430,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			else {
 			    Strshrink(s, 1);
 			    prop--;
+#ifdef USE_ANSI_COLOR
+			    if (color)
+				color--;
+#endif
 			    str++;
 			}
 #endif
@@ -441,6 +478,9 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	*(prop++) = mode;
 #ifdef USE_M17N
 	plen = get_mclen(str);
+	if (str + plen > endp)
+	    plen = endp - str;
+	*(plens++) = plen;
 	if (plen > 1) {
 	    mode = (mode & ~PC_WCHAR1) | PC_WCHAR2;
 	    for (i = 1; i < plen; i++) {
@@ -794,6 +834,15 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
     if (**instr == '\0')
 	return 0;
     for (p = *instr; *p; p++) {
+	/* Drop Unicode soft hyphen */
+	if (*(unsigned char *)p == 0210
+	    && *(unsigned char *)(p + 1) == 0200
+	    && *(unsigned char *)(p + 2) == 0201
+	    && *(unsigned char *)(p + 3) == 0255) {
+	    p += 3;
+	    continue;
+	}
+
 	prev_status = *status;
 	next_status(*p, status);
 	switch (*status) {
@@ -1662,7 +1711,7 @@ url_unquote_conv0(char *url)
 }
 
 static char *tmpf_base[MAX_TMPF_TYPE] = {
-    "tmp", "src", "frame", "cache", "cookie",
+    "tmp", "src", "frame", "cache", "cookie", "hist",
 };
 static unsigned int tmpf_seq[MAX_TMPF_TYPE];
 
@@ -1670,8 +1719,23 @@ Str
 tmpfname(int type, char *ext)
 {
     Str tmpf;
+    char *dir;
+
+    switch(type) {
+    case TMPF_HIST:
+	dir = rc_dir;
+	break;
+    case TMPF_DFL:
+    case TMPF_COOKIE:
+    case TMPF_SRC:
+    case TMPF_FRAME:
+    case TMPF_CACHE:
+    default:
+	dir = tmp_dir;
+    }
+
     tmpf = Sprintf("%s/w3m%s%d-%d%s",
-		   tmp_dir,
+		   dir,
 		   tmpf_base[type],
 		   CurrentPid, tmpf_seq[type]++, (ext) ? ext : "");
     pushText(fileToDelete, tmpf->ptr);

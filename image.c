@@ -31,9 +31,9 @@ static int n_terminal_image = 0;
 static int max_terminal_image = 0;
 static FILE *Imgdisplay_rf = NULL, *Imgdisplay_wf = NULL;
 static pid_t Imgdisplay_pid = 0;
-static int openImgdisplay();
-static void closeImgdisplay();
-int getCharSize();
+static int openImgdisplay(void);
+static void closeImgdisplay(void);
+static int getCharSize(void);
 
 void
 initImage()
@@ -46,8 +46,8 @@ initImage()
 
 int get_pixel_per_cell(int *ppc, int *ppl);
 
-int
-getCharSize()
+static int
+getCharSize(void)
 {
     FILE *f;
     Str tmp;
@@ -134,7 +134,7 @@ openImgdisplay()
 }
 
 static void
-closeImgdisplay()
+closeImgdisplay(void)
 {
     if (Imgdisplay_wf)
 	fclose(Imgdisplay_wf);
@@ -195,14 +195,8 @@ syncImage(void)
     n_terminal_image = 0;
 }
 
-void put_image_osc5379(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh);
-void put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, int sh, int n_terminal_image);
-void put_image_iterm2(char *url, int x, int y, int w, int h);
-void put_image_kitty(char *url, int x, int y, int w, int h, int sx, int sy, int
-    sw, int sh, int c, int r);
-
 void
-drawImage()
+drawImage(void)
 {
     static char buf[64];
     int j, draw = FALSE;
@@ -253,7 +247,9 @@ drawImage()
 
 
 	    if (enable_inline_image == INLINE_IMG_SIXEL) {
-		put_image_sixel(url, x, y, w, h, sx, sy, sw, sh, n_terminal_image);
+		w = i->cache->a_width > 0 ? i->width : 0;
+		h = i->cache->a_height > 0 ? i->height : 0;
+		put_image_sixel(url, x, y, w, h, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, n_terminal_image);
 	    } else if (enable_inline_image == INLINE_IMG_OSC5379) {
 		put_image_osc5379(url, x, y, w, h, sx, sy, sw, sh);
 	    } else if (enable_inline_image == INLINE_IMG_ITERM2) {
@@ -388,7 +384,7 @@ getAllImage(Buffer *buf)
     }
 }
 
-void
+static void
 showImageProgress(Buffer *buf)
 {
     AnchorList *al;
@@ -620,16 +616,8 @@ getImage(Image * image, ParsedURL *current, int flag)
 
 	    if (image->height > 0 && image->height % pixel_per_line_i > 0)
 		image->height += (pixel_per_line_i - image->height % pixel_per_line_i);
-	    if (image->height > 0 && image->width > 0) {
-		cache->loaded = IMG_FLAG_LOADED;
-	    }
 	}
-	if (cache->loaded == IMG_FLAG_UNLOADED) {
-	    cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
-	}
-	else {
-	    cache->touch = NULL;
-	}
+	cache->touch = tmpfname(TMPF_DFL, NULL)->ptr;
 
 	cache->width = image->width ;
 	cache->height = image->height ;

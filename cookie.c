@@ -191,7 +191,7 @@ match_cookie(ParsedURL *pu, struct cookie *cookie, char *domainname)
     return 1;
 }
 
-struct cookie *
+static struct cookie *
 get_cookie_info(Str domain, Str path, Str name)
 {
     struct cookie *p;
@@ -254,7 +254,7 @@ find_cookie(ParsedURL *pu)
     return tmp;
 }
 
-int
+static int
 check_avoid_wrong_number_of_dots_domain( Str domain )
 {
    TextListItem *tl;
@@ -412,7 +412,7 @@ add_cookie(ParsedURL *pu, Str name, Str value,
     return 0;
 }
 
-struct cookie *
+static struct cookie *
 nth_cookie(int n)
 {
     struct cookie *p;

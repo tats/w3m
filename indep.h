@@ -86,11 +86,11 @@ extern void growbuf_reserve(struct growbuf *gb, int leastarea);
 extern void growbuf_append(struct growbuf *gb, const unsigned char *src, int len);
 #define GROWBUF_ADD_CHAR(gb,ch) ((((gb)->length>=(gb)->area_size)?growbuf_reserve(gb,(gb)->length+1):(void)0),(void)((gb)->ptr[(gb)->length++] = (ch)))
 
-extern char *w3m_auxbin_dir();
-extern char *w3m_lib_dir();
-extern char *w3m_etc_dir();
-extern char *w3m_conf_dir();
-extern char *w3m_help_dir();
+extern char *w3m_auxbin_dir(void);
+extern char *w3m_lib_dir(void);
+extern char *w3m_etc_dir(void);
+extern char *w3m_conf_dir(void);
+extern char *w3m_help_dir(void);
 
 #define NewWithoutGC(type)	((type*)xmalloc(sizeof(type)))
 #define NewWithoutGC_N(type,n)	((type*)xmalloc((n)*sizeof(type)))

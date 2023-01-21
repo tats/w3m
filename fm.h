@@ -812,7 +812,8 @@ typedef struct http_request {
 #define TMPF_FRAME	2
 #define TMPF_CACHE	3
 #define TMPF_COOKIE	4
-#define MAX_TMPF_TYPE	5
+#define TMPF_HIST	5
+#define MAX_TMPF_TYPE	6
 
 #define set_no_proxy(domains) (NO_proxy_domains=make_domain_list(domains))
 
@@ -957,6 +958,7 @@ global int override_user_agent init(FALSE);
 
 #ifdef USE_COLOR
 global int useColor init(TRUE);
+global int highIntensityColors init(FALSE);
 global int basic_color init(8);	/* don't change */
 global int anchor_color init(4);	/* blue  */
 global int image_color init(2);	/* green */
@@ -1136,6 +1138,10 @@ extern int symbol_width0;
 global int no_rc_dir init(FALSE);
 global char *rc_dir init(NULL);
 global char *tmp_dir;
+global char *param_tmp_dir init(NULL);
+#ifdef HAVE_MKDTEMP
+global char *mkd_tmp_dir init(NULL);
+#endif
 global char *config_file init(NULL);
 
 #ifdef USE_MOUSE

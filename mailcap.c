@@ -220,7 +220,7 @@ loadMailcap(char *filename)
 }
 
 void
-initMailcap()
+initMailcap(void)
 {
     TextListItem *tl;
     int i;
@@ -238,7 +238,7 @@ initMailcap()
 }
 
 char *
-acceptableMimeTypes()
+acceptableMimeTypes(void)
 {
     static Str types = NULL;
     TextList *l;
@@ -308,7 +308,7 @@ searchExtViewer(char *type)
 #define MCF_SQUOTED (1 << 0)
 #define MCF_DQUOTED (1 << 1)
 
-Str
+static Str
 quote_mailcap(char *s, int flag)
 {
     Str d;

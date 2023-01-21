@@ -1,0 +1,52 @@
+Keyboard Support for w3m
+                                                 (1999/06/30) H. Sakamoto
+                                                  hsaka@mth.biglobe.ne.jp
+
+Keyboard settings are located in ~/.w3m/keymap.
+Settings are designated by:
+
+    keymap key command [argument]
+
+Ex. See: keymap.default and keymap.lynx
+Command settings can be seen in README.func
+
+Multi-character escape sequences are designated by:
+    Escape letter
+    Escape [ letter, Escape O letter
+    Escape [ number ~, EScape [ number number ~
+
+Special characters are represented as:
+
+    Ctrl     : C-, ^
+    Escape   : ESC-, M-, \e, ^[
+    Space    : SPC, ' '
+    Tab      : AB, \t, ^i, ^I
+    Delete   : DEL, ^?
+    BackSpace: \b, ^h, ^H
+    NewLine  : \n, ^j, ^J
+    Return   : \r, ^m, ^M
+    Bell     : \a, ^g, ^G
+    Up       : UP, ^[[A
+    Down     : DOWN, ^[[B
+    Right    : RIGHT, ^[[C
+    Left     : LEFT, ^[[D
+    ^        : \^
+
+Also, terminal commands are can be used by:
+
+    Insert  : ^[[2~
+    PageUp  : ^[[5~
+    PageDown: ^[[6~
+    F1      : ^[[11~
+    F2      : ^[[12~
+    F3      : ^[[13~
+    F4      : ^[[14~
+    F5      : ^[[15~
+    F6      : ^[[17~
+    F7      : ^[[18~
+    F8      : ^[[19~
+    F9      : ^[[20~
+    F10     : ^[[21~
+    Help    : ^[[28~
+
+(Confirm for each keyboard using Ctrl-V + key.)

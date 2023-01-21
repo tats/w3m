@@ -1,4 +1,4 @@
-Debian's w3m 0.5.3+git202301XX
+Debian's w3m 0.5.3+git20230121
 
 * new features
   - location of ~/.w3m can be changed with the W3M_DIR environment variable
@@ -18,7 +18,7 @@ Debian's w3m 0.5.3+git202301XX
   - fix configure tests broken with Clang 16
   - do not override history file if it was changed
   - only read a first title to avoid titles in svg
-  - add workaround for w3mman on Fedora
+  - use GROFF_NO_SGR=1 for w3mman with non-Debian groff
   - handle failed system calls
   - fix charset declaration parser fails with turkish locale
   - fix images are not displayed for OSC 5379

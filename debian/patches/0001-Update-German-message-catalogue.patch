@@ -1,0 +1,77 @@
+From: Markus Hiereth <translation@hiereth.de>
+Date: Sun, 29 Jan 2023 09:06:31 +0100
+Subject: Update German message catalogue
+
+Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1029933#5
+---
+ po/de.po | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/po/de.po b/po/de.po
+index 8191c95..a9c2013 100644
+--- a/po/de.po
++++ b/po/de.po
+@@ -1,13 +1,13 @@
+ # German translation of w3m
+ # Copyright (C) 2014 THE w3m'S COPYRIGHT HOLDER
+ # This file is distributed under the same license as the w3m package.
+-# Markus Hiereth <translation@hiereth.de>, 2014,2022.
++# Markus Hiereth <translation@hiereth.de>, 2014,2022,2023.
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: w3m 0.5.3\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2023-01-04 19:22+0900\n"
+-"PO-Revision-Date: 2022-05-29 09:00+0100\n"
++"PO-Revision-Date: 2023-01-27 22:57+0100\n"
+ "Last-Translator: Markus Hiereth <translation@hiereth.de>\n"
+ "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
+ "Language: de\n"
+@@ -15,7 +15,6 @@ msgstr ""
+ "Content-Type: text/plain; charset=UTF-8\n"
+ "Content-Transfer-Encoding: 8bit\n"
+ "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+-"X-Generator: Virtaal 0.7.1\n"
+ 
+ #: menu.c:269
+ msgid " Back         (b) "
+@@ -234,7 +233,7 @@ msgstr "In Farbe anzeigen"
+ 
+ #: rc.c:100
+ msgid "Use high-intensity colors"
+-msgstr ""
++msgstr "Farben hoher Intensität nutzen"
+ 
+ #: rc.c:101
+ msgid "Color of normal character"
+@@ -339,7 +338,7 @@ msgstr "Verzeichnis für ausführbare Skripte (cgi-bin)"
+ 
+ #: rc.c:132
+ msgid "Directory for temporary files"
+-msgstr ""
++msgstr "Verzeichnis für temporäre Dateien"
+ 
+ #: rc.c:133
+ msgid "Confirm when quitting with q"
+@@ -926,18 +925,18 @@ msgstr "Nur ISO-2022"
+ msgid "ON"
+ msgstr "AN"
+ 
+-# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
++# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014
+ #: rc.c:372
+ msgid "ASCII"
+ msgstr "ASCII"
+ 
+-# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
++# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014
+ # hier ist "Zeichensatz" akzeptabel mh, 09.10.2014
+ #: rc.c:373
+ msgid "charset specific"
+ msgstr "zeichensatzspezifisch"
+ 
+-# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014 
++# Wert aus einem Set zur Wiedergabe von Rändern, mh, 05.10.2014
+ #: rc.c:374
+ msgid "DEC special graphics"
+ msgstr "mit DEC-Grafiken"

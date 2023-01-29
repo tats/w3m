@@ -1,3 +1,8 @@
+2023-01-29  Markus Hiereth  <translation@hiereth.de>
+
+	* po/de.po: Update German message catalogue.
+	Origin: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1029933#5
+
 2023-01-21  Tatsuya Kinoshita  <tats@debian.org>
 
 	* NEWS: Update NEWS to 0.5.3+git20230121.

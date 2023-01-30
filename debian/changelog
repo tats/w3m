@@ -1,3 +1,9 @@
+w3m (0.5.3+git20230121-2) unstable; urgency=medium
+
+  * Update German message catalogue (closes: #1029933)
+
+ -- Tatsuya Kinoshita <tats@debian.org>  Sun, 29 Jan 2023 21:03:49 +0900
+
 w3m (0.5.3+git20230121-1) unstable; urgency=medium
 
   [ Debian Janitor ]

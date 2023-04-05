@@ -8,6 +8,8 @@ $charset = 'UTF-8';
  'BUF:NEXT', '一つ下のバッファを選択',
  'BUF:DELETE', '現在選択しているバッファを削除',
  'BUF:GO', '現在選択しているバッファを表示',
+ 'BUF:MVDN', '現在選択しているバッファを一つ下に移動',
+ 'BUF:MVUP', '現在選択しているバッファを一つ上に移動',
 );
 
 %lineedit_funcdesc = (

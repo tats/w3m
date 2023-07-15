@@ -303,8 +303,8 @@ extern int REV_LB[];
 #endif				/* __EMX__ */
 
 
-#define SKIP_BLANKS(p) {while(*(p)&&IS_SPACE(*(p)))(p)++;}
-#define SKIP_NON_BLANKS(p) {while(*(p)&&!IS_SPACE(*(p)))(p)++;}
+#define SKIP_BLANKS(p) do{while(*(p)&&IS_SPACE(*(p)))(p)++;}while(0)
+#define SKIP_NON_BLANKS(p) do{while(*(p)&&!IS_SPACE(*(p)))(p)++;}while(0)
 #define IS_ENDL(c) ((c)=='\0'||(c)=='\r'||(c)=='\n')
 #define IS_ENDT(c) (IS_ENDL(c)||(c)==';')
 

@@ -1186,7 +1186,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 }
 
 #ifdef USE_DIGEST_AUTH
-#include <openssl/md5.h>
+#include <openssl/evp.h>
 
 /* RFC2617: 3.2.2 The Authorization Request Header
  * 
@@ -1212,6 +1212,20 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
  *                     "8" | "9" | "a" | "b" |
  *                     "c" | "d" | "e" | "f"
  */
+
+#define MD5_DIGEST_LENGTH 16
+
+static void
+MD5(const unsigned char *d, unsigned long n, unsigned char *md)
+{
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+
+    EVP_DigestInit_ex(ctx, EVP_md5(), NULL);
+    EVP_DigestUpdate(ctx, d, n);
+    EVP_DigestFinal_ex(ctx, md, NULL);
+    EVP_MD_CTX_free(ctx);
+}
+
 
 static Str
 digest_hex(unsigned char *p)

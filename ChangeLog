@@ -1,3 +1,11 @@
+2023-07-18  Rene Kita  <mail@rkta.de>
+
+	* etc.c: Fix OOB access due to multiple backspaces.
+	Origin: https://github.com/tats/w3m/pull/273
+	Bug-Debian: https://github.com/tats/w3m/issues/268
+	Bug-Debian: https://github.com/tats/w3m/issues/270 [CVE-2023-38252]
+	Bug-Debian: https://github.com/tats/w3m/issues/271 [CVE-2023-38253]
+
 2023-01-29  Markus Hiereth  <translation@hiereth.de>
 
 	* po/de.po: Update German message catalogue.

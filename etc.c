@@ -393,7 +393,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			    if (color)
 				color -= plen;
 #endif
-			    plen = *(--plens);
+			    if (plens == plens_buffer)
+				plen = 0;
+			    else
+				plen = *(--plens);
 			    str += 2;
 			}
 		    }
@@ -419,7 +422,10 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			    if (color)
 				color -= plen;
 #endif
-			    plen = *(--plens);
+			    if (plens == plens_buffer)
+				plen = 0;
+			    else
+				plen = *(--plens);
 			    str++;
 			}
 #else

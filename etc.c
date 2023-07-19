@@ -2094,6 +2094,8 @@ static char Base64Table[] =
 Str
 base64_encode(const char *src, size_t len)
 {
+#define Strcatc(x,y) ((x)->ptr[(x)->length++]=(y))
+#define Strnulterm(x) ((x)->ptr[(x)->length]=0)
     Str dest;
     const unsigned char *in, *endw, *s;
     unsigned long j;
@@ -2150,4 +2152,6 @@ base64_encode(const char *src, size_t len)
     }
     Strnulterm(dest);
     return dest;
+#undef Strcatc
+#undef Strnulterm
 }

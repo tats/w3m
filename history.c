@@ -90,9 +90,7 @@ saveHistory(Hist *hist, size_t size)
 	return;
 
     histf = rcFile(HISTORY_FILE);
-    if (stat(histf, &st) == -1)
-	goto fail;
-    if (hist->mtime != (long long)st.st_mtime) {
+    if (!stat(histf, &st) && hist->mtime != (long long)st.st_mtime) {
 	fhist = newHist();
 	if (loadHistory(fhist) || mergeHistory(fhist, hist))
 	    disp_err_message("Can't merge history", FALSE);

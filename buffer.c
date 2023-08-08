@@ -511,8 +511,6 @@ reshapeBuffer(Buffer *buf)
     wc_uint8 old_auto_detect = WcOption.auto_detect;
 #endif
 
-    if (!buf->need_reshape)
-	return;
     buf->need_reshape = FALSE;
     buf->width = INIT_BUFFER_WIDTH;
     if (buf->sourcefile == NULL)

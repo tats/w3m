@@ -384,7 +384,6 @@ displayBuffer(Buffer *buf, int mode)
     if ((buf->width != INIT_BUFFER_WIDTH &&
 	 (is_html_type(buf->type) || FoldLine))
 	|| buf->need_reshape) {
-	buf->need_reshape = TRUE;
 	reshapeBuffer(buf);
     }
     if (showLineNum) {

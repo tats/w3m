@@ -1490,7 +1490,7 @@ myExec(char *command)
     exit(127);
 }
 
-void
+int
 mySystem(char *command, int background)
 {
 #ifndef __MINGW32_VERSION
@@ -1501,15 +1501,16 @@ mySystem(char *command, int background)
 	    setup_child(FALSE, 0, -1);
 	    myExec(command);
 	}
+	return 0;
 #else
 	Str cmd = Strnew_charp("start /f ");
 	Strcat_charp(cmd, command);
-	system(cmd->ptr);
+	return system(cmd->ptr);
 #endif
     }
     else
 #endif /* __MINGW32_VERSION */
-	system(command);
+	return system(command);
 }
 
 Str

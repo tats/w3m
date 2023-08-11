@@ -8213,7 +8213,7 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 {
     Str tmpf, command;
     struct mailcap *mcap;
-    int mc_stat;
+    int err, mc_stat;
     Buffer *buf = NULL;
     char *header, *src = NULL, *ext = uf.ext;
 
@@ -8289,8 +8289,11 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
     else {
 	if (mcap->flags & MAILCAP_NEEDSTERMINAL || !BackgroundExtViewer) {
 	    fmTerm();
-	    mySystem(command->ptr, 0);
+	    err = mySystem(command->ptr, 0);
 	    fmInit();
+	    if (err)
+		disp_err_message(Sprintf("%s returned %d", command->ptr, err)->ptr,
+				 FALSE);
 	    if (CurrentTab && Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}

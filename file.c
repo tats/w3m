@@ -1976,7 +1976,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		page = loadGopherDir(&f, &pu, &charset);
 		t = "gopher:directory";
 	    } else {
-		page = loadGopherSearch(&f, &pu, &charset);
+		page = loadGopherSearch(&pu, &charset);
 		t = "gopher:search";
 	    }
 	    TRAP_OFF;
@@ -3044,7 +3044,7 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 
 void
 do_blankline(struct html_feed_environ *h_env, struct readbuffer *obuf,
-	     int indent, int indent_incr, int width)
+	     int indent, int width)
 {
     if (h_env->blank_lines == 0)
 	flushline(h_env, obuf, indent, 1, width);
@@ -3195,7 +3195,7 @@ process_title(struct parsed_tag *tag)
 }
 
 static Str
-process_n_title(struct parsed_tag *tag)
+process_n_title(void)
 {
     Str tmp;
 
@@ -4544,8 +4544,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 1, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	}
 	obuf->flag |= RB_IGNORE_P;
 	if (cmd == HTML_P) {
@@ -4562,8 +4561,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_H:
 	if (!(obuf->flag & (RB_PREMODE | RB_IGNORE_P))) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	}
 	HTMLlineproc1("<b>", h_env);
 	set_alignment(obuf, tag);
@@ -4573,7 +4571,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (!(obuf->flag & RB_PREMODE)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	}
-	do_blankline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
+	do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	RB_RESTORE_FLAG(obuf);
 	close_anchor(h_env, obuf);
 	obuf->flag |= RB_IGNORE_P;
@@ -4586,8 +4584,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    if (!(obuf->flag & RB_PREMODE) &&
 		(h_env->envc == 0 || cmd == HTML_BLQ))
-		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			     h_env->limit);
+		do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	}
 	PUSH_ENV(cmd);
 	if (cmd == HTML_UL || cmd == HTML_OL) {
@@ -4619,8 +4616,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    if (!(obuf->flag & RB_PREMODE) &&
 		(h_env->envc == 0 || cmd == HTML_N_BLQ)) {
 		do_blankline(h_env, obuf,
-			     envs[h_env->envc].indent,
-			     INDENT_INCR, h_env->limit);
+			     envs[h_env->envc].indent, h_env->limit);
 		obuf->flag |= RB_IGNORE_P;
 	    }
 	}
@@ -4633,7 +4629,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    if (!(obuf->flag & RB_PREMODE) && envs[h_env->envc].env != HTML_DL
 		    && envs[h_env->envc].env != HTML_DL_COMPACT
 		    && envs[h_env->envc].env != HTML_DD)
-		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+		do_blankline(h_env, obuf, envs[h_env->envc].indent,
 			     h_env->limit);
 	}
 	PUSH_ENV_NOINDENT(cmd);
@@ -4784,7 +4780,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	    return 1;
 	obuf->flag &= ~RB_TITLE;
 	obuf->end_tag = 0;
-	tmp = process_n_title(tag);
+	tmp = process_n_title();
 	if (tmp)
 	    HTMLlineproc1(tmp->ptr, h_env);
 	return 1;
@@ -4841,7 +4837,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	    if (!x)
-		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+		do_blankline(h_env, obuf, envs[h_env->envc].indent,
 			     h_env->limit);
 	}
 	else
@@ -4852,8 +4848,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
     case HTML_N_PRE:
 	flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
 	if (!(obuf->flag & RB_IGNORE_P)) {
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
 	    h_env->blank_lines++;
 	}
@@ -4890,8 +4885,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	}
 	obuf->flag |= (RB_PRE | RB_IGNORE_P);
 	return 1;
@@ -4899,8 +4893,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
 	}
 	obuf->flag &= ~RB_PRE;
@@ -4911,8 +4904,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	}
 	obuf->flag |= (RB_PLAIN | RB_IGNORE_P);
 	switch (cmd) {
@@ -4932,8 +4924,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 	CLOSE_A;
 	if (!(obuf->flag & RB_IGNORE_P)) {
 	    flushline(h_env, obuf, envs[h_env->envc].indent, 0, h_env->limit);
-	    do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
-			 h_env->limit);
+	    do_blankline(h_env, obuf, envs[h_env->envc].indent, h_env->limit);
 	    obuf->flag |= RB_IGNORE_P;
 	}
 	obuf->flag &= ~RB_PLAIN;
@@ -5287,7 +5278,7 @@ HTMLtagproc1(struct parsed_tag *tag, struct html_feed_environ *h_env)
 		tmp = Sprintf("Refresh (%d sec)", refresh_interval);
 	    if (tmp) {
 		HTMLlineproc1(tmp->ptr, h_env);
-		do_blankline(h_env, obuf, envs[h_env->envc].indent, 0,
+		do_blankline(h_env, obuf, envs[h_env->envc].indent,
 			     h_env->limit);
 		if (!is_redisplay &&
 		    !((obuf->flag & RB_NOFRAMES) && RenderFrame)) {
@@ -6338,8 +6329,7 @@ proc_escape(struct readbuffer *obuf, char **str_return)
 
 
 static int
-need_flushline(struct html_feed_environ *h_env, struct readbuffer *obuf,
-	       Lineprop mode)
+need_flushline(struct html_feed_environ *h_env, struct readbuffer *obuf)
 {
     char ch;
 
@@ -6538,7 +6528,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		if (tbl->vspace > 0 && !(obuf->flag & RB_IGNORE_P)) {
 		    int indent = h_env->envs[h_env->envc].indent;
 		    flushline(h_env, obuf, indent, 0, h_env->limit);
-		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
+		    do_blankline(h_env, obuf, indent,h_env->limit);
 		}
 		save_fonteffect(h_env, obuf);
 		initRenderTable();
@@ -6547,7 +6537,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		obuf->flag &= ~RB_IGNORE_P;
 		if (tbl->vspace > 0) {
 		    int indent = h_env->envs[h_env->envc].indent;
-		    do_blankline(h_env, obuf, indent, 0, h_env->limit);
+		    do_blankline(h_env, obuf, indent, h_env->limit);
 		    obuf->flag |= RB_IGNORE_P;
 		}
 		set_space_to_prevchar(obuf->prevchar);
@@ -6692,7 +6682,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 				   mode);
 		}
 	    }
-	    if (need_flushline(h_env, obuf, mode)) {
+	    if (need_flushline(h_env, obuf)) {
 		char *bp = obuf->line->ptr + obuf->bp.len;
 		char *tp = bp - obuf->bp.tlen;
 		int i = 0;
@@ -7525,10 +7515,10 @@ loadGopherDir0(URLFile *uf, ParsedURL *pu)
 
 #ifdef USE_M17N
 Str
-loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset)
+loadGopherSearch(ParsedURL *pu, wc_ces * charset)
 #else
 Str
-loadGopherSearch0(URLFile *uf, ParsedURL *pu)
+loadGopherSearch0(ParsedURL *pu)
 #endif
 {
     Str tmp;

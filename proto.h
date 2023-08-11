@@ -203,8 +203,7 @@ extern void push_render_image(Str str, int width, int limit,
 extern void flushline(struct html_feed_environ *h_env, struct readbuffer *obuf,
 		      int indent, int force, int width);
 extern void do_blankline(struct html_feed_environ *h_env,
-			 struct readbuffer *obuf, int indent, int indent_incr,
-			 int width);
+			 struct readbuffer *obuf, int indent, int width);
 extern void purgeline(struct html_feed_environ *h_env);
 extern void save_fonteffect(struct html_feed_environ *h_env,
 			    struct readbuffer *obuf);
@@ -252,12 +251,12 @@ extern Buffer *loadHTMLString(Str page);
 #ifdef USE_GOPHER
 #ifdef USE_M17N
 extern Str loadGopherDir(URLFile *uf, ParsedURL *pu, wc_ces * charset);
-extern Str loadGopherSearch(URLFile *uf, ParsedURL *pu, wc_ces * charset);
+extern Str loadGopherSearch(ParsedURL *pu, wc_ces * charset);
 #else
 extern Str loadGopherDir0(URLFile *uf, ParsedURL *pu);
-extern Str loadGopherSearch0(URLFile *uf, ParsedURL *pu);
+extern Str loadGopherSearch0(ParsedURL *pu);
 #define loadGopherDir(uf,pu,charset) loadGopherDir0(uf,pu)
-#define loadGopherSearch(uf,pu,charset) loadGopherSearch0(uf,pu)
+#define loadGopherSearch(pu,charset) loadGopherSearch0(pu)
 #endif
 #endif				/* USE_GOPHER */
 extern Buffer *loadBuffer(URLFile *uf, Buffer *newBuf);
@@ -727,7 +726,7 @@ extern void initMouseAction(void);
 
 #ifdef USE_MENU
 extern void new_menu(Menu *menu, MenuItem *item);
-extern void geom_menu(Menu *menu, int x, int y, int mselect);
+extern void geom_menu(Menu *menu, int mselect);
 extern void draw_all_menu(Menu *menu);
 extern void draw_menu(Menu *menu);
 extern void draw_menu_item(Menu *menu, int mselect);

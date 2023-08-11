@@ -669,9 +669,6 @@ struct readbuffer {
 #define RB_SPECIAL	(RB_PRE | RB_PRE_INT | RB_SCRIPT | RB_STYLE | RB_PLAIN | RB_NOBR)
 #define RB_PLAIN_PRE	0x40000
 
-#ifdef FORMAT_NICE
-#define RB_FILL		0x80000
-#endif				/* FORMAT_NICE */
 #define RB_DEL		0x100000
 #define RB_S		0x200000
 #define RB_HTML5	0x400000

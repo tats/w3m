@@ -2506,9 +2506,6 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
     obuf->bp.pos = obuf->pos;
     obuf->bp.tlen = tag_length;
     obuf->bp.flag = obuf->flag;
-#ifdef FORMAT_NICE
-    obuf->bp.flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
     obuf->bp.top_margin = obuf->top_margin;
     obuf->bp.bottom_margin = obuf->bottom_margin;
 
@@ -2913,47 +2910,6 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	else if (RB_GET_ALIGN(obuf) == RB_LEFT && obuf->flag & RB_INTABLE) {
 	    align(lbuf, width, ALIGN_LEFT);
 	}
-#ifdef FORMAT_NICE
-	else if (obuf->flag & RB_FILL) {
-	    char *p;
-	    int rest, rrest;
-	    int nspace, d, i;
-
-	    rest = width - get_Str_strwidth(line);
-	    if (rest > 1) {
-		nspace = 0;
-		for (p = line->ptr + indent; *p; p++) {
-		    if (*p == ' ')
-			nspace++;
-		}
-		if (nspace > 0) {
-		    int indent_here = 0;
-		    d = rest / nspace;
-		    p = line->ptr;
-		    while (IS_SPACE(*p)) {
-			p++;
-			indent_here++;
-		    }
-		    rrest = rest - d * nspace;
-		    line = Strnew_size(width + 1);
-		    for (i = 0; i < indent_here; i++)
-			Strcat_char(line, ' ');
-		    for (; *p; p++) {
-			Strcat_char(line, *p);
-			if (*p == ' ') {
-			    for (i = 0; i < d; i++)
-				Strcat_char(line, ' ');
-			    if (rrest > 0) {
-				Strcat_char(line, ' ');
-				rrest--;
-			    }
-			}
-		    }
-		    lbuf = newTextLine(line, width);
-		}
-	    }
-	}
-#endif				/* FORMAT_NICE */
 #ifdef TABLE_DEBUG
 	if (w3m_debug) {
 	    FILE *f = fopen("zzzproc1", "a");
@@ -6771,15 +6727,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    bp = obuf->line->ptr + obuf->bp.len;
 		    line = Strnew_charp(bp);
 		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
-#ifdef FORMAT_NICE
-		    if (obuf->pos - i > h_env->limit)
-			obuf->flag |= RB_FILL;
-#endif				/* FORMAT_NICE */
 		    back_to_breakpoint(obuf);
 		    flushline(h_env, obuf, indent, 0, h_env->limit);
-#ifdef FORMAT_NICE
-		    obuf->flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
 		    HTMLlineproc1(line->ptr, h_env);
 		}
 	    }
@@ -6800,13 +6749,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    i = 1;
 	indent = h_env->envs[h_env->envc].indent;
 	if (obuf->pos - i > h_env->limit) {
-#ifdef FORMAT_NICE
-	    obuf->flag |= RB_FILL;
-#endif				/* FORMAT_NICE */
 	    flushline(h_env, obuf, indent, 0, h_env->limit);
-#ifdef FORMAT_NICE
-	    obuf->flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
 	}
     }
 }

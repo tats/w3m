@@ -27,7 +27,6 @@
 /*
  * Do word fill
  */
-#undef FORMAT_NICE
 
 /*
  * Enable id attribute

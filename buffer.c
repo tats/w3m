@@ -48,7 +48,7 @@ newBuffer(int width)
     n->auto_detect = WcOption.auto_detect;
 #endif
     n->check_url = MarkAllPages; /* use default from -o mark_all_pages */
-    n->need_reshape = 1;	 /* always reshape new buffers to mark URLs */
+    n->need_reshape = MarkAllPages;
     return n;
 }
 
@@ -511,8 +511,6 @@ reshapeBuffer(Buffer *buf)
     wc_uint8 old_auto_detect = WcOption.auto_detect;
 #endif
 
-    if (!buf->need_reshape)
-	return;
     buf->need_reshape = FALSE;
     buf->width = INIT_BUFFER_WIDTH;
     if (buf->sourcefile == NULL)

@@ -4858,7 +4858,6 @@ DEFUN(vwSrc, SOURCE VIEW, "Toggle between HTML shown or processed")
     buf->clone = Currentbuf->clone;
     (*buf->clone)++;
 
-    buf->need_reshape = TRUE;
     reshapeBuffer(buf);
     pushBuffer(buf);
     displayBuffer(Currentbuf, B_NORMAL);
@@ -4992,7 +4991,6 @@ DEFUN(reload, RELOAD, "Load current document anew")
 /* reshape */
 DEFUN(reshape, RESHAPE, "Re-render document")
 {
-    Currentbuf->need_reshape = TRUE;
     reshapeBuffer(Currentbuf);
     displayBuffer(Currentbuf, B_FORCE_REDRAW);
 }
@@ -5075,7 +5073,7 @@ chkURLBuffer(Buffer *buf)
 	"https?://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./?=~_\\&+@#,\\$;]*[a-zA-Z0-9_/=\\-]",
 	"file:/[a-zA-Z0-9:%\\-\\./=_\\+@#,\\$;]*",
 #ifdef USE_GOPHER
-	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_]*",
+	"gopher://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./_~]*",
 #endif				/* USE_GOPHER */
 	"ftp://[a-zA-Z0-9][a-zA-Z0-9:%\\-\\./=_+@#,\\$]*[a-zA-Z0-9_/]",
 #ifdef USE_NNTP

@@ -1490,7 +1490,7 @@ myExec(char *command)
     exit(127);
 }
 
-void
+int
 mySystem(char *command, int background)
 {
 #ifndef __MINGW32_VERSION
@@ -1501,15 +1501,16 @@ mySystem(char *command, int background)
 	    setup_child(FALSE, 0, -1);
 	    myExec(command);
 	}
+	return 0;
 #else
 	Str cmd = Strnew_charp("start /f ");
 	Strcat_charp(cmd, command);
-	system(cmd->ptr);
+	return system(cmd->ptr);
 #endif
     }
     else
 #endif /* __MINGW32_VERSION */
-	system(command);
+	return system(command);
 }
 
 Str
@@ -2048,7 +2049,7 @@ FQDN(char *host)
 	for (res = res0; res != NULL; res = res->ai_next) {
 	    if (res->ai_canonname) {
 		/* found */
-		namebuf = strdup(res->ai_canonname);
+		namebuf = Strnew_charp(res->ai_canonname)->ptr;
 		freeaddrinfo(res0);
 		return namebuf;
 	    }
@@ -2094,6 +2095,8 @@ static char Base64Table[] =
 Str
 base64_encode(const char *src, size_t len)
 {
+#define Strcatc(x,y) ((x)->ptr[(x)->length++]=(y))
+#define Strnulterm(x) ((x)->ptr[(x)->length]=0)
     Str dest;
     const unsigned char *in, *endw, *s;
     unsigned long j;
@@ -2150,4 +2153,6 @@ base64_encode(const char *src, size_t len)
     }
     Strnulterm(dest);
     return dest;
+#undef Strcatc
+#undef Strnulterm
 }

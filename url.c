@@ -1048,8 +1048,6 @@ parseURL(char *url, ParsedURL *p_url, ParsedURL *current)
 	p_url->label = NULL;
 }
 
-#define ALLOC_STR(s) ((s)==NULL?NULL:allocStr(s,-1))
-
 void
 copyParsedURL(ParsedURL *p, const ParsedURL *q)
 {
@@ -1061,13 +1059,13 @@ copyParsedURL(ParsedURL *p, const ParsedURL *q)
     p->scheme = q->scheme;
     p->port = q->port;
     p->is_nocache = q->is_nocache;
-    p->user = ALLOC_STR(q->user);
-    p->pass = ALLOC_STR(q->pass);
-    p->host = ALLOC_STR(q->host);
-    p->file = ALLOC_STR(q->file);
-    p->real_file = ALLOC_STR(q->real_file);
-    p->label = ALLOC_STR(q->label);
-    p->query = ALLOC_STR(q->query);
+    p->user = allocStr(q->user, -1);
+    p->pass = allocStr(q->pass, -1);
+    p->host = allocStr(q->host, -1);
+    p->file = allocStr(q->file, -1);
+    p->real_file = allocStr(q->real_file, -1);
+    p->label = allocStr(q->label, -1);
+    p->query = allocStr(q->query, -1);
 }
 
 void

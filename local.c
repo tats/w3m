@@ -407,19 +407,22 @@ localcgi_post(char *uri, char *qstr, FormList *request, char *referer)
 	    set_environ("CONTENT_TYPE",
 			Sprintf("multipart/form-data; boundary=%s",
 				request->boundary)->ptr);
-	    freopen(request->body, "r", stdin);
+	    if (freopen(request->body, "r", stdin))
+		return NULL;
 	}
 	else {
 	    set_environ("CONTENT_TYPE", "application/x-www-form-urlencoded");
 	    fwrite(request->body, sizeof(char), request->length, fw);
 	    fclose(fw);
-	    freopen(tmpf, "r", stdin);
+	    if (freopen(tmpf, "r", stdin))
+		return NULL;
 	}
     }
     else {
 	set_environ("REQUEST_METHOD", "GET");
 	set_environ("QUERY_STRING", qstr ? qstr : "");
-	freopen(DEV_NULL_PATH, "r", stdin);
+	if (freopen(DEV_NULL_PATH, "r", stdin))
+	    return NULL;
     }
 
 #ifdef HAVE_CHDIR		/* ifndef __EMX__ ? */

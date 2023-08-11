@@ -115,7 +115,8 @@ name_from_address(char *str, int n)
     char *s, *p;
     int l, space = TRUE;
 
-    s = allocStr(str, -1);
+    if (!(s = allocStr(str, -1)))
+	return NULL;
     SKIP_BLANKS(s);
     if (*s == '<' && (p = strchr(s, '>'))) {
 	*p++ = '\0';
@@ -159,6 +160,9 @@ html_quote_s(char *str)
     Str tmp = NULL;
     char *p, *q;
     int space = TRUE;
+
+    if (!str)
+	return NULL;
 
     for (p = str; *p; p++) {
 	if (IS_SPACE(*p)) {

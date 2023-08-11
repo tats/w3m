@@ -98,26 +98,15 @@ bzero(void *ptr, int len)
 char *
 allocStr(const char *s, int len)
 {
-    char *ptr;
-
     if (s == NULL)
 	return NULL;
     if (len < 0)
 	len = strlen(s);
-    if (len < 0 || len >= STR_SIZE_MAX)
-	len = STR_SIZE_MAX - 1;
-    ptr = NewAtom_N(char, len + 1);
-    if (ptr == NULL) {
-	fprintf(stderr, "fm: Can't allocate string. Give me more memory!\n");
-	exit(-1);
-    }
-    bcopy(s, ptr, len);
-    ptr[len] = '\0';
-    return ptr;
+    return Strnew_charp_n(s, len)->ptr;
 }
 
 int
-strCmp(const void *s1, const void *s2)
+strCmp(const void *s1, const void *s2) /* helper for qsort */
 {
     return strcmp(*(const char **)s1, *(const char **)s2);
 }
@@ -423,7 +412,7 @@ cleanup_line(Str s, int mode)
 int
 getescapechar(char **str)
 {
-    int dummy = -1;
+    int dummy;
     char *p = *str, *q;
     int strict_entity = TRUE;
 

@@ -1500,7 +1500,7 @@ to_str(struct param_ptr *p)
 	return Sprintf("%g", *(double *)p->varptr);
     }
     /* not reached */
-    return NULL;
+    return Strnew();
 }
 
 Buffer *

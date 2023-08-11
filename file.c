@@ -1186,7 +1186,7 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
 }
 
 #ifdef USE_DIGEST_AUTH
-#include <openssl/md5.h>
+#include <openssl/evp.h>
 
 /* RFC2617: 3.2.2 The Authorization Request Header
  * 
@@ -1212,6 +1212,20 @@ AuthBasicCred(struct http_auth *ha, Str uname, Str pw, ParsedURL *pu,
  *                     "8" | "9" | "a" | "b" |
  *                     "c" | "d" | "e" | "f"
  */
+
+#define MD5_DIGEST_LENGTH 16
+
+static void
+MD5(const unsigned char *d, unsigned long n, unsigned char *md)
+{
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+
+    EVP_DigestInit_ex(ctx, EVP_md5(), NULL);
+    EVP_DigestUpdate(ctx, d, n);
+    EVP_DigestFinal_ex(ctx, md, NULL);
+    EVP_MD_CTX_free(ctx);
+}
+
 
 static Str
 digest_hex(unsigned char *p)
@@ -1694,7 +1708,6 @@ getLinkNumberStr(int correction)
 /* 
  * loadGeneralFile: load file to buffer
  */
-#define DO_EXTERNAL ((Buffer *(*)(URLFile *, Buffer *))doExternal)
 Buffer *
 loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		int flag, FormList *volatile request)
@@ -2166,7 +2179,6 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 
     if (real_type == NULL)
 	real_type = t;
-    proc = loadBuffer;
 
     current_content_length = 0;
     if ((p = checkHeader(t_buf, "Content-Length:")) != NULL)
@@ -2246,7 +2258,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 		!gopher_download &&
 #endif
 		searchExtViewer(t) != NULL) {
-	    proc = DO_EXTERNAL;
+	    proc = NULL;
 	}
 	else {
 	    TRAP_OFF;
@@ -2282,7 +2294,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
     t_buf->ssl_certificate = f.ssl_certificate;
 #endif
     frame_source = flag & RG_FRAME_SRC;
-    if (proc == DO_EXTERNAL) {
+    if (proc == NULL) {
 	b = doExternal(f, t, t_buf);
     } else {
 	b = loadSomething(&f, proc, t_buf);
@@ -2494,9 +2506,6 @@ set_breakpoint(struct readbuffer *obuf, int tag_length)
     obuf->bp.pos = obuf->pos;
     obuf->bp.tlen = tag_length;
     obuf->bp.flag = obuf->flag;
-#ifdef FORMAT_NICE
-    obuf->bp.flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
     obuf->bp.top_margin = obuf->top_margin;
     obuf->bp.bottom_margin = obuf->bottom_margin;
 
@@ -2901,47 +2910,6 @@ flushline(struct html_feed_environ *h_env, struct readbuffer *obuf, int indent,
 	else if (RB_GET_ALIGN(obuf) == RB_LEFT && obuf->flag & RB_INTABLE) {
 	    align(lbuf, width, ALIGN_LEFT);
 	}
-#ifdef FORMAT_NICE
-	else if (obuf->flag & RB_FILL) {
-	    char *p;
-	    int rest, rrest;
-	    int nspace, d, i;
-
-	    rest = width - get_Str_strwidth(line);
-	    if (rest > 1) {
-		nspace = 0;
-		for (p = line->ptr + indent; *p; p++) {
-		    if (*p == ' ')
-			nspace++;
-		}
-		if (nspace > 0) {
-		    int indent_here = 0;
-		    d = rest / nspace;
-		    p = line->ptr;
-		    while (IS_SPACE(*p)) {
-			p++;
-			indent_here++;
-		    }
-		    rrest = rest - d * nspace;
-		    line = Strnew_size(width + 1);
-		    for (i = 0; i < indent_here; i++)
-			Strcat_char(line, ' ');
-		    for (; *p; p++) {
-			Strcat_char(line, *p);
-			if (*p == ' ') {
-			    for (i = 0; i < d; i++)
-				Strcat_char(line, ' ');
-			    if (rrest > 0) {
-				Strcat_char(line, ' ');
-				rrest--;
-			    }
-			}
-		    }
-		    lbuf = newTextLine(line, width);
-		}
-	    }
-	}
-#endif				/* FORMAT_NICE */
 #ifdef TABLE_DEBUG
 	if (w3m_debug) {
 	    FILE *f = fopen("zzzproc1", "a");
@@ -6363,7 +6331,7 @@ proc_escape(struct readbuffer *obuf, char **str_return)
     char *str = *str_return, *estr;
     int ech = getescapechar(str_return);
     int width, n_add = *str_return - str;
-    Lineprop mode = PC_ASCII;
+    Lineprop mode;
 
     if (ech < 0) {
 	*str_return = str;
@@ -6759,15 +6727,8 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 		    bp = obuf->line->ptr + obuf->bp.len;
 		    line = Strnew_charp(bp);
 		    Strshrink(obuf->line, obuf->line->length - obuf->bp.len);
-#ifdef FORMAT_NICE
-		    if (obuf->pos - i > h_env->limit)
-			obuf->flag |= RB_FILL;
-#endif				/* FORMAT_NICE */
 		    back_to_breakpoint(obuf);
 		    flushline(h_env, obuf, indent, 0, h_env->limit);
-#ifdef FORMAT_NICE
-		    obuf->flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
 		    HTMLlineproc1(line->ptr, h_env);
 		}
 	    }
@@ -6788,13 +6749,7 @@ HTMLlineproc0(char *line, struct html_feed_environ *h_env, int internal)
 	    i = 1;
 	indent = h_env->envs[h_env->envc].indent;
 	if (obuf->pos - i > h_env->limit) {
-#ifdef FORMAT_NICE
-	    obuf->flag |= RB_FILL;
-#endif				/* FORMAT_NICE */
 	    flushline(h_env, obuf, indent, 0, h_env->limit);
-#ifdef FORMAT_NICE
-	    obuf->flag &= ~RB_FILL;
-#endif				/* FORMAT_NICE */
 	}
     }
 }
@@ -8258,7 +8213,7 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 {
     Str tmpf, command;
     struct mailcap *mcap;
-    int mc_stat;
+    int err, mc_stat;
     Buffer *buf = NULL;
     char *header, *src = NULL, *ext = uf.ext;
 
@@ -8334,8 +8289,11 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
     else {
 	if (mcap->flags & MAILCAP_NEEDSTERMINAL || !BackgroundExtViewer) {
 	    fmTerm();
-	    mySystem(command->ptr, 0);
+	    err = mySystem(command->ptr, 0);
 	    fmInit();
+	    if (err)
+		disp_err_message(Sprintf("%s returned %d", command->ptr, err)->ptr,
+				 FALSE);
 	    if (CurrentTab && Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
 	}

@@ -34,7 +34,7 @@
 #endif				/* not STR_DEBUG */
 
 Str
-Strnew()
+Strnew(void)
 {
     Str x = GC_MALLOC(sizeof(struct _Str));
     if (x == NULL)

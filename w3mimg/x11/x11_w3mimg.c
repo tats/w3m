@@ -798,7 +798,7 @@ x11_get_image_size(w3mimg_op * self, W3MImage * img, char *fname, int *w,
 /* *INDENT-ON* */
 
 w3mimg_op *
-w3mimg_x11open()
+w3mimg_x11open(void)
 {
     w3mimg_op *wop = NULL;
     struct x11_info *xi = NULL;

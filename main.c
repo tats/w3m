@@ -5922,7 +5922,7 @@ getCodePage(void)
 #endif
 
 void
-deleteFiles()
+deleteFiles(void)
 {
     Buffer *buf;
     char *f;

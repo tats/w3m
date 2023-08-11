@@ -799,7 +799,7 @@ compare_table(struct rc_search_table *a, struct rc_search_table *b)
 }
 
 static void
-create_option_search_table()
+create_option_search_table(void)
 {
     int i, j, k;
     int diff1, diff2;

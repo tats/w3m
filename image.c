@@ -36,7 +36,7 @@ static void closeImgdisplay(void);
 static int getCharSize(void);
 
 void
-initImage()
+initImage(void)
 {
     if (activeImage)
 	return;
@@ -93,7 +93,7 @@ getCharSize(void)
 }
 
 void
-termImage()
+termImage(void)
 {
     if (!activeImage)
 	return;
@@ -106,7 +106,7 @@ termImage()
 }
 
 static int
-openImgdisplay()
+openImgdisplay(void)
 {
     char *cmd;
 
@@ -288,7 +288,7 @@ drawImage(void)
 }
 
 void
-clearImage()
+clearImage(void)
 {
     static char buf[64];
     int j;

@@ -18,7 +18,7 @@ newListItem(void *s, ListItem *n, ListItem *p)
 }
 
 GeneralList *
-newGeneralList()
+newGeneralList(void)
 {
     GeneralList *tl = New(GeneralList);
     tl->first = tl->last = NULL;

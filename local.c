@@ -114,7 +114,7 @@ loadLocalDir(char *dname)
 	n = 1;
 	Strcat_charp(tmp, "<TABLE CELLPADDING=0>\n<TR VALIGN=TOP>\n");
     }
-    qsort((void *)flist, nfile, sizeof(char *), strCmp);
+    qsort(flist, nfile, sizeof(char *), strCmp);
     for (i = 0; i < nfile; i++) {
 	p = flist[i];
 	if (strcmp(p, ".") == 0)
@@ -213,7 +213,7 @@ set_environ(char *var, char *value)
 
     if (env_hash == NULL)
 	env_hash = newHash_sv(20);
-    putHash_sv(env_hash, var, (void *)tmp->ptr);
+    putHash_sv(env_hash, var, tmp->ptr);
 #ifdef HAVE_PUTENV
     putenv(tmp->ptr);
 #else				/* not HAVE_PUTENV */

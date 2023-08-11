@@ -29,7 +29,7 @@ newBuffer(int width)
     n = New(Buffer);
     if (n == NULL)
 	exit(3);
-    bzero((void *)n, sizeof(Buffer));
+    bzero(n, sizeof(Buffer));
     n->width = width;
     n->COLS = COLS;
     n->LINES = LASTLINE;
@@ -590,7 +590,7 @@ void
 copyBuffer(Buffer *a, Buffer *b)
 {
     readBufferCache(b);
-    bcopy((void *)b, (void *)a, sizeof(Buffer));
+    bcopy(b, a, sizeof(Buffer));
 }
 
 Buffer *

@@ -447,7 +447,7 @@ main(int argc, char **argv)
     load_argc = 0;
 
     CurrentDir = currentdir();
-    CurrentPid = (int)getpid();
+    CurrentPid = getpid();
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     if (argv[0] && *argv[0])
 	MyProgramName = argv[0];
@@ -463,7 +463,7 @@ main(int argc, char **argv)
 	    hostname[HOST_NAME_MAX + 1] = '\0';
 	    hostname_len = strlen(hostname);
 	    if (hostname_len <= HOST_NAME_MAX && hostname_len < STR_SIZE_MAX)
-		HostName = allocStr(hostname, (int)hostname_len);
+		HostName = allocStr(hostname, hostname_len);
 	}
     }
 
@@ -1173,7 +1173,7 @@ main(int argc, char **argv)
 	if (CurrentEvent) {
 	    CurrentKey = -1;
 	    CurrentKeyData = NULL;
-	    CurrentCmdData = (char *)CurrentEvent->data;
+	    CurrentCmdData = CurrentEvent->data;
 	    w3mFuncList[CurrentEvent->cmd].func();
 	    CurrentCmdData = NULL;
 	    CurrentEvent = CurrentEvent->next;
@@ -1188,7 +1188,7 @@ main(int argc, char **argv)
 		    Currentbuf->event = NULL;
 		    CurrentKey = -1;
 		    CurrentKeyData = NULL;
-		    CurrentCmdData = (char *)CurrentAlarm->data;
+		    CurrentCmdData = CurrentAlarm->data;
 		    w3mFuncList[CurrentAlarm->cmd].func();
 		    CurrentCmdData = NULL;
 		    continue;
@@ -1257,7 +1257,7 @@ main(int argc, char **argv)
 	    else {
 		set_buffer_environ(Currentbuf);
 		save_buffer_position(Currentbuf);
-		keyPressEventProc((int)c);
+		keyPressEventProc(c);
 		prec_num = 0;
 	    }
 	}
@@ -1453,7 +1453,7 @@ DEFUN(escmap, ESCMAP, "ESC map")
     char c;
     c = getch();
     if (IS_ASCII(c))
-	escKeyProc((int)c, K_ESC, EscKeymap);
+	escKeyProc(c, K_ESC, EscKeymap);
 }
 
 DEFUN(escbmap, ESCBMAP, "ESC [ map")
@@ -1465,7 +1465,7 @@ DEFUN(escbmap, ESCBMAP, "ESC [ map")
 	return;
     }
     if (IS_ASCII(c))
-	escKeyProc((int)c, K_ESCB, EscBKeymap);
+	escKeyProc(c, K_ESCB, EscBKeymap);
 }
 
 void
@@ -1479,7 +1479,7 @@ escdmap(char c)
 	c = getch();
     }
     if (c == '~')
-	escKeyProc((int)d, K_ESCD, EscDKeymap);
+	escKeyProc(d, K_ESCD, EscDKeymap);
 }
 
 DEFUN(multimap, MULTIMAP, "multimap")
@@ -1488,7 +1488,7 @@ DEFUN(multimap, MULTIMAP, "multimap")
     c = getch();
     if (IS_ASCII(c)) {
 	CurrentKey = K_MULTI | (CurrentKey << 16) | c;
-	escKeyProc((int)c, 0, NULL);
+	escKeyProc(c, 0, NULL);
     }
 }
 
@@ -4639,7 +4639,7 @@ _peekURL(int only_img)
 #ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
-    bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+    bcopy(pp, p, s->length * sizeof(Lineprop));
 #endif
   disp:
     n = searchKeyNum();
@@ -4698,7 +4698,7 @@ DEFUN(curURL, PEEK, "Show current address")
 #ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);
-	bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+	bcopy(pp, p, s->length * sizeof(Lineprop));
 #endif
     }
     n = searchKeyNum();

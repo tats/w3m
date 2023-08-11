@@ -6798,7 +6798,7 @@ addnewline(Buffer *buf, char *line, Lineprop *prop, Linecolor *color, int pos,
     if (pos > 0) {
 	s = allocStr(line, pos);
 	p = NewAtom_N(Lineprop, pos);
-	bcopy((void *)prop, (void *)p, pos * sizeof(Lineprop));
+	bcopy(prop, p, pos * sizeof(Lineprop));
     }
     else {
 	s = NullLine;
@@ -6807,7 +6807,7 @@ addnewline(Buffer *buf, char *line, Lineprop *prop, Linecolor *color, int pos,
 #ifdef USE_ANSI_COLOR
     if (pos > 0 && color) {
 	c = NewAtom_N(Linecolor, pos);
-	bcopy((void *)color, (void *)c, pos * sizeof(Linecolor));
+	bcopy(color, c, pos * sizeof(Linecolor));
     }
     else {
 	c = NULL;

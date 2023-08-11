@@ -406,8 +406,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
 	w = im->rgb_width;
     if (h <= 0)
 	h = im->rgb_height;
-    img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
-					attr.depth);
+    img->pixmap = XCreatePixmap(xi->display, xi->parent, w, h, attr.depth);
     if (!img->pixmap)
 	return 0;
     XSetForeground(xi->display, xi->imageGC, xi->background_pixel);
@@ -427,6 +426,7 @@ x11_load_image(w3mimg_op * self, W3MImage * img, char *fname, int w, int h)
     im = imlib_create_cropped_scaled_image(0, 0, imlib_image_get_width(), imlib_image_get_height(), w, h);
     imlib_context_set_image(im);
 
+    /* TODO(rkta): Check if we really want to cast an unsigned long to a pointer */
     img->pixmap = (void *)XCreatePixmap(xi->display, xi->parent, w, h,
 					attr.depth);
     if (!img->pixmap)

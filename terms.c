@@ -1283,7 +1283,7 @@ setupscreen(void)
 	for (i = 0; i < max_LINES; i++) {
 #ifdef USE_M17N
 	    ScreenElem[i].lineimage = New_N(char *, max_COLS);
-	    bzero((void *)ScreenElem[i].lineimage, max_COLS * sizeof(char *));
+	    bzero(ScreenElem[i].lineimage, max_COLS * sizeof(char *));
 #else
 	    ScreenElem[i].lineimage = New_N(char, max_COLS);
 #endif

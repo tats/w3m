@@ -101,6 +101,7 @@ newInputStream(int des)
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->base.type = IST_BASIC;
     stream->base.handle = NewWithoutGC(int);
+    /* TODO(rkta): Check cast from int to void ptr */
     *(int *)stream->base.handle = des;
     stream->base.read = (int (*)(void *, unsigned char *, int))basic_read;
     stream->base.close = (void (*)(void *))basic_close;
@@ -607,9 +608,9 @@ static void
 basic_close(int *handle)
 {
 #ifdef __MINGW32_VERSION
-    closesocket(*(int *)handle);
+    closesocket(*handle);
 #else
-    close(*(int *)handle);
+    close(*handle);
 #endif
     xfree(handle);
 }
@@ -618,9 +619,9 @@ static int
 basic_read(int *handle, char *buf, int len)
 {
 #ifdef __MINGW32_VERSION
-    return recv(*(int *)handle, buf, len, 0);
+    return recv(*handle, buf, len, 0);
 #else
-    return read(*(int *)handle, buf, len);
+    return read(*handle, buf, len);
 #endif
 }
 

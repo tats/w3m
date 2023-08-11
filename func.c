@@ -84,7 +84,7 @@ setKeymap(char *p, int lineno, int verbose)
 	}
 	if (keyData == NULL)
 	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
-	putHash_iv(keyData, m, (void *)mmap);
+	putHash_iv(keyData, m, mmap);
 	if (c & K_ESCD)
 	    map = mmap[3];
 	else if (c & K_ESCB)
@@ -109,7 +109,7 @@ setKeymap(char *p, int lineno, int verbose)
     if (*s) {
 	if (keyData == NULL)
 	    keyData = newHash_iv(KEYDATA_HASH_SIZE);
-	putHash_iv(keyData, c, (void *)s);
+	putHash_iv(keyData, c, s);
     }
     else if (getKeyData(c))
 	putHash_iv(keyData, c, NULL);
@@ -689,11 +689,11 @@ initMouseAction(void)
 {
     FILE *mf;
 
-    bcopy((void *)&default_mouse_action, (void *)&mouse_action,
+    bcopy(&default_mouse_action, &mouse_action,
 	  sizeof(default_mouse_action));
     mouse_action.lastline_map[0] = New_N(MouseActionMap, 6);
-    bcopy((void *)&default_lastline_action,
-	  (void *)mouse_action.lastline_map[0],
+    bcopy(&default_lastline_action,
+	  mouse_action.lastline_map[0],
 	  sizeof(default_lastline_action));
     {
 #ifdef USE_M17N

@@ -679,8 +679,7 @@ openSocket(char *const hostname,
 	hostaddr.sin_family = AF_INET;
 	hostaddr.sin_port = s_port;
 	for (h_addr_list = entry->h_addr_list; *h_addr_list; h_addr_list++) {
-	    bcopy((void *)h_addr_list[0], (void *)&hostaddr.sin_addr,
-		  entry->h_length);
+	    bcopy(h_addr_list[0], &hostaddr.sin_addr, entry->h_length);
 #ifdef SOCK_DEBUG
 	    adr = ntohl(*(long *)&hostaddr.sin_addr);
 	    sock_log("openSocket: connecting %d.%d.%d.%d\n",

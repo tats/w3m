@@ -32,7 +32,7 @@
 #include <gpm.h>
 #endif				/* USE_GPM */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif
@@ -1507,7 +1507,7 @@ static Str currentURL(void);
 
 #ifdef USE_BUFINFO
 void
-saveBufferInfo()
+saveBufferInfo(void)
 {
     FILE *fp;
 

@@ -8,7 +8,7 @@ extern int LASTLINE;
 #endif
 
 void clear(void);
-void flush_tty();
+void flush_tty(void);
 void setlinescols(void);
 
 #ifdef USE_MOUSE
@@ -23,7 +23,7 @@ void setlinescols(void);
 #define MOUSE_BTN_UP 3
 #define MOUSE_BTN_RESET -1
 
-void mouse_end();
+void mouse_end(void);
 #endif
 
 #ifdef __CYGWIN__

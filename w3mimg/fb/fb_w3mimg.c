@@ -169,7 +169,7 @@ check_tty_console(char *tty)
 #endif
 
 w3mimg_op *
-w3mimg_fbopen()
+w3mimg_fbopen(void)
 {
     w3mimg_op *wop = NULL;
     wop = (w3mimg_op *) malloc(sizeof(w3mimg_op));

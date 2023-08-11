@@ -460,7 +460,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
     uf->modtime = ftp_modtime(&current_ftp, realpathname);
     ftp_command(&current_ftp, "RETR", realpathname, &status);
     if (status == 125 || status == 150)
-	return newFileStream(current_ftp.data, (void (*)())closeFTPdata);
+	return newFileStream(current_ftp.data, (void (*)(FILE *))closeFTPdata);
 
   ftp_dir:
     pu->scheme = SCM_FTPDIR;

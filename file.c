@@ -400,7 +400,7 @@ examineFile(char *path, URLFile *uf)
 		return;
 	    if ((fp = lessopen_stream(path))) {
 		UFclose(uf);
-		uf->stream = newFileStream(fp, (void (*)())pclose);
+		uf->stream = newFileStream(fp, (void (*)(FILE *))pclose);
 		uf->guess_type = "text/plain";
 		return;
 	    }
@@ -5537,7 +5537,7 @@ ex_efct(int ex)
 }
 
 static void
-HTMLlineproc2body(Buffer *buf, Str (*feed) (), int llimit)
+HTMLlineproc2body(Buffer *buf, Str (*feed) (void), int llimit)
 {
     static char *outc = NULL;
     static Lineprop *outp = NULL;
@@ -7826,7 +7826,7 @@ loadcmdout(char *cmd,
     f = popen(cmd, "r");
     if (f == NULL)
 	return NULL;
-    init_stream(&uf, SCM_UNKNOWN, newFileStream(f, (void (*)())pclose));
+    init_stream(&uf, SCM_UNKNOWN, newFileStream(f, (void (*)(FILE *))pclose));
     buf = loadproc(&uf, defaultbuf);
     UFclose(&uf);
     return buf;
@@ -7864,7 +7864,7 @@ getpipe(char *cmd)
     if (f == NULL)
 	return NULL;
     buf = newBuffer(INIT_BUFFER_WIDTH);
-    buf->pagerSource = newFileStream(f, (void (*)())pclose);
+    buf->pagerSource = newFileStream(f, (void (*)(FILE *))pclose);
     buf->filename = cmd;
     buf->buffername = Sprintf("%s %s", PIPEBUFFERNAME,
 			      conv_from_system(cmd))->ptr;
@@ -8103,7 +8103,7 @@ save2tmp(URLFile uf, char *tmpf)
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
     volatile int retval = 0;
-    char *volatile buf = NULL;
+    unsigned char *volatile buf = NULL;
 
     ff = fopen(tmpf, "wb");
     if (ff == NULL) {
@@ -8144,7 +8144,7 @@ save2tmp(URLFile uf, char *tmpf)
     {
 	int count;
 
-	buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+	buf = NewWithoutGC_N(unsigned char, SAVE_BUF_SIZE);
 	while ((count = ISread_n(uf.stream, buf, SAVE_BUF_SIZE)) > 0) {
 	    if (fwrite(buf, 1, count, ff) != count) {
 		retval = -2;
@@ -8271,7 +8271,7 @@ _MoveFile(char *path1, char *path2)
     FILE *f2;
     int is_pipe;
     clen_t linelen = 0, trbyte = 0;
-    char *buf = NULL;
+    unsigned char *buf = NULL;
     int count;
 
     f1 = openIS(path1);
@@ -8290,7 +8290,7 @@ _MoveFile(char *path1, char *path2)
 	return -1;
     }
     current_content_length = 0;
-    buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+    buf = NewWithoutGC_N(unsigned char, SAVE_BUF_SIZE);
     while ((count = ISread_n(f1, buf, SAVE_BUF_SIZE)) > 0) {
 	fwrite(buf, 1, count, f2);
 	linelen += count;
@@ -8651,7 +8651,7 @@ uncompress_stream(URLFile *uf, char **src)
 	}
 	if (pid2 == 0) {
 	    /* child2 */
-	    char *buf = NewWithoutGC_N(char, SAVE_BUF_SIZE);
+	    unsigned char *buf = NewWithoutGC_N(unsigned char, SAVE_BUF_SIZE);
 	    int count;
 	    FILE *f = NULL;
 
@@ -8686,7 +8686,7 @@ uncompress_stream(URLFile *uf, char **src)
 	    uf->scheme = SCM_LOCAL;
     }
     UFhalfclose(uf);
-    uf->stream = newFileStream(f1, (void (*)())fclose);
+    uf->stream = newFileStream(f1, (void (*)(FILE *))fclose);
 #endif /* __MINGW32_VERSION */
 }
 

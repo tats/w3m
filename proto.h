@@ -766,7 +766,7 @@ extern int action_menu(Menu *menu);
 extern void popup_menu(Menu *parent, Menu *menu);
 extern void guess_menu_xy(Menu *menu, int width, int *x, int *y);
 extern void new_option_menu(Menu *menu, char **label, int *variable,
-			    void (*func) ());
+			    void (*func) (void));
 
 extern int setMenuItem(MenuItem *item, char *type, char *line);
 extern int addMenuList(MenuList **list, char *id);
@@ -778,7 +778,7 @@ extern void mainMn(void);
 extern void selMn(void);
 extern void tabMn(void);
 extern void optionMenu(int x, int y, char **label, int *variable, int initial,
-		       void (*func) ());
+		       void (*func) (void));
 extern void initMenu(void);
 #else				/* not USE_MENU */
 #define mainMn nulcmd

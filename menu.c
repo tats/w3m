@@ -664,7 +664,7 @@ guess_menu_xy(Menu *parent, int width, int *x, int *y)
 }
 
 void
-new_option_menu(Menu *menu, char **label, int *variable, void (*func) ())
+new_option_menu(Menu *menu, char **label, int *variable, void (*func) (void))
 {
     int i, nitem;
     char **p;
@@ -1649,7 +1649,7 @@ smDelTab(char c)
 
 void
 optionMenu(int x, int y, char **label, int *variable, int initial,
-	   void (*func) ())
+	   void (*func) (void))
 {
     Menu menu;
 

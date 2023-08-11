@@ -2066,7 +2066,7 @@ clrtoeolx(void)
 #endif				/* not USE_BG_COLOR */
 
 static void
-clrtobot_eol(void (*clrtoeol) ())
+clrtobot_eol(void (*clrtoeol) (void))
 {
     int l, c;
 

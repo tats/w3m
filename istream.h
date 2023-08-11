@@ -22,7 +22,7 @@ typedef struct stream_buffer *StreamBuffer;
 
 struct io_file_handle {
     FILE *f;
-    void (*close) ();
+    void (*close) (FILE *);
 };
 
 #ifdef USE_SSL
@@ -47,8 +47,8 @@ struct base_stream {
     void *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (void *, unsigned char *, int);
+    void (*close) (void *);
 };
 
 struct file_stream {
@@ -56,8 +56,8 @@ struct file_stream {
     struct io_file_handle *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (FILE *);
+    void (*close) (FILE *);
 };
 
 struct str_stream {
@@ -65,8 +65,8 @@ struct str_stream {
     Str handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (void *, unsigned char *, int);
+    void (*close) (void *, int, int *);
 };
 
 #ifdef USE_SSL
@@ -75,8 +75,8 @@ struct ssl_stream {
     struct ssl_handle *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (void *, unsigned char *, int);
+    void (*close) (void *, int, int *);
 };
 #endif				/* USE_SSL */
 
@@ -85,8 +85,8 @@ struct encoded_stream {
     struct ens_handle *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (void *, unsigned char *, int);
+    void (*close) (void *, int, int *);
 };
 
 union input_stream {
@@ -110,7 +110,7 @@ typedef struct encoded_stream *EncodedStrStream;
 typedef union input_stream *InputStream;
 
 extern InputStream newInputStream(int des);
-extern InputStream newFileStream(FILE * f, void (*closep) ());
+extern InputStream newFileStream(FILE * f, void (*closep) (FILE *));
 extern InputStream newStrStream(Str s);
 #ifdef USE_SSL
 extern InputStream newSSLStream(SSL * ssl, int sock);
@@ -126,7 +126,7 @@ void ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl);
 #ifdef unused
 extern int ISread(InputStream stream, Str buf, int count);
 #endif
-int ISread_n(InputStream stream, char *dst, int bufsize);
+int ISread_n(InputStream stream, unsigned char *dst, int bufsize);
 extern int ISfileno(InputStream stream);
 extern int ISeos(InputStream stream);
 #ifdef USE_SSL

@@ -50,7 +50,7 @@ do_update(BaseStream base)
 }
 
 static int
-buffer_read(StreamBuffer sb, char *obuf, int count)
+buffer_read(StreamBuffer sb, unsigned char *obuf, int count)
 {
     int len = sb->next - sb->cur;
     if (len > 0) {
@@ -102,13 +102,13 @@ newInputStream(int des)
     stream->base.type = IST_BASIC;
     stream->base.handle = NewWithoutGC(int);
     *(int *)stream->base.handle = des;
-    stream->base.read = (int (*)())basic_read;
-    stream->base.close = (void (*)())basic_close;
+    stream->base.read = (int (*)(void *, unsigned char *, int))basic_read;
+    stream->base.close = (void (*)(void *))basic_close;
     return stream;
 }
 
 InputStream
-newFileStream(FILE * f, void (*closep) ())
+newFileStream(FILE * f, void (*closep) (FILE *))
 {
     InputStream stream;
     if (f == NULL)
@@ -121,9 +121,9 @@ newFileStream(FILE * f, void (*closep) ())
     if (closep)
 	stream->file.handle->close = closep;
     else
-	stream->file.handle->close = (void (*)())fclose;
-    stream->file.read = (int (*)())file_read;
-    stream->file.close = (void (*)())file_close;
+	stream->file.handle->close = (void (*)(FILE *))fclose;
+    stream->file.read = (int (*)(FILE *))file_read;
+    stream->file.close = (void (*)(FILE *))file_close;
     return stream;
 }
 
@@ -137,7 +137,7 @@ newStrStream(Str s)
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
     stream->str.handle = NULL;
-    stream->str.read = (int (*)())str_read;
+    stream->str.read = (int (*)(void *, unsigned char *, int))str_read;
     stream->str.close = NULL;
     return stream;
 }
@@ -155,8 +155,8 @@ newSSLStream(SSL * ssl, int sock)
     stream->ssl.handle = NewWithoutGC(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
-    stream->ssl.read = (int (*)())ssl_read;
-    stream->ssl.close = (void (*)())ssl_close;
+    stream->ssl.read = (int (*)(void *, unsigned char *, int))ssl_read;
+    stream->ssl.close = (void (*)(void *, int, int *))ssl_close;
     return stream;
 }
 #endif
@@ -176,15 +176,15 @@ newEncodedStream(InputStream is, char encoding)
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
     growbuf_init_without_GC(&stream->ens.handle->gb);
-    stream->ens.read = (int (*)())ens_read;
-    stream->ens.close = (void (*)())ens_close;
+    stream->ens.read = (int (*)(void *, unsigned char *, int))ens_read;
+    stream->ens.close = (void (*)(void *, int, int *))ens_close;
     return stream;
 }
 
 int
 ISclose(InputStream stream)
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     if (stream == NULL)
         return -1;
     if (stream->base.close != NULL) {
@@ -297,7 +297,7 @@ ISread(InputStream stream, Str buf, int count)
 #endif
 
 int
-ISread_n(InputStream stream, char *dst, int count)
+ISread_n(InputStream stream, unsigned char *dst, int count)
 {
     int len, l;
     BaseStream base;

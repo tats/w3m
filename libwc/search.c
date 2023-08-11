@@ -5,34 +5,34 @@
 static int
 map_cmp(const void *a, const void *b)
 {
-    return *(wc_uint16 *)a - ((wc_map *)b)->code;
+    return *(const wc_uint16 *)a - ((const wc_map *)b)->code;
 }
 
 static int
 map3_cmp(const void *a, const void *b)
 {
-    return *(wc_uint32 *)a - (((wc_uint32)((wc_map3 *)b)->code << 16) | ((wc_map3 *)b)->code2);
+    return *(const wc_uint32 *)a - (((wc_uint32)((const wc_map3 *)b)->code << 16) | ((const wc_map3 *)b)->code2);
 }
 
 static int
 map_range_cmp(const void *a, const void *b)
 {
-    return (*(wc_uint16 *)a < ((wc_map *)b)->code) ? -1
-	: ((*(wc_uint16 *)a > ((wc_map *)b)->code2) ? 1 : 0);
+    return (*(const wc_uint16 *)a < ((const wc_map *)b)->code) ? -1
+	: ((*(const wc_uint16 *)a > ((const wc_map *)b)->code2) ? 1 : 0);
 }
 
 static int
 map2_range_cmp(const void *a, const void *b)
 {
-    return (*(wc_uint16 *)a < ((wc_map *)b)->code) ? -1
-	: ((*(wc_uint16 *)a >= ((wc_map *)b + 1)->code) ? 1 : 0);
+    return (*(const wc_uint16 *)a < ((const wc_map *)b)->code) ? -1
+	: ((*(const wc_uint16 *)a >= ((const wc_map *)b + 1)->code) ? 1 : 0);
 }
 
 static int
 map3_range_cmp(const void *a, const void *b)
 {
-    return (*(wc_uint16 *)a < ((wc_map3 *)b)->code) ? -1
-	: ((*(wc_uint16 *)a > ((wc_map3 *)b)->code2) ? 1 : 0);
+    return (*(const wc_uint16 *)a < ((const wc_map3 *)b)->code) ? -1
+	: ((*(const wc_uint16 *)a > ((const wc_map3 *)b)->code2) ? 1 : 0);
 }
 
 wc_map *

@@ -32,7 +32,7 @@
 #include <gpm.h>
 #endif				/* USE_GPM */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif
@@ -98,7 +98,6 @@ static void cmd_loadURL(char *url, ParsedURL *current, char *referer,
 static void cmd_loadBuffer(Buffer *buf, int prop, int linkid);
 static void keyPressEventProc(int c);
 int show_params_p = 0;
-void show_params(FILE * fp);
 
 static char *getCurWord(Buffer *buf, int *spos, int *epos);
 
@@ -210,11 +209,6 @@ fusage(FILE * f, int err)
 #ifdef USE_M17N
     fprintf(f, "    -I charset       document charset\n");
     fprintf(f, "    -O charset       display/output charset\n");
-#if 0				/* use -O{s|j|e} instead */
-    fprintf(f, "    -e               EUC-JP\n");
-    fprintf(f, "    -s               Shift_JIS\n");
-    fprintf(f, "    -j               JIS\n");
-#endif
 #endif
     fprintf(f, "    -B               load bookmark\n");
     fprintf(f, "    -bookmark file   specify bookmark file\n");
@@ -264,11 +258,7 @@ fusage(FILE * f, int err)
 #endif				/* USE_COOKIE */
     fprintf(f, "    -graph           use DEC special graphics for border of table and menu\n");
     fprintf(f, "    -no-graph        use ASCII character for border of table and menu\n");
-#if 1				/* pager requires -s */
     fprintf(f, "    -s               squeeze multiple blank lines\n");
-#else
-    fprintf(f, "    -S               squeeze multiple blank lines\n");
-#endif
     fprintf(f, "    -W               toggle search wrap mode\n");
     fprintf(f, "    -X               don't use termcap init/deinit\n");
     fprintf(f,
@@ -457,7 +447,7 @@ main(int argc, char **argv)
     load_argc = 0;
 
     CurrentDir = currentdir();
-    CurrentPid = (int)getpid();
+    CurrentPid = getpid();
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
     if (argv[0] && *argv[0])
 	MyProgramName = argv[0];
@@ -473,7 +463,7 @@ main(int argc, char **argv)
 	    hostname[HOST_NAME_MAX + 1] = '\0';
 	    hostname_len = strlen(hostname);
 	    if (hostname_len <= HOST_NAME_MAX && hostname_len < STR_SIZE_MAX)
-		HostName = allocStr(hostname, (int)hostname_len);
+		HostName = allocStr(hostname, hostname_len);
 	}
     }
 
@@ -586,14 +576,6 @@ main(int argc, char **argv)
 		    PagerMax = atoi(argv[i]);
 	    }
 #ifdef USE_M17N
-#if 0				/* use -O{s|j|e} instead */
-	    else if (!strcmp("-s", argv[i]))
-		DisplayCharset = WC_CES_SHIFT_JIS;
-	    else if (!strcmp("-j", argv[i]))
-		DisplayCharset = WC_CES_ISO_2022_JP;
-	    else if (!strcmp("-e", argv[i]))
-		DisplayCharset = WC_CES_EUC_JP;
-#endif
 	    else if (!strncmp("-I", argv[i], 2)) {
 		if (argv[i][2] != '\0')
 		    p = argv[i] + 2;
@@ -769,11 +751,7 @@ main(int argc, char **argv)
 		accept_cookie = TRUE;
 	    }
 #endif				/* USE_COOKIE */
-#if 1				/* pager requires -s */
 	    else if (!strcmp("-s", argv[i]))
-#else
-	    else if (!strcmp("-S", argv[i]))
-#endif
 		squeezeBlankLine = TRUE;
 	    else if (!strcmp("-X", argv[i]))
 		Do_not_use_ti_te = TRUE;
@@ -910,9 +888,6 @@ main(int argc, char **argv)
 #endif				/* not USE_HISTORY */
 
 #ifdef USE_M17N
-    /*  if (w3m_dump)
-     *    WcOption.pre_conv = WC_TRUE;
-     */
 #endif
 
     if (w3m_backend)
@@ -961,7 +936,7 @@ main(int argc, char **argv)
     if (load_argc == 0) {
 	/* no URL specified */
 	if (!isatty(0)) {
-	    redin = newFileStream(fdopen(dup(0), "rb"), (void (*)())pclose);
+	    redin = newFileStream(fdopen(dup(0), "rb"), (void (*)(FILE *))pclose);
 	    newbuf = openGeneralPagerBuffer(redin);
 	    dup2(1, 0);
 	}
@@ -1198,7 +1173,7 @@ main(int argc, char **argv)
 	if (CurrentEvent) {
 	    CurrentKey = -1;
 	    CurrentKeyData = NULL;
-	    CurrentCmdData = (char *)CurrentEvent->data;
+	    CurrentCmdData = CurrentEvent->data;
 	    w3mFuncList[CurrentEvent->cmd].func();
 	    CurrentCmdData = NULL;
 	    CurrentEvent = CurrentEvent->next;
@@ -1213,7 +1188,7 @@ main(int argc, char **argv)
 		    Currentbuf->event = NULL;
 		    CurrentKey = -1;
 		    CurrentKeyData = NULL;
-		    CurrentCmdData = (char *)CurrentAlarm->data;
+		    CurrentCmdData = CurrentAlarm->data;
 		    w3mFuncList[CurrentAlarm->cmd].func();
 		    CurrentCmdData = NULL;
 		    continue;
@@ -1282,7 +1257,7 @@ main(int argc, char **argv)
 	    else {
 		set_buffer_environ(Currentbuf);
 		save_buffer_position(Currentbuf);
-		keyPressEventProc((int)c);
+		keyPressEventProc(c);
 		prec_num = 0;
 	    }
 	}
@@ -1385,7 +1360,7 @@ dump_extra(Buffer *buf)
 static int
 cmp_anchor_hseq(const void *a, const void *b)
 {
-    return (*((const Anchor **) a))->hseq - (*((const Anchor **) b))->hseq;
+    return (*((const Anchor * const *) a))->hseq - (*((const Anchor * const *) b))->hseq;
 }
 
 static void
@@ -1478,7 +1453,7 @@ DEFUN(escmap, ESCMAP, "ESC map")
     char c;
     c = getch();
     if (IS_ASCII(c))
-	escKeyProc((int)c, K_ESC, EscKeymap);
+	escKeyProc(c, K_ESC, EscKeymap);
 }
 
 DEFUN(escbmap, ESCBMAP, "ESC [ map")
@@ -1490,7 +1465,7 @@ DEFUN(escbmap, ESCBMAP, "ESC [ map")
 	return;
     }
     if (IS_ASCII(c))
-	escKeyProc((int)c, K_ESCB, EscBKeymap);
+	escKeyProc(c, K_ESCB, EscBKeymap);
 }
 
 void
@@ -1504,7 +1479,7 @@ escdmap(char c)
 	c = getch();
     }
     if (c == '~')
-	escKeyProc((int)d, K_ESCD, EscDKeymap);
+	escKeyProc(d, K_ESCD, EscDKeymap);
 }
 
 DEFUN(multimap, MULTIMAP, "multimap")
@@ -1513,7 +1488,7 @@ DEFUN(multimap, MULTIMAP, "multimap")
     c = getch();
     if (IS_ASCII(c)) {
 	CurrentKey = K_MULTI | (CurrentKey << 16) | c;
-	escKeyProc((int)c, 0, NULL);
+	escKeyProc(c, 0, NULL);
     }
 }
 
@@ -1532,7 +1507,7 @@ static Str currentURL(void);
 
 #ifdef USE_BUFINFO
 void
-saveBufferInfo()
+saveBufferInfo(void)
 {
     FILE *fp;
 
@@ -1743,11 +1718,6 @@ DEFUN(ctrCsrV, CENTER_V, "Center on cursor line")
 	return;
     offsety = Currentbuf->LINES / 2 - Currentbuf->cursorY;
     if (offsety != 0) {
-#if 0
-	Currentbuf->currentLine = lineSkip(Currentbuf,
-					   Currentbuf->currentLine, offsety,
-					   FALSE);
-#endif
 	Currentbuf->topLine =
 	    lineSkip(Currentbuf, Currentbuf->topLine, -offsety, FALSE);
 	arrangeLine(Currentbuf);
@@ -1790,7 +1760,7 @@ clear_mark(Line *l)
 static int
 srchcore(char *volatile str, int (*func) (Buffer *, char *))
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     volatile int i, result = SR_NOTFOUND;
 
     if (str != NULL && str != SearchString)
@@ -2195,7 +2165,7 @@ DEFUN(pipesh, PIPE_SHELL, "Execute shell command and display output")
 DEFUN(readsh, READ_SHELL, "Execute shell command and display output")
 {
     Buffer *buf;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     char *cmd;
 
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
@@ -3164,14 +3134,6 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
     }
     if (handleMailto(a->url))
 	return;
-#if 0
-    else if (!strncasecmp(a->url, "news:", 5) && strchr(a->url, '@') == NULL) {
-	/* news:newsgroup is not supported */
-	/* FIXME: gettextize? */
-	disp_err_message("news:newsgroup_name is not supported", TRUE);
-	return;
-    }
-#endif				/* USE_NNTP */
     url = a->url;
 #ifdef USE_IMAGE
     if (map)
@@ -3194,15 +3156,6 @@ DEFUN(followA, GOTO_LINK, "Follow current hyperlink in a new buffer")
     }
     loadLink(url, a->target, a->referer, NULL);
     displayBuffer(Currentbuf, B_NORMAL);
-}
-
-/* follow HREF link in the buffer */
-void
-bufferA(void)
-{
-    on_target = FALSE;
-    followA();
-    on_target = TRUE;
 }
 
 /* view inline image */
@@ -3450,13 +3403,6 @@ query_from_followform(Str *query, FormItemList *fi, int multipart)
 DEFUN(submitForm, SUBMIT, "Submit form")
 {
     _followForm(TRUE);
-}
-
-/* process form */
-void
-followForm(void)
-{
-    _followForm(FALSE);
 }
 
 static void
@@ -4199,14 +4145,6 @@ cmd_loadURL(char *url, ParsedURL *current, char *referer, FormList *request)
 
     if (handleMailto(url))
 	return;
-#if 0
-    if (!strncasecmp(url, "news:", 5) && strchr(url, '@') == NULL) {
-	/* news:newsgroup is not supported */
-	/* FIXME: gettextize? */
-	disp_err_message("news:newsgroup_name is not supported", TRUE);
-	return;
-    }
-#endif				/* USE_NNTP */
 
     refresh();
     buf = loadGeneralFile(url, current, referer, 0, request);
@@ -4701,7 +4639,7 @@ _peekURL(int only_img)
 #ifdef USE_M17N
     s = checkType(s, &pp, NULL);
     p = NewAtom_N(Lineprop, s->length);
-    bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+    bcopy(pp, p, s->length * sizeof(Lineprop));
 #endif
   disp:
     n = searchKeyNum();
@@ -4760,7 +4698,7 @@ DEFUN(curURL, PEEK, "Show current address")
 #ifdef USE_M17N
 	s = checkType(s, &pp, NULL);
 	p = NewAtom_N(Lineprop, s->length);
-	bcopy((void *)pp, (void *)p, s->length * sizeof(Lineprop));
+	bcopy(pp, p, s->length * sizeof(Lineprop));
 #endif
     }
     n = searchKeyNum();
@@ -5313,10 +5251,6 @@ DEFUN(dispI, DISPLAY_IMAGE, "Restart loading and drawing of images")
     if (!activeImage)
 	return;
     displayImage = TRUE;
-    /*
-     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
-     * return;
-     */
     Currentbuf->image_flag = IMG_FLAG_AUTO;
     Currentbuf->need_reshape = TRUE;
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
@@ -5326,10 +5260,6 @@ DEFUN(stopI, STOP_IMAGE, "Stop loading and drawing of images")
 {
     if (!activeImage)
 	return;
-    /*
-     * if (!(Currentbuf->type && is_html_type(Currentbuf->type)))
-     * return;
-     */
     Currentbuf->image_flag = IMG_FLAG_SKIP;
     displayBuffer(Currentbuf, B_REDRAW_IMAGE);
 }
@@ -5992,7 +5922,7 @@ getCodePage(void)
 #endif
 
 void
-deleteFiles()
+deleteFiles(void)
 {
     Buffer *buf;
     char *f;
@@ -6326,11 +6256,7 @@ void
 calcTabPos(void)
 {
     TabBuffer *tab;
-#if 0
-    int lcol = 0, rcol = 2, col;
-#else
     int lcol = 0, rcol = 0, col;
-#endif
     int n1, n2, na, nx, ny, ix, iy;
 
 #ifdef USE_MOUSE

@@ -34,7 +34,7 @@
 #endif				/* not STR_DEBUG */
 
 Str
-Strnew()
+Strnew(void)
 {
     Str x = GC_MALLOC(sizeof(struct _Str));
     if (x == NULL)
@@ -89,7 +89,7 @@ Strnew_charp(const char *p)
 	exit(1);
     x->area_size = n;
     x->length = len;
-    bcopy((void *)p, (void *)x->ptr, len);
+    bcopy(p, x->ptr, len);
     x->ptr[x->length] = '\0';
     return x;
 }
@@ -130,7 +130,7 @@ Strnew_charp_n(const char *p, int n)
 	exit(1);
     x->area_size = n + 1;
     x->length = len;
-    bcopy((void *)p, (void *)x->ptr, len);
+    bcopy(p, x->ptr, len);
     x->ptr[x->length] = '\0';
     return x;
 }
@@ -169,7 +169,7 @@ Strcopy(Str x, Str y)
 	    exit(1);
 	x->area_size = y->length + 1;
     }
-    bcopy((void *)y->ptr, (void *)x->ptr, y->length + 1);
+    bcopy(y->ptr, x->ptr, y->length + 1);
     x->length = y->length;
 }
 
@@ -193,7 +193,7 @@ Strcopy_charp(Str x, const char *y)
 	    exit(1);
 	x->area_size = len + 1;
     }
-    bcopy((void *)y, (void *)x->ptr, len);
+    bcopy(y, x->ptr, len);
     x->ptr[len] = '\0';
     x->length = len;
 }
@@ -217,7 +217,7 @@ Strcopy_charp_n(Str x, const char *y, int n)
 	    exit(1);
 	x->area_size = len + 1;
     }
-    bcopy((void *)y, (void *)x->ptr, len);
+    bcopy(y, x->ptr, len);
     x->ptr[len] = '\0';
     x->length = len;
 }
@@ -248,7 +248,7 @@ Strcat_charp_n(Str x, const char *y, int n)
 	    exit(1);
 	x->area_size = newlen;
     }
-    bcopy((void *)y, (void *)&x->ptr[x->length], n);
+    bcopy(y, &x->ptr[x->length], n);
     x->length += n;
     x->ptr[x->length] = '\0';
 }
@@ -537,7 +537,7 @@ Sprintf(char *fmt, ...)
 		case 'x':
 		case 'X':
 		case 'u':
-		    vi = va_arg(ap, int);
+		    va_arg(ap, int);
 		    len += (p > 0) ? p : 10;
 		    break;
 		case 'f':
@@ -550,7 +550,7 @@ Sprintf(char *fmt, ...)
 		    break;
 		case 'c':
 		    len += 1;
-		    vi = va_arg(ap, int);
+		    va_arg(ap, int);
 		    break;
 		case 's':
 		    vs = va_arg(ap, char *);

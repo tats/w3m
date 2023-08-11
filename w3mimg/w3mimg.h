@@ -44,16 +44,16 @@ typedef struct _w3mimg_op {
 } w3mimg_op;
 
 #ifdef USE_W3MIMG_X11
-extern w3mimg_op *w3mimg_x11open();
+extern w3mimg_op *w3mimg_x11open(void);
 #endif
 #ifdef USE_W3MIMG_FB
-extern w3mimg_op *w3mimg_fbopen();
+extern w3mimg_op *w3mimg_fbopen(void);
 #endif
 #ifdef USE_W3MIMG_WIN
-extern w3mimg_op *w3mimg_winopen();
+extern w3mimg_op *w3mimg_winopen(void);
 #endif
 
-extern w3mimg_op *w3mimg_open();
+extern w3mimg_op *w3mimg_open(void);
 
 #ifdef __cplusplus
 }

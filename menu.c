@@ -344,7 +344,7 @@ new_menu(Menu *menu, MenuItem *item)
 }
 
 void
-geom_menu(Menu *menu, int x, int y, int mselect)
+geom_menu(Menu *menu, int mselect)
 {
     int win_x, win_y, win_w, win_h;
 
@@ -477,8 +477,6 @@ select_menu(Menu *menu, int mselect)
     standout();
     draw_menu_item(menu, menu->select);
     standend();
-    /* 
-     * move(menu->cursorY, menu->cursorX); */
     move(menu->y + mselect - menu->offset, menu->x);
     toggle_stand();
     refresh();
@@ -631,7 +629,7 @@ popup_menu(Menu *parent, Menu *menu)
 	menu->cursorY = parent->cursorY;
 	guess_menu_xy(parent, menu->width, &menu->x, &menu->y);
     }
-    geom_menu(menu, menu->x, menu->y, menu->select);
+    geom_menu(menu, menu->select);
 
     CurrentMenu = menu;
     while (active) {
@@ -666,7 +664,7 @@ guess_menu_xy(Menu *parent, int width, int *x, int *y)
 }
 
 void
-new_option_menu(Menu *menu, char **label, int *variable, void (*func) ())
+new_option_menu(Menu *menu, char **label, int *variable, void (*func) (void))
 {
     int i, nitem;
     char **p;
@@ -1198,8 +1196,6 @@ mMouse(char c)
     if (y < 0)
 	y += 0x100;
 
-    /* 
-     * if (x < 0 || x >= COLS || y < 0 || y > LASTLINE) return; */
     return process_mMouse(btn, x, y);
 }
 
@@ -1329,12 +1325,6 @@ popupMenu(int x, int y, Menu *menu)
     menu->y = y + 2;
 
     popup_menu(NULL, menu);
-}
-
-void
-mainMenu(int x, int y)
-{
-    popupMenu(x, y, &MainMenu);
 }
 
 DEFUN(mainMn, MAIN_MENU MENU, "Pop up menu")
@@ -1495,7 +1485,7 @@ smDelBuf(char c)
     CurrentMenu->x = x;
     CurrentMenu->y = y;
 
-    geom_menu(CurrentMenu, x, y, 0);
+    geom_menu(CurrentMenu, 0);
 
     CurrentMenu->select = (mselect <= CurrentMenu->nitem - 2) ? mselect
 	: (CurrentMenu->nitem - 2);
@@ -1636,7 +1626,7 @@ smDelTab(char c)
     CurrentMenu->x = x;
     CurrentMenu->y = y;
 
-    geom_menu(CurrentMenu, x, y, 0);
+    geom_menu(CurrentMenu, 0);
 
     CurrentMenu->select = (mselect <= CurrentMenu->nitem - 2) ? mselect
 	: (CurrentMenu->nitem - 2);
@@ -1653,7 +1643,7 @@ smDelTab(char c)
 
 void
 optionMenu(int x, int y, char **label, int *variable, int initial,
-	   void (*func) ())
+	   void (*func) (void))
 {
     Menu menu;
 

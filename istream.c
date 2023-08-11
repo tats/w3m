@@ -50,7 +50,7 @@ do_update(BaseStream base)
 }
 
 static int
-buffer_read(StreamBuffer sb, char *obuf, int count)
+buffer_read(StreamBuffer sb, unsigned char *obuf, int count)
 {
     int len = sb->next - sb->cur;
     if (len > 0) {
@@ -101,14 +101,15 @@ newInputStream(int des)
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->base.type = IST_BASIC;
     stream->base.handle = NewWithoutGC(int);
+    /* TODO(rkta): Check cast from int to void ptr */
     *(int *)stream->base.handle = des;
-    stream->base.read = (int (*)())basic_read;
-    stream->base.close = (void (*)())basic_close;
+    stream->base.read = (int (*)(void *, unsigned char *, int))basic_read;
+    stream->base.close = (void (*)(void *))basic_close;
     return stream;
 }
 
 InputStream
-newFileStream(FILE * f, void (*closep) ())
+newFileStream(FILE * f, void (*closep) (FILE *))
 {
     InputStream stream;
     if (f == NULL)
@@ -121,9 +122,9 @@ newFileStream(FILE * f, void (*closep) ())
     if (closep)
 	stream->file.handle->close = closep;
     else
-	stream->file.handle->close = (void (*)())fclose;
-    stream->file.read = (int (*)())file_read;
-    stream->file.close = (void (*)())file_close;
+	stream->file.handle->close = (void (*)(FILE *))fclose;
+    stream->file.read = (int (*)(FILE *))file_read;
+    stream->file.close = (void (*)(FILE *))file_close;
     return stream;
 }
 
@@ -137,7 +138,7 @@ newStrStream(Str s)
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
     stream->str.handle = NULL;
-    stream->str.read = (int (*)())str_read;
+    stream->str.read = (int (*)(void *, unsigned char *, int))str_read;
     stream->str.close = NULL;
     return stream;
 }
@@ -155,8 +156,8 @@ newSSLStream(SSL * ssl, int sock)
     stream->ssl.handle = NewWithoutGC(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
-    stream->ssl.read = (int (*)())ssl_read;
-    stream->ssl.close = (void (*)())ssl_close;
+    stream->ssl.read = (int (*)(void *, unsigned char *, int))ssl_read;
+    stream->ssl.close = (void (*)(void *, int, int *))ssl_close;
     return stream;
 }
 #endif
@@ -176,15 +177,15 @@ newEncodedStream(InputStream is, char encoding)
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
     growbuf_init_without_GC(&stream->ens.handle->gb);
-    stream->ens.read = (int (*)())ens_read;
-    stream->ens.close = (void (*)())ens_close;
+    stream->ens.read = (int (*)(void *, unsigned char *, int))ens_read;
+    stream->ens.close = (void (*)(void *, int, int *))ens_close;
     return stream;
 }
 
 int
 ISclose(InputStream stream)
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     if (stream == NULL)
         return -1;
     if (stream->base.close != NULL) {
@@ -276,28 +277,8 @@ ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl)
     return;
 }
 
-#ifdef unused
 int
-ISread(InputStream stream, Str buf, int count)
-{
-    int len;
-
-    if (count + 1 > buf->area_size) {
-	char *newptr = GC_MALLOC_ATOMIC(count + 1);
-	memcpy(newptr, buf->ptr, buf->length);
-	newptr[buf->length] = '\0';
-	buf->ptr = newptr;
-	buf->area_size = count + 1;
-    }
-    len = ISread_n(stream, buf->ptr, count);
-    buf->length = (len > 0) ? len : 0;
-    buf->ptr[buf->length] = '\0';
-    return (len > 0) ? 1 : 0;
-}
-#endif
-
-int
-ISread_n(InputStream stream, char *dst, int count)
+ISread_n(InputStream stream, unsigned char *dst, int count)
 {
     int len, l;
     BaseStream base;
@@ -338,15 +319,6 @@ ISfileno(InputStream stream)
     default:
 	return -1;
     }
-}
-
-int
-ISeos(InputStream stream)
-{
-    BaseStream base = &stream->base;
-    if (!base->iseos && MUST_BE_UPDATED(base))
-	do_update(base);
-    return base->iseos;
 }
 
 #ifdef USE_SSL
@@ -636,9 +608,9 @@ static void
 basic_close(int *handle)
 {
 #ifdef __MINGW32_VERSION
-    closesocket(*(int *)handle);
+    closesocket(*handle);
 #else
-    close(*(int *)handle);
+    close(*handle);
 #endif
     xfree(handle);
 }
@@ -647,9 +619,9 @@ static int
 basic_read(int *handle, char *buf, int len)
 {
 #ifdef __MINGW32_VERSION
-    return recv(*(int *)handle, buf, len, 0);
+    return recv(*handle, buf, len, 0);
 #else
-    return read(*(int *)handle, buf, len);
+    return read(*handle, buf, len);
 #endif
 }
 
@@ -740,11 +712,11 @@ ens_read(struct ens_handle *handle, char *buf, int len)
 	growbuf_init_without_GC(&gbtmp);
 	p = handle->gb.ptr;
 	if (handle->encoding == ENC_QUOTE)
-	    decodeQP_to_growbuf(&gbtmp, &p);
+	    decodeQP_to_growbuf(&gbtmp, p);
 	else if (handle->encoding == ENC_BASE64)
-	    decodeB_to_growbuf(&gbtmp, &p);
+	    decodeB_to_growbuf(&gbtmp, p);
 	else if (handle->encoding == ENC_UUENCODE)
-	    decodeU_to_growbuf(&gbtmp, &p);
+	    decodeU_to_growbuf(&gbtmp, p);
 	growbuf_clear(&handle->gb);
 	handle->gb = gbtmp;
 	handle->pos = 0;

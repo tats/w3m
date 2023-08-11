@@ -61,7 +61,7 @@ main(int argc, char **argv)
 	    }
 	    s.next_in = (Bytef *) dummy_head;
 	    s.avail_in = sizeof(dummy_head);
-	    status = inflate(&s, flush);
+	    inflate(&s, flush);
 	    s.next_in = (Bytef *) inbuf;
 	    s.avail_in = len;
 	    continue;

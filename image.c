@@ -36,15 +36,13 @@ static void closeImgdisplay(void);
 static int getCharSize(void);
 
 void
-initImage()
+initImage(void)
 {
     if (activeImage)
 	return;
     if (getCharSize())
 	activeImage = TRUE;
 }
-
-int get_pixel_per_cell(int *ppc, int *ppl);
 
 static int
 getCharSize(void)
@@ -95,7 +93,7 @@ getCharSize(void)
 }
 
 void
-termImage()
+termImage(void)
 {
     if (!activeImage)
 	return;
@@ -108,7 +106,7 @@ termImage()
 }
 
 static int
-openImgdisplay()
+openImgdisplay(void)
 {
     char *cmd;
 
@@ -238,14 +236,6 @@ drawImage(void)
 	    int sh = (i->height + i->sy % pixel_per_line_i + pixel_per_line_i - 1) /
 		      pixel_per_line_i;
 
-#if 0
-	    fprintf(stderr,"file %s x %d y %d w %d h %d sx %d sy %d sw %d sh %d (ppc %d ppl %d)\n",
-		i->cache->file,
-		x, y, w, h, sx, sy, sw, sh,
-		pixel_per_char_i, pixel_per_line_i);
-#endif
-
-
 	    if (enable_inline_image == INLINE_IMG_SIXEL) {
 		w = i->cache->a_width > 0 ? i->width : 0;
 		h = i->cache->a_height > 0 ? i->height : 0;
@@ -298,7 +288,7 @@ drawImage(void)
 }
 
 void
-clearImage()
+clearImage(void)
 {
     static char buf[64];
     int j;
@@ -441,13 +431,6 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-	    /*
-	     * #ifdef HAVE_WAITPID
-	     * waitpid(cache->pid, &wait_st, 0);
-	     * #else
-	     * wait(&wait_st);
-	     * #endif
-	     */
 	    cache->pid = 0;
 	}
 	if (!stat(cache->file, &st)) {
@@ -470,18 +453,8 @@ loadImage(Buffer *buf, int flag)
 	    continue;
 	if (cache->pid) {
 	    kill(cache->pid, SIGKILL);
-	    /*
-	     * #ifdef HAVE_WAITPID
-	     * waitpid(cache->pid, &wait_st, 0);
-	     * #else
-	     * wait(&wait_st);
-	     * #endif
-	     */
 	    cache->pid = 0;
 	}
-	/*TODO make sure removing this didn't break anything
-	unlink(cache->touch);
-	*/
 	image_cache[i] = NULL;
     }
 
@@ -547,16 +520,9 @@ loadImage(Buffer *buf, int flag)
 	}
 #else /* !DONT_CALL_GC_AFTER_FORK */
 	if ((cache->pid = fork()) == 0) {
-	    /*
-	     * setup_child(TRUE, 0, -1);
-	     */
 	    setup_child(FALSE, 0, -1);
 	    image_source = cache->file;
 	    loadGeneralFile(cache->url, cache->current, NULL, 0, NULL);
-	    /* TODO make sure removing this didn't break anything
-	    if (!b || !b->real_type || strncasecmp(b->real_type, "image/", 6))
-		unlink(cache->file);
-	    */
 #if defined(HAVE_SYMLINK) && defined(HAVE_LSTAT)
 	    symlink(cache->file, cache->touch);
 #else
@@ -623,17 +589,17 @@ getImage(Image * image, ParsedURL *current, int flag)
 	cache->height = image->height ;
 	cache->a_width = image->width;
 	cache->a_height = image->height;
-	putHash_sv(image_hash, key->ptr, (void *)cache);
+	putHash_sv(image_hash, key->ptr, cache);
     }
     if (flag != IMG_FLAG_SKIP) {
 	if (cache->loaded == IMG_FLAG_UNLOADED) {
 	    if (!image_file)
 		image_file = newHash_sv(100);
 	    if (!getHash_sv(image_file, cache->file, NULL)) {
-		putHash_sv(image_file, cache->file, (void *)cache);
+		putHash_sv(image_file, cache->file, cache);
 		if (!image_list)
 		    image_list = newGeneralList();
-		pushValue(image_list, (void *)cache);
+		pushValue(image_list, cache);
 	    }
 	}
 	if (!cache->index)
@@ -772,7 +738,7 @@ got_image_size:
     if (cache->height == 0)
 	cache->height = 1;
     tmp = Sprintf("%d;%d;%s", cache->width, cache->height, cache->url);
-    putHash_sv(image_hash, tmp->ptr, (void *)cache);
+    putHash_sv(image_hash, tmp->ptr, cache);
     return TRUE;
 }
 #endif

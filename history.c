@@ -28,9 +28,9 @@ historyBuffer(Hist *hist)
     Strcat_charp(src, "<ol>\n");
     if (hist && hist->list) {
 	for (item = hist->list->last; item; item = item->prev) {
-	    q = html_quote((char *)item->ptr);
+	    q = html_quote(item->ptr);
 	    if (DecodeURL)
-		p = html_quote(url_decode2((char *)item->ptr, NULL));
+		p = html_quote(url_decode2(item->ptr, NULL));
 	    else
 		p = q;
 	    Strcat_charp(src, "<li><a href=\"");
@@ -149,7 +149,7 @@ copyHist(Hist *hist)
 	return NULL;
     new = newHist();
     for (item = hist->list->first; item; item = item->next)
-	pushHist(new, (char *)item->ptr);
+	pushHist(new, item->ptr);
     return new;
 }
 
@@ -161,7 +161,7 @@ unshiftHist(Hist *hist, char *ptr)
     if (hist == NULL || hist->list == NULL ||
 	hist->list->nitem >= HIST_LIST_MAX)
 	return NULL;
-    item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
+    item = (HistItem *)newListItem(allocStr(ptr, -1),
 				   (ListItem *)hist->list->first, NULL);
     if (hist->list->first)
 	hist->list->first->prev = item;
@@ -180,7 +180,7 @@ pushHist(Hist *hist, char *ptr)
     if (hist == NULL || hist->list == NULL ||
 	hist->list->nitem >= HIST_LIST_MAX)
 	return NULL;
-    item = (HistItem *)newListItem((void *)allocStr(ptr, -1),
+    item = (HistItem *)newListItem(allocStr(ptr, -1),
 				   NULL, (ListItem *)hist->list->last);
     if (hist->list->last)
 	hist->list->last->next = item;
@@ -214,7 +214,7 @@ pushHashHist(Hist *hist, char *ptr)
 	hist->list->nitem--;
     }
     item = pushHist(hist, ptr);
-    putHash_sv(hist->hash, ptr, (void *)item);
+    putHash_sv(hist->hash, ptr, item);
     return item;
 }
 
@@ -228,7 +228,7 @@ getHashHist(Hist *hist, char *ptr)
     if (hist->hash == NULL) {
 	hist->hash = newHash_sv(HIST_HASH_SIZE);
 	for (item = hist->list->first; item; item = item->next)
-	    putHash_sv(hist->hash, (char *)item->ptr, (void *)item);
+	    putHash_sv(hist->hash, item->ptr, item);
     }
     return (HistItem *)getHash_sv(hist->hash, ptr, NULL);
 }

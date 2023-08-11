@@ -81,7 +81,7 @@ get_animation_size(GdkPixbufAnimation * animation, int *w, int *h, int *delay)
 #endif
 
 void
-fb_image_init()
+fb_image_init(void)
 {
 #if defined(USE_GTK2)
     g_type_init();

@@ -120,41 +120,41 @@ currentLineSkip(Buffer *buf, Line *line, int offset, int last)
 #define MAX_CMD_LEN 128
 
 int
-gethtmlcmd(char **s)
+gethtmlcmd(char *s)
 {
     extern Hash_si tagtable;
     char cmdstr[MAX_CMD_LEN];
     char *p = cmdstr;
-    char *save = *s;
+    char *save = s;
     int cmd;
 
-    (*s)++;
+    s++;
     /* first character */
-    if (IS_ALNUM(**s) || **s == '_' || **s == '/') {
-	*(p++) = TOLOWER(**s);
-	(*s)++;
+    if (IS_ALNUM(*s) || *s == '_' || *s == '/') {
+	*(p++) = TOLOWER(*s);
+	s++;
     }
     else
 	return HTML_UNKNOWN;
     if (p[-1] == '/')
-	SKIP_BLANKS(*s);
-    while ((IS_ALNUM(**s) || **s == '_') && p - cmdstr < MAX_CMD_LEN) {
-	*(p++) = TOLOWER(**s);
-	(*s)++;
+	SKIP_BLANKS(s);
+    while ((IS_ALNUM(*s) || *s == '_') && p - cmdstr < MAX_CMD_LEN) {
+	*(p++) = TOLOWER(*s);
+	s++;
     }
     if (p - cmdstr == MAX_CMD_LEN) {
 	/* buffer overflow: perhaps caused by bad HTML source */
-	*s = save + 1;
+	s = save + 1;
 	return HTML_UNKNOWN;
     }
     *p = '\0';
 
     /* hash search */
     cmd = getHash_si(&tagtable, cmdstr, HTML_UNKNOWN);
-    while (**s && **s != '>')
-	(*s)++;
-    if (**s == '>')
-	(*s)++;
+    while (*s && *s != '>')
+	s++;
+    if (*s == '>')
+	s++;
     return cmd;
 }
 
@@ -885,9 +885,6 @@ read_token(Str buf, char **instr, int *status, int pre, int append)
 	    }
 	    if (*status == R_ST_TAG0 && !REALLY_THE_BEGINNING_OF_A_TAG(p)) {
 		/* it seems that this '<' is not a beginning of a tag */
-		/*
-		 * Strcat_charp(buf, "&lt;");
-		 */
 		Strcat_char(buf, '<');
 		*status = R_ST_NORMAL;
 	    }
@@ -1023,7 +1020,7 @@ find_auth_pass_entry(char *host, int port, char *realm, char *uname,
 
 int
 find_auth_user_passwd(ParsedURL *pu, char *realm,
-		      Str *uname, Str *pwd, int is_proxy)
+		      volatile Str *uname, volatile Str *pwd, int is_proxy)
 {
     struct auth_pass *ent;
 
@@ -1409,13 +1406,6 @@ setup_child(int child, int i, int f)
     if (!child)
 	SETPGRP();
 #endif /* __MINGW32_VERSION */
-    /*
-     * I don't know why but close_tty() sometimes interrupts loadGeneralFile() in loadImage()
-     * and corrupt image data can be cached in ~/.w3m.
-     */
-#if 0
-    close_tty();
-#endif
     close_all_fds_except(i, f);
     QuietMessage = TRUE;
     fmInitialized = FALSE;
@@ -2099,7 +2089,7 @@ base64_encode(const char *src, size_t len)
     unsigned long j;
     size_t k;
 
-    s = (unsigned char*)src;
+    s = (const unsigned char*)src;
 
     k = len;
     if (k % 3)

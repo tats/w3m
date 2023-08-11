@@ -85,7 +85,7 @@ newFrame(struct parsed_tag *tag, Buffer *buf)
     char *p;
 
     body = New(struct frame_body);
-    bzero((void *)body, sizeof(*body));
+    bzero(body, sizeof(*body));
     body->attr = F_UNLOADED;
     body->flags = 0;
     body->baseURL = baseURL(buf);
@@ -111,7 +111,7 @@ deleteFrame(struct frame_body *b)
     if (b == NULL)
 	return;
     unloadFrame(b);
-    bzero((void *)b, sizeof(*b));
+    bzero(b, sizeof(*b));
 }
 
 void
@@ -169,7 +169,7 @@ copyFrame(struct frame_body *ob)
     struct frame_body *rb;
 
     rb = New(struct frame_body);
-    bcopy((const void *)ob, (void *)rb, sizeof(struct frame_body));
+    bcopy(ob, rb, sizeof(struct frame_body));
     return rb;
 }
 
@@ -181,13 +181,11 @@ copyFrameSet(struct frameset *of)
 
     rf = New(struct frameset);
     n = of->col * of->row;
-    bcopy((const void *)of, (void *)rf, sizeof(struct frameset));
+    bcopy(of, rf, sizeof(struct frameset));
     rf->width = New_N(char *, rf->col);
-    bcopy((const void *)of->width,
-	  (void *)rf->width, sizeof(char *) * rf->col);
+    bcopy(of->width, rf->width, sizeof(char *) * rf->col);
     rf->height = New_N(char *, rf->row);
-    bcopy((const void *)of->height,
-	  (void *)rf->height, sizeof(char *) * rf->row);
+    bcopy(of->height, rf->height, sizeof(char *) * rf->row);
     rf->frame = New_N(union frameset_element, n);
     while (n) {
 	n--;
@@ -282,7 +280,7 @@ popFrameTree(struct frameset_queue **fqpp)
 	(rfq = cfq->back)->next = cfq->next;
     }
     *fqpp = rfq;
-    bzero((void *)cfq, sizeof(struct frameset_queue));
+    bzero(cfq, sizeof(struct frameset_queue));
     return rfs;
 }
 
@@ -337,9 +335,6 @@ frame_download_source(struct frame_body *b, ParsedURL *currentURL,
     parseURL2(b->url, &url, currentURL);
     switch (url.scheme) {
     case SCM_LOCAL:
-#if 0
-	b->source = url.real_file;
-#endif
 	b->flags = 0;
     default:
 	is_redisplay = TRUE;
@@ -892,8 +887,6 @@ renderFrame(Buffer *Cbuf, int force_reload)
     f = fopen(tmp->ptr, "w");
     if (f == NULL)
 	return NULL;
-    /* 
-     * if (Cbuf->frameQ != NULL) fset = Cbuf->frameQ->frameset; else */
     fset = Cbuf->frameset;
     if (fset == NULL || createFrameFile(fset, f, Cbuf, 0, force_reload) < 0) {
 	fclose(f);

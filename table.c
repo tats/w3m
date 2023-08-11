@@ -269,7 +269,7 @@ table_border_width(struct table *t)
 }
 
 struct table *
-newTable()
+newTable(void)
 {
     struct table *t;
     int i, j;
@@ -307,12 +307,6 @@ newTable()
     t->matrix = NULL;
     t->vector = NULL;
 #endif				/* MATRIX */
-#if 0
-    t->tabcontentssize = 0;
-    t->indent = 0;
-    t->linfo.prev_ctype = PC_ASCII;
-    t->linfo.prev_spaces = -1;
-#endif
     t->linfo.prevchar = Strnew_size(8);
     set_prevchar(t->linfo.prevchar, "", 0);
     t->trattr = 0;
@@ -763,7 +757,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
     if (h_env.limit > maxlimit)
 	h_env.limit = maxlimit;
     if (tbl->border_mode != BORDER_NONE && tbl->vcellpadding > 0)
-	do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
+	do_blankline(&h_env, &obuf, 0, h_env.limit);
     for (l = orgdata->first; l != NULL; l = l->next) {
 	if (TAG_IS(l->ptr, "<table_alt", 10)) {
 	    int id = -1;
@@ -780,7 +774,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 		save_fonteffect(&h_env, h_env.obuf);
 		flushline(&h_env, &obuf, 0, 2, h_env.limit);
 		if (t->vspace > 0 && !(obuf.flag & RB_IGNORE_P))
-		    do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
+		    do_blankline(&h_env, &obuf, 0, h_env.limit);
 		if (RB_GET_ALIGN(h_env.obuf) == RB_CENTER)
 		    alignment = ALIGN_CENTER;
 		else if (RB_GET_ALIGN(h_env.obuf) == RB_RIGHT)
@@ -800,7 +794,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 		obuf.flag &= ~RB_IGNORE_P;
 		h_env.blank_lines = 0;
 		if (t->vspace > 0) {
-		    do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
+		    do_blankline(&h_env, &obuf, 0, h_env.limit);
 		    obuf.flag |= RB_IGNORE_P;
 		}
 	    }
@@ -818,7 +812,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
 	int rowspan = table_rowspan(tbl, row, col);
 	if (row + rowspan <= tbl->maxrow) {
 	    if (tbl->vcellpadding > 0 && !(obuf.flag & RB_IGNORE_P))
-		do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
+		do_blankline(&h_env, &obuf, 0, h_env.limit);
 	}
 	else {
 	    if (tbl->vspace > 0)
@@ -828,7 +822,7 @@ do_refill(struct table *tbl, int row, int col, int maxlimit)
     else {
 	if (tbl->vcellpadding > 0) {
 	    if (!(obuf.flag & RB_IGNORE_P))
-		do_blankline(&h_env, &obuf, 0, 0, h_env.limit);
+		do_blankline(&h_env, &obuf, 0, h_env.limit);
 	}
 	else
 	    purgeline(&h_env);
@@ -2165,7 +2159,7 @@ check_minimum0(struct table *t, int min)
 }
 
 static int
-setwidth0(struct table *t, struct table_mode *mode)
+setwidth0(struct table *t)
 {
     int w;
     int width = t->tabcontentssize;
@@ -2193,7 +2187,7 @@ setwidth0(struct table *t, struct table_mode *mode)
 static void
 setwidth(struct table *t, struct table_mode *mode)
 {
-    int width = setwidth0(t, mode);
+    int width = setwidth0(t);
     if (width < 0)
 	return;
 #ifdef NOWRAP
@@ -2792,9 +2786,6 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 	for (i = 0; i < rowspan; i++) {
 	    check_row(tbl, tbl->row + i);
 	    for (j = 0; j < colspan; j++) {
-#if 0
-		tbl->tabattr[tbl->row + i][tbl->col + j] &= ~(HTT_X | HTT_Y);
-#endif
 		if (!(tbl->tabattr[tbl->row + i][tbl->col + j] &
 		      (HTT_X | HTT_Y))) {
 		    tbl->tabattr[tbl->row + i][tbl->col + j] |=
@@ -3133,7 +3124,7 @@ feed_table_tag(struct table *tbl, char *line, struct table_mode *mode,
 		    tbl->fixed_width[tbl->col] = w;
 	    }
 #endif
-	    setwidth0(tbl, mode);
+	    setwidth0(tbl);
 	    clearcontentssize(tbl, mode);
 	}
 	break;

@@ -41,7 +41,7 @@ static int xpix, ypix, nbs, obs = 0;
 
 static int is_xterm = 0;
 
-void mouse_init(void), mouse_end(void);
+void mouse_init(void);
 int mouseActive = 0;
 #endif				/* USE_MOUSE */
 
@@ -159,8 +159,6 @@ read_win32_console_input(void)
 static int
 read_win32_console(char *s, int n)
 {
-    KEY_EVENT_RECORD *ker;
-
     if (hConIn == INVALID_HANDLE_VALUE)
 	return read(tty, s, n);
 
@@ -260,10 +258,7 @@ check_cygwin_console(void)
 }
 #endif				/* __CYGWIN__ */
 
-char *getenv(const char *);
 MySignalHandler reset_exit(SIGNAL_ARG), reset_error_exit(SIGNAL_ARG), error_dump(SIGNAL_ARG);
-void setlinescols(void);
-void flush_tty(void);
 
 #ifndef SIGIOT
 #define SIGIOT SIGABRT
@@ -452,10 +447,7 @@ extern int tgetflag(char *);
 extern char *tgetstr(char *, char **);
 extern char *tgoto(char *, int, int);
 extern int tputs(char *, int, int (*)(char));
-void clear(void), wrap(void), touch_line(void), touch_column(int);
-#if 0
-void need_clrtoeol(void);
-#endif
+void wrap(void), touch_line(void), touch_column(int);
 void clrtoeol(void);		/* conflicts with curs_clear(3)? */
 
 static int write1(char);
@@ -1218,12 +1210,6 @@ getTCstr(void)
     GETSTR(T_op, "op");		/* set default color pair to its original value */
 #if defined( CYGWIN ) && CYGWIN < 1
     /* for TERM=pcansi on MS-DOS prompt. */
-#if 0
-    T_eA = "";
-    T_as = "\033[12m";
-    T_ae = "\033[10m";
-    T_ac = "l\001k\002m\003j\004x\005q\006n\020a\024v\025w\026u\027t\031";
-#endif
     T_eA = "";
     T_as = "";
     T_ae = "";
@@ -1297,7 +1283,7 @@ setupscreen(void)
 	for (i = 0; i < max_LINES; i++) {
 #ifdef USE_M17N
 	    ScreenElem[i].lineimage = New_N(char *, max_COLS);
-	    bzero((void *)ScreenElem[i].lineimage, max_COLS * sizeof(char *));
+	    bzero(ScreenElem[i].lineimage, max_COLS * sizeof(char *));
 #else
 	    ScreenElem[i].lineimage = New_N(char, max_COLS);
 #endif
@@ -2018,24 +2004,6 @@ rscroll(int n)
 }
 #endif
 
-#if 0
-void
-need_clrtoeol(void)
-{
-    /* Clear to the end of line as the need arises */
-    l_prop *lprop = ScreenImage[CurLine]->lineprop;
-
-    if (lprop[CurColumn] & S_EOL)
-	return;
-
-    if (!(ScreenImage[CurLine]->isdirty & (L_NEED_CE | L_CLRTOEOL)) ||
-	ScreenImage[CurLine]->eol > CurColumn)
-	ScreenImage[CurLine]->eol = CurColumn;
-
-    ScreenImage[CurLine]->isdirty |= L_NEED_CE;
-}
-#endif				/* 0 */
-
 /* XXX: conflicts with curses's clrtoeol(3) ? */
 void
 clrtoeol(void)
@@ -2093,7 +2061,7 @@ clrtoeolx(void)
 #endif				/* not USE_BG_COLOR */
 
 static void
-clrtobot_eol(void (*clrtoeol) ())
+clrtobot_eol(void (*clrtoeol) (void))
 {
     int l, c;
 
@@ -2109,27 +2077,10 @@ clrtobot_eol(void (*clrtoeol) ())
 }
 
 void
-clrtobot(void)
-{
-    clrtobot_eol(clrtoeol);
-}
-
-void
 clrtobotx(void)
 {
     clrtobot_eol(clrtoeolx);
 }
-
-#if 0
-void
-no_clrtoeol(void)
-{
-    int i;
-    l_prop *lprop = ScreenImage[CurLine]->lineprop;
-
-    ScreenImage[CurLine]->isdirty &= ~L_CLRTOEOL;
-}
-#endif				/* 0 */
 
 void
 addstr(char *s)
@@ -2211,29 +2162,6 @@ crmode(void)
     ttymode_set(CBREAK, 0);
 }
 #endif				/* HAVE_SGTTY_H */
-
-void
-nocrmode(void)
-#ifndef HAVE_SGTTY_H
-{
-    ttymode_set(ICANON, 0);
-#ifdef HAVE_TERMIOS_H
-    set_cc(VMIN, 4);
-#else				/* not HAVE_TERMIOS_H */
-    set_cc(VEOF, 4);
-#endif				/* not HAVE_TERMIOS_H */
-}
-#else				/* HAVE_SGTTY_H */
-{
-    ttymode_reset(CBREAK, 0);
-}
-#endif				/* HAVE_SGTTY_H */
-
-void
-term_echo(void)
-{
-    ttymode_set(ECHO, 0);
-}
 
 void
 term_noecho(void)
@@ -2355,7 +2283,7 @@ wgetch(void *p)
 }
 
 int
-do_getch()
+do_getch(void)
 {
     if (is_xterm || !gpm_handler)
 	return getch();
@@ -2366,7 +2294,7 @@ do_getch()
 
 #ifdef USE_SYSMOUSE
 int
-sysm_getch()
+sysm_getch(void)
 {
     fd_set rfd;
     int key, x, y;
@@ -2386,7 +2314,7 @@ sysm_getch()
 }
 
 int
-do_getch()
+do_getch(void)
 {
     if (is_xterm || !sysm_handler)
 	return getch();
@@ -2488,7 +2416,7 @@ sleep_till_anykey(int sec, int purge)
 /* Linux console with GPM support */
 
 void
-mouse_init()
+mouse_init(void)
 {
     Gpm_Connect conn;
     extern int gpm_process_mouse(Gpm_Event *, void *);
@@ -2525,7 +2453,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2540,7 +2468,7 @@ mouse_end()
 #elif	defined(USE_SYSMOUSE)
 /* *BSD console with sysmouse support */
 void
-mouse_init()
+mouse_init(void)
 {
     mouse_info_t mi;
     extern int sysm_process_mouse();
@@ -2581,7 +2509,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2602,7 +2530,7 @@ mouse_end()
 /* not GPM nor SYSMOUSE, but use mouse with xterm */
 
 void
-mouse_init()
+mouse_init(void)
 {
     if (mouseActive)
 	return;
@@ -2618,7 +2546,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2637,14 +2565,14 @@ mouse_end()
 
 
 void
-mouse_active()
+mouse_active(void)
 {
     if (!mouseActive)
 	mouse_init();
 }
 
 void
-mouse_inactive()
+mouse_inactive(void)
 {
     if (mouseActive && is_xterm)
 	mouse_end();

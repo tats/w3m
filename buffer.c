@@ -29,7 +29,7 @@ newBuffer(int width)
     n = New(Buffer);
     if (n == NULL)
 	exit(3);
-    bzero((void *)n, sizeof(Buffer));
+    bzero(n, sizeof(Buffer));
     n->width = width;
     n->COLS = COLS;
     n->LINES = LASTLINE;
@@ -114,25 +114,6 @@ discardBuffer(Buffer *buf)
 	deleteFrameSet(buf->frameset);
 	buf->frameset = popFrameTree(&(buf->frameQ));
     }
-}
-
-/* 
- * namedBuffer: Select buffer which have specified name
- */
-Buffer *
-namedBuffer(Buffer *first, char *name)
-{
-    Buffer *buf;
-
-    if (!strcmp(first->buffername, name)) {
-	return first;
-    }
-    for (buf = first; buf->nextBuffer != NULL; buf = buf->nextBuffer) {
-	if (!strcmp(buf->nextBuffer->buffername, name)) {
-	    return buf->nextBuffer;
-	}
-    }
-    return NULL;
 }
 
 /* 
@@ -366,8 +347,6 @@ listBuffer(Buffer *top, Buffer *current)
     message("Buffer selection mode: SPC for select / D for delete buffer", 0,
 	    0);
     standend();
-    /* 
-     * move(LASTLINE, COLS - 1); */
     move(c, 0);
     refresh();
     return buf->nextBuffer;
@@ -491,9 +470,6 @@ selectBuffer(Buffer *firstbuf, Buffer *currentbuf, char *selectchar)
 	    *selectchar = c;
 	    return currentbuf;
 	}
-	/* 
-	 * move(LASTLINE, COLS - 1);
-	 */
 	move(spoint, 0);
 	refresh();
     }
@@ -614,7 +590,7 @@ void
 copyBuffer(Buffer *a, Buffer *b)
 {
     readBufferCache(b);
-    bcopy((void *)b, (void *)a, sizeof(Buffer));
+    bcopy(b, a, sizeof(Buffer));
 }
 
 Buffer *

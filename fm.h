@@ -43,8 +43,6 @@
 #ifdef USE_M17N
 #include "wc.h"
 #include "wtf.h"
-#else
-typedef int wc_ces;	/* XXX: not used */
 #endif
 
 #ifdef HAVE_LOCALE_H
@@ -278,7 +276,7 @@ extern int REV_LB[];
 #define SCONF_NO_REFERER_TO	4
 #define SCONF_USER_AGENT	5
 #define SCONF_N_FIELD		6
-#define query_SCONF_SUBSTITUTE_URL(pu) ((const char *)querySiteconf(pu, SCONF_SUBSTITUTE_URL))
+#define query_SCONF_SUBSTITUTE_URL(pu) ((char *)querySiteconf(pu, SCONF_SUBSTITUTE_URL))
 #define query_SCONF_USER_AGENT(pu) ((const char *)querySiteconf(pu, SCONF_USER_AGENT))
 #define query_SCONF_URL_CHARSET(pu) ((const wc_ces *)querySiteconf(pu, SCONF_URL_CHARSET))
 #define query_SCONF_NO_REFERER_FROM(pu) ((const int *)querySiteconf(pu, SCONF_NO_REFERER_FROM))
@@ -821,7 +819,6 @@ typedef struct http_request {
  * Globals.
  */
 
-extern int LINES, COLS;
 #if defined(__CYGWIN__)
 extern int LASTLINE;
 #else				/* not defined(__CYGWIN__) */
@@ -918,10 +915,6 @@ global int CurrentPid;
 #if defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE)
 global char *MyProgramName init("w3m");
 #endif /* defined(DONT_CALL_GC_AFTER_FORK) && defined(USE_IMAGE) */
-/*
- * global Buffer *Currentbuf;
- * global Buffer *Firstbuf;
- */
 global TabBuffer *CurrentTab;
 global TabBuffer *FirstTab;
 global TabBuffer *LastTab;
@@ -1146,13 +1139,12 @@ global char *config_file init(NULL);
 
 #ifdef USE_MOUSE
 global int use_mouse init(TRUE);
-extern int mouseActive;
 global int reverse_mouse init(FALSE);
 global int relative_wheel_scroll init(FALSE);
 global int fixed_wheel_scroll_count init(5);
 global int relative_wheel_scroll_ratio init(30);
 typedef struct _MouseActionMap {
-    void (*func) ();
+    void (*func) (void);
     char *data;
 } MouseActionMap;
 typedef struct _MouseAction {

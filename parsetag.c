@@ -14,16 +14,6 @@ tag_get_value(struct parsed_tagarg *t, char *arg)
     return NULL;
 }
 
-int
-tag_exists(struct parsed_tagarg *t, char *arg)
-{
-    for (; t; t = t->next) {
-	if (!strcasecmp(t->arg, arg))
-	    return 1;
-    }
-    return 0;
-}
-
 struct parsed_tagarg *
 cgistr2tagarg(char *cgistr)
 {

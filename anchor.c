@@ -614,6 +614,13 @@ addMultirowsImg(Buffer *buf, AnchorList *al)
 	    a->slave = TRUE;
 	    a->image = img;
 	    a->end.pos = pos + ecol - col;
+	    /* TODO:
+	     * This is a hack to avoid adding images positioned on the wrong
+	     * line outside line bounds (which would cause a buffer overrun).
+	     * The actual bug is most likely in the image placement code.
+	     */
+	    if (pos < 0 || a->end.pos > l->size)
+		continue;
 	    for (k = pos; k < a->end.pos; k++)
 		l->propBuf[k] |= PE_IMAGE;
 	    if (a_href.url) {

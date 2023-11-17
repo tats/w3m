@@ -389,15 +389,23 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			}
 			else {
 			    Strshrink(s, plen);
-			    prop -= plen;
+			    if (s->length) {
+				prop -= plen;
 #ifdef USE_ANSI_COLOR
-			    if (color)
-				color -= plen;
+				if (color)
+				    color -= plen;
 #endif
-			    if (plens == plens_buffer)
-				plen = 0;
-			    else
 				plen = *(--plens);
+			    }
+			    else {
+				plen = 0;
+				plens = plens_buffer;
+				prop = prop_buffer;
+#ifdef USE_ANSI_COLOR
+				if (color)
+				    color = color_buffer;
+#endif
+			    }
 			    str += 2;
 			}
 		    }
@@ -418,15 +426,23 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			}
 			else {
 			    Strshrink(s, plen);
-			    prop -= plen;
+			    if (s->length) {
+				prop -= plen;
 #ifdef USE_ANSI_COLOR
-			    if (color)
-				color -= plen;
+				if (color)
+				    color -= plen;
 #endif
-			    if (plens == plens_buffer)
-				plen = 0;
-			    else
 				plen = *(--plens);
+			    }
+			    else {
+				plen = 0;
+				plens = plens_buffer;
+				prop = prop_buffer;
+#ifdef USE_ANSI_COLOR
+				if (color)
+				    color = color_buffer;
+#endif
+			    }
 			    str++;
 			}
 #else	/* USE_M17N */
@@ -436,10 +452,12 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			}
 			else {
 			    Strshrink(s, 1);
-			    prop--;
+			    prop = prop == prop_buffer ? prop_buffer : prop - 1;
 #ifdef USE_ANSI_COLOR
 			    if (color)
-				color--;
+				color = (color == color_buffer
+					 ? color_buffer
+					 : color - 1);
 #endif
 			    str++;
 			}

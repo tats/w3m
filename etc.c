@@ -317,6 +317,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    Strcat_charp_n(s, sp, (int)(str - sp));
 	}
     }
+
     if (!do_copy) {
 	for (; str < endp && IS_ASCII(*str); str++) {
 	    *(prop++) = PE_NORMAL | (IS_CNTRL(*str) ? PC_CTRL : PC_ASCII);
@@ -388,15 +389,23 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			}
 			else {
 			    Strshrink(s, plen);
-			    prop -= plen;
+			    if (s->length) {
+				prop -= plen;
 #ifdef USE_ANSI_COLOR
-			    if (color)
-				color -= plen;
+				if (color)
+				    color -= plen;
 #endif
-			    if (plens == plens_buffer)
-				plen = 0;
-			    else
 				plen = *(--plens);
+			    }
+			    else {
+				plen = 0;
+				plens = plens_buffer;
+				prop = prop_buffer;
+#ifdef USE_ANSI_COLOR
+				if (color)
+				    color = color_buffer;
+#endif
+			    }
 			    str += 2;
 			}
 		    }
@@ -404,7 +413,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			str += 2;
 		    }
 		}
-#endif
+#endif	/* USE_M17N */
 		else {
 		    if (s->length) {
 #ifdef USE_M17N
@@ -417,32 +426,42 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 			}
 			else {
 			    Strshrink(s, plen);
-			    prop -= plen;
+			    if (s->length) {
+				prop -= plen;
 #ifdef USE_ANSI_COLOR
-			    if (color)
-				color -= plen;
+				if (color)
+				    color -= plen;
 #endif
-			    if (plens == plens_buffer)
-				plen = 0;
-			    else
 				plen = *(--plens);
+			    }
+			    else {
+				plen = 0;
+				plens = plens_buffer;
+				prop = prop_buffer;
+#ifdef USE_ANSI_COLOR
+				if (color)
+				    color = color_buffer;
+#endif
+			    }
 			    str++;
 			}
-#else
+#else	/* USE_M17N */
 			if (*(str - 1) == *(str + 1)) {
 			    *(prop - 1) |= PE_BOLD;
 			    str += 2;
 			}
 			else {
 			    Strshrink(s, 1);
-			    prop--;
+			    prop = prop == prop_buffer ? prop_buffer : prop - 1;
 #ifdef USE_ANSI_COLOR
 			    if (color)
-				color--;
+				color = (color == color_buffer
+					 ? color_buffer
+					 : color - 1);
 #endif
 			    str++;
 			}
-#endif
+#endif	/* USE_M17N */
 		    }
 		    else {
 			str++;
@@ -457,6 +476,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 		bs = memchr(str, '\b', endp - str);
 #endif
 	}
+
 #ifdef USE_ANSI_COLOR
 	if (es != NULL) {
 	    if (str == es) {
@@ -501,7 +521,7 @@ checkType(Str s, Lineprop **oprop, Linecolor **ocolor)
 	    str += plen;
 	}
 	else
-#endif
+#endif	/* USE_M17N */
 	{
 	    if (do_copy)
 		Strcat_char(s, (char)*str);

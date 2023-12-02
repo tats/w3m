@@ -8,6 +8,8 @@ $charset = 'UTF-8';
  'BUF:NEXT', 'Gehe zum nächsten Punkt',
  'BUF:DELETE', 'Lösche den ausgewählten Eintrag',
  'BUF:GO', 'Gehe zum ausgewählten Eintrag',
+ 'BUF:MVDN', 'Schiebe ausgewählten Eintrag runter',
+ 'BUF:MVUP', 'Schiebe ausgewählten Eintrag hoch',
 );
 
 %lineedit_funcdesc = (

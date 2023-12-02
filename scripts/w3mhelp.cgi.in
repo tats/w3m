@@ -181,7 +181,8 @@ print "<P><A HREF=\"$keymap\">$head</A>\n";
 print "<BR>\n<HR WIDTH=80%>\n";
 
 &show_keymap('Buffer and Tab Selection Mode',
-	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go"));
+	     split(" ", "buffer_next buffer_prev buffer_delete buffer_go
+		buffer_down buffer_up"));
 
 print "<BR>\n<HR WIDTH=80%>\n";
 

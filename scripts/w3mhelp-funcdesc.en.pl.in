@@ -8,6 +8,8 @@ $charset = 'US-ASCII';
  'BUF:NEXT', 'Next item',
  'BUF:DELETE', 'Delete item',
  'BUF:GO', 'Select item',
+ 'BUF:MVDN', 'Move item down',
+ 'BUF:MVUP', 'Move item up',
 );
 
 %lineedit_funcdesc = (

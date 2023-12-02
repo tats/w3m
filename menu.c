@@ -242,6 +242,8 @@ static int SelectV = 0;
 static void initSelectMenu(void);
 static void smChBuf(void);
 static int smDelBuf(char c);
+static int smMovDn(char c);
+static int smMovUp(char c);
 
 /* --- SelectMenu (END) --- */
 
@@ -1387,7 +1389,7 @@ initSelectMenu(void)
     Str str;
     char **label;
     char *p;
-    static char *comment = " SPC for select / D for delete buffer ";
+    static char *comment = " SPC select / D delete / < move down / > move up ";
 
     SelectV = -1;
     for (i = 0, buf = Firstbuf; buf != NULL; i++, buf = buf->nextBuffer) {
@@ -1442,6 +1444,8 @@ initSelectMenu(void)
     SelectMenu.cursorX = Currentbuf->cursorX + Currentbuf->rootX;
     SelectMenu.cursorY = Currentbuf->cursorY + Currentbuf->rootY;
     SelectMenu.keymap['D'] = smDelBuf;
+    SelectMenu.keymap['>'] = smMovUp;
+    SelectMenu.keymap['<'] = smMovDn;
     SelectMenu.item[nitem].type = MENU_NOP;
 }
 
@@ -1504,6 +1508,75 @@ smDelBuf(char c)
     draw_all_menu(CurrentMenu);
     select_menu(CurrentMenu, CurrentMenu->select);
     return (MENU_NOTHING);
+}
+
+static int
+smMovUp(char c)
+{
+    Buffer *cur, *prev, *pprev;
+    int i, mselect, x, y;
+
+    if (!CurrentMenu->select) /* Top of menu */
+	return MENU_NOTHING;
+    for (i = 0, cur = Firstbuf; i < CurrentMenu->select;
+	 i++, cur = cur->nextBuffer) ;
+    prev = prevBuffer(Firstbuf, cur);
+    if ((pprev = prevBuffer(Firstbuf, prev)))
+	pprev->nextBuffer = cur;
+    prev->nextBuffer = cur->nextBuffer;
+    cur->nextBuffer = prev;
+    if (prev == Firstbuf)
+	Firstbuf = cur;
+
+    x = CurrentMenu->x;
+    y = CurrentMenu->y;
+    mselect = CurrentMenu->select;
+
+    initSelectMenu();
+    CurrentMenu->x = x;
+    CurrentMenu->y = y;
+    geom_menu(CurrentMenu, 0, 0, 0);
+    CurrentMenu->select = --mselect;
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    draw_all_menu(CurrentMenu);
+    select_menu(CurrentMenu, CurrentMenu->select);
+    return MENU_NOTHING;
+}
+
+static int
+smMovDn(char c)
+{
+    Buffer *cur, *next;
+    int i, mselect, x, y;
+
+    for (i = 0, cur = Firstbuf; i < CurrentMenu->select;
+	 i++, cur = cur->nextBuffer) ;
+
+    if (!cur->nextBuffer) /* Bottom of menu */
+	return MENU_NOTHING;
+
+    next = cur->nextBuffer;
+
+    if (cur == Firstbuf)
+	Firstbuf = cur->nextBuffer;
+    else
+	prevBuffer(Firstbuf, cur)->nextBuffer = next;
+    cur->nextBuffer = next->nextBuffer;
+    next->nextBuffer = cur;
+
+    x = CurrentMenu->x;
+    y = CurrentMenu->y;
+    mselect = CurrentMenu->select;
+
+    initSelectMenu();
+    CurrentMenu->x = x;
+    CurrentMenu->y = y;
+    geom_menu(CurrentMenu, 0, 0, 0);
+    CurrentMenu->select = ++mselect;
+    displayBuffer(Currentbuf, B_FORCE_REDRAW);
+    draw_all_menu(CurrentMenu);
+    select_menu(CurrentMenu, CurrentMenu->select);
+    return MENU_NOTHING;
 }
 
 /* --- SelectMenu (END) --- */

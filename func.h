@@ -19,7 +19,7 @@
 
 typedef struct _FuncList {
     char *id;
-    void (*func) ();
+    void (*func) (void);
 } FuncList;
 
 #endif				/* not FUNC_H */

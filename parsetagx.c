@@ -10,14 +10,14 @@
 
 /* parse HTML tag */
 
-static int noConv(char *, char **);
-static int toNumber(char *, int *);
-static int toLength(char *, int *);
-static int toAlign(char *, int *);
-static int toVAlign(char *, int *);
+static int noConv(char *, void *);
+static int toNumber(char *, void *);
+static int toLength(char *, void *);
+static int toAlign(char *, void *);
+static int toVAlign(char *, void *);
 
 /* *INDENT-OFF* */
-static int (*toValFunc[]) () = {
+static int (*toValFunc[]) (char *, void *) = {
     noConv,		/* VTYPE_NONE    */
     noConv,		/* VTYPE_STR     */
     toNumber,		/* VTYPE_NUMBER  */
@@ -33,14 +33,14 @@ static int (*toValFunc[]) () = {
 /* *INDENT-ON* */
 
 static int
-noConv(char *oval, char **str)
+noConv(char *oval, void *str)
 {
-    *str = oval;
+    *(char **)str = oval;
     return 1;
 }
 
 static int
-toNumber(char *oval, int *num)
+toNumber(char *oval, void *num)
 {
     char *ep;
     int x;
@@ -48,7 +48,7 @@ toNumber(char *oval, int *num)
     x = strtol(oval, &ep, 10);
 
     if (ep > oval) {
-	*num = x;
+	*(int *)num = x;
 	return 1;
     }
     else
@@ -56,7 +56,7 @@ toNumber(char *oval, int *num)
 }
 
 static int
-toLength(char *oval, int *len)
+toLength(char *oval, void *len)
 {
     int w;
     if (!IS_DIGIT(oval[0]))
@@ -67,41 +67,41 @@ toLength(char *oval, int *len)
     if (w == 0)
 	w = 1;
     if (oval[strlen(oval) - 1] == '%')
-	*len = -w;
+	*(int *)len = -w;
     else
-	*len = w;
+	*(int *)len = w;
     return 1;
 }
 
 static int
-toAlign(char *oval, int *align)
+toAlign(char *oval, void *align)
 {
     if (strcasecmp(oval, "left") == 0)
-	*align = ALIGN_LEFT;
+	*(int *)align = ALIGN_LEFT;
     else if (strcasecmp(oval, "right") == 0)
-	*align = ALIGN_RIGHT;
+	*(int *)align = ALIGN_RIGHT;
     else if (strcasecmp(oval, "center") == 0)
-	*align = ALIGN_CENTER;
+	*(int *)align = ALIGN_CENTER;
     else if (strcasecmp(oval, "top") == 0)
-	*align = ALIGN_TOP;
+	*(int *)align = ALIGN_TOP;
     else if (strcasecmp(oval, "bottom") == 0)
-	*align = ALIGN_BOTTOM;
+	*(int *)align = ALIGN_BOTTOM;
     else if (strcasecmp(oval, "middle") == 0)
-	*align = ALIGN_MIDDLE;
+	*(int *)align = ALIGN_MIDDLE;
     else
 	return 0;
     return 1;
 }
 
 static int
-toVAlign(char *oval, int *valign)
+toVAlign(char *oval, void *valign)
 {
     if (strcasecmp(oval, "top") == 0 || strcasecmp(oval, "baseline") == 0)
-	*valign = VALIGN_TOP;
+	*(int *)valign = VALIGN_TOP;
     else if (strcasecmp(oval, "bottom") == 0)
-	*valign = VALIGN_BOTTOM;
+	*(int *)valign = VALIGN_BOTTOM;
     else if (strcasecmp(oval, "middle") == 0)
-	*valign = VALIGN_MIDDLE;
+	*(int *)valign = VALIGN_MIDDLE;
     else
 	return 0;
     return 1;

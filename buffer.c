@@ -6,7 +6,7 @@
 #include <gpm.h>
 #endif
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* USE_GPM */
 #endif				/* USE_MOUSE */

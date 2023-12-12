@@ -269,7 +269,7 @@ table_border_width(struct table *t)
 }
 
 struct table *
-newTable()
+newTable(void)
 {
     struct table *t;
     int i, j;

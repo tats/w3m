@@ -20,7 +20,7 @@
 #define POP_CHAR(bs) ((bs)->iseos?'\0':(bs)->stream.buf[(bs)->stream.cur++])
 
 static int basic_close(int *handle);
-static int basic_read(int *handle, char *buf, int len);
+static int basic_read(int *handle, unsigned char *buf, int len);
 
 static int file_read(FILE *handle, char *buf, int len);
 
@@ -49,7 +49,7 @@ do_update(BaseStream base)
 }
 
 static int
-buffer_read(StreamBuffer sb, char *obuf, int count)
+buffer_read(StreamBuffer sb, unsigned char *obuf, int count)
 {
     int len = sb->next - sb->cur;
     if (len > 0) {
@@ -107,7 +107,7 @@ newInputStream(int des)
 }
 
 InputStream
-newFileStream(FILE * f, int (*closep) ())
+newFileStream(FILE * f, int (*closep)(FILE *))
 {
     InputStream stream;
     if (f == NULL)
@@ -178,7 +178,7 @@ newEncodedStream(InputStream is, char encoding)
 int
 ISclose(InputStream stream)
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     if (stream == NULL)
         return -1;
     if (stream->base.close != NULL) {
@@ -291,7 +291,7 @@ ISread(InputStream stream, Str buf, int count)
 #endif
 
 int
-ISread_n(InputStream stream, char *dst, int count)
+ISread_n(InputStream stream, unsigned char *dst, int count)
 {
     int len, l;
     BaseStream base;
@@ -639,12 +639,12 @@ basic_close(int *handle)
 }
 
 static int
-basic_read(int *handle, char *buf, int len)
+basic_read(int *handle, unsigned char *buf, int len)
 {
 #ifdef __MINGW32_VERSION
-    return recv(*(int *)handle, buf, len, 0);
+    return recv(*handle, buf, len, 0);
 #else
-    return read(*(int *)handle, buf, len);
+    return read(*handle, buf, len);
 #endif
 }
 

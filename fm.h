@@ -1152,7 +1152,7 @@ global int relative_wheel_scroll init(FALSE);
 global int fixed_wheel_scroll_count init(5);
 global int relative_wheel_scroll_ratio init(30);
 typedef struct _MouseActionMap {
-    void (*func) ();
+    void (*func) (void);
     char *data;
 } MouseActionMap;
 typedef struct _MouseAction {

@@ -8,7 +8,7 @@
 #include <gpm.h>
 #endif
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* USE_GPM */
 #endif				/* USE_MOUSE */
@@ -43,14 +43,14 @@ static int getcntrl(void);
 #endif
 
 static int terminated(unsigned char c);
-#define iself ((void(*)())insertself)
+#define iself ((void(*)(void))insertself)
 
 static void next_compl(int next);
 static void next_dcompl(int next);
 static Str doComplete(Str ifn, int *status, int next);
 
 /* *INDENT-OFF* */
-void (*InputKeymap[32]) () = {
+void (*InputKeymap[32]) (void) = {
 /*  C-@     C-a     C-b     C-c     C-d     C-e     C-f     C-g     */
     _compl, _mvB,   _mvL,   _inbrk, delC,   _mvE,   _mvR,   _inbrk,
 /*  C-h     C-i     C-j     C-k     C-l     C-m     C-n     C-o     */
@@ -208,7 +208,7 @@ inputLineHistSearch(char *prompt, char *def_str, int flag, Hist *hist,
 	else if (!i_quote && c < 0x20) {	/* Control code */
 	    if (incrfunc == NULL
 		|| (c = incrfunc((int)c, strBuf, strProp)) < 0x20)
-		(*InputKeymap[(int)c]) (c);
+		(*InputKeymap[(int)c]) ();
 	    if (incrfunc && c != (unsigned char)-1 && c != CTRL_J)
 		incrfunc(-1, strBuf, strProp);
 	    if (cm_clear)

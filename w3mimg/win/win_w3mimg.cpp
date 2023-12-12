@@ -97,11 +97,11 @@ static char *wstr2mb_alloc(const WCHAR *) THROW_NONE;
     struct win_info *xi = static_cast<struct win_info *>(wop->priv); \
     assert(xi)
 
-win_image::win_image() THROW_NONE
+win_image::win_image(void) THROW_NONE
     : gpbitmap(NULL), nframe(0)
 {}
 
-win_image::~win_image() THROW_NONE
+win_image::~win_image(void) THROW_NONE
 {
     if (this->cache) {
 	for (size_t i = 0; i != this->nframe; ++i) {
@@ -680,7 +680,7 @@ last:
 }
 
 extern "C" w3mimg_op *
-w3mimg_winopen()
+w3mimg_winopen(void)
 {
     w3mimg_op *retval = NULL;
     Gdiplus::Status status = Gdiplus::Ok;

@@ -2097,7 +2097,7 @@ clrtoeolx(void)
 #endif				/* not USE_BG_COLOR */
 
 static void
-clrtobot_eol(void (*clrtoeol) ())
+clrtobot_eol(void (*clrtoeol) (void))
 {
     int l, c;
 
@@ -2359,7 +2359,7 @@ wgetch(void *p)
 }
 
 int
-do_getch()
+do_getch(void)
 {
     if (is_xterm || !gpm_handler)
 	return getch();
@@ -2370,7 +2370,7 @@ do_getch()
 
 #ifdef USE_SYSMOUSE
 int
-sysm_getch()
+sysm_getch(void)
 {
     fd_set rfd;
     int key, x, y;
@@ -2390,7 +2390,7 @@ sysm_getch()
 }
 
 int
-do_getch()
+do_getch(void)
 {
     if (is_xterm || !sysm_handler)
 	return getch();
@@ -2492,7 +2492,7 @@ sleep_till_anykey(int sec, int purge)
 /* Linux console with GPM support */
 
 void
-mouse_init()
+mouse_init(void)
 {
     Gpm_Connect conn;
     extern int gpm_process_mouse(Gpm_Event *, void *);
@@ -2529,7 +2529,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2544,7 +2544,7 @@ mouse_end()
 #elif	defined(USE_SYSMOUSE)
 /* *BSD console with sysmouse support */
 void
-mouse_init()
+mouse_init(void)
 {
     mouse_info_t mi;
     extern int sysm_process_mouse();
@@ -2585,7 +2585,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2606,7 +2606,7 @@ mouse_end()
 /* not GPM nor SYSMOUSE, but use mouse with xterm */
 
 void
-mouse_init()
+mouse_init(void)
 {
     if (mouseActive)
 	return;
@@ -2622,7 +2622,7 @@ mouse_init()
 }
 
 void
-mouse_end()
+mouse_end(void)
 {
     if (mouseActive == 0)
 	return;
@@ -2641,14 +2641,14 @@ mouse_end()
 
 
 void
-mouse_active()
+mouse_active(void)
 {
     if (!mouseActive)
 	mouse_init();
 }
 
 void
-mouse_inactive()
+mouse_inactive(void)
 {
     if (mouseActive && is_xterm)
 	mouse_end();

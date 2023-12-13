@@ -1677,8 +1677,12 @@ setfcolor(int color)
 static char *
 color_seq(int colmode)
 {
+    int n = 30;
     static char seqbuf[32];
-    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + (highIntensityColors ? 90 : 30));
+#ifdef USE_COLOR
+    n = highIntensityColors ? 90 : 30;
+#endif
+    sprintf(seqbuf, "\033[%dm", ((colmode >> 8) & 7) + n);
     return seqbuf;
 }
 

@@ -167,7 +167,6 @@ int
 main(void)
 {
     Str mailcapfile;
-    extern char *getenv();
     char *p;
     int length;
     Str qs = NULL;

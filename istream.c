@@ -116,10 +116,7 @@ newFileStream(FILE * f, void (*closep) ())
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->file.type = IST_FILE;
     stream->file.handle = f;
-    if (closep)
-	stream->file.close = closep;
-    else
-	stream->file.close = (void (*)())fclose;
+    stream->file.close = closep;
     stream->file.read = (int (*)())file_read;
     return stream;
 }

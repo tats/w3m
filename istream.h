@@ -20,11 +20,6 @@ struct stream_buffer {
 
 typedef struct stream_buffer *StreamBuffer;
 
-struct io_file_handle {
-    FILE *f;
-    void (*close) ();
-};
-
 #ifdef USE_SSL
 struct ssl_handle {
     SSL *ssl;
@@ -53,7 +48,7 @@ struct base_stream {
 
 struct file_stream {
     struct stream_buffer stream;
-    struct io_file_handle *handle;
+    FILE *handle;
     char type;
     char iseos;
     int (*read) ();
@@ -144,8 +139,6 @@ extern Str ssl_get_certificate(SSL * ssl, char *hostname);
 #define IStype(stream) ((stream)->base.type)
 #define is_eos(stream) ISeos(stream)
 #define iseos(stream) ((stream)->base.iseos)
-#define file_of(stream) ((stream)->file.handle->f)
-#define set_close(stream,closep) ((IStype(stream)==IST_FILE)?((stream)->file.handle->close=(closep)):0)
 #define str_of(stream) ((stream)->str.handle)
 #ifdef USE_SSL
 #define ssl_socket_of(stream) ((stream)->ssl.handle->sock)

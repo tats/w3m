@@ -43,7 +43,7 @@ struct base_stream {
     char type;
     char iseos;
     int (*read) ();
-    void (*close) ();
+    int (*close) ();
 };
 
 struct file_stream {
@@ -52,7 +52,7 @@ struct file_stream {
     char type;
     char iseos;
     int (*read) ();
-    void (*close) ();
+    int (*close) ();
 };
 
 struct str_stream {
@@ -61,7 +61,7 @@ struct str_stream {
     char type;
     char iseos;
     int (*read) ();
-    void (*close) ();
+    int (*close) ();
 };
 
 #ifdef USE_SSL
@@ -71,7 +71,7 @@ struct ssl_stream {
     char type;
     char iseos;
     int (*read) ();
-    void (*close) ();
+    int (*close) ();
 };
 #endif				/* USE_SSL */
 
@@ -81,7 +81,7 @@ struct encoded_stream {
     char type;
     char iseos;
     int (*read) ();
-    void (*close) ();
+    int (*close) ();
 };
 
 union input_stream {
@@ -105,7 +105,7 @@ typedef struct encoded_stream *EncodedStrStream;
 typedef union input_stream *InputStream;
 
 extern InputStream newInputStream(int des);
-extern InputStream newFileStream(FILE * f, void (*closep) ());
+extern InputStream newFileStream(FILE * f, int (*closep) ());
 extern InputStream newStrStream(Str s);
 #ifdef USE_SSL
 extern InputStream newSSLStream(SSL * ssl, int sock);

@@ -19,7 +19,7 @@
 
 #define POP_CHAR(bs) ((bs)->iseos?'\0':(bs)->stream.buf[(bs)->stream.cur++])
 
-static void basic_close(int *handle);
+static int basic_close(int *handle);
 static int basic_read(int *handle, char *buf, int len);
 
 static int file_read(FILE *handle, char *buf, int len);
@@ -27,12 +27,12 @@ static int file_read(FILE *handle, char *buf, int len);
 static int str_read(Str handle, char *buf, int len);
 
 #ifdef USE_SSL
-static void ssl_close(struct ssl_handle *handle);
+static int ssl_close(struct ssl_handle *handle);
 static int ssl_read(struct ssl_handle *handle, char *buf, int len);
 #endif
 
 static int ens_read(struct ens_handle *handle, char *buf, int len);
-static void ens_close(struct ens_handle *handle);
+static int ens_close(struct ens_handle *handle);
 
 static void memchop(char *p, int *len);
 
@@ -107,7 +107,7 @@ newInputStream(int des)
 }
 
 InputStream
-newFileStream(FILE * f, void (*closep) ())
+newFileStream(FILE * f, int (*closep) ())
 {
     InputStream stream;
     if (f == NULL)
@@ -626,7 +626,7 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 
 /* Raw level input stream functions */
 
-static void
+static int
 basic_close(int *handle)
 {
 #ifdef __MINGW32_VERSION
@@ -635,6 +635,7 @@ basic_close(int *handle)
     close(*handle);
 #endif
     xfree(handle);
+    return 0;
 }
 
 static int
@@ -660,13 +661,14 @@ str_read(Str handle, char *buf, int len)
 }
 
 #ifdef USE_SSL
-static void
+static int
 ssl_close(struct ssl_handle *handle)
 {
     close(handle->sock);
     if (handle->ssl)
 	SSL_free(handle->ssl);
     xfree(handle);
+    return 0;
 }
 
 static int
@@ -698,12 +700,13 @@ ssl_read(struct ssl_handle *handle, char *buf, int len)
 }
 #endif				/* USE_SSL */
 
-static void
+static int
 ens_close(struct ens_handle *handle)
 {
     ISclose(handle->is);
     growbuf_clear(&handle->gb);
     xfree(handle);
+    return 0;
 }
 
 static int

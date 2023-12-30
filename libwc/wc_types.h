@@ -26,6 +26,8 @@ typedef wc_uint32 wc_ces;
 typedef wc_uint32 wc_locale;
 typedef wc_uchar  wc_bool;
 
+typedef struct wc_status wc_status;
+
 typedef struct {
     wc_ccs ccs;
     wc_uint32 code;
@@ -46,7 +48,7 @@ typedef struct {
     wc_ccs       ccs;
     size_t       n;
     wc_map      *map;
-    wc_wchar_t (*conv)();
+    wc_wchar_t (*conv)(wc_ccs, wc_uint16);
 } wc_table;
 
 typedef struct {
@@ -61,9 +63,9 @@ typedef struct {
     char     *desc;
     wc_gset  *gset;
     wc_uchar *gset_ext;
-    Str     (*conv_from)();
-    void    (*push_to)();
-    Str     (*char_conv)();
+    Str     (*conv_from)(Str, wc_ces);
+    void    (*push_to)(Str, wc_wchar_t, wc_status *);
+    Str     (*char_conv)(wc_uchar, wc_status *);
 } wc_ces_info;
 
 typedef struct {
@@ -94,7 +96,7 @@ typedef struct {
     wc_bool east_asian_width;	/* East Asian Ambiguous characters are wide */
 } wc_option;
 
-typedef struct {
+typedef struct wc_status {
     wc_ces_info *ces_info;
     wc_uint8     gr;
     wc_uint8     gl;

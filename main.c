@@ -32,7 +32,7 @@
 #include <gpm.h>
 #endif				/* USE_GPM */
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif
@@ -961,7 +961,7 @@ main(int argc, char **argv)
     if (load_argc == 0) {
 	/* no URL specified */
 	if (!isatty(0)) {
-	    redin = newFileStream(fdopen(dup(0), "rb"), (void (*)())pclose);
+	    redin = newFileStream(fdopen(dup(0), "rb"), pclose);
 	    newbuf = openGeneralPagerBuffer(redin);
 	    dup2(1, 0);
 	}
@@ -1532,7 +1532,7 @@ static Str currentURL(void);
 
 #ifdef USE_BUFINFO
 void
-saveBufferInfo()
+saveBufferInfo(void)
 {
     FILE *fp;
 
@@ -1790,7 +1790,7 @@ clear_mark(Line *l)
 static int
 srchcore(char *volatile str, int (*func) (Buffer *, char *))
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     volatile int i, result = SR_NOTFOUND;
 
     if (str != NULL && str != SearchString)
@@ -2195,7 +2195,7 @@ DEFUN(pipesh, PIPE_SHELL, "Execute shell command and display output")
 DEFUN(readsh, READ_SHELL, "Execute shell command and display output")
 {
     Buffer *buf;
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     char *cmd;
 
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
@@ -5992,7 +5992,7 @@ getCodePage(void)
 #endif
 
 void
-deleteFiles()
+deleteFiles(void)
 {
     Buffer *buf;
     char *f;

@@ -20,11 +20,6 @@ struct stream_buffer {
 
 typedef struct stream_buffer *StreamBuffer;
 
-struct io_file_handle {
-    FILE *f;
-    void (*close) ();
-};
-
 #ifdef USE_SSL
 struct ssl_handle {
     SSL *ssl;
@@ -47,17 +42,17 @@ struct base_stream {
     void *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (int *, unsigned char *, int);
+    int (*close) (int *);
 };
 
 struct file_stream {
     struct stream_buffer stream;
-    struct io_file_handle *handle;
+    FILE *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (FILE *, char *, int);
+    int (*close) (FILE *);
 };
 
 struct str_stream {
@@ -65,8 +60,8 @@ struct str_stream {
     Str handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (Str, char *, int);
+    int (*close) (int);
 };
 
 #ifdef USE_SSL
@@ -75,8 +70,8 @@ struct ssl_stream {
     struct ssl_handle *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (struct ssl_handle *, char *, int);
+    int (*close) (struct ssl_handle *);
 };
 #endif				/* USE_SSL */
 
@@ -85,8 +80,8 @@ struct encoded_stream {
     struct ens_handle *handle;
     char type;
     char iseos;
-    int (*read) ();
-    void (*close) ();
+    int (*read) (struct ens_handle *, char *, int);
+    int (*close) (struct ens_handle *);
 };
 
 union input_stream {
@@ -110,7 +105,7 @@ typedef struct encoded_stream *EncodedStrStream;
 typedef union input_stream *InputStream;
 
 extern InputStream newInputStream(int des);
-extern InputStream newFileStream(FILE * f, void (*closep) ());
+extern InputStream newFileStream(FILE * f, int (*closep) (FILE *));
 extern InputStream newStrStream(Str s);
 #ifdef USE_SSL
 extern InputStream newSSLStream(SSL * ssl, int sock);
@@ -126,7 +121,7 @@ void ISgets_to_growbuf(InputStream stream, struct growbuf *gb, char crnl);
 #ifdef unused
 extern int ISread(InputStream stream, Str buf, int count);
 #endif
-int ISread_n(InputStream stream, char *dst, int bufsize);
+int ISread_n(InputStream stream, unsigned char *dst, int bufsize);
 extern int ISfileno(InputStream stream);
 extern int ISeos(InputStream stream);
 #ifdef USE_SSL
@@ -144,8 +139,6 @@ extern Str ssl_get_certificate(SSL * ssl, char *hostname);
 #define IStype(stream) ((stream)->base.type)
 #define is_eos(stream) ISeos(stream)
 #define iseos(stream) ((stream)->base.iseos)
-#define file_of(stream) ((stream)->file.handle->f)
-#define set_close(stream,closep) ((IStype(stream)==IST_FILE)?((stream)->file.handle->close=(closep)):0)
 #define str_of(stream) ((stream)->str.handle)
 #ifdef USE_SSL
 #define ssl_socket_of(stream) ((stream)->ssl.handle->sock)

@@ -123,7 +123,7 @@ strCmp(const void *s1, const void *s2)
 }
 
 char *
-currentdir()
+currentdir(void)
 {
     char *path;
 #ifdef HAVE_GETCWD

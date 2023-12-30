@@ -24,7 +24,7 @@ extern int sysm_process_mouse(int, int, int, int);
 #if defined(USE_GPM) || defined(USE_SYSMOUSE)
 #define X_MOUSE_SELECTED (char)0xff
 static int X_Mouse_Selection;
-extern int do_getch();
+extern int do_getch(void);
 #define getch()	do_getch()
 #endif				/* defined(USE_GPM) || defined(USE_SYSMOUSE) */
 #endif				/* USE_MOUSE */
@@ -666,7 +666,7 @@ guess_menu_xy(Menu *parent, int width, int *x, int *y)
 }
 
 void
-new_option_menu(Menu *menu, char **label, int *variable, void (*func) ())
+new_option_menu(Menu *menu, char **label, int *variable, void (*func) (void))
 {
     int i, nitem;
     char **p;
@@ -1653,7 +1653,7 @@ smDelTab(char c)
 
 void
 optionMenu(int x, int y, char **label, int *variable, int initial,
-	   void (*func) ())
+	   void (*func) (void))
 {
     Menu menu;
 

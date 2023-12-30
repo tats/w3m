@@ -19,7 +19,7 @@ static int migemo_running;
 static int migemo_pid = 0;
 
 void
-init_migemo()
+init_migemo(void)
 {
     migemo_active = migemo_running = use_migemo;
     if (migemor != NULL)

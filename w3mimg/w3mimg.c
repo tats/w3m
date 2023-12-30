@@ -7,7 +7,7 @@
 #include "w3mimg/w3mimg.h"
 
 w3mimg_op *
-w3mimg_open()
+w3mimg_open(void)
 {
     w3mimg_op *w_op = NULL;
 #ifdef W3MIMGDISPLAY_SETUID

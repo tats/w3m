@@ -183,7 +183,6 @@ insert_bookmark(char *bmark, struct parsed_tagarg *data)
 int
 main(void)
 {
-    extern char *getenv();
     char *p;
     int length;
     Str qs = NULL;

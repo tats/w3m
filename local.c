@@ -28,7 +28,7 @@ static Str Local_cookie = NULL;
 static char *Local_cookie_file = NULL;
 
 static void
-writeLocalCookie()
+writeLocalCookie(void)
 {
     FILE *f;
 
@@ -47,7 +47,7 @@ writeLocalCookie()
 
 /* setup cookie for local CGI */
 Str
-localCookie()
+localCookie(void)
 {
     if (Local_cookie)
 	return Local_cookie;

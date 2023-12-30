@@ -329,7 +329,7 @@ static int ex_ftpdir_name_size_date(char *, char **, char **, char **,
 #define	FTPDIR_LINK	2
 #define	FTPDIR_FILE	3
 
-static void
+static int
 closeFTPdata(FILE * f)
 {
     int status;
@@ -340,6 +340,7 @@ closeFTPdata(FILE * f)
     }
     ftp_command(&current_ftp, NULL, NULL, &status);
     /* status == 226 */
+    return 0;
 }
 
 void
@@ -460,7 +461,7 @@ openFTPStream(ParsedURL *pu, URLFile *uf)
     uf->modtime = ftp_modtime(&current_ftp, realpathname);
     ftp_command(&current_ftp, "RETR", realpathname, &status);
     if (status == 125 || status == 150)
-	return newFileStream(current_ftp.data, (void (*)())closeFTPdata);
+	return newFileStream(current_ftp.data, closeFTPdata);
 
   ftp_dir:
     pu->scheme = SCM_FTPDIR;

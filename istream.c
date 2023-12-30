@@ -19,21 +19,20 @@
 
 #define POP_CHAR(bs) ((bs)->iseos?'\0':(bs)->stream.buf[(bs)->stream.cur++])
 
-static void basic_close(int *handle);
-static int basic_read(int *handle, char *buf, int len);
+static int basic_close(int *handle);
+static int basic_read(int *handle, unsigned char *buf, int len);
 
-static void file_close(struct io_file_handle *handle);
-static int file_read(struct io_file_handle *handle, char *buf, int len);
+static int file_read(FILE *handle, char *buf, int len);
 
 static int str_read(Str handle, char *buf, int len);
 
 #ifdef USE_SSL
-static void ssl_close(struct ssl_handle *handle);
+static int ssl_close(struct ssl_handle *handle);
 static int ssl_read(struct ssl_handle *handle, char *buf, int len);
 #endif
 
 static int ens_read(struct ens_handle *handle, char *buf, int len);
-static void ens_close(struct ens_handle *handle);
+static int ens_close(struct ens_handle *handle);
 
 static void memchop(char *p, int *len);
 
@@ -50,7 +49,7 @@ do_update(BaseStream base)
 }
 
 static int
-buffer_read(StreamBuffer sb, char *obuf, int count)
+buffer_read(StreamBuffer sb, unsigned char *obuf, int count)
 {
     int len = sb->next - sb->cur;
     if (len > 0) {
@@ -102,13 +101,13 @@ newInputStream(int des)
     stream->base.type = IST_BASIC;
     stream->base.handle = NewWithoutGC(int);
     *(int *)stream->base.handle = des;
-    stream->base.read = (int (*)())basic_read;
-    stream->base.close = (void (*)())basic_close;
+    stream->base.read = basic_read;
+    stream->base.close = basic_close;
     return stream;
 }
 
 InputStream
-newFileStream(FILE * f, void (*closep) ())
+newFileStream(FILE * f, int (*closep)(FILE *))
 {
     InputStream stream;
     if (f == NULL)
@@ -116,14 +115,9 @@ newFileStream(FILE * f, void (*closep) ())
     stream = NewWithoutGC(union input_stream);
     init_base_stream(&stream->base, STREAM_BUF_SIZE);
     stream->file.type = IST_FILE;
-    stream->file.handle = NewWithoutGC(struct io_file_handle);
-    stream->file.handle->f = f;
-    if (closep)
-	stream->file.handle->close = closep;
-    else
-	stream->file.handle->close = (void (*)())fclose;
-    stream->file.read = (int (*)())file_read;
-    stream->file.close = (void (*)())file_close;
+    stream->file.handle = f;
+    stream->file.close = closep;
+    stream->file.read = file_read;
     return stream;
 }
 
@@ -137,7 +131,7 @@ newStrStream(Str s)
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
     stream->str.handle = NULL;
-    stream->str.read = (int (*)())str_read;
+    stream->str.read = str_read;
     stream->str.close = NULL;
     return stream;
 }
@@ -155,8 +149,8 @@ newSSLStream(SSL * ssl, int sock)
     stream->ssl.handle = NewWithoutGC(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
-    stream->ssl.read = (int (*)())ssl_read;
-    stream->ssl.close = (void (*)())ssl_close;
+    stream->ssl.read = ssl_read;
+    stream->ssl.close = ssl_close;
     return stream;
 }
 #endif
@@ -176,15 +170,15 @@ newEncodedStream(InputStream is, char encoding)
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
     growbuf_init_without_GC(&stream->ens.handle->gb);
-    stream->ens.read = (int (*)())ens_read;
-    stream->ens.close = (void (*)())ens_close;
+    stream->ens.read = ens_read;
+    stream->ens.close = ens_close;
     return stream;
 }
 
 int
 ISclose(InputStream stream)
 {
-    MySignalHandler(*prevtrap) ();
+    MySignalHandler(*prevtrap) (SIGNAL_ARG);
     if (stream == NULL)
         return -1;
     if (stream->base.close != NULL) {
@@ -192,7 +186,7 @@ ISclose(InputStream stream)
             return -1;
         }
         prevtrap = mySignal(SIGINT, SIG_IGN);
-        stream->base.close (stream->base.handle);
+        stream->base.close(stream->base.handle);
         mySignal(SIGINT, prevtrap);
     }
     xfree(stream->base.stream.buf);
@@ -297,7 +291,7 @@ ISread(InputStream stream, Str buf, int count)
 #endif
 
 int
-ISread_n(InputStream stream, char *dst, int count)
+ISread_n(InputStream stream, unsigned char *dst, int count)
 {
     int len, l;
     BaseStream base;
@@ -328,7 +322,7 @@ ISfileno(InputStream stream)
     case IST_BASIC:
 	return *(int *)stream->base.handle;
     case IST_FILE:
-	return fileno(stream->file.handle->f);
+	return fileno(stream->file.handle);
 #ifdef USE_SSL
     case IST_SSL:
 	return stream->ssl.handle->sock;
@@ -632,38 +626,32 @@ ssl_get_certificate(SSL * ssl, char *hostname)
 
 /* Raw level input stream functions */
 
-static void
+static int
 basic_close(int *handle)
 {
 #ifdef __MINGW32_VERSION
-    closesocket(*(int *)handle);
+    closesocket(*handle);
 #else
-    close(*(int *)handle);
+    close(*handle);
 #endif
     xfree(handle);
+    return 0;
 }
 
 static int
-basic_read(int *handle, char *buf, int len)
+basic_read(int *handle, unsigned char *buf, int len)
 {
 #ifdef __MINGW32_VERSION
-    return recv(*(int *)handle, buf, len, 0);
+    return recv(*handle, buf, len, 0);
 #else
-    return read(*(int *)handle, buf, len);
+    return read(*handle, buf, len);
 #endif
 }
 
-static void
-file_close(struct io_file_handle *handle)
-{
-    handle->close(handle->f);
-    xfree(handle);
-}
-
 static int
-file_read(struct io_file_handle *handle, char *buf, int len)
+file_read(FILE *handle, char *buf, int len)
 {
-    return fread(buf, 1, len, handle->f);
+    return fread(buf, 1, len, handle);
 }
 
 static int
@@ -673,13 +661,14 @@ str_read(Str handle, char *buf, int len)
 }
 
 #ifdef USE_SSL
-static void
+static int
 ssl_close(struct ssl_handle *handle)
 {
     close(handle->sock);
     if (handle->ssl)
 	SSL_free(handle->ssl);
     xfree(handle);
+    return 0;
 }
 
 static int
@@ -711,12 +700,13 @@ ssl_read(struct ssl_handle *handle, char *buf, int len)
 }
 #endif				/* USE_SSL */
 
-static void
+static int
 ens_close(struct ens_handle *handle)
 {
     ISclose(handle->is);
     growbuf_clear(&handle->gb);
     xfree(handle);
+    return 0;
 }
 
 static int

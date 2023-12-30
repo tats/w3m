@@ -101,8 +101,8 @@ newInputStream(int des)
     stream->base.type = IST_BASIC;
     stream->base.handle = NewWithoutGC(int);
     *(int *)stream->base.handle = des;
-    stream->base.read = (int (*)())basic_read;
-    stream->base.close = (void (*)())basic_close;
+    stream->base.read = basic_read;
+    stream->base.close = basic_close;
     return stream;
 }
 
@@ -117,7 +117,7 @@ newFileStream(FILE * f, void (*closep) ())
     stream->file.type = IST_FILE;
     stream->file.handle = f;
     stream->file.close = closep;
-    stream->file.read = (int (*)())file_read;
+    stream->file.read = file_read;
     return stream;
 }
 
@@ -131,7 +131,7 @@ newStrStream(Str s)
     init_str_stream(&stream->base, s);
     stream->str.type = IST_STR;
     stream->str.handle = NULL;
-    stream->str.read = (int (*)())str_read;
+    stream->str.read = str_read;
     stream->str.close = NULL;
     return stream;
 }
@@ -149,8 +149,8 @@ newSSLStream(SSL * ssl, int sock)
     stream->ssl.handle = NewWithoutGC(struct ssl_handle);
     stream->ssl.handle->ssl = ssl;
     stream->ssl.handle->sock = sock;
-    stream->ssl.read = (int (*)())ssl_read;
-    stream->ssl.close = (void (*)())ssl_close;
+    stream->ssl.read = ssl_read;
+    stream->ssl.close = ssl_close;
     return stream;
 }
 #endif
@@ -170,8 +170,8 @@ newEncodedStream(InputStream is, char encoding)
     stream->ens.handle->pos = 0;
     stream->ens.handle->encoding = encoding;
     growbuf_init_without_GC(&stream->ens.handle->gb);
-    stream->ens.read = (int (*)())ens_read;
-    stream->ens.close = (void (*)())ens_close;
+    stream->ens.read = ens_read;
+    stream->ens.close = ens_close;
     return stream;
 }
 
@@ -630,9 +630,9 @@ static void
 basic_close(int *handle)
 {
 #ifdef __MINGW32_VERSION
-    closesocket(*(int *)handle);
+    closesocket(*handle);
 #else
-    close(*(int *)handle);
+    close(*handle);
 #endif
     xfree(handle);
 }

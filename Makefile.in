@@ -35,7 +35,12 @@ RC_DIR = @RC_DIR@
 ETC_DIR = $(sysconfdir)
 CONF_DIR = $(sysconfdir)/$(PACKAGE)
 
-WARNINGS= -Wall -Wnull-dereference
+WARNINGS  = -Wall
+WARNINGS += -Wnull-dereference
+WARNINGS += -Wimplicit-function-declaration
+WARNINGS += -Wimplicit-int
+WARNINGS += -Wstrict-prototypes
+
 CFLAGS = $(WARNINGS) -I. -I$(top_srcdir) @CFLAGS@ $(CPPFLAGS) $(DEFS) $(OPTS)
 WCCFLAGS = @WCCFLAGS@
 CPPFLAGS = @CPPFLAGS@

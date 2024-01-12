@@ -1726,6 +1726,7 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
     HRequest hr;
     ParsedURL *volatile auth_pu;
+    int needs_halfclose = FALSE;
 
     tpath = path;
     prevtrap = NULL;
@@ -2283,11 +2284,14 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 #endif
     frame_source = flag & RG_FRAME_SRC;
     if (proc == DO_EXTERNAL) {
-	b = doExternal(f, t, t_buf);
+	b = doExternal(f, t, t_buf, &needs_halfclose);
     } else {
 	b = loadSomething(&f, proc, t_buf);
     }
-    UFclose(&f);
+    if (needs_halfclose)
+	UFhalfclose(&f);
+    else
+	UFclose(&f);
     frame_source = 0;
     if (b && b != NO_BUFFER) {
 	b->real_scheme = f.scheme;
@@ -7999,6 +8003,7 @@ openGeneralPagerBuffer(InputStream stream)
     char *t = "text/plain";
     Buffer *t_buf = NULL;
     URLFile uf;
+    int needs_halfclose = FALSE;
 
     init_stream(&uf, SCM_UNKNOWN, stream);
 
@@ -8043,8 +8048,11 @@ openGeneralPagerBuffer(InputStream stream)
 #endif
     else {
 	if (searchExtViewer(t)) {
-	    buf = doExternal(uf, t, t_buf);
-	    UFclose(&uf);
+	    buf = doExternal(uf, t, t_buf, &needs_halfclose);
+	    if (needs_halfclose)
+		UFhalfclose(&uf);
+	    else
+		UFclose(&uf);
 	    if (buf == NULL || buf == NO_BUFFER)
 		return buf;
 	}
@@ -8185,21 +8193,15 @@ getNextPage(Buffer *buf, int plen)
     return last;
 }
 
-int
-save2tmp(URLFile uf, char *tmpf)
+static int
+save2file(URLFile uf, FILE *ff)
 {
-    FILE *ff;
     clen_t linelen = 0, trbyte = 0;
     MySignalHandler(*volatile prevtrap) (SIGNAL_ARG) = NULL;
     static JMP_BUF env_bak;
     volatile int retval = 0;
     char *volatile buf = NULL;
 
-    ff = fopen(tmpf, "wb");
-    if (ff == NULL) {
-	/* fclose(f); */
-	return -1;
-    }
     bcopy(AbortLoading, env_bak, sizeof(JMP_BUF));
     if (SETJMP(AbortLoading) != 0) {
 	goto _end;
@@ -8248,19 +8250,35 @@ save2tmp(URLFile uf, char *tmpf)
     bcopy(env_bak, AbortLoading, sizeof(JMP_BUF));
     TRAP_OFF;
     xfree(buf);
-    fclose(ff);
     current_content_length = 0;
     return retval;
 }
 
+int
+save2tmp(URLFile uf, char *tmpf)
+{
+    FILE *ff;
+    int r;
+
+    ff = fopen(tmpf, "wb");
+    if (ff == NULL) {
+	/* fclose(f); */
+	return -1;
+    }
+    r = save2file(uf, ff);
+    fclose(ff);
+    return r;
+}
+
 Buffer *
-doExternal(URLFile uf, char *type, Buffer *defaultbuf)
+doExternal(URLFile uf, char *type, Buffer *defaultbuf, int *needs_halfclose)
 {
     Str tmpf, command;
     struct mailcap *mcap;
-    int mc_stat;
+    int mc_stat, err, background;
     Buffer *buf = NULL;
     char *header, *src = NULL, *ext = uf.ext;
+    FILE *ff;
 
     if (!(mcap = searchExtViewer(type)))
 	return NULL;
@@ -8279,7 +8297,8 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 	header = conv_to_system(header);
     command = unquote_mailcap(mcap->viewer, type, tmpf->ptr, header, &mc_stat);
 #ifndef __EMX__
-    if (!(mc_stat & MCSTAT_REPNAME)) {
+    if (!(mc_stat & MCSTAT_REPNAME) &&
+	(mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT))) {
 	Str tmp = Sprintf("(%s) < %s", command->ptr, shell_quote(tmpf->ptr));
 	command = tmp;
     }
@@ -8291,18 +8310,35 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 	flush_tty();
 	if (!fork()) {
 	    setup_child(FALSE, 0, UFfileno(&uf));
-	    if (save2tmp(uf, tmpf->ptr) < 0)
-		exit(1);
-	    UFclose(&uf);
-	    myExec(command->ptr);
+	    if (mc_stat & MCSTAT_REPNAME) {
+		if (save2tmp(uf, tmpf->ptr) < 0)
+		    exit(1);
+		UFclose(&uf);
+		myExec(command->ptr);
+	    }
+	    else {
+		/* no file name needed; we can pipe directly */
+		if (!(ff = popen(command->ptr, "w")))
+		    exit(1);
+		err = save2file(uf, ff);
+		pclose(ff);
+		/* we are in a child process, we can close uf. */
+		UFclose(&uf);
+		exit(-err); /* exit child process */
+	    }
 	}
+	if (needs_halfclose)
+	    *needs_halfclose = TRUE;
 	return NO_BUFFER;
     }
     else
 #endif
     {
-	if (save2tmp(uf, tmpf->ptr) < 0) {
-	    return NULL;
+	if ((mc_stat & MCSTAT_REPNAME) ||
+	    (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT))) {
+	    if (save2tmp(uf, tmpf->ptr) < 0) {
+		return NULL;
+	    }
 	}
     }
     if (mcap->flags & (MAILCAP_HTMLOUTPUT | MAILCAP_COPIOUSOUTPUT)) {
@@ -8332,15 +8368,29 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 	}
     }
     else {
-	if (mcap->flags & MAILCAP_NEEDSTERMINAL || !BackgroundExtViewer) {
+	background = !(mcap->flags & MAILCAP_NEEDSTERMINAL) &&
+	    BackgroundExtViewer;
+	if (!background)
 	    fmTerm();
-	    mySystem(command->ptr, 0);
+	if (mc_stat & MCSTAT_REPNAME) {
+	    /* saved already */
+	    mySystem(command->ptr, background);
+	}
+	else {
+	    /* either:
+	     * foreground, so we can save2file directly.
+	     * OR background but no setpgrp, in which case we can't do better.
+	     */
+	    if (!(ff = popen(command->ptr, "w")))
+		return NULL;
+	    err = save2file(uf, ff);
+	    pclose(ff);
+	    /* do *not* close uf, it will be closed later. */
+	}
+	if (!background) {
 	    fmInit();
 	    if (CurrentTab && Currentbuf)
 		displayBuffer(Currentbuf, B_FORCE_REDRAW);
-	}
-	else {
-	    mySystem(command->ptr, 1);
 	}
 	buf = NO_BUFFER;
     }
@@ -8351,6 +8401,8 @@ doExternal(URLFile uf, char *type, Buffer *defaultbuf)
 	buf->edit = mcap->edit;
 	buf->mailcap = mcap;
     }
+    if (needs_halfclose)
+	*needs_halfclose = FALSE;
     return buf;
 }
 

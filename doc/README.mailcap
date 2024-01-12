@@ -1,0 +1,46 @@
+On mailcap support
+
+                                                     (11/07/2000) Okabe Katsuya
+                                                        okabek@guitar.ocn.ne.jp
+                                                     (translated from Japanese)
+
+ * Starting with the 10/6/2000 version, w3m follows the mailcap fields
+   `nametemplate', `needsterminal', `copiousoutput', `edit' (see RFC-1524).
+   Also, starting with the 10/26/2000 version, the path of mailcap and
+   mime.types may be set from the option settings panel.
+
+ * In mailcap, the %s is replaced with the path name passed to the external
+   command, and %t is replaced with the file's content type.
+
+ * When a mailcap entry contains a test=command field, the file will only be
+   opened if the test command returns true. e.g. if you write
+
+   image/gif; xv '%s'; test=test "$DISPLAY"
+
+   then xv will only be launched if the DISPLAY environment variable is set.
+
+ * When a mailcap entry contains the `copiousoutput' field, the external
+   command's output is read into a new buffer.
+   e.g.
+
+   application/x-troff-man;/usr/bin/nroff -mandoc;copiousoutput
+
+   For the most part, this functionality can substitute all uses of LESSOPEN.
+   Therefore, usage of LESSOPEN has been made optional.
+
+   w3m has an extension called `x-htmloutput'. Just like `copiousoutput',
+   this reads the command's output into the buffer. The difference is that
+   `x-htmloutput' renders the output as HTML. For interoperability with other
+   browsers, it may be best to place entries not containing x-htmloutput before
+   entries that do contain the flag.
+
+ * nametemplate= specifies the extension of files passed to the external
+   command.
+   Normally, when a temporary file is created, the file extension present
+   in the URL is used. This can be changed using the nametemplate= field.
+   e.g.
+
+   application/x-dvi;xdvi '%s';test=test -n "$DISPLAY";nametemplate=%s.dvi
+
+ * For the meaning of the `needsterminal' and `edit' fields, please consult
+   RFC 1524.

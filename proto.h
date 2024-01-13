@@ -283,7 +283,8 @@ extern Buffer *openPagerBuffer(InputStream stream, Buffer *buf);
 extern Buffer *openGeneralPagerBuffer(InputStream stream);
 extern Line *getNextPage(Buffer *buf, int plen);
 extern int save2tmp(URLFile uf, char *tmpf);
-extern Buffer *doExternal(URLFile uf, char *type, Buffer *defaultbuf);
+extern Buffer *doExternal(URLFile uf, char *type, Buffer *defaultbuf,
+			  int *needs_halfclose);
 extern int _doFileCopy(char *tmpf, char *defstr, int download);
 #define doFileCopy(tmpf, defstr) _doFileCopy(tmpf, defstr, FALSE);
 extern int doFileMove(char *tmpf, char *defstr);

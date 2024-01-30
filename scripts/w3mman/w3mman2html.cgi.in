@@ -162,7 +162,7 @@ EOF
     next;
   }
 
-  s@(http|ftp)://[\w.\-/~]+[\w/]@<a href="$&">$&</a>@g;
+  s@(https|http|ftp)://[\w.\-/~]+[\w/]@<a href="$&">$&</a>@g;
   s@\b(mailto:|)(\w[\w.\-]*\@\w[\w.\-]*\.[\w.\-]*\w)@<a href="mailto:$2">$1$2</a>@g;
   s@(\W)(\~?/[\w.][\w.\-/~]*)@$1 . &file_ref($2)@ge;
   s@(include(<\/?[bu]\>|\s)*\&lt;)([\w.\-/]+)@$1 . &include_ref($3)@ge;

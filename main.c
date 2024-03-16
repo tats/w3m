@@ -2169,7 +2169,7 @@ DEFUN(pipesh, PIPE_SHELL, "Execute shell command and display output")
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
-	cmd = inputLineHist("(read shell[pipe])!", "", IN_COMMAND, ShellHist);
+	cmd = inputLineHist("(read shell[pipe])! ", "", IN_COMMAND, ShellHist);
     }
     if (cmd != NULL)
 	cmd = conv_to_system(cmd);
@@ -2201,7 +2201,7 @@ DEFUN(readsh, READ_SHELL, "Execute shell command and display output")
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
-	cmd = inputLineHist("(read shell)!", "", IN_COMMAND, ShellHist);
+	cmd = inputLineHist("(read shell)! ", "", IN_COMMAND, ShellHist);
     }
     if (cmd != NULL)
 	cmd = conv_to_system(cmd);
@@ -2236,7 +2236,7 @@ DEFUN(execsh, EXEC_SHELL SHELL, "Execute shell command and display output")
     CurrentKeyData = NULL;	/* not allowed in w3m-control: */
     cmd = searchKeyData();
     if (cmd == NULL || *cmd == '\0') {
-	cmd = inputLineHist("(exec shell)!", "", IN_COMMAND, ShellHist);
+	cmd = inputLineHist("(exec shell)! ", "", IN_COMMAND, ShellHist);
     }
     if (cmd != NULL)
 	cmd = conv_to_system(cmd);
@@ -5873,7 +5873,7 @@ execdict(char *word)
 
 DEFUN(dictword, DICT_WORD, "Execute dictionary command (see README.dict)")
 {
-    execdict(inputStr("(dictionary)!", ""));
+    execdict(inputStr("(dictionary)! ", ""));
 }
 
 DEFUN(dictwordat, DICT_WORD_AT,

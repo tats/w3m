@@ -2002,7 +2002,8 @@ loadGeneralFile(char *path, ParsedURL *volatile current, char *referer,
 	    break;
 	case 'I':
 	    t = guessContentType(pu.file);
-	    if(strncasecmp(t, "image/", 6) != 0) {
+	    /* TODO(rkta): Defaulting to png in any case is not a good UX */
+	    if(!t || strncasecmp(t, "image/", 6) != 0) {
 		t = "image/png";
 	    }
 	    break;

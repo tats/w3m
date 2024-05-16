@@ -1,0 +1,10 @@
+[*]
+root = true
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+# unfortunately, existing code assumes tw=8 for formatting. Until someone renormalizes the whole repo, let's use this.
+tab_width = 8

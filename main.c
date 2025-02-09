@@ -127,8 +127,6 @@ static int searchKeyNum(void);
 #define help() fusage(stdout, 0)
 #define usage() fusage(stderr, 1)
 
-int enable_inline_image;
-
 static void
 fversion(FILE * f)
 {
@@ -719,13 +717,13 @@ main(int argc, char **argv)
 		    set_pixel_per_line = TRUE;
 		}
 	    }
-#endif
 	    else if (!strcmp("-ri", argv[i])) {
 	        enable_inline_image = INLINE_IMG_OSC5379;
 	    }
 	    else if (!strcmp("-sixel", argv[i])) {
 		enable_inline_image = INLINE_IMG_SIXEL;
 	    }
+#endif
 	    else if (!strcmp("-num", argv[i]))
 		showLineNum = TRUE;
 	    else if (!strcmp("-no-proxy", argv[i]))
@@ -6006,11 +6004,13 @@ deleteFiles()
     }
     while ((f = popText(fileToDelete)) != NULL) {
 	unlink(f);
+#ifdef USE_IMAGE
 	if (enable_inline_image == INLINE_IMG_SIXEL && strcmp(f+strlen(f)-4, ".gif") == 0) {
 	    Str firstframe = Strnew_charp(f);
 	    Strcat_charp(firstframe, "-1");
 	    unlink(firstframe->ptr);
         }
+#endif
     }
 }
 

@@ -377,6 +377,7 @@ static struct sel_c graphic_char_str[] = {
 
 #ifdef USE_IMAGE
 static struct sel_c inlineimgstr[] = {
+    {N_S(INLINE_IMG_AUTO), N_("auto-select protocol")},
     {N_S(INLINE_IMG_NONE), N_("external command")},
     {N_S(INLINE_IMG_OSC5379), N_("OSC 5379 (mlterm)")},
     {N_S(INLINE_IMG_SIXEL), N_("sixel (img2sixel)")},
@@ -449,7 +450,7 @@ struct param_ptr params1[] = {
      CMT_EXT_IMAGE_VIEWER, NULL},
     {"image_scale", P_SCALE, PI_TEXT, (void *)&image_scale, CMT_IMAGE_SCALE,
      NULL},
-    {"inline_img_protocol", P_INT, PI_SEL_C, (void *)&enable_inline_image,
+    {"inline_img_protocol", P_CHARINT, PI_SEL_C, (void *)&enable_inline_image_config,
      CMT_INLINE_IMG_PROTOCOL, (void *)inlineimgstr},
     {"imgdisplay", P_STRING, PI_TEXT, (void *)&Imgdisplay, CMT_IMGDISPLAY,
      NULL},
@@ -1313,7 +1314,7 @@ sync_with_option(void)
     init_migemo();
 #endif
 #ifdef USE_IMAGE
-    if (fmInitialized && (displayImage || enable_inline_image))
+    if (fmInitialized && (displayImage || enable_inline_image_config))
 	initImage();
 #else
     displayImage = FALSE;	/* XXX */

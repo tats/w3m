@@ -16,7 +16,7 @@ static int image_index = 0;
 
 /* display image */
 
-typedef struct _termialImage {
+typedef struct _terminalImage {
     ImageCache *cache;
     short x;
     short y;
@@ -34,10 +34,15 @@ static pid_t Imgdisplay_pid = 0;
 static int openImgdisplay(void);
 static void closeImgdisplay(void);
 static int getCharSize(void);
+static int inline_img_protocol_autodetect(void);
 
 void
 initImage()
 {
+    enable_inline_image = enable_inline_image_config == INLINE_IMG_AUTO
+	    ? inline_img_protocol_autodetect()
+	    : enable_inline_image_config;
+
     if (activeImage)
 	return;
     if (getCharSize())
@@ -131,6 +136,37 @@ openImgdisplay()
     Imgdisplay_pid = 0;
     activeImage = FALSE;
     return FALSE;
+}
+
+static int
+inline_img_protocol_autodetect(void)
+{
+    int result;
+    const char *env_term, *konsole_version;
+
+    if ((env_term = getenv("TERM"))) {
+	if (strcmp(env_term, "xterm-kitty") == 0)
+	    return INLINE_IMG_KITTY;
+	if (strcmp(env_term, "xterm-ghostty") == 0)
+	    return INLINE_IMG_KITTY;
+	/* yaft doesn't correctly respond to \e[c, but is sixel-capable
+	 * anyway. Thanks to hackerb9/lsix */
+	if (strncmp(env_term, "yaft", 4) == 0)
+	    return INLINE_IMG_SIXEL;
+    }
+
+    if ((konsole_version = getenv("KONSOLE_VERSION"))
+	&& strcmp(konsole_version, "220770") >= 0)
+	return INLINE_IMG_KITTY;
+
+    if ((result = img_protocol_test_for_sixel()) != INLINE_IMG_NONE)
+	return result;
+
+    /* If mlterm too old to support sixel, probably supports older OSC5379 */
+    if (env_term && strncmp(env_term, "mlterm", 6) == 0)
+	return INLINE_IMG_OSC5379;
+
+    return INLINE_IMG_NONE;
 }
 
 static void
@@ -256,6 +292,11 @@ drawImage(void)
 		put_image_iterm2(url, x, y, sw, sh);
 	    } else if (enable_inline_image == INLINE_IMG_KITTY) {
 		put_image_kitty(url, x, y, i->width, i->height, i->sx, i->sy, sw * pixel_per_char, sh * pixel_per_line_i, sw, sh);
+#ifdef DEBUG
+	    } else {
+		fprintf(stderr, "Unrecognised inline image protocol: %d\n",
+			enable_inline_image);
+#endif
 	    }
 
 	    continue ;

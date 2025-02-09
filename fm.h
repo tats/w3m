@@ -317,11 +317,14 @@ extern int REV_LB[];
 #define EOL(l) (&(l)->ptr[(l)->length])
 #define IS_EOL(p,l) ((p)==&(l)->ptr[(l)->length])
 
+#ifdef USE_IMAGE
+#define INLINE_IMG_AUTO		-1
 #define INLINE_IMG_NONE		0
 #define INLINE_IMG_OSC5379	1
 #define INLINE_IMG_SIXEL	2
 #define INLINE_IMG_ITERM2	3
 #define INLINE_IMG_KITTY	4
+#endif
 
 /* 
  * Types.
@@ -940,7 +943,10 @@ global char *CurrentKeyData;
 global char *CurrentCmdData;
 global char *w3m_reqlog;
 extern char *w3m_version;
-extern int enable_inline_image;
+#ifdef USE_IMAGE
+global unsigned char enable_inline_image init(INLINE_IMG_NONE);
+global signed char enable_inline_image_config init(INLINE_IMG_AUTO);
+#endif
 
 #define DUMP_BUFFER   0x01
 #define DUMP_HEAD     0x02

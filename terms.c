@@ -856,6 +856,117 @@ put_image_sixel(char *url, int x, int y, int w, int h, int sx, int sy, int sw, i
     MOVE(Currentbuf->cursorY,Currentbuf->cursorX);
 }
 
+static int
+have_img2sixel(void)
+{
+    pid_t child_pid;
+    int wstatus;
+
+    if (getenv("W3M_IMG2SIXEL"))
+	return TRUE;
+
+    switch (child_pid = fork()) {
+    case -1:
+	return FALSE;
+    case 0:
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
+	execlp("img2sixel", "img2sixel", "--version", NULL);
+	/* if exec fails */
+	_exit(-1);
+    default:
+	return
+#ifdef HAVE_WAITPID
+	    waitpid(child_pid, &wstatus, 0) != -1
+#else
+	    wait(&wstatus) != -1
+#endif
+	    && WIFEXITED(wstatus)
+	    && WEXITSTATUS(wstatus) == 0;
+    }
+}
+
+/*
+ * NB: in theory, user input could be snarfed up with the read(2); in practice,
+ * only museum pieces have such low latency, so we should get the device
+ * attributes (and only the device attributes) immediately. If ever this becomes
+ * an issue (which it won't), ungetch(3) can be used on any extraneous input
+ */
+int
+img_protocol_test_for_sixel(void)
+{
+    static const char errstr[] = "Can't get terminal attributes";
+    size_t response_size = 256, len = 0;
+    char *response = GC_MALLOC_ATOMIC(response_size);
+
+    /* request tty send primary device attributes */
+    write(tty, "\033[c", 3);
+
+    /* loop until we get the whole response */
+    for (; response; response = GC_REALLOC(response, response_size *= 2)) {
+	ssize_t nchars_read;
+	int nret;
+	fd_set fds;
+	/* wait 0.2s (from get_pixel_per_char()) for input */
+	struct timeval timeout = { 0, 0.2 * 1000000 };
+	FD_ZERO(&fds);
+	FD_SET(tty, &fds);
+	if ((nret = select(tty + 1, &fds, NULL, NULL, &timeout)) <= 0) {
+	    fprintf(stderr, "%s: %s\n",
+		errstr, nret == 0 ? "timed out" : strerror(errno));
+	    return INLINE_IMG_NONE;
+	}
+
+	nchars_read = read(tty, response + len, response_size - len - 1);
+	if (nchars_read < 0) {
+	    perror(errstr);
+	    return INLINE_IMG_NONE;
+	}
+
+	/* first useful iteration; validate response */
+	if (nchars_read + len >= 3 &&
+	    (memcmp(response, "\033[", 2) != 0 ||
+	     (response[2] != '?' && response[2] != '=')))
+	{
+	    fputs("Malformed terminal attributes\n", stderr);
+	    return INLINE_IMG_NONE;
+	}
+
+	/* NUL-terminate the terminal response */
+	{
+	    char *ptr = memchr(response + len, 'c', nchars_read);
+	    if (ptr) {
+		ptr[1] = '\0';
+		break;
+	    }
+	}
+
+	/* if we can't find 'c', then the response is incomplete; try again */
+	len += (size_t)nchars_read;
+    }
+
+    /* separate the response parameters by ';' and look for '4' */
+    if (response) {
+	char *ptr;
+	if (response[2] == '=')
+	    return INLINE_IMG_NONE; /* SyncTERM */
+	for (ptr = response; (ptr = strchr(ptr, ';'));) {
+	    if (*++ptr != '4')
+		continue;
+	    switch (*++ptr) {
+	    case ';':
+	    case 'c':
+		if (have_img2sixel())
+		    return INLINE_IMG_SIXEL;
+	    }
+	}
+    } else
+	perror(errstr);
+
+    /* default */
+    return INLINE_IMG_NONE;
+}
+
 int
 get_pixel_per_cell(int *ppc, int *ppl)
 {

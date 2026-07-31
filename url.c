@@ -25,6 +25,9 @@
 #include "myctype.h"
 #include "regex.h"
 
+/* A version-only User-Agent is rejected by sites such as Google. */
+#define DEFAULT_USER_AGENT "Mozilla/5.0 (compatible; w3m)"
+
 #ifdef USE_SSL
 #ifndef SSLEAY_VERSION_NUMBER
 #include <openssl/crypto.h>		/* SSLEAY_VERSION_NUMBER may be here */
@@ -1421,7 +1424,7 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
 	if (url_user_agent)
 	   Strcat_charp(s, url_user_agent);
 	else if (UserAgent == NULL || *UserAgent == '\0')
-            Strcat_charp(s, w3m_version);
+            Strcat_charp(s, DEFAULT_USER_AGENT);
         else
             Strcat_charp(s, UserAgent);
         Strcat_charp(s, "\r\n");

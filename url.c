@@ -1423,10 +1423,12 @@ otherinfo(ParsedURL *target, ParsedURL *current, char *referer)
         Strcat_charp(s, "User-Agent: ");
 	if (url_user_agent)
 	   Strcat_charp(s, url_user_agent);
-	else if (UserAgent == NULL || *UserAgent == '\0')
+	else if (UserAgent != NULL && *UserAgent != '\0')
+	    Strcat_charp(s, UserAgent);
+	else if (use_compatible_user_agent)
             Strcat_charp(s, DEFAULT_USER_AGENT);
-        else
-            Strcat_charp(s, UserAgent);
+	else
+	    Strcat_charp(s, w3m_version);
         Strcat_charp(s, "\r\n");
     }
 

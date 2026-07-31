@@ -165,6 +165,7 @@ static int OptionEncode = FALSE;
 #define CMT_FTPPASS      N_("Password for anonymous FTP (your mail address)")
 #define CMT_FTPPASS_HOSTNAMEGEN N_("Generate domain part of password for FTP")
 #define CMT_USERAGENT    N_("User-Agent identification string")
+#define CMT_COMPATIBLE_USERAGENT N_("Use a browser-compatible User-Agent by default")
 #define CMT_ACCEPTENCODING	N_("Accept-Encoding header")
 #define CMT_ACCEPTMEDIA	 N_("Accept header")
 #define CMT_ACCEPTLANG   N_("Accept-Language header")
@@ -686,6 +687,8 @@ struct param_ptr params9[] = {
     {"siteconf_file", P_STRING, PI_TEXT, (void *)&siteconf_file,
      CMT_SITECONF_FILE, NULL},
     {"user_agent", P_STRING, PI_TEXT, (void *)&UserAgent, CMT_USERAGENT, NULL},
+    {"use_compatible_user_agent", P_INT, PI_ONOFF,
+     (void *)&use_compatible_user_agent, CMT_COMPATIBLE_USERAGENT, NULL},
     {"no_referer", P_INT, PI_ONOFF, (void *)&NoSendReferer, CMT_NOSENDREFERER,
      NULL},
     {"cross_origin_referer", P_INT, PI_ONOFF, (void *)&CrossOriginReferer,

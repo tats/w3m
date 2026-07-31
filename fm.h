@@ -1034,6 +1034,7 @@ global int do_download init(FALSE);
 global char *image_source init(NULL);
 #endif
 global char *UserAgent init(NULL);
+global int use_compatible_user_agent init(FALSE);
 global int NoSendReferer init(FALSE);
 global int CrossOriginReferer init(TRUE);
 global char *AcceptLang init(NULL);
